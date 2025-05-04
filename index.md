@@ -1,3 +1,9 @@
+---
+label: DMM+zurg Explained
+icon: telescope
+order: 100
+---
+
 # DMM+zurg Explained
 
 Real-Debrid, at about $4/month, is a convenience upgrade over free torrents and a cheaper, simpler alternative to paid Usenet.
