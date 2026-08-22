@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.840752251421">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Usenet with zurg</title>
+    <meta name="title" content="Usenet with zurg">
+    <meta name="description" content="zurg's nzb backend turns a directory of .nzb files into a mounted library. There is no downloader, no completed folder, and nothing on disk but the NZB">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/guides/usenet/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/guides/usenet/">
+    <meta property="og:title" content="Usenet with zurg">
+    <meta property="og:description" content="zurg's nzb backend turns a directory of .nzb files into a mounted library. There is no downloader, no completed folder, and nothing on disk but the NZB">
+    <meta property="og:site_name" content="dmm+zurg">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/guides/usenet/">
+    <meta name="twitter:title" content="Usenet with zurg">
+    <meta name="twitter:description" content="zurg's nzb backend turns a directory of .nzb files into a mounted library. There is no downloader, no completed folder, and nothing on disk but the NZB">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/guides/usenet.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../resources/css/retype.css?v=4.6.0.840752251421" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.840752251421" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.840752251421" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.840752251421" defer></script>
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/" class="flex items-center leading-snug text-2xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">dmm+zurg</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg-testing" target="_blank">zurg-testing</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://reddit.com/r/debridmediamanager" target="_blank">Reddit</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.patreon.com/debridmediamanager" target="_blank">Patreon</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg-testing" target="_blank">zurg-testing</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://reddit.com/r/debridmediamanager" target="_blank">Reddit</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.patreon.com/debridmediamanager" target="_blank">Patreon</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="usenet-with-zurg">Usenet with zurg</h1>
+<p>zurg&#x27;s <code translate="no" v-pre>nzb</code> backend turns a directory of <code translate="no" v-pre>.nzb</code> files into a mounted library. There is no downloader, no completed folder, and nothing on disk but the NZB files themselves: when a player seeks into a file, zurg fetches exactly the articles covering those bytes, yEnc-decodes them in memory, and answers the ranged read. A 60 GB remux costs 60 GB of disk nowhere.</p>
+<p>It is a debrid backend as far as the rest of zurg is concerned — the same library model, the same directory filters, the same mount, the same media-server integration — so a Usenet release sits alongside your Real-Debrid or TorBox content in one tree. It can also be the only account you configure; no debrid service is required.</p>
+<p><strong>Several Usenet providers are supported.</strong> One <code translate="no" v-pre>nzb</code> entry carries any number of news accounts — unlimited providers, block accounts, whatever you hold — and zurg falls back through them article by article. That matters more here than redundancy usually does: retention is per-provider, so a second account is very often the difference between one extra fetch and rebuilding a whole release from PAR2. See <doc-anchor-trigger to="#more-than-one-usenet-provider">More than one Usenet provider</doc-anchor-trigger>.</p>
+<p>This guide goes end to end: news accounts, NZBs, the mount, Plex.</p>
+<retype-table copy-text="| | |
+|---|---|
+| Config reference | [config.md → Usenet accounts](../reference/config.md#usenet-accounts) |
+| Dashboard | `http://localhost:9999/config/` → Essentials → Providers |
+| Where the code lives | `internal/nzb` (backend), `internal/nntp` (news client), `internal/par2` (repair math) |
+| Watch directory | `nzbs/`, beside the zurg binary |
+| Repair cache | `data/par2/` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Config reference</td>
+<td><a href="../../reference/config/#usenet-accounts">config.md → Usenet accounts</a></td>
+</tr>
+<tr>
+<td>Dashboard</td>
+<td><code translate="no" v-pre>http://localhost:9999/config/</code> → Essentials → Providers</td>
+</tr>
+<tr>
+<td>Where the code lives</td>
+<td><code translate="no" v-pre>internal/nzb</code> (backend), <code translate="no" v-pre>internal/nntp</code> (news client), <code translate="no" v-pre>internal/par2</code> (repair math)</td>
+</tr>
+<tr>
+<td>Watch directory</td>
+<td><code translate="no" v-pre>nzbs/</code>, beside the zurg binary</td>
+</tr>
+<tr>
+<td>Repair cache</td>
+<td><code translate="no" v-pre>data/par2/</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<hr>
+<h2 id="what-you-need">What you need</h2>
+<ul>
+<li><strong>At least one Usenet provider account.</strong> Retention is what matters most — a 4000+ day provider will still have posts a 1000-day one has aged out. Your plan&#x27;s <em>connection allowance</em> is the second number to know; it is what zurg reads at.</li>
+<li><strong>More accounts, if you have them.</strong> A second unlimited provider on a different backbone, or a cheap block account for the gaps, is the highest-value thing you can add to a Usenet setup — see <doc-anchor-trigger to="#more-than-one-usenet-provider">More than one Usenet provider</doc-anchor-trigger>.</li>
+<li><strong>NZB files.</strong> zurg does not search indexers. Download them from your indexer and drop them into <code translate="no" v-pre>nzbs/</code> — or turn on the <a href="../sabnzbd/">SABnzbd-compatible endpoint</a> and let Sonarr and Radarr hand them over, which writes into the same directory. The endpoint is opt-in and Usenet-only; there is no torrent equivalent.</li>
+<li><strong>zurg</strong>, plus <code translate="no" v-pre>rclone</code> if you want a filesystem mount rather than WebDAV directly. zurg downloads rclone for you on first run.</li>
+</ul>
+<hr>
+<h2 id="1-configure-your-news-accounts">1. Configure your news accounts</h2>
+<p>Each account in zurg is one entry under <code translate="no" v-pre>providers:</code>. A Usenet one authenticates with server credentials instead of an API token, so it carries an <code translate="no" v-pre>nntp</code> block instead of <code translate="no" v-pre>token</code>:</p>
+<div id="1-configure-your-news-accounts-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">zurg: v1
+providers:
+  - type: nzb
+    nntp:
+      host: news.example.com
+      port: 563
+      tls: true
+      username: YOUR_USENET_USERNAME
+      password: YOUR_USENET_PASSWORD
+      connections: 30        # your plan's allowance — see below
+      cache_size_mb: 512     # decoded articles held in memory, across all files</code></pre>
+</doc-codeblock></div>
+<p>That is the whole of it. Add debrid accounts beside it if you have them:</p>
+<div id="1-configure-your-news-accounts-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">providers:
+  - type: realdebrid
+    token: YOUR_RD_API_TOKEN
+  - type: nzb
+    nntp:
+      host: news.example.com
+      ...</code></pre>
+</doc-codeblock></div>
+<retype-table copy-text="| Key | Default | Notes |
+|---|---|---|
+| `host` | *(required)* | The news server. A missing or empty host is a startup error. |
+| `port` | `563` with TLS, `119` without | |
+| `tls` | `false` | Turn it on. Plaintext NNTP sends your password in the clear and your reads to anyone on the path. |
+| `username` / `password` | `&quot;&quot;` | |
+| `connections` | `8` | **Set this to your plan's real allowance.** It is not a rate limit to be polite about: a single connection carries a fraction of a provider's throughput, so zurg reads at this number. Too low and streaming is slow; over the plan's limit and the server starts refusing connections. |
+| `cache_size_mb` | `512` | Decoded article data held in memory, shared across every file being read rather than per file. |
+| `servers` | `[]` | Further news accounts — see [More than one Usenet provider](#more-than-one-usenet-provider). |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>host</code></td>
+<td><em>(required)</em></td>
+<td>The news server. A missing or empty host is a startup error.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>port</code></td>
+<td><code translate="no" v-pre>563</code> with TLS, <code translate="no" v-pre>119</code> without</td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>tls</code></td>
+<td><code translate="no" v-pre>false</code></td>
+<td>Turn it on. Plaintext NNTP sends your password in the clear and your reads to anyone on the path.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>username</code> / <code translate="no" v-pre>password</code></td>
+<td><code translate="no" v-pre>&quot;&quot;</code></td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>connections</code></td>
+<td><code translate="no" v-pre>8</code></td>
+<td><strong>Set this to your plan&#x27;s real allowance.</strong> It is not a rate limit to be polite about: a single connection carries a fraction of a provider&#x27;s throughput, so zurg reads at this number. Too low and streaming is slow; over the plan&#x27;s limit and the server starts refusing connections.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>cache_size_mb</code></td>
+<td><code translate="no" v-pre>512</code></td>
+<td>Decoded article data held in memory, shared across every file being read rather than per file.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>servers</code></td>
+<td><code translate="no" v-pre>[]</code></td>
+<td>Further news accounts — see <doc-anchor-trigger to="#more-than-one-usenet-provider">More than one Usenet provider</doc-anchor-trigger>.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Two rules the config validator enforces:</p>
+<ul>
+<li><strong>Only one enabled <code translate="no" v-pre>nzb</code> provider entry.</strong> Two would each scan the same <code translate="no" v-pre>nzbs/</code> directory and duplicate every release. This is not a limit on how many <em>Usenet providers</em> you can use — extra news accounts go under that one entry&#x27;s <code translate="no" v-pre>nntp.servers</code>, where they serve the same library instead of a second copy of it.</li>
+<li><strong><code translate="no" v-pre>watchlist: true</code> cannot target it.</strong> The Usenet backend cannot add content, so it can never be the account a Plex watchlist addition lands in.</li>
+</ul>
+<h3 id="more-than-one-usenet-provider">More than one Usenet provider</h3>
+<p>Retention is per-provider, and the difference between one extra fetch and a full-release PAR2 rebuild is whether some other account still has the article. That is why a second account is worth more here than redundancy usually is.</p>
+<p>The keys already in the <code translate="no" v-pre>nntp</code> block describe the first account. Anything under <code translate="no" v-pre>servers</code> is another one, asked only when the accounts before it did not have the article. An existing single-account config keeps working untouched:</p>
+<div id="more-than-one-usenet-provider-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">providers:
+  - type: nzb
+    nntp:
+      host: unlimited.example.com          # first account: the workhorse
+      tls: true
+      username: USERNAME
+      password: PASSWORD
+      connections: 30
+      servers:
+        - host: second-unlimited.example.com   # different backbone = different retention
+          tls: true
+          username: USERNAME
+          password: PASSWORD
+          connections: 20
+          backbone: usenetexpress
+        - host: block.example.com              # metered — only for what the others lack
+          tls: true
+          username: USERNAME
+          password: PASSWORD
+          connections: 10
+          backup: true
+          backbone: omicron</code></pre>
+</doc-codeblock></div>
+<p>Each account keeps its own connection allowance, and reads are driven at the <strong>combined allowance of the non-backup accounts</strong> — 30 + 20 = 50 in the example above. A second unlimited provider therefore buys throughput as well as retention insurance; a <code translate="no" v-pre>backup</code> account buys neither, by design, since it only ever carries what the primaries could not supply and counting it would widen every read-ahead window for capacity steady-state playback never touches.</p>
+<p>Three keys shape who gets asked:</p>
+<retype-table copy-text="| Key | Default | Effect |
+|---|---|---|
+| `name` | value of `host` | Labels the account in logs. |
+| `priority` | `0` | Who is asked first, lowest first. Accounts sharing a priority are asked in written order, except that one with a free connection is preferred over one whose allowance is spent — so two equal accounts share the load rather than queueing on one. |
+| `backup` | `false` | Marks a metered block account, consulted only once every primary has answered *no such article*. A primary being merely **busy** is not enough: zurg waits for it rather than spending metered bytes on something an unlimited account would have served. |
+| `backbone` | `&quot;&quot;` | Names the article spool an account resolves to. Two accounts on one backbone hold the same articles, so once one has said it lacks an article the others on that spool are skipped instead of being charged a round trip for the same answer. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>name</code></td>
+<td>value of <code translate="no" v-pre>host</code></td>
+<td>Labels the account in logs.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>priority</code></td>
+<td><code translate="no" v-pre>0</code></td>
+<td>Who is asked first, lowest first. Accounts sharing a priority are asked in written order, except that one with a free connection is preferred over one whose allowance is spent — so two equal accounts share the load rather than queueing on one.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>backup</code></td>
+<td><code translate="no" v-pre>false</code></td>
+<td>Marks a metered block account, consulted only once every primary has answered <em>no such article</em>. A primary being merely <strong>busy</strong> is not enough: zurg waits for it rather than spending metered bytes on something an unlimited account would have served.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>backbone</code></td>
+<td><code translate="no" v-pre>&quot;&quot;</code></td>
+<td>Names the article spool an account resolves to. Two accounts on one backbone hold the same articles, so once one has said it lacks an article the others on that spool are skipped instead of being charged a round trip for the same answer.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Reselling is rife, so <code translate="no" v-pre>backbone</code> is worth filling in: two accounts you bought from different companies may sit on the same spool, and without it every miss is asked twice. Group them by whatever name you like — the string is only compared against other entries.</p>
+<p>At startup zurg names every account it will use:</p>
+<div id="more-than-one-usenet-provider-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Usenet account nzb connected: nntps://unlimited.example.com:563 (30 connections) + nntps://second-unlimited.example.com:563 (20 connections) [usenetexpress] + nntps://block.example.com:563 (10 connections) [backup] [omicron]</code></pre>
+</doc-codeblock></div>
+<p>The census that decides whether a release needs repairing asks every account before calling an article missing, and asks each one only about what its predecessors lacked. A transport failure is never mistaken for an aged-out article: if any account failed to answer <em>at all</em>, that failure is what gets reported, so a timeout never causes silence to be served and a repair to be scheduled for something that was never gone.</p>
+<h3 id="configuring-providers-in-the-dashboard">Configuring providers in the Dashboard</h3>
+<p><code translate="no" v-pre>http://localhost:9999/config/</code> → <strong>Essentials</strong> → <strong>Providers</strong> does the same thing without editing YAML. The table lists every account in config order:</p>
+<div id="configuring-providers-in-the-dashboard-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">#  Name        Type        Token                Flags
+1  realdebrid  realdebrid  …DFFND4OA            —          [Edit] [Delete]
+2  nzb         nzb         news.example.com     —          [Edit] [Delete]</code></pre>
+</doc-codeblock></div>
+<p>For an <code translate="no" v-pre>nzb</code> row the Token column shows the <strong>news server host</strong> instead of a token hint — there is no token to redact.</p>
+<p><strong>To add a Usenet account:</strong></p>
+<ol>
+<li>Click <strong>Add provider</strong>.</li>
+<li>Set <strong>Type</strong> to <code translate="no" v-pre>nzb</code>. The token fields disappear and the NNTP fields appear in their place.</li>
+<li>Leave <strong>Name</strong> empty unless you want something other than <code translate="no" v-pre>nzb</code> — it is what the per-account directory is called, so <code translate="no" v-pre>usenet</code> here gives you <code translate="no" v-pre>__usenet__</code> in the mount.</li>
+<li>Fill in <strong>NNTP host</strong>, <strong>Port</strong>, <strong>TLS</strong> (checked by default — leave it on), <strong>Username</strong>, <strong>Password</strong>, <strong>Connections</strong> (placeholder <code translate="no" v-pre>8</code>; put your plan&#x27;s real allowance here) and <strong>Cache size MB</strong> (placeholder <code translate="no" v-pre>512</code>).</li>
+<li>Leave <strong>Watchlist target</strong> unchecked — the backend cannot add content and saving it checked is rejected. <strong>Disabled</strong> keeps the entry in <code translate="no" v-pre>config.yml</code> without loading it.</li>
+<li><strong>Save</strong>.</li>
+</ol>
+<p>The form is validated as if the edit had been applied, so mistakes come back as an alert rather than a broken config. Adding a <strong>second</strong> <code translate="no" v-pre>nzb</code> provider is refused there — the error points you at <code translate="no" v-pre>nntp.servers</code>, which is where further news accounts belong.</p>
+<p><strong>To edit one</strong>, click <strong>Edit</strong> on its row. The form loads everything except the password, which stays blank and means <em>keep the existing one</em> — type a new password only to change it.</p>
+<p><strong>Delete</strong> asks to confirm, then removes the provider entry from <code translate="no" v-pre>config.yml</code>. It does not touch your <code translate="no" v-pre>nzbs/</code> directory — the NZB files stay where they are and come back with the provider. The last enabled provider can be neither deleted nor disabled.</p>
+<p>Every change here writes straight to <code translate="no" v-pre>config.yml</code> and shows:</p>
+<blockquote>
+<p>Provider changes saved to config.yml — restart zurg to apply</p>
+</blockquote>
+<p>Provider edits are <strong>not</strong> hot-reloaded. Restart zurg before expecting anything to change.</p>
+<blockquote>
+<p><strong>The Dashboard cannot see <code translate="no" v-pre>nntp.servers</code>.</strong> The form has fields for one news account, and saving an <code translate="no" v-pre>nzb</code> provider rewrites its whole <code translate="no" v-pre>nntp</code> block from those fields — so the extra accounts are written out of the config. If you run more than one Usenet provider, keep them in <code translate="no" v-pre>config.yml</code> and use the Dashboard&#x27;s other sections rather than this provider&#x27;s Edit button.</p>
+</blockquote>
+<hr>
+<h2 id="2-start-zurg-and-confirm-the-accounts">2. Start zurg and confirm the accounts</h2>
+<div id="2-start-zurg-and-confirm-the-accounts-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./zurg</code></pre>
+</doc-codeblock></div>
+<p>zurg verifies the news accounts once at startup, because a wrong password otherwise shows up much later as every file failing to play:</p>
+<div id="2-start-zurg-and-confirm-the-accounts-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Usenet account nzb connected: nntps://news.example.com:563 (30 connections)</code></pre>
+</doc-codeblock></div>
+<p>A total failure is just as loud:</p>
+<div id="2-start-zurg-and-confirm-the-accounts-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Cannot reach the news server for nzb: &lt;reason&gt;</code></pre>
+</doc-codeblock></div>
+<p>Check the port and TLS pairing first (<code translate="no" v-pre>563</code>+<code translate="no" v-pre>tls: true</code>, or <code translate="no" v-pre>119</code>+<code translate="no" v-pre>tls: false</code>), then the credentials, then whether the plan is actually active.</p>
+<p><strong>With several accounts, read the warnings, not just the connected line.</strong> Each unreachable account gets one of its own, and startup carries on as long as <em>one</em> account answers — the error above appears only when every account is unreachable. So a dead second provider looks like a healthy start unless you notice:</p>
+<div id="2-start-zurg-and-confirm-the-accounts-code-4" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Usenet account block.example.com is not reachable: &lt;reason&gt;</code></pre>
+</doc-codeblock></div>
+<hr>
+<h2 id="3-add-nzb-files">3. Add NZB files</h2>
+<p>Create the watch directory beside the zurg binary — <strong>zurg does not create it for you</strong>, and a missing one simply yields an empty library:</p>
+<div id="3-add-nzb-files-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p nzbs
+cp ~/Downloads/Some.Release.2024.2160p.nzb nzbs/</code></pre>
+</doc-codeblock></div>
+<p>Within about 15 seconds zurg re-reads the directory, and within roughly 30 the library refresh notices the new count and files it into your directories. The log says what it read:</p>
+<div id="3-add-nzb-files-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Loaded NZB Some.Release.2024.2160p.nzb: 94 files</code></pre>
+</doc-codeblock></div>
+<h3 id="what-gets-picked-up">What gets picked up</h3>
+<ul>
+<li>Files <strong>directly inside <code translate="no" v-pre>nzbs/</code></strong> whose name ends in <code translate="no" v-pre>.nzb</code>, case-insensitively.</li>
+<li><strong>Subdirectories are skipped.</strong> <code translate="no" v-pre>nzbs/movies/foo.nzb</code> is invisible. Flatten instead of organising — the library&#x27;s organisation comes from directory filters, not from this folder.</li>
+<li><strong>Plain XML only.</strong> <code translate="no" v-pre>.nzb.gz</code> is not unpacked and not read; decompress it first.</li>
+<li>A file that fails to parse is skipped with a warning and does not stop the scan.</li>
+</ul>
+<h3 id="what-the-release-is-called">What the release is called</h3>
+<p>The name zurg shows — and therefore the folder Plex sees — is:</p>
+<ol>
+<li>the NZB&#x27;s own <code translate="no" v-pre>&lt;meta type=&quot;name&quot;&gt;</code> value, if it has one and it survives sanitising, otherwise</li>
+<li><strong>the filename with <code translate="no" v-pre>.nzb</code> stripped</strong>.</li>
+</ol>
+<p>So most of the time, <em>the NZB&#x27;s filename is the release name</em>. Name the file the way you would name the release, because that is what your media server will try to match:</p>
+<div id="what-the-release-is-called-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash"># good
+nzbs/Some.Movie.2024.2160p.UHD.BluRay.x265-GROUP.nzb
+
+# bad — Plex has nothing to work with
+nzbs/nzbgeek_download_48213.nzb</code></pre>
+</doc-codeblock></div>
+<p>Two different releases that end up with the same name are told apart by a short hash tag (<code translate="no" v-pre>Some.Release {a1b2c3}</code>), the same as anywhere else in zurg.</p>
+<h3 id="password-protected-releases">Password-protected releases</h3>
+<p>If the indexer recorded the archive password in the NZB&#x27;s metadata block, zurg uses it when streaming out of the RAR set:</p>
+<div id="password-protected-releases-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-markup"><code v-pre class="language-markup">&lt;head&gt;
+  &lt;meta type=&quot;password&quot;&gt;thepassword&lt;/meta&gt;
+&lt;/head&gt;</code></pre>
+</doc-codeblock></div>
+<p>Nothing else is needed. A protected release whose NZB carries no password meta cannot be opened.</p>
+<h3 id="obfuscated-releases">Obfuscated releases</h3>
+<p>Posts whose filenames are random are handled, at a cost paid once at scan time. zurg tries the cheap source first — the filename an article still declares in its own yEnc header, one article per file — and falls back to the release&#x27;s PAR2 index, which records each file&#x27;s true name against the MD5 of its first 16 KiB. That first article also states the file&#x27;s exact length, which is kept, so an obfuscated release is sized by the same articles that name it. It logs what it recovered:</p>
+<div id="obfuscated-releases-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Recovered 27 filename(s) in Some.Release</code></pre>
+</doc-codeblock></div>
+<p>The whole naming pass is bounded at 90 seconds per NZB, so an unreachable server delays a scan rather than hanging it. Names are settled <em>before</em> the library is built from them, because the library keys files by name and a later rename would lose them.</p>
+<p><strong>A fully obfuscated post has no real name to recover.</strong> Some posters obfuscate before building the recovery set, so the PAR2 index restores names that are themselves random (<code translate="no" v-pre>aJPSgA7eYizyzjJXT.part01.rar</code>), and the file inside the archive is a hash too. Nothing in the post knows what the release is — only the NZB&#x27;s own name does. So zurg presents the payload under the release name, the same thing SABnzbd does at the end of unpacking:</p>
+<div id="obfuscated-releases-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Ugliest.House.in.America.S08E02.720p.AMZN.WEB-DL-RAWR/
+└── Ugliest.House.in.America.S08E02.720p.AMZN.WEB-DL-RAWR.mkv</code></pre>
+</doc-codeblock></div>
+<p>Only the file that is clearly the release is renamed: the biggest entry in the archive, and only when it is at least three times the size of the next one, its extension is not part of a disc structure (<code translate="no" v-pre>.vob</code>, <code translate="no" v-pre>.m2ts</code>, <code translate="no" v-pre>.mpls</code>), and its name says nothing. Subtitles and samples sharing its name follow it. An archive holding several files of a similar size — a season pack — is left alone, because no one of them is the release. The archive&#x27;s own names keep working as addresses, so a player that started before a rescan does not lose the file.</p>
+<h3 id="replacing-and-removing">Replacing and removing</h3>
+<ul>
+<li><strong>Removing</strong> an NZB from <code translate="no" v-pre>nzbs/</code> removes the release from the library, drops its cached reader and article cache, and forgets any repaired bytes it held.</li>
+<li><strong>Deleting a Usenet release from the Dashboard deletes the <code translate="no" v-pre>.nzb</code> file from disk.</strong> There is nowhere else for it to live. This is not the same as deleting a torrent from a debrid account, where the file stays on the service.</li>
+<li><strong>Replacing an NZB in place is the one thing to avoid.</strong> zurg notices library changes by counting releases and checking the first one&#x27;s id; swapping a file&#x27;s contents while keeping its name changes neither, so the swap may go unseen until something else changes. Remove the old file, let zurg pick up the removal, then add the new one — or restart.</li>
+</ul>
+<hr>
+<h2 id="4-where-releases-land-in-the-mount">4. Where releases land in the mount</h2>
+<p>A Usenet release is an ordinary library entry, so your existing <code translate="no" v-pre>directories:</code> filters apply to it unchanged:</p>
+<div id="4-where-releases-land-in-the-mount-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">directories:
+  shows:
+    group: media
+    group_order: 20
+    filters:
+      - has_episodes: true
+  movies:
+    group: media
+    group_order: 30
+    only_show_the_biggest_file: true
+    filters:
+      - any_file_inside_not_regex: /\.(mp3|flac|m4b)$/i</code></pre>
+</doc-codeblock></div>
+<p>Alongside those, the account gets a directory of its own — <code translate="no" v-pre>__nzb__</code> by default, or <code translate="no" v-pre>__&lt;name&gt;__</code> if you set <code translate="no" v-pre>name:</code> on the provider entry. That directory is not just a view: reads under it are <strong>pinned</strong> to the Usenet account with no failover, which makes it the right place to test whether Usenet playback works without a debrid account quietly answering instead.</p>
+<p>Four Usenet-specific things to know when writing filters:</p>
+<ul>
+<li><strong>Tag filters will not match Usenet content.</strong> Every <code translate="no" v-pre>zurg_*</code> tag (resolution, HDR, bitrate, duration, language) comes from ffprobe, and ffprobe is an external binary handed a URL — a link zurg assembles itself is not something it can open, so analysis is skipped for this backend entirely. Filter Usenet content on names, file extensions, sizes and <code translate="no" v-pre>has_episodes</code> instead. A directory keyed on <code translate="no" v-pre>tags_match_any</code> will simply never contain a Usenet release.</li>
+<li><strong><code translate="no" v-pre>.par2</code> and <code translate="no" v-pre>.sfv</code> files are hidden.</strong> They are repair scaffolding; zurg reads them itself and no media server has any use for eight of them per season pack. <code translate="no" v-pre>.nfo</code> is kept, because Kodi, Emby and Jellyfin read it.</li>
+<li><strong>RAR sets are content, not archives to unpack.</strong> <code translate="no" v-pre>.rar</code> and <code translate="no" v-pre>.rNN</code> stay visible and a volume set appears in the mount as a <em>folder</em> whose contents are the files inside it — zurg streams video straight out of the archive without extracting anything. A release that is <em>only</em> one volume set stands in for its own contents instead, with no archive folder in between: the payload sits directly in the release folder, which is where a media server looks for it. Files posted beside the set — the <code translate="no" v-pre>.nfo</code>, the poster&#x27;s <code translate="no" v-pre>.txt</code>, artwork, subtitles — stay listed there too.</li>
+<li><strong><code translate="no" v-pre>force_select_playable_files</code> does not apply.</strong> A Usenet post is whole; there is nothing to select. Every content file is already offered.</li>
+</ul>
+<p>Browse the result before involving a media server. <code translate="no" v-pre>http://localhost:9999/http/</code> is a plain HTML index of exactly what the mount will show:</p>
+<div id="4-where-releases-land-in-the-mount-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s http://localhost:9999/http/__nzb__/ | head</code></pre>
+</doc-codeblock></div>
+<hr>
+<h2 id="5-mount-it-with-rclone">5. Mount it with rclone</h2>
+<h3 id="the-easy-path-let-zurg-run-rclone">The easy path: let zurg run rclone</h3>
+<div id="the-easy-path-let-zurg-run-rclone-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">rclone_enabled: true
+rclone_binary: bin/rclone      # downloaded automatically on first run
+mount_path: &quot;/mnt/zurg&quot;        # /Volumes/Zurg on macOS, Z: on Windows</code></pre>
+</doc-codeblock></div>
+<p>zurg starts rclone with a VFS profile already tuned for its own read pattern (buffer size, chunk sizing, cache mode, dir-cache time, timeouts), keeps the mount alive, and invalidates the right dircache entries when the library changes. <code translate="no" v-pre>mount_path</code> is also the prefix zurg uses when telling Plex which paths to scan, so it must be set even if you mount elsewhere.</p>
+<p>Verify:</p>
+<div id="the-easy-path-let-zurg-run-rclone-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">ls /mnt/zurg/
+ls /mnt/zurg/__nzb__/</code></pre>
+</doc-codeblock></div>
+<h3 id="the-manual-path-your-own-rclone">The manual path: your own rclone</h3>
+<p>If you already manage rclone, point a WebDAV remote at zurg:</p>
+<div id="the-manual-path-your-own-rclone-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-ini"><code v-pre class="language-ini">[zurg]
+type = webdav
+url = http://localhost:9999/dav/
+vendor = other
+pacer_min_sleep = 0</code></pre>
+</doc-codeblock></div>
+<div id="the-manual-path-your-own-rclone-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">rclone mount zurg: /mnt/zurg --config rclone.conf --dir-cache-time 10s</code></pre>
+</doc-codeblock></div>
+<p>Still set <code translate="no" v-pre>mount_path</code> in <code translate="no" v-pre>config.yml</code> to wherever you mounted it, or media-server scan notifications are built from the wrong prefix.</p>
+<h3 id="docker">Docker</h3>
+<p>zurg&#x27;s working directory in the image is <code translate="no" v-pre>/app</code>, so the watch directory is <code translate="no" v-pre>/app/nzbs</code> and the repair cache is <code translate="no" v-pre>/app/data</code>. Bind-mount both if you want them to survive the container:</p>
+<div id="docker-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">services:
+  zurg:
+    image: ghcr.io/debridmediamanager/zurg:latest
+    volumes:
+      - ./config.yml:/app/config.yml
+      - ./nzbs:/app/nzbs
+      - ./data:/app/data
+    ports:
+      - 9999:9999</code></pre>
+</doc-codeblock></div>
+<p>Dropping an NZB into <code translate="no" v-pre>./nzbs</code> on the host is then picked up inside the container without a restart.</p>
+<hr>
+<h2 id="6-point-plex-at-it">6. Point Plex at it</h2>
+<p>Nothing here is Usenet-specific except the last subsection, but the order matters.</p>
+<ol>
+<li>
+<p><strong>Give zurg your Plex credentials</strong>, so it can ask Plex to scan just the paths that changed instead of leaving you to wait for a periodic full scan. Easiest through the Dashboard&#x27;s Plex auth flow, which writes the values back into <code translate="no" v-pre>config.yml</code>:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">plex_server_url: &quot;http://localhost:32400&quot;
+plex_token: YOUR_PLEX_TOKEN</code></pre>
+</doc-codeblock></div>
+</li>
+<li>
+<p><strong>Add libraries pointing at subdirectories of the mount</strong>, never at the mount root:</p>
+<ul>
+<li>Movies → <code translate="no" v-pre>/mnt/zurg/movies</code></li>
+<li>TV Shows → <code translate="no" v-pre>/mnt/zurg/shows</code></li>
+</ul>
+<p>The same release appears in every directory whose filter matches it <em>and</em> under <code translate="no" v-pre>__all__</code> and <code translate="no" v-pre>__nzb__</code>. Point Plex at the root and it scans the same file several times over.</p>
+</li>
+<li>
+<p><strong>Set two library options</strong> under each library&#x27;s Edit → Advanced:</p>
+<ul>
+<li><strong>Uncheck &quot;Empty trash automatically after every scan&quot;.</strong> This is the one that matters. If the mount blips while Plex is scanning — a zurg restart, an rclone remount — Plex concludes every file was deleted. With auto-empty on, they are removed permanently and at once; with it off they sit in the trash and come back when the mount does. This has cost a 30,000-item library before.</li>
+<li><strong>Uncheck &quot;Generate video preview thumbnails&quot;.</strong> Every thumbnail is a seek across the whole file; on Usenet that is a full read of the release through your connection allowance.</li>
+</ul>
+</li>
+<li>
+<p><strong>Never restart zurg during a Plex scan.</strong> Check before you do:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">TOKEN=$(grep ^plex_token: config.yml | awk '{print $2}')
+curl -s &quot;http://localhost:32400/status/sessions?X-Plex-Token=$TOKEN&quot; | grep -o 'size=&quot;[0-9]*&quot;'
+curl -s &quot;http://localhost:32400/library/sections?X-Plex-Token=$TOKEN&quot; | grep -o 'refreshing=&quot;1&quot;' | wc -l</code></pre>
+</doc-codeblock></div>
+<p>Sessions at <code translate="no" v-pre>size=&quot;0&quot;</code> and a refreshing count of <code translate="no" v-pre>0</code> mean it is safe. (Use <code translate="no" v-pre>grep -o … | wc -l</code>, not <code translate="no" v-pre>grep -c</code>: grep exits non-zero when it finds nothing, which is the <em>good</em> case, and will abort a <code translate="no" v-pre>&amp;&amp;</code> chain right before the restart it was guarding.)</p>
+</li>
+<li>
+<p><strong>Partial scans.</strong> <code translate="no" v-pre>on_library_update</code> is handed every changed path; <code translate="no" v-pre>plex_update.sh</code> in the repo root is the reference script:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">on_library_update: sh plex_update.sh &quot;$@&quot;</code></pre>
+</doc-codeblock></div>
+</li>
+</ol>
+<p><strong>What Plex will not get from Usenet content:</strong> no ffprobe-derived metadata from zurg (see section 4), so Plex does its own analysis on first play like it would for any local file. File sizes settle shortly after a release is scanned: the first listing may report a cheap estimate from the article count, and the exact length arrives behind it — from the recovery index where there is one, and otherwise from one article per file. Once it lands, the library is told the release changed, so the mount and Plex both see the real length.</p>
+<h3 id="jellyfin--emby--infuse">Jellyfin / Emby / Infuse</h3>
+<p>Jellyfin and Emby take <code translate="no" v-pre>jellyfin_server_url</code> / <code translate="no" v-pre>jellyfin_token</code> and <code translate="no" v-pre>emby_server_url</code> / <code translate="no" v-pre>emby_token</code> and get the same scan notifications; see <a href="../jellyfin/">jellyfin.md</a>. Infuse can point at <code translate="no" v-pre>http://&lt;host&gt;:9999/dav/</code> directly and skip rclone entirely.</p>
+<hr>
+<h2 id="7-when-an-article-is-missing">7. When an article is missing</h2>
+<p>This is the failure mode Usenet has and debrid does not. Articles age out of a provider&#x27;s retention or get taken down, and a release can be perfectly listed while a few of its articles are gone.</p>
+<p>zurg&#x27;s answer, in order of preference:</p>
+<ol>
+<li><strong>Ask another news server.</strong> An article one provider has aged out is very often still on another. This is one fetch — see <doc-anchor-trigger to="#more-than-one-usenet-provider">More than one Usenet provider</doc-anchor-trigger>.</li>
+<li><strong>Rebuild it from the release&#x27;s own PAR2 files.</strong> This is what they are posted for. It costs a read of the <em>entire release</em> — Reed-Solomon has to fold every surviving slice to solve for a missing one — so on a 200 GB post it is 200 GB of reading to recover a few megabytes.</li>
+<li><strong>Serve silence.</strong> Only when neither of the above can answer.</li>
+</ol>
+<p>PAR2 repair is a background job, at most one release at a time, and it needs:</p>
+<div id="7-when-an-article-is-missing-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">enable_repair: true            # PAR2 repair does not run without this
+par2_patch_cache_mb: 512       # budget for data/par2/; -1 keeps repairs in memory only</code></pre>
+</doc-codeblock></div>
+<p>The rebuilt bytes are written under <code translate="no" v-pre>data/par2/&lt;nzb-id&gt;/</code> and picked back up when the file is next opened, so a restart does not cost a full re-read of the release. Only the spans that are actually gone are kept — a damaged release usually costs single-digit megabytes — and whole releases are dropped least-recently-used first when the budget is exceeded. Each release&#x27;s spans are stamped with the modification time of the NZB they were rebuilt from, so a re-saved NZB discards them rather than serving bytes at offsets that may have moved.</p>
+<p>A repair announces itself and then says what it cost:</p>
+<div id="7-when-an-article-is-missing-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">PAR2 repair of Some.Release: 5 slice(s) missing; reading the release to rebuild them
+PAR2 repair of Some.Release rebuilt 5 slice(s) in 55s, keeping 3.4 MiB of them (library holds 3.4 MiB in memory, 3.4 MiB on disk)</code></pre>
+</doc-codeblock></div>
+<p>Two things worth knowing:</p>
+<ul>
+<li><strong>Playback always outranks a repair.</strong> Connections are handed out by who is waiting: a demand read first, read-ahead next, a repair last — except that a repair is guaranteed a quarter of the allowance against read-ahead, so the file being played can still repair the gap it is stuck on.</li>
+<li><strong>zurg&#x27;s library-level repair cannot help here.</strong> That mechanism re-adds a torrent to the account it came from; a backend that cannot add content can report a release broken but not fix it. For Usenet, PAR2 <em>is</em> the repair.</li>
+</ul>
+<p>A release with no PAR2 files in its NZB and no second news account has no recovery path at all. That is a property of the post, not of zurg.</p>
+<hr>
+<h2 id="performance">Performance</h2>
+<p>Measured against a live Eweka account with 50 connections:</p>
+<retype-table copy-text="| | |
+|---|---|
+| Single stream, direct file | ~100 Mbit/s |
+| Single stream, out of a RAR set | 90–106 Mbit/s |
+| Two concurrent streams, aggregate | ~124 Mbit/s |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Single stream, direct file</td>
+<td>~100 Mbit/s</td>
+</tr>
+<tr>
+<td>Single stream, out of a RAR set</td>
+<td>90–106 Mbit/s</td>
+</tr>
+<tr>
+<td>Two concurrent streams, aggregate</td>
+<td>~124 Mbit/s</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>The single-stream rate is set by the <strong>connection allowance</strong>, not by read-ahead depth — deeper read-ahead was measured and gained nothing. So:</p>
+<ul>
+<li><strong>Set <code translate="no" v-pre>connections</code> to your plan&#x27;s real number.</strong> This is the tuning knob. Eight connections will not stream a remux.</li>
+<li><strong>Two primary accounts add up.</strong> Reads are driven at the combined allowance of every non-<code translate="no" v-pre>backup</code> account, so a second unlimited provider raises the ceiling as well as covering the first one&#x27;s retention gaps. A <code translate="no" v-pre>backup</code> account does not count toward it.</li>
+<li><code translate="no" v-pre>cache_size_mb</code> (512 default) is shared across every file being read. Raise it if you run several concurrent streams; it does not make one stream faster.</li>
+<li>Whether a release is RAR-packed or posted as plain files no longer matters much for throughput.</li>
+</ul>
+<p>Repairs are slow by nature — they read the whole release — but they run at background priority and are bounded by the news server rather than by zurg&#x27;s own arithmetic.</p>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<retype-table copy-text="| Symptom | Cause | Fix |
+|---|---|---|
+| `Cannot reach the news server for nzb` at startup | Wrong host/port/TLS pairing, bad credentials, or an inactive plan | `563` goes with `tls: true`, `119` with `tls: false`; then re-check the credentials |
+| Library is empty, no `Loaded NZB` lines | `nzbs/` missing, or in the wrong place | It is relative to zurg's **working directory** — check `WorkingDirectory=` in your systemd unit, or `/app/nzbs` in Docker |
+| One NZB never appears | In a subdirectory, or named `.nzb.gz`, or unparseable | Move it directly into `nzbs/`, decompress it; check the log for a `Skipping` warning |
+| Release shows up with a useless name | The NZB's filename is the name, absent a `&lt;meta type=&quot;name&quot;&gt;` | Rename the `.nzb` to the release name |
+| Files have random names inside the release | Obfuscated post whose recovery failed | Check for `Recovered N filename(s)`; without PAR2 files in the NZB there is no source for the real names |
+| The video still has a random name, though the folder is right | A fully obfuscated post, where the archive holds several files of a similar size | Only a clear single payload is renamed to the release; a season pack in one archive keeps the names the archive gave it |
+| Streaming is slow | `connections` left at the default 8 | Set it to the plan's allowance |
+| Connections refused by the provider | `connections` above what the plan permits | Lower it to the real figure |
+| Playback stutters or a gap plays silent | Missing articles | Look for `PAR2 repair of …` in the log; confirm `enable_repair: true`; add [another Usenet provider](#more-than-one-usenet-provider) |
+| A gap stays silent and no repair line ever appears | `enable_repair` is off, or the NZB carries no `.par2` files | Set `enable_repair: true`; if the post has no recovery files, only another news account can help |
+| A second provider never seems to be asked | Both accounts carry the same `backbone`, so the second is skipped once the first says the article is gone | Correct the `backbone` values — only accounts genuinely on one spool should share a name |
+| One of several accounts is dead but startup looked fine | Startup only fails when *every* account is unreachable | Grep the log for `is not reachable` — each bad account warns by name |
+| A block account is being billed for articles the unlimited one has | `backup: true` missing on it | Set it; a primary being merely busy will then no longer push reads onto the metered account |
+| A release is missing from a tag-filtered directory | ffprobe never runs on Usenet content, so it carries no `zurg_*` tags | Filter on names, extensions, size or `has_episodes` |
+| `.par2` files not visible in the mount | Deliberate — they are hidden as repair scaffolding | Nothing to fix; zurg still reads them |
+| Edited the provider in the Dashboard and the extra news accounts vanished | The Dashboard's provider form covers one account and rewrites the whole `nntp` block, dropping `nntp.servers` | Restore them in `config.yml`; edit that provider by hand from then on |
+| Changed a provider in the Dashboard and nothing happened | Provider changes are written to `config.yml` but not hot-reloaded | Restart zurg — the banner under the providers table says so |
+| Plex emptied the library after a zurg restart | A scan was in flight while the mount was away, with auto-empty-trash on | Turn auto-empty off, and pre-flight sessions *and* refreshing state before any restart |
+| A file's size changed slightly a moment after the release appeared | The first listing can only estimate from the article count; the exact length arrives behind it, from the PAR2 index or from the file's own yEnc header | Expected, and it settles once — the length is written to `data/nzb-sizes/` and never learned again |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>Cannot reach the news server for nzb</code> at startup</td>
+<td>Wrong host/port/TLS pairing, bad credentials, or an inactive plan</td>
+<td><code translate="no" v-pre>563</code> goes with <code translate="no" v-pre>tls: true</code>, <code translate="no" v-pre>119</code> with <code translate="no" v-pre>tls: false</code>; then re-check the credentials</td>
+</tr>
+<tr>
+<td>Library is empty, no <code translate="no" v-pre>Loaded NZB</code> lines</td>
+<td><code translate="no" v-pre>nzbs/</code> missing, or in the wrong place</td>
+<td>It is relative to zurg&#x27;s <strong>working directory</strong> — check <code translate="no" v-pre>WorkingDirectory=</code> in your systemd unit, or <code translate="no" v-pre>/app/nzbs</code> in Docker</td>
+</tr>
+<tr>
+<td>One NZB never appears</td>
+<td>In a subdirectory, or named <code translate="no" v-pre>.nzb.gz</code>, or unparseable</td>
+<td>Move it directly into <code translate="no" v-pre>nzbs/</code>, decompress it; check the log for a <code translate="no" v-pre>Skipping</code> warning</td>
+</tr>
+<tr>
+<td>Release shows up with a useless name</td>
+<td>The NZB&#x27;s filename is the name, absent a <code translate="no" v-pre>&lt;meta type=&quot;name&quot;&gt;</code></td>
+<td>Rename the <code translate="no" v-pre>.nzb</code> to the release name</td>
+</tr>
+<tr>
+<td>Files have random names inside the release</td>
+<td>Obfuscated post whose recovery failed</td>
+<td>Check for <code translate="no" v-pre>Recovered N filename(s)</code>; without PAR2 files in the NZB there is no source for the real names</td>
+</tr>
+<tr>
+<td>The video still has a random name, though the folder is right</td>
+<td>A fully obfuscated post, where the archive holds several files of a similar size</td>
+<td>Only a clear single payload is renamed to the release; a season pack in one archive keeps the names the archive gave it</td>
+</tr>
+<tr>
+<td>Streaming is slow</td>
+<td><code translate="no" v-pre>connections</code> left at the default 8</td>
+<td>Set it to the plan&#x27;s allowance</td>
+</tr>
+<tr>
+<td>Connections refused by the provider</td>
+<td><code translate="no" v-pre>connections</code> above what the plan permits</td>
+<td>Lower it to the real figure</td>
+</tr>
+<tr>
+<td>Playback stutters or a gap plays silent</td>
+<td>Missing articles</td>
+<td>Look for <code translate="no" v-pre>PAR2 repair of …</code> in the log; confirm <code translate="no" v-pre>enable_repair: true</code>; add <doc-anchor-trigger to="#more-than-one-usenet-provider">another Usenet provider</doc-anchor-trigger></td>
+</tr>
+<tr>
+<td>A gap stays silent and no repair line ever appears</td>
+<td><code translate="no" v-pre>enable_repair</code> is off, or the NZB carries no <code translate="no" v-pre>.par2</code> files</td>
+<td>Set <code translate="no" v-pre>enable_repair: true</code>; if the post has no recovery files, only another news account can help</td>
+</tr>
+<tr>
+<td>A second provider never seems to be asked</td>
+<td>Both accounts carry the same <code translate="no" v-pre>backbone</code>, so the second is skipped once the first says the article is gone</td>
+<td>Correct the <code translate="no" v-pre>backbone</code> values — only accounts genuinely on one spool should share a name</td>
+</tr>
+<tr>
+<td>One of several accounts is dead but startup looked fine</td>
+<td>Startup only fails when <em>every</em> account is unreachable</td>
+<td>Grep the log for <code translate="no" v-pre>is not reachable</code> — each bad account warns by name</td>
+</tr>
+<tr>
+<td>A block account is being billed for articles the unlimited one has</td>
+<td><code translate="no" v-pre>backup: true</code> missing on it</td>
+<td>Set it; a primary being merely busy will then no longer push reads onto the metered account</td>
+</tr>
+<tr>
+<td>A release is missing from a tag-filtered directory</td>
+<td>ffprobe never runs on Usenet content, so it carries no <code translate="no" v-pre>zurg_*</code> tags</td>
+<td>Filter on names, extensions, size or <code translate="no" v-pre>has_episodes</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>.par2</code> files not visible in the mount</td>
+<td>Deliberate — they are hidden as repair scaffolding</td>
+<td>Nothing to fix; zurg still reads them</td>
+</tr>
+<tr>
+<td>Edited the provider in the Dashboard and the extra news accounts vanished</td>
+<td>The Dashboard&#x27;s provider form covers one account and rewrites the whole <code translate="no" v-pre>nntp</code> block, dropping <code translate="no" v-pre>nntp.servers</code></td>
+<td>Restore them in <code translate="no" v-pre>config.yml</code>; edit that provider by hand from then on</td>
+</tr>
+<tr>
+<td>Changed a provider in the Dashboard and nothing happened</td>
+<td>Provider changes are written to <code translate="no" v-pre>config.yml</code> but not hot-reloaded</td>
+<td>Restart zurg — the banner under the providers table says so</td>
+</tr>
+<tr>
+<td>Plex emptied the library after a zurg restart</td>
+<td>A scan was in flight while the mount was away, with auto-empty-trash on</td>
+<td>Turn auto-empty off, and pre-flight sessions <em>and</em> refreshing state before any restart</td>
+</tr>
+<tr>
+<td>A file&#x27;s size changed slightly a moment after the release appeared</td>
+<td>The first listing can only estimate from the article count; the exact length arrives behind it, from the PAR2 index or from the file&#x27;s own yEnc header</td>
+<td>Expected, and it settles once — the length is written to <code translate="no" v-pre>data/nzb-sizes/</code> and never learned again</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<hr>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../../reference/config/">config.md</a> — every option, including the <a href="../../reference/config/#usenet-accounts">Usenet account reference</a> and the <a href="../../reference/config/#7-directories--filters">directory filter reference</a></li>
+<li><a href="../plex/">plex.md</a> — how zurg drives Plex scanning, matching and the trash sweep</li>
+<li><a href="../jellyfin/">jellyfin.md</a> — Jellyfin integration</li>
+<li><a href="../../setup/docker/">docker.md</a> — Docker setup, FUSE propagation and troubleshooting</li>
+<li><a href="../../reference/tags/">tags.md</a> — the tag system, and therefore what Usenet content does not get</li>
+<li><a href="../../internals/architecture/">architecture.md</a> — <code translate="no" v-pre>internal/nzb</code> and <code translate="no" v-pre>internal/nntp</code> in context</li>
+</ul>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../guides/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Previous</span>
+                                <span class="block mt-1">Guides</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../guides/sabnzbd/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Next</span>
+                                <span class="block mt-1">Sonarr &amp; Radarr</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Usenet", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/guides/usenet.md" }</script>
+</body>
+</html>

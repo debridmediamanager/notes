@@ -1,0 +1,50 @@
+﻿# zurg
+
+> zurg is a Go daemon that presents a debrid account — Real-Debrid, AllDebrid, TorBox — or a directory of NZBs as a read-only virtual filesystem. It stores no media.
+
+- [zurg](https://notes.debridmediamanager.com/index.md): zurg
+- [Setup](https://notes.debridmediamanager.com/setup/index.md): Getting zurg running on your machine.
+- [Guides](https://notes.debridmediamanager.com/guides/index.md): Working with the library: Usenet, the arrs, __magic__, and media servers.
+- [Migrating](https://notes.debridmediamanager.com/migrate/index.md): Moving an existing library onto zurg without a re-download or a re-scan.
+- [Reference](https://notes.debridmediamanager.com/reference/index.md): Every configuration option, every tag, and what changed when.
+- [Internals](https://notes.debridmediamanager.com/internals/index.md): How zurg is built, what it was measured at, and the design notes behind the awkward parts. Written for someone about to change the code.
+
+## Setup
+
+- [Docker Setup](https://notes.debridmediamanager.com/setup/docker.md): This guide covers running zurg in Docker with host-visible FUSE mounts.
+- [macOS Tutorial](https://notes.debridmediamanager.com/setup/macos.md): macFUSE lets rclone mount zurg's virtual filesystem as a real directory on your Mac.
+- [Windows Setup Guide](https://notes.debridmediamanager.com/setup/windows.md): WinFsp: Required for rclone FUSE mount. Install silently:
+
+## Guides
+
+- [Usenet with zurg](https://notes.debridmediamanager.com/guides/usenet.md): zurg's nzb backend turns a directory of .nzb files into a mounted library. There is no downloader, no completed folder, and nothing on disk but the NZB
+- [Pointing Sonarr and Radarr at zurg](https://notes.debridmediamanager.com/guides/sabnzbd.md): zurg can answer Sonarr and Radarr as though it were a SABnzbd. They hand it an NZB, it writes the file into nzbs/ for the Usenet backend, and once the release is in the library the job reports Completed with a folder under __magic__ to import from.
+- [__magic__, a directory you can organise](https://notes.debridmediamanager.com/guides/magic.md): Every other directory zurg serves is computed. movies holds what matches the movies filter, __all__ holds everything, and a release's folder holds the files its account says it has — so the layout is a view of the library, recomputed on every refresh, and there is nowhere to put anything.
+- [Plex Features & Capabilities](https://notes.debridmediamanager.com/guides/plex.md): Config keys documented in config.md/config.example.yml: plex_server_url, plex_token, plex_match_every_mins (default 1440), plex_watchlist_enabled, plex_watchlist_check_every_secs (default 5s), mount_path (required for matching/scan path building).
+- [Jellyfin Features & Capabilities](https://notes.debridmediamanager.com/guides/jellyfin.md): Config keys (config.md, config.example.yml): jellyfin_server_url (string, default ), jellyfin_token (string, default ). Both ship commented out in config.example.yml and are absent from config.simple.yml.
+
+## Migrating
+
+- [Migrating from AltMount v0.3.2 to zurg](https://notes.debridmediamanager.com/migrate/altmount.md): For a library Plex reads off the AltMount mount (or off an *arr symlink library that AltMount feeds). The requirement this guide is built around: Plex must
+- [Migrating from decypharr v2.5 to zurg](https://notes.debridmediamanager.com/migrate/decypharr.md): decypharr and zurg solve the same problem — debrid accounts and Usenet posts presented as a mounted library — and their trees are close enough that a migration can preserve a Plex library intact.
+- [Migrating from InfiniDysk v1.1.2 to zurg](https://notes.debridmediamanager.com/migrate/infinidysk.md): This guide moves a Plex library from an InfiniDysk-backed mount to zurg's nzb backend without Plex rescanning from scratch, without deleting library items, and without losing watch state, play counts, collections, ratings or artwork choices.
+- [Migrating from nzbdav-dev to zurg](https://notes.debridmediamanager.com/migrate/nzbdav.md): nzbdav-dev's last release is v0.6.4, April 2026, and the upstream repository is no longer maintained (it now redirects to a fork under a different name; that fork is a separate project and not what this guide is about).
+- [Migrating from streamnzb v5.1.0 to zurg](https://notes.debridmediamanager.com/migrate/streamnzb.md): Be clear about what this migration is before starting it: it is a change of model, not a cutover. streamnzb has no filesystem, no WebDAV, no mount and no
+
+## Reference
+
+- [zurg Configuration Documentation](https://notes.debridmediamanager.com/reference/config.md): This document details all available configuration options for zurg. Configure these options in your config.yml file.
+- [Zurg Tags Documentation](https://notes.debridmediamanager.com/reference/tags.md): This document describes all possible tags that can be automatically applied to torrents in Zurg.
+- [TorBox limits and how zurg adapts to them](https://notes.debridmediamanager.com/reference/torbox-limits.md): Zurg's library behaviour grew around Real-Debrid's constraints. TorBox's are different in kind, not just in magnitude, and driving it like Real-Debrid gets the account rate-limited within seconds of a first library scan.
+- [Changelog](https://notes.debridmediamanager.com/reference/changelog.md): Every directory zurg serves is a saved filter. A release is in movies because it matches the movies filter, and it is in __all__, in recent and in movies all at once — so there has never been anywhere in the library to put something.
+
+## Internals
+
+- [Architecture](https://notes.debridmediamanager.com/internals/architecture.md): A map of what zurg is, how the pieces fit, and why each package exists. Aimed at someone about to change the code: it names the load-bearing decisions and the invariants that are easy to break without noticing.
+- [The debrid baseline](https://notes.debridmediamanager.com/internals/debrid-baseline.md): What zurg costs and how fast it feels on the debrid path — Real-Debrid, AllDebrid and TorBox. There is no competitor here. The contender is a later zurg, and this file is what it has to beat.
+- [SABnzbd API contract as consumed by Sonarr and Radarr (develop)](https://notes.debridmediamanager.com/internals/sabnzbd-client-contract.md): Source of truth: files fetched from raw.githubusercontent.com/{Sonarr/Sonarr,Radarr/Radarr}/develop/... on 2026-08-22. Every line number below was read out of those files.
+- [Aligning the Plex trash sweep with zurg's own file status](https://notes.debridmediamanager.com/internals/plex-trash-sweep.md): The Plex trash sweep currently decides what to remove from a Plex library using file absence plus an age timer. zurg already knows something far better — whether the content behind that file is repairable or permanently dead — and does not consult it.
+- [Proxied stream timeout regression](https://notes.debridmediamanager.com/internals/stream-timeout-regression.md): Zurg used download_timeout_secs as a wall-clock deadline for proxied HTTP downloads. Its default is 15 seconds, so any single upstream response whose body took longer than 15 seconds to finish was cut off even while bytes were arriving normally.
+- [Directory Configuration UI/UX Assessment](https://notes.debridmediamanager.com/internals/uiux.md): Page: Directory Configuration at http://localhost:9999/directories/.
+- [E2E Testing](https://notes.debridmediamanager.com/internals/e2e-test.md): End-to-end tests to verify zurg is working correctly after deployment.
+- [Torrents](https://notes.debridmediamanager.com/internals/realdebrid-behavior.md): Real-debrid supports downloading unlimited number of torrent files and magnet links, also selecting which files in it that you want to download If the

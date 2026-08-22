@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.840752251421">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Migrating from decypharr v2.5 to zurg</title>
+    <meta name="title" content="Migrating from decypharr v2.5 to zurg">
+    <meta name="description" content="decypharr and zurg solve the same problem — debrid accounts and Usenet posts presented as a mounted library — and their trees are close enough that a migration can preserve a Plex library intact.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/migrate/decypharr/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/migrate/decypharr/">
+    <meta property="og:title" content="Migrating from decypharr v2.5 to zurg">
+    <meta property="og:description" content="decypharr and zurg solve the same problem — debrid accounts and Usenet posts presented as a mounted library — and their trees are close enough that a migration can preserve a Plex library intact.">
+    <meta property="og:site_name" content="dmm+zurg">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/migrate/decypharr/">
+    <meta name="twitter:title" content="Migrating from decypharr v2.5 to zurg">
+    <meta name="twitter:description" content="decypharr and zurg solve the same problem — debrid accounts and Usenet posts presented as a mounted library — and their trees are close enough that a migration can preserve a Plex library intact.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/migrate/decypharr.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../resources/css/retype.css?v=4.6.0.840752251421" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.840752251421" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.840752251421" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.840752251421" defer></script>
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/" class="flex items-center leading-snug text-2xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">dmm+zurg</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg-testing" target="_blank">zurg-testing</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://reddit.com/r/debridmediamanager" target="_blank">Reddit</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.patreon.com/debridmediamanager" target="_blank">Patreon</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg-testing" target="_blank">zurg-testing</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://reddit.com/r/debridmediamanager" target="_blank">Reddit</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.patreon.com/debridmediamanager" target="_blank">Patreon</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="migrating-from-decypharr-v25-to-zurg">Migrating from decypharr v2.5 to zurg</h1>
+<p>decypharr and zurg solve the same problem — debrid accounts and Usenet posts
+presented as a mounted library — and their trees are close enough that a
+migration can preserve a Plex library intact. Close is not identical, and Plex
+is unforgiving about the difference: every library item is bound to a file
+path in <code translate="no" v-pre>media_parts.file</code>, so a changed path is not a rename to Plex, it is a
+deleted item plus a new one.</p>
+<p>Be precise about what that costs, because it decides how much of this guide is
+worth the effort. Read out of a live 10,126-item library: watch state is keyed
+by <code translate="no" v-pre>account_id</code> plus a <code translate="no" v-pre>plex://</code> GUID in <code translate="no" v-pre>metadata_item_settings</code>, not by the
+item id or the path, so watched flags, play counts, resume offsets and user
+ratings <strong>re-attach</strong> when the new file matches to the same GUID. What dies
+with the item is everything on the <code translate="no" v-pre>metadata_items</code> row — collections
+membership, playlists (they store item ids), artwork and match choices, and
+<code translate="no" v-pre>added_at</code>, which dumps the whole library into Recently Added. Deletion is soft
+(<code translate="no" v-pre>deleted_at</code> on <code translate="no" v-pre>media_parts</code>/<code translate="no" v-pre>media_items</code>); emptying the trash is what makes
+it permanent.</p>
+<p>The rule the whole guide is built around: <strong>the paths Plex has on file must
+never change, and the mount behind them must never read as empty while Plex
+can scan.</strong> Layouts cited here were measured live on 2026-08-19 (decypharr
+v2.5, zurg HEAD <code translate="no" v-pre>23869fa4</code>, same seven NZBs into each, trees read off live
+mounts); anything not measured or read from source is marked unverified.</p>
+<hr>
+<h2 id="0-decide-which-setup-you-have">0. Decide which setup you have</h2>
+<p>Two questions determine the whole shape of the migration. <strong>Where does Plex
+point?</strong></p>
+<ul>
+<li>
+<p>*<em>Setup A — Plex points at an <em>arr-managed library.</em></em> The *arrs imported
+from decypharr&#x27;s symlink farm (<code translate="no" v-pre>download_folder/&lt;category&gt;/&lt;job&gt;/&lt;file&gt;</code>,
+each a symlink to <code translate="no" v-pre>&lt;mount&gt;/__all__/&lt;job&gt;/&lt;file&gt;</code>), so your library is
+symlinks. Plex only ever sees the symlink paths. <strong>This is the good case</strong>:
+those paths never change, and the migration is repointing symlink targets.
+Follow sections 1–7.</p>
+</li>
+<li>
+<p><strong>Setup B — Plex points straight at the DFS/WebDAV mount.</strong> Every naming
+difference between the two servers is Plex-visible. Follow sections 1–5,
+then section 8.</p>
+</li>
+</ul>
+<p><strong>Which providers do you use?</strong> zurg speaks <code translate="no" v-pre>realdebrid</code>, <code translate="no" v-pre>alldebrid</code>,
+<code translate="no" v-pre>torbox</code> and <code translate="no" v-pre>nzb</code>. decypharr additionally supports Debrid-Link and
+Premiumize; zurg has no backend for either, so content held only on those
+accounts <strong>cannot be served by zurg</strong>. Re-acquire it on a supported account
+before the cutover or accept losing those items.</p>
+<hr>
+<h2 id="1-what-maps-to-what">1. What maps to what</h2>
+<h3 id="mount-layout">Mount layout</h3>
+<p>decypharr&#x27;s root and zurg&#x27;s are strikingly close:</p>
+<retype-table copy-text="| decypharr | zurg | Notes |
+|---|---|---|
+| `__all__/&lt;job&gt;/&lt;file&gt;` | `__all__/&lt;name&gt;/&lt;file&gt;` | Same name, same role. The lever this migration rests on. |
+| `version.txt` | `version.txt` | Both at the root; health checks keep working. |
+| `__bad__/` | `__unplayable__/` | Analogous, different name. |
+| `torrents/` | `directories:` entry with `not_provider: nzb` | Reproducible by filter. |
+| `nzbs/&lt;job&gt;/` | `directories:` entry with `provider: nzb` (or built-in `__nzb__`) | Reproducible by filter. |
+| `&lt;provider&gt;/` (e.g. `realdebrid/`) | built-in `__&lt;name&gt;__` or a `directories:` entry with `provider: &lt;name&gt;` | Bare name reproducible by filter. |
+| virtual folders | `directories:` filters | Name/file-name/size/date/provider conditions all have zurg equivalents (`regex`, `any_file_inside_regex`, `size_gte`, `added_within_days`, `provider`). decypharr's &quot;number of files&quot;, &quot;source type&quot; and &quot;category&quot; conditions have no zurg counterpart. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>decypharr</th>
+<th>zurg</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>__all__/&lt;job&gt;/&lt;file&gt;</code></td>
+<td><code translate="no" v-pre>__all__/&lt;name&gt;/&lt;file&gt;</code></td>
+<td>Same name, same role. The lever this migration rests on.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>version.txt</code></td>
+<td><code translate="no" v-pre>version.txt</code></td>
+<td>Both at the root; health checks keep working.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>__bad__/</code></td>
+<td><code translate="no" v-pre>__unplayable__/</code></td>
+<td>Analogous, different name.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>torrents/</code></td>
+<td><code translate="no" v-pre>directories:</code> entry with <code translate="no" v-pre>not_provider: nzb</code></td>
+<td>Reproducible by filter.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>nzbs/&lt;job&gt;/</code></td>
+<td><code translate="no" v-pre>directories:</code> entry with <code translate="no" v-pre>provider: nzb</code> (or built-in <code translate="no" v-pre>__nzb__</code>)</td>
+<td>Reproducible by filter.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>&lt;provider&gt;/</code> (e.g. <code translate="no" v-pre>realdebrid/</code>)</td>
+<td>built-in <code translate="no" v-pre>__&lt;name&gt;__</code> or a <code translate="no" v-pre>directories:</code> entry with <code translate="no" v-pre>provider: &lt;name&gt;</code></td>
+<td>Bare name reproducible by filter.</td>
+</tr>
+<tr>
+<td>virtual folders</td>
+<td><code translate="no" v-pre>directories:</code> filters</td>
+<td>Name/file-name/size/date/provider conditions all have zurg equivalents (<code translate="no" v-pre>regex</code>, <code translate="no" v-pre>any_file_inside_regex</code>, <code translate="no" v-pre>size_gte</code>, <code translate="no" v-pre>added_within_days</code>, <code translate="no" v-pre>provider</code>). decypharr&#x27;s &quot;number of files&quot;, &quot;source type&quot; and &quot;category&quot; conditions have no zurg counterpart.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>So zurg can reproduce every decypharr top-level directory name — which
+matters enormously for Setup B and not at all for Setup A (symlink targets
+all go through <code translate="no" v-pre>__all__</code>).</p>
+<h3 id="folder-job-naming">Folder (job) naming</h3>
+<p>Both servers name an NZB release&#x27;s folder <strong>after the <code translate="no" v-pre>.nzb</code> filename</strong> —
+measured across five servers, it is the one universal rule. So NZB folder
+names are under your control: name the file, name the folder.</p>
+<p>For debrid torrents, decypharr&#x27;s <code translate="no" v-pre>folder_naming</code> setting
+(<code translate="no" v-pre>filename | original | filename_no_ext | original_no_ext | infohash</code>) chose
+your folder names. zurg&#x27;s knobs are <code translate="no" v-pre>retain_rd_torrent_name</code> and
+<code translate="no" v-pre>retain_folder_name_extension</code>; with both false (the default) the folder is
+the torrent&#x27;s original name with a trailing <code translate="no" v-pre>.mkv</code>/<code translate="no" v-pre>.mp4</code> stripped
+(<code translate="no" v-pre>GetKey_Original</code>, <code translate="no" v-pre>internal/torrent/key.go:14</code>) — i.e. <code translate="no" v-pre>original_no_ext</code>.
+<code translate="no" v-pre>retain_folder_name_extension: true</code> keeps the extension. <code translate="no" v-pre>infohash</code> has no
+zurg equivalent, and decypharr&#x27;s <code translate="no" v-pre>filename</code> variants were not measured —
+<strong>verify against your own tree</strong> in section 4 rather than trusting a table.</p>
+<p><strong>Do not change decypharr&#x27;s <code translate="no" v-pre>folder_naming</code> before migrating.</strong> Changing it
+renames every folder in the library at once — every symlink target and every
+mount-direct Plex path breaks in one stroke.</p>
+<p>Two zurg-side naming hazards:</p>
+<ul>
+<li>
+<p>With defaults, zurg strips a trailing <code translate="no" v-pre>.mkv</code>/<code translate="no" v-pre>.mp4</code> from a folder name. If
+your decypharr folders end in an extension, set
+<code translate="no" v-pre>retain_folder_name_extension: true</code> or every such folder shifts.</p>
+</li>
+<li>
+<p>Two <em>different</em> releases sharing a name collide, and zurg hash-suffixes one:
+<code translate="no" v-pre>Some.Release {a1b2c3}</code>. An RD torrent and an NZB of the same release <strong>are</strong>
+different releases to zurg (the NZB&#x27;s id is a hash of its filename, not an
+infohash), so holding both under one name gets one suffixed — and a suffixed
+path breaks whatever pointed at the bare one. Only re-fetch NZBs for
+releases no debrid account already holds (section 5).</p>
+</li>
+</ul>
+<h3 id="the-three-hard-mismatches-nzb-side-measured">The three hard mismatches (NZB side, measured)</h3>
+<p>These cannot be fixed by renaming the <code translate="no" v-pre>.nzb</code> — the filename controls only the
+folder, never the files inside:</p>
+<ol>
+<li>
+<p><strong>Lone video renamed by decypharr.</strong> A single video becomes the job name
+(<code translate="no" v-pre>TLOU-S02E01-FLUX/TLOU-S02E01-FLUX.mkv</code>); zurg keeps the poster&#x27;s
+filename (<code translate="no" v-pre>.../The.Last.of.Us.S02E01.Future.Days.…-FLUX.mkv</code>).</p>
+</li>
+<li>
+<p><strong>RAR releases flattened by decypharr.</strong> The archive collapses to one file
+named by concatenating the inner directory and filename with no separator
+(<code translate="no" v-pre>FatherBrown/Father.Brown.2013.S02E05.HDTV.x264-TLAfather.brown.2013.s02e05.hdtv.x264-tla.mp4</code>);
+zurg reproduces the archive&#x27;s inner directory, <code translate="no" v-pre>Sample/</code> included
+(<code translate="no" v-pre>FatherBrown/Father.Brown.2013.S02E05.HDTV.x264-TLA/father.brown.….mp4</code>).</p>
+</li>
+<li>
+<p><strong>Sidecars.</strong> decypharr drops <code translate="no" v-pre>thumbnail.jpg</code> and <code translate="no" v-pre>.url</code> files; zurg keeps
+them.</p>
+</li>
+</ol>
+<p>Season packs and any multi-file release keep their real filenames on both
+sides — those match automatically once the folder name matches. The
+debrid-torrent side has none of these problems: both servers list the same
+account and present the torrent&#x27;s own filenames. Its migration is
+configuration, not content.</p>
+<h3 id="two-deltas-where-zurg-gains">Two deltas where zurg gains</h3>
+<p>Measured: decypharr produced <strong>nothing at all</strong> for a fully obfuscated NZB or
+a broken RAR chain. zurg serves the obfuscated one (payload presented under
+the release name) and leaves an empty folder for the broken chain — new Plex
+additions plus a little folder noise, both harmless.</p>
+<h3 id="the-zurg-file-size-defect">The zurg file-size defect</h3>
+<p>On NZBs whose subject line carries no byte count, zurg over-reports file
+sizes by 2.5–3.2% (it falls back to the yEnc-encoded segment sum; decypharr
+reports exact sizes). A changed size makes Plex treat the file as modified:
+the item is <strong>not</strong> deleted and keeps its state, but Plex re-analyzes it and
+regenerates preview thumbnails/intro markers — real bandwidth on a streaming
+mount. Turn off &quot;Generate video preview thumbnails&quot; before the cutover.</p>
+<hr>
+<h2 id="2-pre-flight">2. Pre-flight</h2>
+<p><strong>Back up the Plex database.</strong> Stop Plex first — a copy of a live SQLite
+file can be torn:</p>
+<div id="2-pre-flight-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">PLEX_DB=&quot;/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db&quot;
+sudo systemctl stop plexmediaserver
+cp &quot;$PLEX_DB&quot; ~/plexlib.backup.$(date +%Y%m%d).db
+sudo systemctl start plexmediaserver</code></pre>
+</doc-codeblock></div>
+<p><strong>Confirm auto-empty-trash is off.</strong> This is the guard that turns &quot;the mount
+blipped during a scan&quot; from a permanent mass deletion into a recoverable
+trash state. It has cost a 30,065-item library before:</p>
+<div id="2-pre-flight-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">TOKEN=YOUR_PLEX_TOKEN
+curl -s &quot;http://localhost:32400/:/prefs?X-Plex-Token=$TOKEN&quot; | tr '&gt;' '\n' | grep autoEmptyTrash</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>autoEmptyTrash</code> must be <code translate="no" v-pre>0</code>. Also uncheck &quot;Empty trash automatically after
+every scan&quot; per library (Edit → Advanced), and &quot;Generate video preview
+thumbnails&quot;.</p>
+<p><strong>Disable scans for the duration.</strong> Settings → Library: turn off &quot;Update my
+library automatically&quot;, &quot;Run a partial scan when changes are detected&quot;, and
+the scheduled library update. Re-enable in section 9. *<em>Quiesce the <em>arrs</em></em>:
+pause the Sonarr/Radarr queues and disable RSS sync.</p>
+<p><strong>Learn the scan pre-flight.</strong> Before any action that takes the mount away —
+stopping decypharr, restarting zurg, remounting — both of these must be zero:</p>
+<div id="2-pre-flight-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s &quot;http://localhost:32400/status/sessions?X-Plex-Token=$TOKEN&quot; | grep -o 'size=&quot;[0-9]*&quot;'          # want size=&quot;0&quot;
+curl -s &quot;http://localhost:32400/library/sections?X-Plex-Token=$TOKEN&quot; | grep -o 'refreshing=&quot;1&quot;' | wc -l # want 0</code></pre>
+</doc-codeblock></div>
+<p>Sessions only prove nobody is watching; a <strong>scan</strong> in flight is what does
+damage. Use <code translate="no" v-pre>grep -o … | wc -l</code>, never <code translate="no" v-pre>grep -c</code>: grep exits non-zero when it
+finds nothing — the good case here — and that aborts a <code translate="no" v-pre>&amp;&amp;</code> chain or a
+<code translate="no" v-pre>set -e</code> script right before the restart it was guarding.</p>
+<hr>
+<h2 id="3-inventory">3. Inventory</h2>
+<p>Capture everything while decypharr still serves — the mapping table and the
+rollback reference in one.</p>
+<div id="3-inventory-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">MOUNT=/mnt/decypharr            # decypharr's mount
+FARM=/mnt/decypharr-downloads   # its download_folder (symlink farm)
+LIB=/data/media                 # the *arr-managed library roots (Setup A)
+mkdir -p ~/decypharr-migration &amp;&amp; cd ~/decypharr-migration
+
+find &quot;$MOUNT/__all__&quot; -type f -printf '%s %p\n' | sort -k2 &gt; mount-files.txt
+ls &quot;$MOUNT/nzbs&quot; &gt; nzb-jobs.txt                 # the usenet job list
+find &quot;$FARM&quot; -type l -printf '%p -&gt; %l\n' &gt; farm-links.txt
+find &quot;$LIB&quot;  -type l -printf '%p -&gt; %l\n' &gt; lib-links.txt
+
+# Every path Plex has an item bound to — query a COPY, never the live DB
+cp &quot;$PLEX_DB&quot; ./plexlib.copy.db
+sqlite3 ./plexlib.copy.db \
+  &quot;SELECT file FROM media_parts WHERE file != '' ORDER BY file;&quot; &gt; plex-paths.txt</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>plex-paths.txt</code> is the contract: <strong>the migration is done when every line in
+it resolves to a readable file.</strong> In Setup A those lines are symlink paths in
+<code translate="no" v-pre>$LIB</code>; in Setup B they are mount paths.</p>
+<p>On the NZBs themselves: decypharr keeps <code translate="no" v-pre>usenet/meta/&lt;uuid&gt;.meta</code> — a
+compressed binary, one per job — and a <code translate="no" v-pre>usenet/nzbs/</code> directory that was
+<strong>empty</strong> on the bench. There is no documented export, and whether <code translate="no" v-pre>.meta</code>
+blobs can be decoded back into NZBs is unverified. Treat the original NZB
+files as <strong>not recoverable from decypharr</strong>; the job folder name is the NZB
+filename, so <code translate="no" v-pre>nzb-jobs.txt</code> is exactly what to search your indexer for.</p>
+<hr>
+<h2 id="4-build-zurg-in-parallel">4. Build zurg in parallel</h2>
+<p>Run zurg beside decypharr — different mountpoint, no conflict; both may
+list the same debrid accounts at once, listing is read-only.</p>
+<div id="4-build-zurg-in-parallel-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml"># config.yml — staging
+zurg: v1
+providers:
+  - type: realdebrid
+    token: YOUR_RD_TOKEN
+  # - type: alldebrid / torbox as you have them
+  - type: nzb
+    nntp:
+      host: news.example.com
+      port: 563
+      tls: true
+      username: USER
+      password: PASS
+      connections: 30          # your plan's real allowance
+retain_rd_torrent_name: false         # align with decypharr folder_naming
+retain_folder_name_extension: false   # true if folders carry .mkv/.mp4
+mount_path: &quot;/mnt/zurg-staging&quot;
+rclone_enabled: true
+rclone_binary: bin/rclone
+directories:                # Setup B: reproduce decypharr's top-level names
+  torrents:
+    filters:
+      - not_provider: nzb
+  nzbs:
+    filters:
+      - provider: nzb
+  # one entry per virtual folder you had, translated to zurg filters</code></pre>
+</doc-codeblock></div>
+<p>Start it, let it scan the accounts, and compare against the inventory:</p>
+<div id="4-build-zurg-in-parallel-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">find /mnt/zurg-staging/__all__ -type f -printf '%s %p\n' | sort -k2 &gt; zurg-files.txt
+# Folder-level diff: which jobs exist on each side?
+sed 's|.*/__all__/\([^/]*\)/.*|\1|' mount-files.txt | sort -u &gt; decypharr-jobs.txt
+sed 's|.*/__all__/\([^/]*\)/.*|\1|' zurg-files.txt  | sort -u &gt; zurg-jobs.txt
+diff decypharr-jobs.txt zurg-jobs.txt</code></pre>
+</doc-codeblock></div>
+<p>The debrid-torrent folders should already line up; if they differ
+systematically (extension present/absent, RD rename vs original), flip the
+<code translate="no" v-pre>retain_*</code> knobs and rescan before resorting to anything manual. Folders only
+on the decypharr side are the usenet jobs — section 5 — plus anything on a
+Debrid-Link/Premiumize account.</p>
+<hr>
+<h2 id="5-recovering-the-nzb-side">5. Recovering the NZB side</h2>
+<p>zurg&#x27;s ingestion is a watch directory: <code translate="no" v-pre>.nzb</code> files dropped directly into
+<code translate="no" v-pre>nzbs/</code> beside the binary (fixed name, subdirectories ignored, rescanned every
+15 s). zurg does now have a <a href="../../guides/sabnzbd/">SABnzbd-compatible endpoint</a> that
+writes into that same directory, but it will not help here — recovering an
+existing job means placing a file under an exact name, which is what the
+watch directory does and what a re-grab through an *arr does not. For each
+job in <code translate="no" v-pre>nzb-jobs.txt</code>:</p>
+<ol>
+<li>
+<p><strong>Skip it if a debrid account already holds the release</strong> — the symlink
+resolves through the torrent copy, and adding the NZB too triggers the
+duplicate-name hash suffix (section 1).</p>
+</li>
+<li>
+<p>Re-fetch the NZB from your indexer, searching by the job folder name.</p>
+</li>
+<li>
+<p><strong>Rename the file to exactly the job folder name</strong> plus <code translate="no" v-pre>.nzb</code> — the
+filename is the folder name, which is what keeps the folder path
+identical: <code translate="no" v-pre>cp indexer-download.nzb /path/to/zurg/nzbs/TLOU-S02E01-FLUX.nzb</code></p>
+</li>
+<li>
+<p>Watch the log for <code translate="no" v-pre>Loaded NZB &lt;name&gt;: N files</code>, then check the resulting
+folder in <code translate="no" v-pre>/mnt/zurg-staging/__all__/</code> against <code translate="no" v-pre>mount-files.txt</code>.</p>
+</li>
+</ol>
+<p>A release your indexer no longer has is gone: no NZB, no zurg entry, a
+dangling Plex item — leave it (with auto-empty off it survives until a scan
+trashes it) or delete it deliberately after migration. Inner filenames will
+differ for lone-video and RAR releases (section 1); that is what sections 7
+and 8 are for. Some sizes will read 2.5–3.2% high.</p>
+<hr>
+<h2 id="6-cutover-setup-a">6. Cutover (Setup A)</h2>
+<p>Stop Plex, swap the mountpoint from decypharr to zurg, fix the symlinks,
+verify every Plex path resolves, start Plex. With Plex stopped, the &quot;empty
+mount during a scan&quot; failure mode cannot occur — the cleanest guard.</p>
+<div id="6-cutover-setup-a-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash"># 1. Pre-flight: nothing playing, nothing scanning (section 2 commands), then:
+sudo systemctl stop plexmediaserver
+# 2. Stop decypharr and free its mountpoint (the *arrs stay paused).
+sudo systemctl stop decypharr        # or: docker stop decypharr
+mountpoint -q &quot;$MOUNT&quot; &amp;&amp; sudo umount &quot;$MOUNT&quot;
+# 3. Point zurg at the old mountpoint and restart it.
+#    In config.yml: mount_path: &quot;/mnt/decypharr&quot;   (i.e. $MOUNT)
+sudo systemctl restart zurg
+# 4. Confirm the tree is up BEFORE anything else runs.
+ls &quot;$MOUNT/__all__&quot; | head
+cat &quot;$MOUNT/version.txt&quot;</code></pre>
+</doc-codeblock></div>
+<p>Do not delete decypharr, its config, <code translate="no" v-pre>db/</code> or <code translate="no" v-pre>usenet/</code> state — that is the
+rollback path (section 11).</p>
+<hr>
+<h2 id="7-retarget-dangling-symlinks-setup-a">7. Retarget dangling symlinks (Setup A)</h2>
+<p>Every library symlink whose target still exists under zurg&#x27;s <code translate="no" v-pre>__all__</code> —
+debrid torrents, multi-file NZB releases — now just works. The dangling ones
+are the decypharr-renamed lone videos and the flattened RARs. Repoint them:
+the symlink&#x27;s own path (what Plex has on file) never changes, so the item is
+preserved.</p>
+<div id="7-retarget-dangling-symlinks-setup-a-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">#!/bin/bash
+# retarget.sh — repoint dangling library symlinks at zurg's copy of the job.
+# Writes an undo script; GNU find and bash (for printf %q) required.
+MOUNT=/mnt/decypharr; LIB=/data/media; UNDO=./retarget-undo.sh
+: &gt; &quot;$UNDO&quot;
+find &quot;$LIB&quot; -type l | while IFS= read -r link; do
+  [ -e &quot;$link&quot; ] &amp;&amp; continue                        # resolves — leave it alone
+  old=$(readlink &quot;$link&quot;)
+  job=$(printf '%s\n' &quot;$old&quot; | sed -n &quot;s|^$MOUNT/__all__/\([^/]*\)/.*|\1|p&quot;)
+  [ -n &quot;$job&quot; ] || { echo &quot;SKIP (target not under __all__): $link&quot;; continue; }
+  dir=&quot;$MOUNT/__all__/$job&quot;
+  [ -d &quot;$dir&quot; ] || { echo &quot;NO JOB $job: $link&quot;; continue; }
+  # Largest non-sample video in the job, searched recursively (RARs nest).
+  new=$(find &quot;$dir&quot; -type f \( -name '*.mkv' -o -name '*.mp4' -o -name '*.avi' \) \
+        ! -ipath '*sample*' -printf '%s\t%p\n' | sort -rn | head -1 | cut -f2-)
+  [ -n &quot;$new&quot; ] || { echo &quot;NO VIDEO in $job: $link&quot;; continue; }
+  printf 'ln -sfn %q %q\n' &quot;$old&quot; &quot;$link&quot; &gt;&gt; &quot;$UNDO&quot;
+  ln -sfn &quot;$new&quot; &quot;$link&quot;
+  echo &quot;RETARGETED: $link&quot;
+done</code></pre>
+</doc-codeblock></div>
+<p>The largest-video heuristic is safe because multi-file releases already
+resolved and were skipped — only single-payload jobs reach it. Anything still
+dangling afterwards is a job zurg does not have (unrecoverable NZB,
+unsupported provider): the accept-or-delete list.</p>
+<hr>
+<h2 id="8-setup-b-plex-pointed-straight-at-the-mount">8. Setup B: Plex pointed straight at the mount</h2>
+<p>Reproduce as much as possible by configuration first: zurg at decypharr&#x27;s
+exact mountpoint, <code translate="no" v-pre>directories:</code> entries named <code translate="no" v-pre>torrents</code>, <code translate="no" v-pre>nzbs</code> and
+per-provider (section 4), naming knobs aligned, NZBs renamed to the old
+folder names (section 5). The debrid side and multi-file NZB releases then
+carry identical Plex paths and nothing happens to them. The residue is the
+lone-video and RAR jobs, whose inner filenames cannot be configured into
+matching. Four options, in order of preference:</p>
+<ol>
+<li>
+<p><strong>Rewrite <code translate="no" v-pre>media_parts.file</code> in the Plex DB</strong> — the precise fix when the
+affected set is small. With Plex stopped and the section-2 backup taken:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-sql"><code v-pre class="language-sql">UPDATE media_parts
+   SET file = '/mnt/decypharr/__all__/TLOU-S02E01-FLUX/The.Last.of.Us.S02E01.Future.Days.…-FLUX.mkv'
+ WHERE file = '/mnt/decypharr/__all__/TLOU-S02E01-FLUX/TLOU-S02E01-FLUX.mkv';</code></pre>
+</doc-codeblock></div>
+<p>Use Plex&#x27;s bundled &quot;Plex SQLite&quot; binary for writes, not stock <code translate="no" v-pre>sqlite3</code> —
+the DB carries custom extensions and Plex&#x27;s own tooling is the supported
+way to modify it. If you use external subtitle files, check
+<code translate="no" v-pre>media_streams</code> for path references too. Generate the UPDATEs from
+<code translate="no" v-pre>mount-files.txt</code> vs <code translate="no" v-pre>zurg-files.txt</code> rather than typing them.</p>
+</li>
+<li>
+<p><strong>A symlink shim tree</strong> — when you refuse to touch the DB. Mount zurg
+somewhere new (<code translate="no" v-pre>/mnt/zurg</code>) and build the old paths at the old mountpoint
+as a real directory tree of symlinks into it. Every old path resolves,
+renamed inner files included. The shim covers the frozen pre-migration
+set; add the zurg mount as an additional location on each library so new
+content scans in from the real mount. Cost: a shim carried forever.</p>
+</li>
+<li>
+<p><strong>Rename the <code translate="no" v-pre>.nzb</code></strong> — already done in section 5. It fixes folders (the
+whole fix for multi-file releases) but can never fix inner filenames, so
+it is a component of the other options, not an alternative.</p>
+</li>
+<li>
+<p><strong>Accept the change</strong> for items you do not care about. With auto-empty
+off, the old item sits in the trash (state intact) and a new item appears;
+item-bound state — collections, artwork choice, added date — is lost when
+the trash is finally emptied. Do not empty it until section 9 is clean.</p>
+</li>
+</ol>
+<hr>
+<h2 id="9-verification">9. Verification</h2>
+<p>With Plex still stopped:</p>
+<div id="9-verification-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/decypharr-migration
+# The contract: every path Plex knows must resolve.
+while IFS= read -r p; do [ -e &quot;$p&quot; ] || echo &quot;MISSING: $p&quot;; done &lt; plex-paths.txt</code></pre>
+</doc-codeblock></div>
+<p>Chase every line down to zero, or to an explicit accept-list of items you
+have decided to lose. Then <code translate="no" v-pre>sudo systemctl start plexmediaserver</code> and:</p>
+<ul>
+<li>
+<p>Scan <strong>one</strong> small library first. Check its item count against
+pre-migration and that nothing landed in the trash; spot-check watch state
+and a collection.</p>
+</li>
+<li>
+<p>Play one debrid item and one NZB item end to end, including a seek.</p>
+</li>
+<li>
+<p>Analysis activity on NZB files whose size shifted (section 1) is
+re-analysis of a surviving item, not a re-add.</p>
+</li>
+<li>
+<p>Only when every library scans clean: re-enable automatic/scheduled scans
+and the *arr queues, and empty the trash if anything deliberately dropped
+sits in it.</p>
+</li>
+</ul>
+<hr>
+<h2 id="10-what-changes-after-migration">10. What changes after migration</h2>
+<p><strong>Automation.</strong> Half of it carries over. zurg has a
+<a href="../../guides/sabnzbd/">SABnzbd-compatible endpoint</a> — opt-in, Usenet-only — so Sonarr
+and Radarr can hand it an NZB and import from <code translate="no" v-pre>__magic__</code> by rename. It has no
+qBittorrent API, so the torrent half of decypharr&#x27;s ingestion has no
+equivalent, and the NZB half is not a like-for-like replacement either: zurg
+does not yet check whether a post&#x27;s articles are still on the news server, so
+a dead release reports Completed and fails on the first read rather than being
+blocklisted and re-grabbed. Options:</p>
+<ul>
+<li>
+<p>NZBs: turn on <code translate="no" v-pre>sabnzbd.enabled</code> and point the *arrs at zurg — see
+<a href="../../guides/sabnzbd/">sabnzbd.md</a> — or fetch from the indexer yourself and drop into
+<code translate="no" v-pre>nzbs/</code>.</p>
+</li>
+<li>
+<p>Torrents: the zurg dashboard, DMM, or zurg&#x27;s Plex watchlist acquisition
+(<code translate="no" v-pre>plex_watchlist_enabled</code>, needs <code translate="no" v-pre>dmm_api_key</code>). Nothing in the *arr
+ecosystem can hand zurg a torrent.</p>
+</li>
+<li>
+<p>Hybrid: keep decypharr purely as the *arrs&#x27; download client pushing into
+the same debrid accounts, with zurg serving the mount — both list the same
+account, so zurg picks up what decypharr adds. The *arr import step then
+needs remote path mapping onto zurg&#x27;s tree; unverified here, test one grab
+first. If you script against decypharr: the SABnzbd endpoint is
+<code translate="no" v-pre>/sabnzbd/api?mode=addfile</code> with the multipart field named <code translate="no" v-pre>name</code>;
+<code translate="no" v-pre>/api?mode=addfile</code> returns 404 on v2.5.</p>
+</li>
+</ul>
+<p><strong>Mount deltas:</strong> sidecars (<code translate="no" v-pre>thumbnail.jpg</code>, <code translate="no" v-pre>.url</code>) and RAR-inner <code translate="no" v-pre>Sample/</code>
+directories are now visible — <code translate="no" v-pre>only_show_the_biggest_file: true</code> on movie
+directories hides them from a mount-direct library. Obfuscated releases
+decypharr dropped now appear; broken-chain RARs appear as empty folders; NZB
+sizes may read 2.5–3.2% high until the defect is fixed.</p>
+<hr>
+<h2 id="11-rollback">11. Rollback</h2>
+<p>Everything decypharr needs was left in place (section 6), so rollback is
+the cutover in reverse:</p>
+<div id="11-rollback-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash"># Plex pre-flight first (section 2), or stop Plex outright.
+sudo systemctl stop plexmediaserver
+sudo systemctl stop zurg                      # frees the mountpoint
+sudo systemctl start decypharr                # remounts at $MOUNT
+bash ~/decypharr-migration/retarget-undo.sh   # Setup A: restore symlink targets
+# Setup B, if you rewrote the DB: restore the backup.
+# cp ~/plexlib.backup.YYYYMMDD.db &quot;$PLEX_DB&quot;
+sudo systemctl start plexmediaserver</code></pre>
+</doc-codeblock></div>
+<p>Verify with the same section-9 loop over <code translate="no" v-pre>plex-paths.txt</code> before letting Plex
+scan. The NZBs you re-fetched into zurg&#x27;s <code translate="no" v-pre>nzbs/</code> are unaffected by rollback
+and keep their value for the next attempt.</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../migrate/altmount/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Previous</span>
+                                <span class="block mt-1">From Alt​Mount</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../migrate/infinidysk/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Next</span>
+                                <span class="block mt-1">From Infini​Dysk</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "From decypharr", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/migrate/decypharr.md" }</script>
+</body>
+</html>

@@ -1,0 +1,2366 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.840752251421">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>SABnzbd API contract as consumed by Sonarr and Radarr (develop)</title>
+    <meta name="title" content="SABnzbd API contract as consumed by Sonarr and Radarr (develop)">
+    <meta name="description" content="Source of truth: files fetched from raw.githubusercontent.com/{Sonarr/Sonarr,Radarr/Radarr}/develop/... on 2026-08-22. Every line number below was read out of those files.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/internals/sabnzbd-client-contract/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/internals/sabnzbd-client-contract/">
+    <meta property="og:title" content="SABnzbd API contract as consumed by Sonarr and Radarr (develop)">
+    <meta property="og:description" content="Source of truth: files fetched from raw.githubusercontent.com/{Sonarr/Sonarr,Radarr/Radarr}/develop/... on 2026-08-22. Every line number below was read out of those files.">
+    <meta property="og:site_name" content="dmm+zurg">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/internals/sabnzbd-client-contract/">
+    <meta name="twitter:title" content="SABnzbd API contract as consumed by Sonarr and Radarr (develop)">
+    <meta name="twitter:description" content="Source of truth: files fetched from raw.githubusercontent.com/{Sonarr/Sonarr,Radarr/Radarr}/develop/... on 2026-08-22. Every line number below was read out of those files.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/internals/sabnzbd-client-contract.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../resources/css/retype.css?v=4.6.0.840752251421" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.840752251421" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.840752251421" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.840752251421" defer></script>
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/" class="flex items-center leading-snug text-2xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">dmm+zurg</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg-testing" target="_blank">zurg-testing</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://reddit.com/r/debridmediamanager" target="_blank">Reddit</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.patreon.com/debridmediamanager" target="_blank">Patreon</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg-testing" target="_blank">zurg-testing</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://reddit.com/r/debridmediamanager" target="_blank">Reddit</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.patreon.com/debridmediamanager" target="_blank">Patreon</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="sabnzbd-api-contract-as-consumed-by-sonarr-and-radarr-develop">SABnzbd API contract as consumed by Sonarr and Radarr (develop)</h1>
+<p>Source of truth: files fetched from <code translate="no" v-pre>raw.githubusercontent.com/{Sonarr/Sonarr,Radarr/Radarr}/develop/...</code>
+on <strong>2026-08-22</strong>. Every line number below was read out of those files.</p>
+<p>Kept here as the record of why <code translate="no" v-pre>internal/sabnzbd</code> answers in the shapes it does. Nothing in that
+package should be changed without the paragraph here that explains what the client does with the
+field — a wrong struct tag does not fail, it leaves the client reading a zero, and a wrong enum
+value throws inside its deserializer and takes the whole poll with it. For how to point Sonarr or
+Radarr at zurg, see <a href="../../guides/sabnzbd/">sabnzbd.md</a>.</p>
+<p>Unless a section says otherwise, <strong>the two repos&#x27; SAB files are byte-identical apart from a UTF-8 BOM
+and the <code translate="no" v-pre>TvCategory</code> → <code translate="no" v-pre>MovieCategory</code> / <code translate="no" v-pre>RemoteEpisode</code> → <code translate="no" v-pre>RemoteMovie</code> rename, and line numbers match
+one-for-one.</strong> Every <code translate="no" v-pre>Sabnzbd*</code> citation therefore applies to both repos at the same line.
+Paths are <code translate="no" v-pre>src/NzbDrone.Core/Download/Clients/Sabnzbd/...</code> in both. Verified diffs are recorded in §6.</p>
+<p>Nothing here is speculation about SAB itself: every claim is what the <em>client</em> does. Where I state
+Newtonsoft.Json or .NET runtime semantics (not Sonarr code) I say so explicitly.</p>
+<hr>
+<h2 id="0-transport-level-rules-these-bite-first">0. Transport-level rules (these bite first)</h2>
+<h3 id="01-url-shape">0.1 URL shape</h3>
+<p><code translate="no" v-pre>SabnzbdProxy.BuildRequest</code> (<code translate="no" v-pre>SabnzbdProxy.cs:162-185</code>):</p>
+<div id="01-url-shape-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">private HttpRequestBuilder BuildRequest(string mode, SabnzbdSettings settings)
+{
+    var baseUrl = GetBaseUrl(settings, &quot;api&quot;);                      // :164
+    var requestBuilder = new HttpRequestBuilder(baseUrl)
+        .Accept(HttpAccept.Json)                                    // :167  -&gt; Accept: application/json
+        .AddQueryParam(&quot;mode&quot;, mode);                               // :168
+    requestBuilder.LogResponseContent = true;                       // :170
+    if (settings.ApiKey.IsNotNullOrWhiteSpace())
+        requestBuilder.AddSuffixQueryParam(&quot;apikey&quot;, settings.ApiKey);        // :174
+    else
+    {
+        requestBuilder.AddSuffixQueryParam(&quot;ma_username&quot;, settings.Username); // :178
+        requestBuilder.AddSuffixQueryParam(&quot;ma_password&quot;, settings.Password); // :179
+    }
+    requestBuilder.AddSuffixQueryParam(&quot;output&quot;, &quot;json&quot;);           // :182
+    return requestBuilder;
+}</code></pre>
+</doc-codeblock></div>
+<ul>
+<li>
+<p>Base URL: <code translate="no" v-pre>HttpRequestBuilder.BuildBaseUrl</code> (<code translate="no" v-pre>src/NzbDrone.Common/Http/HttpRequestBuilder.cs:56-66</code>)
+= <code translate="no" v-pre>{http|https}://{Host}:{Port}{UrlBase}</code>; <code translate="no" v-pre>UrlBase</code> gets a leading <code translate="no" v-pre>/</code> if missing.
+The endpoint is that + <code translate="no" v-pre>/api</code> (<code translate="no" v-pre>SabnzbdProxy.cs:38-44</code>).</p>
+</li>
+<li>
+<p>Suffix params always land last, so <strong><code translate="no" v-pre>apikey</code> (or <code translate="no" v-pre>ma_username</code>+<code translate="no" v-pre>ma_password</code>) and <code translate="no" v-pre>output=json</code>
+are the final query params</strong> (<code translate="no" v-pre>HttpRequestBuilder.cs:82</code> — <code translate="no" v-pre>QueryParams.Concat(SuffixQueryParams)</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>Accept: application/json</code> on every call. <code translate="no" v-pre>output=json</code> on every call. There is no
+<code translate="no" v-pre>output=xml</code> path anywhere.</p>
+</li>
+<li>
+<p>API key and username/password are <strong>mutually exclusive</strong>: an api key suppresses <code translate="no" v-pre>ma_username</code>/<code translate="no" v-pre>ma_password</code>.</p>
+</li>
+</ul>
+<h3 id="02-always-answer-http-200--even-for-errors">0.2 Always answer HTTP 200 — even for errors</h3>
+<p><code translate="no" v-pre>HttpClient.Execute</code> throws on any status &gt;= 400 (<code translate="no" v-pre>src/NzbDrone.Common/Http/HttpClient.cs:106-121</code>;
+<code translate="no" v-pre>HttpResponse.cs:54</code> — <code translate="no" v-pre>HasHttpError =&gt; (int)StatusCode &gt;= 400</code>; 429 becomes <code translate="no" v-pre>TooManyRequestsException</code>).
+<code translate="no" v-pre>SabnzbdProxy.ProcessRequest</code> (<code translate="no" v-pre>SabnzbdProxy.cs:199-215</code>) converts that into
+<code translate="no" v-pre>DownloadClientException(&quot;Unable to connect to SABnzbd, {0}&quot;)</code>.</p>
+<p><code translate="no" v-pre>HttpException</code>&#x27;s message is <code translate="no" v-pre>&quot;HTTP request failed: [401:Unauthorized] [GET] at [url]&quot;</code>
+(<code translate="no" v-pre>src/NzbDrone.Common/Http/HttpException.cs:18</code>) — <strong>the body is not in the message</strong>. So a 401 with
+<code translate="no" v-pre>{&quot;error&quot;:&quot;API Key Incorrect&quot;}</code> will <em>not</em> be recognised by <code translate="no" v-pre>TestAuthentication</code>
+(<code translate="no" v-pre>Sabnzbd.cs:424,429</code> match on <code translate="no" v-pre>ex.Message</code>), and the connection test reports the generic
+&quot;Test was aborted due to an error&quot; instead. <strong>Emulate SAB: HTTP 200 + <code translate="no" v-pre>{&quot;status&quot;: false, &quot;error&quot;: &quot;...&quot;}</code>.</strong></p>
+<h3 id="03-deserializer-settings-drives-every-field-name-and-type-question">0.3 Deserializer settings (drives every field-name and type question)</h3>
+<p>All SAB payloads go through <code translate="no" v-pre>NzbDrone.Common.Serializer.Json</code>
+(<code translate="no" v-pre>src/NzbDrone.Common/Serializer/Newtonsoft.Json/Json.cs:21-37</code>) — <strong>Newtonsoft</strong>, not System.Text.Json:</p>
+<div id="03-deserializer-settings-drives-every-field-name-and-type-question-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">DateTimeZoneHandling  = DateTimeZoneHandling.Utc,
+NullValueHandling     = NullValueHandling.Ignore,
+Formatting            = Formatting.Indented,
+DefaultValueHandling  = DefaultValueHandling.Include,
+ContractResolver      = new CamelCasePropertyNamesContractResolver()
+Converters: StringEnumConverter { NamingStrategy = CamelCaseNamingStrategy }, VersionConverter, HttpUriConverter</code></pre>
+</doc-codeblock></div>
+<p>Consequences (Newtonsoft semantics, not Sonarr code):</p>
+<retype-table copy-text="| Setting | Effect on an emulator |
+|---|---|
+| `CamelCasePropertyNamesContractResolver` | C# `Storage` binds `storage`, `PP` binds `pp`, `Misc` binds `misc`. Newtonsoft also falls back to a case-insensitive property match, so SAB's real snake_case/lowercase keys bind either way. |
+| `StringEnumConverter` (global) | Applies to `SabnzbdDownloadStatus`, which has **no** per-property converter. Unknown enum names throw `JsonSerializationException`. Integers are also accepted (`AllowIntegerValues` defaults true). |
+| `NullValueHandling.Ignore` | On **read** too: a JSON `null` leaves the C# member at its constructor value. So `&quot;categories&quot;: null` keeps the ctor's empty list, but `&quot;misc&quot;: null` leaves `Misc` null (no ctor default) → NRE, see §3.4. |
+| `MissingMemberHandling` (default `Ignore`) | Extra fields in your payload are harmless. Send the full real SAB body. |
+| `Culture` (default `InvariantCulture`) | Numeric strings like `&quot;1024.00&quot;` must use `.` as the decimal separator and no thousands separators. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Setting</th>
+<th>Effect on an emulator</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>CamelCasePropertyNamesContractResolver</code></td>
+<td>C# <code translate="no" v-pre>Storage</code> binds <code translate="no" v-pre>storage</code>, <code translate="no" v-pre>PP</code> binds <code translate="no" v-pre>pp</code>, <code translate="no" v-pre>Misc</code> binds <code translate="no" v-pre>misc</code>. Newtonsoft also falls back to a case-insensitive property match, so SAB&#x27;s real snake_case/lowercase keys bind either way.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>StringEnumConverter</code> (global)</td>
+<td>Applies to <code translate="no" v-pre>SabnzbdDownloadStatus</code>, which has <strong>no</strong> per-property converter. Unknown enum names throw <code translate="no" v-pre>JsonSerializationException</code>. Integers are also accepted (<code translate="no" v-pre>AllowIntegerValues</code> defaults true).</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>NullValueHandling.Ignore</code></td>
+<td>On <strong>read</strong> too: a JSON <code translate="no" v-pre>null</code> leaves the C# member at its constructor value. So <code translate="no" v-pre>&quot;categories&quot;: null</code> keeps the ctor&#x27;s empty list, but <code translate="no" v-pre>&quot;misc&quot;: null</code> leaves <code translate="no" v-pre>Misc</code> null (no ctor default) → NRE, see §3.4.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>MissingMemberHandling</code> (default <code translate="no" v-pre>Ignore</code>)</td>
+<td>Extra fields in your payload are harmless. Send the full real SAB body.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Culture</code> (default <code translate="no" v-pre>InvariantCulture</code>)</td>
+<td>Numeric strings like <code translate="no" v-pre>&quot;1024.00&quot;</code> must use <code translate="no" v-pre>.</code> as the decimal separator and no thousands separators.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>Json.Deserialize&lt;T&gt;</code> rethrows only <code translate="no" v-pre>JsonReaderException</code> with a nicer message (<code translate="no" v-pre>Json.cs:39-50</code>);
+<code translate="no" v-pre>Json.TryDeserialize&lt;T&gt;</code> swallows <strong>only</strong> <code translate="no" v-pre>JsonReaderException</code> and <code translate="no" v-pre>JsonSerializationException</code>
+(<code translate="no" v-pre>Json.cs:99-117</code>). Anything else (e.g. an <code translate="no" v-pre>ArgumentException</code> from the timeleft converter, or an NRE
+from the priority converter) escapes.</p>
+<hr>
+<h2 id="1-every-mode-every-parameter-every-field-consumed">1. Every mode, every parameter, every field consumed</h2>
+<h3 id="11-modeversion--sabnzbdproxygetversion-sabnzbdproxycs85-95">1.1 <code translate="no" v-pre>mode=version</code> — <code translate="no" v-pre>SabnzbdProxy.GetVersion</code> (<code translate="no" v-pre>SabnzbdProxy.cs:85-95</code>)</h3>
+<p>Request: <code translate="no" v-pre>GET /api?mode=version&amp;apikey=KEY&amp;output=json</code></p>
+<p>Response model <code translate="no" v-pre>SabnzbdVersionResponse</code> (<code translate="no" v-pre>Responses/SabnzbdVersionResponse.cs:5</code>):</p>
+<retype-table copy-text="| JSON key | C# type | Notes |
+|---|---|---|
+| `version` | `string` | The only field read. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>JSON key</th>
+<th>C# type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>version</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td>The only field read.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Read via <code translate="no" v-pre>Json.TryDeserialize</code>; a parse failure yields <code translate="no" v-pre>Version == null</code> (<code translate="no" v-pre>SabnzbdProxy.cs:89-92</code>).</p>
+<p>Parsing (<code translate="no" v-pre>Sabnzbd.cs:334-366</code>), regex at <code translate="no" v-pre>Sabnzbd.cs:38</code>:</p>
+<div id="11-modeversion--sabnzbdproxygetversion-sabnzbdproxycs85-95-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">// patch can be a number (releases) or 'x' (git)
+private static readonly Regex VersionRegex = new Regex(@&quot;(?&lt;major&gt;\d+)\.(?&lt;minor&gt;\d+)\.(?&lt;patch&gt;\d+|x)&quot;, RegexOptions.Compiled);</code></pre>
+</doc-codeblock></div>
+<ul>
+<li>Unanchored, so <code translate="no" v-pre>4.5.0RC1</code> and <code translate="no" v-pre>2.0.0beta1</code> parse (fixture <code translate="no" v-pre>SabnzbdFixture.cs:523,553</code>).</li>
+<li><code translate="no" v-pre>patch</code> may be the literal <code translate="no" v-pre>x</code> (git builds), replaced with <code translate="no" v-pre>0</code> (<code translate="no" v-pre>Sabnzbd.cs:351</code>).</li>
+<li>A <strong>two-component</strong> version (<code translate="no" v-pre>&quot;4.5&quot;</code>) does not match → <code translate="no" v-pre>null</code> → validation failure.</li>
+<li>The exact string <code translate="no" v-pre>&quot;develop&quot;</code> (case-insensitive) is special-cased to <code translate="no" v-pre>3.0.0</code> (<code translate="no" v-pre>Sabnzbd.cs:355-362</code>)
+and produces a <em>warning</em>, not a failure (<code translate="no" v-pre>Sabnzbd.cs:380-387</code>).</li>
+</ul>
+<p>Version is fetched again (a second <code translate="no" v-pre>mode=version</code> round-trip) by <code translate="no" v-pre>HasVersion</code> at
+<code translate="no" v-pre>Sabnzbd.cs:294-332</code> — it is <strong>not cached</strong>.</p>
+<h3 id="12-modeget_config--sabnzbdproxygetconfig-sabnzbdproxycs97-104">1.2 <code translate="no" v-pre>mode=get_config</code> — <code translate="no" v-pre>SabnzbdProxy.GetConfig</code> (<code translate="no" v-pre>SabnzbdProxy.cs:97-104</code>)</h3>
+<p>Request: <code translate="no" v-pre>GET /api?mode=get_config&amp;apikey=KEY&amp;output=json</code></p>
+<p>Uses <code translate="no" v-pre>Json.Deserialize</code> (<strong>not</strong> Try) — a malformed body throws out of <code translate="no" v-pre>GetConfig</code>.
+Top level must be <code translate="no" v-pre>{&quot;config&quot;: {...}}</code> (<code translate="no" v-pre>Responses/SabnzbdConfigResponse.cs:5</code>). See §3 for the fields.</p>
+<h3 id="13-modefullstatus--sabnzbdproxygetfullstatus-sabnzbdproxycs106-114">1.3 <code translate="no" v-pre>mode=fullstatus</code> — <code translate="no" v-pre>SabnzbdProxy.GetFullStatus</code> (<code translate="no" v-pre>SabnzbdProxy.cs:106-114</code>)</h3>
+<p>Request: <code translate="no" v-pre>GET /api?mode=fullstatus&amp;skip_dashboard=1&amp;apikey=KEY&amp;output=json</code></p>
+<p>Top level <code translate="no" v-pre>{&quot;status&quot;: {...}}</code> (<code translate="no" v-pre>Responses/SabnzbdFullStatusResponse.cs:5</code>). Only one field is read:</p>
+<retype-table copy-text="| JSON key | C# | Source |
+|---|---|---|
+| `completedir` | `string CompleteDir` | `SabnzbdFullStatus.cs:9-10` — note: **`completedir`, no underscore** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>JSON key</th>
+<th>C#</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>completedir</code></td>
+<td><code translate="no" v-pre>string CompleteDir</code></td>
+<td><code translate="no" v-pre>SabnzbdFullStatus.cs:9-10</code> — note: <strong><code translate="no" v-pre>completedir</code>, no underscore</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Called <strong>only</strong> when <code translate="no" v-pre>config.misc.complete_dir</code> is <em>not</em> rooted <strong>and</strong> the SAB version is &gt;= 2.0
+(<code translate="no" v-pre>Sabnzbd.cs:220-226</code>). With an absolute <code translate="no" v-pre>complete_dir</code> this endpoint is never hit — implement it anyway.</p>
+<p>Quirk worth knowing: because the real body is <code translate="no" v-pre>{&quot;status&quot;: {...}}</code> and <code translate="no" v-pre>SabnzbdJsonError.Status</code> is a
+<code translate="no" v-pre>string</code>, <code translate="no" v-pre>CheckForError</code>&#x27;s <code translate="no" v-pre>TryDeserialize&lt;SabnzbdJsonError&gt;</code> fails with a <code translate="no" v-pre>JsonSerializationException</code>
+and falls into the plain-text branch, which sets <code translate="no" v-pre>Status = &quot;true&quot;</code> (<code translate="no" v-pre>SabnzbdProxy.cs:224-240</code>). Benign,
+but it means fullstatus can never report an error through the JSON path.</p>
+<h3 id="14-modequeue-read--sabnzbdproxygetqueue-sabnzbdproxycs116-130">1.4 <code translate="no" v-pre>mode=queue</code> (read) — <code translate="no" v-pre>SabnzbdProxy.GetQueue</code> (<code translate="no" v-pre>SabnzbdProxy.cs:116-130</code>)</h3>
+<p>Request: <code translate="no" v-pre>GET /api?mode=queue&amp;start={start}&amp;limit={limit}[&amp;category={cat}]&amp;apikey=KEY&amp;output=json</code></p>
+<ul>
+<li>
+<p><code translate="no" v-pre>category</code> is added <strong>only if</strong> the configured category is non-blank (<code translate="no" v-pre>SabnzbdProxy.cs:122-125</code>).</p>
+</li>
+<li>
+<p>Callers: <code translate="no" v-pre>Sabnzbd.GetQueue()</code> uses <code translate="no" v-pre>start=0, limit=0</code> (<code translate="no" v-pre>Sabnzbd.cs:57</code>) — SAB reads <code translate="no" v-pre>limit=0</code> as &quot;all&quot;;
+<code translate="no" v-pre>Sabnzbd.GetCategories()</code> uses <code translate="no" v-pre>start=0, limit=1</code> on the pre-2.0 path (<code translate="no" v-pre>Sabnzbd.cs:229</code>);
+<code translate="no" v-pre>Sabnzbd.RemoveItem()</code> calls it once more to decide queue-vs-history (<code translate="no" v-pre>Sabnzbd.cs:199</code>).</p>
+</li>
+<li>
+<p>Extraction: <code translate="no" v-pre>Json.Deserialize&lt;SabnzbdQueue&gt;(JObject.Parse(response).SelectToken(&quot;queue&quot;).ToString())</code>
+(<code translate="no" v-pre>SabnzbdProxy.cs:129</code>) — <strong>a missing top-level <code translate="no" v-pre>queue</code> key NREs</strong>.</p>
+</li>
+</ul>
+<p><code translate="no" v-pre>SabnzbdQueue</code> (<code translate="no" v-pre>SabnzbdQueue.cs</code>):</p>
+<retype-table copy-text="| JSON key | C# | Type | Used for |
+|---|---|---|---|
+| `my_home` | `DefaultRootFolder` | `string` | Only on SAB &lt; 2.0 to resolve a relative `complete_dir` (`Sabnzbd.cs:230`). Comment at `SabnzbdQueue.cs:8`: &quot;Removed in Sabnzbd 2.0.0, see mode=fullstatus instead.&quot; |
+| `paused` | `Paused` | `bool` | Global pause; combined with the slot's priority (`Sabnzbd.cs:78`). |
+| `slots` | `Items` | `List&lt;SabnzbdQueueItem&gt;` | |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>JSON key</th>
+<th>C#</th>
+<th>Type</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>my_home</code></td>
+<td><code translate="no" v-pre>DefaultRootFolder</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td>Only on SAB &lt; 2.0 to resolve a relative <code translate="no" v-pre>complete_dir</code> (<code translate="no" v-pre>Sabnzbd.cs:230</code>). Comment at <code translate="no" v-pre>SabnzbdQueue.cs:8</code>: &quot;Removed in Sabnzbd 2.0.0, see mode=fullstatus instead.&quot;</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>paused</code></td>
+<td><code translate="no" v-pre>Paused</code></td>
+<td><code translate="no" v-pre>bool</code></td>
+<td>Global pause; combined with the slot&#x27;s priority (<code translate="no" v-pre>Sabnzbd.cs:78</code>).</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>slots</code></td>
+<td><code translate="no" v-pre>Items</code></td>
+<td><code translate="no" v-pre>List&lt;SabnzbdQueueItem&gt;</code></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>SabnzbdQueueItem</code> (<code translate="no" v-pre>SabnzbdQueueItem.cs</code>):</p>
+<retype-table copy-text="| JSON key | C# member | C# type | SAB's real JSON type | Notes |
+|---|---|---|---|---|
+| `status` | `Status` | `SabnzbdDownloadStatus` | string | Global `StringEnumConverter`. Unknown value ⇒ `JsonSerializationException` ⇒ the whole `GetQueue` throws. |
+| `index` | `Index` | `int` | number | Read, never used. |
+| `timeleft` | `Timeleft` | `TimeSpan` via `SabnzbdQueueTimeConverter` | string | See §1.4.1. |
+| `mb` | `Size` | `decimal` | **string** (`&quot;1024.00&quot;`) | **Megabytes.** `TotalSize = (long)(Size * 1024 * 1024)` (`Sabnzbd.cs:72`). |
+| `mbleft` | `Sizeleft` | `decimal` | **string** | **Megabytes.** `RemainingSize = (long)(Sizeleft * 1024 * 1024)` (`Sabnzbd.cs:73`). |
+| `filename` | `Title` | `string` | string | Becomes `DownloadClientItem.Title` (`Sabnzbd.cs:71`). |
+| `priority` | `Priority` | `SabnzbdPriority` via `SabnzbdPriorityTypeConverter` | string (`&quot;Normal&quot;`) | See §2. |
+| `cat` | `Category` | `string` | string | **`cat` in the queue, `category` in the history.** |
+| `mbleft`/`percentage` | `Percentage` | `int` | **string** (`&quot;50&quot;`) | Read, never used. |
+| `nzo_id` | `Id` | `string` | string | The download id Sonarr/Radarr key everything on. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>JSON key</th>
+<th>C# member</th>
+<th>C# type</th>
+<th>SAB&#x27;s real JSON type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>status</code></td>
+<td><code translate="no" v-pre>Status</code></td>
+<td><code translate="no" v-pre>SabnzbdDownloadStatus</code></td>
+<td>string</td>
+<td>Global <code translate="no" v-pre>StringEnumConverter</code>. Unknown value ⇒ <code translate="no" v-pre>JsonSerializationException</code> ⇒ the whole <code translate="no" v-pre>GetQueue</code> throws.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>index</code></td>
+<td><code translate="no" v-pre>Index</code></td>
+<td><code translate="no" v-pre>int</code></td>
+<td>number</td>
+<td>Read, never used.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>timeleft</code></td>
+<td><code translate="no" v-pre>Timeleft</code></td>
+<td><code translate="no" v-pre>TimeSpan</code> via <code translate="no" v-pre>SabnzbdQueueTimeConverter</code></td>
+<td>string</td>
+<td>See §1.4.1.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>mb</code></td>
+<td><code translate="no" v-pre>Size</code></td>
+<td><code translate="no" v-pre>decimal</code></td>
+<td><strong>string</strong> (<code translate="no" v-pre>&quot;1024.00&quot;</code>)</td>
+<td><strong>Megabytes.</strong> <code translate="no" v-pre>TotalSize = (long)(Size * 1024 * 1024)</code> (<code translate="no" v-pre>Sabnzbd.cs:72</code>).</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>mbleft</code></td>
+<td><code translate="no" v-pre>Sizeleft</code></td>
+<td><code translate="no" v-pre>decimal</code></td>
+<td><strong>string</strong></td>
+<td><strong>Megabytes.</strong> <code translate="no" v-pre>RemainingSize = (long)(Sizeleft * 1024 * 1024)</code> (<code translate="no" v-pre>Sabnzbd.cs:73</code>).</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>filename</code></td>
+<td><code translate="no" v-pre>Title</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td>string</td>
+<td>Becomes <code translate="no" v-pre>DownloadClientItem.Title</code> (<code translate="no" v-pre>Sabnzbd.cs:71</code>).</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>priority</code></td>
+<td><code translate="no" v-pre>Priority</code></td>
+<td><code translate="no" v-pre>SabnzbdPriority</code> via <code translate="no" v-pre>SabnzbdPriorityTypeConverter</code></td>
+<td>string (<code translate="no" v-pre>&quot;Normal&quot;</code>)</td>
+<td>See §2.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>cat</code></td>
+<td><code translate="no" v-pre>Category</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td>string</td>
+<td><strong><code translate="no" v-pre>cat</code> in the queue, <code translate="no" v-pre>category</code> in the history.</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>mbleft</code>/<code translate="no" v-pre>percentage</code></td>
+<td><code translate="no" v-pre>Percentage</code></td>
+<td><code translate="no" v-pre>int</code></td>
+<td><strong>string</strong> (<code translate="no" v-pre>&quot;50&quot;</code>)</td>
+<td>Read, never used.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>nzo_id</code></td>
+<td><code translate="no" v-pre>Id</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td>string</td>
+<td>The download id Sonarr/Radarr key everything on.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h4 id="141-timeleft-format--sabnzbdqueuetimeconverter-jsonconverterssabnzbdqueuetimeconvertercs15-28">1.4.1 <code translate="no" v-pre>timeleft</code> format — <code translate="no" v-pre>SabnzbdQueueTimeConverter</code> (<code translate="no" v-pre>JsonConverters/SabnzbdQueueTimeConverter.cs:15-28</code>)</h4>
+<div id="141-timeleft-format--sabnzbdqueuetimeconverter-jsonconverterssabnzbdqueuetimeconvertercs15-28-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">var split = reader.Value.ToString().Split(':').Select(int.Parse).ToArray();
+switch (split.Length)
+{
+    case 4: return new TimeSpan((split[0] * 24) + split[1], split[2], split[3]);   // d:h:m:s
+    case 3: return new TimeSpan(split[0], split[1], split[2]);                     // h:m:s
+    default: throw new ArgumentException(&quot;Expected either 0:0:0:0 or 0:0:0 format, but received: &quot; + reader.Value);
+}</code></pre>
+</doc-codeblock></div>
+<ul>
+<li>
+<p><strong>Exactly 3 or 4 colon-separated integers.</strong> <code translate="no" v-pre>&quot;0:08:32&quot;</code>, <code translate="no" v-pre>&quot;40:12:14&quot;</code>, <code translate="no" v-pre>&quot;1:16:12:14&quot;</code> all fine
+(fixture <code translate="no" v-pre>SabnzbdQueueTimeConverterFixture.cs:14-20</code>); <code translate="no" v-pre>&quot;1&quot;</code>, <code translate="no" v-pre>&quot;0:1&quot;</code>, <code translate="no" v-pre>&quot;0:0:0:0:1&quot;</code> throw
+(<code translate="no" v-pre>:28-35</code>). Leading zeros are fine (<code translate="no" v-pre>int.Parse</code>).</p>
+</li>
+<li>
+<p>The thrown <code translate="no" v-pre>ArgumentException</code> is <strong>not</strong> caught by <code translate="no" v-pre>Json.TryDeserialize</code> and not by <code translate="no" v-pre>Json.Deserialize</code>.</p>
+</li>
+<li>
+<p>An <strong>empty string</strong> <code translate="no" v-pre>&quot;&quot;</code> splits to <code translate="no" v-pre>[&quot;&quot;]</code> → <code translate="no" v-pre>int.Parse</code> throws <code translate="no" v-pre>FormatException</code>. Never emit <code translate="no" v-pre>&quot;&quot;</code>.</p>
+</li>
+<li>
+<p>Omitting <code translate="no" v-pre>timeleft</code> entirely is safe: the converter is not invoked and <code translate="no" v-pre>Timeleft</code> stays <code translate="no" v-pre>TimeSpan.Zero</code>.</p>
+</li>
+</ul>
+<h3 id="15-modequeuenamedelete--sabnzbdproxyremovefromqueue-sabnzbdproxycs64-72">1.5 <code translate="no" v-pre>mode=queue&amp;name=delete</code> — <code translate="no" v-pre>SabnzbdProxy.RemoveFromQueue</code> (<code translate="no" v-pre>SabnzbdProxy.cs:64-72</code>)</h3>
+<div id="15-modequeuenamedelete--sabnzbdproxyremovefromqueue-sabnzbdproxycs64-72-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">GET /api?mode=queue&amp;name=delete&amp;del_files={0|1}&amp;value={nzo_id}&amp;apikey=KEY&amp;output=json</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>del_files = deleteData ? 1 : 0</code> (<code translate="no" v-pre>SabnzbdProxy.cs:68</code>). <strong>No <code translate="no" v-pre>archive</code> param on the queue path.</strong>
+Response body is only run through <code translate="no" v-pre>CheckForError</code>; nothing is deserialized.</p>
+<h3 id="16-modehistory-read--sabnzbdproxygethistory-sabnzbdproxycs132-146">1.6 <code translate="no" v-pre>mode=history</code> (read) — <code translate="no" v-pre>SabnzbdProxy.GetHistory</code> (<code translate="no" v-pre>SabnzbdProxy.cs:132-146</code>)</h3>
+<p>Request: <code translate="no" v-pre>GET /api?mode=history&amp;start={start}&amp;limit={limit}[&amp;category={cat}]&amp;apikey=KEY&amp;output=json</code></p>
+<ul>
+<li>
+<p>Caller: <code translate="no" v-pre>Sabnzbd.GetHistory()</code> with <code translate="no" v-pre>start=0, limit=_configService.DownloadClientHistoryLimit</code>
+(<code translate="no" v-pre>Sabnzbd.cs:110</code>). Default <strong>60</strong> in both repos
+(Sonarr <code translate="no" v-pre>src/NzbDrone.Core/Configuration/ConfigService.cs:184</code>, Radarr <code translate="no" v-pre>:236</code>).</p>
+</li>
+<li>
+<p>Extraction: <code translate="no" v-pre>SelectToken(&quot;history&quot;)</code> (<code translate="no" v-pre>SabnzbdProxy.cs:145</code>) — top level must be <code translate="no" v-pre>{&quot;history&quot;: {...}}</code>.</p>
+</li>
+</ul>
+<p><code translate="no" v-pre>SabnzbdHistory</code> (<code translate="no" v-pre>SabnzbdHistory.cs</code>): <code translate="no" v-pre>paused</code> (<code translate="no" v-pre>bool</code>, unused), <code translate="no" v-pre>slots</code> → <code translate="no" v-pre>Items</code>.</p>
+<p><code translate="no" v-pre>SabnzbdHistoryItem</code> (<code translate="no" v-pre>SabnzbdHistoryItem.cs</code>):</p>
+<retype-table copy-text="| JSON key | C# member | C# type | Notes |
+|---|---|---|---|
+| `fail_message` | `FailMessage` | `string` | Becomes `DownloadClientItem.Message` (`Sabnzbd.cs:132`) and drives the Warning special case (§1.6.1). |
+| `bytes` | `Size` | `long` | **BYTES, not MB** — `TotalSize = sabHistoryItem.Size` verbatim (`Sabnzbd.cs:128`). This is the single biggest asymmetry with `mode=queue`. |
+| `category` | `Category` | `string` | Note: `category`, whereas the queue uses `cat`. |
+| `nzb_name` | `NzbName` | `string` | Read, never used. |
+| `download_time` | `DownloadTime` | `int` (seconds) | Read, never used. |
+| `storage` | `Storage` | `string` | The output path. See §1.6.2 — this is what gets `rm -rf`'d. |
+| `status` | `Status` | `SabnzbdDownloadStatus` | Global `StringEnumConverter`. |
+| `nzo_id` | `Id` | `string` | |
+| `name` | `Title` | `string` | |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>JSON key</th>
+<th>C# member</th>
+<th>C# type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>fail_message</code></td>
+<td><code translate="no" v-pre>FailMessage</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td>Becomes <code translate="no" v-pre>DownloadClientItem.Message</code> (<code translate="no" v-pre>Sabnzbd.cs:132</code>) and drives the Warning special case (§1.6.1).</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>bytes</code></td>
+<td><code translate="no" v-pre>Size</code></td>
+<td><code translate="no" v-pre>long</code></td>
+<td><strong>BYTES, not MB</strong> — <code translate="no" v-pre>TotalSize = sabHistoryItem.Size</code> verbatim (<code translate="no" v-pre>Sabnzbd.cs:128</code>). This is the single biggest asymmetry with <code translate="no" v-pre>mode=queue</code>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>category</code></td>
+<td><code translate="no" v-pre>Category</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td>Note: <code translate="no" v-pre>category</code>, whereas the queue uses <code translate="no" v-pre>cat</code>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>nzb_name</code></td>
+<td><code translate="no" v-pre>NzbName</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td>Read, never used.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>download_time</code></td>
+<td><code translate="no" v-pre>DownloadTime</code></td>
+<td><code translate="no" v-pre>int</code> (seconds)</td>
+<td>Read, never used.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>storage</code></td>
+<td><code translate="no" v-pre>Storage</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td>The output path. See §1.6.2 — this is what gets <code translate="no" v-pre>rm -rf</code>&#x27;d.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>status</code></td>
+<td><code translate="no" v-pre>Status</code></td>
+<td><code translate="no" v-pre>SabnzbdDownloadStatus</code></td>
+<td>Global <code translate="no" v-pre>StringEnumConverter</code>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>nzo_id</code></td>
+<td><code translate="no" v-pre>Id</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>name</code></td>
+<td><code translate="no" v-pre>Title</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>No <code translate="no" v-pre>DateTime</code>-typed member exists anywhere in the SAB models, so no date format is constrained.</strong>
+<code translate="no" v-pre>completed</code> / <code translate="no" v-pre>last_history_update</code> (unix epoch in real SAB) are never read. The only time-shaped
+values that matter are <code translate="no" v-pre>timeleft</code> (§1.4.1) and <code translate="no" v-pre>download_time</code> (an unread integer of seconds).</p>
+<h4 id="161-history-status--downloaditemstatus-sabnzbdcs116-158">1.6.1 History status → <code translate="no" v-pre>DownloadItemStatus</code> (<code translate="no" v-pre>Sabnzbd.cs:116-158</code>)</h4>
+<div id="161-history-status--downloaditemstatus-sabnzbdcs116-158-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Deleted                                   -&gt; skipped entirely (Sabnzbd.cs:116-119)
+Failed  + fail_message == &quot;Unpacking failed, write error or disk is full?&quot;
+        (InvariantCultureIgnoreCase)      -&gt; DownloadItemStatus.Warning     (:140-144)
+Failed  (any other message)               -&gt; DownloadItemStatus.Failed      (:147)
+Completed                                 -&gt; DownloadItemStatus.Completed   (:152)
+anything else (Verifying/Moving/...)      -&gt; DownloadItemStatus.Downloading (:157)</code></pre>
+</doc-codeblock></div>
+<p>Every history item gets <code translate="no" v-pre>RemainingSize = 0</code>, <code translate="no" v-pre>RemainingTime = TimeSpan.Zero</code>,
+<code translate="no" v-pre>CanBeRemoved = true</code>, <code translate="no" v-pre>CanMoveFiles = true</code> (<code translate="no" v-pre>Sabnzbd.cs:129-135</code>).</p>
+<p><code translate="no" v-pre>DownloadItemStatus</code> itself (<code translate="no" v-pre>src/NzbDrone.Core/Download/DownloadItemStatus.cs:3-11</code>):
+<code translate="no" v-pre>Queued=0, Paused=1, Downloading=2, Completed=3, Failed=4, Warning=5</code>.</p>
+<h4 id="162-storage--outputpath-sabnzbdcs160-176">1.6.2 <code translate="no" v-pre>storage</code> → <code translate="no" v-pre>OutputPath</code> (<code translate="no" v-pre>Sabnzbd.cs:160-176</code>)</h4>
+<div id="162-storage--outputpath-sabnzbdcs160-176-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">var outputPath = _remotePathMappingService.RemapRemoteToLocal(Settings.Host, new OsPath(sabHistoryItem.Storage));
+
+if (!outputPath.IsEmpty)
+{
+    historyItem.OutputPath = outputPath;
+
+    var parent = outputPath.Directory;
+    while (!parent.IsEmpty)
+    {
+        if (parent.FileName == sabHistoryItem.Title)
+        {
+            historyItem.OutputPath = parent;
+        }
+
+        parent = parent.Directory;
+    }
+}</code></pre>
+</doc-codeblock></div>
+<p>The loop walks <strong>all the way to the root</strong> and keeps the <em>highest</em> ancestor whose last segment equals
+<code translate="no" v-pre>name</code>. Purpose: if <code translate="no" v-pre>storage</code> points at a file inside the job folder, back out to the job folder
+(fixture <code translate="no" v-pre>SabnzbdFixture.cs:376-391</code>). If <code translate="no" v-pre>storage</code> is already the job folder, no ancestor matches and
+<code translate="no" v-pre>OutputPath == storage</code> — which is what you want.</p>
+<p><strong>Recommendation for the emulator: set <code translate="no" v-pre>storage</code> to the job folder path itself.</strong></p>
+<p>Empty <code translate="no" v-pre>storage</code> ⇒ <code translate="no" v-pre>OutputPath</code> stays empty ⇒ <code translate="no" v-pre>CompletedDownloadService.ValidatePath</code> warns
+&quot;Download doesn&#x27;t contain intermediate path, Skipping.&quot; (Sonarr <code translate="no" v-pre>CompletedDownloadService.cs:299-303</code>).</p>
+<h3 id="17-modehistorynamedelete--sabnzbdproxyremovefromhistory-sabnzbdproxycs74-83">1.7 <code translate="no" v-pre>mode=history&amp;name=delete</code> — <code translate="no" v-pre>SabnzbdProxy.RemoveFromHistory</code> (<code translate="no" v-pre>SabnzbdProxy.cs:74-83</code>)</h3>
+<div id="17-modehistorynamedelete--sabnzbdproxyremovefromhistory-sabnzbdproxycs74-83-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">GET /api?mode=history&amp;name=delete&amp;del_files={0|1}&amp;value={nzo_id}&amp;archive={0|1}&amp;apikey=KEY&amp;output=json</code></pre>
+</doc-codeblock></div>
+<div id="17-modehistorynamedelete--sabnzbdproxyremovefromhistory-sabnzbdproxycs74-83-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">request.AddQueryParam(&quot;del_files&quot;, deleteData ? 1 : 0);          // :78
+request.AddQueryParam(&quot;value&quot;, id);                              // :79
+request.AddQueryParam(&quot;archive&quot;, deletePermanently ? 0 : 1);     // :80   &lt;-- inverted</code></pre>
+</doc-codeblock></div>
+<p>and the caller (<code translate="no" v-pre>Sabnzbd.cs:208</code>):</p>
+<div id="17-modehistorynamedelete--sabnzbdproxyremovefromhistory-sabnzbdproxycs74-83-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">_proxy.RemoveFromHistory(item.DownloadId, deleteData, item.Status == DownloadItemStatus.Failed, Settings);</code></pre>
+</doc-codeblock></div>
+<p>So <code translate="no" v-pre>deletePermanently == (status is Failed)</code>, and therefore:</p>
+<retype-table copy-text="| Item status | `del_files` | `archive` |
+|---|---|---|
+| Completed | 1 | **1** (archive it) |
+| Failed | 1 | **0** (permanent delete) |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Item status</th>
+<th><code translate="no" v-pre>del_files</code></th>
+<th><code translate="no" v-pre>archive</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Completed</td>
+<td>1</td>
+<td><strong>1</strong> (archive it)</td>
+</tr>
+<tr>
+<td>Failed</td>
+<td>1</td>
+<td><strong>0</strong> (permanent delete)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Yes, that reads backwards at first glance — it is what the code does.</p>
+<h3 id="18-modeaddfile--sabnzbdproxydownloadnzb-sabnzbdproxycs46-62">1.8 <code translate="no" v-pre>mode=addfile</code> — <code translate="no" v-pre>SabnzbdProxy.DownloadNzb</code> (<code translate="no" v-pre>SabnzbdProxy.cs:46-62</code>)</h3>
+<div id="18-modeaddfile--sabnzbdproxydownloadnzb-sabnzbdproxycs46-62-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">POST /api?mode=addfile&amp;cat={category}&amp;priority={int}&amp;apikey=KEY&amp;output=json
+Content-Type: multipart/form-data; boundary=...
+  part: Content-Disposition: form-data; name=&quot;name&quot;; filename=&quot;&lt;CleanFileName(Release.Title)&gt;.nzb&quot;
+        Content-Type: application/x-nzb</code></pre>
+</doc-codeblock></div>
+<ul>
+<li>
+<p>The multipart field is literally <code translate="no" v-pre>name</code> and the part carries a <code translate="no" v-pre>filename</code> (<code translate="no" v-pre>SabnzbdProxy.cs:53</code>,
+<code translate="no" v-pre>HttpRequestBuilder.cs:379-395</code>, emitted at <code translate="no" v-pre>:180-195</code>).</p>
+</li>
+<li>
+<p>Filename comes from <code translate="no" v-pre>FileNameBuilder.CleanFileName(release.Title) + &quot;.nzb&quot;</code>
+(Sonarr <code translate="no" v-pre>src/NzbDrone.Core/Download/UsenetClientBase.cs:43</code>, Radarr <code translate="no" v-pre>:43</code>).</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>cat</code> ignores the method&#x27;s <code translate="no" v-pre>category</code> argument</strong> and reads settings directly
+(<code translate="no" v-pre>SabnzbdProxy.cs:50</code>: <code translate="no" v-pre>request.AddQueryParam(&quot;cat&quot;, settings.TvCategory);</code> — Radarr: <code translate="no" v-pre>settings.MovieCategory</code>).
+Harmless, since the caller passes the same value.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>priority</code> is the raw <code translate="no" v-pre>int</code> from <code translate="no" v-pre>SabnzbdPriority</code> (see §2), chosen by recency:
+Sonarr <code translate="no" v-pre>Sabnzbd.cs:43</code> <code translate="no" v-pre>remoteEpisode.IsRecentEpisode() ? Settings.RecentTvPriority : Settings.OlderTvPriority</code>;
+Radarr <code translate="no" v-pre>Sabnzbd.cs:43</code> <code translate="no" v-pre>remoteMovie.Movie.MovieMetadata.Value.IsRecentMovie ? RecentMoviePriority : OlderMoviePriority</code>.</p>
+</li>
+<li>
+<p>Response <code translate="no" v-pre>SabnzbdAddResponse</code> (<code translate="no" v-pre>Responses/SabnzbdAddResponse.cs</code>):</p>
+</li>
+</ul>
+<retype-table copy-text="| JSON key | C# | Type |
+|---|---|---|
+| `status` | `Status` | `bool` — parsed, then **never read** |
+| `nzo_ids` | `Ids` | `List&lt;string&gt;`, ctor-initialised to empty |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>JSON key</th>
+<th>C#</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>status</code></td>
+<td><code translate="no" v-pre>Status</code></td>
+<td><code translate="no" v-pre>bool</code> — parsed, then <strong>never read</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>nzo_ids</code></td>
+<td><code translate="no" v-pre>Ids</code></td>
+<td><code translate="no" v-pre>List&lt;string&gt;</code>, ctor-initialised to empty</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Read with <code translate="no" v-pre>TryDeserialize</code>; on failure a synthetic <code translate="no" v-pre>{Status=true, Ids=[]}</code> is used (<code translate="no" v-pre>SabnzbdProxy.cs:55-59</code>).
+Then <code translate="no" v-pre>Sabnzbd.cs:47-52</code>:</p>
+<div id="18-modeaddfile--sabnzbdproxydownloadnzb-sabnzbdproxycs46-62-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">if (response == null || response.Ids.Empty())
+{
+    throw new DownloadClientRejectedReleaseException(remoteEpisode.Release, &quot;SABnzbd rejected the NZB for an unknown reason&quot;);
+}
+
+return response.Ids.First();</code></pre>
+</doc-codeblock></div>
+<p><strong><code translate="no" v-pre>nzo_ids</code> must be a non-empty array of strings.</strong> <code translate="no" v-pre>&quot;nzo_ids&quot;: null</code> is equivalent to absent
+(<code translate="no" v-pre>NullValueHandling.Ignore</code> keeps the ctor&#x27;s empty list) and fails the same way.</p>
+<h3 id="19-queue-status--downloaditemstatus-sabnzbdcs60-103">1.9 Queue status → <code translate="no" v-pre>DownloadItemStatus</code> (<code translate="no" v-pre>Sabnzbd.cs:60-103</code>)</h3>
+<div id="19-queue-status--downloaditemstatus-sabnzbdcs60-103-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Deleted                                       -&gt; skipped (Sabnzbd.cs:62-65)
+(queue.paused &amp;&amp; slot.priority != Force) || slot.status == Paused
+                                              -&gt; Paused, and RemainingTime forced to null (:78-84)
+Queued | Grabbing | Propagating               -&gt; Queued        (:85-90)
+everything else                               -&gt; Downloading   (:93)</code></pre>
+</doc-codeblock></div>
+<p>Also <code translate="no" v-pre>Sabnzbd.cs:96-100</code>: a title beginning with the literal <code translate="no" v-pre>&quot;ENCRYPTED /&quot;</code> is stripped of those
+11 characters and the item is flagged <code translate="no" v-pre>IsEncrypted = true</code>.</p>
+<p>Every queue item gets <code translate="no" v-pre>CanBeRemoved = true</code>, <code translate="no" v-pre>CanMoveFiles = true</code> (<code translate="no" v-pre>Sabnzbd.cs:75-76</code>).</p>
+<h3 id="110-client-side-category-filter-sabnzbdcs186-195">1.10 Client-side category filter (<code translate="no" v-pre>Sabnzbd.cs:186-195</code>)</h3>
+<div id="110-client-side-category-filter-sabnzbdcs186-195-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">foreach (var downloadClientItem in GetQueue().Concat(GetHistory()))
+{
+    if (downloadClientItem.Category == Settings.TvCategory ||
+        (downloadClientItem.Category == &quot;*&quot; &amp;&amp; Settings.TvCategory.IsNullOrWhiteSpace()))
+    {
+        yield return downloadClientItem;
+    }
+}</code></pre>
+</doc-codeblock></div>
+<p>Ordinal string equality. An item in category <code translate="no" v-pre>*</code> is only accepted when the configured category is blank.</p>
+<h3 id="111-modes-that-exist-in-the-proxy-but-are-never-called">1.11 Modes that exist in the proxy but are never called</h3>
+<ul>
+<li>
+<p><code translate="no" v-pre>mode=retry&amp;value={id}</code> (<code translate="no" v-pre>SabnzbdProxy.cs:148-160</code>, response <code translate="no" v-pre>{status, nzo_id}</code> →
+<code translate="no" v-pre>Responses/SabnzbdRetryResponse.cs</code>). <code translate="no" v-pre>ISabnzbdProxy.RetryDownload</code> has <strong>no caller</strong> in either repo.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>Responses/SabnzbdCategoryResponse.cs</code> (<code translate="no" v-pre>{&quot;categories&quot;: [...]}</code>, i.e. <code translate="no" v-pre>mode=get_cats</code>) is
+<strong>entirely unreferenced</strong> in both repos.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>Sabnzbd.ValidatePath</code> (<code translate="no" v-pre>Sabnzbd.cs:576-592</code>) is private and never called (dead).</p>
+</li>
+</ul>
+<hr>
+<h2 id="2-sabnzbddownloadstatus-and-sabnzbdpriority--exact-members-unknownnull-handling">2. <code translate="no" v-pre>SabnzbdDownloadStatus</code> and <code translate="no" v-pre>SabnzbdPriority</code> — exact members, unknown/null handling</h2>
+<h3 id="21-sabnzbdprioritycs-complete-file">2.1 <code translate="no" v-pre>SabnzbdPriority.cs</code> (complete file)</h3>
+<div id="21-sabnzbdprioritycs-complete-file-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">namespace NzbDrone.Core.Download.Clients.Sabnzbd
+{
+    public enum SabnzbdPriority
+    {
+        Default = -100,
+        Paused  = -2,
+        Low     = -1,
+        Normal  = 0,
+        High    = 1,
+        Force   = 2
+    }
+}</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>JsonConverters/SabnzbdPriorityTypeConverter.cs:14-21</code>:</p>
+<div id="21-sabnzbdprioritycs-complete-file-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+{
+    var queuePriority = reader.Value.ToString();
+
+    Enum.TryParse(queuePriority, out SabnzbdPriority output);
+
+    return output;
+}</code></pre>
+</doc-codeblock></div>
+<ul>
+<li>
+<p><code translate="no" v-pre>Enum.TryParse&lt;T&gt;(string, out T)</code> is the <strong>case-sensitive</strong> overload (.NET semantics).
+<code translate="no" v-pre>&quot;Normal&quot;</code> parses; <code translate="no" v-pre>&quot;normal&quot;</code> does <strong>not</strong> — and on failure <code translate="no" v-pre>output</code> is
+<code translate="no" v-pre>default(SabnzbdPriority) == 0 == Normal</code>, so a bad case silently degrades to Normal.
+<code translate="no" v-pre>&quot;Force&quot;</code> matters (§1.9), <code translate="no" v-pre>&quot;force&quot;</code> does not work.</p>
+</li>
+<li>
+<p>Numeric strings also parse: <code translate="no" v-pre>&quot;2&quot;</code> → <code translate="no" v-pre>Force</code>, <code translate="no" v-pre>&quot;-100&quot;</code> → <code translate="no" v-pre>Default</code>. A JSON number <code translate="no" v-pre>2</code> works too
+(<code translate="no" v-pre>reader.Value.ToString()</code> == <code translate="no" v-pre>&quot;2&quot;</code>).</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>&quot;priority&quot;: null</code> throws a <code translate="no" v-pre>NullReferenceException</code></strong> (<code translate="no" v-pre>reader.Value.ToString()</code> on null).
+This is <em>not</em> caught by <code translate="no" v-pre>Json.TryDeserialize</code>. Omit the key or send a real value.</p>
+</li>
+<li>
+<p>Omitting <code translate="no" v-pre>priority</code> is safe: the converter is not invoked, member stays <code translate="no" v-pre>Normal</code> (0).</p>
+</li>
+<li>
+<p>The converter is registered only on <code translate="no" v-pre>SabnzbdQueueItem.Priority</code> (<code translate="no" v-pre>SabnzbdQueueItem.cs:21</code>);
+history items have no priority.</p>
+</li>
+<li>
+<p>These same integers are what Sonarr/Radarr send back as <code translate="no" v-pre>&amp;priority=</code> on <code translate="no" v-pre>mode=addfile</code>
+(<code translate="no" v-pre>SabnzbdSettings.cs</code> defaults both <code translate="no" v-pre>Recent*Priority</code> and <code translate="no" v-pre>Older*Priority</code> to
+<code translate="no" v-pre>(int)SabnzbdPriority.Default</code> = <code translate="no" v-pre>-100</code>).</p>
+</li>
+</ul>
+<h3 id="22-sabnzbddownloadstatuscs-complete-file-declaration-order--implicit-values-015">2.2 <code translate="no" v-pre>SabnzbdDownloadStatus.cs</code> (complete file), declaration order = implicit values 0..15</h3>
+<div id="22-sabnzbddownloadstatuscs-complete-file-declaration-order--implicit-values-015-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">namespace NzbDrone.Core.Download.Clients.Sabnzbd
+{
+    public enum SabnzbdDownloadStatus
+    {
+        Grabbing,       // 0
+        Queued,         // 1
+        Paused,         // 2
+        Checking,       // 3
+        Downloading,    // 4
+        QuickCheck,     // 5
+        Verifying,      // 6
+        Repairing,      // 7
+        Fetching,       // 8  -- comment in file: &quot;Fetching additional blocks&quot;
+        Extracting,     // 9
+        Moving,         // 10
+        Running,        // 11 -- comment in file: &quot;Running PP Script&quot;
+        Completed,      // 12
+        Failed,         // 13
+        Deleted,        // 14
+        Propagating     // 15
+    }
+}</code></pre>
+</doc-codeblock></div>
+<ul>
+<li>
+<p><strong>No per-property converter.</strong> The globally registered
+<code translate="no" v-pre>StringEnumConverter { NamingStrategy = CamelCaseNamingStrategy }</code> (<code translate="no" v-pre>Json.cs:32</code>) handles it.</p>
+</li>
+<li>
+<p>An <strong>unknown name throws</strong> (Newtonsoft <code translate="no" v-pre>EnumUtils.ParseEnum</code> → <code translate="no" v-pre>JsonSerializationException</code>),
+and because <code translate="no" v-pre>GetQueue</code>/<code translate="no" v-pre>GetHistory</code> use <code translate="no" v-pre>Json.Deserialize</code> (not Try), the <em>entire</em> queue or history
+call fails. <strong>Never emit a status outside this list.</strong></p>
+</li>
+<li>
+<p>Emit SAB&#x27;s canonical spellings exactly as above (<code translate="no" v-pre>&quot;Downloading&quot;</code>, <code translate="no" v-pre>&quot;QuickCheck&quot;</code>, <code translate="no" v-pre>&quot;Completed&quot;</code>,
+<code translate="no" v-pre>&quot;Failed&quot;</code>, <code translate="no" v-pre>&quot;Propagating&quot;</code>, ...). Newtonsoft&#x27;s enum matching does fall back to case-insensitive,
+but exact case is the only thing worth relying on.</p>
+</li>
+<li>
+<p>Integers are accepted too (<code translate="no" v-pre>AllowIntegerValues</code> default true), but don&#x27;t use them.</p>
+</li>
+<li>
+<p>A JSON <code translate="no" v-pre>null</code> for <code translate="no" v-pre>status</code> is ignored by <code translate="no" v-pre>NullValueHandling.Ignore</code> and the member stays
+<code translate="no" v-pre>Grabbing</code> (0) — a queue slot silently becomes <code translate="no" v-pre>Queued</code>, a history slot silently becomes
+<code translate="no" v-pre>Downloading</code>. Always send an explicit status.</p>
+</li>
+</ul>
+<hr>
+<h2 id="3-get_config-exactly-what-is-read-and-the-validation-rules">3. <code translate="no" v-pre>get_config</code>: exactly what is read, and the validation rules</h2>
+<h3 id="31-the-model--sabnzbdcategorycs">3.1 The model — <code translate="no" v-pre>SabnzbdCategory.cs</code></h3>
+<p>This one file holds <code translate="no" v-pre>SabnzbdConfig</code>, <code translate="no" v-pre>SabnzbdConfigMisc</code>, <code translate="no" v-pre>SabnzbdCategory</code> <strong>and</strong> <code translate="no" v-pre>SabnzbdSorter</code>.
+There is <strong>no <code translate="no" v-pre>SabnzbdConfig.cs</code></strong> in either repo (confirmed via the GitHub contents API listing of
+<code translate="no" v-pre>src/NzbDrone.Core/Download/Clients/Sabnzbd</code>).</p>
+<div id="31-the-model--sabnzbdcategorycs-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">public class SabnzbdConfig                                   // SabnzbdCategory.cs:8
+{
+    public SabnzbdConfig()                                   // :10-15
+    {
+        Categories = new List&lt;SabnzbdCategory&gt;();
+        Servers    = new List&lt;object&gt;();
+        Sorters    = new List&lt;SabnzbdSorter&gt;();
+    }
+
+    public SabnzbdConfigMisc      Misc       { get; set; }   // :17   &lt;-- NOT initialised
+    public List&lt;SabnzbdCategory&gt;  Categories { get; set; }   // :18
+    public List&lt;object&gt;           Servers    { get; set; }   // :19
+    public List&lt;SabnzbdSorter&gt;    Sorters    { get; set; }   // :20
+}</code></pre>
+</doc-codeblock></div>
+<h3 id="32-configmisc--the-complete-set-of-keys-read-sabnzbdcategorycs23-37">3.2 <code translate="no" v-pre>config.misc.*</code> — the complete set of keys read (<code translate="no" v-pre>SabnzbdCategory.cs:23-37</code>)</h3>
+<retype-table copy-text="| JSON key | C# type | Read at | Purpose |
+|---|---|---|---|
+| `complete_dir` | `string` | `Sabnzbd.cs:218` | Base for every category path. |
+| `tv_categories` | `string[]` | `Sabnzbd.cs:265, 493` | |
+| `enable_tv_sorting` | `bool` | `Sabnzbd.cs:265, 493` | |
+| `movie_categories` | `string[]` | `Sabnzbd.cs:269, 502` | |
+| `enable_movie_sorting` | `bool` | `Sabnzbd.cs:269, 502` | |
+| `date_categories` | `string[]` **via `SabnzbdStringArrayConverter`** | `Sabnzbd.cs:273, 511` | |
+| `enable_date_sorting` | `bool` | `Sabnzbd.cs:273, 511` | |
+| `pre_check` | `bool` | `Sabnzbd.cs:443` | |
+| `history_retention` | `string` | `Sabnzbd.cs:540, 561-573` | Legacy, SAB &lt; 4.3. |
+| `history_retention_option` | `string` | `Sabnzbd.cs:541, 544` | SAB &gt;= 4.3. |
+| `history_retention_number` | `int` | `Sabnzbd.cs:542, 553` | SAB &gt;= 4.3. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>JSON key</th>
+<th>C# type</th>
+<th>Read at</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>complete_dir</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:218</code></td>
+<td>Base for every category path.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>tv_categories</code></td>
+<td><code translate="no" v-pre>string[]</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:265, 493</code></td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>enable_tv_sorting</code></td>
+<td><code translate="no" v-pre>bool</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:265, 493</code></td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>movie_categories</code></td>
+<td><code translate="no" v-pre>string[]</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:269, 502</code></td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>enable_movie_sorting</code></td>
+<td><code translate="no" v-pre>bool</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:269, 502</code></td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>date_categories</code></td>
+<td><code translate="no" v-pre>string[]</code> <strong>via <code translate="no" v-pre>SabnzbdStringArrayConverter</code></strong></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:273, 511</code></td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>enable_date_sorting</code></td>
+<td><code translate="no" v-pre>bool</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:273, 511</code></td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>pre_check</code></td>
+<td><code translate="no" v-pre>bool</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:443</code></td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>history_retention</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:540, 561-573</code></td>
+<td>Legacy, SAB &lt; 4.3.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>history_retention_option</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:541, 544</code></td>
+<td>SAB &gt;= 4.3.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>history_retention_number</code></td>
+<td><code translate="no" v-pre>int</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:542, 553</code></td>
+<td>SAB &gt;= 4.3.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>SabnzbdStringArrayConverter</code> (<code translate="no" v-pre>JsonConverters/SabnzbdStringArrayConverter.cs:25-39</code>) — applied only
+to <code translate="no" v-pre>date_categories</code> (<code translate="no" v-pre>SabnzbdCategory.cs:30</code>):</p>
+<div id="32-configmisc--the-complete-set-of-keys-read-sabnzbdcategorycs23-37-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">if (reader.TokenType == JsonToken.String || reader.TokenType == JsonToken.Null)
+{
+    return new string[] { JValue.Load(reader).ToObject&lt;string&gt;() };
+}
+else if (reader.TokenType == JsonToken.StartArray)
+{
+    return JArray.Load(reader).ToObject&lt;string[]&gt;();
+}
+else
+{
+    throw new JsonReaderException(&quot;Expected array&quot;);
+}</code></pre>
+</doc-codeblock></div>
+<p>A JSON <strong>string</strong> becomes a 1-element array; a <strong>null</strong> becomes <code translate="no" v-pre>[null]</code> (a 1-element array containing
+null); an <strong>array</strong> deserialises normally; anything else (a number, an object) throws. Doc comment at
+<code translate="no" v-pre>:7-9</code>: &quot;On some properties sab serializes array of single item as plain string.&quot;</p>
+<h3 id="33-configcategories--sabnzbdcategory-sabnzbdcategorycs39-48">3.3 <code translate="no" v-pre>config.categories[]</code> — <code translate="no" v-pre>SabnzbdCategory</code> (<code translate="no" v-pre>SabnzbdCategory.cs:39-48</code>)</h3>
+<retype-table copy-text="| JSON key | C# | Read at |
+|---|---|---|
+| `priority` | `int Priority` | never read |
+| `pp` | `string PP` | never read (camelCase of `PP` is `pp`) |
+| `name` | `string Name` | `Sabnzbd.cs:251, 255, 458` |
+| `script` | `string Script` | never read |
+| `dir` | `string Dir` | `Sabnzbd.cs:238` (`Dir.TrimEnd('*')`), `Sabnzbd.cs:462` (`Dir.EndsWith(&quot;*&quot;)`) |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>JSON key</th>
+<th>C#</th>
+<th>Read at</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>priority</code></td>
+<td><code translate="no" v-pre>int Priority</code></td>
+<td>never read</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>pp</code></td>
+<td><code translate="no" v-pre>string PP</code></td>
+<td>never read (camelCase of <code translate="no" v-pre>PP</code> is <code translate="no" v-pre>pp</code>)</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>name</code></td>
+<td><code translate="no" v-pre>string Name</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:251, 255, 458</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>script</code></td>
+<td><code translate="no" v-pre>string Script</code></td>
+<td>never read</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>dir</code></td>
+<td><code translate="no" v-pre>string Dir</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:238</code> (<code translate="no" v-pre>Dir.TrimEnd('*')</code>), <code translate="no" v-pre>Sabnzbd.cs:462</code> (<code translate="no" v-pre>Dir.EndsWith(&quot;*&quot;)</code>)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>FullPath</code> (<code translate="no" v-pre>OsPath</code>) is computed, not deserialized.</p>
+<p>Path assembly — <code translate="no" v-pre>Sabnzbd.GetCategories</code> (<code translate="no" v-pre>Sabnzbd.cs:216-244</code>):</p>
+<div id="33-configcategories--sabnzbdcategory-sabnzbdcategorycs39-48-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">var completeDir = new OsPath(config.Misc.complete_dir);
+
+if (!completeDir.IsRooted)
+{
+    if (HasVersion(2, 0))
+    {
+        var status = _proxy.GetFullStatus(Settings);
+        completeDir = new OsPath(status.CompleteDir);
+    }
+    else
+    {
+        var queue = _proxy.GetQueue(0, 1, Settings);
+        var defaultRootFolder = new OsPath(queue.DefaultRootFolder);
+        completeDir = defaultRootFolder + completeDir;
+    }
+}
+
+foreach (var category in config.Categories)
+{
+    var relativeDir = new OsPath(category.Dir.TrimEnd('*'));
+    category.FullPath = completeDir + relativeDir;
+    yield return category;
+}</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>OsPath.operator+</code> (<code translate="no" v-pre>src/NzbDrone.Common/Disk/OsPath.cs:420-448</code>) returns <code translate="no" v-pre>left</code> when <code translate="no" v-pre>right.IsEmpty</code>,
+so <code translate="no" v-pre>dir: &quot;&quot;</code> gives <code translate="no" v-pre>FullPath == complete_dir</code> exactly. <code translate="no" v-pre>IsRooted</code> for a Unix-kind path is
+<code translate="no" v-pre>_path.StartsWith(&quot;/&quot;)</code> (<code translate="no" v-pre>OsPath.cs:142-145</code>); path kind is sniffed from the string
+(<code translate="no" v-pre>OsPath.cs:43-60</code>) — a leading <code translate="no" v-pre>/</code> ⇒ Unix, a <code translate="no" v-pre>\</code> or drive letter ⇒ Windows. A Unix-kind path handed
+to a Windows-hosted Sonarr fails <code translate="no" v-pre>CompletedDownloadService.ValidatePath</code> (<code translate="no" v-pre>:305-310</code>).</p>
+<h3 id="34-the-two-nre-landmines-and-what-is-actually-safe">3.4 The two NRE landmines (and what is actually safe)</h3>
+<retype-table copy-text="| Payload shape | Result |
+|---|---|
+| **`&quot;misc&quot;` absent or `null`** | `Misc` stays null (no ctor default; `NullValueHandling.Ignore` on read) → **NullReferenceException at `Sabnzbd.cs:218`**, surfacing as &quot;Test was aborted due to an error: …&quot; and as a logged error in the health checks. |
+| **a category with `&quot;dir&quot;` absent or `null`** | `Dir` is null → **NullReferenceException at `Sabnzbd.cs:238`** (`category.Dir.TrimEnd('*')`) and again at `:462` (`category.Dir.EndsWith(&quot;*&quot;)`). |
+| `&quot;categories&quot;: null` or absent | Safe — the ctor's empty list survives. `GetStatus` then finds no category and `OutputRootFolders` stays empty. |
+| `&quot;sorters&quot;: null` or absent | Safe — ctor empty list; `config.Sorters.Any(...)` at `Sabnzbd.cs:484` works. |
+| `&quot;servers&quot;: null` or absent | Safe and never read (`List&lt;object&gt;`, `SabnzbdCategory.cs:19`). |
+| `&quot;tv_categories&quot;/&quot;movie_categories&quot;/&quot;date_categories&quot;: null` | Safe: `ContainsCategory` returns `true` for null/empty (§3.5), but that only matters if the matching `enable_*_sorting` is true. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Payload shape</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code translate="no" v-pre>&quot;misc&quot;</code> absent or <code translate="no" v-pre>null</code></strong></td>
+<td><code translate="no" v-pre>Misc</code> stays null (no ctor default; <code translate="no" v-pre>NullValueHandling.Ignore</code> on read) → <strong>NullReferenceException at <code translate="no" v-pre>Sabnzbd.cs:218</code></strong>, surfacing as &quot;Test was aborted due to an error: …&quot; and as a logged error in the health checks.</td>
+</tr>
+<tr>
+<td><strong>a category with <code translate="no" v-pre>&quot;dir&quot;</code> absent or <code translate="no" v-pre>null</code></strong></td>
+<td><code translate="no" v-pre>Dir</code> is null → <strong>NullReferenceException at <code translate="no" v-pre>Sabnzbd.cs:238</code></strong> (<code translate="no" v-pre>category.Dir.TrimEnd('*')</code>) and again at <code translate="no" v-pre>:462</code> (<code translate="no" v-pre>category.Dir.EndsWith(&quot;*&quot;)</code>).</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>&quot;categories&quot;: null</code> or absent</td>
+<td>Safe — the ctor&#x27;s empty list survives. <code translate="no" v-pre>GetStatus</code> then finds no category and <code translate="no" v-pre>OutputRootFolders</code> stays empty.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>&quot;sorters&quot;: null</code> or absent</td>
+<td>Safe — ctor empty list; <code translate="no" v-pre>config.Sorters.Any(...)</code> at <code translate="no" v-pre>Sabnzbd.cs:484</code> works.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>&quot;servers&quot;: null</code> or absent</td>
+<td>Safe and never read (<code translate="no" v-pre>List&lt;object&gt;</code>, <code translate="no" v-pre>SabnzbdCategory.cs:19</code>).</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>&quot;tv_categories&quot;/&quot;movie_categories&quot;/&quot;date_categories&quot;: null</code></td>
+<td>Safe: <code translate="no" v-pre>ContainsCategory</code> returns <code translate="no" v-pre>true</code> for null/empty (§3.5), but that only matters if the matching <code translate="no" v-pre>enable_*_sorting</code> is true.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>Rule: always emit <code translate="no" v-pre>misc</code> as an object and every category with a string <code translate="no" v-pre>dir</code> (use <code translate="no" v-pre>&quot;&quot;</code>).</strong></p>
+<h3 id="35-containscategory-sabnzbdcs523-536">3.5 <code translate="no" v-pre>ContainsCategory</code> (<code translate="no" v-pre>Sabnzbd.cs:523-536</code>)</h3>
+<div id="35-containscategory-sabnzbdcs523-536-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">private bool ContainsCategory(IEnumerable&lt;string&gt; categories, string category)
+{
+    if (categories == null || categories.Empty())
+    {
+        return true;          // &lt;-- null/empty means &quot;all categories&quot;
+    }
+
+    if (category.IsNullOrWhiteSpace())
+    {
+        category = &quot;Default&quot;;
+    }
+
+    return categories.Contains(category);
+}</code></pre>
+</doc-codeblock></div>
+<p>Confirmed by fixtures: <code translate="no" v-pre>enable_tv_sorting=true</code> + <code translate="no" v-pre>tv_categories=null</code> <strong>fails</strong>
+(<code translate="no" v-pre>SabnzbdFixture.cs:636-645</code>), and + <code translate="no" v-pre>tv_categories=[]</code> also <strong>fails</strong> (<code translate="no" v-pre>:647-656</code>).
+<code translate="no" v-pre>TvCategory=null</code> + <code translate="no" v-pre>tv_categories=[&quot;Default&quot;]</code> fails (<code translate="no" v-pre>:680-691</code>).</p>
+<h3 id="36-test--the-exact-order-and-rules-sabnzbdcs286-292">3.6 <code translate="no" v-pre>Test()</code> — the exact order and rules (<code translate="no" v-pre>Sabnzbd.cs:286-292</code>)</h3>
+<div id="36-test--the-exact-order-and-rules-sabnzbdcs286-292-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">protected override void Test(List&lt;ValidationFailure&gt; failures)
+{
+    failures.AddIfNotNull(TestConnectionAndVersion());
+    failures.AddIfNotNull(TestAuthentication());
+    failures.AddIfNotNull(TestGlobalConfig());
+    failures.AddIfNotNull(TestCategory());
+}</code></pre>
+</doc-codeblock></div>
+<p>Wrapped by <code translate="no" v-pre>DownloadClientBase.Test()</code> (<code translate="no" v-pre>src/NzbDrone.Core/Download/DownloadClientBase.cs:148-163</code>),
+which catches any escaping exception and adds <code translate="no" v-pre>&quot;Test was aborted due to an error: &quot; + ex.Message</code>.</p>
+<p><strong><code translate="no" v-pre>TestConnectionAndVersion()</code> (<code translate="no" v-pre>Sabnzbd.cs:368-414</code>)</strong> — 1 × <code translate="no" v-pre>mode=version</code>:</p>
+<ol>
+<li>
+<p>unparseable version → failure on field <code translate="no" v-pre>Version</code> (<code translate="no" v-pre>DownloadClientSabnzbdValidationUnknownVersion</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>rawVersion == &quot;develop&quot;</code> (ignore case) → <strong>warning</strong> on <code translate="no" v-pre>Version</code>, <code translate="no" v-pre>IsValid</code> stays true
+(fixture <code translate="no" v-pre>SabnzbdFixture.cs:566-577</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>version.Major &gt;= 1</code> → pass (<code translate="no" v-pre>:389-392</code>).</p>
+</li>
+<li>
+<p>else <code translate="no" v-pre>version.Minor &gt;= 7</code> → pass (<code translate="no" v-pre>:394-397</code>).</p>
+</li>
+<li>
+<p>else failure: required version <code translate="no" v-pre>&quot;0.7.0&quot;</code> (<code translate="no" v-pre>:399-404</code>).
+Fixture table (<code translate="no" v-pre>SabnzbdFixture.cs:549-564</code>): <code translate="no" v-pre>0.6.9</code>→false, <code translate="no" v-pre>0.7.0</code>/<code translate="no" v-pre>0.8.0</code>/<code translate="no" v-pre>1.0.0</code>/<code translate="no" v-pre>1.0.0RC1</code>/<code translate="no" v-pre>1.1.x</code>→true.</p>
+</li>
+<li>
+<p>Any exception → failure on field <code translate="no" v-pre>Host</code> (&quot;unable to connect&quot;), detail = <code translate="no" v-pre>ex.Message</code> (<code translate="no" v-pre>:406-413</code>).</p>
+</li>
+</ol>
+<p><strong><code translate="no" v-pre>TestAuthentication()</code> (<code translate="no" v-pre>Sabnzbd.cs:416-438</code>)</strong> — 1 × <code translate="no" v-pre>mode=get_config</code>. Catches, then matches
+<code translate="no" v-pre>ex.Message</code> with <code translate="no" v-pre>ContainsIgnoreCase</code>:</p>
+<retype-table copy-text="| Substring matched | Failure field |
+|---|---|
+| `API Key Incorrect` | `APIKey` — `DownloadClientValidationApiKeyIncorrect` |
+| `API Key Required` | `APIKey` — `DownloadClientValidationApiKeyRequired` |
+| anything else | **rethrown** → generic &quot;Test was aborted due to an error: …&quot; |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Substring matched</th>
+<th>Failure field</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>API Key Incorrect</code></td>
+<td><code translate="no" v-pre>APIKey</code> — <code translate="no" v-pre>DownloadClientValidationApiKeyIncorrect</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>API Key Required</code></td>
+<td><code translate="no" v-pre>APIKey</code> — <code translate="no" v-pre>DownloadClientValidationApiKeyRequired</code></td>
+</tr>
+<tr>
+<td>anything else</td>
+<td><strong>rethrown</strong> → generic &quot;Test was aborted due to an error: …&quot;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Because <code translate="no" v-pre>CheckForError</code> wraps the body as <code translate="no" v-pre>&quot;Error response received from SABnzbd: {error}&quot;</code>
+(<code translate="no" v-pre>SabnzbdProxy.cs:244</code>), matching works when your <code translate="no" v-pre>error</code> string <em>contains</em> <code translate="no" v-pre>API Key Incorrect</code> /
+<code translate="no" v-pre>API Key Required</code> — SAB&#x27;s own wording.</p>
+<p><strong><code translate="no" v-pre>TestGlobalConfig()</code> (<code translate="no" v-pre>Sabnzbd.cs:440-453</code>)</strong> — 1 × <code translate="no" v-pre>mode=get_config</code>, plus 1 × <code translate="no" v-pre>mode=version</code>
+only if <code translate="no" v-pre>pre_check</code> is true:</p>
+<div id="36-test--the-exact-order-and-rules-sabnzbdcs286-292-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">var config = _proxy.GetConfig(Settings);
+if (config.Misc.pre_check &amp;&amp; !HasVersion(1, 1))
+{
+    return new NzbDroneValidationFailure(&quot;&quot;, &quot;…CheckBeforeDownload&quot;)
+    {
+        InfoLink = _proxy.GetBaseUrl(Settings, &quot;config/switches/&quot;),
+        …
+    };
+}</code></pre>
+</doc-codeblock></div>
+<p>Threshold: <strong>SAB &gt;= 1.1.0</strong> (<code translate="no" v-pre>HasVersion(major:1, minor:1, patch:0)</code>, <code translate="no" v-pre>Sabnzbd.cs:294-332</code>).
+<code translate="no" v-pre>pre_check: false</code> avoids the whole branch, including the extra <code translate="no" v-pre>mode=version</code> round-trip.</p>
+<p><strong><code translate="no" v-pre>TestCategory()</code> (<code translate="no" v-pre>Sabnzbd.cs:455-521</code>)</strong> — 1 × <code translate="no" v-pre>mode=get_config</code> (a <em>third</em> one), plus whatever
+<code translate="no" v-pre>GetCategories</code> needs. Checks run in this order, first hit wins:</p>
+<ol>
+<li>
+<p>matched category (<code translate="no" v-pre>Name == Settings.TvCategory</code> / <code translate="no" v-pre>MovieCategory</code>) whose <code translate="no" v-pre>dir</code> <strong>ends with <code translate="no" v-pre>*</code></strong>
+→ warning on <code translate="no" v-pre>TvCategory</code>/<code translate="no" v-pre>MovieCategory</code> &quot;enable job folders&quot;, InfoLink <code translate="no" v-pre>config/categories/</code> (<code translate="no" v-pre>:460-469</code>).</p>
+</li>
+<li>
+<p>no matched category <strong>and</strong> the configured category is non-blank → warning
+<code translate="no" v-pre>DownloadClientValidationCategoryMissing</code>, InfoLink <code translate="no" v-pre>config/categories/</code> (<code translate="no" v-pre>:471-481</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>config.Sorters.Any(s =&gt; s.is_active &amp;&amp; ContainsCategory(s.sort_cats, cat))</code> → warning, InfoLink
+<code translate="no" v-pre>config/sorting/</code> (<code translate="no" v-pre>:483-491</code>). Code comment at <code translate="no" v-pre>:483</code>: <em>&quot;New in SABnzbd 4.1, but on older versions
+this will be empty and not apply&quot;</em>.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>misc.enable_tv_sorting &amp;&amp; ContainsCategory(misc.tv_categories, cat)</code> → warning (<code translate="no" v-pre>:493-500</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>misc.enable_movie_sorting &amp;&amp; ContainsCategory(misc.movie_categories, cat)</code> → warning (<code translate="no" v-pre>:502-509</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>misc.enable_date_sorting &amp;&amp; ContainsCategory(misc.date_categories, cat)</code> → warning (<code translate="no" v-pre>:511-518</code>).</p>
+</li>
+</ol>
+<p><code translate="no" v-pre>SabnzbdSorter</code> (<code translate="no" v-pre>SabnzbdCategory.cs:50-66</code>) — read: <code translate="no" v-pre>sort_cats</code> (<code translate="no" v-pre>List&lt;string&gt;</code>, ctor-empty),
+<code translate="no" v-pre>is_active</code> (<code translate="no" v-pre>bool</code>). Present in the model but never read: <code translate="no" v-pre>name</code>, <code translate="no" v-pre>order</code>, <code translate="no" v-pre>min_size</code>,
+<code translate="no" v-pre>multipart_label</code>, <code translate="no" v-pre>sort_string</code>, <code translate="no" v-pre>sort_type</code> (<code translate="no" v-pre>List&lt;int&gt;</code>).</p>
+<p><strong>Traffic note:</strong> all four <code translate="no" v-pre>Test*</code> methods make their own calls, nothing is cached — a single
+connection test issues roughly <strong>2 × <code translate="no" v-pre>mode=version</code> and 3 × <code translate="no" v-pre>mode=get_config</code></strong> (a 4th version call if
+<code translate="no" v-pre>pre_check</code> is true).</p>
+<h3 id="37-configmisc-history-retention--removescompleteddownloads-sabnzbdcs538-574">3.7 <code translate="no" v-pre>config.misc</code> history retention → <code translate="no" v-pre>RemovesCompletedDownloads</code> (<code translate="no" v-pre>Sabnzbd.cs:538-574</code>)</h3>
+<div id="37-configmisc-history-retention--removescompleteddownloads-sabnzbdcs538-574-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">var retention = config.Misc.history_retention;
+var option    = config.Misc.history_retention_option;
+var number    = config.Misc.history_retention_number;
+
+switch (option)
+{
+    case &quot;all&quot;:                                     return false;
+    case &quot;number-archive&quot;: case &quot;number-delete&quot;:    return true;
+    case &quot;days-archive&quot;:   case &quot;days-delete&quot;:      return number &lt; 14;
+    case &quot;all-archive&quot;:    case &quot;all-delete&quot;:       return true;
+}
+
+// TODO: Remove these checks once support for SABnzbd &lt; 4.3 is removed
+if (retention.IsNullOrWhiteSpace()) { return false; }
+if (retention.EndsWith(&quot;d&quot;)) { int.TryParse(retention[..^1], out var daysRetention); return daysRetention &lt; 14; }
+return retention != &quot;0&quot;;</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>true</code> raises a health-check <strong>warning</strong>
+(<code translate="no" v-pre>HealthCheck/Checks/DownloadClientRemovesCompletedDownloadsCheck.cs:44-53</code>).
+Fixture coverage <code translate="no" v-pre>SabnzbdFixture.cs:455-510</code>: legacy <code translate="no" v-pre>&quot;0&quot;</code>/<code translate="no" v-pre>&quot;&quot;</code>/<code translate="no" v-pre>null</code>/<code translate="no" v-pre>&quot;15d&quot;</code> → false;
+<code translate="no" v-pre>&quot;-1&quot;</code>/<code translate="no" v-pre>&quot;15&quot;</code>/<code translate="no" v-pre>&quot;3&quot;</code>/<code translate="no" v-pre>&quot;3d&quot;</code> → true.</p>
+<p><strong>Cleanest emulator answer: <code translate="no" v-pre>history_retention_option: &quot;all&quot;</code>, <code translate="no" v-pre>history_retention_number: 0</code>,
+<code translate="no" v-pre>history_retention: &quot;0&quot;</code>.</strong></p>
+<h3 id="38-sortingmode-and-its-health-check-sabnzbdcs263-279">3.8 <code translate="no" v-pre>SortingMode</code> and its health check (<code translate="no" v-pre>Sabnzbd.cs:263-279</code>)</h3>
+<p><code translate="no" v-pre>GetStatus</code> sets <code translate="no" v-pre>SortingMode</code> to <code translate="no" v-pre>&quot;TV&quot;</code>, <code translate="no" v-pre>&quot;Movie&quot;</code> or <code translate="no" v-pre>&quot;Date&quot;</code> using the same
+<code translate="no" v-pre>enable_*_sorting &amp;&amp; ContainsCategory(...)</code> predicates. Any non-blank value raises a warning in
+<code translate="no" v-pre>HealthCheck/Checks/DownloadClientSortingCheck.cs:45-55</code>. Keep all three <code translate="no" v-pre>enable_*_sorting</code> false.</p>
+<h3 id="39-islocalhost-sabnzbdcs260">3.9 <code translate="no" v-pre>IsLocalhost</code> (<code translate="no" v-pre>Sabnzbd.cs:260</code>)</h3>
+<div id="39-islocalhost-sabnzbdcs260-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">IsLocalhost = Settings.Host == &quot;127.0.0.1&quot; || Settings.Host == &quot;localhost&quot;</code></pre>
+</doc-codeblock></div>
+<p>Ordinal, case-sensitive; <code translate="no" v-pre>::1</code>, <code translate="no" v-pre>Localhost</code> and any hostname do <strong>not</strong> count. This changes which
+<code translate="no" v-pre>RemotePathMappingCheck</code> message you get (see §6.2).</p>
+<hr>
+<h2 id="4-error-handling--checkforerror-sabnzbdproxycs222-246">4. Error handling — <code translate="no" v-pre>CheckForError</code> (<code translate="no" v-pre>SabnzbdProxy.cs:222-246</code>)</h2>
+<div id="4-error-handling--checkforerror-sabnzbdproxycs222-246-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">private void CheckForError(HttpResponse response)
+{
+    if (!Json.TryDeserialize&lt;SabnzbdJsonError&gt;(response.Content, out var result))
+    {
+        // Handle plain text responses from SAB
+        result = new SabnzbdJsonError();
+
+        if (response.Content.StartsWith(&quot;error&quot;, StringComparison.InvariantCultureIgnoreCase))
+        {
+            result.Status = &quot;false&quot;;
+            result.Error = response.Content.Replace(&quot;error: &quot;, &quot;&quot;);
+        }
+        else
+        {
+            result.Status = &quot;true&quot;;
+        }
+
+        result.Error = response.Content.Replace(&quot;error: &quot;, &quot;&quot;);   // :239 — assigned in BOTH branches
+    }
+
+    if (result.Failed)
+    {
+        throw new DownloadClientException(&quot;Error response received from SABnzbd: {0}&quot;, result.Error);
+    }
+}</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>SabnzbdJsonError</code> (<code translate="no" v-pre>SabnzbdJsonError.cs</code>, complete):</p>
+<div id="4-error-handling--checkforerror-sabnzbdproxycs222-246-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">public string Status { get; set; }
+public string Error  { get; set; }
+
+public bool Failed =&gt; !string.IsNullOrWhiteSpace(Status) &amp;&amp;
+                      Status.Equals(&quot;false&quot;, StringComparison.InvariantCultureIgnoreCase);</code></pre>
+</doc-codeblock></div>
+<p>Rules, precisely:</p>
+<ul>
+<li>
+<p><code translate="no" v-pre>CheckForError</code> runs on <strong>every</strong> response, before any mode-specific deserialization
+(<code translate="no" v-pre>SabnzbdProxy.cs:217</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>Status</code> is typed <code translate="no" v-pre>string</code> but SAB sends a JSON <strong>boolean</strong>. Newtonsoft coerces <code translate="no" v-pre>false</code> → <code translate="no" v-pre>&quot;False&quot;</code>,
+which <code translate="no" v-pre>Failed</code> matches case-insensitively. Both <code translate="no" v-pre>false</code> (boolean) and <code translate="no" v-pre>&quot;false&quot;</code> (string) work.</p>
+</li>
+<li>
+<p>A response with <strong>no top-level <code translate="no" v-pre>status</code></strong> (e.g. <code translate="no" v-pre>{&quot;version&quot;: …}</code>, <code translate="no" v-pre>{&quot;queue&quot;: {...}}</code>,
+<code translate="no" v-pre>{&quot;history&quot;: {...}}</code>, <code translate="no" v-pre>{&quot;config&quot;: {...}}</code>) leaves <code translate="no" v-pre>Status</code> null → <code translate="no" v-pre>Failed</code> false → no error.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>status: true</code> → <code translate="no" v-pre>&quot;True&quot;</code> → not failed.</p>
+</li>
+<li>
+<p><strong>Non-JSON body</strong>: <code translate="no" v-pre>TryDeserialize</code> returns false (it catches <code translate="no" v-pre>JsonReaderException</code> and
+<code translate="no" v-pre>JsonSerializationException</code>, <code translate="no" v-pre>Json.cs:107-116</code>) and the plain-text branch runs. A body starting
+with <code translate="no" v-pre>error</code> (case-insensitive) → <code translate="no" v-pre>Status = &quot;false&quot;</code> → throws
+<code translate="no" v-pre>DownloadClientException(&quot;Error response received from SABnzbd: {body with 'error: ' stripped}&quot;)</code>.
+Any other non-JSON body → <code translate="no" v-pre>Status = &quot;true&quot;</code> → <strong>treated as success</strong>, and the mode-specific
+deserialization then fails on its own terms.</p>
+</li>
+<li>
+<p>A <strong>JSON body whose <code translate="no" v-pre>status</code> is an object</strong> (<code translate="no" v-pre>mode=fullstatus</code>) also takes the plain-text branch,
+because a <code translate="no" v-pre>StartObject</code> token cannot fill a <code translate="no" v-pre>string</code> property — <code translate="no" v-pre>Status</code> becomes <code translate="no" v-pre>&quot;true&quot;</code>.</p>
+</li>
+<li>
+<p>Note the redundant <code translate="no" v-pre>result.Error = …</code> at <code translate="no" v-pre>:239</code>: <code translate="no" v-pre>Error</code> is set even on the success branch. It has
+no effect (nothing reads <code translate="no" v-pre>Error</code> unless <code translate="no" v-pre>Failed</code>).</p>
+</li>
+</ul>
+<p>Exception mapping in <code translate="no" v-pre>ProcessRequest</code> (<code translate="no" v-pre>SabnzbdProxy.cs:187-220</code>):</p>
+<retype-table copy-text="| Caught | Thrown |
+|---|---|
+| `HttpException` (any non-2xx, incl. 401/403/404/500) | `DownloadClientException(&quot;Unable to connect to SABnzbd, {0}&quot;)` |
+| `HttpRequestException` | `DownloadClientUnavailableException(&quot;Unable to connect to SABnzbd, {0}&quot;)` |
+| `WebException` with `WebExceptionStatus.TrustFailure` | `DownloadClientUnavailableException(&quot;Unable to connect to SABnzbd, certificate validation failed.&quot;)` |
+| other `WebException` | `DownloadClientUnavailableException(&quot;Unable to connect to SABnzbd, {0}&quot;)` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Caught</th>
+<th>Thrown</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>HttpException</code> (any non-2xx, incl. 401/403/404/500)</td>
+<td><code translate="no" v-pre>DownloadClientException(&quot;Unable to connect to SABnzbd, {0}&quot;)</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>HttpRequestException</code></td>
+<td><code translate="no" v-pre>DownloadClientUnavailableException(&quot;Unable to connect to SABnzbd, {0}&quot;)</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>WebException</code> with <code translate="no" v-pre>WebExceptionStatus.TrustFailure</code></td>
+<td><code translate="no" v-pre>DownloadClientUnavailableException(&quot;Unable to connect to SABnzbd, certificate validation failed.&quot;)</code></td>
+</tr>
+<tr>
+<td>other <code translate="no" v-pre>WebException</code></td>
+<td><code translate="no" v-pre>DownloadClientUnavailableException(&quot;Unable to connect to SABnzbd, {0}&quot;)</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>The exact auth-failure strings matched</strong> (<code translate="no" v-pre>Sabnzbd.cs:424, 429</code>, exact literals, matched with
+<code translate="no" v-pre>ContainsIgnoreCase</code> against the exception message):</p>
+<ul>
+<li><code translate="no" v-pre>&quot;API Key Incorrect&quot;</code></li>
+<li><code translate="no" v-pre>&quot;API Key Required&quot;</code></li>
+</ul>
+<p>Nothing else is classified. Emit them verbatim as the <code translate="no" v-pre>error</code> value of an <strong>HTTP 200</strong> response.</p>
+<p><strong>Why a non-200 must never be returned:</strong> <code translate="no" v-pre>HttpClient.Execute</code> throws before <code translate="no" v-pre>CheckForError</code> ever runs
+(<code translate="no" v-pre>HttpClient.cs:106-121</code>), the resulting <code translate="no" v-pre>HttpException</code> message contains only status/method/URL and
+not the body (<code translate="no" v-pre>HttpException.cs:18</code>), so the <code translate="no" v-pre>&quot;API Key Incorrect&quot;</code> / <code translate="no" v-pre>&quot;API Key Required&quot;</code> matching
+cannot fire. The user sees &quot;Unable to connect to SABnzbd&quot; or &quot;Test was aborted due to an error&quot;
+instead of an actionable message, and every health check treats the client as unreachable.</p>
+<hr>
+<h2 id="5-the-post-import-sequence">5. The post-import sequence</h2>
+<h3 id="51-who-calls-removeitem-and-with-what">5.1 Who calls <code translate="no" v-pre>RemoveItem</code>, and with what</h3>
+<p><code translate="no" v-pre>DownloadEventHub</code> (<code translate="no" v-pre>src/NzbDrone.Core/Download/DownloadEventHub.cs</code>, identical in both repos except
+the BOM):</p>
+<ul>
+<li>
+<p><code translate="no" v-pre>Handle(DownloadCompletedEvent)</code> (<code translate="no" v-pre>:48-69</code>): calls <code translate="no" v-pre>MarkItemAsImported</code> (SAB throws
+<code translate="no" v-pre>NotSupportedException</code> — <code translate="no" v-pre>DownloadClientBase.cs:189-192</code> — logged at debug and ignored), then
+returns early if the item is already <code translate="no" v-pre>Removed</code>, <code translate="no" v-pre>!CanBeRemoved</code>, or still <code translate="no" v-pre>Downloading</code>, then
+returns early unless <code translate="no" v-pre>definition.RemoveCompletedDownloads</code>.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>Handle(DownloadFailedEvent)</code> (<code translate="no" v-pre>:26-46</code>): gated on <code translate="no" v-pre>definition.RemoveFailedDownloads</code>.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>Handle(DownloadCanBeRemovedEvent)</code> (<code translate="no" v-pre>:71-85</code>): gated on <code translate="no" v-pre>definition.RemoveCompletedDownloads</code>.</p>
+</li>
+<li>
+<p>All three funnel into <code translate="no" v-pre>RemoveFromDownloadClient</code> (<code translate="no" v-pre>:87-103</code>):</p>
+</li>
+</ul>
+<div id="51-who-calls-removeitem-and-with-what-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">_logger.Debug(&quot;[{0}] Removing download from {1} history&quot;, …);
+downloadClient.RemoveItem(trackedDownload.DownloadItem, true);   // :92 -- deleteData is ALWAYS true
+trackedDownload.DownloadItem.Removed = true;</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>DownloadClientDefinition</code> defaults (<code translate="no" v-pre>src/NzbDrone.Core/Download/DownloadClientDefinition.cs:17-18</code>):</p>
+<div id="51-who-calls-removeitem-and-with-what-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">public bool RemoveCompletedDownloads { get; set; } = true;
+public bool RemoveFailedDownloads    { get; set; } = true;</code></pre>
+</doc-codeblock></div>
+<p>The manual API path <code translate="no" v-pre>DELETE /api/v3/queue/{id}?removeFromClient=true</code> also passes <code translate="no" v-pre>true</code>
+(Sonarr <code translate="no" v-pre>src/Sonarr.Api.V3/Queue/QueueController.cs:342</code>). <strong>There is no caller anywhere that passes
+<code translate="no" v-pre>deleteData: false</code>.</strong></p>
+<h3 id="52-sabnzbdremoveitem-sabnzbdcs197-214--the-exact-sequence">5.2 <code translate="no" v-pre>Sabnzbd.RemoveItem</code> (<code translate="no" v-pre>Sabnzbd.cs:197-214</code>) — the exact sequence</h3>
+<div id="52-sabnzbdremoveitem-sabnzbdcs197-214--the-exact-sequence-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">public override void RemoveItem(DownloadClientItem item, bool deleteData)
+{
+    var queueClientItem = GetQueue().SingleOrDefault(v =&gt; v.DownloadId == item.DownloadId);   // extra mode=queue
+
+    if (queueClientItem == null)
+    {
+        if (deleteData &amp;&amp; item.Status == DownloadItemStatus.Completed)
+        {
+            DeleteItemData(item);                                                             // rm -rf, see 5.3
+        }
+
+        _proxy.RemoveFromHistory(item.DownloadId, deleteData, item.Status == DownloadItemStatus.Failed, Settings);
+    }
+    else
+    {
+        _proxy.RemoveFromQueue(item.DownloadId, deleteData, Settings);
+    }
+}</code></pre>
+</doc-codeblock></div>
+<p>So the post-import wire sequence against the emulator is:</p>
+<ol>
+<li><code translate="no" v-pre>GET /api?mode=queue&amp;start=0&amp;limit=0&amp;category=tv&amp;apikey=…&amp;output=json</code> (to decide queue vs history)</li>
+<li><strong>local filesystem delete of the output folder</strong> (§5.3) — before any further HTTP call</li>
+<li><code translate="no" v-pre>GET /api?mode=history&amp;name=delete&amp;del_files=1&amp;value={nzo_id}&amp;archive=1&amp;apikey=…&amp;output=json</code></li>
+</ol>
+<p>For a <strong>failed</strong> item: no local delete (status is <code translate="no" v-pre>Failed</code>, not <code translate="no" v-pre>Completed</code>), and <strong><code translate="no" v-pre>archive=0</code></strong> —
+the inversion in <code translate="no" v-pre>SabnzbdProxy.cs:80</code> (<code translate="no" v-pre>archive = deletePermanently ? 0 : 1</code>, where
+<code translate="no" v-pre>deletePermanently == (status is Failed)</code>).</p>
+<h3 id="53-deleteitemdata-srcnzbdronecoredownloaddownloadclientbasecs110-146">5.3 <code translate="no" v-pre>DeleteItemData</code> (<code translate="no" v-pre>src/NzbDrone.Core/Download/DownloadClientBase.cs:110-146</code>)</h3>
+<div id="53-deleteitemdata-srcnzbdronecoredownloaddownloadclientbasecs110-146-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">protected virtual void DeleteItemData(DownloadClientItem item)
+{
+    if (item == null) { return; }
+
+    if (item.OutputPath.IsEmpty)
+    {
+        _logger.Trace(&quot;[{0}] Doesn't have an outputPath, skipping delete data.&quot;, item.Title);
+        return;
+    }
+
+    try
+    {
+        if (_diskProvider.FolderExists(item.OutputPath.FullPath))
+        {
+            _logger.Debug(&quot;[{0}] Deleting folder '{1}'.&quot;, item.Title, item.OutputPath);
+            _diskProvider.DeleteFolder(item.OutputPath.FullPath, true);        // :129  recursive == true
+        }
+        else if (_diskProvider.FileExists(item.OutputPath.FullPath))
+        {
+            _logger.Debug(&quot;[{0}] Deleting file '{1}'.&quot;, item.Title, item.OutputPath);
+            _diskProvider.DeleteFile(item.OutputPath.FullPath);                 // :135
+        }
+        else
+        {
+            _logger.Trace(&quot;[{0}] File or folder '{1}' doesn't exist, skipping cleanup.&quot;, item.Title, item.OutputPath);
+        }
+    }
+    catch (Exception ex)
+    {
+        _logger.Warn(ex, string.Format(&quot;[{0}] Error occurred while trying to delete data from '{1}'.&quot;, item.Title, item.OutputPath));
+    }
+}</code></pre>
+</doc-codeblock></div>
+<ul>
+<li>
+<p><strong>Yes, it recursively deletes the output folder.</strong> <code translate="no" v-pre>DeleteFolder(path, recursive: true)</code> at <code translate="no" v-pre>:129</code>.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>OutputPath</code> here is the history item&#x27;s <code translate="no" v-pre>storage</code> after remote-path remapping and the job-folder
+walk-up (§1.6.2). For a flat magic directory that means <code translate="no" v-pre>rm -rf /mnt/zurg/__magic__/&lt;Title&gt;</code>.</p>
+</li>
+<li>
+<p>The governing setting is the download client&#x27;s <strong>Remove Completed Downloads</strong> toggle
+(<code translate="no" v-pre>DownloadClientDefinition.RemoveCompletedDownloads</code>, default <strong>true</strong>), <em>not</em> a SAB-side setting
+and not <code translate="no" v-pre>del_files</code>. There is no separate &quot;delete data&quot; switch in the UI.</p>
+</li>
+<li>
+<p>Failures are swallowed with a warning — a read-only mount logs noise but does not break the import.</p>
+</li>
+<li>
+<p>Fixture coverage <code translate="no" v-pre>SabnzbdFixture.cs:693-803</code>: folder deleted recursively, file deleted, nothing when
+the path doesn&#x27;t exist, and nothing at all (not even a <code translate="no" v-pre>FolderExists</code> probe) when <code translate="no" v-pre>deleteData</code> is false.</p>
+</li>
+</ul>
+<h3 id="54-transfer-mode-is-the-file-moved-or-copied">5.4 Transfer mode: is the file moved or copied?</h3>
+<p><code translate="no" v-pre>Sabnzbd</code> sets <code translate="no" v-pre>CanMoveFiles = true</code> on <strong>every</strong> item, queue (<code translate="no" v-pre>Sabnzbd.cs:76</code>) and history
+(<code translate="no" v-pre>Sabnzbd.cs:135</code>). The automatic-import path is
+<code translate="no" v-pre>CompletedDownloadService.Import</code> → <code translate="no" v-pre>ProcessPath(outputPath, ImportMode.Auto, …)</code>
+(Sonarr <code translate="no" v-pre>CompletedDownloadService.cs:148-151</code>), and then:</p>
+<p>Sonarr <code translate="no" v-pre>src/NzbDrone.Core/MediaFiles/EpisodeImport/ImportApprovedEpisodes.cs:139-152</code>
+(Radarr <code translate="no" v-pre>src/NzbDrone.Core/MediaFiles/MovieImport/ImportApprovedMovie.cs:116-129</code>, identical logic):</p>
+<div id="54-transfer-mode-is-the-file-moved-or-copied-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">bool copyOnly;
+switch (importMode)
+{
+    default:
+    case ImportMode.Auto: copyOnly = downloadClientItem is { CanMoveFiles: false }; break;
+    case ImportMode.Move: copyOnly = false; break;
+    case ImportMode.Copy: copyOnly = true;  break;
+}</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>CanMoveFiles: true</code> ⇒ <code translate="no" v-pre>copyOnly == false</code> ⇒ <strong><code translate="no" v-pre>TransferMode.Move</code></strong>
+(<code translate="no" v-pre>src/NzbDrone.Core/MediaFiles/EpisodeFileMovingService.cs:91</code>). A <code translate="no" v-pre>copyOnly</code> import would instead use
+<code translate="no" v-pre>TransferMode.HardLinkOrCopy</code> when &quot;Use Hardlinks instead of Copy&quot; is on, else <code translate="no" v-pre>TransferMode.Copy</code>
+(<code translate="no" v-pre>:94-108</code>).</p>
+<p><code translate="no" v-pre>TransferMode</code> (<code translate="no" v-pre>src/NzbDrone.Common/Disk/TransferMode.cs:5-15</code>) is <code translate="no" v-pre>[Flags]</code>:
+<code translate="no" v-pre>None=0, Move=1, Copy=2, HardLink=4, HardLinkOrCopy = Copy|HardLink</code>.</p>
+<h3 id="55-does-a-failed-move-fall-back-to-a-copy--no-a-failed-move-is-a-failed-import">5.5 Does a failed Move fall back to a copy? — <strong>No. A failed Move is a failed import.</strong></h3>
+<p><code translate="no" v-pre>src/NzbDrone.Common/Disk/DiskTransferService.cs</code> (byte-identical between the two repos — verified).
+<code translate="no" v-pre>TransferFile</code>, <code translate="no" v-pre>:256-392</code>; the <code translate="no" v-pre>TransferMode.Move</code> branch at <code translate="no" v-pre>:360-389</code>:</p>
+<div id="55-does-a-failed-move-fall-back-to-a-copy--no-a-failed-move-is-a-failed-import-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">if (mode.HasFlag(TransferMode.Move))
+{
+    if (isBtrfs || isZfs)
+    {
+        if (isSameMount &amp;&amp; _diskProvider.TryRenameFile(sourcePath, targetPath)) { return TransferMode.Move; }
+        if (_diskProvider.TryCreateRefLink(sourcePath, targetPath)) { _diskProvider.DeleteFile(sourcePath); return TransferMode.Move; }
+    }
+
+    if (isCifs &amp;&amp; !isSameMount)                                        // :378
+    {
+        _logger.Trace(&quot;On cifs mount. Starting verified copy [{0}] to [{1}].&quot;, sourcePath, targetPath);
+        TryCopyFileVerified(sourcePath, targetPath, originalSize);
+        _logger.Trace(&quot;Copy successful, deleting source [{0}].&quot;, sourcePath);
+        _diskProvider.DeleteFile(sourcePath);
+        return TransferMode.Move;
+    }
+
+    TryMoveFileVerified(sourcePath, targetPath, originalSize);         // :387
+    return TransferMode.Move;
+}</code></pre>
+</doc-codeblock></div>
+<ul>
+<li>
+<p>The <strong>only</strong> copy fallback is the <code translate="no" v-pre>isCifs &amp;&amp; !isSameMount</code> special case at <code translate="no" v-pre>:378-385</code>, keyed on
+<code translate="no" v-pre>targetMount.DriveFormat == &quot;cifs&quot;</code> (<code translate="no" v-pre>:342</code>). It is chosen <em>up front</em> from the drive format, never
+as a reaction to a failure.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>TryMoveFileVerified</code> (<code translate="no" v-pre>:487-503</code>) catches, calls <code translate="no" v-pre>RollbackPartialMove</code> (unless the exception is
+<code translate="no" v-pre>FileAlreadyExistsException</code>), and <strong>rethrows</strong>:</p>
+</li>
+</ul>
+<div id="55-does-a-failed-move-fall-back-to-a-copy--no-a-failed-move-is-a-failed-import-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">private void TryMoveFileVerified(string sourcePath, string targetPath, long originalSize)
+{
+    try
+    {
+        _diskProvider.MoveFile(sourcePath, targetPath);
+        VerifyFile(sourcePath, targetPath, originalSize, &quot;move&quot;);
+    }
+    catch (Exception ex)
+    {
+        if (ex is not FileAlreadyExistsException) { RollbackPartialMove(sourcePath, targetPath); }
+        throw;
+    }
+}</code></pre>
+</doc-codeblock></div>
+<ul>
+<li>
+<p><code translate="no" v-pre>VerifyFile</code> (<code translate="no" v-pre>:505-524</code>) compares destination size to source size, sleeps 3 s
+(<code translate="no" v-pre>WaitForIO</code>, <code translate="no" v-pre>:467-471</code>), re-checks, then throws
+<code translate="no" v-pre>IOException(&quot;File move incomplete, data loss may have occurred. [{target}] was {n} bytes long instead of the expected {m}.&quot;)</code>.</p>
+</li>
+<li>
+<p>That <code translate="no" v-pre>IOException</code> propagates up through <code translate="no" v-pre>EpisodeFileMovingService.TransferFile</code> (<code translate="no" v-pre>:151</code>) into the
+generic <code translate="no" v-pre>catch (Exception e)</code> in <code translate="no" v-pre>ImportApprovedEpisodes.cs:218-222</code> (Radarr <code translate="no" v-pre>:197-201</code>), producing
+<code translate="no" v-pre>ImportResult(importDecision, &quot;Failed to import episode&quot;)</code> / <code translate="no" v-pre>&quot;Failed to import movie&quot;</code>.
+<strong>No copy is attempted.</strong></p>
+</li>
+<li>
+<p>Other pre-flight <code translate="no" v-pre>IOException</code>s in the same method: source == target (<code translate="no" v-pre>:270</code>, <code translate="no" v-pre>:277</code>), and
+&quot;Destination cannot be a child of the source&quot; (<code translate="no" v-pre>:312-315</code>).</p>
+</li>
+</ul>
+<p>Caveat, and it is a .NET-runtime fact rather than Sonarr code: <code translate="no" v-pre>DiskProviderBase.MoveFileInternal</code>
+(<code translate="no" v-pre>src/NzbDrone.Common/Disk/DiskProviderBase.cs:293-301</code>) is a plain <code translate="no" v-pre>File.Move</code>, and .NET on Unix
+falls back to copy+delete when <code translate="no" v-pre>rename()</code> returns <code translate="no" v-pre>EXDEV</code>. So a cross-filesystem move usually still
+succeeds — as a <em>runtime</em> fallback, not a Sonarr one. What will <strong>not</strong> be tolerated is a destination
+whose size differs from the source, or any exception <code translate="no" v-pre>File.Move</code> itself surfaces (EACCES, EPERM,
+EROFS on the source, …).</p>
+<p><code translate="no" v-pre>TransferFolder</code> (<code translate="no" v-pre>:44-137</code>) is used by other code paths; note <code translate="no" v-pre>:124-131</code> — after a folder Move it
+refuses to delete the source if more than 100 MB of files remain
+(<code translate="no" v-pre>IOException(&quot;Large files still exist in {sourcePath} after folder move, not deleting source folder&quot;)</code>).</p>
+<hr>
+<h2 id="6-the-two-health-checks">6. The two health checks</h2>
+<h3 id="61-downloadclientrootfoldercheck--the-one-place-sonarr-and-radarr-genuinely-differ">6.1 <code translate="no" v-pre>DownloadClientRootFolderCheck</code> — <strong>the one place Sonarr and Radarr genuinely differ</strong></h3>
+<p>Sonarr <code translate="no" v-pre>src/NzbDrone.Core/HealthCheck/Checks/DownloadClientRootFolderCheck.cs:51</code>:</p>
+<div id="61-downloadclientrootfoldercheck--the-one-place-sonarr-and-radarr-genuinely-differ-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">var folders = status.OutputRootFolders.Where(folder =&gt; rootFolders.Any(r =&gt; r.Path.PathEquals(folder.FullPath)));</code></pre>
+</doc-codeblock></div>
+<p>Radarr <code translate="no" v-pre>src/NzbDrone.Core/HealthCheck/Checks/DownloadClientRootFolderCheck.cs:51</code>:</p>
+<div id="61-downloadclientrootfoldercheck--the-one-place-sonarr-and-radarr-genuinely-differ-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">var folders = rootFolders.Where(r =&gt; status.OutputRootFolders.Any(folder =&gt; r.Path.PathEquals(folder.FullPath) || r.Path.IsParentPath(folder.FullPath)));</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>IsParentPath</code> (<code translate="no" v-pre>src/NzbDrone.Common/Extensions/PathExtensions.cs:123-140</code>) walks <strong>up</strong> from the child:</p>
+<div id="61-downloadclientrootfoldercheck--the-one-place-sonarr-and-radarr-genuinely-differ-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">public static bool IsParentPath(this string parentPath, string childPath)
+{
+    var parent = new OsPath(parentPath);
+    var child  = new OsPath(childPath);
+
+    while (child.Directory != OsPath.Null)
+    {
+        if (child.Directory.Equals(parent, true)) { return true; }
+        child = child.Directory;
+    }
+
+    return false;
+}</code></pre>
+</doc-codeblock></div>
+<p>So <code translate="no" v-pre>r.Path.IsParentPath(folder.FullPath)</code> is true when <strong>the root folder is an ancestor of the
+download output folder</strong>, i.e. the output folder lives <em>inside</em> a root folder. It is a strict
+ancestor test (it starts from <code translate="no" v-pre>child.Directory</code>); equality is handled separately by <code translate="no" v-pre>PathEquals</code>.</p>
+<p><strong>Answering the predicate question directly:</strong></p>
+<retype-table copy-text="| Relationship (output folder O vs root folder R) | Sonarr | Radarr |
+|---|---|---|
+| O == R | **warn** | **warn** |
+| O inside R (R is O's ancestor) | no warning | **warn** |
+| O is the PARENT of R (O is R's ancestor) | no warning | **no warning** |
+| unrelated | no warning | no warning |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Relationship (output folder O vs root folder R)</th>
+<th>Sonarr</th>
+<th>Radarr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O == R</td>
+<td><strong>warn</strong></td>
+<td><strong>warn</strong></td>
+</tr>
+<tr>
+<td>O inside R (R is O&#x27;s ancestor)</td>
+<td>no warning</td>
+<td><strong>warn</strong></td>
+</tr>
+<tr>
+<td>O is the PARENT of R (O is R&#x27;s ancestor)</td>
+<td>no warning</td>
+<td><strong>no warning</strong></td>
+</tr>
+<tr>
+<td>unrelated</td>
+<td>no warning</td>
+<td>no warning</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>With <code translate="no" v-pre>complete_dir = /mnt/zurg/__magic__</code> and <code translate="no" v-pre>dir: &quot;&quot;</code> (so <code translate="no" v-pre>OutputRootFolders == [&quot;/mnt/zurg/__magic__&quot;]</code>):</p>
+<ul>
+<li>Sonarr warns only if a root folder is exactly <code translate="no" v-pre>/mnt/zurg/__magic__</code>.</li>
+<li>Radarr warns if a root folder is <code translate="no" v-pre>/mnt/zurg/__magic__</code>, <code translate="no" v-pre>/mnt/zurg</code>, or <code translate="no" v-pre>/mnt</code>.</li>
+<li>Neither warns if a root folder is <code translate="no" v-pre>/mnt/zurg/__magic__/anything</code> (output folder as parent).</li>
+</ul>
+<p><code translate="no" v-pre>PathEquals</code> (<code translate="no" v-pre>PathExtensions.cs:55-73</code>) normalises Unicode, uses <code translate="no" v-pre>DiskProviderBase.PathStringComparison</code>
+(<code translate="no" v-pre>OrdinalIgnoreCase</code> on Windows, <code translate="no" v-pre>Ordinal</code> elsewhere — <code translate="no" v-pre>src/NzbDrone.Common/Disk/DiskProviderBase.cs:17-23</code>),
+and retries with <code translate="no" v-pre>CleanFilePath()</code> (trailing-slash-insensitive).</p>
+<p>Both versions re-run on <code translate="no" v-pre>ProviderUpdatedEvent</code> / <code translate="no" v-pre>ProviderDeletedEvent</code> / <code translate="no" v-pre>ModelEvent&lt;RootFolder&gt;</code> /
+<code translate="no" v-pre>ModelEvent&lt;RemotePathMapping&gt;</code>; Radarr adds <code translate="no" v-pre>[CheckOn(typeof(ProviderAddedEvent&lt;IDownloadClient&gt;))]</code>
+at <code translate="no" v-pre>:17</code>. Result is <code translate="no" v-pre>HealthCheckResult.Warning</code> with anchor <code translate="no" v-pre>#downloads-in-root-folder</code>. The message
+interpolates <code translate="no" v-pre>folder.FullPath</code> in Sonarr and <code translate="no" v-pre>folder.Path</code> in Radarr (<code translate="no" v-pre>:60</code> in both). Both silently
+swallow <code translate="no" v-pre>DownloadClientException</code> and <code translate="no" v-pre>HttpRequestException</code> (debug log) and log any other exception
+as an error.</p>
+<h3 id="62-remotepathmappingcheck--the-local-client-path-srcnzbdronecorehealthcheckchecksremotepathmappingcheckcs">6.2 <code translate="no" v-pre>RemotePathMappingCheck</code> — the local-client path (<code translate="no" v-pre>src/NzbDrone.Core/HealthCheck/Checks/RemotePathMappingCheck.cs</code>)</h3>
+<p>Short-circuit at <code translate="no" v-pre>:51-54</code>: if <code translate="no" v-pre>EnableCompletedDownloadHandling</code> is off, the check is a no-op.</p>
+<p>For every <code translate="no" v-pre>folder</code> in <code translate="no" v-pre>client.GetStatus().OutputRootFolders</code>:</p>
+<ol>
+<li>
+<p><strong><code translate="no" v-pre>!folder.IsValid</code></strong> (<code translate="no" v-pre>:68</code>) — <code translate="no" v-pre>OsPath.IsValid</code> = <code translate="no" v-pre>_path.IsPathValid(PathValidationType.CurrentOs)</code>
+(<code translate="no" v-pre>OsPath.cs:228</code>). On non-Windows that reduces to <code translate="no" v-pre>path.StartsWith(&quot;/&quot;)</code> plus a
+<code translate="no" v-pre>Path.GetInvalidPathChars()</code> scan (<code translate="no" v-pre>PathExtensions.cs:143-182</code>, <code translate="no" v-pre>:403-411</code>). Errors, in order:</p>
+<ul>
+<li>
+<p><code translate="no" v-pre>!status.IsLocalhost</code> → <code translate="no" v-pre>RemotePathMappingWrongOSPathHealthCheckMessage</code> (Radarr key:
+<code translate="no" v-pre>RemotePathMappingCheckWrongOSPath</code>), anchor <code translate="no" v-pre>#bad-remote-path-mapping</code></p>
+</li>
+<li>
+<p><code translate="no" v-pre>_osInfo.IsDocker</code> → …<code translate="no" v-pre>BadDockerPath</code>, anchor <code translate="no" v-pre>#docker-bad-remote-path-mapping</code></p>
+</li>
+<li>
+<p>otherwise → …<code translate="no" v-pre>LocalWrongOSPath</code>, anchor <code translate="no" v-pre>#bad-download-client-settings</code></p>
+</li>
+</ul>
+</li>
+<li><strong><code translate="no" v-pre>!_diskProvider.FolderExists(folder.FullPath)</code></strong> (<code translate="no" v-pre>:115</code>):
+<ul>
+<li><code translate="no" v-pre>_osInfo.IsDocker</code> → …<code translate="no" v-pre>DockerFolderMissing</code>, <code translate="no" v-pre>#docker-bad-remote-path-mapping</code></li>
+<li><code translate="no" v-pre>!status.IsLocalhost</code> → …<code translate="no" v-pre>LocalFolderMissing</code>, <code translate="no" v-pre>#bad-remote-path-mapping</code></li>
+<li>otherwise → …<code translate="no" v-pre>GenericPermissions</code>, <code translate="no" v-pre>#permissions-error</code></li>
+</ul>
+</li>
+</ol>
+<p><strong>For a local client (<code translate="no" v-pre>IsLocalhost</code> true, not Docker) this reduces to exactly two requirements:</strong>
+the reported output root folder must be an absolute path <em>for the OS Sonarr/Radarr runs on</em>, and it
+must <strong>exist on the Sonarr/Radarr host</strong> as a directory. <code translate="no" v-pre>/mnt/zurg/__magic__</code> must be visible to the
+*arr process, not just to the emulator. <strong>There is no writability check here.</strong></p>
+<p>The event-driven overload (<code translate="no" v-pre>:178-368</code>) fires on <code translate="no" v-pre>EpisodeImportFailedEvent</code> (Radarr:
+<code translate="no" v-pre>MovieImportFailedEvent</code>) and, notably, calls <code translate="no" v-pre>client.GetItems()</code> again to look up the failed
+download&#x27;s <code translate="no" v-pre>OutputPath</code> (<code translate="no" v-pre>:232</code>).</p>
+<p>No health check requires the output folder to be <em>writable</em>. <code translate="no" v-pre>FolderWritable</code>
+(<code translate="no" v-pre>DiskProviderBase.cs:126-143</code> Sonarr / <code translate="no" v-pre>:127-144</code> Radarr) — which writes and deletes
+<code translate="no" v-pre>sonarr_write_test.txt</code> / <code translate="no" v-pre>radarr_write_test.txt</code> — is used by
+<code translate="no" v-pre>RootFolderService.Add</code> (Sonarr <code translate="no" v-pre>src/NzbDrone.Core/RootFolders/RootFolderService.cs:117-120</code>) and by
+<code translate="no" v-pre>DownloadClientBase.TestFolder</code> (<code translate="no" v-pre>:167-187</code>), and <strong><code translate="no" v-pre>TestFolder</code> is never called by the SAB client.</strong></p>
+<hr>
+<h2 id="7-sonarr-vs-radarr--the-complete-diff">7. Sonarr vs Radarr — the complete diff</h2>
+<p>Every fetched file was diffed. Results:</p>
+<p><strong>Byte-identical apart from a UTF-8 BOM on the Sonarr copies</strong> (line numbers therefore match exactly):</p>
+<p><code translate="no" v-pre>SabnzbdCategory.cs</code> (no BOM either side — truly identical), <code translate="no" v-pre>SabnzbdDownloadStatus.cs</code>,
+<code translate="no" v-pre>SabnzbdPriority.cs</code>, <code translate="no" v-pre>SabnzbdFullStatus.cs</code>, <code translate="no" v-pre>SabnzbdJsonError.cs</code>, <code translate="no" v-pre>SabnzbdQueue.cs</code>,
+<code translate="no" v-pre>SabnzbdQueueItem.cs</code>, <code translate="no" v-pre>SabnzbdHistory.cs</code>, <code translate="no" v-pre>SabnzbdHistoryItem.cs</code>,
+<code translate="no" v-pre>JsonConverters/*.cs</code> (all three), <code translate="no" v-pre>Responses/*.cs</code> (all six),
+<code translate="no" v-pre>src/NzbDrone.Common/Disk/DiskTransferService.cs</code>, <code translate="no" v-pre>src/NzbDrone.Core/Download/DownloadEventHub.cs</code>.</p>
+<p><strong>Differ only by the <code translate="no" v-pre>TvCategory</code> → <code translate="no" v-pre>MovieCategory</code> / <code translate="no" v-pre>RemoteEpisode</code> → <code translate="no" v-pre>RemoteMovie</code> rename
+(no line-count change, same line numbers):</strong></p>
+<ul>
+<li>
+<p><code translate="no" v-pre>Sabnzbd.cs</code> — <code translate="no" v-pre>:40-52</code> (<code translate="no" v-pre>AddFromNzbFile</code>; Radarr&#x27;s recency test is
+<code translate="no" v-pre>remoteMovie.Movie.MovieMetadata.Value.IsRecentMovie</code> vs Sonarr&#x27;s <code translate="no" v-pre>remoteEpisode.IsRecentEpisode()</code>),
+<code translate="no" v-pre>:190</code>, <code translate="no" v-pre>:251</code>, <code translate="no" v-pre>:265/269/273</code>, <code translate="no" v-pre>:458</code>, and every <code translate="no" v-pre>NzbDroneValidationFailure</code> field name in
+<code translate="no" v-pre>TestCategory</code> (<code translate="no" v-pre>&quot;TvCategory&quot;</code> → <code translate="no" v-pre>&quot;MovieCategory&quot;</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>SabnzbdProxy.cs</code> — <code translate="no" v-pre>:50</code>, <code translate="no" v-pre>:122-124</code>, <code translate="no" v-pre>:138-140</code>.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>SabnzbdSettings.cs</code> — defaults <code translate="no" v-pre>TvCategory = &quot;tv&quot;</code> vs <code translate="no" v-pre>MovieCategory = &quot;movies&quot;</code>;
+<code translate="no" v-pre>RecentTvPriority</code>/<code translate="no" v-pre>OlderTvPriority</code> vs <code translate="no" v-pre>RecentMoviePriority</code>/<code translate="no" v-pre>OlderMoviePriority</code>
+(both default to <code translate="no" v-pre>(int)SabnzbdPriority.Default</code>). Validator is otherwise identical: <code translate="no" v-pre>Host</code> valid,
+<code translate="no" v-pre>Port</code> 1–65535, <code translate="no" v-pre>ApiKey</code> required when username blank, <code translate="no" v-pre>Username</code>/<code translate="no" v-pre>Password</code> required when ApiKey
+blank, category <code translate="no" v-pre>NotEmpty</code> <strong>as a warning</strong>.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>UsenetClientBase.cs</code> — Radarr additionally sets <code translate="no" v-pre>request.AllowAutoRedirect = true</code> (<code translate="no" v-pre>:51</code>) and
+treats HTTP <code translate="no" v-pre>410 Gone</code> like <code translate="no" v-pre>404</code> (<code translate="no" v-pre>:63</code>) when fetching the NZB from the indexer. <strong>This is about
+the indexer, not about SAB.</strong></p>
+</li>
+<li>
+<p><code translate="no" v-pre>DownloadClientBase.cs</code> — only the literal &quot;Sonarr&quot;/&quot;Radarr&quot; in <code translate="no" v-pre>TestFolder</code>&#x27;s detail text.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>RemotePathMappingCheck.cs</code> — localization key names
+(<code translate="no" v-pre>RemotePathMapping*HealthCheckMessage</code> vs <code translate="no" v-pre>RemotePathMappingCheck*</code>), <code translate="no" v-pre>EpisodeImportFailedEvent</code>
+vs <code translate="no" v-pre>MovieImportFailedEvent</code>, plus Radarr&#x27;s extra <code translate="no" v-pre>[CheckOn(ProviderAddedEvent&lt;IDownloadClient&gt;)]</code>.
+<strong>Predicates are identical.</strong></p>
+</li>
+<li>
+<p><code translate="no" v-pre>DiskProviderBase.cs</code> — <code translate="no" v-pre>FolderWritable</code> probe file <code translate="no" v-pre>sonarr_write_test.txt</code> vs <code translate="no" v-pre>radarr_write_test.txt</code>
+(Sonarr <code translate="no" v-pre>:132</code>, Radarr <code translate="no" v-pre>:133</code>).</p>
+</li>
+</ul>
+<p><strong>Real behavioural difference — exactly one:</strong></p>
+<ul>
+<li><strong><code translate="no" v-pre>DownloadClientRootFolderCheck.cs:51</code>.</strong> Sonarr warns only on <code translate="no" v-pre>PathEquals</code>; Radarr also warns when
+a root folder is an ancestor of the output folder. Full table in §6.1.</li>
+</ul>
+<p>Everything else — modes, params, JSON shapes, enums, converters, <code translate="no" v-pre>CheckForError</code>, <code translate="no" v-pre>RemoveItem</code>,
+<code translate="no" v-pre>DeleteItemData</code>, transfer mode, <code translate="no" v-pre>DiskTransferService</code> — is identical. <strong>One emulator serves both.</strong></p>
+<p>Config defaults identical in both: <code translate="no" v-pre>DownloadClientHistoryLimit = 60</code>,
+<code translate="no" v-pre>RemoveCompletedDownloads = true</code>, <code translate="no" v-pre>RemoveFailedDownloads = true</code>.</p>
+<hr>
+<h2 id="8-minimal-but-complete-example-payloads">8. Minimal-but-complete example payloads</h2>
+<p>Given: <code translate="no" v-pre>complete_dir = /mnt/zurg/__magic__</code>; categories <code translate="no" v-pre>*</code>, <code translate="no" v-pre>tv</code>, <code translate="no" v-pre>movies</code>, all with <code translate="no" v-pre>dir: &quot;&quot;</code>.
+Every response is <strong>HTTP 200</strong> with <code translate="no" v-pre>Content-Type: application/json</code>.</p>
+<p>Resulting <code translate="no" v-pre>OutputRootFolders</code>: <code translate="no" v-pre>dir: &quot;&quot;</code> ⇒ <code translate="no" v-pre>FullPath == complete_dir</code> ⇒ <code translate="no" v-pre>/mnt/zurg/__magic__</code>
+for Sonarr (category <code translate="no" v-pre>tv</code>) and for Radarr (category <code translate="no" v-pre>movies</code>).</p>
+<h3 id="81-modeversion">8.1 <code translate="no" v-pre>mode=version</code></h3>
+<div id="81-modeversion-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;version&quot;: &quot;4.3.3&quot;
+}</code></pre>
+</doc-codeblock></div>
+<p>Must be <code translate="no" v-pre>major.minor.(patch|x)</code>. <code translate="no" v-pre>4</code> ≥ 1 satisfies <code translate="no" v-pre>TestConnectionAndVersion</code> (<code translate="no" v-pre>Sabnzbd.cs:389-392</code>);
+≥ 2.0 also means <code translate="no" v-pre>GetCategories</code> would use <code translate="no" v-pre>fullstatus</code> rather than <code translate="no" v-pre>queue.my_home</code> if <code translate="no" v-pre>complete_dir</code>
+were relative (it isn&#x27;t).</p>
+<h3 id="82-modeget_config">8.2 <code translate="no" v-pre>mode=get_config</code></h3>
+<div id="82-modeget_config-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;config&quot;: {
+    &quot;misc&quot;: {
+      &quot;complete_dir&quot;: &quot;/mnt/zurg/__magic__&quot;,
+      &quot;pre_check&quot;: false,
+      &quot;enable_tv_sorting&quot;: false,
+      &quot;tv_categories&quot;: [],
+      &quot;enable_movie_sorting&quot;: false,
+      &quot;movie_categories&quot;: [],
+      &quot;enable_date_sorting&quot;: false,
+      &quot;date_categories&quot;: [],
+      &quot;history_retention&quot;: &quot;0&quot;,
+      &quot;history_retention_option&quot;: &quot;all&quot;,
+      &quot;history_retention_number&quot;: 0
+    },
+    &quot;servers&quot;: [],
+    &quot;categories&quot;: [
+      { &quot;name&quot;: &quot;*&quot;,      &quot;order&quot;: 0, &quot;pp&quot;: &quot;3&quot;, &quot;script&quot;: &quot;None&quot;, &quot;dir&quot;: &quot;&quot;, &quot;newzbin&quot;: &quot;&quot;, &quot;priority&quot;: 0 },
+      { &quot;name&quot;: &quot;tv&quot;,     &quot;order&quot;: 1, &quot;pp&quot;: &quot;3&quot;, &quot;script&quot;: &quot;None&quot;, &quot;dir&quot;: &quot;&quot;, &quot;newzbin&quot;: &quot;&quot;, &quot;priority&quot;: 0 },
+      { &quot;name&quot;: &quot;movies&quot;, &quot;order&quot;: 2, &quot;pp&quot;: &quot;3&quot;, &quot;script&quot;: &quot;None&quot;, &quot;dir&quot;: &quot;&quot;, &quot;newzbin&quot;: &quot;&quot;, &quot;priority&quot;: 0 }
+    ],
+    &quot;sorters&quot;: []
+  }
+}</code></pre>
+</doc-codeblock></div>
+<p>Why each value:</p>
+<ul>
+<li>
+<p><code translate="no" v-pre>misc</code> present as an object — <strong>required</strong>, else NRE (§3.4).</p>
+</li>
+<li>
+<p>every category has a <strong>string</strong> <code translate="no" v-pre>dir</code> — <strong>required</strong>, else NRE at <code translate="no" v-pre>Sabnzbd.cs:238</code> and <code translate="no" v-pre>:462</code>.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>dir</code> does <strong>not</strong> end with <code translate="no" v-pre>*</code> — else the &quot;enable job folders&quot; warning (<code translate="no" v-pre>Sabnzbd.cs:462-469</code>).</p>
+</li>
+<li>
+<p>all three <code translate="no" v-pre>enable_*_sorting: false</code> — kills both the <code translate="no" v-pre>TestCategory</code> warnings (<code translate="no" v-pre>Sabnzbd.cs:493-518</code>)
+and <code translate="no" v-pre>DownloadClientSortingCheck</code>. Note that <code translate="no" v-pre>tv_categories: []</code> combined with
+<code translate="no" v-pre>enable_tv_sorting: true</code> would <strong>fail</strong>, because <code translate="no" v-pre>ContainsCategory</code> returns true for empty
+(<code translate="no" v-pre>Sabnzbd.cs:525-528</code>, fixture <code translate="no" v-pre>SabnzbdFixture.cs:647-656</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>sorters: []</code> — <code translate="no" v-pre>config.Sorters.Any(s =&gt; s.is_active &amp;&amp; …)</code> is false (<code translate="no" v-pre>Sabnzbd.cs:484</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>pre_check: false</code> — skips the <code translate="no" v-pre>HasVersion(1,1)</code> round-trip in <code translate="no" v-pre>TestGlobalConfig</code> (<code translate="no" v-pre>Sabnzbd.cs:443</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>history_retention_option: &quot;all&quot;</code> → <code translate="no" v-pre>RemovesCompletedDownloads == false</code> (<code translate="no" v-pre>Sabnzbd.cs:546-547</code>)
+→ no health-check warning.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>complete_dir</code> absolute → <code translate="no" v-pre>IsRooted</code> true → <code translate="no" v-pre>mode=fullstatus</code> / <code translate="no" v-pre>queue.my_home</code> never consulted
+(<code translate="no" v-pre>Sabnzbd.cs:220</code>).</p>
+</li>
+</ul>
+<h3 id="83-modefullstatusskip_dashboard1">8.3 <code translate="no" v-pre>mode=fullstatus&amp;skip_dashboard=1</code></h3>
+<div id="83-modefullstatusskip_dashboard1-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;status&quot;: {
+    &quot;completedir&quot;: &quot;/mnt/zurg/__magic__&quot;,
+    &quot;version&quot;: &quot;4.3.3&quot;,
+    &quot;uptime&quot;: &quot;1d&quot;,
+    &quot;color_scheme&quot;: &quot;Auto&quot;,
+    &quot;darwin&quot;: false,
+    &quot;nt&quot;: false,
+    &quot;pid&quot;: 1,
+    &quot;new_release&quot;: &quot;&quot;,
+    &quot;new_rel_url&quot;: &quot;&quot;,
+    &quot;active_lang&quot;: &quot;en&quot;,
+    &quot;my_home&quot;: &quot;/mnt/zurg&quot;,
+    &quot;my_lcldata&quot;: &quot;/config&quot;,
+    &quot;webdir&quot;: &quot;&quot;,
+    &quot;loglevel&quot;: &quot;1&quot;,
+    &quot;folders&quot;: [],
+    &quot;configfn&quot;: &quot;/config/sabnzbd.ini&quot;,
+    &quot;warnings&quot;: [],
+    &quot;servers&quot;: [],
+    &quot;localipv4&quot;: &quot;127.0.0.1&quot;,
+    &quot;publicipv4&quot;: &quot;&quot;,
+    &quot;ipv6&quot;: null,
+    &quot;dnslookup&quot;: &quot;ok&quot;
+  }
+}</code></pre>
+</doc-codeblock></div>
+<p>Only <code translate="no" v-pre>completedir</code> is read (<code translate="no" v-pre>SabnzbdFullStatus.cs:9-10</code>). The wrapper key <strong>must</strong> be <code translate="no" v-pre>status</code>
+(<code translate="no" v-pre>Responses/SabnzbdFullStatusResponse.cs:5</code>).</p>
+<h3 id="84-modeaddfile-response">8.4 <code translate="no" v-pre>mode=addfile</code> response</h3>
+<div id="84-modeaddfile-response-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;status&quot;: true,
+  &quot;nzo_ids&quot;: [&quot;SABnzbd_nzo_abc12345&quot;]
+}</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>nzo_ids</code> must be a <strong>non-empty array of strings</strong> (<code translate="no" v-pre>Sabnzbd.cs:47-52</code>). <code translate="no" v-pre>status</code> is parsed
+(<code translate="no" v-pre>Responses/SabnzbdAddResponse.cs:13</code>) but never read; keep it <code translate="no" v-pre>true</code> so <code translate="no" v-pre>CheckForError</code> sees <code translate="no" v-pre>&quot;True&quot;</code>.</p>
+<h3 id="85-modequeuestart0limit0categorytv--one-downloading-slot">8.5 <code translate="no" v-pre>mode=queue&amp;start=0&amp;limit=0&amp;category=tv</code> — one Downloading slot</h3>
+<div id="85-modequeuestart0limit0categorytv--one-downloading-slot-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;queue&quot;: {
+    &quot;status&quot;: &quot;Downloading&quot;,
+    &quot;speedlimit&quot;: &quot;0&quot;,
+    &quot;speedlimit_abs&quot;: &quot;&quot;,
+    &quot;paused&quot;: false,
+    &quot;noofslots_total&quot;: 1,
+    &quot;noofslots&quot;: 1,
+    &quot;limit&quot;: 0,
+    &quot;start&quot;: 0,
+    &quot;finish&quot;: 0,
+    &quot;have_warnings&quot;: &quot;0&quot;,
+    &quot;cache_art&quot;: &quot;0&quot;,
+    &quot;cache_size&quot;: &quot;0 B&quot;,
+    &quot;finishaction&quot;: null,
+    &quot;queue_details&quot;: &quot;0&quot;,
+    &quot;my_home&quot;: &quot;/mnt/zurg&quot;,
+    &quot;my_lcldata&quot;: &quot;/config&quot;,
+    &quot;mb&quot;: &quot;1024.00&quot;,
+    &quot;mbleft&quot;: &quot;512.00&quot;,
+    &quot;size&quot;: &quot;1.0 GB&quot;,
+    &quot;sizeleft&quot;: &quot;512.0 MB&quot;,
+    &quot;kbpersec&quot;: &quot;1024.00&quot;,
+    &quot;speed&quot;: &quot;1.0 M&quot;,
+    &quot;timeleft&quot;: &quot;0:08:32&quot;,
+    &quot;eta&quot;: &quot;12:34 Fri 22 Aug&quot;,
+    &quot;diskspace1&quot;: &quot;1000.00&quot;,
+    &quot;diskspace2&quot;: &quot;1000.00&quot;,
+    &quot;diskspacetotal1&quot;: &quot;2000.00&quot;,
+    &quot;diskspacetotal2&quot;: &quot;2000.00&quot;,
+    &quot;diskspace1_norm&quot;: &quot;1000.0 G&quot;,
+    &quot;diskspace2_norm&quot;: &quot;1000.0 G&quot;,
+    &quot;slots&quot;: [
+      {
+        &quot;status&quot;: &quot;Downloading&quot;,
+        &quot;index&quot;: 0,
+        &quot;password&quot;: &quot;&quot;,
+        &quot;avg_age&quot;: &quot;2d&quot;,
+        &quot;script&quot;: &quot;None&quot;,
+        &quot;direct_unpack&quot;: null,
+        &quot;mb&quot;: &quot;1024.00&quot;,
+        &quot;mbleft&quot;: &quot;512.00&quot;,
+        &quot;mbmissing&quot;: &quot;0.00&quot;,
+        &quot;size&quot;: &quot;1.0 GB&quot;,
+        &quot;sizeleft&quot;: &quot;512.0 MB&quot;,
+        &quot;filename&quot;: &quot;Some.Show.S01E01.1080p.WEB-DL.H264-GRP&quot;,
+        &quot;labels&quot;: [],
+        &quot;priority&quot;: &quot;Normal&quot;,
+        &quot;cat&quot;: &quot;tv&quot;,
+        &quot;timeleft&quot;: &quot;0:08:32&quot;,
+        &quot;percentage&quot;: &quot;50&quot;,
+        &quot;nzo_id&quot;: &quot;SABnzbd_nzo_abc12345&quot;,
+        &quot;unpackopts&quot;: &quot;3&quot;
+      }
+    ]
+  }
+}</code></pre>
+</doc-codeblock></div>
+<p>Hard requirements:</p>
+<ul>
+<li>
+<p>top-level key <code translate="no" v-pre>queue</code> (<code translate="no" v-pre>SabnzbdProxy.cs:129</code>, <code translate="no" v-pre>SelectToken(&quot;queue&quot;)</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>slots[].status</code> ∈ the 16 <code translate="no" v-pre>SabnzbdDownloadStatus</code> names, exact case.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>slots[].mb</code> / <code translate="no" v-pre>mbleft</code> are <strong>megabytes</strong>, invariant-culture decimals. Strings or numbers both work
+(Newtonsoft coerces); real SAB sends strings.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>slots[].timeleft</code> is exactly <code translate="no" v-pre>h:m:s</code> or <code translate="no" v-pre>d:h:m:s</code> — never <code translate="no" v-pre>&quot;&quot;</code>.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>slots[].priority</code> — <code translate="no" v-pre>&quot;Normal&quot;</code>, <code translate="no" v-pre>&quot;High&quot;</code>, <code translate="no" v-pre>&quot;Low&quot;</code>, <code translate="no" v-pre>&quot;Force&quot;</code>, <code translate="no" v-pre>&quot;Paused&quot;</code>, <code translate="no" v-pre>&quot;Default&quot;</code>
+(case-sensitive) or the numeric equivalent. <strong>Never <code translate="no" v-pre>null</code></strong> (NRE).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>slots[].cat</code> (not <code translate="no" v-pre>category</code>) must equal the client&#x27;s configured category, or the item is filtered
+out at <code translate="no" v-pre>Sabnzbd.cs:190</code>.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>queue.paused</code> must be <code translate="no" v-pre>false</code> unless you actually mean paused — <code translate="no" v-pre>true</code> marks every non-<code translate="no" v-pre>Force</code>
+slot as Paused with a null ETA (<code translate="no" v-pre>Sabnzbd.cs:78-84</code>).</p>
+</li>
+</ul>
+<p>Resulting <code translate="no" v-pre>DownloadClientItem</code>: <code translate="no" v-pre>TotalSize = 1024 * 1024 * 1024</code>, <code translate="no" v-pre>RemainingSize = 512 * 1024 * 1024</code>,
+<code translate="no" v-pre>RemainingTime = 00:08:32</code>, <code translate="no" v-pre>Status = Downloading</code>, <code translate="no" v-pre>CanBeRemoved = CanMoveFiles = true</code>.</p>
+<h3 id="86-modehistorystart0limit60categorytv--one-completed-and-one-failed-slot">8.6 <code translate="no" v-pre>mode=history&amp;start=0&amp;limit=60&amp;category=tv</code> — one Completed and one Failed slot</h3>
+<div id="86-modehistorystart0limit60categorytv--one-completed-and-one-failed-slot-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;history&quot;: {
+    &quot;noofslots&quot;: 2,
+    &quot;ppslots&quot;: 0,
+    &quot;day_size&quot;: &quot;1.0 G&quot;,
+    &quot;week_size&quot;: &quot;7.0 G&quot;,
+    &quot;month_size&quot;: &quot;30.0 G&quot;,
+    &quot;total_size&quot;: &quot;1.0 T&quot;,
+    &quot;last_history_update&quot;: 1755835200,
+    &quot;version&quot;: &quot;4.3.3&quot;,
+    &quot;slots&quot;: [
+      {
+        &quot;id&quot;: 1,
+        &quot;completed&quot;: 1755834000,
+        &quot;name&quot;: &quot;Some.Show.S01E02.1080p.WEB-DL.H264-GRP&quot;,
+        &quot;nzb_name&quot;: &quot;Some.Show.S01E02.1080p.WEB-DL.H264-GRP.nzb&quot;,
+        &quot;category&quot;: &quot;tv&quot;,
+        &quot;pp&quot;: &quot;3&quot;,
+        &quot;script&quot;: &quot;None&quot;,
+        &quot;report&quot;: &quot;&quot;,
+        &quot;url&quot;: &quot;&quot;,
+        &quot;status&quot;: &quot;Completed&quot;,
+        &quot;nzo_id&quot;: &quot;SABnzbd_nzo_def67890&quot;,
+        &quot;storage&quot;: &quot;/mnt/zurg/__magic__/Some.Show.S01E02.1080p.WEB-DL.H264-GRP&quot;,
+        &quot;path&quot;: &quot;/mnt/zurg/__magic__/Some.Show.S01E02.1080p.WEB-DL.H264-GRP&quot;,
+        &quot;script_log&quot;: &quot;&quot;,
+        &quot;script_line&quot;: &quot;&quot;,
+        &quot;download_time&quot;: 120,
+        &quot;postproc_time&quot;: 3,
+        &quot;stage_log&quot;: [],
+        &quot;downloaded&quot;: 1073741824,
+        &quot;completeness&quot;: 100,
+        &quot;fail_message&quot;: &quot;&quot;,
+        &quot;url_info&quot;: &quot;&quot;,
+        &quot;bytes&quot;: 1073741824,
+        &quot;meta&quot;: null,
+        &quot;series&quot;: &quot;&quot;,
+        &quot;md5sum&quot;: &quot;&quot;,
+        &quot;password&quot;: &quot;&quot;,
+        &quot;action_line&quot;: &quot;&quot;,
+        &quot;size&quot;: &quot;1.0 GB&quot;,
+        &quot;loaded&quot;: false,
+        &quot;retry&quot;: 0,
+        &quot;has_rating&quot;: false
+      },
+      {
+        &quot;id&quot;: 2,
+        &quot;completed&quot;: 1755833000,
+        &quot;name&quot;: &quot;Some.Show.S01E03.1080p.WEB-DL.H264-GRP&quot;,
+        &quot;nzb_name&quot;: &quot;Some.Show.S01E03.1080p.WEB-DL.H264-GRP.nzb&quot;,
+        &quot;category&quot;: &quot;tv&quot;,
+        &quot;pp&quot;: &quot;3&quot;,
+        &quot;script&quot;: &quot;None&quot;,
+        &quot;report&quot;: &quot;&quot;,
+        &quot;url&quot;: &quot;&quot;,
+        &quot;status&quot;: &quot;Failed&quot;,
+        &quot;nzo_id&quot;: &quot;SABnzbd_nzo_ghi13579&quot;,
+        &quot;storage&quot;: &quot;&quot;,
+        &quot;path&quot;: &quot;&quot;,
+        &quot;script_log&quot;: &quot;&quot;,
+        &quot;script_line&quot;: &quot;&quot;,
+        &quot;download_time&quot;: 0,
+        &quot;postproc_time&quot;: 0,
+        &quot;stage_log&quot;: [],
+        &quot;downloaded&quot;: 0,
+        &quot;completeness&quot;: 0,
+        &quot;fail_message&quot;: &quot;Article download failed, out of retention&quot;,
+        &quot;url_info&quot;: &quot;&quot;,
+        &quot;bytes&quot;: 0,
+        &quot;meta&quot;: null,
+        &quot;series&quot;: &quot;&quot;,
+        &quot;md5sum&quot;: &quot;&quot;,
+        &quot;password&quot;: &quot;&quot;,
+        &quot;action_line&quot;: &quot;&quot;,
+        &quot;size&quot;: &quot;0 B&quot;,
+        &quot;loaded&quot;: false,
+        &quot;retry&quot;: 0,
+        &quot;has_rating&quot;: false
+      }
+    ]
+  }
+}</code></pre>
+</doc-codeblock></div>
+<p>Hard requirements:</p>
+<ul>
+<li>
+<p>top-level key <code translate="no" v-pre>history</code> (<code translate="no" v-pre>SabnzbdProxy.cs:145</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>slots[].bytes</code> is <strong>BYTES</strong> (a JSON number → <code translate="no" v-pre>long</code>). Do not send MB here — the queue uses MB, the
+history uses bytes (<code translate="no" v-pre>Sabnzbd.cs:72-73</code> vs <code translate="no" v-pre>:128</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>slots[].category</code> (not <code translate="no" v-pre>cat</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>slots[].storage</code> = the job folder itself; it becomes <code translate="no" v-pre>OutputPath</code>, and for a Completed item it is
+what <code translate="no" v-pre>DeleteItemData</code> recursively deletes (§5.3). It must be an absolute path valid for the OS
+Sonarr/Radarr runs on and must exist there (<code translate="no" v-pre>RemotePathMappingCheck</code>, §6.2).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>slots[].status</code> exact-case; <code translate="no" v-pre>Deleted</code> items are dropped entirely (<code translate="no" v-pre>Sabnzbd.cs:116-119</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>fail_message</code> exactly <code translate="no" v-pre>&quot;Unpacking failed, write error or disk is full?&quot;</code> downgrades a Failed item
+to <code translate="no" v-pre>Warning</code> instead of <code translate="no" v-pre>Failed</code> (<code translate="no" v-pre>Sabnzbd.cs:140-144</code>) — use something else for a genuine failure.</p>
+</li>
+<li>
+<p>Radarr: <code translate="no" v-pre>category</code> must be <code translate="no" v-pre>movies</code> (or whatever is configured) and <code translate="no" v-pre>name</code> should parse as a movie.</p>
+</li>
+</ul>
+<h3 id="87-error-response-any-mode">8.7 Error response (any mode)</h3>
+<div id="87-error-response-any-mode-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;status&quot;: false,
+  &quot;error&quot;: &quot;API Key Incorrect&quot;
+}</code></pre>
+</doc-codeblock></div>
+<p><strong>HTTP 200.</strong> <code translate="no" v-pre>status</code> may be the boolean <code translate="no" v-pre>false</code> or the string <code translate="no" v-pre>&quot;false&quot;</code>; both satisfy
+<code translate="no" v-pre>SabnzbdJsonError.Failed</code> (<code translate="no" v-pre>SabnzbdJsonError.cs:10-11</code>). The client raises
+<code translate="no" v-pre>DownloadClientException(&quot;Error response received from SABnzbd: API Key Incorrect&quot;)</code>
+(<code translate="no" v-pre>SabnzbdProxy.cs:244</code>), which <code translate="no" v-pre>TestAuthentication</code> recognises (<code translate="no" v-pre>Sabnzbd.cs:424</code>).
+Use <code translate="no" v-pre>&quot;API Key Required&quot;</code> when no key was supplied (<code translate="no" v-pre>Sabnzbd.cs:429</code>). Any other <code translate="no" v-pre>error</code> string is
+reported verbatim but not classified.</p>
+<hr>
+<h2 id="9-implementation-checklist-12-points">9. Implementation checklist (12 points)</h2>
+<ol>
+<li>
+<p>One route: <code translate="no" v-pre>GET|POST {UrlBase}/api</code>, dispatch on <code translate="no" v-pre>mode</code>. <strong>Always HTTP 200, always JSON.</strong></p>
+</li>
+<li>
+<p>Implement <code translate="no" v-pre>version</code>, <code translate="no" v-pre>get_config</code>, <code translate="no" v-pre>queue</code> (read + <code translate="no" v-pre>name=delete</code>), <code translate="no" v-pre>history</code> (read + <code translate="no" v-pre>name=delete</code>),
+<code translate="no" v-pre>addfile</code>, <code translate="no" v-pre>fullstatus</code>. Optionally <code translate="no" v-pre>retry</code> (dead code today). <code translate="no" v-pre>get_cats</code> is never called.</p>
+</li>
+<li>
+<p>Accept auth as either <code translate="no" v-pre>apikey=</code> <strong>or</strong> <code translate="no" v-pre>ma_username=</code>+<code translate="no" v-pre>ma_password=</code>. Reject with 200 +
+<code translate="no" v-pre>{&quot;status&quot;:false,&quot;error&quot;:&quot;API Key Incorrect&quot;}</code> / <code translate="no" v-pre>&quot;API Key Required&quot;</code> — never a 401/403.</p>
+</li>
+<li>
+<p>Honour <code translate="no" v-pre>category=</code> on <code translate="no" v-pre>queue</code>/<code translate="no" v-pre>history</code> (the clients also filter client-side by exact string match,
+<code translate="no" v-pre>Sabnzbd.cs:190</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>queue</code> sizes in <strong>MB</strong> (<code translate="no" v-pre>mb</code>, <code translate="no" v-pre>mbleft</code>); <code translate="no" v-pre>history</code> sizes in <strong>BYTES</strong> (<code translate="no" v-pre>bytes</code>). Never mix them up.
+Queue uses <code translate="no" v-pre>cat</code>, history uses <code translate="no" v-pre>category</code>.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>timeleft</code> is always <code translate="no" v-pre>h:m:s</code> or <code translate="no" v-pre>d:h:m:s</code>, never empty, never absent-as-empty-string.
+No date field is parsed anywhere, so epoch fields are free-form.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>status</code> values must come from the 16-member <code translate="no" v-pre>SabnzbdDownloadStatus</code> list, exact case (an unknown
+name throws and kills the whole queue/history call). <code translate="no" v-pre>priority</code> must be a <code translate="no" v-pre>SabnzbdPriority</code> name
+(exact case) or its integer; <strong>never <code translate="no" v-pre>null</code></strong> (NRE in the converter).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>config.misc</code> must be an object; every category must carry a <strong>non-null string <code translate="no" v-pre>dir</code></strong> that does
+not end in <code translate="no" v-pre>*</code>. <code translate="no" v-pre>categories</code>/<code translate="no" v-pre>sorters</code>/<code translate="no" v-pre>servers</code> may be null or absent, <code translate="no" v-pre>misc</code> and <code translate="no" v-pre>dir</code> may not.</p>
+</li>
+<li>
+<p>Keep <code translate="no" v-pre>enable_tv_sorting</code>, <code translate="no" v-pre>enable_movie_sorting</code>, <code translate="no" v-pre>enable_date_sorting</code> and <code translate="no" v-pre>pre_check</code> all <code translate="no" v-pre>false</code>,
+and <code translate="no" v-pre>history_retention_option: &quot;all&quot;</code>, to keep the connection test and all health checks clean.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>storage</code> on a Completed history slot = the job folder. Expect the *arr to <code translate="no" v-pre>rm -rf</code> it after a
+successful import (default settings), and expect the media file to be <strong>moved</strong> out of it first.
+If the magic directory is read-only the delete fails silently (warning log only), but the <em>move</em>
+of the imported file must still succeed or the import fails outright (§5.5).</p>
+</li>
+<li>
+<p>Do not place any *arr root folder at or above <code translate="no" v-pre>/mnt/zurg/__magic__</code> if you want Radarr&#x27;s
+<code translate="no" v-pre>DownloadClientRootFolderCheck</code> to stay quiet (Sonarr only cares about exact equality).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>/mnt/zurg/__magic__</code> must exist as a directory <strong>on the Sonarr/Radarr host</strong>, not just where the
+emulator runs, or <code translate="no" v-pre>RemotePathMappingCheck</code> raises an error. It does not need to be writable.</p>
+</li>
+</ol>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../internals/debrid-baseline/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Previous</span>
+                                <span class="block mt-1">Debrid baseline</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../internals/plex-trash-sweep/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Next</span>
+                                <span class="block mt-1">Plex trash sweep</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "SABnzbd client contract", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/internals/sabnzbd-client-contract.md" }</script>
+</body>
+</html>

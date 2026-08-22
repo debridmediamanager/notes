@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.840752251421">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Aligning the Plex trash sweep with zurg&#39;s own file status</title>
+    <meta name="title" content="Aligning the Plex trash sweep with zurg's own file status">
+    <meta name="description" content="The Plex trash sweep currently decides what to remove from a Plex library using file absence plus an age timer. zurg already knows something far better — whether the content behind that file is repairable or permanently dead — and does not consult it.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/internals/plex-trash-sweep/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/internals/plex-trash-sweep/">
+    <meta property="og:title" content="Aligning the Plex trash sweep with zurg's own file status">
+    <meta property="og:description" content="The Plex trash sweep currently decides what to remove from a Plex library using file absence plus an age timer. zurg already knows something far better — whether the content behind that file is repairable or permanently dead — and does not consult it.">
+    <meta property="og:site_name" content="dmm+zurg">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/internals/plex-trash-sweep/">
+    <meta name="twitter:title" content="Aligning the Plex trash sweep with zurg's own file status">
+    <meta name="twitter:description" content="The Plex trash sweep currently decides what to remove from a Plex library using file absence plus an age timer. zurg already knows something far better — whether the content behind that file is repairable or permanently dead — and does not consult it.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/internals/plex-trash-sweep.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../resources/css/retype.css?v=4.6.0.840752251421" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.840752251421" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.840752251421" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.840752251421" defer></script>
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/" class="flex items-center leading-snug text-2xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">dmm+zurg</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg-testing" target="_blank">zurg-testing</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://reddit.com/r/debridmediamanager" target="_blank">Reddit</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.patreon.com/debridmediamanager" target="_blank">Patreon</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg-testing" target="_blank">zurg-testing</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://reddit.com/r/debridmediamanager" target="_blank">Reddit</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.patreon.com/debridmediamanager" target="_blank">Patreon</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="aligning-the-plex-trash-sweep-with-zurgs-own-file-status">Aligning the Plex trash sweep with zurg&#x27;s own file status</h1>
+<h2 id="purpose-of-this-document">Purpose of this document</h2>
+<p>The Plex trash sweep currently decides what to remove from a Plex library using
+<strong>file absence plus an age timer</strong>. zurg already knows something far better —
+whether the content behind that file is repairable or permanently dead — and does
+not consult it.</p>
+<p>This document is the plan for replacing the timer with that knowledge. It exists
+to be reviewed <strong>before</strong> any code is written, because the change decides what
+gets deleted from a media library and the current behaviour is wrong in both
+directions: it waits two weeks to remove content that is known dead on day one,
+and it deletes content that zurg is still actively repairing.</p>
+<p>It records what was verified in the code and on a live library, what is being
+proposed, and what is deliberately left alone. Everything stated as fact below was
+checked against the running system on 2026-08-16, not inferred from naming.</p>
+<p>Scope: <code translate="no" v-pre>internal/plexsweep</code>, <code translate="no" v-pre>internal/plexdb</code>, and a new read-only query into
+<code translate="no" v-pre>internal/torrent</code>. No change to repair behaviour itself.</p>
+<hr>
+<h2 id="1-background--what-shipped-and-why-it-needs-revisiting">1. Background — what shipped, and why it needs revisiting</h2>
+<p>Four commits landed the sweep:</p>
+<retype-table copy-text="| Commit | What |
+|---|---|
+| `4737b677` | Warn when Plex's `autoEmptyTrash` is on |
+| `020042a3` | The sweeper: detection, guards, repair, per-item removal |
+| `51cc9f69` | Dashboard config UI and documentation |
+| `1a481a8f` | Count repairs against the cap, not just removals |
+| `c6f41621` | `plex_trash_sweep_min_age_days`, default 14 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Commit</th>
+<th>What</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>4737b677</code></td>
+<td>Warn when Plex&#x27;s <code translate="no" v-pre>autoEmptyTrash</code> is on</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>020042a3</code></td>
+<td>The sweeper: detection, guards, repair, per-item removal</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>51cc9f69</code></td>
+<td>Dashboard config UI and documentation</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>1a481a8f</code></td>
+<td>Count repairs against the cap, not just removals</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>c6f41621</code></td>
+<td><code translate="no" v-pre>plex_trash_sweep_min_age_days</code>, default 14</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>The sweep&#x27;s governing invariant is unchanged and stays: <strong>nothing that still has a
+file is ever removed.</strong> Items with a live file are repaired, or left alone with
+their trash icon. Shows and seasons with live episodes are never touched. Removal
+is per item, never Plex&#x27;s section-wide <code translate="no" v-pre>emptyTrash</code>.</p>
+<p>What is being revisited is only the rule for <em>when a genuinely-absent entry may be
+removed</em>.</p>
+<h3 id="the-timer-is-a-proxy-for-a-question-zurg-can-answer-directly">The timer is a proxy for a question zurg can answer directly</h3>
+<p><code translate="no" v-pre>plex_trash_sweep_min_age_days</code> waits 14 days before removing an entry, on the
+reasoning that the red trash icon is the only notice an operator gets that content
+went missing, and purging the entry destroys that notice.</p>
+<p>The intent is right; the mechanism is a guess. It is wrong in both directions:</p>
+<ul>
+<li>
+<p>A torrent marked <code translate="no" v-pre>infringing torrent</code> is <strong>known dead immediately</strong>. Making its
+Plex entry linger a fortnight helps nobody — waiting cannot bring it back.</p>
+</li>
+<li>
+<p>A torrent still being retried may take <strong>longer than 14 days</strong> to come back. The
+timer deletes its entry while zurg is still working on it. This is the worse
+error, because it destroys a library entry for content that then returns.</p>
+</li>
+</ul>
+<hr>
+<h2 id="2-verified-facts">2. Verified facts</h2>
+<h3 id="21-zurgs-state-model">2.1 zurg&#x27;s state model</h3>
+<p>Three file states and two torrent states exist (counted across
+<code translate="no" v-pre>internal/torrent</code>, excluding tests):</p>
+<retype-table copy-text="| Level | States |
+|---|---|
+| `File.State` | `ok_file`, `broken_file`, `deleted_file` |
+| `Torrent.State` | `ok_torrent`, `broken_torrent` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Level</th>
+<th>States</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>File.State</code></td>
+<td><code translate="no" v-pre>ok_file</code>, <code translate="no" v-pre>broken_file</code>, <code translate="no" v-pre>deleted_file</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Torrent.State</code></td>
+<td><code translate="no" v-pre>ok_torrent</code>, <code translate="no" v-pre>broken_torrent</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Both are <code translate="no" v-pre>pkg/fsm</code> machines. <code translate="no" v-pre>FSMWithTime</code> records the unix timestamp of each
+transition and supports <code translate="no" v-pre>SinceWhen</code>, so &quot;how long has this been broken&quot; is already
+answerable without adding anything.</p>
+<p><strong>One broken file condemns the whole torrent.</strong>
+<code translate="no" v-pre>MarkFileBrokenAndEnqueueRepair</code> (<code translate="no" v-pre>internal/torrent/hooks.go:215-234</code>):</p>
+<div id="21-zurgs-state-model-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-go"><code v-pre class="language-go">changed := file.State.Set(&quot;broken_file&quot;, torrent.State.GetMutex()) == nil
+...
+if err := torrent.State.Set(&quot;broken_torrent&quot;); err == nil {
+    t.repairLog.Infof(&quot;Torrent state changed: %s [? -&gt; broken_torrent] (has broken file)&quot;, ...)
+}</code></pre>
+</doc-codeblock></div>
+<p>The log says <em>&quot;has broken file&quot;</em>, singular. One of ten broken and ten of ten broken
+produce an identical torrent state. Nothing aggregates the file states.</p>
+<p><strong><code translate="no" v-pre>Unfixable</code> aggregates over accounts, not files.</strong>
+<code translate="no" v-pre>markAsUnrepairable</code> (<code translate="no" v-pre>internal/torrent/unplayable_unrepairable.go:44-71</code>):</p>
+<div id="21-zurgs-state-model-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-go"><code v-pre class="language-go">if cp != nil {
+    cp.SetUnrepairableReasonIfEmpty(reason)      // one account's copy
+    entryCondemned = t.repairableCopy(torrent) == nil
+}
+if entryCondemned {
+    torrent.SetUnrepairableReasonIfEmpty(reason) // the entry
+}</code></pre>
+</doc-codeblock></div>
+<p>The entry is condemned when <strong>no repair-capable copy remains</strong>. Deliberately not
+&quot;every copy carries a reason&quot; — a copy that could never be repaired anyway (the
+Usenet backend has no magnet adder) would otherwise keep a dead release eligible
+for repair forever. <code translate="no" v-pre>File</code> carries no unrepairable field at all
+(<code translate="no" v-pre>internal/torrent/file_types.go</code>).</p>
+<p>So the three levels answer three different questions, and <strong>none of them answers
+scope</strong>:</p>
+<retype-table copy-text="| Level | Tells you | Cannot tell you |
+|---|---|---|
+| `File.State` | this file is ok / broken / deleted | whether it is permanently dead |
+| `TorrentCopy.UnrepairableReason` | this account's copy is dead | anything about other accounts |
+| `Torrent.UnrepairableReason` | no account can repair this | how much of the release is affected |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Level</th>
+<th>Tells you</th>
+<th>Cannot tell you</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>File.State</code></td>
+<td>this file is ok / broken / deleted</td>
+<td>whether it is permanently dead</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>TorrentCopy.UnrepairableReason</code></td>
+<td>this account&#x27;s copy is dead</td>
+<td>anything about other accounts</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Torrent.UnrepairableReason</code></td>
+<td>no account can repair this</td>
+<td>how much of the release is affected</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="22-live-measurements-fun-2026-08-16">2.2 Live measurements (fun, 2026-08-16)</h3>
+<p>zurg library: <strong>6,339 torrents — 6,141 <code translate="no" v-pre>ok_torrent</code>, 198 <code translate="no" v-pre>broken_torrent</code>.</strong></p>
+<p>Of the 198 broken, <strong>195 carry an <code translate="no" v-pre>Unfixable</code> reason</strong>:</p>
+<retype-table copy-text="| Reason | Count |
+|---|---|
+| stalled download | 76 |
+| infringing torrent | 74 |
+| repair failed | 30 |
+| duplicate file IDs (pack torrent) | 7 |
+| rar'ed by RD | 2 |
+| repair failed, no seeders | 2 |
+| the lone cached file is broken | 1 |
+| invalid file ids | 1 |
+| repair failed, download status: error | 1 |
+| provider cannot re-add torrents | 1 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Reason</th>
+<th>Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>stalled download</td>
+<td>76</td>
+</tr>
+<tr>
+<td>infringing torrent</td>
+<td>74</td>
+</tr>
+<tr>
+<td>repair failed</td>
+<td>30</td>
+</tr>
+<tr>
+<td>duplicate file IDs (pack torrent)</td>
+<td>7</td>
+</tr>
+<tr>
+<td>rar&#x27;ed by RD</td>
+<td>2</td>
+</tr>
+<tr>
+<td>repair failed, no seeders</td>
+<td>2</td>
+</tr>
+<tr>
+<td>the lone cached file is broken</td>
+<td>1</td>
+</tr>
+<tr>
+<td>invalid file ids</td>
+<td>1</td>
+</tr>
+<tr>
+<td>repair failed, download status: error</td>
+<td>1</td>
+</tr>
+<tr>
+<td>provider cannot re-add torrents</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>3 are broken without a reason</strong> — still repairable.</p>
+<p><strong>But <code translate="no" v-pre>Unfixable</code> is not the same as dead.</strong> zurg already sorts these reasons into
+permanent and recoverable (<code translate="no" v-pre>internal/torrent/unrepairable_reasons.go:44-70</code>).
+<code translate="no" v-pre>permanentReasons</code> holds nine verdicts no retry can change — infringing,
+unsupported, unavailable, invalid, too big, not allowed, no repairable files, no
+seeders, invalid file ids — plus any reason prefixed <code translate="no" v-pre>repair failed, download status:</code>. Everything else, including the two largest buckets above, is explicitly
+temporary: <code translate="no" v-pre>stalled download</code>, <code translate="no" v-pre>repair failed</code>, <code translate="no" v-pre>duplicate file IDs</code>,
+<code translate="no" v-pre>rar'ed by RD</code>, <code translate="no" v-pre>not cached</code>, <code translate="no" v-pre>the lone cached file is broken</code>,
+<code translate="no" v-pre>full torrent repair failed</code>.</p>
+<p>Applying that split to the counts above:</p>
+<retype-table copy-text="| | Count |
+|---|---|
+| Permanently unrepairable | **78** |
+| Unrepairable but recoverable | **117** |
+| Broken, no reason yet | 3 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Permanently unrepairable</td>
+<td><strong>78</strong></td>
+</tr>
+<tr>
+<td>Unrepairable but recoverable</td>
+<td><strong>117</strong></td>
+</tr>
+<tr>
+<td>Broken, no reason yet</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>An unrecognised reason (<code translate="no" v-pre>provider cannot re-add torrents</code>, 1 here) is in neither
+list, and <code translate="no" v-pre>IsPermanentlyUnrepairable</code> returns false for it — the conservative
+answer, which is the one we want.</p>
+<p>This is the single most important finding for the design: <strong>a rule keyed on
+&quot;<code translate="no" v-pre>Unfixable</code> is set&quot; would remove Plex entries for 195 releases, when only 78 are
+actually dead.</strong></p>
+<p>Crucially, where those broken torrents sit relative to the mount:</p>
+<retype-table copy-text="| | Count | What Plex sees |
+|---|---|---|
+| Broken, **still on the mount** | 148 | File appears to exist → never tombstoned. No trash icon; it fails only on playback |
+| Broken, **gone from the mount** | 50 | File missing → tombstoned → **these are the sweep's candidates** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>Count</th>
+<th>What Plex sees</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Broken, <strong>still on the mount</strong></td>
+<td>148</td>
+<td>File appears to exist → never tombstoned. No trash icon; it fails only on playback</td>
+</tr>
+<tr>
+<td>Broken, <strong>gone from the mount</strong></td>
+<td>50</td>
+<td>File missing → tombstoned → <strong>these are the sweep&#x27;s candidates</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>This is the key measurement. It means the sweep only ever meets the second group,
+and for that group zurg usually already holds a verdict.</p>
+<p>Plex side, same host: 1,122 trashed leaves, of which <strong>0</strong> are past the 14-day
+window (oldest tombstone 2026-08-11). Plus 4 empty show shells and 38 empty season
+shells.</p>
+<hr>
+<h2 id="3-the-gap">3. The gap</h2>
+<p><code translate="no" v-pre>broken_torrent</code> means &quot;at least one thing is wrong&quot;. That is the wrong
+granularity for the sweep.</p>
+<p>Concretely: a ten-episode pack where one episode&#x27;s file is permanently gone, but
+the torrent stays repairable overall. Asking the torrent gives &quot;still repairable&quot;,
+so the sweep would keep that dead episode&#x27;s Plex entry <strong>forever</strong>.</p>
+<p>There is no state meaning <em>&quot;this entire release is dead&quot;</em> as distinct from
+<em>&quot;something in this release is broken&quot;</em>.</p>
+<hr>
+<h2 id="4-design">4. Design</h2>
+<h3 id="41-do-not-add-a-fourth-persisted-state">4.1 Do not add a fourth persisted state</h3>
+<p>The obvious move is a new torrent state — <code translate="no" v-pre>dead_torrent</code>, or similar. <strong>Rejected.</strong></p>
+<p>Every site that transitions a torrent would have to maintain it, and a stale
+&quot;all files broken&quot; flag is worse than no flag at all, because it <em>authorises
+removals</em>. The information already exists in the file states; it simply is not
+aggregated.</p>
+<p>Instead, derive it:</p>
+<div id="41-do-not-add-a-fourth-persisted-state-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-go"><code v-pre class="language-go">// AllFilesBroken reports whether nothing in this release still reads.
+// Derived from the file states rather than stored, so it cannot go stale
+// and needs no migration or new transitions.
+func (t *Torrent) AllFilesBroken() bool</code></pre>
+</doc-codeblock></div>
+<p>Cheap, always consistent, and surfaceable in the dashboard without persistence.</p>
+<p>Definition to settle during implementation: <code translate="no" v-pre>deleted_file</code> must count as
+not-reading alongside <code translate="no" v-pre>broken_file</code>, and a torrent with <strong>zero</strong> files must return
+false rather than vacuously true — an empty release is not evidence of death.</p>
+<h3 id="42-ask-the-file-fall-back-to-the-torrent">4.2 Ask the file, fall back to the torrent</h3>
+<p>The sweep resolves a Plex path to a zurg file, then applies:</p>
+<retype-table copy-text="| zurg's verdict | Sweep |
+|---|---|
+| file is `ok_file` | **keep** — it is not really gone |
+| `broken_file`, torrent has no unrepairable reason | **keep** — repair may restore it, however long that takes |
+| `broken_file`, reason set but **not** permanent | **keep** — zurg still considers it recoverable |
+| `broken_file`, reason is **permanently** unrepairable | **remove** — no retry can change this verdict |
+| zurg has no torrent for this path | **fall back to the age window** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>zurg&#x27;s verdict</th>
+<th>Sweep</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>file is <code translate="no" v-pre>ok_file</code></td>
+<td><strong>keep</strong> — it is not really gone</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>broken_file</code>, torrent has no unrepairable reason</td>
+<td><strong>keep</strong> — repair may restore it, however long that takes</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>broken_file</code>, reason set but <strong>not</strong> permanent</td>
+<td><strong>keep</strong> — zurg still considers it recoverable</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>broken_file</code>, reason is <strong>permanently</strong> unrepairable</td>
+<td><strong>remove</strong> — no retry can change this verdict</td>
+</tr>
+<tr>
+<td>zurg has no torrent for this path</td>
+<td><strong>fall back to the age window</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>The permanence test is <code translate="no" v-pre>IsPermanentlyUnrepairable(reason)</code>
+(<code translate="no" v-pre>internal/torrent/unrepairable_reasons.go:59</code>), used exactly as <code translate="no" v-pre>ForceRepairTorrent</code>
+uses it. Reusing it rather than re-deriving a list matters: a reason added to
+<code translate="no" v-pre>permanentReasons</code> later must change the sweep&#x27;s behaviour automatically, and an
+unrecognised reason must stay non-permanent.</p>
+<p><code translate="no" v-pre>AllFilesBroken()</code> does <strong>not</strong> authorise removal on its own — a wholly broken
+release with a recoverable reason is still being worked on. It refines reporting
+and the dashboard, and distinguishes &quot;one episode of ten is gone&quot; from &quot;the whole
+pack is gone&quot; for a human reading the log.</p>
+<p>The last row is why <code translate="no" v-pre>plex_trash_sweep_min_age_days</code> stays. Once a torrent is gone
+from the account entirely its <code translate="no" v-pre>.zurgtorrent</code> goes with it, and zurg has no opinion
+left to offer. The timer stops being the primary rule and becomes the fallback for
+exactly the case where nothing better exists.</p>
+<p>This also demotes the setting in the UI, which resolves the separate complaint
+that its label (&quot;Keep Broken Entries Visible&quot;) describes a side effect rather than
+the action.</p>
+<h3 id="43-path--torrent--file-lookup">4.3 Path → torrent → file lookup</h3>
+<p>The existing Plex matcher goes the <em>other</em> way: <code translate="no" v-pre>buildPlexDirIndex</code>
+(<code translate="no" v-pre>internal/plex/matcher.go:539</code>) indexes Plex path components and looks them up by
+torrent key. The sweep needs the inverse, built from the same idea:</p>
+<ol>
+<li>
+<p>Build <code translate="no" v-pre>map[strings.ToLower(GetKey(torrent))] *Torrent</code> from
+<code translate="no" v-pre>DirectoryMap.Get(INT_ALL)</code>.</p>
+</li>
+<li>
+<p>For a Plex path, split into components with the same normalisation as
+<code translate="no" v-pre>splitPathComponents</code> (<code translate="no" v-pre>matcher.go:525</code>) and look each up. The release
+directory is the component that hits.</p>
+</li>
+<li>
+<p>Within that torrent, match the remaining path tail against <code translate="no" v-pre>File.Path</code>
+(<code translate="no" v-pre>internal/debrid/types.go:133</code>) to reach the specific file.</p>
+</li>
+</ol>
+<p>Reasons this must go through <code translate="no" v-pre>TorrentManager</code> and not string-match
+<code translate="no" v-pre>data/*.zurgtorrent</code>: disambiguated names (<code translate="no" v-pre>Some.Release {a1b2c3}</code>), multi-account
+copies, and renames all resolve correctly only through <code translate="no" v-pre>GetKey</code>.</p>
+<p><strong>A failed lookup is not a licence to delete.</strong> Unresolvable → treat as &quot;zurg has
+no opinion&quot; → age-window fallback.</p>
+<h3 id="44-what-does-not-change">4.4 What does not change</h3>
+<ul>
+<li>The invariant: nothing with a live file is removed.</li>
+<li>Shows and seasons with live descendants are never touched.</li>
+<li>Per-item <code translate="no" v-pre>DELETE</code>, never <code translate="no" v-pre>emptyTrash</code>.</li>
+<li>Guards: rclone managed and running, mount reads, Plex not scanning.</li>
+<li>Snapshot before any change; caps over repairs <em>and</em> removals.</li>
+</ul>
+<p>The new rules only ever make the sweep <strong>more</strong> conservative or <strong>more</strong> precise —
+they never authorise a removal the current code would refuse.</p>
+<hr>
+<h2 id="5-implementation-plan">5. Implementation plan</h2>
+<retype-table copy-text="| # | Step | Files |
+|---|---|---|
+| 0 | Confirm the permanent/recoverable split is the right gate with a dry-run count against a live library before anything deletes | — |
+| 1 | `AllFilesBroken()` + unit tests (empty release, mixed, all broken, all deleted) | `internal/torrent/` |
+| 2 | Read-only status lookup: path → torrent → file, returning a small verdict value | new file in `internal/torrent/` or `internal/plexsweep/` |
+| 3 | Define the verdict type (`StatusOK`, `StatusRecoverable`, `StatusPermanentlyDead`, `StatusUnknown`) so the sweep never handles zurg internals directly | `internal/plexsweep` |
+| 4 | Wire the lookup into `Sweeper` behind an interface, as `Mount`/`Library`/`Trash` already are | `internal/plexsweep/sweep.go` |
+| 5 | Apply the decision table; keep the age window as the `StatusUnknown` fallback | `internal/plexsweep/sweep.go` |
+| 6 | Inject the `TorrentManager` at the call site | `internal/app.go` |
+| 7 | Tests: one per row of the decision table, plus a lookup-failure test proving unresolvable never removes | `internal/plexsweep/sweep_test.go` |
+| 8 | Docs: `docs/config.md`, `config.example.yml`, `docs/CHANGELOG.md`, and re-word the dashboard label | docs + templates |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>#</th>
+<th>Step</th>
+<th>Files</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Confirm the permanent/recoverable split is the right gate with a dry-run count against a live library before anything deletes</td>
+<td>—</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code translate="no" v-pre>AllFilesBroken()</code> + unit tests (empty release, mixed, all broken, all deleted)</td>
+<td><code translate="no" v-pre>internal/torrent/</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Read-only status lookup: path → torrent → file, returning a small verdict value</td>
+<td>new file in <code translate="no" v-pre>internal/torrent/</code> or <code translate="no" v-pre>internal/plexsweep/</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Define the verdict type (<code translate="no" v-pre>StatusOK</code>, <code translate="no" v-pre>StatusRecoverable</code>, <code translate="no" v-pre>StatusPermanentlyDead</code>, <code translate="no" v-pre>StatusUnknown</code>) so the sweep never handles zurg internals directly</td>
+<td><code translate="no" v-pre>internal/plexsweep</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Wire the lookup into <code translate="no" v-pre>Sweeper</code> behind an interface, as <code translate="no" v-pre>Mount</code>/<code translate="no" v-pre>Library</code>/<code translate="no" v-pre>Trash</code> already are</td>
+<td><code translate="no" v-pre>internal/plexsweep/sweep.go</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Apply the decision table; keep the age window as the <code translate="no" v-pre>StatusUnknown</code> fallback</td>
+<td><code translate="no" v-pre>internal/plexsweep/sweep.go</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Inject the <code translate="no" v-pre>TorrentManager</code> at the call site</td>
+<td><code translate="no" v-pre>internal/app.go</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Tests: one per row of the decision table, plus a lookup-failure test proving unresolvable never removes</td>
+<td><code translate="no" v-pre>internal/plexsweep/sweep_test.go</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>Docs: <code translate="no" v-pre>docs/config.md</code>, <code translate="no" v-pre>config.example.yml</code>, <code translate="no" v-pre>docs/CHANGELOG.md</code>, and re-word the dashboard label</td>
+<td>docs + templates</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Ordering note: steps 1–3 are pure additions with no behaviour change and can land
+as one commit; step 5 is the only one that changes what gets deleted.</p>
+<hr>
+<h2 id="6-risks-and-open-questions">6. Risks and open questions</h2>
+<ol>
+<li>
+<p><strong>Wiring order.</strong> Confirmed: <code translate="no" v-pre>startPlexTrashSweep</code> is called at
+<code translate="no" v-pre>internal/app.go:268</code>, and <code translate="no" v-pre>TorrentManager</code> is constructed at
+<code translate="no" v-pre>internal/app.go:285</code> — after it. The call must move after it, or take a setter. Needs
+checking that nothing else depends on the current position.</p>
+</li>
+<li>
+<p><strong>Lookup ambiguity.</strong> Two torrents whose keys collide with the same path
+component. Resolution: if more than one candidate matches, treat as
+<code translate="no" v-pre>StatusUnknown</code> rather than picking one.</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>only_show_the_biggest_file</code>.</strong> The movies directory hides files, so a Plex
+path may name a file that is not the one zurg would serve. The lookup must not
+assume the Plex filename appears in <code translate="no" v-pre>File.Path</code> verbatim.</p>
+</li>
+<li>
+<p><strong>Cost.</strong> Building the key index on every sweep is O(library). At 6,339
+torrents that is trivial, and the sweep runs daily. Build per sweep, not per
+item.</p>
+</li>
+<li>
+<p><del><strong>Does <code translate="no" v-pre>Unfixable</code> ever clear?</strong></del> <strong>Resolved: yes.</strong>
+<code translate="no" v-pre>refresh.go:851-857</code> clears it when a torrent verifies clean and returns to
+<code translate="no" v-pre>ok_torrent</code> (&quot;all links intact, no broken files&quot;), and <code translate="no" v-pre>repair.go:165-181</code>
+clears it — entry and every copy — when a repair is forced. So a recovered
+release does not carry a stale condemnation, and the design does not need to
+defend against one.</p>
+</li>
+<li>
+<p><strong>The 148 broken-but-present torrents.</strong> Out of scope here: Plex never
+tombstones them, so the sweep never sees them. Worth noting that they are
+invisible to both Plex and this feature until playback fails.</p>
+</li>
+</ol>
+<hr>
+<h2 id="7-how-it-was-implemented-2026-08-16">7. How it was implemented (2026-08-16)</h2>
+<p>Landed as <code translate="no" v-pre>feat: decide plex trash sweep removals from zurg's repair verdicts</code>.
+Where the implementation settled a question this document left open, or departed
+from §4, the decision and its reason:</p>
+<ul>
+<li>
+<p><strong>The lookup matches the path&#x27;s parent directory exactly</strong> against
+<code translate="no" v-pre>DirectoryMap[INT_ALL]</code>, instead of scanning every path component (§4.3). The
+mount lays a release out flat — <code translate="no" v-pre>&lt;library dir&gt;/&lt;key&gt;/&lt;visible name&gt;</code> — and
+Plex recorded the path from the mount, which serves the key verbatim. An
+exact miss answers unknown, and the key-collision ambiguity (risk 2)
+disappears: exact keys cannot collide.</p>
+</li>
+<li>
+<p><strong>Row 1 of the decision table changed.</strong> An <code translate="no" v-pre>ok_file</code> that is nonetheless
+absent from the mount is a file the filters hide, not &quot;not really gone&quot; —
+keeping it forever would leave a permanent trash icon after a filter change.
+It falls back to the age window instead.</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>deleted_file</code> counts alongside <code translate="no" v-pre>broken_file</code></strong> in every rule, not just in
+<code translate="no" v-pre>AllFilesBroken()</code> — the table&#x27;s rows read &quot;not <code translate="no" v-pre>ok_file</code>&quot;.</p>
+</li>
+<li>
+<p><strong>Multi-version items are judged as a unit</strong> (the table was per-file, the
+sweep&#x27;s unit is a Plex item with parts): one recoverable part keeps the whole
+item; the item is dead only when every part is; any other mix falls to the
+age window.</p>
+</li>
+<li>
+<p><strong>A filename that resolves to a torrent but not to a file</strong> (rename, archive
+listing, <code translate="no" v-pre>only_show_the_biggest_file</code> — risk 3) is dead only when the entry&#x27;s
+reason is permanent <strong>and</strong> <code translate="no" v-pre>AllFilesBroken()</code>; recoverable when the torrent
+is broken without a permanent verdict; otherwise unknown. An unmatched name
+is never condemned by association while any file still reads.</p>
+</li>
+<li>
+<p><strong>Wiring (risk 1):</strong> <code translate="no" v-pre>startPlexTrashSweep</code> moved below the manager&#x27;s
+construction in <code translate="no" v-pre>internal/app.go</code>; nothing depended on its old position. The
+verdicts reach the sweep behind <code translate="no" v-pre>plexsweep.Verdicts</code>, implemented by
+<code translate="no" v-pre>TorrentManager.FileStatusForMountPath</code>. Before the first refresh populates
+<code translate="no" v-pre>INT_ALL</code>, every lookup answers unknown and the sweep behaves exactly as the
+age-window version did.</p>
+</li>
+</ul>
+<h2 id="8-explicitly-out-of-scope">8. Explicitly out of scope</h2>
+<ul>
+<li>
+<p><strong>Empty show and season shells.</strong> The sweep removes leaves only, so a fully-dead
+show leaves a husk (4 shows, 38 seasons on fun today). Real, separate, needs
+ordering care: remove leaves, re-check the parent, remove only at zero children.</p>
+</li>
+<li>
+<p>Any change to repair behaviour, the repair queue, or when zurg marks something
+unrepairable.</p>
+</li>
+<li>
+<p>Plex&#x27;s own <code translate="no" v-pre>autoEmptyTrash</code>, already handled by the warning in <code translate="no" v-pre>4737b677</code>.</p>
+</li>
+<li>
+<p>fun&#x27;s existing 1,122-entry backlog, deliberately left for a manual decision.</p>
+</li>
+</ul>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../internals/sabnzbd-client-contract/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Previous</span>
+                                <span class="block mt-1">SA​Bnzbd client contract</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../internals/stream-timeout-regression/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Next</span>
+                                <span class="block mt-1">Stream timeout regression</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Plex trash sweep", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/internals/plex-trash-sweep.md" }</script>
+</body>
+</html>

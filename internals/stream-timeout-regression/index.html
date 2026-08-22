@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.840752251421">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Proxied stream timeout regression</title>
+    <meta name="title" content="Proxied stream timeout regression">
+    <meta name="description" content="Zurg used download_timeout_secs as a wall-clock deadline for proxied HTTP downloads. Its default is 15 seconds, so any single upstream response whose body took longer than 15 seconds to finish was cut off even while bytes were arriving normally.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/internals/stream-timeout-regression/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/internals/stream-timeout-regression/">
+    <meta property="og:title" content="Proxied stream timeout regression">
+    <meta property="og:description" content="Zurg used download_timeout_secs as a wall-clock deadline for proxied HTTP downloads. Its default is 15 seconds, so any single upstream response whose body took longer than 15 seconds to finish was cut off even while bytes were arriving normally.">
+    <meta property="og:site_name" content="dmm+zurg">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/internals/stream-timeout-regression/">
+    <meta name="twitter:title" content="Proxied stream timeout regression">
+    <meta name="twitter:description" content="Zurg used download_timeout_secs as a wall-clock deadline for proxied HTTP downloads. Its default is 15 seconds, so any single upstream response whose body took longer than 15 seconds to finish was cut off even while bytes were arriving normally.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/internals/stream-timeout-regression.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../resources/css/retype.css?v=4.6.0.840752251421" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.840752251421" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.840752251421" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.840752251421" defer></script>
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/" class="flex items-center leading-snug text-2xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">dmm+zurg</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg-testing" target="_blank">zurg-testing</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://reddit.com/r/debridmediamanager" target="_blank">Reddit</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.patreon.com/debridmediamanager" target="_blank">Patreon</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg-testing" target="_blank">zurg-testing</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://reddit.com/r/debridmediamanager" target="_blank">Reddit</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.patreon.com/debridmediamanager" target="_blank">Patreon</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="proxied-stream-timeout-regression">Proxied stream timeout regression</h1>
+<h2 id="summary">Summary</h2>
+<p>Zurg used <code translate="no" v-pre>download_timeout_secs</code> as a wall-clock deadline for proxied HTTP
+downloads. Its default is 15 seconds, so any single upstream response whose body
+took longer than 15 seconds to finish was cut off even while bytes were arriving
+normally.</p>
+<p>The defect was reported on Discord on 2026-08-21 against
+<code translate="no" v-pre>2026.08.21.0151-nightly</code> (<code translate="no" v-pre>fc2a21f</code>). Repeated 2 GB ranged requests through zurg
+ended at 15.001 seconds after delivering about 1.26 GB at 84 MB/s. The same range
+completed directly from Real-Debrid, and raising <code translate="no" v-pre>download_timeout_secs</code> to 3600
+let the request finish through zurg in 25.8 seconds.</p>
+<p>This was a zurg regression, not content filtering, a CDN failure, or a regression
+in <code translate="no" v-pre>fc2a21f</code>. Commit <code translate="no" v-pre>6edeaa8c</code> (<code translate="no" v-pre>Optimize client</code>, 2024-11-17) introduced it. The
+plain proxied serving path was fixed by <code translate="no" v-pre>41db7245</code>, and <code translate="no" v-pre>eff972b8</code> then made the
+same mistake difficult to reintroduce at the provider API boundary.</p>
+<h2 id="user-impact">User impact</h2>
+<p>The affected path was any response body that zurg proxied from an HTTP-backed
+debrid provider and that remained open longer than <code translate="no" v-pre>download_timeout_secs</code>.
+Real-Debrid was affected from November 2024. TorBox and AllDebrid inherited the
+same behavior when those providers were added. Locally served NZB reads never
+passed through the HTTP download client and were not affected.</p>
+<p>The user-visible symptoms included:</p>
+<ul>
+<li>Infuse or another direct WebDAV client freezing during playback;</li>
+<li>playback failing after a seek opened a new ranged request;</li>
+<li>a download ending early despite receiving HTTP <code translate="no" v-pre>206 Partial Content</code>; and</li>
+<li>client errors that appeared to implicate the media file or CDN even though a
+direct request completed normally.</li>
+</ul>
+<p>The player did not necessarily fail 15 seconds after playback started. At the
+reported 84 MB/s, zurg transferred roughly 1.26 GB before the deadline. A player
+could consume that buffer for several minutes before it ran dry, which turned an
+exact 15-second network cutoff into an apparently variable playback freeze.</p>
+<h2 id="root-cause">Root cause</h2>
+<p>Go&#x27;s <code translate="no" v-pre>http.Client.Timeout</code> is a deadline for the entire request lifecycle. It is
+not an inactivity or stall timeout. The clock starts when the request begins and
+continues while the response body is read, regardless of whether data is flowing.</p>
+<p>Before <code translate="no" v-pre>6edeaa8c</code>, the download client itself had no whole-request timeout:</p>
+<div id="root-cause-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-go"><code v-pre class="language-go">client: &amp;http.Client{}</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>download_timeout_secs</code> bounded the connection and response-header phases through
+the transport&#x27;s dialer and <code translate="no" v-pre>ResponseHeaderTimeout</code>. Once the response body arrived,
+the serving path could keep reading for as long as the downstream client needed.</p>
+<p><code translate="no" v-pre>6edeaa8c</code> reorganized the HTTP transport and added the configured timeout to the
+client itself while removing <code translate="no" v-pre>ResponseHeaderTimeout</code>:</p>
+<div id="root-cause-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-go"><code v-pre class="language-go">client.client = &amp;http.Client{
+    Transport: transport,
+    Timeout:   time.Duration(timeoutSecs) * time.Second,
+}</code></pre>
+</doc-codeblock></div>
+<p>That changed the meaning of the existing 15-second value. It still protected the
+connection phase, but it now also imposed an absolute deadline on the response
+body. The serving path already fetched media through this client, so the regression
+became live as soon as this change landed.</p>
+<p>The failure was quiet. Zurg sent the successful upstream status and headers before
+copying the body to the player. When the client&#x27;s deadline interrupted the body,
+the copy operation returned an error, but the serving path discarded that error:</p>
+<div id="root-cause-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-go"><code v-pre class="language-go">n, _ = copyBuffered(resp, body)</code></pre>
+</doc-codeblock></div>
+<p>By then the <code translate="no" v-pre>206</code> response was already committed and could not be replaced with an
+error status. With request logging disabled, nothing reported why the body was
+short. The downstream client therefore saw a successful partial-content response
+whose body ended before its advertised length.</p>
+<h2 id="regression-history">Regression history</h2>
+<p>The relevant commits form a longer chain than the nightly where the issue was
+reported:</p>
+<retype-table copy-text="| Date | Commit | Effect |
+|---|---|---|
+| 2024-06-28 | `c3aea427` | Routed the existing serving read through `DownloadFile`. This was behavior-preserving because the download client still had no whole-request timeout. |
+| 2024-11-17 | `6edeaa8c` | Added `http.Client.Timeout` to the download client. This is the regression that began truncating ordinary proxied bodies. |
+| 2026-02-26 | `dea98d34` | Correctly diagnosed the same 15-second cutoff for RAR archive reads, added a timeout-free streaming client, and moved only the RAR path to it. Ordinary file serving remained on `DownloadFile`. |
+| 2026-08-02 | `e9318e66` | Moved downloads behind the multi-provider `debrid.Provider` interface and carried the ordinary serving call forward unchanged. It did not create the Real-Debrid bug, though new HTTP-backed providers inherited the unsafe method. |
+| 2026-08-21 | `fc2a21f` | The nightly used in the report. It contained the bug but did not introduce it. |
+| 2026-08-21 | `41db7245` | Changed ordinary proxied playback to use `DownloadFileStreaming` and added the first end-to-end timeout regression test. |
+| 2026-08-21 | `eff972b8` | Made every HTTP provider's `DownloadFile` timeout-free as a structural guard and expanded coverage to Real-Debrid, AllDebrid, TorBox, and an NZB control. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Date</th>
+<th>Commit</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2024-06-28</td>
+<td><code translate="no" v-pre>c3aea427</code></td>
+<td>Routed the existing serving read through <code translate="no" v-pre>DownloadFile</code>. This was behavior-preserving because the download client still had no whole-request timeout.</td>
+</tr>
+<tr>
+<td>2024-11-17</td>
+<td><code translate="no" v-pre>6edeaa8c</code></td>
+<td>Added <code translate="no" v-pre>http.Client.Timeout</code> to the download client. This is the regression that began truncating ordinary proxied bodies.</td>
+</tr>
+<tr>
+<td>2026-02-26</td>
+<td><code translate="no" v-pre>dea98d34</code></td>
+<td>Correctly diagnosed the same 15-second cutoff for RAR archive reads, added a timeout-free streaming client, and moved only the RAR path to it. Ordinary file serving remained on <code translate="no" v-pre>DownloadFile</code>.</td>
+</tr>
+<tr>
+<td>2026-08-02</td>
+<td><code translate="no" v-pre>e9318e66</code></td>
+<td>Moved downloads behind the multi-provider <code translate="no" v-pre>debrid.Provider</code> interface and carried the ordinary serving call forward unchanged. It did not create the Real-Debrid bug, though new HTTP-backed providers inherited the unsafe method.</td>
+</tr>
+<tr>
+<td>2026-08-21</td>
+<td><code translate="no" v-pre>fc2a21f</code></td>
+<td>The nightly used in the report. It contained the bug but did not introduce it.</td>
+</tr>
+<tr>
+<td>2026-08-21</td>
+<td><code translate="no" v-pre>41db7245</code></td>
+<td>Changed ordinary proxied playback to use <code translate="no" v-pre>DownloadFileStreaming</code> and added the first end-to-end timeout regression test.</td>
+</tr>
+<tr>
+<td>2026-08-21</td>
+<td><code translate="no" v-pre>eff972b8</code></td>
+<td>Made every HTTP provider&#x27;s <code translate="no" v-pre>DownloadFile</code> timeout-free as a structural guard and expanded coverage to Real-Debrid, AllDebrid, TorBox, and an NZB control.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>The February RAR fix is the important near miss. Its commit message explicitly
+states that <code translate="no" v-pre>http.Client.Timeout</code> covers the body and that the 15-second default was
+killing RAR streams. The diagnosis was correct, but the fix was scoped to the RAR
+reader. Keeping separate <code translate="no" v-pre>DownloadFile</code> and <code translate="no" v-pre>DownloadFileStreaming</code> methods allowed
+the ordinary serving path to retain the unsafe choice for another six months.</p>
+<h2 id="why-it-stayed-hidden">Why it stayed hidden</h2>
+<p>Several effects concealed the regression for about 21 months:</p>
+<ol>
+<li>
+<p>Most media-server deployments read zurg through rclone rather than direct
+WebDAV. rclone uses bounded ranged requests. The current managed-mount defaults
+start at 4 MB and grow to a 512 MB limit, so on a fast connection many individual
+upstream requests finish inside 15 seconds. This reduced exposure; it did not
+make the path safe, particularly on slower links.</p>
+</li>
+<li>
+<p>Direct WebDAV clients such as Infuse can issue large or open-ended ranges. Those
+requests keep one upstream response alive long enough to hit the deadline
+reliably, which is why the Discord reproduction was exact at three different
+offsets.</p>
+</li>
+<li>
+<p>Playback buffering separated cause from symptom. The upstream request died at
+15 seconds, but playback stopped only after the player consumed the bytes already
+delivered. The visible delay varied with bitrate, buffering, and seeks.</p>
+</li>
+<li>
+<p>The response looked successful. The CDN returned a valid <code translate="no" v-pre>206</code>, zurg forwarded
+it, and the body-copy error was ignored after headers were sent. Direct CDN tests
+stayed healthy and normal logs contained no timeout error.</p>
+</li>
+<li>
+<p>Raising the setting appeared to solve the problem. That made the defect look
+like an undersized tuning value rather than a timeout attached to the wrong
+abstraction.</p>
+</li>
+<li>
+<p>Existing tests used bodies or ranges that completed inside the configured
+timeout. No test deliberately kept a response body flowing beyond the deadline
+and then asserted the complete length and checksum through the serving path.</p>
+</li>
+<li>
+<p>The narrow RAR fix removed the most obvious earlier manifestation without
+removing the unsafe default from ordinary downloads.</p>
+</li>
+</ol>
+<h2 id="why-a-higher-timeout-appeared-to-fix-it">Why a higher timeout appeared to fix it</h2>
+<p>Changing the setting to 3600 seconds did not change what the timeout covered. It
+only moved the wall-clock deadline far enough away for the reported 25.8-second
+transfer to finish:</p>
+<div id="why-a-higher-timeout-appeared-to-fix-it-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">15 seconds   &lt; 25.8-second transfer &lt; 3600 seconds</code></pre>
+</doc-codeblock></div>
+<p>This was a workaround, not a safe fix. Any finite whole-request timeout can still
+cut off a sufficiently long body, including a slow client or a paused connection.
+The setting also feeds the download client&#x27;s dial timeout and bounded verification
+requests, so increasing it to an hour can make an unreachable host take far longer
+to fail. Fixed builds should use the normal configured value; it no longer caps a
+proxied media body.</p>
+<h2 id="fix-and-guardrails">Fix and guardrails</h2>
+<p>The immediate fix in <code translate="no" v-pre>41db7245</code> changed <code translate="no" v-pre>streamFileToResponse</code> to fetch through
+<code translate="no" v-pre>Provider.DownloadFileStreaming</code>. That client shares the same transport but has no
+<code translate="no" v-pre>http.Client.Timeout</code>, so body lifetime is no longer tied to
+<code translate="no" v-pre>download_timeout_secs</code>. The request still uses the downstream request context, so
+disconnecting the player cancels the upstream read. Connection establishment and
+TLS handshaking remain bounded by the transport.</p>
+<p><code translate="no" v-pre>eff972b8</code> then removed reliance on every caller choosing the method with
+&quot;Streaming&quot; in its name:</p>
+<ul>
+<li>
+<p>Real-Debrid&#x27;s <code translate="no" v-pre>DownloadFile</code> now uses <code translate="no" v-pre>DoStreaming</code>.</p>
+</li>
+<li>
+<p>The shared <code translate="no" v-pre>debrid.DownloadRanged</code> helper accepts <code translate="no" v-pre>StreamingDoer</code>, which exposes
+only <code translate="no" v-pre>DoStreaming</code>; AllDebrid and TorBox use this helper.</p>
+</li>
+<li>
+<p>Both provider download methods are therefore safe for a long response body.</p>
+</li>
+<li>
+<p>Bounded non-playback reads, such as the two 64 KiB reads used for an OpenSubtitles
+hash, receive their own explicit context deadline instead of borrowing an unsafe
+client-wide body timeout.</p>
+</li>
+</ul>
+<p>The regression tests in <code translate="no" v-pre>internal/universal/stream_timeout_test.go</code> use a local
+server that sends a 1.6 MB body in 16 chunks over about 1.6 seconds while the
+configured timeout is one second. They assert both full length and checksum:</p>
+<ul>
+<li>
+<p>directly through both provider download methods for Real-Debrid, AllDebrid, and
+TorBox;</p>
+</li>
+<li>
+<p>end to end through <code translate="no" v-pre>streamFileToResponse</code> for all three HTTP-backed providers;
+and</p>
+</li>
+<li>
+<p>through an NZB-shaped local provider as an unaffected control.</p>
+</li>
+</ul>
+<p>The invariant is now explicit: a method that returns a download body must never use
+a whole-request timeout. Short probes and metadata reads should carry a deadline on
+their own context; streaming bodies should live until completion, downstream
+cancellation, or a real transport error.</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../internals/plex-trash-sweep/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Previous</span>
+                                <span class="block mt-1">Plex trash sweep</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../internals/uiux/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Next</span>
+                                <span class="block mt-1">Directory config UI/UX</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Stream timeout regression", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/internals/stream-timeout-regression.md" }</script>
+</body>
+</html>
