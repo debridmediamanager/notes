@@ -7,7 +7,7 @@ Kept here as the record of why `internal/sabnzbd` answers in the shapes it does.
 package should be changed without the paragraph here that explains what the client does with the
 field — a wrong struct tag does not fail, it leaves the client reading a zero, and a wrong enum
 value throws inside its deserializer and takes the whole poll with it. For how to point Sonarr or
-Radarr at zurg, see [sabnzbd.md](../guides/sabnzbd.md).
+Radarr at zurg, see [sabnzbd.md](../guides/sonarr-radarr.md).
 
 Unless a section says otherwise, **the two repos' SAB files are byte-identical apart from a UTF-8 BOM
 and the `TvCategory` → `MovieCategory` / `RemoteEpisode` → `RemoteMovie` rename, and line numbers match

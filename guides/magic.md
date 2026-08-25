@@ -17,9 +17,9 @@ and restart. The routes are decided at startup, so toggling it from the dashboar
 
 An \*arr imports by **moving** the file out of the download folder into the library. Zurg had nowhere to receive that move, so the \*arr fell back to copying — and a copy from a debrid mount means pulling the entire release down over the network, which is the one thing the mount exists to avoid.
 
-With `__magic__` the import is a rename inside one namespace: a row is written, the file appears where the \*arr put it, and nothing is downloaded. That is what makes [the SABnzbd endpoint](sabnzbd.md) worth having — it is a thin layer on top of this, and without it every import would be a full download.
+With `__magic__` the import is a rename inside one namespace: a row is written, the file appears where the \*arr put it, and nothing is downloaded. That is what makes [the SABnzbd endpoint](sonarr-radarr.md) worth having — it is a thin layer on top of this, and without it every import would be a full download.
 
-It only works if the \*arr's **root folder is also inside `__magic__`** — `/mnt/zurg/__magic__/tv`, not a directory elsewhere on the machine. A move whose destination is outside the namespace is a move between two filesystems, which is a copy again; zurg refuses it outright with a `403` rather than letting it happen quietly. [sabnzbd.md](sabnzbd.md) has the exact settings.
+It only works if the \*arr's **root folder is also inside `__magic__`** — `/mnt/zurg/__magic__/tv`, not a directory elsewhere on the machine. A move whose destination is outside the namespace is a move between two filesystems, which is a copy again; zurg refuses it outright with a `403` rather than letting it happen quietly. [sabnzbd.md](sonarr-radarr.md) has the exact settings.
 
 Organising the library by hand is the other half, and it works with no \*arr involved.
 
@@ -155,6 +155,6 @@ Useful if you drive the namespace over WebDAV directly; the mount handles all of
 
 ## See also
 
-- [sabnzbd.md](sabnzbd.md) — pointing Sonarr and Radarr at zurg, which is what `__magic__` was built to make possible
+- [sabnzbd.md](sonarr-radarr.md) — pointing Sonarr and Radarr at zurg, which is what `__magic__` was built to make possible
 - [usenet.md](usenet.md) — the NZB backend those grabs land in
 - [config.md](../reference/config.md#__magic__-a-directory-you-can-organise) — every key in the `magic:` block

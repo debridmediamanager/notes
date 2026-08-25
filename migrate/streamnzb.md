@@ -39,7 +39,7 @@ fill it:
   and Radarr as a download client, and the import is a rename inside
   `__magic__` rather than a copy. This is the closest thing to what streamnzb
   did for you, and it is what most setups should use; see
-  [sabnzbd.md](../guides/sabnzbd.md). The caveat to know before switching a library over:
+  [sabnzbd.md](../guides/sonarr-radarr.md). The caveat to know before switching a library over:
   zurg does not yet check whether a post's articles are still on the news
   server, so a dead release reports Completed and fails on the first read
   instead of being blocklisted and re-grabbed.

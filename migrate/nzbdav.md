@@ -93,7 +93,7 @@ The deltas, all of them:
 | par2 in obfuscated releases | left visible, hash-named | detected by content and hidden |
 | File sizes | exact | over-reported by 2.5–3.2% on NZBs whose subjects carry no byte count (see below) |
 | Broken RAR chain | import fails, nothing created | empty release folder |
-| Ingestion | SABnzbd API + WebDAV `/nzbs/` upload | drop `.nzb` into `nzbs/` beside the binary, or the opt-in [SABnzbd endpoint](../guides/sabnzbd.md) an \*arr can grab through — which does not yet report a dead post as failed |
+| Ingestion | SABnzbd API + WebDAV `/nzbs/` upload | drop `.nzb` into `nzbs/` beside the binary, or the opt-in [SABnzbd endpoint](../guides/sonarr-radarr.md) an \*arr can grab through — which does not yet report a dead post as failed |
 
 **The size defect matters for Plex.** True sizes come from the yEnc `=ybegin`
 header; zurg only uses the exact size when the poster wrote a byte count into
@@ -256,7 +256,7 @@ mkdir -p nzbs && cp ~/migration/nzbs/*.nzb nzbs/
 Note what does *not* carry over: `zurg_*` tag filters never match Usenet
 content (ffprobe cannot open zurg's locally-assembled links), so filter on
 names, extensions, sizes and `has_episodes`. Acquisition does carry over, with
-a caveat: zurg has a [SABnzbd endpoint](../guides/sabnzbd.md) of its own, off by
+a caveat: zurg has a [SABnzbd endpoint](../guides/sonarr-radarr.md) of its own, off by
 default, and an \*arr pointed at it imports from `__magic__` by rename. It
 does not yet check that a post's articles are still on the news server, so a
 dead release reports Completed rather than being blocklisted — until that

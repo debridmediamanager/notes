@@ -278,7 +278,7 @@ Debrid-Link/Premiumize account.
 
 zurg's ingestion is a watch directory: `.nzb` files dropped directly into
 `nzbs/` beside the binary (fixed name, subdirectories ignored, rescanned every
-15 s). zurg does now have a [SABnzbd-compatible endpoint](../guides/sabnzbd.md) that
+15 s). zurg does now have a [SABnzbd-compatible endpoint](../guides/sonarr-radarr.md) that
 writes into that same directory, but it will not help here — recovering an
 existing job means placing a file under an exact name, which is what the
 watch directory does and what a re-grab through an \*arr does not. For each
@@ -433,7 +433,7 @@ have decided to lose. Then `sudo systemctl start plexmediaserver` and:
 ## 10. What changes after migration
 
 **Automation.** Half of it carries over. zurg has a
-[SABnzbd-compatible endpoint](../guides/sabnzbd.md) — opt-in, Usenet-only — so Sonarr
+[SABnzbd-compatible endpoint](../guides/sonarr-radarr.md) — opt-in, Usenet-only — so Sonarr
 and Radarr can hand it an NZB and import from `__magic__` by rename. It has no
 qBittorrent API, so the torrent half of decypharr's ingestion has no
 equivalent, and the NZB half is not a like-for-like replacement either: zurg
@@ -442,7 +442,7 @@ a dead release reports Completed and fails on the first read rather than being
 blocklisted and re-grabbed. Options:
 
 - NZBs: turn on `sabnzbd.enabled` and point the \*arrs at zurg — see
-  [sabnzbd.md](../guides/sabnzbd.md) — or fetch from the indexer yourself and drop into
+  [sabnzbd.md](../guides/sonarr-radarr.md) — or fetch from the indexer yourself and drop into
   `nzbs/`.
 - Torrents: the zurg dashboard, DMM, or zurg's Plex watchlist acquisition
   (`plex_watchlist_enabled`, needs `dmm_api_key`). Nothing in the \*arr
