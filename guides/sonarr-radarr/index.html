@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.840987264350">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.840987791560">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.840987264350" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.840987791560" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.840987264350" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.840987791560" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.840987264350" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.840987264350" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.840987791560" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.840987791560" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -187,49 +187,6 @@
 <h1 id="sonarr-and-radarr-step-by-step">Sonarr and Radarr, step by step</h1>
 <p>Point Sonarr and Radarr at zurg and they grab from Usenet without a Usenet client — no download, no unpack, no disk. This is the illustrated version: every step, with the screen you should be looking at. For the reference version of the same thing, see <a href="../sabnzbd/">Sonarr &amp; Radarr</a>.</p>
 <p>Everything below was captured against zurg <code translate="no" v-pre>nightly-993-g99bcf9a4</code>, Sonarr <code translate="no" v-pre>4.0.19.2979</code> and Radarr <code translate="no" v-pre>6.3.0.10514</code>, on a live install with a real Usenet account. Host and user names have been changed to <code translate="no" v-pre>yowmamasita@zurg-server</code>; nothing else in the captured output was altered, and API keys shown are illustrative.</p>
-<h2 id="how-it-works">How it works</h2>
-<p>zurg answers Sonarr and Radarr at <code translate="no" v-pre>/api</code> as though it were a SABnzbd install. The clients cannot tell the difference: they hand over an NZB, poll a queue, poll a history, and import from whatever folder the history names.</p>
-<p>What zurg does behind that pretence is nothing like a download. It writes the NZB into <code translate="no" v-pre>nzbs/</code>, where its Usenet backend picks it up and turns it into a release in the library. When the release is listed, the job reports <strong>Completed</strong> and names a folder under <code translate="no" v-pre>__magic__</code>. The client walks into that folder through the mount and <em>moves</em> the file into its root folder — and because both ends of that move live inside <code translate="no" v-pre>__magic__</code>, the move rewrites a single row in a table. No bytes are read, nothing is copied, and importing a 90 GB remux costs the same as importing nothing.</p>
-<svg viewBox="0 0 980 300" role="img" aria-label="A grab travels from Sonarr to zurg's SABnzbd endpoint, becomes an NZB file on disk, is listed by the Usenet backend as a release, and is then imported by a rename inside the __magic__ namespace rather than by copying bytes." style="width:100%;height:auto;color:currentColor;max-width:980px">
-  <defs>
-    <marker id="sr-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
-    <marker id="sr-ahA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3b9ec0"/></marker>
-  </defs>
-  <text x="0" y="14" font-family="ui-monospace,monospace" font-size="11" fill="currentColor" opacity=".55" letter-spacing="1.2">THE GRAB · AN ORDINARY SABNZBD CONVERSATION</text>
-  <rect x="0" y="30" width="168" height="62" rx="7" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".8"/>
-  <text x="84" y="56" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13.5" font-weight="600" fill="currentColor">Sonarr / Radarr</text>
-  <text x="84" y="75" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10.5" fill="currentColor" opacity=".6">grabs a release</text>
-  <line x1="168" y1="61" x2="268" y2="61" stroke="currentColor" stroke-width="1.2" marker-end="url(#sr-ah)"/>
-  <text x="218" y="50" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="currentColor" opacity=".75">POSTs the NZB</text>
-  <text x="218" y="79" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="currentColor" opacity=".55">mode=addfile</text>
-  <rect x="276" y="30" width="176" height="62" rx="7" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".8"/>
-  <text x="364" y="56" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13.5" font-weight="600" fill="currentColor">zurg <tspan font-family="ui-monospace,monospace" font-size="11" opacity=".7">/api</tspan></text>
-  <text x="364" y="75" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10.5" fill="currentColor" opacity=".6">writes nzbs/&lt;name&gt;.nzb</text>
-  <line x1="452" y1="61" x2="552" y2="61" stroke="currentColor" stroke-width="1.2" marker-end="url(#sr-ah)"/>
-  <text x="502" y="50" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="currentColor" opacity=".75">scans + parses</text>
-  <rect x="560" y="30" width="184" height="62" rx="7" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".8"/>
-  <text x="652" y="56" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13.5" font-weight="600" fill="currentColor">Usenet backend</text>
-  <text x="652" y="75" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10.5" fill="currentColor" opacity=".6">release is listed</text>
-  <line x1="744" y1="61" x2="836" y2="61" stroke="currentColor" stroke-width="1.2" marker-end="url(#sr-ah)"/>
-  <text x="790" y="50" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="currentColor" opacity=".75">Completed</text>
-  <rect x="844" y="30" width="136" height="62" rx="7" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".8"/>
-  <text x="912" y="56" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13.5" font-weight="600" fill="currentColor">history</text>
-  <text x="912" y="75" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10.5" fill="currentColor" opacity=".6">names a folder</text>
-  <path d="M912,92 L912,140 L60,140 L60,178" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".5" marker-end="url(#sr-ah)"/>
-  <text x="486" y="132" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="currentColor" opacity=".7">the client polls, then imports from the folder history named</text>
-  <rect x="0" y="178" width="980" height="112" rx="9" fill="none" stroke="#3b9ec0" stroke-width="1.3" stroke-dasharray="5 4" opacity=".8"/>
-  <text x="18" y="203" font-family="ui-monospace,monospace" font-size="10.5" fill="#3b9ec0" letter-spacing="1.1">THE IMPORT · BOTH ENDS INSIDE __magic__</text>
-  <rect x="40" y="214" width="260" height="58" rx="7" fill="none" stroke="#3b9ec0" stroke-width="1.3"/>
-  <text x="170" y="238" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="600" fill="#3b9ec0">the job folder</text>
-  <text x="170" y="257" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10.5" fill="#3b9ec0" opacity=".85">__magic__/&lt;release&gt;/file.mkv</text>
-  <line x1="300" y1="243" x2="628" y2="243" stroke="#3b9ec0" stroke-width="1.6" marker-end="url(#sr-ahA)"/>
-  <text x="466" y="232" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" font-weight="600" fill="#3b9ec0">MOVE</text>
-  <text x="466" y="261" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" fill="#3b9ec0" opacity=".85">one row rewritten · 0 bytes read</text>
-  <rect x="640" y="214" width="300" height="58" rx="7" fill="none" stroke="#3b9ec0" stroke-width="1.3"/>
-  <text x="790" y="238" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="600" fill="#3b9ec0">the root folder</text>
-  <text x="790" y="257" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10.5" fill="#3b9ec0" opacity=".85">__magic__/movies/Title (Year)/</text>
-</svg>
-<p>This is the Usenet half only. SABnzbd carries NZBs and nothing else; a torrent equivalent would be a different API and is not implemented.</p>
 <h2 id="before-you-start">Before you start</h2>
 <p>Three things have to be true. Check all three now — every one of them fails later as something that looks unrelated.</p>
 <ol>
