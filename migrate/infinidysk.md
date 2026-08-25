@@ -22,7 +22,7 @@ zurg side to end up with releases InfiniDysk never had.
 
 One difference in acquisition, stated up front: zurg's own ingestion is a
 watch directory — `.nzb` files dropped into `nzbs/`, rescanned every 15 s. It
-does have a [SABnzbd-compatible endpoint](../guides/sabnzbd.md) that Sonarr and Radarr
+does have a [SABnzbd-compatible endpoint](../guides/sonarr-radarr.md) that Sonarr and Radarr
 can grab through, opt-in and Usenet-only, but it is not yet as strong a
 download client as it looks: zurg does not check whether a post's articles are
 still on the news server, so a dead release reports Completed and fails on the

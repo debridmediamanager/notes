@@ -28,7 +28,7 @@ This guide goes end to end: news accounts, NZBs, the mount, Plex.
 
 - **At least one Usenet provider account.** Retention is what matters most — a 4000+ day provider will still have posts a 1000-day one has aged out. Your plan's *connection allowance* is the second number to know; it is what zurg reads at.
 - **More accounts, if you have them.** A second unlimited provider on a different backbone, or a cheap block account for the gaps, is the highest-value thing you can add to a Usenet setup — see [More than one Usenet provider](#more-than-one-usenet-provider).
-- **NZB files.** zurg does not search indexers. Download them from your indexer and drop them into `nzbs/` — or turn on the [SABnzbd-compatible endpoint](sabnzbd.md) and let Sonarr and Radarr hand them over, which writes into the same directory. The endpoint is opt-in and Usenet-only; there is no torrent equivalent.
+- **NZB files.** zurg does not search indexers. Download them from your indexer and drop them into `nzbs/` — or turn on the [SABnzbd-compatible endpoint](sonarr-radarr.md) and let Sonarr and Radarr hand them over, which writes into the same directory. The endpoint is opt-in and Usenet-only; there is no torrent equivalent.
 - **zurg**, plus `rclone` if you want a filesystem mount rather than WebDAV directly. zurg downloads rclone for you on first run.
 
 ---

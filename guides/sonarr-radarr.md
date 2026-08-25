@@ -1,12 +1,12 @@
 ---
-label: Sonarr & Radarr walkthrough
-icon: checklist
-order: 85
+label: Sonarr & Radarr
+icon: arrow-switch
+order: 80
 ---
 
 # Sonarr and Radarr, step by step
 
-Point Sonarr and Radarr at zurg and they grab from Usenet without a Usenet client — no download, no unpack, no disk. This is the illustrated version: every step, with the screen you should be looking at. For the reference version of the same thing, see [Sonarr & Radarr](sabnzbd.md).
+Point Sonarr and Radarr at zurg and they grab from Usenet without a Usenet client — no download, no unpack, no disk. Every step below, with the screen you should be looking at.
 
 Everything below was captured against zurg `nightly-993-g99bcf9a4`, Sonarr `4.0.19.2979` and Radarr `6.3.0.10514`, on a live install with a real Usenet account. Host and user names have been changed to `yowmamasita@zurg-server`; nothing else in the captured output was altered, and API keys shown are illustrative.
 

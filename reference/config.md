@@ -524,7 +524,7 @@ Both the `magic:` and the `sabnzbd:` block are editable in full from the [config
 
 zurg can answer Sonarr and Radarr as though it were a SABnzbd. They hand it an NZB, it writes the file into `nzbs/` for the Usenet backend, and once the release is in the library the job reports **Completed** with a job folder under `__magic__` to import from. Nothing is downloaded to import: the \*arr renames the file inside the mount, which is a row in the `__magic__` table.
 
-It needs both halves to be useful — an `nzb` provider to read the NZB, and `magic.enabled` to have somewhere to import from — and it is off until asked for. Full setup, including what to put in the \*arr, is in [docs/sabnzbd.md](../guides/sabnzbd.md).
+It needs both halves to be useful — an `nzb` provider to read the NZB, and `magic.enabled` to have somewhere to import from — and it is off until asked for. Full setup, including what to put in the \*arr, is in [docs/sabnzbd.md](../guides/sonarr-radarr.md).
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
