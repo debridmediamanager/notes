@@ -102,7 +102,7 @@ qbittorrent:
 
 Three Windows specifics in there:
 
-- **`--links` is required.** zurg serves the library as an rclone union of a local and a remote half, and on Windows the union fails without it. Without `--links` the mount logs `symlinks not supported without the --links flag` and serves nothing.
+- **`--links` is optional, and worth keeping anyway.** zurg serves the library as an rclone union of a local and a remote half, and WinFsp asks the mount root whether it is a symlink the moment the drive appears. Without the flag rclone answers that one probe with `ERROR : symlinks not supported without the --links flag: /` and mounts regardless — measured 2026-08-31 on zurg `2026.08.31.0443-nightly` against rclone 1.74.2 and 1.75.0, the drive, both halves of the union and a `__magic__` write behaved identically with and without it. With the flag the same probe logs `NOTICE: union root '': Symlinks support enabled` instead, and rclone will carry real symlinks if you ever put any under `data\local`. Keep it and the log stays clean.
 - **`mount_path: "Z:"`** is a drive letter here, not a POSIX path. Any free letter works.
 - **Keep `magic.enabled: true`** if you ever want Sonarr or Radarr importing from this machine — an import is a rename inside `__magic__`, and without it every import becomes a full download. The same applies to the Usenet pass below.
 
@@ -384,7 +384,7 @@ If you do not need Explorer at all — a headless box, or clients that speak HTT
 | What you see | What it means |
 |---|---|
 | `Z:` not in Explorer | The session rule — see [above](#keeping-it-running-the-session-rules). The mount is probably fine; check `http://localhost:9999/http/` first. |
-| `symlinks not supported without the --links flag` | `--links` missing from `rclone_extra_args`. |
+| `symlinks not supported without the --links flag` | `--links` missing from `rclone_extra_args`. Cosmetic — rclone answering WinFsp's symlink probe of the mount root, once, as the drive comes up. The mount works without it; add the flag to silence the line. |
 | `Library is still loading` under `__magic__` or `/http/` | The first Real-Debrid run walks the account. Wait; a 3,300-torrent account took ~40 minutes here. An NZB library never says this — it starts empty. |
 | `realdebrid will not take <name>: it refuses that name outright` | Real-Debrid blocks some release names (`WEBRip` and friends). Grab a differently-named release; nothing is wrong with the setup. |
 | An add fails with `could not read back id=…` or rate-limit text | The account's API budget is spent — on this box, the library walk plus a second zurg on the same token did it. Let the walk finish, or don't share the token across instances. |
