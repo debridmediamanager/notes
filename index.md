@@ -34,6 +34,7 @@ Working with the library.
 
 - [Usenet](guides/usenet.md) — the `nzb` backend end to end: news accounts, NZBs, the mount, Plex
 - [Sonarr & Radarr](guides/sonarr-radarr.md) — zurg answering as a SABnzbd, so imports are a rename not a download
+- [Sonarr & Radarr, torrents](guides/sonarr-radarr-torrents.md) — the same, with zurg answering as a qBittorrent; Prowlarr too
 - [`__magic__`](guides/magic.md) — the one directory whose layout is stored, and therefore yours to arrange
 - [Plex](guides/plex.md) — what zurg does with a Plex token, and what it deliberately does not
 - [Jellyfin](guides/jellyfin.md) — the same, for Jellyfin

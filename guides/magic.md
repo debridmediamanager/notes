@@ -162,5 +162,6 @@ Useful if you drive the namespace over WebDAV directly; the mount handles all of
 ## See also
 
 - [sabnzbd.md](sonarr-radarr.md) — pointing Sonarr and Radarr at zurg, which is what `__magic__` was built to make possible
+- [sonarr-radarr-torrents.md](sonarr-radarr-torrents.md) — the same for torrents, with zurg answering as a qBittorrent
 - [usenet.md](usenet.md) — the NZB backend those grabs land in
 - [config.md](../reference/config.md#__magic__-a-directory-you-can-organise) — every key in the `magic:` block

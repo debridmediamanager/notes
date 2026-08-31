@@ -11,6 +11,7 @@ How zurg is built, what it was measured at, and the design notes behind the awkw
 - [Architecture](architecture.md)
 - [Debrid baseline](debrid-baseline.md)
 - [SABnzbd client contract](sabnzbd-client-contract.md)
+- [qBittorrent client contract](qbittorrent-client-contract.md)
 - [Plex trash sweep](plex-trash-sweep.md)
 - [Stream timeout regression](stream-timeout-regression.md)
 - [Directory config UI/UX](uiux.md)
