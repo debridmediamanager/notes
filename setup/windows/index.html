@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841453646328">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841459293366">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
 
     <!-- Primary Meta Tags -->
-    <title>Windows Setup Guide</title>
-    <meta name="title" content="Windows Setup Guide">
-    <meta name="description" content="WinFsp: Required for rclone FUSE mount. Install silently:">
+    <title>Windows, the binary, from scratch</title>
+    <meta name="title" content="Windows, the binary, from scratch">
+    <meta name="description" content="No Docker, no WSL: the zurg .exe in a folder, a config.yml you write once, and a Z: drive in Explorer. This page walks the whole thing in two passes —">
 
     <!-- Canonical -->
     <link rel="canonical" href="https://notes.debridmediamanager.com/setup/windows/">
@@ -21,28 +21,34 @@
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://notes.debridmediamanager.com/setup/windows/">
-    <meta property="og:title" content="Windows Setup Guide">
-    <meta property="og:description" content="WinFsp: Required for rclone FUSE mount. Install silently:">
+    <meta property="og:title" content="Windows, the binary, from scratch">
+    <meta property="og:description" content="No Docker, no WSL: the zurg .exe in a folder, a config.yml you write once, and a Z: drive in Explorer. This page walks the whole thing in two passes —">
+    <meta property="og:image" content="https://notes.debridmediamanager.com/assets/windows-setup/20-console-rd.webp">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Windows, the binary, from scratch">
     <meta property="og:site_name" content="dmm+zurg">
     <meta property="og:locale" content="en_US">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://notes.debridmediamanager.com/setup/windows/">
-    <meta name="twitter:title" content="Windows Setup Guide">
-    <meta name="twitter:description" content="WinFsp: Required for rclone FUSE mount. Install silently:">
+    <meta name="twitter:title" content="Windows, the binary, from scratch">
+    <meta name="twitter:description" content="No Docker, no WSL: the zurg .exe in a folder, a config.yml you write once, and a Z: drive in Explorer. This page walks the whole thing in two passes —">
+    <meta name="twitter:image" content="https://notes.debridmediamanager.com/assets/windows-setup/20-console-rd.webp">
+    <meta name="twitter:image:alt" content="Windows, the binary, from scratch">
 
     <!-- Alternate Markdown -->
     <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/setup/windows.md">
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841453646328" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841459293366" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841453646328" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841459293366" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841453646328" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841453646328" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841459293366" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841459293366" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -178,152 +184,452 @@
                 <doc-page-actions></doc-page-actions>
 
                 <!-- Page content  -->
-<h1 id="windows-setup-guide">Windows Setup Guide</h1>
-<h2 id="prerequisites">Prerequisites</h2>
+<h1 id="windows-the-binary-from-scratch">Windows, the binary, from scratch</h1>
+<p>No Docker, no WSL: the zurg <code translate="no" v-pre>.exe</code> in a folder, a <code translate="no" v-pre>config.yml</code> you write once, and a <code translate="no" v-pre>Z:</code> drive in Explorer. This page walks the whole thing in two passes — first <strong>RealDebrid with the qBittorrent endpoint</strong>, then a full reset and <strong>Usenet with the SABnzbd endpoint</strong> — because those are the two installs people actually make, and they exercise different halves of zurg.</p>
+<p>Everything below was captured on a live install: Windows 11 Pro 23H2 (build 22631), PowerShell 5.1, WinFsp 2.0.23075, zurg <code translate="no" v-pre>2026.08.30.0459-nightly-73-g5b4c9790</code>, and a Real-Debrid account plus a Usenet news account. User names have been changed; API keys and credentials shown are illustrative.</p>
+<h2 id="what-you-need">What you need</h2>
 <ul>
-<li><strong>WinFsp</strong>: Required for rclone FUSE mount. Install silently:
+<li><strong>zurg.exe</strong> — from the <a href="https://github.com/debridmediamanager/zurg/releases">sponsor releases</a>. This page assumes you have downloaded it.</li>
+<li>
+<p><strong>WinFsp</strong> — zurg mounts the library through rclone, and rclone needs WinFsp for a drive letter on Windows. Install it silently, or from the <a href="https://github.com/winfsp/winfsp/releases">installer</a>:</p>
 <div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$url = &quot;https://github.com/winfsp/winfsp/releases/download/v2.0/winfsp-2.0.23075.msi&quot;
 Invoke-WebRequest -Uri $url -OutFile &quot;$env:TEMP\winfsp.msi&quot; -UseBasicParsing
 Start-Process msiexec.exe -ArgumentList &quot;/i&quot;, &quot;$env:TEMP\winfsp.msi&quot;, &quot;/qn&quot;, &quot;/norestart&quot; -Wait</code></pre>
 </doc-codeblock></div>
 </li>
+<li><strong>An account</strong> — a Real-Debrid API token for the first pass, a news server for the second.</li>
 </ul>
-<h2 id="cross-compile">Cross-compile</h2>
-<div id="cross-compile-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">GOOS=windows GOARCH=amd64 make build</code></pre>
+<p>Nothing else. rclone and ffprobe download themselves on first run.</p>
+<h2 id="1-first-run-zurg-builds-its-own-home">1. First run: zurg builds its own home</h2>
+<p>Make a folder, put the binary in it, run it once with no config file:</p>
+<div id="1-first-run-zurg-builds-its-own-home-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS C:\Users\yowmamasita&gt; mkdir C:\Users\yowmamasita\zurg
+PS C:\Users\yowmamasita\zurg&gt; .\zurg.exe</code></pre>
 </doc-codeblock></div>
-<p>Produces a PE32+ executable named <code translate="no" v-pre>zurg</code> (rename to <code translate="no" v-pre>zurg.exe</code> when copying to Windows).</p>
-<h2 id="first-run">First run</h2>
-<p>On first run, zurg automatically:</p>
-<ol>
-<li>Creates <code translate="no" v-pre>data/</code>, <code translate="no" v-pre>dump/</code>, <code translate="no" v-pre>logs/</code>, <code translate="no" v-pre>strm/</code>, <code translate="no" v-pre>bin/</code> directories</li>
-<li>Downloads <code translate="no" v-pre>ffprobe.exe</code> from ffbinaries.com</li>
-<li>Downloads <code translate="no" v-pre>rclone.exe</code> from GitHub releases</li>
-<li>Updates <code translate="no" v-pre>config.yml</code> with <code translate="no" v-pre>ffprobe_binary: bin\ffprobe.exe</code> and <code translate="no" v-pre>rclone_binary: bin\rclone.exe</code></li>
-<li>Runs the network latency test (results cached to <code translate="no" v-pre>data/network_test_results.json</code>)</li>
-</ol>
-<h2 id="config-notes">Config notes</h2>
-<p>Minimal Windows config:</p>
-<div id="config-notes-code-1" class="codeblock-wrapper"><doc-codeblock>
+<p>zurg creates a default config, fetches its two helper binaries, tells you what to do next, and exits:</p>
+<div id="1-first-run-zurg-builds-its-own-home-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO  setup  Config file not found, creating default from config.simple.yml
+INFO  setup  ffprobe: bin\ffprobe.exe (from github.com/eugeneware/ffmpeg-static)
+INFO  setup  rclone: bin\rclone.exe (from downloads.rclone.org)
+INFO  zurg   Default config created at config.yml
+INFO  zurg   Update config.yml with your Real-Debrid token, then rerun zurg.</code></pre>
+</doc-codeblock></div>
+<p>The downloads are one-time and land in <code translate="no" v-pre>bin\</code> — about 85 MB each. After this first run the folder looks like:</p>
+<div id="1-first-run-zurg-builds-its-own-home-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">C:\Users\yowmamasita\zurg\
+├── bin\                ffprobe.exe, rclone.exe
+├── data\               library cache, keys, the __magic__ table
+├── dump\
+├── logs\               zurg.log, rclone.log
+├── nzbs\               the Usenet watch directory (second pass)
+├── strm\
+├── config.yml
+└── zurg.exe</code></pre>
+</doc-codeblock></div>
+<p>The generated <code translate="no" v-pre>config.yml</code> is a minimal one — a placeholder Real-Debrid provider and two directory filters. You replace it with the config for whichever pass you are doing.</p>
+<h2 id="2-the-realdebrid-pass">2. The RealDebrid pass</h2>
+<h3 id="the-config">The config</h3>
+<p>Overwrite <code translate="no" v-pre>config.yml</code> with this — a Real-Debrid token, the qBittorrent endpoint on, and the mount as <code translate="no" v-pre>Z:</code>:</p>
+<div id="the-config-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">zurg: v1
 providers:
   - type: realdebrid
-    token: YOUR_TOKEN
-port: 9999
-rclone_enabled: true
+    token: YOUR_RD_API_TOKEN
+
+directories:
+  shows:
+    group: media
+    group_order: 10
+    filters:
+      - has_episodes: true
+  movies:
+    group: media
+    group_order: 20
+    only_show_the_biggest_file: true
+
+ffprobe_binary: bin\ffprobe.exe
 rclone_binary: bin\rclone.exe
+
+rclone_enabled: true
 mount_path: &quot;Z:&quot;
 rclone_extra_args:
   - &quot;--links&quot;
-ffprobe_binary: bin\ffprobe.exe</code></pre>
+
+magic:
+  enabled: true
+
+qbittorrent:
+  enabled: true
+  api_key: &quot;&quot;          # empty = zurg generates one and keeps it
+  categories: [tv-sonarr, radarr]</code></pre>
 </doc-codeblock></div>
-<h3 id="required---links-flag">Required: <code translate="no" v-pre>--links</code> flag</h3>
-<p>rclone&#x27;s union remote fails on Windows without <code translate="no" v-pre>--links</code>:</p>
-<div id="required---links-flag-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-none"><code v-pre class="language-none">ERROR : symlinks not supported without the --links flag: /</code></pre>
+<p>Three Windows specifics in there:</p>
+<ul>
+<li><strong><code translate="no" v-pre>--links</code> is required.</strong> zurg serves the library as an rclone union of a local and a remote half, and on Windows the union fails without it. Without <code translate="no" v-pre>--links</code> the mount logs <code translate="no" v-pre>symlinks not supported without the --links flag</code> and serves nothing.</li>
+<li><strong><code translate="no" v-pre>mount_path: &quot;Z:&quot;</code></strong> is a drive letter here, not a POSIX path. Any free letter works.</li>
+<li><strong>Keep <code translate="no" v-pre>magic.enabled: true</code></strong> if you ever want Sonarr or Radarr importing from this machine — an import is a rename inside <code translate="no" v-pre>__magic__</code>, and without it every import becomes a full download. The same applies to the Usenet pass below.</li>
+</ul>
+<h3 id="start-it-and-read-the-log">Start it and read the log</h3>
+<p>Start zurg the plain way for now — a PowerShell window in the folder:</p>
+<div id="start-it-and-read-the-log-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS C:\Users\yowmamasita\zurg&gt; .\zurg.exe --config config.yml</code></pre>
 </doc-codeblock></div>
-<p>Add <code translate="no" v-pre>--links</code> to <code translate="no" v-pre>rclone_extra_args</code> to fix this. Zurg&#x27;s union remote (local + webdav) triggers this because the local backend scans the <code translate="no" v-pre>data/local</code> directory.</p>
-<h3 id="--network-mode-not-recommended"><code translate="no" v-pre>--network-mode</code> (not recommended)</h3>
-<p>Adding <code translate="no" v-pre>--network-mode</code> to <code translate="no" v-pre>rclone_extra_args</code> creates a WinFsp network share (<code translate="no" v-pre>\\server\zurg{HASH}</code>) instead of a drive letter mount. The share is accessible via UNC path from any session, but:</p>
-<ul>
-<li>The auto-generated <code translate="no" v-pre>{HASH}</code> suffix makes the UNC path unpredictable</li>
-<li><code translate="no" v-pre>net use Z: \\server\zurg{HASH}</code> fails with error 67 (network name not found)</li>
-<li>Not practical for drive letter mapping</li>
-</ul>
-<h2 id="session-isolation-problem">Session isolation problem</h2>
-<p><strong>This is the main blocker for a clean Windows setup.</strong></p>
-<p>WinFsp/rclone mounts are scoped to the Windows session where the process runs. Windows has separate sessions:</p>
-<ul>
-<li><strong>Session 0</strong>: Services and SSH connections</li>
-<li><strong>Session 1+</strong>: Interactive desktop (console, RDP, Parsec)</li>
-</ul>
-<p>A process started from SSH runs in session 0. Its rclone mount (e.g., <code translate="no" v-pre>Z:</code>) is invisible to the desktop session (and vice versa). This means:</p>
-<ul>
-<li><code translate="no" v-pre>Start-Process</code> from SSH → mount invisible to desktop</li>
-<li>Scheduled task with <code translate="no" v-pre>schtasks /run</code> from SSH → runs in session 0, mount invisible</li>
-<li>Scheduled task with <code translate="no" v-pre>/IT</code> flag → correct at logon, but <code translate="no" v-pre>schtasks /run</code> from SSH still targets session 0</li>
-<li><code translate="no" v-pre>Register-ScheduledTask</code> with <code translate="no" v-pre>-LogonType Interactive</code> → same problem when triggered from SSH</li>
-</ul>
-<h3 id="approaches-tried">Approaches tried</h3>
-<retype-table copy-text="| Approach | Result |
-|----------|--------|
-| `Start-Process` from SSH | Runs in session 0, mount invisible to desktop |
-| Scheduled task (`/IT`, `Interactive` logon) | Correct at logon trigger, but `schtasks /run` from SSH still uses session 0 |
-| `--network-mode` | Creates UNC share visible across sessions, but can't map to drive letter |
-| PsExec `-i 1` | Launches in session 1, processes run in correct session, but mount still didn't appear (needs more investigation) |
-| VBS in Startup folder | Works but requires manual double-click or re-login |">
+<p>The first thing it does is Real-Debrid&#x27;s network test — it unrestricts test links at every download region and measures latency, taking about twenty seconds. Then the lines that matter:</p>
+<div id="start-it-and-read-the-log-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO  network_test  Network test completed!
+INFO  zurg          Provider realdebrid ready (type=realdebrid)
+INFO  router        __magic__ serves sidecar files from data\local\__magic__
+INFO  router.qbittorrent  qBittorrent API on /api/v2 and /qbittorrent/api/v2, save path Z:/__magic__, categories tv-sonarr, radarr
+INFO  router.qbittorrent  qBittorrent: generated API key 9ec56e41e8c9afa4d5480e1222ad3173 — paste it into Sonarr or Radarr's API Key field, or pin it as qbittorrent.api_key in config.yml
+INFO  zurg          Starting server on http://[::]:9999
+INFO  rclone        rclone started with mount Z:, union local C:\Users\yowmamasita\zurg\data\local
+INFO  zurg          Your realdebrid account will expire in 1858 days</code></pre>
+</doc-codeblock></div>
+<p>The generated key is also in <code translate="no" v-pre>data\qbittorrent-apikey</code>. Then the library walk begins — the first start reads every torrent on the account, and on a large account that takes a while (a 3,300-torrent account took roughly 40 minutes here, sharing the provider&#x27;s API budget with everything else on the account). <strong>While it walks, <code translate="no" v-pre>__magic__</code> answers <em>Library is still loading</em></strong> — that is expected, not a fault.</p>
+<p>Three warnings you may see, all known and none fatal:</p>
+<retype-table copy-text="| Warning | What it is |
+|---|---|
+| `the save path &quot;Z:/__magic__&quot; is not absolute` | A false positive on Windows: zurg checks the path with a POSIX rule, and a drive letter is absolute everywhere else. The endpoint is fine — the clients open `Z:/__magic__` without trouble. |
+| `cannot truncate data\magic.journal: Access is denied` | A real Windows quirk, cosmetic in effect: zurg holds the journal open and then tries to compact it, which Windows refuses. Your placements are still written and still survive restarts — verified on this install — the journal just never shrinks. |
+| `Debug logging is enabled` | The generated config is verbose by default. Add `log_level: INFO` to quiet it. |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
 <tr>
-<th>Approach</th>
-<th>Result</th>
+<th>Warning</th>
+<th>What it is</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code translate="no" v-pre>Start-Process</code> from SSH</td>
-<td>Runs in session 0, mount invisible to desktop</td>
+<td><code translate="no" v-pre>the save path &quot;Z:/__magic__&quot; is not absolute</code></td>
+<td>A false positive on Windows: zurg checks the path with a POSIX rule, and a drive letter is absolute everywhere else. The endpoint is fine — the clients open <code translate="no" v-pre>Z:/__magic__</code> without trouble.</td>
 </tr>
 <tr>
-<td>Scheduled task (<code translate="no" v-pre>/IT</code>, <code translate="no" v-pre>Interactive</code> logon)</td>
-<td>Correct at logon trigger, but <code translate="no" v-pre>schtasks /run</code> from SSH still uses session 0</td>
+<td><code translate="no" v-pre>cannot truncate data\magic.journal: Access is denied</code></td>
+<td>A real Windows quirk, cosmetic in effect: zurg holds the journal open and then tries to compact it, which Windows refuses. Your placements are still written and still survive restarts — verified on this install — the journal just never shrinks.</td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>--network-mode</code></td>
-<td>Creates UNC share visible across sessions, but can&#x27;t map to drive letter</td>
-</tr>
-<tr>
-<td>PsExec <code translate="no" v-pre>-i 1</code></td>
-<td>Launches in session 1, processes run in correct session, but mount still didn&#x27;t appear (needs more investigation)</td>
-</tr>
-<tr>
-<td>VBS in Startup folder</td>
-<td>Works but requires manual double-click or re-login</td>
+<td><code translate="no" v-pre>Debug logging is enabled</code></td>
+<td>The generated config is verbose by default. Add <code translate="no" v-pre>log_level: INFO</code> to quiet it.</td>
 </tr>
 </tbody>
 </table>
 </div>
 </retype-table>
-<h3 id="recommended-next-steps">Recommended next steps</h3>
-<ol>
-<li>
-<p><strong>Native WebDAV mapping</strong> (untested): Skip rclone entirely, run zurg as a background service, map WebDAV via <code translate="no" v-pre>net use Z: http://localhost:9999/dav/</code>. Windows has a built-in WebDAV redirector (WebClient service). Persistent mappings (<code translate="no" v-pre>/persistent:yes</code>) recreate at logon. May have performance limitations.</p>
-</li>
-<li>
-<p><strong>Interactive launch from desktop</strong>: Start zurg from the console session directly (double-click, startup folder, or Parsec). The logon-triggered scheduled task should work correctly for auto-start on actual login (not SSH-triggered).</p>
-</li>
-<li>
-<p><strong>PsExec investigation</strong>: <code translate="no" v-pre>PsExec64.exe -i 1 -d -w C:\Users\ben\zurg zurg.exe</code> successfully launched processes in session 1, but the Z: mount wasn&#x27;t visible in Explorer. May need <code translate="no" v-pre>-s</code> flag or different user context. PsExec is at <code translate="no" v-pre>bin\PsExec64.exe</code> (downloaded from Sysinternals).</p>
-</li>
-</ol>
-<h2 id="current-state-on-bp-00516">Current state on bp-00516</h2>
-<div id="current-state-on-bp-00516-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-none"><code v-pre class="language-none">C:\Users\ben\zurg\
-├── bin\
-│   ├── ffprobe.exe      # auto-downloaded
-│   ├── rclone.exe       # auto-downloaded
-│   └── PsExec64.exe     # from Sysinternals
-├── data\                # cached torrents, network test results, local union dir
-├── dump\
-├── logs\                # zurg.log, rclone.log
-├── strm\
-├── config.yml
-└── zurg.exe             # cross-compiled from mac (GOOS=windows GOARCH=amd64)</code></pre>
+<figure class="content-center">
+    <img src="../../assets/windows-setup/20-console-rd.webp" alt="zurg running in a PowerShell window" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">zurg running in a PowerShell window</figcaption>
+</figure>
+<h3 id="the-dashboard">The dashboard</h3>
+<p><code translate="no" v-pre>http://localhost:9999/</code> — library size climbing as the walk proceeds, traffic served, memory. The <strong>Quick Links</strong> are the whole UI: Torrent Manager, Config, Directories, Magic, Logs.</p>
+<figure class="content-center">
+    <img src="../../assets/windows-setup/10-dashboard-home.webp" alt="The zurg dashboard on Windows" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The zurg dashboard on Windows</figcaption>
+</figure>
+<p><strong>Config</strong> is where everything lives after the first run. The providers block shows the one account:</p>
+<figure class="content-center">
+    <img src="../../assets/windows-setup/12-config-providers.webp" alt="The providers block with the Real-Debrid row" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The providers block with the Real-Debrid row</figcaption>
+</figure>
+<p>The download-client block — the same toggles you set in <code translate="no" v-pre>config.yml</code>, editable here, every change stamped <strong>Restart Required</strong>, which is literal: both endpoints register their routes once at startup.</p>
+<figure class="content-center">
+    <img src="../../assets/windows-setup/13-config-magic-qbittorrent.webp" alt="The magic and download clients block with the qBittorrent endpoint on" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The magic and download clients block with the qBittorrent endpoint on</figcaption>
+</figure>
+<p>And the mount block, showing the drive letter and the rclone supervision:</p>
+<figure class="content-center">
+    <img src="../../assets/windows-setup/14-config-rclone.webp" alt="The rclone mount block with Z: configured" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The rclone mount block with Z: configured</figcaption>
+</figure>
+<h3 id="the-z-drive">The Z: drive</h3>
+<p>When zurg runs, <code translate="no" v-pre>Z:</code> is a petabyte-scale filesystem in Explorer:</p>
+<figure class="content-center">
+    <img src="../../assets/windows-setup/21-explorer-z.webp" alt="File Explorer at the Z: drive" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">File Explorer at the Z: drive</figcaption>
+</figure>
+<p><strong>But only if zurg runs where Explorer can see it — and that is the one genuinely Windows-shaped rule in this setup.</strong> A drive-letter mount belongs to the <em>logon session</em> that created it. Start zurg from an SSH connection or from a service and the mount exists, works, and is invisible to your desktop. This is not a bug in WinFsp or rclone; it is how Windows scopes drive letters. <doc-anchor-trigger to="#keeping-it-running-the-session-rules">The last section</doc-anchor-trigger> has the working recipe — an interactive scheduled task — and what was measured trying the alternatives.</p>
+<h3 id="prove-the-qbittorrent-endpoint">Prove the qBittorrent endpoint</h3>
+<p>Same probes as on any platform, from any PowerShell:</p>
+<div id="prove-the-qbittorrent-endpoint-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; $KEY = Get-Content data\qbittorrent-apikey
+PS&gt; Invoke-WebRequest &quot;http://localhost:9999/api/v2/app/webapiVersion&quot;
+
+# the healthy unauthenticated answer is a 403 — &quot;the API is here, log in&quot;
+PS&gt; Invoke-RestMethod &quot;http://localhost:9999/api/v2/app/version&quot; -Headers @{ Authorization = &quot;Bearer $KEY&quot; }
+v5.0.4
+PS&gt; (Invoke-RestMethod &quot;http://localhost:9999/api/v2/app/preferences&quot; -Headers @{ Authorization = &quot;Bearer $KEY&quot; }).save_path
+Z:/__magic__</code></pre>
 </doc-codeblock></div>
-<p>WinFsp is installed. No scheduled tasks or startup scripts are configured. Zurg is not running.</p>
-<h2 id="powershell-over-ssh-gotchas">PowerShell over SSH gotchas</h2>
+<p>And add a torrent to it. A <code translate="no" v-pre>.torrent</code> file goes up with <code translate="no" v-pre>curl -F</code>, or any client does it for you:</p>
+<div id="prove-the-qbittorrent-endpoint-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO  router.qbittorrent  qBittorrent: added op1176 (dc98af37…) to realdebrid as W7FRRMVJWUOMS</code></pre>
+</doc-codeblock></div>
+<p>The release this install grabbed was not cached on the account, so the *arr-style queue showed a real download — progress climbing 2% → 10% → 50% → 75% → 99% over about six minutes with the rate Real-Debrid reported — and then:</p>
+<div id="prove-the-qbittorrent-endpoint-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO  router.qbittorrent  qBittorrent: op1176 (dc98af37…) finished on realdebrid</code></pre>
+</doc-codeblock></div>
+<p>with the torrent reporting finished and a folder to import from:</p>
+<div id="prove-the-qbittorrent-endpoint-code-4" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">&quot;content_path&quot;: &quot;Z:/__magic__/[NanakoRaws] One Piece S01E1176 (THK TV 1080p HEVC AAC)&quot;</code></pre>
+</doc-codeblock></div>
+<p>Reading the file through <code translate="no" v-pre>Z:</code> pulled a megabyte in milliseconds — rclone&#x27;s VFS read-ahead fronts the provider, so warm reads are local-disk fast and the articles stream in behind them.</p>
+<p>One refusal worth knowing: the first release this install tried was named <code translate="no" v-pre>…WEBRip…</code>, and Real-Debrid blocks some release names outright. zurg knows the patterns and refuses before spending an add slot:</p>
+<div id="prove-the-qbittorrent-endpoint-code-5" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">WARN  router.qbittorrent  qBittorrent: realdebrid will not take op1176: it refuses that name outright, so the next account is tried</code></pre>
+</doc-codeblock></div>
+<p>Pick a differently-named release and it goes through. The <a href="../../guides/sonarr-radarr-torrents/">torrent walkthrough</a> covers the whole endpoint in depth — timeouts, cached-only mode, failure semantics — and the client settings are the same as there, with two Windows notes: <strong>Host</strong> <code translate="no" v-pre>localhost</code> when the *arr runs on the same machine, and the *arr must run in the same logon session as zurg for it to see <code translate="no" v-pre>Z:</code> — see <doc-anchor-trigger to="#keeping-it-running-the-session-rules">the session rules</doc-anchor-trigger>.</p>
+<h2 id="3-reset">3. Reset</h2>
+<p>Switching the install from Real-Debrid to Usenet is a wipe: stop zurg, delete everything the first pass created, keep the binary and <code translate="no" v-pre>bin\</code> so the helper downloads do not repeat.</p>
+<div id="3-reset-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; Stop-ScheduledTask zurg           # or close the console window
+PS&gt; taskkill /IM zurg.exe /F ; taskkill /IM rclone.exe /F
+PS&gt; cd C:\Users\yowmamasita\zurg
+PS&gt; Get-ChildItem -Exclude zurg.exe, bin | Remove-Item -Recurse -Force
+PS&gt; Get-ChildItem
+
+bin
+zurg.exe</code></pre>
+</doc-codeblock></div>
+<p>That <code translate="no" v-pre>Get-ChildItem -Exclude … | Remove-Item</code> is the whole reset — <code translate="no" v-pre>config.yml</code>, <code translate="no" v-pre>data\</code>, <code translate="no" v-pre>logs\</code>, <code translate="no" v-pre>nzbs\</code>, all of it. What survives is exactly what a fresh install needs.</p>
+<h2 id="4-the-usenet-pass">4. The Usenet pass</h2>
+<h3 id="the-config-1">The config</h3>
+<p>Same skeleton, different provider — a news account instead of a debrid token, and the SABnzbd endpoint instead of the qBittorrent one:</p>
+<div id="the-config-1-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">zurg: v1
+providers:
+  - type: nzb
+    nntp:
+      host: news.example.usenet.com
+      port: 563
+      tls: true
+      username: YOUR_NEWS_USERNAME
+      password: YOUR_NEWS_PASSWORD
+      connections: 8
+
+directories:
+  shows:
+    group: media
+    group_order: 10
+    filters:
+      - has_episodes: true
+  movies:
+    group: media
+    group_order: 20
+    only_show_the_biggest_file: true
+
+ffprobe_binary: bin\ffprobe.exe
+rclone_binary: bin\rclone.exe
+
+rclone_enabled: true
+mount_path: &quot;Z:&quot;
+rclone_extra_args:
+  - &quot;--links&quot;
+
+magic:
+  enabled: true
+
+sabnzbd:
+  enabled: true
+  api_key: &quot;&quot;          # empty = zurg generates one and keeps it
+  categories: [tv, movies]</code></pre>
+</doc-codeblock></div>
+<p>Eight connections is plenty for streaming; the account&#x27;s plan states its own cap.</p>
+<h3 id="start-it">Start it</h3>
+<div id="start-it-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS C:\Users\yowmamasita\zurg&gt; .\zurg.exe --config config.yml</code></pre>
+</doc-codeblock></div>
+<p>The contrast with the first pass is immediate: no walk. An NZB library starts empty — there is nothing to fetch from anywhere until you put an NZB in it — so startup is the network test, the endpoint lines, and the news connection:</p>
+<div id="start-it-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO  nzb       NZB articles are kept in memory for the life of the process (nzb_segments: resident)
+INFO  zurg      Provider nzb ready (type=nzb)
+INFO  router    __magic__ serves sidecar files from data\local\__magic__
+INFO  router.sabnzbd  SABnzbd API on /api and /sabnzbd/api, completed directory Z:/__magic__, categories tv, movies
+INFO  router.sabnzbd  SABnzbd: generated API key b7fb2b17e04244e2d36d0aae2d77b37a — paste it into Sonarr or Radarr, or pin it as sabnzbd.api_key in config.yml
+INFO  zurg      Starting server on http://[::]:9999
+INFO  rclone    rclone started with mount Z:, union local C:\Users\yowmamasita\zurg\data\local
+INFO  zurg      Usenet account nzb connected: nntps://news.frugalusenet.com:563 (8 connections)</code></pre>
+</doc-codeblock></div>
+<p>zurg dials the news server the moment it starts and keeps the connections warm, TLS and all. The SABnzbd key lands in <code translate="no" v-pre>data\sabnzbd-apikey</code>.</p>
+<figure class="content-center">
+    <img src="../../assets/windows-setup/50-console-usenet.webp" alt="zurg serving Usenet in a PowerShell window" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">zurg serving Usenet in a PowerShell window</figcaption>
+</figure>
+<p>The dashboard now shows a library of nothing, which is correct:</p>
+<figure class="content-center">
+    <img src="../../assets/windows-setup/40-dashboard-usenet.webp" alt="The dashboard with the Usenet provider, one item after the NZB below" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The dashboard with the Usenet provider, one item after the NZB below</figcaption>
+</figure>
+<p>The providers block carries the news account, and the download-client block now shows the SABnzbd half:</p>
+<figure class="content-center">
+    <img src="../../assets/windows-setup/41-config-providers-nzb.webp" alt="The providers block with the nzb row" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The providers block with the nzb row</figcaption>
+</figure>
+<figure class="content-center">
+    <img src="../../assets/windows-setup/42-config-magic-sabnzbd.webp" alt="The magic and download clients block with the SABnzbd endpoint on" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The magic and download clients block with the SABnzbd endpoint on</figcaption>
+</figure>
+<h3 id="drop-an-nzb-in">Drop an NZB in</h3>
+<p>The <code translate="no" v-pre>nzbs\</code> directory is the whole intake. Put one NZB there — downloaded from any indexer — and zurg picks it up:</p>
+<div id="drop-an-nzb-in-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; Copy-Item .\lanterns.nzb C:\Users\yowmamasita\zurg\nzbs\</code></pre>
+</doc-codeblock></div>
+<div id="drop-an-nzb-in-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO  nzb  Loaded NZB lanterns.nzb: 8 files</code></pre>
+</doc-codeblock></div>
+<p>That is the line that says the NZB parsed. The release appears as a folder under <code translate="no" v-pre>__magic__</code> on the mount, and because a Usenet release names its files however the poster felt like, the inner file may look like <code translate="no" v-pre>J8AZfuVQCD4yPpRIF566Bv0xKoEpYa3M.mkv</code> — the release folder carries the NZB&#x27;s name, the files carry the poster&#x27;s:</p>
+<figure class="content-center">
+    <img src="../../assets/windows-setup/51-explorer-magic-lanterns.webp" alt="File Explorer inside magic, showing the release folder" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">File Explorer inside magic, showing the release folder</figcaption>
+</figure>
+<p>Nothing has been downloaded at this point, and nothing will be until something reads a file. The first read of the episode — 162 MB — fetched exactly the articles covering the requested range, yEnc-decoded them, and answered; later reads were instant because the VFS had read ahead around them. A 60 GB remux costs 60 GB of disk nowhere, Usenet or debrid.</p>
+<p>The SABnzbd endpoint answers the same probes as always:</p>
+<div id="drop-an-nzb-in-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; $KEY = Get-Content data\sabnzbd-apikey
+PS&gt; Invoke-RestMethod &quot;http://localhost:9999/api?mode=version&amp;apikey=$KEY&amp;output=json&quot;
+{&quot;version&quot;:&quot;4.5.1&quot;}
+PS&gt; (Invoke-RestMethod &quot;http://localhost:9999/api?mode=get_config&amp;apikey=$KEY&amp;output=json&quot;).config.misc.complete_dir
+Z:/__magic__</code></pre>
+</doc-codeblock></div>
+<p>A wrong key is refused in the body, with an HTTP 200 — that is how SABnzbd itself behaves, and zurg copies it:</p>
+<div id="drop-an-nzb-in-code-4" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; Invoke-RestMethod &quot;http://localhost:9999/api?mode=queue&amp;apikey=wrong&amp;output=json&quot;
+{&quot;status&quot;:false,&quot;error&quot;:&quot;API Key Incorrect&quot;}</code></pre>
+</doc-codeblock></div>
+<p>For the client side — Sonarr, Radarr, categories, root folders under <code translate="no" v-pre>Z:\__magic__</code> — the <a href="../../guides/sonarr-radarr/">Usenet walkthrough</a> is the step-by-step, and every path in it maps by replacing <code translate="no" v-pre>/mnt/zurg/__magic__</code> with <code translate="no" v-pre>Z:\__magic__</code>. The <a href="../../guides/usenet/">Usenet guide</a> covers block accounts, retention and repair.</p>
+<h2 id="keeping-it-running-the-session-rules">Keeping it running: the session rules</h2>
+<p>A drive letter belongs to the logon session that mounted it. In practice, on the machine this page was captured on:</p>
+<retype-table copy-text="| How zurg was started | The mount |
+|---|---|
+| A PowerShell window you opened | `Z:` on your desktop |
+| SSH (`ssh ben@machine … zurg.exe`) | Works, serves, **invisible on the desktop** — the SSH logon session is not yours |
+| `Invoke-CimMethod Win32_Process Create` from SSH | Same — the new process inherits the caller's logon session |
+| PsExec `-i 1` | Process on the interactive session, but in its **own** logon session — mount still invisible to the desktop |
+| **An interactive scheduled task** | **`Z:` on your desktop** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>How zurg was started</th>
+<th>The mount</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A PowerShell window you opened</td>
+<td><code translate="no" v-pre>Z:</code> on your desktop</td>
+</tr>
+<tr>
+<td>SSH (<code translate="no" v-pre>ssh ben@machine … zurg.exe</code>)</td>
+<td>Works, serves, <strong>invisible on the desktop</strong> — the SSH logon session is not yours</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Invoke-CimMethod Win32_Process Create</code> from SSH</td>
+<td>Same — the new process inherits the caller&#x27;s logon session</td>
+</tr>
+<tr>
+<td>PsExec <code translate="no" v-pre>-i 1</code></td>
+<td>Process on the interactive session, but in its <strong>own</strong> logon session — mount still invisible to the desktop</td>
+</tr>
+<tr>
+<td><strong>An interactive scheduled task</strong></td>
+<td><strong><code translate="no" v-pre>Z:</code> on your desktop</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>The reliable recipe is a scheduled task that runs as you, only when you are logged on:</p>
+<div id="keeping-it-running-the-session-rules-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$wdir = &quot;C:\Users\yowmamasita\zurg&quot;
+Set-Content &quot;$wdir\start-zurg.cmd&quot; &quot;@echo off`ncd /d $wdir`nzurg.exe --config config.yml&quot;
+
+$action    = New-ScheduledTaskAction -Execute &quot;cmd.exe&quot; -Argument &quot;/c $wdir\start-zurg.cmd&quot;
+$trigger   = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(5)
+$principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType Interactive
+$settings  = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -ExecutionTimeLimit ([TimeSpan]::Zero)
+Register-ScheduledTask -TaskName &quot;zurg&quot; -Action $action -Trigger $trigger `
+  -Principal $principal -Settings $settings -Force
+Start-ScheduledTask -TaskName &quot;zurg&quot;</code></pre>
+</doc-codeblock></div>
+<p>A <strong>logon trigger</strong> (<code translate="no" v-pre>New-ScheduledTaskTrigger -AtLogOn</code>) instead of <code translate="no" v-pre>-Once</code> makes it come back on reboot. <code translate="no" v-pre>ExecutionTimeLimit ([TimeSpan]::Zero)</code> matters — without it the Task Scheduler kills the task after 72 hours.</p>
+<p>Two traps measured on this box:</p>
 <ul>
-<li><code translate="no" v-pre>&amp;&amp;</code> is not a valid statement separator — use <code translate="no" v-pre>;</code> instead</li>
-<li><code translate="no" v-pre>2&gt;/dev/null</code> doesn&#x27;t work — use <code translate="no" v-pre>-ErrorAction SilentlyContinue</code> or <code translate="no" v-pre>2&gt;$null</code></li>
-<li><code translate="no" v-pre>$_</code> and other special chars get eaten — use encoded commands or <code translate="no" v-pre>.ps1</code> script files:
-<div class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">sshpass -p 'pw' ssh user@host &quot;powershell -ExecutionPolicy Bypass -File C:\path\script.ps1&quot;</code></pre>
-</doc-codeblock></div>
-</li>
-<li>Pipe <code translate="no" v-pre>|</code> in string arguments (e.g., regex) gets interpreted by PowerShell — use script files for anything with special characters</li>
-<li><code translate="no" v-pre>Start-Process</code> processes get killed when the SSH session ends — use scheduled tasks or PsExec for persistence</li>
+<li><strong>A console with <code translate="no" v-pre>-NoExit</code> wedges the task slot.</strong> If the launcher leaves a window open after zurg stops, the scheduler considers the task still running and every later <code translate="no" v-pre>Start-ScheduledTask</code> is refused with <code translate="no" v-pre>0x800710E0</code>. <code translate="no" v-pre>Stop-ScheduledTask zurg</code> before starting it again, or run the binary directly as above so the task ends when zurg ends.</li>
+<li><strong><code translate="no" v-pre>Get-PSDrive</code> in one window does not falsify the mount.</strong> The drive is visible to processes in the <em>same logon session</em> — your desktop apps — not to every PowerShell you happen to open. If <code translate="no" v-pre>Z:</code> is missing in a window, check where that window&#x27;s session came from before concluding the mount died.</li>
+</ul>
+<p>If you do not need Explorer at all — a headless box, or clients that speak HTTP — none of this matters: run zurg however you like and point things at <code translate="no" v-pre>http://localhost:9999/dav/</code> or the endpoints. The session rule only governs the drive letter.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<retype-table copy-text="| What you see | What it means |
+|---|---|
+| `Z:` not in Explorer | The session rule — see [above](#keeping-it-running-the-session-rules). The mount is probably fine; check `http://localhost:9999/http/` first. |
+| `symlinks not supported without the --links flag` | `--links` missing from `rclone_extra_args`. |
+| `Library is still loading` under `__magic__` or `/http/` | The first Real-Debrid run walks the account. Wait; a 3,300-torrent account took ~40 minutes here. An NZB library never says this — it starts empty. |
+| `realdebrid will not take &lt;name&gt;: it refuses that name outright` | Real-Debrid blocks some release names (`WEBRip` and friends). Grab a differently-named release; nothing is wrong with the setup. |
+| An add fails with `could not read back id=…` or rate-limit text | The account's API budget is spent — on this box, the library walk plus a second zurg on the same token did it. Let the walk finish, or don't share the token across instances. |
+| `cannot truncate data\magic.journal: Access is denied` | The Windows journal-compaction refusal. Placements still persist across restarts; the journal just never compacts. |
+| `the save path &quot;Z:/__magic__&quot; is not absolute` | A false positive on drive-letter paths. The endpoint works; the clients open `Z:/__magic__` fine. |
+| Task start refused, `0x800710E0` | The task is still &quot;running&quot; — a launcher window never exited. `Stop-ScheduledTask zurg`, then start. |
+| `Get-PSDrive` shows no `Z:` from an SSH session | Expected — different logon session. See the session table. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>What you see</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>Z:</code> not in Explorer</td>
+<td>The session rule — see <doc-anchor-trigger to="#keeping-it-running-the-session-rules">above</doc-anchor-trigger>. The mount is probably fine; check <code translate="no" v-pre>http://localhost:9999/http/</code> first.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>symlinks not supported without the --links flag</code></td>
+<td><code translate="no" v-pre>--links</code> missing from <code translate="no" v-pre>rclone_extra_args</code>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Library is still loading</code> under <code translate="no" v-pre>__magic__</code> or <code translate="no" v-pre>/http/</code></td>
+<td>The first Real-Debrid run walks the account. Wait; a 3,300-torrent account took ~40 minutes here. An NZB library never says this — it starts empty.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>realdebrid will not take &lt;name&gt;: it refuses that name outright</code></td>
+<td>Real-Debrid blocks some release names (<code translate="no" v-pre>WEBRip</code> and friends). Grab a differently-named release; nothing is wrong with the setup.</td>
+</tr>
+<tr>
+<td>An add fails with <code translate="no" v-pre>could not read back id=…</code> or rate-limit text</td>
+<td>The account&#x27;s API budget is spent — on this box, the library walk plus a second zurg on the same token did it. Let the walk finish, or don&#x27;t share the token across instances.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>cannot truncate data\magic.journal: Access is denied</code></td>
+<td>The Windows journal-compaction refusal. Placements still persist across restarts; the journal just never compacts.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>the save path &quot;Z:/__magic__&quot; is not absolute</code></td>
+<td>A false positive on drive-letter paths. The endpoint works; the clients open <code translate="no" v-pre>Z:/__magic__</code> fine.</td>
+</tr>
+<tr>
+<td>Task start refused, <code translate="no" v-pre>0x800710E0</code></td>
+<td>The task is still &quot;running&quot; — a launcher window never exited. <code translate="no" v-pre>Stop-ScheduledTask zurg</code>, then start.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Get-PSDrive</code> shows no <code translate="no" v-pre>Z:</code> from an SSH session</td>
+<td>Expected — different logon session. See the session table.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h2 id="powershell-over-ssh-for-the-remote-minded">PowerShell over SSH, for the remote-minded</h2>
+<p>Windows PowerShell parses some POSIX habits badly, and SSH eats quoting. <code translate="no" v-pre>&amp;&amp;</code> is not a separator; <code translate="no" v-pre>2&gt;/dev/null</code> is not a redirect; <code translate="no" v-pre>$_.Property</code> inside an inline <code translate="no" v-pre>-Command</code> arrives mangled. For anything non-trivial, put it in a <code translate="no" v-pre>.ps1</code>, copy it over, and run <code translate="no" v-pre>powershell -ExecutionPolicy Bypass -File C:\path\script.ps1</code> — the whole rig on this page was driven exactly that way.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../docker/">Docker</a> and <a href="../macos/">macOS</a> — the same install on other platforms</li>
+<li><a href="../../guides/sonarr-radarr-torrents/">Sonarr &amp; Radarr, torrents</a> — the qBittorrent endpoint end to end, client settings included</li>
+<li><a href="../../guides/sonarr-radarr/">Sonarr &amp; Radarr</a> — the SABnzbd endpoint, same</li>
+<li><a href="../../guides/usenet/">Usenet</a> — news accounts, retention, repair, the <code translate="no" v-pre>nzb</code> backend in depth</li>
+<li><a href="../../guides/magic/"><code translate="no" v-pre>__magic__</code></a> — the directory both endpoints import from</li>
 </ul>
 
                 
