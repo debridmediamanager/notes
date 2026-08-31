@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.840996158565">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841453646328">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.840996158565" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841453646328" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.840996158565" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841453646328" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.840996158565" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.840996158565" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841453646328" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841453646328" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -1304,6 +1304,70 @@ dav_allow_rename: true</code></pre>
   complete_dir: &quot;&quot;</code></pre>
 </doc-codeblock></div>
 <p>The API key is the whole of the authentication, so treat the endpoint the way you treat the rest of zurg&#x27;s port: on a trusted network, or behind something that is. Basic auth cannot be used for it — the clients never send it, and a 401 is reported to the user as &quot;unable to connect&quot; rather than as an authentication failure.</p>
+<h3 id="qbittorrent-the-torrent-download-client-sonarr-and-radarr-see"><code translate="no" v-pre>qbittorrent</code>, the torrent download client Sonarr and Radarr see</h3>
+<p>zurg can answer Sonarr and Radarr as though it were a qBittorrent. They hand it a magnet or a <code translate="no" v-pre>.torrent</code> and zurg adds the info hash to a debrid account. Once the release is in the library the torrent reports <strong>finished</strong> with a folder under <code translate="no" v-pre>__magic__</code> to import from. Nothing is downloaded to import. The *arr renames the file inside the mount and that is a row in the <code translate="no" v-pre>__magic__</code> table.</p>
+<p>Two halves make it useful. An account that can add torrents reads the magnet and <code translate="no" v-pre>magic.enabled</code> gives the *arr somewhere to import from. It is off until asked for. Full setup including what to put in the *arr is in <a href="../../guides/sonarr-radarr-torrents/">the torrent walkthrough</a>.</p>
+<retype-table copy-text="| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `qbittorrent.enabled` | bool | `false` | Register the endpoint at `/api/v2` and `/qbittorrent/api/v2`. While off, neither route exists. |
+| `qbittorrent.api_key` | string | generated | The only gate on the endpoint. The clients send it as a bearer token when their **API Key** field is set, and accept it as the password on `auth/login` when it is not. Left empty with the block enabled, zurg generates one, keeps it in `data/qbittorrent-apikey` so it survives a restart, and logs it once at startup. |
+| `qbittorrent.categories` | list | `[tv-sonarr, radarr]` | The categories reported to the clients — the two the \*arrs ship with. Every one of them resolves to the same directory, so this exists only to stop a client warning about a category it cannot find. |
+| `qbittorrent.save_path` | string | `&lt;mount_path&gt;/__magic__` | The save path reported to the clients, and the parent of every folder they import from. It must be the path **the \*arr** sees, which is not zurg's own when the \*arr runs in a container that mounts the library elsewhere. Set `sabnzbd.complete_dir` to the same value if you run both endpoints. |
+| `qbittorrent.download_timeout_mins` | int | `15` | How long a grab may go with no movement — no change of stage and no rise in progress — before that account is given up on and the next one that takes torrents is tried. `0` means cached-only: a grab is accepted only onto an account that already holds the content, and refused inside the add otherwise, which is the one refusal Sonarr and Radarr act on. A negative number never gives up. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>qbittorrent.enabled</code></td>
+<td>bool</td>
+<td><code translate="no" v-pre>false</code></td>
+<td>Register the endpoint at <code translate="no" v-pre>/api/v2</code> and <code translate="no" v-pre>/qbittorrent/api/v2</code>. While off, neither route exists.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>qbittorrent.api_key</code></td>
+<td>string</td>
+<td>generated</td>
+<td>The only gate on the endpoint. The clients send it as a bearer token when their <strong>API Key</strong> field is set, and accept it as the password on <code translate="no" v-pre>auth/login</code> when it is not. Left empty with the block enabled, zurg generates one, keeps it in <code translate="no" v-pre>data/qbittorrent-apikey</code> so it survives a restart, and logs it once at startup.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>qbittorrent.categories</code></td>
+<td>list</td>
+<td><code translate="no" v-pre>[tv-sonarr, radarr]</code></td>
+<td>The categories reported to the clients — the two the *arrs ship with. Every one of them resolves to the same directory, so this exists only to stop a client warning about a category it cannot find.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>qbittorrent.save_path</code></td>
+<td>string</td>
+<td><code translate="no" v-pre>&lt;mount_path&gt;/__magic__</code></td>
+<td>The save path reported to the clients, and the parent of every folder they import from. It must be the path <strong>the *arr</strong> sees, which is not zurg&#x27;s own when the *arr runs in a container that mounts the library elsewhere. Set <code translate="no" v-pre>sabnzbd.complete_dir</code> to the same value if you run both endpoints.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>qbittorrent.download_timeout_mins</code></td>
+<td>int</td>
+<td><code translate="no" v-pre>15</code></td>
+<td>How long a grab may go with no movement — no change of stage and no rise in progress — before that account is given up on and the next one that takes torrents is tried. <code translate="no" v-pre>0</code> means cached-only: a grab is accepted only onto an account that already holds the content, and refused inside the add otherwise, which is the one refusal Sonarr and Radarr act on. A negative number never gives up.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<div id="qbittorrent-the-torrent-download-client-sonarr-and-radarr-see-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">qbittorrent:
+  enabled: true
+  api_key: &quot;&quot;
+  categories: [tv-sonarr, radarr]
+  save_path: &quot;&quot;
+  download_timeout_mins: 15</code></pre>
+</doc-codeblock></div>
+<p>The API key is the whole of the authentication here too, and for the same reason: the clients never send basic auth to a download client. See the <a href="../../guides/sonarr-radarr-torrents/">torrent walkthrough</a> for the timeout and cached-only modes in practice.</p>
 <h3 id="media-analysis">Media Analysis</h3>
 <retype-table copy-text="| Option | Type | Default | Description |
 |--------|------|---------|-------------|

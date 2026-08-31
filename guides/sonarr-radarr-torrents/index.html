@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841453646328">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Sonarr and Radarr with torrents, step by step</title>
+    <meta name="title" content="Sonarr and Radarr with torrents, step by step">
+    <meta name="description" content="The previous walkthrough pointed the *arrs at zurg for Usenet, with zurg answering as a SABnzbd. This is the other half: zurg answers as a qBittorrent, the *arrs hand it a magnet or a .torrent instead of an NZB, and the release goes onto a debrid account instead of a news server.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/guides/sonarr-radarr-torrents/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/guides/sonarr-radarr-torrents/">
+    <meta property="og:title" content="Sonarr and Radarr with torrents, step by step">
+    <meta property="og:description" content="The previous walkthrough pointed the *arrs at zurg for Usenet, with zurg answering as a SABnzbd. This is the other half: zurg answers as a qBittorrent, the *arrs hand it a magnet or a .torrent instead of an NZB, and the release goes onto a debrid account instead of a news server.">
+    <meta property="og:image" content="https://notes.debridmediamanager.com/assets/sonarr-radarr-torrents/44-zurg-dashboard-home.webp">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Sonarr and Radarr with torrents, step by step">
+    <meta property="og:site_name" content="dmm+zurg">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/guides/sonarr-radarr-torrents/">
+    <meta name="twitter:title" content="Sonarr and Radarr with torrents, step by step">
+    <meta name="twitter:description" content="The previous walkthrough pointed the *arrs at zurg for Usenet, with zurg answering as a SABnzbd. This is the other half: zurg answers as a qBittorrent, the *arrs hand it a magnet or a .torrent instead of an NZB, and the release goes onto a debrid account instead of a news server.">
+    <meta name="twitter:image" content="https://notes.debridmediamanager.com/assets/sonarr-radarr-torrents/44-zurg-dashboard-home.webp">
+    <meta name="twitter:image:alt" content="Sonarr and Radarr with torrents, step by step">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/guides/sonarr-radarr-torrents.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../resources/css/retype.css?v=4.6.0.841453646328" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841453646328" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841453646328" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841453646328" defer></script>
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/" class="flex items-center leading-snug text-2xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">dmm+zurg</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg-testing" target="_blank">zurg-testing</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://reddit.com/r/debridmediamanager" target="_blank">Reddit</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.patreon.com/debridmediamanager" target="_blank">Patreon</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg-testing" target="_blank">zurg-testing</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://reddit.com/r/debridmediamanager" target="_blank">Reddit</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.patreon.com/debridmediamanager" target="_blank">Patreon</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="sonarr-and-radarr-with-torrents-step-by-step">Sonarr and Radarr with torrents, step by step</h1>
+<p>The <a href="../sonarr-radarr/">previous walkthrough</a> pointed the *arrs at zurg for Usenet, with zurg answering as a SABnzbd. This is the other half: zurg answers as a <strong>qBittorrent</strong>, the *arrs hand it a magnet or a <code translate="no" v-pre>.torrent</code> instead of an NZB, and the release goes onto a debrid account instead of a news server. The import is the same trick — a rename inside <code translate="no" v-pre>__magic__</code>, nothing downloaded to import, nothing copied.</p>
+<p>Everything below was captured against zurg <code translate="no" v-pre>2026.08.30.0459-nightly-73-g5b4c9790</code>, Sonarr <code translate="no" v-pre>4.0.19.2979</code>, Radarr <code translate="no" v-pre>6.3.0.10514</code> and Prowlarr <code translate="no" v-pre>2.5.2.5491</code>, on a live install with a real AllDebrid account. Host and user names have been changed to <code translate="no" v-pre>yowmamasita@zurg-server</code>; nothing else in the captured output was altered, and API keys shown are illustrative.</p>
+<h2 id="before-you-start">Before you start</h2>
+<p>Three things have to be true. Check all three now — every one of them fails later as something that looks unrelated.</p>
+<ol>
+<li><strong>zurg has an account that can add torrents</strong> — Real-Debrid, TorBox or AllDebrid. A Usenet account cannot take a magnet: an install whose only provider is <code translate="no" v-pre>nzb</code> accepts every grab and then refuses it. zurg says so at startup.</li>
+<li><strong><code translate="no" v-pre>magic.enabled</code> is <code translate="no" v-pre>true</code>.</strong> Without it the save path does not exist and every import fails. See <a href="../magic/"><code translate="no" v-pre>__magic__</code></a>.</li>
+<li><strong>The mount is visible to the *arr</strong> at the path zurg reports. If the *arr runs in a container, read <doc-anchor-trigger to="#8-if-your-arr-is-in-docker">step 8</doc-anchor-trigger> before you configure anything.</li>
+</ol>
+<p>Check the first two straight out of the config file, in zurg&#x27;s working directory:</p>
+<div id="before-you-start-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ grep -A3 '^providers:' config.yml
+providers:
+- type: alldebrid
+  token: &lt;redacted&gt;
+
+$ grep -A3 '^magic:' config.yml
+magic:
+  enabled: true
+  allow_delete: false</code></pre>
+</doc-codeblock></div>
+<p><strong>The order of the <code translate="no" v-pre>providers:</code> list matters here.</strong> A grab is offered to every account that takes torrents, in that order, and an account that refuses or stalls on it is given up on and the next is tried. If you hold two accounts, put the one you would rather spend first.</p>
+<h2 id="1-turn-the-endpoint-on">1. Turn the endpoint on</h2>
+<p>Two ways, same result. Both write to <code translate="no" v-pre>config.yml</code> and both need a restart: the routes that serve <code translate="no" v-pre>__magic__</code> and the qBittorrent endpoint are registered once, when zurg starts.</p>
+<h3 id="option-a--the-dashboard">Option A — the dashboard</h3>
+<p>Open zurg&#x27;s dashboard, click <strong>Config</strong>, and scroll to <strong>__magic__ &amp; Download Clients</strong>. Turn on <strong>Serve __magic__</strong> and <strong>qBittorrent Endpoint</strong>.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/44-zurg-dashboard-home.webp" alt="The zurg dashboard's Quick Links" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The zurg dashboard's Quick Links</figcaption>
+</figure>
+<p><strong>Config</strong> is where the setting lives; <strong>Magic</strong> is where you will watch grabs arrive later.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/40-zurg-config-magic-qbittorrent.webp" alt="The magic and download clients block on the config page" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The magic and download clients block on the config page</figcaption>
+</figure>
+<p>Leave <strong>qBittorrent Save Path</strong> empty unless your *arr mounts zurg somewhere other than zurg does — see <doc-anchor-trigger to="#8-if-your-arr-is-in-docker">step 8</doc-anchor-trigger>. The orange <strong>Restart Required</strong> chip is telling the truth: nothing here takes effect until zurg restarts.</p>
+<h3 id="option-b--configyml">Option B — <code translate="no" v-pre>config.yml</code></h3>
+<p>Add the block by hand and restart zurg.</p>
+<div id="option-b--configyml-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">magic:
+  enabled: true
+
+qbittorrent:
+  enabled: true
+  api_key: &quot;&quot;                   # empty = zurg generates one and keeps it
+  categories: [tv-sonarr, radarr]
+  save_path: &quot;&quot;                 # empty = &lt;mount_path&gt;/__magic__
+  download_timeout_mins: 15     # 0 accepts only cached content, negative never gives up</code></pre>
+</doc-codeblock></div>
+<p><strong>The categories are not folders.</strong> They all resolve to the same place — the release&#x27;s own folder under <code translate="no" v-pre>__magic__</code>. The list exists only so a client stops warning about a category it cannot find. If Sonarr&#x27;s category is <code translate="no" v-pre>tv-sonarr</code>, <code translate="no" v-pre>tv-sonarr</code> must be in this list. Prowlarr, if you use it, wants <code translate="no" v-pre>prowlarr</code> — see <doc-anchor-trigger to="#10-prowlarr-manual-grabs">step 10</doc-anchor-trigger>.</p>
+<p>Restart zurg, then confirm the endpoint registered and the provider took:</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/43-zurg-config-providers.webp" alt="The providers block on the zurg config page" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The providers block on the zurg config page</figcaption>
+</figure>
+<p>One <code translate="no" v-pre>alldebrid</code> row is all the endpoint needs — any of the three torrent-capable types.</p>
+<p>The startup log says the same two things, and it is worth reading them once:</p>
+<div id="option-b--configyml-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO  router.qbittorrent  qBittorrent API on /api/v2 and /qbittorrent/api/v2, save path /mnt/zurg_qbt/__magic__, categories tv-sonarr, radarr
+INFO  router.qbittorrent  qBittorrent: torrents are offered to alldebrid, in that order</code></pre>
+</doc-codeblock></div>
+<h2 id="2-find-the-api-key">2. Find the API key</h2>
+<p>The API key is the entire authentication on this endpoint, so get it right once and don&#x27;t paste it anywhere public.</p>
+<p><strong>If you left <code translate="no" v-pre>api_key</code> empty</strong>, zurg generated one on first start, wrote it to <code translate="no" v-pre>data/qbittorrent-apikey</code>, and logged it once:</p>
+<div id="2-find-the-api-key-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ cat data/qbittorrent-apikey
+d09abba6e81524618e2d43a3748af385
+
+$ journalctl -u zurg | grep 'generated API key'
+qBittorrent: generated API key d09abba6e8… — paste it into Sonarr or Radarr's
+API Key field, or pin it as qbittorrent.api_key in config.yml</code></pre>
+</doc-codeblock></div>
+<p>Illustrative key — yours will differ. The file survives restarts, so the key is stable once generated.</p>
+<p><strong>If you set <code translate="no" v-pre>api_key</code> yourself</strong>, it is in <code translate="no" v-pre>config.yml</code> and no file is written.</p>
+<p><strong>This endpoint is outside zurg&#x27;s basic auth.</strong> The *arrs authenticate to a download client the download client&#x27;s own way, and their HTTP layer turns a basic-auth 401 into &quot;unable to connect&quot; with nothing actionable in it — so zurg deliberately exempts <code translate="no" v-pre>/api/v2</code>. The API key is the whole gate. Treat the port the way you treat the rest of zurg&#x27;s: on a trusted network, or behind something that is.</p>
+<p>Three ways to present the key, all accepted:</p>
+<ul>
+<li><strong><code translate="no" v-pre>Authorization: Bearer &lt;key&gt;</code></strong> — what the client sends when its <strong>API Key</strong> field is filled in. This is the recommended one; it skips the login entirely.</li>
+<li><strong>The key as the password</strong> on <code translate="no" v-pre>auth/login</code>, with any username. Use this if you would rather fill in Username and Password.</li>
+<li><strong>zurg&#x27;s own dashboard username and password</strong>, if <code translate="no" v-pre>username:</code> and <code translate="no" v-pre>password:</code> are set in <code translate="no" v-pre>config.yml</code>.</li>
+</ul>
+<h2 id="3-prove-it-answers">3. Prove it answers</h2>
+<p>Do this before touching Sonarr. Ten seconds, and it separates &quot;zurg is wrong&quot; from &quot;the *arr is wrong&quot; for the rest of the setup.</p>
+<div id="3-prove-it-answers-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ KEY=d09abba6e81524618e2d43a3748af385
+$ ZURG=192.168.88.244:9995
+
+$ curl -s &quot;http://$ZURG/api/v2/app/webapiVersion&quot;
+Forbidden
+
+$ curl -s -H &quot;Authorization: Bearer $KEY&quot; &quot;http://$ZURG/api/v2/app/webapiVersion&quot;
+2.11.2
+
+$ curl -s -H &quot;Authorization: Bearer $KEY&quot; &quot;http://$ZURG/api/v2/app/version&quot;
+v5.0.4
+
+$ curl -s -H &quot;Authorization: Bearer $KEY&quot; &quot;http://$ZURG/api/v2/app/preferences&quot; | jq .save_path
+&quot;/mnt/zurg_qbt/__magic__&quot;</code></pre>
+</doc-codeblock></div>
+<p><strong>The bare <code translate="no" v-pre>Forbidden</code> is the healthy answer.</strong> The clients&#x27; first probe is an <em>unauthenticated</em> <code translate="no" v-pre>GET /api/v2/app/webapiVersion</code>, and real qBittorrent answers it <code translate="no" v-pre>403</code> when the API is there but nobody is logged in — so that is what zurg answers, and the client reads it as &quot;v2 supported, authenticate now&quot;. A plain <strong>404</strong> instead means <code translate="no" v-pre>qbittorrent.enabled</code> is still false or zurg has not been restarted since you changed it.</p>
+<p>Then check that a wrong key is actually refused:</p>
+<div id="3-prove-it-answers-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ curl -s -o /dev/null -w &quot;%{http_code}\n&quot; -H &quot;Authorization: Bearer wrongkey&quot; \
+    &quot;http://$ZURG/api/v2/torrents/info&quot;
+403</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>save_path</code> is the path zurg will hand the clients — check now that it is a path <em>they</em> can open.</p>
+<p>Both URL shapes work, so either is fine in the client&#x27;s <strong>URL Base</strong> field:</p>
+<retype-table copy-text="| Path | URL Base in Sonarr / Radarr | Answers |
+|---|---|---|
+| `/api/v2/…` | *(leave empty)* | yes |
+| `/qbittorrent/api/v2/…` | `/qbittorrent` | yes |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Path</th>
+<th>URL Base in Sonarr / Radarr</th>
+<th>Answers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>/api/v2/…</code></td>
+<td><em>(leave empty)</em></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>/qbittorrent/api/v2/…</code></td>
+<td><code translate="no" v-pre>/qbittorrent</code></td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h2 id="4-make-the-root-folders">4. Make the root folders</h2>
+<p>Make them before you add them, because the *arr&#x27;s Add Root Folder dialog browses the live filesystem and will not offer a folder that does not exist.</p>
+<div id="4-make-the-root-folders-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ mkdir -p /mnt/zurg_qbt/__magic__/tv /mnt/zurg_qbt/__magic__/movies
+
+$ ls -d /mnt/zurg_qbt/__magic__/tv /mnt/zurg_qbt/__magic__/movies
+/mnt/zurg_qbt/__magic__/movies
+/mnt/zurg_qbt/__magic__/tv</code></pre>
+</doc-codeblock></div>
+<p>Substitute your own <code translate="no" v-pre>mount_path</code> for <code translate="no" v-pre>/mnt/zurg_qbt</code>.</p>
+<p><strong>The root folder must be inside <code translate="no" v-pre>__magic__</code>, not at it and not above it</strong> — the same rule as the Usenet walkthrough, for the same reason: both clients raise a health check when a root folder <em>is</em> the download client&#x27;s output folder, Radarr also raises one when a root folder <em>contains</em> it, and a root folder one level inside is the one arrangement neither complains about. <a href="../sonarr-radarr/#4-make-the-root-folders">That guide</a> has the screenshots of getting it wrong.</p>
+<p>There is a second reason that is specific to torrents: a move whose destination is outside <code translate="no" v-pre>__magic__</code> is a move between two filesystems, which is a copy — and a copy off a debrid mount reads the whole release back over the network. <code translate="no" v-pre>Remove Completed</code> staying on (below) keeps the import a rename; a root folder outside the namespace would undo that anyway.</p>
+<h2 id="5-add-the-client-in-sonarr">5. Add the client in Sonarr</h2>
+<p>A brand-new Sonarr blocks everything behind a first-run screen. Pick <strong>Forms (Login Page)</strong>, set a username and password, and click <strong>Save</strong>.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/01-sonarr-firstrun-auth.webp" alt="Sonarr's first-run authentication screen" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr's first-run authentication screen</figcaption>
+</figure>
+<p>It will not let you past until <strong>Authentication Method</strong> is something other than None.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/02-sonarr-firstrun-auth-filled.webp" alt="The same screen filled in" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The same screen filled in</figcaption>
+</figure>
+<p>After Save you are signed out once and land on the login page.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/04-sonarr-login.webp" alt="Sonarr's login page" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr's login page</figcaption>
+</figure>
+<h3 id="settings--download-clients">Settings → Download Clients</h3>
+<p>Go to <strong>Settings → Download Clients</strong>. On a fresh install there is nothing here but the <strong>+</strong> card.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/05-sonarr-downloadclients-empty.webp" alt="Sonarr's empty download clients page" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr's empty download clients page</figcaption>
+</figure>
+<p>Click the <strong>+</strong> under &quot;Download Clients&quot; — not the one further down under &quot;Remote Path Mappings&quot;.</p>
+<p>Choose <strong>qBittorrent</strong> from the <strong>Torrents</strong> column.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/06-sonarr-add-client-picker.webp" alt="The add download client picker with qBittorrent visible" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The add download client picker with qBittorrent visible</figcaption>
+</figure>
+<p>zurg impersonates qBittorrent specifically, so nothing else in this list will work. The two columns are the give-away for which guide you are following: SABnzbd sits under Usenet, qBittorrent under Torrents.</p>
+<p>The dialog opens with qBittorrent&#x27;s own defaults — <code translate="no" v-pre>localhost</code>, port <code translate="no" v-pre>8080</code>, no key.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/07-sonarr-qbittorrent-dialog-empty.webp" alt="The untouched qBittorrent download client dialog" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The untouched qBittorrent download client dialog</figcaption>
+</figure>
+<h3 id="what-to-put-in-each-field">What to put in each field</h3>
+<retype-table copy-text="| Field | Value | Why |
+|---|---|---|
+| Name | `zurg (torrents)` | Anything. It is only a label. |
+| Enable | on | Leave it checked. |
+| Host | `192.168.88.244` | The host zurg runs on, as *the \*arr* can reach it. In Docker, see the warning below. |
+| Port | `9995` | zurg's normal port — `9999` on a default install. |
+| Use SSL | off | Only if you put zurg behind TLS yourself. |
+| URL Base | empty | `/qbittorrent` also works — see step 3. |
+| API Key | from step 2 | The whole gate. Sent as a bearer token. |
+| Username / Password | empty | Leave both empty — the key replaces them. |
+| Category | `tv-sonarr` | Must appear in `qbittorrent.categories`. The \*arr default, so it already does. |
+| Initial State / Sequential / First-Last | defaults | There is no swarm here; none of these do anything. |
+| **Remove Completed** | **on** | **The one that matters** — see below. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td><code translate="no" v-pre>zurg (torrents)</code></td>
+<td>Anything. It is only a label.</td>
+</tr>
+<tr>
+<td>Enable</td>
+<td>on</td>
+<td>Leave it checked.</td>
+</tr>
+<tr>
+<td>Host</td>
+<td><code translate="no" v-pre>192.168.88.244</code></td>
+<td>The host zurg runs on, as <em>the *arr</em> can reach it. In Docker, see the warning below.</td>
+</tr>
+<tr>
+<td>Port</td>
+<td><code translate="no" v-pre>9995</code></td>
+<td>zurg&#x27;s normal port — <code translate="no" v-pre>9999</code> on a default install.</td>
+</tr>
+<tr>
+<td>Use SSL</td>
+<td>off</td>
+<td>Only if you put zurg behind TLS yourself.</td>
+</tr>
+<tr>
+<td>URL Base</td>
+<td>empty</td>
+<td><code translate="no" v-pre>/qbittorrent</code> also works — see step 3.</td>
+</tr>
+<tr>
+<td>API Key</td>
+<td>from step 2</td>
+<td>The whole gate. Sent as a bearer token.</td>
+</tr>
+<tr>
+<td>Username / Password</td>
+<td>empty</td>
+<td>Leave both empty — the key replaces them.</td>
+</tr>
+<tr>
+<td>Category</td>
+<td><code translate="no" v-pre>tv-sonarr</code></td>
+<td>Must appear in <code translate="no" v-pre>qbittorrent.categories</code>. The *arr default, so it already does.</td>
+</tr>
+<tr>
+<td>Initial State / Sequential / First-Last</td>
+<td>defaults</td>
+<td>There is no swarm here; none of these do anything.</td>
+</tr>
+<tr>
+<td><strong>Remove Completed</strong></td>
+<td><strong>on</strong></td>
+<td><strong>The one that matters</strong> — see below.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/08-sonarr-qbittorrent-dialog-filled.webp" alt="The qBittorrent dialog filled in" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The qBittorrent dialog filled in</figcaption>
+</figure>
+<p>The API key shown is illustrative — paste your own.</p>
+<p><strong>In Docker, &quot;localhost&quot; and the hostname both lie.</strong> Inside a container, <code translate="no" v-pre>localhost</code> is the container, and the machine&#x27;s own hostname usually resolves to <code translate="no" v-pre>127.0.1.1</code> — which is also the container. This rig&#x27;s host is called <code translate="no" v-pre>zurg-server</code>, and <code translate="no" v-pre>zurg-server</code> inside the Sonarr container resolved to <code translate="no" v-pre>127.0.1.1</code> while the very same name worked from the host shell. Use the host&#x27;s <strong>LAN or Tailscale IP</strong>, never <code translate="no" v-pre>localhost</code> and never the bare hostname.</p>
+<p>Click <strong>Test</strong>. A green tick means the client&#x27;s checks passed — API version, authentication, the category and the torrent list.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/09-sonarr-qbittorrent-test-ok.webp" alt="The dialog footer showing a successful test" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The dialog footer showing a successful test</figcaption>
+</figure>
+<p>Now click <strong>Save</strong>.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/10-sonarr-downloadclient-saved.webp" alt="The saved download client card in Sonarr" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The saved download client card in Sonarr</figcaption>
+</figure>
+<h2 id="6-add-the-root-folder-in-sonarr">6. Add the root folder in Sonarr</h2>
+<p>Go to <strong>Settings → Media Management</strong> and scroll to the bottom.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/11-sonarr-rootfolders-empty.webp" alt="The empty root folders section in Sonarr" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The empty root folders section in Sonarr</figcaption>
+</figure>
+<p>Click <strong>Add Root Folder</strong>. A file browser opens on the container&#x27;s filesystem.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/12-sonarr-rootfolder-dialog.webp" alt="Sonarr's file browser at the filesystem root" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr's file browser at the filesystem root</figcaption>
+</figure>
+<p>Type or navigate. If the mount is genuinely visible to Sonarr, <code translate="no" v-pre>__magic__</code> opens and shows what you made in step 4 — the fastest proof you will get that the bind mount is correct.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/13-sonarr-rootfolder-browse.webp" alt="The file browser inside magic, listing tv and movies" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The file browser inside magic, listing tv and movies</figcaption>
+</figure>
+<p>If this is empty or errors, stop and fix the mount before going further.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/14-sonarr-rootfolder-typed.webp" alt="The path finished at magic/tv" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The path finished at magic/tv</figcaption>
+</figure>
+<p>Finish the path at <code translate="no" v-pre>__magic__/tv</code> and click <strong>Ok</strong>.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/15-sonarr-rootfolder-added.webp" alt="The root folder added, showing free space" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The root folder added, showing free space</figcaption>
+</figure>
+<p><strong>Free Space</strong> reading <code translate="no" v-pre>1 PiB</code> is zurg reporting a virtual filesystem, not a disk — that is expected, and it is what satisfies the *arr&#x27;s free-space check before a grab.</p>
+<h2 id="7-do-the-same-in-radarr">7. Do the same in Radarr</h2>
+<p>Identical, with two values changed: the category is <code translate="no" v-pre>radarr</code> and the root folder is <code translate="no" v-pre>__magic__/movies</code>.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/20-radarr-login.webp" alt="Radarr's login page" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr's login page</figcaption>
+</figure>
+<p>Radarr&#x27;s first run works the same way — set Forms auth, then sign in.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/21-radarr-add-client-picker.webp" alt="Radarr's add download client picker" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr's add download client picker</figcaption>
+</figure>
+<p><strong>Settings → Download Clients → +</strong>, then <strong>qBittorrent</strong> under Torrents.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/22-radarr-qbittorrent-dialog-filled.webp" alt="Radarr's qBittorrent dialog filled in with the radarr category" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr's qBittorrent dialog filled in with the radarr category</figcaption>
+</figure>
+<p>Same host, same port, same key. Only <strong>Category</strong> differs — <code translate="no" v-pre>radarr</code>, not <code translate="no" v-pre>tv-sonarr</code>.</p>
+<p><strong>Test</strong>, green tick, <strong>Save</strong>.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/24-radarr-downloadclient-saved.webp" alt="The saved download client card in Radarr" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The saved download client card in Radarr</figcaption>
+</figure>
+<p>Then <strong>Settings → Media Management → Root Folders → Add Root Folder</strong>, and add <code translate="no" v-pre>/mnt/zurg_qbt/__magic__/movies</code>.</p>
+<p><strong>One zurg, two clients, one queue.</strong> The torrent list each client sees is filtered by category and nothing else. Two Sonarrs both using <code translate="no" v-pre>tv-sonarr</code> will see each other&#x27;s grabs; Sonarr on <code translate="no" v-pre>tv-sonarr</code> and Radarr on <code translate="no" v-pre>radarr</code> will not. Keep one client per category and this never comes up.</p>
+<h2 id="8-if-your-arr-is-in-docker">8. If your *arr is in Docker</h2>
+<p>The same two problems as the Usenet walkthrough, with the same fixes — the mount is the mount — so this is the short version. <a href="../sonarr-radarr/#8-if-your-arr-is-in-docker">That guide&#x27;s step 8</a> has the detail.</p>
+<p><strong>The path zurg reports must be a path the client can open.</strong> If the container mounts the library somewhere other than zurg does, every import fails with <em>download doesn&#x27;t contain intermediate path</em> or a remote-path health check. Set <code translate="no" v-pre>qbittorrent.save_path</code> to the path <em>the client</em> sees, or add a remote path mapping:</p>
+<div id="8-if-your-arr-is-in-docker-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">qbittorrent:
+  save_path: &quot;/data/zurg/__magic__&quot;   # what the *arr sees, not what zurg sees</code></pre>
+</doc-codeblock></div>
+<p><strong>Bind the mount&#x27;s parent, not the mountpoint.</strong> Restarting zurg unmounts and remounts; a container that bound the mountpoint itself keeps the dead fuse connection and every read after that answers <code translate="no" v-pre>Socket not connected</code> — and because both clients check free space before a grab, <em>every release is silently rejected</em>. Bind the parent with <code translate="no" v-pre>rslave</code> and the remount arrives as a sub-mount event the container follows. This rig&#x27;s containers were started before zurg ever mounted, and the mount still appeared inside them:</p>
+<div id="8-if-your-arr-is-in-docker-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ docker exec sonarr df -h /mnt/zurg_qbt
+Filesystem      Size  Used Avail Use% Mounted on
+zurg{8amax}:    1.0P     0  1.0P   0% /mnt/zurg_qbt</code></pre>
+</doc-codeblock></div>
+<h2 id="9-watch-one-grab-go-through">9. Watch one grab go through</h2>
+<p>Add one thing, grab it by hand, and follow it the whole way. Everything below is a real grab through the setup above: <em>Ghost in the Shell (1995)</em>, grabbed from an indexer by hand.</p>
+<h3 id="grab-it">Grab it</h3>
+<p>Open the movie, click <strong>Interactive Search</strong>, and pick a release.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/60-radarr-interactive-search.webp" alt="Radarr's interactive search results" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr's interactive search results</figcaption>
+</figure>
+<p>The <strong>Source</strong> column reads <code translate="no" v-pre>torrent</code> — that is the protocol this endpoint takes. Click the circled-arrow button at the end of the row to grab it. If the client wants you to confirm the mapping first:</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/60b-radarr-override-and-grab.webp" alt="Radarr's Override and Grab dialog" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr's Override and Grab dialog</figcaption>
+</figure>
+<p><strong>Override and Grab</strong> appears when the release does not match cleanly. Check the mapping and click <strong>Grab Release</strong>. A normal grab never shows this.</p>
+<h3 id="the-account-takes-it">The account takes it</h3>
+<p>Two lines in zurg&#x27;s log, and they are the whole add:</p>
+<div id="the-account-takes-it-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO  router.qbittorrent  qBittorrent: [Polarwindz] Ghost in the Shell (1995) (BD 1080p HEVC FLAC) (0c5e4077…) added to alldebrid as 720824192
+INFO  router.qbittorrent  qBittorrent: [Polarwindz] Ghost in the Shell (1995) (BD 1080p HEVC FLAC) (0c5e4077…) finished on alldebrid</code></pre>
+</doc-codeblock></div>
+<p>The hash is the info hash the client sent. <code translate="no" v-pre>added … as 720824192</code> is the account&#x27;s own id for it. This release was already cached on the account, so <code translate="no" v-pre>finished</code> follows in about a second — an uncached one sits between the two lines while the account downloads it, and what the account is doing in that gap is what the client&#x27;s queue shows:</p>
+<retype-table copy-text="| What the account is doing | Queue shows |
+|---|---|
+| Working out what the magnet refers to | *Loading metadata*, nothing measured yet |
+| Parked in the account's own queue | *Queued* |
+| Downloading — the rate, the swarm and the time left are the account's own figures | *Downloading*, with a real progress bar |
+| Every account has refused or timed out | A **warning**, with the reason — see [Troubleshooting](#troubleshooting) |
+| In the library, folder ready to import | *Completed* |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>What the account is doing</th>
+<th>Queue shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Working out what the magnet refers to</td>
+<td><em>Loading metadata</em>, nothing measured yet</td>
+</tr>
+<tr>
+<td>Parked in the account&#x27;s own queue</td>
+<td><em>Queued</em></td>
+</tr>
+<tr>
+<td>Downloading — the rate, the swarm and the time left are the account&#x27;s own figures</td>
+<td><em>Downloading</em>, with a real progress bar</td>
+</tr>
+<tr>
+<td>Every account has refused or timed out</td>
+<td>A <strong>warning</strong>, with the reason — see <doc-anchor-trigger to="#troubleshooting">Troubleshooting</doc-anchor-trigger></td>
+</tr>
+<tr>
+<td>In the library, folder ready to import</td>
+<td><em>Completed</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>A stalled swarm reports <strong>Downloading</strong> with the rate and the seed count at zero rather than as a stall warning — <code translate="no" v-pre>stalledDL</code> is a state the *arrs act on for their failed-download handling, and a swarm with no seeds is not a verdict on the release.</p>
+<h3 id="the-import-happens">The import happens</h3>
+<p><strong>Activity → Queue</strong>, then <strong>Activity → History</strong>. Two events, seconds apart — <strong>Grabbed</strong>, then <strong>Movie Imported</strong>:</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/62-radarr-history.webp" alt="Radarr's history: the imported file, its source and destination both under magic" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr's history: the imported file, its source and destination both under magic</figcaption>
+</figure>
+<p>Expand the imported row and read the paths. <strong>Source</strong> is <code translate="no" v-pre>/mnt/zurg_qbt/__magic__/[Polarwindz] …/[Polarwindz] ….mkv</code> and <strong>Imported To</strong> is <code translate="no" v-pre>/mnt/zurg_qbt/__magic__/movies/Ghost in the Shell (1995)/…</code> — the file never left <code translate="no" v-pre>__magic__</code>, which is what makes the import a rename.</p>
+<p>A grab the client decides not to import stays in the queue as a warning instead. The one in this screenshot&#x27;s queue row is an upgrade the quality profile refused — visible, one click from <em>Remove</em>, and clearing nothing by itself:</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/61-radarr-queue.webp" alt="Radarr's queue holding a completed release the client will not import" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr's queue holding a completed release the client will not import</figcaption>
+</figure>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/63-radarr-movie-imported.webp" alt="The Radarr movie page showing Downloaded status" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The Radarr movie page showing Downloaded status</figcaption>
+</figure>
+<p><strong>Status: Downloaded, Size 17.2 GiB</strong> — and nothing was downloaded to make that true. The bytes are read off the account when something plays the file.</p>
+<h3 id="prove-the-file-is-real">Prove the file is real</h3>
+<p>The import moved the file into the root folder. Read both ends of one and ask ffprobe what it is:</p>
+<div id="prove-the-file-is-real-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ F=&quot;/mnt/zurg_qbt/__magic__/tv/One Piece/Season 23/[AnoZu] One Piece S23E21 1080p CR WEB-DL AAC 2.0 H.264.mkv&quot;
+
+$ ls -la &quot;$F&quot;
+-rw-rw-r-- 1 yowmamasita users 1446325722 Aug 31 00:44 …mkv
+
+$ dd if=&quot;$F&quot; bs=1M count=1 &gt;/dev/null
+1048576 bytes (1.0 MB, 1.0 MiB) copied, 0.00592934 s, 177 MB/s
+
+$ ffprobe -v error -show_entries format=duration,size,format_name \
+    -of default=noprint_wrappers=1 &quot;$F&quot;
+format_name=matroska,webm
+duration=1415.808000
+size=1446325722</code></pre>
+</doc-codeblock></div>
+<p>That one is a Sonarr grab — an episode pulled the same way, imported into <code translate="no" v-pre>tv/One Piece/Season 23/</code>. A 23-minute Matroska, read straight off the debrid account. The bytes arrive when something reads them, not when the *arr imports.</p>
+<h3 id="from-sonarr-it-looks-the-same">From Sonarr, it looks the same</h3>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/50-sonarr-interactive-search.webp" alt="Sonarr's interactive search on one episode" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr's interactive search on one episode</figcaption>
+</figure>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/52-sonarr-history.webp" alt="Sonarr's history with the imported episode detail expanded" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr's history with the imported episode detail expanded</figcaption>
+</figure>
+<p>The same two history events, the same import-by-rename, and a queue that empties the moment the import lands — a cached release goes from grab to imported in a handful of seconds, which is why there is no mid-download screenshot of it here.</p>
+<h2 id="10-prowlarr-manual-grabs">10. Prowlarr, manual grabs</h2>
+<p>Prowlarr speaks to the same endpoint — it shares the qBittorrent client code with the other two — but it is not an importer. It has no library and never imports anything; what it can do is <strong>push a release to the account by hand</strong>, which is exactly what its download client is for.</p>
+<p>Prowlarr&#x27;s first run is the same Forms-auth screen as the other two.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/70-prowlarr-login.webp" alt="Prowlarr's login page" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Prowlarr's login page</figcaption>
+</figure>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/71-prowlarr-downloadclients-empty.webp" alt="Prowlarr's empty download clients page" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Prowlarr's empty download clients page</figcaption>
+</figure>
+<p><strong>Settings → Download Clients → +</strong>, then <strong>qBittorrent</strong> — in Prowlarr&#x27;s picker every client sits in one alphabetical list rather than the two columns the *arrs use. Same host, port and API key. Two fields differ from the *arrs:</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/72-prowlarr-add-client-picker.webp" alt="Prowlarr's add download client picker" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Prowlarr's add download client picker</figcaption>
+</figure>
+<retype-table copy-text="| Field | Value | Why |
+|---|---|---|
+| Default Category | `prowlarr` | Prowlarr's own default, and its help text is worth reading: *adding a category specific to Prowlarr avoids conflicts with unrelated non-Prowlarr downloads*. Add `prowlarr` to `qbittorrent.categories` and restart zurg, or the connection test warns about a category it cannot find. |
+| Priority | `Last` | Nothing to apply it to. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default Category</td>
+<td><code translate="no" v-pre>prowlarr</code></td>
+<td>Prowlarr&#x27;s own default, and its help text is worth reading: <em>adding a category specific to Prowlarr avoids conflicts with unrelated non-Prowlarr downloads</em>. Add <code translate="no" v-pre>prowlarr</code> to <code translate="no" v-pre>qbittorrent.categories</code> and restart zurg, or the connection test warns about a category it cannot find.</td>
+</tr>
+<tr>
+<td>Priority</td>
+<td><code translate="no" v-pre>Last</code></td>
+<td>Nothing to apply it to.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/73-prowlarr-qbittorrent-dialog-filled.webp" alt="Prowlarr's qBittorrent dialog filled in" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Prowlarr's qBittorrent dialog filled in</figcaption>
+</figure>
+<p><strong>Test</strong>, green tick, <strong>Save</strong>.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/74-prowlarr-qbittorrent-test-ok.webp" alt="Prowlarr's dialog footer showing a successful test" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Prowlarr's dialog footer showing a successful test</figcaption>
+</figure>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/75-prowlarr-downloadclient-saved.webp" alt="The saved download client card in Prowlarr" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The saved download client card in Prowlarr</figcaption>
+</figure>
+<p>Then <strong>Search</strong>, type what you want, and push a row at the client:</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/76-prowlarr-manual-search.webp" alt="Prowlarr's manual search with the push button" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Prowlarr's manual search with the push button</figcaption>
+</figure>
+<p>The release goes onto the account exactly as an *arr grab does — same add path, same categories, same <code translate="no" v-pre>__magic__</code> folder — and this one landed cached, <code translate="no" v-pre>finished</code> inside a second. But nothing imports it. It sits in the account and serves from the mount, which is the point: Prowlarr&#x27;s push is for <em>put this on my debrid account now</em>, not for the automated grab-import-clean pipeline. For that, keep Sonarr and Radarr pointed at the endpoint and let Prowlarr manage indexers.</p>
+<h2 id="timeouts-and-cached-only-mode">Timeouts, and cached-only mode</h2>
+<p>A grab that stops moving comes off the account it is on and is offered to the next. One key decides it:</p>
+<div id="timeouts-and-cached-only-mode-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">qbittorrent:
+  download_timeout_mins: 15</code></pre>
+</doc-codeblock></div>
+<retype-table copy-text="| Value | What it does |
+|---|---|
+| `15` | The default. Fifteen minutes with no movement — no stage change, no rise in progress — and the account is given up on. |
+| `0` | Cached-only. A grab is accepted only onto an account that already holds the content, and refused inside the add otherwise. |
+| negative | Never give up. The grab stays on the first account that took it. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Value</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>15</code></td>
+<td>The default. Fifteen minutes with no movement — no stage change, no rise in progress — and the account is given up on.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>0</code></td>
+<td>Cached-only. A grab is accepted only onto an account that already holds the content, and refused inside the add otherwise.</td>
+</tr>
+<tr>
+<td>negative</td>
+<td>Never give up. The grab stays on the first account that took it.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>What counts as moving</strong> is a change of stage or a rise in progress, judged on the raw fraction the account reports rather than whole percent — one percent of a 100 GB release is a gigabyte. A release the account is unpacking is exempt from the clock: that stage sits at one figure for as long as it takes.</p>
+<p><strong>Fifteen is measured, not chosen.</strong> AllDebrid parks a healthy job in its own queue with every counter at zero; in the measurements behind the default, two runs out of two sat there for 580 and 622 seconds before downloading in seconds and finishing. A ten-minute default would have abandoned both.</p>
+<p><strong>The whole add is budgeted at 75 seconds.</strong> The *arrs cancel a <code translate="no" v-pre>torrents/add</code> at 100 seconds and report the expiry as a connection failure, with no way to raise it. Every account shares the one deadline, so three accounts fit comfortably and a fourth gets whatever the first three did not spend.</p>
+<p><strong>Cached-only mode</strong> is the one worth knowing as a policy choice: the refusal happens inside the add, synchronously, and a synchronous refusal is the only signal the *arrs act on — they fail the grab and move to the next release in the list. Everything after the add reaches them as a warning about a download in progress, which they wait on. Set <code translate="no" v-pre>download_timeout_mins: 0</code> and an uncached release is rejected on the spot instead of being downloaded.</p>
+<h2 id="what-works-and-what-does-not">What works, and what does not</h2>
+<p>Works:</p>
+<ul>
+<li>The connection test in all three clients — API version, authentication, the category and the torrent list.</li>
+<li>Grabbing, queue, history, import by rename, and the post-import cleanup, in Sonarr and Radarr.</li>
+<li>Re-grabbing a release the account already holds. The *arr gets the finished torrent back and imports it; the account keeps one copy.</li>
+<li>Multiple accounts: a grab is offered to each in the order of <code translate="no" v-pre>providers:</code>, and a refusal or a stall moves to the next.</li>
+<li>Pushing a release by hand from Prowlarr.</li>
+</ul>
+<p>Does not:</p>
+<ul>
+<li><strong>The qBittorrent Web UI.</strong> This is the API only; there is no page to open.</li>
+<li><strong>Seeding, queueing and priorities.</strong> There is no swarm. Pause, force-start, reprioritise, recheck, relocate and share limits are accepted and do nothing.</li>
+<li><strong>Failure as a first-class state.</strong> qBittorrent&#x27;s API has no way to say a download failed, so a release no account would take reaches the *arr as a <em>warning</em>, never as a blocklist entry. It is visible in the queue with the reason attached, one click from <em>Remove → Blocklist and Search</em>, but it does not clear itself and nothing re-grabs unattended. This is the real difference from the SABnzbd endpoint, which can report a failed job and have the client react.</li>
+<li><strong>Adding by plain HTTP URL.</strong> <code translate="no" v-pre>torrents/add</code> takes magnets and uploaded <code translate="no" v-pre>.torrent</code> files. Both *arrs send one of those; a bare <code translate="no" v-pre>http://…/x.torrent</code> is refused.</li>
+<li><strong>Basic auth on the endpoint.</strong> The API key is the only gate.</li>
+</ul>
+<p><strong>Blocked release names, Real-Debrid only.</strong> RD refuses some releases on the filename alone — <code translate="no" v-pre>WEB-DL</code>, the rip family, a source tag dot-adjacent to an old codec. zurg knows the patterns and refuses such a grab immediately rather than spending an add slot and a minute of retries on a refusal that was certain; the client fails that grab and takes the next release, which is what you want. On TorBox and AllDebrid the same release is added normally.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<retype-table copy-text="| What the \*arr says | What it means |
+|---|---|
+| &quot;Unable to connect to qBittorrent&quot; | zurg is not reachable at that host and port, or something in front of it answered a non-200. Check `qbittorrent.enabled` — while it is off, `/api/v2` is a plain 404. In Docker, check you did not use `localhost` or the bare hostname. |
+| Test passes, grabs fail with *Download client failed to add torrent* | The client reached zurg and zurg refused the add. zurg logs every refusal — grep the log for `qBittorrent: refusing`. The line names the reason and every account it was tried on. |
+| `every account that takes torrents refused or timed out` in zurg's log | No account would take the release. If it names a rate limit where you expected a healthy account, count the *other* zurg instances on the same token: this rig's first grab failed exactly that way while a second zurg on the same Real-Debrid account was walking a large library and the two were sharing one API budget. |
+| &quot;Category … does not exist&quot; | The category in the client is not in `qbittorrent.categories`. Add it and restart zurg. |
+| A grab sits *Downloading* for a long time | The account is genuinely downloading it. The queue carries the account's own rate and time left where it gives them; a release with no seeds reads as zero on both, which is not an error. |
+| A completed release sits in the queue as a warning | Either the client decided not to import it (an upgrade the profile refuses), or every account refused it. The queue row carries the reason. It clears nothing by itself — remove it by hand, and *Blocklist and Search* if the release is bad. |
+| &quot;Downloads in root folder&quot; / &quot;Remote path mapping&quot; | The same root-folder and path rules as the Usenet endpoint — see [steps 4](#4-make-the-root-folders) and [8](#8-if-your-arr-is-in-docker). |
+| Every release rejected, nothing in the log | A stale bind mount. Run `docker exec &lt;client&gt; df -h &lt;mount&gt;`; if it says `Socket not connected`, bind the parent with `rslave` and recreate the container. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>What the *arr says</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&quot;Unable to connect to qBittorrent&quot;</td>
+<td>zurg is not reachable at that host and port, or something in front of it answered a non-200. Check <code translate="no" v-pre>qbittorrent.enabled</code> — while it is off, <code translate="no" v-pre>/api/v2</code> is a plain 404. In Docker, check you did not use <code translate="no" v-pre>localhost</code> or the bare hostname.</td>
+</tr>
+<tr>
+<td>Test passes, grabs fail with <em>Download client failed to add torrent</em></td>
+<td>The client reached zurg and zurg refused the add. zurg logs every refusal — grep the log for <code translate="no" v-pre>qBittorrent: refusing</code>. The line names the reason and every account it was tried on.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>every account that takes torrents refused or timed out</code> in zurg&#x27;s log</td>
+<td>No account would take the release. If it names a rate limit where you expected a healthy account, count the <em>other</em> zurg instances on the same token: this rig&#x27;s first grab failed exactly that way while a second zurg on the same Real-Debrid account was walking a large library and the two were sharing one API budget.</td>
+</tr>
+<tr>
+<td>&quot;Category … does not exist&quot;</td>
+<td>The category in the client is not in <code translate="no" v-pre>qbittorrent.categories</code>. Add it and restart zurg.</td>
+</tr>
+<tr>
+<td>A grab sits <em>Downloading</em> for a long time</td>
+<td>The account is genuinely downloading it. The queue carries the account&#x27;s own rate and time left where it gives them; a release with no seeds reads as zero on both, which is not an error.</td>
+</tr>
+<tr>
+<td>A completed release sits in the queue as a warning</td>
+<td>Either the client decided not to import it (an upgrade the profile refuses), or every account refused it. The queue row carries the reason. It clears nothing by itself — remove it by hand, and <em>Blocklist and Search</em> if the release is bad.</td>
+</tr>
+<tr>
+<td>&quot;Downloads in root folder&quot; / &quot;Remote path mapping&quot;</td>
+<td>The same root-folder and path rules as the Usenet endpoint — see <doc-anchor-trigger to="#4-make-the-root-folders">steps 4</doc-anchor-trigger> and <doc-anchor-trigger to="#8-if-your-arr-is-in-docker">8</doc-anchor-trigger>.</td>
+</tr>
+<tr>
+<td>Every release rejected, nothing in the log</td>
+<td>A stale bind mount. Run <code translate="no" v-pre>docker exec &lt;client&gt; df -h &lt;mount&gt;</code>; if it says <code translate="no" v-pre>Socket not connected</code>, bind the parent with <code translate="no" v-pre>rslave</code> and recreate the container.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h2 id="where-the-state-lives">Where the state lives</h2>
+<retype-table copy-text="| Path | What it is |
+|---|---|
+| `data/qbittorrent-apikey` | A generated API key. Not written when `qbittorrent.api_key` is set. |
+| `data/qbittorrent-jobs.json` | The jobs the clients have handed the endpoint — which account holds each, under which category, and every account already tried. |
+| `data/magic.json` | The `__magic__` table — every placement and tombstone the imports created. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Path</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>data/qbittorrent-apikey</code></td>
+<td>A generated API key. Not written when <code translate="no" v-pre>qbittorrent.api_key</code> is set.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>data/qbittorrent-jobs.json</code></td>
+<td>The jobs the clients have handed the endpoint — which account holds each, under which category, and every account already tried.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>data/magic.json</code></td>
+<td>The <code translate="no" v-pre>__magic__</code> table — every placement and tombstone the imports created.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>The <code translate="no" v-pre>__magic__</code> page on zurg&#x27;s dashboard shows the results of the imports: placements are files the clients moved, tombstones are the job folders they deleted afterwards, and the releases the endpoint took are listed as rows against the folders they were imported out of.</p>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/41-zurg-magic-header.webp" alt="The magic page header with placements and tombstones counted" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The magic page header with placements and tombstones counted</figcaption>
+</figure>
+<figure class="content-center">
+    <img src="../../assets/sonarr-radarr-torrents/42-zurg-magic-overlay.webp" alt="The magic overlay listing the two grabbed releases" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The magic overlay listing the two grabbed releases</figcaption>
+</figure>
+<p>The <a href="../../reference/config/#qbittorrent-the-torrent-download-client-sonarr-and-radarr-see">reference</a> has every <code translate="no" v-pre>qbittorrent:</code> key, and <a href="../../internals/qbittorrent-client-contract/">the client contract</a> — written against the Sonarr and Radarr source — is the specification the endpoint answers to, with the file and line of every claim.</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../guides/sonarr-radarr/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Previous</span>
+                                <span class="block mt-1">Sonarr &amp; Radarr</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../guides/magic/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Next</span>
+                                <span class="block mt-1">__​magic__</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Sonarr & Radarr, torrents", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/guides/sonarr-radarr-torrents.md" }</script>
+</body>
+</html>

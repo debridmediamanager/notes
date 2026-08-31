@@ -537,6 +537,31 @@ sabnzbd:
 
 The API key is the whole of the authentication, so treat the endpoint the way you treat the rest of zurg's port: on a trusted network, or behind something that is. Basic auth cannot be used for it — the clients never send it, and a 401 is reported to the user as "unable to connect" rather than as an authentication failure.
 
+### `qbittorrent`, the torrent download client Sonarr and Radarr see
+
+zurg can answer Sonarr and Radarr as though it were a qBittorrent. They hand it a magnet or a `.torrent` and zurg adds the info hash to a debrid account. Once the release is in the library the torrent reports **finished** with a folder under `__magic__` to import from. Nothing is downloaded to import. The \*arr renames the file inside the mount and that is a row in the `__magic__` table.
+
+Two halves make it useful. An account that can add torrents reads the magnet and `magic.enabled` gives the \*arr somewhere to import from. It is off until asked for. Full setup including what to put in the \*arr is in [the torrent walkthrough](../guides/sonarr-radarr-torrents.md).
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `qbittorrent.enabled` | bool | `false` | Register the endpoint at `/api/v2` and `/qbittorrent/api/v2`. While off, neither route exists. |
+| `qbittorrent.api_key` | string | generated | The only gate on the endpoint. The clients send it as a bearer token when their **API Key** field is set, and accept it as the password on `auth/login` when it is not. Left empty with the block enabled, zurg generates one, keeps it in `data/qbittorrent-apikey` so it survives a restart, and logs it once at startup. |
+| `qbittorrent.categories` | list | `[tv-sonarr, radarr]` | The categories reported to the clients — the two the \*arrs ship with. Every one of them resolves to the same directory, so this exists only to stop a client warning about a category it cannot find. |
+| `qbittorrent.save_path` | string | `<mount_path>/__magic__` | The save path reported to the clients, and the parent of every folder they import from. It must be the path **the \*arr** sees, which is not zurg's own when the \*arr runs in a container that mounts the library elsewhere. Set `sabnzbd.complete_dir` to the same value if you run both endpoints. |
+| `qbittorrent.download_timeout_mins` | int | `15` | How long a grab may go with no movement — no change of stage and no rise in progress — before that account is given up on and the next one that takes torrents is tried. `0` means cached-only: a grab is accepted only onto an account that already holds the content, and refused inside the add otherwise, which is the one refusal Sonarr and Radarr act on. A negative number never gives up. |
+
+```yaml
+qbittorrent:
+  enabled: true
+  api_key: ""
+  categories: [tv-sonarr, radarr]
+  save_path: ""
+  download_timeout_mins: 15
+```
+
+The API key is the whole of the authentication here too, and for the same reason: the clients never send basic auth to a download client. See the [torrent walkthrough](../guides/sonarr-radarr-torrents.md) for the timeout and cached-only modes in practice.
+
 ### Media Analysis
 
 | Option | Type | Default | Description |
