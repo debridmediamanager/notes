@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841575258861">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841578272881">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../resources/css/retype.css?v=4.6.0.841575258861" rel="stylesheet">
+    <link href="../resources/css/retype.css?v=4.6.0.841578272881" rel="stylesheet">
 
-    <script data-cfasync="false" src="../resources/js/config.js?v=4.6.0.841575258861" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../resources/js/config.js?v=4.6.0.841578272881" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../resources/js/lunr.js?v=4.6.0.841575258861" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../resources/js/prism.js?v=4.6.0.841575258861" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../resources/js/lunr.js?v=4.6.0.841578272881" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../resources/js/prism.js?v=4.6.0.841578272881" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -257,6 +257,44 @@ the release under an entirely new id.</p>
 straight at the old mount — <strong>the paths change and the library is re-added.</strong>
 That is the trade named above, and it is the whole cost of every migration
 here.</p>
+<h2 id="what-you-have-today-depends-on-your-platform">What you have today depends on your platform</h2>
+<p>This decides whether the renaming tables on the following pages describe your
+Plex library or only the source it was built from. Get it right before you
+read them.</p>
+<h3 id="linux-and-macos--your-arrs-already-renamed-everything">Linux and macOS — your *arrs already renamed everything</h3>
+<p>The symlink strategy is the documented setup for all four servers here, and it
+only exists on these platforms: the server publishes
+<code translate="no" v-pre>completed-symlinks/&lt;category&gt;/&lt;release&gt;/&lt;file&gt;.rclonelink</code>, <code translate="no" v-pre>rclone mount --links</code> turns each into a real symlink, and <strong>Sonarr and Radarr import from
+that farm into a library at paths they chose.</strong> The mount is the source, not
+the library.</p>
+<p>Two consequences:</p>
+<ul>
+<li>
+<p><strong>The paths Plex has are the *arr&#x27;s</strong>, always — root folder, series folder,
+season folder. None of them contain a release name.</p>
+</li>
+<li>
+<p><strong>The filenames are the *arr&#x27;s too, if you left renaming on</strong> (&quot;Rename
+Episodes&quot; / &quot;Rename Movies&quot;). With renaming off they are the source
+server&#x27;s, and the tables on the following pages describe exactly what you
+see.</p>
+</li>
+</ul>
+<p>So if you run the *arrs with renaming on, the per-server renaming tables do
+<strong>not</strong> describe your library. They describe what the *arr was handed at
+import time — which still matters, because a better source filename is a
+better parse, and you are about to re-import.</p>
+<h3 id="windows--no-symlink-layer-at-all">Windows — no symlink layer at all</h3>
+<p><code translate="no" v-pre>rclone mount --links</code> and a symlink farm are not part of a Windows setup. The
+mount is a drive letter through WinFsp and Plex and the *arrs point straight
+at it, so <strong>Plex shows the server&#x27;s own filenames</strong> and the renaming tables
+describe precisely what you will see change. The <a href="../setup/windows/">Windows
+setup</a> page covers the drive letter and its session rule.</p>
+<h3 id="coming-off-a-symlink-library">Coming off a symlink library</h3>
+<p>You are not moving a library, you are rebuilding one — and <code translate="no" v-pre>__magic__</code> gives
+the *arrs exactly what the symlink farm gave them, minus the farm. They move
+and rename inside it as freely as before, except each move is a row write
+instead of a file operation.</p>
 <div class="flex mb-6">
     <div class="shrink-0 w-1.5 rounded-tl-lg rounded-bl-lg bg-callout-danger"></div>
     <div class="flex w-full py-4 border border-l-0 rounded-tr-lg rounded-br-lg doc-callout bg-callout-base-bg border-callout-base-border" role="alert">
@@ -269,19 +307,40 @@ here.</p>
             </svg>
         </div>
         <div class="pr-5 ml-3 w-full">
-            <h5>Never ask an *arr to relocate an existing library into <code translate="no" v-pre>__magic__</code></h5>
-<p>Changing a root folder makes Sonarr or Radarr <em>move</em> the files. A move inside
-<code translate="no" v-pre>__magic__</code> is free, but a move from anywhere else crosses the mount boundary,
-which is a copy — and a copy off a streaming mount downloads your entire
-library through your news or debrid allowance.</p>
-<p>Adopt the files where they already are instead. <code translate="no" v-pre>__magic__</code> starts as a mirror
-of <code translate="no" v-pre>__all__</code>, so every release is already there, as a folder holding its own
-files, before you organise anything. zurg&#x27;s <code translate="no" v-pre>/magic/</code> dashboard reports the
-size of <code translate="no" v-pre>data/local</code>, which is the number that tells you whether something is
-importing by copying.</p>
+            <h5>Never ask an *arr to relocate the old library into <code translate="no" v-pre>__magic__</code></h5>
+<p>Changing a series&#x27; or movie&#x27;s root folder makes Sonarr or Radarr <strong>move</strong> the
+files. A move inside <code translate="no" v-pre>__magic__</code> is free; a move from anywhere else crosses
+the mount boundary, which is a copy — and a copy off a streaming mount pulls
+your entire library down through your news or debrid allowance. Your old
+library is a tree of symlinks, so what gets copied is every target they
+resolve to.</p>
         </div>
     </div>
 </div>
+<p>Adopt the files where they already are instead:</p>
+<ol>
+<li>
+<p>Add <code translate="no" v-pre>__magic__/tv</code> and <code translate="no" v-pre>__magic__/movies</code> as <strong>new</strong> root folders. Leave the
+old root folder in place for now.</p>
+</li>
+<li>
+<p>Point the *arr&#x27;s library import at those paths so it adopts what is there.
+<code translate="no" v-pre>__magic__</code> starts as a mirror of <code translate="no" v-pre>__all__</code>, so every release is already
+present as a folder holding its own files. With renaming on, the *arr
+applies its own scheme — a free row write, because it never leaves the
+namespace.</p>
+</li>
+<li>
+<p>Remove the old root folder <strong>without deleting files</strong>, and point Plex at
+<code translate="no" v-pre>__magic__</code>.</p>
+</li>
+</ol>
+<p>Watch <code translate="no" v-pre>data/local</code> on zurg&#x27;s <code translate="no" v-pre>/magic/</code> dashboard while step 2 runs. That
+number is the one that says whether something is importing by copying instead
+of moving; on a correct import it does not grow. (The zurg side of this is
+documented behaviour; the *arr side is ordinary library import, but it was
+not bench-tested for this guide — do one series first and check the number
+before turning it loose on the library.)</p>
 <div class="flex mb-6">
     <div class="shrink-0 w-1.5 rounded-tl-lg rounded-bl-lg bg-callout-warning"></div>
     <div class="flex w-full py-4 border border-l-0 rounded-tr-lg rounded-br-lg doc-callout bg-callout-base-bg border-callout-base-border" role="alert">
