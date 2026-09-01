@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841543323324">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841574753926">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
 
     <!-- Primary Meta Tags -->
-    <title>Migrating</title>
-    <meta name="title" content="Migrating">
-    <meta name="description" content="Moving an existing library onto zurg without a re-download or a re-scan.">
+    <title>Migrating to zurg</title>
+    <meta name="title" content="Migrating to zurg">
+    <meta name="description" content="Read this page first. It applies to every migration and it is most of what you need; the per-server pages are short because this one carries the shared part.">
 
     <!-- Canonical -->
     <link rel="canonical" href="https://notes.debridmediamanager.com/migrate/">
@@ -21,27 +21,28 @@
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://notes.debridmediamanager.com/migrate/">
-    <meta property="og:title" content="Migrating">
-    <meta property="og:description" content="Moving an existing library onto zurg without a re-download or a re-scan.">
+    <meta property="og:title" content="Migrating to zurg">
+    <meta property="og:description" content="Read this page first. It applies to every migration and it is most of what you need; the per-server pages are short because this one carries the shared part.">
     <meta property="og:site_name" content="dmm+zurg">
     <meta property="og:locale" content="en_US">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://notes.debridmediamanager.com/migrate/">
-    <meta name="twitter:title" content="Migrating">
-    <meta name="twitter:description" content="Moving an existing library onto zurg without a re-download or a re-scan.">
+    <meta name="twitter:title" content="Migrating to zurg">
+    <meta name="twitter:description" content="Read this page first. It applies to every migration and it is most of what you need; the per-server pages are short because this one carries the shared part.">
 
     <!-- Alternate Markdown -->
     <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/migrate/index.md">
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../resources/css/retype.css?v=4.6.0.841543323324" rel="stylesheet">
+    <link href="../resources/css/retype.css?v=4.6.0.841574753926" rel="stylesheet">
 
-    <script data-cfasync="false" src="../resources/js/config.js?v=4.6.0.841543323324" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../resources/js/config.js?v=4.6.0.841574753926" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../resources/js/lunr.js?v=4.6.0.841543323324" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../resources/js/lunr.js?v=4.6.0.841574753926" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../resources/js/prism.js?v=4.6.0.841574753926" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -177,15 +178,145 @@
                 <doc-page-actions></doc-page-actions>
 
                 <!-- Page content  -->
-<h1 id="migrating">Migrating</h1>
-<p>Moving an existing library onto zurg without a re-download or a re-scan.</p>
+<h1 id="migrating-to-zurg">Migrating to zurg</h1>
+<p>Read this page first. It applies to every migration and it is most of what you
+need; the per-server pages are short because this one carries the shared part.</p>
+<h2 id="the-short-version">The short version</h2>
+<p><strong>zurg publishes every media file the server you are leaving publishes, plus
+more.</strong> That was measured on 2026-09-01 by feeding the same five releases to
+all five servers and reading the mounts back with <code translate="no" v-pre>tree</code>
+(<a href="https://github.com/debridmediamanager/usenet-streaming-benchmark">the full comparison</a>).
+The only thing zurg publishes <em>less</em> of is par2 parity, which Plex never turns
+into a library item.</p>
+<p>So <strong>you will not lose content.</strong> Some of it arrives under a different
+filename, and that is the whole problem this page is about, because Plex binds
+a library item to a file path. A file at a new path is a new item.</p>
+<p>What you trade is not files, it is <strong>curation</strong>:</p>
+<retype-table copy-text="| Survives | Dies with the old item |
+|---|---|
+| Watched flags, play counts, resume offsets | Collections membership |
+| User ratings | Playlist entries (they store item ids) |
+| The files themselves | Chosen posters, art and manual match fixes |
+| | `added_at` — your library floods Recently Added |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Survives</th>
+<th>Dies with the old item</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Watched flags, play counts, resume offsets</td>
+<td>Collections membership</td>
+</tr>
+<tr>
+<td>User ratings</td>
+<td>Playlist entries (they store item ids)</td>
+</tr>
+<tr>
+<td>The files themselves</td>
+<td>Chosen posters, art and manual match fixes</td>
+</tr>
+<tr>
+<td> </td>
+<td><code translate="no" v-pre>added_at</code> — your library floods Recently Added</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Watch state survives because <code translate="no" v-pre>metadata_item_settings</code> is keyed by account and
+<code translate="no" v-pre>plex://</code> GUID rather than by path or item id, so it re-attaches when the new
+item matches to the same GUID. If Plex mismatches the re-added item, the state
+does not come back — check a handful after the first scan.</p>
+<p>The older versions of these guides went to great lengths to avoid that trade:
+database surgery on <code translate="no" v-pre>media_parts.file</code>, symlink shim trees, exact path
+reconstruction. It works, and if your curation genuinely matters more than
+your afternoon, the recipes are still in this site&#x27;s git history. For almost
+everybody the risk of a half-applied rewrite of an undocumented schema is
+worse than the loss, so these guides now take the simple route and tell you
+exactly what it costs.</p>
+<h2 id="which-setup-you-have-decides-everything">Which setup you have decides everything</h2>
+<p>Two questions, one command. Run this against the library folder Plex scans:</p>
+<div id="which-setup-you-have-decides-everything-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">find /path/to/your/plex/library -maxdepth 3 -type l | head -3 | xargs -r -n1 readlink</code></pre>
+</doc-codeblock></div>
+<p><strong>Setup A — it prints symlink targets.</strong> Plex scans an *arr-managed library
+of symlinks and never looks at the mount. <strong>The Plex-visible paths never
+change in this migration</strong>, because Plex stores the link&#x27;s own path and only
+the target moves. Nothing is re-added, nothing is rescanned, no curation is
+lost. Every per-server page has a Setup A section and it is always the short
+one. Take this route if you have it.</p>
+<p><strong>Setup B — it prints nothing.</strong> Plex scans the mount directly, so every path
+carries the old server&#x27;s root and its naming. Everything is re-added. This is
+where the trade above actually gets paid.</p>
+<h2 id="the-one-guard-you-must-not-skip">The one guard you must not skip</h2>
+<p><strong><code translate="no" v-pre>autoEmptyTrash</code> has to be <code translate="no" v-pre>0</code> before you touch anything.</strong></p>
+<div id="the-one-guard-you-must-not-skip-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">TOKEN=&lt;your plex token&gt;
+curl -s &quot;http://localhost:32400/:/prefs?X-Plex-Token=$TOKEN&quot; | tr '&gt;' '\n' | grep autoEmptyTrash
+# set it if needed:
+curl -s -X PUT &quot;http://localhost:32400/:/prefs?autoEmptyTrash=0&amp;X-Plex-Token=$TOKEN&quot;</code></pre>
+</doc-codeblock></div>
+<p>Plex deletes softly. At <code translate="no" v-pre>0</code>, an item whose file stopped existing sits in the
+trash and comes back if the file does; at <code translate="no" v-pre>1</code> it is gone permanently the
+moment a scan notices, and a mount that blips for ten seconds during a scan
+takes the library with it. This has cost a 30,065-item library before.</p>
+<p>Under these simplified guides that setting is doing more work than it used to,
+not less: <strong>the trash is where your old items wait while you check the new
+ones.</strong> Empty it when you are satisfied and not before. That is the step that
+makes the loss real, and it is the only irreversible thing in any of these
+guides.</p>
+<p>While you are in there, turn off <strong>&quot;Generate video preview thumbnails&quot;</strong> for
+the affected libraries. On a streaming mount every thumbnail pass is a full
+read of the release through your news or debrid allowance, and a migration
+hands Plex a lot of new items at once.</p>
+<h2 id="what-every-migration-gains">What every migration gains</h2>
+<p>Two of these are new files appearing in folders Plex already scans, so they
+are worth knowing before they surprise you.</p>
 <ul>
-<li><a href="altmount/">From AltMount</a></li>
-<li><a href="decypharr/">From decypharr</a></li>
-<li><a href="infinidysk/">From InfiniDysk</a></li>
-<li><a href="nzbdav/">From nzbdav</a></li>
-<li><a href="streamnzb/">From streamnzb</a></li>
+<li>
+<p><strong>Sample clips.</strong> zurg is the only one of the five that publishes the sample
+file inside a RAR release&#x27;s <code translate="no" v-pre>Sample/</code> directory. Plex may pick a 9 MB
+<code translate="no" v-pre>-sample.mp4</code> up as an extra or as a second version of the episode. If you
+do not want that, set
+<a href="../reference/config/"><code translate="no" v-pre>only_show_the_biggest_file: true</code></a> on the
+directories your media libraries scan.</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>.nfo</code> files.</strong> zurg is the only one that keeps them. Inert under Plex&#x27;s
+default agents; read by the XBMC/NFO agent if you use it.</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>thumbnail.jpg</code> and <code translate="no" v-pre>.url</code> adverts.</strong> Inert. <code translate="no" v-pre>thumbnail.jpg</code> is not a
+filename Plex uses for posters, and the <code translate="no" v-pre>.url</code> files are the poster&#x27;s
+advertising.</p>
+</li>
+<li>
+<p><strong>Empty folders</strong> where a release&#x27;s archive chain is broken. Plex ignores
+directories with no media in them.</p>
+</li>
+<li>
+<p><strong>par2 and sfv disappear.</strong> zurg hides them by reading what the file is
+rather than what it is called. Plex never itemised them, so this is
+invisible to your library and only matters to tooling that walked them.</p>
+</li>
 </ul>
+<h2 id="the-guides">The guides</h2>
+<ul>
+<li><a href="altmount/">From AltMount</a> — renames archive releases only</li>
+<li><a href="decypharr/">From decypharr</a> — renames single-file and archive releases</li>
+<li><a href="infinidysk/">From InfiniDysk</a> — renames single-file and archive releases</li>
+<li><a href="nzbdav/">From nzbdav</a> — renames nothing, the easiest of the five</li>
+<li><a href="streamnzb/">From streamnzb</a> — no library to migrate, a change of model</li>
+</ul>
+<p>Naming behaviour on each page was measured on 2026-09-01 against zurg
+<code translate="no" v-pre>bda7e3c3</code>, AltMount <code translate="no" v-pre>0614008b</code>, InfiniDysk <code translate="no" v-pre>cd9b1205</code>, nzbdav <code translate="no" v-pre>794948be</code> and
+decypharr <code translate="no" v-pre>0dd1cbbd</code>, on a five-release corpus. A build older or newer than
+those may name things differently, so spot-check a few releases against your
+own tree before trusting a rescan list wholesale.</p>
 
                 
                 <!-- Required only on API pages -->
@@ -252,6 +383,6 @@
 
     <div id="retype-overlay-target"></div>
 
-        <script data-cfasync="false">window.__DOCS__ = { "title": "Migrating", level: 1, icon: "file", hasPrism: false, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/migrate/index.md" }</script>
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Migrating", level: 1, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/migrate/index.md" }</script>
 </body>
 </html>

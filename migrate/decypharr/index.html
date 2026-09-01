@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841543323324">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841574753926">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
 
     <!-- Primary Meta Tags -->
-    <title>Migrating from decypharr v2.5 to zurg</title>
-    <meta name="title" content="Migrating from decypharr v2.5 to zurg">
-    <meta name="description" content="decypharr and zurg solve the same problem — debrid accounts and Usenet posts presented as a mounted library — and their trees are close enough that a migration can preserve a Plex library intact.">
+    <title>Migrating from decypharr to zurg</title>
+    <meta name="title" content="Migrating from decypharr to zurg">
+    <meta name="description" content="Read the shared page first — the trash guard and the Setup A/B question live there.">
 
     <!-- Canonical -->
     <link rel="canonical" href="https://notes.debridmediamanager.com/migrate/decypharr/">
@@ -21,28 +21,28 @@
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://notes.debridmediamanager.com/migrate/decypharr/">
-    <meta property="og:title" content="Migrating from decypharr v2.5 to zurg">
-    <meta property="og:description" content="decypharr and zurg solve the same problem — debrid accounts and Usenet posts presented as a mounted library — and their trees are close enough that a migration can preserve a Plex library intact.">
+    <meta property="og:title" content="Migrating from decypharr to zurg">
+    <meta property="og:description" content="Read the shared page first — the trash guard and the Setup A/B question live there.">
     <meta property="og:site_name" content="dmm+zurg">
     <meta property="og:locale" content="en_US">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://notes.debridmediamanager.com/migrate/decypharr/">
-    <meta name="twitter:title" content="Migrating from decypharr v2.5 to zurg">
-    <meta name="twitter:description" content="decypharr and zurg solve the same problem — debrid accounts and Usenet posts presented as a mounted library — and their trees are close enough that a migration can preserve a Plex library intact.">
+    <meta name="twitter:title" content="Migrating from decypharr to zurg">
+    <meta name="twitter:description" content="Read the shared page first — the trash guard and the Setup A/B question live there.">
 
     <!-- Alternate Markdown -->
     <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/migrate/decypharr.md">
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841543323324" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841574753926" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841543323324" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841574753926" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841543323324" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841543323324" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841574753926" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841574753926" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -178,257 +178,188 @@
                 <doc-page-actions></doc-page-actions>
 
                 <!-- Page content  -->
-<h1 id="migrating-from-decypharr-v25-to-zurg">Migrating from decypharr v2.5 to zurg</h1>
-<p>decypharr and zurg solve the same problem — debrid accounts and Usenet posts
-presented as a mounted library — and their trees are close enough that a
-migration can preserve a Plex library intact. Close is not identical, and Plex
-is unforgiving about the difference: every library item is bound to a file
-path in <code translate="no" v-pre>media_parts.file</code>, so a changed path is not a rename to Plex, it is a
-deleted item plus a new one.</p>
-<p>Be precise about what that costs, because it decides how much of this guide is
-worth the effort. Read out of a live 10,126-item library: watch state is keyed
-by <code translate="no" v-pre>account_id</code> plus a <code translate="no" v-pre>plex://</code> GUID in <code translate="no" v-pre>metadata_item_settings</code>, not by the
-item id or the path, so watched flags, play counts, resume offsets and user
-ratings <strong>re-attach</strong> when the new file matches to the same GUID. What dies
-with the item is everything on the <code translate="no" v-pre>metadata_items</code> row — collections
-membership, playlists (they store item ids), artwork and match choices, and
-<code translate="no" v-pre>added_at</code>, which dumps the whole library into Recently Added. Deletion is soft
-(<code translate="no" v-pre>deleted_at</code> on <code translate="no" v-pre>media_parts</code>/<code translate="no" v-pre>media_items</code>); emptying the trash is what makes
-it permanent.</p>
-<p>The rule the whole guide is built around: <strong>the paths Plex has on file must
-never change, and the mount behind them must never read as empty while Plex
-can scan.</strong> Layouts cited here were measured live on 2026-08-19 (decypharr
-v2.5, zurg HEAD <code translate="no" v-pre>23869fa4</code>, same seven NZBs into each, trees read off live
-mounts); anything not measured or read from source is marked unverified.</p>
-<hr>
-<h2 id="0-decide-which-setup-you-have">0. Decide which setup you have</h2>
-<p>Two questions determine the whole shape of the migration. <strong>Where does Plex
-point?</strong></p>
-<ul>
-<li>
-<p>*<em>Setup A — Plex points at an <em>arr-managed library.</em></em> The *arrs imported
-from decypharr&#x27;s symlink farm (<code translate="no" v-pre>download_folder/&lt;category&gt;/&lt;job&gt;/&lt;file&gt;</code>,
-each a symlink to <code translate="no" v-pre>&lt;mount&gt;/__all__/&lt;job&gt;/&lt;file&gt;</code>), so your library is
-symlinks. Plex only ever sees the symlink paths. <strong>This is the good case</strong>:
-those paths never change, and the migration is repointing symlink targets.
-Follow sections 1–7.</p>
-</li>
-<li>
-<p><strong>Setup B — Plex points straight at the DFS/WebDAV mount.</strong> Every naming
-difference between the two servers is Plex-visible. Follow sections 1–5,
-then section 8.</p>
-</li>
-</ul>
-<p><strong>Which providers do you use?</strong> zurg speaks <code translate="no" v-pre>realdebrid</code>, <code translate="no" v-pre>alldebrid</code>,
-<code translate="no" v-pre>torbox</code> and <code translate="no" v-pre>nzb</code>. decypharr additionally supports Debrid-Link and
-Premiumize; zurg has no backend for either, so content held only on those
-accounts <strong>cannot be served by zurg</strong>. Re-acquire it on a supported account
-before the cutover or accept losing those items.</p>
-<hr>
-<h2 id="1-what-maps-to-what">1. What maps to what</h2>
-<h3 id="mount-layout">Mount layout</h3>
-<p>decypharr&#x27;s root and zurg&#x27;s are strikingly close:</p>
-<retype-table copy-text="| decypharr | zurg | Notes |
-|---|---|---|
-| `__all__/&lt;job&gt;/&lt;file&gt;` | `__all__/&lt;name&gt;/&lt;file&gt;` | Same name, same role. The lever this migration rests on. |
-| `version.txt` | `version.txt` | Both at the root; health checks keep working. |
-| `__bad__/` | `__unplayable__/` | Analogous, different name. |
-| `torrents/` | `directories:` entry with `not_provider: nzb` | Reproducible by filter. |
-| `nzbs/&lt;job&gt;/` | `directories:` entry with `provider: nzb` (or built-in `__nzb__`) | Reproducible by filter. |
-| `&lt;provider&gt;/` (e.g. `realdebrid/`) | built-in `__&lt;name&gt;__` or a `directories:` entry with `provider: &lt;name&gt;` | Bare name reproducible by filter. |
-| virtual folders | `directories:` filters | Name/file-name/size/date/provider conditions all have zurg equivalents (`regex`, `any_file_inside_regex`, `size_gte`, `added_within_days`, `provider`). decypharr's &quot;number of files&quot;, &quot;source type&quot; and &quot;category&quot; conditions have no zurg counterpart. |">
+<h1 id="migrating-from-decypharr-to-zurg">Migrating from decypharr to zurg</h1>
+<p>Read <a href="../">the shared page</a> first — the trash guard and the Setup A/B
+question live there.</p>
+<p>decypharr and zurg solve the same problem and their root layouts are
+strikingly close, which makes this the migration with the most that carries
+over for free:</p>
+<retype-table copy-text="| decypharr | zurg |
+|---|---|
+| `__all__/&lt;job&gt;/&lt;file&gt;` | `__all__/&lt;name&gt;/&lt;file&gt;` |
+| `version.txt` | `version.txt` |
+| `__bad__/` | `__unplayable__/` |
+| `torrents/` | a `directories:` entry with `not_provider: nzb` |
+| `nzbs/&lt;job&gt;/` | a `directories:` entry with `provider: nzb`, or built-in `__nzb__` |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
 <tr>
 <th>decypharr</th>
 <th>zurg</th>
-<th>Notes</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code translate="no" v-pre>__all__/&lt;job&gt;/&lt;file&gt;</code></td>
 <td><code translate="no" v-pre>__all__/&lt;name&gt;/&lt;file&gt;</code></td>
-<td>Same name, same role. The lever this migration rests on.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>version.txt</code></td>
 <td><code translate="no" v-pre>version.txt</code></td>
-<td>Both at the root; health checks keep working.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>__bad__/</code></td>
 <td><code translate="no" v-pre>__unplayable__/</code></td>
-<td>Analogous, different name.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>torrents/</code></td>
-<td><code translate="no" v-pre>directories:</code> entry with <code translate="no" v-pre>not_provider: nzb</code></td>
-<td>Reproducible by filter.</td>
+<td>a <code translate="no" v-pre>directories:</code> entry with <code translate="no" v-pre>not_provider: nzb</code></td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>nzbs/&lt;job&gt;/</code></td>
-<td><code translate="no" v-pre>directories:</code> entry with <code translate="no" v-pre>provider: nzb</code> (or built-in <code translate="no" v-pre>__nzb__</code>)</td>
-<td>Reproducible by filter.</td>
-</tr>
-<tr>
-<td><code translate="no" v-pre>&lt;provider&gt;/</code> (e.g. <code translate="no" v-pre>realdebrid/</code>)</td>
-<td>built-in <code translate="no" v-pre>__&lt;name&gt;__</code> or a <code translate="no" v-pre>directories:</code> entry with <code translate="no" v-pre>provider: &lt;name&gt;</code></td>
-<td>Bare name reproducible by filter.</td>
-</tr>
-<tr>
-<td>virtual folders</td>
-<td><code translate="no" v-pre>directories:</code> filters</td>
-<td>Name/file-name/size/date/provider conditions all have zurg equivalents (<code translate="no" v-pre>regex</code>, <code translate="no" v-pre>any_file_inside_regex</code>, <code translate="no" v-pre>size_gte</code>, <code translate="no" v-pre>added_within_days</code>, <code translate="no" v-pre>provider</code>). decypharr&#x27;s &quot;number of files&quot;, &quot;source type&quot; and &quot;category&quot; conditions have no zurg counterpart.</td>
+<td>a <code translate="no" v-pre>directories:</code> entry with <code translate="no" v-pre>provider: nzb</code>, or built-in <code translate="no" v-pre>__nzb__</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </retype-table>
-<p>So zurg can reproduce every decypharr top-level directory name — which
-matters enormously for Setup B and not at all for Setup A (symlink targets
-all go through <code translate="no" v-pre>__all__</code>).</p>
-<h3 id="folder-job-naming">Folder (job) naming</h3>
-<p>Both servers name an NZB release&#x27;s folder <strong>after the <code translate="no" v-pre>.nzb</code> filename</strong> —
-measured across five servers, it is the one universal rule. So NZB folder
-names are under your control: name the file, name the folder.</p>
-<p>For debrid torrents, decypharr&#x27;s <code translate="no" v-pre>folder_naming</code> setting
-(<code translate="no" v-pre>filename | original | filename_no_ext | original_no_ext | infohash</code>) chose
-your folder names. zurg&#x27;s knobs are <code translate="no" v-pre>retain_rd_torrent_name</code> and
-<code translate="no" v-pre>retain_folder_name_extension</code>; with both false (the default) the folder is
-the torrent&#x27;s original name with a trailing <code translate="no" v-pre>.mkv</code>/<code translate="no" v-pre>.mp4</code> stripped
-(<code translate="no" v-pre>GetKey_Original</code>, <code translate="no" v-pre>internal/torrent/key.go:14</code>) — i.e. <code translate="no" v-pre>original_no_ext</code>.
-<code translate="no" v-pre>retain_folder_name_extension: true</code> keeps the extension. <code translate="no" v-pre>infohash</code> has no
-zurg equivalent, and decypharr&#x27;s <code translate="no" v-pre>filename</code> variants were not measured —
-<strong>verify against your own tree</strong> in section 4 rather than trusting a table.</p>
-<p><strong>Do not change decypharr&#x27;s <code translate="no" v-pre>folder_naming</code> before migrating.</strong> Changing it
-renames every folder in the library at once — every symlink target and every
-mount-direct Plex path breaks in one stroke.</p>
-<p>Two zurg-side naming hazards:</p>
+<p>The <strong>debrid side needs nothing</strong>. Both servers list the same accounts and
+present the torrent&#x27;s own filenames, so those paths are identical once zurg
+sits at decypharr&#x27;s mountpoint. Everything below is about the Usenet side.</p>
+<p>Two things to settle before you start:</p>
 <ul>
 <li>
-<p>With defaults, zurg strips a trailing <code translate="no" v-pre>.mkv</code>/<code translate="no" v-pre>.mp4</code> from a folder name. If
-your decypharr folders end in an extension, set
-<code translate="no" v-pre>retain_folder_name_extension: true</code> or every such folder shifts.</p>
+<p><strong>Providers.</strong> zurg speaks <code translate="no" v-pre>realdebrid</code>, <code translate="no" v-pre>alldebrid</code>, <code translate="no" v-pre>torbox</code> and <code translate="no" v-pre>nzb</code>.
+decypharr additionally supports Debrid-Link and Premiumize, and zurg has no
+backend for either. Content held only on those accounts cannot be served by
+zurg — re-acquire it on a supported account, or accept losing it.</p>
 </li>
 <li>
-<p>Two <em>different</em> releases sharing a name collide, and zurg hash-suffixes one:
-<code translate="no" v-pre>Some.Release {a1b2c3}</code>. An RD torrent and an NZB of the same release <strong>are</strong>
-different releases to zurg (the NZB&#x27;s id is a hash of its filename, not an
-infohash), so holding both under one name gets one suffixed — and a suffixed
-path breaks whatever pointed at the bare one. Only re-fetch NZBs for
-releases no debrid account already holds (section 5).</p>
+<p><strong>Do not change decypharr&#x27;s <code translate="no" v-pre>folder_naming</code> before migrating.</strong> It renames
+every folder in the library at once, which breaks every symlink target and
+every mount-direct Plex path in one stroke.</p>
 </li>
 </ul>
-<h3 id="the-three-hard-mismatches-nzb-side-measured">The three hard mismatches (NZB side, measured)</h3>
-<p>These cannot be fixed by renaming the <code translate="no" v-pre>.nzb</code> — the filename controls only the
-folder, never the files inside:</p>
-<ol>
+<h2 id="what-differs-on-the-usenet-side">What differs on the Usenet side</h2>
+<p>Measured against zurg on the same five releases:</p>
+<retype-table copy-text="| | |
+|---|---|
+| zurg gains | `thumbnail.jpg`, the sample clip, the `.nfo`, the `.url` adverts, the archive's inner directory, **and the obfuscated release decypharr dropped** |
+| zurg loses | nothing |
+| renamed | single-file releases, and archive releases |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>zurg gains</td>
+<td><code translate="no" v-pre>thumbnail.jpg</code>, the sample clip, the <code translate="no" v-pre>.nfo</code>, the <code translate="no" v-pre>.url</code> adverts, the archive&#x27;s inner directory, <strong>and the obfuscated release decypharr dropped</strong></td>
+</tr>
+<tr>
+<td>zurg loses</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>renamed</td>
+<td>single-file releases, and archive releases</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>Single-file releases</strong> come out of decypharr named after the job
+(<code translate="no" v-pre>ToyStory5/ToyStory5.mkv</code>); zurg keeps the poster&#x27;s name
+(<code translate="no" v-pre>ToyStory5/Toy.Story.5.2026.1080p.AMZN.WEB-DL.DDP5.1.H.264-KyoGo.mkv</code>).</p>
+<p><strong>Archive releases</strong> are the interesting case, and it is worth understanding
+because it explains two symptoms at once. decypharr produces:</p>
+<div id="what-differs-on-the-usenet-side-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">FatherBrown/Father.Brown.2013.S02E05.HDTV.x264-TLAfather.brown.2013.s02e05.hdtv.x264-tla.mp4</code></pre>
+</doc-codeblock></div>
+<p>That is the archive&#x27;s inner directory name and the file&#x27;s own name
+concatenated <strong>with no separator</strong> — a path join that lost its <code translate="no" v-pre>/</code>. So the
+missing directory level and the malformed filename are the same defect, not
+two. zurg reproduces the real structure:
+<code translate="no" v-pre>FatherBrown/Father.Brown.2013.S02E05.HDTV.x264-TLA/father.brown.….mp4</code>.</p>
+<p><strong>Multi-file releases and season packs keep their real filenames on both
+sides</strong> and match automatically once the folder name matches.</p>
+<h2 id="what-needs-rescanning">What needs rescanning</h2>
+<p><strong>Setup A (symlink library): single-file and archive releases only.</strong> Debrid
+torrents and multi-file NZB releases resolve unchanged.</p>
+<p><strong>Setup B (Plex on the mount): the same set, and nothing else</strong> — provided you
+put zurg at decypharr&#x27;s old mountpoint. The roots line up, so
+<code translate="no" v-pre>__all__/&lt;job&gt;/&lt;file&gt;</code> is reproduced exactly for everything decypharr did not
+rename. This is the one migration where Setup B is nearly as cheap as Setup A.</p>
+<p>Find the set that will be re-added:</p>
+<div id="what-needs-rescanning-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">MOUNT=/mnt/decypharr
+for d in &quot;$MOUNT&quot;/__all__/*/; do
+  job=$(basename &quot;$d&quot;)
+  n=$(find &quot;$d&quot; -type f | wc -l)
+  [ &quot;$n&quot; -eq 1 ] &amp;&amp; echo &quot;WILL BE RENAMED: $job&quot;
+done</code></pre>
+</doc-codeblock></div>
+<p>Every single-file job on that list is re-added on the first scan; the old item
+drops into the trash. Multi-file jobs are untouched.</p>
+<h2 id="what-new-content-shows-up">What new content shows up</h2>
+<ul>
 <li>
-<p><strong>Lone video renamed by decypharr.</strong> A single video becomes the job name
-(<code translate="no" v-pre>TLOU-S02E01-FLUX/TLOU-S02E01-FLUX.mkv</code>); zurg keeps the poster&#x27;s
-filename (<code translate="no" v-pre>.../The.Last.of.Us.S02E01.Future.Days.…-FLUX.mkv</code>).</p>
+<p><strong>Sample clips</strong> inside <code translate="no" v-pre>Sample/</code> — the one worth configuring for. Set
+<a href="../../reference/config/"><code translate="no" v-pre>only_show_the_biggest_file: true</code></a> if you do not
+want a 9 MB sample turning up as a second version.</p>
 </li>
 <li>
-<p><strong>RAR releases flattened by decypharr.</strong> The archive collapses to one file
-named by concatenating the inner directory and filename with no separator
-(<code translate="no" v-pre>FatherBrown/Father.Brown.2013.S02E05.HDTV.x264-TLAfather.brown.2013.s02e05.hdtv.x264-tla.mp4</code>);
-zurg reproduces the archive&#x27;s inner directory, <code translate="no" v-pre>Sample/</code> included
-(<code translate="no" v-pre>FatherBrown/Father.Brown.2013.S02E05.HDTV.x264-TLA/father.brown.….mp4</code>).</p>
+<p><code translate="no" v-pre>thumbnail.jpg</code>, the <code translate="no" v-pre>.nfo</code>, the poster&#x27;s <code translate="no" v-pre>.url</code> adverts. All inert.</p>
 </li>
 <li>
-<p><strong>Sidecars.</strong> decypharr drops <code translate="no" v-pre>thumbnail.jpg</code> and <code translate="no" v-pre>.url</code> files; zurg keeps
-them.</p>
+<p><strong>Obfuscated releases decypharr dropped</strong>, as new library items. decypharr
+published nothing at all for a fully hash-named post; zurg resolves it to
+the real release name and serves it.</p>
 </li>
-</ol>
-<p>Season packs and any multi-file release keep their real filenames on both
-sides — those match automatically once the folder name matches. The
-debrid-torrent side has none of these problems: both servers list the same
-account and present the torrent&#x27;s own filenames. Its migration is
-configuration, not content.</p>
-<h3 id="two-deltas-where-zurg-gains">Two deltas where zurg gains</h3>
-<p>Measured: decypharr produced <strong>nothing at all</strong> for a fully obfuscated NZB or
-a broken RAR chain. zurg serves the obfuscated one (payload presented under
-the release name) and leaves an empty folder for the broken chain — new Plex
-additions plus a little folder noise, both harmless.</p>
-<h3 id="the-zurg-file-size-defect">The zurg file-size defect</h3>
-<p>On NZBs whose subject line carries no byte count, zurg over-reports file
-sizes by 2.5–3.2% (it falls back to the yEnc-encoded segment sum; decypharr
-reports exact sizes). A changed size makes Plex treat the file as modified:
-the item is <strong>not</strong> deleted and keeps its state, but Plex re-analyzes it and
-regenerates preview thumbnails/intro markers — real bandwidth on a streaming
-mount. Turn off &quot;Generate video preview thumbnails&quot; before the cutover.</p>
-<hr>
-<h2 id="2-pre-flight">2. Pre-flight</h2>
-<p><strong>Back up the Plex database.</strong> Stop Plex first — a copy of a live SQLite
-file can be torn:</p>
-<div id="2-pre-flight-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">PLEX_DB=&quot;/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db&quot;
-sudo systemctl stop plexmediaserver
-cp &quot;$PLEX_DB&quot; ~/plexlib.backup.$(date +%Y%m%d).db
-sudo systemctl start plexmediaserver</code></pre>
+<li>
+<p>Empty folders where an archive chain is broken.</p>
+</li>
+</ul>
+<h2 id="get-your-nzbs-back">Get your NZBs back</h2>
+<p><strong>decypharr cannot give them to you.</strong> It keeps <code translate="no" v-pre>usenet/meta/&lt;uuid&gt;.meta</code> —
+one compressed binary per job — and a <code translate="no" v-pre>usenet/nzbs/</code> directory that was empty
+on the bench. There is no documented export, and whether the <code translate="no" v-pre>.meta</code> blobs
+decode back into NZBs is unverified. Treat the originals as unrecoverable.</p>
+<p>What you do have is the job names, and on both servers the job folder name
+<em>is</em> the NZB filename. So the folder list is your shopping list:</p>
+<div id="get-your-nzbs-back-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">MOUNT=/mnt/decypharr
+ls &quot;$MOUNT/nzbs&quot; &gt; nzb-jobs.txt      # the usenet jobs
+wc -l nzb-jobs.txt</code></pre>
 </doc-codeblock></div>
-<p><strong>Confirm auto-empty-trash is off.</strong> This is the guard that turns &quot;the mount
-blipped during a scan&quot; from a permanent mass deletion into a recoverable
-trash state. It has cost a 30,065-item library before:</p>
-<div id="2-pre-flight-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">TOKEN=YOUR_PLEX_TOKEN
-curl -s &quot;http://localhost:32400/:/prefs?X-Plex-Token=$TOKEN&quot; | tr '&gt;' '\n' | grep autoEmptyTrash</code></pre>
-</doc-codeblock></div>
-<p><code translate="no" v-pre>autoEmptyTrash</code> must be <code translate="no" v-pre>0</code>. Also uncheck &quot;Empty trash automatically after
-every scan&quot; per library (Edit → Advanced), and &quot;Generate video preview
-thumbnails&quot;.</p>
-<p><strong>Disable scans for the duration.</strong> Settings → Library: turn off &quot;Update my
-library automatically&quot;, &quot;Run a partial scan when changes are detected&quot;, and
-the scheduled library update. Re-enable in section 9. *<em>Quiesce the <em>arrs</em></em>:
-pause the Sonarr/Radarr queues and disable RSS sync.</p>
-<p><strong>Learn the scan pre-flight.</strong> Before any action that takes the mount away —
-stopping decypharr, restarting zurg, remounting — both of these must be zero:</p>
-<div id="2-pre-flight-code-3" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s &quot;http://localhost:32400/status/sessions?X-Plex-Token=$TOKEN&quot; | grep -o 'size=&quot;[0-9]*&quot;'          # want size=&quot;0&quot;
-curl -s &quot;http://localhost:32400/library/sections?X-Plex-Token=$TOKEN&quot; | grep -o 'refreshing=&quot;1&quot;' | wc -l # want 0</code></pre>
-</doc-codeblock></div>
-<p>Sessions only prove nobody is watching; a <strong>scan</strong> in flight is what does
-damage. Use <code translate="no" v-pre>grep -o … | wc -l</code>, never <code translate="no" v-pre>grep -c</code>: grep exits non-zero when it
-finds nothing — the good case here — and that aborts a <code translate="no" v-pre>&amp;&amp;</code> chain or a
-<code translate="no" v-pre>set -e</code> script right before the restart it was guarding.</p>
-<hr>
-<h2 id="3-inventory">3. Inventory</h2>
-<p>Capture everything while decypharr still serves — the mapping table and the
-rollback reference in one.</p>
-<div id="3-inventory-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">MOUNT=/mnt/decypharr            # decypharr's mount
-FARM=/mnt/decypharr-downloads   # its download_folder (symlink farm)
-LIB=/data/media                 # the *arr-managed library roots (Setup A)
-mkdir -p ~/decypharr-migration &amp;&amp; cd ~/decypharr-migration
-
-find &quot;$MOUNT/__all__&quot; -type f -printf '%s %p\n' | sort -k2 &gt; mount-files.txt
-ls &quot;$MOUNT/nzbs&quot; &gt; nzb-jobs.txt                 # the usenet job list
-find &quot;$FARM&quot; -type l -printf '%p -&gt; %l\n' &gt; farm-links.txt
-find &quot;$LIB&quot;  -type l -printf '%p -&gt; %l\n' &gt; lib-links.txt
-
-# Every path Plex has an item bound to — query a COPY, never the live DB
-cp &quot;$PLEX_DB&quot; ./plexlib.copy.db
-sqlite3 ./plexlib.copy.db \
-  &quot;SELECT file FROM media_parts WHERE file != '' ORDER BY file;&quot; &gt; plex-paths.txt</code></pre>
-</doc-codeblock></div>
-<p><code translate="no" v-pre>plex-paths.txt</code> is the contract: <strong>the migration is done when every line in
-it resolves to a readable file.</strong> In Setup A those lines are symlink paths in
-<code translate="no" v-pre>$LIB</code>; in Setup B they are mount paths.</p>
-<p>On the NZBs themselves: decypharr keeps <code translate="no" v-pre>usenet/meta/&lt;uuid&gt;.meta</code> — a
-compressed binary, one per job — and a <code translate="no" v-pre>usenet/nzbs/</code> directory that was
-<strong>empty</strong> on the bench. There is no documented export, and whether <code translate="no" v-pre>.meta</code>
-blobs can be decoded back into NZBs is unverified. Treat the original NZB
-files as <strong>not recoverable from decypharr</strong>; the job folder name is the NZB
-filename, so <code translate="no" v-pre>nzb-jobs.txt</code> is exactly what to search your indexer for.</p>
-<hr>
-<h2 id="4-build-zurg-in-parallel">4. Build zurg in parallel</h2>
-<p>Run zurg beside decypharr — different mountpoint, no conflict; both may
-list the same debrid accounts at once, listing is read-only.</p>
-<div id="4-build-zurg-in-parallel-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-yaml"><code v-pre class="language-yaml"># config.yml — staging
-zurg: v1
+<p>For each job, re-fetch the NZB from your indexer by searching the folder name,
+and <strong>rename the file to exactly that name plus <code translate="no" v-pre>.nzb</code></strong> before dropping it in
+zurg&#x27;s <code translate="no" v-pre>nzbs/</code> directory — the filename is the folder name, and the folder
+name is what keeps the path stable.</p>
+<p>Two rules while you do it:</p>
+<ul>
+<li>
+<p><strong>Skip any release a debrid account already holds.</strong> The symlink resolves
+through the torrent copy, and adding the NZB too makes zurg see two
+different releases with one name and hash-suffix one of them
+(<code translate="no" v-pre>Some.Release {a1b2c3}</code>), which breaks whatever pointed at the bare name.</p>
+</li>
+<li>
+<p>A release your indexer no longer carries is simply gone. With
+<code translate="no" v-pre>autoEmptyTrash</code> at <code translate="no" v-pre>0</code> the Plex item survives in the trash until you decide
+to drop it.</p>
+</li>
+</ul>
+<h2 id="build-zurg-alongside">Build zurg alongside</h2>
+<p>Run zurg beside decypharr on its own mountpoint. Both may list the same debrid
+accounts at once — listing is read-only.</p>
+<div id="build-zurg-alongside-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">zurg: v1
 providers:
   - type: realdebrid
     token: YOUR_RD_TOKEN
@@ -440,246 +371,101 @@ providers:
       tls: true
       username: USER
       password: PASS
-      connections: 30          # your plan's real allowance
-retain_rd_torrent_name: false         # align with decypharr folder_naming
-retain_folder_name_extension: false   # true if folders carry .mkv/.mp4
+      connections: 30                # your plan's real allowance
+retain_rd_torrent_name: false        # align with decypharr's folder_naming
+retain_folder_name_extension: false  # true if your folders carry .mkv/.mp4
 mount_path: &quot;/mnt/zurg-staging&quot;
 rclone_enabled: true
 rclone_binary: bin/rclone
-directories:                # Setup B: reproduce decypharr's top-level names
+directories:                         # Setup B: reproduce decypharr's top level
   torrents:
     filters:
       - not_provider: nzb
   nzbs:
     filters:
-      - provider: nzb
-  # one entry per virtual folder you had, translated to zurg filters</code></pre>
+      - provider: nzb</code></pre>
 </doc-codeblock></div>
-<p>Start it, let it scan the accounts, and compare against the inventory:</p>
-<div id="4-build-zurg-in-parallel-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">find /mnt/zurg-staging/__all__ -type f -printf '%s %p\n' | sort -k2 &gt; zurg-files.txt
-# Folder-level diff: which jobs exist on each side?
-sed 's|.*/__all__/\([^/]*\)/.*|\1|' mount-files.txt | sort -u &gt; decypharr-jobs.txt
-sed 's|.*/__all__/\([^/]*\)/.*|\1|' zurg-files.txt  | sort -u &gt; zurg-jobs.txt
+<p>Then check the debrid side lines up before going further:</p>
+<div id="build-zurg-alongside-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">ls /mnt/decypharr/__all__      | sort &gt; decypharr-jobs.txt
+ls /mnt/zurg-staging/__all__   | sort &gt; zurg-jobs.txt
 diff decypharr-jobs.txt zurg-jobs.txt</code></pre>
 </doc-codeblock></div>
-<p>The debrid-torrent folders should already line up; if they differ
-systematically (extension present/absent, RD rename vs original), flip the
-<code translate="no" v-pre>retain_*</code> knobs and rescan before resorting to anything manual. Folders only
-on the decypharr side are the usenet jobs — section 5 — plus anything on a
-Debrid-Link/Premiumize account.</p>
-<hr>
-<h2 id="5-recovering-the-nzb-side">5. Recovering the NZB side</h2>
-<p>zurg&#x27;s ingestion is a watch directory: <code translate="no" v-pre>.nzb</code> files dropped directly into
-<code translate="no" v-pre>nzbs/</code> beside the binary (fixed name, subdirectories ignored, rescanned every
-15 s). zurg does now have a <a href="../../guides/sonarr-radarr/">SABnzbd-compatible endpoint</a> that
-writes into that same directory, but it will not help here — recovering an
-existing job means placing a file under an exact name, which is what the
-watch directory does and what a re-grab through an *arr does not. For each
-job in <code translate="no" v-pre>nzb-jobs.txt</code>:</p>
-<ol>
-<li>
-<p><strong>Skip it if a debrid account already holds the release</strong> — the symlink
-resolves through the torrent copy, and adding the NZB too triggers the
-duplicate-name hash suffix (section 1).</p>
-</li>
-<li>
-<p>Re-fetch the NZB from your indexer, searching by the job folder name.</p>
-</li>
-<li>
-<p><strong>Rename the file to exactly the job folder name</strong> plus <code translate="no" v-pre>.nzb</code> — the
-filename is the folder name, which is what keeps the folder path
-identical: <code translate="no" v-pre>cp indexer-download.nzb /path/to/zurg/nzbs/TLOU-S02E01-FLUX.nzb</code></p>
-</li>
-<li>
-<p>Watch the log for <code translate="no" v-pre>Loaded NZB &lt;name&gt;: N files</code>, then check the resulting
-folder in <code translate="no" v-pre>/mnt/zurg-staging/__all__/</code> against <code translate="no" v-pre>mount-files.txt</code>.</p>
-</li>
-</ol>
-<p>A release your indexer no longer has is gone: no NZB, no zurg entry, a
-dangling Plex item — leave it (with auto-empty off it survives until a scan
-trashes it) or delete it deliberately after migration. Inner filenames will
-differ for lone-video and RAR releases (section 1); that is what sections 7
-and 8 are for. Some sizes will read 2.5–3.2% high.</p>
-<hr>
-<h2 id="6-cutover-setup-a">6. Cutover (Setup A)</h2>
-<p>Stop Plex, swap the mountpoint from decypharr to zurg, fix the symlinks,
-verify every Plex path resolves, start Plex. With Plex stopped, the &quot;empty
-mount during a scan&quot; failure mode cannot occur — the cleanest guard.</p>
-<div id="6-cutover-setup-a-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash"># 1. Pre-flight: nothing playing, nothing scanning (section 2 commands), then:
-sudo systemctl stop plexmediaserver
-# 2. Stop decypharr and free its mountpoint (the *arrs stay paused).
-sudo systemctl stop decypharr        # or: docker stop decypharr
-mountpoint -q &quot;$MOUNT&quot; &amp;&amp; sudo umount &quot;$MOUNT&quot;
-# 3. Point zurg at the old mountpoint and restart it.
-#    In config.yml: mount_path: &quot;/mnt/decypharr&quot;   (i.e. $MOUNT)
-sudo systemctl restart zurg
-# 4. Confirm the tree is up BEFORE anything else runs.
-ls &quot;$MOUNT/__all__&quot; | head
-cat &quot;$MOUNT/version.txt&quot;</code></pre>
-</doc-codeblock></div>
-<p>Do not delete decypharr, its config, <code translate="no" v-pre>db/</code> or <code translate="no" v-pre>usenet/</code> state — that is the
-rollback path (section 11).</p>
-<hr>
-<h2 id="7-retarget-dangling-symlinks-setup-a">7. Retarget dangling symlinks (Setup A)</h2>
-<p>Every library symlink whose target still exists under zurg&#x27;s <code translate="no" v-pre>__all__</code> —
-debrid torrents, multi-file NZB releases — now just works. The dangling ones
-are the decypharr-renamed lone videos and the flattened RARs. Repoint them:
-the symlink&#x27;s own path (what Plex has on file) never changes, so the item is
-preserved.</p>
-<div id="7-retarget-dangling-symlinks-setup-a-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">#!/bin/bash
-# retarget.sh — repoint dangling library symlinks at zurg's copy of the job.
-# Writes an undo script; GNU find and bash (for printf %q) required.
-MOUNT=/mnt/decypharr; LIB=/data/media; UNDO=./retarget-undo.sh
-: &gt; &quot;$UNDO&quot;
-find &quot;$LIB&quot; -type l | while IFS= read -r link; do
-  [ -e &quot;$link&quot; ] &amp;&amp; continue                        # resolves — leave it alone
+<p>If the torrent folders differ <em>systematically</em> — an extension present or
+absent, the RD rename instead of the original — flip <code translate="no" v-pre>retain_rd_torrent_name</code>
+or <code translate="no" v-pre>retain_folder_name_extension</code> and rescan rather than fixing anything by
+hand. Folders only on the decypharr side are the Usenet jobs, plus anything on
+a Debrid-Link or Premiumize account.</p>
+<h2 id="cut-over">Cut over</h2>
+<h3 id="setup-a--repoint-the-symlinks">Setup A — repoint the symlinks</h3>
+<div id="setup-a--repoint-the-symlinks-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">find /data/media -type l | while IFS= read -r link; do
   old=$(readlink &quot;$link&quot;)
-  job=$(printf '%s\n' &quot;$old&quot; | sed -n &quot;s|^$MOUNT/__all__/\([^/]*\)/.*|\1|p&quot;)
-  [ -n &quot;$job&quot; ] || { echo &quot;SKIP (target not under __all__): $link&quot;; continue; }
-  dir=&quot;$MOUNT/__all__/$job&quot;
-  [ -d &quot;$dir&quot; ] || { echo &quot;NO JOB $job: $link&quot;; continue; }
-  # Largest non-sample video in the job, searched recursively (RARs nest).
-  new=$(find &quot;$dir&quot; -type f \( -name '*.mkv' -o -name '*.mp4' -o -name '*.avi' \) \
-        ! -ipath '*sample*' -printf '%s\t%p\n' | sort -rn | head -1 | cut -f2-)
-  [ -n &quot;$new&quot; ] || { echo &quot;NO VIDEO in $job: $link&quot;; continue; }
-  printf 'ln -sfn %q %q\n' &quot;$old&quot; &quot;$link&quot; &gt;&gt; &quot;$UNDO&quot;
-  ln -sfn &quot;$new&quot; &quot;$link&quot;
-  echo &quot;RETARGETED: $link&quot;
-done</code></pre>
+  case &quot;$old&quot; in
+    /mnt/decypharr/__all__/*)
+      rel=${old#/mnt/decypharr/__all__/}
+      new=&quot;/mnt/zurg-staging/__all__/$rel&quot;
+      [ -e &quot;$new&quot; ] &amp;&amp; ln -sfn &quot;$new&quot; &quot;$link&quot;
+      ;;
+  esac
+done
+
+# What dangles is the renamed class — take the largest non-sample video:
+find /data/media -xtype l | while IFS= read -r link; do
+  job=$(readlink &quot;$link&quot; | sed 's|^/mnt/decypharr/__all__/\([^/]*\)/.*|\1|')
+  find &quot;/mnt/zurg-staging/__all__/$job&quot; -type f \
+       \( -iname '*.mkv' -o -iname '*.mp4' -o -iname '*.avi' \) ! -ipath '*sample*' \
+       -printf '%s\t%p\n' | sort -rn | head -1 | cut -f2- | \
+    xargs -r -I{} ln -sfn {} &quot;$link&quot;
+done
+find /data/media -xtype l          # want no output</code></pre>
 </doc-codeblock></div>
-<p>The largest-video heuristic is safe because multi-file releases already
-resolved and were skipped — only single-payload jobs reach it. Anything still
-dangling afterwards is a job zurg does not have (unrecoverable NZB,
-unsupported provider): the accept-or-delete list.</p>
-<hr>
-<h2 id="8-setup-b-plex-pointed-straight-at-the-mount">8. Setup B: Plex pointed straight at the mount</h2>
-<p>Reproduce as much as possible by configuration first: zurg at decypharr&#x27;s
-exact mountpoint, <code translate="no" v-pre>directories:</code> entries named <code translate="no" v-pre>torrents</code>, <code translate="no" v-pre>nzbs</code> and
-per-provider (section 4), naming knobs aligned, NZBs renamed to the old
-folder names (section 5). The debrid side and multi-file NZB releases then
-carry identical Plex paths and nothing happens to them. The residue is the
-lone-video and RAR jobs, whose inner filenames cannot be configured into
-matching. Four options, in order of preference:</p>
-<ol>
-<li>
-<p><strong>Rewrite <code translate="no" v-pre>media_parts.file</code> in the Plex DB</strong> — the precise fix when the
-affected set is small. With Plex stopped and the section-2 backup taken:</p>
-<div class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-sql"><code v-pre class="language-sql">UPDATE media_parts
-   SET file = '/mnt/decypharr/__all__/TLOU-S02E01-FLUX/The.Last.of.Us.S02E01.Future.Days.…-FLUX.mkv'
- WHERE file = '/mnt/decypharr/__all__/TLOU-S02E01-FLUX/TLOU-S02E01-FLUX.mkv';</code></pre>
-</doc-codeblock></div>
-<p>Use Plex&#x27;s bundled &quot;Plex SQLite&quot; binary for writes, not stock <code translate="no" v-pre>sqlite3</code> —
-the DB carries custom extensions and Plex&#x27;s own tooling is the supported
-way to modify it. If you use external subtitle files, check
-<code translate="no" v-pre>media_streams</code> for path references too. Generate the UPDATEs from
-<code translate="no" v-pre>mount-files.txt</code> vs <code translate="no" v-pre>zurg-files.txt</code> rather than typing them.</p>
-</li>
-<li>
-<p><strong>A symlink shim tree</strong> — when you refuse to touch the DB. Mount zurg
-somewhere new (<code translate="no" v-pre>/mnt/zurg</code>) and build the old paths at the old mountpoint
-as a real directory tree of symlinks into it. Every old path resolves,
-renamed inner files included. The shim covers the frozen pre-migration
-set; add the zurg mount as an additional location on each library so new
-content scans in from the real mount. Cost: a shim carried forever.</p>
-</li>
-<li>
-<p><strong>Rename the <code translate="no" v-pre>.nzb</code></strong> — already done in section 5. It fixes folders (the
-whole fix for multi-file releases) but can never fix inner filenames, so
-it is a component of the other options, not an alternative.</p>
-</li>
-<li>
-<p><strong>Accept the change</strong> for items you do not care about. With auto-empty
-off, the old item sits in the trash (state intact) and a new item appears;
-item-bound state — collections, artwork choice, added date — is lost when
-the trash is finally emptied. Do not empty it until section 9 is clean.</p>
-</li>
-</ol>
-<hr>
-<h2 id="9-verification">9. Verification</h2>
-<p>With Plex still stopped:</p>
-<div id="9-verification-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/decypharr-migration
-# The contract: every path Plex knows must resolve.
-while IFS= read -r p; do [ -e &quot;$p&quot; ] || echo &quot;MISSING: $p&quot;; done &lt; plex-paths.txt</code></pre>
-</doc-codeblock></div>
-<p>Chase every line down to zero, or to an explicit accept-list of items you
-have decided to lose. Then <code translate="no" v-pre>sudo systemctl start plexmediaserver</code> and:</p>
-<ul>
-<li>
-<p>Scan <strong>one</strong> small library first. Check its item count against
-pre-migration and that nothing landed in the trash; spot-check watch state
-and a collection.</p>
-</li>
-<li>
-<p>Play one debrid item and one NZB item end to end, including a seek.</p>
-</li>
-<li>
-<p>Analysis activity on NZB files whose size shifted (section 1) is
-re-analysis of a surviving item, not a re-add.</p>
-</li>
-<li>
-<p>Only when every library scans clean: re-enable automatic/scheduled scans
-and the *arr queues, and empty the trash if anything deliberately dropped
-sits in it.</p>
-</li>
-</ul>
-<hr>
-<h2 id="10-what-changes-after-migration">10. What changes after migration</h2>
-<p><strong>Automation.</strong> Half of it carries over. zurg has a
-<a href="../../guides/sonarr-radarr/">SABnzbd-compatible endpoint</a> — opt-in, Usenet-only — so Sonarr
-and Radarr can hand it an NZB and import from <code translate="no" v-pre>__magic__</code> by rename. It has no
-qBittorrent API, so the torrent half of decypharr&#x27;s ingestion has no
-equivalent, and the NZB half is not a like-for-like replacement either: zurg
-does not yet check whether a post&#x27;s articles are still on the news server, so
-a dead release reports Completed and fails on the first read rather than being
-blocklisted and re-grabbed. Options:</p>
-<ul>
-<li>
-<p>NZBs: turn on <code translate="no" v-pre>sabnzbd.enabled</code> and point the *arrs at zurg — see
-<a href="../../guides/sonarr-radarr/">sabnzbd.md</a> — or fetch from the indexer yourself and drop into
-<code translate="no" v-pre>nzbs/</code>.</p>
-</li>
-<li>
-<p>Torrents: the zurg dashboard, DMM, or zurg&#x27;s Plex watchlist acquisition
-(<code translate="no" v-pre>plex_watchlist_enabled</code>, needs <code translate="no" v-pre>dmm_api_key</code>). Nothing in the *arr
-ecosystem can hand zurg a torrent.</p>
-</li>
-<li>
-<p>Hybrid: keep decypharr purely as the *arrs&#x27; download client pushing into
-the same debrid accounts, with zurg serving the mount — both list the same
-account, so zurg picks up what decypharr adds. The *arr import step then
-needs remote path mapping onto zurg&#x27;s tree; unverified here, test one grab
-first. If you script against decypharr: the SABnzbd endpoint is
-<code translate="no" v-pre>/sabnzbd/api?mode=addfile</code> with the multipart field named <code translate="no" v-pre>name</code>;
-<code translate="no" v-pre>/api?mode=addfile</code> returns 404 on v2.5.</p>
-</li>
-</ul>
-<p><strong>Mount deltas:</strong> sidecars (<code translate="no" v-pre>thumbnail.jpg</code>, <code translate="no" v-pre>.url</code>) and RAR-inner <code translate="no" v-pre>Sample/</code>
-directories are now visible — <code translate="no" v-pre>only_show_the_biggest_file: true</code> on movie
-directories hides them from a mount-direct library. Obfuscated releases
-decypharr dropped now appear; broken-chain RARs appear as empty folders; NZB
-sizes may read 2.5–3.2% high until the defect is fixed.</p>
-<hr>
-<h2 id="11-rollback">11. Rollback</h2>
-<p>Everything decypharr needs was left in place (section 6), so rollback is
-the cutover in reverse:</p>
-<div id="11-rollback-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash"># Plex pre-flight first (section 2), or stop Plex outright.
+<p>The largest-non-sample heuristic is safe because everything that already
+resolved was skipped, so only single-payload jobs reach it. Anything still
+dangling is a job zurg does not have. Plex sees no change at all.</p>
+<h3 id="setup-b--take-over-the-mountpoint">Setup B — take over the mountpoint</h3>
+<p>Because the roots match, moving zurg onto decypharr&#x27;s mountpoint preserves
+every path except the renamed class:</p>
+<div id="setup-b--take-over-the-mountpoint-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash"># Nothing playing, nothing scanning, then:
 sudo systemctl stop plexmediaserver
-sudo systemctl stop zurg                      # frees the mountpoint
-sudo systemctl start decypharr                # remounts at $MOUNT
-bash ~/decypharr-migration/retarget-undo.sh   # Setup A: restore symlink targets
-# Setup B, if you rewrote the DB: restore the backup.
-# cp ~/plexlib.backup.YYYYMMDD.db &quot;$PLEX_DB&quot;
+sudo systemctl stop decypharr
+mountpoint -q /mnt/decypharr &amp;&amp; sudo umount /mnt/decypharr
+# set mount_path: &quot;/mnt/decypharr&quot; in zurg's config.yml
+sudo systemctl restart zurg
+ls /mnt/decypharr/__all__ | head
+cat /mnt/decypharr/version.txt
 sudo systemctl start plexmediaserver</code></pre>
 </doc-codeblock></div>
-<p>Verify with the same section-9 loop over <code translate="no" v-pre>plex-paths.txt</code> before letting Plex
-scan. The NZBs you re-fetched into zurg&#x27;s <code translate="no" v-pre>nzbs/</code> are unaffected by rollback
-and keep their value for the next attempt.</p>
+<p>Scan. The renamed releases come back as new items and the old ones land in the
+trash; everything else is untouched. Leave the trash alone until you have
+spot-checked a few.</p>
+<p>Do not delete decypharr, its config, <code translate="no" v-pre>db/</code> or <code translate="no" v-pre>usenet/</code> state until you are
+done — that is your rollback.</p>
+<h2 id="afterwards">Afterwards</h2>
+<p><strong>Automation is where decypharr had more than zurg does.</strong> zurg has an opt-in
+<a href="../../guides/sonarr-radarr/">SABnzbd-compatible endpoint</a> so Sonarr and Radarr
+can hand it an NZB and import from <code translate="no" v-pre>__magic__</code> by rename, but it has no
+qBittorrent API, so the torrent half of decypharr&#x27;s ingestion has no
+equivalent. Options:</p>
+<ul>
+<li>
+<p><strong>NZBs:</strong> turn on <code translate="no" v-pre>sabnzbd.enabled</code> and point the *arrs at zurg. The caveat
+is that zurg does not yet check whether a post&#x27;s articles are still on the
+news server, so a dead release reports Completed and fails on the first read
+instead of being blocklisted and re-grabbed.</p>
+</li>
+<li>
+<p><strong>Torrents:</strong> the zurg dashboard, DMM, or Plex watchlist acquisition
+(<code translate="no" v-pre>plex_watchlist_enabled</code>, needs <code translate="no" v-pre>dmm_api_key</code>).</p>
+</li>
+<li>
+<p><strong>Hybrid:</strong> keep decypharr purely as the *arrs&#x27; download client pushing into
+the same debrid accounts, with zurg serving the mount. Both list the same
+account, so zurg picks up what decypharr adds. The *arr import step then
+needs remote path mapping onto zurg&#x27;s tree — test one grab first.</p>
+</li>
+</ul>
 
                 
                 <!-- Required only on API pages -->

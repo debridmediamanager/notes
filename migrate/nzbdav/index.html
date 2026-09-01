@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841543323324">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841574753926">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
 
     <!-- Primary Meta Tags -->
-    <title>Migrating from nzbdav-dev to zurg</title>
-    <meta name="title" content="Migrating from nzbdav-dev to zurg">
-    <meta name="description" content="nzbdav-dev's last release is v0.6.4, April 2026, and the upstream repository is no longer maintained (it now redirects to a fork under a different name; that fork is a separate project and not what this guide is about).">
+    <title>Migrating from nzbdav to zurg</title>
+    <meta name="title" content="Migrating from nzbdav to zurg">
+    <meta name="description" content="Read the shared page first — the trash guard and the Setup A/B question live there.">
 
     <!-- Canonical -->
     <link rel="canonical" href="https://notes.debridmediamanager.com/migrate/nzbdav/">
@@ -21,28 +21,28 @@
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://notes.debridmediamanager.com/migrate/nzbdav/">
-    <meta property="og:title" content="Migrating from nzbdav-dev to zurg">
-    <meta property="og:description" content="nzbdav-dev's last release is v0.6.4, April 2026, and the upstream repository is no longer maintained (it now redirects to a fork under a different name; that fork is a separate project and not what this guide is about).">
+    <meta property="og:title" content="Migrating from nzbdav to zurg">
+    <meta property="og:description" content="Read the shared page first — the trash guard and the Setup A/B question live there.">
     <meta property="og:site_name" content="dmm+zurg">
     <meta property="og:locale" content="en_US">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://notes.debridmediamanager.com/migrate/nzbdav/">
-    <meta name="twitter:title" content="Migrating from nzbdav-dev to zurg">
-    <meta name="twitter:description" content="nzbdav-dev's last release is v0.6.4, April 2026, and the upstream repository is no longer maintained (it now redirects to a fork under a different name; that fork is a separate project and not what this guide is about).">
+    <meta name="twitter:title" content="Migrating from nzbdav to zurg">
+    <meta name="twitter:description" content="Read the shared page first — the trash guard and the Setup A/B question live there.">
 
     <!-- Alternate Markdown -->
     <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/migrate/nzbdav.md">
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841543323324" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841574753926" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841543323324" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841574753926" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841543323324" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841543323324" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841574753926" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841574753926" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -178,456 +178,192 @@
                 <doc-page-actions></doc-page-actions>
 
                 <!-- Page content  -->
-<h1 id="migrating-from-nzbdav-dev-to-zurg">Migrating from nzbdav-dev to zurg</h1>
-<p>nzbdav-dev&#x27;s last release is v0.6.4, April 2026, and the upstream repository is
-no longer maintained (it now redirects to a fork under a different name; that
-fork is a separate project and not what this guide is about). v0.6.4 itself
-works — on the reference corpus it imported everything zurg imports, season
-packs included — so this migration is about getting off unmaintained software,
-not about broken content. That means you can take your time: nothing here
-requires a rushed cutover, and the safest sequence below runs both servers in
-parallel until the switch is a single atomic step.</p>
-<p>The overriding requirement: <strong>Plex must not rescan from scratch, must not
-delete library items, and must keep watch state, play counts, collections,
-ratings and artwork choices.</strong></p>
-<p>Everything below follows from one fact and one qualification.</p>
-<p>The fact: a Plex library item is bound to the file path recorded in
-<code translate="no" v-pre>media_parts.file</code> inside <code translate="no" v-pre>com.plexapp.plugins.library.db</code>, so a changed path
-is a new item plus a deleted one.</p>
-<p>The qualification, measured against a live 10,126-item library, because the
-folklore overstates it: <strong>watch state is not stored against that item.</strong>
-<code translate="no" v-pre>metadata_item_settings</code> is keyed by <code translate="no" v-pre>account_id</code> plus a <code translate="no" v-pre>plex://</code> GUID —</p>
-<div id="migrating-from-nzbdav-dev-to-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-sql"><code v-pre class="language-sql">metadata_item_settings(id, account_id, guid, rating, view_offset,
-                       view_count, last_viewed_at, …)
--- ('plex://movie/5d776d1796b655001fe3f5d3', 1, NULL, 1707662516)</code></pre>
-</doc-codeblock></div>
-<p>— so watched flags, play counts, resume offsets and user ratings re-attach
-when the new file matches to the same GUID. What dies with the old item is
-everything hanging off the <code translate="no" v-pre>metadata_items</code> row: collections, playlists (they
-store item ids), manual poster/art/match choices, and <code translate="no" v-pre>added_at</code>, which floods
-Recently Added with your whole library. Deletion itself is soft (<code translate="no" v-pre>deleted_at</code>
-on <code translate="no" v-pre>media_parts</code> and <code translate="no" v-pre>media_items</code>) — which is what <code translate="no" v-pre>autoEmptyTrash: 0</code>
-preserves, and what emptying the trash makes permanent.</p>
-<p>So the whole job is: make the paths Plex already knows keep resolving to the
-same content, served by zurg instead of nzbdav. What you are protecting is the
-library&#x27;s structure and curation more than its watch history.</p>
-<hr>
-<h2 id="1-decide-which-setup-you-have">1. Decide which setup you have</h2>
-<p>Two setups exist in the wild. Check before doing anything else.</p>
-<p>*<em>Setup A — Plex points at an <em>arr-managed library of symlinks.</em></em> This is
-nzbdav&#x27;s documented import strategy: <code translate="no" v-pre>completed-symlinks/&lt;category&gt;/&lt;release&gt;/ &lt;file&gt;.rclonelink</code> resolved by rclone&#x27;s <code translate="no" v-pre>--links</code> flag into real symlinks,
-which Radarr/Sonarr imported into a media library at paths <em>they</em> chose
-(<code translate="no" v-pre>/data/media/movies/Movie (2024)/…</code>). Plex scans that library, never the
-nzbdav mount directly.</p>
-<div id="1-decide-which-setup-you-have-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash"># If this prints symlink targets under .ids, you are Setup A:
-find /path/to/your/plex/library -type l | head -3 | xargs -I{} readlink {}
-# e.g.  /mnt/nzbdav/.ids/1/8/5/e/d/185ed3fe-6b74-44f1-967f-fc0222f195ec</code></pre>
-</doc-codeblock></div>
-<p><strong>Setup B — Plex points straight at the mount</strong>, at paths like
-<code translate="no" v-pre>/mnt/nzbdav/content/movies/&lt;release&gt;/&lt;file&gt;</code>.</p>
-<p>Setup A is the easy migration: the Plex-visible paths are the symlink paths,
-which never change. The job is repointing symlink <em>targets</em>, done atomically
-while both mounts are live, and Plex never sees a single file move. If you are
-Setup A, sections 2–6 then 7 are your path. Setup B is harder; section 8
-covers it.</p>
-<p>Whichever you are: <strong>never point a scanner, <code translate="no" v-pre>find</code>, <code translate="no" v-pre>du</code>, or any recursive
-walk at the nzbdav WebDAV root.</strong> The <code translate="no" v-pre>.ids</code> object store materialises all 16
-hex children at every one of its five levels regardless of contents — 16^5 ≈
-1,048,576 directories. Every recipe here targets <code translate="no" v-pre>/content</code>, <code translate="no" v-pre>/nzbs</code> or
-<code translate="no" v-pre>/completed-symlinks</code> explicitly.</p>
-<hr>
-<h2 id="2-what-changes-between-the-two-trees">2. What changes between the two trees</h2>
-<p>Measured 2026-08-19 by importing the same NZBs into both servers and reading
-the mounts back. Per release, zurg&#x27;s tree matches nzbdav&#x27;s almost exactly:
-both name the release folder after the NZB filename, both keep the poster&#x27;s
-inner filenames, both keep sidecars (<code translate="no" v-pre>thumbnail.jpg</code>, <code translate="no" v-pre>.nfo</code>, <code translate="no" v-pre>.url</code>), both
-walk into RAR archives and reproduce the inner directory including <code translate="no" v-pre>Sample/</code>.</p>
-<p>The deltas, all of them:</p>
-<retype-table copy-text="| | nzbdav-dev v0.6.4 | zurg |
-|---|---|---|
-| Roots | `/content/&lt;category&gt;/&lt;release&gt;/…` (SAB categories) | `/dav/&lt;directory&gt;/&lt;release&gt;/…` — directories from `config.yml` filters, plus `__all__`, `__nzb__` |
-| par2 in obfuscated releases | left visible, hash-named | detected by content and hidden |
-| File sizes | exact | over-reported by 2.5–3.2% on NZBs whose subjects carry no byte count (see below) |
-| Broken RAR chain | import fails, nothing created | empty release folder |
-| Ingestion | SABnzbd API + WebDAV `/nzbs/` upload | drop `.nzb` into `nzbs/` beside the binary, or the opt-in [SABnzbd endpoint](../guides/sonarr-radarr.md) an \*arr can grab through — which does not yet report a dead post as failed |">
+<h1 id="migrating-from-nzbdav-to-zurg">Migrating from nzbdav to zurg</h1>
+<p>Read <a href="../">the shared page</a> first — the trash guard and the Setup A/B
+question live there.</p>
+<p>nzbdav-dev&#x27;s last release is v0.6.4 from April 2026 and the upstream
+repository is no longer maintained. v0.6.4 itself works fine, so this
+migration is about getting off unmaintained software rather than about broken
+content. Take your time; nothing here needs a rushed cutover.</p>
+<p><strong>This is the easiest of the five migrations.</strong> Measured against zurg on the
+same five releases, nzbdav&#x27;s tree differs by exactly two things:</p>
+<retype-table copy-text="| | |
+|---|---|
+| zurg gains | the release's `.nfo` file |
+| zurg loses | 5 hash-named par2 volumes inside obfuscated releases |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
 <tr>
 <th> </th>
-<th>nzbdav-dev v0.6.4</th>
-<th>zurg</th>
+<th> </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Roots</td>
-<td><code translate="no" v-pre>/content/&lt;category&gt;/&lt;release&gt;/…</code> (SAB categories)</td>
-<td><code translate="no" v-pre>/dav/&lt;directory&gt;/&lt;release&gt;/…</code> — directories from <code translate="no" v-pre>config.yml</code> filters, plus <code translate="no" v-pre>__all__</code>, <code translate="no" v-pre>__nzb__</code></td>
+<td>zurg gains</td>
+<td>the release&#x27;s <code translate="no" v-pre>.nfo</code> file</td>
 </tr>
 <tr>
-<td>par2 in obfuscated releases</td>
-<td>left visible, hash-named</td>
-<td>detected by content and hidden</td>
-</tr>
-<tr>
-<td>File sizes</td>
-<td>exact</td>
-<td>over-reported by 2.5–3.2% on NZBs whose subjects carry no byte count (see below)</td>
-</tr>
-<tr>
-<td>Broken RAR chain</td>
-<td>import fails, nothing created</td>
-<td>empty release folder</td>
-</tr>
-<tr>
-<td>Ingestion</td>
-<td>SABnzbd API + WebDAV <code translate="no" v-pre>/nzbs/</code> upload</td>
-<td>drop <code translate="no" v-pre>.nzb</code> into <code translate="no" v-pre>nzbs/</code> beside the binary, or the opt-in <a href="../../guides/sonarr-radarr/">SABnzbd endpoint</a> an *arr can grab through — which does not yet report a dead post as failed</td>
+<td>zurg loses</td>
+<td>5 hash-named par2 volumes inside obfuscated releases</td>
 </tr>
 </tbody>
 </table>
 </div>
 </retype-table>
-<p><strong>The size defect matters for Plex.</strong> True sizes come from the yEnc <code translate="no" v-pre>=ybegin</code>
-header; zurg only uses the exact size when the poster wrote a byte count into
-the subject line, otherwise it advertises the yEnc-<em>encoded</em> length. Measured:
-a 4,311,416,302-byte episode listed as 4,419,101,475 (+2.50%); other files
-+2.48% and +3.18%; files with byte counts in the subject were exact. Reading
-the file does not correct the listing. To Plex a changed size is a <em>modified</em>
-file: the item survives with its watch state, but Plex may re-analyse it and
-regenerate preview thumbnails / intro markers. Expect a burst of analysis
-after cutover, not deletions.</p>
-<p><strong>The hidden par2 files cost nothing.</strong> Plex only creates items from media
-files; hash-named par2 volumes are not media and never had items. Their
-disappearance is invisible to Plex. Only non-Plex tooling that walked them
-will notice.</p>
-<p><strong>A release nzbdav refused never reached Plex</strong>, so zurg&#x27;s empty folder for
-the same broken release is also invisible — Plex ignores empty directories.</p>
-<hr>
-<h2 id="3-pre-flight">3. Pre-flight</h2>
-<p>Do all of this before touching anything.</p>
-<p><strong>3.1 — Plex guards.</strong> <code translate="no" v-pre>autoEmptyTrash</code> must be 0. At 1, a scan that finds
-files missing deletes them permanently and at once; at 0 they sit in the trash
-and come back when the mount does. This has cost a 30,065-item library before.</p>
-<div id="3-pre-flight-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">TOKEN=YOUR_PLEX_TOKEN
-curl -s &quot;http://localhost:32400/:/prefs?X-Plex-Token=$TOKEN&quot; | tr '&gt;' '\n' | grep autoEmptyTrash</code></pre>
+<p><strong>Nothing is renamed.</strong> Every filename nzbdav serves, zurg serves under the
+same name, in the same directory shape, including inside RAR archives. The
+two servers agreed on all 20 non-par2 files in the corpus.</p>
+<div class="flex mb-6">
+    <div class="shrink-0 w-1.5 rounded-tl-lg rounded-bl-lg bg-callout-warning"></div>
+    <div class="flex w-full py-4 border border-l-0 rounded-tr-lg rounded-br-lg doc-callout bg-callout-base-bg border-callout-base-border" role="alert">
+        <div class="flex items-center ml-4 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" class="block text-callout-warning" width="22" height="22" viewBox="0 0 24 24" role="presentation">
+                <g fill="currentColor"><g>
+                    <path d="M22.48 15.59L14.01 1.45A2.968 2.968 0 0012.16.09c-.78-.19-1.58-.07-2.27.35-.41.25-.76.6-1.01 1.01v.01L.4 15.6c-.83 1.43-.33 3.27 1.1 4.1.45.26.95.4 1.48.4h16.95c.8-.01 1.55-.33 2.11-.9.56-.57.87-1.33.86-2.13a3.04 3.04 0 00-.42-1.48zm-1.87 2.21c-.19.19-.44.3-.69.3H2.99c-.17 0-.34-.05-.49-.13a.992.992 0 01-.37-1.35L10.6 2.48c.08-.14.2-.25.34-.33a.992.992 0 011.37.33l8.46 14.13c.09.15.13.32.13.49 0 .26-.1.51-.29.7z"></path>
+                    <path d="M11.45 12.1c.55 0 1-.45 1-1v-4c0-.55-.45-1-1-1s-1 .45-1 1v4c0 .56.45 1 1 1zM11.46 14.1c-.56 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"></path>
+                </g></g>
+            </svg>
+        </div>
+        <div class="pr-5 ml-3 w-full">
+            <h5>Never walk the WebDAV root</h5>
+<p>nzbdav&#x27;s <code translate="no" v-pre>.ids</code> object store materialises all 16 hex children at every one of
+its five levels regardless of contents — 16^5 ≈ 1,048,576 directories. Point
+<code translate="no" v-pre>find</code>, <code translate="no" v-pre>du</code>, <code translate="no" v-pre>rclone</code> and any scanner at <code translate="no" v-pre>/content</code>, <code translate="no" v-pre>/nzbs</code> or
+<code translate="no" v-pre>/completed-symlinks</code> explicitly, never at <code translate="no" v-pre>/</code>.</p>
+        </div>
+    </div>
+</div>
+<h2 id="what-needs-rescanning">What needs rescanning</h2>
+<p><strong>Setup A (symlink library): nothing.</strong> Filenames match, so every symlink
+target resolves under zurg once you repoint the prefix. Plex sees no change at
+all.</p>
+<p><strong>Setup B (Plex on the mount): the whole library, unless you reproduce the
+root shape.</strong> nzbdav serves <code translate="no" v-pre>&lt;mount&gt;/content/&lt;category&gt;/&lt;release&gt;/&lt;file&gt;</code> and
+zurg serves <code translate="no" v-pre>&lt;mount&gt;/&lt;directory&gt;/&lt;release&gt;/&lt;file&gt;</code>. Filenames match but the
+prefix does not, so by default everything is re-added.</p>
+<p>Because the names match, nzbdav is the one migration where a <strong>zero-rescan
+Setup B</strong> is cheap. If every release sat under a single category, mount zurg&#x27;s
+<code translate="no" v-pre>__all__</code> where that category was and every path is reproduced exactly:</p>
+<div id="what-needs-rescanning-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">rclone mount zurg:__all__ /mnt/nzbdav/content/movies --config rclone.conf --dir-cache-time 10s</code></pre>
 </doc-codeblock></div>
-<p>Also uncheck &quot;Empty trash automatically after every scan&quot; per library
-(Edit → Advanced), and turn off the two automatic-update settings under
-Settings → Library (&quot;Update my library periodically&quot;, &quot;Run a partial scan
-when changes are detected&quot;) for the duration of the migration.</p>
-<p><strong>3.2 — Confirm nothing is scanning or playing.</strong> Both must be zero. Sessions
-only prove nobody is watching; a scan is the thing that does damage.</p>
-<div id="3-pre-flight-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s &quot;http://localhost:32400/status/sessions?X-Plex-Token=$TOKEN&quot; | grep -o 'size=&quot;[0-9]*&quot;'          # want size=&quot;0&quot;
-curl -s &quot;http://localhost:32400/library/sections?X-Plex-Token=$TOKEN&quot; | grep -o 'refreshing=&quot;1&quot;' | wc -l # want 0</code></pre>
-</doc-codeblock></div>
-<p>Use <code translate="no" v-pre>grep -o … | wc -l</code>, not <code translate="no" v-pre>grep -c</code>: grep exits 1 when it finds nothing,
-which is the <em>good</em> case here, and that aborts a <code translate="no" v-pre>&amp;&amp;</code> chain or a <code translate="no" v-pre>set -e</code>
-script right before the step it was guarding.</p>
-<p><strong>3.3 — Back up the Plex database.</strong> Stop Plex first; a live copy is corrupt.</p>
-<div id="3-pre-flight-code-3" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo systemctl stop plexmediaserver
-cp -a &quot;/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases&quot; \
-      ~/plex-db-backup-$(date +%F)
-sudo systemctl start plexmediaserver</code></pre>
-</doc-codeblock></div>
-<p>*<em>3.4 — Stop the <em>arrs importing.</em></em> Disable RSS sync and automatic import in
-Radarr/Sonarr (or stop them) so nothing writes new symlinks or hands nzbdav
-new jobs mid-migration.</p>
-<hr>
-<h2 id="4-inventory-pull-every-nzb-out-of-nzbdav">4. Inventory: pull every NZB out of nzbdav</h2>
-<p>zurg is fed by <code translate="no" v-pre>.nzb</code> files in a watch directory. nzbdav still has all of
-yours: the WebDAV directory <code translate="no" v-pre>/nzbs/&lt;category&gt;/</code> mirrors the queue and is
-readable. <strong>Copy, do not move — deleting from <code translate="no" v-pre>/nzbs/</code> cancels the job.</strong></p>
-<div id="4-inventory-pull-every-nzb-out-of-nzbdav-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash"># rclone remote pointed at nzbdav's WebDAV (reuse your existing one)
-mkdir -p ~/migration/nzbs
+<p>If you used several categories you would need <code translate="no" v-pre>directories:</code> filters that
+reproduce each category&#x27;s membership exactly, and zurg sorts by its own
+filters rather than by the SAB category a release was queued under. The two
+will not agree on everything, and each release that lands in a different
+directory is a re-add anyway. At that point take the simple route below.</p>
+<h2 id="what-new-content-shows-up">What new content shows up</h2>
+<ul>
+<li>
+<p>The <code translate="no" v-pre>.nfo</code> inside RAR releases.</p>
+</li>
+<li>
+<p><strong>Sample clips</strong> inside <code translate="no" v-pre>Sample/</code>. nzbdav publishes the directory and the
+clip; so does zurg, so this one is <em>not</em> new for you — nzbdav is the only
+server of the four that already had it.</p>
+</li>
+<li>
+<p>Empty folders for releases whose archive chain is broken, where nzbdav
+created nothing.</p>
+</li>
+<li>
+<p>par2 and sfv stop being visible.</p>
+</li>
+</ul>
+<p>None of it produces a Plex item except the sample clip, which nzbdav already
+gave you. If it was not bothering you before, nothing changes.</p>
+<h2 id="get-your-nzbs-out">Get your NZBs out</h2>
+<p>zurg is fed by a directory of <code translate="no" v-pre>.nzb</code> files, and nzbdav still has all of yours
+at <code translate="no" v-pre>/nzbs/&lt;category&gt;/</code>. <strong>Copy, do not move — deleting from <code translate="no" v-pre>/nzbs/</code> cancels
+the job.</strong></p>
+<div id="get-your-nzbs-out-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p ~/migration/nzbs
 for cat in uncategorized movies tv audio software; do
   rclone copy &quot;nzbdav:/nzbs/$cat&quot; ~/migration/nzbs/ --include '*.nzb'
 done
 ls ~/migration/nzbs | wc -l</code></pre>
 </doc-codeblock></div>
-<p>The raw blobs also live under nzbdav&#x27;s config directory per its own docs
-(not re-verified here); the WebDAV route above is the supported one and was
-verified working.</p>
-<p><strong>Naming is the whole game.</strong> All servers in this family — nzbdav included —
-name the release folder after the NZB <em>filename</em>, not the subject line and not
-the inner file. So the folder Plex knows as
-<code translate="no" v-pre>/content/movies/The.Wild.Robot.2024.BluRay.1080p.DD5.1.x264-TiGER/</code> came from
-<code translate="no" v-pre>The.Wild.Robot.2024.BluRay.1080p.DD5.1.x264-TiGER.nzb</code>, and dropping that
-same file into zurg reproduces the same folder name. Verify the stems match
-the folders Plex has, and fix any that don&#x27;t by renaming the <code translate="no" v-pre>.nzb</code>:</p>
-<div id="4-inventory-pull-every-nzb-out-of-nzbdav-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash"># Folders nzbdav serves (per category — never the WebDAV root):
-rclone lsf &quot;nzbdav:/content/movies&quot; --dirs-only | sort &gt; ~/migration/folders-old.txt
-rclone lsf &quot;nzbdav:/content/tv&quot;    --dirs-only | sort &gt;&gt; ~/migration/folders-old.txt
-# Stems you recovered:
+<p>Both servers name the release folder after the NZB <em>filename</em>, so the stems
+you recovered should equal the folders nzbdav serves. Check, and rename any
+that drifted:</p>
+<div id="get-your-nzbs-out-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">rclone lsf &quot;nzbdav:/content/movies&quot; --dirs-only | sed 's:/$::' | sort &gt; ~/migration/folders-old.txt
 ls ~/migration/nzbs | sed 's/\.nzb$//' | sort &gt; ~/migration/stems.txt
-diff &lt;(sed 's:/$::' ~/migration/folders-old.txt | sort) ~/migration/stems.txt</code></pre>
+diff ~/migration/folders-old.txt ~/migration/stems.txt</code></pre>
 </doc-codeblock></div>
-<p>Three zurg-specific naming rules to check against that list:</p>
+<p>Two zurg naming rules worth checking against that list:</p>
 <ul>
 <li>
-<p>With defaults, zurg strips a trailing <code translate="no" v-pre>.mkv</code> or <code translate="no" v-pre>.mp4</code> from the folder name
-(<code translate="no" v-pre>GetKey_Original</code>, <code translate="no" v-pre>internal/torrent/key.go</code>). <code translate="no" v-pre>Movie.2024.mkv.nzb</code> becomes
-folder <code translate="no" v-pre>Movie.2024</code>, which will not match nzbdav&#x27;s <code translate="no" v-pre>Movie.2024.mkv</code>. If any
-stems end that way, set <code translate="no" v-pre>retain_folder_name_extension: true</code> in <code translate="no" v-pre>config.yml</code>.</p>
+<p>zurg strips a trailing <code translate="no" v-pre>.mkv</code>/<code translate="no" v-pre>.mp4</code> from a folder name. If any stem ends
+that way, set <code translate="no" v-pre>retain_folder_name_extension: true</code>.</p>
 </li>
 <li>
-<p>Two <em>different</em> releases with the same stem get a <code translate="no" v-pre> {shorthash}</code> suffix on
-the folder. Find duplicates now: <code translate="no" v-pre>ls ~/migration/nzbs | sed 's/\.nzb$//' | sort | uniq -d</code> — rename one of each pair before import, because a suffixed
-folder matches nothing Plex knows.</p>
-</li>
-<li>
-<p>A stem that looks like a hash makes zurg fall back to the NZB&#x27;s
-<code translate="no" v-pre>&lt;meta type=&quot;name&quot;&gt;</code>. If a hash-named folder is what Plex knows, rename the
-<code translate="no" v-pre>.nzb</code> is not enough — but nzbdav named folders from filenames too, so this
-only bites if you renamed files during recovery.</p>
+<p>Two different releases sharing a stem get a <code translate="no" v-pre> {shorthash}</code> suffix on one of
+them. Find them now with <code translate="no" v-pre>ls ~/migration/nzbs | sed 's/\.nzb$//' | sort | uniq -d</code>.</p>
 </li>
 </ul>
-<hr>
-<h2 id="5-build-the-zurg-side-in-parallel">5. Build the zurg side in parallel</h2>
-<p>nzbdav keeps serving throughout. zurg gets its own mountpoint.</p>
-<div id="5-build-the-zurg-side-in-parallel-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-yaml"><code v-pre class="language-yaml"># config.yml (minimal)
-zurg: v1
+<h2 id="build-zurg-alongside">Build zurg alongside</h2>
+<p>nzbdav keeps serving throughout. Copy its provider block into zurg&#x27;s config,
+give zurg its own mountpoint, drop the NZBs in and let it scan — the watch
+directory is picked up every ~15 s.</p>
+<div id="build-zurg-alongside-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">zurg: v1
 providers:
   - type: nzb
     nntp:
-      host: news.example.com
+      host: news.example.com   # copy from nzbdav's provider settings
       port: 563
       tls: true
-      username: YOUR_USER
-      password: YOUR_PASS
-      connections: 30          # your plan's real allowance, not the default 8
-mount_path: &quot;/mnt/zurg&quot;
+      username: USER
+      password: PASS
+      connections: 30          # your plan's real allowance
 rclone_enabled: true
 rclone_binary: bin/rclone
-enable_repair: true
-directories:
-  tv:
-    group: media
-    group_order: 20
-    filters:
-      - has_episodes: true
-  movies:
-    group: media
-    group_order: 30
-    only_show_the_biggest_file: true
-    filters:
-      - any_file_inside_not_regex: /\.(mp3|flac|m4b)$/i</code></pre>
+mount_path: &quot;/mnt/zurg&quot;</code></pre>
 </doc-codeblock></div>
-<div id="5-build-the-zurg-side-in-parallel-code-2" class="codeblock-wrapper"><doc-codeblock>
+<div id="build-zurg-alongside-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p nzbs &amp;&amp; cp ~/migration/nzbs/*.nzb nzbs/
-./zurg          # expect &quot;Usenet account &lt;label&gt; connected: …&quot; then one
-                # &quot;Loaded NZB &lt;file&gt;: N files&quot; per NZB</code></pre>
+./zurg
+ls /mnt/zurg/__all__/ | wc -l     # should approach your release count</code></pre>
 </doc-codeblock></div>
-<p>Note what does <em>not</em> carry over: <code translate="no" v-pre>zurg_*</code> tag filters never match Usenet
-content (ffprobe cannot open zurg&#x27;s locally-assembled links), so filter on
-names, extensions, sizes and <code translate="no" v-pre>has_episodes</code>. Acquisition does carry over, with
-a caveat: zurg has a <a href="../../guides/sonarr-radarr/">SABnzbd endpoint</a> of its own, off by
-default, and an *arr pointed at it imports from <code translate="no" v-pre>__magic__</code> by rename. It
-does not yet check that a post&#x27;s articles are still on the news server, so a
-dead release reports Completed rather than being blocklisted — until that
-lands, dropping <code translate="no" v-pre>.nzb</code> files into <code translate="no" v-pre>nzbs/</code> is the path that never lies to the
-*arr about what it got.</p>
-<p>Verify the tree before involving Plex. <code translate="no" v-pre>__all__</code> contains every release under
-its release name regardless of filters, which makes it the stable comparison
-target:</p>
-<div id="5-build-the-zurg-side-in-parallel-code-3" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">ls /mnt/zurg/__all__/ | sort &gt; ~/migration/folders-new.txt
-diff &lt;(sed 's:/$::' ~/migration/folders-old.txt | sort) ~/migration/folders-new.txt
-# Then spot-check file names inside a few releases against the old mount:
-diff &lt;(rclone lsf &quot;nzbdav:/content/movies/SomeRelease&quot;) &lt;(ls /mnt/zurg/__all__/SomeRelease)</code></pre>
-</doc-codeblock></div>
-<p>Expect exactly two classes of difference: hash-named par2 files present on the
-nzbdav side of obfuscated releases and absent on zurg&#x27;s, and empty zurg
-folders for releases nzbdav had rejected. Anything else, stop and fix before
-cutover. Sizes will differ on some files (section 2); names must not.</p>
-<hr>
-<h2 id="6-build-the-path-map">6. Build the path map</h2>
-<p>Both setups need a mapping from old identity to new path. The
-<code translate="no" v-pre>completed-symlinks</code> tree is the Rosetta stone: each entry is
-<code translate="no" v-pre>&lt;category&gt;/&lt;release&gt;/&lt;file&gt;</code> and its target is the <code translate="no" v-pre>.ids</code> object path — and
-<code translate="no" v-pre>.ids/&lt;…&gt;/&lt;uuid&gt;</code> and <code translate="no" v-pre>/content/&lt;category&gt;/&lt;release&gt;/&lt;file&gt;</code> serve the same
-bytes (verified: identical Content-Length). So <code translate="no" v-pre>.ids</code> target →
-release + file → zurg path, with <code translate="no" v-pre>__all__</code> as the target root so zurg&#x27;s
-filter placement is irrelevant:</p>
-<div id="6-build-the-path-map-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash"># On the machine with the nzbdav mount (rclone --links, so these are real symlinks).
-# Map: .ids target -&gt; /mnt/zurg/__all__/&lt;release&gt;/&lt;file&gt;
-: &gt; ~/migration/idmap.tsv
-find /mnt/nzbdav/completed-symlinks -type l -print0 |
-while IFS= read -r -d '' link; do
-  ids_target=$(readlink &quot;$link&quot;)
-  rel=${link#/mnt/nzbdav/completed-symlinks/}   # &lt;category&gt;/&lt;release&gt;/&lt;file&gt;
-  rel=${rel#*/}                                 # &lt;release&gt;/&lt;file&gt;
-  printf '%s\t%s\n' &quot;$ids_target&quot; &quot;/mnt/zurg/__all__/$rel&quot; &gt;&gt; ~/migration/idmap.tsv
-done
-wc -l ~/migration/idmap.tsv</code></pre>
-</doc-codeblock></div>
-<p>If your rclone mounts <em>without</em> <code translate="no" v-pre>--links</code>, the entries are <code translate="no" v-pre>*.rclonelink</code>
-text files instead; use <code translate="no" v-pre>cat</code> in place of <code translate="no" v-pre>readlink</code> and strip the
-<code translate="no" v-pre>.rclonelink</code> suffix from <code translate="no" v-pre>rel</code>. (nzbdav&#x27;s own documentation warns <code translate="no" v-pre>--links</code>
-needs a recent rclone — v1.70.3 works, v1.60.1-DEV does not.)</p>
-<p>Sanity-check every mapped target exists on the zurg side before touching
-anything:</p>
-<div id="6-build-the-path-map-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">awk -F'\t' '{print $2}' ~/migration/idmap.tsv | while IFS= read -r p; do
-  [ -e &quot;$p&quot; ] || echo &quot;MISSING: $p&quot;
-done</code></pre>
-</doc-codeblock></div>
-<p>Zero <code translate="no" v-pre>MISSING</code> lines is the gate for cutover.</p>
-<hr>
-<h2 id="7-cutover-setup-a-retarget-the-symlinks">7. Cutover, Setup A: retarget the symlinks</h2>
-<p>This is the good case. The Plex-visible paths are the symlink paths in the
-*arr library, and those do not change. Each symlink flips atomically from a
-valid nzbdav target to a valid zurg target <strong>while both mounts are live</strong>, so
-there is no window in which Plex could see a missing file, let alone an empty
-mount.</p>
-<div id="7-cutover-setup-a-retarget-the-symlinks-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash"># Retarget every library symlink whose target is in the map.
-find /path/to/your/plex/library -type l -print0 |
-while IFS= read -r -d '' link; do
+<h2 id="cut-over">Cut over</h2>
+<h3 id="setup-a--repoint-the-symlinks">Setup A — repoint the symlinks</h3>
+<p>Both mounts are up, so no path is ever broken and Plex sees nothing. Because
+the filenames match, the retarget is a prefix swap:</p>
+<div id="setup-a--repoint-the-symlinks-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">find /path/to/arr-library -type l | while IFS= read -r link; do
   old=$(readlink &quot;$link&quot;)
-  new=$(awk -F'\t' -v k=&quot;$old&quot; '$1==k{print $2}' ~/migration/idmap.tsv)
-  [ -z &quot;$new&quot; ] &amp;&amp; { echo &quot;UNMAPPED: $link -&gt; $old&quot;; continue; }
-  dir=$(dirname &quot;$link&quot;)
-  tmp=$(mktemp -u &quot;$dir/.retarget.XXXXXX&quot;)
-  ln -s &quot;$new&quot; &quot;$tmp&quot; &amp;&amp; mv -T &quot;$tmp&quot; &quot;$link&quot;   # rename(2): atomic replace
-done</code></pre>
+  case &quot;$old&quot; in
+    /mnt/nzbdav/content/*)
+      rel=${old#/mnt/nzbdav/content/*/}          # strip mount + category
+      new=&quot;/mnt/zurg/__all__/$rel&quot;
+      [ -e &quot;$new&quot; ] &amp;&amp; ln -sfn &quot;$new&quot; &quot;$link&quot;
+      ;;
+  esac
+done
+find /path/to/arr-library -xtype l          # want no output</code></pre>
 </doc-codeblock></div>
-<p><code translate="no" v-pre>mv -T</code> is GNU coreutils; it guarantees the destination is replaced rather
-than descended into. Without it (macOS), <code translate="no" v-pre>mv -f</code> works here only because the
-targets are files, not directories — prefer installing coreutils.</p>
-<p>Find anything broken afterwards:</p>
-<div id="7-cutover-setup-a-retarget-the-symlinks-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">find /path/to/your/plex/library -xtype l          # GNU find: dangling symlinks
-# portable equivalent: find -L /path/to/your/plex/library -type l</code></pre>
-</doc-codeblock></div>
-<p>Zero dangling links and zero <code translate="no" v-pre>UNMAPPED</code> lines means the cutover is done. Plex
-was never involved: same paths, same items, watch state and everything else
-untouched. Decommission nzbdav at leisure (section 10), then re-run the
-pre-flight checks and let Plex scan — expect re-analysis on the files whose
-advertised size grew (section 2), and nothing else.</p>
-<p>Point the *arrs&#x27; root folders nowhere new — they manage the same library
-paths — but their download client entry (nzbdav&#x27;s SAB mock) now has no
-replacement; remove it and feed zurg&#x27;s <code translate="no" v-pre>nzbs/</code> directly from your indexer.</p>
-<hr>
-<h2 id="8-cutover-setup-b-plex-pointed-at-content">8. Cutover, Setup B: Plex pointed at <code translate="no" v-pre>/content</code></h2>
-<p>Harder, because zurg cannot reproduce <code translate="no" v-pre>/content/&lt;category&gt;/…</code> natively: its
-roots are <code translate="no" v-pre>/dav/&lt;directory&gt;/</code>, directories come from filters rather than SAB
-categories, and the mount prefix differs. Three options, best first:</p>
-<p><strong>(a) A symlink shim tree — recommended.</strong> Build a static tree of real
-directories and symlinks that reproduces the old paths exactly, each link
-pointing into <code translate="no" v-pre>/mnt/zurg/__all__/</code>. Exact per-file fidelity, independent of
-zurg&#x27;s filter placement:</p>
-<div id="8-cutover-setup-b-plex-pointed-at-content-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">SHIM=~/migration/shim
-for cat in movies tv; do
-  rclone lsf &quot;nzbdav:/content/$cat&quot; --dirs-only | sed 's:/$::' |
-  while IFS= read -r rel; do
-    mkdir -p &quot;$SHIM/content/$cat&quot;
-    ln -s &quot;/mnt/zurg/__all__/$rel&quot; &quot;$SHIM/content/$cat/$rel&quot;
-  done
-done</code></pre>
-</doc-codeblock></div>
-<p>Then swap it into place under the exact path Plex knows. This is the one
-moment with a window, so it is gated: run the section 3.2 pre-flight
-(both zeros), unmount nzbdav&#x27;s rclone, and immediately move the shim in:</p>
-<div id="8-cutover-setup-b-plex-pointed-at-content-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">fusermount -u /mnt/nzbdav            # umount /mnt/nzbdav on macOS
-mv ~/migration/shim/content /mnt/nzbdav/content
-ls /mnt/nzbdav/content/movies | head  # must list releases before you re-enable anything</code></pre>
-</doc-codeblock></div>
-<p>With automatic scans off and no scan in flight, Plex never observes the
-seconds between unmount and <code translate="no" v-pre>mv</code>. Directory-level symlinks are fine: Plex
-follows them and keeps recording the paths it scanned.</p>
-<p><strong>(b) Mount zurg so the prefix matches.</strong> Name zurg&#x27;s directories <code translate="no" v-pre>movies</code>
-and <code translate="no" v-pre>tv</code> and set <code translate="no" v-pre>mount_path: /mnt/nzbdav/content</code>. Paths line up with no
-shim — but only if zurg&#x27;s filters file every release into the same category
-nzbdav&#x27;s SAB categories did. A release that lands in the other directory is a
-moved file: new item, deleted item, and the curation attached to it —
-collections, artwork, <code translate="no" v-pre>added_at</code> — gone, even though watch state re-attaches
-by GUID. Use this only if your
-category split is cleanly <code translate="no" v-pre>has_episodes</code>-shaped and you verify placement
-release-by-release against <code translate="no" v-pre>folders-old.txt</code> first. Extra roots (<code translate="no" v-pre>__all__</code>,
-<code translate="no" v-pre>__nzb__</code>) appear beside <code translate="no" v-pre>movies</code> and <code translate="no" v-pre>tv</code>; harmless as long as no Plex
-library points at the mount root — which it never should.</p>
-<p><strong>(c) Rewrite <code translate="no" v-pre>media_parts.file</code> in the Plex database.</strong> Unsupported but
-honest about what it is: with Plex stopped and the backup taken,</p>
-<p><strong>Use Plex&#x27;s own SQLite binary, not the system one.</strong> The schema carries
-custom extensions: a stock <code translate="no" v-pre>sqlite3</code> walking this database fails with
-<code translate="no" v-pre>no such module: spellfix1</code> (observed, on a Plex 10,126-item library). Reading
-a copy is fine; writing with the wrong binary is not.</p>
-<div id="8-cutover-setup-b-plex-pointed-at-content-code-3" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">PSQL=&quot;/usr/lib/plexmediaserver/Plex SQLite&quot;      # Linux package path
-DB=&quot;…/Plug-in Support/Databases/com.plexapp.plugins.library.db&quot;
-
-sudo systemctl stop plexmediaserver
-&quot;$PSQL&quot; &quot;$DB&quot; \
-  &quot;UPDATE media_parts SET file = replace(file, '/mnt/nzbdav/content/movies/', '/mnt/zurg/movies/');&quot;
-&quot;$PSQL&quot; &quot;$DB&quot; \
-  &quot;UPDATE section_locations SET root_path = '/mnt/zurg/movies' WHERE root_path = '/mnt/nzbdav/content/movies';&quot;
-sudo systemctl start plexmediaserver</code></pre>
-</doc-codeblock></div>
-<p><code translate="no" v-pre>section_locations.root_path</code> is what each library is pointed at — one row per
-library root — and it must move with the parts, or Plex will treat every
-rewritten path as outside the library. Verify before starting Plex:</p>
-<div id="8-cutover-setup-b-plex-pointed-at-content-code-4" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">&quot;$PSQL&quot; &quot;$DB&quot; &quot;SELECT id, library_section_id, root_path FROM section_locations;&quot;
-&quot;$PSQL&quot; &quot;$DB&quot; &quot;SELECT count(*) FROM media_parts WHERE file LIKE '/mnt/nzbdav/%';&quot;   # want 0</code></pre>
-</doc-codeblock></div>
-<p>Last resort, for path shapes the other two cannot bridge — a prefix rewrite
-cannot express per-release placement differences, so (a) beats it whenever the
-old tree still exists to be mirrored.</p>
-<hr>
-<h2 id="9-verification">9. Verification</h2>
-<div id="9-verification-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash"># 1. No dangling links (Setup A library, or the shim):
-find /path/to/links -xtype l | wc -l                       # want 0
-
-# 2. Plex sees no deletions: after one manual scan of one library,
-#    check the library's trash is empty in the UI, then the rest.
-
-# 3. Watch state spot-check: pick five long-watched items, confirm
-#    watched flags, play counts and ratings survive the scan.
-
-# 4. Playback: play one file per release shape — plain movie, episode,
-#    RAR-packed release, obfuscated release — through Plex, with a seek.</code></pre>
-</doc-codeblock></div>
-<p>Give zurg&#x27;s Plex integration your server URL and token afterwards
-(<code translate="no" v-pre>plex_server_url</code> / <code translate="no" v-pre>plex_token</code> in <code translate="no" v-pre>config.yml</code>, or the dashboard auth
-flow) so library changes trigger targeted scans; see <code translate="no" v-pre>docs/plex.md</code>.</p>
-<hr>
-<h2 id="10-rollback">10. Rollback</h2>
-<p>Nothing in this runbook consumes anything. The NZBs were copied, not moved;
-nzbdav&#x27;s queue, blobs and database are untouched; zurg does not modify the
-<code translate="no" v-pre>.nzb</code> files it reads.</p>
-<ul>
-<li>
-<p><strong>Setup A:</strong> re-run the section 7 loop with the map inverted
-(<code translate="no" v-pre>awk -F'\t' '{print $2&quot;\t&quot;$1}' idmap.tsv</code>), or restore the library
-directory from a pre-migration copy if you took one. nzbdav&#x27;s mount must be
-back up first.</p>
-</li>
-<li>
-<p><strong>Setup B (a/b):</strong> remove the shim / unmount zurg, remount nzbdav&#x27;s rclone
-at the original path. Pre-flight first, as ever.</p>
-</li>
-<li>
-<p><strong>Setup B (c), or anything that went wrong at the item level:</strong> stop Plex,
-restore the Databases directory from the section 3.3 backup, start Plex.</p>
-</li>
-</ul>
-<p>The one irreversible act in the whole migration would be letting a scan run
-against a missing mount with auto-empty-trash on. That is why section 3 comes
-first.</p>
+<p>Anything still listed is a release zurg does not have — a missing NZB. Fix it
+or accept the loss. Then stop nzbdav. No scan, no trash, no re-add.</p>
+<h3 id="setup-b--point-plex-at-zurg">Setup B — point Plex at zurg</h3>
+<p>Confirm <code translate="no" v-pre>autoEmptyTrash</code> is <code translate="no" v-pre>0</code>, then add zurg&#x27;s mount as an additional
+location on each library (Edit → Add folder), scan, and remove the old nzbdav
+location once the new items are in. Your library is re-added: watch state
+returns via GUID, collections and artwork choices do not.</p>
+<p>Leave the old items in the trash until you have spot-checked a few, then empty
+it.</p>
+<h2 id="afterwards">Afterwards</h2>
+<p>Keep nzbdav&#x27;s config directory until you have streamed from a representative
+sample. It is the only other copy of your NZBs.</p>
+<p>On acquisition: zurg has an opt-in
+<a href="../../guides/sonarr-radarr/">SABnzbd-compatible endpoint</a> Sonarr and Radarr
+can grab through, and it imports by rename inside <code translate="no" v-pre>__magic__</code> rather than by
+copying. The caveat before you switch a library over is that zurg does not yet
+check whether a post&#x27;s articles are still on the news server, so a dead
+release reports Completed and fails on the first read instead of being
+blocklisted and re-grabbed.</p>
 
                 
                 <!-- Required only on API pages -->

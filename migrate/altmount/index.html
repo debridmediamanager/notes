@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841543323324">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841574753926">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
 
     <!-- Primary Meta Tags -->
-    <title>Migrating from AltMount v0.3.2 to zurg</title>
-    <meta name="title" content="Migrating from AltMount v0.3.2 to zurg">
-    <meta name="description" content="For a library Plex reads off the AltMount mount (or off an *arr symlink library that AltMount feeds). The requirement this guide is built around: Plex must">
+    <title>Migrating from AltMount to zurg</title>
+    <meta name="title" content="Migrating from AltMount to zurg">
+    <meta name="description" content="Read the shared page first — the trash guard and the Setup A/B question live there.">
 
     <!-- Canonical -->
     <link rel="canonical" href="https://notes.debridmediamanager.com/migrate/altmount/">
@@ -21,28 +21,28 @@
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://notes.debridmediamanager.com/migrate/altmount/">
-    <meta property="og:title" content="Migrating from AltMount v0.3.2 to zurg">
-    <meta property="og:description" content="For a library Plex reads off the AltMount mount (or off an *arr symlink library that AltMount feeds). The requirement this guide is built around: Plex must">
+    <meta property="og:title" content="Migrating from AltMount to zurg">
+    <meta property="og:description" content="Read the shared page first — the trash guard and the Setup A/B question live there.">
     <meta property="og:site_name" content="dmm+zurg">
     <meta property="og:locale" content="en_US">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://notes.debridmediamanager.com/migrate/altmount/">
-    <meta name="twitter:title" content="Migrating from AltMount v0.3.2 to zurg">
-    <meta name="twitter:description" content="For a library Plex reads off the AltMount mount (or off an *arr symlink library that AltMount feeds). The requirement this guide is built around: Plex must">
+    <meta name="twitter:title" content="Migrating from AltMount to zurg">
+    <meta name="twitter:description" content="Read the shared page first — the trash guard and the Setup A/B question live there.">
 
     <!-- Alternate Markdown -->
     <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/migrate/altmount.md">
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841543323324" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841574753926" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841543323324" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841574753926" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841543323324" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841543323324" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841574753926" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841574753926" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -178,205 +178,140 @@
                 <doc-page-actions></doc-page-actions>
 
                 <!-- Page content  -->
-<h1 id="migrating-from-altmount-v032-to-zurg">Migrating from AltMount v0.3.2 to zurg</h1>
-<p>For a library Plex reads off the AltMount mount (or off an *arr symlink library
-that AltMount feeds). The requirement this guide is built around: <strong>Plex must
-not rescan from scratch, must not delete a single library item, and must keep
-watch state, play counts, collections, ratings and artwork choices.</strong></p>
-<p>Path and size behaviour below was measured live on 2026-08-19 (AltMount
-v0.3.2, zurg HEAD <code translate="no" v-pre>23869fa4</code>) by importing the same NZBs into both and reading
-the trees back off FUSE mounts. Anything not measured is marked unverified.</p>
-<hr>
-<h2 id="1-why-this-is-delicate-at-all">1. Why this is delicate at all</h2>
-<p>Plex binds every library item to a file path: <code translate="no" v-pre>media_parts.file</code> in
-<code translate="no" v-pre>com.plexapp.plugins.library.db</code>. When a scan finds that path gone, the item
-goes to the trash; with &quot;Empty trash automatically after every scan&quot; enabled it
-is deleted permanently, at once. A file that reappears under a <em>different</em>
-path is a <strong>new</strong> item — Plex does not track moves.</p>
-<p>What survives a delete-and-re-add and what does not, read out of a live
-10,126-item library rather than assumed. Watch state is keyed by account and
-metadata GUID, not by the item id or the path:</p>
-<div id="1-why-this-is-delicate-at-all-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-sql"><code v-pre class="language-sql">metadata_item_settings(id, account_id, guid, rating, view_offset,
-                       view_count, last_viewed_at, …)
--- ('plex://movie/5d776d1796b655001fe3f5d3', 1, NULL, 1707662516)</code></pre>
-</doc-codeblock></div>
-<p>So watched flags, play counts, resume offsets and user ratings come back once
-the re-added item matches to the same GUID; <code translate="no" v-pre>metadata_item_views</code> is GUID-keyed
-too. Collections membership, playlists (they store metadata item ids), selected
-posters and artwork, manual match fixes and <code translate="no" v-pre>added_at</code> all live on the
-<code translate="no" v-pre>metadata_items</code> row and are <strong>lost</strong> with the item — which also means a mass
-re-add dumps your entire library into Recently Added.</p>
-<p>Deletion itself is soft: <code translate="no" v-pre>deleted_at</code> on <code translate="no" v-pre>media_parts</code> and <code translate="no" v-pre>media_items</code>. That
-is what the trash holds and what &quot;Empty trash automatically after every scan&quot;
-makes permanent.</p>
-<p>So the spine of this migration is: <strong>make zurg serve byte-identical paths at
-the same mountpoint</strong>, and handle the minority of files where that is
-impossible by editing <code translate="no" v-pre>media_parts.file</code> — never by letting Plex see a
-delete-and-re-add.</p>
-<p>The second mechanism is size: a part whose advertised size changes looks
-<em>modified</em> and can trigger re-analysis — not deletion. zurg has a known defect
-here, see section 9.</p>
-<hr>
-<h2 id="2-what-matches-and-what-cannot">2. What matches and what cannot</h2>
-<p>Both servers name the release folder after the NZB filename, so <strong>folder names
-are fully under your control</strong> — recover the NZBs under the names AltMount
-used (section 5) and every folder matches. The inner filenames are where the
-two disagree, and no <code translate="no" v-pre>.nzb</code> rename can fix those: the <code translate="no" v-pre>.nzb</code> name only
-controls the folder.</p>
-<p>Measured, release by release:</p>
-<retype-table copy-text="| Release shape | AltMount serves | zurg serves | Match? |
-|---|---|---|---|
-| Single video, inner name == NZB name (`The.Wild.Robot…-TiGER`) | `&lt;R&gt;/&lt;R&gt;.mkv` | `&lt;R&gt;/&lt;R&gt;.mkv` + `thumbnail.jpg` | **Yes** |
-| Season pack, multiple videos (`Servant.S01…`) | real filenames | real filenames | **Yes** |
-| Obfuscated post, real name recoverable (`Obfuscated`) | `Obfuscated/Toy.Story.5.…-KyoGo.mkv` | same, + `thumbnail.jpg` | **Yes** |
-| Single video, inner name != NZB name (`TLOU-S02E01-FLUX`) | `&lt;R&gt;/&lt;R&gt;.mkv` — **renamed to the NZB name** | `&lt;R&gt;/The.Last.of.Us.S02E01.…-FLUX.mkv` — poster's name kept | **No** |
-| Same, anime (`OnePiece-1174`) | `OnePiece-1174/OnePiece-1174.mkv` | `OnePiece-1174/[SubsPlease] One Piece - 1174 (1080p) [B4711849].mkv` | **No** |
-| RAR release (`FatherBrown`) | `FatherBrown/FatherBrown.mp4` — flattened and renamed | `FatherBrown/Father.Brown.2013.S02E05.HDTV.x264-TLA/father.brown….mp4` + `Sample/` + the poster's `.url` junk | **No** |
-| Broken RAR chain (`DoomsdayRar`) | empty folder | empty folder | No item on either side |">
+<h1 id="migrating-from-altmount-to-zurg">Migrating from AltMount to zurg</h1>
+<p>Read <a href="../">the shared page</a> first — the trash guard and the Setup A/B
+question live there.</p>
+<p>AltMount serves the cleanest tree of the five: exactly one file per release,
+no thumbnails, no adverts, no sample, no leftovers. The migration is
+correspondingly small, because there is very little there to disagree about.</p>
+<p>Measured against zurg on the same five releases:</p>
+<retype-table copy-text="| | |
+|---|---|
+| zurg gains | the sample clip, the `.nfo`, `thumbnail.jpg`, the `.url` adverts, the archive's inner directory, **and every release AltMount refused** |
+| zurg loses | nothing |
+| renamed | **archive (RAR) releases only** |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
 <tr>
-<th>Release shape</th>
-<th>AltMount serves</th>
-<th>zurg serves</th>
-<th>Match?</th>
+<th> </th>
+<th> </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Single video, inner name == NZB name (<code translate="no" v-pre>The.Wild.Robot…-TiGER</code>)</td>
-<td><code translate="no" v-pre>&lt;R&gt;/&lt;R&gt;.mkv</code></td>
-<td><code translate="no" v-pre>&lt;R&gt;/&lt;R&gt;.mkv</code> + <code translate="no" v-pre>thumbnail.jpg</code></td>
-<td><strong>Yes</strong></td>
+<td>zurg gains</td>
+<td>the sample clip, the <code translate="no" v-pre>.nfo</code>, <code translate="no" v-pre>thumbnail.jpg</code>, the <code translate="no" v-pre>.url</code> adverts, the archive&#x27;s inner directory, <strong>and every release AltMount refused</strong></td>
 </tr>
 <tr>
-<td>Season pack, multiple videos (<code translate="no" v-pre>Servant.S01…</code>)</td>
-<td>real filenames</td>
-<td>real filenames</td>
-<td><strong>Yes</strong></td>
+<td>zurg loses</td>
+<td>nothing</td>
 </tr>
 <tr>
-<td>Obfuscated post, real name recoverable (<code translate="no" v-pre>Obfuscated</code>)</td>
-<td><code translate="no" v-pre>Obfuscated/Toy.Story.5.…-KyoGo.mkv</code></td>
-<td>same, + <code translate="no" v-pre>thumbnail.jpg</code></td>
-<td><strong>Yes</strong></td>
-</tr>
-<tr>
-<td>Single video, inner name != NZB name (<code translate="no" v-pre>TLOU-S02E01-FLUX</code>)</td>
-<td><code translate="no" v-pre>&lt;R&gt;/&lt;R&gt;.mkv</code> — <strong>renamed to the NZB name</strong></td>
-<td><code translate="no" v-pre>&lt;R&gt;/The.Last.of.Us.S02E01.…-FLUX.mkv</code> — poster&#x27;s name kept</td>
-<td><strong>No</strong></td>
-</tr>
-<tr>
-<td>Same, anime (<code translate="no" v-pre>OnePiece-1174</code>)</td>
-<td><code translate="no" v-pre>OnePiece-1174/OnePiece-1174.mkv</code></td>
-<td><code translate="no" v-pre>OnePiece-1174/[SubsPlease] One Piece - 1174 (1080p) [B4711849].mkv</code></td>
-<td><strong>No</strong></td>
-</tr>
-<tr>
-<td>RAR release (<code translate="no" v-pre>FatherBrown</code>)</td>
-<td><code translate="no" v-pre>FatherBrown/FatherBrown.mp4</code> — flattened and renamed</td>
-<td><code translate="no" v-pre>FatherBrown/Father.Brown.2013.S02E05.HDTV.x264-TLA/father.brown….mp4</code> + <code translate="no" v-pre>Sample/</code> + the poster&#x27;s <code translate="no" v-pre>.url</code> junk</td>
-<td><strong>No</strong></td>
-</tr>
-<tr>
-<td>Broken RAR chain (<code translate="no" v-pre>DoomsdayRar</code>)</td>
-<td>empty folder</td>
-<td>empty folder</td>
-<td>No item on either side</td>
+<td>renamed</td>
+<td><strong>archive (RAR) releases only</strong></td>
 </tr>
 </tbody>
 </table>
 </div>
 </retype-table>
-<p>AltMount&#x27;s rename rule: when a release resolves to exactly one content file,
-the video is renamed to the NZB name. zurg keeps the poster&#x27;s inner filenames
-and reproduces a RAR archive&#x27;s inner directory (including <code translate="no" v-pre>Sample/</code>). So the
-mismatch classes are <strong>single-file releases whose inner filename differs from
-the NZB name</strong>, and <strong>all RAR releases</strong> (different basename <em>and</em> an extra
-directory level). Everything else matches byte-for-byte.</p>
-<p>Two smaller hazards: two <em>different</em> releases sharing a name get a
-<code translate="no" v-pre> {shorthash}</code> suffix in zurg (<code translate="no" v-pre>internal/torrent/key.go</code>) — keep recovered NZB
-filenames unique. And zurg strips a trailing <code translate="no" v-pre>.mkv</code>/<code translate="no" v-pre>.mp4</code> from the folder
-name by default — if any AltMount folder literally ends in one, set
-<code translate="no" v-pre>retain_folder_name_extension: true</code>.</p>
-<hr>
-<h2 id="3-first-find-out-which-case-you-are-in">3. First, find out which case you are in</h2>
-<p>Read the truth out of Plex, not out of memory. Copy the DB and query the copy
-— stock sqlite3 is fine read-only on a copy, never for writing:</p>
-<div id="3-first-find-out-which-case-you-are-in-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">PLEXDIR=&quot;/var/lib/plexmediaserver/Library/Application Support/Plex Media Server&quot;
-cp &quot;$PLEXDIR/Plug-in Support/Databases/com.plexapp.plugins.library.db&quot; /tmp/plex-copy.db
-sqlite3 /tmp/plex-copy.db &quot;SELECT file FROM media_parts WHERE file != '';&quot; &gt; plex-paths.txt
-wc -l plex-paths.txt
-head plex-paths.txt</code></pre>
+<div class="flex mb-6">
+    <div class="shrink-0 w-1.5 rounded-tl-lg rounded-bl-lg bg-callout-info"></div>
+    <div class="flex w-full py-4 border border-l-0 rounded-tr-lg rounded-br-lg doc-callout bg-callout-base-bg border-callout-base-border" role="alert">
+        <div class="flex items-center ml-4 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" class="block text-callout-info" width="22" height="22" viewBox="0 0 24 24" role="presentation">
+                <g fill="currentColor"><g>
+                    <path d="M12 1C5.93 1 1 5.93 1 12s4.93 11 11 11 11-4.93 11-11S18.07 1 12 1zm0 20c-4.96 0-9-4.04-9-9s4.04-9 9-9 9 4.04 9 9-4.04 9-9 9z"></path>
+                    <path d="M12 11c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1s1-.45 1-1v-4c0-.55-.45-1-1-1zM12.01 7c-.56 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"></path>
+                    <path fill="none" d="M0 0h24v24H0z"></path>
+                </g></g>
+            </svg>
+        </div>
+        <div class="pr-5 ml-3 w-full">
+            <h5>Naming behaviour changed</h5>
+<p>An earlier version of this guide, measured against v0.3.2 on 2026-08-19,
+described AltMount as renaming <em>every</em> single-file release to the NZB
+filename. That does not reproduce on build <code translate="no" v-pre>0614008b</code>: across three
+independent runs on 2026-09-01, plain single-file releases kept the poster&#x27;s
+filename, including a release whose inner name differs from the NZB name and
+a fully obfuscated one. Only the release that had to be unpacked from a RAR
+came out as <code translate="no" v-pre>&lt;NZB name&gt;.mp4</code>.</p>
+<p>If you are on an older AltMount, check your own tree before trusting the
+rescan list below — the one command in &quot;What needs rescanning&quot; tells you in
+seconds.</p>
+        </div>
+    </div>
+</div>
+<h2 id="the-bigger-issue-is-what-altmount-never-imported">The bigger issue is what AltMount never imported</h2>
+<p>AltMount refused a 10-episode season pack in every one of four runs, with the
+articles verified present on the news server beforehand:</p>
+<div id="the-bigger-issue-is-what-altmount-never-imported-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">fast-fail segment check inconclusive: 93 segment(s) remained
+unverified after 3 attempts: context deadline exceeded</code></pre>
 </doc-codeblock></div>
-<p>Paths <strong>into the AltMount mount</strong> (import_strategy <code translate="no" v-pre>NONE</code>): the full runbook
-below applies. Paths into an *<strong>arr library of symlinks</strong> (<code translate="no" v-pre>SYMLINK</code>): the
-easy case — read the pre-flight (section 4), then go to section 10. Paths to
-<code translate="no" v-pre>.strm</code> files (<code translate="no" v-pre>STRM</code>): unusual with Plex; section 10 as well.</p>
-<div id="3-first-find-out-which-case-you-are-in-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">OLDMOUNT=/mnt/altmount        # the prefix your plex-paths.txt shows</code></pre>
+<p>The check is not deterministic — the same release came back with 196, then 93,
+then 76 unverified segments — and it is size-biased, because
+<code translate="no" v-pre>import.segment_sample_percentage: 1</code> samples 1% of segments, so a bigger
+release needs more STATs to land inside the deadline. Repeated against a
+<em>faster</em> news host it refused more, not less: the season pack and a 41 GB
+remux both. Latency is not the explanation.</p>
+<p>The practical consequence for you: <strong>the releases AltMount quietly never
+published are the ones zurg will add.</strong> They have no Plex item today, so
+nothing is preserved and nothing is at risk — they simply appear. If your
+library is smaller than your NZB collection, this is why.</p>
+<p>If you want to keep AltMount importing while you migrate, lowering
+<code translate="no" v-pre>segment_sample_percentage</code> is the knob to try; it was not exercised here.</p>
+<h2 id="what-needs-rescanning">What needs rescanning</h2>
+<p><strong>Setup A (symlink library): only the archive releases.</strong> Everything else
+resolves under zurg unchanged.</p>
+<p><strong>Setup B (Plex on the mount): everything.</strong> AltMount serves a flat
+<code translate="no" v-pre>&lt;mount&gt;/&lt;release&gt;/&lt;file&gt;</code> and zurg serves <code translate="no" v-pre>&lt;mount&gt;/&lt;directory&gt;/&lt;release&gt;/…</code>,
+so the prefix moves even where the filename does not.</p>
+<p>Find your archive releases — the ones that will be re-added either way — by
+looking for a mount folder whose single file is named after the folder:</p>
+<div id="what-needs-rescanning-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">AM=/mnt/altmount
+for d in &quot;$AM&quot;/*/; do
+  r=$(basename &quot;$d&quot;)
+  for f in &quot;$d&quot;*; do
+    b=$(basename &quot;$f&quot;)
+    [ &quot;${b%.*}&quot; = &quot;$r&quot; ] &amp;&amp; echo &quot;RENAMED BY ALTMOUNT: $f&quot;
+  done
+done</code></pre>
 </doc-codeblock></div>
-<hr>
-<h2 id="4-pre-flight--do-all-of-this-before-touching-anything">4. Pre-flight — do all of this before touching anything</h2>
-<div id="4-pre-flight--do-all-of-this-before-touching-anything-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">TOKEN=YOUR_PLEX_TOKEN   # later: $(grep ^plex_token: ~/zurg/config.yml | awk '{print $2}')</code></pre>
-</doc-codeblock></div>
-<ol>
+<p>Every line is a release whose file zurg will serve under the poster&#x27;s name
+inside the archive&#x27;s own directory, one level deeper. Those items are re-added
+on the first scan; the old ones drop into the trash.</p>
+<h2 id="what-new-content-shows-up">What new content shows up</h2>
+<p>Everything in the shared page&#x27;s list applies to you, because AltMount publishes
+none of it:</p>
+<ul>
 <li>
-<p><strong>Turn off automatic trash emptying.</strong> This is the single setting that
-turns a mount blip into permanent deletions. Per library: Edit → Advanced →
-uncheck &quot;Empty trash automatically after every scan&quot;. Verify:</p>
-<div class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s &quot;http://localhost:32400/:/prefs?X-Plex-Token=$TOKEN&quot; | tr '&gt;' '\n' | grep autoEmptyTrash</code></pre>
-</doc-codeblock></div>
-<p>It must read <code translate="no" v-pre>0</code>: at <code translate="no" v-pre>0</code>, missing files sit in the trash and come back when
-the mount does. This exact failure at <code translate="no" v-pre>1</code> once removed a 30,065-item
-library.</p>
+<p><strong>Sample clips</strong> inside <code translate="no" v-pre>Sample/</code> — the one worth configuring for. Set
+<a href="../../reference/config/"><code translate="no" v-pre>only_show_the_biggest_file: true</code></a> if you do not
+want a 9 MB sample turning up as a second version.</p>
 </li>
 <li>
-<p><strong>Disable periodic scans for the duration</strong> (Settings → Library → &quot;Scan my
-library periodically&quot; off), so nothing scans while you cut over.</p>
+<p><code translate="no" v-pre>thumbnail.jpg</code>, the <code translate="no" v-pre>.nfo</code>, the poster&#x27;s <code translate="no" v-pre>.url</code> adverts. All inert.</p>
 </li>
 <li>
-<p><strong>Back up the Plex database</strong> — copy the whole <code translate="no" v-pre>Plug-in Support/Databases/</code>
-directory with Plex stopped, or Settings → Manage → Troubleshooting →
-&quot;Download database&quot;. Keep <code translate="no" v-pre>plex-paths.txt</code> from section 3 too.</p>
+<p><strong>Whole releases AltMount refused</strong>, as new library items.</p>
 </li>
 <li>
-<p><strong>Learn the restart guard.</strong> Before stopping Plex, restarting zurg or
-remounting anything, check that nothing is playing <em>and nothing is
-scanning</em> — sessions alone prove only that nobody is watching:</p>
-<div class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s &quot;http://localhost:32400/status/sessions?X-Plex-Token=$TOKEN&quot; | grep -o 'size=&quot;[0-9]*&quot;'          # want size=&quot;0&quot;
-curl -s &quot;http://localhost:32400/library/sections?X-Plex-Token=$TOKEN&quot; | grep -o 'refreshing=&quot;1&quot;' | wc -l # want 0</code></pre>
-</doc-codeblock></div>
-<p>Use <code translate="no" v-pre>grep -o … | wc -l</code>, not <code translate="no" v-pre>grep -c</code>: grep exits 1 when it finds nothing,
-which is the <em>good</em> case here, and that aborts a <code translate="no" v-pre>&amp;&amp;</code> chain or a <code translate="no" v-pre>set -e</code>
-script right before the operation it was guarding.</p>
+<p>Empty folders where an archive chain is broken.</p>
 </li>
-<li>
-<p><strong>Do not decommission AltMount.</strong> Its config directory (<code translate="no" v-pre>altmount.db</code>,
-<code translate="no" v-pre>.nzbs/</code>, <code translate="no" v-pre>metadata/</code>) is your rollback; leave it untouched until
-section 12&#x27;s verification passes.</p>
-</li>
-</ol>
-<hr>
-<h2 id="5-get-the-nzbs-back">5. Get the NZBs back</h2>
-<p>AltMount took ownership of every NZB you fed it: the original file was moved
-away and a compressed copy kept at
+</ul>
+<h2 id="get-your-nzbs-out">Get your NZBs out</h2>
+<p>AltMount took ownership of every NZB you fed it: the original was moved away
+and a compressed copy kept at
 <code translate="no" v-pre>&lt;config&gt;/.nzbs/&lt;category&gt;/&lt;queueID&gt;-&lt;name&gt;.nzbz</code>. The mapping from mount
-folder to <code translate="no" v-pre>.nzbz</code> lives in the <code translate="no" v-pre>.meta</code> files under
+folder to <code translate="no" v-pre>.nzbz</code> is in the <code translate="no" v-pre>.meta</code> files under
 <code translate="no" v-pre>&lt;config&gt;/metadata/complete/&lt;Release&gt;/</code> — binary, magic <code translate="no" v-pre>AM3</code>, with the
 <code translate="no" v-pre>.nzbz</code> path in there as a plain string.</p>
-<p>zurg needs one <code translate="no" v-pre>.nzb</code> per release, named after the release, flat in <code translate="no" v-pre>nzbs/</code>
-(subdirectories are skipped — flatten, do not keep AltMount&#x27;s categories).
-The <code translate="no" v-pre>metadata/complete/&lt;Release&gt;</code> directory name <em>is</em> the mount folder name,
-which is exactly the name the file should get:</p>
-<div id="5-get-the-nzbs-back-code-1" class="codeblock-wrapper"><doc-codeblock>
+<p>zurg wants one <code translate="no" v-pre>.nzb</code> per release, named after the release, flat in <code translate="no" v-pre>nzbs/</code>
+(subdirectories are skipped). The <code translate="no" v-pre>metadata/complete/&lt;Release&gt;</code> directory name
+<em>is</em> the mount folder name, which is exactly the name the file should get:</p>
+<div id="get-your-nzbs-out-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">AM=/path/to/altmount/config          # holds altmount.db, .nzbs/, metadata/
 OUT=./recovered-nzbs
 mkdir -p &quot;$OUT&quot;
@@ -388,7 +323,7 @@ for dir in &quot;$AM&quot;/metadata/complete/*/; do
   case &quot;$nzbz&quot; in &quot;&quot;) echo &quot;NO NZBZ REF: $release&quot; &gt;&amp;2; continue ;;
                   /*) src=$nzbz ;; *) src=&quot;$AM/$nzbz&quot; ;; esac
   [ -f &quot;$src&quot; ] || { echo &quot;NZBZ MISSING: $release&quot; &gt;&amp;2; continue; }
-  if [ -e &quot;$OUT/$release.nzb&quot; ]; then echo &quot;NAME COLLISION: $release&quot; &gt;&amp;2; continue; fi
+  [ -e &quot;$OUT/$release.nzb&quot; ] &amp;&amp; { echo &quot;NAME COLLISION: $release&quot; &gt;&amp;2; continue; }
   if zcat &quot;$src&quot; &gt; &quot;$OUT/$release.nzb&quot; 2&gt;/dev/null &amp;&amp; grep -q '&lt;nzb' &quot;$OUT/$release.nzb&quot;; then
     echo &quot;OK: $release&quot;
   else
@@ -398,247 +333,92 @@ for dir in &quot;$AM&quot;/metadata/complete/*/; do
 done</code></pre>
 </doc-codeblock></div>
 <p>On the measured v0.3.2 install the <code translate="no" v-pre>.nzbz</code> decompressed as a gzip copy of the
-imported NZB. The v0.3.2 source also carries a zstd-protobuf store path for
-these files, so the <code translate="no" v-pre>zcat</code>-plus-<code translate="no" v-pre>grep</code> check above is not paranoia: any file
-it rejects goes through the API instead.</p>
-<p><strong>The API route</strong> (verified in v0.3.2 source): <code translate="no" v-pre>GET /api/files/export-nzb?path=&lt;virtual path&gt;</code> regenerates a faithful NZB from the
-store — all original files, segments, posters, dates, with the archive
-password meta re-attached. There is also a batch form, <code translate="no" v-pre>POST /api/files/export-batch</code>, which returns a ZIP. Both need a JWT, not the API
-key:</p>
-<div id="5-get-the-nzbs-back-code-2" class="codeblock-wrapper"><doc-codeblock>
+imported NZB, but the source also carries a zstd-protobuf path for these
+files, so the <code translate="no" v-pre>zcat</code>-plus-<code translate="no" v-pre>grep</code> check is not paranoia. Anything it rejects
+goes through the API instead — <code translate="no" v-pre>GET /api/files/export-nzb?path=&lt;virtual path&gt;</code>
+regenerates a faithful NZB from the store, and <code translate="no" v-pre>POST /api/files/export-batch</code>
+returns a ZIP. Both need a JWT rather than the API key:</p>
+<div id="get-your-nzbs-out-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -c jar -s -X POST http://localhost:8585/api/auth/login \
   -H 'Content-Type: application/json' -d '{&quot;username&quot;:&quot;admin&quot;,&quot;password&quot;:&quot;…&quot;}'
 curl -b jar -s -G http://localhost:8585/api/files/export-nzb \
   --data-urlencode &quot;path=/complete/&lt;Release&gt;/&lt;file&gt;&quot; -o &quot;$OUT/&lt;Release&gt;.nzb&quot;</code></pre>
 </doc-codeblock></div>
-<p>The exact virtual-path format was not verified — take paths from the AltMount
-UI&#x27;s file view or <code translate="no" v-pre>/api/files/info</code> rather than guessing. The download is
-named <code translate="no" v-pre>&lt;queueID&gt;-&lt;name&gt;.nzb</code>; rename it to <code translate="no" v-pre>&lt;Release&gt;.nzb</code> so zurg names the
-folder correctly.</p>
-<p>Sanity check: recovered <code translate="no" v-pre>.nzb</code> count should equal the <code translate="no" v-pre>metadata/complete/*/</code>
-directory count, minus failed imports (a broken-RAR release AltMount refused
-has no Plex item to preserve anyway).</p>
-<hr>
-<h2 id="6-build-the-zurg-side-in-parallel">6. Build the zurg side in parallel</h2>
-<p>AltMount keeps serving Plex throughout this section. Run zurg on the same
-host (port 9999, no clash with AltMount&#x27;s 8585) or anywhere else.</p>
-<p><code translate="no" v-pre>config.yml</code>, minimum:</p>
-<div id="6-build-the-zurg-side-in-parallel-code-1" class="codeblock-wrapper"><doc-codeblock>
+<p>Take virtual paths from the AltMount UI&#x27;s file view or <code translate="no" v-pre>/api/files/info</code>
+rather than guessing the format. The download is named
+<code translate="no" v-pre>&lt;queueID&gt;-&lt;name&gt;.nzb</code>; rename it to <code translate="no" v-pre>&lt;Release&gt;.nzb</code> so zurg names the folder
+correctly.</p>
+<p>Sanity check: the recovered <code translate="no" v-pre>.nzb</code> count should equal the
+<code translate="no" v-pre>metadata/complete/*/</code> directory count.</p>
+<h2 id="build-zurg-alongside">Build zurg alongside</h2>
+<p>AltMount keeps serving throughout. Run zurg on port 9999 — no clash with
+AltMount&#x27;s 8585.</p>
+<div id="build-zurg-alongside-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">zurg: v1
 providers:
   - type: nzb
     nntp:
-      host: news.example.com      # copy host/port/TLS/credentials from
-      port: 563                   # AltMount's provider config
+      host: news.example.com   # copy host/port/TLS/credentials from AltMount
+      port: 563
       tls: true
-      username: …
-      password: …
-      connections: 30             # your plan's real allowance
-rclone_enabled: false             # manual mount below; enable later if you prefer
-mount_path: &quot;/mnt/altmount&quot;       # the OLD mountpoint — scan paths are built from this
-serve_strm_files: false</code></pre>
+      username: USER
+      password: PASS
+      connections: 30          # your plan's real allowance
+rclone_enabled: true
+rclone_binary: bin/rclone
+mount_path: &quot;/mnt/zurg&quot;</code></pre>
 </doc-codeblock></div>
-<p>Drop the recovered NZBs in and let zurg scan (the watch directory is rescanned
-every ~15 s; obfuscated-name recovery is bounded at 90 s per NZB):</p>
-<div id="6-build-the-zurg-side-in-parallel-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p nzbs &amp;&amp; cp -n recovered-nzbs/*.nzb nzbs/
-./zurg</code></pre>
+<div id="build-zurg-alongside-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p nzbs &amp;&amp; cp recovered-nzbs/*.nzb nzbs/
+./zurg
+ls /mnt/zurg/__all__/ | wc -l</code></pre>
 </doc-codeblock></div>
-<p><strong>The layout problem:</strong> zurg&#x27;s mount root is not flat — it has <code translate="no" v-pre>__all__</code>,
-<code translate="no" v-pre>__nzb__</code>, your <code translate="no" v-pre>directories:</code> entries and <code translate="no" v-pre>version.txt</code>. AltMount served
-<code translate="no" v-pre>&lt;mount&gt;/&lt;Release&gt;/&lt;file&gt;</code> with nothing in between. To reproduce that, mount a
-<em>subdirectory</em> of the zurg WebDAV with your own rclone rather than letting
-zurg mount the root:</p>
-<div id="6-build-the-zurg-side-in-parallel-code-3" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-ini"><code v-pre class="language-ini"># rclone.conf
-[zurg]
-type = webdav
-url = http://localhost:9999/dav/
-vendor = other
-pacer_min_sleep = 0</code></pre>
-</doc-codeblock></div>
-<div id="6-build-the-zurg-side-in-parallel-code-4" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p /mnt/zurg-staging
-rclone mount zurg:__all__ /mnt/zurg-staging --config rclone.conf --dir-cache-time 10s &amp;
-# __nzb__ works too and pins reads to the Usenet account; __all__ is right
-# when the NZB backend is your only provider.</code></pre>
-</doc-codeblock></div>
-<p>Trade-off, flagged now: zurg builds its Plex partial-scan paths as
-<code translate="no" v-pre>mount_path/&lt;directory&gt;/&lt;release&gt;</code>, so with a subdirectory mounted at the old
-mountpoint those computed paths do not exist and zurg&#x27;s path-targeted
-refreshes will not line up with your library. Harmless in itself, but partial
-scans then need either an <code translate="no" v-pre>on_library_update</code> script that rewrites the path
-(adapt <code translate="no" v-pre>plex_update.sh</code> — unverified, watch the first scan fire) or Plex&#x27;s own
-periodic scan re-enabled after migration, with the trash guard from section 4
-permanently off.</p>
-<hr>
-<h2 id="7-diff-the-staged-tree-against-what-plex-holds">7. Diff the staged tree against what Plex holds</h2>
-<p>This is the safety net that catches everything — rename quirks, sanitised
-characters, failed imports — not just the two known mismatch classes:</p>
-<div id="7-diff-the-staged-tree-against-what-plex-holds-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">: &gt; mismatched.txt
-while IFS= read -r p; do
-  rel=${p#&quot;$OLDMOUNT&quot;/}
-  [ -e &quot;/mnt/zurg-staging/$rel&quot; ] || echo &quot;$p&quot; &gt;&gt; mismatched.txt
-done &lt; plex-paths.txt
-wc -l mismatched.txt</code></pre>
-</doc-codeblock></div>
-<p>Every line in <code translate="no" v-pre>mismatched.txt</code> is a Plex item whose path zurg will not serve.
-Expect the single-file-renamed and RAR classes from section 2. For each, find
-what zurg calls it — usually the only video in the same release folder:</p>
-<div id="7-diff-the-staged-tree-against-what-plex-holds-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">while IFS= read -r p; do
-  rel=${p#&quot;$OLDMOUNT&quot;/}; release=${rel%%/*}
-  echo &quot;== $p&quot;
-  find &quot;/mnt/zurg-staging/$release&quot; -type f \
-       \( -iname '*.mkv' -o -iname '*.mp4' -o -iname '*.avi' \) \
-       ! -ipath '*sample*'
-done &lt; mismatched.txt &gt; mapping-review.txt</code></pre>
-</doc-codeblock></div>
-<p>Review <code translate="no" v-pre>mapping-review.txt</code> by hand; a release folder with several candidate
-videos needs a human decision, not a script.</p>
-<hr>
-<h2 id="8-cutover--plex-must-never-see-an-empty-mount">8. Cutover — Plex must never see an empty mount</h2>
-<p>The one unrecoverable mistake is letting a scan run against a missing or
-empty mountpoint; the clean way out is to not let Plex run during the swap:</p>
-<div id="8-cutover--plex-must-never-see-an-empty-mount-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash"># 1. Guard: nothing playing, nothing scanning (section 4, both must be zero).
-# 2. Stop Plex entirely.
-sudo systemctl stop plexmediaserver
+<p>Expect <strong>more</strong> folders here than AltMount had. That is the refused-import
+class arriving.</p>
+<h2 id="cut-over">Cut over</h2>
+<h3 id="setup-a--repoint-the-symlinks">Setup A — repoint the symlinks</h3>
+<p>Both mounts are up, so nothing is ever broken. Repoint what resolves, then
+handle the archive releases:</p>
+<div id="setup-a--repoint-the-symlinks-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">find /path/to/arr-library -type l | while IFS= read -r link; do
+  old=$(readlink &quot;$link&quot;)
+  case &quot;$old&quot; in
+    /mnt/altmount/*)
+      rel=${old#/mnt/altmount/}
+      new=&quot;/mnt/zurg/__all__/$rel&quot;
+      [ -e &quot;$new&quot; ] &amp;&amp; ln -sfn &quot;$new&quot; &quot;$link&quot;
+      ;;
+  esac
+done
 
-# 3. Swap the mountpoint.
-fusermount -u /mnt/zurg-staging            # or umount on macOS
-sudo systemctl stop altmount               # however AltMount is run
-fusermount -u &quot;$OLDMOUNT&quot; 2&gt;/dev/null || umount &quot;$OLDMOUNT&quot;
-rclone mount zurg:__all__ &quot;$OLDMOUNT&quot; --config rclone.conf --dir-cache-time 10s &amp;
-
-# 4. Prove the paths are there BEFORE Plex comes back — zero misses required,
-#    apart from the mismatched.txt lines you are about to fix:
-missing=0
-while IFS= read -r p; do
-  [ -e &quot;$p&quot; ] || grep -qxF &quot;$p&quot; mismatched.txt || { echo &quot;MISSING: $p&quot;; missing=1; }
-done &lt; plex-paths.txt
-echo &quot;missing=$missing&quot;</code></pre>
+# What is left dangling is the archive class — one video per release folder:
+find /path/to/arr-library -xtype l | while IFS= read -r link; do
+  release=$(readlink &quot;$link&quot; | sed 's|^/mnt/altmount/\([^/]*\)/.*|\1|')
+  find &quot;/mnt/zurg/__all__/$release&quot; -type f \
+       \( -iname '*.mkv' -o -iname '*.mp4' -o -iname '*.avi' \) ! -ipath '*sample*' \
+       -printf '%s\t%p\n' | sort -rn | head -1 | cut -f2- | \
+    xargs -r -I{} ln -sfn {} &quot;$link&quot;
+done
+find /path/to/arr-library -xtype l          # want no output</code></pre>
 </doc-codeblock></div>
-<h3 id="fix-the-mismatched-minority-in-the-plex-db-plex-still-stopped">Fix the mismatched minority in the Plex DB (Plex still stopped)</h3>
-<p>This is the primary route for the files zurg cannot serve under the old name:
-repoint <code translate="no" v-pre>media_parts.file</code> so Plex never perceives a change of identity. Use
-the <code translate="no" v-pre>Plex SQLite</code> binary Plex ships — the DB uses custom collations that stock
-sqlite3 does not have:</p>
-<div id="fix-the-mismatched-minority-in-the-plex-db-plex-still-stopped-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">PLEXDB=&quot;$PLEXDIR/Plug-in Support/Databases/com.plexapp.plugins.library.db&quot;
-cp &quot;$PLEXDB&quot; &quot;$PLEXDB.bak-migration&quot;
-PSQL=&quot;/usr/lib/plexmediaserver/Plex SQLite&quot;     # path varies by platform
-
-# From your reviewed mapping, one UPDATE per file:
-&quot;$PSQL&quot; &quot;$PLEXDB&quot; &quot;UPDATE media_parts
-  SET file='/mnt/altmount/TLOU-S02E01-FLUX/The.Last.of.Us.S02E01.Future.Days.1080p.AMZN.WEB-DL.DDP5.1.Atmos.H.264-FLUX.mkv'
-  WHERE file='/mnt/altmount/TLOU-S02E01-FLUX/TLOU-S02E01-FLUX.mkv';&quot;</code></pre>
-</doc-codeblock></div>
-<p><strong>Do not touch <code translate="no" v-pre>section_locations</code>.</strong> Each library root is one row there
-(<code translate="no" v-pre>root_path</code>, e.g. <code translate="no" v-pre>/mnt/altmount</code>), and this migration deliberately reuses the
-old mountpoint, so the roots are already correct. Only the leaf paths inside
-them move. A guide that relocates the mount has to update <code translate="no" v-pre>root_path</code> too;
-this one must not.</p>
-<p>Three notes. Leave <code translate="no" v-pre>media_parts.size</code> alone — the next scan sees a changed
-size and re-analyzes that item, the same effect the size defect (section 9)
-has anyway; nothing is deleted. For RAR releases the new path adds a directory
-level; the part path existing on disk is what prevents deletion, and Plex
-reconciles its directory rows on the next scan — expected behaviour, but not
-bench-exercised, so watch these items on the first scan. And if you would
-rather not touch the DB at all: accepting the delete-and-re-add costs those
-items&#x27; collections membership and artwork choices (watch state should return
-via GUID re-match) — a fair trade for a handful of items, not for hundreds.
-Count <code translate="no" v-pre>mismatched.txt</code> and decide.</p>
-<div id="fix-the-mismatched-minority-in-the-plex-db-plex-still-stopped-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo systemctl start plexmediaserver</code></pre>
-</doc-codeblock></div>
-<hr>
-<h2 id="9-what-to-expect-from-the-size-defect">9. What to expect from the size defect</h2>
-<p>zurg only reports a file&#x27;s exact size when the poster wrote a byte count into
-the subject line; otherwise it advertises the yEnc-<em>encoded</em> length, 2.5–3.2 %
-over the truth, and reading the file does not correct it (measured at HEAD
-<code translate="no" v-pre>23869fa4</code>: HEAD still over-reports after reads; a read past the true EOF is
-correctly refused with 416). AltMount reported exact sizes.</p>
-<p>Every affected file therefore looks <strong>modified</strong> on the first scan after
-cutover: expect re-analysis, and BIF regeneration if video preview thumbnails
-are on. Items are not deleted and watch state is untouched. The over-reported
-size is deterministic from the NZB, so the churn is one-time, not recurring.
-Turn <strong>off</strong> &quot;Generate video preview thumbnails&quot; per library before that scan:
-on Usenet every thumbnail pass is a full read of the release through your
-connection allowance, and the size churn would trigger many at once. No
-configuration fixes the defect today; it is an open zurg bug.</p>
-<hr>
-<h2 id="10-the-easy-case-plex-reads-an-arr-symlink-library">10. The easy case: Plex reads an *arr symlink library</h2>
-<p>If section 3 showed *arr-library paths, Plex&#x27;s paths never change — they are
-the symlink paths, and only the <strong>targets</strong> point at the mount. Run the
-pre-flight, NZB recovery and parallel build unchanged (sections 4–6), cut over
-as in section 8 with zurg mounted at the old <code translate="no" v-pre>mount_path</code> so most targets keep
-resolving (stopping Plex is only needed if the *arr library itself lives on a
-mount), then find and repoint the broken links — the mismatch classes again:</p>
-<div id="10-the-easy-case-plex-reads-an-arr-symlink-library-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">find /path/to/arr-library -xtype l &gt; broken-links.txt
-# for each: ln -sfn &quot;&lt;zurg path from mapping-review.txt&gt;&quot; &quot;&lt;link&gt;&quot;</code></pre>
-</doc-codeblock></div>
-<p>No Plex DB edit at all: <code translate="no" v-pre>ln -sfn</code> changes the target, and the path Plex
-stores is the link, which never moved. The size-change re-analysis from
-section 9 still applies.</p>
-<p><code translate="no" v-pre>STRM</code> strategy: Plex does not play <code translate="no" v-pre>.strm</code> natively, so this pairing is rare.
-If you have it, the <code translate="no" v-pre>.strm</code> paths are what Plex knows; regenerate files at
-those same paths pointing at zurg (<code translate="no" v-pre>serve_strm_files</code> / <code translate="no" v-pre>save_strm_files</code>) and
-verify one plays before cutover. Not exercised on the bench; a sketch, not a
-recipe.</p>
-<hr>
-<h2 id="11-content-that-will-read-differently-afterwards">11. Content that will read differently afterwards</h2>
-<ul>
-<li>
-<p><strong>RAR releases</strong> gain their inner directory, a <code translate="no" v-pre>Sample/</code> folder and the
-poster&#x27;s <code translate="no" v-pre>.url</code> files. Whether Plex picks a <code translate="no" v-pre>-sample</code> file up as an extra
-version was not verified — check those items after the first scan.</p>
-</li>
-<li>
-<p><strong><code translate="no" v-pre>thumbnail.jpg</code></strong> sidecars reappear (AltMount dropped them). Not a
-filename Plex uses for posters; expect it to be inert.</p>
-</li>
-<li>
-<p><strong>Broken RAR chains</strong> (<code translate="no" v-pre>DoomsdayRar</code> class): empty folder on both sides, no
-Plex item on either, nothing to preserve.</p>
-</li>
-<li>
-<p><strong>par2/sfv</strong> are hidden by zurg; <code translate="no" v-pre>.nfo</code> is kept.</p>
-</li>
-</ul>
-<hr>
-<h2 id="12-verification-then-decommission">12. Verification, then decommission</h2>
-<p>After the first full scan completes:</p>
-<div id="12-verification-then-decommission-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash"># Nothing landed in the trash:
-cp &quot;$PLEXDB&quot; /tmp/plex-after.db     # Plex may be running; this copy is read-only use
-sqlite3 /tmp/plex-after.db &quot;SELECT count(*) FROM metadata_items WHERE deleted_at IS NOT NULL;&quot;</code></pre>
-</doc-codeblock></div>
-<p>Want <code translate="no" v-pre>0</code>. Then spot-check, minimum: one matched movie plays; one DB-edited
-item plays and still shows its watch state and collections; one size-defect
-episode plays after its re-analysis; posters you had chosen are still the
-chosen ones.</p>
-<p>Only when all of that holds: stop AltMount for good and archive its config
-directory (the <code translate="no" v-pre>.nzbz</code> store is the only other copy of your NZBs). Re-enable
-Plex&#x27;s periodic scan if you rely on it, with &quot;Empty trash automatically&quot; left
-permanently off — that guard is load-bearing for any Plex-on-network-mount
-setup, zurg included.</p>
-<h2 id="13-rollback">13. Rollback</h2>
-<p>Everything up to the DB edit is non-destructive: AltMount&#x27;s config directory
-was only read, the NZBs were copied out, and Plex was stopped, not modified.</p>
-<div id="13-rollback-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo systemctl stop plexmediaserver
-fusermount -u &quot;$OLDMOUNT&quot;
-sudo systemctl start altmount            # and its mount, however you ran it
-# only if you edited media_parts:
-cp &quot;$PLEXDB.bak-migration&quot; &quot;$PLEXDB&quot;
-sudo systemctl start plexmediaserver</code></pre>
-</doc-codeblock></div>
-<p>If a scan <em>did</em> run against a bad mount before you caught it: with auto-empty
-off the items are in the trash, not gone — restore the mount, rescan, and they
-come back. Do not empty the trash until every section shows its full count.</p>
+<p>The largest-non-sample heuristic is safe here because everything that already
+resolved was skipped, so only single-payload releases reach it. Plex sees no
+change: the link paths never moved.</p>
+<h3 id="setup-b--point-plex-at-zurg">Setup B — point Plex at zurg</h3>
+<p>Confirm <code translate="no" v-pre>autoEmptyTrash</code> is <code translate="no" v-pre>0</code>, add zurg&#x27;s mount as an additional location on
+each library, scan, then remove the old AltMount location. Everything is
+re-added — watch state returns via GUID, collections and artwork choices do
+not.</p>
+<p>Leave the old items in the trash until you have spot-checked a few.</p>
+<h2 id="afterwards">Afterwards</h2>
+<p>Do not decommission AltMount until you have streamed from a representative
+sample. Its config directory holds the <code translate="no" v-pre>.nzbz</code> store, which is the only other
+copy of your NZBs.</p>
+<p>On acquisition: zurg has an opt-in
+<a href="../../guides/sonarr-radarr/">SABnzbd-compatible endpoint</a> Sonarr and Radarr
+can grab through. It does not yet check whether a post&#x27;s articles are still on
+the news server, so a dead release reports Completed and fails on the first
+read rather than being blocklisted and re-grabbed.</p>
 
                 
                 <!-- Required only on API pages -->

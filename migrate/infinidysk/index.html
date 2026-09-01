@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841543323324">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841574753926">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
 
     <!-- Primary Meta Tags -->
-    <title>Migrating from InfiniDysk v1.1.2 to zurg</title>
-    <meta name="title" content="Migrating from InfiniDysk v1.1.2 to zurg">
-    <meta name="description" content="This guide moves a Plex library from an InfiniDysk-backed mount to zurg's nzb backend without Plex rescanning from scratch, without deleting library items, and without losing watch state, play counts, collections, ratings or artwork choices.">
+    <title>Migrating from InfiniDysk to zurg</title>
+    <meta name="title" content="Migrating from InfiniDysk to zurg">
+    <meta name="description" content="Read the shared page first — the trash guard and the Setup A/B question live there.">
 
     <!-- Canonical -->
     <link rel="canonical" href="https://notes.debridmediamanager.com/migrate/infinidysk/">
@@ -21,28 +21,28 @@
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://notes.debridmediamanager.com/migrate/infinidysk/">
-    <meta property="og:title" content="Migrating from InfiniDysk v1.1.2 to zurg">
-    <meta property="og:description" content="This guide moves a Plex library from an InfiniDysk-backed mount to zurg's nzb backend without Plex rescanning from scratch, without deleting library items, and without losing watch state, play counts, collections, ratings or artwork choices.">
+    <meta property="og:title" content="Migrating from InfiniDysk to zurg">
+    <meta property="og:description" content="Read the shared page first — the trash guard and the Setup A/B question live there.">
     <meta property="og:site_name" content="dmm+zurg">
     <meta property="og:locale" content="en_US">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://notes.debridmediamanager.com/migrate/infinidysk/">
-    <meta name="twitter:title" content="Migrating from InfiniDysk v1.1.2 to zurg">
-    <meta name="twitter:description" content="This guide moves a Plex library from an InfiniDysk-backed mount to zurg's nzb backend without Plex rescanning from scratch, without deleting library items, and without losing watch state, play counts, collections, ratings or artwork choices.">
+    <meta name="twitter:title" content="Migrating from InfiniDysk to zurg">
+    <meta name="twitter:description" content="Read the shared page first — the trash guard and the Setup A/B question live there.">
 
     <!-- Alternate Markdown -->
     <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/migrate/infinidysk.md">
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841543323324" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841574753926" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841543323324" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841574753926" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841543323324" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841543323324" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841574753926" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841574753926" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -178,205 +178,201 @@
                 <doc-page-actions></doc-page-actions>
 
                 <!-- Page content  -->
-<h1 id="migrating-from-infinidysk-v112-to-zurg">Migrating from InfiniDysk v1.1.2 to zurg</h1>
-<p>This guide moves a Plex library from an InfiniDysk-backed mount to zurg&#x27;s <code translate="no" v-pre>nzb</code>
-backend without Plex rescanning from scratch, without deleting library items,
-and without losing watch state, play counts, collections, ratings or artwork
-choices. Directory layouts and behaviour cited here were measured live on
-2026-08-19 against InfiniDysk v1.1.2 and zurg HEAD <code translate="no" v-pre>23869fa4</code>; anything not
-measured is marked unverified.</p>
-<p>Why the migration is worth it, beyond preference: v1.1.2 rejected an entire
-10-episode season pack (<code translate="no" v-pre>Servant.S01.2160p.ATVP.WEB-DL</code>) on both import
-attempts with <code translate="no" v-pre>430 No such article</code>, for a message-id a direct NNTP <code translate="no" v-pre>STAT</code> on
-the same account answers <code translate="no" v-pre>223</code> for — the article is present, the server holds
-it. zurg imported the identical NZB and served all ten episodes. Expect the
-zurg side to end up with releases InfiniDysk never had.</p>
-<p>One difference in acquisition, stated up front: zurg&#x27;s own ingestion is a
-watch directory — <code translate="no" v-pre>.nzb</code> files dropped into <code translate="no" v-pre>nzbs/</code>, rescanned every 15 s. It
-does have a <a href="../../guides/sonarr-radarr/">SABnzbd-compatible endpoint</a> that Sonarr and Radarr
-can grab through, opt-in and Usenet-only, but it is not yet as strong a
-download client as it looks: zurg does not check whether a post&#x27;s articles are
-still on the news server, so a dead release reports Completed and fails on the
-first read instead of being blocklisted and re-grabbed. This guide migrates
-the existing library; decide the acquisition path separately.</p>
-<hr>
-<h2 id="0-the-mechanism-so-the-steps-make-sense">0. The mechanism, so the steps make sense</h2>
-<p>Plex binds every library item to a file path — <code translate="no" v-pre>media_parts.file</code> in
-<code translate="no" v-pre>com.plexapp.plugins.library.db</code>. A changed path is not a rename to Plex: it
-is a new item plus a deleted one.</p>
-<p>What that costs you is narrower than the folklore says, and worth knowing
-exactly, because it decides how much effort the rest of this guide is worth.
-Measured against a live 10,126-item library:</p>
+<h1 id="migrating-from-infinidysk-to-zurg">Migrating from InfiniDysk to zurg</h1>
+<p>Read <a href="../">the shared page</a> first — the trash guard and the Setup A/B
+question live there.</p>
+<p>Measured against zurg on the same five releases:</p>
+<retype-table copy-text="| | |
+|---|---|
+| zurg gains | the sample clip, the `.nfo` |
+| zurg loses | 5 hash-named par2 volumes inside obfuscated releases |
+| renamed | **every release except multi-file ones** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>zurg gains</td>
+<td>the sample clip, the <code translate="no" v-pre>.nfo</code></td>
+</tr>
+<tr>
+<td>zurg loses</td>
+<td>5 hash-named par2 volumes inside obfuscated releases</td>
+</tr>
+<tr>
+<td>renamed</td>
+<td><strong>every release except multi-file ones</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<div class="flex mb-6">
+    <div class="shrink-0 w-1.5 rounded-tl-lg rounded-bl-lg bg-callout-warning"></div>
+    <div class="flex w-full py-4 border border-l-0 rounded-tr-lg rounded-br-lg doc-callout bg-callout-base-bg border-callout-base-border" role="alert">
+        <div class="flex items-center ml-4 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" class="block text-callout-warning" width="22" height="22" viewBox="0 0 24 24" role="presentation">
+                <g fill="currentColor"><g>
+                    <path d="M22.48 15.59L14.01 1.45A2.968 2.968 0 0012.16.09c-.78-.19-1.58-.07-2.27.35-.41.25-.76.6-1.01 1.01v.01L.4 15.6c-.83 1.43-.33 3.27 1.1 4.1.45.26.95.4 1.48.4h16.95c.8-.01 1.55-.33 2.11-.9.56-.57.87-1.33.86-2.13a3.04 3.04 0 00-.42-1.48zm-1.87 2.21c-.19.19-.44.3-.69.3H2.99c-.17 0-.34-.05-.49-.13a.992.992 0 01-.37-1.35L10.6 2.48c.08-.14.2-.25.34-.33a.992.992 0 011.37.33l8.46 14.13c.09.15.13.32.13.49 0 .26-.1.51-.29.7z"></path>
+                    <path d="M11.45 12.1c.55 0 1-.45 1-1v-4c0-.55-.45-1-1-1s-1 .45-1 1v4c0 .56.45 1 1 1zM11.46 14.1c-.56 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"></path>
+                </g></g>
+            </svg>
+        </div>
+        <div class="pr-5 ml-3 w-full">
+            <h5>The renaming is the whole migration</h5>
+<p>InfiniDysk renames a release&#x27;s media file to the NZB filename whenever the
+release resolves to a single payload. On the 2026-09-01 corpus four of five
+came out as <code translate="no" v-pre>ToyStory5.mkv</code>, <code translate="no" v-pre>Obfuscated.mkv</code>, <code translate="no" v-pre>FatherBrown.mp4</code> and
+<code translate="no" v-pre>MandaloriaREMUX.mkv</code>; only the ten-episode season pack kept its episode
+names. The rename applies at any depth — <code translate="no" v-pre>FatherBrown.mp4</code> sits <em>inside</em> the
+preserved <code translate="no" v-pre>Father.Brown.2013.S02E05.HDTV.x264-TLA/</code> directory.</p>
+<p>zurg keeps the poster&#x27;s filename. So the release name — the string Plex and
+the *arrs parse for quality, group and episode — comes back, and every
+single-payload release changes path. An earlier version of this guide did not
+mention this behaviour at all.</p>
+        </div>
+    </div>
+</div>
+<p>One more difference, small but confusing if you meet it cold: InfiniDysk
+creates the archive&#x27;s <code translate="no" v-pre>Sample/</code> directory and leaves it <strong>empty</strong>. zurg puts
+the sample clip inside it.</p>
+<div class="flex mb-6">
+    <div class="shrink-0 w-1.5 rounded-tl-lg rounded-bl-lg bg-callout-info"></div>
+    <div class="flex w-full py-4 border border-l-0 rounded-tr-lg rounded-br-lg doc-callout bg-callout-base-bg border-callout-base-border" role="alert">
+        <div class="flex items-center ml-4 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" class="block text-callout-info" width="22" height="22" viewBox="0 0 24 24" role="presentation">
+                <g fill="currentColor"><g>
+                    <path d="M12 1C5.93 1 1 5.93 1 12s4.93 11 11 11 11-4.93 11-11S18.07 1 12 1zm0 20c-4.96 0-9-4.04-9-9s4.04-9 9-9 9 4.04 9 9-4.04 9-9 9z"></path>
+                    <path d="M12 11c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1s1-.45 1-1v-4c0-.55-.45-1-1-1zM12.01 7c-.56 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"></path>
+                    <path fill="none" d="M0 0h24v24H0z"></path>
+                </g></g>
+            </svg>
+        </div>
+        <div class="pr-5 ml-3 w-full">
+            <h5>An older claim, now retracted</h5>
+<p>A previous version of this guide opened by citing v1.1.2 rejecting an entire
+10-episode season pack with <code translate="no" v-pre>430 No such article</code> for an article the news
+server demonstrably held. That does not reproduce on build <code translate="no" v-pre>cd9b1205</code>, which
+imported all five releases including the season pack. Do not migrate expecting
+InfiniDysk to be dropping content — on a current build it is not.</p>
+        </div>
+    </div>
+</div>
+<div class="flex mb-6">
+    <div class="shrink-0 w-1.5 rounded-tl-lg rounded-bl-lg bg-callout-warning"></div>
+    <div class="flex w-full py-4 border border-l-0 rounded-tr-lg rounded-br-lg doc-callout bg-callout-base-bg border-callout-base-border" role="alert">
+        <div class="flex items-center ml-4 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" class="block text-callout-warning" width="22" height="22" viewBox="0 0 24 24" role="presentation">
+                <g fill="currentColor"><g>
+                    <path d="M22.48 15.59L14.01 1.45A2.968 2.968 0 0012.16.09c-.78-.19-1.58-.07-2.27.35-.41.25-.76.6-1.01 1.01v.01L.4 15.6c-.83 1.43-.33 3.27 1.1 4.1.45.26.95.4 1.48.4h16.95c.8-.01 1.55-.33 2.11-.9.56-.57.87-1.33.86-2.13a3.04 3.04 0 00-.42-1.48zm-1.87 2.21c-.19.19-.44.3-.69.3H2.99c-.17 0-.34-.05-.49-.13a.992.992 0 01-.37-1.35L10.6 2.48c.08-.14.2-.25.34-.33a.992.992 0 011.37.33l8.46 14.13c.09.15.13.32.13.49 0 .26-.1.51-.29.7z"></path>
+                    <path d="M11.45 12.1c.55 0 1-.45 1-1v-4c0-.55-.45-1-1-1s-1 .45-1 1v4c0 .56.45 1 1 1zM11.46 14.1c-.56 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"></path>
+                </g></g>
+            </svg>
+        </div>
+        <div class="pr-5 ml-3 w-full">
+            <h5>Never walk the WebDAV root</h5>
+<p>The <code translate="no" v-pre>.ids</code> object store materialises all 16 hex children at every one of its
+five levels regardless of contents — 16^5 ≈ 1,048,576 directories. Point
+<code translate="no" v-pre>find</code>, <code translate="no" v-pre>du</code>, <code translate="no" v-pre>rclone</code> and any scanner at <code translate="no" v-pre>/content</code>, <code translate="no" v-pre>/nzbs</code> or
+<code translate="no" v-pre>/completed-symlinks</code> explicitly, never at <code translate="no" v-pre>/</code>.</p>
+        </div>
+    </div>
+</div>
+<h2 id="what-needs-rescanning">What needs rescanning</h2>
+<p><strong>Setup A (symlink library): every single-payload release.</strong> In practice that
+is most of a movie library and any single-episode grab. Multi-file releases
+and season packs resolve unchanged.</p>
+<p><strong>Setup B (Plex on the mount): everything.</strong> InfiniDysk serves
+<code translate="no" v-pre>&lt;mount&gt;/content/&lt;category&gt;/&lt;release&gt;/&lt;file&gt;</code> and zurg serves
+<code translate="no" v-pre>&lt;mount&gt;/&lt;directory&gt;/&lt;release&gt;/…</code>, so the prefix moves even where the filename
+does not.</p>
+<p>Find the set that will be re-added — a release folder whose media file is
+named after the folder:</p>
+<div id="what-needs-rescanning-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">ID=/mnt/remote/nzbdav                      # your InfiniDysk mount
+find &quot;$ID/content&quot; -mindepth 3 -maxdepth 4 -type f | while IFS= read -r f; do
+  rel=$(basename &quot;$(dirname &quot;$f&quot;)&quot;)
+  b=$(basename &quot;$f&quot;)
+  [ &quot;${b%.*}&quot; = &quot;$rel&quot; ] &amp;&amp; echo &quot;RENAMED BY INFINIDYSK: $f&quot;
+done</code></pre>
+</doc-codeblock></div>
+<p>Because the rename can happen one level inside an archive directory, the
+<code translate="no" v-pre>-maxdepth 4</code> matters. Every line is an item Plex re-adds on the first scan;
+the old one drops into the trash.</p>
+<h2 id="what-new-content-shows-up">What new content shows up</h2>
 <ul>
 <li>
-<p><strong>Watch state survives.</strong> <code translate="no" v-pre>metadata_item_settings</code> is keyed by <code translate="no" v-pre>account_id</code>
-plus a <code translate="no" v-pre>plex://</code> GUID, not by the item id or the path:</p>
-<div class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-sql"><code v-pre class="language-sql">metadata_item_settings(id, account_id, guid, rating, view_offset,
-                       view_count, last_viewed_at, …)
--- ('plex://movie/5d776d1796b655001fe3f5d3', 1, NULL, 1707662516)</code></pre>
-</doc-codeblock></div>
-<p>Watched flags, play counts, resume offsets and user ratings re-attach when
-the new file matches to the same GUID. <code translate="no" v-pre>metadata_item_views</code> is GUID-keyed
-too.</p>
+<p><strong>Sample clips</strong> — the <code translate="no" v-pre>Sample/</code> directories you already have stop being
+empty. This is the one worth configuring for: set
+<a href="../../reference/config/"><code translate="no" v-pre>only_show_the_biggest_file: true</code></a> if you do not
+want a 9 MB sample turning up as a second version of the episode.</p>
 </li>
 <li>
-<p><strong>Curation does not.</strong> Collections, playlists (they store metadata item
-ids), manual poster/art/match choices and <code translate="no" v-pre>added_at</code> all hang off the
-<code translate="no" v-pre>metadata_items</code> row and die with it. A path change floods Recently Added
-with your entire library.</p>
+<p>The <code translate="no" v-pre>.nfo</code> inside RAR releases. Inert under Plex&#x27;s default agents.</p>
 </li>
 <li>
-<p><strong>And the trash is the real hazard.</strong> Deletion is soft — <code translate="no" v-pre>deleted_at</code> on
-<code translate="no" v-pre>media_parts</code> and <code translate="no" v-pre>media_items</code> — which is exactly what <code translate="no" v-pre>autoEmptyTrash: 0</code>
-preserves. Empty the trash while the mount is missing and the items are gone
-for good.</p>
+<p>Empty folders where an archive chain is broken, where InfiniDysk created
+nothing.</p>
+</li>
+<li>
+<p><strong>par2 and sfv stop being visible</strong>, hash-named volumes inside obfuscated
+releases included. Those carry no media extension, so Plex will not have
+itemised them — but if any non-Plex tooling of yours walked them, it will
+notice.</p>
 </li>
 </ul>
-<p>So the entire job is still: <strong>the paths Plex already has must keep resolving to
-the same bytes.</strong> Just be clear that what you are protecting is the library&#x27;s
-structure and curation more than its watch history.</p>
-<p>Which is why the first question is where Plex actually points.</p>
-<h3 id="setup-a--symlink-library-the-recommended-infinidysk-setup-and-the-easy-migration">Setup A — symlink library (the recommended InfiniDysk setup, and the easy migration)</h3>
-<p>InfiniDysk&#x27;s documented Plex path is the symlink import strategy: the WebDAV
-tree exposes <code translate="no" v-pre>completed-symlinks/&lt;category&gt;/&lt;release&gt;/&lt;file&gt;.rclonelink</code>,
-rclone mounted with <code translate="no" v-pre>--links</code> turns each into a real symlink, and Sonarr/Radarr
-import those symlinks into a media library at paths <em>the arrs chose</em> —
-<code translate="no" v-pre>/media/movies/Movie (2024)/Movie.mkv</code> and the like. Plex scans that library.</p>
-<p>Every such symlink targets the content-addressed store, never the human tree:</p>
-<div id="setup-a--symlink-library-the-recommended-infinidysk-setup-and-the-easy-migration-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-none"><code v-pre class="language-none">$ readlink &quot;/media/movies/Toy Story 5 (2026)/Toy.Story.5.2026.….mkv&quot;
-/mnt/remote/nzbdav/.ids/1/8/5/e/d/185ed3fe-6b74-44f1-967f-fc0222f195ec</code></pre>
-</doc-codeblock></div>
-<p>If this is your setup, <strong>the Plex-visible paths never change in this
-migration</strong>. Plex stores the symlink&#x27;s own path in <code translate="no" v-pre>media_parts.file</code>; only
-the target moves. The whole job is repointing each symlink from an
-InfiniDysk <code translate="no" v-pre>.ids</code> object to the same file in zurg&#x27;s mount, while both servers
-are serving — so no path is ever broken, and Plex sees nothing at all.</p>
-<h3 id="setup-b--plex-points-straight-at-content">Setup B — Plex points straight at <code translate="no" v-pre>/content</code></h3>
-<p>The minority setup: a Plex library rooted at
-<code translate="no" v-pre>&lt;mount&gt;/content/&lt;category&gt;/&lt;release&gt;/…</code>. Here the paths embed InfiniDysk&#x27;s
-roots and its SAB categories, neither of which zurg reproduces: zurg&#x27;s WebDAV
-root is <code translate="no" v-pre>/dav/&lt;directory&gt;/</code> with directories driven by its own filters, not by
-categories. Section 6 works through the options; the short answer is a symlink
-shim tree that rebuilds the old paths over zurg&#x27;s mount.</p>
-<p>Decide which you are before proceeding:</p>
-<div id="setup-b--plex-points-straight-at-content-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">IDMOUNT=/mnt/remote/nzbdav        # your InfiniDysk rclone mount
-# If this prints symlink targets under .ids, you are Setup A:
-find /path/to/your/plex/library -type l -lname '*/.ids/*' | head -3 | xargs -r -n1 readlink</code></pre>
-</doc-codeblock></div>
-<hr>
-<h2 id="1-pre-flight-make-plex-unable-to-hurt-itself">1. Pre-flight: make Plex unable to hurt itself</h2>
-<p>Do all of this before touching anything else.</p>
-<p><strong>1. <code translate="no" v-pre>autoEmptyTrash</code> must be 0.</strong> If the mount blips during a scan, Plex
-concludes every file was deleted. At <code translate="no" v-pre>autoEmptyTrash=1</code> they are removed
-permanently and at once; at <code translate="no" v-pre>0</code> they sit in the trash and come back when the
-mount does. This has cost a 30,065-item library before.</p>
-<div id="1-pre-flight-make-plex-unable-to-hurt-itself-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">TOKEN=&lt;your plex token&gt;
-curl -s &quot;http://localhost:32400/:/prefs?X-Plex-Token=$TOKEN&quot; | tr '&gt;' '\n' | grep autoEmptyTrash
-# set it if needed:
-curl -s -X PUT &quot;http://localhost:32400/:/prefs?autoEmptyTrash=0&amp;X-Plex-Token=$TOKEN&quot;</code></pre>
-</doc-codeblock></div>
-<p><strong>2. Disable automatic scanning for the duration.</strong> Settings → Library:
-uncheck &quot;Scan my library automatically&quot;, &quot;Run a partial scan when changes are
-detected&quot;, and &quot;Update my library periodically&quot;. (The equivalent prefs are
-<code translate="no" v-pre>FSEventLibraryUpdatesEnabled</code>, <code translate="no" v-pre>FSEventLibraryPartialScanEnabled</code>,
-<code translate="no" v-pre>ScheduledLibraryUpdatesEnabled</code>, settable via the same <code translate="no" v-pre>/:/prefs</code> PUT —
-unverified against your Plex version; the UI checkboxes are the sure path.)</p>
-<p><strong>3. Confirm nothing is playing and nothing is scanning</strong> before any step that
-stops a server or a mount — sessions only prove nobody is watching; a scan is
-the thing that does damage:</p>
-<div id="1-pre-flight-make-plex-unable-to-hurt-itself-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s &quot;http://localhost:32400/status/sessions?X-Plex-Token=$TOKEN&quot; | grep -o 'size=&quot;[0-9]*&quot;'          # want size=&quot;0&quot;
-curl -s &quot;http://localhost:32400/library/sections?X-Plex-Token=$TOKEN&quot; | grep -o 'refreshing=&quot;1&quot;' | wc -l # want 0</code></pre>
-</doc-codeblock></div>
-<p>Use <code translate="no" v-pre>grep -o … | wc -l</code>, never <code translate="no" v-pre>grep -c</code>: grep exits 1 when it finds nothing,
-which is the <em>good</em> case here, and that aborts a <code translate="no" v-pre>&amp;&amp;</code> chain or a <code translate="no" v-pre>set -e</code>
-script right before the step it was guarding. If a scan is running, wait it
-out.</p>
-<p><strong>4. Back up the Plex database.</strong></p>
-<div id="1-pre-flight-make-plex-unable-to-hurt-itself-code-3" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo systemctl stop plexmediaserver
-PDB=&quot;/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases&quot;
-cp -a &quot;$PDB/com.plexapp.plugins.library.db&quot;* ~/plex-db-backup-$(date +%F)/
-sudo systemctl start plexmediaserver</code></pre>
-</doc-codeblock></div>
-<p><strong>5. Record per-section item counts</strong> to compare after cutover:</p>
-<div id="1-pre-flight-make-plex-unable-to-hurt-itself-code-4" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s &quot;http://localhost:32400/library/sections?X-Plex-Token=$TOKEN&quot; | grep -o 'title=&quot;[^&quot;]*&quot;'</code></pre>
-</doc-codeblock></div>
-<p>One warning that applies to every command in this guide: <strong>never point a
-recursive walk, an <code translate="no" v-pre>rclone copy</code>, or any scanner at InfiniDysk&#x27;s WebDAV
-root.</strong> The <code translate="no" v-pre>.ids</code> tree materialises all 16 hex children at every one of its
-five levels regardless of contents — 16^5 ≈ 1,048,576 directories. Scope
-everything to <code translate="no" v-pre>/content</code>, <code translate="no" v-pre>/nzbs</code> or <code translate="no" v-pre>/completed-symlinks</code>.</p>
-<hr>
-<h2 id="2-recover-the-nzbs">2. Recover the NZBs</h2>
-<p>zurg&#x27;s library <em>is</em> a directory of <code translate="no" v-pre>.nzb</code> files. You need one per release,
-named after the release folder, because on both servers <strong>the release folder
-is named after the NZB file</strong> — not the poster&#x27;s subject line, not the inner
-filename. That is what makes path-identical trees possible: name the <code translate="no" v-pre>.nzb</code>
-<code translate="no" v-pre>&lt;release&gt;.nzb</code> and zurg produces the folder <code translate="no" v-pre>&lt;release&gt;</code>.</p>
-<p>InfiniDysk&#x27;s WebDAV <code translate="no" v-pre>/nzbs/&lt;category&gt;/</code> mirrors the queue and is readable:</p>
-<div id="2-recover-the-nzbs-code-1" class="codeblock-wrapper"><doc-codeblock>
+<h2 id="get-your-nzbs-out">Get your NZBs out</h2>
+<p>zurg is fed by a directory of <code translate="no" v-pre>.nzb</code> files, one per release, named after the
+release folder. InfiniDysk&#x27;s WebDAV <code translate="no" v-pre>/nzbs/&lt;category&gt;/</code> mirrors the queue and
+is readable:</p>
+<div id="get-your-nzbs-out-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p ~/recovered-nzbs
-rclone copy infinidysk:nzbs ~/recovered-nzbs/ --webdav-url ...   # scoped to /nzbs — never the root
+rclone copy infinidysk:nzbs ~/recovered-nzbs/ --include '*.nzb'   # scoped to /nzbs, never the root
 find ~/recovered-nzbs -name '*.nzb' | wc -l</code></pre>
 </doc-codeblock></div>
-<p>Whether completed (historical) jobs remain listed under <code translate="no" v-pre>/nzbs</code> after they
-finish is <strong>unverified</strong> — it mirrors the queue, and your history may be
-deeper than your queue. For anything missing there, the NZB metadata
-InfiniDysk keeps for remounting lives in <code translate="no" v-pre>{CONFIG_PATH}/blobs/</code> on the
-InfiniDysk host (per its own docs). The blob format and naming are
-<strong>unverified</strong>; check before trusting them:</p>
-<div id="2-recover-the-nzbs-code-2" class="codeblock-wrapper"><doc-codeblock>
+<p>Whether completed jobs stay listed under <code translate="no" v-pre>/nzbs</code> after they finish is
+<strong>unverified</strong> — it mirrors the queue, and your history may be deeper than
+your queue. For anything missing, the NZB metadata InfiniDysk keeps for
+remounting lives in <code translate="no" v-pre>{CONFIG_PATH}/blobs/</code>. The blob format is unverified;
+check before trusting it:</p>
+<div id="get-your-nzbs-out-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">for f in &quot;$CONFIG_PATH&quot;/blobs/*; do head -c 32 &quot;$f&quot; | grep -q '&lt;?xml' &amp;&amp; echo &quot;NZB: $f&quot;; done</code></pre>
 </doc-codeblock></div>
-<p>If blobs are not plain XML on your install, your indexer&#x27;s download history
-is the fallback of last resort.</p>
-<p>Then name every file after its release folder, exactly:</p>
-<div id="2-recover-the-nzbs-code-3" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash"># releases.tsv: &lt;category&gt;\t&lt;release&gt;, from the live content tree
-find &quot;$IDMOUNT/content&quot; -mindepth 2 -maxdepth 2 -type d -printf '%P\n' \
+<p>If blobs are not plain XML on your install, your indexer&#x27;s download history is
+the fallback.</p>
+<p>Then make every file <code translate="no" v-pre>&lt;release&gt;.nzb</code> for the release folders you actually
+have:</p>
+<div id="get-your-nzbs-out-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">find &quot;$ID/content&quot; -mindepth 2 -maxdepth 2 -type d -printf '%P\n' \
   | awk -F/ '{print $1 &quot;\t&quot; $2}' &gt; releases.tsv</code></pre>
 </doc-codeblock></div>
-<p>Each recovered NZB must end up as <code translate="no" v-pre>&lt;release&gt;.nzb</code> for the <code translate="no" v-pre>&lt;release&gt;</code> in that
-list. NZBs pulled from <code translate="no" v-pre>/nzbs/&lt;category&gt;/</code> normally already carry the right
-name, since that name is where the folder name came from. Verify rather than
-assume — a mismatch here is a renamed folder, which is a deleted item.</p>
-<p>Three naming caveats, all verified in zurg&#x27;s code:</p>
+<p>NZBs pulled from <code translate="no" v-pre>/nzbs/&lt;category&gt;/</code> normally already carry the right name,
+since that is where the folder name came from. Two zurg naming rules to check
+against the list:</p>
 <ul>
 <li>
-<p>zurg strips a trailing <code translate="no" v-pre>.mkv</code> or <code translate="no" v-pre>.mp4</code> from the release name
-(<code translate="no" v-pre>GetKey_Original</code>, <code translate="no" v-pre>internal/torrent/key.go:14</code>). If any InfiniDysk release
-folder itself ends in <code translate="no" v-pre>.mkv</code>/<code translate="no" v-pre>.mp4</code>, set
-<code translate="no" v-pre>retain_folder_name_extension: true</code> in zurg&#x27;s config or that folder&#x27;s name
-will change.</p>
+<p>zurg strips a trailing <code translate="no" v-pre>.mkv</code>/<code translate="no" v-pre>.mp4</code> from a folder name. If any release
+folder ends that way, set <code translate="no" v-pre>retain_folder_name_extension: true</code>.</p>
 </li>
 <li>
-<p>Two <em>different</em> releases sharing a name get a <code translate="no" v-pre> {&lt;shorthash&gt;}</code> suffix in
-zurg. Check for duplicates in <code translate="no" v-pre>releases.tsv</code> (<code translate="no" v-pre>cut -f2 releases.tsv | sort | uniq -d</code>) — a duplicate means one of the two folders will not have the name
-you predicted. InfiniDysk had the same problem differently: re-importing the
-same NZB there created <code translate="no" v-pre>&lt;Release&gt; (2)</code>.</p>
-</li>
-<li>
-<p>The NZB&#x27;s <code translate="no" v-pre>&lt;meta type=&quot;name&quot;&gt;</code> is only consulted when the filename looks
-like a hash (<code translate="no" v-pre>releaseName</code>, <code translate="no" v-pre>internal/nzb/provider.go</code>). A real filename
-always wins, so your renamed files control the outcome.</p>
+<p>Two different releases sharing a name get a <code translate="no" v-pre> {shorthash}</code> suffix on one.
+Find them with <code translate="no" v-pre>cut -f2 releases.tsv | sort | uniq -d</code>. InfiniDysk had the
+same problem differently — re-importing an NZB there created <code translate="no" v-pre>&lt;Release&gt; (2)</code>.</p>
 </li>
 </ul>
-<hr>
-<h2 id="3-build-the-zurg-side-in-parallel">3. Build the zurg side in parallel</h2>
-<p>InfiniDysk keeps serving throughout. Nothing here touches Plex.</p>
-<div id="3-build-the-zurg-side-in-parallel-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-yaml"><code v-pre class="language-yaml"># zurg config.yml — minimal for this migration
-zurg: v1
+<h2 id="build-zurg-alongside">Build zurg alongside</h2>
+<p>InfiniDysk keeps serving throughout.</p>
+<div id="build-zurg-alongside-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">zurg: v1
 providers:
   - type: nzb
     nntp:
-      host: news.example.com
+      host: news.example.com   # copy from InfiniDysk's provider settings
       port: 563
       tls: true
       username: USER
@@ -387,247 +383,62 @@ rclone_enabled: true
 rclone_binary: bin/rclone
 mount_path: &quot;/mnt/zurg&quot;</code></pre>
 </doc-codeblock></div>
-<div id="3-build-the-zurg-side-in-parallel-code-2" class="codeblock-wrapper"><doc-codeblock>
+<div id="build-zurg-alongside-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p nzbs &amp;&amp; cp ~/recovered-nzbs/*.nzb nzbs/
 ./zurg
-ls /mnt/zurg/__all__/ | wc -l          # should approach the release count</code></pre>
+ls /mnt/zurg/__all__/ | wc -l          # should approach your release count</code></pre>
 </doc-codeblock></div>
 <p><code translate="no" v-pre>__all__</code> holds every release regardless of directory filters, so it is the
-stable prefix to point symlinks at — no filter tuning can move a release out
-of it. (See <code translate="no" v-pre>docs/usenet.md</code> for the full backend guide.)</p>
-<p>Now diff the trees. This is the step that catches every surprise before Plex
-can see one:</p>
-<div id="3-build-the-zurg-side-in-parallel-code-3" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">find &quot;$IDMOUNT/content&quot; -mindepth 2 -type f -printf '%P\t%s\n' | sed 's|^[^/]*/||' | sort &gt; infinidysk-files.tsv
-find /mnt/zurg/__all__ -type f -printf '%P\t%s\n' | sort &gt; zurg-files.tsv
-diff &lt;(cut -f1 infinidysk-files.tsv) &lt;(cut -f1 zurg-files.tsv)</code></pre>
+stable prefix to point symlinks at.</p>
+<h2 id="cut-over">Cut over</h2>
+<h3 id="setup-a--repoint-the-symlinks">Setup A — repoint the symlinks</h3>
+<p>Both mounts are up, so nothing is ever broken. The folder names match, so most
+links are a prefix swap; the renamed ones need the video picked out.</p>
+<div id="setup-a--repoint-the-symlinks-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">LIB=/data/media
+find &quot;$LIB&quot; -type l | while IFS= read -r link; do
+  old=$(readlink &quot;$link&quot;)
+  rel=$(printf '%s\n' &quot;$old&quot; | sed -n 's|.*/content/[^/]*/\([^/]*\)/.*|\1|p')
+  [ -n &quot;$rel&quot; ] || continue
+  name=$(basename &quot;$old&quot;)
+  new=&quot;/mnt/zurg/__all__/$rel/$name&quot;
+  [ -e &quot;$new&quot; ] &amp;&amp; ln -sfn &quot;$new&quot; &quot;$link&quot;
+done</code></pre>
 </doc-codeblock></div>
-<p>Expected, benign differences (all measured):</p>
-<ul>
-<li>
-<p><strong><code translate="no" v-pre>.par2</code> and <code translate="no" v-pre>.sfv</code> files present on InfiniDysk, absent on zurg.</strong> zurg
-hides repair scaffolding; it still reads it itself. InfiniDysk additionally
-leaves <em>hash-named</em> par2 volumes visible inside obfuscated releases (five of
-them, 4 KB–134 MB, in the measured <code translate="no" v-pre>Obfuscated</code> release). Those files
-vanish from the mount. They carry no media extension, so a Plex section
-will not normally have itemised them — but check nothing in your library
-references one before shrugging: <code translate="no" v-pre>grep -F</code> the names against your symlink
-targets or the file inventory. Any item Plex did have for one is a deletion
-Plex will see.</p>
-</li>
-<li>
-<p><strong>Releases zurg has that InfiniDysk refused</strong> — the <code translate="no" v-pre>430 No such article</code>
-class. These import into Plex as <em>new</em> items; there is no watch state to
-preserve on content InfiniDysk never served.</p>
-</li>
-<li>
-<p><strong>A broken-RAR-chain release</strong> (<code translate="no" v-pre>.r00</code>–<code translate="no" v-pre>.r27</code> absent from the NZB itself)
-appears on zurg as an empty archive folder; InfiniDysk created nothing.
-Harmless to Plex either way.</p>
-</li>
-<li>
-<p><strong>Fully obfuscated single-payload releases</strong>: where the PAR2 index restores
-names that are themselves random, zurg renames the clear payload to the
-release name (SABnzbd&#x27;s behaviour); InfiniDysk shows the hash name. A
-different filename is a different path — for Setup A it just changes the
-retarget destination; for Setup B it is a rename Plex will see on that file.
-In the measured corpus the real names were recoverable and both servers
-showed identical filenames, so this bites only truly nameless posts.</p>
-</li>
-</ul>
-<p>And one difference that is a zurg defect, not benign: <strong>file sizes</strong>.
-InfiniDysk reports exact sizes for everything it serves. zurg reports the
-exact size only when the poster wrote a byte count into the subject line;
-otherwise it advertises the yEnc-<em>encoded</em> length — measured at <strong>+2.50% to
-+3.18%</strong> over the true size on three of five test files, and reading the file
-does not correct it. A changed size makes the file look <em>modified</em> to Plex.
-That does not delete the item or touch watch state, but it can trigger
-re-analysis and preview-thumbnail/intro-marker regeneration across every
-affected file. Budget for that I/O after cutover, and turn off &quot;Generate
-video preview thumbnails&quot; on these libraries first — on Usenet every
-thumbnail pass is a full read of the release through your connection
-allowance.</p>
-<p>Do not proceed to cutover until the diff contains nothing you cannot explain
-from the list above.</p>
-<hr>
-<h2 id="4-cutover-setup-a-retarget-the-symlinks">4. Cutover, Setup A: retarget the symlinks</h2>
-<p>Both servers are serving. Every symlink is valid before its rewrite and valid
-after it, so Plex never sees a missing file at any instant. Run it with
-scanning disabled anyway (section 1).</p>
-<p><strong>Build the uuid → release/file map.</strong> Under <code translate="no" v-pre>--links</code>, each entry in
-<code translate="no" v-pre>completed-symlinks</code> appears as a real symlink whose target is the <code translate="no" v-pre>.ids</code>
-path, and whose own path names the release and file. The <code translate="no" v-pre>.ids</code> leaf and
-<code translate="no" v-pre>/content/&lt;category&gt;/&lt;release&gt;/&lt;file&gt;</code> serve the same object — verified:
-identical Content-Length, identical content type.</p>
-<div id="4-cutover-setup-a-retarget-the-symlinks-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">IDMOUNT=/mnt/remote/nzbdav
-ZURG=/mnt/zurg
-LIB=/media                      # the *arr library Plex scans
-
-find &quot;$IDMOUNT/completed-symlinks&quot; -type l | while IFS= read -r l; do
-  uuid=$(basename &quot;$(readlink &quot;$l&quot;)&quot;)
-  rel=&quot;${l#&quot;$IDMOUNT/completed-symlinks/&quot;}&quot;   # &lt;category&gt;/&lt;release&gt;/&lt;file&gt;
-  rel=&quot;${rel#*/}&quot;                             # &lt;release&gt;/&lt;file&gt;
-  printf '%s\t%s\n' &quot;$uuid&quot; &quot;$rel&quot;
-done | sort -u &gt; uuid-map.tsv</code></pre>
-</doc-codeblock></div>
-<p><strong>Rewrite each library symlink atomically</strong> — create the new link beside the
-old and <code translate="no" v-pre>mv -f</code> over it, one rename syscall, never a moment with no link.
-Save the old target first so rollback is mechanical, and never switch to a
-path that does not exist:</p>
-<div id="4-cutover-setup-a-retarget-the-symlinks-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">: &gt; retarget-undo.tsv; : &gt; unmapped.txt; : &gt; missing.txt
-find &quot;$LIB&quot; -type l -lname '*/.ids/*' -print0 | while IFS= read -r -d '' link; do
-  old=$(readlink &quot;$link&quot;); uuid=$(basename &quot;$old&quot;)
-  rel=$(awk -F'\t' -v u=&quot;$uuid&quot; '$1==u{print $2; exit}' uuid-map.tsv)
-  [ -n &quot;$rel&quot; ] || { printf '%s\t%s\n' &quot;$link&quot; &quot;$old&quot; &gt;&gt; unmapped.txt; continue; }
-  new=&quot;$ZURG/__all__/$rel&quot;
-  [ -e &quot;$new&quot; ] || { printf '%s\t%s\n' &quot;$link&quot; &quot;$new&quot; &gt;&gt; missing.txt; continue; }
-  printf '%s\t%s\t%s\n' &quot;$link&quot; &quot;$old&quot; &quot;$new&quot; &gt;&gt; retarget-undo.tsv
-  ln -s &quot;$new&quot; &quot;$link.zurgtmp&quot; &amp;&amp; mv -Tf &quot;$link.zurgtmp&quot; &quot;$link&quot;
+<p>Most InfiniDysk libraries symlink into the <code translate="no" v-pre>.ids</code> object store rather than the
+human tree, in which case the target carries no release name and the loop
+above cannot map it. Use the <code translate="no" v-pre>completed-symlinks</code> tree instead, which does
+carry names, or fall back to matching by the link&#x27;s own filename. Then handle
+what is left:</p>
+<div id="setup-a--repoint-the-symlinks-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">find &quot;$LIB&quot; -xtype l | while IFS= read -r link; do
+  # release name from the link's own path, or from completed-symlinks
+  rel=$(basename &quot;$(dirname &quot;$link&quot;)&quot;)
+  find &quot;/mnt/zurg/__all__/$rel&quot; -type f \
+       \( -iname '*.mkv' -o -iname '*.mp4' -o -iname '*.avi' \) ! -ipath '*sample*' \
+       -printf '%s\t%p\n' | sort -rn | head -1 | cut -f2- | \
+    xargs -r -I{} ln -sfn {} &quot;$link&quot;
 done
-wc -l retarget-undo.tsv unmapped.txt missing.txt</code></pre>
+find &quot;$LIB&quot; -xtype l          # want no output</code></pre>
 </doc-codeblock></div>
-<p><code translate="no" v-pre>mv -T</code> (GNU coreutils) is deliberate: it forces the destination to be treated
-as a plain path rather than descended into. Without <code translate="no" v-pre>-T</code> this works only
-because every target here is a file — the day one points at a directory,
-plain <code translate="no" v-pre>mv -f</code> would move the new link <em>inside</em> it instead of replacing it.
-<code translate="no" v-pre>-lname</code> is GNU <code translate="no" v-pre>find</code> for the same reason; on macOS install coreutils and
-findutils, or run this step on the Linux host.</p>
-<p><code translate="no" v-pre>unmapped.txt</code> holds symlinks whose uuid appears in no <code translate="no" v-pre>completed-symlinks</code>
-entry (measured entries are flat <code translate="no" v-pre>&lt;release&gt;/&lt;file&gt;</code>; whether releases with
-inner RAR directory structure symlink every nested file is <strong>unverified</strong>).
-Resolve those by size: <code translate="no" v-pre>stat -c %s</code> the old target through the mount, then
-find the file of that exact size under <code translate="no" v-pre>$IDMOUNT/content</code> — sizes there are
-exact — and map its <code translate="no" v-pre>&lt;release&gt;/&lt;relative path&gt;</code> to <code translate="no" v-pre>$ZURG/__all__/</code> by name.
-<code translate="no" v-pre>missing.txt</code> holds files zurg does not serve; each needs an explanation from
-the section 3 diff before you continue.</p>
-<p><strong>Prove there are no broken links</strong>, then and only then stop InfiniDysk:</p>
-<div id="4-cutover-setup-a-retarget-the-symlinks-code-3" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">find &quot;$LIB&quot; -xtype l          # must print nothing
-# pre-flight from section 1 (sessions size=&quot;0&quot;, refreshing count 0), then:
-systemctl stop infinidysk-rclone-mount infinidysk    # whatever your units are</code></pre>
-</doc-codeblock></div>
-<p>Do <strong>not</strong> unmount InfiniDysk before the <code translate="no" v-pre>find -xtype l</code> is clean — every
-line it prints is a file Plex will treat as deleted on its next scan.</p>
-<hr>
-<h2 id="5-cutover-setup-b-plex-pointed-straight-at-content">5. Cutover, Setup B: Plex pointed straight at <code translate="no" v-pre>/content</code></h2>
-<p>The old paths are <code translate="no" v-pre>&lt;mount&gt;/content/&lt;category&gt;/&lt;release&gt;/&lt;file&gt;</code>. Three ways
-to keep them resolving; pick (a) unless it cannot apply.</p>
-<p><strong>(a) A symlink shim tree over zurg&#x27;s mount — recommended.</strong> Rebuild the old
-path shape as one real directory of per-release symlinks into
-<code translate="no" v-pre>$ZURG/__all__</code>. File names inside each release match (section 3 verified
-exactly this), so a release-level link is enough:</p>
-<div id="5-cutover-setup-b-plex-pointed-straight-at-content-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">STAGE=/srv/nzbdav-shim
-while IFS=$'\t' read -r cat rel; do
-  mkdir -p &quot;$STAGE/content/$cat&quot;
-  ln -s &quot;$ZURG/__all__/$rel&quot; &quot;$STAGE/content/$cat/$rel&quot;
-done &lt; releases.tsv</code></pre>
-</doc-codeblock></div>
-<p>Cutover: pre-flight (section 1), stop InfiniDysk and its rclone mount, then
-put the shim where the mount was — <code translate="no" v-pre>$IDMOUNT</code> is an empty real directory once
-unmounted:</p>
-<div id="5-cutover-setup-b-plex-pointed-straight-at-content-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">mv &quot;$STAGE/content&quot; &quot;$IDMOUNT/content&quot;</code></pre>
-</doc-codeblock></div>
-<p>The exposure window is the seconds between unmount and <code translate="no" v-pre>mv</code>, covered by
-disabled scans and <code translate="no" v-pre>autoEmptyTrash=0</code>. Plex&#x27;s paths are untouched; the hidden
-par2/sfv files simply stop existing inside folders Plex never itemised them
-from, and the size-defect re-analysis from section 3 still applies.</p>
-<p><strong>(b) zurg <code translate="no" v-pre>directories:</code> shaped like the categories.</strong> Mount zurg at
-<code translate="no" v-pre>$IDMOUNT/content</code> and define <code translate="no" v-pre>directories: movies: / tv:</code> with filters
-(<code translate="no" v-pre>has_episodes</code>, name regexes) so releases land under the old category names.
-Honest assessment: zurg sorts by its own filters, not by the SAB category the
-release was queued under, and the two will not agree on everything — every
-release a filter files differently than its old category is a moved path,
-which is a deletion plus an addition. zurg&#x27;s extra roots (<code translate="no" v-pre>__all__</code>,
-<code translate="no" v-pre>__nzb__</code>, <code translate="no" v-pre>version.txt</code>) also appear under <code translate="no" v-pre>content/</code>, harmless only because
-Plex scans its section folders, not the parent. Use this only for a small,
-regular library where you can verify every release&#x27;s landing directory
-against <code translate="no" v-pre>releases.tsv</code> before cutover.</p>
-<p><strong>(c) Rewriting <code translate="no" v-pre>media_parts.file</code> in <code translate="no" v-pre>com.plexapp.plugins.library.db</code>.</strong>
-Stop Plex, work on a copy of your backup, and rewrite the path prefixes.</p>
-<p><strong>Write with the SQLite binary Plex ships, not the system one.</strong> The schema
-carries custom extensions — a stock <code translate="no" v-pre>sqlite3</code> walking this database fails with
-<code translate="no" v-pre>no such module: spellfix1</code> (observed on a 10,126-item library). Reading a copy
-with stock <code translate="no" v-pre>sqlite3</code> is fine; writing the live database with it is not.</p>
-<div id="5-cutover-setup-b-plex-pointed-straight-at-content-code-3" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">PSQL=&quot;/usr/lib/plexmediaserver/Plex SQLite&quot;    # path varies by platform
-DB=&quot;…/Plug-in Support/Databases/com.plexapp.plugins.library.db&quot;
-
-&quot;$PSQL&quot; &quot;$DB&quot; &quot;UPDATE media_parts SET file = replace(file, '/mnt/remote/nzbdav/content/movies/', '/mnt/zurg/movies/');&quot;
-&quot;$PSQL&quot; &quot;$DB&quot; &quot;UPDATE section_locations SET root_path = '/mnt/zurg/movies' WHERE root_path = '/mnt/remote/nzbdav/content/movies';&quot;</code></pre>
-</doc-codeblock></div>
-<p><code translate="no" v-pre>section_locations</code> holds one row per library root and must move with the
-parts, or Plex treats every rewritten path as outside the library. Verify
-before restarting:</p>
-<div id="5-cutover-setup-b-plex-pointed-straight-at-content-code-4" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">&quot;$PSQL&quot; &quot;$DB&quot; &quot;SELECT id, library_section_id, root_path FROM section_locations;&quot;
-&quot;$PSQL&quot; &quot;$DB&quot; &quot;SELECT count(*) FROM media_parts WHERE file LIKE '/mnt/remote/nzbdav/%';&quot;   # want 0</code></pre>
-</doc-codeblock></div>
-<p>Plex also keeps a <code translate="no" v-pre>directories</code> table of scanned folder rows. Whether it needs
-the same rewrite, or is rebuilt on the next scan, was <strong>not verified</strong> — check
-it with <code translate="no" v-pre>.schema directories</code> and inspect before assuming either way.</p>
-<p>This keeps items, state and artwork because the rows never die — but it is
-unsupported surgery on an undocumented schema that shifts between Plex
-versions, per-file paths must land exactly (including every rename from
-section 3&#x27;s caveat list), and a half-applied rewrite is worse than either
-failure mode above. It is the fallback for when the old path prefix cannot be
-reconstructed at all — e.g. the mount point is gone and cannot be recreated —
-never the first choice. (<code translate="no" v-pre>media_parts.file</code>, <code translate="no" v-pre>media_parts.size</code> and
-<code translate="no" v-pre>section_locations.root_path</code> were read off a live Plex database for this
-guide; anything beyond them, inspect with <code translate="no" v-pre>.schema</code> against your own version
-before touching it.)</p>
-<hr>
-<h2 id="6-verification">6. Verification</h2>
-<p>With the cutover done and InfiniDysk stopped:</p>
-<div id="6-verification-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash"># 1. No broken symlinks anywhere Plex looks
-find &quot;$LIB&quot; -xtype l | wc -l                        # Setup A — want 0
-find &quot;$IDMOUNT/content&quot; -xtype l | wc -l            # Setup B shim — want 0
-
-# 2. Bytes actually flow through zurg
-head -c 1048576 &quot;$(find &quot;$LIB&quot; -type l | head -1)&quot; &gt; /dev/null &amp;&amp; echo OK</code></pre>
-</doc-codeblock></div>
-<p>Re-enable the scanning options from section 1, trigger a scan of one section,
-and compare against the counts recorded in pre-flight. Then check state
-survived: pick a watched item, confirm its watch state, play count and any
-custom poster are intact, and check the section&#x27;s trash is not suddenly
-populated (Plex Web → library → three-dot menu). Files whose advertised size
-grew (the +2.5–3.2% class) will show as changed and re-analyse; that is
-expected and does not touch watch state.</p>
-<p>Only after a full scan completes clean on every section, tear down
-InfiniDysk&#x27;s data — and even then keep <code translate="no" v-pre>{CONFIG_PATH}/blobs/</code> and your
-recovered NZB set until you have streamed from a representative sample.</p>
-<hr>
-<h2 id="7-rollback">7. Rollback</h2>
-<p>Everything before cutover is additive, so rollback is only meaningful after
-section 4 or 5:</p>
-<ul>
-<li>
-<p><strong>Setup A:</strong> replay <code translate="no" v-pre>retarget-undo.tsv</code> in reverse — the same atomic
-create-and-rename with <code translate="no" v-pre>$old</code> as the target — after restarting InfiniDysk
-and its mount:</p>
-<div class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">while IFS=$'\t' read -r link old new; do
-  ln -s &quot;$old&quot; &quot;$link.zurgtmp&quot; &amp;&amp; mv -f &quot;$link.zurgtmp&quot; &quot;$link&quot;
-done &lt; retarget-undo.tsv</code></pre>
-</doc-codeblock></div>
-</li>
-<li>
-<p><strong>Setup B (a/b):</strong> remove the shim (<code translate="no" v-pre>rm -rf &quot;$IDMOUNT/content&quot;</code> — it is
-symlinks, not data) or unmount zurg, and remount InfiniDysk at the old
-path.</p>
-</li>
-<li>
-<p><strong>Setup B (c), or any case where items were actually deleted:</strong> stop Plex
-and restore the database backup from section 1. That is what it is for.</p>
-</li>
-</ul>
-<p>If Plex saw files vanish but <code translate="no" v-pre>autoEmptyTrash</code> was 0, nothing is lost yet: the
-items are in the trash and return when the paths do. Do not empty the trash
-while anything is unresolved.</p>
+<p>Do <strong>not</strong> unmount InfiniDysk until that last command is clean. Every line it
+prints is a file Plex will treat as deleted on its next scan.</p>
+<p>Plex sees no change: the link paths never moved, only their targets.</p>
+<h3 id="setup-b--point-plex-at-zurg">Setup B — point Plex at zurg</h3>
+<p>Confirm <code translate="no" v-pre>autoEmptyTrash</code> is <code translate="no" v-pre>0</code>, add zurg&#x27;s mount as an additional location on
+each library, scan, then remove the old InfiniDysk location. Everything is
+re-added — watch state returns via GUID, collections and artwork choices do
+not.</p>
+<p>Leave the old items in the trash until you have spot-checked a few.</p>
+<h2 id="afterwards">Afterwards</h2>
+<p>Keep <code translate="no" v-pre>{CONFIG_PATH}/blobs/</code> and your recovered NZB set until you have streamed
+from a representative sample.</p>
+<p>On acquisition: zurg has an opt-in
+<a href="../../guides/sonarr-radarr/">SABnzbd-compatible endpoint</a> Sonarr and Radarr
+can grab through, importing by rename inside <code translate="no" v-pre>__magic__</code>. It does not yet
+check whether a post&#x27;s articles are still on the news server, so a dead
+release reports Completed and fails on the first read rather than being
+blocklisted and re-grabbed.</p>
 
                 
                 <!-- Required only on API pages -->
