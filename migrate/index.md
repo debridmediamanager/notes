@@ -38,24 +38,49 @@ half-applied rewrite is worse than either outcome it was meant to prevent.
 
 These guides take the simple route and tell you exactly what it costs.
 
-## Which setup you have decides everything
+## Where your library lands: `__magic__`, not a symlink farm
 
-Two questions, one command. Run this against the library folder Plex scans:
+Every server on this list hands its library to the \*arrs through a farm of
+symlinks. **zurg does not, and you should not rebuild one.** It has
+[`__magic__`](../guides/magic.md) instead — the one directory whose paths are
+*stored* rather than computed. A move inside it rewrites a row in a small
+table; no bytes move, nothing is copied, and the release stays where it is on
+the account. Point Sonarr and Radarr at it and they organise and rename
+however they like, at no cost.
 
-```bash
-find /path/to/your/plex/library -maxdepth 3 -type l | head -3 | xargs -r -n1 readlink
-```
+That is not just one less moving part, it is a layer that cannot break the way
+the old one did. A symlink has to point at a real path, and the obvious target
+— `__all__/<release>/<file>` — is *computed*. It changes when the release is
+renamed, and when two releases collide zurg suffixes one of them
+`{shorthash}`. Every such change silently dangles a link. A `__magic__`
+placement is keyed on the release's content hash plus the file's path inside
+it, so it survives a rename, a `{shorthash}` suffix, and a repair that re-adds
+the release under an entirely new id.
 
-**Setup A — it prints symlink targets.** Plex scans an \*arr-managed library
-of symlinks and never looks at the mount. **The Plex-visible paths never
-change in this migration**, because Plex stores the link's own path and only
-the target moves. Nothing is re-added, nothing is rescanned, no curation is
-lost. Every per-server page has a Setup A section and it is always the short
-one. Take this route if you have it.
+So whatever you have today — an \*arr symlink library, or Plex pointed
+straight at the old mount — **the paths change and the library is re-added.**
+That is the trade named above, and it is the whole cost of every migration
+here.
 
-**Setup B — it prints nothing.** Plex scans the mount directly, so every path
-carries the old server's root and its naming. Everything is re-added. This is
-where the trade above actually gets paid.
+!!!danger Never ask an \*arr to relocate an existing library into `__magic__`
+Changing a root folder makes Sonarr or Radarr *move* the files. A move inside
+`__magic__` is free, but a move from anywhere else crosses the mount boundary,
+which is a copy — and a copy off a streaming mount downloads your entire
+library through your news or debrid allowance.
+
+Adopt the files where they already are instead. `__magic__` starts as a mirror
+of `__all__`, so every release is already there, as a folder holding its own
+files, before you organise anything. zurg's `/magic/` dashboard reports the
+size of `data/local`, which is the number that tells you whether something is
+importing by copying.
+!!!
+
+!!!warning Point each Plex library at one directory, not two
+A library that scans both a filter directory (`movies`, `shows`, `__all__`)
+and `__magic__` finds every episode twice. Pick one. If you use the \*arrs,
+pick `__magic__`; if you browse a library nobody organises, pick the filter
+directories and leave `__magic__` off.
+!!!
 
 ## The one guard you must not skip
 

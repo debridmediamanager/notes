@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841575001488">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841575258861">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -12,7 +12,7 @@
     <!-- Primary Meta Tags -->
     <title>Migrating from nzbdav to zurg</title>
     <meta name="title" content="Migrating from nzbdav to zurg">
-    <meta name="description" content="Read the shared page first — the trash guard and the Setup A/B question live there.">
+    <meta name="description" content="Read the shared page first — the trash guard, and why your library lands in __magic__ rather than a symlink farm, both live there.">
 
     <!-- Canonical -->
     <link rel="canonical" href="https://notes.debridmediamanager.com/migrate/nzbdav/">
@@ -22,7 +22,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://notes.debridmediamanager.com/migrate/nzbdav/">
     <meta property="og:title" content="Migrating from nzbdav to zurg">
-    <meta property="og:description" content="Read the shared page first — the trash guard and the Setup A/B question live there.">
+    <meta property="og:description" content="Read the shared page first — the trash guard, and why your library lands in __magic__ rather than a symlink farm, both live there.">
     <meta property="og:site_name" content="dmm+zurg">
     <meta property="og:locale" content="en_US">
 
@@ -30,19 +30,19 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://notes.debridmediamanager.com/migrate/nzbdav/">
     <meta name="twitter:title" content="Migrating from nzbdav to zurg">
-    <meta name="twitter:description" content="Read the shared page first — the trash guard and the Setup A/B question live there.">
+    <meta name="twitter:description" content="Read the shared page first — the trash guard, and why your library lands in __magic__ rather than a symlink farm, both live there.">
 
     <!-- Alternate Markdown -->
     <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/migrate/nzbdav.md">
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841575001488" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841575258861" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841575001488" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841575258861" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841575001488" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841575001488" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841575258861" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841575258861" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -179,8 +179,8 @@
 
                 <!-- Page content  -->
 <h1 id="migrating-from-nzbdav-to-zurg">Migrating from nzbdav to zurg</h1>
-<p>Read <a href="../">the shared page</a> first — the trash guard and the Setup A/B
-question live there.</p>
+<p>Read <a href="../">the shared page</a> first — the trash guard, and why your
+library lands in <code translate="no" v-pre>__magic__</code> rather than a symlink farm, both live there.</p>
 <p>nzbdav-dev&#x27;s last release is v0.6.4 from April 2026 and the upstream
 repository is no longer maintained. v0.6.4 itself works fine, so this
 migration is about getting off unmaintained software rather than about broken
@@ -235,25 +235,14 @@ its five levels regardless of contents — 16^5 ≈ 1,048,576 directories. Point
         </div>
     </div>
 </div>
-<h2 id="what-needs-rescanning">What needs rescanning</h2>
-<p><strong>Setup A (symlink library): nothing.</strong> Filenames match, so every symlink
-target resolves under zurg once you repoint the prefix. Plex sees no change at
-all.</p>
-<p><strong>Setup B (Plex on the mount): the whole library, unless you reproduce the
-root shape.</strong> nzbdav serves <code translate="no" v-pre>&lt;mount&gt;/content/&lt;category&gt;/&lt;release&gt;/&lt;file&gt;</code> and
-zurg serves <code translate="no" v-pre>&lt;mount&gt;/&lt;directory&gt;/&lt;release&gt;/&lt;file&gt;</code>. Filenames match but the
-prefix does not, so by default everything is re-added.</p>
-<p>Because the names match, nzbdav is the one migration where a <strong>zero-rescan
-Setup B</strong> is cheap. If every release sat under a single category, mount zurg&#x27;s
-<code translate="no" v-pre>__all__</code> where that category was and every path is reproduced exactly:</p>
-<div id="what-needs-rescanning-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">rclone mount zurg:__all__ /mnt/nzbdav/content/movies --config rclone.conf --dir-cache-time 10s</code></pre>
-</doc-codeblock></div>
-<p>If you used several categories you would need <code translate="no" v-pre>directories:</code> filters that
-reproduce each category&#x27;s membership exactly, and zurg sorts by its own
-filters rather than by the SAB category a release was queued under. The two
-will not agree on everything, and each release that lands in a different
-directory is a re-add anyway. At that point take the simple route below.</p>
+<h2 id="what-your-library-looks-like-afterwards">What your library looks like afterwards</h2>
+<p><strong>Everything is re-added</strong>, because the library root moves to <code translate="no" v-pre>__magic__</code>.
+There is no cheaper path and no partial one — see
+<a href="../">the shared page</a> for why.</p>
+<p>The good news is that nzbdav is the one migration where <strong>nothing you see
+changes but the prefix</strong>. Every filename zurg serves is the one nzbdav served,
+so an *arr re-importing from <code translate="no" v-pre>__magic__</code> parses exactly what it parsed
+before, and a folder you organise by hand looks the same as it always did.</p>
 <h2 id="what-new-content-shows-up">What new content shows up</h2>
 <ul>
 <li>
@@ -329,31 +318,43 @@ mount_path: &quot;/mnt/zurg&quot;</code></pre>
 ls /mnt/zurg/__all__/ | wc -l     # should approach your release count</code></pre>
 </doc-codeblock></div>
 <h2 id="cut-over">Cut over</h2>
-<h3 id="setup-a--repoint-the-symlinks">Setup A — repoint the symlinks</h3>
-<p>Both mounts are up, so no path is ever broken and Plex sees nothing. Because
-the filenames match, the retarget is a prefix swap:</p>
-<div id="setup-a--repoint-the-symlinks-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">find /path/to/arr-library -type l | while IFS= read -r link; do
-  old=$(readlink &quot;$link&quot;)
-  case &quot;$old&quot; in
-    /mnt/nzbdav/content/*)
-      rel=${old#/mnt/nzbdav/content/*/}          # strip mount + category
-      new=&quot;/mnt/zurg/__all__/$rel&quot;
-      [ -e &quot;$new&quot; ] &amp;&amp; ln -sfn &quot;$new&quot; &quot;$link&quot;
-      ;;
-  esac
-done
-find /path/to/arr-library -xtype l          # want no output</code></pre>
+<p>One path, whatever you have today. Nothing here moves bytes.</p>
+<p><strong>1. Turn on <code translate="no" v-pre>__magic__</code></strong> and restart — the routes are registered at startup,
+so a dashboard toggle needs a restart before the namespace answers.</p>
+<div id="cut-over-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">magic:
+  enabled: true</code></pre>
 </doc-codeblock></div>
-<p>Anything still listed is a release zurg does not have — a missing NZB. Fix it
-or accept the loss. Then stop nzbdav. No scan, no trash, no re-add.</p>
-<h3 id="setup-b--point-plex-at-zurg">Setup B — point Plex at zurg</h3>
-<p>Confirm <code translate="no" v-pre>autoEmptyTrash</code> is <code translate="no" v-pre>0</code>, then add zurg&#x27;s mount as an additional
-location on each library (Edit → Add folder), scan, and remove the old nzbdav
-location once the new items are in. Your library is re-added: watch state
-returns via GUID, collections and artwork choices do not.</p>
-<p>Leave the old items in the trash until you have spot-checked a few, then empty
-it.</p>
+<p><strong>2. Make the root folders.</strong> They have to be <em>inside</em> <code translate="no" v-pre>__magic__</code>, one level
+down. Not <code translate="no" v-pre>__magic__</code> itself and not the mount root — both *arrs raise a
+health check for those, and an import lands here anyway.</p>
+<div id="cut-over-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p /mnt/zurg/__magic__/tv /mnt/zurg/__magic__/movies
+ls /mnt/zurg/__magic__/          # your releases are already listed here</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>__magic__</code> starts as a mirror of <code translate="no" v-pre>__all__</code>, so every release is present
+before you organise anything.</p>
+<p><strong>3. Organise, if you want to.</strong> A <code translate="no" v-pre>mv</code> inside <code translate="no" v-pre>__magic__</code> writes a row and
+moves no bytes:</p>
+<div id="cut-over-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">mv &quot;/mnt/zurg/__magic__/Some.Release.S01E01.1080p/ep1.mkv&quot; \
+   &quot;/mnt/zurg/__magic__/tv/The Show/Season 01/S01E01.mkv&quot;</code></pre>
+</doc-codeblock></div>
+<p>Or point Sonarr and Radarr at those root folders and let them do it — see
+<a href="../../guides/sonarr-radarr/">Sonarr &amp; Radarr</a>. <strong>Adopt the existing files where
+they are; never change a root folder in a way that makes the *arr move your
+old library in.</strong> That crosses the mount boundary, which is a copy, which
+downloads everything.</p>
+<p><strong>4. Point Plex at <code translate="no" v-pre>__magic__</code></strong> — that library only, never <code translate="no" v-pre>__magic__</code> <em>and</em> a
+filter directory, or every episode is found twice. Confirm <code translate="no" v-pre>autoEmptyTrash</code> is
+<code translate="no" v-pre>0</code>, add the new location, scan, then remove the old nzbdav location.</p>
+<p><strong>5. Empty the trash</strong> once you have spot-checked a few items. Watch state
+comes back through the GUID match; collections and artwork choices do not.</p>
+<p>Leave nzbdav running until then — it costs nothing and it is your rollback.
+When you are done:</p>
+<div id="cut-over-code-4" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo systemctl stop nzbdav</code></pre>
+</doc-codeblock></div>
 <h2 id="afterwards">Afterwards</h2>
 <p>Keep nzbdav&#x27;s config directory until you have streamed from a representative
 sample. It is the only other copy of your NZBs.</p>

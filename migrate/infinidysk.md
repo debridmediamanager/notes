@@ -1,7 +1,7 @@
 # Migrating from InfiniDysk to zurg
 
-Read [the shared page](index.md) first — the trash guard and the Setup A/B
-question live there.
+Read [the shared page](index.md) first — the trash guard, and why your
+library lands in `__magic__` rather than a symlink farm, both live there.
 
 Measured against zurg on the same five releases:
 
@@ -39,19 +39,19 @@ five levels regardless of contents — 16^5 ≈ 1,048,576 directories. Point
 `/completed-symlinks` explicitly, never at `/`.
 !!!
 
-## What needs rescanning
+## What your library looks like afterwards
 
-**Setup A (symlink library): every single-payload release.** In practice that
-is most of a movie library and any single-episode grab. Multi-file releases
-and season packs resolve unchanged.
+**Everything is re-added**, because the library root moves to `__magic__`.
+See [the shared page](index.md) for why there is no cheaper path.
 
-**Setup B (Plex on the mount): everything.** InfiniDysk serves
-`<mount>/content/<category>/<release>/<file>` and zurg serves
-`<mount>/<directory>/<release>/…`, so the prefix moves even where the filename
-does not.
+This is the migration where that costs you least and gains you most, because
+almost every filename improves. `ToyStory5.mkv` becomes
+`Toy.Story.5.2026.1080p.AMZN.WEB-DL.DDP5.1.H.264-KyoGo.mkv`, and an \*arr
+re-importing from `__magic__` can finally parse quality, source, group and
+edition off the filename. Only the season packs, which already read correctly,
+stay as they were.
 
-Find the set that will be re-added — a release folder whose media file is
-named after the folder:
+List the releases whose names move — most of them:
 
 ```bash
 ID=/mnt/remote/nzbdav                      # your InfiniDysk mount
@@ -63,8 +63,7 @@ done
 ```
 
 Because the rename can happen one level inside an archive directory, the
-`-maxdepth 4` matters. Every line is an item Plex re-adds on the first scan;
-the old one drops into the trash.
+`-maxdepth 4` matters.
 
 ## What new content shows up
 
@@ -155,54 +154,55 @@ stable prefix to point symlinks at.
 
 ## Cut over
 
-### Setup A — repoint the symlinks
+One path, whatever you have today. Nothing here moves bytes.
 
-Both mounts are up, so nothing is ever broken. The folder names match, so most
-links are a prefix swap; the renamed ones need the video picked out.
+**1. Turn on `__magic__`** and restart — the routes are registered at startup,
+so a dashboard toggle needs a restart before the namespace answers.
 
-```bash
-LIB=/data/media
-find "$LIB" -type l | while IFS= read -r link; do
-  old=$(readlink "$link")
-  rel=$(printf '%s\n' "$old" | sed -n 's|.*/content/[^/]*/\([^/]*\)/.*|\1|p')
-  [ -n "$rel" ] || continue
-  name=$(basename "$old")
-  new="/mnt/zurg/__all__/$rel/$name"
-  [ -e "$new" ] && ln -sfn "$new" "$link"
-done
+```yaml
+magic:
+  enabled: true
 ```
 
-Most InfiniDysk libraries symlink into the `.ids` object store rather than the
-human tree, in which case the target carries no release name and the loop
-above cannot map it. Use the `completed-symlinks` tree instead, which does
-carry names, or fall back to matching by the link's own filename. Then handle
-what is left:
+**2. Make the root folders.** They have to be *inside* `__magic__`, one level
+down. Not `__magic__` itself and not the mount root — both \*arrs raise a
+health check for those, and an import lands here anyway.
 
 ```bash
-find "$LIB" -xtype l | while IFS= read -r link; do
-  # release name from the link's own path, or from completed-symlinks
-  rel=$(basename "$(dirname "$link")")
-  find "/mnt/zurg/__all__/$rel" -type f \
-       \( -iname '*.mkv' -o -iname '*.mp4' -o -iname '*.avi' \) ! -ipath '*sample*' \
-       -printf '%s\t%p\n' | sort -rn | head -1 | cut -f2- | \
-    xargs -r -I{} ln -sfn {} "$link"
-done
-find "$LIB" -xtype l          # want no output
+mkdir -p /mnt/zurg/__magic__/tv /mnt/zurg/__magic__/movies
+ls /mnt/zurg/__magic__/          # your releases are already listed here
 ```
 
-Do **not** unmount InfiniDysk until that last command is clean. Every line it
-prints is a file Plex will treat as deleted on its next scan.
+`__magic__` starts as a mirror of `__all__`, so every release is present
+before you organise anything.
 
-Plex sees no change: the link paths never moved, only their targets.
+**3. Organise, if you want to.** A `mv` inside `__magic__` writes a row and
+moves no bytes:
 
-### Setup B — point Plex at zurg
+```bash
+mv "/mnt/zurg/__magic__/Some.Release.S01E01.1080p/ep1.mkv" \
+   "/mnt/zurg/__magic__/tv/The Show/Season 01/S01E01.mkv"
+```
 
-Confirm `autoEmptyTrash` is `0`, add zurg's mount as an additional location on
-each library, scan, then remove the old InfiniDysk location. Everything is
-re-added — watch state returns via GUID, collections and artwork choices do
-not.
+Or point Sonarr and Radarr at those root folders and let them do it — see
+[Sonarr & Radarr](../guides/sonarr-radarr.md). **Adopt the existing files where
+they are; never change a root folder in a way that makes the \*arr move your
+old library in.** That crosses the mount boundary, which is a copy, which
+downloads everything.
 
-Leave the old items in the trash until you have spot-checked a few.
+**4. Point Plex at `__magic__`** — that library only, never `__magic__` *and* a
+filter directory, or every episode is found twice. Confirm `autoEmptyTrash` is
+`0`, add the new location, scan, then remove the old InfiniDysk location.
+
+**5. Empty the trash** once you have spot-checked a few items. Watch state
+comes back through the GUID match; collections and artwork choices do not.
+
+Leave InfiniDysk running until then — it costs nothing and it is your rollback.
+When you are done:
+
+```bash
+sudo systemctl stop infinidysk infinidysk-rclone-mount
+```
 
 ## Afterwards
 

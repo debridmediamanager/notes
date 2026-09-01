@@ -1,7 +1,7 @@
 # Migrating from nzbdav to zurg
 
-Read [the shared page](index.md) first — the trash guard and the Setup A/B
-question live there.
+Read [the shared page](index.md) first — the trash guard, and why your
+library lands in `__magic__` rather than a symlink farm, both live there.
 
 nzbdav-dev's last release is v0.6.4 from April 2026 and the upstream
 repository is no longer maintained. v0.6.4 itself works fine, so this
@@ -27,30 +27,16 @@ its five levels regardless of contents — 16^5 ≈ 1,048,576 directories. Point
 `/completed-symlinks` explicitly, never at `/`.
 !!!
 
-## What needs rescanning
+## What your library looks like afterwards
 
-**Setup A (symlink library): nothing.** Filenames match, so every symlink
-target resolves under zurg once you repoint the prefix. Plex sees no change at
-all.
+**Everything is re-added**, because the library root moves to `__magic__`.
+There is no cheaper path and no partial one — see
+[the shared page](index.md) for why.
 
-**Setup B (Plex on the mount): the whole library, unless you reproduce the
-root shape.** nzbdav serves `<mount>/content/<category>/<release>/<file>` and
-zurg serves `<mount>/<directory>/<release>/<file>`. Filenames match but the
-prefix does not, so by default everything is re-added.
-
-Because the names match, nzbdav is the one migration where a **zero-rescan
-Setup B** is cheap. If every release sat under a single category, mount zurg's
-`__all__` where that category was and every path is reproduced exactly:
-
-```bash
-rclone mount zurg:__all__ /mnt/nzbdav/content/movies --config rclone.conf --dir-cache-time 10s
-```
-
-If you used several categories you would need `directories:` filters that
-reproduce each category's membership exactly, and zurg sorts by its own
-filters rather than by the SAB category a release was queued under. The two
-will not agree on everything, and each release that lands in a different
-directory is a re-add anyway. At that point take the simple route below.
+The good news is that nzbdav is the one migration where **nothing you see
+changes but the prefix**. Every filename zurg serves is the one nzbdav served,
+so an \*arr re-importing from `__magic__` parses exactly what it parsed
+before, and a folder you organise by hand looks the same as it always did.
 
 ## What new content shows up
 
@@ -127,37 +113,55 @@ ls /mnt/zurg/__all__/ | wc -l     # should approach your release count
 
 ## Cut over
 
-### Setup A — repoint the symlinks
+One path, whatever you have today. Nothing here moves bytes.
 
-Both mounts are up, so no path is ever broken and Plex sees nothing. Because
-the filenames match, the retarget is a prefix swap:
+**1. Turn on `__magic__`** and restart — the routes are registered at startup,
+so a dashboard toggle needs a restart before the namespace answers.
 
-```bash
-find /path/to/arr-library -type l | while IFS= read -r link; do
-  old=$(readlink "$link")
-  case "$old" in
-    /mnt/nzbdav/content/*)
-      rel=${old#/mnt/nzbdav/content/*/}          # strip mount + category
-      new="/mnt/zurg/__all__/$rel"
-      [ -e "$new" ] && ln -sfn "$new" "$link"
-      ;;
-  esac
-done
-find /path/to/arr-library -xtype l          # want no output
+```yaml
+magic:
+  enabled: true
 ```
 
-Anything still listed is a release zurg does not have — a missing NZB. Fix it
-or accept the loss. Then stop nzbdav. No scan, no trash, no re-add.
+**2. Make the root folders.** They have to be *inside* `__magic__`, one level
+down. Not `__magic__` itself and not the mount root — both \*arrs raise a
+health check for those, and an import lands here anyway.
 
-### Setup B — point Plex at zurg
+```bash
+mkdir -p /mnt/zurg/__magic__/tv /mnt/zurg/__magic__/movies
+ls /mnt/zurg/__magic__/          # your releases are already listed here
+```
 
-Confirm `autoEmptyTrash` is `0`, then add zurg's mount as an additional
-location on each library (Edit → Add folder), scan, and remove the old nzbdav
-location once the new items are in. Your library is re-added: watch state
-returns via GUID, collections and artwork choices do not.
+`__magic__` starts as a mirror of `__all__`, so every release is present
+before you organise anything.
 
-Leave the old items in the trash until you have spot-checked a few, then empty
-it.
+**3. Organise, if you want to.** A `mv` inside `__magic__` writes a row and
+moves no bytes:
+
+```bash
+mv "/mnt/zurg/__magic__/Some.Release.S01E01.1080p/ep1.mkv" \
+   "/mnt/zurg/__magic__/tv/The Show/Season 01/S01E01.mkv"
+```
+
+Or point Sonarr and Radarr at those root folders and let them do it — see
+[Sonarr & Radarr](../guides/sonarr-radarr.md). **Adopt the existing files where
+they are; never change a root folder in a way that makes the \*arr move your
+old library in.** That crosses the mount boundary, which is a copy, which
+downloads everything.
+
+**4. Point Plex at `__magic__`** — that library only, never `__magic__` *and* a
+filter directory, or every episode is found twice. Confirm `autoEmptyTrash` is
+`0`, add the new location, scan, then remove the old nzbdav location.
+
+**5. Empty the trash** once you have spot-checked a few items. Watch state
+comes back through the GUID match; collections and artwork choices do not.
+
+Leave nzbdav running until then — it costs nothing and it is your rollback.
+When you are done:
+
+```bash
+sudo systemctl stop nzbdav
+```
 
 ## Afterwards
 
