@@ -6,8 +6,8 @@ order: 80
 
 # Migrating from decypharr to zurg
 
-Read [the shared page](index.md) first — the trash guard and the Setup A/B
-question live there.
+Read [the shared page](index.md) first — the trash guard, and why your
+library lands in `__magic__` rather than a symlink farm, both live there.
 
 decypharr and zurg solve the same problem and their root layouts are
 strikingly close, which makes this the migration with the most that carries
@@ -65,29 +65,29 @@ two. zurg reproduces the real structure:
 **Multi-file releases and season packs keep their real filenames on both
 sides** and match automatically once the folder name matches.
 
-## What needs rescanning
+## What your library looks like afterwards
 
-**Setup A (symlink library): single-file and archive releases only.** Debrid
-torrents and multi-file NZB releases resolve unchanged.
+**Everything is re-added**, because the library root moves to `__magic__`.
+See [the shared page](index.md) for why there is no cheaper path.
 
-**Setup B (Plex on the mount): the same set, and nothing else** — provided you
-put zurg at decypharr's old mountpoint. The roots line up, so
-`__all__/<job>/<file>` is reproduced exactly for everything decypharr did not
-rename. This is the one migration where Setup B is nearly as cheap as Setup A.
+The gain is in the names. Every single-payload release comes back under the
+poster's filename instead of the job name, so
+`ToyStory5/ToyStory5.mkv` becomes
+`Toy.Story.5.2026.1080p.AMZN.WEB-DL.DDP5.1.H.264-KyoGo.mkv` — the string
+Sonarr, Radarr and Plex parse for quality, source, group and edition. Archive
+releases stop carrying a welded name and sit in the archive's own directory.
+Multi-file releases and season packs already read correctly and are unchanged.
 
-Find the set that will be re-added:
+List the releases whose names move:
 
 ```bash
 MOUNT=/mnt/decypharr
 for d in "$MOUNT"/__all__/*/; do
   job=$(basename "$d")
   n=$(find "$d" -type f | wc -l)
-  [ "$n" -eq 1 ] && echo "WILL BE RENAMED: $job"
+  [ "$n" -eq 1 ] && echo "RENAMED BY DECYPHARR: $job"
 done
 ```
-
-Every single-file job on that list is re-added on the first scan; the old item
-drops into the trash. Multi-file jobs are untouched.
 
 ## What new content shows up
 
@@ -155,7 +155,7 @@ retain_folder_name_extension: false  # true if your folders carry .mkv/.mp4
 mount_path: "/mnt/zurg-staging"
 rclone_enabled: true
 rclone_binary: bin/rclone
-directories:                         # Setup B: reproduce decypharr's top level
+directories:                         # optional: mirror decypharr's top level
   torrents:
     filters:
       - not_provider: nzb
@@ -180,58 +180,55 @@ a Debrid-Link or Premiumize account.
 
 ## Cut over
 
-### Setup A — repoint the symlinks
+One path, whatever you have today. Nothing here moves bytes.
 
-```bash
-find /data/media -type l | while IFS= read -r link; do
-  old=$(readlink "$link")
-  case "$old" in
-    /mnt/decypharr/__all__/*)
-      rel=${old#/mnt/decypharr/__all__/}
-      new="/mnt/zurg-staging/__all__/$rel"
-      [ -e "$new" ] && ln -sfn "$new" "$link"
-      ;;
-  esac
-done
+**1. Turn on `__magic__`** and restart — the routes are registered at startup,
+so a dashboard toggle needs a restart before the namespace answers.
 
-# What dangles is the renamed class — take the largest non-sample video:
-find /data/media -xtype l | while IFS= read -r link; do
-  job=$(readlink "$link" | sed 's|^/mnt/decypharr/__all__/\([^/]*\)/.*|\1|')
-  find "/mnt/zurg-staging/__all__/$job" -type f \
-       \( -iname '*.mkv' -o -iname '*.mp4' -o -iname '*.avi' \) ! -ipath '*sample*' \
-       -printf '%s\t%p\n' | sort -rn | head -1 | cut -f2- | \
-    xargs -r -I{} ln -sfn {} "$link"
-done
-find /data/media -xtype l          # want no output
+```yaml
+magic:
+  enabled: true
 ```
 
-The largest-non-sample heuristic is safe because everything that already
-resolved was skipped, so only single-payload jobs reach it. Anything still
-dangling is a job zurg does not have. Plex sees no change at all.
-
-### Setup B — take over the mountpoint
-
-Because the roots match, moving zurg onto decypharr's mountpoint preserves
-every path except the renamed class:
+**2. Make the root folders.** They have to be *inside* `__magic__`, one level
+down. Not `__magic__` itself and not the mount root — both \*arrs raise a
+health check for those, and an import lands here anyway.
 
 ```bash
-# Nothing playing, nothing scanning, then:
-sudo systemctl stop plexmediaserver
+mkdir -p /mnt/zurg/__magic__/tv /mnt/zurg/__magic__/movies
+ls /mnt/zurg/__magic__/          # your releases are already listed here
+```
+
+`__magic__` starts as a mirror of `__all__`, so every release is present
+before you organise anything.
+
+**3. Organise, if you want to.** A `mv` inside `__magic__` writes a row and
+moves no bytes:
+
+```bash
+mv "/mnt/zurg/__magic__/Some.Release.S01E01.1080p/ep1.mkv" \
+   "/mnt/zurg/__magic__/tv/The Show/Season 01/S01E01.mkv"
+```
+
+Or point Sonarr and Radarr at those root folders and let them do it — see
+[Sonarr & Radarr](../guides/sonarr-radarr.md). **Adopt the existing files where
+they are; never change a root folder in a way that makes the \*arr move your
+old library in.** That crosses the mount boundary, which is a copy, which
+downloads everything.
+
+**4. Point Plex at `__magic__`** — that library only, never `__magic__` *and* a
+filter directory, or every episode is found twice. Confirm `autoEmptyTrash` is
+`0`, add the new location, scan, then remove the old decypharr location.
+
+**5. Empty the trash** once you have spot-checked a few items. Watch state
+comes back through the GUID match; collections and artwork choices do not.
+
+Leave decypharr running until then — it costs nothing and it is your rollback.
+When you are done:
+
+```bash
 sudo systemctl stop decypharr
-mountpoint -q /mnt/decypharr && sudo umount /mnt/decypharr
-# set mount_path: "/mnt/decypharr" in zurg's config.yml
-sudo systemctl restart zurg
-ls /mnt/decypharr/__all__ | head
-cat /mnt/decypharr/version.txt
-sudo systemctl start plexmediaserver
 ```
-
-Scan. The renamed releases come back as new items and the old ones land in the
-trash; everything else is untouched. Leave the trash alone until you have
-spot-checked a few.
-
-Do not delete decypharr, its config, `db/` or `usenet/` state until you are
-done — that is your rollback.
 
 ## Afterwards
 

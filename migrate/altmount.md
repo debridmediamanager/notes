@@ -6,8 +6,8 @@ order: 90
 
 # Migrating from AltMount to zurg
 
-Read [the shared page](index.md) first — the trash guard and the Setup A/B
-question live there.
+Read [the shared page](index.md) first — the trash guard, and why your
+library lands in `__magic__` rather than a symlink farm, both live there.
 
 AltMount serves the cleanest tree of the five: exactly one file per release,
 no thumbnails, no adverts, no sample, no leftovers. The migration is
@@ -57,17 +57,19 @@ library is smaller than your NZB collection, this is why.
 If you want to keep AltMount importing while you migrate, lowering
 `segment_sample_percentage` is the knob to try; it was not exercised here.
 
-## What needs rescanning
+## What your library looks like afterwards
 
-**Setup A (symlink library): only the archive releases.** Everything else
-resolves under zurg unchanged.
+**Everything is re-added**, because the library root moves to `__magic__`.
+See [the shared page](index.md) for why there is no cheaper path.
 
-**Setup B (Plex on the mount): everything.** AltMount serves a flat
-`<mount>/<release>/<file>` and zurg serves `<mount>/<directory>/<release>/…`,
-so the prefix moves even where the filename does not.
+What changes on the way through is small. Plain single-file releases keep the
+filename AltMount gave them, so most of the library reads the same. **Archive
+releases come back under the poster's name**, one directory deeper, which is
+strictly better for an \*arr — `father.brown.2013.s02e05.hdtv.x264-tla.mp4`
+carries the quality, source and group that `FatherBrown.mp4` threw away.
 
-Find your archive releases — the ones that will be re-added either way — by
-looking for a mount folder whose single file is named after the folder:
+Find the archive releases, the ones whose names actually move, by looking for
+a mount folder whose single file is named after the folder:
 
 ```bash
 AM=/mnt/altmount
@@ -79,10 +81,6 @@ for d in "$AM"/*/; do
   done
 done
 ```
-
-Every line is a release whose file zurg will serve under the poster's name
-inside the archive's own directory, one level deeper. Those items are re-added
-on the first scan; the old ones drop into the trash.
 
 ## What new content shows up
 
@@ -185,46 +183,55 @@ class arriving.
 
 ## Cut over
 
-### Setup A — repoint the symlinks
+One path, whatever you have today. Nothing here moves bytes.
 
-Both mounts are up, so nothing is ever broken. Repoint what resolves, then
-handle the archive releases:
+**1. Turn on `__magic__`** and restart — the routes are registered at startup,
+so a dashboard toggle needs a restart before the namespace answers.
 
-```bash
-find /path/to/arr-library -type l | while IFS= read -r link; do
-  old=$(readlink "$link")
-  case "$old" in
-    /mnt/altmount/*)
-      rel=${old#/mnt/altmount/}
-      new="/mnt/zurg/__all__/$rel"
-      [ -e "$new" ] && ln -sfn "$new" "$link"
-      ;;
-  esac
-done
-
-# What is left dangling is the archive class — one video per release folder:
-find /path/to/arr-library -xtype l | while IFS= read -r link; do
-  release=$(readlink "$link" | sed 's|^/mnt/altmount/\([^/]*\)/.*|\1|')
-  find "/mnt/zurg/__all__/$release" -type f \
-       \( -iname '*.mkv' -o -iname '*.mp4' -o -iname '*.avi' \) ! -ipath '*sample*' \
-       -printf '%s\t%p\n' | sort -rn | head -1 | cut -f2- | \
-    xargs -r -I{} ln -sfn {} "$link"
-done
-find /path/to/arr-library -xtype l          # want no output
+```yaml
+magic:
+  enabled: true
 ```
 
-The largest-non-sample heuristic is safe here because everything that already
-resolved was skipped, so only single-payload releases reach it. Plex sees no
-change: the link paths never moved.
+**2. Make the root folders.** They have to be *inside* `__magic__`, one level
+down. Not `__magic__` itself and not the mount root — both \*arrs raise a
+health check for those, and an import lands here anyway.
 
-### Setup B — point Plex at zurg
+```bash
+mkdir -p /mnt/zurg/__magic__/tv /mnt/zurg/__magic__/movies
+ls /mnt/zurg/__magic__/          # your releases are already listed here
+```
 
-Confirm `autoEmptyTrash` is `0`, add zurg's mount as an additional location on
-each library, scan, then remove the old AltMount location. Everything is
-re-added — watch state returns via GUID, collections and artwork choices do
-not.
+`__magic__` starts as a mirror of `__all__`, so every release is present
+before you organise anything.
 
-Leave the old items in the trash until you have spot-checked a few.
+**3. Organise, if you want to.** A `mv` inside `__magic__` writes a row and
+moves no bytes:
+
+```bash
+mv "/mnt/zurg/__magic__/Some.Release.S01E01.1080p/ep1.mkv" \
+   "/mnt/zurg/__magic__/tv/The Show/Season 01/S01E01.mkv"
+```
+
+Or point Sonarr and Radarr at those root folders and let them do it — see
+[Sonarr & Radarr](../guides/sonarr-radarr.md). **Adopt the existing files where
+they are; never change a root folder in a way that makes the \*arr move your
+old library in.** That crosses the mount boundary, which is a copy, which
+downloads everything.
+
+**4. Point Plex at `__magic__`** — that library only, never `__magic__` *and* a
+filter directory, or every episode is found twice. Confirm `autoEmptyTrash` is
+`0`, add the new location, scan, then remove the old AltMount location.
+
+**5. Empty the trash** once you have spot-checked a few items. Watch state
+comes back through the GUID match; collections and artwork choices do not.
+
+Leave AltMount running until then — it costs nothing and it is your rollback.
+When you are done:
+
+```bash
+sudo systemctl stop altmount
+```
 
 ## Afterwards
 
