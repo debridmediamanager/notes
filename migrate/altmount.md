@@ -15,18 +15,15 @@ Measured against zurg on the same five releases:
 | zurg loses | nothing |
 | renamed | **archive (RAR) releases only** |
 
-!!!info Naming behaviour changed
-An earlier version of this guide, measured against v0.3.2 on 2026-08-19,
-described AltMount as renaming *every* single-file release to the NZB
-filename. That does not reproduce on build `0614008b`: across three
-independent runs on 2026-09-01, plain single-file releases kept the poster's
-filename, including a release whose inner name differs from the NZB name and
-a fully obfuscated one. Only the release that had to be unpacked from a RAR
-came out as `<NZB name>.mp4`.
+!!!info Only the archive path renames
+Across three independent runs on build `0614008b`, plain single-file releases
+kept the poster's filename — including one whose inner name differs from the
+NZB name, and a fully obfuscated one. Only the release that had to be unpacked
+from a RAR came out as `<NZB name>.mp4`.
 
-If you are on an older AltMount, check your own tree before trusting the
-rescan list below — the one command in "What needs rescanning" tells you in
-seconds.
+Older AltMount builds renamed more than this, so check your own tree before
+trusting the rescan list below. The one command in "What needs rescanning"
+tells you in seconds.
 !!!
 
 ## The bigger issue is what AltMount never imported

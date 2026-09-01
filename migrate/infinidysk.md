@@ -21,21 +21,16 @@ preserved `Father.Brown.2013.S02E05.HDTV.x264-TLA/` directory.
 
 zurg keeps the poster's filename. So the release name — the string Plex and
 the \*arrs parse for quality, group and episode — comes back, and every
-single-payload release changes path. An earlier version of this guide did not
-mention this behaviour at all.
+single-payload release changes path.
 !!!
 
 One more difference, small but confusing if you meet it cold: InfiniDysk
 creates the archive's `Sample/` directory and leaves it **empty**. zurg puts
 the sample clip inside it.
 
-!!!info An older claim, now retracted
-A previous version of this guide opened by citing v1.1.2 rejecting an entire
-10-episode season pack with `430 No such article` for an article the news
-server demonstrably held. That does not reproduce on build `cd9b1205`, which
-imported all five releases including the season pack. Do not migrate expecting
-InfiniDysk to be dropping content — on a current build it is not.
-!!!
+Content is not the reason to move. Build `cd9b1205` imported all five releases
+of the reference corpus, season pack included, so do not expect to find
+InfiniDysk dropping things. What you get back is the naming.
 
 !!!warning Never walk the WebDAV root
 The `.ids` object store materialises all 16 hex children at every one of its

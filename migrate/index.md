@@ -30,13 +30,13 @@ Watch state survives because `metadata_item_settings` is keyed by account and
 item matches to the same GUID. If Plex mismatches the re-added item, the state
 does not come back — check a handful after the first scan.
 
-The older versions of these guides went to great lengths to avoid that trade:
-database surgery on `media_parts.file`, symlink shim trees, exact path
-reconstruction. It works, and if your curation genuinely matters more than
-your afternoon, the recipes are still in this site's git history. For almost
-everybody the risk of a half-applied rewrite of an undocumented schema is
-worse than the loss, so these guides now take the simple route and tell you
-exactly what it costs.
+You can avoid that trade entirely, at a price: rewriting `media_parts.file` in
+Plex's database so the rows never die, or building a symlink shim tree that
+reconstructs every old path over zurg's mount. Both work. Both are unsupported
+surgery on an undocumented schema that shifts between Plex versions, and a
+half-applied rewrite is worse than either outcome it was meant to prevent.
+
+These guides take the simple route and tell you exactly what it costs.
 
 ## Which setup you have decides everything
 
