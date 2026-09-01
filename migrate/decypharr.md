@@ -89,6 +89,17 @@ for d in "$MOUNT"/__all__/*/; do
 done
 ```
 
+!!!info Whether you actually see this depends on your setup
+If Plex reads the mount directly — every Windows setup, and any Linux or macOS
+one without an \*arr symlink farm — the names below are what changes in your
+library.
+
+If Sonarr and Radarr organise a symlink library with renaming on, **your
+filenames are already theirs** and none of the names below appear in Plex. What
+the table tells you then is how good a parse the \*arr was working from, which
+matters when you re-import. See [the shared page](index.md).
+!!!
+
 ## What new content shows up
 
 - **Sample clips** inside `Sample/` — the one worth configuring for. Set
@@ -202,23 +213,26 @@ ls /mnt/zurg/__magic__/          # your releases are already listed here
 `__magic__` starts as a mirror of `__all__`, so every release is present
 before you organise anything.
 
-**3. Organise, if you want to.** A `mv` inside `__magic__` writes a row and
-moves no bytes:
+**3. Organise it.** A `mv` inside `__magic__` writes a row and moves no bytes:
 
 ```bash
 mv "/mnt/zurg/__magic__/Some.Release.S01E01.1080p/ep1.mkv" \
    "/mnt/zurg/__magic__/tv/The Show/Season 01/S01E01.mkv"
 ```
 
-Or point Sonarr and Radarr at those root folders and let them do it — see
-[Sonarr & Radarr](../guides/sonarr-radarr.md). **Adopt the existing files where
-they are; never change a root folder in a way that makes the \*arr move your
-old library in.** That crosses the mount boundary, which is a copy, which
-downloads everything.
+**If Sonarr and Radarr organised your old library, let them do it here too** —
+that is what `__magic__` is for, and it replaces the symlink farm outright.
+Add `__magic__/tv` and `__magic__/movies` as *new* root folders and run a
+library import against them so the \*arrs adopt what is already there. Never
+change an existing series' or movie's root folder to point into `__magic__`:
+that makes the \*arr move the files across the mount boundary, which is a copy,
+which downloads your library. The full sequence and the number to watch are on
+[the shared page](index.md#coming-off-a-symlink-library).
 
 **4. Point Plex at `__magic__`** — that library only, never `__magic__` *and* a
 filter directory, or every episode is found twice. Confirm `autoEmptyTrash` is
-`0`, add the new location, scan, then remove the old decypharr location.
+`0`, add the new location, scan, then remove the old one (your \*arr library
+path, or the decypharr mount if Plex read it directly).
 
 **5. Empty the trash** once you have spot-checked a few items. Watch state
 comes back through the GUID match; collections and artwork choices do not.

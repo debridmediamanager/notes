@@ -68,18 +68,77 @@ straight at the old mount — **the paths change and the library is re-added.**
 That is the trade named above, and it is the whole cost of every migration
 here.
 
-!!!danger Never ask an \*arr to relocate an existing library into `__magic__`
-Changing a root folder makes Sonarr or Radarr *move* the files. A move inside
-`__magic__` is free, but a move from anywhere else crosses the mount boundary,
-which is a copy — and a copy off a streaming mount downloads your entire
-library through your news or debrid allowance.
+## What you have today depends on your platform
 
-Adopt the files where they already are instead. `__magic__` starts as a mirror
-of `__all__`, so every release is already there, as a folder holding its own
-files, before you organise anything. zurg's `/magic/` dashboard reports the
-size of `data/local`, which is the number that tells you whether something is
-importing by copying.
+This decides whether the renaming tables on the following pages describe your
+Plex library or only the source it was built from. Get it right before you
+read them.
+
+### Linux and macOS — your \*arrs already renamed everything
+
+The symlink strategy is the documented setup for all four servers here, and it
+only exists on these platforms: the server publishes
+`completed-symlinks/<category>/<release>/<file>.rclonelink`, `rclone mount
+--links` turns each into a real symlink, and **Sonarr and Radarr import from
+that farm into a library at paths they chose.** The mount is the source, not
+the library.
+
+Two consequences:
+
+- **The paths Plex has are the \*arr's**, always — root folder, series folder,
+  season folder. None of them contain a release name.
+- **The filenames are the \*arr's too, if you left renaming on** ("Rename
+  Episodes" / "Rename Movies"). With renaming off they are the source
+  server's, and the tables on the following pages describe exactly what you
+  see.
+
+So if you run the \*arrs with renaming on, the per-server renaming tables do
+**not** describe your library. They describe what the \*arr was handed at
+import time — which still matters, because a better source filename is a
+better parse, and you are about to re-import.
+
+### Windows — no symlink layer at all
+
+`rclone mount --links` and a symlink farm are not part of a Windows setup. The
+mount is a drive letter through WinFsp and Plex and the \*arrs point straight
+at it, so **Plex shows the server's own filenames** and the renaming tables
+describe precisely what you will see change. The [Windows
+setup](../setup/windows.md) page covers the drive letter and its session rule.
+
+### Coming off a symlink library
+
+You are not moving a library, you are rebuilding one — and `__magic__` gives
+the \*arrs exactly what the symlink farm gave them, minus the farm. They move
+and rename inside it as freely as before, except each move is a row write
+instead of a file operation.
+
+!!!danger Never ask an \*arr to relocate the old library into `__magic__`
+Changing a series' or movie's root folder makes Sonarr or Radarr **move** the
+files. A move inside `__magic__` is free; a move from anywhere else crosses
+the mount boundary, which is a copy — and a copy off a streaming mount pulls
+your entire library down through your news or debrid allowance. Your old
+library is a tree of symlinks, so what gets copied is every target they
+resolve to.
 !!!
+
+Adopt the files where they already are instead:
+
+1. Add `__magic__/tv` and `__magic__/movies` as **new** root folders. Leave the
+   old root folder in place for now.
+2. Point the \*arr's library import at those paths so it adopts what is there.
+   `__magic__` starts as a mirror of `__all__`, so every release is already
+   present as a folder holding its own files. With renaming on, the \*arr
+   applies its own scheme — a free row write, because it never leaves the
+   namespace.
+3. Remove the old root folder **without deleting files**, and point Plex at
+   `__magic__`.
+
+Watch `data/local` on zurg's `/magic/` dashboard while step 2 runs. That
+number is the one that says whether something is importing by copying instead
+of moving; on a correct import it does not grow. (The zurg side of this is
+documented behaviour; the \*arr side is ordinary library import, but it was
+not bench-tested for this guide — do one series first and check the number
+before turning it loose on the library.)
 
 !!!warning Point each Plex library at one directory, not two
 A library that scans both a filter directory (`movies`, `shows`, `__all__`)
