@@ -158,7 +158,7 @@ Substitute your own `mount_path` for `/mnt/zurg_qbt`.
 
 **The root folder must be inside `__magic__`, not at it and not above it** — the same rule as the Usenet walkthrough, for the same reason: both clients raise a health check when a root folder *is* the download client's output folder, Radarr also raises one when a root folder *contains* it, and a root folder one level inside is the one arrangement neither complains about. [That guide](sonarr-radarr.md#4-make-the-root-folders) has the screenshots of getting it wrong.
 
-There is a second reason that is specific to torrents: a move whose destination is outside `__magic__` is a move between two filesystems, which is a copy — and a copy off a debrid mount reads the whole release back over the network. `Remove Completed` staying on (below) keeps the import a rename; a root folder outside the namespace would undo that anyway.
+There is a second reason that is specific to torrents: a move whose destination is outside `__magic__` is a move between two filesystems, which is a copy — and a copy off a debrid mount reads the whole release back over the network. `Remove Completed` staying on ([below](#if-the-import-copies-instead-of-moving)) keeps the import a rename; a root folder outside the namespace would undo that anyway.
 
 ## 5. Add the client in Sonarr
 
@@ -206,7 +206,7 @@ The dialog opens with qBittorrent's own defaults — `localhost`, port `8080`, n
 | Username / Password | empty | Leave both empty — the key replaces them. |
 | Category | `tv-sonarr` | Must appear in `qbittorrent.categories`. The \*arr default, so it already does. |
 | Initial State / Sequential / First-Last | defaults | There is no swarm here; none of these do anything. |
-| **Remove Completed** | **on** | **The one that matters** — see below. |
+| **Remove Completed** | **on** | **The one that matters** — see [If the import copies instead of moving](#if-the-import-copies-instead-of-moving). |
 
 ![The qBittorrent dialog filled in](../assets/sonarr-radarr-torrents/08-sonarr-qbittorrent-dialog-filled.webp)
 
@@ -405,6 +405,25 @@ Then **Search**, type what you want, and push a row at the client:
 
 The release goes onto the account exactly as an \*arr grab does — same add path, same categories, same `__magic__` folder — and this one landed cached, `finished` inside a second. But nothing imports it. It sits in the account and serves from the mount, which is the point: Prowlarr's push is for *put this on my debrid account now*, not for the automated grab-import-clean pipeline. For that, keep Sonarr and Radarr pointed at the endpoint and let Prowlarr manage indexers.
 
+## If the import copies instead of moving
+
+Everything above depends on the import being a **rename**. One setting in the \*arr decides that, and it is the only part of the decision zurg has no say in.
+
+The client will only move an imported file when it believes it is free to remove the download afterwards, which is three things at once: **Remove Completed** on, a finished-and-paused torrent, and a seed limit it can see has been reached. zurg reports the last two exactly as they have to be — every completed torrent comes back paused, at ratio 0 against a ratio limit of 0. **Remove Completed** is the one that is yours.
+
+With it off the client copies instead, and off a debrid mount a copy means reading every byte of the release back over the network and writing it to local disk. The release in step 9 would go from a rename that moved nothing to a 17 GiB download, to import a file that was already there.
+
+**Nothing in the \*arr says so.** The import is reported as successful either way and the history row looks the same. The difference shows only in zurg's log:
+
+| The import | What zurg logs |
+|---|---|
+| moved — correct | one `MOVE __magic__` line |
+| copied | `MKCOL`, then a `PUT` carrying the release's full byte count |
+
+A `PUT` of a media file arriving while an import is in flight is that import copying. The `/magic/` page says the same thing more slowly: it reports the size of `data/local`, which is where a copying client's bytes land and where nothing else would put them. If that number grows every time something imports, this is why.
+
+Turn **Remove Completed** back on and the next import is a rename again. **Use Hardlinks instead of Copy** is not a substitute — the client only consults it once it has already decided to copy, so it cannot turn a copy back into a move.
+
 ## Timeouts, and cached-only mode
 
 A grab that stops moving comes off the account it is on and is offered to the next. One key decides it:
@@ -460,6 +479,7 @@ Does not:
 | A completed release sits in the queue as a warning | Either the client decided not to import it (an upgrade the profile refuses), or every account refused it. The queue row carries the reason. It clears nothing by itself — remove it by hand, and *Blocklist and Search* if the release is bad. |
 | "Downloads in root folder" / "Remote path mapping" | The same root-folder and path rules as the Usenet endpoint — see [steps 4](#4-make-the-root-folders) and [8](#8-if-your-arr-is-in-docker). |
 | Every release rejected, nothing in the log | A stale bind mount. Run `docker exec <client> df -h <mount>`; if it says `Socket not connected`, bind the parent with `rslave` and recreate the container. |
+| Imports succeed, but they take a long time and local disk fills | The \*arr is copying rather than renaming. zurg's log shows a `PUT` carrying the release's full size where a rename would be one `MOVE`. **Remove Completed** is off on the download client — see [If the import copies instead of moving](#if-the-import-copies-instead-of-moving). |
 
 ## Where the state lives
 
