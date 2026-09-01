@@ -12,60 +12,21 @@ This guide covers running zurg in Docker with host-visible FUSE mounts.
 
 ## Quick Start
 
-### 1. Create required directories
+### 1. One-time host setup
+
+FUSE mount propagation from Docker requires the parent directory to be a shared bind mount. Run this once (it does not survive reboots on its own — see step 5 to persist):
 
 ```bash
-mkdir -p ~/zurg/{logs,data,dump,strm}
 sudo mkdir -p /zurg_mnt
 sudo modprobe fuse
-```
-
-### 2. One-time host setup
-
-FUSE mount propagation from Docker requires the parent directory to be a shared bind mount. Run this once (it does not survive reboots on its own — see step 6 to persist):
-
-```bash
 sudo mount --bind /zurg_mnt /zurg_mnt
 sudo mount --make-rshared /zurg_mnt
 ```
 
-### 3. Configure your token
+### 2. Create docker-compose.yml
 
-**Option A: Create config.yml** (full control)
+Create `~/zurg/docker-compose.yml`. There is nothing else to create — no config file, no state directories:
 
-Create `~/zurg/config.yml`:
-```yaml
-zurg: v1
-providers:
-  - type: realdebrid
-    token: YOUR_RD_API_TOKEN
-rclone_enabled: true
-mount_path: /zurg_mnt/zurg
-
-directories:
-  movies:
-    group: media
-    group_order: 30
-    only_show_the_biggest_file: true
-    filters:
-      - regex: /.*/
-
-  shows:
-    group: media
-    group_order: 20
-    filters:
-      - has_episodes: true
-```
-
-**Option B: Use TOKEN env var** (zero-config)
-
-Skip creating config.yml entirely. Set the `TOKEN` environment variable in docker-compose.yml (see step 4) and zurg will auto-create a default config with your token on first run. You can then customize settings via the Dashboard at `http://localhost:9999/config/`.
-
-The generated config leaves `rclone_enabled` off and `mount_path` unset, so nothing appears at `/zurg_mnt/zurg` until you enable the rclone mount and point it at `/zurg_mnt/zurg` in the Dashboard. It is also written inside the container, so it is lost whenever the container is recreated — bind-mount `config.yml` (Option A) if you want Dashboard edits to survive.
-
-### 4. Create docker-compose.yml
-
-Create `~/zurg/docker-compose.yml`:
 ```yaml
 services:
   zurg:
@@ -78,50 +39,38 @@ services:
       - SYS_ADMIN
     security_opt:
       - apparmor:unconfined
-    healthcheck:
-      test: curl -f localhost:9999/http/version.txt || exit 1
-      interval: 10s
-      timeout: 10s
-      start_period: 60s
-      retries: 1000
     ports:
       - 9999:9999
-    volumes:
-      # If using Option A (config.yml), mount it here:
-      - ./config.yml:/app/config.yml
-      # If using Option B (TOKEN env var), remove the config.yml mount above
-      - ./logs:/app/logs
-      - ./data:/app/data
-      - ./dump:/app/dump
-      - ./strm:/app/strm
-      - /zurg_mnt:/zurg_mnt:rshared
     environment:
-      - PUID=0
-      - PGID=0
-      # If using Option B, uncomment and set your token:
-      # - TOKEN=YOUR_RD_API_TOKEN
+      - TOKEN=YOUR_RD_API_TOKEN
+      - MOUNT_PATH=/zurg_mnt/zurg
+    volumes:
+      - ./:/config
+      - /zurg_mnt:/zurg_mnt:rshared
 ```
 
 > **Note:** `privileged: true` is NOT required. `cap_add: SYS_ADMIN` with `apparmor:unconfined` provides the minimum permissions needed for FUSE mounts.
 
-### 5. Start zurg
+### 3. Start zurg
 
 ```bash
 cd ~/zurg
 docker compose up -d
 ```
 
-### 6. Verify the mount
+`config.yml` appears next to your compose file, carrying the token and the mount you asked for. Open it, or use the Dashboard at `http://localhost:9999/config/` — both edit the same file.
+
+### 4. Verify the mount
 
 ```bash
 ls -la /zurg_mnt/zurg/
 ```
 
-You should see your directories (movies, shows, etc.).
+You should see your directories (movies, shows, etc.). A large library takes a while to load on the first run; until it has, `/dav/movies/` answers 503 and the mount lists nothing.
 
-### 7. Persist across reboots
+### 5. Persist across reboots
 
-The bind mount from step 2 does not survive reboots. Create a systemd service to apply it automatically:
+The bind mount from step 1 does not survive reboots. Create a systemd service to apply it automatically:
 
 ```bash
 sudo tee /etc/systemd/system/rshared-zurg-mnt.service << 'EOF'
@@ -139,6 +88,33 @@ WantedBy=multi-user.target
 EOF
 sudo systemctl enable rshared-zurg-mnt.service
 ```
+
+## What lives where
+
+Everything zurg writes resolves against its working directory, and in the image that directory is `/config`. One bind mount therefore holds the entire install:
+
+| Path | What it is |
+|---|---|
+| `config.yml` | The only source of truth for settings. Dashboard edits are written straight back into it |
+| `data/` | Library cache, network test results, and the rclone VFS cache |
+| `logs/` | zurg's log and rclone's |
+| `dump/` | Torrent dumps, when enabled |
+| `strm/` | `.strm` files, when `save_strm_files` is on |
+| `nzbs/` | The watch directory for the Usenet backend |
+
+Pulling a new image moves none of it.
+
+### Seeding the config from the environment
+
+`TOKEN` (or `RD_TOKEN`) and `MOUNT_PATH` are read **only on the run that creates `config.yml`**. `MOUNT_PATH` writes both `rclone_enabled: true` and `mount_path`, which is what makes a first run mount something without a Dashboard visit.
+
+After that the file wins and the variables are ignored, for the same reason `log_level` in the config beats `LOG_LEVEL` in the environment: a value baked into a compose file must not silently undo a setting changed in the Dashboard. Startup logs a warning when a `MOUNT_PATH` is set and disagrees with the config, so the ignoring is visible rather than mysterious. To move the mount, edit `config.yml` or use the Dashboard.
+
+### Upgrading from an install that mounted `/app`
+
+Nothing to do, and nothing to change. Older setups bind-mounted `/app/config.yml`, `/app/data` and friends individually; the container still picks `/app` whenever any of those is present, so an image update finds the same config and the same library cache it had yesterday.
+
+To move such an install onto the single-folder layout, stop the container, put the existing `config.yml` and `data/` into one directory, and mount that directory at `/config` instead.
 
 ## How It Works
 
@@ -194,7 +170,7 @@ curl -s http://localhost:9999/dav/version.txt
 ```bash
 findmnt /zurg_mnt
 ```
-If it doesn't show `/zurg_mnt` as a bind mount, re-run step 2 from the Quick Start.
+If it doesn't show `/zurg_mnt` as a bind mount, re-run step 1 from the Quick Start.
 
 ### Mount appears twice in `mount` output
 
