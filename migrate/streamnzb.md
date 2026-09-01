@@ -20,6 +20,28 @@ zurg deliberately does not.
 
 This guide is shorter than its siblings because the problem is smaller.
 
+## What needs rescanning, and what new content shows up
+
+The two questions the [other migration guides](index.md) answer do not really
+apply here, and it is worth saying why rather than leaving you to wonder.
+
+**Nothing needs rescanning, because there is nothing to rescan.** streamnzb
+holds no library and Plex has no items bound to any path, so none of the
+trash-guard machinery on the shared page is load-bearing for you. There is no
+old item to preserve and nothing that can be trashed by a mistake.
+
+**All of it is new content.** Whatever you drop into zurg's `nzbs/` is a
+first-time scan into an empty library, so set your libraries up the way you
+want them before the first pass rather than fixing them afterwards. Two
+settings worth having in place first:
+
+- [`only_show_the_biggest_file: true`](../reference/config.md) on the
+  directories your media libraries scan, unless you want sample clips, `.nfo`
+  files and the poster's `.url` adverts visible.
+- "Generate video preview thumbnails" **off** on those libraries. On a
+  streaming mount every thumbnail pass is a full read of the release through
+  your news allowance, and a first scan hands Plex the whole library at once.
+
 ---
 
 ## The model change
