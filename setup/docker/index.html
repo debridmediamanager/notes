@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841579988558">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841586123798">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841579988558" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841586123798" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841579988558" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841586123798" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841579988558" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841579988558" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841586123798" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841586123798" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -184,49 +184,17 @@
 <p><strong>Note:</strong> The integrated rclone mount feature requires zurg v0.10+. The Docker image <code translate="no" v-pre>ghcr.io/debridmediamanager/zurg:latest</code> is sponsors-only. See the <a href="https://www.patreon.com/debridmediamanager">Patreon</a> for access.</p>
 </blockquote>
 <h2 id="quick-start">Quick Start</h2>
-<h3 id="1-create-required-directories">1. Create required directories</h3>
-<div id="1-create-required-directories-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p ~/zurg/{logs,data,dump,strm}
-sudo mkdir -p /zurg_mnt
-sudo modprobe fuse</code></pre>
-</doc-codeblock></div>
-<h3 id="2-one-time-host-setup">2. One-time host setup</h3>
-<p>FUSE mount propagation from Docker requires the parent directory to be a shared bind mount. Run this once (it does not survive reboots on its own — see step 6 to persist):</p>
-<div id="2-one-time-host-setup-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo mount --bind /zurg_mnt /zurg_mnt
+<h3 id="1-one-time-host-setup">1. One-time host setup</h3>
+<p>FUSE mount propagation from Docker requires the parent directory to be a shared bind mount. Run this once (it does not survive reboots on its own — see step 5 to persist):</p>
+<div id="1-one-time-host-setup-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo mkdir -p /zurg_mnt
+sudo modprobe fuse
+sudo mount --bind /zurg_mnt /zurg_mnt
 sudo mount --make-rshared /zurg_mnt</code></pre>
 </doc-codeblock></div>
-<h3 id="3-configure-your-token">3. Configure your token</h3>
-<p><strong>Option A: Create config.yml</strong> (full control)</p>
-<p>Create <code translate="no" v-pre>~/zurg/config.yml</code>:</p>
-<div id="3-configure-your-token-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">zurg: v1
-providers:
-  - type: realdebrid
-    token: YOUR_RD_API_TOKEN
-rclone_enabled: true
-mount_path: /zurg_mnt/zurg
-
-directories:
-  movies:
-    group: media
-    group_order: 30
-    only_show_the_biggest_file: true
-    filters:
-      - regex: /.*/
-
-  shows:
-    group: media
-    group_order: 20
-    filters:
-      - has_episodes: true</code></pre>
-</doc-codeblock></div>
-<p><strong>Option B: Use TOKEN env var</strong> (zero-config)</p>
-<p>Skip creating config.yml entirely. Set the <code translate="no" v-pre>TOKEN</code> environment variable in docker-compose.yml (see step 4) and zurg will auto-create a default config with your token on first run. You can then customize settings via the Dashboard at <code translate="no" v-pre>http://localhost:9999/config/</code>.</p>
-<p>The generated config leaves <code translate="no" v-pre>rclone_enabled</code> off and <code translate="no" v-pre>mount_path</code> unset, so nothing appears at <code translate="no" v-pre>/zurg_mnt/zurg</code> until you enable the rclone mount and point it at <code translate="no" v-pre>/zurg_mnt/zurg</code> in the Dashboard. It is also written inside the container, so it is lost whenever the container is recreated — bind-mount <code translate="no" v-pre>config.yml</code> (Option A) if you want Dashboard edits to survive.</p>
-<h3 id="4-create-docker-composeyml">4. Create docker-compose.yml</h3>
-<p>Create <code translate="no" v-pre>~/zurg/docker-compose.yml</code>:</p>
-<div id="4-create-docker-composeyml-code-1" class="codeblock-wrapper"><doc-codeblock>
+<h3 id="2-create-docker-composeyml">2. Create docker-compose.yml</h3>
+<p>Create <code translate="no" v-pre>~/zurg/docker-compose.yml</code>. There is nothing else to create — no config file, no state directories:</p>
+<div id="2-create-docker-composeyml-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">services:
   zurg:
     image: ghcr.io/debridmediamanager/zurg:latest
@@ -238,45 +206,32 @@ directories:
       - SYS_ADMIN
     security_opt:
       - apparmor:unconfined
-    healthcheck:
-      test: curl -f localhost:9999/http/version.txt || exit 1
-      interval: 10s
-      timeout: 10s
-      start_period: 60s
-      retries: 1000
     ports:
       - 9999:9999
-    volumes:
-      # If using Option A (config.yml), mount it here:
-      - ./config.yml:/app/config.yml
-      # If using Option B (TOKEN env var), remove the config.yml mount above
-      - ./logs:/app/logs
-      - ./data:/app/data
-      - ./dump:/app/dump
-      - ./strm:/app/strm
-      - /zurg_mnt:/zurg_mnt:rshared
     environment:
-      - PUID=0
-      - PGID=0
-      # If using Option B, uncomment and set your token:
-      # - TOKEN=YOUR_RD_API_TOKEN</code></pre>
+      - TOKEN=YOUR_RD_API_TOKEN
+      - MOUNT_PATH=/zurg_mnt/zurg
+    volumes:
+      - ./:/config
+      - /zurg_mnt:/zurg_mnt:rshared</code></pre>
 </doc-codeblock></div>
 <blockquote>
 <p><strong>Note:</strong> <code translate="no" v-pre>privileged: true</code> is NOT required. <code translate="no" v-pre>cap_add: SYS_ADMIN</code> with <code translate="no" v-pre>apparmor:unconfined</code> provides the minimum permissions needed for FUSE mounts.</p>
 </blockquote>
-<h3 id="5-start-zurg">5. Start zurg</h3>
-<div id="5-start-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
+<h3 id="3-start-zurg">3. Start zurg</h3>
+<div id="3-start-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/zurg
 docker compose up -d</code></pre>
 </doc-codeblock></div>
-<h3 id="6-verify-the-mount">6. Verify the mount</h3>
-<div id="6-verify-the-mount-code-1" class="codeblock-wrapper"><doc-codeblock>
+<p><code translate="no" v-pre>config.yml</code> appears next to your compose file, carrying the token and the mount you asked for. Open it, or use the Dashboard at <code translate="no" v-pre>http://localhost:9999/config/</code> — both edit the same file.</p>
+<h3 id="4-verify-the-mount">4. Verify the mount</h3>
+<div id="4-verify-the-mount-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">ls -la /zurg_mnt/zurg/</code></pre>
 </doc-codeblock></div>
-<p>You should see your directories (movies, shows, etc.).</p>
-<h3 id="7-persist-across-reboots">7. Persist across reboots</h3>
-<p>The bind mount from step 2 does not survive reboots. Create a systemd service to apply it automatically:</p>
-<div id="7-persist-across-reboots-code-1" class="codeblock-wrapper"><doc-codeblock>
+<p>You should see your directories (movies, shows, etc.). A large library takes a while to load on the first run; until it has, <code translate="no" v-pre>/dav/movies/</code> answers 503 and the mount lists nothing.</p>
+<h3 id="5-persist-across-reboots">5. Persist across reboots</h3>
+<p>The bind mount from step 1 does not survive reboots. Create a systemd service to apply it automatically:</p>
+<div id="5-persist-across-reboots-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo tee /etc/systemd/system/rshared-zurg-mnt.service &lt;&lt; 'EOF'
 [Unit]
 Description=Make /zurg_mnt rshared for Docker FUSE mounts
@@ -292,6 +247,60 @@ WantedBy=multi-user.target
 EOF
 sudo systemctl enable rshared-zurg-mnt.service</code></pre>
 </doc-codeblock></div>
+<h2 id="what-lives-where">What lives where</h2>
+<p>Everything zurg writes resolves against its working directory, and in the image that directory is <code translate="no" v-pre>/config</code>. One bind mount therefore holds the entire install:</p>
+<retype-table copy-text="| Path | What it is |
+|---|---|
+| `config.yml` | The only source of truth for settings. Dashboard edits are written straight back into it |
+| `data/` | Library cache, network test results, and the rclone VFS cache |
+| `logs/` | zurg's log and rclone's |
+| `dump/` | Torrent dumps, when enabled |
+| `strm/` | `.strm` files, when `save_strm_files` is on |
+| `nzbs/` | The watch directory for the Usenet backend |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Path</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>config.yml</code></td>
+<td>The only source of truth for settings. Dashboard edits are written straight back into it</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>data/</code></td>
+<td>Library cache, network test results, and the rclone VFS cache</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>logs/</code></td>
+<td>zurg&#x27;s log and rclone&#x27;s</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>dump/</code></td>
+<td>Torrent dumps, when enabled</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>strm/</code></td>
+<td><code translate="no" v-pre>.strm</code> files, when <code translate="no" v-pre>save_strm_files</code> is on</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>nzbs/</code></td>
+<td>The watch directory for the Usenet backend</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Pulling a new image moves none of it.</p>
+<h3 id="seeding-the-config-from-the-environment">Seeding the config from the environment</h3>
+<p><code translate="no" v-pre>TOKEN</code> (or <code translate="no" v-pre>RD_TOKEN</code>) and <code translate="no" v-pre>MOUNT_PATH</code> are read <strong>only on the run that creates <code translate="no" v-pre>config.yml</code></strong>. <code translate="no" v-pre>MOUNT_PATH</code> writes both <code translate="no" v-pre>rclone_enabled: true</code> and <code translate="no" v-pre>mount_path</code>, which is what makes a first run mount something without a Dashboard visit.</p>
+<p>After that the file wins and the variables are ignored, for the same reason <code translate="no" v-pre>log_level</code> in the config beats <code translate="no" v-pre>LOG_LEVEL</code> in the environment: a value baked into a compose file must not silently undo a setting changed in the Dashboard. Startup logs a warning when a <code translate="no" v-pre>MOUNT_PATH</code> is set and disagrees with the config, so the ignoring is visible rather than mysterious. To move the mount, edit <code translate="no" v-pre>config.yml</code> or use the Dashboard.</p>
+<h3 id="upgrading-from-an-install-that-mounted-app">Upgrading from an install that mounted <code translate="no" v-pre>/app</code></h3>
+<p>Nothing to do, and nothing to change. Older setups bind-mounted <code translate="no" v-pre>/app/config.yml</code>, <code translate="no" v-pre>/app/data</code> and friends individually; the container still picks <code translate="no" v-pre>/app</code> whenever any of those is present, so an image update finds the same config and the same library cache it had yesterday.</p>
+<p>To move such an install onto the single-folder layout, stop the container, put the existing <code translate="no" v-pre>config.yml</code> and <code translate="no" v-pre>data/</code> into one directory, and mount that directory at <code translate="no" v-pre>/config</code> instead.</p>
 <h2 id="how-it-works">How It Works</h2>
 <p>Docker&#x27;s mount namespace isolation normally prevents FUSE mounts inside containers from being visible on the host. The solution is to mount a parent directory into the container with <code translate="no" v-pre>rshared</code> propagation:</p>
 <ol>
@@ -345,7 +354,7 @@ echo &quot;fuse&quot; | sudo tee /etc/modules-load.d/fuse.conf</code></pre>
 <div id="mount-is-empty-code-4" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">findmnt /zurg_mnt</code></pre>
 </doc-codeblock></div>
-<p>If it doesn&#x27;t show <code translate="no" v-pre>/zurg_mnt</code> as a bind mount, re-run step 2 from the Quick Start.</p>
+<p>If it doesn&#x27;t show <code translate="no" v-pre>/zurg_mnt</code> as a bind mount, re-run step 1 from the Quick Start.</p>
 <h3 id="mount-appears-twice-in-mount-output">Mount appears twice in <code translate="no" v-pre>mount</code> output</h3>
 <p>This is normal with rshared propagation - the mount is visible in both the container and host mount namespaces.</p>
 <h3 id="container-keeps-restarting">Container keeps restarting</h3>
