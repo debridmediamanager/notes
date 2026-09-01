@@ -38,10 +38,11 @@ does not come back — check a handful after the first scan.
 
 The older versions of these guides went to great lengths to avoid that trade:
 database surgery on `media_parts.file`, symlink shim trees, exact path
-reconstruction. If you want none of your curation touched, that machinery is
-still the way, and the [zurg-testing repo](https://github.com/debridmediamanager/zurg-testing)
-history has it. For almost everybody it is not worth the risk, so these guides
-now take the simple route and tell you exactly what it costs.
+reconstruction. It works, and if your curation genuinely matters more than
+your afternoon, the recipes are still in this site's git history. For almost
+everybody the risk of a half-applied rewrite of an undocumented schema is
+worse than the loss, so these guides now take the simple route and tell you
+exactly what it costs.
 
 ## Which setup you have decides everything
 
