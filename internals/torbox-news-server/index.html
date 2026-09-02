@@ -10,30 +10,30 @@
     <meta name="generator" content="Retype 4.6.0">
 
     <!-- Primary Meta Tags -->
-    <title>Zurg Tags Documentation</title>
-    <meta name="title" content="Zurg Tags Documentation">
-    <meta name="description" content="This document describes all possible tags that can be automatically applied to torrents in Zurg.">
+    <title>TorBox news server</title>
+    <meta name="title" content="TorBox news server">
+    <meta name="description" content="A TorBox Pro subscription bundles a Usenet account. It is a real NNTP server and zurg can use it as an ordinary type: nzb provider. This page records what that server is and what it is worth as a provider slot.">
 
     <!-- Canonical -->
-    <link rel="canonical" href="https://notes.debridmediamanager.com/reference/tags/">
+    <link rel="canonical" href="https://notes.debridmediamanager.com/internals/torbox-news-server/">
     <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/sitemap.xml">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://notes.debridmediamanager.com/reference/tags/">
-    <meta property="og:title" content="Zurg Tags Documentation">
-    <meta property="og:description" content="This document describes all possible tags that can be automatically applied to torrents in Zurg.">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/internals/torbox-news-server/">
+    <meta property="og:title" content="TorBox news server">
+    <meta property="og:description" content="A TorBox Pro subscription bundles a Usenet account. It is a real NNTP server and zurg can use it as an ordinary type: nzb provider. This page records what that server is and what it is worth as a provider slot.">
     <meta property="og:site_name" content="dmm+zurg">
     <meta property="og:locale" content="en_US">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://notes.debridmediamanager.com/reference/tags/">
-    <meta name="twitter:title" content="Zurg Tags Documentation">
-    <meta name="twitter:description" content="This document describes all possible tags that can be automatically applied to torrents in Zurg.">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/internals/torbox-news-server/">
+    <meta name="twitter:title" content="TorBox news server">
+    <meta name="twitter:description" content="A TorBox Pro subscription bundles a Usenet account. It is a real NNTP server and zurg can use it as an ordinary type: nzb provider. This page records what that server is and what it is worth as a provider slot.">
 
     <!-- Alternate Markdown -->
-    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/reference/tags.md">
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/internals/torbox-news-server.md">
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
@@ -178,298 +178,442 @@
                 <doc-page-actions></doc-page-actions>
 
                 <!-- Page content  -->
-<h1 id="zurg-tags-documentation">Zurg Tags Documentation</h1>
-<p>This document describes all possible tags that can be automatically applied to torrents in Zurg.</p>
-<h2 id="resolution-tags">Resolution Tags</h2>
-<p>Resolution tags are applied based on video dimensions with a 5% tolerance factor: a stream matches a tier when both its width and height are at least 95% of the listed dimensions. Embedded images (cover art, thumbnails) are ignored. Only the highest matching resolution tag is applied.</p>
-<retype-table copy-text="| Tag | Description |
-|-----|-------------|
-| `zurg_8k` | Resolution &gt;= 7680x4320 |
-| `zurg_4k` | Resolution &gt;= 3840x2160 |
-| `zurg_1440p` | Resolution &gt;= 2560x1440 |
-| `zurg_1080p` | Resolution &gt;= 1920x1080 |
-| `zurg_720p` | Resolution &gt;= 1280x720 |
-| `zurg_480p` | Resolution &gt;= 720x480 |">
+<h1 id="torbox-news-server">TorBox news server</h1>
+<p>A TorBox Pro subscription bundles a Usenet account. It is a real NNTP server and zurg can use it as
+an ordinary <code translate="no" v-pre>type: nzb</code> provider. This page records what that server is and what it is worth as a
+provider slot. Everything below was measured on 2026-09-02 and 2026-09-03 from two hosts on separate networks.</p>
+<h2 id="what-answers-on-the-wire">What answers on the wire</h2>
+<p><code translate="no" v-pre>nntp.torbox.app:563</code> speaks NNTP over TLS 1.3 behind a Let&#x27;s Encrypt certificate for
+<code translate="no" v-pre>nntp.torbox.app</code>. The greeting is <code translate="no" v-pre>200 Welcome to TorBox</code>. The capability list names the software.</p>
+<div id="what-answers-on-the-wire-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">VERSION 2
+IMPLEMENTATION nntpswitch2 (local-dev)
+READER
+LIST OVERVIEW.FMT ACTIVE ACTIVE.TIMES NEWSGROUPS DISTRIB.PATS HEADERS MOTD
+OVER
+HDR
+XZVER
+XZHDR
+POST</code></pre>
+</doc-codeblock></div>
+<p>That implementation string is not INN and not Diablo and not the <code translate="no" v-pre>nntpd</code> that some providers report.
+It is custom software and the name says what it does. A switch sits in front of one or more article
+spools.</p>
+<h2 id="who-runs-it">Who runs it</h2>
+<p>Forty public reader hostnames were probed for that implementation string. Thirty two answered NNTP
+and six of them report <code translate="no" v-pre>nntpswitch2</code>. All six return identical capability lists in identical order.</p>
+<retype-table copy-text="| Reader | Address | Greeting |
+|---|---|---|
+| `nntp.torbox.app` | 78.152.55.171 | `200 Welcome to TorBox` |
+| `news.cheapnews.eu` | 78.152.55.164 | `200 Welcome to Cheapnews` |
+| `reader.xsnews.nl` | 94.232.116.131 | `200 Welcome to XS News` |
+| `news.easyusenet.nl` | 94.232.116.128 | `200 Welcome to Easyusenet` |
+| `news.hitnews.com` | 94.232.116.174 | `200 Welcome to Hitnews` |
+| `news.usenext.de` | 94.232.116.150 | `200 Welcome to Aviteo Ltd DE` |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
 <tr>
-<th>Tag</th>
-<th>Description</th>
+<th>Reader</th>
+<th>Address</th>
+<th>Greeting</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code translate="no" v-pre>zurg_8k</code></td>
-<td>Resolution &gt;= 7680x4320</td>
+<td><code translate="no" v-pre>nntp.torbox.app</code></td>
+<td>78.152.55.171</td>
+<td><code translate="no" v-pre>200 Welcome to TorBox</code></td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>zurg_4k</code></td>
-<td>Resolution &gt;= 3840x2160</td>
+<td><code translate="no" v-pre>news.cheapnews.eu</code></td>
+<td>78.152.55.164</td>
+<td><code translate="no" v-pre>200 Welcome to Cheapnews</code></td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>zurg_1440p</code></td>
-<td>Resolution &gt;= 2560x1440</td>
+<td><code translate="no" v-pre>reader.xsnews.nl</code></td>
+<td>94.232.116.131</td>
+<td><code translate="no" v-pre>200 Welcome to XS News</code></td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>zurg_1080p</code></td>
-<td>Resolution &gt;= 1920x1080</td>
+<td><code translate="no" v-pre>news.easyusenet.nl</code></td>
+<td>94.232.116.128</td>
+<td><code translate="no" v-pre>200 Welcome to Easyusenet</code></td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>zurg_720p</code></td>
-<td>Resolution &gt;= 1280x720</td>
+<td><code translate="no" v-pre>news.hitnews.com</code></td>
+<td>94.232.116.174</td>
+<td><code translate="no" v-pre>200 Welcome to Hitnews</code></td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>zurg_480p</code></td>
-<td>Resolution &gt;= 720x480</td>
+<td><code translate="no" v-pre>news.usenext.de</code></td>
+<td>94.232.116.150</td>
+<td><code translate="no" v-pre>200 Welcome to Aviteo Ltd DE</code></td>
 </tr>
 </tbody>
 </table>
 </div>
 </retype-table>
-<h2 id="dynamic-range-tags">Dynamic Range Tags</h2>
-<p>Only one of these tags is applied based on the video&#x27;s dynamic range characteristics:</p>
-<retype-table copy-text="| Tag | Description |
-|-----|-------------|
-| `zurg_hdr` | HDR content (detected by BT.2020 color space) |
-| `zurg_dv` | Dolby Vision content |
-| `zurg_sdr` | Standard Dynamic Range content (applied when neither HDR nor DV is detected) |">
+<p>Everything else answered differently. That includes the Omicron brands and Eweka and Frugal and
+UsenetExpress and Giganews and Usenet.Farm.</p>
+<p>The addresses settle the rest. <code translate="no" v-pre>94.232.112.0/21</code> is registered to Abavia S.r.l. of San Marino with
+<code translate="no" v-pre>abuse@abavia.com</code> on the record. A reverse scan of <code translate="no" v-pre>94.232.116.0/24</code> returns more than sixty reader
+names in that one block. XS News and Easyusenet and Hitnews and UseNeXT sit there next to dozens of
+smaller brands. The neighbouring <code translate="no" v-pre>94.232.117.0/24</code> is XS News host naming end to end.</p>
+<p>TorBox does not sit in that block. It sits in an Amsterdam range seven addresses from
+<code translate="no" v-pre>news.cheapnews.eu</code>.</p>
+<p><strong>Measured</strong> is the software fingerprint and the address ownership and the adjacency. <strong>Inferred</strong> is
+the commercial arrangement. TorBox describes its Usenet as a high quality blend of Usenet providers
+and the switch software is consistent with that. So the safe statement is that TorBox fronts the
+same reader platform the Abavia and XS News brands run and not that TorBox resells one named spool.</p>
+<h2 id="what-the-account-gives-you">What the account gives you</h2>
+<retype-table copy-text="| Property | Value |
+|---|---|
+| Host | `nntp.torbox.app:563` TLS, also answers on 119 |
+| Groups in `LIST ACTIVE` | 103,415 |
+| Connections | 10, a hard cap counted exactly, mid handshake included |
+| Retention | 3900+ days claimed by TorBox for this server |
+| Posting | allowed, `POST` returns `340 Start posting` |
+| Overview fields | Subject, From, Date, Message-ID, References, Bytes, Lines, Xref:full |
+| Compression | `XZVER` and `XZHDR` both offered |
+| Bandwidth | unlimited but counted in the TorBox dashboard usage figure |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
 <tr>
-<th>Tag</th>
-<th>Description</th>
+<th>Property</th>
+<th>Value</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code translate="no" v-pre>zurg_hdr</code></td>
-<td>HDR content (detected by BT.2020 color space)</td>
+<td>Host</td>
+<td><code translate="no" v-pre>nntp.torbox.app:563</code> TLS, also answers on 119</td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>zurg_dv</code></td>
-<td>Dolby Vision content</td>
+<td>Groups in <code translate="no" v-pre>LIST ACTIVE</code></td>
+<td>103,415</td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>zurg_sdr</code></td>
-<td>Standard Dynamic Range content (applied when neither HDR nor DV is detected)</td>
+<td>Connections</td>
+<td>10, a hard cap counted exactly, mid handshake included</td>
+</tr>
+<tr>
+<td>Retention</td>
+<td>3900+ days claimed by TorBox for this server</td>
+</tr>
+<tr>
+<td>Posting</td>
+<td>allowed, <code translate="no" v-pre>POST</code> returns <code translate="no" v-pre>340 Start posting</code></td>
+</tr>
+<tr>
+<td>Overview fields</td>
+<td>Subject, From, Date, Message-ID, References, Bytes, Lines, Xref:full</td>
+</tr>
+<tr>
+<td>Compression</td>
+<td><code translate="no" v-pre>XZVER</code> and <code translate="no" v-pre>XZHDR</code> both offered</td>
+</tr>
+<tr>
+<td>Bandwidth</td>
+<td>unlimited but counted in the TorBox dashboard usage figure</td>
 </tr>
 </tbody>
 </table>
 </div>
 </retype-table>
-<p>When both HDR and Dolby Vision metadata are present, the Dolby Vision tag takes priority and <code translate="no" v-pre>zurg_hdr</code> is not applied.</p>
-<h2 id="video-bitrate-tags">Video Bitrate Tags</h2>
-<p>Video bitrate tags are based on the highest video stream bitrate found across all analyzed files, ignoring embedded images (cover art, thumbnails). Only the highest matching tier is applied.</p>
-<retype-table copy-text="| Tag | Description |
-|-----|-------------|
-| `zurg_ultra_high_video_bitrate` | Video bitrate ≥ 100 Mbps |
-| `zurg_high_video_bitrate` | Video bitrate ≥ 70 Mbps and &lt; 100 Mbps |
-| `zurg_moderate_video_bitrate` | Video bitrate ≥ 40 Mbps and &lt; 70 Mbps |
-| `zurg_low_video_bitrate` | Video bitrate ≥ 10 Mbps and &lt; 40 Mbps |
-| `zurg_very_low_video_bitrate` | Video bitrate ≥ 0 Mbps and &lt; 10 Mbps |">
+<p>Credentials come from torbox.app under tools and View Usenet Connection Details. The username is the
+account auth id. The password is shown once. Any reset invalidates the previous one so a reset
+breaks every client already configured.</p>
+<p>Two refusal strings matter when something goes wrong. <code translate="no" v-pre>482 too many connections for your user</code> is
+the cap and it clears the moment a connection is returned. <code translate="no" v-pre>482 Invalid username or password</code> is a
+genuinely dead credential. Both are slow failures at around two seconds. A successful auth is much
+faster and was measured between 64 ms and 592 ms across a day of production dials.</p>
+<h2 id="the-article-number-window-is-two-weeks-wide">The article number window is two weeks wide</h2>
+<p><code translate="no" v-pre>GROUP</code> on a busy binary group reports a count exactly equal to the high water mark minus the low
+water mark. Real spools have gaps so that equality is the signature of synthesized numbering. The
+window is also short.</p>
+<retype-table copy-text="| Group | Low water | High water | Numbers in the window |
+|---|---|---|---|
+| `alt.binaries.boneless` | 148068410000 | 150053594960 | 1,985,184,960 |
+| `alt.binaries.teevee` | 2992135000 | 3392153099 | 400,018,099 |
+| `alt.binaries.multimedia` | 31901685000 | 32301734812 | 400,049,812 |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
 <tr>
-<th>Tag</th>
-<th>Description</th>
+<th>Group</th>
+<th>Low water</th>
+<th>High water</th>
+<th>Numbers in the window</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code translate="no" v-pre>zurg_ultra_high_video_bitrate</code></td>
-<td>Video bitrate ≥ 100 Mbps</td>
+<td><code translate="no" v-pre>alt.binaries.boneless</code></td>
+<td>148068410000</td>
+<td>150053594960</td>
+<td>1,985,184,960</td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>zurg_high_video_bitrate</code></td>
-<td>Video bitrate ≥ 70 Mbps and &lt; 100 Mbps</td>
+<td><code translate="no" v-pre>alt.binaries.teevee</code></td>
+<td>2992135000</td>
+<td>3392153099</td>
+<td>400,018,099</td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>zurg_moderate_video_bitrate</code></td>
-<td>Video bitrate ≥ 40 Mbps and &lt; 70 Mbps</td>
-</tr>
-<tr>
-<td><code translate="no" v-pre>zurg_low_video_bitrate</code></td>
-<td>Video bitrate ≥ 10 Mbps and &lt; 40 Mbps</td>
-</tr>
-<tr>
-<td><code translate="no" v-pre>zurg_very_low_video_bitrate</code></td>
-<td>Video bitrate ≥ 0 Mbps and &lt; 10 Mbps</td>
+<td><code translate="no" v-pre>alt.binaries.multimedia</code></td>
+<td>31901685000</td>
+<td>32301734812</td>
+<td>400,049,812</td>
 </tr>
 </tbody>
 </table>
 </div>
 </retype-table>
-<h2 id="audio-bitrate-tags">Audio Bitrate Tags</h2>
-<p>Audio bitrate tags are based on the highest audio bitrate found across all audio streams. Only the highest matching tier is applied.</p>
-<retype-table copy-text="| Tag | Description |
-|-----|-------------|
-| `zurg_ultra_high_audio_bitrate` | Audio bitrate ≥ 2000 kbps (e.g., DTS-HD MA, TrueHD, LPCM) |
-| `zurg_high_audio_bitrate` | Audio bitrate ≥ 768 kbps and &lt; 2000 kbps (e.g., DTS, high-bitrate AC3) |
-| `zurg_moderate_audio_bitrate` | Audio bitrate ≥ 384 kbps and &lt; 768 kbps (e.g., standard AC3, 5.1 AAC) |
-| `zurg_low_audio_bitrate` | Audio bitrate ≥ 128 kbps and &lt; 384 kbps (e.g., stereo AAC, MP3) |
-| `zurg_very_low_audio_bitrate` | Audio bitrate ≥ 0 kbps and &lt; 128 kbps (e.g., low-quality stereo) |">
+<p>Sampling the oldest numbers in <code translate="no" v-pre>alt.binaries.boneless</code> returns articles posted on 2026-08-19. That
+was fourteen days before this was written. Anything older has no number on this server.</p>
+<p>This does not affect zurg. An NZB addresses articles by message id and a message id lookup reaches
+articles far older than the window. It does affect anything that walks article numbers. A header
+downloader or an indexer pointed at this server sees a fortnight of Usenet and nothing before it.</p>
+<h2 id="configuring-it-in-zurg">Configuring it in zurg</h2>
+<p>The account is a normal <code translate="no" v-pre>type: nzb</code> server entry. Two keys matter more than the rest.</p>
+<div id="configuring-it-in-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">providers:
+  - type: nzb
+    nntp:
+      host: your-primary.example.com
+      tls: true
+      username: USERNAME
+      password: PASSWORD
+      connections: 40
+      backbone: primary-backbone
+      servers:
+        - name: torbox-news
+          host: nntp.torbox.app
+          port: 563
+          tls: true
+          username: YOUR_TORBOX_AUTH_ID
+          password: YOUR_TORBOX_NEWS_PASSWORD
+          connections: 8
+          backbone: torbox
+          backup: true</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>backup: true</code> keeps the ten connections for articles every other account has already refused. A
+busy primary does not divert to it. Only a real <em>no such article</em> does. See
+<a href="../../reference/config/">the provider keys</a> for how <code translate="no" v-pre>backup</code> and <code translate="no" v-pre>backbone</code> behave.</p>
+<p>Configure 8 rather than 10. The cap counts connections that are still handshaking so a pool that
+opens right up to the limit will refuse itself during a cold start. Leaving two spare also leaves
+room to run a check by hand without knocking production over. Never point a second client at the
+same credentials. Two consumers of a ten connection account will starve each other and the server
+refuses the older holder rather than the newer one.</p>
+<h2 id="what-it-actually-holds">What it actually holds</h2>
+<p>Coverage was measured against three other backbones on the same article ids. The sample is 177
+releases taken from a live zurg NZB library. Posting dates run from 2011 to 2026. Three articles
+were taken from each release at even spacing through the file. That gives 531 message ids. Every id
+was asked of four accounts over one connection each. The three others are an Omicron account
+reached through Tweaknews and an Eweka account and a Frugal account.</p>
+<retype-table copy-text="| Posting year | ids | `nntp.torbox.app` | `newshosting.tweaknews.eu` | `news.eweka.nl` | `newswest.frugalusenet.com` |
+|---|---|---|---|---|---|
+| 2011 | 9 | 0 | 9 | 0 | 0 |
+| 2012 | 21 | 16 | 21 | 21 | 21 |
+| 2013 | 36 | 30 | 33 | 33 | 33 |
+| 2014 | 36 | 33 | 36 | 36 | 36 |
+| 2015 | 33 | 17 | 31 | 24 | 26 |
+| 2016 | 36 | 31 | 36 | 36 | 36 |
+| 2017 | 36 | 21 | 33 | 27 | 19 |
+| 2018 | 36 | 16 | 36 | 24 | 24 |
+| 2019 | 36 | 30 | 36 | 36 | 36 |
+| 2020 | 36 | 34 | 36 | 36 | 36 |
+| 2021 | 36 | 25 | 36 | 33 | 30 |
+| 2022 | 36 | 29 | 36 | 27 | 27 |
+| 2023 | 36 | 15 | 29 | 22 | 16 |
+| 2024 | 36 | 23 | 35 | 32 | 33 |
+| 2025 | 36 | 28 | 36 | 31 | 31 |
+| 2026 | 36 | 30 | 36 | 30 | 30 |
+| **Total** | **531** | **378 (71.2%)** | **515 (97.0%)** | **448 (84.4%)** | **434 (81.7%)** |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
 <tr>
-<th>Tag</th>
-<th>Description</th>
+<th>Posting year</th>
+<th>ids</th>
+<th><code translate="no" v-pre>nntp.torbox.app</code></th>
+<th><code translate="no" v-pre>newshosting.tweaknews.eu</code></th>
+<th><code translate="no" v-pre>news.eweka.nl</code></th>
+<th><code translate="no" v-pre>newswest.frugalusenet.com</code></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code translate="no" v-pre>zurg_ultra_high_audio_bitrate</code></td>
-<td>Audio bitrate ≥ 2000 kbps (e.g., DTS-HD MA, TrueHD, LPCM)</td>
+<td>2011</td>
+<td>9</td>
+<td>0</td>
+<td>9</td>
+<td>0</td>
+<td>0</td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>zurg_high_audio_bitrate</code></td>
-<td>Audio bitrate ≥ 768 kbps and &lt; 2000 kbps (e.g., DTS, high-bitrate AC3)</td>
+<td>2012</td>
+<td>21</td>
+<td>16</td>
+<td>21</td>
+<td>21</td>
+<td>21</td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>zurg_moderate_audio_bitrate</code></td>
-<td>Audio bitrate ≥ 384 kbps and &lt; 768 kbps (e.g., standard AC3, 5.1 AAC)</td>
+<td>2013</td>
+<td>36</td>
+<td>30</td>
+<td>33</td>
+<td>33</td>
+<td>33</td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>zurg_low_audio_bitrate</code></td>
-<td>Audio bitrate ≥ 128 kbps and &lt; 384 kbps (e.g., stereo AAC, MP3)</td>
+<td>2014</td>
+<td>36</td>
+<td>33</td>
+<td>36</td>
+<td>36</td>
+<td>36</td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>zurg_very_low_audio_bitrate</code></td>
-<td>Audio bitrate ≥ 0 kbps and &lt; 128 kbps (e.g., low-quality stereo)</td>
+<td>2015</td>
+<td>33</td>
+<td>17</td>
+<td>31</td>
+<td>24</td>
+<td>26</td>
+</tr>
+<tr>
+<td>2016</td>
+<td>36</td>
+<td>31</td>
+<td>36</td>
+<td>36</td>
+<td>36</td>
+</tr>
+<tr>
+<td>2017</td>
+<td>36</td>
+<td>21</td>
+<td>33</td>
+<td>27</td>
+<td>19</td>
+</tr>
+<tr>
+<td>2018</td>
+<td>36</td>
+<td>16</td>
+<td>36</td>
+<td>24</td>
+<td>24</td>
+</tr>
+<tr>
+<td>2019</td>
+<td>36</td>
+<td>30</td>
+<td>36</td>
+<td>36</td>
+<td>36</td>
+</tr>
+<tr>
+<td>2020</td>
+<td>36</td>
+<td>34</td>
+<td>36</td>
+<td>36</td>
+<td>36</td>
+</tr>
+<tr>
+<td>2021</td>
+<td>36</td>
+<td>25</td>
+<td>36</td>
+<td>33</td>
+<td>30</td>
+</tr>
+<tr>
+<td>2022</td>
+<td>36</td>
+<td>29</td>
+<td>36</td>
+<td>27</td>
+<td>27</td>
+</tr>
+<tr>
+<td>2023</td>
+<td>36</td>
+<td>15</td>
+<td>29</td>
+<td>22</td>
+<td>16</td>
+</tr>
+<tr>
+<td>2024</td>
+<td>36</td>
+<td>23</td>
+<td>35</td>
+<td>32</td>
+<td>33</td>
+</tr>
+<tr>
+<td>2025</td>
+<td>36</td>
+<td>28</td>
+<td>36</td>
+<td>31</td>
+<td>31</td>
+</tr>
+<tr>
+<td>2026</td>
+<td>36</td>
+<td>30</td>
+<td>36</td>
+<td>30</td>
+<td>30</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>531</strong></td>
+<td><strong>378 (71.2%)</strong></td>
+<td><strong>515 (97.0%)</strong></td>
+<td><strong>448 (84.4%)</strong></td>
+<td><strong>434 (81.7%)</strong></td>
 </tr>
 </tbody>
 </table>
 </div>
 </retype-table>
-<h2 id="duration-tags">Duration Tags</h2>
-<p>Duration tags are based on the longest duration found across all analyzed files, audio-only files included. Only the highest matching tier is applied.</p>
-<retype-table copy-text="| Tag | Description |
-|-----|-------------|
-| `zurg_80minsplus_duration` | Duration ≥ 80 minutes |
-| `zurg_60to80mins_duration` | Duration ≥ 60 minutes and &lt; 80 minutes |
-| `zurg_40to60mins_duration` | Duration ≥ 40 minutes and &lt; 60 minutes |
-| `zurg_20to40mins_duration` | Duration ≥ 20 minutes and &lt; 40 minutes |
-| `zurg_0to20mins_duration` | Duration ≥ 0 minutes and &lt; 20 minutes |">
-<div class="table-wrapper scrollbar overflow-hidden">
-<table class="comfortable">
-<thead>
-<tr>
-<th>Tag</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code translate="no" v-pre>zurg_80minsplus_duration</code></td>
-<td>Duration ≥ 80 minutes</td>
-</tr>
-<tr>
-<td><code translate="no" v-pre>zurg_60to80mins_duration</code></td>
-<td>Duration ≥ 60 minutes and &lt; 80 minutes</td>
-</tr>
-<tr>
-<td><code translate="no" v-pre>zurg_40to60mins_duration</code></td>
-<td>Duration ≥ 40 minutes and &lt; 60 minutes</td>
-</tr>
-<tr>
-<td><code translate="no" v-pre>zurg_20to40mins_duration</code></td>
-<td>Duration ≥ 20 minutes and &lt; 40 minutes</td>
-</tr>
-<tr>
-<td><code translate="no" v-pre>zurg_0to20mins_duration</code></td>
-<td>Duration ≥ 0 minutes and &lt; 20 minutes</td>
-</tr>
-</tbody>
-</table>
-</div>
-</retype-table>
-<h2 id="language-tags">Language Tags</h2>
-<p>Language tags are applied for each unique language detected in audio and subtitle streams. Detection aggregates every analyzed file in the torrent, so a season pack carries the union of its episodes&#x27; languages. Only streams inside analyzed video/audio files count — a standalone <code translate="no" v-pre>.srt</code> beside them is never read — and streams without a declared language default to <code translate="no" v-pre>und</code>.</p>
-<h3 id="audio-language-tags">Audio Language Tags</h3>
-<p>Format: <code translate="no" v-pre>zurg_aud_[language_code]</code></p>
-<p>Example:</p>
-<ul>
-<li><code translate="no" v-pre>zurg_aud_eng</code> - English audio track</li>
-<li><code translate="no" v-pre>zurg_aud_jpn</code> - Japanese audio track</li>
-</ul>
-<h3 id="subtitle-language-tags">Subtitle Language Tags</h3>
-<p>Format: <code translate="no" v-pre>zurg_sub_[language_code]</code></p>
-<p>Example:</p>
-<ul>
-<li><code translate="no" v-pre>zurg_sub_eng</code> - English subtitles</li>
-<li><code translate="no" v-pre>zurg_sub_spa</code> - Spanish subtitles</li>
-</ul>
-<h2 id="using-tags-for-filtering">Using Tags for Filtering</h2>
-<p>Tags can be used in the configuration file to filter torrents into specific directories. There are four list-based tag filters available, plus two single-tag conditions:</p>
-<h3 id="tag-filter-types">Tag Filter Types</h3>
-<ol>
-<li>
-<p><code translate="no" v-pre>tags_match_all</code>: All specified tags must be present</p>
-<div class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">tags_match_all: [&quot;zurg_4k&quot;, &quot;zurg_hdr&quot;]  # Must have both 4K and HDR</code></pre>
-</doc-codeblock></div>
-</li>
-<li>
-<p><code translate="no" v-pre>tags_match_any</code>: At least one of the specified tags must be present</p>
-<div class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">tags_match_any: [&quot;zurg_aud_eng&quot;, &quot;zurg_sub_eng&quot;]  # Must have either English audio or subtitles</code></pre>
-</doc-codeblock></div>
-</li>
-<li>
-<p><code translate="no" v-pre>tags_missing_all</code>: Returns true if none of the filter tags are present (the reverse of &quot;tags_match_any&quot;)</p>
-<div class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">tags_missing_all: [&quot;zurg_aud_eng&quot;, &quot;zurg_sub_eng&quot;]  # Must not have English audio or subtitles</code></pre>
-</doc-codeblock></div>
-</li>
-<li>
-<p><code translate="no" v-pre>tags_missing_any</code>: Returns true if at least one of the filter tags is missing (the reverse of &quot;tags_match_all&quot;)</p>
-<div class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">tags_missing_any: [&quot;zurg_4k&quot;, &quot;zurg_hdr&quot;]  # Must be missing either 4K or HDR (or both)</code></pre>
-</doc-codeblock></div>
-</li>
-</ol>
-<p>Tag names in these four filters are compared case-insensitively. A torrent carrying no tags at all fails <code translate="no" v-pre>tags_match_all</code> and <code translate="no" v-pre>tags_match_any</code>, and passes <code translate="no" v-pre>tags_missing_all</code> and <code translate="no" v-pre>tags_missing_any</code> — which is where torrents that have never been analyzed end up.</p>
-<p>The four keys are checked in the order above and the first one present decides the whole filter block, so give each tag filter its own entry under <code translate="no" v-pre>and:</code>/<code translate="no" v-pre>or:</code> instead of combining several in one block.</p>
-<h3 id="single-tag-conditions">Single-Tag Conditions</h3>
-<p><code translate="no" v-pre>has_tag</code> and <code translate="no" v-pre>not_has_tag</code> take one tag name instead of a list, and match case-sensitively. Unlike the four filters above they can only reject a torrent, never select one on their own: a filter block containing nothing but <code translate="no" v-pre>has_tag</code> matches nothing, so they must sit alongside another condition in the same block.</p>
-<div id="single-tag-conditions-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">- has_tag: zurg_4k       # gate: torrent must carry this tag
-  regex: /.*/            # and a condition that can match on its own</code></pre>
-</doc-codeblock></div>
-<h3 id="example-directory-configuration">Example Directory Configuration</h3>
-<p>Here&#x27;s an example of how to use tag filters in a directory configuration:</p>
-<div id="example-directory-configuration-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">&quot;quality movies&quot;:
-  filters:
-    - and:
-      - tags_match_all: [&quot;zurg_4k&quot;, &quot;zurg_hdr&quot;]  # Must have both 4K and HDR
-      - tags_match_any: [&quot;zurg_high_video_bitrate&quot;, &quot;zurg_ultra_high_video_bitrate&quot;]  # Must have either high or ultra-high video bitrate
-      - tags_match_any: [&quot;zurg_high_audio_bitrate&quot;, &quot;zurg_ultra_high_audio_bitrate&quot;]  # Must have either high or ultra-high audio bitrate
-      - tags_match_any: [&quot;zurg_60to80mins_duration&quot;, &quot;zurg_80minsplus_duration&quot;]  # Must be at least 60 minutes long
-      - tags_missing_all: [&quot;zurg_sdr&quot;, &quot;zurg_very_low_video_bitrate&quot;]  # Must not have SDR or very low video bitrate
-      - tags_missing_any: [&quot;zurg_dv&quot;]  # Must be missing Dolby Vision (prefer HDR10)</code></pre>
-</doc-codeblock></div>
-<h2 id="notes">Notes</h2>
-<ul>
-<li>Tags are applied automatically based on media analysis, which needs an <code translate="no" v-pre>ffprobe</code> binary and runs on newly added torrents only when <code translate="no" v-pre>auto_analyze_new_torrents</code> is enabled; the dashboard&#x27;s analyze action and the per-torrent media info action on the manage page trigger it on demand</li>
-<li>Nothing is tagged until at least one file has been analyzed — an unanalyzed torrent carries no <code translate="no" v-pre>zurg_sdr</code>, no bitrate tier and no duration tier</li>
-<li>Every <code translate="no" v-pre>zurg_*</code> tag is cleared and recomputed on each analysis run; tags without that prefix (user tags, directory assignments) are preserved</li>
-<li>Multiple language tags can be present simultaneously</li>
-<li>Only one resolution tag is applied (highest matching)</li>
-<li>Only one dynamic range tag is applied</li>
-<li>Only one video bitrate tier tag is applied (highest matching)</li>
-<li>Only one audio bitrate tier tag is applied (highest matching)</li>
-<li>Only one duration tier tag is applied (highest matching)</li>
-<li>A 5% tolerance factor is applied for resolution checks</li>
-<li>Video bitrates are based on the highest bitrate stream (not average)</li>
-<li>Audio bitrates are based on the highest bitrate stream (not average)</li>
-<li>A stream that reports no bitrate counts as 0, so a file whose streams carry no bitrate metadata lands in the <code translate="no" v-pre>very_low</code> tier</li>
-<li>Duration is based on the longest analyzed file in the torrent (audio-only files included)</li>
-<li>Tag filters can be combined with other filters for precise content organization</li>
-</ul>
+<p>TorBox answered for less of this library than any of the three paid backbones.</p>
+<p>The number that decides whether the slot earns its place is a different one. <strong>TorBox held nothing
+the others lacked.</strong> Not one article in 531. Measured against the Omicron account it is a strict
+subset with no articles of its own at all. It did hold 9 articles Frugal lacked and 6 that Eweka
+lacked. Every one of those was also on Omicron. Meanwhile the Omicron account alone held 61 articles
+no other backbone had.</p>
+<p>A miss on this server is real and not a busy server answering badly. All 153 misses were asked again
+on a fresh connection minutes later and none came back. An earlier run of the same shape re-asked 77
+misses and got 1 back. So roughly 1 percent of a negative answer is noise and the rest is absence.</p>
+<p>A hit is real too. Twenty articles that all four servers claimed were then fetched in full with
+<code translate="no" v-pre>BODY</code>. All four delivered 20 of 20. <code translate="no" v-pre>STAT</code> on this server can be trusted to mean the bytes will
+arrive.</p>
+<p>Single connection throughput was measured in the same runs and is not reported here because it was
+not stable. Three rounds from one host put TorBox anywhere between 1.6 and 7.4 MB/s with the other
+three overlapping that range and no consistent ordering. Anyone sizing a pool should measure from
+their own host.</p>
+<p>Three caveats belong with the table. The sample is one operator&#x27;s library so it reflects what that
+library collects. Three articles from one release are not independent of each other so a per year
+cell is really twelve releases and not thirty six. And a <code translate="no" v-pre>STAT</code> answer is a claim about one article
+rather than a verdict on a whole release.</p>
+<h2 id="is-it-worth-a-slot">Is it worth a slot</h2>
+<p>The account costs nothing extra because it ships with Pro. That is the strongest argument for it.</p>
+<p>It is not a retention backbone and configuring it as one will disappoint. It answered for less of a
+real library than the three paid accounts it was measured against and it produced no article that
+another had already refused. A stack that already has an Omicron account gains nothing from adding
+this one.</p>
+<p>Two honest uses remain. A single provider setup gains a free second opinion and any second opinion
+beats none. And <code translate="no" v-pre>backup: true</code> makes a wrong guess cheap because a backup account is only asked
+after every primary has said no such article.</p>
 
                 
                 <!-- Required only on API pages -->
@@ -479,20 +623,20 @@
             
                 <nav id="retype-nextprev" class="print:hidden flex mt-14">
                     <div class="w-1/2">
-                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../reference/config/">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../internals/debrid-baseline/">
                             <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
                             <span>
                                 <span class="block text-xs font-normal text-base-text-muted">Previous</span>
-                                <span class="block mt-1">Configuration</span>
+                                <span class="block mt-1">Debrid baseline</span>
                             </span>
                         </a>
                     </div>
             
                     <div class="w-1/2">
-                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../reference/torbox-limits/">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../internals/qbittorrent-client-contract/">
                             <span>
                                 <span class="block text-xs font-normal text-right text-base-text-muted">Next</span>
-                                <span class="block mt-1">Tor​Box limits</span>
+                                <span class="block mt-1">q​Bittorrent client contract</span>
                             </span>
                             <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
                         </a>
@@ -536,6 +680,6 @@
 
     <div id="retype-overlay-target"></div>
 
-        <script data-cfasync="false">window.__DOCS__ = { "title": "Tags", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/reference/tags.md" }</script>
+        <script data-cfasync="false">window.__DOCS__ = { "title": "TorBox news server", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/internals/torbox-news-server.md" }</script>
 </body>
 </html>
