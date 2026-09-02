@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841703470553">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841706725213">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841703470553" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841706725213" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841703470553" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841706725213" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841703470553" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841703470553" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841706725213" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841706725213" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -376,6 +376,91 @@ was fourteen days before this was written. Anything older has no number on this 
 <p>This does not affect zurg. An NZB addresses articles by message id and a message id lookup reaches
 articles far older than the window. It does affect anything that walks article numbers. A header
 downloader or an indexer pointed at this server sees a fortnight of Usenet and nothing before it.</p>
+<h2 id="is-it-proxying-your-request-to-other-providers">Is it proxying your request to other providers</h2>
+<p>No. Three measurements say the answer comes from a spool the platform already holds.</p>
+<p><strong>It refuses faster than it could ask anyone.</strong> Twenty five message ids that never existed anywhere
+were asked of three servers.</p>
+<retype-table copy-text="| Server | `STAT` on a hit | `STAT` on an id that never existed |
+|---|---|---|
+| `nntp.torbox.app` | 37 ms | **43 ms** |
+| `news.eweka.nl` | 20 ms | 471 ms |
+| `newshosting.tweaknews.eu` | 44 ms | 909 ms |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Server</th>
+<th><code translate="no" v-pre>STAT</code> on a hit</th>
+<th><code translate="no" v-pre>STAT</code> on an id that never existed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>nntp.torbox.app</code></td>
+<td>37 ms</td>
+<td><strong>43 ms</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>news.eweka.nl</code></td>
+<td>20 ms</td>
+<td>471 ms</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>newshosting.tweaknews.eu</code></td>
+<td>44 ms</td>
+<td>909 ms</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>A server that polls upstreams before answering is slowest when the answer is no because every
+upstream has to reply first. This one says no in the same time it confirms a yes. That is a local
+index answering.</p>
+<p><strong>There is no first fetch penalty.</strong> Ten articles from 2012 to 2018 were fetched cold and then
+immediately again on the same connection.</p>
+<retype-table copy-text="| Server | cold median | warm median |
+|---|---|---|
+| `nntp.torbox.app` | 49.6 ms | 30.9 ms |
+| `news.eweka.nl` | 98.0 ms | 78.1 ms |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Server</th>
+<th>cold median</th>
+<th>warm median</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>nntp.torbox.app</code></td>
+<td>49.6 ms</td>
+<td>30.9 ms</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>news.eweka.nl</code></td>
+<td>98.0 ms</td>
+<td>78.1 ms</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>The cold to warm ratio is 1.6 here against 1.25 on a plain spool. That is TCP and page cache. A
+fetch from a third party on first request would cost far more and would show up only on the cold
+pass. A 792 KB article arrived cold in 49 to 73 ms which is around 11 to 16 MB/s and leaves no room
+for a round trip to another provider.</p>
+<p><strong>A blend cannot be a subset of one of its members.</strong> This is the argument that settles it. If the
+server merged several backbones then its coverage would be their union and it would hold articles
+that at least one member lacked. It held none. It is a strict subset of the Omicron account at 71.2
+percent. Merging providers cannot produce that.</p>
+<p>One related detail for anyone trying to trace the source. Headers come back normalized rather than
+verbatim. Field order changes and capitalization is rewritten so <code translate="no" v-pre>X-Received-Body-CRC</code> becomes
+<code translate="no" v-pre>X-Received-Body-Crc</code> and <code translate="no" v-pre>Message-ID</code> becomes <code translate="no" v-pre>Message-Id</code>. <code translate="no" v-pre>Path</code> is <code translate="no" v-pre>not-for-mail</code> on every
+article checked. A plain spool can preserve the real chain and one of the servers above returns
+<code translate="no" v-pre>news.tweak-news.eu!spooler.pl1!...!feed.tweaknews.nl!path-stripped</code> for the same article. So the
+headers are rebuilt from parsed fields and the feed path is not recoverable from them.</p>
 <h2 id="configuring-it-in-zurg">Configuring it in zurg</h2>
 <p>The account is a normal <code translate="no" v-pre>type: nzb</code> server entry. Two keys matter more than the rest.</p>
 <div id="configuring-it-in-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>

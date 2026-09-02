@@ -96,6 +96,48 @@ This does not affect zurg. An NZB addresses articles by message id and a message
 articles far older than the window. It does affect anything that walks article numbers. A header
 downloader or an indexer pointed at this server sees a fortnight of Usenet and nothing before it.
 
+## Is it proxying your request to other providers
+
+No. Three measurements say the answer comes from a spool the platform already holds.
+
+**It refuses faster than it could ask anyone.** Twenty five message ids that never existed anywhere
+were asked of three servers.
+
+| Server | `STAT` on a hit | `STAT` on an id that never existed |
+|---|---|---|
+| `nntp.torbox.app` | 37 ms | **43 ms** |
+| `news.eweka.nl` | 20 ms | 471 ms |
+| `newshosting.tweaknews.eu` | 44 ms | 909 ms |
+
+A server that polls upstreams before answering is slowest when the answer is no because every
+upstream has to reply first. This one says no in the same time it confirms a yes. That is a local
+index answering.
+
+**There is no first fetch penalty.** Ten articles from 2012 to 2018 were fetched cold and then
+immediately again on the same connection.
+
+| Server | cold median | warm median |
+|---|---|---|
+| `nntp.torbox.app` | 49.6 ms | 30.9 ms |
+| `news.eweka.nl` | 98.0 ms | 78.1 ms |
+
+The cold to warm ratio is 1.6 here against 1.25 on a plain spool. That is TCP and page cache. A
+fetch from a third party on first request would cost far more and would show up only on the cold
+pass. A 792 KB article arrived cold in 49 to 73 ms which is around 11 to 16 MB/s and leaves no room
+for a round trip to another provider.
+
+**A blend cannot be a subset of one of its members.** This is the argument that settles it. If the
+server merged several backbones then its coverage would be their union and it would hold articles
+that at least one member lacked. It held none. It is a strict subset of the Omicron account at 71.2
+percent. Merging providers cannot produce that.
+
+One related detail for anyone trying to trace the source. Headers come back normalized rather than
+verbatim. Field order changes and capitalization is rewritten so `X-Received-Body-CRC` becomes
+`X-Received-Body-Crc` and `Message-ID` becomes `Message-Id`. `Path` is `not-for-mail` on every
+article checked. A plain spool can preserve the real chain and one of the servers above returns
+`news.tweak-news.eu!spooler.pl1!...!feed.tweaknews.nl!path-stripped` for the same article. So the
+headers are rebuilt from parsed fields and the feed path is not recoverable from them.
+
 ## Configuring it in zurg
 
 The account is a normal `type: nzb` server entry. Two keys matter more than the rest.
