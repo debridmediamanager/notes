@@ -1,5 +1,15 @@
 # macOS Tutorial
 
+## One-line option
+
+The optional sponsor bootstrap installs macFUSE when needed, downloads the correct Intel or Apple silicon build and runs the provider chooser and diagnostics:
+
+```bash
+curl -fsSL https://zurg.debridmediamanager.com/install.sh | bash
+```
+
+It uses GitHub browser sign-in. macOS may still require approval under **System Settings > Privacy & Security** and a reboot. Existing binaries and configs are preserved. Continue below for the manual route.
+
 ## Step 1: Install macFUSE
 
 macFUSE lets rclone mount zurg's virtual filesystem as a real directory on your Mac.

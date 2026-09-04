@@ -1,5 +1,15 @@
 # Linux binary setup
 
+## One-line option
+
+The optional sponsor bootstrap installs the supported system packages, downloads the matching CPU build and runs setup plus diagnostics:
+
+```bash
+curl -fsSL https://zurg.debridmediamanager.com/install.sh | bash
+```
+
+It signs in through GitHub and keeps the install in `~/zurg`. Existing binaries and configs are preserved. Continue below for the manual route or a custom path.
+
 The zurg binary can build the rest of its install itself. It writes the config, downloads the correct rclone and ffprobe binaries for the machine, creates the mount and registers an enabled systemd service.
 
 This flow was verified on 4 September 2026 on fresh Ubuntu 24.04 ARM64 and x86_64 servers.

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841867491211">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841876549986">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -12,7 +12,7 @@
     <!-- Primary Meta Tags -->
     <title>Windows, the binary, from scratch</title>
     <meta name="title" content="Windows, the binary, from scratch">
-    <meta name="description" content="No Docker, no WSL: the zurg .exe in a folder, a config.yml you write once, and a Z: drive in Explorer. This page walks the whole thing in two passes —">
+    <meta name="description" content="Run the optional sponsor bootstrap from PowerShell. It installs WinFsp through UAC, downloads zurg and runs the provider chooser and diagnostics:">
 
     <!-- Canonical -->
     <link rel="canonical" href="https://notes.debridmediamanager.com/setup/windows/">
@@ -22,7 +22,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://notes.debridmediamanager.com/setup/windows/">
     <meta property="og:title" content="Windows, the binary, from scratch">
-    <meta property="og:description" content="No Docker, no WSL: the zurg .exe in a folder, a config.yml you write once, and a Z: drive in Explorer. This page walks the whole thing in two passes —">
+    <meta property="og:description" content="Run the optional sponsor bootstrap from PowerShell. It installs WinFsp through UAC, downloads zurg and runs the provider chooser and diagnostics:">
     <meta property="og:image" content="https://notes.debridmediamanager.com/assets/windows-setup/20-console-rd.webp">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -34,7 +34,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://notes.debridmediamanager.com/setup/windows/">
     <meta name="twitter:title" content="Windows, the binary, from scratch">
-    <meta name="twitter:description" content="No Docker, no WSL: the zurg .exe in a folder, a config.yml you write once, and a Z: drive in Explorer. This page walks the whole thing in two passes —">
+    <meta name="twitter:description" content="Run the optional sponsor bootstrap from PowerShell. It installs WinFsp through UAC, downloads zurg and runs the provider chooser and diagnostics:">
     <meta name="twitter:image" content="https://notes.debridmediamanager.com/assets/windows-setup/20-console-rd.webp">
     <meta name="twitter:image:alt" content="Windows, the binary, from scratch">
 
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841867491211" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841876549986" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841867491211" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841876549986" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841867491211" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841867491211" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841876549986" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841876549986" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -185,6 +185,12 @@
 
                 <!-- Page content  -->
 <h1 id="windows-the-binary-from-scratch">Windows, the binary, from scratch</h1>
+<h2 id="one-line-option">One-line option</h2>
+<p>Run the optional sponsor bootstrap from PowerShell. It installs WinFsp through UAC, downloads zurg and runs the provider chooser and diagnostics:</p>
+<div id="one-line-option-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">irm https://zurg.debridmediamanager.com/install.ps1 | iex</code></pre>
+</doc-codeblock></div>
+<p>It uses GitHub browser sign-in and installs into <code translate="no" v-pre>$HOME\zurg</code>. Existing binaries and configs are preserved. Continue below for the manual route.</p>
 <p>No Docker, no WSL: the zurg <code translate="no" v-pre>.exe</code> in a folder, a <code translate="no" v-pre>config.yml</code> you write once, and a <code translate="no" v-pre>Z:</code> drive in Explorer. This page walks the whole thing in two passes — first <strong>RealDebrid with the qBittorrent endpoint</strong>, then a full reset and <strong>Usenet with the SABnzbd endpoint</strong> — because those are the two installs people actually make, and they exercise different halves of zurg.</p>
 <p>Everything below was captured on a live install: Windows 11 Pro 23H2 (build 22631), PowerShell 5.1, WinFsp 2.0.23075, zurg <code translate="no" v-pre>2026.08.30.0459-nightly-73-g5b4c9790</code>, and a Real-Debrid account plus a Usenet news account. User names have been changed; API keys and credentials shown are illustrative.</p>
 <h2 id="what-you-need">What you need</h2>
@@ -193,7 +199,7 @@
 <li>
 <p><strong>WinFsp</strong> — zurg mounts the library through rclone, and rclone needs WinFsp for a drive letter on Windows. Install it silently, or from the <a href="https://github.com/winfsp/winfsp/releases">installer</a>:</p>
 <div class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$url = &quot;https://github.com/winfsp/winfsp/releases/download/v2.0/winfsp-2.0.23075.msi&quot;
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$url = &quot;https://github.com/winfsp/winfsp/releases/download/v2.1/winfsp-2.1.25156.msi&quot;
 Invoke-WebRequest -Uri $url -OutFile &quot;$env:TEMP\winfsp.msi&quot; -UseBasicParsing
 Start-Process msiexec.exe -ArgumentList &quot;/i&quot;, &quot;$env:TEMP\winfsp.msi&quot;, &quot;/qn&quot;, &quot;/norestart&quot; -Wait</code></pre>
 </doc-codeblock></div>
