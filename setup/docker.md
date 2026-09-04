@@ -14,6 +14,16 @@ The container setup flow was verified on 4 September 2026 with Docker Engine 29.
 
 > **Linux host required:** the host-visible mount below depends on Linux mount propagation. Docker Desktop runs containers inside a VM on macOS and Windows and cannot propagate this FUSE mount into Finder or Explorer. Use the [macOS](macos.md) or [Windows](windows.md) binary guide when the media server runs on either host.
 
+## One-line option
+
+On a fresh Linux host the optional bootstrap can install Docker when approved, configure persistent FUSE propagation, authenticate to the sponsor registry, create the Compose project and run the provider chooser:
+
+```bash
+curl -fsSL https://zurg.debridmediamanager.com/install-docker.sh | bash
+```
+
+Existing Compose files and configs are preserved. Continue below for the complete manual route.
+
 ## What the installer does in a container
 
 The flags are deliberate:

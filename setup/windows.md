@@ -6,6 +6,16 @@ order: 70
 
 # Windows, the binary, from scratch
 
+## One-line option
+
+Run the optional sponsor bootstrap from PowerShell. It installs WinFsp through UAC, downloads zurg and runs the provider chooser and diagnostics:
+
+```powershell
+irm https://zurg.debridmediamanager.com/install.ps1 | iex
+```
+
+It uses GitHub browser sign-in and installs into `$HOME\zurg`. Existing binaries and configs are preserved. Continue below for the manual route.
+
 No Docker, no WSL: the zurg `.exe` in a folder, a `config.yml` you write once, and a `Z:` drive in Explorer. This page walks the whole thing in two passes — first **RealDebrid with the qBittorrent endpoint**, then a full reset and **Usenet with the SABnzbd endpoint** — because those are the two installs people actually make, and they exercise different halves of zurg.
 
 Everything below was captured on a live install: Windows 11 Pro 23H2 (build 22631), PowerShell 5.1, WinFsp 2.0.23075, zurg `2026.08.30.0459-nightly-73-g5b4c9790`, and a Real-Debrid account plus a Usenet news account. User names have been changed; API keys and credentials shown are illustrative.
@@ -16,7 +26,7 @@ Everything below was captured on a live install: Windows 11 Pro 23H2 (build 2263
 - **WinFsp** — zurg mounts the library through rclone, and rclone needs WinFsp for a drive letter on Windows. Install it silently, or from the [installer](https://github.com/winfsp/winfsp/releases):
 
   ```powershell
-  $url = "https://github.com/winfsp/winfsp/releases/download/v2.0/winfsp-2.0.23075.msi"
+  $url = "https://github.com/winfsp/winfsp/releases/download/v2.1/winfsp-2.1.25156.msi"
   Invoke-WebRequest -Uri $url -OutFile "$env:TEMP\winfsp.msi" -UseBasicParsing
   Start-Process msiexec.exe -ArgumentList "/i", "$env:TEMP\winfsp.msi", "/qn", "/norestart" -Wait
   ```
