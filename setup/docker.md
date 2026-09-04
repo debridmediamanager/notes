@@ -8,7 +8,7 @@ order: 90
 
 This guide runs zurg in Docker while making its FUSE mount visible on the Linux host. Docker supplies zurg, rclone and ffprobe and keeps the container running. The built-in `setup` command creates the config and the built-in `doctor` command checks the finished install.
 
-This flow was verified on 4 September 2026 with Docker Engine 29.1.1 and the `2026.09.04.1449-nightly` zurg image.
+The container setup flow was verified on 4 September 2026 with Docker Engine 29.1.1. Use the newest dated nightly release so the image contains the provider chooser described below.
 
 > **Sponsor image:** `ghcr.io/debridmediamanager/zurg` is sponsors-only. See [Patreon](https://www.patreon.com/debridmediamanager) for access.
 
@@ -25,7 +25,7 @@ docker compose run --rm zurg setup \
   --mount-path /zurg_mnt/zurg
 ```
 
-- `setup` prompts for the Real-Debrid token without displaying it and writes `config.yml` with mode `0600`.
+- `setup` asks which providers to configure, prompts only for their credentials and writes `config.yml` with mode `0600`.
 - `--no-service` leaves auto-start to Docker's `restart: unless-stopped` policy instead of trying to install systemd inside Alpine.
 - `--skip-downloads` uses the rclone and ffprobe already installed in the image.
 - `--mount-path` records the subdirectory whose FUSE mount will propagate back to the host.
@@ -47,7 +47,13 @@ Sign in to GitHub Container Registry with your GitHub username. When prompted fo
 docker login ghcr.io -u YOUR_GITHUB_USERNAME
 ```
 
-The compose file below pins the exact image tested for this guide. A dated tag also gives you a known rollback target. Choose a newer dated sponsor release when you intentionally upgrade.
+Set `ZURG_TAG` to the newest dated sponsor release. Keeping it in `.env` gives you a known rollback target and makes upgrades explicit:
+
+```bash
+printf 'ZURG_TAG=YYYY.MM.DD.HHMM-nightly\n' > .env
+```
+
+Replace the placeholder with the actual release tag before continuing.
 
 ## 2. Prepare FUSE mount propagation
 
@@ -81,7 +87,7 @@ Create `docker-compose.yml`:
 ```yaml
 services:
   zurg:
-    image: ghcr.io/debridmediamanager/zurg:2026.09.04.1449-nightly
+    image: ghcr.io/debridmediamanager/zurg:${ZURG_TAG}
     container_name: zurg
     restart: unless-stopped
     devices:
@@ -112,9 +118,9 @@ docker compose run --rm zurg setup \
   --mount-path /zurg_mnt/zurg
 ```
 
-Paste the Real-Debrid token at the hidden prompt. Setup creates `config.yml` in `~/zurg`, enables rclone and creates `/zurg_mnt/zurg`. No token is stored in the compose file or shell history.
+Choose one or several providers in priority order. For example enter `2,4` for TorBox followed by Usenet. Setup asks only for their credentials, creates `config.yml` in `~/zurg`, enables rclone and creates `/zurg_mnt/zurg`. No credential is stored in the compose file or shell history.
 
-For TorBox, AllDebrid, Usenet or several providers, create the wanted `providers:` block in `config.yml` first and run the same command. Setup preserves the existing file and does not ask for a Real-Debrid token.
+For automation repeat `--provider` and pass the provider-specific token-file or `--nntp-*` flags. Setup preserves an existing config on later runs.
 
 ## 5. Start zurg
 
@@ -272,4 +278,3 @@ The host path must be a shared bind mount and the compose volume must bind the p
 ### Mount appears twice in `mount` output
 
 That is normal. The same FUSE mount is visible in the container and host mount namespaces because propagation is working.
-

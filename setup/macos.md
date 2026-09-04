@@ -49,7 +49,7 @@ From the extracted directory, run:
 ./zurg doctor
 ```
 
-`setup` prompts for a Real-Debrid token without showing it on screen. It creates `config.yml` with mode `0600`, downloads rclone and ffprobe, prepares `/Volumes/Zurg` and installs auto-start.
+`setup` asks which providers to configure. Choose one or several of Real-Debrid, TorBox, AllDebrid and Usenet in priority order. For example enter `2,4` for TorBox followed by Usenet. It asks only for the selected credentials, creates `config.yml` with mode `0600`, downloads rclone and ffprobe, prepares `/Volumes/Zurg` and installs auto-start.
 
 It chooses a LaunchAgent when the current user has a GUI launchd domain. On a headless Mac with no logged-in GUI user it installs a system LaunchDaemon that still runs zurg as the current user. That path does not require auto-login.
 

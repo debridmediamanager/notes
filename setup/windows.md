@@ -37,7 +37,7 @@ Set-Location "$HOME\zurg"
 .\zurg.exe doctor
 ```
 
-`setup` prompts for a Real-Debrid token without showing it on screen. It then:
+`setup` asks which providers to configure. Choose one or several of Real-Debrid, TorBox, AllDebrid and Usenet in priority order. It asks only for the selected credentials. It then:
 
 1. Creates and validates `config.yml`.
 2. Restricts its ACL to your user, SYSTEM and Administrators.
@@ -66,17 +66,15 @@ PS C:\Users\yowmamasita> mkdir C:\Users\yowmamasita\zurg
 PS C:\Users\yowmamasita\zurg> .\zurg.exe
 ```
 
-zurg creates a default config, fetches its two helper binaries, tells you what to do next, and exits:
+zurg creates a provider-neutral default config, tells you what to do next and exits:
 
 ```
 INFO  setup  Config file not found, creating default from config.simple.yml
-INFO  setup  ffprobe: bin\ffprobe.exe (from github.com/eugeneware/ffmpeg-static)
-INFO  setup  rclone: bin\rclone.exe (from downloads.rclone.org)
 INFO  zurg   Default config created at config.yml
-INFO  zurg   Update config.yml with your Real-Debrid token, then rerun zurg.
+INFO  zurg   Run zurg setup to choose provider(s), or add a providers block to config.yml, then rerun zurg.
 ```
 
-The downloads are one-time and land in `bin\` — about 85 MB each. After this first run the folder looks like:
+Run `.\zurg.exe setup` to select providers and download the helpers. After setup the folder looks like:
 
 ```
 C:\Users\yowmamasita\zurg\
@@ -90,7 +88,7 @@ C:\Users\yowmamasita\zurg\
 └── zurg.exe
 ```
 
-The generated `config.yml` is a minimal one — a placeholder Real-Debrid provider and two directory filters. You replace it with the config for whichever pass you are doing.
+The generated `config.yml` starts with an empty provider list and two directory filters. Setup fills the list from your choices. The manual examples below replace it with the config for each walkthrough.
 
 ## 2. The RealDebrid pass
 

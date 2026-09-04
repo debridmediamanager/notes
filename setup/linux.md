@@ -56,7 +56,16 @@ cd ~/zurg
 ./zurg setup
 ```
 
-Setup prompts for a Real-Debrid token without showing it on screen. It then:
+Setup asks which providers to configure. Choose one or several in priority order:
+
+```text
+  1) Real-Debrid
+  2) TorBox
+  3) AllDebrid
+  4) Usenet (NZB)
+```
+
+For example enter `2,4` for TorBox followed by Usenet. Setup asks only for the selected credentials. It then:
 
 1. Creates and validates `config.yml`.
 2. Restricts the config to its owner with mode `0600`.
@@ -130,9 +139,9 @@ For a system service:
 sudo journalctl -u zurg.service -f
 ```
 
-## Existing or non-Real-Debrid configs
+## Existing and unattended configs
 
-For TorBox, AllDebrid, Usenet or multiple accounts, write the wanted `providers:` block into `config.yml` first and then run `./zurg setup`. Setup only asks for a Real-Debrid token when no config exists.
+Setup never replaces an existing `config.yml`. For unattended setup repeat `--provider` and supply the matching token-file or `--nntp-*` flags. Run `./zurg setup --help` for the full list.
 
 See the [configuration reference](../reference/config.md) for every setting.
 
