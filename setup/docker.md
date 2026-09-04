@@ -4,17 +4,54 @@ icon: container
 order: 90
 ---
 
-# Docker Setup
+# Docker setup
 
-This guide covers running zurg in Docker with host-visible FUSE mounts.
+This guide runs zurg in Docker while making its FUSE mount visible on the Linux host. Docker supplies zurg, rclone and ffprobe and keeps the container running. The built-in `setup` command creates the config and the built-in `doctor` command checks the finished install.
 
-> **Note:** The integrated rclone mount feature requires zurg v0.10+. The Docker image `ghcr.io/debridmediamanager/zurg:latest` is sponsors-only. See the [Patreon](https://www.patreon.com/debridmediamanager) for access.
+This flow was verified on 4 September 2026 with Docker Engine 29.1.1 and the `2026.09.04.1449-nightly` zurg image.
 
-## Quick Start
+> **Sponsor image:** `ghcr.io/debridmediamanager/zurg` is sponsors-only. See [Patreon](https://www.patreon.com/debridmediamanager) for access.
 
-### 1. One-time host setup
+> **Linux host required:** the host-visible mount below depends on Linux mount propagation. Docker Desktop runs containers inside a VM on macOS and Windows and cannot propagate this FUSE mount into Finder or Explorer. Use the [macOS](macos.md) or [Windows](windows.md) binary guide when the media server runs on either host.
 
-FUSE mount propagation from Docker requires the parent directory to be a shared bind mount. Run this once (it does not survive reboots on its own — see step 5 to persist):
+## What the installer does in a container
+
+The flags are deliberate:
+
+```bash
+docker compose run --rm zurg setup \
+  --no-service \
+  --skip-downloads \
+  --mount-path /zurg_mnt/zurg
+```
+
+- `setup` prompts for the Real-Debrid token without displaying it and writes `config.yml` with mode `0600`.
+- `--no-service` leaves auto-start to Docker's `restart: unless-stopped` policy instead of trying to install systemd inside Alpine.
+- `--skip-downloads` uses the rclone and ffprobe already installed in the image.
+- `--mount-path` records the subdirectory whose FUSE mount will propagate back to the host.
+
+Running setup again is safe. It validates and updates the install but does not replace an existing `config.yml`.
+
+## 1. Install Docker and unlock the image
+
+Install Docker Engine with the Compose plugin on the Linux host. Check both commands before continuing:
+
+```bash
+docker version
+docker compose version
+```
+
+Sign in to GitHub Container Registry with your GitHub username. When prompted for the password, paste a personal access token with `read:packages` access:
+
+```bash
+docker login ghcr.io -u YOUR_GITHUB_USERNAME
+```
+
+The compose file below pins the exact image tested for this guide. A dated tag also gives you a known rollback target. Choose a newer dated sponsor release when you intentionally upgrade.
+
+## 2. Prepare FUSE mount propagation
+
+The FUSE mount must be created below a shared parent mount. Run this once before the first container starts:
 
 ```bash
 sudo mkdir -p /zurg_mnt
@@ -23,14 +60,28 @@ sudo mount --bind /zurg_mnt /zurg_mnt
 sudo mount --make-rshared /zurg_mnt
 ```
 
-### 2. Create docker-compose.yml
+Verify the device and propagation mode:
 
-Create `~/zurg/docker-compose.yml`. There is nothing else to create — no config file, no state directories:
+```bash
+test -c /dev/fuse
+findmnt -o TARGET,PROPAGATION /zurg_mnt
+```
+
+The second command should report `shared` under `PROPAGATION`.
+
+## 3. Create the compose project
+
+```bash
+mkdir -p ~/zurg
+cd ~/zurg
+```
+
+Create `docker-compose.yml`:
 
 ```yaml
 services:
   zurg:
-    image: ghcr.io/debridmediamanager/zurg:latest
+    image: ghcr.io/debridmediamanager/zurg:2026.09.04.1449-nightly
     container_name: zurg
     restart: unless-stopped
     devices:
@@ -41,36 +92,61 @@ services:
       - apparmor:unconfined
     ports:
       - 9999:9999
-    environment:
-      - TOKEN=YOUR_RD_API_TOKEN
-      - MOUNT_PATH=/zurg_mnt/zurg
     volumes:
       - ./:/config
       - /zurg_mnt:/zurg_mnt:rshared
 ```
 
-> **Note:** `privileged: true` is NOT required. `cap_add: SYS_ADMIN` with `apparmor:unconfined` provides the minimum permissions needed for FUSE mounts.
+`privileged: true` is not required. The FUSE device, `SYS_ADMIN` capability and unconfined AppArmor profile are the narrower set used by the mount.
 
-### 3. Start zurg
+Do not bind `/zurg_mnt/zurg` directly. The FUSE mount must be a child of the `rshared` bind for its mount event to reach the host.
+
+## 4. Run the built-in setup
+
+From `~/zurg` run:
 
 ```bash
-cd ~/zurg
-docker compose up -d
+docker compose run --rm zurg setup \
+  --no-service \
+  --skip-downloads \
+  --mount-path /zurg_mnt/zurg
 ```
 
-`config.yml` appears next to your compose file, carrying the token and the mount you asked for. Open it, or use the Dashboard at `http://localhost:9999/config/` — both edit the same file.
+Paste the Real-Debrid token at the hidden prompt. Setup creates `config.yml` in `~/zurg`, enables rclone and creates `/zurg_mnt/zurg`. No token is stored in the compose file or shell history.
 
-### 4. Verify the mount
+For TorBox, AllDebrid, Usenet or several providers, create the wanted `providers:` block in `config.yml` first and run the same command. Setup preserves the existing file and does not ask for a Real-Debrid token.
+
+## 5. Start zurg
 
 ```bash
+docker compose up -d
+docker compose logs -f --tail=100 zurg
+```
+
+Leave the log view with `Ctrl+C`; the container keeps running. The Dashboard is at `http://localhost:9999/config/` and edits the same `config.yml` stored beside the compose file.
+
+A large library can take a while to load on its first run. Until it has, `/dav/movies/` answers 503 and the mount may list nothing.
+
+## 6. Verify with doctor
+
+Once the library is ready, run the same diagnostic tool used by a binary install:
+
+```bash
+docker compose exec zurg /app/zurg doctor --working-dir /config
+```
+
+`doctor` checks the config and its permissions, ffprobe, rclone, FUSE, the HTTP endpoint and the mount reported by zurg. `WARN service zurg is not installed` is expected in Docker because Compose owns auto-start. Warnings do not make the command fail; any `FAIL` does.
+
+Confirm that the propagated mount is also visible outside the container:
+
+```bash
+cat /zurg_mnt/zurg/version.txt
 ls -la /zurg_mnt/zurg/
 ```
 
-You should see your directories (movies, shows, etc.). A large library takes a while to load on the first run; until it has, `/dav/movies/` answers 503 and the mount lists nothing.
+## 7. Make the shared parent survive reboots
 
-### 5. Persist across reboots
-
-The bind mount from step 1 does not survive reboots. Create a systemd service to apply it automatically:
+The self-bind from step 2 does not survive a reboot. Create a systemd oneshot unit on the host:
 
 ```bash
 sudo tee /etc/systemd/system/rshared-zurg-mnt.service << 'EOF'
@@ -89,100 +165,111 @@ EOF
 sudo systemctl enable rshared-zurg-mnt.service
 ```
 
+On the next reboot the host prepares the shared parent before Docker restores the zurg container.
+
+## Managing and updating zurg
+
+Run these from `~/zurg`:
+
+```bash
+docker compose ps
+docker compose logs -f --tail=100 zurg
+docker compose restart zurg
+docker compose stop zurg
+docker compose start zurg
+```
+
+To upgrade, replace the dated image tag in `docker-compose.yml`, then recreate the container and run doctor:
+
+```bash
+docker compose pull zurg
+docker compose up -d zurg
+docker compose exec zurg /app/zurg doctor --working-dir /config
+```
+
+To roll back, restore the previous tag and run those three commands again. The bind-mounted config, library state, logs and cache do not move with the container.
+
+`docker compose down` removes the container and network but leaves the bind-mounted files in `~/zurg` and the mount parent at `/zurg_mnt`.
+
 ## What lives where
 
-Everything zurg writes resolves against its working directory, and in the image that directory is `/config`. One bind mount therefore holds the entire install:
+Everything zurg writes resolves against `/config`, so the single `./:/config` bind holds the install:
 
 | Path | What it is |
 |---|---|
-| `config.yml` | The only source of truth for settings. Dashboard edits are written straight back into it |
-| `data/` | Library cache, network test results, and the rclone VFS cache |
-| `logs/` | zurg's log and rclone's |
-| `dump/` | Torrent dumps, when enabled |
-| `strm/` | `.strm` files, when `save_strm_files` is on |
-| `nzbs/` | The watch directory for the Usenet backend |
+| `config.yml` | Settings and provider credentials; Dashboard edits write back here |
+| `data/` | Library state, local files, generated keys and the rclone VFS cache |
+| `logs/` | zurg and rclone logs |
+| `dump/` | Torrent dumps when enabled |
+| `strm/` | `.strm` files when `save_strm_files` is enabled |
+| `nzbs/` | Watch directory for the Usenet backend |
 
-Pulling a new image moves none of it.
+Pulling or recreating the image changes none of these files.
 
-### Seeding the config from the environment
+### Environment seeding for unattended installs
 
-`TOKEN` (or `RD_TOKEN`) and `MOUNT_PATH` are read **only on the run that creates `config.yml`**. `MOUNT_PATH` writes both `rclone_enabled: true` and `mount_path`, which is what makes a first run mount something without a Dashboard visit.
+The image still supports the older first-run path. If no `config.yml` exists, `TOKEN` or `RD_TOKEN` seeds the account and `MOUNT_PATH` enables the mount. Those variables are read only while the file is being created; the file wins on every later start.
 
-After that the file wins and the variables are ignored, for the same reason `log_level` in the config beats `LOG_LEVEL` in the environment: a value baked into a compose file must not silently undo a setting changed in the Dashboard. Startup logs a warning when a `MOUNT_PATH` is set and disagrees with the config, so the ignoring is visible rather than mysterious. To move the mount, edit `config.yml` or use the Dashboard.
+The interactive `setup` command is preferred for a person at a terminal because the token never enters the compose file. Environment seeding remains useful for automation that already has a secret store.
 
-### Upgrading from an install that mounted `/app`
+### Upgrading an install that mounted `/app`
 
-Nothing to do, and nothing to change. Older setups bind-mounted `/app/config.yml`, `/app/data` and friends individually; the container still picks `/app` whenever any of those is present, so an image update finds the same config and the same library cache it had yesterday.
+Older compose projects bind-mounted `/app/config.yml`, `/app/data` and other paths separately. The entrypoint still selects `/app` whenever it finds that layout, so pulling a newer image keeps using the old config and cache.
 
-To move such an install onto the single-folder layout, stop the container, put the existing `config.yml` and `data/` into one directory, and mount that directory at `/config` instead.
-
-## How It Works
-
-Docker's mount namespace isolation normally prevents FUSE mounts inside containers from being visible on the host. The solution is to mount a parent directory into the container with `rshared` propagation:
-
-1. Make `/zurg_mnt` a shared bind mount on the host (`mount --bind /zurg_mnt /zurg_mnt && mount --make-rshared /zurg_mnt`)
-2. Bind `/zurg_mnt` into the container with `rshared` propagation
-3. Configure zurg to mount rclone at `/zurg_mnt/zurg` inside the container
-4. The FUSE mount propagates back to the host automatically
-
-### Why NOT `/mnt/zurg:/mnt/zurg:rshared`?
-
-Mounting the exact target path does NOT work. FUSE mount propagation only works when the FUSE mount is created on a **subdirectory** of the `rshared` bind mount. When you bind the exact path, the FUSE mount replaces the bind mount instead of propagating through it.
+To adopt the single-folder layout, stop the container, copy the existing `config.yml`, `data/` and other state directories into one host directory, then bind that directory at `/config`.
 
 ## Troubleshooting
 
-### "Transport endpoint is not connected"
+Start with the diagnostic and the current logs:
 
-The FUSE mount has become stale:
+```bash
+docker compose exec zurg /app/zurg doctor --working-dir /config
+docker compose logs --tail=200 zurg
+```
+
+### `unknown command "setup"` or `unknown command "doctor"`
+
+The container predates the built-in installer. Use `2026.09.04.1449-nightly` or a newer dated zurg image, then recreate it:
+
+```bash
+docker compose pull zurg
+docker compose up -d zurg
+```
+
+### `Transport endpoint is not connected`
+
+The old FUSE mount is stale:
+
 ```bash
 sudo fusermount -uz /zurg_mnt/zurg
 docker compose restart zurg
 ```
 
-### "fuse device not found"
+### FUSE device is unavailable
 
-Load the FUSE kernel module:
+Load the module now and on later boots:
+
 ```bash
 sudo modprobe fuse
-echo "fuse" | sudo tee /etc/modules-load.d/fuse.conf
+echo fuse | sudo tee /etc/modules-load.d/fuse.conf
 ```
+
+Then confirm the compose service still includes `/dev/fuse`, `SYS_ADMIN` and the AppArmor setting.
 
 ### Mount is empty
 
-1. Check container logs:
+Check each layer in order:
+
 ```bash
-docker logs zurg 2>&1 | grep -i rclone
+docker compose logs zurg 2>&1 | grep -i rclone
+docker compose exec zurg ls -la /zurg_mnt/zurg
+curl -fsS http://localhost:9999/http/version.txt
+findmnt -o TARGET,PROPAGATION /zurg_mnt
 ```
 
-2. Verify the mount inside the container:
-```bash
-docker exec zurg ls /zurg_mnt/zurg
-```
-
-3. Verify WebDAV is accessible:
-```bash
-curl -s http://localhost:9999/dav/version.txt
-```
-
-4. Make sure you are NOT using `/zurg_mnt/zurg:/zurg_mnt/zurg:rshared` — this will NOT work. You must mount the **parent directory** (`/zurg_mnt`) with rshared propagation.
-
-5. Make sure the host bind mount is active:
-```bash
-findmnt /zurg_mnt
-```
-If it doesn't show `/zurg_mnt` as a bind mount, re-run step 1 from the Quick Start.
+The host path must be a shared bind mount and the compose volume must bind the parent as `/zurg_mnt:/zurg_mnt:rshared`.
 
 ### Mount appears twice in `mount` output
 
-This is normal with rshared propagation - the mount is visible in both the container and host mount namespaces.
+That is normal. The same FUSE mount is visible in the container and host mount namespaces because propagation is working.
 
-### Container keeps restarting
-
-```bash
-docker logs zurg
-```
-
-Common issues:
-- Invalid Real-Debrid token
-- Network connectivity problems
-- Missing `/zurg_mnt` directory on host
