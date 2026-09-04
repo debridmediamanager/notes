@@ -10,38 +10,39 @@
     <meta name="generator" content="Retype 4.6.0">
 
     <!-- Primary Meta Tags -->
-    <title>Guides</title>
-    <meta name="title" content="Guides">
-    <meta name="description" content="Working with the library: Usenet, the arrs, __magic__, and media servers.">
+    <title>Linux binary setup</title>
+    <meta name="title" content="Linux binary setup">
+    <meta name="description" content="The zurg binary can build the rest of its install itself. It writes the config, downloads the correct rclone and ffprobe binaries for the machine, creates the mount and registers an enabled systemd service.">
 
     <!-- Canonical -->
-    <link rel="canonical" href="https://notes.debridmediamanager.com/guides/">
+    <link rel="canonical" href="https://notes.debridmediamanager.com/setup/linux/">
     <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/sitemap.xml">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://notes.debridmediamanager.com/guides/">
-    <meta property="og:title" content="Guides">
-    <meta property="og:description" content="Working with the library: Usenet, the arrs, __magic__, and media servers.">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/setup/linux/">
+    <meta property="og:title" content="Linux binary setup">
+    <meta property="og:description" content="The zurg binary can build the rest of its install itself. It writes the config, downloads the correct rclone and ffprobe binaries for the machine, creates the mount and registers an enabled systemd service.">
     <meta property="og:site_name" content="dmm+zurg">
     <meta property="og:locale" content="en_US">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://notes.debridmediamanager.com/guides/">
-    <meta name="twitter:title" content="Guides">
-    <meta name="twitter:description" content="Working with the library: Usenet, the arrs, __magic__, and media servers.">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/setup/linux/">
+    <meta name="twitter:title" content="Linux binary setup">
+    <meta name="twitter:description" content="The zurg binary can build the rest of its install itself. It writes the config, downloads the correct rclone and ffprobe binaries for the machine, creates the mount and registers an enabled systemd service.">
 
     <!-- Alternate Markdown -->
-    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/guides/index.md">
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/setup/linux.md">
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../resources/css/retype.css?v=4.6.0.841848712341" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841848712341" rel="stylesheet">
 
-    <script data-cfasync="false" src="../resources/js/config.js?v=4.6.0.841848712341" data-turbo-eval="false" defer></script>
-    <script data-cfasync="false" src="../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../resources/js/lunr.js?v=4.6.0.841848712341" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841848712341" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841848712341" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841848712341" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -177,17 +178,101 @@
                 <doc-page-actions></doc-page-actions>
 
                 <!-- Page content  -->
-<h1 id="guides">Guides</h1>
-<p>Working with the library: Usenet, the arrs, <code translate="no" v-pre>__magic__</code>, and media servers.</p>
+<h1 id="linux-binary-setup">Linux binary setup</h1>
+<p>The zurg binary can build the rest of its install itself. It writes the config, downloads the correct rclone and ffprobe binaries for the machine, creates the mount and registers an enabled systemd service.</p>
+<p>This flow was verified on 4 September 2026 on fresh Ubuntu 24.04 ARM64 and x86_64 servers.</p>
+<h2 id="1-install-fuse-3">1. Install FUSE 3</h2>
+<p>On Debian, Ubuntu and their derivatives:</p>
+<div id="1-install-fuse-3-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo apt-get update
+sudo apt-get install -y fuse3</code></pre>
+</doc-codeblock></div>
+<p>Check that the helper and device are present:</p>
+<div id="1-install-fuse-3-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">command -v fusermount3
+test -c /dev/fuse</code></pre>
+</doc-codeblock></div>
+<p>If Plex, Jellyfin or another process runs as a different Unix user, enable <code translate="no" v-pre>allow_other</code> once:</p>
+<div id="1-install-fuse-3-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">echo user_allow_other | sudo tee -a /etc/fuse.conf</code></pre>
+</doc-codeblock></div>
+<p>Without that setting the mount still works, but only the account running zurg can open it. <code translate="no" v-pre>zurg doctor</code> reports the difference.</p>
+<h2 id="2-download-zurg">2. Download zurg</h2>
+<p>Download the matching Linux archive from the <a href="https://github.com/debridmediamanager/zurg/releases">sponsor releases</a>. Choose <code translate="no" v-pre>linux-amd64</code> for an Intel or AMD machine and <code translate="no" v-pre>linux-arm64</code> for an ARM machine.</p>
+<p>Extract it into the directory that should hold the whole install:</p>
+<div id="2-download-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p ~/zurg
+cd ~/zurg
+# Put the downloaded zurg binary here, then:
+chmod +x zurg</code></pre>
+</doc-codeblock></div>
+<p>Everything zurg keeps stays beside that binary: <code translate="no" v-pre>config.yml</code>, downloaded helpers, library state, logs and the rclone cache.</p>
+<h2 id="3-run-setup">3. Run setup</h2>
+<div id="3-run-setup-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/zurg
+./zurg setup</code></pre>
+</doc-codeblock></div>
+<p>Setup prompts for a Real-Debrid token without showing it on screen. It then:</p>
+<ol>
+<li>Creates and validates <code translate="no" v-pre>config.yml</code>.</li>
+<li>Restricts the config to its owner with mode <code translate="no" v-pre>0600</code>.</li>
+<li>Downloads native rclone and ffprobe binaries into <code translate="no" v-pre>bin/</code>.</li>
+<li>Enables the rclone mount at <code translate="no" v-pre>/mnt/zurg</code>.</li>
+<li>Installs and starts an enabled systemd service.</li>
+</ol>
+<p>Use a mount inside your home directory when you do not have permission to create <code translate="no" v-pre>/mnt/zurg</code>:</p>
+<div id="3-run-setup-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./zurg setup --mount-path &quot;$HOME/zurg-mount&quot;</code></pre>
+</doc-codeblock></div>
+<p>Setup is safe to run again. It updates the generated service but does not replace an existing <code translate="no" v-pre>config.yml</code>.</p>
+<h3 id="choosing-the-systemd-scope">Choosing the systemd scope</h3>
+<p>With a working systemd user manager the default <code translate="no" v-pre>auto</code> scope installs <code translate="no" v-pre>~/.config/systemd/user/zurg.service</code>. Otherwise setup installs <code translate="no" v-pre>/etc/systemd/system/zurg.service</code> and asks sudo to run it as the current user.</p>
+<p>Choose explicitly when needed:</p>
+<div id="choosing-the-systemd-scope-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./zurg setup --service-scope user
+./zurg setup --service-scope system --service-user &quot;$USER&quot;</code></pre>
+</doc-codeblock></div>
+<p>For a user service to start before the first login after a reboot, enable lingering:</p>
+<div id="choosing-the-systemd-scope-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">loginctl show-user &quot;$USER&quot; -p Linger
+sudo loginctl enable-linger &quot;$USER&quot;</code></pre>
+</doc-codeblock></div>
+<p>Running setup as <code translate="no" v-pre>root</code> on a server selects a system service owned by root.</p>
+<h2 id="4-verify-the-install">4. Verify the install</h2>
+<div id="4-verify-the-install-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./zurg doctor
+curl -fsS http://127.0.0.1:9999/http/version.txt
+ls /mnt/zurg/version.txt</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>doctor</code> checks the config and its permissions, both downloaded tools, FUSE, the systemd unit, the HTTP endpoint and the mount reported by zurg.</p>
+<p>A large Real-Debrid library takes time to build on its first run. The service can already be active while the first mount listing waits for that scan to finish.</p>
+<h2 id="managing-zurg">Managing zurg</h2>
+<p>Run these commands from the zurg directory:</p>
+<div id="managing-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./zurg service status
+./zurg service restart
+./zurg service stop
+./zurg service start
+./zurg service uninstall</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>uninstall</code> removes only auto-start. The binary, config, data, logs and cache stay in place.</p>
+<p>Follow logs for a user service:</p>
+<div id="managing-zurg-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">journalctl --user -u zurg.service -f</code></pre>
+</doc-codeblock></div>
+<p>For a system service:</p>
+<div id="managing-zurg-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo journalctl -u zurg.service -f</code></pre>
+</doc-codeblock></div>
+<h2 id="existing-or-non-real-debrid-configs">Existing or non-Real-Debrid configs</h2>
+<p>For TorBox, AllDebrid, Usenet or multiple accounts, write the wanted <code translate="no" v-pre>providers:</code> block into <code translate="no" v-pre>config.yml</code> first and then run <code translate="no" v-pre>./zurg setup</code>. Setup only asks for a Real-Debrid token when no config exists.</p>
+<p>See the <a href="../../reference/config/">configuration reference</a> for every setting.</p>
+<h2 id="see-also">See also</h2>
 <ul>
-<li><a href="usenet/">Usenet</a></li>
-<li><a href="sonarr-radarr/">Sonarr &amp; Radarr</a></li>
-<li><a href="sonarr-radarr-torrents/">Sonarr &amp; Radarr, torrents</a></li>
-<li><a href="magic/">__magic__</a></li>
-<li><a href="plex/">Plex</a></li>
-<li><a href="jellyfin/">Jellyfin</a></li>
+<li><a href="../docker/">Docker</a> — container setup and FUSE mount propagation</li>
+<li><a href="../macos/">macOS</a> — the same binary installer with macFUSE and launchd</li>
+<li><a href="../windows/">Windows</a> — the same binary installer with WinFsp and an interactive scheduled task</li>
 </ul>
-<p>Getting zurg itself running is the <a href="../setup/windows/">Setup</a> section — <a href="../setup/windows/">Windows</a> is a from-scratch walkthrough of the binary install, RealDebrid with the qBittorrent endpoint first, then Usenet with SABnzbd.</p>
 
                 
                 <!-- Required only on API pages -->
@@ -197,20 +282,20 @@
             
                 <nav id="retype-nextprev" class="print:hidden flex mt-14">
                     <div class="w-1/2">
-                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../setup/windows/">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../setup/docker/">
                             <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
                             <span>
                                 <span class="block text-xs font-normal text-base-text-muted">Previous</span>
-                                <span class="block mt-1">Windows</span>
+                                <span class="block mt-1">Docker</span>
                             </span>
                         </a>
                     </div>
             
                     <div class="w-1/2">
-                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../guides/usenet/">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../setup/macos/">
                             <span>
                                 <span class="block text-xs font-normal text-right text-base-text-muted">Next</span>
-                                <span class="block mt-1">Usenet</span>
+                                <span class="block mt-1">mac​OS</span>
                             </span>
                             <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
                         </a>
@@ -254,6 +339,6 @@
 
     <div id="retype-overlay-target"></div>
 
-        <script data-cfasync="false">window.__DOCS__ = { "title": "Guides", level: 1, icon: "file", hasPrism: false, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/guides/index.md" }</script>
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Linux", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/setup/linux.md" }</script>
 </body>
 </html>

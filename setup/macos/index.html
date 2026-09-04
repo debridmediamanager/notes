@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841706725213">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841848712341">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841706725213" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841848712341" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841706725213" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841848712341" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841706725213" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841706725213" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841848712341" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841848712341" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -204,9 +204,21 @@ chmod +x zurg</code></pre>
 <div id="step-2-download-zurg-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">./zurg version</code></pre>
 </doc-codeblock></div>
-<h2 id="step-3-configure-zurg">Step 3: Configure Zurg</h2>
+<h2 id="recommended-let-zurg-finish-the-setup">Recommended: let zurg finish the setup</h2>
+<p>From the extracted directory, run:</p>
+<div id="recommended-let-zurg-finish-the-setup-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./zurg setup
+./zurg doctor</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>setup</code> prompts for a Real-Debrid token without showing it on screen. It creates <code translate="no" v-pre>config.yml</code> with mode <code translate="no" v-pre>0600</code>, downloads rclone and ffprobe, prepares <code translate="no" v-pre>/Volumes/Zurg</code> and installs auto-start.</p>
+<p>It chooses a LaunchAgent when the current user has a GUI launchd domain. On a headless Mac with no logged-in GUI user it installs a system LaunchDaemon that still runs zurg as the current user. That path does not require auto-login.</p>
+<p>The prerequisite check distinguishes an installed macFUSE package from an extension macOS can actually load. On Apple silicon the first macFUSE install may still require a one-time Recovery security change, approval under <strong>System Settings &gt; Privacy &amp; Security</strong> and a reboot. No installer can bypass those confirmations.</p>
+<p>Setup is safe to run again. It updates the generated launchd service but does not replace an existing <code translate="no" v-pre>config.yml</code>.</p>
+<p>Before streaming through the mount, open <code translate="no" v-pre>config.yml</code> or the Dashboard at <code translate="no" v-pre>http://localhost:9999/config/</code> and set both <code translate="no" v-pre>--vfs-cache-max-size</code> and <code translate="no" v-pre>--vfs-cache-min-free-space</code> under <code translate="no" v-pre>rclone_extra_args</code>. Keep the maximum below half of the currently free disk space and reserve at least <code translate="no" v-pre>20G</code> with the minimum-free-space setting. Then run <code translate="no" v-pre>./zurg service restart</code>.</p>
+<p>The rest of this page explains the config and Plex setup. Steps 3, 4, 5 and 7 are the manual alternative and can be skipped after <code translate="no" v-pre>zurg setup</code> succeeds.</p>
+<h2 id="step-3-configure-zurg-manually">Step 3: Configure zurg manually</h2>
 <p>Create a config file with your Real-Debrid API token:</p>
-<div id="step-3-configure-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
+<div id="step-3-configure-zurg-manually-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/zurg
 cat &gt; config.yml &lt;&lt; 'EOF'
 # Minimal config - use Dashboard at http://localhost:9999/config/ for more settings
@@ -237,7 +249,7 @@ directories:
 EOF</code></pre>
 </doc-codeblock></div>
 <p>Replace the placeholder token with your actual token from <a href="http://real-debrid.com/?id=440161">real-debrid.com/apitoken</a>:</p>
-<div id="step-3-configure-zurg-code-2" class="codeblock-wrapper"><doc-codeblock>
+<div id="step-3-configure-zurg-manually-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">sed -i '' &quot;s|YOUR_RD_API_TOKEN_HERE|PASTE_YOUR_TOKEN_HERE|g&quot; ~/zurg/config.yml</code></pre>
 </doc-codeblock></div>
 <blockquote>
@@ -251,26 +263,26 @@ EOF</code></pre>
 </ul>
 <p>For example, on a 256GB drive with 100GB free, use <code translate="no" v-pre>50G</code> max size and <code translate="no" v-pre>20G</code> min free space.</p>
 </blockquote>
-<h2 id="step-4-download-dependencies">Step 4: Download Dependencies</h2>
+<h2 id="step-4-download-dependencies-manually">Step 4: Download dependencies manually</h2>
 <p>Zurg has a built-in command that downloads rclone and ffprobe and updates <code translate="no" v-pre>config.yml</code> with their paths:</p>
-<div id="step-4-download-dependencies-code-1" class="codeblock-wrapper"><doc-codeblock>
+<div id="step-4-download-dependencies-manually-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/zurg
 ./zurg download-requirements</code></pre>
 </doc-codeblock></div>
 <p>Create the mount point and the log directory. <code translate="no" v-pre>/Volumes</code> is owned by root, so zurg cannot create <code translate="no" v-pre>/Volumes/Zurg</code> itself; the log directory has to exist before launchd opens its output files in Step 7:</p>
-<div id="step-4-download-dependencies-code-2" class="codeblock-wrapper"><doc-codeblock>
+<div id="step-4-download-dependencies-manually-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo mkdir -p /Volumes/Zurg
 sudo chown &quot;$(whoami)&quot; /Volumes/Zurg
 mkdir -p ~/zurg/logs</code></pre>
 </doc-codeblock></div>
 <p>See <a href="../../reference/config/">the configuration reference</a> for all available options, or use the web Dashboard at <code translate="no" v-pre>http://localhost:9999/config/</code> after starting zurg.</p>
-<h2 id="step-5-test-zurg">Step 5: Test Zurg</h2>
+<h2 id="step-5-test-zurg-manually">Step 5: Test zurg manually</h2>
 <p>Before setting up auto-start, verify everything works:</p>
-<div id="step-5-test-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
+<div id="step-5-test-zurg-manually-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/zurg &amp;&amp; ./zurg</code></pre>
 </doc-codeblock></div>
 <p>You should see log output showing zurg starting up, connecting to Real-Debrid, and mounting via rclone. In another terminal window, check:</p>
-<div id="step-5-test-zurg-code-2" class="codeblock-wrapper"><doc-codeblock>
+<div id="step-5-test-zurg-manually-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash"># Check the HTTP endpoint
 curl -s http://localhost:9999/http/version.txt
 
@@ -300,7 +312,7 @@ ls /Volumes/Zurg/
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">plex_server_url: http://localhost:32400
 plex_token: YOUR_PLEX_TOKEN</code></pre>
 </doc-codeblock></div>
-<h2 id="step-7-set-up-zurg-auto-start">Step 7: Set Up Zurg Auto-Start</h2>
+<h2 id="step-7-set-up-zurg-auto-start-manually">Step 7: Set up zurg auto-start manually</h2>
 <p>macOS LaunchAgents start services automatically when you log in. Plex already handles its own auto-start (Step 6), so we only need a LaunchAgent for zurg.</p>
 <h3 id="zurg-launchagent">Zurg LaunchAgent</h3>
 <div id="zurg-launchagent-code-1" class="codeblock-wrapper"><doc-codeblock>
@@ -396,11 +408,12 @@ curl -s -o /dev/null -w &quot;%{http_code}&quot; http://localhost:32400/identity
 # 4. Processes
 ps -eo pid,command | grep -E &quot;[z]urg|[r]clone.*mount|[P]lex Media Server&quot; | head -5
 
-# 5. Zurg LaunchAgent
-launchctl list | grep zurg</code></pre>
+# 5. Zurg service
+cd ~/zurg &amp;&amp; ./zurg service status</code></pre>
 </doc-codeblock></div>
 <h2 id="step-10-enable-auto-login-optional">Step 10: Enable Auto-Login (Optional)</h2>
-<p>By default, macOS requires a user to log in after each reboot before LaunchAgents start. If this Mac is a headless server, enable auto-login so everything starts unattended:</p>
+<p>This is only needed for the manual LaunchAgent path. A LaunchAgent requires a user to log in after each reboot. The built-in installer uses a LaunchDaemon on a headless Mac instead.</p>
+<p>If you deliberately use the manual LaunchAgent on a headless server, enable auto-login so it starts unattended:</p>
 <ol>
 <li>Open <strong>System Settings</strong></li>
 <li>Go to <strong>Users &amp; Groups</strong></li>
@@ -412,6 +425,16 @@ launchctl list | grep zurg</code></pre>
 </blockquote>
 <hr>
 <h2 id="managing-the-services">Managing the Services</h2>
+<p>For an install created by <code translate="no" v-pre>zurg setup</code>, use the same commands on every platform:</p>
+<div id="managing-the-services-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/zurg
+./zurg service status
+./zurg service restart
+./zurg service stop
+./zurg service start
+./zurg service uninstall</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>uninstall</code> removes auto-start only. It leaves the binary, config, data, logs and cache in place. The launchctl commands below are the manual equivalents.</p>
 <h3 id="start--stop--restart">Start / Stop / Restart</h3>
 <div id="start--stop--restart-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash"># Stop zurg (and its rclone child process)
@@ -439,7 +462,7 @@ launchctl load ~/Library/LaunchAgents/com.zurg.plist</code></pre>
 </doc-codeblock></div>
 <p>If you edit <code translate="no" v-pre>config.yml</code>, just restart zurg:</p>
 <div id="reload-after-config-change-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">launchctl stop com.zurg &amp;&amp; launchctl start com.zurg</code></pre>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/zurg &amp;&amp; ./zurg service restart</code></pre>
 </doc-codeblock></div>
 <h3 id="update-zurg">Update Zurg</h3>
 <p>Download the new <code translate="no" v-pre>darwin-arm64</code> zip from <a href="https://github.com/debridmediamanager/zurg/releases">Releases</a> the same way as in Step 2, then:</p>
@@ -488,12 +511,13 @@ launchctl stop com.zurg &amp;&amp; sleep 2 &amp;&amp; launchctl start com.zurg</
 <li>Reboot</li>
 </ol>
 <h3 id="everything-was-working-but-stopped-after-reboot">Everything was working but stopped after reboot</h3>
-<p>If auto-login is not enabled, you must log in to the Mac for LaunchAgents to start. Either:</p>
+<p>If you installed the manual LaunchAgent and auto-login is not enabled, you must log in before it starts. Either:</p>
 <ul>
 <li>Enable auto-login (see Step 10)</li>
 <li>SSH in — the LaunchAgents will already be loaded once the user session exists</li>
 <li>Use VNC/Screen Sharing to log in remotely</li>
 </ul>
+<p>An install created by <code translate="no" v-pre>zurg setup</code> on a headless Mac uses a LaunchDaemon and does not need a GUI login. Check it with <code translate="no" v-pre>cd ~/zurg &amp;&amp; ./zurg service status</code>.</p>
 <h2 id="architecture-overview">Architecture Overview</h2>
 <div id="architecture-overview-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-none"><code v-pre class="language-none">launchd (PID 1)
@@ -518,9 +542,11 @@ launchctl stop com.zurg &amp;&amp; sleep 2 &amp;&amp; launchctl start com.zurg</
 <h2 id="quick-reference">Quick Reference</h2>
 <retype-table copy-text="| Action | Command |
 |--------|---------|
-| Start zurg | `launchctl start com.zurg` |
-| Stop zurg | `launchctl stop com.zurg` |
-| Restart zurg | `launchctl stop com.zurg &amp;&amp; sleep 2 &amp;&amp; launchctl start com.zurg` |
+| Start zurg | `./zurg service start` |
+| Stop zurg | `./zurg service stop` |
+| Restart zurg | `./zurg service restart` |
+| Check the install | `./zurg doctor` |
+| Remove auto-start | `./zurg service uninstall` |
 | View zurg logs | `tail -f ~/zurg/logs/launchd-stdout.log` |
 | View rclone logs | `tail -f ~/zurg/logs/rclone.log` |
 | Check mount | `ls /Volumes/Zurg/` |
@@ -539,15 +565,23 @@ launchctl stop com.zurg &amp;&amp; sleep 2 &amp;&amp; launchctl start com.zurg</
 <tbody>
 <tr>
 <td>Start zurg</td>
-<td><code translate="no" v-pre>launchctl start com.zurg</code></td>
+<td><code translate="no" v-pre>./zurg service start</code></td>
 </tr>
 <tr>
 <td>Stop zurg</td>
-<td><code translate="no" v-pre>launchctl stop com.zurg</code></td>
+<td><code translate="no" v-pre>./zurg service stop</code></td>
 </tr>
 <tr>
 <td>Restart zurg</td>
-<td><code translate="no" v-pre>launchctl stop com.zurg &amp;&amp; sleep 2 &amp;&amp; launchctl start com.zurg</code></td>
+<td><code translate="no" v-pre>./zurg service restart</code></td>
+</tr>
+<tr>
+<td>Check the install</td>
+<td><code translate="no" v-pre>./zurg doctor</code></td>
+</tr>
+<tr>
+<td>Remove auto-start</td>
+<td><code translate="no" v-pre>./zurg service uninstall</code></td>
 </tr>
 <tr>
 <td>View zurg logs</td>
@@ -590,11 +624,11 @@ launchctl stop com.zurg &amp;&amp; sleep 2 &amp;&amp; launchctl start com.zurg</
             
                 <nav id="retype-nextprev" class="print:hidden flex mt-14">
                     <div class="w-1/2">
-                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../setup/docker/">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../setup/linux/">
                             <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
                             <span>
                                 <span class="block text-xs font-normal text-base-text-muted">Previous</span>
-                                <span class="block mt-1">Docker</span>
+                                <span class="block mt-1">Linux</span>
                             </span>
                         </a>
                     </div>

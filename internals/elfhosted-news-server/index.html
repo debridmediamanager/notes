@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841848712341">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>ElfHosted news server</title>
+    <meta name="title" content="ElfHosted news server">
+    <meta name="description" content="ElfHosted bundles a Usenet account with its Stremio addon plans and calls it Usenet Essential. This page records what that server is. Everything below was measured on 2026-09-04 from one host.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/internals/elfhosted-news-server/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/internals/elfhosted-news-server/">
+    <meta property="og:title" content="ElfHosted news server">
+    <meta property="og:description" content="ElfHosted bundles a Usenet account with its Stremio addon plans and calls it Usenet Essential. This page records what that server is. Everything below was measured on 2026-09-04 from one host.">
+    <meta property="og:site_name" content="dmm+zurg">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/internals/elfhosted-news-server/">
+    <meta name="twitter:title" content="ElfHosted news server">
+    <meta name="twitter:description" content="ElfHosted bundles a Usenet account with its Stremio addon plans and calls it Usenet Essential. This page records what that server is. Everything below was measured on 2026-09-04 from one host.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/internals/elfhosted-news-server.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../resources/css/retype.css?v=4.6.0.841848712341" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841848712341" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841848712341" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841848712341" defer></script>
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/" class="flex items-center leading-snug text-2xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">dmm+zurg</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg-testing" target="_blank">zurg-testing</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://reddit.com/r/debridmediamanager" target="_blank">Reddit</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.patreon.com/debridmediamanager" target="_blank">Patreon</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg-testing" target="_blank">zurg-testing</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://reddit.com/r/debridmediamanager" target="_blank">Reddit</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.patreon.com/debridmediamanager" target="_blank">Patreon</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="elfhosted-news-server">ElfHosted news server</h1>
+<p>ElfHosted bundles a Usenet account with its Stremio addon plans and calls it Usenet Essential. This
+page records what that server is. Everything below was measured on 2026-09-04 from one host. The
+account itself could not be measured, because the only credential ElfHosted ever published is dead,
+and that is the first finding.</p>
+<h2 id="what-answers-on-the-wire">What answers on the wire</h2>
+<p><code translate="no" v-pre>news.elfhosted.com</code> resolves to <code translate="no" v-pre>94.232.116.124</code> and speaks NNTP over TLS 1.3 on 563 behind a
+Let&#x27;s Encrypt certificate for <code translate="no" v-pre>news.elfhosted.com</code>. The certificate carries that one name and
+nothing else and was issued on 2026-08-17. The same server answers plaintext on 119 with the same
+greeting. The greeting is <code translate="no" v-pre>200 Welcome to elfhosted</code>.</p>
+<div id="what-answers-on-the-wire-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">VERSION 2
+IMPLEMENTATION nntpswitch2 (local-dev)
+READER
+LIST OVERVIEW.FMT ACTIVE ACTIVE.TIMES NEWSGROUPS DISTRIB.PATS HEADERS MOTD
+OVER
+HDR
+XZVER
+XZHDR
+AUTHINFO USER</code></pre>
+</doc-codeblock></div>
+<p>That is the same <code translate="no" v-pre>nntpswitch2</code> string the <a href="../torbox-news-server/">TorBox reader</a> reports. This list
+is the unauthenticated one, so it ends at <code translate="no" v-pre>AUTHINFO USER</code> rather than <code translate="no" v-pre>POST</code>. <code translate="no" v-pre>HELP</code> answers without
+credentials and lists the full command set including <code translate="no" v-pre>POST</code> and <code translate="no" v-pre>IHAVE</code> and <code translate="no" v-pre>XPAT</code> and <code translate="no" v-pre>XGTITLE</code>, so
+the missing <code translate="no" v-pre>POST</code> is the session and not the server.</p>
+<p>Three commands work before authentication and nothing else does.</p>
+<retype-table copy-text="| Command | Answer |
+|---|---|
+| `DATE` | `111 20260903225242` |
+| `HELP` | `100 Help follows.` |
+| `CAPABILITIES` | `101 Capabilities.` |
+| `MODE READER` | `480 Authentication required for command.` |
+| `GROUP` and `LIST` and `STAT` and `POST` | `480 Authentication required for command.` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Command</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>DATE</code></td>
+<td><code translate="no" v-pre>111 20260903225242</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>HELP</code></td>
+<td><code translate="no" v-pre>100 Help follows.</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>CAPABILITIES</code></td>
+<td><code translate="no" v-pre>101 Capabilities.</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>MODE READER</code></td>
+<td><code translate="no" v-pre>480 Authentication required for command.</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>GROUP</code> and <code translate="no" v-pre>LIST</code> and <code translate="no" v-pre>STAT</code> and <code translate="no" v-pre>POST</code></td>
+<td><code translate="no" v-pre>480 Authentication required for command.</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h2 id="who-runs-it">Who runs it</h2>
+<p>The TorBox page had to infer the operator from adjacency. This one does not. <code translate="no" v-pre>news.elfhosted.com</code>
+sits inside the Abavia reader block itself.</p>
+<p><code translate="no" v-pre>94.232.116.124</code> is in <code translate="no" v-pre>94.232.112.0/21</code>, <code translate="no" v-pre>AS48345 AS-ABAVIA</code>, registered to Abavia S.r.l. of San
+Marino. A reverse sweep of <code translate="no" v-pre>94.232.116.0/24</code> returns 79 names. Forty five of them answer NNTP on 563
+and all forty five report <code translate="no" v-pre>nntpswitch2 (local-dev)</code> with byte identical capability lists in
+identical order. Abavia&#x27;s own border routers are in the same /24 and so are the XS News feeders and
+web host and nameserver.</p>
+<retype-table copy-text="| Address | Reader | Greeting |
+|---|---|---|
+| `94.232.116.122` | `reader2.newsxs.nl` | `200 Welcome to Newsxs` |
+| `94.232.116.124` | `news.elfhosted.com` | `200 Welcome to elfhosted` |
+| `94.232.116.125` | `reader.spotnews.nl` | `200 Welcome to Spotnews` |
+| `94.232.116.128` | `reader.easyusenet.nl` | `200 Welcome to Easyusenet` |
+| `94.232.116.131` | `reader.xsnews.nl` | `200 Welcome to XS News` |
+| `94.232.116.135` | `reader-usenetfarm.xsnews.nl` | `200 Welcome to XS News` |
+| `94.232.116.136` | `reader.torrentclaw.com` | `200 Welcome to TorrentClaw` |
+| `94.232.116.140` | `reader.usenet.nl` | `200 Usenet.nl S.r.l.` |
+| `94.232.116.147` | `giganews.hostredirects.com` | `200 Welcome to giganews` |
+| `94.232.116.150` | `news.usenext.de` | `200 Welcome to Aviteo Ltd DE` |
+| `94.232.116.174` | `news.hitnews.com` | `200 Welcome to Hitnews` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Address</th>
+<th>Reader</th>
+<th>Greeting</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>94.232.116.122</code></td>
+<td><code translate="no" v-pre>reader2.newsxs.nl</code></td>
+<td><code translate="no" v-pre>200 Welcome to Newsxs</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>94.232.116.124</code></td>
+<td><code translate="no" v-pre>news.elfhosted.com</code></td>
+<td><code translate="no" v-pre>200 Welcome to elfhosted</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>94.232.116.125</code></td>
+<td><code translate="no" v-pre>reader.spotnews.nl</code></td>
+<td><code translate="no" v-pre>200 Welcome to Spotnews</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>94.232.116.128</code></td>
+<td><code translate="no" v-pre>reader.easyusenet.nl</code></td>
+<td><code translate="no" v-pre>200 Welcome to Easyusenet</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>94.232.116.131</code></td>
+<td><code translate="no" v-pre>reader.xsnews.nl</code></td>
+<td><code translate="no" v-pre>200 Welcome to XS News</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>94.232.116.135</code></td>
+<td><code translate="no" v-pre>reader-usenetfarm.xsnews.nl</code></td>
+<td><code translate="no" v-pre>200 Welcome to XS News</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>94.232.116.136</code></td>
+<td><code translate="no" v-pre>reader.torrentclaw.com</code></td>
+<td><code translate="no" v-pre>200 Welcome to TorrentClaw</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>94.232.116.140</code></td>
+<td><code translate="no" v-pre>reader.usenet.nl</code></td>
+<td><code translate="no" v-pre>200 Usenet.nl S.r.l.</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>94.232.116.147</code></td>
+<td><code translate="no" v-pre>giganews.hostredirects.com</code></td>
+<td><code translate="no" v-pre>200 Welcome to giganews</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>94.232.116.150</code></td>
+<td><code translate="no" v-pre>news.usenext.de</code></td>
+<td><code translate="no" v-pre>200 Welcome to Aviteo Ltd DE</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>94.232.116.174</code></td>
+<td><code translate="no" v-pre>news.hitnews.com</code></td>
+<td><code translate="no" v-pre>200 Welcome to Hitnews</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>ElfHosted is four addresses from Easyusenet and seven from XS News and twelve from TorrentClaw,
+which is another Stremio addon fronting the same platform.</p>
+<p>There is no name based multiplexing. Connecting to the address with a servername of
+<code translate="no" v-pre>reader.xsnews.nl</code>, or with one that does not exist at all, returns the same certificate and the
+same <code translate="no" v-pre>200 Welcome to elfhosted</code> greeting. One address per brand.</p>
+<p>TorBox is not in this block. It sits on <code translate="no" v-pre>78.152.55.171</code> in <code translate="no" v-pre>AS3257 GTT</code> in the Netherlands. So the
+ElfHosted attribution is the stronger of the two. TorBox runs the same software next door to a brand
+in this family. ElfHosted runs it on Abavia&#x27;s own address space.</p>
+<p><strong>Measured</strong> is the software fingerprint and the address ownership and the certificate and the
+absence of name based multiplexing. <strong>Inferred</strong> is that the spool behind it is Abavia&#x27;s own rather
+than a blend ElfHosted assembled. Nothing on the wire distinguishes those two without a credential.</p>
+<h2 id="the-published-credential-is-dead">The published credential is dead</h2>
+<p>On 2025-12-20 ElfHosted announced NNTP access bundled with NzbDav as a two month proof of concept
+with an unnamed Usenet infrastructure provider, and published one shared credential in the
+announcement.</p>
+<retype-table copy-text="| Field | As published, 2025-12-20 |
+|---|---|
+| Host | `news.elfhosted.com` |
+| Port | 563 SSL |
+| Username | `elfie` |
+| Password | `elfie` |
+| Connections | 100 |
+| Cost | none until February 2026 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Field</th>
+<th>As published, 2025-12-20</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host</td>
+<td><code translate="no" v-pre>news.elfhosted.com</code></td>
+</tr>
+<tr>
+<td>Port</td>
+<td>563 SSL</td>
+</tr>
+<tr>
+<td>Username</td>
+<td><code translate="no" v-pre>elfie</code></td>
+</tr>
+<tr>
+<td>Password</td>
+<td><code translate="no" v-pre>elfie</code></td>
+</tr>
+<tr>
+<td>Connections</td>
+<td>100</td>
+</tr>
+<tr>
+<td>Cost</td>
+<td>none until February 2026</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>It was pre configured in NzbDav for new users. The post said the arrangement would be reviewed once
+the proof of concept wrapped up. It was. The credential no longer authenticates.</p>
+<div id="the-published-credential-is-dead-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">200 Welcome to elfhosted
+381 Need more.
+482 Invalid username or password</code></pre>
+</doc-codeblock></div>
+<p>On this software <code translate="no" v-pre>482 Invalid username or password</code> is the genuinely dead answer and not the
+connection cap, which says <code translate="no" v-pre>482 too many connections for your user</code> instead. The timing agrees. Five
+dials with a username that never existed and two dials with <code translate="no" v-pre>elfie</code> are the same refusal in the same
+envelope.</p>
+<retype-table copy-text="| Dial | Answer | Time |
+|---|---|---|
+| Random username, five dials | `482 Invalid username or password` | median 2066 ms, range 2043 to 2070 |
+| `elfie` and `elfie`, two dials | `482 Invalid username or password` | 2043 ms and 2212 ms |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Dial</th>
+<th>Answer</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Random username, five dials</td>
+<td><code translate="no" v-pre>482 Invalid username or password</code></td>
+<td>median 2066 ms, range 2043 to 2070</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>elfie</code> and <code translate="no" v-pre>elfie</code>, two dials</td>
+<td><code translate="no" v-pre>482 Invalid username or password</code></td>
+<td>2043 ms and 2212 ms</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>A retired credential and a username that was never issued are indistinguishable here, in the code
+and in the timing both. Around two seconds is what this software takes to say no, which is what the
+TorBox reader does as well.</p>
+<p>So the 100 connections figure describes an offer that ended. It is the only number ElfHosted has
+ever published about this server and it applies to nothing you can buy today. The paid Usenet
+Essential presumably issues a credential per customer. That cannot be checked from outside.</p>
+<p>The same announcement published an internal Newznab endpoint at <code translate="no" v-pre>elfhosted-internal.zyclops</code> that
+accepts any API key and can be filtered to known healthy results for a given backbone. That endpoint
+is what the ElfHosted store means when it says a Usenet plan includes the indexer. It surfaces
+availability and health signals rather than content, and their own wording calls it a crystal ball
+for infrastructure health and not a treasure map. A plan still needs a real indexer alongside it.</p>
+<h2 id="what-could-not-be-measured">What could not be measured</h2>
+<p>Everything that decides whether a provider slot is worth filling. All of it needs a credential.</p>
+<retype-table copy-text="| Property | State |
+|---|---|
+| Connection cap | unknown, the 100 applied to the retired proof of concept only |
+| Retention | never published |
+| Groups in `LIST ACTIVE` | needs auth |
+| Article number window | needs auth |
+| Coverage against other backbones | needs auth |
+| Single connection throughput | needs auth |
+| Posting | the server offers `POST`, the account is unknown |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Property</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Connection cap</td>
+<td>unknown, the 100 applied to the retired proof of concept only</td>
+</tr>
+<tr>
+<td>Retention</td>
+<td>never published</td>
+</tr>
+<tr>
+<td>Groups in <code translate="no" v-pre>LIST ACTIVE</code></td>
+<td>needs auth</td>
+</tr>
+<tr>
+<td>Article number window</td>
+<td>needs auth</td>
+</tr>
+<tr>
+<td>Coverage against other backbones</td>
+<td>needs auth</td>
+</tr>
+<tr>
+<td>Single connection throughput</td>
+<td>needs auth</td>
+</tr>
+<tr>
+<td>Posting</td>
+<td>the server offers <code translate="no" v-pre>POST</code>, the account is unknown</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>A seven day trial costs one dollar and buys the credential. Running the same 531 message id sweep
+the <a href="../torbox-news-server/#what-it-actually-holds">TorBox page</a> used, inside that week, would answer
+every row above.</p>
+<h2 id="what-the-platform-already-tells-you">What the platform already tells you</h2>
+<p>Two facts carry over from the TorBox measurements, and one does not.</p>
+<p>Carries over: the refusal semantics and the refusal timing. Same software, same answers, so
+<code translate="no" v-pre>482 Invalid username or password</code> means a dead credential here too and the cap is a different
+string.</p>
+<p>Carries over: the article number window. A <code translate="no" v-pre>nntpswitch2</code> reader synthesizes article numbers over a
+short window, so anything that walks numbers rather than message ids sees a fortnight of Usenet.
+That is a property of the platform and not of one account. NZB driven reads address articles by
+message id and are unaffected.</p>
+<p>Does not carry over: coverage. The TorBox reader was measured as a strict subset of an Omicron
+account at 71.2 percent with zero articles of its own in 531. That was TorBox&#x27;s endpoint and not
+this one, and TorBox is not even in this block. It is the closest prior on the same software and the
+same operator and it is not a measurement of ElfHosted. Treat it as the hypothesis to test, not as
+the answer.</p>
+<h2 id="configuring-it-in-zurg">Configuring it in zurg</h2>
+<p>If a credential is obtained, it is an ordinary <code translate="no" v-pre>type: nzb</code> server entry alongside the primary.</p>
+<div id="configuring-it-in-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">providers:
+  - type: nzb
+    nntp:
+      host: your-primary.example.com
+      tls: true
+      username: USERNAME
+      password: PASSWORD
+      connections: 40
+      backbone: primary-backbone
+      servers:
+        - name: elfhosted-news
+          host: news.elfhosted.com
+          port: 563
+          tls: true
+          username: YOUR_ELFHOSTED_USERNAME
+          password: YOUR_ELFHOSTED_PASSWORD
+          connections: 8
+          backbone: abavia
+          backup: true</code></pre>
+</doc-codeblock></div>
+<p>Start at 8 connections and raise it only after the real cap has been measured. The published 100 is
+retired and a pool that opens past an unknown cap will refuse itself during a cold start. Set
+<code translate="no" v-pre>backbone: abavia</code> rather than a brand name, because XS News and Easyusenet and Hitnews and UseNeXT
+and this one are the same platform and treating them as separate backbones would let a pool count
+one spool as several. <code translate="no" v-pre>backup: true</code> keeps it for articles every primary has already refused.</p>
+<p>Never point a second client at one credential. The server refuses the older holder rather than the
+newer one, so a second consumer costs the first.</p>
+<h2 id="is-it-worth-a-slot">Is it worth a slot</h2>
+<p>It cannot be bought on its own. It arrives with a nine dollar per month Stremio addon plan, which
+also carries a hosted addon and an NzbDav instance and a TorBox Essentials account. As a line item
+inside that, it costs nothing extra, and that is the strongest thing that can be said for it without
+a credential.</p>
+<p>Against a stack that already holds an Omicron account and Eweka and Frugal, adding a fourth reader
+from this platform is the same bet the TorBox page took and lost. That bet has not been measured
+here, so it is a prior and not a verdict. What would settle it is one dollar and one week and the
+531 id sweep.</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../internals/debrid-baseline/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Previous</span>
+                                <span class="block mt-1">Debrid baseline</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../internals/torbox-news-server/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Next</span>
+                                <span class="block mt-1">Tor​Box news server</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "ElfHosted news server", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/internals/elfhosted-news-server.md" }</script>
+</body>
+</html>

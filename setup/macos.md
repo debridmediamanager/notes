@@ -34,7 +34,28 @@ Verify:
 ./zurg version
 ```
 
-## Step 3: Configure Zurg
+## Recommended: let zurg finish the setup
+
+From the extracted directory, run:
+
+```bash
+./zurg setup
+./zurg doctor
+```
+
+`setup` prompts for a Real-Debrid token without showing it on screen. It creates `config.yml` with mode `0600`, downloads rclone and ffprobe, prepares `/Volumes/Zurg` and installs auto-start.
+
+It chooses a LaunchAgent when the current user has a GUI launchd domain. On a headless Mac with no logged-in GUI user it installs a system LaunchDaemon that still runs zurg as the current user. That path does not require auto-login.
+
+The prerequisite check distinguishes an installed macFUSE package from an extension macOS can actually load. On Apple silicon the first macFUSE install may still require a one-time Recovery security change, approval under **System Settings > Privacy & Security** and a reboot. No installer can bypass those confirmations.
+
+Setup is safe to run again. It updates the generated launchd service but does not replace an existing `config.yml`.
+
+Before streaming through the mount, open `config.yml` or the Dashboard at `http://localhost:9999/config/` and set both `--vfs-cache-max-size` and `--vfs-cache-min-free-space` under `rclone_extra_args`. Keep the maximum below half of the currently free disk space and reserve at least `20G` with the minimum-free-space setting. Then run `./zurg service restart`.
+
+The rest of this page explains the config and Plex setup. Steps 3, 4, 5 and 7 are the manual alternative and can be skipped after `zurg setup` succeeds.
+
+## Step 3: Configure zurg manually
 
 Create a config file with your Real-Debrid API token:
 
@@ -84,7 +105,7 @@ sed -i '' "s|YOUR_RD_API_TOKEN_HERE|PASTE_YOUR_TOKEN_HERE|g" ~/zurg/config.yml
 >
 > For example, on a 256GB drive with 100GB free, use `50G` max size and `20G` min free space.
 
-## Step 4: Download Dependencies
+## Step 4: Download dependencies manually
 
 Zurg has a built-in command that downloads rclone and ffprobe and updates `config.yml` with their paths:
 
@@ -103,7 +124,7 @@ mkdir -p ~/zurg/logs
 
 See [the configuration reference](../reference/config.md) for all available options, or use the web Dashboard at `http://localhost:9999/config/` after starting zurg.
 
-## Step 5: Test Zurg
+## Step 5: Test zurg manually
 
 Before setting up auto-start, verify everything works:
 
@@ -144,7 +165,7 @@ plex_server_url: http://localhost:32400
 plex_token: YOUR_PLEX_TOKEN
 ```
 
-## Step 7: Set Up Zurg Auto-Start
+## Step 7: Set up zurg auto-start manually
 
 macOS LaunchAgents start services automatically when you log in. Plex already handles its own auto-start (Step 6), so we only need a LaunchAgent for zurg.
 
@@ -246,13 +267,15 @@ curl -s -o /dev/null -w "%{http_code}" http://localhost:32400/identity && echo "
 # 4. Processes
 ps -eo pid,command | grep -E "[z]urg|[r]clone.*mount|[P]lex Media Server" | head -5
 
-# 5. Zurg LaunchAgent
-launchctl list | grep zurg
+# 5. Zurg service
+cd ~/zurg && ./zurg service status
 ```
 
 ## Step 10: Enable Auto-Login (Optional)
 
-By default, macOS requires a user to log in after each reboot before LaunchAgents start. If this Mac is a headless server, enable auto-login so everything starts unattended:
+This is only needed for the manual LaunchAgent path. A LaunchAgent requires a user to log in after each reboot. The built-in installer uses a LaunchDaemon on a headless Mac instead.
+
+If you deliberately use the manual LaunchAgent on a headless server, enable auto-login so it starts unattended:
 
 1. Open **System Settings**
 2. Go to **Users & Groups**
@@ -264,6 +287,19 @@ By default, macOS requires a user to log in after each reboot before LaunchAgent
 ---
 
 ## Managing the Services
+
+For an install created by `zurg setup`, use the same commands on every platform:
+
+```bash
+cd ~/zurg
+./zurg service status
+./zurg service restart
+./zurg service stop
+./zurg service start
+./zurg service uninstall
+```
+
+`uninstall` removes auto-start only. It leaves the binary, config, data, logs and cache in place. The launchctl commands below are the manual equivalents.
 
 ### Start / Stop / Restart
 
@@ -300,7 +336,7 @@ launchctl load ~/Library/LaunchAgents/com.zurg.plist
 If you edit `config.yml`, just restart zurg:
 
 ```bash
-launchctl stop com.zurg && launchctl start com.zurg
+cd ~/zurg && ./zurg service restart
 ```
 
 ### Update Zurg
@@ -361,10 +397,12 @@ Major macOS updates sometimes invalidate the kernel extension. Reinstall macFUSE
 
 ### Everything was working but stopped after reboot
 
-If auto-login is not enabled, you must log in to the Mac for LaunchAgents to start. Either:
+If you installed the manual LaunchAgent and auto-login is not enabled, you must log in before it starts. Either:
 - Enable auto-login (see Step 10)
 - SSH in — the LaunchAgents will already be loaded once the user session exists
 - Use VNC/Screen Sharing to log in remotely
+
+An install created by `zurg setup` on a headless Mac uses a LaunchDaemon and does not need a GUI login. Check it with `cd ~/zurg && ./zurg service status`.
 
 ## Architecture Overview
 
@@ -393,9 +431,11 @@ launchd (PID 1)
 
 | Action | Command |
 |--------|---------|
-| Start zurg | `launchctl start com.zurg` |
-| Stop zurg | `launchctl stop com.zurg` |
-| Restart zurg | `launchctl stop com.zurg && sleep 2 && launchctl start com.zurg` |
+| Start zurg | `./zurg service start` |
+| Stop zurg | `./zurg service stop` |
+| Restart zurg | `./zurg service restart` |
+| Check the install | `./zurg doctor` |
+| Remove auto-start | `./zurg service uninstall` |
 | View zurg logs | `tail -f ~/zurg/logs/launchd-stdout.log` |
 | View rclone logs | `tail -f ~/zurg/logs/rclone.log` |
 | Check mount | `ls /Volumes/Zurg/` |

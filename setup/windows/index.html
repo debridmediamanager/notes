@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841706725213">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841848712341">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841706725213" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841848712341" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841706725213" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841848712341" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841706725213" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841706725213" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841848712341" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841848712341" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -200,15 +200,39 @@ Start-Process msiexec.exe -ArgumentList &quot;/i&quot;, &quot;$env:TEMP\winfsp.m
 </li>
 <li><strong>An account</strong> — a Real-Debrid API token for the first pass, a news server for the second.</li>
 </ul>
-<p>Nothing else. rclone and ffprobe download themselves on first run.</p>
-<h2 id="1-first-run-zurg-builds-its-own-home">1. First run: zurg builds its own home</h2>
+<p>Nothing else. The built-in installer downloads rclone and ffprobe.</p>
+<h2 id="recommended-let-zurg-finish-the-setup">Recommended: let zurg finish the setup</h2>
+<p>Make a folder, put <code translate="no" v-pre>zurg.exe</code> in it and run the installer from PowerShell:</p>
+<div id="recommended-let-zurg-finish-the-setup-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">New-Item -ItemType Directory -Force &quot;$HOME\zurg&quot; | Out-Null
+Set-Location &quot;$HOME\zurg&quot;
+# Copy the downloaded zurg.exe here, then:
+.\zurg.exe setup
+.\zurg.exe doctor</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>setup</code> prompts for a Real-Debrid token without showing it on screen. It then:</p>
+<ol>
+<li>Creates and validates <code translate="no" v-pre>config.yml</code>.</li>
+<li>Restricts its ACL to your user, SYSTEM and Administrators.</li>
+<li>Downloads <code translate="no" v-pre>bin\rclone.exe</code> and <code translate="no" v-pre>bin\ffprobe.exe</code>.</li>
+<li>Enables the rclone mount at <code translate="no" v-pre>Z:</code>.</li>
+<li>Registers <code translate="no" v-pre>\Zurg\zurg</code> as an interactive logon task and starts it when a desktop user is logged in.</li>
+</ol>
+<p>Choose another unused drive when needed:</p>
+<div id="recommended-let-zurg-finish-the-setup-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">.\zurg.exe setup --mount-path &quot;Y:&quot;</code></pre>
+</doc-codeblock></div>
+<p>Setup is safe to run again. It updates the generated task but does not replace an existing <code translate="no" v-pre>config.yml</code>.</p>
+<p>The interactive task is deliberate. WinFsp drive mounts belong to the Windows logon session that creates them. A normal Windows service runs in session 0 and its drive is invisible to Plex and Explorer on the desktop. This installer behavior was verified on Windows 11 on 4 September 2026.</p>
+<p>The walkthrough below shows the files and configuration behind the installer and then builds Real-Debrid and Usenet download-client setups. The manual first run and scheduled-task recipe are useful when you want to assemble those pieces yourself.</p>
+<h2 id="1-manual-first-run-zurg-builds-its-own-home">1. Manual first run: zurg builds its own home</h2>
 <p>Make a folder, put the binary in it, run it once with no config file:</p>
-<div id="1-first-run-zurg-builds-its-own-home-code-1" class="codeblock-wrapper"><doc-codeblock>
+<div id="1-manual-first-run-zurg-builds-its-own-home-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS C:\Users\yowmamasita&gt; mkdir C:\Users\yowmamasita\zurg
 PS C:\Users\yowmamasita\zurg&gt; .\zurg.exe</code></pre>
 </doc-codeblock></div>
 <p>zurg creates a default config, fetches its two helper binaries, tells you what to do next, and exits:</p>
-<div id="1-first-run-zurg-builds-its-own-home-code-2" class="codeblock-wrapper"><doc-codeblock>
+<div id="1-manual-first-run-zurg-builds-its-own-home-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-none"><code v-pre class="language-none">INFO  setup  Config file not found, creating default from config.simple.yml
 INFO  setup  ffprobe: bin\ffprobe.exe (from github.com/eugeneware/ffmpeg-static)
 INFO  setup  rclone: bin\rclone.exe (from downloads.rclone.org)
@@ -216,7 +240,7 @@ INFO  zurg   Default config created at config.yml
 INFO  zurg   Update config.yml with your Real-Debrid token, then rerun zurg.</code></pre>
 </doc-codeblock></div>
 <p>The downloads are one-time and land in <code translate="no" v-pre>bin\</code> — about 85 MB each. After this first run the folder looks like:</p>
-<div id="1-first-run-zurg-builds-its-own-home-code-3" class="codeblock-wrapper"><doc-codeblock>
+<div id="1-manual-first-run-zurg-builds-its-own-home-code-3" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-none"><code v-pre class="language-none">C:\Users\yowmamasita\zurg\
 ├── bin\                ffprobe.exe, rclone.exe
 ├── data\               library cache, keys, the __magic__ table
@@ -540,8 +564,17 @@ Z:/__magic__</code></pre>
 </table>
 </div>
 </retype-table>
-<p>The reliable recipe is a scheduled task that runs as you, only when you are logged on:</p>
+<p><code translate="no" v-pre>zurg setup</code> creates the working interactive task automatically. Manage it from the zurg directory:</p>
 <div id="keeping-it-running-the-session-rules-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">.\zurg.exe service status
+.\zurg.exe service restart
+.\zurg.exe service stop
+.\zurg.exe service start
+.\zurg.exe service uninstall</code></pre>
+</doc-codeblock></div>
+<p>Stop and restart ask zurg to shut down gracefully first so its rclone child releases the drive. <code translate="no" v-pre>uninstall</code> removes the task but leaves the binary, config, data, logs and cache.</p>
+<p>The manual equivalent is a scheduled task that runs as you only when you are logged on:</p>
+<div id="keeping-it-running-the-session-rules-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$wdir = &quot;C:\Users\yowmamasita\zurg&quot;
 Set-Content &quot;$wdir\start-zurg.cmd&quot; &quot;@echo off`ncd /d $wdir`nzurg.exe --config config.yml&quot;
 
@@ -564,6 +597,7 @@ Start-ScheduledTask -TaskName &quot;zurg&quot;</code></pre>
 <retype-table copy-text="| What you see | What it means |
 |---|---|
 | `Z:` not in Explorer | The session rule — see [above](#keeping-it-running-the-session-rules). The mount is probably fine; check `http://localhost:9999/http/` first. |
+| `zurg doctor` says the task is ready but not running | No interactive user is logged in. Log into the desktop and run `.\zurg.exe service start`. |
 | `symlinks not supported without the --links flag` | `--links` missing from `rclone_extra_args`. Cosmetic — rclone answering WinFsp's symlink probe of the mount root, once, as the drive comes up. The mount works without it; add the flag to silence the line. |
 | `Library is still loading` under `__magic__` or `/http/` | The first Real-Debrid run walks the account. Wait; a 3,300-torrent account took ~40 minutes here. An NZB library never says this — it starts empty. |
 | `realdebrid will not take &lt;name&gt;: it refuses that name outright` | Real-Debrid blocks some release names (`WEBRip` and friends). Grab a differently-named release; nothing is wrong with the setup. |
@@ -584,6 +618,10 @@ Start-ScheduledTask -TaskName &quot;zurg&quot;</code></pre>
 <tr>
 <td><code translate="no" v-pre>Z:</code> not in Explorer</td>
 <td>The session rule — see <doc-anchor-trigger to="#keeping-it-running-the-session-rules">above</doc-anchor-trigger>. The mount is probably fine; check <code translate="no" v-pre>http://localhost:9999/http/</code> first.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>zurg doctor</code> says the task is ready but not running</td>
+<td>No interactive user is logged in. Log into the desktop and run <code translate="no" v-pre>.\zurg.exe service start</code>.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>symlinks not supported without the --links flag</code></td>
@@ -625,7 +663,7 @@ Start-ScheduledTask -TaskName &quot;zurg&quot;</code></pre>
 <p>Windows PowerShell parses some POSIX habits badly, and SSH eats quoting. <code translate="no" v-pre>&amp;&amp;</code> is not a separator; <code translate="no" v-pre>2&gt;/dev/null</code> is not a redirect; <code translate="no" v-pre>$_.Property</code> inside an inline <code translate="no" v-pre>-Command</code> arrives mangled. For anything non-trivial, put it in a <code translate="no" v-pre>.ps1</code>, copy it over, and run <code translate="no" v-pre>powershell -ExecutionPolicy Bypass -File C:\path\script.ps1</code> — the whole rig on this page was driven exactly that way.</p>
 <h2 id="see-also">See also</h2>
 <ul>
-<li><a href="../docker/">Docker</a> and <a href="../macos/">macOS</a> — the same install on other platforms</li>
+<li><a href="../linux/">Linux</a>, <a href="../docker/">Docker</a> and <a href="../macos/">macOS</a> — the same install on other platforms</li>
 <li><a href="../../guides/sonarr-radarr-torrents/">Sonarr &amp; Radarr, torrents</a> — the qBittorrent endpoint end to end, client settings included</li>
 <li><a href="../../guides/sonarr-radarr/">Sonarr &amp; Radarr</a> — the SABnzbd endpoint, same</li>
 <li><a href="../../guides/usenet/">Usenet</a> — news accounts, retention, repair, the <code translate="no" v-pre>nzb</code> backend in depth</li>
