@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841861742082">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841867491211">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841861742082" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841867491211" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841861742082" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841867491211" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841861742082" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841861742082" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841867491211" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841867491211" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -180,7 +180,7 @@
                 <!-- Page content  -->
 <h1 id="docker-setup">Docker setup</h1>
 <p>This guide runs zurg in Docker while making its FUSE mount visible on the Linux host. Docker supplies zurg, rclone and ffprobe and keeps the container running. The built-in <code translate="no" v-pre>setup</code> command creates the config and the built-in <code translate="no" v-pre>doctor</code> command checks the finished install.</p>
-<p>This flow was verified on 4 September 2026 with Docker Engine 29.1.1 and the <code translate="no" v-pre>2026.09.04.1449-nightly</code> zurg image.</p>
+<p>The container setup flow was verified on 4 September 2026 with Docker Engine 29.1.1. Use the newest dated nightly release so the image contains the provider chooser described below.</p>
 <blockquote>
 <p><strong>Sponsor image:</strong> <code translate="no" v-pre>ghcr.io/debridmediamanager/zurg</code> is sponsors-only. See <a href="https://www.patreon.com/debridmediamanager">Patreon</a> for access.</p>
 </blockquote>
@@ -196,7 +196,7 @@
   --mount-path /zurg_mnt/zurg</code></pre>
 </doc-codeblock></div>
 <ul>
-<li><code translate="no" v-pre>setup</code> prompts for the Real-Debrid token without displaying it and writes <code translate="no" v-pre>config.yml</code> with mode <code translate="no" v-pre>0600</code>.</li>
+<li><code translate="no" v-pre>setup</code> asks which providers to configure, prompts only for their credentials and writes <code translate="no" v-pre>config.yml</code> with mode <code translate="no" v-pre>0600</code>.</li>
 <li><code translate="no" v-pre>--no-service</code> leaves auto-start to Docker&#x27;s <code translate="no" v-pre>restart: unless-stopped</code> policy instead of trying to install systemd inside Alpine.</li>
 <li><code translate="no" v-pre>--skip-downloads</code> uses the rclone and ffprobe already installed in the image.</li>
 <li><code translate="no" v-pre>--mount-path</code> records the subdirectory whose FUSE mount will propagate back to the host.</li>
@@ -212,7 +212,11 @@ docker compose version</code></pre>
 <div id="1-install-docker-and-unlock-the-image-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">docker login ghcr.io -u YOUR_GITHUB_USERNAME</code></pre>
 </doc-codeblock></div>
-<p>The compose file below pins the exact image tested for this guide. A dated tag also gives you a known rollback target. Choose a newer dated sponsor release when you intentionally upgrade.</p>
+<p>Set <code translate="no" v-pre>ZURG_TAG</code> to the newest dated sponsor release. Keeping it in <code translate="no" v-pre>.env</code> gives you a known rollback target and makes upgrades explicit:</p>
+<div id="1-install-docker-and-unlock-the-image-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">printf 'ZURG_TAG=YYYY.MM.DD.HHMM-nightly\n' &gt; .env</code></pre>
+</doc-codeblock></div>
+<p>Replace the placeholder with the actual release tag before continuing.</p>
 <h2 id="2-prepare-fuse-mount-propagation">2. Prepare FUSE mount propagation</h2>
 <p>The FUSE mount must be created below a shared parent mount. Run this once before the first container starts:</p>
 <div id="2-prepare-fuse-mount-propagation-code-1" class="codeblock-wrapper"><doc-codeblock>
@@ -236,7 +240,7 @@ cd ~/zurg</code></pre>
 <div id="3-create-the-compose-project-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">services:
   zurg:
-    image: ghcr.io/debridmediamanager/zurg:2026.09.04.1449-nightly
+    image: ghcr.io/debridmediamanager/zurg:${ZURG_TAG}
     container_name: zurg
     restart: unless-stopped
     devices:
@@ -261,8 +265,8 @@ cd ~/zurg</code></pre>
   --skip-downloads \
   --mount-path /zurg_mnt/zurg</code></pre>
 </doc-codeblock></div>
-<p>Paste the Real-Debrid token at the hidden prompt. Setup creates <code translate="no" v-pre>config.yml</code> in <code translate="no" v-pre>~/zurg</code>, enables rclone and creates <code translate="no" v-pre>/zurg_mnt/zurg</code>. No token is stored in the compose file or shell history.</p>
-<p>For TorBox, AllDebrid, Usenet or several providers, create the wanted <code translate="no" v-pre>providers:</code> block in <code translate="no" v-pre>config.yml</code> first and run the same command. Setup preserves the existing file and does not ask for a Real-Debrid token.</p>
+<p>Choose one or several providers in priority order. For example enter <code translate="no" v-pre>2,4</code> for TorBox followed by Usenet. Setup asks only for their credentials, creates <code translate="no" v-pre>config.yml</code> in <code translate="no" v-pre>~/zurg</code>, enables rclone and creates <code translate="no" v-pre>/zurg_mnt/zurg</code>. No credential is stored in the compose file or shell history.</p>
+<p>For automation repeat <code translate="no" v-pre>--provider</code> and pass the provider-specific token-file or <code translate="no" v-pre>--nntp-*</code> flags. Setup preserves an existing config on later runs.</p>
 <h2 id="5-start-zurg">5. Start zurg</h2>
 <div id="5-start-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose up -d
