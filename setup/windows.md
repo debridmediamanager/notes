@@ -23,9 +23,41 @@ Everything below was captured on a live install: Windows 11 Pro 23H2 (build 2263
 
 - **An account** — a Real-Debrid API token for the first pass, a news server for the second.
 
-Nothing else. rclone and ffprobe download themselves on first run.
+Nothing else. The built-in installer downloads rclone and ffprobe.
 
-## 1. First run: zurg builds its own home
+## Recommended: let zurg finish the setup
+
+Make a folder, put `zurg.exe` in it and run the installer from PowerShell:
+
+```powershell
+New-Item -ItemType Directory -Force "$HOME\zurg" | Out-Null
+Set-Location "$HOME\zurg"
+# Copy the downloaded zurg.exe here, then:
+.\zurg.exe setup
+.\zurg.exe doctor
+```
+
+`setup` prompts for a Real-Debrid token without showing it on screen. It then:
+
+1. Creates and validates `config.yml`.
+2. Restricts its ACL to your user, SYSTEM and Administrators.
+3. Downloads `bin\rclone.exe` and `bin\ffprobe.exe`.
+4. Enables the rclone mount at `Z:`.
+5. Registers `\Zurg\zurg` as an interactive logon task and starts it when a desktop user is logged in.
+
+Choose another unused drive when needed:
+
+```powershell
+.\zurg.exe setup --mount-path "Y:"
+```
+
+Setup is safe to run again. It updates the generated task but does not replace an existing `config.yml`.
+
+The interactive task is deliberate. WinFsp drive mounts belong to the Windows logon session that creates them. A normal Windows service runs in session 0 and its drive is invisible to Plex and Explorer on the desktop. This installer behavior was verified on Windows 11 on 4 September 2026.
+
+The walkthrough below shows the files and configuration behind the installer and then builds Real-Debrid and Usenet download-client setups. The manual first run and scheduled-task recipe are useful when you want to assemble those pieces yourself.
+
+## 1. Manual first run: zurg builds its own home
 
 Make a folder, put the binary in it, run it once with no config file:
 
@@ -355,7 +387,19 @@ A drive letter belongs to the logon session that mounted it. In practice, on the
 | PsExec `-i 1` | Process on the interactive session, but in its **own** logon session — mount still invisible to the desktop |
 | **An interactive scheduled task** | **`Z:` on your desktop** |
 
-The reliable recipe is a scheduled task that runs as you, only when you are logged on:
+`zurg setup` creates the working interactive task automatically. Manage it from the zurg directory:
+
+```powershell
+.\zurg.exe service status
+.\zurg.exe service restart
+.\zurg.exe service stop
+.\zurg.exe service start
+.\zurg.exe service uninstall
+```
+
+Stop and restart ask zurg to shut down gracefully first so its rclone child releases the drive. `uninstall` removes the task but leaves the binary, config, data, logs and cache.
+
+The manual equivalent is a scheduled task that runs as you only when you are logged on:
 
 ```powershell
 $wdir = "C:\Users\yowmamasita\zurg"
@@ -384,6 +428,7 @@ If you do not need Explorer at all — a headless box, or clients that speak HTT
 | What you see | What it means |
 |---|---|
 | `Z:` not in Explorer | The session rule — see [above](#keeping-it-running-the-session-rules). The mount is probably fine; check `http://localhost:9999/http/` first. |
+| `zurg doctor` says the task is ready but not running | No interactive user is logged in. Log into the desktop and run `.\zurg.exe service start`. |
 | `symlinks not supported without the --links flag` | `--links` missing from `rclone_extra_args`. Cosmetic — rclone answering WinFsp's symlink probe of the mount root, once, as the drive comes up. The mount works without it; add the flag to silence the line. |
 | `Library is still loading` under `__magic__` or `/http/` | The first Real-Debrid run walks the account. Wait; a 3,300-torrent account took ~40 minutes here. An NZB library never says this — it starts empty. |
 | `realdebrid will not take <name>: it refuses that name outright` | Real-Debrid blocks some release names (`WEBRip` and friends). Grab a differently-named release; nothing is wrong with the setup. |
@@ -399,7 +444,7 @@ Windows PowerShell parses some POSIX habits badly, and SSH eats quoting. `&&` is
 
 ## See also
 
-- [Docker](docker.md) and [macOS](macos.md) — the same install on other platforms
+- [Linux](linux.md), [Docker](docker.md) and [macOS](macos.md) — the same install on other platforms
 - [Sonarr & Radarr, torrents](../guides/sonarr-radarr-torrents.md) — the qBittorrent endpoint end to end, client settings included
 - [Sonarr & Radarr](../guides/sonarr-radarr.md) — the SABnzbd endpoint, same
 - [Usenet](../guides/usenet.md) — news accounts, retention, repair, the `nzb` backend in depth

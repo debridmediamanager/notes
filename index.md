@@ -24,9 +24,10 @@ Four views onto the same library:
 
 Getting zurg running on your machine.
 
+- [Linux](setup/linux.md) — FUSE 3 and a systemd service created by the binary
 - [Docker](setup/docker.md) — containers, FUSE propagation, and what breaks a host-visible mount
-- [macOS](setup/macos.md) — macFUSE, rclone, and a mount that survives a reboot
-- [Windows](setup/windows.md) — WinFsp and a drive letter
+- [macOS](setup/macos.md) — macFUSE and launchd auto-start created by the binary
+- [Windows](setup/windows.md) — WinFsp and an interactive drive-letter task created by the binary
 
 ## Guides
 
