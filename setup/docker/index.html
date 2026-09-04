@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841848712341">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841861742082">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
 
     <!-- Primary Meta Tags -->
-    <title>Docker Setup</title>
-    <meta name="title" content="Docker Setup">
-    <meta name="description" content="This guide covers running zurg in Docker with host-visible FUSE mounts.">
+    <title>Docker setup</title>
+    <meta name="title" content="Docker setup">
+    <meta name="description" content="This guide runs zurg in Docker while making its FUSE mount visible on the Linux host. Docker supplies zurg, rclone and ffprobe and keeps the container running.">
 
     <!-- Canonical -->
     <link rel="canonical" href="https://notes.debridmediamanager.com/setup/docker/">
@@ -21,28 +21,28 @@
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://notes.debridmediamanager.com/setup/docker/">
-    <meta property="og:title" content="Docker Setup">
-    <meta property="og:description" content="This guide covers running zurg in Docker with host-visible FUSE mounts.">
+    <meta property="og:title" content="Docker setup">
+    <meta property="og:description" content="This guide runs zurg in Docker while making its FUSE mount visible on the Linux host. Docker supplies zurg, rclone and ffprobe and keeps the container running.">
     <meta property="og:site_name" content="dmm+zurg">
     <meta property="og:locale" content="en_US">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://notes.debridmediamanager.com/setup/docker/">
-    <meta name="twitter:title" content="Docker Setup">
-    <meta name="twitter:description" content="This guide covers running zurg in Docker with host-visible FUSE mounts.">
+    <meta name="twitter:title" content="Docker setup">
+    <meta name="twitter:description" content="This guide runs zurg in Docker while making its FUSE mount visible on the Linux host. Docker supplies zurg, rclone and ffprobe and keeps the container running.">
 
     <!-- Alternate Markdown -->
     <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/setup/docker.md">
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841848712341" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841861742082" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841848712341" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841861742082" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841848712341" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841848712341" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841861742082" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841861742082" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -178,26 +178,65 @@
                 <doc-page-actions></doc-page-actions>
 
                 <!-- Page content  -->
-<h1 id="docker-setup">Docker Setup</h1>
-<p>This guide covers running zurg in Docker with host-visible FUSE mounts.</p>
+<h1 id="docker-setup">Docker setup</h1>
+<p>This guide runs zurg in Docker while making its FUSE mount visible on the Linux host. Docker supplies zurg, rclone and ffprobe and keeps the container running. The built-in <code translate="no" v-pre>setup</code> command creates the config and the built-in <code translate="no" v-pre>doctor</code> command checks the finished install.</p>
+<p>This flow was verified on 4 September 2026 with Docker Engine 29.1.1 and the <code translate="no" v-pre>2026.09.04.1449-nightly</code> zurg image.</p>
 <blockquote>
-<p><strong>Note:</strong> The integrated rclone mount feature requires zurg v0.10+. The Docker image <code translate="no" v-pre>ghcr.io/debridmediamanager/zurg:latest</code> is sponsors-only. See the <a href="https://www.patreon.com/debridmediamanager">Patreon</a> for access.</p>
+<p><strong>Sponsor image:</strong> <code translate="no" v-pre>ghcr.io/debridmediamanager/zurg</code> is sponsors-only. See <a href="https://www.patreon.com/debridmediamanager">Patreon</a> for access.</p>
 </blockquote>
-<h2 id="quick-start">Quick Start</h2>
-<h3 id="1-one-time-host-setup">1. One-time host setup</h3>
-<p>FUSE mount propagation from Docker requires the parent directory to be a shared bind mount. Run this once (it does not survive reboots on its own — see step 5 to persist):</p>
-<div id="1-one-time-host-setup-code-1" class="codeblock-wrapper"><doc-codeblock>
+<blockquote>
+<p><strong>Linux host required:</strong> the host-visible mount below depends on Linux mount propagation. Docker Desktop runs containers inside a VM on macOS and Windows and cannot propagate this FUSE mount into Finder or Explorer. Use the <a href="../macos/">macOS</a> or <a href="../windows/">Windows</a> binary guide when the media server runs on either host.</p>
+</blockquote>
+<h2 id="what-the-installer-does-in-a-container">What the installer does in a container</h2>
+<p>The flags are deliberate:</p>
+<div id="what-the-installer-does-in-a-container-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose run --rm zurg setup \
+  --no-service \
+  --skip-downloads \
+  --mount-path /zurg_mnt/zurg</code></pre>
+</doc-codeblock></div>
+<ul>
+<li><code translate="no" v-pre>setup</code> prompts for the Real-Debrid token without displaying it and writes <code translate="no" v-pre>config.yml</code> with mode <code translate="no" v-pre>0600</code>.</li>
+<li><code translate="no" v-pre>--no-service</code> leaves auto-start to Docker&#x27;s <code translate="no" v-pre>restart: unless-stopped</code> policy instead of trying to install systemd inside Alpine.</li>
+<li><code translate="no" v-pre>--skip-downloads</code> uses the rclone and ffprobe already installed in the image.</li>
+<li><code translate="no" v-pre>--mount-path</code> records the subdirectory whose FUSE mount will propagate back to the host.</li>
+</ul>
+<p>Running setup again is safe. It validates and updates the install but does not replace an existing <code translate="no" v-pre>config.yml</code>.</p>
+<h2 id="1-install-docker-and-unlock-the-image">1. Install Docker and unlock the image</h2>
+<p>Install Docker Engine with the Compose plugin on the Linux host. Check both commands before continuing:</p>
+<div id="1-install-docker-and-unlock-the-image-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker version
+docker compose version</code></pre>
+</doc-codeblock></div>
+<p>Sign in to GitHub Container Registry with your GitHub username. When prompted for the password, paste a personal access token with <code translate="no" v-pre>read:packages</code> access:</p>
+<div id="1-install-docker-and-unlock-the-image-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker login ghcr.io -u YOUR_GITHUB_USERNAME</code></pre>
+</doc-codeblock></div>
+<p>The compose file below pins the exact image tested for this guide. A dated tag also gives you a known rollback target. Choose a newer dated sponsor release when you intentionally upgrade.</p>
+<h2 id="2-prepare-fuse-mount-propagation">2. Prepare FUSE mount propagation</h2>
+<p>The FUSE mount must be created below a shared parent mount. Run this once before the first container starts:</p>
+<div id="2-prepare-fuse-mount-propagation-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo mkdir -p /zurg_mnt
 sudo modprobe fuse
 sudo mount --bind /zurg_mnt /zurg_mnt
 sudo mount --make-rshared /zurg_mnt</code></pre>
 </doc-codeblock></div>
-<h3 id="2-create-docker-composeyml">2. Create docker-compose.yml</h3>
-<p>Create <code translate="no" v-pre>~/zurg/docker-compose.yml</code>. There is nothing else to create — no config file, no state directories:</p>
-<div id="2-create-docker-composeyml-code-1" class="codeblock-wrapper"><doc-codeblock>
+<p>Verify the device and propagation mode:</p>
+<div id="2-prepare-fuse-mount-propagation-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">test -c /dev/fuse
+findmnt -o TARGET,PROPAGATION /zurg_mnt</code></pre>
+</doc-codeblock></div>
+<p>The second command should report <code translate="no" v-pre>shared</code> under <code translate="no" v-pre>PROPAGATION</code>.</p>
+<h2 id="3-create-the-compose-project">3. Create the compose project</h2>
+<div id="3-create-the-compose-project-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p ~/zurg
+cd ~/zurg</code></pre>
+</doc-codeblock></div>
+<p>Create <code translate="no" v-pre>docker-compose.yml</code>:</p>
+<div id="3-create-the-compose-project-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">services:
   zurg:
-    image: ghcr.io/debridmediamanager/zurg:latest
+    image: ghcr.io/debridmediamanager/zurg:2026.09.04.1449-nightly
     container_name: zurg
     restart: unless-stopped
     devices:
@@ -208,30 +247,43 @@ sudo mount --make-rshared /zurg_mnt</code></pre>
       - apparmor:unconfined
     ports:
       - 9999:9999
-    environment:
-      - TOKEN=YOUR_RD_API_TOKEN
-      - MOUNT_PATH=/zurg_mnt/zurg
     volumes:
       - ./:/config
       - /zurg_mnt:/zurg_mnt:rshared</code></pre>
 </doc-codeblock></div>
-<blockquote>
-<p><strong>Note:</strong> <code translate="no" v-pre>privileged: true</code> is NOT required. <code translate="no" v-pre>cap_add: SYS_ADMIN</code> with <code translate="no" v-pre>apparmor:unconfined</code> provides the minimum permissions needed for FUSE mounts.</p>
-</blockquote>
-<h3 id="3-start-zurg">3. Start zurg</h3>
-<div id="3-start-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/zurg
-docker compose up -d</code></pre>
+<p><code translate="no" v-pre>privileged: true</code> is not required. The FUSE device, <code translate="no" v-pre>SYS_ADMIN</code> capability and unconfined AppArmor profile are the narrower set used by the mount.</p>
+<p>Do not bind <code translate="no" v-pre>/zurg_mnt/zurg</code> directly. The FUSE mount must be a child of the <code translate="no" v-pre>rshared</code> bind for its mount event to reach the host.</p>
+<h2 id="4-run-the-built-in-setup">4. Run the built-in setup</h2>
+<p>From <code translate="no" v-pre>~/zurg</code> run:</p>
+<div id="4-run-the-built-in-setup-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose run --rm zurg setup \
+  --no-service \
+  --skip-downloads \
+  --mount-path /zurg_mnt/zurg</code></pre>
 </doc-codeblock></div>
-<p><code translate="no" v-pre>config.yml</code> appears next to your compose file, carrying the token and the mount you asked for. Open it, or use the Dashboard at <code translate="no" v-pre>http://localhost:9999/config/</code> — both edit the same file.</p>
-<h3 id="4-verify-the-mount">4. Verify the mount</h3>
-<div id="4-verify-the-mount-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">ls -la /zurg_mnt/zurg/</code></pre>
+<p>Paste the Real-Debrid token at the hidden prompt. Setup creates <code translate="no" v-pre>config.yml</code> in <code translate="no" v-pre>~/zurg</code>, enables rclone and creates <code translate="no" v-pre>/zurg_mnt/zurg</code>. No token is stored in the compose file or shell history.</p>
+<p>For TorBox, AllDebrid, Usenet or several providers, create the wanted <code translate="no" v-pre>providers:</code> block in <code translate="no" v-pre>config.yml</code> first and run the same command. Setup preserves the existing file and does not ask for a Real-Debrid token.</p>
+<h2 id="5-start-zurg">5. Start zurg</h2>
+<div id="5-start-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose up -d
+docker compose logs -f --tail=100 zurg</code></pre>
 </doc-codeblock></div>
-<p>You should see your directories (movies, shows, etc.). A large library takes a while to load on the first run; until it has, <code translate="no" v-pre>/dav/movies/</code> answers 503 and the mount lists nothing.</p>
-<h3 id="5-persist-across-reboots">5. Persist across reboots</h3>
-<p>The bind mount from step 1 does not survive reboots. Create a systemd service to apply it automatically:</p>
-<div id="5-persist-across-reboots-code-1" class="codeblock-wrapper"><doc-codeblock>
+<p>Leave the log view with <code translate="no" v-pre>Ctrl+C</code>; the container keeps running. The Dashboard is at <code translate="no" v-pre>http://localhost:9999/config/</code> and edits the same <code translate="no" v-pre>config.yml</code> stored beside the compose file.</p>
+<p>A large library can take a while to load on its first run. Until it has, <code translate="no" v-pre>/dav/movies/</code> answers 503 and the mount may list nothing.</p>
+<h2 id="6-verify-with-doctor">6. Verify with doctor</h2>
+<p>Once the library is ready, run the same diagnostic tool used by a binary install:</p>
+<div id="6-verify-with-doctor-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose exec zurg /app/zurg doctor --working-dir /config</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>doctor</code> checks the config and its permissions, ffprobe, rclone, FUSE, the HTTP endpoint and the mount reported by zurg. <code translate="no" v-pre>WARN service zurg is not installed</code> is expected in Docker because Compose owns auto-start. Warnings do not make the command fail; any <code translate="no" v-pre>FAIL</code> does.</p>
+<p>Confirm that the propagated mount is also visible outside the container:</p>
+<div id="6-verify-with-doctor-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cat /zurg_mnt/zurg/version.txt
+ls -la /zurg_mnt/zurg/</code></pre>
+</doc-codeblock></div>
+<h2 id="7-make-the-shared-parent-survive-reboots">7. Make the shared parent survive reboots</h2>
+<p>The self-bind from step 2 does not survive a reboot. Create a systemd oneshot unit on the host:</p>
+<div id="7-make-the-shared-parent-survive-reboots-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo tee /etc/systemd/system/rshared-zurg-mnt.service &lt;&lt; 'EOF'
 [Unit]
 Description=Make /zurg_mnt rshared for Docker FUSE mounts
@@ -247,16 +299,34 @@ WantedBy=multi-user.target
 EOF
 sudo systemctl enable rshared-zurg-mnt.service</code></pre>
 </doc-codeblock></div>
+<p>On the next reboot the host prepares the shared parent before Docker restores the zurg container.</p>
+<h2 id="managing-and-updating-zurg">Managing and updating zurg</h2>
+<p>Run these from <code translate="no" v-pre>~/zurg</code>:</p>
+<div id="managing-and-updating-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose ps
+docker compose logs -f --tail=100 zurg
+docker compose restart zurg
+docker compose stop zurg
+docker compose start zurg</code></pre>
+</doc-codeblock></div>
+<p>To upgrade, replace the dated image tag in <code translate="no" v-pre>docker-compose.yml</code>, then recreate the container and run doctor:</p>
+<div id="managing-and-updating-zurg-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose pull zurg
+docker compose up -d zurg
+docker compose exec zurg /app/zurg doctor --working-dir /config</code></pre>
+</doc-codeblock></div>
+<p>To roll back, restore the previous tag and run those three commands again. The bind-mounted config, library state, logs and cache do not move with the container.</p>
+<p><code translate="no" v-pre>docker compose down</code> removes the container and network but leaves the bind-mounted files in <code translate="no" v-pre>~/zurg</code> and the mount parent at <code translate="no" v-pre>/zurg_mnt</code>.</p>
 <h2 id="what-lives-where">What lives where</h2>
-<p>Everything zurg writes resolves against its working directory, and in the image that directory is <code translate="no" v-pre>/config</code>. One bind mount therefore holds the entire install:</p>
+<p>Everything zurg writes resolves against <code translate="no" v-pre>/config</code>, so the single <code translate="no" v-pre>./:/config</code> bind holds the install:</p>
 <retype-table copy-text="| Path | What it is |
 |---|---|
-| `config.yml` | The only source of truth for settings. Dashboard edits are written straight back into it |
-| `data/` | Library cache, network test results, and the rclone VFS cache |
-| `logs/` | zurg's log and rclone's |
-| `dump/` | Torrent dumps, when enabled |
-| `strm/` | `.strm` files, when `save_strm_files` is on |
-| `nzbs/` | The watch directory for the Usenet backend |">
+| `config.yml` | Settings and provider credentials; Dashboard edits write back here |
+| `data/` | Library state, local files, generated keys and the rclone VFS cache |
+| `logs/` | zurg and rclone logs |
+| `dump/` | Torrent dumps when enabled |
+| `strm/` | `.strm` files when `save_strm_files` is enabled |
+| `nzbs/` | Watch directory for the Usenet backend |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -268,105 +338,75 @@ sudo systemctl enable rshared-zurg-mnt.service</code></pre>
 <tbody>
 <tr>
 <td><code translate="no" v-pre>config.yml</code></td>
-<td>The only source of truth for settings. Dashboard edits are written straight back into it</td>
+<td>Settings and provider credentials; Dashboard edits write back here</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>data/</code></td>
-<td>Library cache, network test results, and the rclone VFS cache</td>
+<td>Library state, local files, generated keys and the rclone VFS cache</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>logs/</code></td>
-<td>zurg&#x27;s log and rclone&#x27;s</td>
+<td>zurg and rclone logs</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>dump/</code></td>
-<td>Torrent dumps, when enabled</td>
+<td>Torrent dumps when enabled</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>strm/</code></td>
-<td><code translate="no" v-pre>.strm</code> files, when <code translate="no" v-pre>save_strm_files</code> is on</td>
+<td><code translate="no" v-pre>.strm</code> files when <code translate="no" v-pre>save_strm_files</code> is enabled</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>nzbs/</code></td>
-<td>The watch directory for the Usenet backend</td>
+<td>Watch directory for the Usenet backend</td>
 </tr>
 </tbody>
 </table>
 </div>
 </retype-table>
-<p>Pulling a new image moves none of it.</p>
-<h3 id="seeding-the-config-from-the-environment">Seeding the config from the environment</h3>
-<p><code translate="no" v-pre>TOKEN</code> (or <code translate="no" v-pre>RD_TOKEN</code>) and <code translate="no" v-pre>MOUNT_PATH</code> are read <strong>only on the run that creates <code translate="no" v-pre>config.yml</code></strong>. <code translate="no" v-pre>MOUNT_PATH</code> writes both <code translate="no" v-pre>rclone_enabled: true</code> and <code translate="no" v-pre>mount_path</code>, which is what makes a first run mount something without a Dashboard visit.</p>
-<p>After that the file wins and the variables are ignored, for the same reason <code translate="no" v-pre>log_level</code> in the config beats <code translate="no" v-pre>LOG_LEVEL</code> in the environment: a value baked into a compose file must not silently undo a setting changed in the Dashboard. Startup logs a warning when a <code translate="no" v-pre>MOUNT_PATH</code> is set and disagrees with the config, so the ignoring is visible rather than mysterious. To move the mount, edit <code translate="no" v-pre>config.yml</code> or use the Dashboard.</p>
-<h3 id="upgrading-from-an-install-that-mounted-app">Upgrading from an install that mounted <code translate="no" v-pre>/app</code></h3>
-<p>Nothing to do, and nothing to change. Older setups bind-mounted <code translate="no" v-pre>/app/config.yml</code>, <code translate="no" v-pre>/app/data</code> and friends individually; the container still picks <code translate="no" v-pre>/app</code> whenever any of those is present, so an image update finds the same config and the same library cache it had yesterday.</p>
-<p>To move such an install onto the single-folder layout, stop the container, put the existing <code translate="no" v-pre>config.yml</code> and <code translate="no" v-pre>data/</code> into one directory, and mount that directory at <code translate="no" v-pre>/config</code> instead.</p>
-<h2 id="how-it-works">How It Works</h2>
-<p>Docker&#x27;s mount namespace isolation normally prevents FUSE mounts inside containers from being visible on the host. The solution is to mount a parent directory into the container with <code translate="no" v-pre>rshared</code> propagation:</p>
-<ol>
-<li>Make <code translate="no" v-pre>/zurg_mnt</code> a shared bind mount on the host (<code translate="no" v-pre>mount --bind /zurg_mnt /zurg_mnt &amp;&amp; mount --make-rshared /zurg_mnt</code>)</li>
-<li>Bind <code translate="no" v-pre>/zurg_mnt</code> into the container with <code translate="no" v-pre>rshared</code> propagation</li>
-<li>Configure zurg to mount rclone at <code translate="no" v-pre>/zurg_mnt/zurg</code> inside the container</li>
-<li>The FUSE mount propagates back to the host automatically</li>
-</ol>
-<h3 id="why-not-mntzurgmntzurgrshared">Why NOT <code translate="no" v-pre>/mnt/zurg:/mnt/zurg:rshared</code>?</h3>
-<p>Mounting the exact target path does NOT work. FUSE mount propagation only works when the FUSE mount is created on a <strong>subdirectory</strong> of the <code translate="no" v-pre>rshared</code> bind mount. When you bind the exact path, the FUSE mount replaces the bind mount instead of propagating through it.</p>
+<p>Pulling or recreating the image changes none of these files.</p>
+<h3 id="environment-seeding-for-unattended-installs">Environment seeding for unattended installs</h3>
+<p>The image still supports the older first-run path. If no <code translate="no" v-pre>config.yml</code> exists, <code translate="no" v-pre>TOKEN</code> or <code translate="no" v-pre>RD_TOKEN</code> seeds the account and <code translate="no" v-pre>MOUNT_PATH</code> enables the mount. Those variables are read only while the file is being created; the file wins on every later start.</p>
+<p>The interactive <code translate="no" v-pre>setup</code> command is preferred for a person at a terminal because the token never enters the compose file. Environment seeding remains useful for automation that already has a secret store.</p>
+<h3 id="upgrading-an-install-that-mounted-app">Upgrading an install that mounted <code translate="no" v-pre>/app</code></h3>
+<p>Older compose projects bind-mounted <code translate="no" v-pre>/app/config.yml</code>, <code translate="no" v-pre>/app/data</code> and other paths separately. The entrypoint still selects <code translate="no" v-pre>/app</code> whenever it finds that layout, so pulling a newer image keeps using the old config and cache.</p>
+<p>To adopt the single-folder layout, stop the container, copy the existing <code translate="no" v-pre>config.yml</code>, <code translate="no" v-pre>data/</code> and other state directories into one host directory, then bind that directory at <code translate="no" v-pre>/config</code>.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
-<h3 id="transport-endpoint-is-not-connected">&quot;Transport endpoint is not connected&quot;</h3>
-<p>The FUSE mount has become stale:</p>
+<p>Start with the diagnostic and the current logs:</p>
+<div id="troubleshooting-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose exec zurg /app/zurg doctor --working-dir /config
+docker compose logs --tail=200 zurg</code></pre>
+</doc-codeblock></div>
+<h3 id="unknown-command-setup-or-unknown-command-doctor"><code translate="no" v-pre>unknown command &quot;setup&quot;</code> or <code translate="no" v-pre>unknown command &quot;doctor&quot;</code></h3>
+<p>The container predates the built-in installer. Use <code translate="no" v-pre>2026.09.04.1449-nightly</code> or a newer dated zurg image, then recreate it:</p>
+<div id="unknown-command-setup-or-unknown-command-doctor-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose pull zurg
+docker compose up -d zurg</code></pre>
+</doc-codeblock></div>
+<h3 id="transport-endpoint-is-not-connected"><code translate="no" v-pre>Transport endpoint is not connected</code></h3>
+<p>The old FUSE mount is stale:</p>
 <div id="transport-endpoint-is-not-connected-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo fusermount -uz /zurg_mnt/zurg
 docker compose restart zurg</code></pre>
 </doc-codeblock></div>
-<h3 id="fuse-device-not-found">&quot;fuse device not found&quot;</h3>
-<p>Load the FUSE kernel module:</p>
-<div id="fuse-device-not-found-code-1" class="codeblock-wrapper"><doc-codeblock>
+<h3 id="fuse-device-is-unavailable">FUSE device is unavailable</h3>
+<p>Load the module now and on later boots:</p>
+<div id="fuse-device-is-unavailable-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo modprobe fuse
-echo &quot;fuse&quot; | sudo tee /etc/modules-load.d/fuse.conf</code></pre>
+echo fuse | sudo tee /etc/modules-load.d/fuse.conf</code></pre>
 </doc-codeblock></div>
+<p>Then confirm the compose service still includes <code translate="no" v-pre>/dev/fuse</code>, <code translate="no" v-pre>SYS_ADMIN</code> and the AppArmor setting.</p>
 <h3 id="mount-is-empty">Mount is empty</h3>
-<ol>
-<li>Check container logs:</li>
-</ol>
+<p>Check each layer in order:</p>
 <div id="mount-is-empty-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker logs zurg 2&gt;&amp;1 | grep -i rclone</code></pre>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose logs zurg 2&gt;&amp;1 | grep -i rclone
+docker compose exec zurg ls -la /zurg_mnt/zurg
+curl -fsS http://localhost:9999/http/version.txt
+findmnt -o TARGET,PROPAGATION /zurg_mnt</code></pre>
 </doc-codeblock></div>
-<ol start="2">
-<li>Verify the mount inside the container:</li>
-</ol>
-<div id="mount-is-empty-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker exec zurg ls /zurg_mnt/zurg</code></pre>
-</doc-codeblock></div>
-<ol start="3">
-<li>Verify WebDAV is accessible:</li>
-</ol>
-<div id="mount-is-empty-code-3" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s http://localhost:9999/dav/version.txt</code></pre>
-</doc-codeblock></div>
-<ol start="4">
-<li>
-<p>Make sure you are NOT using <code translate="no" v-pre>/zurg_mnt/zurg:/zurg_mnt/zurg:rshared</code> — this will NOT work. You must mount the <strong>parent directory</strong> (<code translate="no" v-pre>/zurg_mnt</code>) with rshared propagation.</p>
-</li>
-<li>
-<p>Make sure the host bind mount is active:</p>
-</li>
-</ol>
-<div id="mount-is-empty-code-4" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">findmnt /zurg_mnt</code></pre>
-</doc-codeblock></div>
-<p>If it doesn&#x27;t show <code translate="no" v-pre>/zurg_mnt</code> as a bind mount, re-run step 1 from the Quick Start.</p>
+<p>The host path must be a shared bind mount and the compose volume must bind the parent as <code translate="no" v-pre>/zurg_mnt:/zurg_mnt:rshared</code>.</p>
 <h3 id="mount-appears-twice-in-mount-output">Mount appears twice in <code translate="no" v-pre>mount</code> output</h3>
-<p>This is normal with rshared propagation - the mount is visible in both the container and host mount namespaces.</p>
-<h3 id="container-keeps-restarting">Container keeps restarting</h3>
-<div id="container-keeps-restarting-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker logs zurg</code></pre>
-</doc-codeblock></div>
-<p>Common issues:</p>
-<ul>
-<li>Invalid Real-Debrid token</li>
-<li>Network connectivity problems</li>
-<li>Missing <code translate="no" v-pre>/zurg_mnt</code> directory on host</li>
-</ul>
+<p>That is normal. The same FUSE mount is visible in the container and host mount namespaces because propagation is working.</p>
 
                 
                 <!-- Required only on API pages -->
