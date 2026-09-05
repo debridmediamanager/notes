@@ -258,7 +258,7 @@ options.
   news server. So a dead release reports Completed and fails on the first read
   instead of being blocklisted and re-grabbed.
 - **Torrents.** Use the zurg dashboard or DMM or Plex watchlist acquisition.
-  That last one is `plex_watchlist_enabled` and it needs `dmm_api_key`.
+  That last one is the `watchlist:` block, which searches your own Newznab indexers.
 - **Hybrid.** Keep decypharr purely as the \*arrs' download client pushing into
   the same debrid accounts with zurg serving the mount. Both list the same
   account so zurg picks up what decypharr adds. The \*arr import step then needs
