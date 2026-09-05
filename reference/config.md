@@ -51,7 +51,7 @@ None of this is required. It is what the `providers` block bought:
 | TorBox, AllDebrid and Usenet backends, alongside Real-Debrid or instead of it | [Accounts](#accounts) |
 | Several accounts of the same service, told apart by `name` | [Accounts](#accounts) |
 | `disabled: true` to park an account without deleting its credentials | [Accounts](#accounts) |
-| `watchlist: true` to choose which account receives Plex watchlist additions | [Accounts](#accounts) |
+| `watchlist: true` to choose which account new torrent adds are tried on first | [Accounts](#accounts) |
 | `provider:` / `not_provider:` directory filters, and per-account directories | [Directories](#7-directories--filters) |
 | `rd_cdn_host_preference` and `tb_cdn_host_preference` for per-service CDN choice | [CDN & Host Selection](#cdn--host-selection) |
 
@@ -152,7 +152,9 @@ Each entry in `providers` is one account. Any number can run side by side — Re
 | `download_tokens` | list | `[]` | Backup API tokens for the same service. When the primary token's daily bandwidth limit is reached, zurg automatically rotates to these tokens to keep downloads flowing. |
 | `strm_link_token` | string | `""` | A separate API token that resolves the reads arriving at the `/strm/` endpoint, so a player opening a `.strm` does not spend the token the live mount streams on. Falls back to `token` if not set. **Real-Debrid and AllDebrid** — the two backends that rotate credentials, and so the two where pinning `.strm` traffic to a key of its own means something. Accepted and unused on `torbox` and `nzb` entries. |
 | `disabled` | bool | `false` | Keeps an account in the config without loading it. If every entry is disabled, the load fails. |
-| `watchlist` | bool | `false` | Marks the account that receives new content (Plex watchlist additions). At most one entry may set it, and never an `nzb` one. With none set, the first account that can add torrents is used. |
+| `watchlist` | bool | `false` | Marks the account tried first for new torrent adds (the download-client endpoints). At most one entry may set it, and never an `nzb` one. With none set, the first account that can add torrents is used. Plex watchlist acquisition itself goes through the Usenet backend, not this account — see [Watchlist](#watchlist). |
+| `add_torrents` | bool | `true` | Whether this account is offered new torrents at all — the ones the download-client endpoints are handed, and the ones the Plex watchlist asks for. Set it `false` for an archive account, or one whose quota is spoken for: it goes on serving and reading its library while nothing new is ever put on it. **The order of the `providers:` list is the order the accounts that do take adds are tried in**, so this key and that order are read together; an account marked `watchlist: true` is tried first wherever it sits. Cannot be combined with `watchlist: true` on the same entry, and on an `nzb` entry it is ignored with a startup warning, since a news server is never handed a torrent. See [`qbittorrent`](#qbittorrent-the-torrent-download-client-sonarr-and-radarr-see). |
+| `warm_connections` | int | `1` | How many connections this account keeps dialled and handshaken **to each host it has been using**, so a read does not pay to open one. Capped at 4. `-1` keeps none. Ignored on an `nzb` entry, whose floor is per account and lives at [`nntp.warm_connections`](../guides/usenet.md). See [warm connections](#warm-connections). |
 | `nntp` | block | *(required for `nzb`)* | News server credentials. Required for type `nzb` and ignored by every other type. |
 
 ```yaml
@@ -247,6 +249,33 @@ A top-level key governs what repairs leave behind:
 |--------|------|---------|-------------|
 | `par2_patch_cache_mb` | int | `512` | How much of `data/par2/` the bytes rebuilt by PAR2 repair may occupy. Those bytes are the one thing a reader cannot ask the news server for again — the articles carrying them are gone — so keeping them means a restart does not cost a full re-read of the release to recover the same few megabytes. Only the dead articles' spans are stored, which is single-digit megabytes per damaged release; whole releases are dropped, least recently used first, when the budget is exceeded. A negative value turns persistence off and keeps repairs in memory for the life of the process. |
 
+And two govern what a parsed NZB costs in memory:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `nzb_segments` | string | `mmap` on Linux/macOS/BSD, `resident` on Windows | How a parsed NZB's article list is retained. **Needs a restart.** `mmap` writes the lists to `data/nzb-index/<id>.bin` and maps that file on demand, so the bytes live in the page cache instead of on zurg's heap. `reparse` gives them back once the release has settled and re-reads the NZB from disk when a read or a repair needs them, costing no disk at all. `resident` keeps every one of them in memory for the life of the process — **the previous behaviour**, and what every earlier build did. Anything unrecognised takes the default and is named in a startup warning; the mode actually in force is logged at startup either way. |
+| `nzb_segments_idle_secs` | int | `120` | How long a release's article list is kept after the last read of it, under the lazy modes. **Needs a restart.** A sweep runs every 30 seconds, so 10 is the shortest window it can honour and the Dashboard's floor. Ignored under `resident`, which never gives anything back. `0` takes the default. |
+
+The trade is worth stating plainly, because it is not the usual memory-for-speed one. A listing — a library refresh, a fingerprint check, an *arr asking whether a job has settled — never touches an article under any mode: a file's name, its size and its article count are answered from the entry itself. What the lazy modes cost is the *first* read of a release nothing has touched for `nzb_segments_idle_secs`, and what they save is the heap the article lists occupy the rest of the time. Measured on a 60-file, 30,000-segment release (Apple M3 Pro):
+
+| | heap per release, settled | first read of an idle release | per article on the read path |
+|---|---|---|---|
+| `resident` | 1.74 MB (58 B/segment) | — | 6 ns |
+| `reparse` | 21.3 kB (0.71 B/segment) | 39 ms | 52 ns |
+| `mmap` | 16.6 kB (0.55 B/segment) | 0.27 ms | 63 ns |
+
+Two thirds of the `mmap` reload is the checksum over the index it has just mapped — the map itself is 0.08 ms — and it is worth that: without it a single bad byte inside an arena is served as a message id nobody posted, which the news server answers as a dead article and every layer above reads as damage to the release.
+
+And on a real library — 2,636 NZBs, 27.6 million segments, the same binary run three times over the same corpus, idle after a scan:
+
+| | resident set | live heap | idle CPU | cold open, p50 | index on disk |
+|---|---|---|---|---|---|
+| `resident` | 2,921 MB | 2,677 MB | 23 % | 806 ms | — |
+| `reparse` | 1,188 MB | 987 MB | 31 % | 1,018 ms | — |
+| `mmap` | **1,135 MB** | **921 MB** | 23 % | **694 ms** | 1,456 MB |
+
+Warm opens, streaming throughput and startup time were indistinguishable. `mmap` is the default wherever there is a real mapping because it wins on every axis but disk — a cold open included, since mapping a written arena is a syscall where parsing the NZB again is megabytes of XML. It costs about 55 bytes of disk per article and one extra write per release at scan time; the index is rewritten whenever the NZB changes and removed when the NZB goes. Choose `reparse` on a host where `data/` must not grow. On Windows there is no mapping — the index would be read into the heap, which is resident memory *plus* a reload — so the default there stays `resident` and `reparse` is the lazy mode worth choosing.
+
 ## 2. Media Server Integration
 
 Connect zurg to your media server so library updates, metadata matching, and watchlist monitoring work automatically.
@@ -258,9 +287,10 @@ Connect zurg to your media server so library updates, metadata matching, and wat
 | `plex_server_url` | string | `""` | URL of your Plex server. Required for Plex matching and watchlist features. Example: `http://localhost:32400` |
 | `plex_token` | string | `""` | Your Plex authentication token. Required alongside `plex_server_url`. |
 | `plex_match_every_mins` | int | `1440` | How often (in minutes) zurg scans your Plex library to match torrents to Plex items. This enables features like showing which torrents correspond to which Plex media. Minimum 1; `0` falls back to the default. Requires `mount_path` to be set. |
-| `plex_watchlist_enabled` | bool | `false` | When enabled, zurg monitors your Plex watchlist and automatically processes new items. Requires `plex_server_url` and `plex_token`. Items are removed from the watchlist after processing. |
-| `plex_watchlist_check_every_secs` | int | `5` | How frequently (in seconds) zurg polls the Plex watchlist for new items. Lower values mean faster response but more API calls. Only relevant when `plex_watchlist_enabled` is true. |
-| `watchlist_quality` | string | `"best"` | Which release the watchlist acquires for an item. One of `best`, `4k`, `1080p`, `720p`, `smallest`. The search runs through DebridMediaManager, so acquisition is skipped entirely without `dmm_api_key`. |
+| `plex_watchlist_enabled` | bool | `false` | Legacy spelling of `watchlist.enabled` (see [Watchlist](#watchlist)); still honoured. |
+| `plex_watchlist_check_every_secs` | int | — | Legacy spelling of `watchlist.check_every_secs`; still honoured when the block does not set one. |
+| `watchlist_quality` | string | `"best"` | Legacy spelling of `watchlist.quality`; still honoured when the block does not set one. |
+| `plex_settings_policy` | string | `"guard"` | How far zurg may go in correcting the Plex preferences that matter for a debrid mount. One of `off` (touch nothing), `warn` (report everything, change nothing), `guard` (fix only the settings whose wrong value loses a library, report the rest) or `enforce` (also fix the settings that make Plex decode whole files). Skip Intro and Skip Credits are only ever reported. See [Plex settings](../guides/plex.md#recommended-plex-settings). |
 
 > **Note:** Plex is best configured through the Dashboard (web UI) authentication flow; it writes `plex_server_url` and `plex_token` back into `config.yml`. The keys above remain supported for manual configuration.
 
@@ -268,9 +298,37 @@ Connect zurg to your media server so library updates, metadata matching, and wat
 plex_server_url: "http://localhost:32400"
 plex_token: "your-plex-token"
 plex_match_every_mins: 1440
-plex_watchlist_enabled: false
-plex_watchlist_check_every_secs: 5
-watchlist_quality: "best"
+```
+
+### Watchlist
+
+Add something to your Plex watchlist and zurg fetches it: every new watchlist item is searched on your Newznab indexers and the chosen release's NZB drops into the Usenet backend, exactly as a Sonarr grab or a Stremio play would — the three surfaces share the naming rules, so they find each other's grabs instead of duplicating them. A movie becomes one release; a show is acquired season by season, preferring season packs over loose episodes — a season nobody posted a pack of falls back to the loose episodes the search surfaced, best release per episode. The item leaves the watchlist only once something was actually acquired; failures stay on the list and are retried a few times with backoff.
+
+It needs a `plex_token` (the monitor talks to Plex's cloud service, so `plex_server_url` is not required), a configured `nzb` provider to read the watch directory, and at least one indexer — its own list, or the Stremio addon's.
+
+Every option below is on the config page under **Plex Watchlist**, indexer list included; the dashboard writes this block rather than the legacy flat keys, and switching the monitor off there clears `plex_watchlist_enabled` too, since that one is ORed into the switch.
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `enabled` | bool | `false` | Starts the monitor. The legacy `plex_watchlist_enabled` key still counts. |
+| `check_every_secs` | int | `60` | How often the watchlist is polled on Plex's cloud service. |
+| `indexers` | list | `[]` | Newznab endpoints to search, each with `name`, `url`, `api_key` and optional `api_path` — the same shape as `stremio.indexers`, which is borrowed wholesale when this list is empty. |
+| `max_size_gb` | int | `40` | Releases larger than this are dropped for movies and single episodes. Releases whose size the indexer did not state are kept. |
+| `max_season_size_gb` | int | `100` | The same ceiling for season packs, which are legitimately several times a movie. |
+| `quality` | string | `"best"` | Which release wins: `best` (resolution first, then size), `4k`, `1080p`, `720p` (prefer that resolution, fall back to best) or `smallest`. The legacy `watchlist_quality` key still counts. |
+
+```yaml
+plex_token: "your-plex-token"
+watchlist:
+  enabled: true
+  check_every_secs: 60
+  max_size_gb: 40
+  max_season_size_gb: 100
+  quality: best
+  indexers:
+    - name: nzbgeek
+      url: https://api.nzbgeek.info
+      api_key: your-api-key
 ```
 
 ### Plex Library Maintenance (same host only)
@@ -310,7 +368,7 @@ For every absent file the sweep asks zurg's own repair state before reaching for
 |---|---|
 | the file still reads (the filters hide it from the mount) | falls back to the age window |
 | broken, and repair has not given up | **keeps the entry**, however long repair takes |
-| broken with a permanently unrepairable reason (infringing, invalid, no seeders, …) | **removes it at once** — waiting cannot bring it back |
+| broken with a permanently unrepairable reason (infringing, invalid, not allowed, …) | **removes it at once** — waiting cannot bring it back |
 | no verdict — the torrent left the account entirely, or the path does not resolve | falls back to the age window |
 
 An item with several versions is judged as a unit: one version still under repair keeps the whole entry, and an entry is only known dead when every version is. A failed lookup is never a licence to delete — anything zurg cannot vouch for is handled by the age window below, exactly as before.
@@ -428,33 +486,61 @@ delete_torrent_if_extensions_found:
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `retain_folder_name_extension` | bool | `false` | When true, keeps file extensions in folder/directory names. Normally zurg strips extensions from directory names for cleaner browsing. Enable this for single-file torrents where the extension in the folder name is meaningful. |
-| `retain_rd_torrent_name` | bool | `false` | When true, uses the torrent name as shown by Real-Debrid. When false, uses the `original_name` from the torrent metadata. This matters for season packs where only one file is selected — with this off, the directory name reflects the individual file rather than the full pack name. |
-| `ignore_renames` | bool | `false` | When true, zurg ignores any rename metadata in torrents and uses original filenames. Enable this if renamed files are causing issues with your media server's matching. |
+| `retain_folder_name_extension` | bool | `false` | **Deprecated — will be removed.** When true, the folder name is the account's `Name` verbatim, extension and all, instead of `OriginalName` with a trailing `.mp4` then `.mkv` trimmed off. It applies only where `Name` contains `OriginalName` as a substring; everywhere else the trim happens anyway. `retain_rd_torrent_name` is checked first and shadows it entirely. |
+| `retain_rd_torrent_name` | bool | `false` | **Deprecated — will be removed.** When true, the folder name is the account's `Name` (Real-Debrid's `filename`); when false it is `OriginalName` (`original_filename`), which is the name the torrent itself declared. This matters for a pack with one file selected: Real-Debrid collapses `filename` to that file's own basename while `original_filename` stays the pack name, so **`false` gives the pack name and `true` gives the individual file's**. |
+| `ignore_renames` | bool | `false` | When true, zurg ignores any rename metadata in torrents and uses original filenames. Enable this if renamed files are causing issues with your media server's matching. Not deprecated. |
 
 ```yaml
-retain_folder_name_extension: false
-retain_rd_torrent_name: false
+retain_folder_name_extension: false   # deprecated
+retain_rd_torrent_name: false         # deprecated
 ignore_renames: false
 ```
+
+Both deprecated flags key the library on `Name`, which the account rewrites
+underneath zurg; the defaults key it on the name the torrent declared, which the
+account leaves alone. Setting either logs a warning at startup, and on an
+instance fronting Sonarr or Radarr (a `sabnzbd:` or `qbittorrent:` block) the
+defaults are the only correct values — an access key that moves after an import
+loses the release. Behaviour is unchanged this release: nobody's folder names
+move. `docs/naming.txt` is the full set of naming rules.
 
 ### Mount Writes
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `dav_allow_delete` | bool | `false` | When true, a WebDAV DELETE through the mount removes a file from the library — and the release from every debrid account holding it once nothing is left. Off by default: rclone flushes an overwritten file as DELETE followed by PUT, so anything that rewrites a file in place (an `.nfo` writer, a trickplay pass, an \*arr rename, a stray `touch`) deletes content instead of replacing it, and the mount carries rclone's own credentials so authentication cannot tell the two apart. Deleting from the dashboard is unaffected — it never goes through WebDAV. |
 | `dav_allow_rename` | bool | `true` | When false, a WebDAV MOVE through the mount is refused with 403. On by default: renaming a torrent or a file is what the writable mount exists for and it destroys nothing. |
 
-A refused write answers **403** and logs the config key that would allow it, so a client whose delete stopped working says why in `logs/zurg.log`.
+**A WebDAV DELETE through the mount is always honoured — there is no key for it.** It removes a file from the library, and the release from every debrid account holding it once nothing is left. Know what that costs before pointing a writer at the mount: rclone flushes an overwritten file as DELETE followed by PUT, so anything that rewrites a file in place (an `.nfo` writer, a trickplay pass, an \*arr rename, a stray `touch`) deletes content instead of replacing it, and the mount carries rclone's own credentials so authentication cannot tell the two apart. Only the PUT half being refused keeps that sequence from completing quietly. `mount_read_only: true` is what stops a delete reaching zurg at all.
+
+A refused write answers **403** and logs the config key that would allow it, so a client whose write stopped working says why in `logs/zurg.log`.
 
 One aftermath to know about: when a program writes through the FUSE mount, rclone's VFS cache keeps the modified copy and retries the refused upload on a backoff, and the mount shows the locally-modified file until that cache entry is discarded — the server-side file is untouched the whole time. `mount_read_only: true` avoids this entirely by failing the write at the kernel, before rclone caches anything.
 
 ```yaml
-dav_allow_delete: false
 dav_allow_rename: true
 ```
 
 See also `mount_read_only`, which makes the kernel refuse the write before it reaches zurg.
+
+### Directory listing cache
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `disable_listing_cache` | bool | `false` | When true, every directory listing is rendered from scratch on every request. Leave it off: with it on, a `PROPFIND Depth:1` of `__all__` re-renders the whole library each time it is asked — measured at 59 ms for 6,120 releases, 121 ms for 2,636 Usenet releases, 148 ms for `__magic__`'s root — and a media server scan asks for the same listing over and over. |
+
+```yaml
+disable_listing_cache: false
+```
+
+The cache keeps the last rendering of each top-level directory, one per mount flavour (`/dav`, `/infuse`, `/http`), and hands it back until the library changes. What counts as a change is not a guess: it is exactly the set of events that already make rclone forget its own cached copy of the same listing — a release added, removed, renamed, refiled, a file going broken or healing — and rclone holds those listings for **twelve hours**. So a listing served from here is never staler than the one the mount is already serving, and there is a hard 60-second cap on top of that as belt and braces.
+
+`__magic__`'s root additionally tracks the stored layout, so an \*arr import invalidates `__magic__` alone and leaves every other directory's rendering intact. `__downloads__` and `Depth: 0` requests are not cached at all.
+
+Responses carry an `X-Zurg-Listing: hit` or `miss` header, so a live install can be measured:
+
+```bash
+curl -s -o /dev/null -D - -X PROPFIND -H 'Depth: 1' http://localhost:9999/dav/__all__/ | grep -i x-zurg-listing
+```
 
 ### `__magic__`, a directory you can organise
 
@@ -465,7 +551,7 @@ Full write-up, including what survives a repair and what each refusal means, in 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `magic.enabled` | bool | `false` | Serve `__magic__` at all. Off by default: it is a writable tree, and an \*arr pointed at the wrong root folder can reorganise a library. With nothing moved it reads exactly as `__all__` does. |
-| `magic.allow_delete` | bool | `false` | When true, a DELETE of a **file** under `__magic__` also deletes the content, as `dav_allow_delete` does elsewhere. Off by default, a delete only hides: the entry leaves `__magic__` and stays in `__all__` and in every filter directory. A release folder and a directory never delete content whatever this is set to — Sonarr deletes the job folder after every import. |
+| `magic.allow_delete` | bool | `false` | When true, a DELETE of a **file** under `__magic__` also deletes the content, as a DELETE on the mount proper always does. Off by default, a delete only hides: the entry leaves `__magic__` and stays in `__all__` and in every filter directory. A release folder and a directory never delete content whatever this is set to — Sonarr deletes the job folder after every import. |
 | `magic.sidecar_max_mb` | int | `32` | The largest single file a client may `PUT` into `__magic__`. Over it the write is refused with **413**. |
 | `magic.sidecar_budget_mb` | int | `2048` | The largest the whole sidecar tree may grow. Over it a write is refused with **507 Insufficient Storage**, which says what 413 does not: deleting something makes the same request succeed. The total is measured by walking the tree at startup, so a restart does not hand the allowance back to a tree that is already full, and again before any refusal — the tree is the same `data/local` directory zurg's own mount writes into, so a file removed there behind zurg's back must not go on being charged for. Zero or a negative takes the default; there is no way to ask for no cap. |
 
@@ -477,15 +563,15 @@ magic:
   sidecar_budget_mb: 2048
 ```
 
-Neither `dav_allow_rename` nor `dav_allow_delete` applies here. Those two guard the path that renames and deletes what the debrid account holds; a write under `__magic__` reaches no account. `mount_read_only: true` still overrides everything, at the kernel.
+`dav_allow_rename` does not apply here, and neither does the mount's ungated delete path. Those cover the routes that rename and destroy what the debrid account holds; a write under `__magic__` reaches no account. `mount_read_only: true` still overrides everything, at the kernel.
 
 Two things worth knowing. The filter directories are untouched by design, so a release you moved inside `__magic__` is still in `recent` and `movies` under its own name — point a media server at `__magic__` **or** at the filters, not at both. And anything genuinely new written into the mount (an `.nfo`, a subtitle, a poster) lands in zurg's own `data/local` and is merged into the listing, which is why sidecars beside a release simply work.
 
 #### Sidecar files, and what the two caps are for
 
-The embedded mount is a union whose first upstream is `data/local`, so when a program creates a new file on the mount, rclone writes it there and zurg is never asked. Nothing to configure, nothing to cap — that tree is rclone's.
+The embedded mount is a union whose first upstream is `data/local`, so when a program creates a new file on the mount, rclone writes it there and zurg is never asked. Nothing caps that tree — unless [`union_writable: server`](#rclone-settings) flips the union order, in which case the create arrives at zurg as a `PUT` and is refused outside `__magic__` and bounded by the two caps inside it.
 
-The two caps are for the other kind of client: one that mounts `/dav` directly, with no union in front of it. Those send zurg the `PUT`, and zurg writes the body into `data/local/__magic__/<path>` — the very directory the union serves — so the two views show one directory rather than two. Without a bound, that is a general file store reachable over WebDAV, which is what `sidecar_max_mb` and `sidecar_budget_mb` exist to prevent. They bound only what zurg writes; the union's own local upstream cannot be capped from here.
+With the default order, the two caps are for the other kind of client: one that mounts `/dav` directly, with no union in front of it. Those send zurg the `PUT`, and zurg writes the body into `data/local/__magic__/<path>` — the very directory the union serves — so the two views show one directory rather than two. Without a bound, that is a general file store reachable over WebDAV, which is what `sidecar_max_mb` and `sidecar_budget_mb` exist to prevent.
 
 Two rules follow from what `__magic__` is, and both are refusals a client may see:
 
@@ -541,7 +627,7 @@ The API key is the whole of the authentication, so treat the endpoint the way yo
 
 zurg can answer Sonarr and Radarr as though it were a qBittorrent. They hand it a magnet or a `.torrent` and zurg adds the info hash to a debrid account. Once the release is in the library the torrent reports **finished** with a folder under `__magic__` to import from. Nothing is downloaded to import. The \*arr renames the file inside the mount and that is a row in the `__magic__` table.
 
-Two halves make it useful. An account that can add torrents reads the magnet and `magic.enabled` gives the \*arr somewhere to import from. It is off until asked for. Full setup including what to put in the \*arr is in [the torrent walkthrough](../guides/sonarr-radarr-torrents.md).
+Two halves make it useful. An account that can add torrents reads the magnet and `magic.enabled` gives the \*arr somewhere to import from. It is off until asked for. Full setup including what to put in the \*arr is in [docs/qbittorrent.md](../guides/sonarr-radarr-torrents.md).
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
@@ -549,7 +635,7 @@ Two halves make it useful. An account that can add torrents reads the magnet and
 | `qbittorrent.api_key` | string | generated | The only gate on the endpoint. The clients send it as a bearer token when their **API Key** field is set, and accept it as the password on `auth/login` when it is not. Left empty with the block enabled, zurg generates one, keeps it in `data/qbittorrent-apikey` so it survives a restart, and logs it once at startup. |
 | `qbittorrent.categories` | list | `[tv-sonarr, radarr]` | The categories reported to the clients — the two the \*arrs ship with. Every one of them resolves to the same directory, so this exists only to stop a client warning about a category it cannot find. |
 | `qbittorrent.save_path` | string | `<mount_path>/__magic__` | The save path reported to the clients, and the parent of every folder they import from. It must be the path **the \*arr** sees, which is not zurg's own when the \*arr runs in a container that mounts the library elsewhere. Set `sabnzbd.complete_dir` to the same value if you run both endpoints. |
-| `qbittorrent.download_timeout_mins` | int | `15` | How long a grab may go with no movement — no change of stage and no rise in progress — before that account is given up on and the next one that takes torrents is tried. `0` means cached-only: a grab is accepted only onto an account that already holds the content, and refused inside the add otherwise, which is the one refusal Sonarr and Radarr act on. A negative number never gives up. |
+| `qbittorrent.download_timeout_mins` | int | `15` | How long a grab may go with no movement — no change of stage and no rise in progress — before that account is given up on and the next one that takes torrents is tried. `0` means cached-only: a grab is accepted only onto an account that already holds the content, and refused inside the add otherwise, which is the one refusal Sonarr and Radarr act on. A negative number never gives up. See [Timeouts and cached-only mode](../guides/sonarr-radarr-torrents.md#timeouts-and-cached-only-mode). |
 
 ```yaml
 qbittorrent:
@@ -560,7 +646,11 @@ qbittorrent:
   download_timeout_mins: 15
 ```
 
-The API key is the whole of the authentication here too, and for the same reason: the clients never send basic auth to a download client. See the [torrent walkthrough](../guides/sonarr-radarr-torrents.md) for the timeout and cached-only modes in practice.
+Fifteen minutes is a measured figure rather than a chosen one. AllDebrid parks a healthy job in its own queue with every counter at zero before it moves a byte. Two runs out of two sat there for 580 and 622 seconds.
+
+Which account a grab goes to is decided by [`add_torrents`](#accounts) and by the order of the `providers:` list. A grab that timed out or that an account gave up on is deleted from that account before the next one is tried. Only an instance zurg added itself for that grab and that never finished is ever a candidate. Nothing else this endpoint answers deletes anything from a debrid account.
+
+The API key is the whole of the authentication. Treat the endpoint the way you treat the rest of zurg's port. Put it on a trusted network or behind something that is. Basic auth cannot be used for it. The clients never send it and they read a 401 as a hard authentication failure they never retry.
 
 ### Media Analysis
 
@@ -624,6 +714,46 @@ host: "[::]"
 port: 9999
 ```
 
+### Warm connections
+
+Opening a connection to a debrid service is expensive and using one is nearly free. Measured from a live host on 2026-08-29, a fresh connection to a Real-Debrid download host costs a TCP round trip and then 68–85 ms of TLS handshake before a byte of the file has been asked for — and zurg's HTTP transport opens nothing until a read wants it, dropping an unused connection again after 90 seconds. On anything but a busy library, the read that follows a quiet spell pays for that on the viewer's own path.
+
+A warm floor moves it off that path: each account keeps a stated number of connections dialled and handshaken ahead of demand, so the transport has one in hand when a read arrives.
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `warm_connections` | int | *(unset)* | The floor for every account that states none of its own. Unset leaves each backend its default — 1 per host for a debrid account, 2 per account for a news account. `-1` turns warming off everywhere. An account's own `warm_connections` always wins, including over a global `-1`. |
+
+```yaml
+warm_connections: 2        # every account keeps 2, unless it says otherwise
+
+providers:
+  - type: realdebrid
+    token: YOUR_RD_API_TOKEN
+    warm_connections: 4    # this one keeps 4 to each host it uses
+  - type: torbox
+    token: YOUR_TORBOX_API_KEY
+    warm_connections: -1   # and this one keeps none
+```
+
+**How much this buys you depends on the host, and for the debrid services it is less than it sounds.** A connection that has sent nothing is the first thing these services reap, and they do it quickly. Timed from a live host on 2026-08-29, holding a silent connection open and waiting to be hung up on:
+
+| Host | Silent connection | After serving a request |
+|---|---|---|
+| a Real-Debrid download host | closed after 30s | closed at once |
+| `api.alldebrid.com` | closed after 15s | still open at 4 min |
+| `api.torbox.app` | closed after 15s | still open at 4 min |
+| `api.real-debrid.com` | closed after 4s | closed after 5s |
+
+So a floor is worth keeping to a download host and not much else, and Real-Debrid's API cannot be warmed at all — no floor outruns a four-second hang-up without manufacturing traffic to keep the connection alive, which zurg will not do. Rather than assume, **the floor measures**: it retires its own connections at 15 seconds and checks whether each was still alive when it did. A host that keeps closing them before a read could use them is given up on, and its reads dial as they always did. Nothing has to be configured for that, and a floor going unread on a quiet library is not mistaken for it.
+
+Two more things worth knowing before raising it:
+
+- **A debrid account's floor is per host, a news account's is per account.** A debrid account is reached over many hosts — an API hostname, and a delivery host per link — and which ones is not knowable until a link has been minted, so the hosts kept warm are the ones the account has actually been using. At most 16 are kept at once, and one unused for 10 minutes is retired. A news account is one host, named in the config, and holds its session for as long as the plan allows — which is why its floor is the one that reliably pays off. See [Usenet](../guides/usenet.md).
+- **Warm connections are real connections, and count against the per-host ceiling the provider polices** — 32 on Real-Debrid and AllDebrid, 20 on TorBox. That is why the debrid floor is capped at 4: a floor that size leaves the ceiling essentially intact, where a large one would spend it on sockets carrying nothing.
+
+The floor is disabled when `proxy` is set, since an HTTP or SOCKS proxy makes zurg dial the proxy rather than the host, and there is nothing on the far side worth holding open.
+
 ### Authentication & Proxy
 
 | Option | Type | Default | Description |
@@ -644,14 +774,16 @@ proxy: "http://[username:password@]host:port"
 |--------|------|---------|-------------|
 | `rclone_enabled` | bool | `false` | When true, zurg manages an rclone mount automatically. This eliminates the need to run rclone separately — zurg starts, monitors, and restarts the rclone process as needed. The mount uses `mount_path` as the mount point. |
 | `rclone_binary` | string | `"rclone"` | Path to the rclone executable. Only needed if rclone is not on your system PATH. |
-| `rclone_extra_args` | list | `[]` | Additional command-line flags passed to the rclone mount command. Use this to override zurg's benchmark-optimized VFS defaults (see table below). Each entry is a single flag string. |
-| `mount_read_only` | bool | `false` | When true, the mount is started with rclone's `--read-only`, so the kernel refuses a write before it ever reaches zurg. `dav_allow_delete` is the real guard — it also covers clients talking to the WebDAV endpoint directly — but this additionally stops a stray write from landing in the mount's local union upstream. Override it per-flag with `rclone_extra_args: ["--read-only=false"]`. |
+| `rclone_extra_args` | list | `[]` | Additional command-line flags passed to the rclone mount command. Use this to override zurg's benchmark-optimized VFS defaults (see table below). Each entry is a single flag string. The RC settings and the `--union-*`/`--webdav-*` backend flags are refused: zurg constructs those itself, and a flag would outrank what it builds (`union_writable` would stop describing the mount). |
+| `mount_read_only` | bool | `false` | When true, the mount is started with rclone's `--read-only`, so the kernel refuses a write before it ever reaches zurg. Nothing else gates a mount DELETE, so this is the only way to refuse one — though it does not cover clients talking to the WebDAV endpoint directly — and it additionally stops a stray write from landing in the mount's local union upstream. Override it per-flag with `rclone_extra_args: ["--read-only=false"]`. |
+| `union_writable` | string | `"local"` | Which side of the embedded mount's union a created file is written to. `local`, the default, puts it straight onto the local upstream (`data/local`) without zurg seeing it. `server` lists the WebDAV upstream first, so the create arrives at zurg: refused outside `__magic__`, written as a size-capped sidecar inside it. A refused write never reaches the disk — rclone's VFS cache accepts it and retries the upload on a backoff, so it is bounded by the cache cap and visible in `logs/rclone.log`, where the local order would have put unbounded bytes in `data/local`. One caveat measured under `server`: renaming a sidecar file through the mount can answer an error (the file is visible on both upstreams, so rclone applies the move to each); release moves inside `__magic__` — the \*arr import path — are unaffected. Switching to `server` changes where *new* creates go and nothing else: whatever the local order already wrote to `data/local` stays until you delete it. The line zurg logs at startup names the live mode (`new files go to zurg over WebDAV (union_writable: server)`), so it is the thing to check rather than the presence of the `data/local` path, which is part of the union under either order. |
 
 ```yaml
 rclone_enabled: false
 rclone_binary: "rclone"
 rclone_extra_args: []
 mount_read_only: false
+union_writable: "local"
 ```
 
 #### Benchmark-Optimized Defaults
@@ -661,15 +793,34 @@ Zurg uses benchmark-tested rclone VFS settings optimized for streaming performan
 | Setting | Default | Why |
 |---------|---------|-----|
 | `--buffer-size` | 256M | Large buffer for smooth streaming |
-| `--vfs-read-chunk-size` | 4M | Best TTFB, efficient chunking |
-| `--vfs-read-chunk-size-limit` | 512M | High limit when chunking is enabled via override |
+| `--vfs-read-chunk-size` | 32M | How long a fresh read spends ramping. The first chunk is fetched at this size and doubles from there, so at 4M a read from a cold offset spent most of its life below line rate. A request size, not a forced transfer — rclone still stops pulling when the reader stops. |
+| `--vfs-read-chunk-size-limit` | 512M | Where the doubling above stops. Chunking is on by default, so this is a ceiling the ramp reaches rather than something an override switches on. |
 | `--vfs-read-ahead` | 128M | Balance between buffer and bandwidth efficiency |
-| `--max-read-ahead` | 1M | Small FUSE kernel buffer reduces small reads |
+| `--max-read-ahead` | 1M | Small FUSE kernel buffer reduces small reads. Not passed on Windows. |
 | `--vfs-read-wait` | 5ms | Critical: higher values cause severe slowdowns |
 | `--vfs-cache-mode` | full | Full caching for best performance |
+| `--vfs-cache-max-size` | 256G | Hard cap on the on-disk VFS cache. Not a config key — override it with `rclone_extra_args`. |
+| `--vfs-cache-min-free-space` | 10G | Stops caching before the cache disk fills |
+| `--vfs-cache-max-age` | 72h | How long an untouched cached file is kept |
 | `--vfs-cache-poll-interval` | 1m | Responsive cache updates |
+| `--vfs-fast-fingerprint` | on | Identifies files without hashing them |
+| `--dir-cache-time` | 12h | Listings hold for hours; zurg forgets affected entries over the RC API when the library changes, so media-server scans stay warm |
+| `--attr-timeout` | 60s | Library files are immutable, and state changes forget the affected entries explicitly. Bounded so a stale size can't outlive a scan pass. |
+| `--poll-interval` | 0 | Change polling is zurg's job, not rclone's |
+| `--timeout` | 5m | IO idle timeout |
+| `--no-modtime` / `--no-checksum` | on | Neither is meaningful for a debrid library, and asking for them costs requests |
+| `--async-read` | rclone default (on), not passed | Zurg does not put this flag on the command line, and rclone defaults it to true — so the mount reads asynchronously, and every figure on this page was measured that way. A tuning field once claimed to disable it; all it gated was appending the bare flag, which sets the default it already had. To actually turn it off: `rclone_extra_args: ["--async-read=false"]`. |
+| `--low-level-retries` | 3 | rclone's VFS downloader already restarts a failed read ten times per open, and each restart is retried by the backend pacer this many times. At rclone's default of 10 that is 100 requests for one open of a file zurg is answering 503 deliberately. |
+| `--retries` | 1 | Whole-command budget; for a mount that never exits it only multiplies a startup failure |
+| `--log-level` | NOTICE | rclone's own verbosity, always passed |
+| `--cache-dir` | `data/rclone-cache` | Resolved against the working directory |
+| `--log-file` | `logs/rclone.log` | Resolved against the working directory |
 
-These values were determined through benchmarking on a 600 Mbps connection, achieving ~533 Mbps cold-cache throughput and ~235ms TTFB.
+`--vfs-cache-max-size`, `--vfs-cache-min-free-space`, `--low-level-retries`, `--retries`, `--log-level`, `--cache-dir` and `--log-file` are constants in `internal/rclone/manager.go`; every other row comes from `tuneVFSOptions` in `internal/rclone/tuning.go` — `--vfs-cache-max-age` and `--vfs-cache-poll-interval` included, despite the names.
+
+Four more are added by platform, all of them on Linux: `--allow-other` and `--allow-non-empty` always, `--uid` and `--gid` only when the running user's ids can be read. `--max-read-ahead` is passed everywhere except Windows, and `--read-only` whenever [`mount_read_only`](#rclone-settings) is set.
+
+The buffer and read-wait values were determined through benchmarking on a 600 Mbps connection, achieving ~533 Mbps cold-cache throughput and ~235ms TTFB. The read chunk size was re-measured later on a ~70 MB/s host: paired and interleaved, median throughput went 49.1 -> 56.5 MB/s on Real-Debrid moving it from 4M to 32M, and moved the same way on TorBox.
 
 **Override defaults** using `rclone_extra_args`:
 ```yaml
@@ -698,6 +849,32 @@ network_test_every_mins: 1440
 dns_servers:
   - "1.1.1.1:53"   # Cloudflare
   - "8.8.8.8:53"   # Google
+```
+
+### Public NZB sharing
+
+An NZB share is a URL a recipient fetches — so it only helps if they can reach this host, which a zurg behind a home NAT cannot promise. These two keys route that URL through a [zrok](https://zrok.io) service instead: zurg dials the service outbound and serves the share through the connection, so **no local port opens** and nothing new answers on this host. What the tunnel carries is only the two token-gated share routes, never the dashboard and never the library.
+
+Both empty, and with no enabled environment under `data/zrok`, sharing stays on the network this host is already on, dialing nowhere — that is the default. Note the second half of that: once an environment *has* been enabled, an empty `zrok_account_token` no longer means local-only, because the enable is what turns sharing on and it persists. Turning public sharing back off means removing `data/zrok`.
+
+Building, serving and revoking shares work the same either way — the share token in the path is the authorization on the local URL and the public one alike.
+
+The public URL survives a restart: the service-side share is looked up and re-attached to rather than created again. What it does not survive is enabling again — a new environment gets a new share, and URLs handed out under the old one stop resolving. That happens when you remove `data/zrok`, and also if the identity saved in there goes missing or unreadable, since enabling again is the only way back from that.
+
+Removing `data/zrok` by hand also leaves that environment, and the share under it, registered on the zrok account — the identity that could have released them is what you just deleted, so tidy them from the zrok console if the clutter matters. It is not a way to switch sharing off in place, either: a running zurg holds the connection it is already serving on, so the old URL keeps working until the process restarts. zurg releases an environment itself whenever it replaces one, and refuses to replace one it could not reach the service to release — or one whose files it finds on disk but cannot read, since enabling over that would abandon a live environment on every restart.
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `zrok_account_token` | string | `""` | The zrok enable token that turns public sharing on. Free from [myzrok.io](https://myzrok.io) for the hosted service; from your own controller if you self-host. Needed for the **first enable only**: enabling redeems it once and saves it, with the environment identity, under `data/zrok`, and every later call authenticates off that saved copy — so the key can come back out of `config.yml` afterwards and public sharing still comes up on the next restart. Note what that means for the secret: taking the key out of the config does not take the token off the host. Two reasons to leave it in anyway: an enable that *failed* — a refused token, a service that could not be reached — is not a completed one, and the retry needs the key; and any later *re*-enable needs it too, so an instance that has had it removed and then loses the identity under `data/zrok` cannot recover on its own. A rotated token is picked up from here and applied to the saved environment, identity and public URL intact. |
+| `zrok_api_endpoint` | string | `""` | The zrok service to talk to, for self-hosted deployments; empty keeps the SDK's default, `https://api-v2.zrok.io` (the hosted service). Read **at enable time only** — once `data/zrok` holds an enabled environment, the endpoint saved there wins, so pointing an already-enabled zurg at a different service means deleting `data/zrok` and enabling again. The identity belongs to whichever service issued it, so that is the honest way round anyway. It does not replace `zrok_account_token`: the first enable still needs a token from the service this names. The SDK's own `ZROK2_API_ENDPOINT` environment variable outranks this key at that same moment. |
+
+Reachability cuts two different ways for a self-hosted service, and only one of them is yours: **this zurg** reaches the controller API — a tailnet address is enough for that — while **your recipients** reach the service's frontend. A service reachable only on your own tailnet therefore hands out share URLs only your own tailnet can open.
+
+Two more things a self-hosted service has to line up with. The share URL is the one the service advertises for its frontend, and a bare host with no scheme is assumed to be `https` — so a frontend serving plain HTTP wants TLS in front of it, or an advertised URL that carries its own scheme and port. And the share is created in the namespace the zrok SDK resolves, which is `public` unless the SDK's own `ZROK2_DEFAULT_NAMESPACE` says otherwise; zurg pins neither, so a service whose namespace is named something else is told through that variable.
+
+```yaml
+zrok_account_token: ""   # the enable token, needed for the first enable only
+zrok_api_endpoint: ""    # self-hosted only; empty = the hosted service
 ```
 
 ## 6. Performance & Tuning (Advanced)
