@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841883551725">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841883759113">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841883551725" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841883759113" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841883551725" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841883759113" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841883551725" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841883551725" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841883759113" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841883759113" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -183,7 +183,7 @@
 <ul>
 <li>Config keys documented in <a href="../../reference/config/"><code translate="no" v-pre>config.md</code></a>/<code translate="no" v-pre>config.example.yml</code>: <code translate="no" v-pre>plex_server_url</code>, <code translate="no" v-pre>plex_token</code>, <code translate="no" v-pre>plex_match_every_mins</code> (default 1440), <code translate="no" v-pre>plex_watchlist_enabled</code>, <code translate="no" v-pre>plex_watchlist_check_every_secs</code> (default 5s), <code translate="no" v-pre>mount_path</code> (required for matching/scan path building). Dashboard-authored settings are saved directly to <code translate="no" v-pre>config.yml</code> via the config writer (<code translate="no" v-pre>updateConfigFileAtomic</code>).</li>
 <li>Both intervals fall back to their default only when the value is exactly <code translate="no" v-pre>0</code> (<code translate="no" v-pre>intOr</code>, <code translate="no" v-pre>internal/config/config.go:9-14</code>); neither can be disabled. The dashboard rejects anything below 1 (<code translate="no" v-pre>internal/handlers/dashboard/dashboard.go:1168-1190</code>), and a negative <code translate="no" v-pre>plex_match_every_mins</code> written straight into <code translate="no" v-pre>config.yml</code> panics the scheduler&#x27;s ticker rather than turning matching off.</li>
-<li>Watchlist acquisition additionally needs <code translate="no" v-pre>dmm_api_key</code>; <code translate="no" v-pre>watchlist_quality</code> (default <code translate="no" v-pre>best</code>) picks the quality preference for the DMM search (<code translate="no" v-pre>internal/config/config.go:119-122, 610-627</code>).</li>
+<li>Watchlist acquisition is configured by the <code translate="no" v-pre>watchlist:</code> block — <code translate="no" v-pre>enabled</code>, <code translate="no" v-pre>check_every_secs</code>, <code translate="no" v-pre>indexers</code>, <code translate="no" v-pre>max_size_gb</code>, <code translate="no" v-pre>max_season_size_gb</code> and <code translate="no" v-pre>quality</code> (default <code translate="no" v-pre>best</code>). An empty <code translate="no" v-pre>indexers</code> borrows <code translate="no" v-pre>stremio.indexers</code>. The flat <code translate="no" v-pre>plex_watchlist_enabled</code>, <code translate="no" v-pre>plex_watchlist_check_every_secs</code> and <code translate="no" v-pre>watchlist_quality</code> keys still count as the legacy spellings of the first, second and last of those. See <a href="../../reference/config/#watchlist">config.md</a>.</li>
 <li><code translate="no" v-pre>mount_path</code> is also the prefix for scan paths sent to Plex and the managed rclone mount (<a href="../../reference/config/"><code translate="no" v-pre>config.md</code></a>, <code translate="no" v-pre>pkg/scan/scanner.go</code>).</li>
 <li>On-library-update hook (<code translate="no" v-pre>on_library_update</code>) is fed every changed path as arguments, debounced 500 ms and deduped, with one invocation at a time, enabling Plex autoscan scripts (<code translate="no" v-pre>internal/torrent/hooks.go</code>).</li>
 </ul>
@@ -243,11 +243,13 @@
 </ul>
 <h2 id="watchlist-monitor">Watchlist Monitor</h2>
 <ul>
-<li>Optional background polling when <code translate="no" v-pre>plex_watchlist_enabled: true</code> (<code translate="no" v-pre>internal/plex/watchlist_monitor.go</code>). Toggling it in the dashboard requires a restart to take effect; the interval can be changed live via <code translate="no" v-pre>ResetWatchlistTicker</code>.</li>
-<li>Uses <code translate="no" v-pre>pkg/plex/watchlist.go</code> client against <code translate="no" v-pre>metadata.provider.plex.tv</code> with 200-item paging; headers include client identifier. The token is read fresh per request through <code translate="no" v-pre>PlexTokenProvider</code>, so re-authenticating in the dashboard takes effect without a restart.</li>
-<li>Tracks processed <code translate="no" v-pre>ratingKey</code> timestamps (7-day retention) to avoid repeats, and immediately removes each new item from the Plex watchlist via PUT <code translate="no" v-pre>removeFromWatchlist</code>.</li>
-<li>Acquisition: extracts <code translate="no" v-pre>imdb://</code>/<code translate="no" v-pre>tmdb://</code> from the item GUIDs, resolves TMDB→IMDB through the DMM client when needed, searches DMM for torrents (<code translate="no" v-pre>SearchMovieTorrents</code> limit 10, <code translate="no" v-pre>SearchTVTorrents</code> limit 5 per season, quality from <code translate="no" v-pre>watchlist_quality</code>), takes the first result, and adds it with <code translate="no" v-pre>TorrentManager.AddMagnetAndSelect</code> unless the hash is already in the library. Shows add one torrent per season. Without <code translate="no" v-pre>dmm_api_key</code> the monitor stops after the removal and logs a warning.</li>
-<li>Failures (search error, no results, unresolvable TMDB) go to an in-memory retry queue: first retry after 5 minutes, backing off by 5 minutes per attempt, given up after 3.</li>
+<li>Optional background polling when <code translate="no" v-pre>watchlist.enabled</code> (or the legacy <code translate="no" v-pre>plex_watchlist_enabled</code>) is true (<code translate="no" v-pre>internal/plex/watchlist_monitor.go</code>). Toggling it in the dashboard requires a restart to take effect; the interval can be changed live via <code translate="no" v-pre>ResetWatchlistTicker</code>.</li>
+<li>Uses the <code translate="no" v-pre>pkg/plex/watchlist.go</code> client against <strong><code translate="no" v-pre>discover.provider.plex.tv</code></strong>, not <code translate="no" v-pre>metadata.provider.plex.tv</code> — the metadata host answers the watchlist section with a 404, which is what silently stopped the old monitor. Paging is 100 per request; the discover API refuses anything above that, so the previous 200 failed every fetch (measured 2026-09-02). The token is read fresh per request through <code translate="no" v-pre>PlexTokenProvider</code>, so re-authenticating in the dashboard takes effect without a restart.</li>
+<li>Tracks processed <code translate="no" v-pre>ratingKey</code> timestamps (7-day retention) to avoid repeats. The discover API no longer reports when an item was watchlisted, so a re-add of a title that failed is noticed after that cleanup or a restart, not before.</li>
+<li>Acquisition runs against <strong>your own Newznab indexers</strong>, the same ones the Stremio addon searches, and drops the chosen NZB into the Usenet backend through the same naming rules the SABnzbd endpoint uses — so the three surfaces find each other&#x27;s grabs rather than duplicating them. A movie becomes the best matching release; a show is acquired season by season, preferring a season pack and falling back to the loose episodes when nobody posted one. A release already in the library counts as acquired: the point is the content, not the write.</li>
+<li>TV searches lead with the TVDB id and retry once by IMDb id when that finds nothing. Indexers key TV on TVDB and their show-level IMDb mapping is patchy — measured 2026-09-02, <em>The Bear</em> (<code translate="no" v-pre>tt14452776</code>) answered total=0 on nzbgeek while <code translate="no" v-pre>tvdbid=403294</code> found everything. The two ids are never sent together.</li>
+<li><strong>Removal comes after acquisition</strong>, not before: an item removed first is simply lost when the search or the NZB fetch then fails. Only <code translate="no" v-pre>movie</code> and <code translate="no" v-pre>show</code> reach Plex&#x27;s watchlist at all — <code translate="no" v-pre>addToWatchlist</code> answers 400 for seasons and episodes (measured 2026-09-02) — though the monitor carries arms for both should that loosen.</li>
+<li>Failures go to an in-memory retry queue: first retry after 5 minutes, backing off by 5 minutes per attempt, given up after 3. An item given up on stays on the watchlist.</li>
 </ul>
 <h2 id="dashboard--api-endpoints-internalhandlersroutergo-internalhandlersdashboard">Dashboard &amp; API Endpoints (<code translate="no" v-pre>internal/handlers/router.go</code>, <code translate="no" v-pre>internal/handlers/dashboard</code>)</h2>
 <ul>
@@ -275,6 +277,7 @@
 <p>Plex&#x27;s defaults assume local disks that are always present and free to read. A zurg mount is neither: its bytes come from a provider over HTTP, and it can be briefly unreadable while rclone reconnects. Several Plex defaults are actively harmful under those conditions.</p>
 <p>zurg reconciles these on every Plex status refresh. <code translate="no" v-pre>plex_settings_policy</code> decides how far it goes — <code translate="no" v-pre>off</code>, <code translate="no" v-pre>warn</code>, <code translate="no" v-pre>guard</code> (default) or <code translate="no" v-pre>enforce</code>. The list lives in <code translate="no" v-pre>pkg/plex/settings.go</code> (<code translate="no" v-pre>RecommendedSettings</code>); the policy in <code translate="no" v-pre>pkg/plex/reconcile.go</code>.</p>
 <p>A setting the server does not report is skipped, so a Plex version that lacks one is not reported as misconfigured.</p>
+<p>Nine of the sixteen values below are against Plex&#x27;s own default; the other seven match it and are guards rather than corrections, firing only for an operator who turned one on. Those rows show the same value in both columns, which is not a mistake — Plex ships <code translate="no" v-pre>GenerateBIFBehavior</code> at <code translate="no" v-pre>never</code> and the server these were measured against was sitting at <code translate="no" v-pre>scheduled</code>. Plex reports its own default per setting in <code translate="no" v-pre>/:/prefs</code>, so the &quot;Plex ships&quot; column below is read from the server rather than assumed (measured 2026-09-05 against Plex 1.42.2).</p>
 <h3 id="opting-out-of-one-setting">Opting out of one setting</h3>
 <p><code translate="no" v-pre>plex_settings_policy</code> is tiered, and the tier is not always the question being asked. An operator whose files move between library folders — tag-driven sorting, say — depends on Plex emptying its own trash to clear the entry left behind, and <code translate="no" v-pre>guard</code> turns that off. Dropping to <code translate="no" v-pre>warn</code> to get it back also gives up the filesystem-event guards, which are the same tier and not what they asked for.</p>
 <p><code translate="no" v-pre>plex_settings_ignore</code> names settings individually:</p>
@@ -286,12 +289,12 @@ plex_settings_ignore:
 <p>An ignored setting is still read and still shown on the dashboard and in <code translate="no" v-pre>zurg plex-settings</code> (marked <code translate="no" v-pre>skip</code>), so nothing is hidden. It is simply never written, never counted as a problem, and never behind the dashboard&#x27;s trash banner. Ids are matched case-insensitively; one that names no setting in the tables below is reported at startup and leaves the setting guarded, since a typo must not read as an opt-out.</p>
 <p>Ignoring a safety setting is at your own risk, and zurg says so once when it starts rather than on every refresh. <code translate="no" v-pre>autoEmptyTrash</code> in particular is the setting that empties a library when a scan meets a mount that has blipped — with it ignored, zurg&#x27;s own <a href="../../internals/plex-trash-sweep/">trash sweep</a> (<code translate="no" v-pre>plex_trash_sweep_every_mins</code>) is the safer way to get the same cleanup, since it removes entries one at a time and only ones whose files are confirmed gone from a mount that reads.</p>
 <h3 id="safety--corrected-under-guard-and-enforce">Safety — corrected under <code translate="no" v-pre>guard</code> and <code translate="no" v-pre>enforce</code></h3>
-<p>These lose data rather than time, which is why the default policy writes them instead of only warning.</p>
+<p>These lose data rather than time, which is why the default policy writes them instead of only warning. Only <code translate="no" v-pre>autoEmptyTrash</code> ships at the destructive value; the other three already default the way zurg wants them and are here to catch an operator who turned one on.</p>
 <retype-table copy-text="| Preference | Plex default | zurg wants | Why |
 |---|---|---|---|
 | `autoEmptyTrash` | `1` | `0` | Plex empties its trash after every scan. If the mount is briefly unreadable while a scan is walking it, every file reads as deleted and Plex removes them permanently instead of leaving them in the trash to come back with the mount. |
-| `FSEventLibraryUpdatesEnabled` | `0` | `0` | A FUSE mount does not emit filesystem events reliably, so this triggers scans at moments nothing asked for one — including while the mount is still coming back. |
-| `FSEventLibraryPartialScanEnabled` | `0` | `0` | Driven by the same unreliable events, against a directory that may not be fully present yet. |
+| `FSEventLibraryUpdatesEnabled` | `0` | `0` | Event-driven updates miss what actually changes here. zurg's tree changes on its own side, which never passes through the local kernel, so no event is raised and the library quietly goes stale. The events that do arrive are writes made *through* the mount, which land while a directory is still being assembled. |
+| `FSEventLibraryPartialScanEnabled` | `0` | `0` | A partial scan runs off those same events, so it fires on the writes coming through the mount — exactly when a directory is half-written — and never on the remote-side changes that would actually need a scan. |
 | `ButlerTaskBackupDatabase` | `1` | `1` | The nightly database backup is the only thing that recovers a library Plex has already deleted. |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
@@ -314,13 +317,13 @@ plex_settings_ignore:
 <td><code translate="no" v-pre>FSEventLibraryUpdatesEnabled</code></td>
 <td><code translate="no" v-pre>0</code></td>
 <td><code translate="no" v-pre>0</code></td>
-<td>A FUSE mount does not emit filesystem events reliably, so this triggers scans at moments nothing asked for one — including while the mount is still coming back.</td>
+<td>Event-driven updates miss what actually changes here. zurg&#x27;s tree changes on its own side, which never passes through the local kernel, so no event is raised and the library quietly goes stale. The events that do arrive are writes made <em>through</em> the mount, which land while a directory is still being assembled.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>FSEventLibraryPartialScanEnabled</code></td>
 <td><code translate="no" v-pre>0</code></td>
 <td><code translate="no" v-pre>0</code></td>
-<td>Driven by the same unreliable events, against a directory that may not be fully present yet.</td>
+<td>A partial scan runs off those same events, so it fires on the writes coming through the mount — exactly when a directory is half-written — and never on the remote-side changes that would actually need a scan.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>ButlerTaskBackupDatabase</code></td>
@@ -332,6 +335,7 @@ plex_settings_ignore:
 </table>
 </div>
 </retype-table>
+<p>The two <code translate="no" v-pre>FSEvent</code> reasons were rewritten after measuring them. A <code translate="no" v-pre>fuse.rclone</code> mount <strong>does</strong> deliver inotify events for writes made through it — a watch on <code translate="no" v-pre>/mnt/zurg</code> on 2026-09-05 saw <code translate="no" v-pre>CREATE</code>, <code translate="no" v-pre>OPEN</code>, <code translate="no" v-pre>ATTRIB</code>, <code translate="no" v-pre>CLOSE_WRITE</code> and <code translate="no" v-pre>DELETE</code> for six of six operations. What it cannot report is a change made on zurg&#x27;s side, which never passes through the local kernel. So the failure mode is not the spurious scan the earlier wording claimed: it is a scan that fires on a half-written import and never fires for the changes that need one.</p>
 <h3 id="bandwidth--corrected-under-enforce-only">Bandwidth — corrected under <code translate="no" v-pre>enforce</code> only</h3>
 <p>Each of these makes Plex decode entire files. Harmless on local storage; over a debrid mount every byte is a provider request, and these run across the whole library.</p>
 <retype-table copy-text="| Preference | Plex default | zurg wants |

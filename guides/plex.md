@@ -3,7 +3,7 @@
 ## Configuration & Storage
 - Config keys documented in [`config.md`](../reference/config.md)/`config.example.yml`: `plex_server_url`, `plex_token`, `plex_match_every_mins` (default 1440), `plex_watchlist_enabled`, `plex_watchlist_check_every_secs` (default 5s), `mount_path` (required for matching/scan path building). Dashboard-authored settings are saved directly to `config.yml` via the config writer (`updateConfigFileAtomic`).
 - Both intervals fall back to their default only when the value is exactly `0` (`intOr`, `internal/config/config.go:9-14`); neither can be disabled. The dashboard rejects anything below 1 (`internal/handlers/dashboard/dashboard.go:1168-1190`), and a negative `plex_match_every_mins` written straight into `config.yml` panics the scheduler's ticker rather than turning matching off.
-- Watchlist acquisition additionally needs `dmm_api_key`; `watchlist_quality` (default `best`) picks the quality preference for the DMM search (`internal/config/config.go:119-122, 610-627`).
+- Watchlist acquisition is configured by the `watchlist:` block — `enabled`, `check_every_secs`, `indexers`, `max_size_gb`, `max_season_size_gb` and `quality` (default `best`). An empty `indexers` borrows `stremio.indexers`. The flat `plex_watchlist_enabled`, `plex_watchlist_check_every_secs` and `watchlist_quality` keys still count as the legacy spellings of the first, second and last of those. See [config.md](../reference/config.md#watchlist).
 - `mount_path` is also the prefix for scan paths sent to Plex and the managed rclone mount ([`config.md`](../reference/config.md), `pkg/scan/scanner.go`).
 - On-library-update hook (`on_library_update`) is fed every changed path as arguments, debounced 500 ms and deduped, with one invocation at a time, enabling Plex autoscan scripts (`internal/torrent/hooks.go`).
 
@@ -51,11 +51,13 @@
   - Applying a match (`HandleApplyPlexMatch`) calls `ApplyManualMatch`, then re-looks-up the rating key by the chosen GUID because Plex may reassign it, updates the torrent's rating key and IMDB (including an optional IMDB supplied by the user), persists changes, and redirects with success/error states.
 
 ## Watchlist Monitor
-- Optional background polling when `plex_watchlist_enabled: true` (`internal/plex/watchlist_monitor.go`). Toggling it in the dashboard requires a restart to take effect; the interval can be changed live via `ResetWatchlistTicker`.
-- Uses `pkg/plex/watchlist.go` client against `metadata.provider.plex.tv` with 200-item paging; headers include client identifier. The token is read fresh per request through `PlexTokenProvider`, so re-authenticating in the dashboard takes effect without a restart.
-- Tracks processed `ratingKey` timestamps (7-day retention) to avoid repeats, and immediately removes each new item from the Plex watchlist via PUT `removeFromWatchlist`.
-- Acquisition: extracts `imdb://`/`tmdb://` from the item GUIDs, resolves TMDB→IMDB through the DMM client when needed, searches DMM for torrents (`SearchMovieTorrents` limit 10, `SearchTVTorrents` limit 5 per season, quality from `watchlist_quality`), takes the first result, and adds it with `TorrentManager.AddMagnetAndSelect` unless the hash is already in the library. Shows add one torrent per season. Without `dmm_api_key` the monitor stops after the removal and logs a warning.
-- Failures (search error, no results, unresolvable TMDB) go to an in-memory retry queue: first retry after 5 minutes, backing off by 5 minutes per attempt, given up after 3.
+- Optional background polling when `watchlist.enabled` (or the legacy `plex_watchlist_enabled`) is true (`internal/plex/watchlist_monitor.go`). Toggling it in the dashboard requires a restart to take effect; the interval can be changed live via `ResetWatchlistTicker`.
+- Uses the `pkg/plex/watchlist.go` client against **`discover.provider.plex.tv`**, not `metadata.provider.plex.tv` — the metadata host answers the watchlist section with a 404, which is what silently stopped the old monitor. Paging is 100 per request; the discover API refuses anything above that, so the previous 200 failed every fetch (measured 2026-09-02). The token is read fresh per request through `PlexTokenProvider`, so re-authenticating in the dashboard takes effect without a restart.
+- Tracks processed `ratingKey` timestamps (7-day retention) to avoid repeats. The discover API no longer reports when an item was watchlisted, so a re-add of a title that failed is noticed after that cleanup or a restart, not before.
+- Acquisition runs against **your own Newznab indexers**, the same ones the Stremio addon searches, and drops the chosen NZB into the Usenet backend through the same naming rules the SABnzbd endpoint uses — so the three surfaces find each other's grabs rather than duplicating them. A movie becomes the best matching release; a show is acquired season by season, preferring a season pack and falling back to the loose episodes when nobody posted one. A release already in the library counts as acquired: the point is the content, not the write.
+- TV searches lead with the TVDB id and retry once by IMDb id when that finds nothing. Indexers key TV on TVDB and their show-level IMDb mapping is patchy — measured 2026-09-02, *The Bear* (`tt14452776`) answered total=0 on nzbgeek while `tvdbid=403294` found everything. The two ids are never sent together.
+- **Removal comes after acquisition**, not before: an item removed first is simply lost when the search or the NZB fetch then fails. Only `movie` and `show` reach Plex's watchlist at all — `addToWatchlist` answers 400 for seasons and episodes (measured 2026-09-02) — though the monitor carries arms for both should that loosen.
+- Failures go to an in-memory retry queue: first retry after 5 minutes, backing off by 5 minutes per attempt, given up after 3. An item given up on stays on the watchlist.
 
 ## Dashboard & API Endpoints (`internal/handlers/router.go`, `internal/handlers/dashboard`)
 - Routes: `/plex/auth`, `/plex/callback`, `/plex/auth/status`, `/plex/servers`, `/plex/server`, `/plex/logout`, `/plex/match-torrents`, `/plex/match-torrents/status`, `/plex/scan/{sectionKey}`, `/plex/scan-all`, `/plex-stats`, `/plex-stats/data`, `/plex-stats/image`, `/manage/{hash}/plex-match`.
@@ -83,6 +85,8 @@ zurg reconciles these on every Plex status refresh. `plex_settings_policy` decid
 
 A setting the server does not report is skipped, so a Plex version that lacks one is not reported as misconfigured.
 
+Nine of the sixteen values below are against Plex's own default; the other seven match it and are guards rather than corrections, firing only for an operator who turned one on. Those rows show the same value in both columns, which is not a mistake — Plex ships `GenerateBIFBehavior` at `never` and the server these were measured against was sitting at `scheduled`. Plex reports its own default per setting in `/:/prefs`, so the "Plex ships" column below is read from the server rather than assumed (measured 2026-09-05 against Plex 1.42.2).
+
 ### Opting out of one setting
 
 `plex_settings_policy` is tiered, and the tier is not always the question being asked. An operator whose files move between library folders — tag-driven sorting, say — depends on Plex emptying its own trash to clear the entry left behind, and `guard` turns that off. Dropping to `warn` to get it back also gives up the filesystem-event guards, which are the same tier and not what they asked for.
@@ -101,14 +105,16 @@ Ignoring a safety setting is at your own risk, and zurg says so once when it sta
 
 ### Safety — corrected under `guard` and `enforce`
 
-These lose data rather than time, which is why the default policy writes them instead of only warning.
+These lose data rather than time, which is why the default policy writes them instead of only warning. Only `autoEmptyTrash` ships at the destructive value; the other three already default the way zurg wants them and are here to catch an operator who turned one on.
 
 | Preference | Plex default | zurg wants | Why |
 |---|---|---|---|
 | `autoEmptyTrash` | `1` | `0` | Plex empties its trash after every scan. If the mount is briefly unreadable while a scan is walking it, every file reads as deleted and Plex removes them permanently instead of leaving them in the trash to come back with the mount. |
-| `FSEventLibraryUpdatesEnabled` | `0` | `0` | A FUSE mount does not emit filesystem events reliably, so this triggers scans at moments nothing asked for one — including while the mount is still coming back. |
-| `FSEventLibraryPartialScanEnabled` | `0` | `0` | Driven by the same unreliable events, against a directory that may not be fully present yet. |
+| `FSEventLibraryUpdatesEnabled` | `0` | `0` | Event-driven updates miss what actually changes here. zurg's tree changes on its own side, which never passes through the local kernel, so no event is raised and the library quietly goes stale. The events that do arrive are writes made *through* the mount, which land while a directory is still being assembled. |
+| `FSEventLibraryPartialScanEnabled` | `0` | `0` | A partial scan runs off those same events, so it fires on the writes coming through the mount — exactly when a directory is half-written — and never on the remote-side changes that would actually need a scan. |
 | `ButlerTaskBackupDatabase` | `1` | `1` | The nightly database backup is the only thing that recovers a library Plex has already deleted. |
+
+The two `FSEvent` reasons were rewritten after measuring them. A `fuse.rclone` mount **does** deliver inotify events for writes made through it — a watch on `/mnt/zurg` on 2026-09-05 saw `CREATE`, `OPEN`, `ATTRIB`, `CLOSE_WRITE` and `DELETE` for six of six operations. What it cannot report is a change made on zurg's side, which never passes through the local kernel. So the failure mode is not the spurious scan the earlier wording claimed: it is a scan that fires on a half-written import and never fires for the changes that need one.
 
 ### Bandwidth — corrected under `enforce` only
 
