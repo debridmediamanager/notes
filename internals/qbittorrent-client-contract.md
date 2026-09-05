@@ -550,7 +550,7 @@ passes `ex.InnerException` into the `WebException`.
 budget, and the *arr has no way to distinguish "still working" from "unreachable". The
 per-attempt deadline times the number of providers tried, plus any cached-only probe window, must
 stay well under it. The measured provider latencies that budget is built from are in
-torrent-lifecycle.md in the zurg repository.
+[torrent-lifecycle.md](torrent-lifecycle.md).
 
 One footnote for completeness. The 100 s is per dispatcher call, so each hop of an auto-redirect
 chain gets a fresh budget (`HttpClient.cs:43` caps the chain at 5). The retry strategy at
@@ -1030,7 +1030,7 @@ exactly the case the client's `content_path == save_path` warning is about.
 
 `RemapRemoteToLocal(Settings.Host, …)` applies the user's Remote Path Mappings, keyed on the
 configured **Host** string. If the \*arr runs in a container and the shim reports the host's path,
-the operator needs a mapping; see [sabnzbd.md\](../guides/sonarr-radarr.md#remote-path-mapping), which applies
+the operator needs a mapping; see [sabnzbd.md](../guides/sonarr-radarr.md#8-if-your-arr-is-in-docker), which applies
 unchanged.
 
 ### 4.2 The pre-2.6.1 path: `GetImportItem` walks `torrents/files`
@@ -1102,7 +1102,7 @@ Downloading (or Queued) until the folder actually exists and its file sizes are 
 will simply keep polling. Reporting Completed too early costs an import attempt against a folder that
 is not ready — and, worse, the \*arr may move a partially-sized file and then fail `VerifyFile`,
 having already emptied the source. That is the same trap documented for the SAB endpoint
-([sabnzbd.md\](../guides/sonarr-radarr.md), *What happens on a grab*, step 5).
+([sabnzbd.md](../guides/sonarr-radarr.md), *What happens on a grab*, step 5).
 
 ---
 
@@ -1192,7 +1192,7 @@ job, not the \*arr's, because `RemoveItem` does **not** call `DeleteItemData` (�
 has already deleted the folder itself in step 2 above — through the mount, which under `__magic__`
 writes a tombstone: the entry disappears from `__magic__` and stays exactly where it was in `__all__`,
 in every filter directory, and on the debrid account
-([magic.md\](../guides/magic.md#deleting-hides-it-does-not-destroy)).
+([magic.md](../guides/magic.md#deleting-hides-it-does-not-destroy)).
 
 So:
 
@@ -1202,7 +1202,7 @@ So:
   would be honest is a torrent nothing ever imported from — the failed-download path — and even there
   a debrid torrent is shared library state, not a scratch download, so the safe default is: **never
   delete the provider torrent, tombstone only.** Say so in the user-facing doc, the way
-  [sabnzbd.md\](../guides/sonarr-radarr.md) does under *What works, and what does not*.
+  [sabnzbd.md](../guides/sonarr-radarr.md) does under *What works, and what does not*.
 - A `torrents/delete` for an **unknown hash** should still answer 200. Real qBittorrent does (wiki,
   *Delete torrents*: "200 | All scenarios"), and an error here is logged as an error and retried
   every poll for ever.
@@ -1469,7 +1469,7 @@ anything is moved. That is a real cost on a zurg mount, and it is unavoidable fr
 root folder is `/mnt/zurg/__magic__/tv` and a series folder is
 `/mnt/zurg/__magic__/tv/The Show`, then an import path that happens to *be* a series folder is
 refused outright. It is why the download folder (`content_path`) must be a sibling of the root
-folders, not inside one — which is the arrangement [sabnzbd.md\](../guides/sonarr-radarr.md) already prescribes:
+folders, not inside one — which is the arrangement [sabnzbd.md](../guides/sonarr-radarr.md) already prescribes:
 `save_path` = `/mnt/zurg/__magic__`, root folders `/mnt/zurg/__magic__/tv` and
 `/mnt/zurg/__magic__/movies`, releases at `/mnt/zurg/__magic__/<release>`.
 
@@ -1760,7 +1760,7 @@ preferences out of it entirely (§3.5).
 
 Real qBittorrent's `contentPath()` returns the **file path** for a single-file torrent
 (`torrentimpl.cpp:582-583`). Under `__magic__` every release is a folder holding its files
-([magic.md\](../guides/magic.md#with-nothing-stored-it-is-__all__)), including a single-file release.
+([magic.md](../guides/magic.md#with-nothing-stored-it-is-__all__s-releases-as-real-folders)), including a single-file release.
 
 Consequences, all in the client's favour:
 
@@ -1802,7 +1802,7 @@ the name. What it does break is the title-parsing path of §7.1. Two rules follo
 ### 11.4 There is no progress and no metadata phase
 
 There is nothing to download, so there is no meaningful `progress`, `eta`, `dlspeed`, or `metaDL`
-period — the same limitation the SAB endpoint documents ([sabnzbd.md\](../guides/sonarr-radarr.md), *What works, and
+period — the same limitation the SAB endpoint documents ([sabnzbd.md](../guides/sonarr-radarr.md), *What works, and
 what does not*: "No progress. A job is queued or it is completed"). The natural mapping is: **Queued**
 (`queuedDL`) while the library does not list the release yet, **Completed** (`pausedUP`) once it does
 *and its file sizes have settled*, with `size` taken from whatever the backend declares so the queue
@@ -1819,7 +1819,7 @@ Do not use `stalledDL`, `error` or `missingFiles` for a transient wait: all thre
 `torrents/delete?deleteFiles=true` on real qBittorrent removes the torrent and `rm -rf`s its data.
 Here it must drop only the record: the release is still served out of the provider torrent, and the
 folder the \*arr wanted gone it already tombstoned itself, through the mount (§5.2,
-[magic.md\](../guides/magic.md#deleting-hides-it-does-not-destroy)). This is exactly the reasoning
+[magic.md](../guides/magic.md#deleting-hides-it-does-not-destroy)). This is exactly the reasoning
 `internal/sabnzbd`'s `deleteFromHistory` records at `internal/sabnzbd/api.go:596-609`.
 
 ### 11.6 Everything the client can ask for that has nothing to apply to

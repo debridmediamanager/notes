@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841882414384">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841883551725">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841882414384" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841883551725" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841882414384" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841883551725" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841882414384" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841882414384" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841883551725" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841883551725" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -471,16 +471,27 @@ launchctl load ~/Library/LaunchAgents/com.zurg.plist</code></pre>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/zurg &amp;&amp; ./zurg service restart</code></pre>
 </doc-codeblock></div>
 <h3 id="update-zurg">Update Zurg</h3>
-<p>Download the new <code translate="no" v-pre>darwin-arm64</code> zip from <a href="https://github.com/debridmediamanager/zurg/releases">Releases</a> the same way as in Step 2, then:</p>
+<p>A sponsor build replaces itself:</p>
 <div id="update-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/zurg
-launchctl stop com.zurg &amp;&amp; sleep 2
+./zurg update
+./zurg service restart</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>update</code> takes the newest nightly. It downloads it, checks the new binary reports the version it expected, and only then swaps it in by rename, so the running process is never overwritten. When the installed build is already the newest it says so and changes nothing.</p>
+<p>On a build too old to carry the command, the installer does the same job:</p>
+<div id="update-zurg-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -fsSL https://zurg.debridmediamanager.com/install.sh | bash -s update</code></pre>
+</doc-codeblock></div>
+<p>By hand, download the new <code translate="no" v-pre>darwin-arm64</code> zip from <a href="https://github.com/debridmediamanager/zurg/releases">Releases</a> the same way as in Step 2, then:</p>
+<div id="update-zurg-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/zurg
+./zurg service stop &amp;&amp; sleep 2
 rm -f zurg
 unzip -o ~/Downloads/zurg-*-darwin-arm64.zip
 chmod +x zurg
-launchctl start com.zurg</code></pre>
+./zurg service start</code></pre>
 </doc-codeblock></div>
-<p>Delete the old binary rather than overwriting it in place. Rewriting the file keeps the same inode and invalidates its ad-hoc code signature, and macOS then kills the new build on exec — the symptom is an immediate exit with no output at all.</p>
+<p>Delete the old binary rather than overwriting it in place. Rewriting the file keeps the same inode and invalidates its ad-hoc code signature, and macOS then kills the new build on exec — the symptom is an immediate exit with no output at all. <code translate="no" v-pre>zurg update</code> swaps by rename for exactly this reason.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <h3 id="operation-not-permitted-when-mounting">&quot;Operation not permitted&quot; when mounting</h3>
 <p>macFUSE needs to be approved in System Settings:</p>

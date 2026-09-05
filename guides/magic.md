@@ -23,11 +23,36 @@ It only works if the \*arr's **root folder is also inside `__magic__`** — `/mn
 
 Organising the library by hand is the other half, and it works with no \*arr involved.
 
-## With nothing stored, it is `__all__`
+## With nothing stored, it is `__all__`'s releases as real folders
 
-Open `__magic__` on a fresh install and you get every release as a folder, each holding that release's files — the same listing `__all__` gives, rendered identically. The table starts empty and only ever stores **deviations** from that default, so an untouched library stores nothing at all, and new releases appear in `__magic__` the moment they appear anywhere else.
+Open `__magic__` on a fresh install and you get every release `__all__` holds, as a folder each. The table starts empty and only ever stores **deviations** from that default, so an untouched library stores nothing at all, and new releases appear in `__magic__` the moment they appear anywhere else.
 
 There is no directory config behind it: no `only_show_the_biggest_file`, no size filters. What the release has is what you see.
+
+The one difference from `__all__` is **what a release folder looks like inside**. Everywhere else zurg flattens a release into a single directory, keyed by filename, with a suffix where two files would collide:
+
+```
+__all__/Show.S01/Show.S01E01.mkv
+__all__/Show.S01/Gag Reel (Extras).mkv
+```
+
+`__magic__` shows the tree the release actually has:
+
+```
+__magic__/Show.S01/Show.S01E01.mkv
+__magic__/Show.S01/Extras/Gag Reel.mkv
+```
+
+That is not cosmetic. Sonarr and Radarr scan a download folder as a folder: a file under an `extras`, `samples`, `featurettes`, `trailers` or `deleted scenes` **subfolder** is skipped, and one at the top level is considered — so the flattened `Gag Reel (Extras).mkv` gets offered for import where the real tree has it passed over. And their import only falls back to the download's own title for parsing when the folder holds a single video, so a movie flattened beside its featurette loses that fallback. Since [the SABnzbd endpoint](sonarr-radarr.md) hands an \*arr a folder under `__magic__`, this is the surface those rules run against.
+
+Two details of the shape:
+
+- **A single wrapping folder is dropped.** Nearly every release is one folder holding everything, and that folder is what the release is already *called* — the debrid backends derive the name from it. So `/Show.S01/Season 01/ep1.mkv` shows as `Show.S01/Season 01/ep1.mkv`, not `Show.S01/Show.S01/Season 01/ep1.mkv`. Only one level, and only when nothing sits beside it: a release with a file at the top and a folder beside it keeps both.
+- **No duplicate-name suffixes.** They exist to keep a flattened listing unambiguous, and a tree has directories to do that.
+
+Everything else about a release folder is unchanged, including an archive: a RAR set is still browsable as a directory, now sitting wherever its volumes sit in the tree, and a release served out of one flattened archive still lists that archive's contents.
+
+`__all__` and the `directories:` filters stay flat. They are what a media server should be pointed at, and nothing about them moves.
 
 ## Organising it
 
@@ -48,6 +73,14 @@ mv /mnt/zurg/__magic__/Some.Movie.2024.2160p /mnt/zurg/__magic__/movies/Some\ Mo
 ```
 
 Directories move with everything under them, as one batch. Moves go both ways: a file can be moved *into* a release folder as well as out of one, and the folder lists it beside the release's own entries — which is what a program that puts something back into the folder it is importing from needs to see. Where a name arrives from two places at once the deliberate one wins: what you moved beats what the release calls that name, which beats a real file in `data/local`, and the loser is left out rather than listed twice.
+
+One shape fails through the built-in mount, and only under the default `union_writable: local`: renaming a directory *you created through the mount*, so `mkdir` and then, later, `mv` of that directory. Under the default order `mkdir` creates the directory on rclone's own local upstream while the rows beneath it make the same directory exist server-side, so rclone renames its local copy, moves the rows one file at a time — zurg answers every one of those correctly — and then fails removing a source it has already renamed away:
+
+```
+ERROR : __magic__/tv/Saul: Dir.Rename error: RenameDir rmdir: object not found
+```
+
+The rows end up exactly where you asked: zurg serves the new path and 404s the old one. But `mv` exits 1, and the mount is left showing the emptied source directory and not the destination until its listing is re-read. No request for that removal ever reaches zurg, so nothing zurg does can prevent it. Moving files, and moving a whole release folder, work under either order. If you reorganise directories through the mount, set [`union_writable: server`](../reference/config.md#rclone-settings), where the directory exists only in the namespace and the rename is one server-side operation. Measured on rclone 1.71.2.
 
 `rm` hides things — see [Deleting hides, it does not destroy](#deleting-hides-it-does-not-destroy).
 
@@ -80,7 +113,7 @@ magic:
 
 Then a **file** delete removes the content from the account as well. A release folder, a directory and an entry inside an archive never do, whatever this is set to: the first is what Sonarr deletes after every import, and the last has no file of its own to remove.
 
-`dav_allow_rename` and `dav_allow_delete` have nothing to do with any of this. Those guard the path that renames and deletes what the debrid account holds; a write under `__magic__` reaches no account. `mount_read_only: true` still overrides everything, at the kernel.
+`dav_allow_rename`, and the mount's own ungated delete path, have nothing to do with any of this. Those cover the routes that rename and destroy what the debrid account holds; a write under `__magic__` reaches no account. `mount_read_only: true` still overrides everything, at the kernel.
 
 Undoing a tombstone is a click on the dashboard.
 
@@ -106,13 +139,15 @@ magic:
   sidecar_budget_mb: 2048  # the whole tree
 ```
 
-Over the first is `413`, over the second `507`. They bound what *zurg* writes; rclone's own local upstream cannot be refused from here, though the tree is re-measured before any refusal, so files it put there do count against the budget the next time zurg is asked to write one.
+Over the first is `413`, over the second `507`. They bound what *zurg* writes. With the default `union_writable: local`, rclone's own local upstream cannot be refused from here, though the tree is re-measured before any refusal, so files it put there do count against the budget the next time zurg is asked to write one. `union_writable: server` flips that: the create itself arrives at zurg, so the caps decide every write through the mount too, and anything outside `__magic__` is refused outright.
 
 A sidecar cannot be created inside a release folder — the library owns every name in there, so a file put among its entries would be listed by nothing — and a real file cannot be moved into one for the same reason. A `DELETE` of a sidecar really deletes it, which is the one place in `__magic__` where a delete is not a tombstone: a tombstone hides an entry the library still holds elsewhere, and a sidecar's bytes live in `data/local` and nowhere else.
 
 ## The dashboard
 
-`/magic/` on zurg's normal port shows what the table holds: every stored row grouped by release, what each one is and where it came from, the dangling ones in their own section, and the sidecar tree with its size against the budget. It also reports the journal and snapshot sizes, and the size of the whole of `data/local` — the number that says whether something is importing by copying, because a client that copies rather than moves puts the bytes there and nothing else would ever show it.
+Once the library has loaded, zurg logs one line saying how many rows the table holds and how many of them are dangling, so a library that has lost content does not keep a growing set of rows nothing mentions. `/magic/` on zurg's normal port shows what the table holds: every stored row grouped by release, what each one is and where it came from, the dangling ones in their own section, and the sidecar tree with its size against the budget. It also reports the journal and snapshot sizes, and the size of the whole of `data/local` — the number that says whether something is importing by copying, because under the default `union_writable: local` a client that copies rather than moves puts the bytes there and nothing else would ever show it.
+
+Under `union_writable: server` that number stays at zero and the log is what says it instead: a copying client's `PUT` is refused, so the tree it would have filled is never written. The bytes are not saved by the refusal — rclone's cache holds them and retries — but they are no longer on this disk under a name zurg can count. [The qBittorrent guide](sonarr-radarr-torrents.md) has the cause, which is a client-side setting in every case: an \*arr only moves an import when it is free to remove the download afterwards.
 
 From there you can reset a placement (the file goes back to its default location), clear a tombstone (the entry comes back), drop a dangling row, prune all of them at once, and delete a sidecar. Each is confirmed before it runs.
 
@@ -136,14 +171,16 @@ Useful if you drive the namespace over WebDAV directly; the mount handles all of
 | `204` | DELETE, or a PUT that replaced a sidecar |
 | `400` | a path this namespace cannot store, or a `Destination` header that is missing or unreadable |
 | `403` | a destination outside `__magic__`, a path the library answers for, a path running through a file, `__magic__` itself, or a table that is read-only |
-| `404` | nothing there |
+| `404` | nothing there, or a MOVE out of an archive that no longer holds the entry |
 | `405` | MKCOL where something already exists, or PUT onto a directory |
-| `409` | missing parent, non-empty directory, or an occupied destination with `Overwrite: T` |
+| `409` | missing parent, non-empty directory, an occupied destination with `Overwrite: T`, or a MOVE out of an archive that will not open |
 | `412` | occupied destination with `Overwrite: F` |
 | `413` / `507` | over `sidecar_max_mb` / `sidecar_budget_mb` |
-| `503` | shutting down |
+| `503` | shutting down, or a MOVE whose source cannot be served right now — with a `Retry-After` |
 
 `MOVE` refuses any destination outside `__magic__`: the filter directories stay read-only.
+
+A `MOVE` **out of an archive** is also checked against the archive itself before anything is written. An import is a `MOVE`, a `MOVE` that succeeds is a promise nothing re-checks afterwards, and the listing the client walked is no evidence for it: parsed archive contents are memoised, so a release whose bytes have gone keeps listing its episodes. So the volume's health, the release's article damage, and — where those say nothing — the archive itself are all consulted first, exactly as a `HEAD` of the same path consults them, and a healthy release answers out of the same memo its listing already built. A source that will never be readable is a `409`, one that cannot be read at the moment is a `503` with a `Retry-After`, and a name the archive does not hold stays a `404`. Nothing is recorded on a refusal.
 
 ## Limits worth knowing
 
@@ -156,6 +193,5 @@ Useful if you drive the namespace over WebDAV directly; the mount handles all of
 ## See also
 
 - [sabnzbd.md](sonarr-radarr.md) — pointing Sonarr and Radarr at zurg, which is what `__magic__` was built to make possible
-- [sonarr-radarr-torrents.md](sonarr-radarr-torrents.md) — the same for torrents, with zurg answering as a qBittorrent
 - [usenet.md](usenet.md) — the NZB backend those grabs land in
 - [config.md](../reference/config.md#__magic__-a-directory-you-can-organise) — every key in the `magic:` block

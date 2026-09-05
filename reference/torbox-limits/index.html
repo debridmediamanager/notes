@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841882414384">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841883551725">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,11 +37,11 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841882414384" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841883551725" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841882414384" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841883551725" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841882414384" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841883551725" data-turbo-eval="false" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -191,7 +191,8 @@ that struct in, not editing the torrent manager.</p>
 | All endpoints together, per API token | 300/min | [documented](https://api-docs.torbox.app/) |
 | `POST /torrents/createtorrent` (uncached only) | 60/hour | documented |
 | `POST /webdl/createwebdownload`, `POST /usenet/createusenetdownload` | 60/hour | documented |
-| `GET /torrents/requestdl` | ~100 calls at 20 concurrent before 429 | measured, May 2026 |
+| `GET /torrents/requestdl` | **~100 calls, then 429** — a budget, not a rate | measured, 2026-08-30 |
+| Concurrent connections to one CDN host | **exactly 20**, 429 above it | measured, 2026-08-23 |
 | Global burst ceiling | trips at ~40 concurrent, throttles *all* endpoints | measured |
 | 429 recovery | `Retry-After: 300`, binary cutoff | measured |">
 <div class="table-wrapper scrollbar overflow-hidden">
@@ -221,8 +222,13 @@ that struct in, not editing the torrent manager.</p>
 </tr>
 <tr>
 <td><code translate="no" v-pre>GET /torrents/requestdl</code></td>
-<td>~100 calls at 20 concurrent before 429</td>
-<td>measured, May 2026</td>
+<td><strong>~100 calls, then 429</strong> — a budget, not a rate</td>
+<td>measured, 2026-08-30</td>
+</tr>
+<tr>
+<td>Concurrent connections to one CDN host</td>
+<td><strong>exactly 20</strong>, 429 above it</td>
+<td>measured, 2026-08-23</td>
 </tr>
 <tr>
 <td>Global burst ceiling</td>
@@ -250,20 +256,117 @@ so pacing each endpoint separately lets their sum cross a ceiling none of
 them crosses alone.</p>
 </li>
 <li>
-<p><strong><code translate="no" v-pre>requestdl</code> is far stricter than documented.</strong> It is the endpoint that
-mints download URLs, and it gave out after roughly 100 calls where
-<code translate="no" v-pre>user/me</code>, <code translate="no" v-pre>mylist</code> and <code translate="no" v-pre>checkcached</code> all handled 500+ at the same
-concurrency.</p>
+<p><strong><code translate="no" v-pre>requestdl</code> is far stricter than documented, and it is not a rate.</strong> It is
+the endpoint that mints download URLs, and it gave out after roughly 100
+calls where <code translate="no" v-pre>user/me</code>, <code translate="no" v-pre>mylist</code> and <code translate="no" v-pre>checkcached</code> all handled 500+ at the
+same concurrency.</p>
+<p>Slowing down does not buy more of them. Measured 2026-08-30 on the main
+account, three runs each starting from a cleared lockout:</p>
+<retype-table copy-text="| Pacing | 429 arrived at | Elapsed |
+  |---|---|---|
+  | as fast as possible, ramped 60→240/min | call **100** | 56s |
+  | one a second (60/min) | call **94** | 108s |
+  | one every two seconds (30/min) | call **101** | 198s |
+  | one every three seconds (20/min) | **never** — 241 calls | 721s, clean |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Pacing</th>
+<th>429 arrived at</th>
+<th>Elapsed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>as fast as possible, ramped 60→240/min</td>
+<td>call <strong>100</strong></td>
+<td>56s</td>
+</tr>
+<tr>
+<td>one a second (60/min)</td>
+<td>call <strong>94</strong></td>
+<td>108s</td>
+</tr>
+<tr>
+<td>one every two seconds (30/min)</td>
+<td>call <strong>101</strong></td>
+<td>198s</td>
+</tr>
+<tr>
+<td>one every three seconds (20/min)</td>
+<td><strong>never</strong> — 241 calls</td>
+<td>721s, clean</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Halving the rate bought ninety more seconds and no more calls; halving it
+again stopped the 429 happening at all. What the account holds is <strong>100 calls
+per rolling five minutes — 20/min</strong>, and only that reading fits all four
+runs: it predicts the trip at t≈100s, t≈200s and immediately for the first
+three, and predicts the fourth sitting exactly on the line and surviving.</p>
+<p>This is the correction that matters when reading the rest of this file. A
+per-minute limiter cannot keep zurg under a budget, so the pacing numbers
+below buy smoothness rather than headroom: a faster limiter does not finish a
+library scan sooner, it reaches the same lockout sooner and leaves the mount
+answering nothing at all for five minutes when it does. Spending <em>fewer</em>
+calls is the only thing that raises how far a scan gets, which is why the
+read-ahead is declined here and why naming a resolved file must never cost a
+request.</p>
 </li>
 <li>
 <p><strong>429 is a cliff, not a slope.</strong> Once tripped, 100% of requests fail for
 about five minutes. There is no partial-throughput degradation to ride out.</p>
 </li>
 </ul>
-<p>CDN downloads are metered separately, per IP at the Cloudflare layer, and do
-<strong>not</strong> share the API budget. Streaming a file never costs link-resolution
-quota. That was verified in both directions: saturating CDN downloads to 429
-left <code translate="no" v-pre>requestdl</code> answering normally, and vice versa.</p>
+<p>CDN downloads are metered separately and do <strong>not</strong> share the API budget.
+Streaming a file never costs link-resolution quota. That was verified in both
+directions: saturating CDN downloads to 429 left <code translate="no" v-pre>requestdl</code> answering
+normally, and vice versa.</p>
+<h3 id="two-different-limits-both-numbered-20">Two different limits both numbered 20</h3>
+<p>The table above lists 20 twice and they are unrelated. Conflating them is easy
+and leads to pacing the wrong thing.</p>
+<ul>
+<li>
+<p><strong><code translate="no" v-pre>requestdl</code> at ~20 concurrent</strong> is an <em>API</em> limit: roughly 100 calls at
+that concurrency before a 429, spending the account&#x27;s request budget.</p>
+</li>
+<li>
+<p><strong>20 connections per CDN host</strong> is a <em>byte-path</em> limit, measured 2026-08-23
+with a gradual ramp. It needs no <code translate="no" v-pre>requestdl</code> call at all — reusing one
+already-minted URL is enough to hit it.</p>
+</li>
+</ul>
+<p>The byte-path ceiling is <strong>exactly 20</strong> and behaves as a hard cap rather than a
+slope: 20 sustained whether 24, 32, 40 or 48 connections were requested, the
+refusals rising to absorb everything above the line.</p>
+<p>It is scoped to the <strong>CDN host, not the object and not the IP</strong>, which is a
+correction to the older &quot;per IP at the Cloudflare layer&quot; reading:</p>
+<ul>
+<li>
+<p>Two <em>different</em> files served from one <code translate="no" v-pre>nexus-NNN</code> host share the single
+budget of 20 and refuse the same surplus.</p>
+</li>
+<li>
+<p>The identical workload split across two hosts runs clean.</p>
+</li>
+<li>
+<p>32 concurrent streams spread over 16 hosts, all from one IP, are fine.</p>
+</li>
+</ul>
+<p>For scale against the other providers measured the same way: Real-Debrid caps
+at 32 per host (refusing at the TCP layer, with no HTTP status), AllDebrid at
+32 (HTTP 429), and Premiumize showed no ceiling at all up to 64. TorBox&#x27;s 20 is
+the lowest of the four.</p>
+<p><strong>TorBox&#x27;s global edges have no such cap.</strong> The 20 is a property of the
+per-node <code translate="no" v-pre>nexus-NNN.&lt;region&gt;.tb-cdn.st</code> hosts that <code translate="no" v-pre>requestdl</code> mints. The two
+global edges — <code translate="no" v-pre>nexus.erth.tb-cdn.earth</code> and <code translate="no" v-pre>nexus.hare.tb-cdn.earth</code> — serve
+any file in the account and both ramped to 64 concurrent connections with zero
+refusals. Only the host differs; the path and token still authenticate the
+request. zurg does not rewrite onto them today (the sibling <code translate="no" v-pre>debrid</code> service
+does, via <code translate="no" v-pre>TORBOX_CDN_EDGE</code>), so the ceiling below is what applies here.</p>
 <h3 id="what-zurg-does">What zurg does</h3>
 <ul>
 <li>
@@ -280,9 +383,22 @@ per-torrent call and the on-disk info cache for providers that set it. On a
 dashboard, another client, a second zurg.</p>
 </li>
 <li>
-<p><strong><code translate="no" v-pre>requestdl</code> has a second limiter on top</strong>, set to 60/min. A resolution
-spends from both, because the measured burst ceiling for that endpoint is
-roughly a third of the account&#x27;s whole budget.</p>
+<p><strong><code translate="no" v-pre>requestdl</code> has a second limiter on top</strong>, set to 15/min. A resolution
+spends from both. The number is under the measured 20/min rather than on it,
+for the reason the general limiter sits at 240 against a documented 300: the
+budget is spent by everything holding the key, and 20/min was measured with
+nothing else on it. <code translate="no" v-pre>TestTheRequestdlBudgetCannotBeSpentInsideItsWindow</code>
+holds the real invariant — the whole allowance must not be spendable inside
+the window that refills it — so the constant cannot quietly go back over.</p>
+</li>
+<li>
+<p><strong>The download client is capped at 20 connections per CDN host</strong>
+(<code translate="no" v-pre>maxConnsPerCDNHost</code> in <code translate="no" v-pre>internal/torbox/client.go</code>, plumbed through
+<code translate="no" v-pre>rdclient.HTTPClientOptions.MaxConnsPerHost</code>). Go&#x27;s <code translate="no" v-pre>MaxConnsPerHost</code> makes
+request 21 <em>wait for a free connection</em> rather than fail, so the cap turns a
+provider refusal into local queuing. Without it the download client inherited
+the general-purpose transport&#x27;s unlimited setting and could collect 429s on
+the byte path while every API limiter was being respected.</p>
 </li>
 <li>
 <p><strong>429 responses park every caller</strong> for the <code translate="no" v-pre>Retry-After</code> window rather than
@@ -294,9 +410,43 @@ account-wide, so a 429 met on any endpoint holds back all of them.</p>
 burst ceiling, leaving room for the download client alongside.</p>
 </li>
 <li>
-<p><strong>The link cache is the main defence.</strong> Resolutions are cached for 2h30m
-against the documented 3-hour link lifetime, so steady-state playback costs
-no <code translate="no" v-pre>requestdl</code> calls at all.</p>
+<p><strong>The read ahead is declined.</strong> Zurg warms the next file of a release on a
+cold read, which every backend with a genuine per-minute budget absorbs. A
+library scan is the case that breaks it: it opens every file exactly once, so
+every one of those opens is cold, the warm-read refusal never fires, and the
+account is asked for two resolutions per file. Measured 2026-08-30, a
+forty-file scan drew exactly forty speculative resolutions alongside its
+forty reads — half the budget, spent on files nothing had asked for. TorBox
+declares <code translate="no" v-pre>Capabilities.SpeculativeResolutionsAffordable</code> false and is asked
+for none.</p>
+</li>
+<li>
+<p><strong>Naming a resolved file costs no request.</strong> Every resolution ends by looking
+up that file&#x27;s name and length for the download record. That lookup went
+through the list snapshot, so once its thirty-second freshness window lapsed
+the next read fetched the whole torrent list before it could answer — during
+a scan, once every thirty seconds for as long as the scan ran, and on a
+3,700-torrent library that listing pages four times over. It now reads the
+listing already in hand however old it is, since a finished torrent&#x27;s file
+names and lengths cannot change.</p>
+</li>
+<li>
+<p><strong>The link cache is the main defence, and it is held for a day.</strong> A
+<code translate="no" v-pre>requestdl</code> URL is not a signed grant with a lifetime — it is a deterministic
+address. Measured 2026-08-30: three calls for the same <code translate="no" v-pre>(torrent, file)</code> came
+back byte-identical down to the delivery node, a call an hour later returned
+that same URL, and one minted 3h25m earlier still answered a ranged read with
+<code translate="no" v-pre>206</code>, past the three hours the docs imply. The account&#x27;s API key rides in
+the query string and is what authorises it; nothing in the URL is signed or
+stamped.</p>
+<p>So the cache is held for 24h rather than the old 2h30m, and the number is
+chosen against the scan rather than against a link lifetime. A first library
+scan costs one <code translate="no" v-pre>requestdl</code> per file at 20/min, so it runs for hours — and
+every entry lapsing before it finishes is one the next pass buys again out of
+the same budget. At 2h30m a scan was covered for 2,250 files. The one way a
+cached entry still goes bad is content deleted or aged out of retention,
+which already self-heals: a 404 on a minted URL is read as a revoked link and
+re-resolved.</p>
 </li>
 <li>
 <p><strong><code translate="no" v-pre>bypass_cache=true</code> on every list call.</strong> TorBox&#x27;s own <code translate="no" v-pre>mylist</code> cache has a
@@ -392,18 +542,40 @@ unbounded rather than blocking forever.</p>
 bills outgoing traffic, neither of which helps a streaming mount.</p>
 </li>
 <li>
-<p><strong>Cache is checked before adding.</strong> Cached adds fall under the 300/min
-budget; uncached ones consume the 60/hour allowance.</p>
+<p><strong>Cache is checked before adding only in cached-only mode.</strong> <code translate="no" v-pre>checkcached</code> has
+one call site and it is the download client&#x27;s <code translate="no" v-pre>qbittorrent.download_timeout_mins: 0</code>
+path, where a miss must be refused inside the add rather than become a
+download. Every other add goes straight to <code translate="no" v-pre>createtorrent</code> without a probe.
+Cached adds fall under the 300/min budget; uncached ones consume the 60/hour
+allowance.</p>
 </li>
 </ul>
 <h2 id="content-expiry">Content expiry</h2>
-<p>Pro content expires after 30 days. Torrents come back from the API as
-<code translate="no" v-pre>expired</code> or <code translate="no" v-pre>reported missing</code>, still reporting <code translate="no" v-pre>download_finished: true</code>
+<p>Pro content expires after 30 days. Expired torrents come back from the API as
+<code translate="no" v-pre>expired</code> or <code translate="no" v-pre>reported missing</code> while still reporting <code translate="no" v-pre>download_finished: true</code>
 with <code translate="no" v-pre>download_present: false</code>.</p>
 <p>Reading <code translate="no" v-pre>download_finished</code> alone would mount a whole torrent whose every link
-404s. Zurg maps both states — and the structural <code translate="no" v-pre>finished &amp;&amp; !present</code> case,
-for wording not yet seen — to <code translate="no" v-pre>error</code> status. <code translate="no" v-pre>Capabilities.ContentExpires</code>
-marks this as normal for the backend rather than a fault.</p>
+404s. Zurg maps both wordings to <code translate="no" v-pre>error</code> status and <code translate="no" v-pre>Capabilities.ContentExpires</code>
+marks that as normal for the backend rather than a fault.</p>
+<p><strong>The two booleans are not on their own a sign the data is gone.</strong> A healthy
+uncached download reports <code translate="no" v-pre>download_finished: true</code> with
+<code translate="no" v-pre>download_present: false</code> for the last 9.6 seconds of its life while it moves
+through <code translate="no" v-pre>processing</code> and <code translate="no" v-pre>downloading</code> and <code translate="no" v-pre>uploading</code>. Measured 2026-08-30 at a
+0.5 second poll and written up in <code translate="no" v-pre>docs/torrent-lifecycle.md</code>. Zurg used to read
+that pair as death whatever the state string said and any instance running with
+<code translate="no" v-pre>delete_error_torrents: true</code> deleted such a torrent mid-download. Five probe
+torrents were reaped that way on the day. The structural rule now decides only a
+payload that carries no <code translate="no" v-pre>download_state</code> at all. A wording this code has not seen
+is treated as work in flight instead because <code translate="no" v-pre>processing</code> was one of those
+wordings until it was measured.</p>
+<p>A read that reaches such a file anyway now costs more than one call. Since the
+serving path treats a 404 on a minted delivery URL as a revoked link rather
+than a missing file — which is what it is on Real-Debrid, whose codes die when
+their downloads row is deleted — it re-resolves before giving up, so an expired
+TorBox file spends up to four <code translate="no" v-pre>requestdl</code> calls per read instead of one. It is
+bounded per read, and the listing has already marked the torrent <code translate="no" v-pre>error</code>, so
+nothing walks an expired library at that rate; but a client hammering one
+expired path pays four times what it used to.</p>
 <h3 id="what-zurg-does-2">What zurg does</h3>
 <p><strong>Nothing re-adds an expiring backend&#x27;s torrents on its own.</strong> Repair fixes a
 broken torrent by adding its magnet again, which is a repair on a backend that

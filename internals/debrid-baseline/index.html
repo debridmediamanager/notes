@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841882414384">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841883551725">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841882414384" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841883551725" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841882414384" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841883551725" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841882414384" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841882414384" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841883551725" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841883551725" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -1159,6 +1159,31 @@ same bandwidth — per-stream median falls from ~45 MB/s at one to ~8 MB/s at tw
 flow — its aggregate stays at the host ceiling — but individual streams do not finish,
 and the per-stream median drops to zero at eight and twelve with TTFB medians above
 3 s. Everything else holds until twelve, where all four lose one or two.</p>
+<blockquote>
+<p><strong>Retracted 2026-08-23. This is not a provider concurrency limit.</strong> Retested direct to
+the APIs at rate-capped playback bitrates rather than flat-out through zurg, AllDebrid
+resolved <strong>4/8/12/16/24 concurrent distinct links at 100%</strong> and sustained <strong>24/24</strong> live
+streams. The failures above were <strong>three null-routed AllDebrid CDN hosts</strong> —
+<code translate="no" v-pre>l4m5n6.debrid.it</code>, <code translate="no" v-pre>o7p8q9.debrid.it</code>, <code translate="no" v-pre>c1uw74.debrid.it</code>, all resolving to <code translate="no" v-pre>0.0.0.0</code>
+and carrying <strong>15.6% of resolved links</strong>. The first is the same host recorded as a
+one-off dead link further down this document; it is not a one-off.</p>
+<p>A dead host fails only when its file is in the batch, so the failure count rises with N
+and takes exactly the shape of a concurrency ceiling. <strong>Any ladder that draws more
+distinct files as it climbs will reproduce this false result.</strong></p>
+<p>The whole completion column here is method-limited for the same reason: these runs pulled
+flat-out over a saturated 73–78 MB/s link, so what it measures is <strong>bandwidth share, not a
+provider limit</strong>. The real per-host ceilings, all undocumented, are Real-Debrid <strong>32</strong>
+(dropped at the TCP layer), AllDebrid <strong>32</strong> (HTTP 429), TorBox <strong>20</strong> per <code translate="no" v-pre>nexus-NNN</code>
+host (HTTP 429, per host rather than per IP), and no ceiling found for Premiumize at 64.</p>
+<p>One caveat against over-reading the retraction: a null-routed host fails in ~0.1 s,
+whereas the TTFB medians above run past 3 s. That is a slow failure with a different
+signature, so bandwidth starvation was probably present too. Both effects point away
+from a provider cap.</p>
+<p><strong>The fix this implies:</strong> treat a connection-level failure on an AllDebrid CDN host as
+retryable by <strong>re-unlocking the link</strong> — a fresh <code translate="no" v-pre>/link/unlock</code> returns a different host —
+not by reducing concurrency. A DNS lookup rejecting <code translate="no" v-pre>0.0.0.0</code> catches every case seen
+here and costs nothing.</p>
+</blockquote>
 <h3 id="multiple-readers-one-file">Multiple readers, one file</h3>
 <p>Same levels, one file, different offsets — the read-ahead-plus-seek shape.</p>
 <retype-table copy-text="| streams | Real-Debrid | AllDebrid | TorBox |
@@ -1203,6 +1228,12 @@ and the per-stream median drops to zero at eight and twelve with TTFB medians ab
 That inversion is the diagnosis: its limit is not bandwidth and not a per-torrent cap,
 it is concurrent <strong>link resolution</strong>. Distinct files mean distinct unlocks; one file
 resolves once and then just streams.</p>
+<blockquote>
+<p><strong>Retracted 2026-08-23</strong> — the inversion has a simpler explanation. Distinct files draw
+distinct CDN hosts, and three of AllDebrid&#x27;s were null-routed; a single file resolves to
+one host and either works or does not. Link resolution itself was measured clean at 24
+concurrent. See the note above.</p>
+</blockquote>
 <h3 id="multiple-readers-across-different-providers">Multiple readers across different providers</h3>
 <p>This is the mixed-provider case, and it needs a corpus the matched one cannot
 provide. Since the merged instance serves a multi-account release from <code translate="no" v-pre>Sources[0]</code>,
@@ -1334,6 +1365,17 @@ each scan run and each mixed-reader run. Its CDN hostname resolves to a null rou
 zurg&#x27;s. zurg&#x27;s part is what it does about it: three attempts over roughly 4 s, then a
 500. The file is on no other account, so there was nothing to fall back to — but the
 failover result above says it would not have fallen back anyway.</p>
+<blockquote>
+<p><strong>2026-08-23: not one host, and not one file.</strong> Three AllDebrid CDN hostnames were
+null-routed simultaneously — <code translate="no" v-pre>l4m5n6.debrid.it</code>, <code translate="no" v-pre>o7p8q9.debrid.it</code>, <code translate="no" v-pre>c1uw74.debrid.it</code> —
+accounting for <strong>5 of 32 links in one sample and 4 of 32 in another, across unrelated
+content</strong>. AllDebrid hands the same dead hosts out for different files, and was still
+doing so days after this run. This is a persistent hole in its fleet, and it is what
+produced the retracted concurrency finding above.</p>
+<p>Three attempts and a 500 is the wrong response. <strong>Re-unlock instead</strong> — <code translate="no" v-pre>/link/unlock</code>
+returns a different host — and pre-flight with a DNS lookup that rejects <code translate="no" v-pre>0.0.0.0</code>, which
+catches every case observed at no cost.</p>
+</blockquote>
 <h3 id="scanning">Scanning</h3>
 <p><code translate="no" v-pre>ffprobe</code> over the whole 23-file mixed pool, which is the shape of a Plex analysis
 pass.</p>
@@ -1454,7 +1496,12 @@ Real-Debrid or AllDebrid then hangs until the client&#x27;s own timeout rather t
 failing fast. TorBox answers 400 in 35 ms.</p>
 </li>
 <li>
-<p><strong>AllDebrid stops completing concurrent reads of different files.</strong> 2 of 4, 3 of 8,
+<p><del><strong>AllDebrid stops completing concurrent reads of different files.</strong></del> <strong>Retracted
+2026-08-23 — see the note in &quot;Multiple readers, different files&quot; above.</strong> The cause was
+three null-routed AllDebrid CDN hosts carrying 15.6% of links, not a concurrency limit;
+retested directly, AD resolves 24 concurrent distinct links at 100% and sustains 24/24
+streams. The original text is kept below for the record.</p>
+<p>2 of 4, 3 of 8,
 4 of 12. The same levels against a <em>single</em> file are fine (4/4, 8/8), so the limit
 is concurrent link resolution, not bandwidth or a per-torrent cap. Four files
 playing at once is an ordinary evening for a household.</p>

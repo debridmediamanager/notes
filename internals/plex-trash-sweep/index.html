@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841882414384">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841883551725">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841882414384" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841883551725" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841882414384" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841883551725" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841882414384" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841882414384" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841883551725" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841883551725" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -426,12 +426,19 @@ scope</strong>:</p>
 <p><strong>3 are broken without a reason</strong> — still repairable.</p>
 <p><strong>But <code translate="no" v-pre>Unfixable</code> is not the same as dead.</strong> zurg already sorts these reasons into
 permanent and recoverable (<code translate="no" v-pre>internal/torrent/unrepairable_reasons.go:44-70</code>).
-<code translate="no" v-pre>permanentReasons</code> holds nine verdicts no retry can change — infringing,
-unsupported, unavailable, invalid, too big, not allowed, no repairable files, no
-seeders, invalid file ids — plus any reason prefixed <code translate="no" v-pre>repair failed, download status:</code>. Everything else, including the two largest buckets above, is explicitly
+<code translate="no" v-pre>permanentReasons</code> holds eight verdicts no retry can change — infringing,
+unsupported, unavailable, invalid, too big, not allowed, no repairable files,
+invalid file ids — plus any reason prefixed <code translate="no" v-pre>repair failed, download status:</code>.
+Everything else, including the two largest buckets above, is explicitly
 temporary: <code translate="no" v-pre>stalled download</code>, <code translate="no" v-pre>repair failed</code>, <code translate="no" v-pre>duplicate file IDs</code>,
 <code translate="no" v-pre>rar'ed by RD</code>, <code translate="no" v-pre>not cached</code>, <code translate="no" v-pre>the lone cached file is broken</code>,
 <code translate="no" v-pre>full torrent repair failed</code>.</p>
+<p><code translate="no" v-pre>repair failed, no seeders</code> was the ninth when the counts above were taken, and
+the 2 entries carrying it here are the reason it no longer is: no backend zurg
+speaks to reports seeders, so nothing ever measured that verdict — it was
+inferred from a repair running out of clock. It is now transient, and
+unrecordable besides (<code translate="no" v-pre>verdictClaims</code>), so those two entries retire and are
+tried again like any other.</p>
 <p>Applying that split to the counts above:</p>
 <retype-table copy-text="| | Count |
 |---|---|

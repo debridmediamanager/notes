@@ -425,6 +425,23 @@ Two traps measured on this box:
 
 If you do not need Explorer at all — a headless box, or clients that speak HTTP — none of this matters: run zurg however you like and point things at `http://localhost:9999/dav/` or the endpoints. The session rule only governs the drive letter.
 
+## Updating zurg
+
+A sponsor build replaces itself:
+
+```powershell
+cd $HOME\zurg
+.\zurg.exe update
+```
+
+`update` takes the newest nightly, checks the download reports the version it expected before replacing anything, and moves the running `zurg.exe` aside so Windows will let the new one land. When the installed build is already the newest it says so and changes nothing. Restart the zurg task afterwards to run the new build.
+
+On a build too old to carry the command, the installer does the same job:
+
+```powershell
+$env:ZURG_INSTALL_MODE = "update"; irm https://zurg.debridmediamanager.com/install.ps1 | iex
+```
+
 ## Troubleshooting
 
 | What you see | What it means |

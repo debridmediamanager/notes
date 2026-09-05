@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841882414384">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841883551725">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841882414384" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841883551725" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841882414384" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841883551725" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841882414384" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841882414384" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841883551725" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841883551725" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -186,6 +186,7 @@
                 <!-- Page content  -->
 <h1 id="sonarr-and-radarr-step-by-step">Sonarr and Radarr, step by step</h1>
 <p>Point Sonarr and Radarr at zurg and they grab from Usenet without a Usenet client — no download, no unpack, no disk. Every step below, with the screen you should be looking at.</p>
+<p>This is the Usenet half. SABnzbd carries NZBs and nothing else; the torrent half is a separate endpoint answering the same two clients as a qBittorrent, and the two share this folder — see <a href="../sonarr-radarr-torrents/">Sonarr &amp; Radarr, torrents</a>.</p>
 <p>Everything below was captured against zurg <code translate="no" v-pre>nightly-993-g99bcf9a4</code>, Sonarr <code translate="no" v-pre>4.0.19.2979</code> and Radarr <code translate="no" v-pre>6.3.0.10514</code>, on a live install with a real Usenet account. Host and user names have been changed to <code translate="no" v-pre>yowmamasita@zurg-server</code>; nothing else in the captured output was altered, and API keys shown are illustrative.</p>
 <h2 id="before-you-start">Before you start</h2>
 <p>Three things have to be true. Check all three now — every one of them fails later as something that looks unrelated.</p>
@@ -638,7 +639,7 @@ size=4920958828</code></pre>
     <img src="../../assets/sonarr-radarr/42-zurg-magic-sabnzbd-jobs.webp" alt="The SABnzbd jobs table on the magic page" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
     <figcaption class="caption">The SABnzbd jobs table on the magic page</figcaption>
 </figure>
-<p><strong>State</strong> is the whole story — <strong>Queued</strong> means the library has not listed the release yet, <strong>Completed</strong> means it has, and <strong>Release</strong> names the folder the client imports from.</p>
+<p><strong>State</strong> is the whole story — <strong>Queued</strong> means zurg is not done with the release yet, whether because the library has not listed it, its file sizes have not settled, or its articles have not been checked; <strong>Completed</strong> means it is ready to import; and <strong>Release</strong> names the folder the client imports from.</p>
 <p>That <strong>Release</strong> column is read off the library at every poll, not stored. Rename the release in zurg&#x27;s dashboard, let a repair rebuild it, or let zurg add a suffix because two releases share a name — the job follows it.</p>
 <h2 id="what-works-and-what-does-not">What works, and what does not</h2>
 <p>Works:</p>
@@ -656,8 +657,8 @@ size=4920958828</code></pre>
 <li><strong><code translate="no" v-pre>del_files</code> on a history delete is ignored.</strong> The client means &quot;the job folder is yours again&quot;, but the file it just imported is still served out of that NZB. The folder it wanted gone is gone — it deleted that itself, through the mount.</li>
 <li><strong>Basic auth cannot protect this endpoint.</strong> The API key is the only gate.</li>
 </ul>
-<p><strong>The failure signal is partial.</strong> A release with nothing importable in it — every file broken, deleted or filtered away, or nothing but <code translate="no" v-pre>.par2</code>, <code translate="no" v-pre>.sfv</code> and sidecars — is reported <strong>Failed</strong>, and both clients blocklist it and grab an alternative. A RAR set is content, not scaffolding: zurg streams the video straight out of it.</p>
-<p>What is <em>not</em> checked is whether the articles still exist on your news server. A dead post reports <strong>Completed</strong> like any other and fails on the first read, which Sonarr sees as an <em>import</em> failure rather than a <em>download</em> failure — so it neither blocklists nor re-grabs. Until that lands, a release that will not play is one to blocklist by hand.</p>
+<p><strong>The failure signal.</strong> A release with nothing importable in it is reported <strong>Failed</strong>, and both clients blocklist it and grab an alternative. That covers a release whose files are all broken, deleted or filtered away; one holding nothing but <code translate="no" v-pre>.par2</code>, <code translate="no" v-pre>.sfv</code> and sidecars; one whose every file is a shape nothing plays, which is what an obfuscated post naming its RAR set <code translate="no" v-pre>.z001</code>…<code translate="no" v-pre>.z133</code> looks like; and an archive already opened and found to hold no media. A RAR set is content, not scaffolding: zurg streams the video straight out of it. If a release really does carry something zurg has no extension for, widen <code translate="no" v-pre>addl_playable_extensions</code> rather than blocklisting it.</p>
+<p><strong>The articles are checked before a job is reported finished.</strong> Once the library lists the release and its file sizes have settled, zurg asks the news servers for the first article of each content file — one <code translate="no" v-pre>STAT</code> each, on its own goroutine, never inside the poll — and the job stays <strong>Queued</strong> until that answers. A release whose articles are gone is reported <strong>Failed</strong> with a count of what is missing. That is a <em>download</em> failure, which is the one the clients act on: they blocklist it and grab an alternative unattended, rather than importing something that will not play.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <retype-table copy-text="| What the \*arr says | What it means |
 |---|---|
@@ -670,7 +671,8 @@ size=4920958828</code></pre>
 | Every release rejected, nothing in the log | A stale bind mount. Run `docker exec &lt;client&gt; df -h &lt;mount&gt;`; if it says `Socket not connected`, bind the parent with `rslave` and recreate the container. |
 | A job stays queued for a poll or two after the release appears | Expected, and it settles once per release. An NZB does not state how long a file is; the estimate is being replaced by the exact length from the PAR2 index or one article's own header. Reporting Completed early is what makes the client throw *File move incomplete, data loss may have occurred*. |
 | A job sits queued for ever | The release never appeared in the library. Check that the NZB parsed — `Loaded NZB &lt;name&gt;: N files` in the log — and that the `nzb` provider is configured at all. |
-| &quot;The release arrived with no files that can be read&quot; | The library holds the release but there is nothing importable in it. An NZB of nothing but recovery volumes is exactly this. |">
+| &quot;The release holds no files that can be imported&quot; | The library holds the release but there is nothing in it a client could import. An NZB of nothing but recovery volumes is exactly this, and so is an obfuscated post whose RAR set is named `.z001`…`.z133`. Widen `addl_playable_extensions` if the release really does carry content zurg has no extension for. |
+| Finished releases stay queued during a large burst | More than sixty jobs are ready at once. Sonarr and Radarr only ask for the newest sixty history entries, so zurg holds the surplus in the queue and advances one into history each time an import clears a slot. Expected, and it drains itself. |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -717,8 +719,12 @@ size=4920958828</code></pre>
 <td>The release never appeared in the library. Check that the NZB parsed — <code translate="no" v-pre>Loaded NZB &lt;name&gt;: N files</code> in the log — and that the <code translate="no" v-pre>nzb</code> provider is configured at all.</td>
 </tr>
 <tr>
-<td>&quot;The release arrived with no files that can be read&quot;</td>
-<td>The library holds the release but there is nothing importable in it. An NZB of nothing but recovery volumes is exactly this.</td>
+<td>&quot;The release holds no files that can be imported&quot;</td>
+<td>The library holds the release but there is nothing in it a client could import. An NZB of nothing but recovery volumes is exactly this, and so is an obfuscated post whose RAR set is named <code translate="no" v-pre>.z001</code>…<code translate="no" v-pre>.z133</code>. Widen <code translate="no" v-pre>addl_playable_extensions</code> if the release really does carry content zurg has no extension for.</td>
+</tr>
+<tr>
+<td>Finished releases stay queued during a large burst</td>
+<td>More than sixty jobs are ready at once. Sonarr and Radarr only ask for the newest sixty history entries, so zurg holds the surplus in the queue and advances one into history each time an import clears a slot. Expected, and it drains itself.</td>
 </tr>
 </tbody>
 </table>

@@ -222,8 +222,14 @@ info is cached under `data/info/`. A restart loads from disk and is immediately
 serviceable, then refreshes — which matters because a cold scan is
 rate-limit-bound, not CPU-bound. Torrents that have left the account can be
 archived into `dump/` and surfaced as the `__dump__` directory
-(`load_dumped_torrents`), with `/torrents/archive` and `/torrents/restore`
-driving it.
+(`load_dumped_torrents`).
+
+The state nothing else can rebuild — the config, every zurgtorrent, the
+`__magic__` store under `data/local/`, the source NZBs under `nzbs/` — is a
+single streamed `.zurgbackup`: `zurg backup` writes one (as does the
+dashboard's Backup & Restore page), `zurg restore-backup <file>` unpacks it
+into the working directory. `internal/backup` owns the format; a manifest is
+the first entry, so a restore validates what it is holding before writing.
 
 Reserved directory names: `__all__`, `__unplayable__`, `__dump__`,
 `__downloads__`, and one per account as `__<provider-name>__`.

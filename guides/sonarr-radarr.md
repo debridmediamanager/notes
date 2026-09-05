@@ -2,6 +2,8 @@
 
 Point Sonarr and Radarr at zurg and they grab from Usenet without a Usenet client — no download, no unpack, no disk. Every step below, with the screen you should be looking at.
 
+This is the Usenet half. SABnzbd carries NZBs and nothing else; the torrent half is a separate endpoint answering the same two clients as a qBittorrent, and the two share this folder — see [Sonarr & Radarr, torrents](sonarr-radarr-torrents.md).
+
 Everything below was captured against zurg `nightly-993-g99bcf9a4`, Sonarr `4.0.19.2979` and Radarr `6.3.0.10514`, on a live install with a real Usenet account. Host and user names have been changed to `yowmamasita@zurg-server`; nothing else in the captured output was altered, and API keys shown are illustrative.
 
 ## Before you start
@@ -402,7 +404,7 @@ zurg's `/magic/` page lists every NZB the endpoint has ever been handed. It is r
 
 ![The SABnzbd jobs table on the __magic__ page](../assets/sonarr-radarr/42-zurg-magic-sabnzbd-jobs.webp)
 
-**State** is the whole story — **Queued** means the library has not listed the release yet, **Completed** means it has, and **Release** names the folder the client imports from.
+**State** is the whole story — **Queued** means zurg is not done with the release yet, whether because the library has not listed it, its file sizes have not settled, or its articles have not been checked; **Completed** means it is ready to import; and **Release** names the folder the client imports from.
 
 That **Release** column is read off the library at every poll, not stored. Rename the release in zurg's dashboard, let a repair rebuild it, or let zurg add a suffix because two releases share a name — the job follows it.
 
@@ -423,9 +425,9 @@ Does not:
 - **`del_files` on a history delete is ignored.** The client means "the job folder is yours again", but the file it just imported is still served out of that NZB. The folder it wanted gone is gone — it deleted that itself, through the mount.
 - **Basic auth cannot protect this endpoint.** The API key is the only gate.
 
-**The failure signal is partial.** A release with nothing importable in it — every file broken, deleted or filtered away, or nothing but `.par2`, `.sfv` and sidecars — is reported **Failed**, and both clients blocklist it and grab an alternative. A RAR set is content, not scaffolding: zurg streams the video straight out of it.
+**The failure signal.** A release with nothing importable in it is reported **Failed**, and both clients blocklist it and grab an alternative. That covers a release whose files are all broken, deleted or filtered away; one holding nothing but `.par2`, `.sfv` and sidecars; one whose every file is a shape nothing plays, which is what an obfuscated post naming its RAR set `.z001`…`.z133` looks like; and an archive already opened and found to hold no media. A RAR set is content, not scaffolding: zurg streams the video straight out of it. If a release really does carry something zurg has no extension for, widen `addl_playable_extensions` rather than blocklisting it.
 
-What is *not* checked is whether the articles still exist on your news server. A dead post reports **Completed** like any other and fails on the first read, which Sonarr sees as an *import* failure rather than a *download* failure — so it neither blocklists nor re-grabs. Until that lands, a release that will not play is one to blocklist by hand.
+**The articles are checked before a job is reported finished.** Once the library lists the release and its file sizes have settled, zurg asks the news servers for the first article of each content file — one `STAT` each, on its own goroutine, never inside the poll — and the job stays **Queued** until that answers. A release whose articles are gone is reported **Failed** with a count of what is missing. That is a *download* failure, which is the one the clients act on: they blocklist it and grab an alternative unattended, rather than importing something that will not play.
 
 ## Troubleshooting
 
@@ -440,7 +442,8 @@ What is *not* checked is whether the articles still exist on your news server. A
 | Every release rejected, nothing in the log | A stale bind mount. Run `docker exec <client> df -h <mount>`; if it says `Socket not connected`, bind the parent with `rslave` and recreate the container. |
 | A job stays queued for a poll or two after the release appears | Expected, and it settles once per release. An NZB does not state how long a file is; the estimate is being replaced by the exact length from the PAR2 index or one article's own header. Reporting Completed early is what makes the client throw *File move incomplete, data loss may have occurred*. |
 | A job sits queued for ever | The release never appeared in the library. Check that the NZB parsed — `Loaded NZB <name>: N files` in the log — and that the `nzb` provider is configured at all. |
-| "The release arrived with no files that can be read" | The library holds the release but there is nothing importable in it. An NZB of nothing but recovery volumes is exactly this. |
+| "The release holds no files that can be imported" | The library holds the release but there is nothing in it a client could import. An NZB of nothing but recovery volumes is exactly this, and so is an obfuscated post whose RAR set is named `.z001`…`.z133`. Widen `addl_playable_extensions` if the release really does carry content zurg has no extension for. |
+| Finished releases stay queued during a large burst | More than sixty jobs are ready at once. Sonarr and Radarr only ask for the newest sixty history entries, so zurg holds the surplus in the queue and advances one into history each time an import clears a slot. Expected, and it drains itself. |
 
 ### Where the state lives
 

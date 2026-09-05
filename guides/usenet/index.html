@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841882414384">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841883551725">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841882414384" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841883551725" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841882414384" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841883551725" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841882414384" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841882414384" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841883551725" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841883551725" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -189,7 +189,9 @@
 | Dashboard | `http://localhost:9999/config/` → Essentials → Providers |
 | Where the code lives | `internal/nzb` (backend), `internal/nntp` (news client), `internal/par2` (repair math) |
 | Watch directory | `nzbs/`, beside the zurg binary |
-| Repair cache | `data/par2/` |">
+| Repair cache | `data/par2/` |
+| Resolved filenames | `data/nzb-names/`, so an obfuscated release is read for its names once rather than once per restart |
+| Article index | `data/nzb-index/`, under `nzb_segments: mmap` — the default on Linux, macOS and BSD |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -218,6 +220,14 @@
 <tr>
 <td>Repair cache</td>
 <td><code translate="no" v-pre>data/par2/</code></td>
+</tr>
+<tr>
+<td>Resolved filenames</td>
+<td><code translate="no" v-pre>data/nzb-names/</code>, so an obfuscated release is read for its names once rather than once per restart</td>
+</tr>
+<tr>
+<td>Article index</td>
+<td><code translate="no" v-pre>data/nzb-index/</code>, under <code translate="no" v-pre>nzb_segments: mmap</code> — the default on Linux, macOS and BSD</td>
 </tr>
 </tbody>
 </table>
@@ -264,6 +274,7 @@ providers:
 | `tls` | `false` | Turn it on. Plaintext NNTP sends your password in the clear and your reads to anyone on the path. |
 | `username` / `password` | `&quot;&quot;` | |
 | `connections` | `8` | **Set this to your plan's real allowance.** It is not a rate limit to be polite about: a single connection carries a fraction of a provider's throughput, so zurg reads at this number. Too low and streaming is slow; over the plan's limit and the server starts refusing connections. |
+| `warm_connections` | `2` | Idle, authenticated connections held open so a read never waits on a dial. A dial is about 0.8s of TCP, TLS, greeting and `AUTHINFO`, and without a floor it was paid on the demand path after every start and every quiet spell. They come out of `connections` rather than being extra — the plan counts them as open connections, and zurg keeps them alive with a periodic `DATE` — so the floor is capped at the allowance. `-1` keeps none, which is what a plan metered by connection time wants. The top-level `warm_connections` sets the default for an account that states none — see [warm connections](../reference/config.md#warm-connections). |
 | `cache_size_mb` | `512` | Decoded article data held in memory, shared across every file being read rather than per file. |
 | `servers` | `[]` | Further news accounts — see [More than one Usenet provider](#more-than-one-usenet-provider). |">
 <div class="table-wrapper scrollbar overflow-hidden">
@@ -300,6 +311,11 @@ providers:
 <td><code translate="no" v-pre>connections</code></td>
 <td><code translate="no" v-pre>8</code></td>
 <td><strong>Set this to your plan&#x27;s real allowance.</strong> It is not a rate limit to be polite about: a single connection carries a fraction of a provider&#x27;s throughput, so zurg reads at this number. Too low and streaming is slow; over the plan&#x27;s limit and the server starts refusing connections.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>warm_connections</code></td>
+<td><code translate="no" v-pre>2</code></td>
+<td>Idle, authenticated connections held open so a read never waits on a dial. A dial is about 0.8s of TCP, TLS, greeting and <code translate="no" v-pre>AUTHINFO</code>, and without a floor it was paid on the demand path after every start and every quiet spell. They come out of <code translate="no" v-pre>connections</code> rather than being extra — the plan counts them as open connections, and zurg keeps them alive with a periodic <code translate="no" v-pre>DATE</code> — so the floor is capped at the allowance. <code translate="no" v-pre>-1</code> keeps none, which is what a plan metered by connection time wants. The top-level <code translate="no" v-pre>warm_connections</code> sets the default for an account that states none — see <a href="../../reference/config/#warm-connections">warm connections</a>.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>cache_size_mb</code></td>
@@ -389,6 +405,7 @@ providers:
 </table>
 </div>
 </retype-table>
+<p>Every account keeps a warm floor of its own as well, out of its own allowance: a retention gap sends a read straight past the primary, so the account reached for the first time is exactly the one whose dial nobody has paid yet. A two-connection block account can be told to hold none with <code translate="no" v-pre>warm_connections: -1</code>.</p>
 <p>Reselling is rife, so <code translate="no" v-pre>backbone</code> is worth filling in: two accounts you bought from different companies may sit on the same spool, and without it every miss is asked twice. Group them by whatever name you like — the string is only compared against other entries.</p>
 <p>At startup zurg names every account it will use:</p>
 <div id="more-than-one-usenet-provider-code-2" class="codeblock-wrapper"><doc-codeblock>
@@ -557,19 +574,20 @@ pacer_min_sleep = 0</code></pre>
 </doc-codeblock></div>
 <p>Still set <code translate="no" v-pre>mount_path</code> in <code translate="no" v-pre>config.yml</code> to wherever you mounted it, or media-server scan notifications are built from the wrong prefix.</p>
 <h3 id="docker">Docker</h3>
-<p>zurg&#x27;s working directory in the image is <code translate="no" v-pre>/app</code>, so the watch directory is <code translate="no" v-pre>/app/nzbs</code> and the repair cache is <code translate="no" v-pre>/app/data</code>. Bind-mount both if you want them to survive the container:</p>
+<p>zurg&#x27;s working directory in the image is <code translate="no" v-pre>/config</code>, and the watch directory and the repair cache both sit under it. One bind mount carries them along with everything else:</p>
 <div id="docker-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">services:
   zurg:
     image: ghcr.io/debridmediamanager/zurg:latest
     volumes:
-      - ./config.yml:/app/config.yml
-      - ./nzbs:/app/nzbs
-      - ./data:/app/data
+      - ./:/config
     ports:
       - 9999:9999</code></pre>
 </doc-codeblock></div>
 <p>Dropping an NZB into <code translate="no" v-pre>./nzbs</code> on the host is then picked up inside the container without a restart.</p>
+<blockquote>
+<p>Installs made before <code translate="no" v-pre>/config</code> bind-mounted <code translate="no" v-pre>/app/config.yml</code>, <code translate="no" v-pre>/app/nzbs</code> and <code translate="no" v-pre>/app/data</code> separately. Those keep working exactly as they did — see <a href="../../setup/docker/#upgrading-an-install-that-mounted-app">docker.md</a>.</p>
+</blockquote>
 <hr>
 <h2 id="6-point-plex-at-it">6. Point Plex at it</h2>
 <p>Nothing here is Usenet-specific except the last subsection, but the order matters.</p>
@@ -678,10 +696,114 @@ PAR2 repair of Some.Release rebuilt 5 slice(s) in 55s, keeping 3.4 MiB of them (
 <ul>
 <li><strong>Set <code translate="no" v-pre>connections</code> to your plan&#x27;s real number.</strong> This is the tuning knob. Eight connections will not stream a remux.</li>
 <li><strong>Two primary accounts add up.</strong> Reads are driven at the combined allowance of every non-<code translate="no" v-pre>backup</code> account, so a second unlimited provider raises the ceiling as well as covering the first one&#x27;s retention gaps. A <code translate="no" v-pre>backup</code> account does not count toward it.</li>
+<li><strong><code translate="no" v-pre>warm_connections</code> (2 by default) buys latency, not throughput.</strong> It holds that many connections open, idle and authenticated, so the first read after a start or a quiet spell does not spend ~0.8s dialling before its first byte: 1.5s to first byte cold against 0.15s warm. Once a stream is running it changes nothing.</li>
+<li><strong>The dials that do happen stick to one backend, so their TLS sessions resume.</strong> A dial costs about 0.8s — measured against news.frugalusenet.com on 2026-08-29: 106ms TCP, 213ms TLS handshake, 256ms greeting, 218ms for the two <code translate="no" v-pre>AUTHINFO</code> exchanges. A provider hostname is a rotation (that one resolves to 11 addresses) and a TLS session ticket is only good at the machine that issued it, so redialling whichever address the resolver named first resumed <strong>0 of 3</strong> sessions while redialling the same address resumed <strong>3 of 3</strong>. Each account now redials the address its last connection came from, which takes <strong>110–140ms off every redial</strong> there — a resumed handshake is 109–141ms against 225–261ms for a full one. Eweka&#x27;s round trip is ~18ms, so the saving on it is smaller. The pin is dropped and the name resolved again as soon as that address stops answering, so nothing is stuck to a machine the provider has retired; a refusal that reaches NNTP — the account at its connection ceiling, a rejected password — keeps it, because that is the account&#x27;s answer and not the backend&#x27;s. Each dial logs its phases at debug level, <code translate="no" v-pre>resumed=</code> included.</li>
 <li><code translate="no" v-pre>cache_size_mb</code> (512 default) is shared across every file being read. Raise it if you run several concurrent streams; it does not make one stream faster.</li>
 <li>Whether a release is RAR-packed or posted as plain files no longer matters much for throughput.</li>
 </ul>
 <p>Repairs are slow by nature — they read the whole release — but they run at background priority and are bounded by the news server rather than by zurg&#x27;s own arithmetic.</p>
+<h3 id="memory-what-a-watch-directory-costs">Memory: what a watch directory costs</h3>
+<p>An NZB is a list of articles, and a big library is a lot of articles. Parsing one keeps its message ids and their offsets in memory so a read can find them, and builds before this one kept every one of them for the life of the process. Measured on a watch directory of 2,636 NZBs — 27.6 million <code translate="no" v-pre>&lt;segment&gt;</code> elements — that is <strong>1.52 GB of live heap</strong>, at about 58 bytes per article, on top of the article cache. Almost none of it is in use: a listing needs names, sizes and counts, and only a file actually being read or repaired needs to know what its articles are called.</p>
+<p><code translate="no" v-pre>nzb_segments</code> decides whether zurg keeps them:</p>
+<div id="memory-what-a-watch-directory-costs-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">nzb_segments: mmap             # mmap (default) | reparse | resident
+nzb_segments_idle_secs: 120    # how long a release's articles are kept after the last read</code></pre>
+</doc-codeblock></div>
+<ul>
+<li><strong><code translate="no" v-pre>mmap</code></strong> — the lists are written to <code translate="no" v-pre>data/nzb-index/&lt;id&gt;.bin</code> and that file is mapped on demand, so the bytes sit in the page cache rather than on zurg&#x27;s heap and the kernel reclaims them under pressure. <strong>The default on Linux, macOS and BSD.</strong> Costs roughly as much disk as the lists themselves.</li>
+<li><strong><code translate="no" v-pre>reparse</code></strong> — the lists are given back once a release has settled, and the NZB is re-read from disk when a read or a repair needs them. Costs no disk at all, which is the reason to choose it: a host where <code translate="no" v-pre>data/</code> must not grow.</li>
+<li><strong><code translate="no" v-pre>resident</code></strong> — every article list in memory, always. <strong>The previous behaviour</strong>, and what every earlier build did. Still supported; it is simply no longer what you get by default.</li>
+</ul>
+<p>Whichever is set, a listing never loads anything: a file&#x27;s name, its size and its article count are answered without the article list being anywhere near memory, so a library refresh, a fingerprint check and an *arr asking whether a job has settled all stay free. What the lazy modes cost is the first read of a release nothing has touched for <code translate="no" v-pre>nzb_segments_idle_secs</code> — a sweep runs every 30 seconds — and a release&#x27;s whole set of files loads together, so walking a season pack&#x27;s rar volumes in order pays it once.</p>
+<p>Measured on a 60-file, 30,000-segment release:</p>
+<retype-table copy-text="| | heap per release | first read of an idle release | per article on the read path |
+|---|---|---|---|
+| `resident` | 1.74 MB | — | 6 ns |
+| `reparse` | 21.3 kB | 39 ms | 52 ns |
+| `mmap` | 16.6 kB | 0.27 ms | 63 ns |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>heap per release</th>
+<th>first read of an idle release</th>
+<th>per article on the read path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>resident</code></td>
+<td>1.74 MB</td>
+<td>—</td>
+<td>6 ns</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>reparse</code></td>
+<td>21.3 kB</td>
+<td>39 ms</td>
+<td>52 ns</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>mmap</code></td>
+<td>16.6 kB</td>
+<td>0.27 ms</td>
+<td>63 ns</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Fifty nanoseconds an article is nothing beside the milliseconds it takes to fetch one, so the read-path figures matter less than they look. The one to weigh is the reload: <code translate="no" v-pre>reparse</code> re-reads and re-parses the whole XML document, which on a season pack is tens of milliseconds before the first byte moves; <code translate="no" v-pre>mmap</code> is a <code translate="no" v-pre>mmap</code> call, a slice header per file, and a checksum of the index it just mapped — 0.08 ms of the three, and the other 0.19 ms is the price of catching a bad byte rather than serving it as a message id.</p>
+<p>And on a whole library rather than one release — 2,636 NZBs, 27.6 million articles, the same binary run three times over the same corpus, idle after a scan:</p>
+<retype-table copy-text="| | resident set | live heap | idle CPU | cold open, p50 | index on disk |
+|---|---|---|---|---|---|
+| `resident` | 2,921 MB | 2,677 MB | 23 % | 806 ms | — |
+| `reparse` | 1,188 MB | 987 MB | 31 % | 1,018 ms | — |
+| `mmap` | **1,135 MB** | **921 MB** | 23 % | **694 ms** | 1,456 MB |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>resident set</th>
+<th>live heap</th>
+<th>idle CPU</th>
+<th>cold open, p50</th>
+<th>index on disk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>resident</code></td>
+<td>2,921 MB</td>
+<td>2,677 MB</td>
+<td>23 %</td>
+<td>806 ms</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>reparse</code></td>
+<td>1,188 MB</td>
+<td>987 MB</td>
+<td>31 %</td>
+<td>1,018 ms</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>mmap</code></td>
+<td><strong>1,135 MB</strong></td>
+<td><strong>921 MB</strong></td>
+<td>23 %</td>
+<td><strong>694 ms</strong></td>
+<td>1,456 MB</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Warm opens (1 ms), streaming throughput (38–39 MB/s) and startup time were indistinguishable across all three. <code translate="no" v-pre>mmap</code> opens a cold release <em>faster</em> than keeping everything in memory, because a release that was never opened this run has to be parsed under <code translate="no" v-pre>resident</code> too — and mapping a written arena is a syscall where parsing is megabytes of XML.</p>
+<p>The index rewrites itself whenever the NZB changes, repairs itself if it is ever unreadable — falling back to the NZB and writing it out again — and is removed when the NZB leaves the watch directory. Both its header and its contents are checksummed, so a bad byte is caught rather than served as a message id nobody posted. What it currently weighs is on the Dashboard&#x27;s front page, under <strong>Article Index</strong>, and in the line the backend logs at startup. On <strong>Windows</strong> there is no mapping: the index would be read into the heap instead, which is resident memory <em>plus</em> a reload, so the default there stays <code translate="no" v-pre>resident</code> and <code translate="no" v-pre>reparse</code> is the lazy mode worth choosing.</p>
 <hr>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <retype-table copy-text="| Symptom | Cause | Fix |
@@ -693,6 +815,7 @@ PAR2 repair of Some.Release rebuilt 5 slice(s) in 55s, keeping 3.4 MiB of them (
 | Files have random names inside the release | Obfuscated post whose recovery failed | Check for `Recovered N filename(s)`; without PAR2 files in the NZB there is no source for the real names |
 | The video still has a random name, though the folder is right | A fully obfuscated post, where the archive holds several files of a similar size | Only a clear single payload is renamed to the release; a season pack in one archive keeps the names the archive gave it |
 | Streaming is slow | `connections` left at the default 8 | Set it to the plan's allowance |
+| The first play after a quiet spell takes a second to start, then runs fine | The warm floor is off, or capped to nothing by a one-connection account | Leave `warm_connections` unset — it defaults to 2 — and check neither it nor the top-level `warm_connections` has been set negative |
 | Connections refused by the provider | `connections` above what the plan permits | Lower it to the real figure |
 | Playback stutters or a gap plays silent | Missing articles | Look for `PAR2 repair of …` in the log; confirm `enable_repair: true`; add [another Usenet provider](#more-than-one-usenet-provider) |
 | A gap stays silent and no repair line ever appears | `enable_repair` is off, or the NZB carries no `.par2` files | Set `enable_repair: true`; if the post has no recovery files, only another news account can help |
@@ -749,6 +872,11 @@ PAR2 repair of Some.Release rebuilt 5 slice(s) in 55s, keeping 3.4 MiB of them (
 <td>Streaming is slow</td>
 <td><code translate="no" v-pre>connections</code> left at the default 8</td>
 <td>Set it to the plan&#x27;s allowance</td>
+</tr>
+<tr>
+<td>The first play after a quiet spell takes a second to start, then runs fine</td>
+<td>The warm floor is off, or capped to nothing by a one-connection account</td>
+<td>Leave <code translate="no" v-pre>warm_connections</code> unset — it defaults to 2 — and check neither it nor the top-level <code translate="no" v-pre>warm_connections</code> has been set negative</td>
 </tr>
 <tr>
 <td>Connections refused by the provider</td>
@@ -814,6 +942,30 @@ PAR2 repair of Some.Release rebuilt 5 slice(s) in 55s, keeping 3.4 MiB of them (
 </table>
 </div>
 </retype-table>
+<h3 id="asking-about-one-article">Asking about one article</h3>
+<p><code translate="no" v-pre>GET /debug/nzb/probe</code> puts a single question to the news accounts through the
+pool zurg is already using, at the priority a demand read gets. It exists
+because the alternative did not work: an account gives out eight connections and
+zurg holds all of them, so probing a post by hand meant a second account or a
+stopped server — and stopping the server destroys the state being diagnosed.</p>
+<div id="asking-about-one-article-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash"># Is this article still there? A STAT, so nothing is transferred.
+curl -u user:pass 'http://localhost:9999/debug/nzb/probe?message_id=abc@news.example'
+
+# The same question addressed the way you have it: a release id from the
+# library, a file index counting from zero, an article number counting from one.
+curl -u user:pass 'http://localhost:9999/debug/nzb/probe?release=&lt;nzb id&gt;&amp;file=0&amp;article=3'
+
+# &amp;body=1 fetches the one article and reports what actually arrived against what
+# the article says should have. This is how a provider that strips trailing
+# bytes is identified: `short: true` with `decoded_bytes` below `span_bytes`.
+curl -u user:pass 'http://localhost:9999/debug/nzb/probe?release=&lt;nzb id&gt;&amp;article=3&amp;body=1'</code></pre>
+</doc-codeblock></div>
+<p>It answers one JSON object per configured Usenet account — <code translate="no" v-pre>found</code>, <code translate="no" v-pre>missing</code>,
+which account answered, and how long it took — so &quot;which of my providers still
+has this&quot; is a single call. It is read-only: nothing it fetches enters the
+article cache, and an article it fails to find is not recorded as a dead one, so
+a probe cannot silence a file that plays.</p>
 <hr>
 <h2 id="see-also">See also</h2>
 <ul>

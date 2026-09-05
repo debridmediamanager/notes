@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841882414384">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841883551725">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841882414384" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841883551725" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841882414384" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841883551725" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841882414384" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841882414384" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841883551725" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841883551725" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -186,11 +186,12 @@
                 <!-- Page content  -->
 <h1 id="sonarr-and-radarr-with-torrents-step-by-step">Sonarr and Radarr with torrents, step by step</h1>
 <p>The <a href="../sonarr-radarr/">previous walkthrough</a> pointed the *arrs at zurg for Usenet, with zurg answering as a SABnzbd. This is the other half: zurg answers as a <strong>qBittorrent</strong>, the *arrs hand it a magnet or a <code translate="no" v-pre>.torrent</code> instead of an NZB, and the release goes onto a debrid account instead of a news server. The import is the same trick — a rename inside <code translate="no" v-pre>__magic__</code>, nothing downloaded to import, nothing copied.</p>
+<p><strong>Which of the two the *arr sends is not cosmetic.</strong> A <code translate="no" v-pre>.torrent</code> is uploaded to the account as the file itself, on all three services; only a magnet is added by info hash alone. A magnet makes the account work out what the torrent holds from the hash, and a private tracker&#x27;s hash has no public swarm to work it out from — Real-Debrid dies in <code translate="no" v-pre>magnet_error</code> with no files, and TorBox accepts it and then sits in <code translate="no" v-pre>checking</code> with no file list, no size and a hundred-day estimate, so the grab neither fails nor finishes. The <code translate="no" v-pre>.torrent</code> file keys the account&#x27;s cache lookup by hash directly, so content the account already holds is added at once with no magnet resolution at all. That is what makes private indexers work here: their releases are addable exactly when the account already holds the content, which for anything a community shares is the common case. Point the *arr at an indexer that hands out <code translate="no" v-pre>.torrent</code> files rather than magnets — private ones do.</p>
 <p>Everything below was captured against zurg <code translate="no" v-pre>2026.08.30.0459-nightly-73-g5b4c9790</code>, Sonarr <code translate="no" v-pre>4.0.19.2979</code>, Radarr <code translate="no" v-pre>6.3.0.10514</code> and Prowlarr <code translate="no" v-pre>2.5.2.5491</code>, on a live install with a real AllDebrid account. Host and user names have been changed to <code translate="no" v-pre>yowmamasita@zurg-server</code>; nothing else in the captured output was altered, and API keys shown are illustrative.</p>
 <h2 id="before-you-start">Before you start</h2>
 <p>Three things have to be true. Check all three now — every one of them fails later as something that looks unrelated.</p>
 <ol>
-<li><strong>zurg has an account that can add torrents</strong> — Real-Debrid, TorBox or AllDebrid. A Usenet account cannot take a magnet: an install whose only provider is <code translate="no" v-pre>nzb</code> accepts every grab and then refuses it. zurg says so at startup.</li>
+<li><strong>zurg has an account that can add torrents</strong> — Real-Debrid, TorBox or AllDebrid. All three take the uploaded <code translate="no" v-pre>.torrent</code> file itself, which is what makes a private tracker&#x27;s release addable. A Usenet account takes a torrent in neither form: an install whose only provider is <code translate="no" v-pre>nzb</code> accepts every grab and then refuses it. zurg says so at startup.</li>
 <li><strong><code translate="no" v-pre>magic.enabled</code> is <code translate="no" v-pre>true</code>.</strong> Without it the save path does not exist and every import fails. See <a href="../magic/"><code translate="no" v-pre>__magic__</code></a>.</li>
 <li><strong>The mount is visible to the *arr</strong> at the path zurg reports. If the *arr runs in a container, read <doc-anchor-trigger to="#8-if-your-arr-is-in-docker">step 8</doc-anchor-trigger> before you configure anything.</li>
 </ol>
@@ -207,6 +208,7 @@ magic:
   allow_delete: false</code></pre>
 </doc-codeblock></div>
 <p><strong>The order of the <code translate="no" v-pre>providers:</code> list matters here.</strong> A grab is offered to every account that takes torrents, in that order, and an account that refuses or stalls on it is given up on and the next is tried. If you hold two accounts, put the one you would rather spend first.</p>
+<p>Two keys move an account out of that order. <code translate="no" v-pre>watchlist: true</code> puts one account first wherever it sits in the file; <code translate="no" v-pre>add_torrents: false</code> takes one out of the rotation altogether, so it goes on serving and reading its library while nothing new is ever put on it — an archive account, or one whose quota is spoken for. A Usenet account is never offered a torrent either way. Both are in <a href="../../reference/config/#accounts">the configuration reference</a>.</p>
 <h2 id="1-turn-the-endpoint-on">1. Turn the endpoint on</h2>
 <p>Two ways, same result. Both write to <code translate="no" v-pre>config.yml</code> and both need a restart: the routes that serve <code translate="no" v-pre>__magic__</code> and the qBittorrent endpoint are registered once, when zurg starts.</p>
 <h3 id="option-a--the-dashboard">Option A — the dashboard</h3>
@@ -769,9 +771,41 @@ size=1446325722</code></pre>
 </div>
 </retype-table>
 <p><strong>What counts as moving</strong> is a change of stage or a rise in progress, judged on the raw fraction the account reports rather than whole percent — one percent of a 100 GB release is a gigabyte. A release the account is unpacking is exempt from the clock: that stage sits at one figure for as long as it takes.</p>
-<p><strong>Fifteen is measured, not chosen.</strong> AllDebrid parks a healthy job in its own queue with every counter at zero; in the measurements behind the default, two runs out of two sat there for 580 and 622 seconds before downloading in seconds and finishing. A ten-minute default would have abandoned both.</p>
+<p><strong>Fifteen is measured, not chosen.</strong> AllDebrid parks a healthy job in its own queue with every counter at zero; two runs out of two sat there for 580 and 622 seconds before downloading in seconds and finishing. A ten-minute default would have abandoned both. The captures, and the table mapping each account&#x27;s own wordings onto the five states the *arrs understand, are in <a href="../../internals/torrent-lifecycle/">Torrent lifecycle</a>.</p>
+<p><strong>What a timeout deletes.</strong> The instance on that account, and only that one: the delete reaches an instance zurg added itself for this grab and that never finished, and nothing else. Once no account is left the grab is reported errored with a reason naming every account and what it did.</p>
+<p><strong>A torrent you delete by hand on the account</strong> is only noticed on Real-Debrid, which answers an unknown id with a 404 and means it. TorBox answers HTTP 500 with a database error, which is also what it answers when its own database is unhappy, and AllDebrid&#x27;s error does not separate the two — so on those two zurg keeps asking and the no-movement clock is what ends it. On Real-Debrid the grab moves to the next account immediately.</p>
 <p><strong>The whole add is budgeted at 75 seconds.</strong> The *arrs cancel a <code translate="no" v-pre>torrents/add</code> at 100 seconds and report the expiry as a connection failure, with no way to raise it. Every account shares the one deadline, so three accounts fit comfortably and a fourth gets whatever the first three did not spend.</p>
-<p><strong>Cached-only mode</strong> is the one worth knowing as a policy choice: the refusal happens inside the add, synchronously, and a synchronous refusal is the only signal the *arrs act on — they fail the grab and move to the next release in the list. Everything after the add reaches them as a warning about a download in progress, which they wait on. Set <code translate="no" v-pre>download_timeout_mins: 0</code> and an uncached release is rejected on the spot instead of being downloaded.</p>
+<p><strong>Cached-only mode</strong> is the one worth knowing as a policy choice: the refusal happens inside the add, synchronously, and a synchronous refusal is the only signal the *arrs act on — they fail the grab and move to the next release in the list. Everything after the add reaches them as a warning about a download in progress, which they wait on. Set <code translate="no" v-pre>download_timeout_mins: 0</code> and an uncached release is rejected on the spot instead of being downloaded. How the question gets answered is each service&#x27;s own business:</p>
+<retype-table copy-text="| Account | How zurg asks |
+|---|---|
+| TorBox | `checkcached`, which answers without adding anything. A miss costs no add slot and leaves nothing behind. |
+| AllDebrid | The upload itself answers — AllDebrid says on the response whether it already had the content, and a miss is deleted again straight away. |
+| Real-Debrid | Nothing answers it, so the torrent is added, its files are selected, and it is watched for up to five seconds. Cached content completes 0.4 to 1.5 seconds after the selection; anything still going at five seconds is a real download and is deleted again. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Account</th>
+<th>How zurg asks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TorBox</td>
+<td><code translate="no" v-pre>checkcached</code>, which answers without adding anything. A miss costs no add slot and leaves nothing behind.</td>
+</tr>
+<tr>
+<td>AllDebrid</td>
+<td>The upload itself answers — AllDebrid says on the response whether it already had the content, and a miss is deleted again straight away.</td>
+</tr>
+<tr>
+<td>Real-Debrid</td>
+<td>Nothing answers it, so the torrent is added, its files are selected, and it is watched for up to five seconds. Cached content completes 0.4 to 1.5 seconds after the selection; anything still going at five seconds is a real download and is deleted again.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
 <h2 id="what-works-and-what-does-not">What works, and what does not</h2>
 <p>Works:</p>
 <ul>
@@ -789,6 +823,7 @@ size=1446325722</code></pre>
 <li><strong>Adding by plain HTTP URL.</strong> <code translate="no" v-pre>torrents/add</code> takes magnets and uploaded <code translate="no" v-pre>.torrent</code> files. Both *arrs send one of those; a bare <code translate="no" v-pre>http://…/x.torrent</code> is refused.</li>
 <li><strong>Basic auth on the endpoint.</strong> The API key is the only gate.</li>
 </ul>
+<p><strong>One grab does vanish from the queue rather than warning.</strong> If no account ever took the release — none holds the hash and none is fetching it — it is reported errored after ten minutes and dropped from the torrent list after a day. There is no download to report a state for, and a queue entry for one that does not exist is worse than none. Every other failure stays visible.</p>
 <p><strong>Blocked release names, Real-Debrid only.</strong> RD refuses some releases on the filename alone — <code translate="no" v-pre>WEB-DL</code>, the rip family, a source tag dot-adjacent to an old codec. zurg knows the patterns and refuses such a grab immediately rather than spending an add slot and a minute of retries on a refusal that was certain; the client fails that grab and takes the next release, which is what you want. On TorBox and AllDebrid the same release is added normally.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <retype-table copy-text="| What the \*arr says | What it means |

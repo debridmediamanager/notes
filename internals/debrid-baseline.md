@@ -377,6 +377,34 @@ flow — its aggregate stays at the host ceiling — but individual streams do n
 and the per-stream median drops to zero at eight and twelve with TTFB medians above
 3 s. Everything else holds until twelve, where all four lose one or two.
 
+> **Retracted 2026-08-23. This is not a provider concurrency limit.** Retested direct to
+> the APIs at rate-capped playback bitrates rather than flat-out through zurg, AllDebrid
+> resolved **4/8/12/16/24 concurrent distinct links at 100%** and sustained **24/24** live
+> streams. The failures above were **three null-routed AllDebrid CDN hosts** —
+> `l4m5n6.debrid.it`, `o7p8q9.debrid.it`, `c1uw74.debrid.it`, all resolving to `0.0.0.0`
+> and carrying **15.6% of resolved links**. The first is the same host recorded as a
+> one-off dead link further down this document; it is not a one-off.
+>
+> A dead host fails only when its file is in the batch, so the failure count rises with N
+> and takes exactly the shape of a concurrency ceiling. **Any ladder that draws more
+> distinct files as it climbs will reproduce this false result.**
+>
+> The whole completion column here is method-limited for the same reason: these runs pulled
+> flat-out over a saturated 73–78 MB/s link, so what it measures is **bandwidth share, not a
+> provider limit**. The real per-host ceilings, all undocumented, are Real-Debrid **32**
+> (dropped at the TCP layer), AllDebrid **32** (HTTP 429), TorBox **20** per `nexus-NNN`
+> host (HTTP 429, per host rather than per IP), and no ceiling found for Premiumize at 64.
+>
+> One caveat against over-reading the retraction: a null-routed host fails in ~0.1 s,
+> whereas the TTFB medians above run past 3 s. That is a slow failure with a different
+> signature, so bandwidth starvation was probably present too. Both effects point away
+> from a provider cap.
+>
+> **The fix this implies:** treat a connection-level failure on an AllDebrid CDN host as
+> retryable by **re-unlocking the link** — a fresh `/link/unlock` returns a different host —
+> not by reducing concurrency. A DNS lookup rejecting `0.0.0.0` catches every case seen
+> here and costs nothing.
+
 ### Multiple readers, one file
 
 Same levels, one file, different offsets — the read-ahead-plus-seek shape.
@@ -391,6 +419,11 @@ AllDebrid is **fine** here — 4/4 and 8/8 — while it was 2/4 and 3/8 on disti
 That inversion is the diagnosis: its limit is not bandwidth and not a per-torrent cap,
 it is concurrent **link resolution**. Distinct files mean distinct unlocks; one file
 resolves once and then just streams.
+
+> **Retracted 2026-08-23** — the inversion has a simpler explanation. Distinct files draw
+> distinct CDN hosts, and three of AllDebrid's were null-routed; a single file resolves to
+> one host and either works or does not. Link resolution itself was measured clean at 24
+> concurrent. See the note above.
 
 ### Multiple readers across different providers
 
@@ -470,6 +503,17 @@ zurg's. zurg's part is what it does about it: three attempts over roughly 4 s, t
 500. The file is on no other account, so there was nothing to fall back to — but the
 failover result above says it would not have fallen back anyway.
 
+> **2026-08-23: not one host, and not one file.** Three AllDebrid CDN hostnames were
+> null-routed simultaneously — `l4m5n6.debrid.it`, `o7p8q9.debrid.it`, `c1uw74.debrid.it` —
+> accounting for **5 of 32 links in one sample and 4 of 32 in another, across unrelated
+> content**. AllDebrid hands the same dead hosts out for different files, and was still
+> doing so days after this run. This is a persistent hole in its fleet, and it is what
+> produced the retracted concurrency finding above.
+>
+> Three attempts and a 500 is the wrong response. **Re-unlock instead** — `/link/unlock`
+> returns a different host — and pre-flight with a DNS lookup that rejects `0.0.0.0`, which
+> catches every case observed at no cost.
+
 ### Scanning
 
 `ffprobe` over the whole 23-file mixed pool, which is the shape of a Plex analysis
@@ -523,7 +567,13 @@ Ordered by what they cost.
 4. **Starting into a provider outage yields an empty mount**, and a read against
    Real-Debrid or AllDebrid then hangs until the client's own timeout rather than
    failing fast. TorBox answers 400 in 35 ms.
-5. **AllDebrid stops completing concurrent reads of different files.** 2 of 4, 3 of 8,
+5. ~~**AllDebrid stops completing concurrent reads of different files.**~~ **Retracted
+   2026-08-23 — see the note in "Multiple readers, different files" above.** The cause was
+   three null-routed AllDebrid CDN hosts carrying 15.6% of links, not a concurrency limit;
+   retested directly, AD resolves 24 concurrent distinct links at 100% and sustains 24/24
+   streams. The original text is kept below for the record.
+
+   2 of 4, 3 of 8,
    4 of 12. The same levels against a *single* file are fine (4/4, 8/8), so the limit
    is concurrent link resolution, not bandwidth or a per-torrent cap. Four files
    playing at once is an ordinary evening for a household.

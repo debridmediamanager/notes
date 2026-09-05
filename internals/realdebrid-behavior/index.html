@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841882414384">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841883551725">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,11 +37,11 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841882414384" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.841883551725" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841882414384" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841883551725" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841882414384" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841883551725" data-turbo-eval="false" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -263,8 +263,19 @@ N fastest hosts): the host a verification HEAD landed on is not the host the
 next request picks. A resolution left in the link cache after its row is
 deleted therefore answers 404 invalid_download_code on almost every later
 request, which reads as a rotted link and marks a healthy release broken.</p>
-<p>Re-unrestricting the same link after a delete is unaffected: it mints a new id
-on a new host and works normally. Ids are not reused.</p>
+<p>Re-unrestricting the same link after a delete eventually mints a new id on a
+new host and works normally. Ids are not reused.</p>
+<p>But not at once, and the first measurement here said &quot;unaffected&quot; because it
+was taken minutes later. Re-measured 2026-08-23 on the test account: after
+DELETE /downloads/delete/<id>, unrestrict/link kept returning the <em>same dead
+id</em> for 75 seconds, and only minted a new one at t+81s.</p>
+<p>Two things follow, and both are in the code. downloadsCleanupMinAge holds a row
+for two minutes before retiring it, so a sibling instance resolving the same
+link in that window gets a live code. And the serving path&#x27;s re-unrestrict
+chain — four attempts inside about six seconds — fits entirely inside the
+window, so exhausting it says nothing about the file: when every resolution
+comes back as the URL that just answered 404, zurg refuses the read with a
+Retry-After instead of marking the release broken.</p>
 
                 
                 <!-- Required only on API pages -->

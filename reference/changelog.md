@@ -1,5 +1,81 @@
 # Changelog
 
+## zurg updates itself
+
+`zurg update` replaces the running binary with the newest sponsor nightly. It reads the release feed with the GitHub CLI sign-in when one exists and `GITHUB_TOKEN` or `GH_TOKEN` otherwise, checks the download runs and reports the expected version before anything is replaced, and swaps the binary in by rename so an update cannot fail while zurg is running. A build already on the newest nightly, or ahead of it, is left alone. Inside a container the command refuses and points at the image pull instead, since a replaced binary there is lost on the next recreate; `--force` overrides. The installers gained a matching `update` mode for builds too old to carry the command.
+
+Per platform: [Linux](../setup/linux.md#updating-zurg), [macOS](../setup/macos.md#update-zurg), [Windows](../setup/windows.md#updating-zurg), [Docker](../setup/docker.md).
+
+## One Plex setting can be opted out of the policy
+
+`plex_settings_ignore` names Plex preferences zurg leaves alone whatever `plex_settings_policy` says. It exists for the setup that genuinely wants one of them: a library whose files move between folders depends on Plex emptying its own trash to clear the entry left behind, and the default policy turns that off — while dropping to `warn` to get it back would also give up the filesystem-event guards beside it. An ignored setting is still read and still reported, on the dashboard and as `skip` in `zurg plex-settings`; it is only never written, never warned about, and never behind the trash banner. Ignoring a safety setting is at your own risk and zurg says so once at startup; an id that names nothing is reported and leaves the setting guarded, so a typo cannot read as an opt-out.
+
+The settings themselves, and what each policy level does with them, are in [Plex](../guides/plex.md#recommended-plex-settings).
+
+## One-line installers for every supported host
+
+Fresh installs now have optional one-line bootstraps for Linux, macOS, Windows and Docker on Linux. They check or install platform prerequisites, use GitHub's browser sign-in for sponsor access, download the correct architecture, and hand off to `zurg setup` and `zurg doctor`. Existing binaries and configs are preserved, and every manual guide remains available.
+
+## Setup asks which providers to configure
+
+Fresh `zurg setup` installs no longer assume Real-Debrid. The interactive installer asks for one or more providers in priority order and collects only the selected credentials. Non-interactive installs can repeat `--provider` and use provider-specific token-file flags or environment variables. Existing configs are still preserved and the legacy Real-Debrid `--token-file`, `TOKEN` and `RD_TOKEN` inputs remain compatible when supplied explicitly.
+
+## A burst larger than Sonarr's history window no longer loses imports
+
+Sonarr and Radarr ask SABnzbd for every queued job but only the newest sixty history entries. That usually describes a real downloader well: completions arrive gradually and the client removes each one after importing it. A cached NZB library is different. A bulk season search can finish hundreds of individual episode jobs before the client's next poll, and zurg used to remove all of them from the queue while returning only sixty in history. Every job past that page was absent from both responses, so the client never imported or failed it and its release remained at the root of `__magic__` indefinitely.
+
+zurg now keeps finished jobs beyond that visible page in the queue. As the client imports and removes the first sixty, the next completions advance into history. A season grabbed as individual episodes therefore drains in bounded batches instead of racing a fixed-size window; a season pack still behaves as one job.
+
+## A delete through the mount always works, and `dav_allow_delete` is gone
+
+Deleting a file from a media server pointed at the mount used to do nothing visible: zurg refused the WebDAV DELETE with a 403, rclone turned that into an I/O error, and the client reported a failure with no cause attached — Plex answers a plain `400 Bad Request` and logs nothing, so the button simply did not work and nothing said why. The key that allowed it, `dav_allow_delete`, is removed; a DELETE through the mount is now honoured everywhere, with no configuration. A config file that still sets the key is not an error — unknown keys are ignored — it just no longer does anything.
+
+What the key was guarding has not gone away, so it is worth stating plainly: rclone has no way to express "overwrite" and flushes a rewritten file as DELETE followed by PUT, which means a program that rewrites a file in place — an `.nfo` writer, a trickplay pass, an \*arr rename, a stray `touch` — deletes the release from the debrid account rather than replacing a file, and the mount carries rclone's own credentials so nothing upstream can tell that apart from a deliberate delete. The PUT half is still refused, which is what keeps the sequence from completing quietly. If anything writes into your mount, set `mount_read_only: true`, which fails the write at the kernel before it reaches zurg at all.
+
+## The Plex watchlist acquires through your Newznab indexers
+
+The watchlist monitor now works, and it works off your own indexers. The old version searched through a DMM API key — and silently stopped working when Plex moved the watchlist to its discover host, since the endpoint it polled started answering 404. It now polls the right host, and every new watchlist item is searched on the Newznab indexers you already configured: a movie becomes the best matching release, a show is acquired season by season **preferring season packs** over loose episodes — a season nobody posted a pack of falls back to the loose episodes, best release per episode — and a chosen release whose NZB link fails to fetch (an indexer's burst-limit 429, say) falls to the next-ranked candidate rather than costing the item. The chosen NZB drops into the Usenet backend through the same naming rules as the SABnzbd endpoint and the Stremio addon, so the three surfaces find each other's grabs instead of duplicating them. An item leaves the watchlist only after something was actually acquired — the old order removed first and asked questions later, so any failure quietly ate the item off your list.
+
+Configure it with the new `watchlist:` block: `enabled`, `check_every_secs` (default 60), `indexers` (empty borrows `stremio.indexers`), `max_size_gb` (default 40, movies and single episodes), `max_season_size_gb` (default 100, season packs) and `quality` (`best`, `4k`, `1080p`, `720p`, `smallest`). The legacy `plex_watchlist_*` keys keep their meaning. A `plex_token` is all the Plex it needs — the monitor talks to Plex's cloud service, so it runs fine on an instance with no `plex_server_url`. TV searches lead with the TVDB id and retry once by IMDb id when that finds nothing — indexers key TV on TVDB, and their show-level IMDb mapping is patchy enough that a heavily indexed show can answer an imdbid search with zero results.
+
+Every key is on the config page under **Plex Watchlist**, and in [the configuration reference](../reference/config.md#watchlist).
+
+## A Stremio addon over your Newznab indexers
+
+zurg can now answer Stremio directly. Turn on the `stremio:` block, list your Newznab indexers, and paste the logged `/stremio/<token>/manifest.json` URL into Stremio: the client asks for streams by IMDb id, zurg searches the indexers (movies by `t=movie`, episodes by `t=tvsearch` with season and episode), and the results come back ranked resolution-first as playable streams. Picking one pulls the NZB into the Usenet backend — through the same naming rules as the SABnzbd endpoint, so a release grabbed twice is found rather than duplicated — and plays it through the signed `/strm/e/` endpoint, ranges, failover and archive interiors included. Everything played lands in the library, so it shows up in Plex like any other release.
+
+The token in the path is the whole authorization, generated and kept in `data/stremio-token` when the config names none. Search results are cached in `data/stremio-cache` so reopening a title costs no indexer calls, for a lifetime that scales with how much the search found — an hour per result up to four, `stremio.cache_hours` (default 24) from five, never for an empty answer — and a cached stream list carries a refresh item that clears the cache for that title. Releases larger than `stremio.max_size_gb` (default 40) are dropped from the list, so a full-disc remux does not outrank every playable option.
+
+The whole thing, including what the first play costs: [The Stremio addon](../guides/stremio.md).
+
+## One folder is the whole Docker install, and it mounts on the first run
+
+The documented way to start zurg in Docker was one `docker run` with a `TOKEN` in it, and it produced a container that mounted nothing. The config it generated left `rclone_enabled` off and `mount_path` unset, so `/zurg_mnt/zurg` stayed empty until someone found the two controls in the Dashboard — and that config was written inside the container, so the next `docker pull` threw the answer away along with the library cache. The quick start needed a footnote listing both of those, which is a quick start admitting it does not work.
+
+`MOUNT_PATH` now seeds `rclone_enabled: true` and `mount_path` into the config on the run that creates it, next to what `TOKEN` already seeded. The image's working directory is `/config`, and everything zurg keeps resolves against it — `config.yml`, `data/`, `logs/`, `dump/`, `strm/`, `nzbs/` and the rclone cache — so a single `-v ~/zurg:/config` holds the entire install and an image update moves none of it. A first run is one command and ends with a mounted library rather than a Dashboard errand.
+
+Both variables are read **only when there is no config file yet**, and are ignored ever after. That is the same rule `log_level` already has against `LOG_LEVEL`, for the same reason: a `MOUNT_PATH` left behind in a compose file must never quietly undo a mount path changed later in the Dashboard. Startup now warns when one is set and disagrees with the config, so an operator redeploying against no effect is told why.
+
+Installs made against the old layout are untouched. Docker creates the target of every bind mount, so `/app/config.yml`, `/app/data` or `/app/logs` being present is the old layout announcing itself, and the container keeps using `/app` when it sees any of them. The full setup, and what breaks a host-visible mount, is in [Docker](../setup/docker.md).
+
+## TorBox and AllDebrid are handed the `.torrent` too, so a private grab is not left hanging
+
+The `.torrent` file an \*arr sends started travelling with the add last release, but only Real-Debrid could take one — the other two accounts were still handed the info hash alone, which for a private tracker's release is the one form of it they cannot use. Nothing failed, which is what made it hard to see: measured against the live TorBox account, a hash with no public swarm was accepted with a torrent id and then sat in `checking` reporting `size: -1`, no file list and a hundred-day estimate, exactly as reported from a TorrentLeech grab that "just hangs, nothing downloads". The same release's file was answered at once with its real name, its real size and its file list, and the qBittorrent endpoint could get on with the job.
+
+Both accounts now take the file. TorBox's `createtorrent` and AllDebrid's `magnet/upload/file` both accept it in place of the magnet and answer in the shape the magnet add already answered in, so nothing downstream of the add changes — AllDebrid still reports on the upload itself whether it already held the content, which is the only cache answer that account ever gives. Verified live through zurg's own add path on both: a cached release uploaded and read back `done` at 100% with its file list within seconds, and one nobody holds read back named, sized, and stalled for want of peers — a state the endpoint can act on, where the hash's was a torrent that never resolves and never finishes.
+
+One refusal is now legible as well. A TorBox call refused with a 4xx reached the caller as the shared HTTP client's bare "unexpected status code: 400", because the response body — where TorBox puts its own error code and detail — was dropped in favour of that error. So a `.torrent` TorBox will not act on was reported to the \*arr as a status number and nothing else. The body is now read first, and the account's own reason travels with the refusal.
+
+What this means when you set the indexers up: [Sonarr & Radarr, torrents](../guides/sonarr-radarr-torrents.md).
+
+## Compressed archive entries stream, decoded on demand
+
+A compressed RAR or deflate zip entry can't answer a ranged read the way a stored one does — its bytes exist only behind a decoder that must run from the entry's start — so zurg refused them: a compressed-only release answered 415, and compressed siblings of stored entries were skipped. That was the honest answer for a streamer, but it hid the bulk of Usenet's older catalog: every poster who packed with compression, whole and entire.
+
+These entries are now served by decoding forward on demand into a bounded in-memory window — nothing written to disk, nothing decoded that no read asked for. Sequential playback, the pattern a player generates, lands at the window's edge and advances it a little per read; a seek backwards past what the window kept restarts the decode from the entry's start. The whole entry's bytes are what unrar would extract: a real compressed RAR4 volume's three jpg entries decode byte-exact against the same fixture read by an independent decoder pass, md5 for md5.
+
+Walking a split set's volumes needed rardecode's volume chain, which opens `.part02.rar` from the filesystem; zurg's volumes live behind ranged network readers. The decoder is now vendored under `internal/rardecode` (MIT, upstream v1.1.3) with one change — `OpenReaderOver` takes an opener, so each next volume comes from the set by the name the archive itself derives. Listings change shape accordingly: a compressed-only release presents its payload (`stream_compressed_archives: false` restores the old refusals), and a mixed archive lists its compressed siblings beside its stored ones. Listing version 15.
+
 ## Sonarr and Radarr can grab torrents, and Prowlarr can push them
 
 zurg can answer the \*arrs as though it were a qBittorrent. They hand it a magnet or a `.torrent`, it adds the info hash to a debrid account — Real-Debrid, TorBox or AllDebrid, whichever is configured — and once the release is in the library the torrent reports finished with a folder under `__magic__` to import from. The import is the same rename the SABnzbd endpoint has always given Usenet grabs: a row in the `__magic__` table, no bytes moved.

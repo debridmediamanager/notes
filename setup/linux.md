@@ -143,9 +143,27 @@ For a system service:
 sudo journalctl -u zurg.service -f
 ```
 
+## Updating zurg
+
+A sponsor build replaces itself:
+
+```bash
+cd ~/zurg
+./zurg update
+./zurg service restart
+```
+
+`update` takes the newest nightly. It downloads it, checks the new binary reports the version it expected, and only then swaps it in by rename, so the running process is never overwritten. When the installed build is already the newest it says so and changes nothing. Credentials come from the GitHub CLI sign-in when there is one, and from `GITHUB_TOKEN` or `GH_TOKEN` otherwise.
+
+On a build too old to carry the command, the installer does the same job and touches nothing else:
+
+```bash
+curl -fsSL https://zurg.debridmediamanager.com/install.sh | bash -s update
+```
+
 ## Existing and unattended configs
 
-Setup never replaces an existing `config.yml`. For unattended setup repeat `--provider` and supply the matching token-file or `--nntp-*` flags. Run `./zurg setup --help` for the full list.
+Setup never replaces an existing `config.yml`. For unattended setup repeat `--provider` and supply the matching token-file or `--nntp-*` flags. `REALDEBRID_TOKEN`, `TORBOX_TOKEN`, `ALLDEBRID_TOKEN` and the `NNTP_*` variables work too. Run `./zurg setup --help` for the full list.
 
 See the [configuration reference](../reference/config.md) for every setting.
 

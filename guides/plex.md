@@ -83,6 +83,22 @@ zurg reconciles these on every Plex status refresh. `plex_settings_policy` decid
 
 A setting the server does not report is skipped, so a Plex version that lacks one is not reported as misconfigured.
 
+### Opting out of one setting
+
+`plex_settings_policy` is tiered, and the tier is not always the question being asked. An operator whose files move between library folders — tag-driven sorting, say — depends on Plex emptying its own trash to clear the entry left behind, and `guard` turns that off. Dropping to `warn` to get it back also gives up the filesystem-event guards, which are the same tier and not what they asked for.
+
+`plex_settings_ignore` names settings individually:
+
+```yaml
+plex_settings_policy: guard
+plex_settings_ignore:
+  - autoEmptyTrash
+```
+
+An ignored setting is still read and still shown on the dashboard and in `zurg plex-settings` (marked `skip`), so nothing is hidden. It is simply never written, never counted as a problem, and never behind the dashboard's trash banner. Ids are matched case-insensitively; one that names no setting in the tables below is reported at startup and leaves the setting guarded, since a typo must not read as an opt-out.
+
+Ignoring a safety setting is at your own risk, and zurg says so once when it starts rather than on every refresh. `autoEmptyTrash` in particular is the setting that empties a library when a scan meets a mount that has blipped — with it ignored, zurg's own [trash sweep](../internals/plex-trash-sweep.md) (`plex_trash_sweep_every_mins`) is the safer way to get the same cleanup, since it removes entries one at a time and only ones whose files are confirmed gone from a mount that reads.
+
 ### Safety — corrected under `guard` and `enforce`
 
 These lose data rather than time, which is why the default policy writes them instead of only warning.

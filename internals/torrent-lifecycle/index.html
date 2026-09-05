@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841883551725">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Torrent lifecycle on Real-Debrid AllDebrid and TorBox</title>
+    <meta name="title" content="Torrent lifecycle on Real-Debrid AllDebrid and TorBox">
+    <meta name="description" content="Measured on 2026-08-30 against live accounts. Everything below marked observed came out of a capture. Everything marked inferred did not and says why.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/internals/torrent-lifecycle/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/internals/torrent-lifecycle/">
+    <meta property="og:title" content="Torrent lifecycle on Real-Debrid AllDebrid and TorBox">
+    <meta property="og:description" content="Measured on 2026-08-30 against live accounts. Everything below marked observed came out of a capture. Everything marked inferred did not and says why.">
+    <meta property="og:site_name" content="dmm+zurg">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/internals/torrent-lifecycle/">
+    <meta name="twitter:title" content="Torrent lifecycle on Real-Debrid AllDebrid and TorBox">
+    <meta name="twitter:description" content="Measured on 2026-08-30 against live accounts. Everything below marked observed came out of a capture. Everything marked inferred did not and says why.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/internals/torrent-lifecycle.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../resources/css/retype.css?v=4.6.0.841883551725" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841883551725" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841883551725" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841883551725" defer></script>
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/" class="flex items-center leading-snug text-2xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">dmm+zurg</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg-testing" target="_blank">zurg-testing</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://reddit.com/r/debridmediamanager" target="_blank">Reddit</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.patreon.com/debridmediamanager" target="_blank">Patreon</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://github.com/debridmediamanager/zurg-testing" target="_blank">zurg-testing</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://reddit.com/r/debridmediamanager" target="_blank">Reddit</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.patreon.com/debridmediamanager" target="_blank">Patreon</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="torrent-lifecycle-on-real-debrid-alldebrid-and-torbox">Torrent lifecycle on Real-Debrid AllDebrid and TorBox</h1>
+<p>Measured on 2026-08-30 against live accounts. Everything below marked <strong>observed</strong> came out of a
+capture. Everything marked <strong>inferred</strong> did not and says why.</p>
+<p>zurg needs this because the qBittorrent shim has to tell Sonarr and Radarr what stage a download is
+in. Today it cannot. <code translate="no" v-pre>TorrentInfo.Status</code> carries Real-Debrid&#x27;s status vocabulary and the AllDebrid
+and TorBox packages translate into it before zurg&#x27;s own code ever sees a torrent. TorBox
+<code translate="no" v-pre>stalled (no seeds)</code> arrives as <code translate="no" v-pre>queued</code>. Nothing carries seeders or speed or eta at all. So the
+stage table had to be built from the wire and not from the provider packages that already normalise
+it away.</p>
+<p>The harness is <code translate="no" v-pre>scripts/torrent_lifecycle_probe.py</code>. It hits
+the raw REST APIs so the captures are wire status. It deletes everything it adds on the way out
+including on Ctrl-C.</p>
+<hr>
+<h2 id="how-this-was-measured">How this was measured</h2>
+<h3 id="the-accounts">The accounts</h3>
+<retype-table copy-text="| Provider | Account | Why this one |
+|---|---|---|
+| Real-Debrid | test 2 | not the main account and not `bendav`, which zen's production zurg uses |
+| AllDebrid | test key | resolves to the `ymsita` account, which already held 39 magnets, so only ids the run created were ever deleted |
+| TorBox | main | the only TorBox account there is. **Shared with fun's `zurg-tb`**, which is not a footnote. See [Hazards](#hazards-found-on-the-way) |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Provider</th>
+<th>Account</th>
+<th>Why this one</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Real-Debrid</td>
+<td>test 2</td>
+<td>not the main account and not <code translate="no" v-pre>bendav</code>, which zen&#x27;s production zurg uses</td>
+</tr>
+<tr>
+<td>AllDebrid</td>
+<td>test key</td>
+<td>resolves to the <code translate="no" v-pre>ymsita</code> account, which already held 39 magnets, so only ids the run created were ever deleted</td>
+</tr>
+<tr>
+<td>TorBox</td>
+<td>main</td>
+<td>the only TorBox account there is. <strong>Shared with fun&#x27;s <code translate="no" v-pre>zurg-tb</code></strong>, which is not a footnote. See <doc-anchor-trigger to="#hazards-found-on-the-way">Hazards</doc-anchor-trigger></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Credentials come from <code translate="no" v-pre>RD_TOKEN</code> <code translate="no" v-pre>AD_KEY</code> <code translate="no" v-pre>TB_KEY</code> in the environment. Nothing writes them to a
+capture.</p>
+<h3 id="the-torrents">The torrents</h3>
+<p>All legitimate. FOSS images and public domain film. Every info hash that came from a <code translate="no" v-pre>.torrent</code> was
+recomputed from the file by the harness rather than typed in. Swarm sizes are tracker scrapes taken
+the same day.</p>
+<retype-table copy-text="| Case | Torrent | Info hash | Size | Tracker seeders | Webseeds |
+|---|---|---|---|---|---|
+| cached | Big Buck Bunny | `dd8255ecdc7ca55fb0bbf81323d87062db1f6d1c` | 264 MiB | n/a | n/a |
+| cached | Sintel | `08ada5a7a6183aae1e09d831df6748d566095a10` | 123 MiB | n/a | n/a |
+| cached | ubuntu-26.04.1-desktop-amd64.iso | `5b1e0d988fc7a0c9e99bd852071681a59974b39f` | 6.04 GiB | 22 to 27 | none |
+| uncached | debian-13.6.0-arm64-DVD-1.iso | `4d38178b8f08447ea8609e844b0071354ed65887` | 3.72 GiB | 212 | 2 |
+| uncached | debian-13.2.0-amd64-DVD-1.iso | `7f23b66ebc763f6d931e999583adfd22a7d796fa` | 3.71 GiB | 328 | 2 |
+| webseed | Prelinger `205882_Home_Movie_005588` | `69e7bba940b3c2edf7ce517330e3ca904877d8d1` | 0.71 GiB | 0 seeders and 0 leechers | 3 |
+| seedless | ubuntu-16.04.6-desktop-i386.iso | `c16796a74dc24cc7c6df2f7b66b861e22dec69b1` | 1.56 GiB | 0 | none |
+| seedless | ubuntu-24.04-beta-live-server-s390x.iso | `8e693ebcdda44f741e2034cedbb552e93944143d` | 1.18 GiB | 0 | none |
+| nometa | random 40-hex | `3f9c1a77b0e4d2568af3c01e9b7d4a5268c1f0e3` | none | none | none |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Case</th>
+<th>Torrent</th>
+<th>Info hash</th>
+<th>Size</th>
+<th>Tracker seeders</th>
+<th>Webseeds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cached</td>
+<td>Big Buck Bunny</td>
+<td><code translate="no" v-pre>dd8255ecdc7ca55fb0bbf81323d87062db1f6d1c</code></td>
+<td>264 MiB</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>cached</td>
+<td>Sintel</td>
+<td><code translate="no" v-pre>08ada5a7a6183aae1e09d831df6748d566095a10</code></td>
+<td>123 MiB</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>cached</td>
+<td>ubuntu-26.04.1-desktop-amd64.iso</td>
+<td><code translate="no" v-pre>5b1e0d988fc7a0c9e99bd852071681a59974b39f</code></td>
+<td>6.04 GiB</td>
+<td>22 to 27</td>
+<td>none</td>
+</tr>
+<tr>
+<td>uncached</td>
+<td>debian-13.6.0-arm64-DVD-1.iso</td>
+<td><code translate="no" v-pre>4d38178b8f08447ea8609e844b0071354ed65887</code></td>
+<td>3.72 GiB</td>
+<td>212</td>
+<td>2</td>
+</tr>
+<tr>
+<td>uncached</td>
+<td>debian-13.2.0-amd64-DVD-1.iso</td>
+<td><code translate="no" v-pre>7f23b66ebc763f6d931e999583adfd22a7d796fa</code></td>
+<td>3.71 GiB</td>
+<td>328</td>
+<td>2</td>
+</tr>
+<tr>
+<td>webseed</td>
+<td>Prelinger <code translate="no" v-pre>205882_Home_Movie_005588</code></td>
+<td><code translate="no" v-pre>69e7bba940b3c2edf7ce517330e3ca904877d8d1</code></td>
+<td>0.71 GiB</td>
+<td>0 seeders and 0 leechers</td>
+<td>3</td>
+</tr>
+<tr>
+<td>seedless</td>
+<td>ubuntu-16.04.6-desktop-i386.iso</td>
+<td><code translate="no" v-pre>c16796a74dc24cc7c6df2f7b66b861e22dec69b1</code></td>
+<td>1.56 GiB</td>
+<td>0</td>
+<td>none</td>
+</tr>
+<tr>
+<td>seedless</td>
+<td>ubuntu-24.04-beta-live-server-s390x.iso</td>
+<td><code translate="no" v-pre>8e693ebcdda44f741e2034cedbb552e93944143d</code></td>
+<td>1.18 GiB</td>
+<td>0</td>
+<td>none</td>
+</tr>
+<tr>
+<td>nometa</td>
+<td>random 40-hex</td>
+<td><code translate="no" v-pre>3f9c1a77b0e4d2568af3c01e9b7d4a5268c1f0e3</code></td>
+<td>none</td>
+<td>none</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>The zeros are real and not a dead tracker. <code translate="no" v-pre>torrent.ubuntu.com</code> was scraped twice for all three
+Ubuntu entries in the same loop and answered 22 then 27 seeders for 26.04.1 while answering an empty
+<code translate="no" v-pre>d5:filesdee</code> for the two seedless ones. Same for <code translate="no" v-pre>bt1.archive.org</code> and the Prelinger item.</p>
+<p>TorBox <code translate="no" v-pre>checkcached</code> was asked about every hash before anything was added. It is the only
+non-destructive cache probe of the three. It said cached for the three cached rows and uncached for
+the other six. That is the split the case names claim.</p>
+<h3 id="poll-cadence-and-caps">Poll cadence and caps</h3>
+<p>3 s for the first 2 minutes then 15 s. 1 s for the cached case because the whole lifecycle there can
+be over inside one normal poll. Cap 15 minutes per torrent for the campaign rather than the script
+default of 30. The shim&#x27;s proposed default timeout is 10 minutes and a torrent still moving at 15 is
+already past the only window that matters. Real-Debrid adds are spaced at least 20 s apart.</p>
+<p>Each provider ran as its own process against its own output directory. That keeps the Real-Debrid
+add spacing honest inside one process and lets the three run at once.</p>
+<hr>
+<h2 id="real-debrid">Real-Debrid</h2>
+<h3 id="endpoints">Endpoints</h3>
+<div id="endpoints-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">POST   /rest/1.0/torrents/addMagnet          magnet=magnet:?xt=urn:btih:&lt;hash&gt;   -&gt; 201 {&quot;id&quot;,&quot;uri&quot;}
+POST   /rest/1.0/torrents/selectFiles/{id}   files=all                           -&gt; 204
+GET    /rest/1.0/torrents/info/{id}                                              -&gt; 200 object
+DELETE /rest/1.0/torrents/delete/{id}                                            -&gt; 204</code></pre>
+</doc-codeblock></div>
+<h3 id="status-values-observed">Status values observed</h3>
+<p><code translate="no" v-pre>waiting_files_selection</code> <code translate="no" v-pre>magnet_conversion</code> <code translate="no" v-pre>magnet_error</code> <code translate="no" v-pre>queued</code> <code translate="no" v-pre>downloading</code> <code translate="no" v-pre>uploading</code>
+<code translate="no" v-pre>downloaded</code></p>
+<p>Not observed here. <code translate="no" v-pre>compressing</code> <code translate="no" v-pre>virus</code> <code translate="no" v-pre>error</code> <code translate="no" v-pre>dead</code>. Those need content this campaign had no
+legitimate way to produce.</p>
+<h3 id="which-wire-fields-exist-in-which-status">Which wire fields exist in which status</h3>
+<p>This matters more than the vocabulary. Fields come and go. A mapper that reads <code translate="no" v-pre>speed</code> in every
+state reads a missing key half the time.</p>
+<retype-table copy-text="| Field | magnet_conversion | queued | downloading | uploading | downloaded |
+|---|---|---|---|---|---|
+| `status` | yes | yes | yes | yes | yes |
+| `progress` | 0 | 0 | **float percent** 0 to 100 | **restarts at 0** and climbs to 100 | 100 |
+| `seeders` | yes | **absent** | yes | **absent** | **absent** |
+| `speed` | **absent** | **absent** | yes, bytes per second | yes, always 0 in the capture | **absent** |
+| `bytes` / `original_bytes` | 0 | real size | real size | real size | real size |
+| `filename` | `&quot;Magnet&quot;` | real name | real name | real name | real name |
+| `files` | `[]` | populated | populated | populated | populated |
+| `links` | `[]` | `[]` | `[]` | fills during the phase | populated |
+| `ended` | absent | absent | absent | absent | present |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Field</th>
+<th>magnet_conversion</th>
+<th>queued</th>
+<th>downloading</th>
+<th>uploading</th>
+<th>downloaded</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>status</code></td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>progress</code></td>
+<td>0</td>
+<td>0</td>
+<td><strong>float percent</strong> 0 to 100</td>
+<td><strong>restarts at 0</strong> and climbs to 100</td>
+<td>100</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>seeders</code></td>
+<td>yes</td>
+<td><strong>absent</strong></td>
+<td>yes</td>
+<td><strong>absent</strong></td>
+<td><strong>absent</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>speed</code></td>
+<td><strong>absent</strong></td>
+<td><strong>absent</strong></td>
+<td>yes, bytes per second</td>
+<td>yes, always 0 in the capture</td>
+<td><strong>absent</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>bytes</code> / <code translate="no" v-pre>original_bytes</code></td>
+<td>0</td>
+<td>real size</td>
+<td>real size</td>
+<td>real size</td>
+<td>real size</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>filename</code></td>
+<td><code translate="no" v-pre>&quot;Magnet&quot;</code></td>
+<td>real name</td>
+<td>real name</td>
+<td>real name</td>
+<td>real name</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>files</code></td>
+<td><code translate="no" v-pre>[]</code></td>
+<td>populated</td>
+<td>populated</td>
+<td>populated</td>
+<td>populated</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>links</code></td>
+<td><code translate="no" v-pre>[]</code></td>
+<td><code translate="no" v-pre>[]</code></td>
+<td><code translate="no" v-pre>[]</code></td>
+<td>fills during the phase</td>
+<td>populated</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>ended</code></td>
+<td>absent</td>
+<td>absent</td>
+<td>absent</td>
+<td>absent</td>
+<td>present</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>progress</code> is a <strong>float</strong> and not an integer. The capture holds 0.4 and 0.8 and 1.4 alongside 100.
+A stall detector that rounds to an integer percent will call a 100 GB release stalled at 1 MB/s.</p>
+<p><code translate="no" v-pre>progress</code> <strong>goes backwards on purpose</strong>. It resets to 0 when the status turns <code translate="no" v-pre>uploading</code> and climbs
+to 100 again. Movement has to be defined as a stage change or a progress increase and never as a
+monotonic percentage.</p>
+<p><code translate="no" v-pre>seeders</code> disappears rather than going to zero once the torrent leaves <code translate="no" v-pre>downloading</code>. So does
+<code translate="no" v-pre>speed</code>. A mapper must treat an absent key as unknown and not as zero.</p>
+<h3 id="what-each-case-did">What each case did</h3>
+<retype-table copy-text="| Case | Torrent | Transitions with seconds from add | Verdict |
+|---|---|---|---|
+| cached | Big Buck Bunny | `downloaded`@0.0 | done in 1.32 s end to end |
+| cached | Sintel | `downloaded`@0.0 | done in 0.73 s |
+| cached | Ubuntu 26.04.1 | `downloaded`@0.0 | done in 0.32 s |
+| uncached | Debian 13.6.0 arm64 DVD-1 | `downloaded`@0.0 | already cached on this account |
+| uncached | Debian 13.2.0 amd64 DVD-1 | `queued`@0.0 `downloading`@3.1 `uploading`@166.5 `downloaded`@196.8 | done. 3.71 GiB in 197 s |
+| webseed | Prelinger home movie | `magnet_conversion`@0.0 `magnet_error`@318.0 | failed |
+| seedless | ubuntu-16.04.6-desktop-i386 | `queued`@0.0 `downloading`@3.1 `uploading` `downloaded`@166.8 | done. The case did not reproduce |
+| seedless | ubuntu-24.04-beta-live-server-s390x | `queued`@0.0 `downloading`@3.1 and nothing after that | **capped at 907.6 s still `downloading`**. This is the stall shape |
+| nometa | random 40-hex | `magnet_conversion`@0.0 `magnet_error`@317.9 | failed |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Case</th>
+<th>Torrent</th>
+<th>Transitions with seconds from add</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cached</td>
+<td>Big Buck Bunny</td>
+<td><code translate="no" v-pre>downloaded</code>@0.0</td>
+<td>done in 1.32 s end to end</td>
+</tr>
+<tr>
+<td>cached</td>
+<td>Sintel</td>
+<td><code translate="no" v-pre>downloaded</code>@0.0</td>
+<td>done in 0.73 s</td>
+</tr>
+<tr>
+<td>cached</td>
+<td>Ubuntu 26.04.1</td>
+<td><code translate="no" v-pre>downloaded</code>@0.0</td>
+<td>done in 0.32 s</td>
+</tr>
+<tr>
+<td>uncached</td>
+<td>Debian 13.6.0 arm64 DVD-1</td>
+<td><code translate="no" v-pre>downloaded</code>@0.0</td>
+<td>already cached on this account</td>
+</tr>
+<tr>
+<td>uncached</td>
+<td>Debian 13.2.0 amd64 DVD-1</td>
+<td><code translate="no" v-pre>queued</code>@0.0 <code translate="no" v-pre>downloading</code>@3.1 <code translate="no" v-pre>uploading</code>@166.5 <code translate="no" v-pre>downloaded</code>@196.8</td>
+<td>done. 3.71 GiB in 197 s</td>
+</tr>
+<tr>
+<td>webseed</td>
+<td>Prelinger home movie</td>
+<td><code translate="no" v-pre>magnet_conversion</code>@0.0 <code translate="no" v-pre>magnet_error</code>@318.0</td>
+<td>failed</td>
+</tr>
+<tr>
+<td>seedless</td>
+<td>ubuntu-16.04.6-desktop-i386</td>
+<td><code translate="no" v-pre>queued</code>@0.0 <code translate="no" v-pre>downloading</code>@3.1 <code translate="no" v-pre>uploading</code> <code translate="no" v-pre>downloaded</code>@166.8</td>
+<td>done. The case did not reproduce</td>
+</tr>
+<tr>
+<td>seedless</td>
+<td>ubuntu-24.04-beta-live-server-s390x</td>
+<td><code translate="no" v-pre>queued</code>@0.0 <code translate="no" v-pre>downloading</code>@3.1 and nothing after that</td>
+<td><strong>capped at 907.6 s still <code translate="no" v-pre>downloading</code></strong>. This is the stall shape</td>
+</tr>
+<tr>
+<td>nometa</td>
+<td>random 40-hex</td>
+<td><code translate="no" v-pre>magnet_conversion</code>@0.0 <code translate="no" v-pre>magnet_error</code>@317.9</td>
+<td>failed</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="the-cached-add-latency">The cached add latency</h3>
+<p>This is the number the shim&#x27;s cached-only mode is built on.</p>
+<retype-table copy-text="| Torrent | addMagnet returns | selectFiles returns | first `/torrents/info` | status |
+|---|---|---|---|---|
+| Big Buck Bunny | t=0 | t+1.211 s | t+1.318 s | `downloaded` |
+| Sintel | t=0 | t+0.632 s | t+0.729 s | `downloaded` |
+| Ubuntu 26.04.1 | t=0 | t+0.215 s | t+0.320 s | `downloaded` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Torrent</th>
+<th>addMagnet returns</th>
+<th>selectFiles returns</th>
+<th>first <code translate="no" v-pre>/torrents/info</code></th>
+<th>status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Big Buck Bunny</td>
+<td>t=0</td>
+<td>t+1.211 s</td>
+<td>t+1.318 s</td>
+<td><code translate="no" v-pre>downloaded</code></td>
+</tr>
+<tr>
+<td>Sintel</td>
+<td>t=0</td>
+<td>t+0.632 s</td>
+<td>t+0.729 s</td>
+<td><code translate="no" v-pre>downloaded</code></td>
+</tr>
+<tr>
+<td>Ubuntu 26.04.1</td>
+<td>t=0</td>
+<td>t+0.215 s</td>
+<td>t+0.320 s</td>
+<td><code translate="no" v-pre>downloaded</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>Observed.</strong> A cached torrent is <code translate="no" v-pre>downloaded</code> at the very first read after <code translate="no" v-pre>selectFiles</code>. The whole
+synchronous cost is two round trips. It never passes <code translate="no" v-pre>queued</code> and it never passes <code translate="no" v-pre>downloading</code>.</p>
+<p>A second run polled <code translate="no" v-pre>/torrents/info</code> at 0.25 s in the gap between <code translate="no" v-pre>addMagnet</code> and <code translate="no" v-pre>selectFiles</code> as
+well as after it. That is what <code translate="no" v-pre>--rd-select-detail</code> does and it settles the shape.</p>
+<retype-table copy-text="| Torrent | Status before `selectFiles` | `selectFiles` | First read after it | addMagnet to `downloaded` |
+|---|---|---|---|---|
+| Big Buck Bunny | `waiting_files_selection` with 3 files listed and `links` empty | 204 at t+1.314 s | `downloaded` `progress` 100 `links` 1 | **1.535 s** |
+| Sintel | `waiting_files_selection` with 11 files listed | 204 at t+0.627 s | `downloaded` `progress` 100 `links` 1 | **0.841 s** |
+| Ubuntu 26.04.1 | `waiting_files_selection` with 1 file listed | 204 at t+0.219 s | `downloaded` `progress` 100 `links` 1 | **0.430 s** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Torrent</th>
+<th>Status before <code translate="no" v-pre>selectFiles</code></th>
+<th><code translate="no" v-pre>selectFiles</code></th>
+<th>First read after it</th>
+<th>addMagnet to <code translate="no" v-pre>downloaded</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Big Buck Bunny</td>
+<td><code translate="no" v-pre>waiting_files_selection</code> with 3 files listed and <code translate="no" v-pre>links</code> empty</td>
+<td>204 at t+1.314 s</td>
+<td><code translate="no" v-pre>downloaded</code> <code translate="no" v-pre>progress</code> 100 <code translate="no" v-pre>links</code> 1</td>
+<td><strong>1.535 s</strong></td>
+</tr>
+<tr>
+<td>Sintel</td>
+<td><code translate="no" v-pre>waiting_files_selection</code> with 11 files listed</td>
+<td>204 at t+0.627 s</td>
+<td><code translate="no" v-pre>downloaded</code> <code translate="no" v-pre>progress</code> 100 <code translate="no" v-pre>links</code> 1</td>
+<td><strong>0.841 s</strong></td>
+</tr>
+<tr>
+<td>Ubuntu 26.04.1</td>
+<td><code translate="no" v-pre>waiting_files_selection</code> with 1 file listed</td>
+<td>204 at t+0.219 s</td>
+<td><code translate="no" v-pre>downloaded</code> <code translate="no" v-pre>progress</code> 100 <code translate="no" v-pre>links</code> 1</td>
+<td><strong>0.430 s</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>So the full cached sequence is <code translate="no" v-pre>waiting_files_selection</code> then <code translate="no" v-pre>downloaded</code> and nothing in between.
+The file list is already there before <code translate="no" v-pre>selectFiles</code>. <code translate="no" v-pre>links</code> is what <code translate="no" v-pre>selectFiles</code> fills.</p>
+<p><strong>The cached-only probe window can be one poll.</strong> 0.43 s to 1.54 s end to end across three torrents
+of 123 MiB and 264 MiB and 6.04 GiB. A window of two seconds at a quarter-second poll is generous.</p>
+<p>Against the 100 s that Sonarr and Radarr allow a <code translate="no" v-pre>torrents/add</code> call
+(see <a href="../qbittorrent-client-contract/">qbittorrent-client-contract.md §1.7a</a>) a cached-only probe
+window of a couple of seconds is free. There is no reason to set it in the tens of seconds.</p>
+<h3 id="quirks-a-stage-mapper-has-to-survive">Quirks a stage mapper has to survive</h3>
+<ul>
+<li>
+<p><strong><code translate="no" v-pre>selectFiles</code> answers 404 while the torrent is still in <code translate="no" v-pre>magnet_conversion</code> and the error lies.</strong>
+The body is <code translate="no" v-pre>{&quot;error&quot;:&quot;parameter_missing&quot;,&quot;error_code&quot;:1,&quot;error_details&quot;:&quot;{files} is missing&quot;}</code> even
+though <code translate="no" v-pre>files=all</code> was sent. There are simply no files to select yet. It is not a failure of the
+add and the torrent stays alive. Both runs that hit it lived another 318 s.</p>
+</li>
+<li>
+<p><strong>A private tracker&#x27;s hash can be condemned at once rather than after 318 s.</strong> The hash behind the qBittorrent report of
+2026-08-31 (a CiNEPHiLES remux from a UNIT3D indexer, <code translate="no" v-pre>45e1ec0d…</code>) answered <code translate="no" v-pre>magnet_error</code> with zero files on the
+first read after addMagnet — no <code translate="no" v-pre>magnet_conversion</code> window at all, seconds after the add. Whether Real-Debrid
+recognised the hash or failed fast on it, the observable is the same: a private hash has no DHT swarm, so addMagnet
+can never succeed for one, and selectFiles on the dead instance answers the lying 404 above.</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>addTorrent</code> skips nothing for uncached content but everything for cached.</strong> A <code translate="no" v-pre>.torrent</code> uploaded for content
+Real-Debrid does not hold (an archive.org Big Buck Bunny, seeded but not cached) went to <code translate="no" v-pre>magnet_conversion</code> like a
+bare magnet — the file&#x27;s metadata is not used to resolve. A cached one (an Ubuntu ISO) answered
+<code translate="no" v-pre>waiting_files_selection</code> with its file list at the first read, selected, and finished <code translate="no" v-pre>downloaded</code> inside two
+seconds, never passing <code translate="no" v-pre>magnet_conversion</code> at all. So the upload&#x27;s value is the immediate hash→cache lookup — which
+is what makes a private tracker&#x27;s release addable whenever the content is cached, and never addable as a magnet.</p>
+</li>
+<li>
+<p><strong>Metadata resolution gives up after 318 s.</strong> Two independent runs went <code translate="no" v-pre>magnet_conversion</code> to
+<code translate="no" v-pre>magnet_error</code> at 317.9 s and 318.0 s. That is the wall a magnet with no reachable peers hits. It
+is the same whether or not a torrent exists for the hash.</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>seeders</code> lies during <code translate="no" v-pre>magnet_conversion</code>.</strong> The random 40-hex hash reported <code translate="no" v-pre>seeders: 1</code> at
+80.9 s. No torrent exists for it.</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>ended</code> on a freshly added cached torrent carries an old date.</strong> The captures hold
+<code translate="no" v-pre>2025-12-28</code> and <code translate="no" v-pre>2026-07-28</code> for torrents added on 2026-08-30. It is when Real-Debrid first had
+the content and not when this instance finished. Do not compute an age from it.</p>
+</li>
+<li>
+<p><strong>A zero-peer magnet dies in metadata resolution and never reaches the webseed.</strong> Real-Debrid does
+honour webseeds once it has the torrent. It cannot get the torrent from a magnet with no peers. So
+a webseed-only item added as a magnet ends <code translate="no" v-pre>magnet_error</code>. That is a metadata failure rather than a
+webseed failure and the two look identical from <code translate="no" v-pre>/torrents/info</code>.</p>
+</li>
+</ul>
+<hr>
+<h2 id="alldebrid">AllDebrid</h2>
+<h3 id="endpoints-1">Endpoints</h3>
+<p><code translate="no" v-pre>v4</code> and <code translate="no" v-pre>v4.1</code> are not interchangeable and the difference bit this campaign.</p>
+<div id="endpoints-1-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">POST /v4/magnet/upload      magnets[]=magnet:?xt=urn:btih:&lt;hash&gt;   -&gt; 200, per-magnet `ready` flag
+POST /v4/magnet/upload/file multipart files[]=&lt;the .torrent&gt;       -&gt; 200, per-file `ready` flag
+GET  /v4.1/magnet/status?id=&lt;id&gt;                                   -&gt; 200, data.magnets is an OBJECT
+GET  /v4.1/magnet/status                                           -&gt; 200, data.magnets is a LIST
+POST /v4/magnet/delete      id=&lt;id&gt;                                -&gt; 200</code></pre>
+</doc-codeblock></div>
+<p><strong>The file upload answers under <code translate="no" v-pre>files</code>, not <code translate="no" v-pre>magnets</code>.</strong> Same fields per entry — <code translate="no" v-pre>id</code>, <code translate="no" v-pre>hash</code>,
+<code translate="no" v-pre>name</code>, <code translate="no" v-pre>ready</code>, an optional per-entry <code translate="no" v-pre>error</code> — so the <code translate="no" v-pre>ready</code> flag below is the cache answer either
+way, but a decoder written for the magnet response reads an empty list.</p>
+<p><strong>And the file is the only form of a release AllDebrid can describe without a swarm.</strong> Measured
+2026-09-01 on the test account, two same-shaped synthetic private torrents whose hashes no swarm has
+ever seen. Uploaded as files they came back with their real names and their real sizes
+(<code translate="no" v-pre>&quot;name&quot;:&quot;zurg.private.ad.probe&quot;,&quot;size&quot;:65536</code>), listing as <code translate="no" v-pre>In queue</code> with the clock not yet
+running. Sent as a bare <code translate="no" v-pre>magnets[]</code> hash the answer was <code translate="no" v-pre>&quot;name&quot;:&quot;noname&quot;,&quot;size&quot;:0</code> — AllDebrid
+accepted it and knew nothing about it, which is every private tracker&#x27;s release added by hash.</p>
+<p><strong><code translate="no" v-pre>/v4/magnet/status</code> is gone.</strong> With an id or without one it answers HTTP 200 carrying
+<code translate="no" v-pre>{&quot;status&quot;:&quot;error&quot;,&quot;error&quot;:{&quot;code&quot;:&quot;DISCONTINUED&quot;},&quot;deprecated&quot;:true}</code>. <code translate="no" v-pre>/v4/magnet/upload</code> and
+<code translate="no" v-pre>/v4/magnet/delete</code> still work. So the plan&#x27;s assumption that the v4 status endpoint could be used
+and v4.1 sampled once for comparison is backwards. v4.1 is the only status endpoint and the harness
+records one v4 read per torrent so the capture carries the proof rather than the claim.</p>
+<p>Auth is <code translate="no" v-pre>Authorization: Bearer &lt;apikey&gt;</code>. No <code translate="no" v-pre>agent</code> parameter is needed.</p>
+<h3 id="status-values-observed-1">Status values observed</h3>
+<retype-table copy-text="| `statusCode` | `status` | Seen |
+|---|---|---|
+| 0 | `In queue` | yes |
+| 1 | `Downloading` | yes |
+| 2 | `Compressing / Moving` | **no** |
+| 3 | `Uploading` | yes |
+| 4 | `Ready` | yes |
+| 5 and above | the error codes | **no** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th><code translate="no" v-pre>statusCode</code></th>
+<th><code translate="no" v-pre>status</code></th>
+<th>Seen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code translate="no" v-pre>In queue</code></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code translate="no" v-pre>Downloading</code></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code translate="no" v-pre>Compressing / Moving</code></td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code translate="no" v-pre>Uploading</code></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code translate="no" v-pre>Ready</code></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>5 and above</td>
+<td>the error codes</td>
+<td><strong>no</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="which-wire-fields-exist-in-which-status-1">Which wire fields exist in which status</h3>
+<retype-table copy-text="| Field | In queue (0) | Downloading (1) | Uploading (3) | Ready (4) |
+|---|---|---|---|---|
+| `status` / `statusCode` | yes | yes | yes | yes |
+| `version` | 1 | 2 | 2 | 2 |
+| `filename` | `&quot;noname&quot;` until metadata lands | real name once metadata lands | real name | real name |
+| `size` | 0 until metadata lands | real size | real size | real size |
+| `downloaded` | 0 | **the progress figure, in bytes** | equals `size` | **absent** |
+| `downloadSpeed` | 0 | yes, bytes per second | 0 | **absent** |
+| `seeders` | 0 | yes | 0 | **absent** |
+| `uploaded` / `uploadSpeed` | 0 | 0 | **the progress figure for this phase** | **absent** |
+| `processingPerc` | 0 | 0 | 0 | **absent** |
+| `files` / `nbLinks` | absent | absent | absent | present |
+| `completionDate` | 0 | 0 | 0 | set |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Field</th>
+<th>In queue (0)</th>
+<th>Downloading (1)</th>
+<th>Uploading (3)</th>
+<th>Ready (4)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>status</code> / <code translate="no" v-pre>statusCode</code></td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>version</code></td>
+<td>1</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>filename</code></td>
+<td><code translate="no" v-pre>&quot;noname&quot;</code> until metadata lands</td>
+<td>real name once metadata lands</td>
+<td>real name</td>
+<td>real name</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>size</code></td>
+<td>0 until metadata lands</td>
+<td>real size</td>
+<td>real size</td>
+<td>real size</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloaded</code></td>
+<td>0</td>
+<td><strong>the progress figure, in bytes</strong></td>
+<td>equals <code translate="no" v-pre>size</code></td>
+<td><strong>absent</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloadSpeed</code></td>
+<td>0</td>
+<td>yes, bytes per second</td>
+<td>0</td>
+<td><strong>absent</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>seeders</code></td>
+<td>0</td>
+<td>yes</td>
+<td>0</td>
+<td><strong>absent</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>uploaded</code> / <code translate="no" v-pre>uploadSpeed</code></td>
+<td>0</td>
+<td>0</td>
+<td><strong>the progress figure for this phase</strong></td>
+<td><strong>absent</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>processingPerc</code></td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td><strong>absent</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>files</code> / <code translate="no" v-pre>nbLinks</code></td>
+<td>absent</td>
+<td>absent</td>
+<td>absent</td>
+<td>present</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>completionDate</code></td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>set</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>There is no percentage anywhere.</strong> Progress on AllDebrid is <code translate="no" v-pre>downloaded / size</code> and both are
+integers in bytes. <code translate="no" v-pre>processingPerc</code> stayed 0 in every state in every capture.</p>
+<p><code translate="no" v-pre>Uploading</code> is AllDebrid moving the finished download into its own storage. It has its own progress
+counter in <code translate="no" v-pre>uploaded</code> and <code translate="no" v-pre>uploadSpeed</code> and its <code translate="no" v-pre>downloadSpeed</code> is 0 throughout. A stall rule that
+only watches <code translate="no" v-pre>downloaded</code> will call a healthy <code translate="no" v-pre>Uploading</code> phase stalled.</p>
+<h3 id="what-each-case-did-1">What each case did</h3>
+<retype-table copy-text="| Case | Torrent | `ready` on upload | Transitions with seconds from add | Verdict |
+|---|---|---|---|---|
+| cached | Big Buck Bunny | true | `Ready`@0.0 | done in 0.11 s |
+| cached | Sintel | true | `Ready`@0.0 | done in 0.12 s |
+| cached | Ubuntu 26.04.1 | true | `Ready`@0.0 | done in 0.11 s |
+| uncached | Debian 13.6.0 arm64 DVD-1 | true | `Ready`@0.0 | already cached |
+| uncached | Debian 13.2.0 amd64 DVD-1 | false | `In queue`@0.0 `Downloading`@12.5 with every counter at zero until 634.9 `Uploading`@650.1 `Ready`@876.9 | done in 877 s |
+| webseed | Prelinger home movie | false | `In queue`@0.0 `Downloading`@6.3 and every counter at zero after that | **capped at 907.8 s still `Downloading`** |
+| seedless | ubuntu-16.04.6-desktop-i386 | false | `In queue`@0.0 `Downloading`@9.4 with every counter at zero until 589.6 `Uploading`@619.9 `Ready`@650.2 | done in 650 s |
+| seedless | ubuntu-24.04-beta-live-server-s390x | false | `In queue`@0.0 `Downloading`@3.2 and every counter at zero after that | **capped at 907.0 s still `Downloading`** |
+| nometa | random 40-hex | false | `In queue`@0.0 `Downloading`@9.4 and every counter at zero after that | **capped at 907.4 s still `Downloading`** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Case</th>
+<th>Torrent</th>
+<th><code translate="no" v-pre>ready</code> on upload</th>
+<th>Transitions with seconds from add</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cached</td>
+<td>Big Buck Bunny</td>
+<td>true</td>
+<td><code translate="no" v-pre>Ready</code>@0.0</td>
+<td>done in 0.11 s</td>
+</tr>
+<tr>
+<td>cached</td>
+<td>Sintel</td>
+<td>true</td>
+<td><code translate="no" v-pre>Ready</code>@0.0</td>
+<td>done in 0.12 s</td>
+</tr>
+<tr>
+<td>cached</td>
+<td>Ubuntu 26.04.1</td>
+<td>true</td>
+<td><code translate="no" v-pre>Ready</code>@0.0</td>
+<td>done in 0.11 s</td>
+</tr>
+<tr>
+<td>uncached</td>
+<td>Debian 13.6.0 arm64 DVD-1</td>
+<td>true</td>
+<td><code translate="no" v-pre>Ready</code>@0.0</td>
+<td>already cached</td>
+</tr>
+<tr>
+<td>uncached</td>
+<td>Debian 13.2.0 amd64 DVD-1</td>
+<td>false</td>
+<td><code translate="no" v-pre>In queue</code>@0.0 <code translate="no" v-pre>Downloading</code>@12.5 with every counter at zero until 634.9 <code translate="no" v-pre>Uploading</code>@650.1 <code translate="no" v-pre>Ready</code>@876.9</td>
+<td>done in 877 s</td>
+</tr>
+<tr>
+<td>webseed</td>
+<td>Prelinger home movie</td>
+<td>false</td>
+<td><code translate="no" v-pre>In queue</code>@0.0 <code translate="no" v-pre>Downloading</code>@6.3 and every counter at zero after that</td>
+<td><strong>capped at 907.8 s still <code translate="no" v-pre>Downloading</code></strong></td>
+</tr>
+<tr>
+<td>seedless</td>
+<td>ubuntu-16.04.6-desktop-i386</td>
+<td>false</td>
+<td><code translate="no" v-pre>In queue</code>@0.0 <code translate="no" v-pre>Downloading</code>@9.4 with every counter at zero until 589.6 <code translate="no" v-pre>Uploading</code>@619.9 <code translate="no" v-pre>Ready</code>@650.2</td>
+<td>done in 650 s</td>
+</tr>
+<tr>
+<td>seedless</td>
+<td>ubuntu-24.04-beta-live-server-s390x</td>
+<td>false</td>
+<td><code translate="no" v-pre>In queue</code>@0.0 <code translate="no" v-pre>Downloading</code>@3.2 and every counter at zero after that</td>
+<td><strong>capped at 907.0 s still <code translate="no" v-pre>Downloading</code></strong></td>
+</tr>
+<tr>
+<td>nometa</td>
+<td>random 40-hex</td>
+<td>false</td>
+<td><code translate="no" v-pre>In queue</code>@0.0 <code translate="no" v-pre>Downloading</code>@9.4 and every counter at zero after that</td>
+<td><strong>capped at 907.4 s still <code translate="no" v-pre>Downloading</code></strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>A separate run against Debian 13.3.0 arm64 DVD-1 (<code translate="no" v-pre>6aa9b0a4709a0d6c4982fd0363614d9006877223</code>) caught
+a complete uncached lifecycle and is the reference sequence.</p>
+<retype-table copy-text="| Seconds | State | What moved |
+|---|---|---|
+| 0.0 | `In queue` 0 version 1 | `filename` is `&quot;noname&quot;` and `size` is 0 |
+| 2.2 | `Downloading` 1 version 2 | still no name and no size |
+| 4.3 | `Downloading` | `filename` and `size` resolve |
+| 6.5 to 55.1 | `Downloading` | `downloaded` climbs to `size`. `downloadSpeed` peaks near 110 MB/s. `seeders` 8 to 9 |
+| 57.2 | `Uploading` 3 | `downloadSpeed` drops to 0. `uploadSpeed` and `uploaded` start climbing |
+| 65.6 | `Ready` 4 | `files` and `nbLinks` appear. Six progress fields disappear |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Seconds</th>
+<th>State</th>
+<th>What moved</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.0</td>
+<td><code translate="no" v-pre>In queue</code> 0 version 1</td>
+<td><code translate="no" v-pre>filename</code> is <code translate="no" v-pre>&quot;noname&quot;</code> and <code translate="no" v-pre>size</code> is 0</td>
+</tr>
+<tr>
+<td>2.2</td>
+<td><code translate="no" v-pre>Downloading</code> 1 version 2</td>
+<td>still no name and no size</td>
+</tr>
+<tr>
+<td>4.3</td>
+<td><code translate="no" v-pre>Downloading</code></td>
+<td><code translate="no" v-pre>filename</code> and <code translate="no" v-pre>size</code> resolve</td>
+</tr>
+<tr>
+<td>6.5 to 55.1</td>
+<td><code translate="no" v-pre>Downloading</code></td>
+<td><code translate="no" v-pre>downloaded</code> climbs to <code translate="no" v-pre>size</code>. <code translate="no" v-pre>downloadSpeed</code> peaks near 110 MB/s. <code translate="no" v-pre>seeders</code> 8 to 9</td>
+</tr>
+<tr>
+<td>57.2</td>
+<td><code translate="no" v-pre>Uploading</code> 3</td>
+<td><code translate="no" v-pre>downloadSpeed</code> drops to 0. <code translate="no" v-pre>uploadSpeed</code> and <code translate="no" v-pre>uploaded</code> start climbing</td>
+</tr>
+<tr>
+<td>65.6</td>
+<td><code translate="no" v-pre>Ready</code> 4</td>
+<td><code translate="no" v-pre>files</code> and <code translate="no" v-pre>nbLinks</code> appear. Six progress fields disappear</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>3.72 GiB in 65.6 s.</p>
+<h3 id="alldebrid-reports-no-progress-at-all-while-a-job-waits-for-its-own-infrastructure">AllDebrid reports no progress at all while a job waits for its own infrastructure</h3>
+<p>This is the finding that most changes the timeout design and it took two independent runs to trust.</p>
+<p><code translate="no" v-pre>Downloading</code> with <code translate="no" v-pre>statusCode</code> 1 arrives within seconds of the upload. For a while after that
+AllDebrid reports <code translate="no" v-pre>downloaded</code> 0 and <code translate="no" v-pre>downloadSpeed</code> 0 and <code translate="no" v-pre>seeders</code> 0 and <code translate="no" v-pre>uploaded</code> 0 and
+<code translate="no" v-pre>uploadSpeed</code> 0 and <code translate="no" v-pre>processingPerc</code> 0. It also sets <code translate="no" v-pre>size</code> back to 0 and <code translate="no" v-pre>filename</code> back to the info
+hash even when it had already reported both correctly.</p>
+<retype-table copy-text="| Run | How long every counter stayed at zero | What happened next |
+|---|---|---|
+| Debian 13.2.0 amd64 DVD-1 | **622 s** from 12.5 s to 634.9 s | 3.71 GiB downloaded in 15 s then `Uploading` then `Ready` at 876.9 s |
+| ubuntu-16.04.6-desktop-i386 | **580 s** from 9.4 s to 589.6 s | 1.56 GiB downloaded in 30 s then `Uploading` then `Ready` at 650.2 s |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Run</th>
+<th>How long every counter stayed at zero</th>
+<th>What happened next</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Debian 13.2.0 amd64 DVD-1</td>
+<td><strong>622 s</strong> from 12.5 s to 634.9 s</td>
+<td>3.71 GiB downloaded in 15 s then <code translate="no" v-pre>Uploading</code> then <code translate="no" v-pre>Ready</code> at 876.9 s</td>
+</tr>
+<tr>
+<td>ubuntu-16.04.6-desktop-i386</td>
+<td><strong>580 s</strong> from 9.4 s to 589.6 s</td>
+<td>1.56 GiB downloaded in 30 s then <code translate="no" v-pre>Uploading</code> then <code translate="no" v-pre>Ready</code> at 650.2 s</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Both finished. Neither reported a single byte of movement for the first ten minutes.</p>
+<p><strong>A ten minute no-movement timeout would abandon healthy AllDebrid jobs.</strong> The proposed
+<code translate="no" v-pre>download_timeout_mins</code> default of 10 lands inside this window twice out of two. Either the timeout
+has to be longer than this or AllDebrid <code translate="no" v-pre>Downloading</code> with <code translate="no" v-pre>size</code> 0 has to count as its own stage
+that the clock does not run against. Losing the name and the size is how AllDebrid says the job is
+assigned but not started and it is not a failure.</p>
+<p>A run that did start straight away is the contrast. Debian 13.3.0 arm64 DVD-1 went from <code translate="no" v-pre>In queue</code> to
+real byte counters in 6.5 s. So the wait is a queue and not a fixed delay.</p>
+<h3 id="the-ready-flag-is-a-real-cache-answer">The <code translate="no" v-pre>ready</code> flag is a real cache answer</h3>
+<p><code translate="no" v-pre>ready</code> on the <code translate="no" v-pre>/v4/magnet/upload</code> response was true for every hash TorBox also called cached and
+false for the two the campaign downloaded. AllDebrid has no separate cache probe so this flag is the
+whole cache signal, and zurg now carries it out of both add paths — the magnet&#x27;s and the file
+upload&#x27;s — as <code translate="no" v-pre>MagnetResponse.Cached</code> with <code translate="no" v-pre>CacheKnown</code> set, so a backend that cannot answer is never
+mistaken for one reporting a miss.</p>
+<p><strong>A false <code translate="no" v-pre>ready</code> means the magnet is already added.</strong> There is no way to ask AllDebrid whether a
+hash is cached without adding it. A cached-only path on AllDebrid has to delete the miss.</p>
+<hr>
+<h2 id="torbox">TorBox</h2>
+<h3 id="endpoints-2">Endpoints</h3>
+<div id="endpoints-2-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">GET  /v1/api/torrents/checkcached?hash=&lt;hash&gt;&amp;format=list
+POST /v1/api/torrents/createtorrent      magnet=…&amp;seed=3&amp;allow_zip=false   -&gt; {&quot;success&quot;:true,&quot;data&quot;:{&quot;torrent_id&quot;:N}}
+POST /v1/api/torrents/createtorrent      multipart file=&lt;the .torrent&gt;    -&gt; the same shape; `detail` says whether it was cached
+GET  /v1/api/torrents/mylist?id=&lt;id&gt;&amp;bypass_cache=true
+POST /v1/api/torrents/controltorrent     {&quot;torrent_id&quot;:N,&quot;operation&quot;:&quot;delete&quot;}</code></pre>
+</doc-codeblock></div>
+<h3 id="status-values-observed-2">Status values observed</h3>
+<p><code translate="no" v-pre>metaDL</code> <code translate="no" v-pre>checking</code> <code translate="no" v-pre>stalledDL</code> <code translate="no" v-pre>stalled (no seeds)</code> <code translate="no" v-pre>downloading</code> <code translate="no" v-pre>processing</code>
+<code translate="no" v-pre>uploading (no peers)</code> <code translate="no" v-pre>uploading</code> <code translate="no" v-pre>cached</code></p>
+<p><code translate="no" v-pre>processing</code> and <code translate="no" v-pre>checking</code> and <code translate="no" v-pre>stalledDL</code> are <strong>not in zurg&#x27;s translation table</strong>
+(<code translate="no" v-pre>internal/torbox/types.go</code> <code translate="no" v-pre>normalizeStatus</code>). All three fall to the default branch and are reported
+as <code translate="no" v-pre>downloading</code>.</p>
+<p><code translate="no" v-pre>checking</code> is where TorBox waits for metadata and not where it verifies a hash. A magnet whose swarm
+never answers goes <code translate="no" v-pre>metaDL</code> then <code translate="no" v-pre>checking</code> and stays there. The random 40-hex hash was still
+<code translate="no" v-pre>checking</code> at the 910 s cap and so was the zero-peer Prelinger item at 911 s. TorBox never gives up
+the way Real-Debrid does at 318 s.</p>
+<p><strong>Uploading the <code translate="no" v-pre>.torrent</code> skips that wait entirely, and it is the whole difference for a private
+tracker&#x27;s release.</strong> Measured 2026-09-01 on the account above, the same synthetic private torrent
+sent both ways. As a hash: accepted with a <code translate="no" v-pre>torrent_id</code>, then <code translate="no" v-pre>checking</code> with <code translate="no" v-pre>name</code> set to the bare
+hash, <code translate="no" v-pre>size: -1</code>, <code translate="no" v-pre>files: null</code> and <code translate="no" v-pre>eta: 8640000</code> — TorBox looking for a swarm that is not in the
+DHT, which it will do until the cap and report nothing about. As the file, on
+<code translate="no" v-pre>POST /torrents/createtorrent</code> with the bytes in a multipart <code translate="no" v-pre>file</code> part: read back three seconds
+later carrying the torrent&#x27;s own name, its real size and <code translate="no" v-pre>stalled (no seeds)</code> — the same content
+nobody holds, but now described. The stage is the point. <code translate="no" v-pre>checking</code> with <code translate="no" v-pre>size: -1</code> maps to
+<code translate="no" v-pre>StageResolvingMetadata</code>, which says work is in progress and nothing can be concluded; <code translate="no" v-pre>stalled (no seeds)</code> maps to <code translate="no" v-pre>StageStalledNoPeers</code>, which the qBittorrent endpoint can act on. A cached release
+read back <code translate="no" v-pre>done</code> at 100% with its file list inside the same three seconds. The part name is
+load-bearing: a file sent under any other name is not seen at all, and the endpoint answers
+<code translate="no" v-pre>MISSING_REQUIRED_OPTION</code>, &quot;You must provide either a file or magnet link&quot;.</p>
+<h3 id="which-wire-fields-exist-in-which-status-2">Which wire fields exist in which status</h3>
+<p>TorBox sends the same key set in every state and changes the values. That makes it the easiest of
+the three to read. The values are what carry the meaning.</p>
+<retype-table copy-text="| State | `download_finished` | `download_present` | `cached` | `active` | `progress` | `eta` | `size` |
+|---|---|---|---|---|---|---|---|
+| `metaDL` | false | false | false | true | 0 | 8640000 | 0 |
+| `checking` | false | false | false | true | 0 | 8640000 | **-1** |
+| `stalledDL` | false | false | false | true | tiny | 8640000 | real |
+| `stalled (no seeds)` | false | false | false | true | 0 | 8640000 | real |
+| `downloading` | false then **true** | false | false | true | fraction | seconds | real |
+| `processing` | **true** | **false** | false | true | 1 | seconds | real |
+| `uploading (no peers)` | **true** | **false** | false | true | 1 | 2591994 | real |
+| `uploading` | true | **true** | true | true | 1 | 0 | real |
+| `cached` | true | true | true | false | 1 | 0 | real |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>State</th>
+<th><code translate="no" v-pre>download_finished</code></th>
+<th><code translate="no" v-pre>download_present</code></th>
+<th><code translate="no" v-pre>cached</code></th>
+<th><code translate="no" v-pre>active</code></th>
+<th><code translate="no" v-pre>progress</code></th>
+<th><code translate="no" v-pre>eta</code></th>
+<th><code translate="no" v-pre>size</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>metaDL</code></td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+<td>true</td>
+<td>0</td>
+<td>8640000</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>checking</code></td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+<td>true</td>
+<td>0</td>
+<td>8640000</td>
+<td><strong>-1</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>stalledDL</code></td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+<td>true</td>
+<td>tiny</td>
+<td>8640000</td>
+<td>real</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>stalled (no seeds)</code></td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+<td>true</td>
+<td>0</td>
+<td>8640000</td>
+<td>real</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloading</code></td>
+<td>false then <strong>true</strong></td>
+<td>false</td>
+<td>false</td>
+<td>true</td>
+<td>fraction</td>
+<td>seconds</td>
+<td>real</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>processing</code></td>
+<td><strong>true</strong></td>
+<td><strong>false</strong></td>
+<td>false</td>
+<td>true</td>
+<td>1</td>
+<td>seconds</td>
+<td>real</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>uploading (no peers)</code></td>
+<td><strong>true</strong></td>
+<td><strong>false</strong></td>
+<td>false</td>
+<td>true</td>
+<td>1</td>
+<td>2591994</td>
+<td>real</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>uploading</code></td>
+<td>true</td>
+<td><strong>true</strong></td>
+<td>true</td>
+<td>true</td>
+<td>1</td>
+<td>0</td>
+<td>real</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>cached</code></td>
+<td>true</td>
+<td>true</td>
+<td>true</td>
+<td>false</td>
+<td>1</td>
+<td>0</td>
+<td>real</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Field names. The plan listed all of these as unverified.</p>
+<retype-table copy-text="| What | TorBox field | Shape |
+|---|---|---|
+| progress | `progress` | **fraction of one**, not a percentage. `0.0793719` |
+| seeders | `seeds` | integer |
+| leechers | `peers` | integer |
+| download rate | `download_speed` | bytes per second |
+| upload rate | `upload_speed` | bytes per second |
+| eta | `eta` | seconds. `8640000` is the not-known placeholder |
+| bytes fetched | `total_downloaded` | integer |
+| swarm health | `availability` | float. Goes to **-1** in `uploading (no peers)` |
+| where the data is | `download_path` | null until the data is present |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>What</th>
+<th>TorBox field</th>
+<th>Shape</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>progress</td>
+<td><code translate="no" v-pre>progress</code></td>
+<td><strong>fraction of one</strong>, not a percentage. <code translate="no" v-pre>0.0793719</code></td>
+</tr>
+<tr>
+<td>seeders</td>
+<td><code translate="no" v-pre>seeds</code></td>
+<td>integer</td>
+</tr>
+<tr>
+<td>leechers</td>
+<td><code translate="no" v-pre>peers</code></td>
+<td>integer</td>
+</tr>
+<tr>
+<td>download rate</td>
+<td><code translate="no" v-pre>download_speed</code></td>
+<td>bytes per second</td>
+</tr>
+<tr>
+<td>upload rate</td>
+<td><code translate="no" v-pre>upload_speed</code></td>
+<td>bytes per second</td>
+</tr>
+<tr>
+<td>eta</td>
+<td><code translate="no" v-pre>eta</code></td>
+<td>seconds. <code translate="no" v-pre>8640000</code> is the not-known placeholder</td>
+</tr>
+<tr>
+<td>bytes fetched</td>
+<td><code translate="no" v-pre>total_downloaded</code></td>
+<td>integer</td>
+</tr>
+<tr>
+<td>swarm health</td>
+<td><code translate="no" v-pre>availability</code></td>
+<td>float. Goes to <strong>-1</strong> in <code translate="no" v-pre>uploading (no peers)</code></td>
+</tr>
+<tr>
+<td>where the data is</td>
+<td><code translate="no" v-pre>download_path</code></td>
+<td>null until the data is present</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>8640000</code> is 100 days. It is TorBox&#x27;s way of saying it does not know. It is also the same constant
+zurg&#x27;s shim hands Sonarr today when it has nothing to report.</p>
+<h3 id="what-each-case-did-2">What each case did</h3>
+<retype-table copy-text="| Case | Torrent | `checkcached` | Transitions with seconds from add | Verdict |
+|---|---|---|---|---|
+| cached | Big Buck Bunny | true | `cached`@0.0 | done in 0.83 s |
+| cached | Sintel | true | `cached`@0.0 | done in 0.94 s |
+| cached | Ubuntu 26.04.1 | true | `cached`@0.0 | done in 0.69 s |
+| uncached | Debian 13.6.0 arm64 DVD-1 | false | `metaDL`@0.0 `stalled (no seeds)`@7.3 `downloading`@24.1 then **gone**@48.6 | deleted by fun's zurg-tb at 86.7% |
+| uncached | Debian 13.2.0 amd64 DVD-1 | false | `metaDL`@0.0 `stalled (no seeds)`@13.8 `downloading`@27.8 `processing`@69.4 `downloading`@72.7 `uploading (no peers)`@83.1 then **gone**@86.7 | deleted by fun's zurg-tb |
+| webseed | Prelinger home movie | false | `metaDL`@0.0 `checking`@23.3 and never anything else | **capped at 911.3 s in `checking`**. TorBox did not use the webseed |
+| seedless | ubuntu-16.04.6-desktop-i386 | false | `metaDL`@0.0 `checking`@10.5 `downloading`@20.6 `processing`@184.4 then **gone**@200.4 | deleted by fun's zurg-tb at `processing` |
+| seedless | ubuntu-24.04-beta-live-server-s390x | false | `metaDL`@0.0 `checking`@18.9 `stalled (no seeds)`@169.3 `downloading`@230.9 then **gone**@462.3 | deleted by fun's zurg-tb at 91.9 percent |
+| nometa | random 40-hex | false | `metaDL`@0.0 `checking`@10.2 and never anything else | **capped at 910.3 s in `checking`** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Case</th>
+<th>Torrent</th>
+<th><code translate="no" v-pre>checkcached</code></th>
+<th>Transitions with seconds from add</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cached</td>
+<td>Big Buck Bunny</td>
+<td>true</td>
+<td><code translate="no" v-pre>cached</code>@0.0</td>
+<td>done in 0.83 s</td>
+</tr>
+<tr>
+<td>cached</td>
+<td>Sintel</td>
+<td>true</td>
+<td><code translate="no" v-pre>cached</code>@0.0</td>
+<td>done in 0.94 s</td>
+</tr>
+<tr>
+<td>cached</td>
+<td>Ubuntu 26.04.1</td>
+<td>true</td>
+<td><code translate="no" v-pre>cached</code>@0.0</td>
+<td>done in 0.69 s</td>
+</tr>
+<tr>
+<td>uncached</td>
+<td>Debian 13.6.0 arm64 DVD-1</td>
+<td>false</td>
+<td><code translate="no" v-pre>metaDL</code>@0.0 <code translate="no" v-pre>stalled (no seeds)</code>@7.3 <code translate="no" v-pre>downloading</code>@24.1 then <strong>gone</strong>@48.6</td>
+<td>deleted by fun&#x27;s zurg-tb at 86.7%</td>
+</tr>
+<tr>
+<td>uncached</td>
+<td>Debian 13.2.0 amd64 DVD-1</td>
+<td>false</td>
+<td><code translate="no" v-pre>metaDL</code>@0.0 <code translate="no" v-pre>stalled (no seeds)</code>@13.8 <code translate="no" v-pre>downloading</code>@27.8 <code translate="no" v-pre>processing</code>@69.4 <code translate="no" v-pre>downloading</code>@72.7 <code translate="no" v-pre>uploading (no peers)</code>@83.1 then <strong>gone</strong>@86.7</td>
+<td>deleted by fun&#x27;s zurg-tb</td>
+</tr>
+<tr>
+<td>webseed</td>
+<td>Prelinger home movie</td>
+<td>false</td>
+<td><code translate="no" v-pre>metaDL</code>@0.0 <code translate="no" v-pre>checking</code>@23.3 and never anything else</td>
+<td><strong>capped at 911.3 s in <code translate="no" v-pre>checking</code></strong>. TorBox did not use the webseed</td>
+</tr>
+<tr>
+<td>seedless</td>
+<td>ubuntu-16.04.6-desktop-i386</td>
+<td>false</td>
+<td><code translate="no" v-pre>metaDL</code>@0.0 <code translate="no" v-pre>checking</code>@10.5 <code translate="no" v-pre>downloading</code>@20.6 <code translate="no" v-pre>processing</code>@184.4 then <strong>gone</strong>@200.4</td>
+<td>deleted by fun&#x27;s zurg-tb at <code translate="no" v-pre>processing</code></td>
+</tr>
+<tr>
+<td>seedless</td>
+<td>ubuntu-24.04-beta-live-server-s390x</td>
+<td>false</td>
+<td><code translate="no" v-pre>metaDL</code>@0.0 <code translate="no" v-pre>checking</code>@18.9 <code translate="no" v-pre>stalled (no seeds)</code>@169.3 <code translate="no" v-pre>downloading</code>@230.9 then <strong>gone</strong>@462.3</td>
+<td>deleted by fun&#x27;s zurg-tb at 91.9 percent</td>
+</tr>
+<tr>
+<td>nometa</td>
+<td>random 40-hex</td>
+<td>false</td>
+<td><code translate="no" v-pre>metaDL</code>@0.0 <code translate="no" v-pre>checking</code>@10.2 and never anything else</td>
+<td><strong>capped at 910.3 s in <code translate="no" v-pre>checking</code></strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>A separate run at a 0.5 s poll against Debian 13.5.0 amd64 netinst
+(<code translate="no" v-pre>58846860f0a766f8a42b0bb214d8c713fdf1b167</code>) survived long enough to reach done and is the reference
+sequence.</p>
+<retype-table copy-text="| Seconds | State | `download_finished` | `download_present` | `progress` |
+|---|---|---|---|---|
+| 0.0 | `stalledDL` | false | false | 0.000289735 |
+| 16.3 | `downloading` | false | false | 0.0608651 |
+| 54.8 | `processing` | **true** | **false** | 1 |
+| 59.1 | `downloading` | **true** | **false** | 0.997972 |
+| 64.4 | `uploading` | true | **true** | 1 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Seconds</th>
+<th>State</th>
+<th><code translate="no" v-pre>download_finished</code></th>
+<th><code translate="no" v-pre>download_present</code></th>
+<th><code translate="no" v-pre>progress</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.0</td>
+<td><code translate="no" v-pre>stalledDL</code></td>
+<td>false</td>
+<td>false</td>
+<td>0.000289735</td>
+</tr>
+<tr>
+<td>16.3</td>
+<td><code translate="no" v-pre>downloading</code></td>
+<td>false</td>
+<td>false</td>
+<td>0.0608651</td>
+</tr>
+<tr>
+<td>54.8</td>
+<td><code translate="no" v-pre>processing</code></td>
+<td><strong>true</strong></td>
+<td><strong>false</strong></td>
+<td>1</td>
+</tr>
+<tr>
+<td>59.1</td>
+<td><code translate="no" v-pre>downloading</code></td>
+<td><strong>true</strong></td>
+<td><strong>false</strong></td>
+<td>0.997972</td>
+</tr>
+<tr>
+<td>64.4</td>
+<td><code translate="no" v-pre>uploading</code></td>
+<td>true</td>
+<td><strong>true</strong></td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>754 MiB in 64.4 s.</p>
+<p>Read the last three rows twice. TorBox sets <code translate="no" v-pre>download_finished</code> to true and <code translate="no" v-pre>progress</code> to 1 roughly
+ten seconds <strong>before</strong> the data is present. Then it drops back to <code translate="no" v-pre>downloading</code> with a progress
+figure lower than the one it just reported. Both <code translate="no" v-pre>progress</code> and <code translate="no" v-pre>download_state</code> go backwards on a
+healthy download.</p>
+<hr>
+<h2 id="the-stage-table">The stage table</h2>
+<p>The stage enum the shim will speak is <code translate="no" v-pre>resolving-metadata</code> <code translate="no" v-pre>queued</code> <code translate="no" v-pre>downloading</code> <code translate="no" v-pre>stalled-no-peers</code>
+<code translate="no" v-pre>finalizing</code> <code translate="no" v-pre>done</code> <code translate="no" v-pre>failed</code> and the empty string for unknown.</p>
+<h3 id="real-debrid-1">Real-Debrid</h3>
+<retype-table copy-text="| Raw `status` | Stage | Basis |
+|---|---|---|
+| `magnet_conversion` | `resolving-metadata` | **observed**. `bytes` 0 and `files` empty and `filename` is the literal `&quot;Magnet&quot;` |
+| `waiting_files_selection` | `queued` | **observed** with `--rd-select-detail`. Files are already listed. `links` is empty |
+| `queued` | `queued` | **observed**. Real size and real name are already known. No `seeders` and no `speed` |
+| `downloading` | `downloading` | **observed** |
+| `downloading` with `seeders` 0 | `stalled-no-peers` | **observed**. 904 s of `progress` 0 and `seeders` 0 and `speed` 0 across 92 polls |
+| `compressing` | `finalizing` | **inferred**. Not seen |
+| `uploading` | `finalizing` | **observed**. Progress restarts from 0 and `seeders` disappears |
+| `downloaded` | `done` | **observed** |
+| `magnet_error` | `failed` | **observed** after 318 s in `magnet_conversion` |
+| `error` `virus` `dead` | `failed` | **inferred**. Not seen |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Raw <code translate="no" v-pre>status</code></th>
+<th>Stage</th>
+<th>Basis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>magnet_conversion</code></td>
+<td><code translate="no" v-pre>resolving-metadata</code></td>
+<td><strong>observed</strong>. <code translate="no" v-pre>bytes</code> 0 and <code translate="no" v-pre>files</code> empty and <code translate="no" v-pre>filename</code> is the literal <code translate="no" v-pre>&quot;Magnet&quot;</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>waiting_files_selection</code></td>
+<td><code translate="no" v-pre>queued</code></td>
+<td><strong>observed</strong> with <code translate="no" v-pre>--rd-select-detail</code>. Files are already listed. <code translate="no" v-pre>links</code> is empty</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>queued</code></td>
+<td><code translate="no" v-pre>queued</code></td>
+<td><strong>observed</strong>. Real size and real name are already known. No <code translate="no" v-pre>seeders</code> and no <code translate="no" v-pre>speed</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloading</code></td>
+<td><code translate="no" v-pre>downloading</code></td>
+<td><strong>observed</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloading</code> with <code translate="no" v-pre>seeders</code> 0</td>
+<td><code translate="no" v-pre>stalled-no-peers</code></td>
+<td><strong>observed</strong>. 904 s of <code translate="no" v-pre>progress</code> 0 and <code translate="no" v-pre>seeders</code> 0 and <code translate="no" v-pre>speed</code> 0 across 92 polls</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>compressing</code></td>
+<td><code translate="no" v-pre>finalizing</code></td>
+<td><strong>inferred</strong>. Not seen</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>uploading</code></td>
+<td><code translate="no" v-pre>finalizing</code></td>
+<td><strong>observed</strong>. Progress restarts from 0 and <code translate="no" v-pre>seeders</code> disappears</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloaded</code></td>
+<td><code translate="no" v-pre>done</code></td>
+<td><strong>observed</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>magnet_error</code></td>
+<td><code translate="no" v-pre>failed</code></td>
+<td><strong>observed</strong> after 318 s in <code translate="no" v-pre>magnet_conversion</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>error</code> <code translate="no" v-pre>virus</code> <code translate="no" v-pre>dead</code></td>
+<td><code translate="no" v-pre>failed</code></td>
+<td><strong>inferred</strong>. Not seen</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="alldebrid-1">AllDebrid</h3>
+<retype-table copy-text="| `statusCode` | Stage | Basis |
+|---|---|---|
+| 0 `In queue` | `queued` | **observed**. Lasts a few seconds. `filename` may still be `&quot;noname&quot;` and `size` 0 |
+| 1 `Downloading` with `size` 0 | `queued` | **observed**. Not `downloading` and not `stalled-no-peers`. AllDebrid has taken the job and not started it. Held for 622 s and 580 s in two runs that then completed |
+| 1 `Downloading` with a real `size` | `downloading` | **observed** |
+| 1 `Downloading` with `seeders` 0 and `downloaded` flat | `stalled-no-peers` | **not observed and not safely inferrable**. See below |
+| 2 `Compressing / Moving` | `finalizing` | **inferred**. Not seen |
+| 3 `Uploading` | `finalizing` | **observed**. `uploaded` and `uploadSpeed` carry the progress here and `downloadSpeed` is 0 |
+| 4 `Ready` | `done` | **observed** |
+| 5 and above | `failed` | **inferred**. Not seen |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th><code translate="no" v-pre>statusCode</code></th>
+<th>Stage</th>
+<th>Basis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 <code translate="no" v-pre>In queue</code></td>
+<td><code translate="no" v-pre>queued</code></td>
+<td><strong>observed</strong>. Lasts a few seconds. <code translate="no" v-pre>filename</code> may still be <code translate="no" v-pre>&quot;noname&quot;</code> and <code translate="no" v-pre>size</code> 0</td>
+</tr>
+<tr>
+<td>1 <code translate="no" v-pre>Downloading</code> with <code translate="no" v-pre>size</code> 0</td>
+<td><code translate="no" v-pre>queued</code></td>
+<td><strong>observed</strong>. Not <code translate="no" v-pre>downloading</code> and not <code translate="no" v-pre>stalled-no-peers</code>. AllDebrid has taken the job and not started it. Held for 622 s and 580 s in two runs that then completed</td>
+</tr>
+<tr>
+<td>1 <code translate="no" v-pre>Downloading</code> with a real <code translate="no" v-pre>size</code></td>
+<td><code translate="no" v-pre>downloading</code></td>
+<td><strong>observed</strong></td>
+</tr>
+<tr>
+<td>1 <code translate="no" v-pre>Downloading</code> with <code translate="no" v-pre>seeders</code> 0 and <code translate="no" v-pre>downloaded</code> flat</td>
+<td><code translate="no" v-pre>stalled-no-peers</code></td>
+<td><strong>not observed and not safely inferrable</strong>. See below</td>
+</tr>
+<tr>
+<td>2 <code translate="no" v-pre>Compressing / Moving</code></td>
+<td><code translate="no" v-pre>finalizing</code></td>
+<td><strong>inferred</strong>. Not seen</td>
+</tr>
+<tr>
+<td>3 <code translate="no" v-pre>Uploading</code></td>
+<td><code translate="no" v-pre>finalizing</code></td>
+<td><strong>observed</strong>. <code translate="no" v-pre>uploaded</code> and <code translate="no" v-pre>uploadSpeed</code> carry the progress here and <code translate="no" v-pre>downloadSpeed</code> is 0</td>
+</tr>
+<tr>
+<td>4 <code translate="no" v-pre>Ready</code></td>
+<td><code translate="no" v-pre>done</code></td>
+<td><strong>observed</strong></td>
+</tr>
+<tr>
+<td>5 and above</td>
+<td><code translate="no" v-pre>failed</code></td>
+<td><strong>inferred</strong>. Not seen</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>AllDebrid has no observable stall shape.</strong> A job AllDebrid has queued and a job AllDebrid cannot
+make progress on look identical on the wire. Both are <code translate="no" v-pre>statusCode</code> 1 with <code translate="no" v-pre>size</code> 0 and every counter
+at zero. The Prelinger item sat in exactly that shape for the full 907.8 s cap and two other torrents
+sat in it for ten minutes each and then finished. So nothing in the AllDebrid response distinguishes
+the two and a stall verdict on AllDebrid can only ever come from a clock.</p>
+<h3 id="torbox-1">TorBox</h3>
+<retype-table copy-text="| Raw `download_state` | Stage | Basis |
+|---|---|---|
+| `metaDL` | `resolving-metadata` | **observed**. `size` 0 and `name` equal to the hash |
+| `checking` | `resolving-metadata` | **observed**. `size` **-1** while it lasts. This is where TorBox waits for the torrent and not a hash check. Not in zurg's table today |
+| `stalledDL` | `stalled-no-peers` | **observed**. Not in zurg's table today |
+| `stalled (no seeds)` | `stalled-no-peers` | **observed**. The name overstates it. Two captures carried `seeds` 1 and 2 while in this state. zurg maps it to `queued` today |
+| `downloading` | `downloading` | **observed** |
+| `processing` | `finalizing` | **observed**. Not in zurg's table today |
+| `uploading (no peers)` | `finalizing` | **observed** when `download_present` is false |
+| `uploading` | `done` | **observed** when `download_present` is true |
+| `cached` `completed` `seeding` | `done` | `cached` **observed**. The other two **inferred** |
+| `expired` `reported missing` `failed` `error` `missingfiles` | `failed` | **inferred**. None seen |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Raw <code translate="no" v-pre>download_state</code></th>
+<th>Stage</th>
+<th>Basis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>metaDL</code></td>
+<td><code translate="no" v-pre>resolving-metadata</code></td>
+<td><strong>observed</strong>. <code translate="no" v-pre>size</code> 0 and <code translate="no" v-pre>name</code> equal to the hash</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>checking</code></td>
+<td><code translate="no" v-pre>resolving-metadata</code></td>
+<td><strong>observed</strong>. <code translate="no" v-pre>size</code> <strong>-1</strong> while it lasts. This is where TorBox waits for the torrent and not a hash check. Not in zurg&#x27;s table today</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>stalledDL</code></td>
+<td><code translate="no" v-pre>stalled-no-peers</code></td>
+<td><strong>observed</strong>. Not in zurg&#x27;s table today</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>stalled (no seeds)</code></td>
+<td><code translate="no" v-pre>stalled-no-peers</code></td>
+<td><strong>observed</strong>. The name overstates it. Two captures carried <code translate="no" v-pre>seeds</code> 1 and 2 while in this state. zurg maps it to <code translate="no" v-pre>queued</code> today</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloading</code></td>
+<td><code translate="no" v-pre>downloading</code></td>
+<td><strong>observed</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>processing</code></td>
+<td><code translate="no" v-pre>finalizing</code></td>
+<td><strong>observed</strong>. Not in zurg&#x27;s table today</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>uploading (no peers)</code></td>
+<td><code translate="no" v-pre>finalizing</code></td>
+<td><strong>observed</strong> when <code translate="no" v-pre>download_present</code> is false</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>uploading</code></td>
+<td><code translate="no" v-pre>done</code></td>
+<td><strong>observed</strong> when <code translate="no" v-pre>download_present</code> is true</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>cached</code> <code translate="no" v-pre>completed</code> <code translate="no" v-pre>seeding</code></td>
+<td><code translate="no" v-pre>done</code></td>
+<td><code translate="no" v-pre>cached</code> <strong>observed</strong>. The other two <strong>inferred</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>expired</code> <code translate="no" v-pre>reported missing</code> <code translate="no" v-pre>failed</code> <code translate="no" v-pre>error</code> <code translate="no" v-pre>missingfiles</code></td>
+<td><code translate="no" v-pre>failed</code></td>
+<td><strong>inferred</strong>. None seen</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>The <code translate="no" v-pre>download_finished</code> and <code translate="no" v-pre>download_present</code> pair is not a substitute for the state string.</strong> Both
+<code translate="no" v-pre>processing</code> and <code translate="no" v-pre>uploading (no peers)</code> and part of <code translate="no" v-pre>downloading</code> carry <code translate="no" v-pre>download_finished: true</code> with
+<code translate="no" v-pre>download_present: false</code>. That combination is a normal finalizing phase and not a dead torrent. See
+the hazard below.</p>
+<hr>
+<h2 id="what-could-not-be-measured">What could not be measured</h2>
+<ul>
+<li>
+<p><strong>The seedless case reproduced on one candidate out of two.</strong> Both had zero tracker peers.
+ubuntu-16.04.6-desktop-i386 downloaded anyway on all three providers because DHT supplied peers the
+tracker did not know about. ubuntu-24.04-beta-live-server-s390x stalled on Real-Debrid for the full
+cap and is the stall observation above. A zero on a tracker scrape is a weak predictor. Keep two
+candidates in the case. Real-Debrid held the metadata for both regardless and reported <code translate="no" v-pre>bytes</code> and
+<code translate="no" v-pre>filename</code> correctly in the very first <code translate="no" v-pre>queued</code> read.</p>
+</li>
+<li>
+<p><strong>Real-Debrid <code translate="no" v-pre>compressing</code> was never seen.</strong> Every completed run went <code translate="no" v-pre>downloading</code> straight to
+<code translate="no" v-pre>uploading</code>.</p>
+</li>
+<li>
+<p><strong>AllDebrid status code 2 was never seen.</strong> Every capture went from 1 straight to 3.</p>
+</li>
+<li>
+<p><strong>No provider was pushed into its own error vocabulary.</strong> Real-Debrid <code translate="no" v-pre>error</code> and <code translate="no" v-pre>virus</code> and
+<code translate="no" v-pre>dead</code> and every AllDebrid code above 4 and every TorBox failure state are all unmeasured.
+Producing them needs content that is blocked or infected or expired rather than a FOSS ISO.</p>
+</li>
+<li>
+<p><strong>TorBox could rarely be watched to completion.</strong> Four campaign torrents and one follow-up were
+deleted mid-download by fun&#x27;s <code translate="no" v-pre>zurg-tb</code>. See the hazard below. Only a 754 MiB image finished before
+that process next polled.</p>
+</li>
+</ul>
+<hr>
+<h2 id="hazards-found-on-the-way">Hazards found on the way</h2>
+<h3 id="funs-zurg-tb-deletes-healthy-torbox-downloads">fun&#x27;s zurg-tb deletes healthy TorBox downloads</h3>
+<p>The TorBox account is shared with <code translate="no" v-pre>zurg-tb</code> on fun. Its config reads</p>
+<div id="funs-zurg-tb-deletes-healthy-torbox-downloads-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">enable_repair: true
+delete_error_torrents: true
+stalled_download_mins: 120</code></pre>
+</doc-codeblock></div>
+<p><strong>Five</strong> probe torrents were deleted while they were downloading normally. This is <strong>observed</strong> on
+both sides. The harness saw each torrent vanish and fun&#x27;s journal says why.</p>
+<div id="funs-zurg-tb-deletes-healthy-torbox-downloads-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Aug 30 12:43:26 fun zurg: INFO manager Deleting torrent 86695315 because it encountered an error status: error
+Aug 30 12:43:27 fun zurg: DEBUG torbox Deleted TorBox torrent id=86695315
+Aug 30 12:44:56 fun zurg: INFO manager Deleting torrent 86695708 because it encountered an error status: error
+Aug 30 12:47:41 fun zurg: INFO manager Deleting torrent 86697191 because it encountered an error status: error</code></pre>
+</doc-codeblock></div>
+<p>The five are <code translate="no" v-pre>86695315</code> <code translate="no" v-pre>86695708</code> <code translate="no" v-pre>86697191</code> <code translate="no" v-pre>86702627</code> <code translate="no" v-pre>86704212</code>. Every one of them carried the
+same reason. None of them was broken.</p>
+<p>The mechanism is the second rule in <code translate="no" v-pre>normalizeStatus</code> at <code translate="no" v-pre>internal/torbox/types.go</code>.</p>
+<div id="funs-zurg-tb-deletes-healthy-torbox-downloads-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-go"><code v-pre class="language-go">if w.DownloadFinished &amp;&amp; !w.DownloadPresent {
+    return &quot;error&quot;
+}</code></pre>
+</doc-codeblock></div>
+<p>That combination is a normal TorBox finalizing phase. The 0.5 s capture puts a number on it. On a
+754 MiB image the window from <code translate="no" v-pre>download_finished</code> turning true to <code translate="no" v-pre>download_present</code> turning true was
+<strong>9.6 seconds</strong>. On a 3.7 GiB image it was at least 17 s and the sweep landed inside it. fun&#x27;s
+<code translate="no" v-pre>zurg-tb</code> polls the library roughly every 15 s. Whether a healthy TorBox download survives its own
+completion is close to a coin toss.</p>
+<p>Three consequences. A TorBox download that a user watches finish in the TorBox UI can be gone from
+their zurg library. <code translate="no" v-pre>delete_error_torrents</code> is documented as deleting torrents the provider says are
+broken and here it deletes ones the provider says are fine. And any measurement of TorBox on this
+account is racing that sweep.</p>
+<p><strong>Not fixed here.</strong> Phase 0 measures. The fix belongs with the stage work. There
+<code translate="no" v-pre>download_finished &amp;&amp; !download_present</code> becomes <code translate="no" v-pre>finalizing</code> rather than <code translate="no" v-pre>failed</code>.</p>
+<h3 id="the-alldebrid-account-is-shared-with-fun-too-and-got-away-with-it">The AllDebrid account is shared with fun too and got away with it</h3>
+<p>fun&#x27;s <code translate="no" v-pre>zurg-ad</code> carries the <strong>same AllDebrid key</strong> as the one this campaign used. The md5 of the
+<code translate="no" v-pre>token:</code> line in <code translate="no" v-pre>~/zurg-ad/config.yml</code> on fun matches the md5 of the key in the environment here.
+Its sweep settings are the same three as <code translate="no" v-pre>zurg-tb</code>.</p>
+<div id="the-alldebrid-account-is-shared-with-fun-too-and-got-away-with-it-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">enable_repair: true
+delete_error_torrents: true
+stalled_download_mins: 120</code></pre>
+</doc-codeblock></div>
+<p>No AllDebrid probe was deleted. The reason is in the code and not in luck. <code translate="no" v-pre>normalizeStatus</code> in
+<code translate="no" v-pre>internal/alldebrid/types.go</code> maps only status codes at or above 5 to <code translate="no" v-pre>error</code> and has no structural
+rule of the <code translate="no" v-pre>download_finished &amp;&amp; !download_present</code> kind. So a healthy AllDebrid download can never
+read as broken. The TorBox bug is that one extra rule and not sweeping in general.</p>
+<p>Real-Debrid is the odd one out. Test 2 is not the account behind fun&#x27;s <code translate="no" v-pre>zurg</code> and not the <code translate="no" v-pre>bendav</code>
+account behind zen&#x27;s. Nothing was sweeping it and nothing interfered.</p>
+<h3 id="torbox-answers-a-delete-for-an-unknown-id-with-http-500">TorBox answers a delete for an unknown id with HTTP 500</h3>
+<div id="torbox-answers-a-delete-for-an-unknown-id-with-http-500-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">POST /v1/api/torrents/controltorrent  {&quot;torrent_id&quot;:86695315,&quot;operation&quot;:&quot;delete&quot;}
+-&gt; HTTP 500 {&quot;success&quot;:false,&quot;error&quot;:&quot;DATABASE_ERROR&quot;,&quot;detail&quot;:&quot;There was an error processing your request. Please try again later.&quot;}</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>GET /torrents/mylist?id=&lt;gone&gt;</code> answers the same way. So a torrent that no longer exists is
+indistinguishable from a TorBox outage by status code alone. zurg reports it as
+<code translate="no" v-pre>account temporarily unavailable</code>. fun&#x27;s journal shows it retrying the delete of an already deleted
+id every 15 s. The harness works around it by asking <code translate="no" v-pre>mylist</code> after a failed delete and treating a
+gone torrent as deleted.</p>
+<h3 id="real-debrid-throttling-did-not-appear">Real-Debrid throttling did not appear</h3>
+<p>Nine adds at 20 s spacing produced zero 451s and zero 429s across the whole campaign. That matches
+the note in the root <code translate="no" v-pre>CLAUDE.md</code> that 6 adds 10 s apart went 0/6 and the same 6 at 20 s went 6/6.
+The 20 s floor is doing real work and is not superstition.</p>
+<hr>
+<h2 id="re-running-the-campaign">Re-running the campaign</h2>
+<div id="re-running-the-campaign-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">export RD_TOKEN=…   # Real-Debrid test 2
+export AD_KEY=…     # AllDebrid test
+export TB_KEY=…     # TorBox
+
+# 1. check the catalog still resolves and the swarms are still what the tables claim
+./scripts/torrent_lifecycle_probe.py --inspect-torrents
+
+# 2. non-destructive. Confirms the cached/uncached split before anything is added
+./scripts/torrent_lifecycle_probe.py --cache-probe
+
+# 3. record what each account holds now, so step 6 has something to compare against
+./scripts/torrent_lifecycle_probe.py --list
+
+# 4. the campaign. One process per provider, each with its own output directory
+for p in rd ad tb; do
+  LIFECYCLE_OUTDIR=~/lifecycle/$p ./scripts/torrent_lifecycle_probe.py \
+    --provider $p --case all --cap-mins 15 &gt; ~/lifecycle/$p.out 2&gt;&amp;1 &amp;
+done
+
+# 5. the two follow-ups the campaign cannot do
+./scripts/torrent_lifecycle_probe.py --provider rd --case cached --rd-select-detail
+./scripts/torrent_lifecycle_probe.py --provider tb --case adhoc --fast-poll 0.5 --fast-window 480 \
+  --extra-hash 58846860f0a766f8a42b0bb214d8c713fdf1b167:debian-netinst
+
+# 6. verify nothing was left behind
+./scripts/torrent_lifecycle_probe.py --cleanup-only
+./scripts/torrent_lifecycle_probe.py --list</code></pre>
+</doc-codeblock></div>
+<p>Run it from a machine with residential egress. AllDebrid answers <code translate="no" v-pre>NO_SERVER</code> to datacenter IPs.</p>
+<p>Step 6 is not optional and step 3 is what makes it meaningful. After the 2026-08-30 campaign the
+three accounts held 500 and 39 and 469 items and not one of the 34 instance ids the harness had
+claimed was among them. Neither was any of the nine probe hashes.</p>
+<p>Before touching TorBox read fun&#x27;s <code translate="no" v-pre>zurg-tb</code> config and expect the sweep described above.</p>
+<div id="re-running-the-campaign-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">ssh ben@fun 'grep -E &quot;delete_error_torrents|stalled_download_mins|enable_repair&quot; ~/zurg-tb/config.yml'</code></pre>
+</doc-codeblock></div>
+<p>Never change it. A probe that disappears mid-run is data.</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../internals/torbox-news-server/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Previous</span>
+                                <span class="block mt-1">Tor​Box news server</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../internals/qbittorrent-client-contract/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Next</span>
+                                <span class="block mt-1">q​Bittorrent client contract</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Torrent lifecycle", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/internals/torrent-lifecycle.md" }</script>
+</body>
+</html>
