@@ -10,6 +10,7 @@ How zurg is built, what it was measured at, and the design notes behind the awkw
 
 - [Architecture](architecture.md)
 - [Debrid baseline](debrid-baseline.md)
+- [Torrent lifecycle](torrent-lifecycle.md)
 - [TorBox news server](torbox-news-server.md)
 - [ElfHosted news server](elfhosted-news-server.md)
 - [SABnzbd client contract](sabnzbd-client-contract.md)

@@ -39,6 +39,7 @@ Working with the library.
 - [`__magic__`](guides/magic.md) — the one directory whose layout is stored, and therefore yours to arrange
 - [Plex](guides/plex.md) — what zurg does with a Plex token, and what it deliberately does not
 - [Jellyfin](guides/jellyfin.md) — the same, for Jellyfin
+- [The Stremio addon](guides/stremio.md) — Stremio searching your own indexers, playing straight out of the Usenet backend
 
 ## Migrating
 
@@ -63,6 +64,7 @@ How zurg is built, what it was measured at, and the design notes behind the awkw
 
 - [Architecture](internals/architecture.md) — the shape of the whole, and the invariants that are easy to break
 - [Debrid baseline](internals/debrid-baseline.md) — what zurg costs and how fast it feels across RD, AD and TorBox
+- [Torrent lifecycle](internals/torrent-lifecycle.md) — what each account actually reports while a grab runs, measured live
 - [SABnzbd client contract](internals/sabnzbd-client-contract.md) — the exact shapes Sonarr and Radarr expect
 - [Plex trash sweep](internals/plex-trash-sweep.md) · [Stream timeout regression](internals/stream-timeout-regression.md) · [Directory config UI/UX](internals/uiux.md)
 - [E2E testing](internals/e2e-test.md) · [Real-Debrid API notes](internals/realdebrid-behavior.md)
