@@ -8,13 +8,15 @@ order: 78
 
 The [previous walkthrough](sonarr-radarr.md) pointed the \*arrs at zurg for Usenet, with zurg answering as a SABnzbd. This is the other half: zurg answers as a **qBittorrent**, the \*arrs hand it a magnet or a `.torrent` instead of an NZB, and the release goes onto a debrid account instead of a news server. The import is the same trick — a rename inside `__magic__`, nothing downloaded to import, nothing copied.
 
+**Which of the two the \*arr sends is not cosmetic.** A `.torrent` is uploaded to the account as the file itself, on all three services; only a magnet is added by info hash alone. A magnet makes the account work out what the torrent holds from the hash, and a private tracker's hash has no public swarm to work it out from — Real-Debrid dies in `magnet_error` with no files, and TorBox accepts it and then sits in `checking` with no file list, no size and a hundred-day estimate, so the grab neither fails nor finishes. The `.torrent` file keys the account's cache lookup by hash directly, so content the account already holds is added at once with no magnet resolution at all. That is what makes private indexers work here: their releases are addable exactly when the account already holds the content, which for anything a community shares is the common case. Point the \*arr at an indexer that hands out `.torrent` files rather than magnets — private ones do.
+
 Everything below was captured against zurg `2026.08.30.0459-nightly-73-g5b4c9790`, Sonarr `4.0.19.2979`, Radarr `6.3.0.10514` and Prowlarr `2.5.2.5491`, on a live install with a real AllDebrid account. Host and user names have been changed to `yowmamasita@zurg-server`; nothing else in the captured output was altered, and API keys shown are illustrative.
 
 ## Before you start
 
 Three things have to be true. Check all three now — every one of them fails later as something that looks unrelated.
 
-1. **zurg has an account that can add torrents** — Real-Debrid, TorBox or AllDebrid. A Usenet account cannot take a magnet: an install whose only provider is `nzb` accepts every grab and then refuses it. zurg says so at startup.
+1. **zurg has an account that can add torrents** — Real-Debrid, TorBox or AllDebrid. All three take the uploaded `.torrent` file itself, which is what makes a private tracker's release addable. A Usenet account takes a torrent in neither form: an install whose only provider is `nzb` accepts every grab and then refuses it. zurg says so at startup.
 2. **`magic.enabled` is `true`.** Without it the save path does not exist and every import fails. See [`__magic__`](magic.md).
 3. **The mount is visible to the \*arr** at the path zurg reports. If the \*arr runs in a container, read [step 8](#8-if-your-arr-is-in-docker) before you configure anything.
 
@@ -33,6 +35,8 @@ magic:
 ```
 
 **The order of the `providers:` list matters here.** A grab is offered to every account that takes torrents, in that order, and an account that refuses or stalls on it is given up on and the next is tried. If you hold two accounts, put the one you would rather spend first.
+
+Two keys move an account out of that order. `watchlist: true` puts one account first wherever it sits in the file; `add_torrents: false` takes one out of the rotation altogether, so it goes on serving and reading its library while nothing new is ever put on it — an archive account, or one whose quota is spoken for. A Usenet account is never offered a torrent either way. Both are in [the configuration reference](../reference/config.md#accounts).
 
 ## 1. Turn the endpoint on
 
@@ -448,11 +452,21 @@ qbittorrent:
 
 **What counts as moving** is a change of stage or a rise in progress, judged on the raw fraction the account reports rather than whole percent — one percent of a 100 GB release is a gigabyte. A release the account is unpacking is exempt from the clock: that stage sits at one figure for as long as it takes.
 
-**Fifteen is measured, not chosen.** AllDebrid parks a healthy job in its own queue with every counter at zero; in the measurements behind the default, two runs out of two sat there for 580 and 622 seconds before downloading in seconds and finishing. A ten-minute default would have abandoned both.
+**Fifteen is measured, not chosen.** AllDebrid parks a healthy job in its own queue with every counter at zero; two runs out of two sat there for 580 and 622 seconds before downloading in seconds and finishing. A ten-minute default would have abandoned both. The captures, and the table mapping each account's own wordings onto the five states the \*arrs understand, are in [Torrent lifecycle](../internals/torrent-lifecycle.md).
+
+**What a timeout deletes.** The instance on that account, and only that one: the delete reaches an instance zurg added itself for this grab and that never finished, and nothing else. Once no account is left the grab is reported errored with a reason naming every account and what it did.
+
+**A torrent you delete by hand on the account** is only noticed on Real-Debrid, which answers an unknown id with a 404 and means it. TorBox answers HTTP 500 with a database error, which is also what it answers when its own database is unhappy, and AllDebrid's error does not separate the two — so on those two zurg keeps asking and the no-movement clock is what ends it. On Real-Debrid the grab moves to the next account immediately.
 
 **The whole add is budgeted at 75 seconds.** The \*arrs cancel a `torrents/add` at 100 seconds and report the expiry as a connection failure, with no way to raise it. Every account shares the one deadline, so three accounts fit comfortably and a fourth gets whatever the first three did not spend.
 
-**Cached-only mode** is the one worth knowing as a policy choice: the refusal happens inside the add, synchronously, and a synchronous refusal is the only signal the \*arrs act on — they fail the grab and move to the next release in the list. Everything after the add reaches them as a warning about a download in progress, which they wait on. Set `download_timeout_mins: 0` and an uncached release is rejected on the spot instead of being downloaded.
+**Cached-only mode** is the one worth knowing as a policy choice: the refusal happens inside the add, synchronously, and a synchronous refusal is the only signal the \*arrs act on — they fail the grab and move to the next release in the list. Everything after the add reaches them as a warning about a download in progress, which they wait on. Set `download_timeout_mins: 0` and an uncached release is rejected on the spot instead of being downloaded. How the question gets answered is each service's own business:
+
+| Account | How zurg asks |
+|---|---|
+| TorBox | `checkcached`, which answers without adding anything. A miss costs no add slot and leaves nothing behind. |
+| AllDebrid | The upload itself answers — AllDebrid says on the response whether it already had the content, and a miss is deleted again straight away. |
+| Real-Debrid | Nothing answers it, so the torrent is added, its files are selected, and it is watched for up to five seconds. Cached content completes 0.4 to 1.5 seconds after the selection; anything still going at five seconds is a real download and is deleted again. |
 
 ## What works, and what does not
 
@@ -471,6 +485,8 @@ Does not:
 - **Failure as a first-class state.** qBittorrent's API has no way to say a download failed, so a release no account would take reaches the \*arr as a *warning*, never as a blocklist entry. It is visible in the queue with the reason attached, one click from *Remove → Blocklist and Search*, but it does not clear itself and nothing re-grabs unattended. This is the real difference from the SABnzbd endpoint, which can report a failed job and have the client react.
 - **Adding by plain HTTP URL.** `torrents/add` takes magnets and uploaded `.torrent` files. Both \*arrs send one of those; a bare `http://…/x.torrent` is refused.
 - **Basic auth on the endpoint.** The API key is the only gate.
+
+**One grab does vanish from the queue rather than warning.** If no account ever took the release — none holds the hash and none is fetching it — it is reported errored after ten minutes and dropped from the torrent list after a day. There is no download to report a state for, and a queue entry for one that does not exist is worse than none. Every other failure stays visible.
 
 **Blocked release names, Real-Debrid only.** RD refuses some releases on the filename alone — `WEB-DL`, the rip family, a source tag dot-adjacent to an old codec. zurg knows the patterns and refuses such a grab immediately rather than spending an add slot and a minute of retries on a refusal that was certain; the client fails that grab and takes the next release, which is what you want. On TorBox and AllDebrid the same release is added normally.
 
