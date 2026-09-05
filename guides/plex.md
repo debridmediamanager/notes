@@ -80,3 +80,60 @@ order: 60
 - Sample Nginx vhost for proxying Plex traffic (`nginx/plex.conf`).
 - `plex_update.sh` is the reference partial-scan script for `on_library_update: sh plex_update.sh "$@"`; `docker-compose.yml` carries a commented-out bind mount for it, to be uncommented when you use it.
 - `integration/plex_integration.sh` runs under `make integration-test` and `make integration-test-media`; it skips loudly on a host with no Plex server, so read the output rather than the exit code. `scripts/plex-e2e-test.sh` is a standalone playback check that reads `plex_server_url`/`plex_token` out of `config.yml`.
+
+## Recommended Plex Settings
+
+Plex's defaults assume local disks that are always present and free to read. A zurg mount is neither: its bytes come from a provider over HTTP, and it can be briefly unreadable while rclone reconnects. Several Plex defaults are actively harmful under those conditions.
+
+zurg reconciles these on every Plex status refresh. `plex_settings_policy` decides how far it goes — `off`, `warn`, `guard` (default) or `enforce`. The list lives in `pkg/plex/settings.go` (`RecommendedSettings`); the policy in `pkg/plex/reconcile.go`.
+
+A setting the server does not report is skipped, so a Plex version that lacks one is not reported as misconfigured.
+
+### Safety — corrected under `guard` and `enforce`
+
+These lose data rather than time, which is why the default policy writes them instead of only warning.
+
+| Preference | Plex default | zurg wants | Why |
+|---|---|---|---|
+| `autoEmptyTrash` | `1` | `0` | Plex empties its trash after every scan. If the mount is briefly unreadable while a scan is walking it, every file reads as deleted and Plex removes them permanently instead of leaving them in the trash to come back with the mount. |
+| `FSEventLibraryUpdatesEnabled` | `0` | `0` | A FUSE mount does not emit filesystem events reliably, so this triggers scans at moments nothing asked for one — including while the mount is still coming back. |
+| `FSEventLibraryPartialScanEnabled` | `0` | `0` | Driven by the same unreliable events, against a directory that may not be fully present yet. |
+| `ButlerTaskBackupDatabase` | `1` | `1` | The nightly database backup is the only thing that recovers a library Plex has already deleted. |
+
+### Bandwidth — corrected under `enforce` only
+
+Each of these makes Plex decode entire files. Harmless on local storage; over a debrid mount every byte is a provider request, and these run across the whole library.
+
+| Preference | Plex default | zurg wants |
+|---|---|---|
+| `ButlerTaskDeepMediaAnalysis` | `1` | `0` |
+| `ButlerTaskUpgradeMediaAnalysis` | `1` | `0` |
+| `LoudnessAnalysisBehavior` | `scheduled` | `never` |
+| `GenerateBIFBehavior` | `never` | `never` |
+| `GenerateChapterThumbBehavior` | `scheduled` | `never` |
+| `GenerateAdMarkerBehavior` | `scheduled` | `never` |
+| `MusicAnalysisBehavior` | `scheduled` | `never` |
+| `GenerateVADBehavior` | `never` | `never` |
+| `GenerateIndexFilesDuringAnalysis` | `0` | `0` |
+| `ButlerTaskGenerateMediaIndexFiles` | `0` | `0` |
+
+### Taste — always reported, never corrected
+
+There is a feature behind each of these, so zurg only points out when the value chosen is the expensive way to have it.
+
+| Preference | Plex default | zurg suggests | Why |
+|---|---|---|---|
+| `GenerateIntroMarkerBehavior` | `asap` | `scheduled` or `never` | `asap` decodes each file the moment it lands, outside any maintenance window. `scheduled` keeps the Skip Intro button and moves the work into the window. |
+| `GenerateCreditsMarkerBehavior` | `asap` | `scheduled` or `never` | The same, for Skip Credits. |
+
+### The maintenance window
+
+zurg does not touch `ButlerStartHour`/`ButlerEndHour`, because there is no hour that is right for everyone. It is worth setting by hand: Plex defaults to 02:00–05:00, and a window overlapping the hours anyone watches turns every maintenance task into a stall. Whatever survives in the bandwidth tier runs inside it.
+
+### Stopping a pass already in flight
+
+Changing a preference stops *future* runs, not the one already going. Plex Media Server respawns its scanner children, so killing them does nothing:
+
+```bash
+curl -X DELETE "http://localhost:32400/butler?X-Plex-Token=$TOKEN"
+```
