@@ -12,17 +12,17 @@ The container setup flow was verified on 4 September 2026 with Docker Engine 29.
 
 > **Sponsor image:** `ghcr.io/debridmediamanager/zurg` is sponsors-only. See [Patreon](https://www.patreon.com/debridmediamanager) for access.
 
-> **Linux host required:** the host-visible mount below depends on Linux mount propagation. Docker Desktop runs containers inside a VM on macOS and Windows and cannot propagate this FUSE mount into Finder or Explorer. Use the [macOS](macos.md) or [Windows](windows.md) binary guide when the media server runs on either host.
+> **Linux host required:** the host-visible mount below depends on Linux mount propagation. Docker Desktop runs containers inside a VM on macOS and Windows and cannot propagate this FUSE mount into Finder or Explorer. Use the [macOS](https://notes.debridmediamanager.com/setup/macos/) or [Windows](https://notes.debridmediamanager.com/setup/windows/) binary guide when the media server runs on either host.
 
 ## One-line option
 
-On a fresh Linux host the optional bootstrap can install Docker when approved, configure persistent FUSE propagation, authenticate to the sponsor registry, create the Compose project and run the provider chooser:
+On a fresh Linux host, the optional bootstrap can install Docker when approved, configure persistent FUSE mount propagation, authenticate to the sponsor registry, write the Compose project, run the provider chooser, and verify the result:
 
 ```bash
 curl -fsSL https://zurg.debridmediamanager.com/install-docker.sh | bash
 ```
 
-Existing Compose files and configs are preserved. Continue below for the complete manual route.
+Existing Compose files and configs are preserved. The sections below show every step for operators who prefer the manual route.
 
 ## What the installer does in a container
 
@@ -128,9 +128,9 @@ docker compose run --rm zurg setup \
   --mount-path /zurg_mnt/zurg
 ```
 
-Choose one or several providers in priority order. For example enter `2,4` for TorBox followed by Usenet. Setup asks only for their credentials, creates `config.yml` in `~/zurg`, enables rclone and creates `/zurg_mnt/zurg`. No credential is stored in the compose file or shell history.
+Choose one or several providers in priority order. For example enter `2,4` for TorBox followed by Usenet. Setup prompts only for their credentials, creates `config.yml` in `~/zurg`, enables rclone and creates `/zurg_mnt/zurg`. No credential is stored in the compose file or shell history.
 
-For automation repeat `--provider` and pass the provider-specific token-file or `--nntp-*` flags. Setup preserves an existing config on later runs.
+For automation, repeat `--provider` and pass the provider-specific token-file or `--nntp-*` flags. Setup preserves an existing config on later runs.
 
 ## 5. Start zurg
 
@@ -195,7 +195,7 @@ docker compose stop zurg
 docker compose start zurg
 ```
 
-To upgrade, replace the dated image tag in `docker-compose.yml`, then recreate the container and run doctor:
+The compose project tracks `ZURG_TAG` from `.env`, which the installer sets to `latest` so a pull always brings the newest nightly. To upgrade, pull and recreate the container, then run doctor:
 
 ```bash
 docker compose pull zurg
@@ -203,7 +203,9 @@ docker compose up -d zurg
 docker compose exec zurg /app/zurg doctor --working-dir /config
 ```
 
-To roll back, restore the previous tag and run those three commands again. The bind-mounted config, library state, logs and cache do not move with the container.
+`zurg update` is not the route here and refuses to run inside a container: the binary it writes lives in the container layer and is lost the moment the container is recreated, so the next `up` would silently be back on the old build. Pull the image instead. `--force` overrides the refusal for a container you intend to keep.
+
+To roll back, set `ZURG_TAG` in `.env` to a specific nightly tag and run those three commands again. The bind-mounted config, library state, logs and cache do not move with the container.
 
 `docker compose down` removes the container and network but leaves the bind-mounted files in `~/zurg` and the mount parent at `/zurg_mnt`.
 

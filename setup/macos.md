@@ -357,18 +357,34 @@ cd ~/zurg && ./zurg service restart
 
 ### Update Zurg
 
-Download the new `darwin-arm64` zip from [Releases](https://github.com/debridmediamanager/zurg/releases) the same way as in Step 2, then:
+A sponsor build replaces itself:
 
 ```bash
 cd ~/zurg
-launchctl stop com.zurg && sleep 2
+./zurg update
+./zurg service restart
+```
+
+`update` takes the newest nightly. It downloads it, checks the new binary reports the version it expected, and only then swaps it in by rename, so the running process is never overwritten. When the installed build is already the newest it says so and changes nothing.
+
+On a build too old to carry the command, the installer does the same job:
+
+```bash
+curl -fsSL https://zurg.debridmediamanager.com/install.sh | bash -s update
+```
+
+By hand, download the new `darwin-arm64` zip from [Releases](https://github.com/debridmediamanager/zurg/releases) the same way as in Step 2, then:
+
+```bash
+cd ~/zurg
+./zurg service stop && sleep 2
 rm -f zurg
 unzip -o ~/Downloads/zurg-*-darwin-arm64.zip
 chmod +x zurg
-launchctl start com.zurg
+./zurg service start
 ```
 
-Delete the old binary rather than overwriting it in place. Rewriting the file keeps the same inode and invalidates its ad-hoc code signature, and macOS then kills the new build on exec — the symptom is an immediate exit with no output at all.
+Delete the old binary rather than overwriting it in place. Rewriting the file keeps the same inode and invalidates its ad-hoc code signature, and macOS then kills the new build on exec — the symptom is an immediate exit with no output at all. `zurg update` swaps by rename for exactly this reason.
 
 ## Troubleshooting
 
