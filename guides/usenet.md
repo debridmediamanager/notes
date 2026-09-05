@@ -21,6 +21,8 @@ This guide goes end to end: news accounts, NZBs, the mount, Plex.
 | Where the code lives | `internal/nzb` (backend), `internal/nntp` (news client), `internal/par2` (repair math) |
 | Watch directory | `nzbs/`, beside the zurg binary |
 | Repair cache | `data/par2/` |
+| Resolved filenames | `data/nzb-names/`, so an obfuscated release is read for its names once rather than once per restart |
+| Article index | `data/nzb-index/`, under `nzb_segments: mmap` — the default on Linux, macOS and BSD |
 
 ---
 
@@ -70,6 +72,7 @@ providers:
 | `tls` | `false` | Turn it on. Plaintext NNTP sends your password in the clear and your reads to anyone on the path. |
 | `username` / `password` | `""` | |
 | `connections` | `8` | **Set this to your plan's real allowance.** It is not a rate limit to be polite about: a single connection carries a fraction of a provider's throughput, so zurg reads at this number. Too low and streaming is slow; over the plan's limit and the server starts refusing connections. |
+| `warm_connections` | `2` | Idle, authenticated connections held open so a read never waits on a dial. A dial is about 0.8s of TCP, TLS, greeting and `AUTHINFO`, and without a floor it was paid on the demand path after every start and every quiet spell. They come out of `connections` rather than being extra — the plan counts them as open connections, and zurg keeps them alive with a periodic `DATE` — so the floor is capped at the allowance. `-1` keeps none, which is what a plan metered by connection time wants. The top-level `warm_connections` sets the default for an account that states none — see [warm connections](../reference/config.md#warm-connections). |
 | `cache_size_mb` | `512` | Decoded article data held in memory, shared across every file being read rather than per file. |
 | `servers` | `[]` | Further news accounts — see [More than one Usenet provider](#more-than-one-usenet-provider). |
 
@@ -119,6 +122,8 @@ Three keys shape who gets asked:
 | `priority` | `0` | Who is asked first, lowest first. Accounts sharing a priority are asked in written order, except that one with a free connection is preferred over one whose allowance is spent — so two equal accounts share the load rather than queueing on one. |
 | `backup` | `false` | Marks a metered block account, consulted only once every primary has answered *no such article*. A primary being merely **busy** is not enough: zurg waits for it rather than spending metered bytes on something an unlimited account would have served. |
 | `backbone` | `""` | Names the article spool an account resolves to. Two accounts on one backbone hold the same articles, so once one has said it lacks an article the others on that spool are skipped instead of being charged a round trip for the same answer. |
+
+Every account keeps a warm floor of its own as well, out of its own allowance: a retention gap sends a read straight past the primary, so the account reached for the first time is exactly the one whose dial nobody has paid yet. A two-connection block account can be told to hold none with `warm_connections: -1`.
 
 Reselling is rife, so `backbone` is worth filling in: two accounts you bought from different companies may sit on the same spool, and without it every miss is asked twice. Group them by whatever name you like — the string is only compared against other entries.
 
@@ -350,21 +355,21 @@ Still set `mount_path` in `config.yml` to wherever you mounted it, or media-serv
 
 ### Docker
 
-zurg's working directory in the image is `/app`, so the watch directory is `/app/nzbs` and the repair cache is `/app/data`. Bind-mount both if you want them to survive the container:
+zurg's working directory in the image is `/config`, and the watch directory and the repair cache both sit under it. One bind mount carries them along with everything else:
 
 ```yaml
 services:
   zurg:
     image: ghcr.io/debridmediamanager/zurg:latest
     volumes:
-      - ./config.yml:/app/config.yml
-      - ./nzbs:/app/nzbs
-      - ./data:/app/data
+      - ./:/config
     ports:
       - 9999:9999
 ```
 
 Dropping an NZB into `./nzbs` on the host is then picked up inside the container without a restart.
+
+> Installs made before `/config` bind-mounted `/app/config.yml`, `/app/nzbs` and `/app/data` separately. Those keep working exactly as they did — see [docker.md](../setup/docker.md#upgrading-an-install-that-mounted-app).
 
 ---
 
@@ -464,10 +469,51 @@ The single-stream rate is set by the **connection allowance**, not by read-ahead
 
 - **Set `connections` to your plan's real number.** This is the tuning knob. Eight connections will not stream a remux.
 - **Two primary accounts add up.** Reads are driven at the combined allowance of every non-`backup` account, so a second unlimited provider raises the ceiling as well as covering the first one's retention gaps. A `backup` account does not count toward it.
+- **`warm_connections` (2 by default) buys latency, not throughput.** It holds that many connections open, idle and authenticated, so the first read after a start or a quiet spell does not spend ~0.8s dialling before its first byte: 1.5s to first byte cold against 0.15s warm. Once a stream is running it changes nothing.
+- **The dials that do happen stick to one backend, so their TLS sessions resume.** A dial costs about 0.8s — measured against news.frugalusenet.com on 2026-08-29: 106ms TCP, 213ms TLS handshake, 256ms greeting, 218ms for the two `AUTHINFO` exchanges. A provider hostname is a rotation (that one resolves to 11 addresses) and a TLS session ticket is only good at the machine that issued it, so redialling whichever address the resolver named first resumed **0 of 3** sessions while redialling the same address resumed **3 of 3**. Each account now redials the address its last connection came from, which takes **110–140ms off every redial** there — a resumed handshake is 109–141ms against 225–261ms for a full one. Eweka's round trip is ~18ms, so the saving on it is smaller. The pin is dropped and the name resolved again as soon as that address stops answering, so nothing is stuck to a machine the provider has retired; a refusal that reaches NNTP — the account at its connection ceiling, a rejected password — keeps it, because that is the account's answer and not the backend's. Each dial logs its phases at debug level, `resumed=` included.
 - `cache_size_mb` (512 default) is shared across every file being read. Raise it if you run several concurrent streams; it does not make one stream faster.
 - Whether a release is RAR-packed or posted as plain files no longer matters much for throughput.
 
 Repairs are slow by nature — they read the whole release — but they run at background priority and are bounded by the news server rather than by zurg's own arithmetic.
+
+### Memory: what a watch directory costs
+
+An NZB is a list of articles, and a big library is a lot of articles. Parsing one keeps its message ids and their offsets in memory so a read can find them, and builds before this one kept every one of them for the life of the process. Measured on a watch directory of 2,636 NZBs — 27.6 million `<segment>` elements — that is **1.52 GB of live heap**, at about 58 bytes per article, on top of the article cache. Almost none of it is in use: a listing needs names, sizes and counts, and only a file actually being read or repaired needs to know what its articles are called.
+
+`nzb_segments` decides whether zurg keeps them:
+
+```yaml
+nzb_segments: mmap             # mmap (default) | reparse | resident
+nzb_segments_idle_secs: 120    # how long a release's articles are kept after the last read
+```
+
+- **`mmap`** — the lists are written to `data/nzb-index/<id>.bin` and that file is mapped on demand, so the bytes sit in the page cache rather than on zurg's heap and the kernel reclaims them under pressure. **The default on Linux, macOS and BSD.** Costs roughly as much disk as the lists themselves.
+- **`reparse`** — the lists are given back once a release has settled, and the NZB is re-read from disk when a read or a repair needs them. Costs no disk at all, which is the reason to choose it: a host where `data/` must not grow.
+- **`resident`** — every article list in memory, always. **The previous behaviour**, and what every earlier build did. Still supported; it is simply no longer what you get by default.
+
+Whichever is set, a listing never loads anything: a file's name, its size and its article count are answered without the article list being anywhere near memory, so a library refresh, a fingerprint check and an *arr asking whether a job has settled all stay free. What the lazy modes cost is the first read of a release nothing has touched for `nzb_segments_idle_secs` — a sweep runs every 30 seconds — and a release's whole set of files loads together, so walking a season pack's rar volumes in order pays it once.
+
+Measured on a 60-file, 30,000-segment release:
+
+| | heap per release | first read of an idle release | per article on the read path |
+|---|---|---|---|
+| `resident` | 1.74 MB | — | 6 ns |
+| `reparse` | 21.3 kB | 39 ms | 52 ns |
+| `mmap` | 16.6 kB | 0.27 ms | 63 ns |
+
+Fifty nanoseconds an article is nothing beside the milliseconds it takes to fetch one, so the read-path figures matter less than they look. The one to weigh is the reload: `reparse` re-reads and re-parses the whole XML document, which on a season pack is tens of milliseconds before the first byte moves; `mmap` is a `mmap` call, a slice header per file, and a checksum of the index it just mapped — 0.08 ms of the three, and the other 0.19 ms is the price of catching a bad byte rather than serving it as a message id.
+
+And on a whole library rather than one release — 2,636 NZBs, 27.6 million articles, the same binary run three times over the same corpus, idle after a scan:
+
+| | resident set | live heap | idle CPU | cold open, p50 | index on disk |
+|---|---|---|---|---|---|
+| `resident` | 2,921 MB | 2,677 MB | 23 % | 806 ms | — |
+| `reparse` | 1,188 MB | 987 MB | 31 % | 1,018 ms | — |
+| `mmap` | **1,135 MB** | **921 MB** | 23 % | **694 ms** | 1,456 MB |
+
+Warm opens (1 ms), streaming throughput (38–39 MB/s) and startup time were indistinguishable across all three. `mmap` opens a cold release *faster* than keeping everything in memory, because a release that was never opened this run has to be parsed under `resident` too — and mapping a written arena is a syscall where parsing is megabytes of XML.
+
+The index rewrites itself whenever the NZB changes, repairs itself if it is ever unreadable — falling back to the NZB and writing it out again — and is removed when the NZB leaves the watch directory. Both its header and its contents are checksummed, so a bad byte is caught rather than served as a message id nobody posted. What it currently weighs is on the Dashboard's front page, under **Article Index**, and in the line the backend logs at startup. On **Windows** there is no mapping: the index would be read into the heap instead, which is resident memory *plus* a reload, so the default there stays `resident` and `reparse` is the lazy mode worth choosing.
 
 ---
 
@@ -482,6 +528,7 @@ Repairs are slow by nature — they read the whole release — but they run at b
 | Files have random names inside the release | Obfuscated post whose recovery failed | Check for `Recovered N filename(s)`; without PAR2 files in the NZB there is no source for the real names |
 | The video still has a random name, though the folder is right | A fully obfuscated post, where the archive holds several files of a similar size | Only a clear single payload is renamed to the release; a season pack in one archive keeps the names the archive gave it |
 | Streaming is slow | `connections` left at the default 8 | Set it to the plan's allowance |
+| The first play after a quiet spell takes a second to start, then runs fine | The warm floor is off, or capped to nothing by a one-connection account | Leave `warm_connections` unset — it defaults to 2 — and check neither it nor the top-level `warm_connections` has been set negative |
 | Connections refused by the provider | `connections` above what the plan permits | Lower it to the real figure |
 | Playback stutters or a gap plays silent | Missing articles | Look for `PAR2 repair of …` in the log; confirm `enable_repair: true`; add [another Usenet provider](#more-than-one-usenet-provider) |
 | A gap stays silent and no repair line ever appears | `enable_repair` is off, or the NZB carries no `.par2` files | Set `enable_repair: true`; if the post has no recovery files, only another news account can help |
@@ -494,6 +541,34 @@ Repairs are slow by nature — they read the whole release — but they run at b
 | Changed a provider in the Dashboard and nothing happened | Provider changes are written to `config.yml` but not hot-reloaded | Restart zurg — the banner under the providers table says so |
 | Plex emptied the library after a zurg restart | A scan was in flight while the mount was away, with auto-empty-trash on | Turn auto-empty off, and pre-flight sessions *and* refreshing state before any restart |
 | A file's size changed slightly a moment after the release appeared | The first listing can only estimate from the article count; the exact length arrives behind it, from the PAR2 index or from the file's own yEnc header | Expected, and it settles once — the length is written to `data/nzb-sizes/` and never learned again |
+
+### Asking about one article
+
+`GET /debug/nzb/probe` puts a single question to the news accounts through the
+pool zurg is already using, at the priority a demand read gets. It exists
+because the alternative did not work: an account gives out eight connections and
+zurg holds all of them, so probing a post by hand meant a second account or a
+stopped server — and stopping the server destroys the state being diagnosed.
+
+```bash
+# Is this article still there? A STAT, so nothing is transferred.
+curl -u user:pass 'http://localhost:9999/debug/nzb/probe?message_id=abc@news.example'
+
+# The same question addressed the way you have it: a release id from the
+# library, a file index counting from zero, an article number counting from one.
+curl -u user:pass 'http://localhost:9999/debug/nzb/probe?release=<nzb id>&file=0&article=3'
+
+# &body=1 fetches the one article and reports what actually arrived against what
+# the article says should have. This is how a provider that strips trailing
+# bytes is identified: `short: true` with `decoded_bytes` below `span_bytes`.
+curl -u user:pass 'http://localhost:9999/debug/nzb/probe?release=<nzb id>&article=3&body=1'
+```
+
+It answers one JSON object per configured Usenet account — `found`, `missing`,
+which account answered, and how long it took — so "which of my providers still
+has this" is a single call. It is read-only: nothing it fetches enters the
+article cache, and an article it fails to find is not recorded as a dead one, so
+a probe cannot silence a file that plays.
 
 ---
 

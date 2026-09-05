@@ -145,13 +145,20 @@ Of the 198 broken, **195 carry an `Unfixable` reason**:
 
 **But `Unfixable` is not the same as dead.** zurg already sorts these reasons into
 permanent and recoverable (`internal/torrent/unrepairable_reasons.go:44-70`).
-`permanentReasons` holds nine verdicts no retry can change — infringing,
-unsupported, unavailable, invalid, too big, not allowed, no repairable files, no
-seeders, invalid file ids — plus any reason prefixed `repair failed, download
-status:`. Everything else, including the two largest buckets above, is explicitly
+`permanentReasons` holds eight verdicts no retry can change — infringing,
+unsupported, unavailable, invalid, too big, not allowed, no repairable files,
+invalid file ids — plus any reason prefixed `repair failed, download status:`.
+Everything else, including the two largest buckets above, is explicitly
 temporary: `stalled download`, `repair failed`, `duplicate file IDs`,
 `rar'ed by RD`, `not cached`, `the lone cached file is broken`,
 `full torrent repair failed`.
+
+`repair failed, no seeders` was the ninth when the counts above were taken, and
+the 2 entries carrying it here are the reason it no longer is: no backend zurg
+speaks to reports seeders, so nothing ever measured that verdict — it was
+inferred from a repair running out of clock. It is now transient, and
+unrecordable besides (`verdictClaims`), so those two entries retire and are
+tried again like any other.
 
 Applying that split to the counts above:
 

@@ -103,5 +103,18 @@ next request picks. A resolution left in the link cache after its row is
 deleted therefore answers 404 invalid_download_code on almost every later
 request, which reads as a rotted link and marks a healthy release broken.
 
-Re-unrestricting the same link after a delete is unaffected: it mints a new id
-on a new host and works normally. Ids are not reused.
+Re-unrestricting the same link after a delete eventually mints a new id on a
+new host and works normally. Ids are not reused.
+
+But not at once, and the first measurement here said "unaffected" because it
+was taken minutes later. Re-measured 2026-08-23 on the test account: after
+DELETE /downloads/delete/<id>, unrestrict/link kept returning the *same dead
+id* for 75 seconds, and only minted a new one at t+81s.
+
+Two things follow, and both are in the code. downloadsCleanupMinAge holds a row
+for two minutes before retiring it, so a sibling instance resolving the same
+link in that window gets a live code. And the serving path's re-unrestrict
+chain — four attempts inside about six seconds — fits entirely inside the
+window, so exhausting it says nothing about the file: when every resolution
+comes back as the URL that just answered 404, zurg refuses the read with a
+Retry-After instead of marking the release broken.

@@ -297,6 +297,7 @@ Connect zurg to your media server so library updates, metadata matching, and wat
 | `plex_watchlist_check_every_secs` | int | — | Legacy spelling of `watchlist.check_every_secs`; still honoured when the block does not set one. |
 | `watchlist_quality` | string | `"best"` | Legacy spelling of `watchlist.quality`; still honoured when the block does not set one. |
 | `plex_settings_policy` | string | `"guard"` | How far zurg may go in correcting the Plex preferences that matter for a debrid mount. One of `off` (touch nothing), `warn` (report everything, change nothing), `guard` (fix only the settings whose wrong value loses a library, report the rest) or `enforce` (also fix the settings that make Plex decode whole files). Skip Intro and Skip Credits are only ever reported. See [Plex settings](../guides/plex.md#recommended-plex-settings). |
+| `plex_settings_ignore` | list | — | Plex preference ids zurg leaves alone whatever the policy says, matched case-insensitively. Per setting rather than per tier, so opting out of one does not give up the others beside it. An id naming no setting zurg knows is reported at startup and changes nothing. See [Opting out of one setting](../guides/plex.md#opting-out-of-one-setting). |
 
 > **Note:** Plex is best configured through the Dashboard (web UI) authentication flow; it writes `plex_server_url` and `plex_token` back into `config.yml`. The keys above remain supported for manual configuration.
 
@@ -652,7 +653,7 @@ qbittorrent:
   download_timeout_mins: 15
 ```
 
-Fifteen minutes is a measured figure rather than a chosen one. AllDebrid parks a healthy job in its own queue with every counter at zero before it moves a byte. Two runs out of two sat there for 580 and 622 seconds.
+Fifteen minutes is a measured figure rather than a chosen one. AllDebrid parks a healthy job in its own queue with every counter at zero before it moves a byte. Two runs out of two sat there for 580 and 622 seconds. The captures are in [docs/torrent-lifecycle.md](../internals/torrent-lifecycle.md).
 
 Which account a grab goes to is decided by [`add_torrents`](#accounts) and by the order of the `providers:` list. A grab that timed out or that an account gave up on is deleted from that account before the next one is tried. Only an instance zurg added itself for that grab and that never finished is ever a candidate. Nothing else this endpoint answers deletes anything from a debrid account.
 
