@@ -1,5 +1,191 @@
 # Changelog
 
+## zurg runs on Android phones and Google TV
+
+A new Android app hosts your library on the device itself. It adapts to phones and tablets as well as Android TV and Google TV. It needs Android 8.0 or newer and Usenet needs 64-bit Android. The app walks you through provider accounts and a device profile and then starts the library. You browse it in the app or in Android's Files and play in the external player you choose with full seeking. A TV remote drives every screen. MediaInfo works on the device with no extra tools. The library can also be shared with other devices on your local network behind a password. That password never travels to a player.
+
+The APKs are on the sponsor nightly releases. The app does not carry zurg itself. After you sign in to GitHub it installs the zurg engine as a second package. The app and the engine update separately. Updates lists every engine version still published so a nightly that misbehaves on your device can be rolled back to one that worked. Anyone who installed the first Android build needs to install an engine from Updates once. Providers and library settings carry over untouched.
+
+The engine for 64-bit ARM devices now looks up provider addresses through Android's own resolver. The first build's engine could fail to reach any provider at all.
+
+Setup and player notes are in [Android](../guides/android.md).
+
+## A new NZB shows up in the library within seconds
+
+An NZB dropped into the watch directory used to wait for the next periodic change check. An obfuscated release then waited a second interval while its real filenames were read. At the default interval that added up to 20 to 30 seconds with a Sonarr or Radarr grab sitting at Queued the whole time.
+
+zurg now checks the watch directory itself once a second. It does not rely on filesystem events and so it behaves the same on a NAS or inside a container. A release is listed the moment its names have been read. A season pack of twenty releases still costs one listing. The periodic check stays as the backstop for an NZB replaced under a name it already had.
+
+## Usenet streams hold their speed
+
+A file inside a RAR set reaches the news account one volume at a time. zurg opens the next volume early so the crossing does not start cold. It used to warm only the first four megabytes. On a release cut into small volumes that meant a boundary every second or two of playback and a stall at each one. One such release streamed at 14 to 16 MB/s where a plain file on the same account ran at 86 to 99 MB/s. The next volume is now warmed a full read-ahead window deep once the stream comes within 32 MiB of it. A volume the stream has just crossed into keeps the read-ahead it earned. A volume nothing is near is still warmed only at its head. That keeps a library scan from pulling data it will never read.
+
+A steady read also spent about one second in twenty crawling on a single slow article while every other connection waited behind it. zurg now asks a second connection for that one article once the wait runs long and uses whichever answer lands first. It only does this for a read a player is waiting on. Read-ahead and repair are never doubled up. It is capped at twenty extra requests a minute per account.
+
+The read a player is waiting on now comes first in more places. Read-ahead no longer takes an account's last free connection. The sizing pass at startup leaves one free too. A read uses connections the account already holds instead of opening its own. It waits for a connection already being opened rather than paying for another. The article a player is stuck on can jump ahead of queued fetches for later bytes. In one measurement the first byte of a read arrived in 177 ms instead of 354 ms. Warm-up and keep-alives and reads also share one connection limit now. zurg never opens more connections than the account allows.
+
+Saving a decoded article to the disk cache no longer holds up the read that fetched it. The write used to sit inside a lock every other read needed. It now happens after the bytes reach the player. A burst larger than the cache can keep up with skips the extra records rather than slow playback. An existing cache carries over as it is.
+
+## Sonarr and Radarr stop waiting on grabs that can never finish
+
+The SABnzbd endpoint used to leave some jobs queued forever. The client never blocklisted them and never grabbed another release. Each case below is now reported Failed with a message that says why. Failed is what makes Sonarr and Radarr blocklist the release and search again.
+
+A release can leave the library after its grab. It may be deleted from the dashboard or removed from the watch directory or dropped by every account. The job used to sit at 0% with nothing that would ever move it. It now fails once the release has been gone for fifteen minutes. Nothing fails in the first fifteen minutes after a restart while the library is still loading.
+
+A grab can land on a release an earlier import already emptied. That happens when an upgrade deletes the imported file and a search picks the same release again. zurg used to answer Completed and point the client at a folder with nothing left in it. A later grab of an emptied release now fails at once. A folder that stays empty for fifteen minutes fails its job too. That covers a folder emptied by a move done by hand or by an import filed under another job. The grab doing the import still reads Completed while it finishes.
+
+Some releases never finish their article check. zurg asks the news servers whether a release's articles are still there before it reports a grab finished. A check that could not complete used to be retried every minute without end. It now fails after thirty attempts in a row that span at least three hours. A news account that is down for an hour does not get every waiting job blocklisted. A check that finally answers resets the count.
+
+Some releases do not hold their whole archive. A set can have no volume holding the start of the file. It can be missing a volume from the middle. It can start somewhere other than its first volume. Sonarr used to be pointed at a folder it could never import from and retried it forever. The grab now fails. The verdict is tied to the exact volumes it was reached on. A PAR2 repair or a re-grab or a second account holding the missing volumes gets the release looked at again.
+
+## Backup download tokens take over when the daily allowance runs out
+
+Real-Debrid refuses a download once a token has spent its daily allowance. zurg is meant to retire that token and move on to the next entry in `download_tokens`. That stopped happening during playback when proxied streams moved to a new HTTP client. The refusal came back as an ordinary response and nothing marked the token spent. Every backup token sat unused and every read spent the capped one again.
+
+The refusal is now recognised wherever zurg meets it. That means playback and also the refresh loop and repair. Both of those check links whether or not anything is playing. A refusal that arrives without Real-Debrid's usual header retires the token as well.
+
+A retired token is tested once a minute so it can return as soon as its allowance does. That test used a link cached under the retired token itself. Nothing refills that cache once the token stops serving. So the test found nothing and the token stayed out until the nightly reset or a restart. It now borrows a link from whichever token is still serving.
+
+The nightly reset was a day late. Real-Debrid resets allowances a few minutes after midnight CET. zurg skipped the first midnight after every start and reset at the second. An account that had spent its allowance kept serving from its backup token for an extra day. zurg also worked out that midnight from the host's own date. West of Europe that left the reset at whatever hour zurg happened to start. Every reset is now scheduled from the date in CET.
+
+## A magnet grab keeps its release name on the debrid account
+
+Sonarr and Radarr hand the qBittorrent endpoint the indexer's whole magnet. zurg used to cut it down to the info hash before adding it. The display name and the trackers never reached the account. On a magnet-only indexer the display name is the only place the release name exists. An uncached torrent then sat in the account's list under a 40-character hash. For a torrent nobody seeds that is the only name it ever gets.
+
+The magnet now reaches the account as the client sent it. Repair and the Plex watchlist and portable libraries still add the bare hash because they have no name to pass on.
+
+## The .strm dump holds only files a player can open
+
+`save_strm_files` used to write a .strm for every selected file of a release. Subtitles and posters and NFOs and PAR2 volumes each became a library entry that opens to nothing. TorBox and AllDebrid mark every file selected. So does a Usenet post with its repair files beside the video. Now only recognised video and audio get a .strm along with anything named in `addl_playable_extensions`. A video inside a RAR set is still written while the volumes around it are not. Entries written by earlier builds are removed the next time the release is walked.
+
+Several write paths also told the media server to scan before the .strm files existed. Plex or Jellyfin or Emby could look at an empty folder and index nothing. Nothing would ask it to look again until the release changed. The files are now written first on every path.
+
+## Moving the zurg folder no longer strands the mount cache
+
+The rclone mount keeps what it reads in `data/rclone-cache`. rclone names that cache after its own configuration. The configuration includes the full path of zurg's `data/local` folder. Moving the zurg folder or changing `union_writable` gave the cache a new name. The old tree stayed on disk where no size cap counted it and nothing cleaned it. A few moves could leave terabytes behind.
+
+At mount start zurg now asks rclone which cache tree is live and deletes the others. It logs what it freed. It skips the sweep when `rclone_extra_args` sets its own `--cache-dir`. Set `rclone_cache_reclaim: false` to keep the old trees.
+
+The live cache is also bigger than most people expect. It grows to 256G by default and stays there. A media server's nightly pass touches every file and so the 72-hour age limit almost never evicts anything. Plan around the size cap. How to lower it is in [the configuration reference](config.md#disk-the-mount-uses).
+
+## Posters and .nfo files keep landing in `__magic__`
+
+A client that writes through zurg's mount puts new files in `data/local`. That is the folder where `__magic__` keeps its sidecars. zurg counted every file there against `sidecar_budget_mb`. A few videos an \*arr wrote through the mount could use up the whole budget. Every .nfo and poster after that was refused as though the tree were full. Raising the budget never helped. A file larger than `sidecar_max_mb` cannot have come through zurg's sidecar path. Those files no longer count against the budget. zurg names them once at startup because they still take up disk space.
+
+Deleting a `__magic__` path that is already gone now succeeds. The mount can remove a shared sidecar from both of its sides without breaking an import's cleanup.
+
+## A Stremio play tries the next release when the first has aged off
+
+A Stremio click used to mean one release. If that release held nothing playable the play failed with a 404. The usual cause is a post that has aged off the news server. The stream list might have shown a dozen other releases.
+
+A refused play now tries up to two more rows from the same ranked list. It starts after the row you picked. So the fallback is the same resolution and smaller or the tier below. It is never a bigger release you passed over. A release that is still being fetched answers 503 as before and pressing play again picks it up. Each try spends an indexer grab and leaves that release in the library. Play links made before this change behave as they always did.
+
+## Stremio lists show every resolution and a spread of sizes
+
+The stream list's cap used to count across the whole list. 4K results sort first and a popular title has more of them than the cap. The list could fill with 20 to 40 GB remuxes and hide every 1080p and 720p release the search had found. `stremio.max_results` now counts per resolution and defaults to 5. A value you set by hand keeps its number and now applies to each resolution.
+
+Within a resolution the list used to keep only the largest releases. The 4 GB encode a phone or laptop would play was the one that got cut. Each resolution now keeps evenly spaced picks from its largest release down to its smallest. Both ends are always included.
+
+Each stream's description now ends with how long ago the release was posted. It reads `3d` or `126d` or `2y`. Age is the best clue that a post may have aged off the news server. Results cached before this change show no age until that title's cache is refreshed.
+
+The addon's manifest now carries the real build version instead of `0.1.0`. `zurg --version` prints the same build details as `zurg version` and needs no config file.
+
+## Healthy releases stop disappearing from the library
+
+A failed connection or DNS lookup at the Real-Debrid API now marks the account temporarily unavailable. It used to mark healthy files broken. They then sat waiting for repair after the network came back.
+
+Cleanup after a library refresh used to wait behind background media analysis. By the time it ran a newer refresh could have added a release back. The late cleanup then removed it again. Cleanup now finishes before a refresh returns. Media analysis still runs in the background.
+
+## Kodi can browse the WebDAV share
+
+WebDAV listings now give the full path of every folder and file with the `/dav/` prefix included. Kodi and other strict players used to drop that prefix and could not open folders or media. Names with escaped characters and paths inside archives keep their addresses.
+
+## A busy news server no longer puts holes in a stream
+
+A news server can answer "no such article" for an article it holds while it is busy. zurg used to confirm that answer a few hundred milliseconds later on the same connection. It then served the span as zeros and wrote the article off for a day. One 32 MiB read came back with 384,000 zero bytes from an article the server served correctly a minute later.
+
+A refused article is now asked about once more a second later. The second ask goes over a different connection where one is free. The read waits for that answer instead of filling the gap. An article that really is gone is still served as silence and repaired as before. A damaged release therefore takes about a second longer to reach that silence.
+
+An article whose connection goes quiet is also asked again once on another connection. It used to fail the whole response. A RAR stream answered 500 for an article the provider was only slow to send.
+
+## Choose how zurg identifies itself to the services it calls
+
+Requests to debrid services and indexers now use a generic browser User-Agent by default. Subtitle lookups use it too and no longer send `zurg v0`. Those requests also drop origin and referrer headers along with zurg's own headers. That holds through redirects. A redirect cannot leak the previous URL's private path or API key.
+
+`user_agent` sets a different agent and `omit_user_agent` sends none. The `outbound_*` keys set the client and device names that Plex and Jellyfin and Emby see. All of them are on the dashboard under Network & Connectivity and take effect after a restart. Usenet connections send no software identifier at all. This removes zurg's own identifiers. It does not make you anonymous.
+
+The details are in [Outbound identity](outbound-identity.md).
+
+## zurg empties the Plex trash by default
+
+zurg turns off Plex's "Empty trash automatically after every scan". Otherwise a scan that meets a briefly unreadable mount deletes the library instead of parking it. What that left behind went unnoticed. Plex no longer collected dead entries and zurg's own removal was opt-in. So by default nothing collected them. Entries whose files were long gone piled up. The most visible case was a file moved between library folders whose old entry stayed forever.
+
+With `plex_trash_sweep_every_mins` unset the trash sweep now runs every 60 minutes. It stands down when Plex is still emptying its own trash. It removes one entry at a time and never one that still has a file. It only runs against a mount that reads. Anything it cannot judge stays visible as broken for 14 days first. Write `plex_trash_sweep_every_mins: 0` to keep removal off and empty the trash yourself.
+
+That setting does not hand trash emptying back to Plex. The config page now has a Let Plex Empty Its Own Trash switch for that. The risk it carries is written beside it.
+
+Restoring works now too. Plex skips an ordinary scan of a folder it has already scanned. A trashed show whose files were all back could stay trashed through scan after scan. The sweep now asks Plex for a forced scan of that folder. A scan started by hand from the dashboard also reaches the `__magic__` paths a Usenet library is indexed from. It used to find no Plex section and do nothing.
+
+How the two collectors share the job is in [Plex](../guides/plex.md#who-empties-the-trash).
+
+## Damaged archives list the right bytes or nothing at all
+
+Some damaged RAR sets used to list a video that played the wrong bytes. A set missing a volume from the middle served the rest of the file shifted with a tail of zeros. Such a set is now refused. A set whose first header could not be read had its later bytes shifted. zurg now reads the continuation headers first so every offset holds. Files after the movie in the last volume are kept too. A RAR4 end marker used to be mistaken for encryption. Split sets with padded end blocks lost their first volume. They now list the complete video.
+
+An NZB with 10% or more of its articles missing is refused before anything is served. Content that PAR2 has already rebuilt still plays.
+
+Existing archive listings are rebuilt so these fixes reach releases already in the library.
+
+## Large libraries can give idle memory back
+
+`library_detail` decides whether every release's file list stays in memory. `resident` keeps them all and stays the default. `lazy` releases file lists nobody has read for `library_detail_idle_secs`. Listings stay available and a file list comes back from disk when something reads it. `auto` does the same only under sustained memory pressure on the host or container. Large season packs hold much less memory under either. A compressed recovery copy protects a file list if its disk cache is damaged. Unsaved changes are never released. The dashboard offers all three modes. A change needs a restart.
+
+Startup also uses less memory with a large Real-Debrid download history. Saving and loading that history and the library caches no longer makes extra copies of them.
+
+The trade-offs are in [the configuration reference](config.md#library-detail).
+
+## Plex watchlist and Seerr requests share one queue
+
+The `acquisition:` block feeds Plex watchlist items and Seerr requests into one queue. Both are searched on your Newznab indexers and land in the Usenet backend. Seerr requests are followed only once approved. Only the requested seasons are grabbed. A 4K request is kept apart from a 1080p one. Open Seerr requests are rechecked for newly aired episodes.
+
+Progress now survives a restart. That covers retry deadlines and attempt counts and which episodes are done. An interrupted acquisition picks up where it stopped. One that already finished only retries removing the item from the watchlist and does not search again. The saved state is part of normal backups. Existing `watchlist:` settings keep working unchanged.
+
+Setup is in [Acquisition](../guides/acquisition.md).
+
+## Debrid libraries can live in portable local files
+
+A debrid account can now take its library from a folder of `.zurgtorrent` files instead of from the account's own list. `zurg export-torrents` writes an existing library out as those files. They describe the content and carry no credentials or download links. So a library can be shared. The person receiving it plays through their own account and their provider's limits still apply. Importing and listing and refreshing the files adds nothing to the account.
+
+Existing configs keep working. New backups use format 2 and need this build or newer to restore.
+
+Export and setup are in [Local libraries](../guides/local-libraries.md).
+
+## Read caches survive a restart
+
+zurg now keeps its read caches on disk across restarts. That covers parsed NZBs and decoded Usenet articles. It also covers archive layouts and decoded archive blocks and delivery links. After a restart zurg does not have to parse every NZB or read every archive header again. Each byte cache is capped at 512 MiB by default. `zurg backup --include-caches` adds them to a backup for a warm restore.
+
+Requests for the same AllDebrid or TorBox file at the same moment now share one link lookup.
+
+Settings and limits are in [Persistent caches](../internals/persistent-caches.md).
+
+## Usenet grabs are checked more closely before they read Completed
+
+Before a grab reads Completed zurg asks the news server about the first sixteen articles and the last article of each content file. It used to check only the first. That missed gaps in the media header. The checks go out as one batch per file so large archives no longer run out of time.
+
+A release whose missing articles PAR2 has fully rebuilt now imports. It used to fail because the original articles were still gone from the server. A partial repair still does not count.
+
+`sabnzbd.history_limit` can now match a larger history limit in Sonarr or Radarr. A big backlog of finished jobs then drains in larger batches. Both ends must use the same number. The default stays sixty.
+
+## `enforce` leaves the Plex features you can see alone
+
+`plex_settings_policy: enforce` no longer turns off scrubbing previews or chapter pictures. Nor does it turn off volume levelling or sonic analysis. Each of them decodes whole files and that costs bandwidth on a debrid mount. Each also gives you something you can see. They now sit with Skip Intro and Skip Credits as a matter of taste. zurg still reports what each one costs. It just stops making the choice for you. The bandwidth group now holds only analysis whose output nobody looks at.
+
+## Expired debrid links recover without failing playback
+
+A TorBox link whose signed token has gone stale now gets a fresh one. Readers waiting on the same file share that one lookup. Repeated failures pause playback without marking the file broken.
+
+When a TorBox or Real-Debrid or AllDebrid download server asks zurg to wait it now waits as long as it is told. It also stops retrying a server that keeps refusing. That holds for playback and link checks and archive reads. A revoked link opened through `__downloads__` gets a fresh one too.
+
 ## zurg updates itself
 
 `zurg update` replaces the running binary with the newest sponsor nightly. It reads the release feed with the GitHub CLI sign-in when one exists and `GITHUB_TOKEN` or `GH_TOKEN` otherwise, checks the download runs and reports the expected version before anything is replaced, and swaps the binary in by rename so an update cannot fail while zurg is running. A build already on the newest nightly, or ahead of it, is left alone. Inside a container the command refuses and points at the image pull instead, since a replaced binary there is lost on the next recreate; `--force` overrides. The installers gained a matching `update` mode for builds too old to carry the command.

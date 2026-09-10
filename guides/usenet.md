@@ -203,11 +203,31 @@ mkdir -p nzbs
 cp ~/Downloads/Some.Release.2024.2160p.nzb nzbs/
 ```
 
-Within about 15 seconds zurg re-reads the directory, and within roughly 30 the library refresh notices the new count and files it into your directories. The log says what it read:
+Within a second or two zurg notices the file and reads it, and the library lists it as soon as the read finishes. The log says what it read:
 
 ```
 Loaded NZB Some.Release.2024.2160p.nzb: 94 files
 ```
+
+### How quickly it appears
+
+zurg watches `nzbs/` itself, a check about once a second that costs one syscall
+however many NZBs the directory holds, so a file arriving in it is read almost
+at once rather than whenever the next library change check comes round. An
+[obfuscated release](#obfuscated-releases) takes a little longer, because its
+real filenames have to be read out of its own articles first — usually well
+under a second — and it is listed the moment that finishes. Neither wait
+depends on `check_for_changes_every_secs` any more. It used to: an obfuscated
+release was listed up to two whole intervals after it was dropped, one for the
+directory to be read and another because the names had been resolved just after
+the check that would have noticed. Measured at an interval of 10 seconds, that
+was 17.7 seconds from the drop to the release appearing, of which 0.67 seconds
+was the work.
+
+The periodic check is still there and is still the backstop. It is what catches
+the two things a watched directory cannot report on its own: an NZB **replaced
+in place** under a name it already had, and a filesystem whose directory
+timestamps are too coarse to separate two changes made in the same second.
 
 ### What gets picked up
 
@@ -270,7 +290,7 @@ Only the file that is clearly the release is renamed: the biggest entry in the a
 
 - **Removing** an NZB from `nzbs/` removes the release from the library, drops its cached reader and article cache, and forgets any repaired bytes it held.
 - **Deleting a Usenet release from the Dashboard deletes the `.nzb` file from disk.** There is nowhere else for it to live. This is not the same as deleting a torrent from a debrid account, where the file stays on the service.
-- **Replacing an NZB in place is the one thing to avoid.** zurg notices library changes by counting releases and checking the first one's id; swapping a file's contents while keeping its name changes neither, so the swap may go unseen until something else changes. Remove the old file, let zurg pick up the removal, then add the new one — or restart.
+- **Replacing an NZB in place is the slow way to do it.** Writing over a file does not change the directory, so the watch above cannot see it; what notices is the periodic change check, which reads the file's modification time and re-parses it — up to `check_for_changes_every_secs` later. Removing the old file and adding the new one is noticed within a second or two, and is what an indexer or the SABnzbd endpoint does anyway.
 
 ---
 
@@ -467,6 +487,14 @@ The single-stream rate is set by the **connection allowance**, not by read-ahead
 - **The dials that do happen stick to one backend, so their TLS sessions resume.** A dial costs about 0.8s — measured against news.frugalusenet.com on 2026-08-29: 106ms TCP, 213ms TLS handshake, 256ms greeting, 218ms for the two `AUTHINFO` exchanges. A provider hostname is a rotation (that one resolves to 11 addresses) and a TLS session ticket is only good at the machine that issued it, so redialling whichever address the resolver named first resumed **0 of 3** sessions while redialling the same address resumed **3 of 3**. Each account now redials the address its last connection came from, which takes **110–140ms off every redial** there — a resumed handshake is 109–141ms against 225–261ms for a full one. Eweka's round trip is ~18ms, so the saving on it is smaller. The pin is dropped and the name resolved again as soon as that address stops answering, so nothing is stuck to a machine the provider has retired; a refusal that reaches NNTP — the account at its connection ceiling, a rejected password — keeps it, because that is the account's answer and not the backend's. Each dial logs its phases at debug level, `resumed=` included.
 - `cache_size_mb` (512 default) is shared across every file being read. Raise it if you run several concurrent streams; it does not make one stream faster.
 - Whether a release is RAR-packed or posted as plain files no longer matters much for throughput.
+
+**One slow article no longer stalls the stream.** A sequential read averaging ~90 MB/s still dips to 1–5 MB/s for about a second at a time, and every one of those dips is the same thing: a single article stops arriving while the other connections finish theirs and go idle, and the read cannot ask for anything further because everything it schedules is measured from the article it is stuck on. When a read has been standing on one article for longer than that reader has learned to expect, zurg now asks a **second connection** for the same article and serves whichever answer arrives first. The bounds are deliberately tight, because a second ask is by definition load the account did not need: the deadline is twice the reader's own recent wait, never under 250 ms and never over 2 s; a reader hedges one article at a time and never the same article twice; an account pays for at most 20 of them a minute; and only a read a client is actually waiting on is ever hedged — read-ahead, the next-volume prefetch and repair are not. An article the servers have just *refused* is not hedged either: that one is already waiting on its own confirmation a second later, and asking inside that window proves nothing. Each hedge writes one line at debug level saying how long the read had blocked, and the line that follows says whether the second ask won.
+
+### Crossing a volume boundary
+
+A file inside a RAR set is served one volume at a time, and each volume is a separate read into the news account. zurg opens the next volume while the current one is still playing and reads its first four megabytes, so a crossing does not start cold. On a release posted in small volumes that head is not enough on its own: four megabytes is about ten articles of a release posted in ~395 KB parts, and volumes of ~26 MB put a boundary every 1.7 seconds of playback — so the stream drained the warm head from memory in a quarter of a second and then waited a round trip for everything behind it. Measured on a Hetzner CCX23 over ten connections on 8 September 2026, that release streamed at **14–16 MB/s** where a plain file on the same account reached **86–99 MB/s**, its one-second rate swinging between 1 and 29 MB/s, while 46 to 55 of the account's 60 read-ahead slots sat unused.
+
+zurg now warms the next volume a whole read-ahead window deep once the stream comes within 32 MiB of the boundary, and a volume the stream has just crossed into keeps the window it earned instead of starting again at two articles. A volume the playhead will not reach for several seconds is still warmed only to its head, which is what keeps a library scan — a reader per entry, a few megabytes of each — from pulling a window of every next volume it will never read. Nothing here needs configuring, and it changes no memory ceiling: an account still carries two read-ahead windows at once, the volume being played and the one being warmed, inside `cache_size_mb`.
 
 Repairs are slow by nature — they read the whole release — but they run at background priority and are bounded by the news server rather than by zurg's own arithmetic.
 

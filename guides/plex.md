@@ -50,14 +50,22 @@
   - Fetches Plex manual match candidates with optional title/year/language overrides (44 language options, default `en-US`); renders matches with the current selection highlighted (`torrent_matches.go`).
   - Applying a match (`HandleApplyPlexMatch`) calls `ApplyManualMatch`, then re-looks-up the rating key by the chosen GUID because Plex may reassign it, updates the torrent's rating key and IMDB (including an optional IMDB supplied by the user), persists changes, and redirects with success/error states.
 
-## Watchlist Monitor
-- Optional background polling when `watchlist.enabled` (or the legacy `plex_watchlist_enabled`) is true (`internal/plex/watchlist_monitor.go`). Toggling it in the dashboard requires a restart to take effect; the interval can be changed live via `ResetWatchlistTicker`.
-- Uses the `pkg/plex/watchlist.go` client against **`discover.provider.plex.tv`**, not `metadata.provider.plex.tv` — the metadata host answers the watchlist section with a 404, which is what silently stopped the old monitor. Paging is 100 per request; the discover API refuses anything above that, so the previous 200 failed every fetch (measured 2026-09-02). The token is read fresh per request through `PlexTokenProvider`, so re-authenticating in the dashboard takes effect without a restart.
-- Tracks processed `ratingKey` timestamps (7-day retention) to avoid repeats. The discover API no longer reports when an item was watchlisted, so a re-add of a title that failed is noticed after that cleanup or a restart, not before.
-- Acquisition runs against **your own Newznab indexers**, the same ones the Stremio addon searches, and drops the chosen NZB into the Usenet backend through the same naming rules the SABnzbd endpoint uses — so the three surfaces find each other's grabs rather than duplicating them. A movie becomes the best matching release; a show is acquired season by season, preferring a season pack and falling back to the loose episodes when nobody posted one. A release already in the library counts as acquired: the point is the content, not the write.
-- TV searches lead with the TVDB id and retry once by IMDb id when that finds nothing. Indexers key TV on TVDB and their show-level IMDb mapping is patchy — measured 2026-09-02, *The Bear* (`tt14452776`) answered total=0 on nzbgeek while `tvdbid=403294` found everything. The two ids are never sent together.
-- **Removal comes after acquisition**, not before: an item removed first is simply lost when the search or the NZB fetch then fails. Only `movie` and `show` reach Plex's watchlist at all — `addToWatchlist` answers 400 for seasons and episodes (measured 2026-09-02) — though the monitor carries arms for both should that loosen.
-- Failures go to an in-memory retry queue: first retry after 5 minutes, backing off by 5 minutes per attempt, given up after 3. An item given up on stays on the watchlist.
+## Watchlist acquisition
+
+- Plex watchlist is an adapter in `internal/acquisition/plex`, running on the
+  shared acquisition service alongside Seerr. Existing watchlist settings work;
+  adapters can also be configured under `acquisition.sources`.
+- The client uses `discover.provider.plex.tv` and pages 100 items at a time.
+  The Plex token is read fresh for each request, so re-authentication applies
+  without restarting the adapter.
+- The shared Newznab executor acquires movies or each planned season, preferring
+  season packs. TV searches try TVDB before IMDb because indexer mappings differ.
+- Progress, retry deadlines and per-episode receipts survive restarts in
+  `data/acquisition.json`. The earlier Plex ledger is imported automatically.
+- Removal follows acquisition of every planned target. Failed requests stay on
+  the watchlist and retry with persistent backoff. A removal-only retry does not
+  acquire again. See [Plex watchlist acquisition](plex-watchlist.md) for limits
+  and [acquisition sources](acquisition.md) for the shared configuration.
 
 ## Dashboard & API Endpoints (`internal/handlers/router.go`, `internal/handlers/dashboard`)
 - Routes: `/plex/auth`, `/plex/callback`, `/plex/auth/status`, `/plex/servers`, `/plex/server`, `/plex/logout`, `/plex/match-torrents`, `/plex/match-torrents/status`, `/plex/scan/{sectionKey}`, `/plex/scan-all`, `/plex-stats`, `/plex-stats/data`, `/plex-stats/image`, `/manage/{hash}/plex-match`.
@@ -99,9 +107,23 @@ plex_settings_ignore:
   - autoEmptyTrash
 ```
 
+The dashboard writes this one for you. The config page has a **Let Plex Empty Its Own Trash** switch above the Library Trash Sweep settings. It adds and removes `autoEmptyTrash` here and leaves the rest of the list untouched. Turning it on takes effect on the next restart.
+
 An ignored setting is still read and still shown on the dashboard and in `zurg plex-settings` (marked `skip`), so nothing is hidden. It is simply never written, never counted as a problem, and never behind the dashboard's trash banner. Ids are matched case-insensitively; one that names no setting in the tables below is reported at startup and leaves the setting guarded, since a typo must not read as an opt-out.
 
-Ignoring a safety setting is at your own risk, and zurg says so once when it starts rather than on every refresh. `autoEmptyTrash` in particular is the setting that empties a library when a scan meets a mount that has blipped — with it ignored, zurg's own [trash sweep](../internals/plex-trash-sweep.md) (`plex_trash_sweep_every_mins`) is the safer way to get the same cleanup, since it removes entries one at a time and only ones whose files are confirmed gone from a mount that reads.
+Ignoring a safety setting is at your own risk, and zurg says so once when it starts rather than on every refresh. `autoEmptyTrash` in particular is the setting that empties a library when a scan meets a mount that has blipped. Ignoring it also hands the cleanup job back to Plex — see below.
+
+### Who empties the trash
+
+Turning `autoEmptyTrash` off leaves a job undone. Plex has been told not to clear entries whose files are gone, and for a long time zurg's own removal was opt-in, so out of the box a library accumulated dead entries and nothing collected them. Neither side was wrong and the gap was real: it is what someone hits when a file moves between library folders and the old entry stays forever.
+
+zurg now takes the job it took away. With `plex_trash_sweep_every_mins` unset, the [trash sweep](../internals/plex-trash-sweep.md) removes entries every 60 minutes — but only when nothing else is doing it. If Plex is still emptying its own trash, because `plex_settings_policy` is `off` or `warn` or because `autoEmptyTrash` is in `plex_settings_ignore`, zurg stands down and leaves it to Plex. Two collectors on one library is how a disagreement between them becomes a deletion.
+
+The sweep is much narrower than Plex's own emptying, which is the point of preferring it: it removes one entry at a time, never one that still has a file, only from a mount that reads at that moment, capped at 50 removals and 10% of the trash per pass, and entries it has no verdict on stay visible as broken for 14 days first. It also needs `plex_database_path` set, so it only runs where Plex is on this host.
+
+To keep removal off and empty the trash yourself, write `plex_trash_sweep_every_mins: 0`. That is the explicit no, and it is distinct from leaving the key out.
+
+That key only turns off zurg's own removal. It does not hand Plex's setting back. Under `guard` zurg still writes `autoEmptyTrash` off, so Plex still will not empty its trash after a scan and the entries pile up with nothing collecting them. Use the dashboard switch or `plex_settings_ignore` to give Plex the job back.
 
 ### Safety — corrected under `guard` and `enforce`
 
@@ -114,33 +136,46 @@ These lose data rather than time, which is why the default policy writes them in
 | `FSEventLibraryPartialScanEnabled` | `0` | `0` | A partial scan runs off those same events, so it fires on the writes coming through the mount — exactly when a directory is half-written — and never on the remote-side changes that would actually need a scan. |
 | `ButlerTaskBackupDatabase` | `1` | `1` | The nightly database backup is the only thing that recovers a library Plex has already deleted. |
 
-The two `FSEvent` reasons were rewritten after measuring them. A `fuse.rclone` mount **does** deliver inotify events for writes made through it — a watch on `/mnt/zurg` on 2026-09-05 saw `CREATE`, `OPEN`, `ATTRIB`, `CLOSE_WRITE` and `DELETE` for six of six operations. What it cannot report is a change made on zurg's side, which never passes through the local kernel. So the failure mode is not the spurious scan the earlier wording claimed: it is a scan that fires on a half-written import and never fires for the changes that need one.
+The two `FSEvent` reasons were rewritten after measuring them, on every platform zurg mounts on. The earlier wording said a FUSE mount "does not emit them reliably, so this produces scans at moments nothing asked for one". Both halves of that are wrong.
+
+Measured 2026-09-05, each platform watched with the API its media server actually uses, against an rclone mount whose backing directory could be changed directly. **A** is a write made through the mount; **B** is the same file appearing on the far side, the way it does when zurg's own tree changes.
+
+| Platform | Mount | Watched with | A: through the mount | B: changed on the far side |
+|---|---|---|---|---|
+| Linux | `fuse.rclone` | inotify | `CREATE` `OPEN` `ATTRIB` `CLOSE_WRITE` | **no events** |
+| Docker | same mount bind-mounted into a container | inotify, inside the container | same four, seen in the container | **no events** |
+| macOS | macFUSE | FSEvents | `Created IsFile` | **no events** |
+| Windows | WinFsp | `ReadDirectoryChangesW` | `Created` `Changed` | **no events** |
+
+Every platform delivered A, and a same-run control on a native filesystem (APFS, NTFS) produced the same events, so the watchers were working. None delivered B, though the file was visible through the mount once the directory cache expired.
+
+So the failure mode is the opposite of the one claimed: an event-driven update fires on writes coming *through* the mount — an \*arr import landing in a directory still being assembled — and never fires for the remote-side changes that are the reason to scan at all. It is not that events are unreliable; it is that they report the wrong half of what happens on a debrid mount.
 
 ### Bandwidth — corrected under `enforce` only
 
-Each of these makes Plex decode entire files. Harmless on local storage; over a debrid mount every byte is a provider request, and these run across the whole library.
+Each of these makes Plex decode entire files for a result nobody looks at. Harmless on local storage; over a debrid mount every byte is a provider request, and these run across the whole library. Analysis whose output *is* visible — scrubbing previews, chapter pictures, volume levelling, sonic analysis — sits in the taste tier below instead, where `enforce` will not touch it.
 
 | Preference | Plex default | zurg wants |
 |---|---|---|
 | `ButlerTaskDeepMediaAnalysis` | `1` | `0` |
 | `ButlerTaskUpgradeMediaAnalysis` | `1` | `0` |
-| `LoudnessAnalysisBehavior` | `scheduled` | `never` |
-| `GenerateBIFBehavior` | `never` | `never` |
-| `GenerateChapterThumbBehavior` | `scheduled` | `never` |
 | `GenerateAdMarkerBehavior` | `scheduled` | `never` |
-| `MusicAnalysisBehavior` | `scheduled` | `never` |
 | `GenerateVADBehavior` | `never` | `never` |
 | `GenerateIndexFilesDuringAnalysis` | `0` | `0` |
 | `ButlerTaskGenerateMediaIndexFiles` | `0` | `0` |
 
 ### Taste — always reported, never corrected
 
-There is a feature behind each of these, so zurg only points out when the value chosen is the expensive way to have it.
+There is a feature behind each of these, so zurg says what the value costs and leaves the choice alone. Turning one off unasked would take away something the operator can see, which is not zurg's call however much bandwidth it would save. For the first two the cheaper option keeps the feature and moves the work into the maintenance window; for the rest the choice is the feature or the bandwidth.
 
 | Preference | Plex default | zurg suggests | Why |
 |---|---|---|---|
 | `GenerateIntroMarkerBehavior` | `asap` | `scheduled` or `never` | `asap` decodes each file the moment it lands, outside any maintenance window. `scheduled` keeps the Skip Intro button and moves the work into the window. |
 | `GenerateCreditsMarkerBehavior` | `asap` | `scheduled` or `never` | The same, for Skip Credits. |
+| `GenerateBIFBehavior` | `never` | `never` | Decodes the whole video to build the image strip shown while scrubbing. Playback does not need it. |
+| `GenerateChapterThumbBehavior` | `scheduled` | `never` | Decodes the file to pull one frame per chapter, for the picture beside each entry in the chapter list. |
+| `LoudnessAnalysisBehavior` | `scheduled` | `never` | Fully decodes every file's audio to measure it, for volume levelling between tracks and titles. |
+| `MusicAnalysisBehavior` | `scheduled` | `never` | Decodes every track — many small files, so this is the request count that gets an account rate-limited. Buys sonic analysis: similar-track mixes and the visualiser. |
 
 ### The maintenance window
 

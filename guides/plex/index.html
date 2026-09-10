@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841883759113">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.842386562606">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841883759113" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.842386562606" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841883759113" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.842386562606" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841883759113" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841883759113" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.842386562606" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.842386562606" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -241,15 +241,32 @@
 </ul>
 </li>
 </ul>
-<h2 id="watchlist-monitor">Watchlist Monitor</h2>
+<h2 id="watchlist-acquisition">Watchlist acquisition</h2>
 <ul>
-<li>Optional background polling when <code translate="no" v-pre>watchlist.enabled</code> (or the legacy <code translate="no" v-pre>plex_watchlist_enabled</code>) is true (<code translate="no" v-pre>internal/plex/watchlist_monitor.go</code>). Toggling it in the dashboard requires a restart to take effect; the interval can be changed live via <code translate="no" v-pre>ResetWatchlistTicker</code>.</li>
-<li>Uses the <code translate="no" v-pre>pkg/plex/watchlist.go</code> client against <strong><code translate="no" v-pre>discover.provider.plex.tv</code></strong>, not <code translate="no" v-pre>metadata.provider.plex.tv</code> — the metadata host answers the watchlist section with a 404, which is what silently stopped the old monitor. Paging is 100 per request; the discover API refuses anything above that, so the previous 200 failed every fetch (measured 2026-09-02). The token is read fresh per request through <code translate="no" v-pre>PlexTokenProvider</code>, so re-authenticating in the dashboard takes effect without a restart.</li>
-<li>Tracks processed <code translate="no" v-pre>ratingKey</code> timestamps (7-day retention) to avoid repeats. The discover API no longer reports when an item was watchlisted, so a re-add of a title that failed is noticed after that cleanup or a restart, not before.</li>
-<li>Acquisition runs against <strong>your own Newznab indexers</strong>, the same ones the Stremio addon searches, and drops the chosen NZB into the Usenet backend through the same naming rules the SABnzbd endpoint uses — so the three surfaces find each other&#x27;s grabs rather than duplicating them. A movie becomes the best matching release; a show is acquired season by season, preferring a season pack and falling back to the loose episodes when nobody posted one. A release already in the library counts as acquired: the point is the content, not the write.</li>
-<li>TV searches lead with the TVDB id and retry once by IMDb id when that finds nothing. Indexers key TV on TVDB and their show-level IMDb mapping is patchy — measured 2026-09-02, <em>The Bear</em> (<code translate="no" v-pre>tt14452776</code>) answered total=0 on nzbgeek while <code translate="no" v-pre>tvdbid=403294</code> found everything. The two ids are never sent together.</li>
-<li><strong>Removal comes after acquisition</strong>, not before: an item removed first is simply lost when the search or the NZB fetch then fails. Only <code translate="no" v-pre>movie</code> and <code translate="no" v-pre>show</code> reach Plex&#x27;s watchlist at all — <code translate="no" v-pre>addToWatchlist</code> answers 400 for seasons and episodes (measured 2026-09-02) — though the monitor carries arms for both should that loosen.</li>
-<li>Failures go to an in-memory retry queue: first retry after 5 minutes, backing off by 5 minutes per attempt, given up after 3. An item given up on stays on the watchlist.</li>
+<li>
+<p>Plex watchlist is an adapter in <code translate="no" v-pre>internal/acquisition/plex</code>, running on the
+shared acquisition service alongside Seerr. Existing watchlist settings work;
+adapters can also be configured under <code translate="no" v-pre>acquisition.sources</code>.</p>
+</li>
+<li>
+<p>The client uses <code translate="no" v-pre>discover.provider.plex.tv</code> and pages 100 items at a time.
+The Plex token is read fresh for each request, so re-authentication applies
+without restarting the adapter.</p>
+</li>
+<li>
+<p>The shared Newznab executor acquires movies or each planned season, preferring
+season packs. TV searches try TVDB before IMDb because indexer mappings differ.</p>
+</li>
+<li>
+<p>Progress, retry deadlines and per-episode receipts survive restarts in
+<code translate="no" v-pre>data/acquisition.json</code>. The earlier Plex ledger is imported automatically.</p>
+</li>
+<li>
+<p>Removal follows acquisition of every planned target. Failed requests stay on
+the watchlist and retry with persistent backoff. A removal-only retry does not
+acquire again. See <a href="../plex-watchlist/">Plex watchlist acquisition</a> for limits
+and <a href="../acquisition/">acquisition sources</a> for the shared configuration.</p>
+</li>
 </ul>
 <h2 id="dashboard--api-endpoints-internalhandlersroutergo-internalhandlersdashboard">Dashboard &amp; API Endpoints (<code translate="no" v-pre>internal/handlers/router.go</code>, <code translate="no" v-pre>internal/handlers/dashboard</code>)</h2>
 <ul>
@@ -286,8 +303,15 @@
 plex_settings_ignore:
   - autoEmptyTrash</code></pre>
 </doc-codeblock></div>
+<p>The dashboard writes this one for you. The config page has a <strong>Let Plex Empty Its Own Trash</strong> switch above the Library Trash Sweep settings. It adds and removes <code translate="no" v-pre>autoEmptyTrash</code> here and leaves the rest of the list untouched. Turning it on takes effect on the next restart.</p>
 <p>An ignored setting is still read and still shown on the dashboard and in <code translate="no" v-pre>zurg plex-settings</code> (marked <code translate="no" v-pre>skip</code>), so nothing is hidden. It is simply never written, never counted as a problem, and never behind the dashboard&#x27;s trash banner. Ids are matched case-insensitively; one that names no setting in the tables below is reported at startup and leaves the setting guarded, since a typo must not read as an opt-out.</p>
-<p>Ignoring a safety setting is at your own risk, and zurg says so once when it starts rather than on every refresh. <code translate="no" v-pre>autoEmptyTrash</code> in particular is the setting that empties a library when a scan meets a mount that has blipped — with it ignored, zurg&#x27;s own <a href="../../internals/plex-trash-sweep/">trash sweep</a> (<code translate="no" v-pre>plex_trash_sweep_every_mins</code>) is the safer way to get the same cleanup, since it removes entries one at a time and only ones whose files are confirmed gone from a mount that reads.</p>
+<p>Ignoring a safety setting is at your own risk, and zurg says so once when it starts rather than on every refresh. <code translate="no" v-pre>autoEmptyTrash</code> in particular is the setting that empties a library when a scan meets a mount that has blipped. Ignoring it also hands the cleanup job back to Plex — see below.</p>
+<h3 id="who-empties-the-trash">Who empties the trash</h3>
+<p>Turning <code translate="no" v-pre>autoEmptyTrash</code> off leaves a job undone. Plex has been told not to clear entries whose files are gone, and for a long time zurg&#x27;s own removal was opt-in, so out of the box a library accumulated dead entries and nothing collected them. Neither side was wrong and the gap was real: it is what someone hits when a file moves between library folders and the old entry stays forever.</p>
+<p>zurg now takes the job it took away. With <code translate="no" v-pre>plex_trash_sweep_every_mins</code> unset, the <a href="../../internals/plex-trash-sweep/">trash sweep</a> removes entries every 60 minutes — but only when nothing else is doing it. If Plex is still emptying its own trash, because <code translate="no" v-pre>plex_settings_policy</code> is <code translate="no" v-pre>off</code> or <code translate="no" v-pre>warn</code> or because <code translate="no" v-pre>autoEmptyTrash</code> is in <code translate="no" v-pre>plex_settings_ignore</code>, zurg stands down and leaves it to Plex. Two collectors on one library is how a disagreement between them becomes a deletion.</p>
+<p>The sweep is much narrower than Plex&#x27;s own emptying, which is the point of preferring it: it removes one entry at a time, never one that still has a file, only from a mount that reads at that moment, capped at 50 removals and 10% of the trash per pass, and entries it has no verdict on stay visible as broken for 14 days first. It also needs <code translate="no" v-pre>plex_database_path</code> set, so it only runs where Plex is on this host.</p>
+<p>To keep removal off and empty the trash yourself, write <code translate="no" v-pre>plex_trash_sweep_every_mins: 0</code>. That is the explicit no, and it is distinct from leaving the key out.</p>
+<p>That key only turns off zurg&#x27;s own removal. It does not hand Plex&#x27;s setting back. Under <code translate="no" v-pre>guard</code> zurg still writes <code translate="no" v-pre>autoEmptyTrash</code> off, so Plex still will not empty its trash after a scan and the entries pile up with nothing collecting them. Use the dashboard switch or <code translate="no" v-pre>plex_settings_ignore</code> to give Plex the job back.</p>
 <h3 id="safety--corrected-under-guard-and-enforce">Safety — corrected under <code translate="no" v-pre>guard</code> and <code translate="no" v-pre>enforce</code></h3>
 <p>These lose data rather than time, which is why the default policy writes them instead of only warning. Only <code translate="no" v-pre>autoEmptyTrash</code> ships at the destructive value; the other three already default the way zurg wants them and are here to catch an operator who turned one on.</p>
 <retype-table copy-text="| Preference | Plex default | zurg wants | Why |
@@ -335,18 +359,67 @@ plex_settings_ignore:
 </table>
 </div>
 </retype-table>
-<p>The two <code translate="no" v-pre>FSEvent</code> reasons were rewritten after measuring them. A <code translate="no" v-pre>fuse.rclone</code> mount <strong>does</strong> deliver inotify events for writes made through it — a watch on <code translate="no" v-pre>/mnt/zurg</code> on 2026-09-05 saw <code translate="no" v-pre>CREATE</code>, <code translate="no" v-pre>OPEN</code>, <code translate="no" v-pre>ATTRIB</code>, <code translate="no" v-pre>CLOSE_WRITE</code> and <code translate="no" v-pre>DELETE</code> for six of six operations. What it cannot report is a change made on zurg&#x27;s side, which never passes through the local kernel. So the failure mode is not the spurious scan the earlier wording claimed: it is a scan that fires on a half-written import and never fires for the changes that need one.</p>
+<p>The two <code translate="no" v-pre>FSEvent</code> reasons were rewritten after measuring them, on every platform zurg mounts on. The earlier wording said a FUSE mount &quot;does not emit them reliably, so this produces scans at moments nothing asked for one&quot;. Both halves of that are wrong.</p>
+<p>Measured 2026-09-05, each platform watched with the API its media server actually uses, against an rclone mount whose backing directory could be changed directly. <strong>A</strong> is a write made through the mount; <strong>B</strong> is the same file appearing on the far side, the way it does when zurg&#x27;s own tree changes.</p>
+<retype-table copy-text="| Platform | Mount | Watched with | A: through the mount | B: changed on the far side |
+|---|---|---|---|---|
+| Linux | `fuse.rclone` | inotify | `CREATE` `OPEN` `ATTRIB` `CLOSE_WRITE` | **no events** |
+| Docker | same mount bind-mounted into a container | inotify, inside the container | same four, seen in the container | **no events** |
+| macOS | macFUSE | FSEvents | `Created IsFile` | **no events** |
+| Windows | WinFsp | `ReadDirectoryChangesW` | `Created` `Changed` | **no events** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Platform</th>
+<th>Mount</th>
+<th>Watched with</th>
+<th>A: through the mount</th>
+<th>B: changed on the far side</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Linux</td>
+<td><code translate="no" v-pre>fuse.rclone</code></td>
+<td>inotify</td>
+<td><code translate="no" v-pre>CREATE</code> <code translate="no" v-pre>OPEN</code> <code translate="no" v-pre>ATTRIB</code> <code translate="no" v-pre>CLOSE_WRITE</code></td>
+<td><strong>no events</strong></td>
+</tr>
+<tr>
+<td>Docker</td>
+<td>same mount bind-mounted into a container</td>
+<td>inotify, inside the container</td>
+<td>same four, seen in the container</td>
+<td><strong>no events</strong></td>
+</tr>
+<tr>
+<td>macOS</td>
+<td>macFUSE</td>
+<td>FSEvents</td>
+<td><code translate="no" v-pre>Created IsFile</code></td>
+<td><strong>no events</strong></td>
+</tr>
+<tr>
+<td>Windows</td>
+<td>WinFsp</td>
+<td><code translate="no" v-pre>ReadDirectoryChangesW</code></td>
+<td><code translate="no" v-pre>Created</code> <code translate="no" v-pre>Changed</code></td>
+<td><strong>no events</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Every platform delivered A, and a same-run control on a native filesystem (APFS, NTFS) produced the same events, so the watchers were working. None delivered B, though the file was visible through the mount once the directory cache expired.</p>
+<p>So the failure mode is the opposite of the one claimed: an event-driven update fires on writes coming <em>through</em> the mount — an *arr import landing in a directory still being assembled — and never fires for the remote-side changes that are the reason to scan at all. It is not that events are unreliable; it is that they report the wrong half of what happens on a debrid mount.</p>
 <h3 id="bandwidth--corrected-under-enforce-only">Bandwidth — corrected under <code translate="no" v-pre>enforce</code> only</h3>
-<p>Each of these makes Plex decode entire files. Harmless on local storage; over a debrid mount every byte is a provider request, and these run across the whole library.</p>
+<p>Each of these makes Plex decode entire files for a result nobody looks at. Harmless on local storage; over a debrid mount every byte is a provider request, and these run across the whole library. Analysis whose output <em>is</em> visible — scrubbing previews, chapter pictures, volume levelling, sonic analysis — sits in the taste tier below instead, where <code translate="no" v-pre>enforce</code> will not touch it.</p>
 <retype-table copy-text="| Preference | Plex default | zurg wants |
 |---|---|---|
 | `ButlerTaskDeepMediaAnalysis` | `1` | `0` |
 | `ButlerTaskUpgradeMediaAnalysis` | `1` | `0` |
-| `LoudnessAnalysisBehavior` | `scheduled` | `never` |
-| `GenerateBIFBehavior` | `never` | `never` |
-| `GenerateChapterThumbBehavior` | `scheduled` | `never` |
 | `GenerateAdMarkerBehavior` | `scheduled` | `never` |
-| `MusicAnalysisBehavior` | `scheduled` | `never` |
 | `GenerateVADBehavior` | `never` | `never` |
 | `GenerateIndexFilesDuringAnalysis` | `0` | `0` |
 | `ButlerTaskGenerateMediaIndexFiles` | `0` | `0` |">
@@ -371,27 +444,7 @@ plex_settings_ignore:
 <td><code translate="no" v-pre>0</code></td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>LoudnessAnalysisBehavior</code></td>
-<td><code translate="no" v-pre>scheduled</code></td>
-<td><code translate="no" v-pre>never</code></td>
-</tr>
-<tr>
-<td><code translate="no" v-pre>GenerateBIFBehavior</code></td>
-<td><code translate="no" v-pre>never</code></td>
-<td><code translate="no" v-pre>never</code></td>
-</tr>
-<tr>
-<td><code translate="no" v-pre>GenerateChapterThumbBehavior</code></td>
-<td><code translate="no" v-pre>scheduled</code></td>
-<td><code translate="no" v-pre>never</code></td>
-</tr>
-<tr>
 <td><code translate="no" v-pre>GenerateAdMarkerBehavior</code></td>
-<td><code translate="no" v-pre>scheduled</code></td>
-<td><code translate="no" v-pre>never</code></td>
-</tr>
-<tr>
-<td><code translate="no" v-pre>MusicAnalysisBehavior</code></td>
 <td><code translate="no" v-pre>scheduled</code></td>
 <td><code translate="no" v-pre>never</code></td>
 </tr>
@@ -415,11 +468,15 @@ plex_settings_ignore:
 </div>
 </retype-table>
 <h3 id="taste--always-reported-never-corrected">Taste — always reported, never corrected</h3>
-<p>There is a feature behind each of these, so zurg only points out when the value chosen is the expensive way to have it.</p>
+<p>There is a feature behind each of these, so zurg says what the value costs and leaves the choice alone. Turning one off unasked would take away something the operator can see, which is not zurg&#x27;s call however much bandwidth it would save. For the first two the cheaper option keeps the feature and moves the work into the maintenance window; for the rest the choice is the feature or the bandwidth.</p>
 <retype-table copy-text="| Preference | Plex default | zurg suggests | Why |
 |---|---|---|---|
 | `GenerateIntroMarkerBehavior` | `asap` | `scheduled` or `never` | `asap` decodes each file the moment it lands, outside any maintenance window. `scheduled` keeps the Skip Intro button and moves the work into the window. |
-| `GenerateCreditsMarkerBehavior` | `asap` | `scheduled` or `never` | The same, for Skip Credits. |">
+| `GenerateCreditsMarkerBehavior` | `asap` | `scheduled` or `never` | The same, for Skip Credits. |
+| `GenerateBIFBehavior` | `never` | `never` | Decodes the whole video to build the image strip shown while scrubbing. Playback does not need it. |
+| `GenerateChapterThumbBehavior` | `scheduled` | `never` | Decodes the file to pull one frame per chapter, for the picture beside each entry in the chapter list. |
+| `LoudnessAnalysisBehavior` | `scheduled` | `never` | Fully decodes every file's audio to measure it, for volume levelling between tracks and titles. |
+| `MusicAnalysisBehavior` | `scheduled` | `never` | Decodes every track — many small files, so this is the request count that gets an account rate-limited. Buys sonic analysis: similar-track mixes and the visualiser. |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -442,6 +499,30 @@ plex_settings_ignore:
 <td><code translate="no" v-pre>asap</code></td>
 <td><code translate="no" v-pre>scheduled</code> or <code translate="no" v-pre>never</code></td>
 <td>The same, for Skip Credits.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>GenerateBIFBehavior</code></td>
+<td><code translate="no" v-pre>never</code></td>
+<td><code translate="no" v-pre>never</code></td>
+<td>Decodes the whole video to build the image strip shown while scrubbing. Playback does not need it.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>GenerateChapterThumbBehavior</code></td>
+<td><code translate="no" v-pre>scheduled</code></td>
+<td><code translate="no" v-pre>never</code></td>
+<td>Decodes the file to pull one frame per chapter, for the picture beside each entry in the chapter list.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>LoudnessAnalysisBehavior</code></td>
+<td><code translate="no" v-pre>scheduled</code></td>
+<td><code translate="no" v-pre>never</code></td>
+<td>Fully decodes every file&#x27;s audio to measure it, for volume levelling between tracks and titles.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>MusicAnalysisBehavior</code></td>
+<td><code translate="no" v-pre>scheduled</code></td>
+<td><code translate="no" v-pre>never</code></td>
+<td>Decodes every track — many small files, so this is the request count that gets an account rate-limited. Buys sonic analysis: similar-track mixes and the visualiser.</td>
 </tr>
 </tbody>
 </table>
@@ -473,10 +554,10 @@ plex_settings_ignore:
                     </div>
             
                     <div class="w-1/2">
-                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../guides/stremio/">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../guides/acquisition/">
                             <span>
                                 <span class="block text-xs font-normal text-right text-base-text-muted">Next</span>
-                                <span class="block mt-1">Stremio addon</span>
+                                <span class="block mt-1">Watchlist and Seerr</span>
                             </span>
                             <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
                         </a>

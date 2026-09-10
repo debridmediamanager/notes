@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841883759113">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.842386562606">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841883759113" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.842386562606" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841883759113" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.842386562606" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841883759113" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841883759113" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.842386562606" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.842386562606" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -376,6 +376,25 @@ docker compose exec zurg /app/zurg doctor --working-dir /config</code></pre>
 </div>
 </retype-table>
 <p>Pulling or recreating the image changes none of these files.</p>
+<p><code translate="no" v-pre>data/rclone-cache</code> is the one that grows. The mount downloads every file it
+reads in full and keeps it after playback ends, up to <strong>256G</strong> by default, so
+the bind directory needs room for the cache on top of everything else. The 72h
+age limit does not bound it in practice — anything that reads the library, a
+media server&#x27;s nightly pass included, counts as touching the file.</p>
+<div id="what-lives-where-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">du -sh ./data/rclone-cache</code></pre>
+</doc-codeblock></div>
+<p>Cap it lower in <code translate="no" v-pre>config.yml</code> when the host disk cannot spare that much:</p>
+<div id="what-lives-where-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">rclone_extra_args:
+  - &quot;--vfs-cache-max-size&quot;
+  - &quot;50G&quot;
+  - &quot;--vfs-cache-min-free-space&quot;
+  - &quot;20G&quot;</code></pre>
+</doc-codeblock></div>
+<p>Changing the host path behind <code translate="no" v-pre>/config</code> renames the cache and strands the old
+copy; zurg reclaims stranded trees at the next start and logs what it freed.
+See <a href="../../reference/config/#disk-the-mount-uses">config.md</a>.</p>
 <h3 id="environment-seeding-for-unattended-installs">Environment seeding for unattended installs</h3>
 <p>The image still supports the older first-run path. If no <code translate="no" v-pre>config.yml</code> exists, <code translate="no" v-pre>TOKEN</code> or <code translate="no" v-pre>RD_TOKEN</code> seeds the account and <code translate="no" v-pre>MOUNT_PATH</code> enables the mount. Those variables are read only while the file is being created; the file wins on every later start.</p>
 <p>The interactive <code translate="no" v-pre>setup</code> command is preferred for a person at a terminal because the token never enters the compose file. Environment seeding remains useful for automation that already has a secret store.</p>

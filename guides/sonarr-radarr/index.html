@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841883759113">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.842386562606">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841883759113" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.842386562606" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841883759113" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.842386562606" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841883759113" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841883759113" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.842386562606" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.842386562606" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -646,7 +646,7 @@ size=4920958828</code></pre>
 <ul>
 <li>The connection test, all four checks, in both clients.</li>
 <li>Grabbing, queue, history, import by rename, and the post-import cleanup.</li>
-<li>Re-grabbing the same release. The job id comes from the NZB&#x27;s filename, so it names the same job rather than a second one.</li>
+<li>Re-grabbing the same release. The job id comes from the NZB&#x27;s filename, so it names the same job rather than a second one. A re-grab of a release an earlier import already emptied is reported <strong>Failed</strong>. Its folder under <code translate="no" v-pre>__magic__</code> has nothing left to import and Failed makes the client blocklist it and take another. The grab that did the emptying keeps reporting Completed until the client deletes it.</li>
 <li>Removing a job from the queue, with or without deleting the NZB.</li>
 <li><code translate="no" v-pre>mode=addurl</code>, for a human or an automation passing a URL instead of uploading. Neither *arr uses it.</li>
 </ul>
@@ -659,6 +659,8 @@ size=4920958828</code></pre>
 </ul>
 <p><strong>The failure signal.</strong> A release with nothing importable in it is reported <strong>Failed</strong>, and both clients blocklist it and grab an alternative. That covers a release whose files are all broken, deleted or filtered away; one holding nothing but <code translate="no" v-pre>.par2</code>, <code translate="no" v-pre>.sfv</code> and sidecars; one whose every file is a shape nothing plays, which is what an obfuscated post naming its RAR set <code translate="no" v-pre>.z001</code>…<code translate="no" v-pre>.z133</code> looks like; and an archive already opened and found to hold no media. A RAR set is content, not scaffolding: zurg streams the video straight out of it. If a release really does carry something zurg has no extension for, widen <code translate="no" v-pre>addl_playable_extensions</code> rather than blocklisting it.</p>
 <p><strong>The articles are checked before a job is reported finished.</strong> Once the library lists the release and its file sizes have settled, zurg asks the news servers for the first article of each content file — one <code translate="no" v-pre>STAT</code> each, on its own goroutine, never inside the poll — and the job stays <strong>Queued</strong> until that answers. A release whose articles are gone is reported <strong>Failed</strong> with a count of what is missing. That is a <em>download</em> failure, which is the one the clients act on: they blocklist it and grab an alternative unattended, rather than importing something that will not play.</p>
+<p><strong>A check that cannot finish does not wait for ever.</strong> Sometimes the check cannot complete at all. The connection pool may be down or the account throttled or the walk out of time. That is not an answer. The job stays <strong>Queued</strong> and is asked about again a minute later. zurg counts the attempts on the job so a restart does not forget them. After thirty failed attempts in a row that span at least three hours the job moves to history as <strong>Failed</strong>. The message carries the count and the span and the last error. An outage of outright refusals reaches thirty inside an hour and does not fail the queue for it.</p>
+<p><strong>A release that leaves the library fails its job.</strong> A release can be deleted from the dashboard or have its NZB removed from the watch directory or be dropped by every account. Its job stays <strong>Queued</strong> for fifteen minutes and then moves to history as <strong>Failed</strong>. The client blocklists it and grabs another. The wait is there for restarts. The library unlists every release while it loads and that must not read as a deletion. Nothing fails on this ground in the first fifteen minutes after zurg starts. A job whose release the library never listed is not affected because it is still arriving.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <retype-table copy-text="| What the \*arr says | What it means |
 |---|---|
@@ -672,7 +674,9 @@ size=4920958828</code></pre>
 | A job stays queued for a poll or two after the release appears | Expected, and it settles once per release. An NZB does not state how long a file is; the estimate is being replaced by the exact length from the PAR2 index or one article's own header. Reporting Completed early is what makes the client throw *File move incomplete, data loss may have occurred*. |
 | A job sits queued for ever | The release never appeared in the library. Check that the NZB parsed — `Loaded NZB &lt;name&gt;: N files` in the log — and that the `nzb` provider is configured at all. |
 | &quot;The release holds no files that can be imported&quot; | The library holds the release but there is nothing in it a client could import. An NZB of nothing but recovery volumes is exactly this, and so is an obfuscated post whose RAR set is named `.z001`…`.z133`. Widen `addl_playable_extensions` if the release really does carry content zurg has no extension for. |
-| Finished releases stay queued during a large burst | More than sixty jobs are ready at once. Sonarr and Radarr only ask for the newest sixty history entries, so zurg holds the surplus in the queue and advances one into history each time an import clears a slot. Expected, and it drains itself. |">
+| Finished releases stay queued during a large burst | More than sixty jobs are ready at once. Sonarr and Radarr only ask for the newest sixty history entries, so zurg holds the surplus in the queue and advances one into history each time an import clears a slot. Expected, and it drains itself. |
+| &quot;The release could not be checked against the news servers&quot; | The article check failed to complete thirty times in a row across at least three hours. Nothing was found missing. The news account could not be asked. The message carries the last error. Look at the account first and re-grab the release once it answers. |
+| &quot;The release was in the library and has since been removed from it&quot; | The library listed the release once and has not listed it for fifteen minutes. Something deleted it and the log says `Release &lt;name&gt; is gone from every account`. The client blocklists it and grabs another rather than waiting for a folder that is not coming back. |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -725,6 +729,14 @@ size=4920958828</code></pre>
 <tr>
 <td>Finished releases stay queued during a large burst</td>
 <td>More than sixty jobs are ready at once. Sonarr and Radarr only ask for the newest sixty history entries, so zurg holds the surplus in the queue and advances one into history each time an import clears a slot. Expected, and it drains itself.</td>
+</tr>
+<tr>
+<td>&quot;The release could not be checked against the news servers&quot;</td>
+<td>The article check failed to complete thirty times in a row across at least three hours. Nothing was found missing. The news account could not be asked. The message carries the last error. Look at the account first and re-grab the release once it answers.</td>
+</tr>
+<tr>
+<td>&quot;The release was in the library and has since been removed from it&quot;</td>
+<td>The library listed the release once and has not listed it for fifteen minutes. Something deleted it and the log says <code translate="no" v-pre>Release &lt;name&gt; is gone from every account</code>. The client blocklists it and grabs another rather than waiting for a folder that is not coming back.</td>
 </tr>
 </tbody>
 </table>

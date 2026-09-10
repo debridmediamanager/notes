@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841883759113">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.842386562606">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841883759113" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.842386562606" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841883759113" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.842386562606" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841883759113" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841883759113" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.842386562606" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.842386562606" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -465,10 +465,27 @@ providers:
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p nzbs
 cp ~/Downloads/Some.Release.2024.2160p.nzb nzbs/</code></pre>
 </doc-codeblock></div>
-<p>Within about 15 seconds zurg re-reads the directory, and within roughly 30 the library refresh notices the new count and files it into your directories. The log says what it read:</p>
+<p>Within a second or two zurg notices the file and reads it, and the library lists it as soon as the read finishes. The log says what it read:</p>
 <div id="3-add-nzb-files-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-none"><code v-pre class="language-none">Loaded NZB Some.Release.2024.2160p.nzb: 94 files</code></pre>
 </doc-codeblock></div>
+<h3 id="how-quickly-it-appears">How quickly it appears</h3>
+<p>zurg watches <code translate="no" v-pre>nzbs/</code> itself, a check about once a second that costs one syscall
+however many NZBs the directory holds, so a file arriving in it is read almost
+at once rather than whenever the next library change check comes round. An
+<doc-anchor-trigger to="#obfuscated-releases">obfuscated release</doc-anchor-trigger> takes a little longer, because its
+real filenames have to be read out of its own articles first — usually well
+under a second — and it is listed the moment that finishes. Neither wait
+depends on <code translate="no" v-pre>check_for_changes_every_secs</code> any more. It used to: an obfuscated
+release was listed up to two whole intervals after it was dropped, one for the
+directory to be read and another because the names had been resolved just after
+the check that would have noticed. Measured at an interval of 10 seconds, that
+was 17.7 seconds from the drop to the release appearing, of which 0.67 seconds
+was the work.</p>
+<p>The periodic check is still there and is still the backstop. It is what catches
+the two things a watched directory cannot report on its own: an NZB <strong>replaced
+in place</strong> under a name it already had, and a filesystem whose directory
+timestamps are too coarse to separate two changes made in the same second.</p>
 <h3 id="what-gets-picked-up">What gets picked up</h3>
 <ul>
 <li>Files <strong>directly inside <code translate="no" v-pre>nzbs/</code></strong> whose name ends in <code translate="no" v-pre>.nzb</code>, case-insensitively.</li>
@@ -515,7 +532,7 @@ nzbs/nzbgeek_download_48213.nzb</code></pre>
 <ul>
 <li><strong>Removing</strong> an NZB from <code translate="no" v-pre>nzbs/</code> removes the release from the library, drops its cached reader and article cache, and forgets any repaired bytes it held.</li>
 <li><strong>Deleting a Usenet release from the Dashboard deletes the <code translate="no" v-pre>.nzb</code> file from disk.</strong> There is nowhere else for it to live. This is not the same as deleting a torrent from a debrid account, where the file stays on the service.</li>
-<li><strong>Replacing an NZB in place is the one thing to avoid.</strong> zurg notices library changes by counting releases and checking the first one&#x27;s id; swapping a file&#x27;s contents while keeping its name changes neither, so the swap may go unseen until something else changes. Remove the old file, let zurg pick up the removal, then add the new one — or restart.</li>
+<li><strong>Replacing an NZB in place is the slow way to do it.</strong> Writing over a file does not change the directory, so the watch above cannot see it; what notices is the periodic change check, which reads the file&#x27;s modification time and re-parses it — up to <code translate="no" v-pre>check_for_changes_every_secs</code> later. Removing the old file and adding the new one is noticed within a second or two, and is what an indexer or the SABnzbd endpoint does anyway.</li>
 </ul>
 <hr>
 <h2 id="4-where-releases-land-in-the-mount">4. Where releases land in the mount</h2>
@@ -701,6 +718,10 @@ PAR2 repair of Some.Release rebuilt 5 slice(s) in 55s, keeping 3.4 MiB of them (
 <li><code translate="no" v-pre>cache_size_mb</code> (512 default) is shared across every file being read. Raise it if you run several concurrent streams; it does not make one stream faster.</li>
 <li>Whether a release is RAR-packed or posted as plain files no longer matters much for throughput.</li>
 </ul>
+<p><strong>One slow article no longer stalls the stream.</strong> A sequential read averaging ~90 MB/s still dips to 1–5 MB/s for about a second at a time, and every one of those dips is the same thing: a single article stops arriving while the other connections finish theirs and go idle, and the read cannot ask for anything further because everything it schedules is measured from the article it is stuck on. When a read has been standing on one article for longer than that reader has learned to expect, zurg now asks a <strong>second connection</strong> for the same article and serves whichever answer arrives first. The bounds are deliberately tight, because a second ask is by definition load the account did not need: the deadline is twice the reader&#x27;s own recent wait, never under 250 ms and never over 2 s; a reader hedges one article at a time and never the same article twice; an account pays for at most 20 of them a minute; and only a read a client is actually waiting on is ever hedged — read-ahead, the next-volume prefetch and repair are not. An article the servers have just <em>refused</em> is not hedged either: that one is already waiting on its own confirmation a second later, and asking inside that window proves nothing. Each hedge writes one line at debug level saying how long the read had blocked, and the line that follows says whether the second ask won.</p>
+<h3 id="crossing-a-volume-boundary">Crossing a volume boundary</h3>
+<p>A file inside a RAR set is served one volume at a time, and each volume is a separate read into the news account. zurg opens the next volume while the current one is still playing and reads its first four megabytes, so a crossing does not start cold. On a release posted in small volumes that head is not enough on its own: four megabytes is about ten articles of a release posted in ~395 KB parts, and volumes of ~26 MB put a boundary every 1.7 seconds of playback — so the stream drained the warm head from memory in a quarter of a second and then waited a round trip for everything behind it. Measured on a Hetzner CCX23 over ten connections on 8 September 2026, that release streamed at <strong>14–16 MB/s</strong> where a plain file on the same account reached <strong>86–99 MB/s</strong>, its one-second rate swinging between 1 and 29 MB/s, while 46 to 55 of the account&#x27;s 60 read-ahead slots sat unused.</p>
+<p>zurg now warms the next volume a whole read-ahead window deep once the stream comes within 32 MiB of the boundary, and a volume the stream has just crossed into keeps the window it earned instead of starting again at two articles. A volume the playhead will not reach for several seconds is still warmed only to its head, which is what keeps a library scan — a reader per entry, a few megabytes of each — from pulling a window of every next volume it will never read. Nothing here needs configuring, and it changes no memory ceiling: an account still carries two read-ahead windows at once, the volume being played and the one being warmed, inside <code translate="no" v-pre>cache_size_mb</code>.</p>
 <p>Repairs are slow by nature — they read the whole release — but they run at background priority and are bounded by the news server rather than by zurg&#x27;s own arithmetic.</p>
 <h3 id="memory-what-a-watch-directory-costs">Memory: what a watch directory costs</h3>
 <p>An NZB is a list of articles, and a big library is a lot of articles. Parsing one keeps its message ids and their offsets in memory so a read can find them, and builds before this one kept every one of them for the life of the process. Measured on a watch directory of 2,636 NZBs — 27.6 million <code translate="no" v-pre>&lt;segment&gt;</code> elements — that is <strong>1.52 GB of live heap</strong>, at about 58 bytes per article, on top of the article cache. Almost none of it is in use: a listing needs names, sizes and counts, and only a file actually being read or repaired needs to know what its articles are called.</p>

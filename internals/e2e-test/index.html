@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841883759113">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.842386562606">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841883759113" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.842386562606" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841883759113" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.842386562606" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841883759113" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841883759113" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.842386562606" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.842386562606" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -313,20 +313,26 @@ Movie '2 Fast 2 Furious (2003)' is playable via Plex</code></pre>
 </retype-table>
 <h2 id="integration-suite">Integration Suite</h2>
 <div id="integration-suite-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">ssh ben@fun
-cd ~/zurg &amp;&amp; make integration-test</code></pre>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">ssh ben@zen
+cd /path/to/isolated/zurg/source
+make integration-test</code></pre>
 </doc-codeblock></div>
-<p><strong>Run it on <code translate="no" v-pre>fun</code>.</strong> It is the only host with all of Go, rclone, FUSE, Plex and
-a Usenet account, so it is the only place all six tests actually execute. Elsewhere the ones that
-cannot run skip — loudly, but they still exit 0, so read the output rather than
-the exit code. <code translate="no" v-pre>zen</code> has Plex but no Go toolchain and no zurg mount, so it
-cannot run the suite at all.</p>
+<p><strong>Run it on an isolated target on <code translate="no" v-pre>zen</code>.</strong> Supply a Go toolchain, shellcheck,
+rclone and the .NET move probe there. The suite creates its own zurg processes
+and mounts; it does not require replacing zen&#x27;s normal zurg service or mount.
+Use a separate source directory, <code translate="no" v-pre>TMPDIR</code>, config, port and <code translate="no" v-pre>MOUNT_PATH</code>.
+Inspect the scratch config before running it and retain the host-wide
+<code translate="no" v-pre>INTEGRATION_LOCK_FILE=/tmp/zurg-integration-rd.lock</code> even with a private
+<code translate="no" v-pre>TMPDIR</code>, so other sessions still serialize with yours.</p>
+<p>Tests whose prerequisites are absent can skip with a successful exit. Read
+their output to verify that FUSE, rclone, Plex and NNTP actually ran.</p>
 <retype-table copy-text="| Test | Needs FUSE | Needs Plex | Needs a Usenet account |
 |------|:----------:|:----------:|:----------------------:|
 | `refresh_repair_integration.sh` | | | |
 | `network_test_cache_integration.sh` | | | |
 | `rclone_mount_integration.sh` | yes | | |
 | `magic_mount_integration.sh` | yes | | |
+| `magic_move_refusal.sh` | yes | | |
 | `plex_integration.sh` | yes | yes | |
 | `nzb_bench_integration.sh` | | | yes |">
 <div class="table-wrapper scrollbar overflow-hidden">
@@ -365,6 +371,12 @@ cannot run the suite at all.</p>
 <td style="text-align: center;"> </td>
 </tr>
 <tr>
+<td><code translate="no" v-pre>magic_move_refusal.sh</code></td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;"> </td>
+</tr>
+<tr>
 <td><code translate="no" v-pre>plex_integration.sh</code></td>
 <td style="text-align: center;">yes</td>
 <td style="text-align: center;">yes</td>
@@ -385,23 +397,24 @@ about this host&#x27;s network path to Real-Debrid&#x27;s CDN rather than about 
 it fails where that path cannot answer regardless of the change under test. Run
 it on purpose with <code translate="no" v-pre>make force-location-test</code>, on a host with working IPv4 to
 the region being forced. See <doc-anchor-trigger to="#force-location-integration-test">Force Location Integration Test</doc-anchor-trigger>.</p>
-<p>The first five drive the same Real-Debrid account — see
+<p>The five tests that use Real-Debrid drive the same account — see
 <doc-anchor-trigger to="#the-real-debrid-test-account-is-shared">the account is shared</doc-anchor-trigger>. The benchmark
 drives a news account instead and touches Real-Debrid not at all, but it takes
 the same host-wide lock as the rest: a run measured beside another suite&#x27;s reads
 is measuring the other suite.</p>
 <p>The mount test runs on a Mac too when macFUSE is installed — it is verified on
 both macFUSE and Linux <code translate="no" v-pre>fusermount</code>. The Plex test needs <code translate="no" v-pre>plex_server_url</code> and
-<code translate="no" v-pre>plex_token</code> in the config it reads, which a laptop&#x27;s <code translate="no" v-pre>config.yml</code> normally
-lacks, so that one is <code translate="no" v-pre>fun</code>-only in practice.</p>
+<code translate="no" v-pre>plex_token</code> in its scratch config, and Plex must be able to traverse every
+parent directory of the scratch mount. A mount beneath a private home
+directory can work for the test user while remaining inaccessible to Plex.</p>
 <p><code translate="no" v-pre>make integration-test</code> builds zurg, runs shellcheck over the scripts, the
 <code translate="no" v-pre>lib.sh</code> self-test and <code translate="no" v-pre>integration/nzbbench</code>&#x27;s unit tests, then runs all seven,
-cheapest first: network test cache, force location, rclone mount, Plex,
-<code translate="no" v-pre>__magic__</code> mount, refresh/repair, and the Usenet benchmark last. The last two
+cheapest first: network test cache, rclone mount, Plex, <code translate="no" v-pre>__magic__</code> mount,
+.NET move-refusal, refresh/repair, and the Usenet benchmark last. The last two
 are the expensive ones — refresh/repair waits out a full library scan, and the
 benchmark reads gigabytes off a news server twice over — so a mistake in any of
 the others should not cost that wait to discover.
-<code translate="no" v-pre>make integration-test-media</code> runs just the three that need a real mount, and
+<code translate="no" v-pre>make integration-test-media</code> runs the rclone, Plex and <code translate="no" v-pre>__magic__</code> mount tests, and
 <code translate="no" v-pre>make nzb-bench-test</code> just the benchmark.</p>
 <p>Each script owns a work dir under <code translate="no" v-pre>$TMPDIR</code>, its own port, and writes zurg&#x27;s log
 there; the suite runs with <code translate="no" v-pre>STREAM_LOGS=false</code>, so only the test&#x27;s own
@@ -748,7 +761,7 @@ mount holds one release rather than the whole account. <code translate="no" v-pr
 |------|-----------|
 | 2 | zurg logs `Successfully connected to Plex server` |
 | 3 | the fixture reaches the library, and if it also surfaces in the mount it must be readable (Plex reads it as its own user) |
-| 4 | a throwaway section is created over `$MOUNT_PATH/movies`, starting empty |
+| 4 | a new throwaway section is created over `$MOUNT_PATH/movies` |
 | 5 | zurg resolves its library path to that section and queues a refresh **for the fixture's path** |
 | 6 | Plex ends up with the item indexed |">
 <div class="table-wrapper scrollbar overflow-hidden">
@@ -770,7 +783,7 @@ mount holds one release rather than the whole account. <code translate="no" v-pr
 </tr>
 <tr>
 <td>4</td>
-<td>a throwaway section is created over <code translate="no" v-pre>$MOUNT_PATH/movies</code>, starting empty</td>
+<td>a new throwaway section is created over <code translate="no" v-pre>$MOUNT_PATH/movies</code></td>
 </tr>
 <tr>
 <td>5</td>
@@ -791,11 +804,14 @@ The test says so and carries on after <code translate="no" v-pre>MOUNT_VISIBLE_T
 steps 5 and 6 already fail if Plex cannot see the file, and asserting that
 invalidation works is the mount test&#x27;s job. <code translate="no" v-pre>PLEX_URL</code> and <code translate="no" v-pre>PLEX_TOKEN</code> override
 the config&#x27;s <code translate="no" v-pre>plex_server_url</code>/<code translate="no" v-pre>plex_token</code>.</p>
+<p>Plex automatically scans a new section and may finish before creation returns.
+The test reports that initial count; step 5 independently checks that zurg
+queues the correct path after an explicit manage request.</p>
 <p>The section is created with <code translate="no" v-pre>agent=tv.plex.agents.none</code> and the <code translate="no" v-pre>Plex Video Files</code> scanner, so Plex indexes locally without consulting an online metadata
 agent, and it is deleted on the way out — including on failure, from the EXIT
-trap. Nothing runs on SIGKILL though, so the run also starts by sweeping any
-<code translate="no" v-pre>zurg-itest-</code> section an earlier killed run left behind. Existing libraries are
-never touched.</p>
+trap. Nothing runs on SIGKILL though, so inspect and remove only your own section
+after a killed run. The harness leaves pre-existing sections alone because they
+may belong to another session. Existing libraries are never touched.</p>
 <p>Step 5 asks zurg to run the side effects via <code translate="no" v-pre>POST /manage/{hash}/scan</code> rather
 than waiting for a refresh pass. The directory-assignment trigger fires once, as
 a torrent is discovered, which is necessarily before the section exists; waiting
@@ -1023,6 +1039,15 @@ account&#x27;s password in cleartext and is deleted when the run ends.</p>
 <li>
 <p>For the mount and Plex tests: <code translate="no" v-pre>fusermount</code>/macFUSE, an rclone binary, and
 <code translate="no" v-pre>user_allow_other</code> in <code translate="no" v-pre>/etc/fuse.conf</code> so Plex can read the mount</p>
+</li>
+<li>
+<p>For the move-refusal check: the corrected rclone from
+<code translate="no" v-pre>scripts/build-rclone-move-fix.sh</code>, set
+through both <code translate="no" v-pre>RCLONE_BIN</code> and <code translate="no" v-pre>RCLONE_TEST_BIN</code>. A newer unpatched upstream
+rclone is not sufficient. See <a href="../rclone-move-refusal/">the MOVE regression</a>.
+Supply a prebuilt helper through <code translate="no" v-pre>DOTNET_MOVE_PROBE_BIN</code>, or Docker to build
+it. When building it as an unprivileged container user, give .NET a writable
+<code translate="no" v-pre>XDG_DATA_HOME</code> as well as its CLI and NuGet cache directories.</p>
 </li>
 <li>
 <p>For the Usenet benchmark: a news account, plus Go, <code translate="no" v-pre>git</code>, <code translate="no" v-pre>tar</code> and <code translate="no" v-pre>make</code> —

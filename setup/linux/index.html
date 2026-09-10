@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841883759113">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.842386562606">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841883759113" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.842386562606" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841883759113" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.842386562606" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841883759113" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841883759113" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.842386562606" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.842386562606" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -259,6 +259,25 @@ ls /mnt/zurg/version.txt</code></pre>
 </doc-codeblock></div>
 <p><code translate="no" v-pre>doctor</code> checks the config and its permissions, both downloaded tools, FUSE, the systemd unit, the HTTP endpoint and the mount reported by zurg.</p>
 <p>A large Real-Debrid library takes time to build on its first run. The service can already be active while the first mount listing waits for that scan to finish.</p>
+<h2 id="disk-the-mount-uses">Disk the mount uses</h2>
+<p>The mount caches every file it reads under <code translate="no" v-pre>~/zurg/data/rclone-cache</code>. It keeps the whole file after playback ends. Left alone that cache grows to <strong>256G</strong> and stays there. It is not cleared when a video stops. The 72h age limit will not save you either. rclone counts a file as touched whenever anything reads it and a media server&#x27;s nightly maintenance pass reads the whole library.</p>
+<p>Check what it holds.</p>
+<div id="disk-the-mount-uses-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">du -sh ~/zurg/data/rclone-cache</code></pre>
+</doc-codeblock></div>
+<p>If 256G is more than the disk can spare then cap it lower in <code translate="no" v-pre>config.yml</code>.</p>
+<div id="disk-the-mount-uses-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">rclone_extra_args:
+  - &quot;--vfs-cache-max-size&quot;
+  - &quot;50G&quot;
+  - &quot;--vfs-cache-min-free-space&quot;
+  - &quot;20G&quot;</code></pre>
+</doc-codeblock></div>
+<p>Restart zurg afterwards. To empty it by hand stop zurg first and then run this.</p>
+<div id="disk-the-mount-uses-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">rm -rf ~/zurg/data/rclone-cache/vfs/* ~/zurg/data/rclone-cache/vfsMeta/*</code></pre>
+</doc-codeblock></div>
+<p>Moving the zurg directory renames the cache and leaves the old copy behind. zurg reclaims those at the next start and logs what it freed. The details and the opt-out are in <a href="../../reference/config/#disk-the-mount-uses">the configuration reference</a>.</p>
 <h2 id="managing-zurg">Managing zurg</h2>
 <p>Run these commands from the zurg directory:</p>
 <div id="managing-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>

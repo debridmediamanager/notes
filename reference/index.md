@@ -3,6 +3,8 @@
 Every configuration option, every tag, and what changed when.
 
 - [Configuration](config.md)
+- [Command line](cli.md)
+- [Outbound identity](outbound-identity.md)
 - [Tags](tags.md)
 - [TorBox limits](torbox-limits.md)
 - [Changelog](changelog.md)

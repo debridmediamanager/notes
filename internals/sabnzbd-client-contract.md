@@ -1544,3 +1544,38 @@ reported verbatim but not classified.
     `DownloadClientRootFolderCheck` to stay quiet (Sonarr only cares about exact equality).
 12. `/mnt/zurg/__magic__` must exist as a directory **on the Sonarr/Radarr host**, not just where the
     emulator runs, or `RemotePathMappingCheck` raises an error. It does not need to be writable.
+
+## Configuring a larger completion window
+
+Both clients default `DownloadClientHistoryLimit` to 60. zurg mirrors that
+window when it keeps completed overflow in `queue`; increasing only the client
+limit would report some jobs in both queue and history, where queue wins.
+
+For a large backlog, set `sabnzbd.history_limit` in zurg and the clients'
+`DownloadClientHistoryLimit` to the same value, for example 500. This exposes
+more completed and failed jobs per poll. Leave zurg at the smallest client
+limit when several clients use different values. This advanced client setting
+is not exposed in the Sonarr v4 download-client configuration API resource;
+back up and stop the client before editing its stored configuration.
+
+```yaml
+sabnzbd:
+  enabled: true
+  history_limit: 500
+```
+
+The default remains 60; zero and negative values use that default. A diagnostic
+history request with a different limit never changes the configured window.
+Warnings that the client cannot resolve still require review; a larger window
+lets other jobs reach import while those warnings occupy history slots.
+
+The availability check before completion samples the first sixteen articles
+and the last article of each content file. This catches a missing article in
+the media header that the former first-article canary missed. It transfers one
+body per release to check article identity, then uses STAT for the remaining
+sample. It does not validate every article or prove that the media decodes.
+STAT requests are batched per file so the sample pays for one pool reservation
+instead of seventeen, without raising the account's connection allowance.
+An unusable batch falls back to individual STATs.
+Server failures leave the job queued for retry; confirmed missing articles
+produce a failed download before the first completion notification.

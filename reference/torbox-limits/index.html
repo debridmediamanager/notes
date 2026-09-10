@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841883759113">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.842386562606">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,11 +37,11 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841883759113" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.842386562606" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841883759113" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.842386562606" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841883759113" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.842386562606" data-turbo-eval="false" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -431,22 +431,22 @@ listing already in hand however old it is, since a finished torrent&#x27;s file
 names and lengths cannot change.</p>
 </li>
 <li>
-<p><strong>The link cache is the main defence, and it is held for a day.</strong> A
-<code translate="no" v-pre>requestdl</code> URL is not a signed grant with a lifetime — it is a deterministic
-address. Measured 2026-08-30: three calls for the same <code translate="no" v-pre>(torrent, file)</code> came
-back byte-identical down to the delivery node, a call an hour later returned
-that same URL, and one minted 3h25m earlier still answered a ranged read with
-<code translate="no" v-pre>206</code>, past the three hours the docs imply. The account&#x27;s API key rides in
-the query string and is what authorises it; nothing in the URL is signed or
-stamped.</p>
-<p>So the cache is held for 24h rather than the old 2h30m, and the number is
-chosen against the scan rather than against a link lifetime. A first library
-scan costs one <code translate="no" v-pre>requestdl</code> per file at 20/min, so it runs for hours — and
-every entry lapsing before it finishes is one the next pass buys again out of
-the same budget. At 2h30m a scan was covered for 2,250 files. The one way a
-cached entry still goes bad is content deleted or aged out of retention,
-which already self-heals: a 404 on a minted URL is read as a revoked link and
-re-resolved.</p>
+<p><strong>The link cache is held for a day, with recovery on explicit refusal.</strong>
+Repeated <code translate="no" v-pre>requestdl</code> calls returned identical URLs in the 2026-08-30 probe,
+including an hour later, and a 3h25m-old URL still served <code translate="no" v-pre>206</code>. That
+establishes reuse, not an unlimited lifetime. On 2026-09-04 a correctly
+authenticated cached URL returned <code translate="no" v-pre>400</code> with “Invalid Presigned Token”,
+while a fresh resolution of the same torrent/file returned a different
+host and path and served <code translate="no" v-pre>206</code>. Its query was unchanged. Moving just the
+old path/query to the new host still returned <code translate="no" v-pre>400</code>.</p>
+<p>The 24h cache remains a budget choice: a scan resolves at 20/min and can
+take hours. An explicit invalid-token refusal now invalidates that URL and
+tries a fresh resolution. Concurrent readers share resolution work, and a
+late refusal cannot evict a newer cached URL. If the freshly resolved URL
+is also refused, playback pauses locally for a minute without condemning
+the file. Generic 400s do not prove a stale URL and only trigger a short
+cooldown. CDN 429s preserve <code translate="no" v-pre>Retry-After</code> and park reads to that host across
+files and verification calls; the API budget remains separate.</p>
 </li>
 <li>
 <p><strong><code translate="no" v-pre>bypass_cache=true</code> on every list call.</strong> TorBox&#x27;s own <code translate="no" v-pre>mylist</code> cache has a
@@ -691,10 +691,10 @@ written must not be able to cause deletions.</p>
                     </div>
             
                     <div class="w-1/2">
-                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../reference/changelog/">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../reference/outbound-identity/">
                             <span>
                                 <span class="block text-xs font-normal text-right text-base-text-muted">Next</span>
-                                <span class="block mt-1">Changelog</span>
+                                <span class="block mt-1">Outbound identity</span>
                             </span>
                             <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
                         </a>

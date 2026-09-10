@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.841883759113">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.842386562606">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.841883759113" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.842386562606" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.841883759113" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.842386562606" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.841883759113" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.841883759113" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.842386562606" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.842386562606" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -231,6 +231,27 @@ NZB has to be fetched and parsed, and an archive&#x27;s interior read — typica
 few seconds, up to a minute or two for an obfuscated post whose naming pass
 has to run. A play that outlasts the wait answers 503 with a Retry-After;
 pressing play again lands on the fast path. Every later play is immediate.</p>
+<p>A release that lists and turns out to hold nothing playable — usually one
+that has aged off the spool, every file marked broken by the news-server
+check — is not the end of the click. The play URL carries the request it was
+minted for, so zurg looks up the same ranked list the stream list showed and
+tries the rows after the one picked, up to two of them, each through the same
+grab-and-list path; the first that plays is what the player is redirected
+into. The rows <em>after</em> the pick on purpose: they are the same resolution and
+smaller, or the resolution below, never a bigger release the user passed over.
+A fallback that is itself still ingesting answers the same 503, and pressing
+play again resolves it — the refused release is refused at once and the
+fallback is found on the fast path. Only that final refusal falls through; a
+503 never does. Each try spends an indexer grab and leaves its release in the
+library like any other grab, which is why the count is small, and when every
+row tried is refused the answer is the 404 it always was. Each fallback is
+logged at info with the release refused and the one tried next.</p>
+<p>Measured against three other usenet-backed Stremio addons on 7 September 2026:
+stremio-addon-findings-2026-09-07.md.
+The short version is that the per-resolution cap fixed what the previous round
+found and coverage still halved, because a five-deep bucket has nowhere to go
+when its first playable entry is a release that has aged off the spool. The
+fallback above is the first fix from that round; the bucket is still five deep.</p>
 <h2 id="search-behaviour">Search behaviour</h2>
 <ul>
 <li>
@@ -244,7 +265,29 @@ costs its results, not the list. Refusals are logged per indexer.</p>
 </li>
 <li>
 <p>Results are deduplicated by release name, ranked resolution-first then size,
-and capped at <code translate="no" v-pre>max_results</code> (default 15).</p>
+and capped at <code translate="no" v-pre>max_results</code> (default 5) <em>per resolution</em>. The cap counts per
+resolution because the sort leads with 2160p: a popular title has more UHD
+releases under the size ceiling than any cap, so counting across the whole
+list answers every popular title with nothing but remuxes, whatever else the
+search found.</p>
+</li>
+<li>
+<p>What each resolution keeps is a spread of its sizes, not its largest few:
+evenly spaced picks from the largest release down to the smallest, both
+always included. Kept from the top, a 1080p tier of five is five remuxes
+between 19 and 30 GB, and the 4 GB encode a phone or a laptop direct-plays
+is exactly what the cap removes — measured on 7 September 2026, three of
+zurg&#x27;s fifteen entries for The Shawshank Redemption were under 6 GB against
+forty such releases on the same indexers. The list stays size-descending
+within a resolution. A release whose size the indexer did not state has no
+place on that axis, so it only fills whatever room the sized releases leave.</p>
+</li>
+<li>
+<p>Each stream&#x27;s description carries the release name, its size, the indexer
+that found it, and how long ago it was posted — <code translate="no" v-pre>3d</code>, <code translate="no" v-pre>126d</code>, <code translate="no" v-pre>2y</code> — when
+the indexer said. Ageing off the news server was the most common reason a
+play failed in the 7 September round, and the post date is the one signal
+a viewer can steer around it with.</p>
 </li>
 <li>
 <p>Releases larger than <code translate="no" v-pre>max_size_gb</code> (default 40) are dropped before ranking —
@@ -282,11 +325,11 @@ will not appear.</p>
             
                 <nav id="retype-nextprev" class="print:hidden flex mt-14">
                     <div class="w-1/2">
-                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../guides/plex/">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../guides/plex-watchlist/">
                             <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
                             <span>
                                 <span class="block text-xs font-normal text-base-text-muted">Previous</span>
-                                <span class="block mt-1">Plex</span>
+                                <span class="block mt-1">Plex watchlist</span>
                             </span>
                         </a>
                     </div>

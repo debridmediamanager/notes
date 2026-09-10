@@ -142,15 +142,15 @@ base_url: "http://192.168.0.123:9999"
 
 ### Accounts
 
-Each entry in `providers` is one account. Any number can run side by side — Real-Debrid, TorBox and AllDebrid together, or several accounts on the same service.
+Each entry in `providers` is one account. Any number can run side by side — Real-Debrid, TorBox, AllDebrid, Premiumize, Debrid-Link and Offcloud together, or several accounts on the same service.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `type` | string | *(required)* | Which backend the account uses: `realdebrid`, `torbox`, `alldebrid`, or `nzb`. |
+| `type` | string | *(required)* | Which backend the account uses: `realdebrid`, `torbox`, `alldebrid`, `premiumize`, `debridlink`, `offcloud`, or `nzb`. |
 | `name` | string | value of `type` | Distinguishes this account from others of the same type. It is the name used by the `provider` filter, the [per-account directory](#per-account-directories), cache paths, and the dashboard. Names must be unique across entries, and `e` is reserved for STRM link routing. |
 | `token` | string | *(required)* | The account's API token or key. Get a Real-Debrid one from http://real-debrid.com/?id=440161, a TorBox one from https://torbox.app/settings, an AllDebrid one from https://alldebrid.com/apikeys. Not used by `nzb`, which authenticates through `nntp` instead. A Real-Debrid token can also be provided via the `TOKEN` or `RD_TOKEN` environment variable to auto-create a config on first run. |
-| `download_tokens` | list | `[]` | Backup API tokens for the same service. When the primary token's daily bandwidth limit is reached, zurg automatically rotates to these tokens to keep downloads flowing. |
-| `strm_link_token` | string | `""` | A separate API token that resolves the reads arriving at the `/strm/` endpoint, so a player opening a `.strm` does not spend the token the live mount streams on. Falls back to `token` if not set. **Real-Debrid and AllDebrid** — the two backends that rotate credentials, and so the two where pinning `.strm` traffic to a key of its own means something. Accepted and unused on `torbox` and `nzb` entries. |
+| `download_tokens` | list | `[]` | **Real-Debrid and AllDebrid:** backup API tokens for the same service, used when the active token's bandwidth allowance is exhausted. They use this entry's catalog, including a [local catalog](#local-debrid-catalogs), without importing the extra accounts' torrent libraries. **TorBox:** accepted, but rotation does not remap account-specific torrent/file IDs; use separate provider entries for different accounts. Unused by NZB. Premiumize, Debrid-Link and Offcloud require separate account entries because their stored file IDs belong to the listing account. |
+| `strm_link_token` | string | `""` | A separate API token that resolves the reads arriving at the `/strm/` endpoint, so a player opening a `.strm` does not spend the token the live mount streams on. Falls back to `token` if not set. **Real-Debrid and AllDebrid** — the two backends that rotate credentials, and so the two where pinning `.strm` traffic to a key of its own means something. Accepted and unused on `torbox` and `nzb` entries. Premiumize, Debrid-Link and Offcloud accept only the account’s own `token` here. |
 | `disabled` | bool | `false` | Keeps an account in the config without loading it. If every entry is disabled, the load fails. |
 | `watchlist` | bool | `false` | Marks the account tried first for new torrent adds (the download-client endpoints). At most one entry may set it, and never an `nzb` one. With none set, the first account that can add torrents is used. Plex watchlist acquisition itself goes through the Usenet backend, not this account — see [Watchlist](#watchlist). |
 | `add_torrents` | bool | `true` | Whether this account is offered new torrents at all — the ones the download-client endpoints are handed, and the ones the Plex watchlist asks for. Set it `false` for an archive account, or one whose quota is spoken for: it goes on serving and reading its library while nothing new is ever put on it. **The order of the `providers:` list is the order the accounts that do take adds are tried in**, so this key and that order are read together; an account marked `watchlist: true` is tried first wherever it sits. Cannot be combined with `watchlist: true` on the same entry, and on an `nzb` entry it is ignored with a startup warning, since a news server is never handed a torrent. See [`qbittorrent`](#qbittorrent-the-torrent-download-client-sonarr-and-radarr-see). |
@@ -174,6 +174,12 @@ providers:
     disabled: true
 ```
 
+TorBox's `download_tokens` setting does not provide the cross-account playback
+fallback that RD and AD locked links allow. Its resolver changes the API key
+while retaining the torrent/file IDs from the existing source. Separate TorBox
+provider entries keep each account's IDs and catalog independent. For a local
+library, put the portable manifests in each entry's own source directory.
+
 #### Usenet accounts
 
 The `nzb` type is Usenet rather than a debrid service: `.nzb` files dropped into the `nzbs/` directory become torrents in the library, and reads are satisfied by fetching articles from your news server and decoding them on demand. Only one enabled `nzb` entry is supported, since both would scan the same directory — extra news servers go under that entry's `nntp.servers` instead, where they serve the same library rather than a second copy of it.
@@ -186,6 +192,8 @@ The `nzb` type is Usenet rather than a debrid service: `.nzb` files dropped into
 | `username` | string | `""` | The account username. |
 | `password` | string | `""` | The account password. |
 | `connections` | int | `8` | The account's concurrent connection allowance. Zurg reads at this number — one connection carries a fraction of a plan's throughput, so streaming saturates the allowance rather than fetching one article at a time. Going over what the plan permits gets connections refused, so set it to the real figure. |
+| `pipeline_depth` | int | `4` | How many articles zurg asks for at once on one connection. The cap is 8. Set it to `1` for a server that cannot handle several commands in flight. zurg drops to 1 by itself with a warning when batches keep tearing. |
+| `socket_receive_buffer_kb` | int | unset | Pins each connection's kernel receive buffer at this many KiB. Leave it unset. A pinned buffer is one the kernel stops tuning. On Linux that holds the receive window near 64 KiB and costs most of the account's throughput over a link with any latency. It exists for kernels that never tune or whose ceiling is set too low. |
 | `cache_size_mb` | int | `512` | How much decoded article data is held in memory, across every file being read rather than per file. |
 | `servers` | list | `[]` | Further news accounts to fall back to, article by article. See [more than one news server](#more-than-one-news-server). |
 
@@ -211,7 +219,7 @@ The keys above describe the first account. Anything under `servers` is a further
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `name` | string | value of `host` | Labels the account in logs. |
-| `host`, `port`, `tls`, `username`, `password`, `connections` | | | As above. Each account has its own connection allowance. |
+| `host`, `port`, `tls`, `username`, `password`, `connections`, `pipeline_depth`, `warm_connections`, `socket_receive_buffer_kb` | | | As above. Each account has its own connection allowance. Pipelining and the receive buffer are set per account because tolerance for them belongs to the server. |
 | `priority` | int | `0` | Who is asked first, lowest first. Accounts sharing a priority are asked in the order written, except that one with a free connection is preferred over one whose allowance is spent — so two equal accounts share the load. |
 | `backup` | bool | `false` | Marks a block account, consulted only once every primary has answered *no such article*. A primary being **busy** is not enough: zurg waits for it rather than spending metered bytes on something an unlimited account would have served. |
 | `backbone` | string | `""` | The article spool this account resolves to. Two accounts on one backbone hold the same articles, so once one has said it lacks an article the other is skipped instead of being asked the same question. |
@@ -280,18 +288,63 @@ Warm opens, streaming throughput and startup time were indistinguishable. `mmap`
 
 Connect zurg to your media server so library updates, metadata matching, and watchlist monitoring work automatically.
 
+### Premiumize, Debrid-Link and Offcloud
+
+```yaml
+providers:
+  - type: premiumize
+    token: YOUR_PREMIUMIZE_API_KEY_OR_OAUTH_TOKEN
+  - type: debridlink
+    token: YOUR_DEBRID_LINK_API_TOKEN
+  - type: offcloud
+    token: YOUR_OFFCLOUD_API_KEY
+```
+
+These backends support library browsing, streamed and redirected reads, STRM,
+magnet adds, `.torrent` uploads and deletion. Each account also appears in its
+own `__<name>__` directory. Add accounts through the dashboard or `zurg setup`;
+unattended setup accepts `--premiumize-token-file`, `--debridlink-token-file`
+and `--offcloud-token-file`, or `PREMIUMIZE_TOKEN`, `DEBRIDLINK_TOKEN` and
+`OFFCLOUD_TOKEN`.
+
+Premiumize mounts completed transfers and cloud files retained after the transfer
+list is cleared. Nested folders keep their paths. Hashes supplied through zurg
+are saved under `data/premiumize/<account>/sources.json` so matching across
+accounts survives a restart or clearing completed transfers. Imported cloud
+content without a recorded hash still streams, but cannot be repaired by hash or
+matched to another account by hash. Deleting a Premiumize transfer through zurg
+also deletes the files owned by that transfer. Cloud storage and fair-use quotas
+remain the account's own limits.
+
+Debrid-Link lists the seedbox with pagination and resolves each file by its ID.
+Its retired cache endpoint is not used; a cached-only add can only establish a
+hit from the add response. Daily add and traffic quota failures are reported as
+account limits. The backend pauses after a flood refusal.
+
+Offcloud resolves file handles through the cloud explore endpoint. File sizes
+are checked against the delivery server and cached torrent metadata supplies
+folder paths where it can be matched unambiguously. An ambiguous file listing is
+reported as an error. Malformed magnets are rejected before submission.
+
+Delivery URLs are refreshed when their cache expires or a read invalidates them.
+Keep generated URLs and STRM access private; provider quotas belong to the
+account serving the bytes. These three backends use one credential per account
+entry and do not rotate through another account's file IDs.
+
 ### Plex Integration
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `plex_server_url` | string | `""` | URL of your Plex server. Required for Plex matching and watchlist features. Example: `http://localhost:32400` |
 | `plex_token` | string | `""` | Your Plex authentication token. Required alongside `plex_server_url`. |
+| `plex_scan_check_url` | string | value of `plex_server_url` | The Plex server zurg asks whether a library scan is running before it restarts the mount. It waits while one is. A mount that vanishes in the middle of a scan makes Plex trash everything it could not see. Set this on an instance that runs no Plex integration of its own. One instance per provider is the usual case. Setting `plex_server_url` there would also start Plex matching. |
+| `plex_scan_check_token` | string | value of `plex_token` | The token for `plex_scan_check_url`. |
 | `plex_match_every_mins` | int | `1440` | How often (in minutes) zurg scans your Plex library to match torrents to Plex items. This enables features like showing which torrents correspond to which Plex media. Minimum 1; `0` falls back to the default. Requires `mount_path` to be set. |
 | `plex_watchlist_enabled` | bool | `false` | Legacy spelling of `watchlist.enabled` (see [Watchlist](#watchlist)); still honoured. |
 | `plex_watchlist_check_every_secs` | int | — | Legacy spelling of `watchlist.check_every_secs`; still honoured when the block does not set one. |
 | `watchlist_quality` | string | `"best"` | Legacy spelling of `watchlist.quality`; still honoured when the block does not set one. |
-| `plex_settings_policy` | string | `"guard"` | How far zurg may go in correcting the Plex preferences that matter for a debrid mount. One of `off` (touch nothing), `warn` (report everything, change nothing), `guard` (fix only the settings whose wrong value loses a library, report the rest) or `enforce` (also fix the settings that make Plex decode whole files). Skip Intro and Skip Credits are only ever reported. See [Plex settings](../guides/plex.md#recommended-plex-settings). |
-| `plex_settings_ignore` | list | — | Plex preference ids zurg leaves alone whatever the policy says, matched case-insensitively. Per setting rather than per tier, so opting out of one does not give up the others beside it. An id naming no setting zurg knows is reported at startup and changes nothing. See [Opting out of one setting](../guides/plex.md#opting-out-of-one-setting). |
+| `plex_settings_policy` | string | `"guard"` | How far zurg may go in correcting the Plex preferences that matter for a debrid mount. One of `off` (touch nothing), `warn` (report everything, change nothing), `guard` (fix only the settings whose wrong value loses a library, report the rest) or `enforce` (also fix the settings that make Plex decode whole files for a result nobody sees). Anything with a visible feature behind it — Skip Intro, Skip Credits, scrubbing previews, chapter pictures, volume levelling, sonic analysis — is only ever reported. See [Plex settings](../guides/plex.md#recommended-plex-settings). |
+| `plex_settings_ignore` | list | — | Plex preference ids zurg leaves alone whatever the policy says, matched case-insensitively. Per setting rather than per tier, so opting out of one does not give up the others beside it. An id naming no setting zurg knows is reported at startup and changes nothing. The dashboard's **Let Plex Empty Its Own Trash** switch writes `autoEmptyTrash` into this list. See [Opting out of one setting](../guides/plex.md#opting-out-of-one-setting). |
 
 > **Note:** Plex is best configured through the Dashboard (web UI) authentication flow; it writes `plex_server_url` and `plex_token` back into `config.yml`. The keys above remain supported for manual configuration.
 
@@ -344,7 +397,7 @@ zurg only ever **reads** this database, through a read-only handle. It never wri
 | `plex_sqlite_binary` | string | `/usr/lib/plexmediaserver/Plex SQLite` | Plex ships its own SQLite build. A stock `sqlite3` can fail on, or damage, this database. |
 | `plex_backups_keep` | int | `5` | Snapshots retained. Each is the size of the whole database. An explicit `0` observes without ever snapshotting. |
 | `plex_backups_every_mins` | int | `15` | Minimum gap between snapshots, so a crash-looping zurg does not copy the database on every restart. |
-| `plex_trash_sweep_every_mins` | int | `0` (off) | How often to remove Plex entries whose files are gone from the mount. **No default is applied** — this one deletes library entries, so it runs only because you set the key. |
+| `plex_trash_sweep_every_mins` | int | unset (see note) | How often to remove Plex entries whose files are gone from the mount. Unset lets zurg decide: removal runs every 60 minutes when nothing else is emptying Plex's trash, and stands down when Plex still is. An explicit `0` keeps zurg's own removal off and leaves the trash to you; a negative value turns the whole sweep off, repairing half included. `0` does **not** hand Plex's own trash emptying back, which is `plex_settings_ignore` and the dashboard's **Let Plex Empty Its Own Trash** switch. See [Who empties the trash](../guides/plex.md#who-empties-the-trash). |
 | `plex_trash_sweep_max_items` | int | `50` | Most entries one sweep may remove. Exceeding it aborts the sweep without removing anything. |
 | `plex_trash_sweep_max_percent` | int | `10` | The same cap as a percentage of what is in the trash, so it scales with library size. |
 | `plex_trash_sweep_min_age_days` | int | `14` | How long an entry keeps its red trash icon before the sweep may remove it — the fallback for entries zurg has no verdict on. A release zurg knows to be permanently dead is removed without the wait, and one still under repair stays regardless of age. An explicit `0` removes as soon as the other guards allow. |
@@ -401,7 +454,7 @@ None of these states touch files. The file was already gone from the mount — t
 
 A snapshot is taken before anything is removed, and a snapshot failure aborts the sweep.
 
-> **Turning it off:** set `plex_trash_sweep_every_mins: 0`, or remove the key. Changing it needs a zurg restart.
+> **Turning it off:** set `plex_trash_sweep_every_mins: 0`, or remove the key. Changing it needs a zurg restart. That turns off zurg's removal only. To have Plex empty its own trash again, use the **Let Plex Empty Its Own Trash** switch on the dashboard, or list `autoEmptyTrash` in `plex_settings_ignore`.
 
 ```yaml
 plex_database_path: "/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db"
@@ -411,7 +464,7 @@ plex_trash_sweep_max_items: 50
 plex_trash_sweep_max_percent: 10
 ```
 
-> **Related Plex setting, outside zurg:** turn **off** Plex's *Settings → Library → Empty trash automatically after every scan*. It is enabled by default in Plex and is unsafe on a zurg mount — a scan that meets a briefly unreadable mount deletes the library permanently instead of parking it in the trash, where it would come back with the mount. zurg warns on the dashboard and in the log when it finds this enabled.
+> **Related Plex setting, outside zurg:** turn **off** Plex's *Settings → Library → Empty trash automatically after every scan*. It is enabled by default in Plex and is unsafe on a zurg mount — a scan that meets a briefly unreadable mount deletes the library permanently instead of parking it in the trash, where it would come back with the mount. zurg turns it off itself under the default `guard` policy, and says so on the dashboard and in the log. If your files move between library folders and you need that cleanup back, the config page's **Let Plex Empty Its Own Trash** switch hands it to Plex again at your own risk.
 
 ### Other Integrations
 
@@ -441,7 +494,7 @@ Controls what files your media server sees and how content is streamed.
 |--------|------|---------|-------------|
 | `disable_stream_proxy` | bool | `false` | When true, a **mount** read is answered with a redirect to the account's own download URL instead of being proxied through zurg. Reduces zurg's CPU and bandwidth but means the client must be able to reach the account's servers directly. Ignored for a backend whose links are served locally — a Usenet file has no URL to hand out, so it is always proxied. |
 | `serve_strm_files` | bool | `false` | When true, zurg serves `.strm` files in place of actual video files in the WebDAV mount. Media servers like Plex/Jellyfin read the `.strm` file to get the streaming URL. **Important:** When enabled, the actual video files are hidden and replaced by `.strm` entries. |
-| `save_strm_files` | bool | `false` | When true, zurg writes `.strm` files to a `strm/` directory alongside the zurg binary. Useful for setups where you want persistent STRM files on disk (e.g., for manual import into a media server). Uses `base_url` for the URLs inside the files. |
+| `save_strm_files` | bool | `false` | When true, zurg writes `.strm` files to a `strm/` directory alongside the zurg binary. Useful for setups where you want persistent STRM files on disk (e.g., for manual import into a media server). Uses `base_url` for the URLs inside the files. Only files a player can open get one — recognised video and audio plus anything `addl_playable_extensions` names — so subtitles, posters, NFOs and PAR2 volumes stay out of the dump, and any an older build wrote there are removed the next time the release is walked. |
 
 ```yaml
 disable_stream_proxy: false
@@ -470,6 +523,7 @@ A `.strm` is opened by a player zurg has no session with, so the endpoint can on
 | `addl_playable_extensions` | list | `[]` | File extensions that zurg should treat as playable media in addition to the built-in video/audio formats. Dots, quotes, and case are normalized by the dashboard. Add extensions like `m3u` or `cbz` if you want those files to be visible and selectable. |
 | `force_select_playable_files` | bool | `false` | When true, zurg automatically selects all playable files in a torrent, even if they weren't originally selected. Works with both built-in video extensions and `addl_playable_extensions`. Useful when torrents have unselected video files you want access to. |
 | `delete_torrent_if_extensions_found` | list | `[]` | If any file in a torrent has one of these extensions, the entire torrent is deleted from RD. Useful for automatically removing torrents that contain unwanted content like `.rar` archives (not RD-extracted ones) or `.zipx` files. |
+| `stream_compressed_archives` | bool | `true` | Serves a file packed inside a compressed archive by decoding it as it is read. The decoder keeps a bounded window in memory. Set `false` to refuse compressed archives the way older builds did. |
 
 Built-in playable formats are `.avi`, `.flv`, `.m2ts`, `.m4v`, `.mkv`, `.mov`, `.mp4`, `.mpg`, `.mpeg`, `.ts`, `.webm`, `.wmv`, `.mp3`, `.flac`, `.m4a`, and `.m4b`.
 
@@ -612,6 +666,7 @@ It needs both halves to be useful — an `nzb` provider to read the NZB, and `ma
 | `sabnzbd.enabled` | bool | `false` | Register the endpoint at `/api` and `/sabnzbd/api`. While off, neither route exists. |
 | `sabnzbd.api_key` | string | generated | The only gate on the endpoint. Sonarr and Radarr send no basic auth, so these routes sit outside it and the key is what stands in. Left empty with the block enabled, zurg generates one, keeps it in `data/sabnzbd-apikey` so it survives a restart, and logs it once at startup. |
 | `sabnzbd.categories` | list | `[tv, movies]` | The categories reported to the clients. Every one of them resolves to the same directory, so this exists only to stop a client warning about a category it cannot find — add whatever you configured in the \*arr. `*` is always reported as well. |
+| `sabnzbd.history_limit` | int | `60` | How many history entries Sonarr and Radarr read. zurg holds finished jobs past this in the queue until a slot frees. Match it to the client's `DownloadClientHistoryLimit` if you raised that. `0` keeps their default of 60. |
 | `sabnzbd.complete_dir` | string | `<mount_path>/__magic__` | The completed directory reported to the clients. It must be the path **the \*arr** sees, which is not zurg's own when the \*arr runs in a container that mounts the library elsewhere. |
 
 ```yaml
@@ -653,6 +708,19 @@ Which account a grab goes to is decided by [`add_torrents`](#accounts) and by th
 
 The API key is the whole of the authentication. Treat the endpoint the way you treat the rest of zurg's port. Put it on a trusted network or behind something that is. Basic auth cannot be used for it. The clients never send it and they read a 401 as a hard authentication failure they never retry.
 
+### The `stremio` addon
+
+zurg can be a Stremio addon that searches your own Newznab indexers and plays through the Usenet backend. It needs an `nzb` provider and at least one indexer. It is off until asked for. Setup and what a play does are in [stremio.md](../guides/stremio.md).
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `stremio.enabled` | bool | `false` | Registers the addon routes under `/stremio/`. While off they answer 404. |
+| `stremio.token` | string | generated | The path segment that gates every addon route. It is the whole authorization. Left empty zurg generates one and keeps it in `data/stremio-token`. |
+| `stremio.indexers` | list | `[]` | Newznab endpoints to search. Each takes `name`, `url`, `api_key` and an optional `api_path`. |
+| `stremio.max_results` | int | `5` | How many releases each resolution keeps after ranking. The cap is per resolution. Each tier keeps a spread from its largest release to its smallest. `0` takes the default. |
+| `stremio.max_size_gb` | int | `40` | Drops releases larger than this before ranking. Releases with no stated size are kept. `0` takes the default. |
+| `stremio.cache_hours` | int | `24` | How long a full answer of five or more results is served from `data/stremio-cache` before the indexers are asked again. Thinner answers are kept for less time. An empty answer is never kept. `0` takes the default. |
+
 ### Media Analysis
 
 | Option | Type | Default | Description |
@@ -678,6 +746,9 @@ The "set it and forget it" section. Controls how zurg keeps your library healthy
 | `restrict_repair_to_cached` | bool | `false` | When true, zurg only uses torrents already cached on Real-Debrid for repairs. This means faster repairs (no waiting for downloads) but may fail if no cached alternative exists. When false, zurg can add uncached torrents that need time to download. |
 | `only_full_torrent_repair` | bool | `false` | When true, repair reinserts the whole torrent with its original file selection or gives up. If that first step fails the torrent is marked broken immediately, skipping the archive and per-file strategies that would otherwise follow. |
 | `check_for_changes_every_secs` | int | `15` | How frequently (in seconds) zurg polls Real-Debrid to detect library changes (new torrents, removed torrents, status changes). Lower values mean faster updates in your media server but more API calls. |
+| `library_resync_every_mins` | int | `10` | How often the change check is rebuilt from a full listing instead of a cheap probe. It is a safety net that catches drift a probe can miss. It is not how often zurg polls. Real-Debrid takes its own path and ignores it. |
+| `library_detail` | string | `resident` | `resident` keeps file details in memory. `lazy` releases idle details. `auto` releases idle details only under sustained memory pressure. All providers share this instance-wide policy. Restart required. See [Library detail](#library-detail). |
+| `library_detail_idle_secs` | int | `300` | Minimum time without a detail read before `lazy` or `auto` may release a table. The sweep runs every 30 seconds. Ignored by `resident`; zero or invalid values use 300. Restart required. |
 | `downloads_every_mins` | int | `720` | How often (in minutes) zurg re-fetches your RD downloads (unrestricted links, file locker links) and mounts them. These are non-torrent downloads from RD. |
 | `delete_error_torrents` | bool | `false` | When true, automatically deletes torrents from RD that are in an error state (e.g., dead torrents that can't be downloaded). Keeps your RD library clean but means the torrent is permanently removed. |
 | `on_library_update` | string | `""` | A shell command executed whenever zurg detects library changes. Each changed directory path is passed as an argument. Commonly used to trigger Plex/Jellyfin library scans on specific folders for faster updates. |
@@ -690,6 +761,8 @@ stalled_download_mins: 10
 restrict_repair_to_cached: false
 only_full_torrent_repair: false
 check_for_changes_every_secs: 15
+library_detail: resident
+library_detail_idle_secs: 300
 downloads_every_mins: 720
 delete_error_torrents: false
 on_library_update: |
@@ -698,6 +771,93 @@ on_library_update: |
       echo "detected update on: $arg"
   done
 ```
+
+### Library detail
+
+**`library_detail: resident` remains the default.** Choose a mode and idle time
+in the dashboard's configuration page or in `config.yml`. Both settings take
+effect after restarting zurg; saving them does not partly switch a running
+library. The policy applies to every provider in the instance.
+
+| Mode | Behavior | Tradeoff |
+|---|---|---|
+| `resident` | Keeps every release's file details in memory. | Predictable access with no detail reloads; highest retained memory. |
+| `lazy` | Releases details after `library_detail_idle_secs` without use. | Reduces idle memory even when RAM is plentiful; accessing cold details costs a reload. |
+| `auto` | Keeps details while memory is plentiful and releases the oldest idle tables under sustained pressure. | Responds to runtime conditions; adds pressure monitoring and less predictable reload latency. |
+
+Names, sizes, renames and visibility remain available to listings in every
+mode. Opening or repairing a file rebuilds released details on demand. `auto`
+does not eagerly reload the library when pressure ends: details return as they
+are used and stay resident until pressure and the idle window allow eviction
+again.
+
+#### Automatic pressure detection
+
+`auto` samples every 30 seconds. Two readings at least 30 seconds apart at or
+above **90%** of a measured budget start eviction, in batches of at most **128
+idle tables** per sweep. Eviction continues until usage reaches **80%** or less,
+then pauses for at least a minute before considering a new episode. Brief
+spikes do not start eviction. The configured idle window always applies.
+
+The tightest available reading drives the decision:
+
+- **Host memory:** total minus available memory, including the OS's estimate of
+  reclaimable caches. A full filesystem cache alone is not a shortage of RAM.
+- **Linux containers and service limits:** cgroup v2 `memory.max` and
+  `memory.high`, or v1 `memory.limit_in_bytes`, with each visible ancestor's
+  own usage. Cold file cache is discounted. Container limits are reread at
+  runtime; private cgroup namespaces can hide limits above the visible root.
+- **An explicit runtime budget:** a positive `memory_limit_mb`, in MiB, compares
+  against Go-managed memory. `GOMEMLIMIT`, when set, takes precedence;
+  `GOMEMLIMIT=off` disables this particular signal. Host and container pressure
+  still apply. The automatic Go ceiling derived from Usenet caches is ignored
+  because it rises with the live heap and does not measure available RAM.
+
+No additional budget is required to enable `auto`:
+
+```yaml
+library_detail: auto
+library_detail_idle_secs: 300
+# Optional explicit Go runtime budget, also used by the collector:
+# memory_limit_mb: 1024
+```
+
+Without a usable measurement, automatic eviction pauses. This is a gradual
+memory optimization, **not a hard memory cap**: active files, unsaved changes,
+recovery snapshots, and other caches may dominate memory, and sudden allocation
+spikes can outpace the sweeper. `memory_limit_mb` remains a soft collector limit;
+setting it below the live data can cause excessive garbage collection.
+
+#### Data integrity and cost
+
+Eviction retains a **compressed recovery snapshot** as well as the existing
+`data/*.zurgtorrent` dump. A disk reload must match that snapshot. If the dump is
+missing, damaged or replaced, zurg restores the snapshot and keeps the release
+resident, then retries saving the recovered data. `auto` also retries idle dirty
+tables when pressure has ended, with a separate bounded save pass. File writes
+and state changes restore ownership immediately, including
+writes through a pointer held by a stream across eviction. Failed saves leave
+changes resident and dirty; overlapping writes are not acknowledged by an older
+save. A successful save is still required for changes to survive a process exit.
+
+Measured on an Apple Silicon Mac with Go 1.26.4, using 500 releases per shape
+through the conversion and persistence paths, including the recovery snapshot:
+
+| Shape | Resident bytes/entry | Lazy bytes/entry | Reduction | Average rebuild |
+|---|---:|---:|---:|---:|
+| Real-Debrid movie, 3 files | 3,662 | 2,845 | 22% | 88 µs |
+| Real-Debrid season pack, 24 files | 15,670 | 7,366 | 53% | 371 µs |
+| TorBox, 2 files | 3,019 | 2,680 | 11% | 56 µs |
+| AllDebrid, 1 file | 2,580 | 2,516 | 2% | 55 µs |
+| RAR set, 7 volumes | 5,343 | 3,303 | 38% | 109 µs |
+
+These are retained heap figures per release, not whole-process RSS. Rebuilds
+read recently written local files; cold or remote storage can take longer.
+Choose `lazy` for consistent idle reclamation or `auto` to reclaim only under
+pressure. Keep `resident` when predictable access matters more than RAM. Small
+releases save little, and the recovery snapshot deliberately spends memory to
+protect data. These measurements describe evicted entries in both `lazy` and
+`auto`; automatic mode may retain more entries at any given time.
 
 ## 5. Network & Connectivity (Technical)
 
@@ -777,6 +937,7 @@ proxy: "http://[username:password@]host:port"
 | `rclone_binary` | string | `"rclone"` | Path to the rclone executable. Only needed if rclone is not on your system PATH. |
 | `rclone_extra_args` | list | `[]` | Additional command-line flags passed to the rclone mount command. Use this to override zurg's benchmark-optimized VFS defaults (see table below). Each entry is a single flag string. The RC settings and the `--union-*`/`--webdav-*` backend flags are refused: zurg constructs those itself, and a flag would outrank what it builds (`union_writable` would stop describing the mount). |
 | `mount_read_only` | bool | `false` | When true, the mount is started with rclone's `--read-only`, so the kernel refuses a write before it ever reaches zurg. Nothing else gates a mount DELETE, so this is the only way to refuse one — though it does not cover clients talking to the WebDAV endpoint directly — and it additionally stops a stray write from landing in the mount's local union upstream. Override it per-flag with `rclone_extra_args: ["--read-only=false"]`. |
+| `rclone_cache_reclaim` | bool | `true` | Whether zurg deletes the VFS cache trees left behind by an earlier mount configuration. rclone names its cache after the remote, and that name hashes the union upstreams, which carry the absolute path of `data/local` — so moving the zurg directory or flipping `union_writable` renames the cache and strands the old tree where no cap counts it and no cleaner visits it. At mount start zurg asks the running rclone which tree is live and removes the rest, logging what it freed; it does nothing unless the live tree is where rclone says it is, and skips the sweep entirely when `rclone_extra_args` sets `--cache-dir`. Set it to `false` to keep every stranded tree. See [Disk the mount uses](#disk-the-mount-uses). |
 | `union_writable` | string | `"local"` | Which side of the embedded mount's union a created file is written to. `local`, the default, puts it straight onto the local upstream (`data/local`) without zurg seeing it. `server` lists the WebDAV upstream first, so the create arrives at zurg: refused outside `__magic__`, written as a size-capped sidecar inside it. A refused write never reaches the disk — rclone's VFS cache accepts it and retries the upload on a backoff, so it is bounded by the cache cap and visible in `logs/rclone.log`, where the local order would have put unbounded bytes in `data/local`. One caveat measured under `server`: renaming a sidecar file through the mount can answer an error (the file is visible on both upstreams, so rclone applies the move to each); release moves inside `__magic__` — the \*arr import path — are unaffected. Switching to `server` changes where *new* creates go and nothing else: whatever the local order already wrote to `data/local` stays until you delete it. The line zurg logs at startup names the live mode (`new files go to zurg over WebDAV (union_writable: server)`), so it is the thing to check rather than the presence of the `data/local` path, which is part of the union under either order. |
 
 ```yaml
@@ -784,6 +945,7 @@ rclone_enabled: false
 rclone_binary: "rclone"
 rclone_extra_args: []
 mount_read_only: false
+rclone_cache_reclaim: true
 union_writable: "local"
 ```
 
@@ -802,7 +964,7 @@ Zurg uses benchmark-tested rclone VFS settings optimized for streaming performan
 | `--vfs-cache-mode` | full | Full caching for best performance |
 | `--vfs-cache-max-size` | 256G | Hard cap on the on-disk VFS cache. Not a config key — override it with `rclone_extra_args`. |
 | `--vfs-cache-min-free-space` | 10G | Stops caching before the cache disk fills |
-| `--vfs-cache-max-age` | 72h | How long an untouched cached file is kept |
+| `--vfs-cache-max-age` | 72h | How long an untouched cached file is kept. Untouched is the operative word, and a media server rarely leaves anything untouched — see [Disk the mount uses](#disk-the-mount-uses). |
 | `--vfs-cache-poll-interval` | 1m | Responsive cache updates |
 | `--vfs-fast-fingerprint` | on | Identifies files without hashing them |
 | `--dir-cache-time` | 12h | Listings hold for hours; zurg forgets affected entries over the RC API when the library changes, so media-server scans stay warm |
@@ -818,6 +980,75 @@ Zurg uses benchmark-tested rclone VFS settings optimized for streaming performan
 | `--log-file` | `logs/rclone.log` | Resolved against the working directory |
 
 `--vfs-cache-max-size`, `--vfs-cache-min-free-space`, `--low-level-retries`, `--retries`, `--log-level`, `--cache-dir` and `--log-file` are constants in `internal/rclone/manager.go`; every other row comes from `tuneVFSOptions` in `internal/rclone/tuning.go` — `--vfs-cache-max-age` and `--vfs-cache-poll-interval` included, despite the names.
+
+### Disk the mount uses
+
+`--vfs-cache-mode full` means a file read through the mount is downloaded **in
+full** to `data/rclone-cache` and kept there after playback ends. It is not a
+playback scratch buffer that empties when the video stops. Left alone, the cache
+grows to `--vfs-cache-max-size`, which defaults to **256G**, and stays there.
+
+Two limits are supposed to bound it, and in practice only one does:
+
+- `--vfs-cache-max-size` (256G) is the real bound. Set it to no more than half
+  the free space on whatever disk `data/` sits on.
+- `--vfs-cache-max-age` (72h) evicts a file nothing has touched for three days.
+  rclone measures that from its own record in `data/rclone-cache/vfsMeta/`, not
+  from the filesystem's atime, and **anything that reads the library refreshes
+  it**. A Plex server with scheduled tasks enabled reads every cached file
+  during its nightly maintenance window, so on 2026-09-09 an instance whose
+  cache held 362 files had an ATime from that same morning on every one of
+  them. Nothing had aged out in months, and nothing ever would. Do not plan
+  around age eviction; plan around the size cap.
+
+Lower the cap with `rclone_extra_args`:
+
+```yaml
+rclone_extra_args:
+  - "--vfs-cache-max-size"
+  - "50G"
+  - "--vfs-cache-min-free-space"
+  - "20G"
+```
+
+`--vfs-cache-min-free-space` (10G by default) stops caching when the disk gets
+that close to full. Keep it well above zero on a disk shared with anything else.
+
+To reclaim the cache by hand, stop zurg first, then empty both trees:
+
+```bash
+rm -rf data/rclone-cache/vfs/* data/rclone-cache/vfsMeta/*
+```
+
+Measure it with `du -sh data/rclone-cache`. Partially downloaded entries are
+sparse files, so a size that counts apparent bytes reports far more than the
+disk actually holds.
+
+#### Caches stranded by a move
+
+rclone names its cache after the remote it is caching, and that name carries a
+hash of the remote's configuration. Zurg's remote is a union whose upstreams
+embed the absolute path of `data/local`, so the name moves when the
+configuration does:
+
+| Union upstreams | Cache tree |
+|---|---|
+| `/home/ben/zurg/data/local :webdav:` | `vfs/zurg{t8Hwq}` |
+| `:webdav: /home/ben/zurg/data/local` (`union_writable: server`) | `vfs/zurg{K45Mp}` |
+| `/other/root/data/local :webdav:` (zurg moved) | `vfs/zurg{jFPsL}` |
+
+rclone only ever accounts for the tree it is using. A tree under an old name is
+counted against no cap, visited by no cleaner, and deleted by nothing — so
+moving the zurg directory, or an external drive that comes back under a new
+mount point, leaves a whole cache behind. Several such moves is how an install
+with a 256G cap ends up holding multiple terabytes.
+
+Zurg reclaims those trees at mount start: it asks the running rclone which tree
+is live and deletes the rest, logging what it freed. It does nothing unless the
+live tree is on disk where rclone says it is, and it skips the sweep entirely
+when `rclone_extra_args` sets `--cache-dir`, since a directory you chose may be
+shared with another zurg. Set `rclone_cache_reclaim: false` to turn it off and
+keep every stranded tree.
 
 Four more are added by platform, all of them on Linux: `--allow-other` and `--allow-non-empty` always, `--uid` and `--gid` only when the running user's ids can be read. `--max-read-ahead` is passed everywhere except Windows, and `--read-only` whenever [`mount_read_only`](#rclone-settings) is set.
 
@@ -836,7 +1067,14 @@ RC flags (`--rc`, `--rc-addr`, and anything else starting with `rc-`) are reject
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `user_agent` | string | Chrome UA | The HTTP User-Agent header sent with all requests to Real-Debrid. The default mimics a standard Chrome browser. Change this only if RD is blocking your requests or you have a specific reason. |
+| `user_agent` | string | Chrome UA | Shared HTTP User-Agent for providers, indexers, ffprobe and outbound integrations. Blank restores the generic browser default; explicit custom values are sent as entered. Requires restart. See [outbound request identity](outbound-identity.md). |
+| `omit_user_agent` | boolean | `false` | Suppress the HTTP User-Agent (ffprobe uses an empty value), overriding `user_agent`. Requires restart. |
+| `outbound_client_name` | string | `"Media Client"` | Product/client name for media-server integrations where supported. Blank restores the default. Requires restart. |
+| `outbound_client_id` | string | `"media-client"` | Plex client identifier, including sign-in for media-server integrations where supported. Blank restores the default. Requires restart. |
+| `outbound_client_version` | string | `"1.0"` | Client version for media-server integrations where supported. Blank restores the default. Requires restart. |
+| `outbound_device_name` | string | `"Media Client"` | Device name for media-server integrations where supported. Blank restores the default. Requires restart. |
+| `outbound_device_id` | string | `"media-client"` | Jellyfin/Emby device identifier for media-server integrations where supported. Blank restores the default. Requires restart. |
+| `outbound_platform` | string | `"Desktop"` | Plex platform for media-server integrations where supported. Blank restores the default. Requires restart. |
 | `force_ipv6` | bool | `false` | Forces all of zurg's network tests and host selection to use IPv6. Enable this if your network has better IPv6 connectivity to RD servers (e.g., some ISPs throttle IPv4 but not IPv6). |
 | `unrestrict_ip` | string | `""` | The IP address to pass to RD when unrestricting download links. Useful in multi-network setups where you want downloads to be generated for a specific IP (e.g., a VPN exit IP) rather than the IP zurg is running on. |
 | `dns_servers` | list | `[]` (system DNS) | Custom DNS servers for resolving RD hostnames. Useful if your system DNS is slow, unreliable, or blocked by your ISP. Leave empty to use the system resolver. Must include the port (e.g., `1.1.1.1:53`). |
@@ -881,6 +1119,17 @@ zrok_api_endpoint: ""    # self-hosted only; empty = the hosted service
 ## 6. Performance & Tuning (Advanced)
 
 These settings are rarely touched unless debugging or optimizing for your specific network conditions.
+
+### Persistent read caches
+
+Two byte caches survive a restart. Both are shared across the instance and each has its own disk budget in MiB. A change takes effect after a restart.
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `nzb_article_disk_cache_mb` | int | `512` | Decoded Usenet articles kept in `data/bytecache/articles/`. An article read once is served from disk the next time. `0` turns it off. |
+| `archive_decoded_disk_cache_mb` | int | `512` | Decompressed archive blocks kept in `data/bytecache/decoded/`. A backward seek or a restart does not decode from the start of the entry again. `0` turns it off. |
+
+The oldest unused records go first when a budget fills. [persistent-caches.md](../internals/persistent-caches.md) covers every cache that survives a restart.
 
 ### CDN & Host Selection
 
@@ -1066,3 +1315,36 @@ The directory is named after the account's `name`, which defaults to its `type`.
 Because the same release appears under every account holding it as well as in your filtered directories, point a media server at one part of the mount rather than all of it, or it will scan the same content several times.
 
 An account named after a directory zurg already uses (`all`, `unplayable`, `dump`, `downloads`) gets no per-account directory, and zurg logs a warning at startup rather than taking the existing one over.
+
+### Local debrid catalogs
+
+Each debrid provider entry accepts an optional `library` block:
+
+```yaml
+providers:
+  - name: rd-local
+    type: realdebrid
+    token: PRIMARY_RD_TOKEN
+    download_tokens: # Optional bandwidth fallback.
+      - SECOND_RD_TOKEN
+    library:
+      source: local
+      path: torrents/rd-local
+```
+
+`source` defaults to `provider`. With `local`, portable `.zurgtorrent` files own
+membership and playback uses this account's credentials. `path` defaults to
+`torrents/<resolved-account-name>` and must stay under `torrents/`. The same
+source directory cannot belong to two enabled accounts. NZB providers retain
+their existing `nzbs/` library.
+
+In this example, both RD tokens serve the one catalog in `torrents/rd-local/`.
+The second token needs no provider entry or directory, and its torrent library
+is not imported. `download_tokens` keeps its bandwidth-fallback behavior; it
+does not force every download through the second token. Two separate local
+provider entries instead own two distinct catalog directories, even when both
+are Real-Debrid. Credentials stay in the config and are never exported into
+portable files.
+
+See [portable libraries](../guides/local-libraries.md) for offline export, migration
+from `dump/`, sharing semantics and playback limits.
