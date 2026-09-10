@@ -66,6 +66,10 @@ TorBox also accepts `download_tokens`, but its token rotation does not map the
 stored torrent/file IDs to IDs on the other account. Use separate TorBox
 provider entries for separate accounts, each with its own local catalog.
 
+Premiumize, Offcloud and Debrid-Link accounts can hold a local library too. None of them has a
+portable file reference. So like TorBox each one adds the hash to its own account on first
+playback and matches the files by path and size. Use one provider entry per account.
+
 Restart after changing account configuration. File additions, replacements and
 removals are picked up by the normal refresh loop. Each directory is scanned
 one level deep. Paths must be distinct directories below `torrents/`, so normal
@@ -101,6 +105,7 @@ and selected file paths, sizes and optional renames. References are optional:
 | Real-Debrid | Canonical 13-character `https://real-debrid.com/d/...` | Resolve with the recipient's credentials and download IP. |
 | AllDebrid | Locked `https://alldebrid.com/f/...` | Unlock with the recipient's credentials. |
 | TorBox | Hash and file paths/sizes | Obtain a recipient-side torrent on first playback and match its files by path and size. |
+| Premiumize, Offcloud, Debrid-Link | Hash and file paths/sizes | Add the hash on the recipient's account on first playback and match its files by path and size. |
 
 No account names, credentials, provider torrent/file IDs, CDN URLs, MediaInfo
 input URLs, Plex IDs, repair state or deletion queues are exported. The importer
@@ -117,8 +122,9 @@ locations, active slots, quotas and rate limits still apply.
 RD and AD use shared locked references when present. Hash-only manifests, and
 an RD reference the API definitively reports missing, can establish content on
 the recipient's account. TorBox always needs that account attachment and first reuses a matching torrent already on the recipient account. Adds use
-the existing provider pacing, check the active allowance and are serialized per
-account. An uncertain add is held for 30 minutes before another attempt; a
+the existing provider pacing and are serialized per account. An add waits for a free
+slot when the account reports its slot count or zurg knows it. AllDebrid, Premiumize and
+Offcloud report none, so the add goes ahead and a full account refuses it. An uncertain add is held for 30 minutes before another attempt; a
 preparing torrent is checked only when playback is requested again.
 
 Recipient IDs and resolved native file handles stay privately in
