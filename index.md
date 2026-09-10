@@ -40,6 +40,10 @@ Working with the library.
 - [Plex](guides/plex.md) — what zurg does with a Plex token, and what it deliberately does not
 - [Jellyfin](guides/jellyfin.md) — the same, for Jellyfin
 - [The Stremio addon](guides/stremio.md) — Stremio searching your own indexers, playing straight out of the Usenet backend
+- [Watchlist and Seerr](guides/acquisition.md) fetches what you ask for through your own indexers
+- [Plex watchlist](guides/plex-watchlist.md) is the Plex side of that
+- [Local libraries](guides/local-libraries.md) plays a shared list of releases through your own account
+- [Android and Google TV](guides/android.md) runs the whole library on a phone or a TV box
 
 ## Migrating
 
@@ -54,6 +58,8 @@ Moving an existing library onto zurg without a re-download or a re-scan.
 ## Reference
 
 - [Configuration](reference/config.md) — every option in `config.yml`
+- [Command line](reference/cli.md) lists every command and flag the binary takes
+- [Outbound identity](reference/outbound-identity.md) says what zurg tells the services it calls about itself
 - [Tags](reference/tags.md) — what gets applied to a torrent, and why
 - [TorBox limits](reference/torbox-limits.md) — where TorBox differs from Real-Debrid, and how zurg adapts
 - [Changelog](reference/changelog.md) — what changed when
@@ -68,6 +74,8 @@ How zurg is built, what it was measured at, and the design notes behind the awkw
 - [SABnzbd client contract](internals/sabnzbd-client-contract.md) — the exact shapes Sonarr and Radarr expect
 - [Plex trash sweep](internals/plex-trash-sweep.md) · [Stream timeout regression](internals/stream-timeout-regression.md) · [Directory config UI/UX](internals/uiux.md)
 - [E2E testing](internals/e2e-test.md) · [Real-Debrid API notes](internals/realdebrid-behavior.md)
+- [qBittorrent client contract](internals/qbittorrent-client-contract.md) · [TorBox news server](internals/torbox-news-server.md) · [ElfHosted news server](internals/elfhosted-news-server.md)
+- [Persistent caches](internals/persistent-caches.md) · [Naming](internals/naming.md) · [rclone move refusal](internals/rclone-move-refusal.md)
 
 ---
 

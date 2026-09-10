@@ -20,4 +20,7 @@ How zurg is built, what it was measured at, and the design notes behind the awkw
 - [Directory config UI/UX](uiux.md)
 - [E2E testing](e2e-test.md)
 - [Real-Debrid API notes](realdebrid-behavior.md)
+- [Persistent caches](persistent-caches.md)
+- [Naming](naming.md)
+- [rclone move refusal](rclone-move-refusal.md)
 - [plex_api.json](plex_api.json) — the raw Plex API surface zurg codes against (1.2 MB)
