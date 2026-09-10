@@ -420,7 +420,7 @@ Works:
 
 - The connection test, all four checks, in both clients.
 - Grabbing, queue, history, import by rename, and the post-import cleanup.
-- Re-grabbing the same release. The job id comes from the NZB's filename, so it names the same job rather than a second one.
+- Re-grabbing the same release. The job id comes from the NZB's filename, so it names the same job rather than a second one. A re-grab of a release an earlier import already emptied is reported **Failed**. Its folder under `__magic__` has nothing left to import and Failed makes the client blocklist it and take another. The grab that did the emptying keeps reporting Completed until the client deletes it.
 - Removing a job from the queue, with or without deleting the NZB.
 - `mode=addurl`, for a human or an automation passing a URL instead of uploading. Neither \*arr uses it.
 
@@ -434,6 +434,10 @@ Does not:
 **The failure signal.** A release with nothing importable in it is reported **Failed**, and both clients blocklist it and grab an alternative. That covers a release whose files are all broken, deleted or filtered away; one holding nothing but `.par2`, `.sfv` and sidecars; one whose every file is a shape nothing plays, which is what an obfuscated post naming its RAR set `.z001`…`.z133` looks like; and an archive already opened and found to hold no media. A RAR set is content, not scaffolding: zurg streams the video straight out of it. If a release really does carry something zurg has no extension for, widen `addl_playable_extensions` rather than blocklisting it.
 
 **The articles are checked before a job is reported finished.** Once the library lists the release and its file sizes have settled, zurg asks the news servers for the first article of each content file — one `STAT` each, on its own goroutine, never inside the poll — and the job stays **Queued** until that answers. A release whose articles are gone is reported **Failed** with a count of what is missing. That is a *download* failure, which is the one the clients act on: they blocklist it and grab an alternative unattended, rather than importing something that will not play.
+
+**A check that cannot finish does not wait for ever.** Sometimes the check cannot complete at all. The connection pool may be down or the account throttled or the walk out of time. That is not an answer. The job stays **Queued** and is asked about again a minute later. zurg counts the attempts on the job so a restart does not forget them. After thirty failed attempts in a row that span at least three hours the job moves to history as **Failed**. The message carries the count and the span and the last error. An outage of outright refusals reaches thirty inside an hour and does not fail the queue for it.
+
+**A release that leaves the library fails its job.** A release can be deleted from the dashboard or have its NZB removed from the watch directory or be dropped by every account. Its job stays **Queued** for fifteen minutes and then moves to history as **Failed**. The client blocklists it and grabs another. The wait is there for restarts. The library unlists every release while it loads and that must not read as a deletion. Nothing fails on this ground in the first fifteen minutes after zurg starts. A job whose release the library never listed is not affected because it is still arriving.
 
 ## Troubleshooting
 
@@ -450,6 +454,8 @@ Does not:
 | A job sits queued for ever | The release never appeared in the library. Check that the NZB parsed — `Loaded NZB <name>: N files` in the log — and that the `nzb` provider is configured at all. |
 | "The release holds no files that can be imported" | The library holds the release but there is nothing in it a client could import. An NZB of nothing but recovery volumes is exactly this, and so is an obfuscated post whose RAR set is named `.z001`…`.z133`. Widen `addl_playable_extensions` if the release really does carry content zurg has no extension for. |
 | Finished releases stay queued during a large burst | More than sixty jobs are ready at once. Sonarr and Radarr only ask for the newest sixty history entries, so zurg holds the surplus in the queue and advances one into history each time an import clears a slot. Expected, and it drains itself. |
+| "The release could not be checked against the news servers" | The article check failed to complete thirty times in a row across at least three hours. Nothing was found missing. The news account could not be asked. The message carries the last error. Look at the account first and re-grab the release once it answers. |
+| "The release was in the library and has since been removed from it" | The library listed the release once and has not listed it for fifteen minutes. Something deleted it and the log says `Release <name> is gone from every account`. The client blocklists it and grabs another rather than waiting for a folder that is not coming back. |
 
 ### Where the state lives
 
