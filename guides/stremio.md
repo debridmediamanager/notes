@@ -70,6 +70,29 @@ few seconds, up to a minute or two for an obfuscated post whose naming pass
 has to run. A play that outlasts the wait answers 503 with a Retry-After;
 pressing play again lands on the fast path. Every later play is immediate.
 
+A release that lists and turns out to hold nothing playable — usually one
+that has aged off the spool, every file marked broken by the news-server
+check — is not the end of the click. The play URL carries the request it was
+minted for, so zurg looks up the same ranked list the stream list showed and
+tries the rows after the one picked, up to two of them, each through the same
+grab-and-list path; the first that plays is what the player is redirected
+into. The rows *after* the pick on purpose: they are the same resolution and
+smaller, or the resolution below, never a bigger release the user passed over.
+A fallback that is itself still ingesting answers the same 503, and pressing
+play again resolves it — the refused release is refused at once and the
+fallback is found on the fast path. Only that final refusal falls through; a
+503 never does. Each try spends an indexer grab and leaves its release in the
+library like any other grab, which is why the count is small, and when every
+row tried is refused the answer is the 404 it always was. Each fallback is
+logged at info with the release refused and the one tried next.
+
+Measured against three other usenet-backed Stremio addons on 7 September 2026:
+stremio-addon-findings-2026-09-07.md.
+The short version is that the per-resolution cap fixed what the previous round
+found and coverage still halved, because a five-deep bucket has nowhere to go
+when its first playable entry is a release that has aged off the spool. The
+fallback above is the first fix from that round; the bucket is still five deep.
+
 ## Search behaviour
 
 - Movies search `t=movie`, episodes `t=tvsearch` with `season`/`ep`, both by
@@ -78,7 +101,25 @@ pressing play again lands on the fast path. Every later play is immediate.
 - Indexers are searched in parallel; one refusing (a burst limit, a dead key)
   costs its results, not the list. Refusals are logged per indexer.
 - Results are deduplicated by release name, ranked resolution-first then size,
-  and capped at `max_results` (default 15).
+  and capped at `max_results` (default 5) *per resolution*. The cap counts per
+  resolution because the sort leads with 2160p: a popular title has more UHD
+  releases under the size ceiling than any cap, so counting across the whole
+  list answers every popular title with nothing but remuxes, whatever else the
+  search found.
+- What each resolution keeps is a spread of its sizes, not its largest few:
+  evenly spaced picks from the largest release down to the smallest, both
+  always included. Kept from the top, a 1080p tier of five is five remuxes
+  between 19 and 30 GB, and the 4 GB encode a phone or a laptop direct-plays
+  is exactly what the cap removes — measured on 7 September 2026, three of
+  zurg's fifteen entries for The Shawshank Redemption were under 6 GB against
+  forty such releases on the same indexers. The list stays size-descending
+  within a resolution. A release whose size the indexer did not state has no
+  place on that axis, so it only fills whatever room the sized releases leave.
+- Each stream's description carries the release name, its size, the indexer
+  that found it, and how long ago it was posted — `3d`, `126d`, `2y` — when
+  the indexer said. Ageing off the news server was the most common reason a
+  play failed in the 7 September round, and the post date is the one signal
+  a viewer can steer around it with.
 - Releases larger than `max_size_gb` (default 40) are dropped before ranking —
   the resolution-first sort would otherwise put full-disc UHD remuxes at the
   top of every list. Sizes the indexer did not state are kept. The gate is

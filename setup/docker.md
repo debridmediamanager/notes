@@ -224,6 +224,30 @@ Everything zurg writes resolves against `/config`, so the single `./:/config` bi
 
 Pulling or recreating the image changes none of these files.
 
+`data/rclone-cache` is the one that grows. The mount downloads every file it
+reads in full and keeps it after playback ends, up to **256G** by default, so
+the bind directory needs room for the cache on top of everything else. The 72h
+age limit does not bound it in practice — anything that reads the library, a
+media server's nightly pass included, counts as touching the file.
+
+```bash
+du -sh ./data/rclone-cache
+```
+
+Cap it lower in `config.yml` when the host disk cannot spare that much:
+
+```yaml
+rclone_extra_args:
+  - "--vfs-cache-max-size"
+  - "50G"
+  - "--vfs-cache-min-free-space"
+  - "20G"
+```
+
+Changing the host path behind `/config` renames the cache and strands the old
+copy; zurg reclaims stranded trees at the next start and logs what it freed.
+See [config.md](../reference/config.md#disk-the-mount-uses).
+
 ### Environment seeding for unattended installs
 
 The image still supports the older first-run path. If no `config.yml` exists, `TOKEN` or `RD_TOKEN` seeds the account and `MOUNT_PATH` enables the mount. Those variables are read only while the file is being created; the file wins on every later start.

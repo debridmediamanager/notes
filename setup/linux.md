@@ -123,6 +123,34 @@ ls /mnt/zurg/version.txt
 
 A large Real-Debrid library takes time to build on its first run. The service can already be active while the first mount listing waits for that scan to finish.
 
+## Disk the mount uses
+
+The mount caches every file it reads under `~/zurg/data/rclone-cache`. It keeps the whole file after playback ends. Left alone that cache grows to **256G** and stays there. It is not cleared when a video stops. The 72h age limit will not save you either. rclone counts a file as touched whenever anything reads it and a media server's nightly maintenance pass reads the whole library.
+
+Check what it holds.
+
+```bash
+du -sh ~/zurg/data/rclone-cache
+```
+
+If 256G is more than the disk can spare then cap it lower in `config.yml`.
+
+```yaml
+rclone_extra_args:
+  - "--vfs-cache-max-size"
+  - "50G"
+  - "--vfs-cache-min-free-space"
+  - "20G"
+```
+
+Restart zurg afterwards. To empty it by hand stop zurg first and then run this.
+
+```bash
+rm -rf ~/zurg/data/rclone-cache/vfs/* ~/zurg/data/rclone-cache/vfsMeta/*
+```
+
+Moving the zurg directory renames the cache and leaves the old copy behind. zurg reclaims those at the next start and logs what it freed. The details and the opt-out are in [the configuration reference](../reference/config.md#disk-the-mount-uses).
+
 ## Managing zurg
 
 Run these commands from the zurg directory:

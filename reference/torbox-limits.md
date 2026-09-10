@@ -157,23 +157,23 @@ does, via `TORBOX_CDN_EDGE`), so the ceiling below is what applies here.
   3,700-torrent library that listing pages four times over. It now reads the
   listing already in hand however old it is, since a finished torrent's file
   names and lengths cannot change.
-- **The link cache is the main defence, and it is held for a day.** A
-  `requestdl` URL is not a signed grant with a lifetime — it is a deterministic
-  address. Measured 2026-08-30: three calls for the same `(torrent, file)` came
-  back byte-identical down to the delivery node, a call an hour later returned
-  that same URL, and one minted 3h25m earlier still answered a ranged read with
-  `206`, past the three hours the docs imply. The account's API key rides in
-  the query string and is what authorises it; nothing in the URL is signed or
-  stamped.
+- **The link cache is held for a day, with recovery on explicit refusal.**
+  Repeated `requestdl` calls returned identical URLs in the 2026-08-30 probe,
+  including an hour later, and a 3h25m-old URL still served `206`. That
+  establishes reuse, not an unlimited lifetime. On 2026-09-04 a correctly
+  authenticated cached URL returned `400` with “Invalid Presigned Token”,
+  while a fresh resolution of the same torrent/file returned a different
+  host and path and served `206`. Its query was unchanged. Moving just the
+  old path/query to the new host still returned `400`.
 
-  So the cache is held for 24h rather than the old 2h30m, and the number is
-  chosen against the scan rather than against a link lifetime. A first library
-  scan costs one `requestdl` per file at 20/min, so it runs for hours — and
-  every entry lapsing before it finishes is one the next pass buys again out of
-  the same budget. At 2h30m a scan was covered for 2,250 files. The one way a
-  cached entry still goes bad is content deleted or aged out of retention,
-  which already self-heals: a 404 on a minted URL is read as a revoked link and
-  re-resolved.
+  The 24h cache remains a budget choice: a scan resolves at 20/min and can
+  take hours. An explicit invalid-token refusal now invalidates that URL and
+  tries a fresh resolution. Concurrent readers share resolution work, and a
+  late refusal cannot evict a newer cached URL. If the freshly resolved URL
+  is also refused, playback pauses locally for a minute without condemning
+  the file. Generic 400s do not prove a stale URL and only trigger a short
+  cooldown. CDN 429s preserve `Retry-After` and park reads to that host across
+  files and verification calls; the API budget remains separate.
 - **`bypass_cache=true` on every list call.** TorBox's own `mylist` cache has a
   ~5 minute TTL; serving from it is what makes WebDAV mounts lag 5–15 minutes
   behind reality. The parameter is free against the rate limit and drops

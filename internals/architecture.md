@@ -446,9 +446,12 @@ Two distinct things share the word "Plex":
 - **`internal/plex`** is zurg-specific behaviour: `Matcher` pairs torrents with
   Plex library items using file paths, IMDB ids and TVDb/TMDb identifiers,
   running periodically in worker pools with cached metadata, and backfills
-  discovered IMDB ids onto torrents. `WatchlistMonitor` polls the Plex
-  watchlist and auto-adds torrents, deduplicating by timestamp — that path uses
-  `pkg/dmm` to search debridmediamanager.com for a magnet.
+  discovered IMDB ids onto torrents.
+- **`internal/acquisition`** owns the persistent acquisition queue and shared
+  Newznab executor. Plex watchlist and Seerr are source adapters that resolve
+  requests into movie, season or episode targets. `data/acquisition.json` holds
+  retry deadlines and per-target progress across restarts. See
+  [acquisition sources](../guides/acquisition.md) for configuration and adapter contracts.
 
 `pkg/mediabrowser` holds the types Emby and Jellyfin share.
 

@@ -79,15 +79,21 @@ Movie '2 Fast 2 Furious (2003)' is playable via Plex
 ## Integration Suite
 
 ```bash
-ssh ben@fun
-cd ~/zurg && make integration-test
+ssh ben@zen
+cd /path/to/isolated/zurg/source
+make integration-test
 ```
 
-**Run it on `fun`.** It is the only host with all of Go, rclone, FUSE, Plex and
-a Usenet account, so it is the only place all six tests actually execute. Elsewhere the ones that
-cannot run skip — loudly, but they still exit 0, so read the output rather than
-the exit code. `zen` has Plex but no Go toolchain and no zurg mount, so it
-cannot run the suite at all.
+**Run it on an isolated target on `zen`.** Supply a Go toolchain, shellcheck,
+rclone and the .NET move probe there. The suite creates its own zurg processes
+and mounts; it does not require replacing zen's normal zurg service or mount.
+Use a separate source directory, `TMPDIR`, config, port and `MOUNT_PATH`.
+Inspect the scratch config before running it and retain the host-wide
+`INTEGRATION_LOCK_FILE=/tmp/zurg-integration-rd.lock` even with a private
+`TMPDIR`, so other sessions still serialize with yours.
+
+Tests whose prerequisites are absent can skip with a successful exit. Read
+their output to verify that FUSE, rclone, Plex and NNTP actually ran.
 
 | Test | Needs FUSE | Needs Plex | Needs a Usenet account |
 |------|:----------:|:----------:|:----------------------:|
@@ -95,6 +101,7 @@ cannot run the suite at all.
 | `network_test_cache_integration.sh` | | | |
 | `rclone_mount_integration.sh` | yes | | |
 | `magic_mount_integration.sh` | yes | | |
+| `magic_move_refusal.sh` | yes | | |
 | `plex_integration.sh` | yes | yes | |
 | `nzb_bench_integration.sh` | | | yes |
 
@@ -104,7 +111,7 @@ it fails where that path cannot answer regardless of the change under test. Run
 it on purpose with `make force-location-test`, on a host with working IPv4 to
 the region being forced. See [Force Location Integration Test](#force-location-integration-test).
 
-The first five drive the same Real-Debrid account — see
+The five tests that use Real-Debrid drive the same account — see
 [the account is shared](#the-real-debrid-test-account-is-shared). The benchmark
 drives a news account instead and touches Real-Debrid not at all, but it takes
 the same host-wide lock as the rest: a run measured beside another suite's reads
@@ -112,17 +119,18 @@ is measuring the other suite.
 
 The mount test runs on a Mac too when macFUSE is installed — it is verified on
 both macFUSE and Linux `fusermount`. The Plex test needs `plex_server_url` and
-`plex_token` in the config it reads, which a laptop's `config.yml` normally
-lacks, so that one is `fun`-only in practice.
+`plex_token` in its scratch config, and Plex must be able to traverse every
+parent directory of the scratch mount. A mount beneath a private home
+directory can work for the test user while remaining inaccessible to Plex.
 
 `make integration-test` builds zurg, runs shellcheck over the scripts, the
 `lib.sh` self-test and `integration/nzbbench`'s unit tests, then runs all seven,
-cheapest first: network test cache, force location, rclone mount, Plex,
-`__magic__` mount, refresh/repair, and the Usenet benchmark last. The last two
+cheapest first: network test cache, rclone mount, Plex, `__magic__` mount,
+.NET move-refusal, refresh/repair, and the Usenet benchmark last. The last two
 are the expensive ones — refresh/repair waits out a full library scan, and the
 benchmark reads gigabytes off a news server twice over — so a mistake in any of
 the others should not cost that wait to discover.
-`make integration-test-media` runs just the three that need a real mount, and
+`make integration-test-media` runs the rclone, Plex and `__magic__` mount tests, and
 `make nzb-bench-test` just the benchmark.
 
 Each script owns a work dir under `$TMPDIR`, its own port, and writes zurg's log
@@ -334,7 +342,7 @@ mount holds one release rather than the whole account. `MOUNT_PATH` defaults to
 |------|-----------|
 | 2 | zurg logs `Successfully connected to Plex server` |
 | 3 | the fixture reaches the library, and if it also surfaces in the mount it must be readable (Plex reads it as its own user) |
-| 4 | a throwaway section is created over `$MOUNT_PATH/movies`, starting empty |
+| 4 | a new throwaway section is created over `$MOUNT_PATH/movies` |
 | 5 | zurg resolves its library path to that section and queues a refresh **for the fixture's path** |
 | 6 | Plex ends up with the item indexed |
 
@@ -346,12 +354,16 @@ steps 5 and 6 already fail if Plex cannot see the file, and asserting that
 invalidation works is the mount test's job. `PLEX_URL` and `PLEX_TOKEN` override
 the config's `plex_server_url`/`plex_token`.
 
+Plex automatically scans a new section and may finish before creation returns.
+The test reports that initial count; step 5 independently checks that zurg
+queues the correct path after an explicit manage request.
+
 The section is created with `agent=tv.plex.agents.none` and the `Plex Video
 Files` scanner, so Plex indexes locally without consulting an online metadata
 agent, and it is deleted on the way out — including on failure, from the EXIT
-trap. Nothing runs on SIGKILL though, so the run also starts by sweeping any
-`zurg-itest-` section an earlier killed run left behind. Existing libraries are
-never touched.
+trap. Nothing runs on SIGKILL though, so inspect and remove only your own section
+after a killed run. The harness leaves pre-existing sections alone because they
+may belong to another session. Existing libraries are never touched.
 
 Step 5 asks zurg to run the side effects via `POST /manage/{hash}/scan` rather
 than waiting for a refresh pass. The directory-assignment trigger fires once, as
@@ -461,6 +473,13 @@ account's password in cleartext and is deleted when the run ends.
 - `shellcheck` for `make lint-integration` (skipped with a notice if absent)
 - For the mount and Plex tests: `fusermount`/macFUSE, an rclone binary, and
   `user_allow_other` in `/etc/fuse.conf` so Plex can read the mount
+- For the move-refusal check: the corrected rclone from
+  `scripts/build-rclone-move-fix.sh`, set
+  through both `RCLONE_BIN` and `RCLONE_TEST_BIN`. A newer unpatched upstream
+  rclone is not sufficient. See [the MOVE regression](rclone-move-refusal.md).
+  Supply a prebuilt helper through `DOTNET_MOVE_PROBE_BIN`, or Docker to build
+  it. When building it as an unprivileged container user, give .NET a writable
+  `XDG_DATA_HOME` as well as its CLI and NuGet cache directories.
 - For the Usenet benchmark: a news account, plus Go, `git`, `tar` and `make` —
   it builds its baseline from a `git archive` of a nightly tag
 
