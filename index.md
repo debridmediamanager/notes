@@ -6,10 +6,11 @@ order: 100
 
 # zurg
 
-zurg is a Go daemon that presents a debrid account — Real-Debrid, AllDebrid, TorBox — or a
-directory of NZBs as a read-only virtual filesystem. It stores no media. Every read becomes a
-ranged HTTP GET against the provider's CDN at the moment a player asks for those bytes, so a
-60 GB remux costs 60 GB of disk nowhere.
+zurg is a Go daemon that presents a debrid account or a directory of NZBs as a read-only
+virtual filesystem. Six debrid services are supported and so is Usenet. It stores no media.
+Nothing is fetched before a player asks for it. A read on a debrid account becomes a ranged
+HTTP GET against that service's CDN. A read on the Usenet backend becomes the articles that
+cover those bytes. A 60 GB remux costs 60 GB of disk nowhere.
 
 Four views onto the same library:
 
