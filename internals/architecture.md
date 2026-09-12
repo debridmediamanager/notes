@@ -16,9 +16,15 @@ follows from.
 
 ## What zurg is
 
-A Go daemon that presents a debrid account's torrent library as a read-only
-virtual filesystem. It stores no media. Every read is turned into a ranged
-HTTP GET against the provider's CDN at request time.
+A Go daemon that presents a debrid account's torrent library as a virtual
+filesystem. It stores no media. Every read is turned into a ranged HTTP GET
+against the provider's CDN at request time.
+
+It holds no content of its own and refuses a PUT, so it is read-only in the
+sense that matters for bytes. Two writes are accepted: a rename, which stores a
+name and touches no account ([renaming.md](../guides/renaming.md)), and a DELETE, which
+removes the release from every account holding it. `__magic__` adds a third
+inside one namespace, a stored layout ([magic.md](../guides/magic.md)).
 
 Four views onto the same library:
 
