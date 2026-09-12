@@ -140,7 +140,7 @@ ask for it specifically.
 repair re-adds the release entire.
 
 The full picture with sources is in
-[TorBox limits](../reference/torbox-limits.md).
+[TorBox limits](torbox-limits.md).
 
 ## Choosing a CDN region
 
