@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.842529145308">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.842529332507">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.842529145308" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.842529332507" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.842529145308" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.842529332507" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.842529145308" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.842529145308" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.842529332507" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.842529332507" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -184,8 +184,10 @@
 remote library. You drop <code translate="no" v-pre>.nzb</code> files into a watch directory and zurg turns each
 one into a release. Articles are fetched from your news server and decoded at
 the moment a player asks for those bytes.</p>
-<p>This page covers the provider entry. The end to end walkthrough with news
-accounts and Sonarr and Plex is <a href="../../guides/usenet/">Usenet with zurg</a>.</p>
+<p>This page is the provider entry and the Docker specifics only. Everything else
+about running Usenet on zurg lives in <a href="../../guides/usenet/">Usenet with zurg</a>.
+That is the full walkthrough with news accounts and NZBs and the mount and Plex.
+It is the page to read second.</p>
 <h2 id="configure-it">Configure it</h2>
 <p>There is no <code translate="no" v-pre>token</code>. An <code translate="no" v-pre>nntp</code> block with a host is what makes the entry valid.</p>
 <div id="configure-it-code-1" class="codeblock-wrapper"><doc-codeblock>
@@ -272,40 +274,11 @@ to rotate.</p>
 still on another. Without a second account the only way to recover a dead
 article is PAR2 and that costs a read of the <strong>entire release</strong>. So a second
 server is the difference between fetching one article and re-reading everything.</p>
-<div id="a-second-news-server-is-worth-more-than-it-looks-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">providers:
-  - type: nzb
-    nntp:
-      host: unlimited.example.com
-      tls: true
-      username: USERNAME
-      password: PASSWORD
-      connections: 30
-      servers:
-        - host: second-unlimited.example.com
-          tls: true
-          username: USERNAME
-          password: PASSWORD
-          connections: 20
-          backbone: usenetexpress
-        - host: block.example.com
-          tls: true
-          username: USERNAME
-          password: PASSWORD
-          connections: 10
-          backup: true
-          backbone: omicron</code></pre>
-</doc-codeblock></div>
-<p><code translate="no" v-pre>backup: true</code> marks a block account and it is only consulted once every primary
-has answered that it does not have the article. A primary being busy is not
-enough. zurg waits rather than spending metered bytes on something an unlimited
-account would have served.</p>
-<p><code translate="no" v-pre>backbone</code> names the article spool an account resolves to. Two accounts on one
-backbone hold the same articles. Once one has said it lacks an article the
-other is skipped instead of being asked the same question.</p>
-<p>Each account has its own connection allowance. Full descriptions of <code translate="no" v-pre>priority</code>
-and the rest are in the
-<a href="../../reference/config/#more-than-one-news-server">configuration reference</a>.</p>
+<p>Extra accounts go under this entry&#x27;s <code translate="no" v-pre>nntp.servers</code> rather than into a second
+<code translate="no" v-pre>nzb</code> entry. <code translate="no" v-pre>priority</code> and <code translate="no" v-pre>backup</code> and <code translate="no" v-pre>backbone</code> decide who is asked and in
+what order. Reads are driven at the combined allowance of the accounts that are
+not marked <code translate="no" v-pre>backup</code>. The worked config and what each key buys are in
+<a href="../../guides/usenet/#more-than-one-usenet-provider">Usenet with zurg</a>.</p>
 <h2 id="check-it-worked">Check it worked</h2>
 <div id="check-it-worked-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -fsS -X POST http://localhost:9999/api/providers/nzb/test
@@ -315,19 +288,17 @@ ls /zurg_mnt/zurg/__nzb__/</code></pre>
 <p>The probe here authenticates against the news server using at most one
 connection from the existing pool. There is no account API to ask.</p>
 <h2 id="when-it-goes-wrong">When it goes wrong</h2>
-<p><strong>Connections are refused.</strong> <code translate="no" v-pre>connections</code> is higher than the plan allows. The
-allowance is shared across every process and host using that account. Whatever
-else you run counts against the same number.</p>
+<p>Two symptoms belong to the provider entry itself rather than to the library.</p>
 <p><strong>Reads tear and zurg drops to one article at a time.</strong> <code translate="no" v-pre>pipeline_depth</code> is
 higher than the server tolerates. zurg reduces it by itself and warns. Set it to
 <code translate="no" v-pre>1</code> explicitly for a server that cannot handle several commands in flight.</p>
-<p><strong>A release reports as missing and you can see it on the server.</strong> The census
-that decides whether a release needs repairing asks every account before calling
-an article missing. If it is still wrong that is worth reporting rather than
-working around.</p>
 <p><strong>Throughput is poor on a high latency link.</strong> Leave <code translate="no" v-pre>socket_receive_buffer_kb</code>
 unset. A pinned buffer is one the kernel stops tuning. On Linux that holds the
 receive window near 64 KiB and costs most of the account&#x27;s throughput.</p>
+<p>Everything else has a row in the troubleshooting table on
+<a href="../../guides/usenet/#troubleshooting">Usenet with zurg</a>. Refused connections and
+slow streaming and a provider that never gets asked and a Dashboard edit that
+dropped <code translate="no" v-pre>nntp.servers</code> are all there.</p>
 
                 
                 <!-- Required only on API pages -->
@@ -394,6 +365,6 @@ receive window near 64 KiB and costs most of the account&#x27;s throughput.</p>
 
     <div id="retype-overlay-target"></div>
 
-        <script data-cfasync="false">window.__DOCS__ = { "title": "Usenet", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/providers/usenet.md" }</script>
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Usenet (nzb)", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/providers/usenet.md" }</script>
 </body>
 </html>
