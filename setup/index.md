@@ -31,3 +31,7 @@ The bootstrap checks platform prerequisites, signs in to GitHub for sponsor acce
 - [Docker](docker.md)
 - [macOS](macos.md)
 - [Windows](windows.md)
+
+Once zurg is installed [Providers](../providers/index.md) covers pointing it at
+an account. There is a page per service with the credential and the `config.yml`
+entry and what that service does differently.
