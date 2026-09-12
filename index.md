@@ -39,6 +39,8 @@ the Docker install.
 | [Debrid-Link](providers/debridlink.md) | The seedbox listing carries every file, and there is no cache check |
 | [Offcloud](providers/offcloud.md) | Sizes checked against the delivery server, folder paths from cached metadata |
 | [Usenet](providers/usenet.md) | The `nzb` type as a provider entry. No token, a watch directory instead |
+| [TorBox limits](providers/torbox-limits.md) | The measured figures behind TorBox throttling, and how zurg paces against them |
+| [TorBox news server](providers/torbox-news-server.md) · [ElfHosted news server](providers/elfhosted-news-server.md) | What the bundled Usenet accounts are, on the wire |
 
 [The shared page](providers/index.md) has the three ways to add an account in
 Docker and the rules the config loader enforces.
@@ -75,7 +77,6 @@ Moving an existing library onto zurg without a re-download or a re-scan.
 - [Command line](reference/cli.md) lists every command and flag the binary takes
 - [Outbound identity](reference/outbound-identity.md) says what zurg tells the services it calls about itself
 - [Tags](reference/tags.md) — what gets applied to a torrent, and why
-- [TorBox limits](reference/torbox-limits.md) — where TorBox differs from Real-Debrid, and how zurg adapts
 - [Changelog](reference/changelog.md) — what changed when
 
 ## Internals
@@ -88,8 +89,8 @@ How zurg is built, what it was measured at, and the design notes behind the awkw
 - [SABnzbd client contract](internals/sabnzbd-client-contract.md) — the exact shapes Sonarr and Radarr expect
 - [Plex trash sweep](internals/plex-trash-sweep.md) · [Stream timeout regression](internals/stream-timeout-regression.md) · [Directory config UI/UX](internals/uiux.md)
 - [E2E testing](internals/e2e-test.md) · [Real-Debrid API notes](internals/realdebrid-behavior.md)
-- [qBittorrent client contract](internals/qbittorrent-client-contract.md) · [TorBox news server](internals/torbox-news-server.md) · [ElfHosted news server](internals/elfhosted-news-server.md)
-- [Persistent caches](internals/persistent-caches.md) · [Naming](internals/naming.md) · [rclone move refusal](internals/rclone-move-refusal.md)
+- [qBittorrent client contract](internals/qbittorrent-client-contract.md) · [Persistent caches](internals/persistent-caches.md)
+- [Naming](internals/naming.md) · [rclone move refusal](internals/rclone-move-refusal.md)
 
 ---
 

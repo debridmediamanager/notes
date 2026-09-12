@@ -15,6 +15,12 @@ can serve it at the time.
 | Offcloud | `offcloud` | [Offcloud](offcloud.md) |
 | Usenet | `nzb` | [Usenet](usenet.md) |
 
+Three pages go deeper than setup. [TorBox limits](torbox-limits.md) has the
+measured figures behind TorBox throttling. [TorBox news server](torbox-news-server.md)
+and [ElfHosted news server](elfhosted-news-server.md) record what the Usenet
+accounts bundled with those plans actually are. Judge one from there before
+spending a provider slot on it.
+
 Every page here assumes the container install from
 [Docker setup](../setup/docker.md). `~/zurg` is the compose directory on the
 host. `/config` is that same directory seen from inside the container. There is

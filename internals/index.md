@@ -19,8 +19,6 @@ run zurg.
 |---|---|
 | [Debrid baseline](debrid-baseline.md) | What zurg costs and how fast it feels across Real-Debrid and AllDebrid and TorBox. |
 | [Torrent lifecycle](torrent-lifecycle.md) | What each account actually reports while a grab runs, captured live. |
-| [TorBox news server](torbox-news-server.md) | What the Usenet account bundled with TorBox Pro is, on the wire. |
-| [ElfHosted news server](elfhosted-news-server.md) | The same for the account bundled with ElfHosted's addon plans. |
 | [Real-Debrid API notes](realdebrid-behavior.md) | Link semantics, file selection and what cached really means. |
 
 ## Contracts zurg has to satisfy
@@ -42,3 +40,6 @@ run zurg.
 ## Testing
 
 - [E2E testing](e2e-test.md) covers what the end to end suite exercises and what it costs to run.
+
+What a particular service does and what its limits are is under
+[Providers](../providers/index.md) rather than here.
