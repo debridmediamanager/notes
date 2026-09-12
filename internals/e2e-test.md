@@ -142,7 +142,10 @@ Shared helpers live in `integration/lib.sh` (process control, the Real-Debrid
 API, on-disk library queries) and `integration/lib_media.sh` (FUSE and Plex).
 Add a test by sourcing them, not by copying another script.
 `integration/lib_test.sh` covers the helpers themselves: no account, no network,
-about a second.
+about a second. `integration/nzb_bench_timing_gate_test.sh` covers how the
+benchmark wrapper turns the tool's exit code into the suite's vocabulary, driven
+from a trimmed real report in `integration/testdata/`; both run under
+`make test-integration-lib`.
 
 ### The Real-Debrid test account is shared
 
@@ -244,6 +247,13 @@ and is re-minted before any of them sees it.
 ```bash
 ./integration/refresh_repair_integration.sh
 ```
+
+Automatic repair stays disabled in the scratch config. The two explicit
+`/manage/{hash}/repair` requests bypass that setting and repair their fixtures.
+Enabling unattended repair would also scan and change unrelated entries in
+the shared account, spending the API budget that the assertions need.
+`refresh_repair_config_test.sh` checks the generated config without provider
+traffic, using the redacted scratch input captured from the 2026-09-10 failure.
 
 | Scenario | Description |
 |----------|-------------|
@@ -465,6 +475,19 @@ The config has to be your own: the one the wrapper generates carries the news
 account's password in cleartext and is deleted when the run ends.
 
 `integration/nzbbench/README.md` documents the tool's own flags and exit codes.
+
+**`nzb_bench_integration.sh`'s exit codes.** `0` the comparison was made and
+passed, or the host could not benchmark at all and the run skipped; `1` a
+functional assertion failed or a metric regressed; `4` every functional
+assertion passed and the timing gate was **not judged** -- the news server moved
+past the tool's stability limit inside the window, so the throughput and latency
+comparison was discarded. 4 is deliberately neither the 1 of a broken build nor
+the 0 of a skip: nothing was decided about performance, the answer is a rerun in
+a quieter window, and the run prints a banner naming the gate and the spreads
+that broke it. `make integration-test` turns any failing recipe line into make's
+own exit 2, so a suite run surfaces this as a non-zero make plus that banner
+instead of the target's "All integration tests passed." line; call the script
+directly when something needs to branch on the 4 itself.
 
 ### Prerequisites
 

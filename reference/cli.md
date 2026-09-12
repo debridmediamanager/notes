@@ -200,7 +200,7 @@ It reads `data/*.zurgtorrent` or an old dump file. Pass a file or folder to expo
 
 ### zurg nzb-share
 
-Builds a share of your NZBs that you can publish. The result is a folder with a `manifest.json` and one `.nzb.gz` per release named by content hash. Every NZB is cleaned first. Comments and DOCTYPEs and watermark metadata go. So do the original file names. What you publish names the release and never the account that downloaded it. Archive passwords stay because recipients need them to read the release.
+Builds a share of your NZBs that you can publish. The result is a folder with a `manifest.json` and one `.nzb.gz` per release named by content hash. Every NZB is cleaned first. Comments and DOCTYPEs and watermark metadata go. So do the original file names. Posters and dates go too, and every file gets the same fixed newsgroup, because some indexers change all three on every download. Account stamps an indexer hides in a subject, a title or a password are cut. What you publish names the release and never the account that downloaded it. Real archive passwords stay because recipients need them to read the release.
 
 Publish the folder anywhere static. A git repository works. So does a Pages site or `rclone serve`. The audit of what was stripped stays on your machine and prints here. It holds the very identifiers the clean exists to remove.
 
