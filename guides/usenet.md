@@ -550,7 +550,7 @@ The index rewrites itself whenever the NZB changes, repairs itself if it is ever
 | Symptom | Cause | Fix |
 |---|---|---|
 | `Cannot reach the news server for nzb` at startup | Wrong host/port/TLS pairing, bad credentials, or an inactive plan | `563` goes with `tls: true`, `119` with `tls: false`; then re-check the credentials |
-| Library is empty, no `Loaded NZB` lines | `nzbs/` missing, or in the wrong place | It is relative to zurg's **working directory** — check `WorkingDirectory=` in your systemd unit, or `/app/nzbs` in Docker |
+| Library is empty, no `Loaded NZB` lines | `nzbs/` missing, or in the wrong place | It is relative to zurg's **working directory** — check `WorkingDirectory=` in your systemd unit, or the directory bound at `/config` in Docker, which is `nzbs/` beside the compose file. Only an install predating `/config` watches `/app/nzbs` |
 | One NZB never appears | In a subdirectory, or named `.nzb.gz`, or unparseable | Move it directly into `nzbs/`, decompress it; check the log for a `Skipping` warning |
 | Release shows up with a useless name | The NZB's filename is the name, absent a `<meta type="name">` | Rename the `.nzb` to the release name |
 | Files have random names inside the release | Obfuscated post whose recovery failed | Check for `Recovered N filename(s)`; without PAR2 files in the NZB there is no source for the real names |
