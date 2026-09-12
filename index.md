@@ -23,6 +23,25 @@ Getting zurg running on your machine.
 - [macOS](setup/macos.md) — macFUSE and launchd auto-start created by the binary
 - [Windows](setup/windows.md) — WinFsp and an interactive drive-letter task created by the binary
 
+## Providers
+
+Pointing zurg at an account. Each page covers the credential and the
+`config.yml` entry and what that service does differently. All of them assume
+the Docker install.
+
+| Page | What is different about it |
+|---|---|
+| [Real-Debrid](providers/realdebrid.md) | Per-file selection, `__downloads__`, CDN host choice, a separate `.strm` token |
+| [TorBox](providers/torbox.md) | One request per library refresh, and an active-slot ceiling rather than a bandwidth one |
+| [AllDebrid](providers/alldebrid.md) | File lists arrive from their own endpoint, so a first scan fills in gradually |
+| [Premiumize](providers/premiumize.md) | Completed transfers plus the cloud files left behind, with their folders intact |
+| [Debrid-Link](providers/debridlink.md) | The seedbox listing carries every file, and there is no cache check |
+| [Offcloud](providers/offcloud.md) | Sizes checked against the delivery server, folder paths from cached metadata |
+| [Usenet](providers/usenet.md) | The `nzb` type as a provider entry. No token, a watch directory instead |
+
+[The shared page](providers/index.md) has the three ways to add an account in
+Docker and the rules the config loader enforces.
+
 ## Guides
 
 Working with the library.

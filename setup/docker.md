@@ -126,6 +126,8 @@ Choose one or several providers in priority order. For example enter `2,4` for T
 
 For automation, repeat `--provider` and pass the provider-specific token-file or `--nntp-*` flags. Setup preserves an existing config on later runs.
 
+Setup writes the accounts only on the run that creates `config.yml`. To add one to an install that already has a config, use the Dashboard's **Add provider** or edit the file, then restart. Each service has its own page with the credential, the config block and the limits worth knowing: [Providers](../providers/index.md).
+
 ## 5. Start zurg
 
 ```bash
@@ -245,6 +247,8 @@ See [config.md](../reference/config.md#disk-the-mount-uses).
 ### Environment seeding for unattended installs
 
 The image still supports the older first-run path. If no `config.yml` exists, `TOKEN` or `RD_TOKEN` seeds the account and `MOUNT_PATH` enables the mount. Those variables are read only while the file is being created; the file wins on every later start.
+
+Real-Debrid is the only account the running container seeds this way. `TORBOX_TOKEN`, `ALLDEBRID_TOKEN`, `PREMIUMIZE_TOKEN`, `DEBRIDLINK_TOKEN`, `OFFCLOUD_TOKEN` and `NNTP_HOST` are read by `zurg setup`, so they take effect in the one-off setup container above and do nothing sitting in the service's `environment:` block.
 
 The interactive `setup` command is preferred for a person at a terminal because the token never enters the compose file. Environment seeding remains useful for automation that already has a secret store.
 
