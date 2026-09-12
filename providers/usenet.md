@@ -1,5 +1,5 @@
 ---
-label: Usenet
+label: Usenet (nzb)
 icon: broadcast
 order: 40
 ---
@@ -13,8 +13,10 @@ remote library. You drop `.nzb` files into a watch directory and zurg turns each
 one into a release. Articles are fetched from your news server and decoded at
 the moment a player asks for those bytes.
 
-This page covers the provider entry. The end to end walkthrough with news
-accounts and Sonarr and Plex is [Usenet with zurg](../guides/usenet.md).
+This page is the provider entry and the Docker specifics only. Everything else
+about running Usenet on zurg lives in [Usenet with zurg](../guides/usenet.md).
+That is the full walkthrough with news accounts and NZBs and the mount and Plex.
+It is the page to read second.
 
 ## Configure it
 
@@ -109,43 +111,11 @@ still on another. Without a second account the only way to recover a dead
 article is PAR2 and that costs a read of the **entire release**. So a second
 server is the difference between fetching one article and re-reading everything.
 
-```yaml
-providers:
-  - type: nzb
-    nntp:
-      host: unlimited.example.com
-      tls: true
-      username: USERNAME
-      password: PASSWORD
-      connections: 30
-      servers:
-        - host: second-unlimited.example.com
-          tls: true
-          username: USERNAME
-          password: PASSWORD
-          connections: 20
-          backbone: usenetexpress
-        - host: block.example.com
-          tls: true
-          username: USERNAME
-          password: PASSWORD
-          connections: 10
-          backup: true
-          backbone: omicron
-```
-
-`backup: true` marks a block account and it is only consulted once every primary
-has answered that it does not have the article. A primary being busy is not
-enough. zurg waits rather than spending metered bytes on something an unlimited
-account would have served.
-
-`backbone` names the article spool an account resolves to. Two accounts on one
-backbone hold the same articles. Once one has said it lacks an article the
-other is skipped instead of being asked the same question.
-
-Each account has its own connection allowance. Full descriptions of `priority`
-and the rest are in the
-[configuration reference](../reference/config.md#more-than-one-news-server).
+Extra accounts go under this entry's `nntp.servers` rather than into a second
+`nzb` entry. `priority` and `backup` and `backbone` decide who is asked and in
+what order. Reads are driven at the combined allowance of the accounts that are
+not marked `backup`. The worked config and what each key buys are in
+[Usenet with zurg](../guides/usenet.md#more-than-one-usenet-provider).
 
 ## Check it worked
 
@@ -160,19 +130,17 @@ connection from the existing pool. There is no account API to ask.
 
 ## When it goes wrong
 
-**Connections are refused.** `connections` is higher than the plan allows. The
-allowance is shared across every process and host using that account. Whatever
-else you run counts against the same number.
+Two symptoms belong to the provider entry itself rather than to the library.
 
 **Reads tear and zurg drops to one article at a time.** `pipeline_depth` is
 higher than the server tolerates. zurg reduces it by itself and warns. Set it to
 `1` explicitly for a server that cannot handle several commands in flight.
 
-**A release reports as missing and you can see it on the server.** The census
-that decides whether a release needs repairing asks every account before calling
-an article missing. If it is still wrong that is worth reporting rather than
-working around.
-
 **Throughput is poor on a high latency link.** Leave `socket_receive_buffer_kb`
 unset. A pinned buffer is one the kernel stops tuning. On Linux that holds the
 receive window near 64 KiB and costs most of the account's throughput.
+
+Everything else has a row in the troubleshooting table on
+[Usenet with zurg](../guides/usenet.md#troubleshooting). Refused connections and
+slow streaming and a provider that never gets asked and a Dashboard edit that
+dropped `nntp.servers` are all there.
