@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.842390393606">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.842522710939">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.842390393606" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.842522710939" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.842390393606" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.842522710939" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.842390393606" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.842390393606" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.842522710939" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.842522710939" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -424,7 +424,10 @@ stderr while debugging.</p>
 API, on-disk library queries) and <code translate="no" v-pre>integration/lib_media.sh</code> (FUSE and Plex).
 Add a test by sourcing them, not by copying another script.
 <code translate="no" v-pre>integration/lib_test.sh</code> covers the helpers themselves: no account, no network,
-about a second.</p>
+about a second. <code translate="no" v-pre>integration/nzb_bench_timing_gate_test.sh</code> covers how the
+benchmark wrapper turns the tool&#x27;s exit code into the suite&#x27;s vocabulary, driven
+from a trimmed real report in <code translate="no" v-pre>integration/testdata/</code>; both run under
+<code translate="no" v-pre>make test-integration-lib</code>.</p>
 <h3 id="the-real-debrid-test-account-is-shared">The Real-Debrid test account is shared</h3>
 <p>The suite drives one Real-Debrid test account, and that account is not private.
 <code translate="no" v-pre>zen</code>&#x27;s production zurg watches the same library, so it lists and refreshes the
@@ -535,6 +538,12 @@ and is re-minted before any of them sees it.</p>
 <div id="refreshrepair-integration-test-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">./integration/refresh_repair_integration.sh</code></pre>
 </doc-codeblock></div>
+<p>Automatic repair stays disabled in the scratch config. The two explicit
+<code translate="no" v-pre>/manage/{hash}/repair</code> requests bypass that setting and repair their fixtures.
+Enabling unattended repair would also scan and change unrelated entries in
+the shared account, spending the API budget that the assertions need.
+<code translate="no" v-pre>refresh_repair_config_test.sh</code> checks the generated config without provider
+traffic, using the redacted scratch input captured from the 2026-09-10 failure.</p>
 <retype-table copy-text="| Scenario | Description |
 |----------|-------------|
 | 1. Automatic Refresh (Addition) | Adds a torrent via the RD API and waits for the refresh loop to notice — no restart, or it would be testing the cold-load path instead |
@@ -1025,6 +1034,18 @@ numbers without comparing anything, call the tool directly with a single
 <p>The config has to be your own: the one the wrapper generates carries the news
 account&#x27;s password in cleartext and is deleted when the run ends.</p>
 <p><code translate="no" v-pre>integration/nzbbench/README.md</code> documents the tool&#x27;s own flags and exit codes.</p>
+<p><strong><code translate="no" v-pre>nzb_bench_integration.sh</code>&#x27;s exit codes.</strong> <code translate="no" v-pre>0</code> the comparison was made and
+passed, or the host could not benchmark at all and the run skipped; <code translate="no" v-pre>1</code> a
+functional assertion failed or a metric regressed; <code translate="no" v-pre>4</code> every functional
+assertion passed and the timing gate was <strong>not judged</strong> -- the news server moved
+past the tool&#x27;s stability limit inside the window, so the throughput and latency
+comparison was discarded. 4 is deliberately neither the 1 of a broken build nor
+the 0 of a skip: nothing was decided about performance, the answer is a rerun in
+a quieter window, and the run prints a banner naming the gate and the spreads
+that broke it. <code translate="no" v-pre>make integration-test</code> turns any failing recipe line into make&#x27;s
+own exit 2, so a suite run surfaces this as a non-zero make plus that banner
+instead of the target&#x27;s &quot;All integration tests passed.&quot; line; call the script
+directly when something needs to branch on the 4 itself.</p>
 <h3 id="prerequisites-1">Prerequisites</h3>
 <ul>
 <li>

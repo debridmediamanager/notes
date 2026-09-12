@@ -1,5 +1,39 @@
 # Changelog
 
+## Usenet reads tell a slow batch from a stalled one
+
+zurg asks a second news connection for an article whose wait has run long and takes whichever answer lands first. Deciding that the wait had run long was done on a clock, and an ordinary batch of large articles on a fast account was asked for twice while its first article was still arriving.
+
+That call now comes from the bytes on the wire. A news connection already refreshes its own timeout every time bytes arrive, and the reader sees that evidence too. A batch half way through a large article is left alone however long that article takes. Only a batch whose bytes have stopped is asked for elsewhere.
+
+When a connection takes a batch of articles and then answers none of them, zurg asks another connection for the whole rest of that batch at once instead of finding each missing article on its own. The quiet connection is never cut off, so its articles still count if they arrive. Only the articles that never arrived are asked for again, at most once per batch. The articles nearest the playhead go first, and one second ask is always left in hand so the next read that stands still can still ask for its own article.
+
+A read also stops treating the wait it spent on a second ask as its own normal speed. It learns the time zurg was willing to wait and no more. On an account where every article legitimately takes a second or more, the threshold now settles near what that account really delivers instead of falling to its shortest setting and asking twice for most articles.
+
+## Usenet read-ahead keeps its window full across articles and volumes
+
+Read-ahead used to stop asking for new bytes while an earlier article was late, so one slow article drained the window it had built. zurg now keeps a bounded window of requested bytes in flight anyway, and one batch of articles can span the join between two stored RAR volumes instead of ending at it.
+
+The window takes at most a quarter of the RAM cache you configured and never more than 128 MiB, so a smaller cache gets a smaller window. Requests keep their own cancellation and their account's connection and cache limits.
+
+## Usenet playback costs less CPU on older processors
+
+The read cache checksums every record it stores. On Intel and AMD processors that have SSE4.1 but not AVX, SHA-256 runs with no hardware help at all, and that cost showed up during playback. zurg now uses a faster 256-bit checksum on those processors. Records carry a version so damage is still detected, an existing cache stays readable, and every other processor keeps SHA-256.
+
+## NZB shares no longer point back to the account that grabbed them
+
+Some indexers stamp every download with details that lead back to your account, and part of that sat in fields a share kept. One hides a fresh token in the release title and often in the password, and changes the poster, the date and the newsgroup on every file. Another puts your account number at the front of one file's subject. A third puts an account marker in every poster. `zurg nzb-share` now drops posters and dates, gives every file the same fixed newsgroup, cuts the subject stamp and ignores a token wherever it sits. When the name and the title disagree, the name wins. Two people who grabbed the same release now publish the same file. Shares also stop leaving out NZBs saved in the Latin-1 encoding, and stop doubling the backslashes some subjects carry.
+
+What the clean removes is in [`zurg nzb-share`](cli.md#zurg-nzb-share).
+
+## Local libraries add the hash on AllDebrid, Premiumize and Offcloud
+
+A local library whose manifest has no portable link adds the hash to your account on first play. A manifest exported from TorBox is always like that. So is one whose AllDebrid link has expired. On AllDebrid and Premiumize and Offcloud every such play failed with "provider did not report an active torrent allowance". zurg wanted the account to report its torrent slot limit before adding. Those three never report one. zurg now falls back to the declared slot count the way repair does. With neither it adds the hash and lets the provider refuse a full account.
+
+## Offcloud files report their length
+
+Resolving an Offcloud file left its length unset. A local library checks that length against its manifest. So it refused every Offcloud play with "resolved file size does not match the portable manifest". Ordinary playback also lost the range handling that needs a length. zurg now asks the delivery server for the length the way the Offcloud listing already does.
+
 ## zurg runs on Android phones and Google TV
 
 A new Android app hosts your library on the device itself. It adapts to phones and tablets as well as Android TV and Google TV. It needs Android 8.0 or newer and Usenet needs 64-bit Android. The app walks you through provider accounts and a device profile and then starts the library. You browse it in the app or in Android's Files and play in the external player you choose with full seeking. A TV remote drives every screen. MediaInfo works on the device with no extra tools. The library can also be shared with other devices on your local network behind a password. That password never travels to a player.
