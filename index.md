@@ -1,10 +1,10 @@
 # zurg
 
-zurg is a Go daemon that presents a debrid account or a directory of NZBs as a read-only
-virtual filesystem. Six debrid services are supported and so is Usenet. It stores no media.
-Nothing is fetched before a player asks for it. A read on a debrid account becomes a ranged
-HTTP GET against that service's CDN. A read on the Usenet backend becomes the articles that
-cover those bytes. A 60 GB remux costs 60 GB of disk nowhere.
+zurg is a Go daemon that presents a debrid account or a directory of NZBs as a virtual
+filesystem. Six debrid services are supported and so is Usenet. It stores no media and it
+accepts no uploads. Nothing is fetched before a player asks for it. A read on a debrid
+account becomes a ranged HTTP GET against that service's CDN. A read on the Usenet backend
+becomes the articles that cover those bytes. A 60 GB remux costs 60 GB of disk nowhere.
 
 Four views onto the same library:
 
@@ -53,6 +53,7 @@ Working with the library.
 - [Sonarr & Radarr](guides/sonarr-radarr.md) — zurg answering as a SABnzbd, so imports are a rename not a download
 - [Sonarr & Radarr, torrents](guides/sonarr-radarr-torrents.md) — the same, with zurg answering as a qBittorrent; Prowlarr too
 - [`__magic__`](guides/magic.md) — the one directory whose layout is stored, and therefore yours to arrange
+- [Renaming](guides/renaming.md) — rename a release or a file anywhere in the library. A move is refused and the page says why
 - [Plex](guides/plex.md) — what zurg does with a Plex token, and what it deliberately does not
 - [Jellyfin](guides/jellyfin.md) — the same, for Jellyfin
 - [The Stremio addon](guides/stremio.md) — Stremio searching your own indexers, playing straight out of the Usenet backend

@@ -1,11 +1,16 @@
 # zurg naming
 
-Every name zurg shows is computed, never stored. A release's folder name, a
-file's name inside it, and the on-disk filename of its cache record are all
-derived from the torrent on every lookup. Nothing writes a name down and reads
-it back, because a stored name is a second thing to keep in step with the
-library, and keeping it in step is exactly what a repair, a rename or an NZB
+Almost every name zurg shows is computed, never stored. A release's folder name,
+a file's name inside it, and the on-disk filename of its cache record are all
+derived from the torrent on every lookup. Nothing writes those down and reads
+them back, because a stored name is a second thing to keep in step with the
+library, and keeping it in step is exactly what a repair or an NZB
 re-resolution breaks.
+
+The exception is a rename the operator asked for. That one IS stored, on the
+release itself, and it beats every derivation below. Section 9 has the rules,
+and the renaming guide is the user-facing version. Everything else on this page
+describes the name a release has when no rename is set.
 
 That has one consequence worth stating first, because it is the source of most
 surprises for anything integrating with zurg: a folder can change name without
