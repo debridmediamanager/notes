@@ -1,7 +1,7 @@
 ---
 label: Linux
 icon: server
-order: 85
+order: 90
 ---
 
 # Linux binary setup

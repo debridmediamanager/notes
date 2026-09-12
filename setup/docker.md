@@ -1,7 +1,7 @@
 ---
 label: Docker
 icon: container
-order: 90
+order: 85
 ---
 
 # Docker setup
