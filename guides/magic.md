@@ -10,6 +10,18 @@ Every other directory zurg serves is computed. `movies` holds what matches the m
 
 `__magic__` is the one directory whose paths are **stored**. A move inside it rewrites a row in a small table; no bytes move, nothing is copied, and the release stays exactly where it was on the debrid account. What you get is a tree you can arrange — by hand, or by pointing Sonarr or Radarr at it.
 
+It holds two things. `__magic__/__all__` is the library exactly as `__all__` lists it, and it is the folder the download clients import from; it is computed, so nothing can be written into it. Everything beside it at the root of `__magic__` is yours:
+
+```
+/mnt/zurg/__magic__
+├── __all__     <- every release, where a grab lands
+├── anime
+├── movies
+└── tv          <- your *arr root folders
+```
+
+That separation is the point. The folder a client imports *from* and the folders it imports *into* are siblings, so neither contains the other: a manual import pointed at the download folder does not walk your library tree, and neither Sonarr nor Radarr warns about the arrangement.
+
 It is off by default. Turn it on with:
 
 ```yaml
@@ -25,13 +37,13 @@ An \*arr imports by **moving** the file out of the download folder into the libr
 
 With `__magic__` the import is a rename inside one namespace: a row is written, the file appears where the \*arr put it, and nothing is downloaded. That is what makes [the SABnzbd endpoint](sonarr-radarr.md) worth having — it is a thin layer on top of this, and without it every import would be a full download.
 
-It only works if the \*arr's **root folder is also inside `__magic__`** — `/mnt/zurg/__magic__/tv`, not a directory elsewhere on the machine. A move whose destination is outside the namespace is a move between two filesystems, which is a copy again; zurg refuses it outright with a `403` rather than letting it happen quietly. [sabnzbd.md](sonarr-radarr.md) has the exact settings.
+It only works if the \*arr's **root folder is also inside `__magic__`** — `/mnt/zurg/__magic__/tv`, not a directory elsewhere on the machine. A move whose destination is outside the namespace is a move between two filesystems, which is a copy again; zurg refuses it outright with a `403` rather than letting it happen quietly. The one place inside the namespace that is also refused is `__magic__/__all__`, which is the library's own layout rather than anywhere to put things. [sabnzbd.md](sonarr-radarr.md) has the exact settings.
 
 Organising the library by hand is the other half, and it works with no \*arr involved.
 
 ## With nothing stored, it is `__all__`'s releases as real folders
 
-Open `__magic__` on a fresh install and you get every release `__all__` holds, as a folder each. The table starts empty and only ever stores **deviations** from that default, so an untouched library stores nothing at all, and new releases appear in `__magic__` the moment they appear anywhere else.
+Open `__magic__/__all__` on a fresh install and you get every release `__all__` holds, as a folder each. The table starts empty and only ever stores **deviations** from that default, so an untouched library stores nothing at all, the root of `__magic__` holds nothing but the mirror, and new releases appear in it the moment they appear anywhere else.
 
 There is no directory config behind it: no `only_show_the_biggest_file`, no size filters. What the release has is what you see.
 
@@ -42,14 +54,14 @@ __all__/Show.S01/Show.S01E01.mkv
 __all__/Show.S01/Gag Reel (Extras).mkv
 ```
 
-`__magic__` shows the tree the release actually has:
+`__magic__/__all__` shows the tree the release actually has:
 
 ```
-__magic__/Show.S01/Show.S01E01.mkv
-__magic__/Show.S01/Extras/Gag Reel.mkv
+__magic__/__all__/Show.S01/Show.S01E01.mkv
+__magic__/__all__/Show.S01/Extras/Gag Reel.mkv
 ```
 
-That is not cosmetic. Sonarr and Radarr scan a download folder as a folder: a file under an `extras`, `samples`, `featurettes`, `trailers` or `deleted scenes` **subfolder** is skipped, and one at the top level is considered — so the flattened `Gag Reel (Extras).mkv` gets offered for import where the real tree has it passed over. And their import only falls back to the download's own title for parsing when the folder holds a single video, so a movie flattened beside its featurette loses that fallback. Since [the SABnzbd endpoint](sonarr-radarr.md) hands an \*arr a folder under `__magic__`, this is the surface those rules run against.
+That is not cosmetic. Sonarr and Radarr scan a download folder as a folder: a file under an `extras`, `samples`, `featurettes`, `trailers` or `deleted scenes` **subfolder** is skipped, and one at the top level is considered — so the flattened `Gag Reel (Extras).mkv` gets offered for import where the real tree has it passed over. And their import only falls back to the download's own title for parsing when the folder holds a single video, so a movie flattened beside its featurette loses that fallback. Since [the SABnzbd endpoint](sonarr-radarr.md) hands an \*arr a folder under `__magic__/__all__`, this is the surface those rules run against.
 
 Two details of the shape:
 
@@ -66,7 +78,7 @@ Through the mount, with ordinary commands:
 
 ```bash
 mkdir -p /mnt/zurg/__magic__/tv/The\ Show/Season\ 01
-mv /mnt/zurg/__magic__/Some.Release.S01E01.1080p/ep1.mkv \
+mv /mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv \
    /mnt/zurg/__magic__/tv/The\ Show/Season\ 01/S01E01.mkv
 ```
 
@@ -75,7 +87,7 @@ The file now lives at the new path and is gone from the old one. It streams from
 Whole release folders move too, as a single row:
 
 ```bash
-mv /mnt/zurg/__magic__/Some.Movie.2024.2160p /mnt/zurg/__magic__/movies/Some\ Movie\ \(2024\)
+mv /mnt/zurg/__magic__/__all__/Some.Movie.2024.2160p /mnt/zurg/__magic__/movies/Some\ Movie\ \(2024\)
 ```
 
 Directories move with everything under them, as one batch. Moves go both ways: a file can be moved *into* a release folder as well as out of one, and the folder lists it beside the release's own entries — which is what a program that puts something back into the folder it is importing from needs to see. Where a name arrives from two places at once the deliberate one wins: what you moved beats what the release calls that name, which beats a real file in `data/local`, and the loser is left out rather than listed twice.

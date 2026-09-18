@@ -152,6 +152,10 @@ rewritten, but anything that copied a URL out of it is not.
 
 `dav_allow_rename` covers the mount. It does not gate the dashboard endpoints,
 and it does not gate writes under `__magic__`, which reach no debrid account.
+The mirror is the one exception, and not because of this key: `__magic__/__all__`
+and the release folders directly inside it are the library's own layout, so a
+write aimed at either is refused whatever this is set to. Inside a release
+folder is ordinary again.
 `mount_read_only` overrides everything, at the kernel, and is also the only way
 to stop a mount `DELETE` — see [config.md](../reference/config.md) for why that matters more
 than the rename does.
@@ -167,6 +171,7 @@ Every one of these is refused:
 | A file into a subfolder of its own release | `400` |
 | A top-level directory renamed or moved | `405` |
 | Anything out of `__magic__` | `403` |
+| A write at `__magic__/__all__`, or at a name directly inside it | `403` |
 
 The rule underneath is the same each time: **a rename has somewhere to be
 stored, and a move does not.**

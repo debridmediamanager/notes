@@ -588,7 +588,7 @@ See also `mount_read_only`, which makes the kernel refuse the write before it re
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `disable_listing_cache` | bool | `false` | When true, every directory listing is rendered from scratch on every request. Leave it off: with it on, a `PROPFIND Depth:1` of `__all__` re-renders the whole library each time it is asked — measured at 59 ms for 6,120 releases, 121 ms for 2,636 Usenet releases, 148 ms for `__magic__`'s root — and a media server scan asks for the same listing over and over. |
+| `disable_listing_cache` | bool | `false` | When true, every directory listing is rendered from scratch on every request. Leave it off: with it on, a `PROPFIND Depth:1` of `__all__` re-renders the whole library each time it is asked — measured at 59 ms for 6,120 releases, 121 ms for 2,636 Usenet releases, 148 ms for `__magic__/__all__` — and a media server scan asks for the same listing over and over. |
 
 ```yaml
 disable_listing_cache: false
@@ -596,7 +596,7 @@ disable_listing_cache: false
 
 The cache keeps the last rendering of each top-level directory, one per mount flavour (`/dav`, `/infuse`, `/http`), and hands it back until the library changes. What counts as a change is not a guess: it is exactly the set of events that already make rclone forget its own cached copy of the same listing — a release added, removed, renamed, refiled, a file going broken or healing — and rclone holds those listings for **twelve hours**. So a listing served from here is never staler than the one the mount is already serving, and there is a hard 60-second cap on top of that as belt and braces.
 
-`__magic__`'s root additionally tracks the stored layout, so an \*arr import invalidates `__magic__` alone and leaves every other directory's rendering intact. `__downloads__` and `Depth: 0` requests are not cached at all.
+`__magic__/__all__` — the mirror, and the only listing in the namespace worth caching, since the root above it holds the mirror and a handful of rows — additionally tracks the stored layout, so an \*arr import invalidates that one listing and leaves every other directory's rendering intact. `__downloads__` and `Depth: 0` requests are not cached at all.
 
 Responses carry an `X-Zurg-Listing: hit` or `miss` header, so a live install can be measured:
 
@@ -606,13 +606,13 @@ curl -s -o /dev/null -D - -X PROPFIND -H 'Depth: 1' http://localhost:9999/dav/__
 
 ### `__magic__`, a directory you can organise
 
-Every other directory is a saved filter — a release is in `movies` because it matches the movies filter — so there is nowhere in the library to *put* something. `__magic__` is the exception: it starts as an exact copy of `__all__`, and inside it anything can be moved anywhere. A move rewrites a row in `data/magic.journal`, compacted into `data/magic.json`; no bytes move, no torrent is renamed, and the rows key on the release's content hash, so a repair that rebuilds the release does not lose where you put things. It is what lets Radarr and Sonarr import by rename instead of by copy.
+Every other directory is a saved filter — a release is in `movies` because it matches the movies filter — so there is nowhere in the library to *put* something. `__magic__` is the exception: `__magic__/__all__` is an exact copy of `__all__` and the root beside it is yours, and anything can be moved out of the mirror to anywhere else in the namespace. A move rewrites a row in `data/magic.journal`, compacted into `data/magic.json`; no bytes move, no torrent is renamed, and the rows key on the release's content hash, so a repair that rebuilds the release does not lose where you put things. It is what lets Radarr and Sonarr import by rename instead of by copy.
 
 Full write-up, including what survives a repair and what each refusal means, in [docs/magic.md](../guides/magic.md).
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `magic.enabled` | bool | `false` | Serve `__magic__` at all. Off by default: it is a writable tree, and an \*arr pointed at the wrong root folder can reorganise a library. With nothing moved it reads exactly as `__all__` does. |
+| `magic.enabled` | bool | `false` | Serve `__magic__` at all. Off by default: it is a writable tree, and an \*arr pointed at the wrong root folder can reorganise a library. With nothing moved its own `__all__` reads exactly as the library's does, and the root holds nothing else. |
 | `magic.allow_delete` | bool | `false` | When true, a DELETE of a **file** under `__magic__` also deletes the content, as a DELETE on the mount proper always does. Off by default, a delete only hides: the entry leaves `__magic__` and stays in `__all__` and in every filter directory. A release folder and a directory never delete content whatever this is set to — Sonarr deletes the job folder after every import. |
 | `magic.sidecar_max_mb` | int | `32` | The largest single file a client may `PUT` into `__magic__`. Over it the write is refused with **413**. |
 | `magic.sidecar_budget_mb` | int | `2048` | The largest the whole sidecar tree may grow. Over it a write is refused with **507 Insufficient Storage**, which says what 413 does not: deleting something makes the same request succeed. The total is measured by walking the tree at startup, so a restart does not hand the allowance back to a tree that is already full, and again before any refusal — the tree is the same `data/local` directory zurg's own mount writes into, so a file removed there behind zurg's back must not go on being charged for. Zero or a negative takes the default; there is no way to ask for no cap. |
@@ -637,6 +637,7 @@ With the default order, the two caps are for the other kind of client: one that 
 
 Two rules follow from what `__magic__` is, and both are refusals a client may see:
 
+- **The mirror is the library's own.** `__magic__/__all__` and the release folders directly inside it are computed, so a `MOVE`, `MKCOL` or `DELETE` aimed at either is **403**: a row there would be a second address for a release that already has one. Deeper is a release's own folder, where a write is as ordinary as anywhere else — it is where an \*arr puts the `.nfo` beside a file it imported.
 - **Nothing the library answers for may be written over.** A release folder, an entry of one, and a path a move has placed something at are all rendered from the library, so a `PUT` or a `MOVE` of a real file onto any of them is **403**. That includes a name inside a release folder the release does not have: the folder's listing is the release's, so a file put among its entries would be listed by nothing.
 - **A placement never destroys a real file.** Moving something the library holds onto a path a sidecar occupies is refused rather than overwriting it, even with `Overwrite: T`. The same holds for a directory of real files moved the other way: it may not be renamed onto a path the library answers for, because its files would then sit in a folder that lists the release and nothing else.
 
@@ -664,7 +665,7 @@ Both the `magic:` and the `sabnzbd:` block are editable in full from the [config
 
 ### `sabnzbd`, the download client Sonarr and Radarr see
 
-zurg can answer Sonarr and Radarr as though it were a SABnzbd. They hand it an NZB, it writes the file into `nzbs/` for the Usenet backend, and once the release is in the library the job reports **Completed** with a job folder under `__magic__` to import from. Nothing is downloaded to import: the \*arr renames the file inside the mount, which is a row in the `__magic__` table.
+zurg can answer Sonarr and Radarr as though it were a SABnzbd. They hand it an NZB, it writes the file into `nzbs/` for the Usenet backend, and once the release is in the library the job reports **Completed** with a job folder under `__magic__/__all__` to import from. Nothing is downloaded to import: the \*arr renames the file inside the mount, which is a row in the `__magic__` table.
 
 It needs both halves to be useful — an `nzb` provider to read the NZB, and `magic.enabled` to have somewhere to import from — and it is off until asked for. Full setup, including what to put in the \*arr, is in [docs/sabnzbd.md](../guides/sonarr-radarr.md).
 
@@ -673,8 +674,8 @@ It needs both halves to be useful — an `nzb` provider to read the NZB, and `ma
 | `sabnzbd.enabled` | bool | `false` | Register the endpoint at `/api` and `/sabnzbd/api`. While off, neither route exists. |
 | `sabnzbd.api_key` | string | generated | The only gate on the endpoint. Sonarr and Radarr send no basic auth, so these routes sit outside it and the key is what stands in. Left empty with the block enabled, zurg generates one, keeps it in `data/sabnzbd-apikey` so it survives a restart, and logs it once at startup. |
 | `sabnzbd.categories` | list | `[tv, movies]` | The categories reported to the clients. Every one of them resolves to the same directory, so this exists only to stop a client warning about a category it cannot find — add whatever you configured in the \*arr. `*` is always reported as well. |
-| `sabnzbd.history_limit` | int | `60` | How many history entries Sonarr and Radarr read. zurg holds finished jobs past this in the queue until a slot frees. Match it to the client's `DownloadClientHistoryLimit` if you raised that. `0` keeps their default of 60. |
-| `sabnzbd.complete_dir` | string | `<mount_path>/__magic__` | The completed directory reported to the clients. It must be the path **the \*arr** sees, which is not zurg's own when the \*arr runs in a container that mounts the library elsewhere. |
+| `sabnzbd.history_limit` | int | `60` | How many history entries Sonarr and Radarr read. zurg holds finished jobs past this in the queue until a slot frees, which happens when the client clears one or when one has gone ten minutes uncleared while jobs wait. Match it to the client's `DownloadClientHistoryLimit` if you raised that. `0` keeps their default of 60. |
+| `sabnzbd.complete_dir` | string | `<mount_path>/__magic__/__all__` | The completed directory reported to the clients. It must be the path **the \*arr** sees, which is not zurg's own when the \*arr runs in a container that mounts the library elsewhere. |
 
 ```yaml
 sabnzbd:
@@ -688,7 +689,7 @@ The API key is the whole of the authentication, so treat the endpoint the way yo
 
 ### `qbittorrent`, the torrent download client Sonarr and Radarr see
 
-zurg can answer Sonarr and Radarr as though it were a qBittorrent. They hand it a magnet or a `.torrent` and zurg adds the info hash to a debrid account. Once the release is in the library the torrent reports **finished** with a folder under `__magic__` to import from. Nothing is downloaded to import. The \*arr renames the file inside the mount and that is a row in the `__magic__` table.
+zurg can answer Sonarr and Radarr as though it were a qBittorrent. They hand it a magnet or a `.torrent` and zurg adds the info hash to a debrid account. Once the release is in the library the torrent reports **finished** with a folder under `__magic__/__all__` to import from. Nothing is downloaded to import. The \*arr renames the file inside the mount and that is a row in the `__magic__` table.
 
 Two halves make it useful. An account that can add torrents reads the magnet and `magic.enabled` gives the \*arr somewhere to import from. It is off until asked for. Full setup including what to put in the \*arr is in [docs/qbittorrent.md](../guides/sonarr-radarr-torrents.md).
 
@@ -697,7 +698,7 @@ Two halves make it useful. An account that can add torrents reads the magnet and
 | `qbittorrent.enabled` | bool | `false` | Register the endpoint at `/api/v2` and `/qbittorrent/api/v2`. While off, neither route exists. |
 | `qbittorrent.api_key` | string | generated | The only gate on the endpoint. The clients send it as a bearer token when their **API Key** field is set, and accept it as the password on `auth/login` when it is not. Left empty with the block enabled, zurg generates one, keeps it in `data/qbittorrent-apikey` so it survives a restart, and logs it once at startup. |
 | `qbittorrent.categories` | list | `[tv-sonarr, radarr]` | The categories reported to the clients — the two the \*arrs ship with. Every one of them resolves to the same directory, so this exists only to stop a client warning about a category it cannot find. |
-| `qbittorrent.save_path` | string | `<mount_path>/__magic__` | The save path reported to the clients, and the parent of every folder they import from. It must be the path **the \*arr** sees, which is not zurg's own when the \*arr runs in a container that mounts the library elsewhere. Set `sabnzbd.complete_dir` to the same value if you run both endpoints. |
+| `qbittorrent.save_path` | string | `<mount_path>/__magic__/__all__` | The save path reported to the clients, and the parent of every folder they import from. It must be the path **the \*arr** sees, which is not zurg's own when the \*arr runs in a container that mounts the library elsewhere. Set `sabnzbd.complete_dir` to the same value if you run both endpoints. |
 | `qbittorrent.download_timeout_mins` | int | `15` | How long a grab may go with no movement — no change of stage and no rise in progress — before that account is given up on and the next one that takes torrents is tried. `0` means cached-only: a grab is accepted only onto an account that already holds the content, and refused inside the add otherwise, which is the one refusal Sonarr and Radarr act on. A negative number never gives up. See [Timeouts and cached-only mode](../guides/sonarr-radarr-torrents.md#timeouts-and-cached-only-mode). |
 
 ```yaml
@@ -746,7 +747,7 @@ The "set it and forget it" section. Controls how zurg keeps your library healthy
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `enable_repair` | bool | `false` | Enables automatic torrent repair. When a torrent becomes unavailable (e.g., removed from RD cache), zurg will attempt to find and add a replacement. **Important:** Only one zurg instance should have repair enabled to avoid conflicts. |
+| `enable_repair` | bool | `true` | Enables automatic torrent repair. Unset means enabled. When a torrent becomes unavailable (e.g., removed from RD cache), zurg will attempt to find and add a replacement. **Important:** Only one zurg instance should have repair enabled to avoid conflicts. |
 | `repair_every_mins` | int | `60` | How often (in minutes) zurg scans for broken torrents that need repair. Lower values catch problems faster but increase API usage. |
 | `repair_timeout_mins` | int | `30` | Maximum time (in minutes) to wait for a repair operation to complete. If a repair takes longer than this, the torrent is marked as broken and skipped until the next repair cycle. |
 | `stalled_download_mins` | int | `10` | Minimum minutes before a downloading torrent is considered stalled. The actual threshold is `max(GB_downloaded, stalled_download_mins)` — so large downloads get more time automatically. Increase this for slow or low-seed torrents (e.g., public trackers) that need more time to complete. |
@@ -778,6 +779,29 @@ on_library_update: |
       echo "detected update on: $arg"
   done
 ```
+
+### Repairing across accounts
+
+Every other repair strategy re-adds a release to the account it came from, which is the right shape for as long as that account can still produce the content. It is the wrong shape for one case.
+
+The services keep independent caches. A release Real-Debrid has purged, or one it refuses on the filename alone, can be sitting cached on AllDebrid right now, under the same info hash. Nothing is wrong with the release. Only the account is wrong.
+
+So when a release has been given up on by every account that holds it, zurg offers it to the configured accounts that do not, in the order they appear in your `providers` block. The first one that already has it takes it, zurg lists that account, and the release picks up a second copy the way any multi-account release does: its own file ids, its own links, read failover between the two. The verdict on the entry clears itself once a copy that can be repaired exists.
+
+There is no setting. Configuring a second account is the decision, and zurg already lists it, serves from it and fails reads over to it; asking it about a release the first account cannot produce is the same arrangement. It follows `enable_repair` like every other repair.
+
+The repair button on a release does this too, and in the right order: it retries the account that holds the release first, exactly as it always has, and only offers the release around if that attempt fails. That is the one path that works with the repair sweep switched off entirely.
+
+What keeps it from becoming an add loop is the shape of the offer rather than a switch:
+
+- **An account is only ever handed content it already holds.** The offer is an add that is withdrawn and deleted again unless the account completes it within fifteen seconds. An account that would have to fetch the release off the swarm is left exactly as it was found, having spent no transfer allowance. This is a repair, never a re-download. `restrict_repair_to_cached` does not control this and is never read here: that key is about an account repairing its own copy, and this path is cached-only whatever it says.
+- **Only a release nothing can serve.** A working release is never copied around, and neither is one repair has not given up on yet.
+- **An account that says no is asked less and less.** The wait after a miss starts at a day and doubles with each further miss, up to about a fortnight. A release that is merely out of cache this week is found again within days; one that is gone for good settles into a fortnightly question. Without that decay, always-on would mean a daily add for every dead release on every account, for ever.
+- **At most ten releases a sweep**, so the first sweep after a second account is added works through a backlog over hours rather than in one burst.
+
+An account that already holds a copy of the release is never offered a second instance of it, however broken the copy it holds is: repair's own strategies own that account, and on Real-Debrid a duplicate add never downloads at all. Releases whose key is not a bittorrent info hash, which is how the Usenet backend identifies its own, are never offered to anything.
+
+This is the one place zurg adds to an account whose content expires without being asked. Repair will not re-add a release to such an account on a timer, because re-fetching content the service deliberately removed is the pattern those services call abuse. A cached offer is not that: nothing is fetched, no allowance is spent, and the content being claimed is already in the service's cache because somebody else put it there.
 
 ### Library detail
 
@@ -969,7 +993,7 @@ Zurg uses benchmark-tested rclone VFS settings optimized for streaming performan
 | `--vfs-read-ahead` | 128M | Balance between buffer and bandwidth efficiency |
 | `--max-read-ahead` | 1M | Small FUSE kernel buffer reduces small reads. Not passed on Windows. |
 | `--vfs-read-wait` | 5ms | Critical: higher values cause severe slowdowns |
-| `--vfs-cache-mode` | full | Full caching for best performance |
+| `--vfs-cache-mode` | full | Full caching for best performance. Not always the right trade for a player reading the mount over a share — see [When the cache costs more than it buys](#when-the-cache-costs-more-than-it-buys). |
 | `--vfs-cache-max-size` | 256G | Hard cap on the on-disk VFS cache. Not a config key — override it with `rclone_extra_args`. |
 | `--vfs-cache-min-free-space` | 10G | Stops caching before the cache disk fills |
 | `--vfs-cache-max-age` | 72h | How long an untouched cached file is kept. Untouched is the operative word, and a media server rarely leaves anything untouched — see [Disk the mount uses](#disk-the-mount-uses). |
@@ -1031,6 +1055,34 @@ rm -rf data/rclone-cache/vfs/* data/rclone-cache/vfsMeta/*
 Measure it with `du -sh data/rclone-cache`. Partially downloaded entries are
 sparse files, so a size that counts apparent bytes reports far more than the
 disk actually holds.
+
+#### When the cache costs more than it buys
+
+`full` is the right default for a media server on the same host: it reads a file
+once, and everything after that is local. It is not automatically right for a
+hardware player reading the mount over a file share.
+
+Under `full` a read has to land on disk before it reaches the reader, and what
+gets fetched is the whole file rather than the part being watched. Put a share
+in front of that and one disk is serving the player while rclone is still
+writing to it. A Zidoo player reading a Windows share stuttered on every title
+until the cache was turned off, and played cleanly afterwards (reported
+2026-08-30). The mechanism above is the plausible reading of that report rather
+than something measured here, so treat it as the first thing to try when a
+direct-reading client stutters on a mount that a media server on the same host
+plays without trouble:
+
+```yaml
+rclone_extra_args:
+  - "--vfs-cache-mode"
+  - "off"
+```
+
+What that gives up is real. With no local copy a seek re-reads from the
+provider, a second play downloads the file again, and nothing survives a
+restart. It also changes what the mount accepts as a write, so leave the default
+alone on a host where an \*arr imports through the mount — see
+[qbittorrent.md](../guides/sonarr-radarr-torrents.md).
 
 #### Caches stranded by a move
 

@@ -198,10 +198,13 @@ Built in, and reserved:
     __dump__         dumped torrents
     __downloads__    the downloads view
     __magic__        the writable overlay, the one directory whose layout is
-                     stored rather than computed. It holds the releases
-                     `__all__` holds, each as the directory tree its files'
-                     `File.Path` values describe rather than flattened
-                     (`internal/magic/tree.go`)
+                     stored rather than computed. Its own `__all__` mirrors the
+                     library — every release `__all__` holds, each as the
+                     directory tree its files' `File.Path` values describe
+                     rather than flattened (`internal/magic/tree.go`) — and
+                     everything beside that mirror is what the user stored.
+                     The mirror is computed, so nothing may be written into it;
+                     `MirrorDirectory` in `internal/magic/resolve.go` names it
     int__all__       internal hash index
 
 `__downloads__` and `__magic__` are not filters, so they are appended to the
@@ -234,7 +237,8 @@ behind, a restart loads both and the rename silently reverts.
 The season fix (`/torrents/season-fix/plan` and `/apply`) is a bulk file rename
 driven by Plex's own episode matching: plan is read-only and gives a per-file
 skip reason, apply takes an explicit list of hashes rather than an apply-all
-flag.
+flag. The dashboard drives both from `/season-fix/`, which is also where the
+mapping rules and the skip reasons are written out for an operator.
 
 
 ## 10. Consequences for anything integrating with zurg

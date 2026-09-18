@@ -83,6 +83,7 @@ Moving an existing library onto zurg without a re-download or a re-scan.
 - [Configuration](reference/config.md) — every option in `config.yml`
 - [Command line](reference/cli.md) lists every command and flag the binary takes
 - [Outbound identity](reference/outbound-identity.md) says what zurg tells the services it calls about itself
+- [MCP server](reference/mcp.md) lets an AI agent drive zurg over the Model Context Protocol
 - [Tags](reference/tags.md) — what gets applied to a torrent, and why
 - [Changelog](reference/changelog.md) — what changed when
 
