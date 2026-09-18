@@ -66,11 +66,11 @@ qbittorrent:
   enabled: true
   api_key: ""                   # empty = zurg generates one and keeps it
   categories: [tv-sonarr, radarr]
-  save_path: ""                 # empty = <mount_path>/__magic__
+  save_path: ""                 # empty = <mount_path>/__magic__/__all__
   download_timeout_mins: 15     # 0 accepts only cached content, negative never gives up
 ```
 
-**The categories are not folders.** They all resolve to the same place — the release's own folder under `__magic__`. The list exists only so a client stops warning about a category it cannot find. If Sonarr's category is `tv-sonarr`, `tv-sonarr` must be in this list. Prowlarr, if you use it, wants `prowlarr` — see [step 10](#10-prowlarr-manual-grabs).
+**The categories are not folders.** They all resolve to the same place — the release's own folder under `__magic__/__all__`. The list exists only so a client stops warning about a category it cannot find. If Sonarr's category is `tv-sonarr`, `tv-sonarr` must be in this list. Prowlarr, if you use it, wants `prowlarr` — see [step 10](#10-prowlarr-manual-grabs).
 
 Restart zurg, then confirm the endpoint registered and the provider took:
 
@@ -81,7 +81,7 @@ One `alldebrid` row is all the endpoint needs — any of the three torrent-capab
 The startup log says the same two things, and it is worth reading them once:
 
 ```
-INFO  router.qbittorrent  qBittorrent API on /api/v2 and /qbittorrent/api/v2, save path /mnt/zurg_qbt/__magic__, categories tv-sonarr, radarr
+INFO  router.qbittorrent  qBittorrent API on /api/v2 and /qbittorrent/api/v2, save path /mnt/zurg_qbt/__magic__/__all__, categories tv-sonarr, radarr
 INFO  router.qbittorrent  qBittorrent: torrents are offered to alldebrid, in that order
 ```
 
@@ -130,7 +130,7 @@ $ curl -s -H "Authorization: Bearer $KEY" "http://$ZURG/api/v2/app/version"
 v5.0.4
 
 $ curl -s -H "Authorization: Bearer $KEY" "http://$ZURG/api/v2/app/preferences" | jq .save_path
-"/mnt/zurg_qbt/__magic__"
+"/mnt/zurg_qbt/__magic__/__all__"
 ```
 
 **The bare `Forbidden` is the healthy answer.** The clients' first probe is an *unauthenticated* `GET /api/v2/app/webapiVersion`, and real qBittorrent answers it `403` when the API is there but nobody is logged in — so that is what zurg answers, and the client reads it as "v2 supported, authenticate now". A plain **404** instead means `qbittorrent.enabled` is still false or zurg has not been restarted since you changed it.
@@ -166,7 +166,7 @@ $ ls -d /mnt/zurg_qbt/__magic__/tv /mnt/zurg_qbt/__magic__/movies
 
 Substitute your own `mount_path` for `/mnt/zurg_qbt`.
 
-**The root folder must be inside `__magic__`, not at it and not above it** — the same rule as the Usenet walkthrough, for the same reason: both clients raise a health check when a root folder *is* the download client's output folder, Radarr also raises one when a root folder *contains* it, and a root folder one level inside is the one arrangement neither complains about. [That guide](sonarr-radarr.md#4-make-the-root-folders) has the screenshots of getting it wrong.
+**The root folder goes beside the save path, not at it and not above it** — the same rule as the Usenet walkthrough, for the same reason: zurg reports `__magic__/__all__` as the save path, both clients raise a health check when a root folder *is* the download client's output folder, Radarr also raises one when a root folder *contains* it, and siblings trip neither. [That guide](sonarr-radarr.md#4-make-the-root-folders) has the screenshots of getting it wrong.
 
 There is a second reason that is specific to torrents: a move whose destination is outside `__magic__` is a move between two filesystems, which is a copy — and a copy off a debrid mount reads the whole release back over the network. `Remove Completed` staying on ([below](#if-the-import-copies-instead-of-moving)) keeps the import a rename; a root folder outside the namespace would undo that anyway.
 
@@ -242,7 +242,7 @@ Click **Add Root Folder**. A file browser opens on the container's filesystem.
 
 ![Sonarr's file browser at the filesystem root](../assets/sonarr-radarr-torrents/12-sonarr-rootfolder-dialog.webp)
 
-Type or navigate. If the mount is genuinely visible to Sonarr, `__magic__` opens and shows what you made in step 4 — the fastest proof you will get that the bind mount is correct.
+Type or navigate. If the mount is genuinely visible to Sonarr, `__magic__` opens and shows what you made in step 4, beside the `__all__` zurg puts there itself — the fastest proof you will get that the bind mount is correct.
 
 ![The file browser inside __magic__, listing tv and movies](../assets/sonarr-radarr-torrents/13-sonarr-rootfolder-browse.webp)
 
@@ -288,7 +288,7 @@ The same two problems as the Usenet walkthrough, with the same fixes — the mou
 
 ```yaml
 qbittorrent:
-  save_path: "/data/zurg/__magic__"   # what the *arr sees, not what zurg sees
+  save_path: "/data/zurg/__magic__/__all__"   # what the *arr sees, not what zurg sees
 ```
 
 **Bind the mount's parent, not the mountpoint.** Restarting zurg unmounts and remounts; a container that bound the mountpoint itself keeps the dead fuse connection and every read after that answers `Socket not connected` — and because both clients check free space before a grab, *every release is silently rejected*. Bind the parent with `rslave` and the remount arrives as a sub-mount event the container follows. This rig's containers were started before zurg ever mounted, and the mount still appeared inside them:
@@ -344,7 +344,7 @@ The whole magnet reaches the account. zurg passes on the display name the client
 
 ![Radarr's history: the imported file, its source and destination both under __magic__](../assets/sonarr-radarr-torrents/62-radarr-history.webp)
 
-Expand the imported row and read the paths. **Source** is `/mnt/zurg_qbt/__magic__/[Polarwindz] …/[Polarwindz] ….mkv` and **Imported To** is `/mnt/zurg_qbt/__magic__/movies/Ghost in the Shell (1995)/…` — the file never left `__magic__`, which is what makes the import a rename.
+Expand the imported row and read the paths. **Source** is `/mnt/zurg_qbt/__magic__/__all__/[Polarwindz] …/[Polarwindz] ….mkv` and **Imported To** is `/mnt/zurg_qbt/__magic__/movies/Ghost in the Shell (1995)/…` — the file never left `__magic__`, which is what makes the import a rename. The screenshot was taken before the library moved down into `__all__`, so its source path is one level up from what yours will read.
 
 A grab the client decides not to import stays in the queue as a warning instead. The one in this screenshot's queue row is an upgrade the quality profile refused — visible, one click from *Remove*, and clearing nothing by itself:
 

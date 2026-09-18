@@ -200,22 +200,23 @@ magic:
   enabled: true
 ```
 
-**2. Make the root folders.** They have to be *inside* `__magic__` and one
-level down. Not `__magic__` itself and not the mount root. Both \*arrs raise a
-health check for those and an import lands one level down anyway.
+**2. Make the root folders.** They go at the root of `__magic__`, beside the
+`__all__` zurg keeps there. Not `__magic__/__all__`, not `__magic__` itself and
+not the mount root. Both \*arrs raise a health check for those; siblings trip
+neither.
 
 ```bash
 mkdir -p /mnt/zurg/__magic__/tv /mnt/zurg/__magic__/movies
-ls /mnt/zurg/__magic__/          # your releases are already listed here
+ls /mnt/zurg/__magic__/__all__/   # your releases are already listed here
 ```
 
-`__magic__` starts as a mirror of `__all__` so every release is present before
+`__magic__/__all__` mirrors the library so every release is present before
 you organise anything.
 
 **3. Organise it.** A `mv` inside `__magic__` writes a row and moves no bytes.
 
 ```bash
-mv "/mnt/zurg/__magic__/Some.Release.S01E01.1080p/ep1.mkv" \
+mv "/mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv" \
    "/mnt/zurg/__magic__/tv/The Show/Season 01/S01E01.mkv"
 ```
 
@@ -228,8 +229,10 @@ That makes the \*arr move the files across the mount boundary. It is a copy and
 it downloads your library. The full sequence and the number to watch are on
 [the shared page](index.md#coming-off-a-symlink-library).
 
-**4. Point Plex at `__magic__`** and at that library only. Never `__magic__`
-*and* a filter directory or every episode is found twice. Confirm
+**4. Point Plex at the root folders you made** — `__magic__/tv` and
+`__magic__/movies` — and at those only. Never the root of `__magic__`, which
+holds the whole library at `__magic__/__all__` as well, and never `__magic__`
+*and* a filter directory, or every episode is found twice. Confirm
 `autoEmptyTrash` is `0`. Add the new location and scan. Then remove the old
 one. That is your \*arr library path or the decypharr mount if Plex read it
 directly.
@@ -247,18 +250,23 @@ sudo systemctl stop decypharr
 
 ## Afterwards
 
-**Automation is where decypharr had more than zurg does.** zurg has an opt-in
+**Automation carries over, both halves.** zurg has an opt-in
 [SABnzbd-compatible endpoint](../guides/sonarr-radarr.md) so Sonarr and Radarr
-can hand it an NZB and import from `__magic__` by rename. It has no qBittorrent
-API so the torrent half of decypharr's ingestion has no equivalent. Your
-options.
+can hand it an NZB, and an opt-in
+[qBittorrent-compatible endpoint](../guides/sonarr-radarr-torrents.md) so they
+can hand it a magnet or a `.torrent` for a debrid account. Both import out of
+`__magic__/__all__` by rename. Your options.
 
 - **NZBs.** Turn on `sabnzbd.enabled` and point the \*arrs at zurg. The caveat
   is that zurg does not yet check whether a post's articles are still on the
   news server. So a dead release reports Completed and fails on the first read
   instead of being blocklisted and re-grabbed.
-- **Torrents.** Use the zurg dashboard or DMM or Plex watchlist acquisition.
-  That last one is the `watchlist:` block, which searches your own Newznab indexers.
+- **Torrents.** Turn on `qbittorrent.enabled` and add it as a second download
+  client. A private tracker's release works when the indexer hands out a
+  `.torrent` file rather than a bare magnet, because the file keys the account's
+  cache lookup by hash directly. The zurg dashboard, DMM and Plex watchlist
+  acquisition are still there for one-off adds; that last one is the
+  `watchlist:` block, which searches your own Newznab indexers.
 - **Hybrid.** Keep decypharr purely as the \*arrs' download client pushing into
   the same debrid accounts with zurg serving the mount. Both list the same
   account so zurg picks up what decypharr adds. The \*arr import step then needs

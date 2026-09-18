@@ -125,12 +125,14 @@ Adopt the files where they already are instead.
 1. Add `__magic__/tv` and `__magic__/movies` as **new** root folders. Leave the
    old root folder in place for now.
 2. Point the \*arr's library import at those paths so it adopts what is there.
-   `__magic__` starts as a mirror of `__all__` so every release is already
-   present as a folder holding its own files. With renaming on the \*arr
+   `__magic__/__all__` mirrors the library so every release is already
+   present there as a folder holding its own files. With renaming on the \*arr
    applies its own scheme. That is a free row write because it never leaves the
    namespace.
 3. Remove the old root folder **without deleting files**. Then point Plex at
-   `__magic__`.
+   the root folders you added, not at `__magic__` itself — the namespace holds
+   the whole library at `__magic__/__all__` as well, and a library scanning
+   both finds everything twice.
 
 Watch `data/local` on zurg's `/magic/` dashboard while step 2 runs. That number
 is the one that says whether something is importing by copying instead of
@@ -142,9 +144,12 @@ and check the number before turning it loose on the library.
 
 !!!warning Point each Plex library at one directory and not two
 A library that scans a filter directory such as `movies` or `shows` or
-`__all__` **and** scans `__magic__` finds every episode twice. Pick one. If you
-use the \*arrs then pick `__magic__`. If you browse a library nobody organises
-then pick the filter directories and leave `__magic__` off.
+`__all__` **and** scans `__magic__` finds every episode twice — and `__magic__`
+holds its own `__all__`, so pointing a library at the root of the namespace
+scans the whole library along with what you organised. Pick one. If you use the
+\*arrs then point Plex at the root folders you made, `__magic__/tv` and
+`__magic__/movies`. If you browse a library nobody organises then pick the
+filter directories and leave `__magic__` off.
 !!!
 
 ## The one guard you must not skip
