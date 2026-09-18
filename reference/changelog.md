@@ -6,6 +6,362 @@ order: 60
 
 # Changelog
 
+## Cached-only grabs on TorBox no longer download the releases they were meant to skip
+
+TorBox has a flag that makes an add refuse anything it does not already hold. It is in their
+API but in none of their documentation, and zurg was not using it: a cached-only grab added the
+torrent, waited to see whether it completed, and deleted it again when it turned out to be a
+real download. That spent one of the account's sixty hourly adds, occupied a transfer slot, and
+pulled bytes for a release the *arr had already been told to skip.
+
+Cached-only grabs now ask for the content and are refused in under a second if TorBox does not
+have it, with nothing left on the account. A miss still costs one of those sixty hourly adds, so
+zurg paces them as before. And a hit is still checked rather than believed: TorBox's cache can
+say yes to content it then fails to serve, so the release has to finish before zurg reports it.
+
+## Cached-only grabs on Debrid-Link no longer spend the daily add allowance
+
+Debrid-Link accepts a bare info hash as well as a magnet, and only adds the
+hash when it already has the content. zurg was sending a magnet, which is an
+instruction to fetch: every cached-only miss was accepted, charged against the
+account's 50 uncached adds a day and one of its 20 transfer slots, and then
+deleted again to get the allowance back. Fifty misses and the account could
+add nothing else until the daily reset.
+
+Cached-only grabs now send the hash. A miss is refused outright in about a
+tenth of a second and leaves the account untouched, so an *arr can work through
+a long release list without spending anything on the ones nobody has. This
+holds for grabs that arrive as a .torrent file too: the file exists to spare a
+service the metadata lookup a bare hash forces on it, and a cache question
+needs none of that.
+
+## Debrid-Link rate-limit lockouts are backed off from again
+
+Debrid-Link answers its hour-long, per-endpoint lockout with HTTP 503 and the
+reason in the body. zurg treated every 503 as the service being briefly down,
+so it never read the reason and kept retrying an endpoint that had already
+said to wait an hour. It now recognises the lockout and stays off that endpoint
+until it clears.
+
+## __magic__ now mirrors your library at __magic__/__all__, leaving its root to you
+
+The namespace used to mirror `__all__` at its own root, which made the folder a
+download client imports from the same folder every release already sits in. A
+Sonarr or Radarr root folder had to be nested *inside* the download folder to
+dodge the two health checks that arrangement raises, and a manual import
+pointed at the download folder walked the whole library looking for one release.
+
+The mirror has moved one level down. `__magic__/__all__` is the library as
+`__all__` lists it and is what `sabnzbd.complete_dir` and
+`qbittorrent.save_path` now compute; the root of `__magic__` is yours, for the
+`tv`, `movies` and `anime` folders you point the \*arrs at. The two are
+siblings, so neither contains the other and neither client warns.
+
+**This changes paths.** If you set `sabnzbd.complete_dir` or
+`qbittorrent.save_path` by hand — the container mapping case — append
+`/__all__` to it. If you pointed a Plex or Jellyfin library at `__magic__`
+itself rather than at a folder inside it, its paths move by one level; point it
+at `__magic__/__all__` or at the folder you import into. Your root folders do
+not move, and nothing stored in the table moves: placements are paths under
+folders you made, and tombstones are keyed on the release, so an existing
+layout is untouched. A grab already in flight when you upgrade carries the old
+path and needs re-grabbing.
+
+Nothing can be written into `__magic__/__all__`: a row there would be a second
+address for a release that already has one, so a MOVE, MKCOL or DELETE aimed at
+it is refused. Writing *inside* a release folder is unchanged, which is where
+an \*arr puts the .nfo beside a file it imported.
+
+## Export Logs now tells you where your links went and how long they last
+
+Export Logs tries several paste hosts and hands you the first one that takes
+the file. It never said which one, and they are not interchangeable: the
+preferred host keeps a paste for 180 days and renews it every time somebody
+reads it, while the fallback drops it after three. Same-looking link, and a
+report filed on a Friday was two dead links by Monday with nothing to explain
+why. The links now come with the host that holds them and the deadline that
+comes with it.
+
+The reason you were landing on the fallback is the second half of this. The
+preferred host blocks an address that uploads a few times in quick succession,
+and an export publishes two files per click, so a run of bug reports got the
+address turned away — after which every request from that box was refused,
+including reading back a paste it had already stored. zurg walked both halves
+of every later export into it anyway and logged each one as an upload that had
+failed, which pointed at the file instead of at the address. A host that
+refuses the box is now left alone for a day and the log says that is what
+happened.
+
+## Uploading debug info no longer publishes your indexer and download-client keys
+
+Export Logs redacts every credential it finds before sending the config to a
+paste host, but it was only looking at the top level. The keys inside the
+nested blocks went out in the clear: your Newznab indexer API keys — from both
+the Stremio and the watchlist lists — the Stremio addon token, the SABnzbd and
+qBittorrent API keys, the zrok account token and the Plex scan token. The
+indexer keys are the sharp one: those are your Usenet account, not zurg's.
+
+They are redacted now. Provider tokens and news-server passwords were never
+affected.
+
+## zurg can be driven by an AI agent
+
+There is a new endpoint at `/mcp` speaking the Model Context Protocol, so a
+client like Claude can search the library, work out why a release will not
+play, and repair it — as typed tools rather than by reading the dashboard's
+HTML.
+
+It is off by default. Turn it on with `mcp: {enabled: true}` and point a client
+at `http://your-zurg:9999/mcp` using the same username and password the
+dashboard takes. Clients that only speak stdio use `zurg mcp`, which bridges to
+the instance already running rather than starting a second one.
+
+Alongside the tools it offers zurg's own documentation and its live state as
+things a client can read directly, and six prompts for the procedures worth
+following exactly — diagnosing a release that will not play, preparing a Plex
+scan safely, triaging what repair has given up on.
+
+It knows what it is not allowed to do quietly. Anything that takes something
+away describes what it would do first and acts only when you confirm that exact
+plan; `read_only: true` withholds every tool that changes anything; and the
+tools that could stop zurg or its mount stay behind their own switch. No result
+carries a token, a password or a resolved link.
+
+See [the MCP server](mcp.md).
+
+## zurg says when your build is out of date
+
+Nothing in zurg ever mentioned how old a build was, which is how a defect fixed in August reached a bug report in September with the fix already three weeks old and nobody in the thread with a reason to suspect it. Once a day zurg now asks the public repository for its newest release and, if this build predates it, writes one line naming the release, its date and yours. It is quiet the rest of the time: nothing is printed when you are current, nothing is printed when GitHub cannot be reached, and a build that does not know when it was made, which is the Docker image, is not guessed about. Sponsors on a nightly are always ahead of the last public release and never see it at all. The answer is cached for a day so a restart costs no request, a refusal is not retried until tomorrow, and the whole thing is off with `disable_update_check: true`.
+
+## A dead link inside an archived release stops being declared healthy every sweep
+
+When a release is served as a single archive and repair cannot narrow a re-add any further, zurg checks whether the archive itself still reads and, if it does, lifts the broken marks on the release instead of condemning it. It lifted all of them, including the marks on files the account addresses directly with links of their own. A verified archive link proves the archive reads and proves nothing whatever about those. So a file whose link the account had stopped serving was put back to healthy on the strength of an unrelated read, the next sweep unrestricted it and found it dead again, the release was condemned again, and the pass that condemned it ended by restoring it again. On a 64-file release with 9 links the account had stopped serving, that ran 111 times in a week, twice inside the same 40 seconds, at two magnet adds a pass. The reprieve now covers only the files the archive actually serves, which are the ones carrying no link of their own. A file the account addresses keeps the verdict its own link earned and goes to repair, which is the only path that can mint it a working one.
+
+## Downloads that only partly arrive no longer sit in the queue for ever
+
+When some of a release's files could not be read, zurg kept its download in the
+queue waiting for exact file sizes it was never going to learn, and the check
+that would have found the problem only ran once those sizes had arrived. Sonarr
+and Radarr showed such a download at 0% with no time left, for as long as zurg
+kept running, and never blocklisted the release or searched for another one.
+
+zurg now asks the news servers about a release that has been waiting thirty
+minutes, and reports the download failed if its articles are gone, or if the
+servers could not be asked at all. A release whose sizes really are still on
+the way is unaffected and is still held back until they arrive.
+
+## A release one account gave up on can be repaired from another
+
+The debrid services keep independent caches. A release Real-Debrid has purged,
+or one it refuses on the filename alone, can be sitting cached on AllDebrid
+right now under the same hash. Until now zurg could not use that. Repair always
+re-added a release to the account it came from, so once that account had given
+up there was nothing left to try, and the release stayed dead in your library
+while another account you already pay for was holding it.
+
+Now a release that every account holding it has given up on gets offered to
+your other accounts. The first one that already has it takes it, and the
+release comes back with both accounts behind it, failing over between them like
+any release two accounts hold. There is nothing to turn on: if you have a second
+account configured and repair is enabled, this is what repair does when it runs
+out of other options.
+
+An account is only ever handed content it already holds. If it would have to
+fetch the release, the add is withdrawn and deleted again, so nothing downloads
+anything and no transfer allowance is spent. An account that answers no is asked
+again a day later, then two days, then four, up to about a fortnight, so a
+release that is gone for good stops costing anything to keep asking about.
+
+## Cached-only grabs are judged by your account, not by a cache lookup
+
+In cached-only mode zurg used to ask TorBox, Premiumize and Offcloud whether a
+release was in their cache and hand that answer straight back to Sonarr. Those
+endpoints answer a different question than the one being asked. They say the
+content sits in the service's cache, not that your account ends up holding it,
+and nothing looked at the torrent afterwards. A yes that turned into a download
+reached Sonarr as the instant grab it had just been promised, which is the one
+thing cached-only exists to prevent.
+
+Every account is judged the same way now. The torrent is added, the instance is
+watched, and only one that finishes inside the window counts as cached.
+Anything else is deleted again and the grab is refused, which is what makes
+Sonarr move on to the next release in its list. The cost is that a miss on
+those three services now spends an add slot, where a cache lookup used to spend
+nothing.
+
+## An AllDebrid backup key no longer answers for your library
+
+`download_tokens` on an AllDebrid account are separate AllDebrid accounts, held
+for their download allowance. Once the account's own key hit its limit and went
+out of rotation, every other call went out on the backup key as well: the magnet
+listing, a release's file list, adds, deletes, restarts, the saved links behind
+`__downloads__` and the change-detection probe. So the library refresh could
+list the backup account's magnets and adopt them as yours, a delete could be
+sent to an account that had never held that magnet and come back looking like
+it had already been removed, and once every key was capped the catalog went
+dark entirely over what is only a limit on bytes. Only unlocking a link rotates
+now. Everything that is about your account is asked of your account.
+
+## A healthy release stops flapping in and out of the Broken list
+
+A release whose account keeps offering one dead link could sit in the dashboard's Broken list half of every hour while every file in it played perfectly. Repair drops a link that has answered `hoster_unavailable` for three cycles so it can re-address the release instead, and remembers the drop so the next listing cannot hand the corpse back. That memory was then wiped by the wrong thing: any repair that ended well cleared it, including the passes that mint nothing and only establish that the addressing the entry already holds still reads. "The archive that serves it still reads" is the extreme case — it proves the one link serving the release works, and says nothing whatever about a link the account refused. So the give-up was forgotten, the next refresh adopted the same dead link, repair failed to assign it again and condemned the entry again, on a thirty-minute cycle that could not end. Measured on a live library over three days: one release re-condemned 129 times, 556 condemnations across the library in a week, each cycle spending two to four magnet adds. Only a repair that actually re-addressed the release forgets a give-up now, and a manual repair still forgets every one of them, so an operator can hand a link back by hand.
+
+## A release served as one archive is no longer marked broken every sweep
+
+Some releases are served as a single archive: the `.rar` carries the account's only link and every episode inside it is listed as a file of its own with no link anywhere. The repair sweep asked the account about those interior files regardless. There was nothing to ask with, so no account was consulted and nothing was measured — and the answer came back "file is broken" all the same, which the sweep wrote onto each file and used to condemn the whole release. What followed cost two magnet adds: the account was asked for just the broken files, answered with the same single archive link it had always had, and the archive fallback then verified that link and restored every file that had just been condemned. Measured on a live library: 44 episodes of one 4.9 GB archive through that cycle every half hour. A file no account holds a link for is now left alone, and the archive's own file is judged exactly as before — when the link that actually serves the release stops resolving, that file goes broken and the release with it.
+
+## Traffic goes back to your own account's token once its allowance resets
+
+A Real-Debrid account that spends its daily allowance moves its traffic onto
+the first `download_tokens` entry that still has one, and the watcher puts the
+account's own token back in the rotation as soon as it can serve bytes again.
+Getting a token back did not get the traffic back. The rotation answered from
+wherever it had stopped and only asked whether that one token was capped, so
+the backup account went on taking every byte for the rest of the day with the
+counter on the main account already at zero. The order in `download_tokens` is
+a preference now rather than a position to walk through: whichever token is
+nearest the front and able to serve is the one that serves, so the main
+account picks its traffic back up within a minute of its counter resetting.
+
+## An rclone remote pointed at the wrong address now says so
+
+If the url of an rclone webdav remote is missing the `/dav/` on the end, every listing failed with "couldn't list files: 405 Method Not Allowed" and nothing anywhere said why. The dashboard answered normally in a browser, so zurg looked healthy, and zurg's own log stayed silent about the client that was failing every few seconds. zurg now answers a WebDAV request that arrives outside `/dav/` with the address to use instead, which rclone prints as part of its own error, and writes one warning naming the client that sent it.
+
+## Windows installs now send media server scans again
+
+A `mount_path` of `Z:`, which is what `zurg setup` writes on Windows, built scan
+paths relative to the current directory on the drive rather than to its root, so
+every path missed the library section it belonged to and no scan was ever sent.
+The warning that followed asked the operator to check a `mount_path` that was
+already correct. Existing configs need no edit.
+
+## Bulk scan reads the Plex library once instead of once per torrent
+
+Matching after a dashboard bulk scan re-read the whole Plex library for every
+torrent in the batch, so scanning a large library aimed hundreds of identical
+full-library fetches at a Plex server that was usually busy scanning.
+
+## Windows library paths match regardless of case
+
+A Plex, Jellyfin or Emby library recorded as `Z:\Movies` no longer misses the
+`Z:\movies` zurg builds from its own directory name. NTFS is case-insensitive,
+so the two name one directory; matching them exactly dropped the scan and
+reported the mount_path as wrong.
+
+## A file that stops serving no longer stalls a Plex scan
+
+A broken file kept its place in the directory listing and answered reads with
+`503 File temporarily unavailable (being repaired)` until something lifted the
+verdict — with repair running, until the repair concluded. Plex blocks on a
+503, so one such file stalls a library scan and a library that collects them
+never finishes scanning at all, while Jellyfin walks past them and looks fine.
+
+Those are two separate decisions and they now have separate answers. The entry
+still stays listed for as long as it might come back, because an entry that
+disappears from a folder reads to a media scanner as a deletion and gets the
+item trashed — nothing about that changes. What changes is the read: it is
+answered 503 for a minute after the file stops serving and 404 after that. A
+minute is what a client can use, since rclone retries a 503 and gives up on a
+read at about that point, so a short blip is still absorbed and the read
+succeeds, while past it the 503 was failing the read anyway and costing every
+scan behind it.
+
+Measured against a real Plex on a fifteen-film library with ten files refused
+and every file still listed: reads answering 404 finished the scan in 5
+seconds, and a 503 that never lifted had found three of the fifteen when the
+run was cut off at ten minutes.
+
+## New SABnzbd jobs no longer wait behind a full library's size checks
+
+When zurg restarted with a large Usenet library, it queued a size check for every release and forgot which failed checks were still inside their one-hour retry delay. A newly grabbed release could then sit behind thousands of background checks while Sonarr or Radarr waited for its exact file sizes. Size checks now use a fixed worker queue, a release with a waiting SABnzbd job moves to the front, and both completed checks and retry delays survive a restart in `data/nzb-sizes/`. While work is queued, zurg reports the waiting, client-priority and running counts once a minute.
+
+## Downloads a client never clears no longer stop new ones from being imported
+
+zurg shows Sonarr, Radarr and other download clients a page of finished downloads, and keeps each one on that page until the client removes it. Clients only remove what they import or fail, so an import they block, such as a title they cannot match, stayed on the page for good. Once the page filled with those, every newly finished download waited in the queue and was never imported. A download that has sat on the page for ten minutes without being removed now gives its place to one that is waiting, the way SABnzbd drops older rows off its history page as newer ones arrive. Nothing changes while the page has room, and grabbing a release again gives it a place of its own.
+
+## A download looked up by its id is found as soon as it finishes
+
+Tools that ask zurg about one download at a time by its id, such as LazyLibrarian, are now told it finished as soon as it has, even while the page of finished downloads Sonarr and Radarr read is full. Before, such a download could look unfinished to them until a place on that page opened up.
+
+## Season fix has a page in the dashboard
+
+The library-wide rename that files fansub-numbered episodes under the names
+Plex reads has been reachable only as two HTTP endpoints since it shipped:
+`/torrents/season-fix/plan` and `/torrents/season-fix/apply`, with no control
+anywhere in the dashboard and a single paragraph in the naming reference. A
+feature nobody can find does not exist, and this one had been asked for in the
+wishlist channel as recently as this month by people who had no idea it was
+already built.
+
+`/season-fix/` now explains what the pass does, shows the canonical form it
+produces against the fansub name it replaces, and says where the season shape
+comes from: Plex's own metadata provider, never the local library, since a
+library that has collapsed the seasons is the thing being fixed. It lists what
+the mapper refuses to touch and why, because a scan that comes back nearly
+empty is the conservative answer working rather than a fault.
+
+Scanning stays behind a button — planning walks every torrent and asks Plex
+about each matched show, so opening the page does not start it. Results group
+by show with every rename shown old to new and the skipped files behind a
+disclosure. An entry flagged as a probable wrong-show match arrives unticked
+and says so again in the confirmation, so applying everything at once cannot
+quietly rename a release matched to the wrong series.
+
+## Play a compressed release that is split across several volumes
+
+A release that was packed with compression rather than stored whole stopped at
+the end of its first volume. Every file inside it listed with the right name and
+size and then refused to play, leaving a bad header CRC in the log. zurg now
+carries the unpacking across each volume join, so these releases play from start
+to finish.
+
+## Start up quickly when your account holds failed torrents
+
+Every library refresh re-checked each torrent your debrid service had marked
+failed, one request at a time, and the service allows only a few of those per
+second. On an account holding a few hundred of them that alone took over a
+minute, on every refresh, and your library stayed unreadable for that long after
+each start. That is long enough for Plex to scan a folder that is not there yet
+and mark everything in it unavailable. zurg now reads what it already knows
+about a failed torrent from disk, and asks the service again only when the
+service says the torrent is no longer failed.
+
+## Stop re-asking AllDebrid about magnets it has already refused to retry
+
+When a magnet fails, zurg asks AllDebrid to fetch it again. AllDebrid refuses
+some of those, and the refusal was not counted against the two attempts a
+torrent gets, so the same magnet was asked about on every library refresh for
+as long as zurg ran. The answer is now remembered for an hour, and for the
+status the account gave it, so a magnet that changes gets asked afresh. The
+count of attempts is also written to disk, instead of being forgotten on every
+restart and spent all over again.
+
+## Keep the link steady for a release your account holds twice
+
+A release added twice to one account has two of everything, including two
+download links per file. zurg kept one link per account, so each copy replaced
+the other's on every refresh and the entry never settled. Nothing was
+unplayable, but the log filled with re-pointing and the library was rewritten
+to disk every few seconds. zurg now leaves the link alone when it can only see
+part of what the account holds.
+
+## Faster change checks on TorBox when the account holds failed torrents
+
+TorBox has no way to ask whether an account changed, so zurg reads a small page
+of the newest torrents and watches the ones that have not finished. A torrent
+TorBox has failed never finishes, so a single old failure made every check read
+a much larger page, for the rest of the account's life. Failed torrents are no
+longer watched for movement they cannot make.
+
+## A release your *arr could not import is no longer deleted by the attempt
+
+When zurg refuses to move a release out of the Usenet staging folder because it
+cannot be read from the news servers, Sonarr and Radarr do not simply give up.
+.NET answers a failed move by copying the file and then deleting the original,
+and zurg was honouring that delete, so the release vanished and an empty file
+was left where it had been imported to. The delete that follows a refused move
+is now refused for the same reason, and the release stays put.
+
 ## Usenet reads tell a slow batch from a stalled one
 
 zurg asks a second news connection for an article whose wait has run long and takes whichever answer lands first. Deciding that the wait had run long was done on a clock, and an ordinary batch of large articles on a fast account was asked for twice while its first article was still arriving.
