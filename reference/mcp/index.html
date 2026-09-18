@@ -10,30 +10,30 @@
     <meta name="generator" content="Retype 4.6.0">
 
     <!-- Primary Meta Tags -->
-    <title>TorBox</title>
-    <meta name="title" content="TorBox">
-    <meta name="description" content="type: torbox">
+    <title>The MCP endpoint</title>
+    <meta name="title" content="The MCP endpoint">
+    <meta name="description" content="zurg can answer an AI agent over the Model Context Protocol: the client asks what tools exist, zurg describes them, and the agent calls them to read the library, work out why a release is not playing, repair it, or drive the media servers.">
 
     <!-- Canonical -->
-    <link rel="canonical" href="https://notes.debridmediamanager.com/providers/torbox/">
+    <link rel="canonical" href="https://notes.debridmediamanager.com/reference/mcp/">
     <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/sitemap.xml">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://notes.debridmediamanager.com/providers/torbox/">
-    <meta property="og:title" content="TorBox">
-    <meta property="og:description" content="type: torbox">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/reference/mcp/">
+    <meta property="og:title" content="The MCP endpoint">
+    <meta property="og:description" content="zurg can answer an AI agent over the Model Context Protocol: the client asks what tools exist, zurg describes them, and the agent calls them to read the library, work out why a release is not playing, repair it, or drive the media servers.">
     <meta property="og:site_name" content="dmm+zurg">
     <meta property="og:locale" content="en_US">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://notes.debridmediamanager.com/providers/torbox/">
-    <meta name="twitter:title" content="TorBox">
-    <meta name="twitter:description" content="type: torbox">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/reference/mcp/">
+    <meta name="twitter:title" content="The MCP endpoint">
+    <meta name="twitter:description" content="zurg can answer an AI agent over the Model Context Protocol: the client asks what tools exist, zurg describes them, and the agent calls them to read the library, work out why a release is not playing, repair it, or drive the media servers.">
 
     <!-- Alternate Markdown -->
-    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/providers/torbox.md">
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/reference/mcp.md">
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
@@ -178,186 +178,217 @@
                 <doc-page-actions></doc-page-actions>
 
                 <!-- Page content  -->
-<h1 id="torbox">TorBox</h1>
-<p><code translate="no" v-pre>type: torbox</code></p>
-<p>TorBox is the cheapest library for zurg to keep in sync and the most easily
-throttled to read from. Its torrent list already carries every file. A library
-refresh costs one request rather than one per torrent. Its link resolution
-endpoint is a fixed allowance rather than a rate. zurg is deliberately careful
-with it.</p>
-<h2 id="get-the-api-key">Get the API key</h2>
-<p>Sign in and open <a href="https://torbox.app/settings">torbox.app/settings</a>. The API key
-is on that page.</p>
-<h2 id="configure-it">Configure it</h2>
-<div id="configure-it-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">zurg: v1
-providers:
-  - type: torbox
-    token: YOUR_TORBOX_API_KEY
-mount_path: &quot;/zurg_mnt/zurg&quot;</code></pre>
+<h1 id="the-mcp-endpoint">The MCP endpoint</h1>
+<p>zurg can answer an AI agent over the <a href="https://modelcontextprotocol.io">Model Context Protocol</a>:
+the client asks what tools exist, zurg describes them, and the agent calls them
+to read the library, work out why a release is not playing, repair it, or drive
+the media servers. It is the same set of operations the dashboard and the CLI
+expose, as typed tools with schemas rather than as HTML and 303 redirects.</p>
+<p>The endpoint is off by default. It sits behind the same basic auth as the
+dashboard, and zurg refuses to serve it at all when no username is configured —
+with one empty, every route on the server is public, and these tools delete
+releases.</p>
+<h2 id="configuration">Configuration</h2>
+<div id="configuration-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">mcp:
+  enabled: true</code></pre>
 </doc-codeblock></div>
-<p>On a fresh container install let setup write it.</p>
-<div id="configure-it-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/zurg
-docker compose run --rm zurg setup \
-  --no-service --skip-downloads --mount-path /zurg_mnt/zurg \
-  --provider torbox</code></pre>
+<p>That is the whole of it for a normal install. The rest has defaults worth
+knowing about:</p>
+<div id="configuration-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">mcp:
+  enabled: true
+  toolsets: [library, releases, repair]   # the default; see below
+  read_only: false                        # withhold every tool that changes anything
+  allow_unauthenticated: false            # serve /mcp with no username set
+  allow_lifecycle: false                  # admit the tools that stop zurg or its mount
+  page_limit: 50                          # items a listing returns by default; 500 is the cap
+  max_result_kb: 256                      # ceiling on one result; a page over it is trimmed
+  session_timeout_mins: 30                # -1 keeps sessions for the life of the process</code></pre>
 </doc-codeblock></div>
-<p>On an install that already has a <code translate="no" v-pre>config.yml</code> use <strong>Add provider</strong> in the
-Dashboard at <code translate="no" v-pre>http://localhost:9999/config/</code> or edit the file. Either way
-restart afterwards.</p>
-<div id="configure-it-code-3" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose restart zurg</code></pre>
+<p>Like the other feature blocks, this is read once at startup: changing it takes
+a restart.</p>
+<h2 id="connecting">Connecting</h2>
+<h3 id="over-http">Over HTTP</h3>
+<p>The endpoint is <code translate="no" v-pre>/mcp</code> on zurg&#x27;s usual port, speaking Streamable HTTP. Point a
+client at <code translate="no" v-pre>http://&lt;host&gt;:9999/mcp</code> with the dashboard&#x27;s credentials.</p>
+<div id="over-http-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">npx @modelcontextprotocol/inspector
+# Transport:  Streamable HTTP
+# URL:        http://localhost:9999/mcp
+# Header:     Authorization: Basic &lt;base64 of user:password&gt;</code></pre>
 </doc-codeblock></div>
-<div class="flex mb-6">
-    <div class="shrink-0 w-1.5 rounded-tl-lg rounded-bl-lg bg-callout-warning"></div>
-    <div class="flex w-full py-4 border border-l-0 rounded-tr-lg rounded-br-lg doc-callout bg-callout-base-bg border-callout-base-border" role="alert">
-        <div class="flex items-center ml-4 h-7">
-            <svg xmlns="http://www.w3.org/2000/svg" class="block text-callout-warning" width="22" height="22" viewBox="0 0 24 24" role="presentation">
-                <g fill="currentColor"><g>
-                    <path d="M22.48 15.59L14.01 1.45A2.968 2.968 0 0012.16.09c-.78-.19-1.58-.07-2.27.35-.41.25-.76.6-1.01 1.01v.01L.4 15.6c-.83 1.43-.33 3.27 1.1 4.1.45.26.95.4 1.48.4h16.95c.8-.01 1.55-.33 2.11-.9.56-.57.87-1.33.86-2.13a3.04 3.04 0 00-.42-1.48zm-1.87 2.21c-.19.19-.44.3-.69.3H2.99c-.17 0-.34-.05-.49-.13a.992.992 0 01-.37-1.35L10.6 2.48c.08-.14.2-.25.34-.33a.992.992 0 011.37.33l8.46 14.13c.09.15.13.32.13.49 0 .26-.1.51-.29.7z"></path>
-                    <path d="M11.45 12.1c.55 0 1-.45 1-1v-4c0-.55-.45-1-1-1s-1 .45-1 1v4c0 .56.45 1 1 1zM11.46 14.1c-.56 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"></path>
-                </g></g>
-            </svg>
-        </div>
-        <div class="pr-5 ml-3 w-full">
-            <h5>A TorBox key in your compose environment does nothing on its own</h5>
-<p><code translate="no" v-pre>TORBOX_TOKEN</code> is read by <code translate="no" v-pre>zurg setup</code> and not by the running daemon. Only
-Real-Debrid&#x27;s <code translate="no" v-pre>TOKEN</code> seeds a config on first start. Pass the key to a setup
-container or add the account in the Dashboard.</p>
-        </div>
-    </div>
-</div>
-<p>For an unattended install point setup at a file rather than an environment
-variable.</p>
-<div id="configure-it-code-4" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose run --rm zurg setup --non-interactive \
-  --no-service --skip-downloads --mount-path /zurg_mnt/zurg \
-  --provider torbox \
-  --torbox-token-file /config/secrets/torbox</code></pre>
+<h3 id="over-stdio">Over stdio</h3>
+<p>Clients that only speak stdio use the <code translate="no" v-pre>zurg mcp</code> subcommand, which bridges to a
+running instance:</p>
+<div id="over-stdio-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;mcpServers&quot;: {
+    &quot;zurg&quot;: {
+      &quot;command&quot;: &quot;/path/to/zurg&quot;,
+      &quot;args&quot;: [&quot;mcp&quot;],
+      &quot;cwd&quot;: &quot;/path/to/your/zurg/directory&quot;
+    }
+  }
+}</code></pre>
 </doc-codeblock></div>
-<h2 id="two-keys-that-do-not-apply-here">Two keys that do not apply here</h2>
-<p><code translate="no" v-pre>download_tokens</code> is accepted and will not do what it does on Real-Debrid.
-Rotating to a second key does not remap torrent and file IDs. On TorBox those
-belong to the account that listed them. A second TorBox account needs its own
-entry with its own <code translate="no" v-pre>name</code>.</p>
-<div id="two-keys-that-do-not-apply-here-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">providers:
-  - type: torbox
-    name: tb-main
-    token: FIRST_TORBOX_API_KEY
-  - type: torbox
-    name: tb-second
-    token: SECOND_TORBOX_API_KEY</code></pre>
-</doc-codeblock></div>
-<p><code translate="no" v-pre>strm_link_token</code> is accepted and unused. TorBox mints a download URL per
-request. There is no long-lived credential for a <code translate="no" v-pre>.strm</code> file to pin itself to.</p>
-<h2 id="active-slots-are-the-real-ceiling">Active slots are the real ceiling</h2>
-<p>TorBox&#x27;s defining restriction is how many torrents may be downloading or seeding
-at once. Real-Debrid&#x27;s is bandwidth. TorBox&#x27;s is slots.</p>
-<retype-table copy-text="| Plan | Active slots |
-|---|---|
-| Free | 1 |
-| Essential | 3 |
-| Standard | 5 |
-| Pro | 10 |">
+<p>The <code translate="no" v-pre>cwd</code> matters: every zurg path resolves against the working directory, and
+that is where <code translate="no" v-pre>zurg mcp</code> reads <code translate="no" v-pre>config.yml</code> for the port and the credentials.
+With those it needs no arguments. <code translate="no" v-pre>--username</code> and <code translate="no" v-pre>--password</code> override the
+local credentials. A custom <code translate="no" v-pre>--url</code> never inherits credentials from the local
+config — pass both credential flags explicitly when that endpoint needs them,
+so a local password cannot be sent to another host by accident.</p>
+<p>It starts no second instance. A second zurg would load the whole library, take
+a second set of provider slots against accounts that meter them, and fight the
+first for the mount — so the command is a pipe to the daemon, and it serves
+nothing when the daemon is not up. Its diagnostics go to stderr, because stdout
+carries the protocol.</p>
+<p>One limitation: a notification the server raises outside any call does not
+cross the bridge. Progress and log lines raised <em>during</em> a call ride that
+call&#x27;s own response and arrive normally, which covers everything zurg sends.</p>
+<h2 id="toolsets">Toolsets</h2>
+<p>zurg&#x27;s full surface is a few hundred tools, which is more than a client reasons
+over well — past roughly eighty, a model picks the wrong tool more often and
+the schemas alone cost tens of thousands of tokens. So <code translate="no" v-pre>toolsets</code> selects
+groups, and the default is a working subset rather than everything.</p>
+<retype-table copy-text="| Toolset | In the default | What it covers |
+|---|:-:|---|
+| `library` | yes | Search, directory listings, tag counts |
+| `releases` | yes | One release in detail: files, per-account copies, what can serve each file |
+| `repair` | yes | What is broken, whether repair will reach it, forcing a repair |
+| `releases_write` | | Deleting, renaming, tagging, force-showing, writing `.strm` files |
+| `magic` | | The `__magic__` namespace: the stored layout, its rows, and moving things about |
+| `plex` | | Plex, Jellyfin and Emby: status, matching, and guarded scanning |
+| `providers` | | The configured accounts: what each can do, whether it is reachable, what it has spent |
+| `usenet` | | The NZB backend: news accounts, article probes, damage and the article cache |
+| `clients` | | The SABnzbd, qBittorrent and Stremio endpoints Sonarr and Radarr talk to |
+| `diagnostics` | | The log, the byte counters, memory and goroutines |
+| `config` | | Reading the configuration, finding drift, and writing a curated set of keys |
+| `mount` | | The rclone mount: status, forgetting cached listings, restarting it |
+| `system` | | Build facts, `doctor`, the service, backups and updating |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
 <tr>
-<th>Plan</th>
-<th>Active slots</th>
+<th>Toolset</th>
+<th style="text-align: center;">In the default</th>
+<th>What it covers</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Free</td>
-<td>1</td>
+<td><code translate="no" v-pre>library</code></td>
+<td style="text-align: center;">yes</td>
+<td>Search, directory listings, tag counts</td>
 </tr>
 <tr>
-<td>Essential</td>
-<td>3</td>
+<td><code translate="no" v-pre>releases</code></td>
+<td style="text-align: center;">yes</td>
+<td>One release in detail: files, per-account copies, what can serve each file</td>
 </tr>
 <tr>
-<td>Standard</td>
-<td>5</td>
+<td><code translate="no" v-pre>repair</code></td>
+<td style="text-align: center;">yes</td>
+<td>What is broken, whether repair will reach it, forcing a repair</td>
 </tr>
 <tr>
-<td>Pro</td>
-<td>10</td>
+<td><code translate="no" v-pre>releases_write</code></td>
+<td style="text-align: center;"> </td>
+<td>Deleting, renaming, tagging, force-showing, writing <code translate="no" v-pre>.strm</code> files</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>magic</code></td>
+<td style="text-align: center;"> </td>
+<td>The <code translate="no" v-pre>__magic__</code> namespace: the stored layout, its rows, and moving things about</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>plex</code></td>
+<td style="text-align: center;"> </td>
+<td>Plex, Jellyfin and Emby: status, matching, and guarded scanning</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>providers</code></td>
+<td style="text-align: center;"> </td>
+<td>The configured accounts: what each can do, whether it is reachable, what it has spent</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>usenet</code></td>
+<td style="text-align: center;"> </td>
+<td>The NZB backend: news accounts, article probes, damage and the article cache</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>clients</code></td>
+<td style="text-align: center;"> </td>
+<td>The SABnzbd, qBittorrent and Stremio endpoints Sonarr and Radarr talk to</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>diagnostics</code></td>
+<td style="text-align: center;"> </td>
+<td>The log, the byte counters, memory and goroutines</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>config</code></td>
+<td style="text-align: center;"> </td>
+<td>Reading the configuration, finding drift, and writing a curated set of keys</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>mount</code></td>
+<td style="text-align: center;"> </td>
+<td>The rclone mount: status, forgetting cached listings, restarting it</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>system</code></td>
+<td style="text-align: center;"> </td>
+<td>Build facts, <code translate="no" v-pre>doctor</code>, the service, backups and updating</td>
 </tr>
 </tbody>
 </table>
 </div>
 </retype-table>
-<p>zurg reads the plan from the account and gates adding more on it. An account
-whose plan it cannot read is treated as 3.</p>
-<p>Size everything else that adds torrents against the same budget. Sonarr and
-Radarr grabbing through the qBittorrent endpoint and a repair sweep and a
-watchlist all draw on those same slots.</p>
-<h2 id="limits-worth-knowing">Limits worth knowing</h2>
-<p><strong>Link resolution is a budget of about a hundred calls and not a rate.</strong>
-Measured 2026-08-30. A 429 carrying <code translate="no" v-pre>Retry-After: 300</code> arrived at cumulative
-call 100 when the calls were issued as fast as possible. It arrived at call 94
-when they were paced to one a second. The lockout is account-wide. It stops the
-whole mount for five minutes and not just the read that tripped it.</p>
-<p>Two things follow from that and zurg does both by itself.</p>
-<ul>
-<li>
-<p>It never resolves a file nothing has asked for. Every other backend gets a
-head start on the next episode. TorBox cannot pay for the guess because a
-media server analysing a library opens every file exactly once and every one
-of those opens is cold.</p>
-</li>
-<li>
-<p>It resolves a multi-volume archive&#x27;s volumes strictly one at a time. Faster
-would spend the ceiling several times over and buy the volumes behind a broken
-one before anything discovered they were not needed.</p>
-</li>
-</ul>
-<p><strong>60 uncached adds an hour.</strong> Cached adds fall under the per-minute budget
-instead.</p>
-<p><strong>300 requests a minute across all endpoints for one key.</strong> zurg paces itself to
-300 minus 60 so the retries its HTTP client makes on its own do not push a
-budgeted burst over the real ceiling.</p>
-<p><strong>The 21st connection to one CDN host gets a 429.</strong> Measured 2026-08-23 by
-opening one connection every 500ms and holding it. The limit is per host rather
-than per key. Spreading reads across TorBox&#x27;s fleet avoids it and piling them
-onto one node does not. zurg queues past 20 rather than dialling. That turns the
-refusal into a short local wait.</p>
-<p><strong>Content is removed after the plan&#x27;s retention window.</strong> A torrent that has
-disappeared is expected rather than broken. Repair leaves it alone unless you
-ask for it specifically.</p>
-<p><strong>There is no per-file selection.</strong> Adding a torrent fetches all of it and
-repair re-adds the release entire.</p>
-<p>The full picture with sources is in
-<a href="../torbox-limits/">TorBox limits</a>.</p>
-<h2 id="choosing-a-cdn-region">Choosing a CDN region</h2>
-<div id="choosing-a-cdn-region-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">tb_cdn_host_preference: &quot;auto&quot;</code></pre>
-</doc-codeblock></div>
-<p><code translate="no" v-pre>auto</code> leaves TorBox&#x27;s own choice alone. <code translate="no" v-pre>force_location_&lt;region&gt;</code> serves
-downloads from that region. Only regions currently advertising a delivery node
-can be forced and the Dashboard&#x27;s select lists exactly those. Do not reach for
-<code translate="no" v-pre>cdn_host_preference</code> here. That key is Real-Debrid only and its values are
-Real-Debrid location codes.</p>
-<h2 id="check-it-worked">Check it worked</h2>
-<div id="check-it-worked-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -fsS -X POST http://localhost:9999/api/providers/torbox/test
-ls /zurg_mnt/zurg/__torbox__/ | head</code></pre>
-</doc-codeblock></div>
-<h2 id="when-it-goes-wrong">When it goes wrong</h2>
-<p><strong>Playback stops for five minutes at a time.</strong> The requestdl allowance is spent
-and the 429 is account-wide. Something is resolving more links than it needs to.
-A media server scanning the whole mount at once is the usual cause. Point it at
-one directory rather than all of them.</p>
-<p><strong>Grabs stop being accepted.</strong> Either every active slot is full or the hourly
-add limit is spent. Both clear on their own and neither is helped by retrying.</p>
-<p><strong>A release lists fewer files than you expect.</strong> <code translate="no" v-pre>__torbox__</code> lists only what
-TorBox actually holds. If another account holds the release whole then the rest
-of the mount still serves all of it.</p>
-<p><strong>A torrent vanished.</strong> Retention. See above. zurg will not re-add it unattended
-because rediscovering that costs the account&#x27;s budget for nothing.</p>
+<p><code translate="no" v-pre>toolsets: [all]</code> enables every group. A name prefixed with <code translate="no" v-pre>-</code> subtracts, so
+<code translate="no" v-pre>[all, -config, -system]</code> is the whole surface without the two that change the
+machine rather than the library. An unrecognised name warns at startup and is
+ignored: a typo must not take the endpoint away.</p>
+<p>The tools that stop zurg, control its service or cycle the mount are not a
+group of their own — they live in <code translate="no" v-pre>system</code> and <code translate="no" v-pre>mount</code>, and stay withheld until
+<code translate="no" v-pre>allow_lifecycle</code> is set, whatever <code translate="no" v-pre>toolsets</code> says.</p>
+<p>A small <code translate="no" v-pre>server</code> group — what this build is, and whether the library has
+finished loading — is always registered whatever <code translate="no" v-pre>toolsets</code> says. Withholding
+it would leave a client unable to find out that every other answer is currently
+partial.</p>
+<h2 id="what-it-will-not-do-without-being-asked">What it will not do without being asked</h2>
+<p><strong>Confirmation.</strong> A tool that takes something away describes what it would do
+and hands back a token; it acts only when called again with that token. The
+token is derived from the plan, so a confirmation cannot carry to a different
+one — if the library changed in between, the second call goes back to
+describing rather than doing. Tokens are single-use, last two minutes and do
+not survive a restart.</p>
+<p><strong><code translate="no" v-pre>read_only</code>.</strong> One switch that withholds every tool that changes anything,
+whatever <code translate="no" v-pre>toolsets</code> says. The question an operator actually asks is &quot;can this
+break my library&quot;, not &quot;which of these tools writes&quot;. They are omitted from
+<code translate="no" v-pre>tools/list</code>, so a client cannot select a capability this endpoint will never
+admit. The call-time gate remains as defence in depth if the live setting
+changes after the server was built.</p>
+<p><strong><code translate="no" v-pre>allow_lifecycle</code>.</strong> The tools that stop zurg, control its service or cycle
+the mount are withheld the same way behind a separate switch. Each can make
+the entire library disappear at once, and the process/service actions cannot
+report their own outcome because they may end the process answering the call.</p>
+<p><strong>Secrets.</strong> No tool result carries a provider token, an API key, a news-server
+password, a resolved CDN link or a signed <code translate="no" v-pre>.strm</code> URL. Log output is redacted
+on the way out. A resolved link is redeemable by anyone holding it against the
+account that minted it, and a transcript is not a place to put one.</p>
+<p><strong>Size.</strong> Every listing is bounded twice: by a page limit, and by a ceiling on
+the marshalled result. One account measured against this holds 84,000 releases,
+which is about twelve megabytes of names before a single file is listed. A
+result over the ceiling is trimmed and says that it was trimmed.</p>
+<h2 id="notes">Notes</h2>
+<p>The endpoint inherits the dashboard&#x27;s basic auth by being registered inside it.
+A cross-origin request is refused: <code translate="no" v-pre>/mcp</code> is for a local agent, not a web page.
+A reverse proxy in front of zurg works — the protocol library&#x27;s DNS-rebinding
+check would otherwise reject a proxy that forwards its own <code translate="no" v-pre>Host</code> while dialling
+<code translate="no" v-pre>127.0.0.1</code>, so zurg turns that check off and leaves the gate to basic auth.</p>
+<p><code translate="no" v-pre>zurg mcp --help</code> lists the bridge&#x27;s flags. <code translate="no" v-pre>zurg doctor</code> checks whether the
+endpoint is answering at all.</p>
 
                 
                 <!-- Required only on API pages -->
@@ -367,20 +398,20 @@ because rediscovering that costs the account&#x27;s budget for nothing.</p>
             
                 <nav id="retype-nextprev" class="print:hidden flex mt-14">
                     <div class="w-1/2">
-                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../providers/realdebrid/">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../reference/tags/">
                             <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
                             <span>
                                 <span class="block text-xs font-normal text-base-text-muted">Previous</span>
-                                <span class="block mt-1">Real-​Debrid</span>
+                                <span class="block mt-1">Tags</span>
                             </span>
                         </a>
                     </div>
             
                     <div class="w-1/2">
-                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../providers/alldebrid/">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../reference/outbound-identity/">
                             <span>
                                 <span class="block text-xs font-normal text-right text-base-text-muted">Next</span>
-                                <span class="block mt-1">All​Debrid</span>
+                                <span class="block mt-1">Outbound identity</span>
                             </span>
                             <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
                         </a>
@@ -424,6 +455,6 @@ because rediscovering that costs the account&#x27;s budget for nothing.</p>
 
     <div id="retype-overlay-target"></div>
 
-        <script data-cfasync="false">window.__DOCS__ = { "title": "TorBox", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/providers/torbox.md" }</script>
+        <script data-cfasync="false">window.__DOCS__ = { "title": "MCP server", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/reference/mcp.md" }</script>
 </body>
 </html>

@@ -1470,8 +1470,8 @@ root folder is `/mnt/zurg/__magic__/tv` and a series folder is
 `/mnt/zurg/__magic__/tv/The Show`, then an import path that happens to *be* a series folder is
 refused outright. It is why the download folder (`content_path`) must be a sibling of the root
 folders, not inside one — which is the arrangement [sabnzbd.md](../guides/sonarr-radarr.md) already prescribes:
-`save_path` = `/mnt/zurg/__magic__`, root folders `/mnt/zurg/__magic__/tv` and
-`/mnt/zurg/__magic__/movies`, releases at `/mnt/zurg/__magic__/<release>`.
+`save_path` = `/mnt/zurg/__magic__/__all__`, root folders `/mnt/zurg/__magic__/tv` and
+`/mnt/zurg/__magic__/movies`, releases at `/mnt/zurg/__magic__/__all__/<release>`.
 
 `_UNPACK_` and `_FAILED_` are stripped from the folder name before parsing
 (`GetCleanedUpFolderName`, `:311-317`).
@@ -1501,7 +1501,8 @@ All three are shared with the SAB client and analysed in
 - **`DownloadClientRootFolderCheck`** is the one place the two repos genuinely differ — Sonarr warns
   only when a root folder *equals* an output folder, Radarr also when a root folder *contains* one.
   Full analysis in [sabnzbd-client-contract.md §6.1](sabnzbd-client-contract.md); the practical rule is
-  the same here: do not put a root folder at or above `/mnt/zurg/__magic__`.
+  the same here: do not put a root folder at or above the save path, and do not put one
+  inside it — `/mnt/zurg/__magic__/tv` is a sibling of `/mnt/zurg/__magic__/__all__`.
 
 ---
 
@@ -1559,7 +1560,7 @@ Only the ten keys of §1.4 are read; send more if you like, they are ignored.
 
 ```json
 {
-  "save_path": "/mnt/zurg/__magic__",
+  "save_path": "/mnt/zurg/__magic__/__all__",
   "queueing_enabled": true,
   "dht": true,
   "max_ratio_enabled": false,
@@ -1605,7 +1606,7 @@ leaves the output root folder at the global `save_path`.
     "eta": 8640000,
     "state": "metaDL",
     "category": "tv",
-    "save_path": "/mnt/zurg/__magic__",
+    "save_path": "/mnt/zurg/__magic__/__all__",
     "content_path": "",
     "ratio": 0,
     "ratio_limit": 0,
@@ -1637,8 +1638,8 @@ leaves the output root folder at the global `save_path`.
     "eta": 8640000,
     "state": "pausedUP",
     "category": "tv",
-    "save_path": "/mnt/zurg/__magic__",
-    "content_path": "/mnt/zurg/__magic__/Some.Show.S01E03.1080p.WEB.h264-GRP",
+    "save_path": "/mnt/zurg/__magic__/__all__",
+    "content_path": "/mnt/zurg/__magic__/__all__/Some.Show.S01E03.1080p.WEB.h264-GRP",
     "ratio": 0,
     "ratio_limit": 0,
     "seeding_time_limit": -2,
@@ -1687,7 +1688,7 @@ Hard requirements:
 ```json
 {
   "hash": "3b1a1469c180f447b77021074dbbccaef62611e7",
-  "save_path": "/mnt/zurg/__magic__",
+  "save_path": "/mnt/zurg/__magic__/__all__",
   "seeding_time": 0,
   "total_size": 1073741824,
   "addition_date": 1756252200,
@@ -1880,7 +1881,7 @@ folder regardless (§11.2), so the parameter is inert and the operator can leave
     it does log and default to Downloading. Never use `stalledDL`, `error` or `missingFiles` for a
     transient wait — all three are Warnings.
 14. **Do not put a root folder at or above the output folder.** With `save_path` =
-    `/mnt/zurg/__magic__`, use `/mnt/zurg/__magic__/tv` and `/mnt/zurg/__magic__/movies` as root
-    folders, and keep releases as siblings at `/mnt/zurg/__magic__/<release>` — otherwise
+    `/mnt/zurg/__magic__/__all__`, use `/mnt/zurg/__magic__/tv` and `/mnt/zurg/__magic__/movies`
+    as root folders, and keep releases at `/mnt/zurg/__magic__/__all__/<release>` — otherwise
     `SeriesPathExists`/`MoviePathExists` refuses the import outright (§7.4) and Radarr's
     `DownloadClientRootFolderCheck` complains on every start.

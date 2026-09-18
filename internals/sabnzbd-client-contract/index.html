@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.842533813309">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.843005907944">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.842533813309" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.843005907944" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.842533813309" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.843005907944" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.842533813309" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.842533813309" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.843005907944" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.843005907944" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -1613,7 +1613,7 @@ the inversion in <code translate="no" v-pre>SabnzbdProxy.cs:80</code> (<code tra
 </li>
 <li>
 <p><code translate="no" v-pre>OutputPath</code> here is the history item&#x27;s <code translate="no" v-pre>storage</code> after remote-path remapping and the job-folder
-walk-up (§1.6.2). For a flat magic directory that means <code translate="no" v-pre>rm -rf /mnt/zurg/__magic__/&lt;Title&gt;</code>.</p>
+walk-up (§1.6.2). For a flat magic directory that means <code translate="no" v-pre>rm -rf /mnt/zurg/__magic__/__all__/&lt;Title&gt;</code>.</p>
 </li>
 <li>
 <p>The governing setting is the download client&#x27;s <strong>Remove Completed Downloads</strong> toggle
@@ -1799,11 +1799,15 @@ ancestor test (it starts from <code translate="no" v-pre>child.Directory</code>)
 </table>
 </div>
 </retype-table>
-<p>With <code translate="no" v-pre>complete_dir = /mnt/zurg/__magic__</code> and <code translate="no" v-pre>dir: &quot;&quot;</code> (so <code translate="no" v-pre>OutputRootFolders == [&quot;/mnt/zurg/__magic__&quot;]</code>):</p>
+<p>With <code translate="no" v-pre>complete_dir = /mnt/zurg/__magic__/__all__</code> and <code translate="no" v-pre>dir: &quot;&quot;</code> (so
+<code translate="no" v-pre>OutputRootFolders == [&quot;/mnt/zurg/__magic__/__all__&quot;]</code>):</p>
 <ul>
-<li>Sonarr warns only if a root folder is exactly <code translate="no" v-pre>/mnt/zurg/__magic__</code>.</li>
-<li>Radarr warns if a root folder is <code translate="no" v-pre>/mnt/zurg/__magic__</code>, <code translate="no" v-pre>/mnt/zurg</code>, or <code translate="no" v-pre>/mnt</code>.</li>
-<li>Neither warns if a root folder is <code translate="no" v-pre>/mnt/zurg/__magic__/anything</code> (output folder as parent).</li>
+<li>Sonarr warns only if a root folder is exactly <code translate="no" v-pre>/mnt/zurg/__magic__/__all__</code>.</li>
+<li>Radarr warns if a root folder is <code translate="no" v-pre>/mnt/zurg/__magic__/__all__</code>, <code translate="no" v-pre>/mnt/zurg/__magic__</code>, <code translate="no" v-pre>/mnt/zurg</code>, or <code translate="no" v-pre>/mnt</code>.</li>
+<li>Neither warns if a root folder is <code translate="no" v-pre>/mnt/zurg/__magic__/tv</code> — the mirror and the root folders are
+siblings, so the pair is unrelated and neither rule fires. A root folder <em>inside</em> the output folder
+(<code translate="no" v-pre>/mnt/zurg/__magic__/__all__/anything</code>) would also be quiet here, but the namespace refuses to
+store anything at that depth, so it is not an arrangement that can exist.</li>
 </ul>
 <p><code translate="no" v-pre>PathEquals</code> (<code translate="no" v-pre>PathExtensions.cs:55-73</code>) normalises Unicode, uses <code translate="no" v-pre>DiskProviderBase.PathStringComparison</code>
 (<code translate="no" v-pre>OrdinalIgnoreCase</code> on Windows, <code translate="no" v-pre>Ordinal</code> elsewhere — <code translate="no" v-pre>src/NzbDrone.Common/Disk/DiskProviderBase.cs:17-23</code>),
@@ -1845,7 +1849,7 @@ as an error.</p>
 </ol>
 <p><strong>For a local client (<code translate="no" v-pre>IsLocalhost</code> true, not Docker) this reduces to exactly two requirements:</strong>
 the reported output root folder must be an absolute path <em>for the OS Sonarr/Radarr runs on</em>, and it
-must <strong>exist on the Sonarr/Radarr host</strong> as a directory. <code translate="no" v-pre>/mnt/zurg/__magic__</code> must be visible to the
+must <strong>exist on the Sonarr/Radarr host</strong> as a directory. <code translate="no" v-pre>/mnt/zurg/__magic__/__all__</code> must be visible to the
 *arr process, not just to the emulator. <strong>There is no writability check here.</strong></p>
 <p>The event-driven overload (<code translate="no" v-pre>:178-368</code>) fires on <code translate="no" v-pre>EpisodeImportFailedEvent</code> (Radarr:
 <code translate="no" v-pre>MovieImportFailedEvent</code>) and, notably, calls <code translate="no" v-pre>client.GetItems()</code> again to look up the failed
@@ -1913,9 +1917,9 @@ a root folder is an ancestor of the output folder. Full table in §6.1.</li>
 <code translate="no" v-pre>RemoveCompletedDownloads = true</code>, <code translate="no" v-pre>RemoveFailedDownloads = true</code>.</p>
 <hr>
 <h2 id="8-minimal-but-complete-example-payloads">8. Minimal-but-complete example payloads</h2>
-<p>Given: <code translate="no" v-pre>complete_dir = /mnt/zurg/__magic__</code>; categories <code translate="no" v-pre>*</code>, <code translate="no" v-pre>tv</code>, <code translate="no" v-pre>movies</code>, all with <code translate="no" v-pre>dir: &quot;&quot;</code>.
+<p>Given: <code translate="no" v-pre>complete_dir = /mnt/zurg/__magic__/__all__</code>; categories <code translate="no" v-pre>*</code>, <code translate="no" v-pre>tv</code>, <code translate="no" v-pre>movies</code>, all with <code translate="no" v-pre>dir: &quot;&quot;</code>.
 Every response is <strong>HTTP 200</strong> with <code translate="no" v-pre>Content-Type: application/json</code>.</p>
-<p>Resulting <code translate="no" v-pre>OutputRootFolders</code>: <code translate="no" v-pre>dir: &quot;&quot;</code> ⇒ <code translate="no" v-pre>FullPath == complete_dir</code> ⇒ <code translate="no" v-pre>/mnt/zurg/__magic__</code>
+<p>Resulting <code translate="no" v-pre>OutputRootFolders</code>: <code translate="no" v-pre>dir: &quot;&quot;</code> ⇒ <code translate="no" v-pre>FullPath == complete_dir</code> ⇒ <code translate="no" v-pre>/mnt/zurg/__magic__/__all__</code>
 for Sonarr (category <code translate="no" v-pre>tv</code>) and for Radarr (category <code translate="no" v-pre>movies</code>).</p>
 <h3 id="81-modeversion">8.1 <code translate="no" v-pre>mode=version</code></h3>
 <div id="81-modeversion-code-1" class="codeblock-wrapper"><doc-codeblock>
@@ -1931,7 +1935,7 @@ were relative (it isn&#x27;t).</p>
 <pre translate="no" class="language-json"><code v-pre class="language-json">{
   &quot;config&quot;: {
     &quot;misc&quot;: {
-      &quot;complete_dir&quot;: &quot;/mnt/zurg/__magic__&quot;,
+      &quot;complete_dir&quot;: &quot;/mnt/zurg/__magic__/__all__&quot;,
       &quot;pre_check&quot;: false,
       &quot;enable_tv_sorting&quot;: false,
       &quot;tv_categories&quot;: [],
@@ -1989,7 +1993,7 @@ and <code translate="no" v-pre>DownloadClientSortingCheck</code>. Note that <cod
 <div id="83-modefullstatusskip_dashboard1-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-json"><code v-pre class="language-json">{
   &quot;status&quot;: {
-    &quot;completedir&quot;: &quot;/mnt/zurg/__magic__&quot;,
+    &quot;completedir&quot;: &quot;/mnt/zurg/__magic__/__all__&quot;,
     &quot;version&quot;: &quot;4.3.3&quot;,
     &quot;uptime&quot;: &quot;1d&quot;,
     &quot;color_scheme&quot;: &quot;Auto&quot;,
@@ -2140,8 +2144,8 @@ slot as Paused with a null ETA (<code translate="no" v-pre>Sabnzbd.cs:78-84</cod
         &quot;url&quot;: &quot;&quot;,
         &quot;status&quot;: &quot;Completed&quot;,
         &quot;nzo_id&quot;: &quot;SABnzbd_nzo_def67890&quot;,
-        &quot;storage&quot;: &quot;/mnt/zurg/__magic__/Some.Show.S01E02.1080p.WEB-DL.H264-GRP&quot;,
-        &quot;path&quot;: &quot;/mnt/zurg/__magic__/Some.Show.S01E02.1080p.WEB-DL.H264-GRP&quot;,
+        &quot;storage&quot;: &quot;/mnt/zurg/__magic__/__all__/Some.Show.S01E02.1080p.WEB-DL.H264-GRP&quot;,
+        &quot;path&quot;: &quot;/mnt/zurg/__magic__/__all__/Some.Show.S01E02.1080p.WEB-DL.H264-GRP&quot;,
         &quot;script_log&quot;: &quot;&quot;,
         &quot;script_line&quot;: &quot;&quot;,
         &quot;download_time&quot;: 120,
@@ -2287,12 +2291,14 @@ If the magic directory is read-only the delete fails silently (warning log only)
 of the imported file must still succeed or the import fails outright (§5.5).</p>
 </li>
 <li>
-<p>Do not place any *arr root folder at or above <code translate="no" v-pre>/mnt/zurg/__magic__</code> if you want Radarr&#x27;s
-<code translate="no" v-pre>DownloadClientRootFolderCheck</code> to stay quiet (Sonarr only cares about exact equality).</p>
+<p>Do not place any *arr root folder at or above <code translate="no" v-pre>/mnt/zurg/__magic__/__all__</code> if you want Radarr&#x27;s
+<code translate="no" v-pre>DownloadClientRootFolderCheck</code> to stay quiet (Sonarr only cares about exact equality). Put them
+beside the mirror instead — <code translate="no" v-pre>/mnt/zurg/__magic__/tv</code>, <code translate="no" v-pre>/mnt/zurg/__magic__/movies</code> — which is
+unrelated to the output folder rather than above or below it.</p>
 </li>
 <li>
-<p><code translate="no" v-pre>/mnt/zurg/__magic__</code> must exist as a directory <strong>on the Sonarr/Radarr host</strong>, not just where the
-emulator runs, or <code translate="no" v-pre>RemotePathMappingCheck</code> raises an error. It does not need to be writable.</p>
+<p><code translate="no" v-pre>/mnt/zurg/__magic__/__all__</code> must exist as a directory <strong>on the Sonarr/Radarr host</strong>, not just where
+the emulator runs, or <code translate="no" v-pre>RemotePathMappingCheck</code> raises an error. It does not need to be writable.</p>
 </li>
 </ol>
 <h2 id="configuring-a-larger-completion-window">Configuring a larger completion window</h2>

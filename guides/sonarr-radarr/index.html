@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.842533813309">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.843005907944">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.842533813309" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.843005907944" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.842533813309" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.843005907944" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.842533813309" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.842533813309" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.843005907944" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.843005907944" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -239,9 +239,9 @@ sabnzbd:
   enabled: true
   api_key: &quot;&quot;          # empty = zurg generates one and keeps it
   categories: [tv, movies]
-  complete_dir: &quot;&quot;     # empty = &lt;mount_path&gt;/__magic__</code></pre>
+  complete_dir: &quot;&quot;     # empty = &lt;mount_path&gt;/__magic__/__all__</code></pre>
 </doc-codeblock></div>
-<p><strong>The categories are not folders.</strong> They all resolve to the same place — a job&#x27;s folder is the release&#x27;s own folder under <code translate="no" v-pre>__magic__</code>. The list exists only so Sonarr and Radarr stop warning about a category they cannot find. If Sonarr&#x27;s category is <code translate="no" v-pre>tv</code>, <code translate="no" v-pre>tv</code> must be in this list.</p>
+<p><strong>The categories are not folders.</strong> They all resolve to the same place — a job&#x27;s folder is the release&#x27;s own folder under <code translate="no" v-pre>__magic__/__all__</code>. The list exists only so Sonarr and Radarr stop warning about a category they cannot find. If Sonarr&#x27;s category is <code translate="no" v-pre>tv</code>, <code translate="no" v-pre>tv</code> must be in this list.</p>
 <p>Restart zurg, then confirm the provider took:</p>
 <figure class="content-center">
     <img src="../../assets/sonarr-radarr/43-zurg-config-providers.webp" alt="The providers block on the zurg config page" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
@@ -273,7 +273,7 @@ $ curl -s &quot;http://$ZURG/api?mode=version&amp;apikey=$SAB&amp;output=json&qu
 
 $ curl -s &quot;http://$ZURG/api?mode=get_config&amp;apikey=$SAB&amp;output=json&quot; \
     | jq '.config.misc.complete_dir, [.config.categories[].name]'
-&quot;/mnt/zurg_usenet/__magic__&quot;
+&quot;/mnt/zurg_usenet/__magic__/__all__&quot;
 [ &quot;*&quot;, &quot;tv&quot;, &quot;movies&quot; ]</code></pre>
 </doc-codeblock></div>
 <p><code translate="no" v-pre>complete_dir</code> is the path zurg will hand the clients — check now that it is a path <em>they</em> can open.</p>
@@ -326,18 +326,18 @@ $ ls -d /mnt/zurg_usenet/__magic__/tv /mnt/zurg_usenet/__magic__/movies
 /mnt/zurg_usenet/__magic__/tv</code></pre>
 </doc-codeblock></div>
 <p>Substitute your own <code translate="no" v-pre>mount_path</code> for <code translate="no" v-pre>/mnt/zurg_usenet</code>. The folder names are yours to choose; <code translate="no" v-pre>tv</code> and <code translate="no" v-pre>movies</code> just match the categories.</p>
-<p><strong>The root folder must be inside <code translate="no" v-pre>__magic__</code>, not at it and not above it.</strong> Use <code translate="no" v-pre>__magic__/tv</code>. <strong>Not</strong> <code translate="no" v-pre>__magic__</code> itself and <strong>not</strong> <code translate="no" v-pre>/mnt/zurg_usenet</code>. Both clients raise a health check when a root folder <em>is</em> the download client&#x27;s output folder, and Radarr also raises one when a root folder <em>contains</em> it. A root folder one level inside the output folder is the single arrangement neither complains about — and it is where an import naturally lands anyway.</p>
-<p>This is what getting it wrong looks like. Both are real, from the two clients:</p>
+<p><strong>The root folder goes beside the completed directory, not at it and not above it.</strong> zurg hands the clients <code translate="no" v-pre>__magic__/__all__</code>, which is your library as <code translate="no" v-pre>__all__</code> lists it. Your root folders sit next to it, at <code translate="no" v-pre>__magic__/tv</code> and <code translate="no" v-pre>__magic__/movies</code>. <strong>Not</strong> <code translate="no" v-pre>__magic__/__all__</code>, <strong>not</strong> <code translate="no" v-pre>__magic__</code> itself and <strong>not</strong> <code translate="no" v-pre>/mnt/zurg_usenet</code>. Both clients raise a health check when a root folder <em>is</em> the download client&#x27;s output folder, and Radarr also raises one when a root folder <em>contains</em> it. Siblings trip neither, and a manual import pointed at the completed directory then has one release to look at rather than your whole library.</p>
+<p>This is what getting it wrong looks like. Both are real, from the two clients. They were taken before the completed directory moved down to <code translate="no" v-pre>__magic__/__all__</code>, so the paths in them are one level up from yours — the two rules they show are the same ones:</p>
 <figure class="content-center">
-    <img src="../../assets/sonarr-radarr/30-sonarr-health-rootfolder-warning.webp" alt="Sonarr health check warning about a root folder at magic" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
-    <figcaption class="caption">Sonarr health check warning about a root folder at magic</figcaption>
+    <img src="../../assets/sonarr-radarr/30-sonarr-health-rootfolder-warning.webp" alt="Sonarr health check warning about a root folder at the completed directory" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr health check warning about a root folder at the completed directory</figcaption>
 </figure>
-<p>Sonarr with <code translate="no" v-pre>/mnt/zurg_usenet/__magic__</code> added as a root folder — it warns because the root folder <em>is</em> the output folder.</p>
+<p>Sonarr with the completed directory itself added as a root folder — it warns because the root folder <em>is</em> the output folder.</p>
 <figure class="content-center">
-    <img src="../../assets/sonarr-radarr/31-radarr-health-rootfolder-warning.webp" alt="Radarr health check warning about a root folder above magic" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
-    <figcaption class="caption">Radarr health check warning about a root folder above magic</figcaption>
+    <img src="../../assets/sonarr-radarr/31-radarr-health-rootfolder-warning.webp" alt="Radarr health check warning about a root folder above the completed directory" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr health check warning about a root folder above the completed directory</figcaption>
 </figure>
-<p>Radarr with <code translate="no" v-pre>/mnt/zurg_usenet</code> added — it warns for the parent too, which Sonarr does not. Move the root folder inside <code translate="no" v-pre>__magic__</code> and both warnings go.</p>
+<p>Radarr with <code translate="no" v-pre>/mnt/zurg_usenet</code> added — it warns for the parent too, which Sonarr does not. Move the root folder beside the completed directory and both warnings go.</p>
 <h2 id="5-add-the-client-in-sonarr">5. Add the client in Sonarr</h2>
 <p>A brand-new Sonarr blocks everything behind a first-run screen. Pick <strong>Forms (Login Page)</strong>, set a username and password, and click <strong>Save</strong>.</p>
 <figure class="content-center">
@@ -488,10 +488,10 @@ $ ls -d /mnt/zurg_usenet/__magic__/tv /mnt/zurg_usenet/__magic__/movies
     <img src="../../assets/sonarr-radarr/12-sonarr-rootfolder-dialog.webp" alt="Sonarr's file browser at the filesystem root" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
     <figcaption class="caption">Sonarr's file browser at the filesystem root</figcaption>
 </figure>
-<p>Type the path into the box at the top. If the mount is genuinely visible to Sonarr, the releases inside <code translate="no" v-pre>__magic__</code> appear as you type — which is the fastest proof you will get that the bind mount is correct.</p>
+<p>Type the path into the box at the top. If the mount is genuinely visible to Sonarr, what is inside <code translate="no" v-pre>__magic__</code> appears as you type — <code translate="no" v-pre>__all__</code> with every release in it, and whatever you made beside it. That is the fastest proof you will get that the bind mount is correct.</p>
 <figure class="content-center">
-    <img src="../../assets/sonarr-radarr/13-sonarr-rootfolder-browse.webp" alt="The file browser listing releases inside magic" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
-    <figcaption class="caption">The file browser listing releases inside magic</figcaption>
+    <img src="../../assets/sonarr-radarr/13-sonarr-rootfolder-browse.webp" alt="The file browser listing what is inside magic" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The file browser listing what is inside magic</figcaption>
 </figure>
 <p>If this is empty or errors, stop and fix the mount before going further.</p>
 <figure class="content-center">
@@ -542,7 +542,7 @@ $ ls -d /mnt/zurg_usenet/__magic__/tv /mnt/zurg_usenet/__magic__/movies
 </ul>
 <div id="the-path-zurg-reports-must-be-a-path-the-client-can-open-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">sabnzbd:
-  complete_dir: &quot;/data/zurg/__magic__&quot;   # what the *arr sees, not what zurg sees</code></pre>
+  complete_dir: &quot;/data/zurg/__magic__/__all__&quot;   # what the *arr sees, not what zurg sees</code></pre>
 </doc-codeblock></div>
 <p>For the second, go to <strong>Settings → Download Clients</strong> and use the <strong>+</strong> under <strong>Remote Path Mappings</strong> — the lower one on the page, not the one you used in step 5.</p>
 <figure class="content-center">
@@ -646,7 +646,7 @@ size=4920958828</code></pre>
 <ul>
 <li>The connection test, all four checks, in both clients.</li>
 <li>Grabbing, queue, history, import by rename, and the post-import cleanup.</li>
-<li>Re-grabbing the same release. The job id comes from the NZB&#x27;s filename, so it names the same job rather than a second one. A re-grab of a release an earlier import already emptied is reported <strong>Failed</strong>. Its folder under <code translate="no" v-pre>__magic__</code> has nothing left to import and Failed makes the client blocklist it and take another. The grab that did the emptying keeps reporting Completed until the client deletes it.</li>
+<li>Re-grabbing the same release. The job id comes from the NZB&#x27;s filename, so it names the same job rather than a second one. A re-grab of a release an earlier import already emptied is reported <strong>Failed</strong>. Its folder under <code translate="no" v-pre>__magic__/__all__</code> has nothing left to import and Failed makes the client blocklist it and take another. The grab that did the emptying keeps reporting Completed until the client deletes it.</li>
 <li>Removing a job from the queue, with or without deleting the NZB.</li>
 <li><code translate="no" v-pre>mode=addurl</code>, for a human or an automation passing a URL instead of uploading. Neither *arr uses it.</li>
 </ul>
@@ -668,7 +668,7 @@ size=4920958828</code></pre>
 | &quot;API Key Incorrect&quot; / &quot;API Key Required&quot; | The key does not match. It is in `config.yml` if you set one, in `data/sabnzbd-apikey` if zurg generated it. |
 | &quot;Test was aborted due to an error&quot; | Something other than an authentication failure. zurg logs every request it refused — grep the log for `SABnzbd:`. |
 | &quot;Category … does not exist&quot; | The category in the \*arr is not in `sabnzbd.categories`. Add it and restart zurg. |
-| &quot;Downloads in root folder&quot; | A root folder is at or above `__magic__`. Move it inside — `__magic__/tv`, not `__magic__` and not `/mnt/zurg_usenet`. |
+| &quot;Downloads in root folder&quot; | A root folder is at or above the completed directory. Move it beside it — `__magic__/tv`, not `__magic__/__all__`, not `__magic__` and not `/mnt/zurg_usenet`. |
 | &quot;Remote path mapping&quot; / &quot;download doesn't contain intermediate path&quot; | The path zurg reports is not a path the client can open. See [step 8](#8-if-your-arr-is-in-docker). |
 | Every release rejected, nothing in the log | A stale bind mount. Run `docker exec &lt;client&gt; df -h &lt;mount&gt;`; if it says `Socket not connected`, bind the parent with `rslave` and recreate the container. |
 | A job stays queued for a poll or two after the release appears | Expected, and it settles once per release. An NZB does not state how long a file is; the estimate is being replaced by the exact length from the PAR2 index or one article's own header. Reporting Completed early is what makes the client throw *File move incomplete, data loss may have occurred*. |
@@ -704,7 +704,7 @@ size=4920958828</code></pre>
 </tr>
 <tr>
 <td>&quot;Downloads in root folder&quot;</td>
-<td>A root folder is at or above <code translate="no" v-pre>__magic__</code>. Move it inside — <code translate="no" v-pre>__magic__/tv</code>, not <code translate="no" v-pre>__magic__</code> and not <code translate="no" v-pre>/mnt/zurg_usenet</code>.</td>
+<td>A root folder is at or above the completed directory. Move it beside it — <code translate="no" v-pre>__magic__/tv</code>, not <code translate="no" v-pre>__magic__/__all__</code>, not <code translate="no" v-pre>__magic__</code> and not <code translate="no" v-pre>/mnt/zurg_usenet</code>.</td>
 </tr>
 <tr>
 <td>&quot;Remote path mapping&quot; / &quot;download doesn&#x27;t contain intermediate path&quot;</td>

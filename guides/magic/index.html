@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.842533813309">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.843005907944">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.842533813309" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.843005907944" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.842533813309" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.843005907944" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.842533813309" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.842533813309" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.843005907944" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.843005907944" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -181,8 +181,17 @@
 <h1 id="__magic__-a-directory-you-can-organise"><code translate="no" v-pre>__magic__</code>, a directory you can organise</h1>
 <p>Every other directory zurg serves is computed. <code translate="no" v-pre>movies</code> holds what matches the movies filter, <code translate="no" v-pre>__all__</code> holds everything, and a release&#x27;s folder holds the files its account says it has — so the layout is a view of the library, recomputed on every refresh, and there is nowhere to put anything.</p>
 <p><code translate="no" v-pre>__magic__</code> is the one directory whose paths are <strong>stored</strong>. A move inside it rewrites a row in a small table; no bytes move, nothing is copied, and the release stays exactly where it was on the debrid account. What you get is a tree you can arrange — by hand, or by pointing Sonarr or Radarr at it.</p>
-<p>It is off by default. Turn it on with:</p>
+<p>It holds two things. <code translate="no" v-pre>__magic__/__all__</code> is the library exactly as <code translate="no" v-pre>__all__</code> lists it, and it is the folder the download clients import from; it is computed, so nothing can be written into it. Everything beside it at the root of <code translate="no" v-pre>__magic__</code> is yours:</p>
 <div id="__magic__-a-directory-you-can-organise-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">/mnt/zurg/__magic__
+├── __all__     &lt;- every release, where a grab lands
+├── anime
+├── movies
+└── tv          &lt;- your *arr root folders</code></pre>
+</doc-codeblock></div>
+<p>That separation is the point. The folder a client imports <em>from</em> and the folders it imports <em>into</em> are siblings, so neither contains the other: a manual import pointed at the download folder does not walk your library tree, and neither Sonarr nor Radarr warns about the arrangement.</p>
+<p>It is off by default. Turn it on with:</p>
+<div id="__magic__-a-directory-you-can-organise-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">magic:
   enabled: true</code></pre>
 </doc-codeblock></div>
@@ -190,22 +199,22 @@
 <h2 id="what-it-is-for">What it is for</h2>
 <p>An *arr imports by <strong>moving</strong> the file out of the download folder into the library. Zurg had nowhere to receive that move, so the *arr fell back to copying — and a copy from a debrid mount means pulling the entire release down over the network, which is the one thing the mount exists to avoid.</p>
 <p>With <code translate="no" v-pre>__magic__</code> the import is a rename inside one namespace: a row is written, the file appears where the *arr put it, and nothing is downloaded. That is what makes <a href="../sonarr-radarr/">the SABnzbd endpoint</a> worth having — it is a thin layer on top of this, and without it every import would be a full download.</p>
-<p>It only works if the *arr&#x27;s <strong>root folder is also inside <code translate="no" v-pre>__magic__</code></strong> — <code translate="no" v-pre>/mnt/zurg/__magic__/tv</code>, not a directory elsewhere on the machine. A move whose destination is outside the namespace is a move between two filesystems, which is a copy again; zurg refuses it outright with a <code translate="no" v-pre>403</code> rather than letting it happen quietly. <a href="../sonarr-radarr/">sabnzbd.md</a> has the exact settings.</p>
+<p>It only works if the *arr&#x27;s <strong>root folder is also inside <code translate="no" v-pre>__magic__</code></strong> — <code translate="no" v-pre>/mnt/zurg/__magic__/tv</code>, not a directory elsewhere on the machine. A move whose destination is outside the namespace is a move between two filesystems, which is a copy again; zurg refuses it outright with a <code translate="no" v-pre>403</code> rather than letting it happen quietly. The one place inside the namespace that is also refused is <code translate="no" v-pre>__magic__/__all__</code>, which is the library&#x27;s own layout rather than anywhere to put things. <a href="../sonarr-radarr/">sabnzbd.md</a> has the exact settings.</p>
 <p>Organising the library by hand is the other half, and it works with no *arr involved.</p>
 <h2 id="with-nothing-stored-it-is-__all__s-releases-as-real-folders">With nothing stored, it is <code translate="no" v-pre>__all__</code>&#x27;s releases as real folders</h2>
-<p>Open <code translate="no" v-pre>__magic__</code> on a fresh install and you get every release <code translate="no" v-pre>__all__</code> holds, as a folder each. The table starts empty and only ever stores <strong>deviations</strong> from that default, so an untouched library stores nothing at all, and new releases appear in <code translate="no" v-pre>__magic__</code> the moment they appear anywhere else.</p>
+<p>Open <code translate="no" v-pre>__magic__/__all__</code> on a fresh install and you get every release <code translate="no" v-pre>__all__</code> holds, as a folder each. The table starts empty and only ever stores <strong>deviations</strong> from that default, so an untouched library stores nothing at all, the root of <code translate="no" v-pre>__magic__</code> holds nothing but the mirror, and new releases appear in it the moment they appear anywhere else.</p>
 <p>There is no directory config behind it: no <code translate="no" v-pre>only_show_the_biggest_file</code>, no size filters. What the release has is what you see.</p>
 <p>The one difference from <code translate="no" v-pre>__all__</code> is <strong>what a release folder looks like inside</strong>. Everywhere else zurg flattens a release into a single directory, keyed by filename, with a suffix where two files would collide:</p>
 <div id="with-nothing-stored-it-is-__all__s-releases-as-real-folders-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-none"><code v-pre class="language-none">__all__/Show.S01/Show.S01E01.mkv
 __all__/Show.S01/Gag Reel (Extras).mkv</code></pre>
 </doc-codeblock></div>
-<p><code translate="no" v-pre>__magic__</code> shows the tree the release actually has:</p>
+<p><code translate="no" v-pre>__magic__/__all__</code> shows the tree the release actually has:</p>
 <div id="with-nothing-stored-it-is-__all__s-releases-as-real-folders-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-none"><code v-pre class="language-none">__magic__/Show.S01/Show.S01E01.mkv
-__magic__/Show.S01/Extras/Gag Reel.mkv</code></pre>
+<pre translate="no" class="language-none"><code v-pre class="language-none">__magic__/__all__/Show.S01/Show.S01E01.mkv
+__magic__/__all__/Show.S01/Extras/Gag Reel.mkv</code></pre>
 </doc-codeblock></div>
-<p>That is not cosmetic. Sonarr and Radarr scan a download folder as a folder: a file under an <code translate="no" v-pre>extras</code>, <code translate="no" v-pre>samples</code>, <code translate="no" v-pre>featurettes</code>, <code translate="no" v-pre>trailers</code> or <code translate="no" v-pre>deleted scenes</code> <strong>subfolder</strong> is skipped, and one at the top level is considered — so the flattened <code translate="no" v-pre>Gag Reel (Extras).mkv</code> gets offered for import where the real tree has it passed over. And their import only falls back to the download&#x27;s own title for parsing when the folder holds a single video, so a movie flattened beside its featurette loses that fallback. Since <a href="../sonarr-radarr/">the SABnzbd endpoint</a> hands an *arr a folder under <code translate="no" v-pre>__magic__</code>, this is the surface those rules run against.</p>
+<p>That is not cosmetic. Sonarr and Radarr scan a download folder as a folder: a file under an <code translate="no" v-pre>extras</code>, <code translate="no" v-pre>samples</code>, <code translate="no" v-pre>featurettes</code>, <code translate="no" v-pre>trailers</code> or <code translate="no" v-pre>deleted scenes</code> <strong>subfolder</strong> is skipped, and one at the top level is considered — so the flattened <code translate="no" v-pre>Gag Reel (Extras).mkv</code> gets offered for import where the real tree has it passed over. And their import only falls back to the download&#x27;s own title for parsing when the folder holds a single video, so a movie flattened beside its featurette loses that fallback. Since <a href="../sonarr-radarr/">the SABnzbd endpoint</a> hands an *arr a folder under <code translate="no" v-pre>__magic__/__all__</code>, this is the surface those rules run against.</p>
 <p>Two details of the shape:</p>
 <ul>
 <li><strong>A single wrapping folder is dropped.</strong> Nearly every release is one folder holding everything, and that folder is what the release is already <em>called</em> — the debrid backends derive the name from it. So <code translate="no" v-pre>/Show.S01/Season 01/ep1.mkv</code> shows as <code translate="no" v-pre>Show.S01/Season 01/ep1.mkv</code>, not <code translate="no" v-pre>Show.S01/Show.S01/Season 01/ep1.mkv</code>. Only one level, and only when nothing sits beside it: a release with a file at the top and a folder beside it keeps both.</li>
@@ -217,13 +226,13 @@ __magic__/Show.S01/Extras/Gag Reel.mkv</code></pre>
 <p>Through the mount, with ordinary commands:</p>
 <div id="organising-it-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p /mnt/zurg/__magic__/tv/The\ Show/Season\ 01
-mv /mnt/zurg/__magic__/Some.Release.S01E01.1080p/ep1.mkv \
+mv /mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv \
    /mnt/zurg/__magic__/tv/The\ Show/Season\ 01/S01E01.mkv</code></pre>
 </doc-codeblock></div>
 <p>The file now lives at the new path and is gone from the old one. It streams from the same account it always did.</p>
 <p>Whole release folders move too, as a single row:</p>
 <div id="organising-it-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">mv /mnt/zurg/__magic__/Some.Movie.2024.2160p /mnt/zurg/__magic__/movies/Some\ Movie\ \(2024\)</code></pre>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">mv /mnt/zurg/__magic__/__all__/Some.Movie.2024.2160p /mnt/zurg/__magic__/movies/Some\ Movie\ \(2024\)</code></pre>
 </doc-codeblock></div>
 <p>Directories move with everything under them, as one batch. Moves go both ways: a file can be moved <em>into</em> a release folder as well as out of one, and the folder lists it beside the release&#x27;s own entries — which is what a program that puts something back into the folder it is importing from needs to see. Where a name arrives from two places at once the deliberate one wins: what you moved beats what the release calls that name, which beats a real file in <code translate="no" v-pre>data/local</code>, and the loser is left out rather than listed twice.</p>
 <p>One shape fails through the built-in mount, and only under the default <code translate="no" v-pre>union_writable: local</code>: renaming a directory <em>you created through the mount</em>, so <code translate="no" v-pre>mkdir</code> and then, later, <code translate="no" v-pre>mv</code> of that directory. Under the default order <code translate="no" v-pre>mkdir</code> creates the directory on rclone&#x27;s own local upstream while the rows beneath it make the same directory exist server-side, so rclone renames its local copy, moves the rows one file at a time — zurg answers every one of those correctly — and then fails removing a source it has already renamed away:</p>

@@ -154,7 +154,7 @@ The first thing it does is Real-Debrid's network test — it unrestricts test li
 INFO  network_test  Network test completed!
 INFO  zurg          Provider realdebrid ready (type=realdebrid)
 INFO  router        __magic__ serves sidecar files from data\local\__magic__
-INFO  router.qbittorrent  qBittorrent API on /api/v2 and /qbittorrent/api/v2, save path Z:/__magic__, categories tv-sonarr, radarr
+INFO  router.qbittorrent  qBittorrent API on /api/v2 and /qbittorrent/api/v2, save path Z:/__magic__/__all__, categories tv-sonarr, radarr
 INFO  router.qbittorrent  qBittorrent: generated API key 9ec56e41e8c9afa4d5480e1222ad3173 — paste it into Sonarr or Radarr's API Key field, or pin it as qbittorrent.api_key in config.yml
 INFO  zurg          Starting server on http://[::]:9999
 INFO  rclone        rclone started with mount Z:, union local C:\Users\yowmamasita\zurg\data\local
@@ -167,7 +167,7 @@ Three warnings you may see, all known and none fatal:
 
 | Warning | What it is |
 |---|---|
-| `the save path "Z:/__magic__" is not absolute` | A false positive on Windows: zurg checks the path with a POSIX rule, and a drive letter is absolute everywhere else. The endpoint is fine — the clients open `Z:/__magic__` without trouble. |
+| `the save path "Z:/__magic__/__all__" is not absolute` | A false positive on Windows: zurg checks the path with a POSIX rule, and a drive letter is absolute everywhere else. The endpoint is fine — the clients open `Z:/__magic__/__all__` without trouble. |
 | `cannot truncate data\magic.journal: Access is denied` | A real Windows quirk, cosmetic in effect: zurg holds the journal open and then tries to compact it, which Windows refuses. Your placements are still written and still survive restarts — verified on this install — the journal just never shrinks. |
 | `Debug logging is enabled` | The generated config is verbose by default. Add `log_level: INFO` to quiet it. |
 
@@ -211,7 +211,7 @@ PS> Invoke-WebRequest "http://localhost:9999/api/v2/app/webapiVersion"
 PS> Invoke-RestMethod "http://localhost:9999/api/v2/app/version" -Headers @{ Authorization = "Bearer $KEY" }
 v5.0.4
 PS> (Invoke-RestMethod "http://localhost:9999/api/v2/app/preferences" -Headers @{ Authorization = "Bearer $KEY" }).save_path
-Z:/__magic__
+Z:/__magic__/__all__
 ```
 
 And add a torrent to it. A `.torrent` file goes up with `curl -F`, or any client does it for you:
@@ -229,7 +229,7 @@ INFO  router.qbittorrent  qBittorrent: op1176 (dc98af37…) finished on realdebr
 with the torrent reporting finished and a folder to import from:
 
 ```
-"content_path": "Z:/__magic__/[NanakoRaws] One Piece S01E1176 (THK TV 1080p HEVC AAC)"
+"content_path": "Z:/__magic__/__all__/[NanakoRaws] One Piece S01E1176 (THK TV 1080p HEVC AAC)"
 ```
 
 Reading the file through `Z:` pulled a megabyte in milliseconds — rclone's VFS read-ahead fronts the provider, so warm reads are local-disk fast and the articles stream in behind them.
@@ -319,7 +319,7 @@ The contrast with the first pass is immediate: no walk. An NZB library starts em
 INFO  nzb       NZB articles are kept in memory for the life of the process (nzb_segments: resident)
 INFO  zurg      Provider nzb ready (type=nzb)
 INFO  router    __magic__ serves sidecar files from data\local\__magic__
-INFO  router.sabnzbd  SABnzbd API on /api and /sabnzbd/api, completed directory Z:/__magic__, categories tv, movies
+INFO  router.sabnzbd  SABnzbd API on /api and /sabnzbd/api, completed directory Z:/__magic__/__all__, categories tv, movies
 INFO  router.sabnzbd  SABnzbd: generated API key b7fb2b17e04244e2d36d0aae2d77b37a — paste it into Sonarr or Radarr, or pin it as sabnzbd.api_key in config.yml
 INFO  zurg      Starting server on http://[::]:9999
 INFO  rclone    rclone started with mount Z:, union local C:\Users\yowmamasita\zurg\data\local
@@ -352,9 +352,9 @@ PS> Copy-Item .\lanterns.nzb C:\Users\yowmamasita\zurg\nzbs\
 INFO  nzb  Loaded NZB lanterns.nzb: 8 files
 ```
 
-That is the line that says the NZB parsed. The release appears as a folder under `__magic__` on the mount, and because a Usenet release names its files however the poster felt like, the inner file may look like `J8AZfuVQCD4yPpRIF566Bv0xKoEpYa3M.mkv` — the release folder carries the NZB's name, the files carry the poster's:
+That is the line that says the NZB parsed. The release appears as a folder under `__magic__\__all__` on the mount, and because a Usenet release names its files however the poster felt like, the inner file may look like `J8AZfuVQCD4yPpRIF566Bv0xKoEpYa3M.mkv` — the release folder carries the NZB's name, the files carry the poster's:
 
-![File Explorer inside __magic__, showing the release folder](../assets/windows-setup/51-explorer-magic-lanterns.webp)
+![File Explorer inside the library folder, showing the release folder](../assets/windows-setup/51-explorer-magic-lanterns.webp)
 
 Nothing has been downloaded at this point, and nothing will be until something reads a file. The first read of the episode — 162 MB — fetched exactly the articles covering the requested range, yEnc-decoded them, and answered; later reads were instant because the VFS had read ahead around them. A 60 GB remux costs 60 GB of disk nowhere, Usenet or debrid.
 
@@ -365,7 +365,7 @@ PS> $KEY = Get-Content data\sabnzbd-apikey
 PS> Invoke-RestMethod "http://localhost:9999/api?mode=version&apikey=$KEY&output=json"
 {"version":"4.5.1"}
 PS> (Invoke-RestMethod "http://localhost:9999/api?mode=get_config&apikey=$KEY&output=json").config.misc.complete_dir
-Z:/__magic__
+Z:/__magic__/__all__
 ```
 
 A wrong key is refused in the body, with an HTTP 200 — that is how SABnzbd itself behaves, and zurg copies it:
@@ -453,7 +453,7 @@ $env:ZURG_INSTALL_MODE = "update"; irm https://zurg.debridmediamanager.com/insta
 | `realdebrid will not take <name>: it refuses that name outright` | Real-Debrid blocks some release names (`WEBRip` and friends). Grab a differently-named release; nothing is wrong with the setup. |
 | An add fails with `could not read back id=…` or rate-limit text | The account's API budget is spent — on this box, the library walk plus a second zurg on the same token did it. Let the walk finish, or don't share the token across instances. |
 | `cannot truncate data\magic.journal: Access is denied` | The Windows journal-compaction refusal. Placements still persist across restarts; the journal just never compacts. |
-| `the save path "Z:/__magic__" is not absolute` | A false positive on drive-letter paths. The endpoint works; the clients open `Z:/__magic__` fine. |
+| `the save path "Z:/__magic__/__all__" is not absolute` | A false positive on drive-letter paths. The endpoint works; the clients open `Z:/__magic__/__all__` fine. |
 | Task start refused, `0x800710E0` | The task is still "running" — a launcher window never exited. `Stop-ScheduledTask zurg`, then start. |
 | `Get-PSDrive` shows no `Z:` from an SSH session | Expected — different logon session. See the session table. |
 

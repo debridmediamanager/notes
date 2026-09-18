@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.842533813309">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.843005907944">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.842533813309" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.843005907944" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.842533813309" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.843005907944" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.842533813309" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.842533813309" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.843005907944" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.843005907944" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -428,18 +428,19 @@ a dashboard toggle needs a restart before the namespace answers.</p>
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">magic:
   enabled: true</code></pre>
 </doc-codeblock></div>
-<p><strong>2. Make the root folders.</strong> They have to be <em>inside</em> <code translate="no" v-pre>__magic__</code> and one
-level down. Not <code translate="no" v-pre>__magic__</code> itself and not the mount root. Both *arrs raise a
-health check for those and an import lands one level down anyway.</p>
+<p><strong>2. Make the root folders.</strong> They go at the root of <code translate="no" v-pre>__magic__</code>, beside the
+<code translate="no" v-pre>__all__</code> zurg keeps there. Not <code translate="no" v-pre>__magic__/__all__</code>, not <code translate="no" v-pre>__magic__</code> itself and
+not the mount root. Both *arrs raise a health check for those; siblings trip
+neither.</p>
 <div id="cut-over-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p /mnt/zurg/__magic__/tv /mnt/zurg/__magic__/movies
-ls /mnt/zurg/__magic__/          # your releases are already listed here</code></pre>
+ls /mnt/zurg/__magic__/__all__/   # your releases are already listed here</code></pre>
 </doc-codeblock></div>
-<p><code translate="no" v-pre>__magic__</code> starts as a mirror of <code translate="no" v-pre>__all__</code> so every release is present before
+<p><code translate="no" v-pre>__magic__/__all__</code> mirrors the library so every release is present before
 you organise anything.</p>
 <p><strong>3. Organise it.</strong> A <code translate="no" v-pre>mv</code> inside <code translate="no" v-pre>__magic__</code> writes a row and moves no bytes.</p>
 <div id="cut-over-code-3" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">mv &quot;/mnt/zurg/__magic__/Some.Release.S01E01.1080p/ep1.mkv&quot; \
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">mv &quot;/mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv&quot; \
    &quot;/mnt/zurg/__magic__/tv/The Show/Season 01/S01E01.mkv&quot;</code></pre>
 </doc-codeblock></div>
 <p><strong>If Sonarr and Radarr organised your old library then let them do it here
@@ -450,8 +451,10 @@ Never change an existing series or movie root folder to point into <code transla
 That makes the *arr move the files across the mount boundary. It is a copy and
 it downloads your library. The full sequence and the number to watch are on
 <a href="../#coming-off-a-symlink-library">the shared page</a>.</p>
-<p><strong>4. Point Plex at <code translate="no" v-pre>__magic__</code></strong> and at that library only. Never <code translate="no" v-pre>__magic__</code>
-<em>and</em> a filter directory or every episode is found twice. Confirm
+<p><strong>4. Point Plex at the root folders you made</strong> — <code translate="no" v-pre>__magic__/tv</code> and
+<code translate="no" v-pre>__magic__/movies</code> — and at those only. Never the root of <code translate="no" v-pre>__magic__</code>, which
+holds the whole library at <code translate="no" v-pre>__magic__/__all__</code> as well, and never <code translate="no" v-pre>__magic__</code>
+<em>and</em> a filter directory, or every episode is found twice. Confirm
 <code translate="no" v-pre>autoEmptyTrash</code> is <code translate="no" v-pre>0</code>. Add the new location and scan. Then remove the old
 one. That is your *arr library path or the decypharr mount if Plex read it
 directly.</p>
@@ -464,11 +467,12 @@ stop it.</p>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo systemctl stop decypharr</code></pre>
 </doc-codeblock></div>
 <h2 id="afterwards">Afterwards</h2>
-<p><strong>Automation is where decypharr had more than zurg does.</strong> zurg has an opt-in
+<p><strong>Automation carries over, both halves.</strong> zurg has an opt-in
 <a href="../../guides/sonarr-radarr/">SABnzbd-compatible endpoint</a> so Sonarr and Radarr
-can hand it an NZB and import from <code translate="no" v-pre>__magic__</code> by rename. It has no qBittorrent
-API so the torrent half of decypharr&#x27;s ingestion has no equivalent. Your
-options.</p>
+can hand it an NZB, and an opt-in
+<a href="../../guides/sonarr-radarr-torrents/">qBittorrent-compatible endpoint</a> so they
+can hand it a magnet or a <code translate="no" v-pre>.torrent</code> for a debrid account. Both import out of
+<code translate="no" v-pre>__magic__/__all__</code> by rename. Your options.</p>
 <ul>
 <li>
 <p><strong>NZBs.</strong> Turn on <code translate="no" v-pre>sabnzbd.enabled</code> and point the *arrs at zurg. The caveat
@@ -477,8 +481,12 @@ news server. So a dead release reports Completed and fails on the first read
 instead of being blocklisted and re-grabbed.</p>
 </li>
 <li>
-<p><strong>Torrents.</strong> Use the zurg dashboard or DMM or Plex watchlist acquisition.
-That last one is the <code translate="no" v-pre>watchlist:</code> block, which searches your own Newznab indexers.</p>
+<p><strong>Torrents.</strong> Turn on <code translate="no" v-pre>qbittorrent.enabled</code> and add it as a second download
+client. A private tracker&#x27;s release works when the indexer hands out a
+<code translate="no" v-pre>.torrent</code> file rather than a bare magnet, because the file keys the account&#x27;s
+cache lookup by hash directly. The zurg dashboard, DMM and Plex watchlist
+acquisition are still there for one-off adds; that last one is the
+<code translate="no" v-pre>watchlist:</code> block, which searches your own Newznab indexers.</p>
 </li>
 <li>
 <p><strong>Hybrid.</strong> Keep decypharr purely as the *arrs&#x27; download client pushing into

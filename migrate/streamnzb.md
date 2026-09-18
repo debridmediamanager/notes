@@ -60,7 +60,8 @@ it.
 
 - **The SABnzbd endpoint.** Setting `sabnzbd.enabled: true` makes zurg answer
   Sonarr and Radarr as a download client and the import is a rename inside
-  `__magic__` rather than a copy. This is the closest thing to what streamnzb
+  `__magic__` — out of `__magic__/__all__`, where the grab lands, into the root
+  folder beside it — rather than a copy. This is the closest thing to what streamnzb
   did for you and it is what most setups should use. See
   [Sonarr & Radarr](../guides/sonarr-radarr.md). One caveat to know before
   switching a library over. zurg does not yet check whether a post's articles

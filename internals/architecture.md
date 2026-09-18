@@ -18,7 +18,9 @@ It holds no content of its own and refuses a PUT, so it is read-only in the
 sense that matters for bytes. Two writes are accepted: a rename, which stores a
 name and touches no account ([renaming.md](../guides/renaming.md)), and a DELETE, which
 removes the release from every account holding it. `__magic__` adds a third
-inside one namespace, a stored layout ([magic.md](../guides/magic.md)).
+inside one namespace, a stored layout ([magic.md](../guides/magic.md)) — everywhere in it
+except at `__magic__/__all__` and the release folders directly inside it, the
+computed mirror the download clients import from.
 
 Four views onto the same library:
 
@@ -138,7 +140,6 @@ type-assert and degrade on:
 |---|---|---|
 | `MagnetAdder` | add by hash, select files, active-slot count | repair |
 | `TorrentRestarter` | retry a failed torrent in place | repair, cheapest strategy |
-| `CacheChecker` | is this hash instantly available | repair, before queueing |
 | `HostRotator` | swap the CDN host pool | network test, `/hosts` page |
 | `DownloadLister` | a separate hoster-downloads list | the `__downloads__` directory |
 | `ArchivePasswordKeeper` | password for a release's archives | Usenet only |
@@ -300,6 +301,19 @@ When links stop serving bytes, repair escalates through strategies:
 2. **Re-download the broken files** — re-select only what is broken.
 3. **Reinsert** — re-add the magnet and harvest fresh links.
 4. **Archive** — last resort for releases that cannot be recovered.
+5. **Offer it to an account that does not hold it**
+   (`repair_across_accounts.go`) — the services keep independent caches, so a
+   release one account has purged, or refuses by filename, can be cached on
+   another. Once no account holding the release can fix it, the configured
+   accounts that do not hold it are asked in order and the first that already
+   has the hash takes it; the listing that follows joins it to the entry as a
+   second copy through the ordinary `absorbCopy` path, which clears the entry's
+   verdict itself. Cached-only always, through `AddIfCached` and never through
+   `restrict_repair_to_cached` — an add the account would have to fetch is
+   withdrawn and deleted again, so this is a repair and never a re-download.
+   An account that answers no backs off from a day to about a fortnight, and a
+   sweep makes at most ten offers, which is what makes it affordable to run
+   unasked against a library of condemned releases.
 
 Around that: exponential backoff, per-copy retry ceilings (`RepairCycles`,
 `AssignRetries`, persisted so ceilings survive restarts), hourly add-budget
@@ -312,7 +326,14 @@ nothing about the TorBox copy.
 
 An operator can force a repair by hand; forced standing lives on the torrent
 rather than the context, because a request arriving mid-sweep is parked in the
-queue and picked up later under the sweep's own context.
+queue and picked up later under the sweep's own context. The button reaches
+step 5 too, and in that order: it clears every verdict on the release first, so
+the account holding it is retried exactly as before, and the offer follows only
+if that attempt fails. Because it clears those verdicts, a named torrent is
+eligible when the sweep collects its condemned entries and condemned again only
+by the repair that has just run, so it is collected after that repair rather
+than in the loop — otherwise the one path with somebody waiting on it would be
+the one path that never offers.
 
 ### Everything else in the package
 

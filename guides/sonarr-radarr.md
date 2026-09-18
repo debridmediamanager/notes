@@ -65,10 +65,10 @@ sabnzbd:
   enabled: true
   api_key: ""          # empty = zurg generates one and keeps it
   categories: [tv, movies]
-  complete_dir: ""     # empty = <mount_path>/__magic__
+  complete_dir: ""     # empty = <mount_path>/__magic__/__all__
 ```
 
-**The categories are not folders.** They all resolve to the same place — a job's folder is the release's own folder under `__magic__`. The list exists only so Sonarr and Radarr stop warning about a category they cannot find. If Sonarr's category is `tv`, `tv` must be in this list.
+**The categories are not folders.** They all resolve to the same place — a job's folder is the release's own folder under `__magic__/__all__`. The list exists only so Sonarr and Radarr stop warning about a category they cannot find. If Sonarr's category is `tv`, `tv` must be in this list.
 
 Restart zurg, then confirm the provider took:
 
@@ -110,7 +110,7 @@ $ curl -s "http://$ZURG/api?mode=version&apikey=$SAB&output=json"
 
 $ curl -s "http://$ZURG/api?mode=get_config&apikey=$SAB&output=json" \
     | jq '.config.misc.complete_dir, [.config.categories[].name]'
-"/mnt/zurg_usenet/__magic__"
+"/mnt/zurg_usenet/__magic__/__all__"
 [ "*", "tv", "movies" ]
 ```
 
@@ -151,17 +151,17 @@ $ ls -d /mnt/zurg_usenet/__magic__/tv /mnt/zurg_usenet/__magic__/movies
 
 Substitute your own `mount_path` for `/mnt/zurg_usenet`. The folder names are yours to choose; `tv` and `movies` just match the categories.
 
-**The root folder must be inside `__magic__`, not at it and not above it.** Use `__magic__/tv`. **Not** `__magic__` itself and **not** `/mnt/zurg_usenet`. Both clients raise a health check when a root folder *is* the download client's output folder, and Radarr also raises one when a root folder *contains* it. A root folder one level inside the output folder is the single arrangement neither complains about — and it is where an import naturally lands anyway.
+**The root folder goes beside the completed directory, not at it and not above it.** zurg hands the clients `__magic__/__all__`, which is your library as `__all__` lists it. Your root folders sit next to it, at `__magic__/tv` and `__magic__/movies`. **Not** `__magic__/__all__`, **not** `__magic__` itself and **not** `/mnt/zurg_usenet`. Both clients raise a health check when a root folder *is* the download client's output folder, and Radarr also raises one when a root folder *contains* it. Siblings trip neither, and a manual import pointed at the completed directory then has one release to look at rather than your whole library.
 
-This is what getting it wrong looks like. Both are real, from the two clients:
+This is what getting it wrong looks like. Both are real, from the two clients. They were taken before the completed directory moved down to `__magic__/__all__`, so the paths in them are one level up from yours — the two rules they show are the same ones:
 
-![Sonarr health check warning about a root folder at __magic__](../assets/sonarr-radarr/30-sonarr-health-rootfolder-warning.webp)
+![Sonarr health check warning about a root folder at the completed directory](../assets/sonarr-radarr/30-sonarr-health-rootfolder-warning.webp)
 
-Sonarr with `/mnt/zurg_usenet/__magic__` added as a root folder — it warns because the root folder *is* the output folder.
+Sonarr with the completed directory itself added as a root folder — it warns because the root folder *is* the output folder.
 
-![Radarr health check warning about a root folder above __magic__](../assets/sonarr-radarr/31-radarr-health-rootfolder-warning.webp)
+![Radarr health check warning about a root folder above the completed directory](../assets/sonarr-radarr/31-radarr-health-rootfolder-warning.webp)
 
-Radarr with `/mnt/zurg_usenet` added — it warns for the parent too, which Sonarr does not. Move the root folder inside `__magic__` and both warnings go.
+Radarr with `/mnt/zurg_usenet` added — it warns for the parent too, which Sonarr does not. Move the root folder beside the completed directory and both warnings go.
 
 ## 5. Add the client in Sonarr
 
@@ -236,9 +236,9 @@ Click **Add Root Folder**. A file browser opens on the container's filesystem.
 
 ![Sonarr's file browser at the filesystem root](../assets/sonarr-radarr/12-sonarr-rootfolder-dialog.webp)
 
-Type the path into the box at the top. If the mount is genuinely visible to Sonarr, the releases inside `__magic__` appear as you type — which is the fastest proof you will get that the bind mount is correct.
+Type the path into the box at the top. If the mount is genuinely visible to Sonarr, what is inside `__magic__` appears as you type — `__all__` with every release in it, and whatever you made beside it. That is the fastest proof you will get that the bind mount is correct.
 
-![The file browser listing releases inside __magic__](../assets/sonarr-radarr/13-sonarr-rootfolder-browse.webp)
+![The file browser listing what is inside __magic__](../assets/sonarr-radarr/13-sonarr-rootfolder-browse.webp)
 
 If this is empty or errors, stop and fix the mount before going further.
 
@@ -289,7 +289,7 @@ If the container mounts the library somewhere other than zurg does, every import
 
 ```yaml
 sabnzbd:
-  complete_dir: "/data/zurg/__magic__"   # what the *arr sees, not what zurg sees
+  complete_dir: "/data/zurg/__magic__/__all__"   # what the *arr sees, not what zurg sees
 ```
 
 For the second, go to **Settings → Download Clients** and use the **+** under **Remote Path Mappings** — the lower one on the page, not the one you used in step 5.
@@ -414,7 +414,7 @@ Works:
 
 - The connection test, all four checks, in both clients.
 - Grabbing, queue, history, import by rename, and the post-import cleanup.
-- Re-grabbing the same release. The job id comes from the NZB's filename, so it names the same job rather than a second one. A re-grab of a release an earlier import already emptied is reported **Failed**. Its folder under `__magic__` has nothing left to import and Failed makes the client blocklist it and take another. The grab that did the emptying keeps reporting Completed until the client deletes it.
+- Re-grabbing the same release. The job id comes from the NZB's filename, so it names the same job rather than a second one. A re-grab of a release an earlier import already emptied is reported **Failed**. Its folder under `__magic__/__all__` has nothing left to import and Failed makes the client blocklist it and take another. The grab that did the emptying keeps reporting Completed until the client deletes it.
 - Removing a job from the queue, with or without deleting the NZB.
 - `mode=addurl`, for a human or an automation passing a URL instead of uploading. Neither \*arr uses it.
 
@@ -441,7 +441,7 @@ Does not:
 | "API Key Incorrect" / "API Key Required" | The key does not match. It is in `config.yml` if you set one, in `data/sabnzbd-apikey` if zurg generated it. |
 | "Test was aborted due to an error" | Something other than an authentication failure. zurg logs every request it refused — grep the log for `SABnzbd:`. |
 | "Category … does not exist" | The category in the \*arr is not in `sabnzbd.categories`. Add it and restart zurg. |
-| "Downloads in root folder" | A root folder is at or above `__magic__`. Move it inside — `__magic__/tv`, not `__magic__` and not `/mnt/zurg_usenet`. |
+| "Downloads in root folder" | A root folder is at or above the completed directory. Move it beside it — `__magic__/tv`, not `__magic__/__all__`, not `__magic__` and not `/mnt/zurg_usenet`. |
 | "Remote path mapping" / "download doesn't contain intermediate path" | The path zurg reports is not a path the client can open. See [step 8](#8-if-your-arr-is-in-docker). |
 | Every release rejected, nothing in the log | A stale bind mount. Run `docker exec <client> df -h <mount>`; if it says `Socket not connected`, bind the parent with `rslave` and recreate the container. |
 | A job stays queued for a poll or two after the release appears | Expected, and it settles once per release. An NZB does not state how long a file is; the estimate is being replaced by the exact length from the PAR2 index or one article's own header. Reporting Completed early is what makes the client throw *File move incomplete, data loss may have occurred*. |

@@ -949,7 +949,7 @@ protected virtual void DeleteItemData(DownloadClientItem item)
 
 - **Yes, it recursively deletes the output folder.** `DeleteFolder(path, recursive: true)` at `:129`.
 - `OutputPath` here is the history item's `storage` after remote-path remapping and the job-folder
-  walk-up (§1.6.2). For a flat magic directory that means `rm -rf /mnt/zurg/__magic__/<Title>`.
+  walk-up (§1.6.2). For a flat magic directory that means `rm -rf /mnt/zurg/__magic__/__all__/<Title>`.
 - The governing setting is the download client's **Remove Completed Downloads** toggle
   (`DownloadClientDefinition.RemoveCompletedDownloads`, default **true**), *not* a SAB-side setting
   and not `del_files`. There is no separate "delete data" switch in the UI.
@@ -1106,11 +1106,15 @@ ancestor test (it starts from `child.Directory`); equality is handled separately
 | O is the PARENT of R (O is R's ancestor) | no warning | **no warning** |
 | unrelated | no warning | no warning |
 
-With `complete_dir = /mnt/zurg/__magic__` and `dir: ""` (so `OutputRootFolders == ["/mnt/zurg/__magic__"]`):
+With `complete_dir = /mnt/zurg/__magic__/__all__` and `dir: ""` (so
+`OutputRootFolders == ["/mnt/zurg/__magic__/__all__"]`):
 
-- Sonarr warns only if a root folder is exactly `/mnt/zurg/__magic__`.
-- Radarr warns if a root folder is `/mnt/zurg/__magic__`, `/mnt/zurg`, or `/mnt`.
-- Neither warns if a root folder is `/mnt/zurg/__magic__/anything` (output folder as parent).
+- Sonarr warns only if a root folder is exactly `/mnt/zurg/__magic__/__all__`.
+- Radarr warns if a root folder is `/mnt/zurg/__magic__/__all__`, `/mnt/zurg/__magic__`, `/mnt/zurg`, or `/mnt`.
+- Neither warns if a root folder is `/mnt/zurg/__magic__/tv` — the mirror and the root folders are
+  siblings, so the pair is unrelated and neither rule fires. A root folder *inside* the output folder
+  (`/mnt/zurg/__magic__/__all__/anything`) would also be quiet here, but the namespace refuses to
+  store anything at that depth, so it is not an arrangement that can exist.
 
 `PathEquals` (`PathExtensions.cs:55-73`) normalises Unicode, uses `DiskProviderBase.PathStringComparison`
 (`OrdinalIgnoreCase` on Windows, `Ordinal` elsewhere — `src/NzbDrone.Common/Disk/DiskProviderBase.cs:17-23`),
@@ -1143,7 +1147,7 @@ For every `folder` in `client.GetStatus().OutputRootFolders`:
 
 **For a local client (`IsLocalhost` true, not Docker) this reduces to exactly two requirements:**
 the reported output root folder must be an absolute path *for the OS Sonarr/Radarr runs on*, and it
-must **exist on the Sonarr/Radarr host** as a directory. `/mnt/zurg/__magic__` must be visible to the
+must **exist on the Sonarr/Radarr host** as a directory. `/mnt/zurg/__magic__/__all__` must be visible to the
 *arr process, not just to the emulator. **There is no writability check here.**
 
 The event-driven overload (`:178-368`) fires on `EpisodeImportFailedEvent` (Radarr:
@@ -1209,10 +1213,10 @@ Config defaults identical in both: `DownloadClientHistoryLimit = 60`,
 
 ## 8. Minimal-but-complete example payloads
 
-Given: `complete_dir = /mnt/zurg/__magic__`; categories `*`, `tv`, `movies`, all with `dir: ""`.
+Given: `complete_dir = /mnt/zurg/__magic__/__all__`; categories `*`, `tv`, `movies`, all with `dir: ""`.
 Every response is **HTTP 200** with `Content-Type: application/json`.
 
-Resulting `OutputRootFolders`: `dir: ""` ⇒ `FullPath == complete_dir` ⇒ `/mnt/zurg/__magic__`
+Resulting `OutputRootFolders`: `dir: ""` ⇒ `FullPath == complete_dir` ⇒ `/mnt/zurg/__magic__/__all__`
 for Sonarr (category `tv`) and for Radarr (category `movies`).
 
 ### 8.1 `mode=version`
@@ -1233,7 +1237,7 @@ were relative (it isn't).
 {
   "config": {
     "misc": {
-      "complete_dir": "/mnt/zurg/__magic__",
+      "complete_dir": "/mnt/zurg/__magic__/__all__",
       "pre_check": false,
       "enable_tv_sorting": false,
       "tv_categories": [],
@@ -1277,7 +1281,7 @@ Why each value:
 ```json
 {
   "status": {
-    "completedir": "/mnt/zurg/__magic__",
+    "completedir": "/mnt/zurg/__magic__/__all__",
     "version": "4.3.3",
     "uptime": "1d",
     "color_scheme": "Auto",
@@ -1423,8 +1427,8 @@ Resulting `DownloadClientItem`: `TotalSize = 1024 * 1024 * 1024`, `RemainingSize
         "url": "",
         "status": "Completed",
         "nzo_id": "SABnzbd_nzo_def67890",
-        "storage": "/mnt/zurg/__magic__/Some.Show.S01E02.1080p.WEB-DL.H264-GRP",
-        "path": "/mnt/zurg/__magic__/Some.Show.S01E02.1080p.WEB-DL.H264-GRP",
+        "storage": "/mnt/zurg/__magic__/__all__/Some.Show.S01E02.1080p.WEB-DL.H264-GRP",
+        "path": "/mnt/zurg/__magic__/__all__/Some.Show.S01E02.1080p.WEB-DL.H264-GRP",
         "script_log": "",
         "script_line": "",
         "download_time": 120,
@@ -1540,10 +1544,12 @@ reported verbatim but not classified.
     successful import (default settings), and expect the media file to be **moved** out of it first.
     If the magic directory is read-only the delete fails silently (warning log only), but the *move*
     of the imported file must still succeed or the import fails outright (§5.5).
-11. Do not place any *arr root folder at or above `/mnt/zurg/__magic__` if you want Radarr's
-    `DownloadClientRootFolderCheck` to stay quiet (Sonarr only cares about exact equality).
-12. `/mnt/zurg/__magic__` must exist as a directory **on the Sonarr/Radarr host**, not just where the
-    emulator runs, or `RemotePathMappingCheck` raises an error. It does not need to be writable.
+11. Do not place any *arr root folder at or above `/mnt/zurg/__magic__/__all__` if you want Radarr's
+    `DownloadClientRootFolderCheck` to stay quiet (Sonarr only cares about exact equality). Put them
+    beside the mirror instead — `/mnt/zurg/__magic__/tv`, `/mnt/zurg/__magic__/movies` — which is
+    unrelated to the output folder rather than above or below it.
+12. `/mnt/zurg/__magic__/__all__` must exist as a directory **on the Sonarr/Radarr host**, not just where
+    the emulator runs, or `RemotePathMappingCheck` raises an error. It does not need to be writable.
 
 ## Configuring a larger completion window
 

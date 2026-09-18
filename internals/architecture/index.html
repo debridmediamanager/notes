@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.842533813309">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.843005907944">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,11 +37,11 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.842533813309" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.843005907944" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.842533813309" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.843005907944" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.842533813309" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.843005907944" data-turbo-eval="false" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -192,7 +192,9 @@ against the provider&#x27;s CDN at request time.</p>
 sense that matters for bytes. Two writes are accepted: a rename, which stores a
 name and touches no account (<a href="../../guides/renaming/">renaming.md</a>), and a DELETE, which
 removes the release from every account holding it. <code translate="no" v-pre>__magic__</code> adds a third
-inside one namespace, a stored layout (<a href="../../guides/magic/">magic.md</a>).</p>
+inside one namespace, a stored layout (<a href="../../guides/magic/">magic.md</a>) — everywhere in it
+except at <code translate="no" v-pre>__magic__/__all__</code> and the release folders directly inside it, the
+computed mirror the download clients import from.</p>
 <p>Four views onto the same library:</p>
 <retype-table copy-text="| Endpoint | For |
 |---|---|
@@ -339,7 +341,6 @@ type-assert and degrade on:</p>
 |---|---|---|
 | `MagnetAdder` | add by hash, select files, active-slot count | repair |
 | `TorrentRestarter` | retry a failed torrent in place | repair, cheapest strategy |
-| `CacheChecker` | is this hash instantly available | repair, before queueing |
 | `HostRotator` | swap the CDN host pool | network test, `/hosts` page |
 | `DownloadLister` | a separate hoster-downloads list | the `__downloads__` directory |
 | `ArchivePasswordKeeper` | password for a release's archives | Usenet only |
@@ -363,11 +364,6 @@ type-assert and degrade on:</p>
 <td><code translate="no" v-pre>TorrentRestarter</code></td>
 <td>retry a failed torrent in place</td>
 <td>repair, cheapest strategy</td>
-</tr>
-<tr>
-<td><code translate="no" v-pre>CacheChecker</code></td>
-<td>is this hash instantly available</td>
-<td>repair, before queueing</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>HostRotator</code></td>
@@ -620,6 +616,21 @@ rather than being deleted and rediscovered.</p>
 <li>
 <p><strong>Archive</strong> — last resort for releases that cannot be recovered.</p>
 </li>
+<li>
+<p><strong>Offer it to an account that does not hold it</strong>
+(<code translate="no" v-pre>repair_across_accounts.go</code>) — the services keep independent caches, so a
+release one account has purged, or refuses by filename, can be cached on
+another. Once no account holding the release can fix it, the configured
+accounts that do not hold it are asked in order and the first that already
+has the hash takes it; the listing that follows joins it to the entry as a
+second copy through the ordinary <code translate="no" v-pre>absorbCopy</code> path, which clears the entry&#x27;s
+verdict itself. Cached-only always, through <code translate="no" v-pre>AddIfCached</code> and never through
+<code translate="no" v-pre>restrict_repair_to_cached</code> — an add the account would have to fetch is
+withdrawn and deleted again, so this is a repair and never a re-download.
+An account that answers no backs off from a day to about a fortnight, and a
+sweep makes at most ten offers, which is what makes it affordable to run
+unasked against a library of condemned releases.</p>
+</li>
 </ol>
 <p>Around that: exponential backoff, per-copy retry ceilings (<code translate="no" v-pre>RepairCycles</code>,
 <code translate="no" v-pre>AssignRetries</code>, persisted so ceilings survive restarts), hourly add-budget
@@ -631,7 +642,14 @@ entry when <em>every</em> copy carries one — a permanent Real-Debrid error say
 nothing about the TorBox copy.</p>
 <p>An operator can force a repair by hand; forced standing lives on the torrent
 rather than the context, because a request arriving mid-sweep is parked in the
-queue and picked up later under the sweep&#x27;s own context.</p>
+queue and picked up later under the sweep&#x27;s own context. The button reaches
+step 5 too, and in that order: it clears every verdict on the release first, so
+the account holding it is retried exactly as before, and the offer follows only
+if that attempt fails. Because it clears those verdicts, a named torrent is
+eligible when the sweep collects its condemned entries and condemned again only
+by the repair that has just run, so it is collected after that repair rather
+than in the loop — otherwise the one path with somebody waiting on it would be
+the one path that never offers.</p>
 <h3 id="everything-else-in-the-package">Everything else in the package</h3>
 <p><code translate="no" v-pre>mediainfo.go</code> (ffprobe analysis, feeding duration/codec tags), <code translate="no" v-pre>tags.go</code>,
 <code translate="no" v-pre>rename.go</code> (renames that must survive refresh), <code translate="no" v-pre>delete.go</code>, <code translate="no" v-pre>strm.go</code>

@@ -211,12 +211,13 @@ paid plan a completed torrent can hold one for up to 30 days.
   unbounded rather than blocking forever.
 - **Added torrents are marked never-seed.** Seeding holds a slot for weeks and
   bills outgoing traffic, neither of which helps a streaming mount.
-- **Cache is checked before adding only in cached-only mode.** `checkcached` has
-  one call site and it is the download client's `qbittorrent.download_timeout_mins: 0`
-  path, where a miss must be refused inside the add rather than become a
-  download. Every other add goes straight to `createtorrent` without a probe.
-  Cached adds fall under the 300/min budget; uncached ones consume the 60/hour
-  allowance.
+- **The cache is never checked before adding.** `checkcached` has no call site
+  at all. Cached-only mode (`qbittorrent.download_timeout_mins: 0`) was the one
+  exception until it was made to add the torrent and watch the instance like
+  every other backend, because the endpoint reports whether the content is in
+  TorBox's cache rather than whether this account ends up holding it. That costs
+  something real on a miss: an uncached add consumes the 60/hour allowance where
+  a probe consumed nothing. Cached adds still fall under the 300/min budget.
 
 ## Content expiry
 

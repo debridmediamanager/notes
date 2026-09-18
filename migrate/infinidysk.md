@@ -174,22 +174,23 @@ magic:
   enabled: true
 ```
 
-**2. Make the root folders.** They have to be *inside* `__magic__` and one
-level down. Not `__magic__` itself and not the mount root. Both \*arrs raise a
-health check for those and an import lands one level down anyway.
+**2. Make the root folders.** They go at the root of `__magic__`, beside the
+`__all__` zurg keeps there. Not `__magic__/__all__`, not `__magic__` itself and
+not the mount root. Both \*arrs raise a health check for those; siblings trip
+neither.
 
 ```bash
 mkdir -p /mnt/zurg/__magic__/tv /mnt/zurg/__magic__/movies
-ls /mnt/zurg/__magic__/          # your releases are already listed here
+ls /mnt/zurg/__magic__/__all__/   # your releases are already listed here
 ```
 
-`__magic__` starts as a mirror of `__all__` so every release is present before
+`__magic__/__all__` mirrors the library so every release is present before
 you organise anything.
 
 **3. Organise it.** A `mv` inside `__magic__` writes a row and moves no bytes.
 
 ```bash
-mv "/mnt/zurg/__magic__/Some.Release.S01E01.1080p/ep1.mkv" \
+mv "/mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv" \
    "/mnt/zurg/__magic__/tv/The Show/Season 01/S01E01.mkv"
 ```
 
@@ -202,8 +203,10 @@ That makes the \*arr move the files across the mount boundary. It is a copy and
 it downloads your library. The full sequence and the number to watch are on
 [the shared page](index.md#coming-off-a-symlink-library).
 
-**4. Point Plex at `__magic__`** and at that library only. Never `__magic__`
-*and* a filter directory or every episode is found twice. Confirm
+**4. Point Plex at the root folders you made** — `__magic__/tv` and
+`__magic__/movies` — and at those only. Never the root of `__magic__`, which
+holds the whole library at `__magic__/__all__` as well, and never `__magic__`
+*and* a filter directory, or every episode is found twice. Confirm
 `autoEmptyTrash` is `0`. Add the new location and scan. Then remove the old
 one. That is your \*arr library path or the InfiniDysk mount if Plex read it
 directly.
@@ -225,7 +228,8 @@ from a representative sample.
 
 Now think about acquisition. zurg has an opt-in
 [SABnzbd-compatible endpoint](../guides/sonarr-radarr.md) that Sonarr and
-Radarr can grab through. It imports by rename inside `__magic__`. One caveat
+Radarr can grab through. It imports by rename inside `__magic__`, out of
+`__magic__/__all__` where the grab lands. One caveat
 before you switch a library over. zurg does not yet check whether a post's
 articles are still on the news server. So a dead release reports Completed and
 fails on the first read rather than being blocklisted and re-grabbed.
