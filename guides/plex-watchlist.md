@@ -18,6 +18,10 @@ deadlines, attempt counts and acquisitions waiting only for Plex removal survive
 reboots. Both state files are included in normal backups. Keep `data/` and
 `nzbs/` when recreating containers.
 
+Releases come from Newznab indexers as NZBs and from Torznab indexers as info
+hashes handed to a debrid account that already holds them. See
+[Newznab and Torznab](acquisition.md#newznab-and-torznab).
+
 Successful acquisition removes an item from the watchlist, unless
 `remove_after_grab: false` says otherwise; with it off the title stays and zurg
 satisfies it in the background. `only_new_items` (on by default) means turning
