@@ -1,5 +1,106 @@
 # Changelog
 
+## Saved .strm files follow a Base URL change
+
+Changing Base URL left every `.strm` already in `strm/` pointing at the old
+address, and restarting did not help, because zurg only ever wrote the files
+that were missing. Now a `.strm` whose URL differs from the one zurg would
+write is rewritten in place. That happens at every start, and straight away
+when Base URL is changed on the dashboard or `save_strm_files` is switched on
+there. Files that are already right are left alone, so a media server does not
+re-read the whole folder on every scan.
+
+Jellyfin keeps the URL it read from a `.strm` and picks up the new one at its
+next library scan. A `.strm` still holding an account link from an older build is
+rewritten too, to the form that fails over between accounts and survives
+repairs. A `.strm` edited by hand inside `strm/` is overwritten, so point
+Base URL at the address you want instead.
+
+## Turning the Plex watchlist on no longer empties it
+
+Enabling the watchlist used to read your whole list as a backlog and work
+through it, deleting each title as it went. One first run took 121 titles off a
+163-item list in about four minutes. Plex keeps no record of a removed
+watchlist entry, so the only way back was a snapshot taken beforehand, and
+nothing in the config or the logs said this was about to happen.
+
+Two settings now decide what acquiring does to the list, which is yours rather
+than zurg's.
+
+**`watchlist.only_new_items`** is on by default. Turning the watchlist on now
+starts watching it. Whatever is already on the list is taken as handled, and
+what you add afterwards is acquired. It applies once, at the first run, and
+never over a queue that already exists, so an install that has been working
+through a watchlist carries on exactly as before.
+
+**`watchlist.remove_after_grab`** is on by default, which is what the feature
+has always done, so nothing changes for you unless you ask. Turn it off to keep
+your watchlist a watchlist. It stays a list you browse to decide what to watch,
+and zurg satisfies it in the background without ever editing it. A title left
+in place costs nothing to re-check, because the receipt already covers it and
+no indexer is asked about it again.
+
+Both are on the config page, and both take effect at the next restart. An
+acquisition source you spell out under `acquisition.sources` can set either per
+source. They mean nothing to a Seerr source, which owns no list zurg writes to.
+
+## Watchlist and Seerr requests wait for the news servers before they are cleared
+
+A grab used to be finished the moment its NZB reached the watch directory. The
+indexer answered, the answer parsed as an NZB and the file was written. Those
+are three facts about the indexer and none about the post. The request was then
+cleared on the strength of them, which for a Plex watchlist means the entry is
+deleted, and Plex keeps no record of a removed one. A dead post therefore took
+the only record that you wanted the title, before anything had read a byte of
+it. One run over a 163-item watchlist removed 121 titles and 12 of the releases
+behind them could not be read.
+
+Each acquired release is now put to the news servers before anything is
+acknowledged, the same check the SABnzbd endpoint has made since the 08.28
+nightly. There are three answers and they are kept apart.
+
+- **The articles are gone.** The grab does not count. The title stays on your
+  watchlist, the request stays open, and the release is remembered as dead so
+  the next attempt ranks the next candidate instead of settling on the one
+  already sitting in your library. A release known dead costs nothing at all.
+  It is not fetched and takes no place among the three candidates an attempt
+  tries, so a run of dead posts at the top of a ranking is walked through
+  rather than retried for ever. A season pack found dead puts its whole season
+  back to being wanted, so the loose episodes get taken instead.
+- **The servers could not be asked.** A pool that is down, an account
+  throttling, or simply a library that has not listed the new NZB yet. Nothing
+  was established, so nothing is decided. The request waits and is asked again,
+  and waiting costs it no retry attempt. A release that still cannot be checked
+  after about two hours is set aside the way a dead one is, and the next
+  release gets its turn. The title is never cleared on a release nobody could
+  check.
+- **The release is there.** Exactly as before.
+
+An install with no Usenet account has nothing to ask and is unaffected.
+
+## Checking a big release no longer runs out of time on a slow news server
+
+Before a grab is reported finished, zurg asks the news servers about every file
+in it. It asked about one file at a time. Some accounts answer those questions
+slowly and strictly in turn, so sending them all at once down one connection is
+no faster. Frugal's newswest took over five seconds per file, which made a
+133-volume 4K release about twelve minutes of questions, and every check is
+given five. The check could never finish, so Sonarr and Radarr waited three
+hours and then saw the grab failed, and the watchlist waited for ever.
+
+The files are now asked about several at a time, using every connection the
+account has except the one kept free for playback, so the more connections your
+account allows the quicker a big release is checked. Measured against the same
+133-volume release that could never be checked before: under two minutes on
+twelve connections. On four connections it still runs out of time, because the
+questions themselves are what take the while. A small release is no slower than
+before.
+
+A release the check cannot get through in time is not left to block the title
+any more. The watchlist sets it aside the way it sets aside a dead one and
+tries the next release, and the SABnzbd endpoint reports it failed as it always
+has, so Sonarr and Radarr go and find another.
+
 ## Cached-only grabs on TorBox no longer download the releases they were meant to skip
 
 TorBox has a flag that makes an add refuse anything it does not already hold. It is in their

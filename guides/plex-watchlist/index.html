@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.843005907944">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.843108886810">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,11 +37,11 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.843005907944" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.843108886810" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.843005907944" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.843108886810" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.843005907944" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.843108886810" data-turbo-eval="false" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -188,12 +188,24 @@ Newznab executor to save NZBs. It starts after the library loads and needs an
 deadlines, attempt counts and acquisitions waiting only for Plex removal survive
 reboots. Both state files are included in normal backups. Keep <code translate="no" v-pre>data/</code> and
 <code translate="no" v-pre>nzbs/</code> when recreating containers.</p>
-<p>Successful acquisition removes an item from the watchlist. Every planned season
+<p>Successful acquisition removes an item from the watchlist, unless
+<code translate="no" v-pre>remove_after_grab: false</code> says otherwise; with it off the title stays and zurg
+satisfies it in the background. <code translate="no" v-pre>only_new_items</code> (on by default) means turning
+the feature on starts watching the list rather than working through everything
+already on it. Both are documented under
+<a href="../acquisition/#what-acquiring-does-to-the-sources-own-list">what acquiring does to the source&#x27;s own list</a>. Every planned season
 must now be acquired before a show is removed; successful seasons are remembered
 while missing ones retry. A season pack is preferred. The loose-episode fallback
 acquires episodes found in indexer results, since the watchlist does not provide
 an expected episode inventory. This is not continuous monitoring of future
 episodes after the item leaves the watchlist.</p>
+<p>Removal waits for the news servers. A watchlist entry is the only record that
+you wanted a title — Plex keeps no history of a removed one — so it is not
+deleted on the strength of an NZB nobody has checked. A release the accounts no
+longer hold leaves the title where it is and is remembered as dead, so the
+retry ranks the next candidate; a check that could not be made leaves the title
+queued rather than deciding either way. See
+<a href="../acquisition/#verifying-a-grab">verifying a grab</a>.</p>
 <p>Failures retry with persistent backoff while the item remains on the list.
 Once acquisition is recorded, failed or interrupted Plex removal retries only
 that removal. Corrupt state is preserved and acquisition pauses until repaired

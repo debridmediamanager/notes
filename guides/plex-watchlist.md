@@ -12,12 +12,25 @@ deadlines, attempt counts and acquisitions waiting only for Plex removal survive
 reboots. Both state files are included in normal backups. Keep `data/` and
 `nzbs/` when recreating containers.
 
-Successful acquisition removes an item from the watchlist. Every planned season
+Successful acquisition removes an item from the watchlist, unless
+`remove_after_grab: false` says otherwise; with it off the title stays and zurg
+satisfies it in the background. `only_new_items` (on by default) means turning
+the feature on starts watching the list rather than working through everything
+already on it. Both are documented under
+[what acquiring does to the source's own list](acquisition.md#what-acquiring-does-to-the-sources-own-list). Every planned season
 must now be acquired before a show is removed; successful seasons are remembered
 while missing ones retry. A season pack is preferred. The loose-episode fallback
 acquires episodes found in indexer results, since the watchlist does not provide
 an expected episode inventory. This is not continuous monitoring of future
 episodes after the item leaves the watchlist.
+
+Removal waits for the news servers. A watchlist entry is the only record that
+you wanted a title — Plex keeps no history of a removed one — so it is not
+deleted on the strength of an NZB nobody has checked. A release the accounts no
+longer hold leaves the title where it is and is remembered as dead, so the
+retry ranks the next candidate; a check that could not be made leaves the title
+queued rather than deciding either way. See
+[verifying a grab](acquisition.md#verifying-a-grab).
 
 Failures retry with persistent backoff while the item remains on the list.
 Once acquisition is recorded, failed or interrupted Plex removal retries only

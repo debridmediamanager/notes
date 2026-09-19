@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.843005907944">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.843108886810">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -12,7 +12,7 @@
     <!-- Primary Meta Tags -->
     <title>Changelog</title>
     <meta name="title" content="Changelog">
-    <meta name="description" content="TorBox has a flag that makes an add refuse anything it does not already hold. It is in their API but in none of their documentation, and zurg was not using it: a cached-only grab added the torrent, waited to see whether it completed, and deleted it again when it turned out to be a real download.">
+    <meta name="description" content="Changing Base URL left every .strm already in strm/ pointing at the old address, and restarting did not help, because zurg only ever wrote the files that were missing.">
 
     <!-- Canonical -->
     <link rel="canonical" href="https://notes.debridmediamanager.com/reference/changelog/">
@@ -22,7 +22,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://notes.debridmediamanager.com/reference/changelog/">
     <meta property="og:title" content="Changelog">
-    <meta property="og:description" content="TorBox has a flag that makes an add refuse anything it does not already hold. It is in their API but in none of their documentation, and zurg was not using it: a cached-only grab added the torrent, waited to see whether it completed, and deleted it again when it turned out to be a real download.">
+    <meta property="og:description" content="Changing Base URL left every .strm already in strm/ pointing at the old address, and restarting did not help, because zurg only ever wrote the files that were missing.">
     <meta property="og:site_name" content="dmm+zurg">
     <meta property="og:locale" content="en_US">
 
@@ -30,19 +30,19 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://notes.debridmediamanager.com/reference/changelog/">
     <meta name="twitter:title" content="Changelog">
-    <meta name="twitter:description" content="TorBox has a flag that makes an add refuse anything it does not already hold. It is in their API but in none of their documentation, and zurg was not using it: a cached-only grab added the torrent, waited to see whether it completed, and deleted it again when it turned out to be a real download.">
+    <meta name="twitter:description" content="Changing Base URL left every .strm already in strm/ pointing at the old address, and restarting did not help, because zurg only ever wrote the files that were missing.">
 
     <!-- Alternate Markdown -->
     <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/reference/changelog.md">
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.843005907944" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.843108886810" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.843005907944" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.843108886810" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.843005907944" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.843005907944" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.843108886810" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.843108886810" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -179,6 +179,97 @@
 
                 <!-- Page content  -->
 <h1 id="changelog">Changelog</h1>
+<h2 id="saved-strm-files-follow-a-base-url-change">Saved .strm files follow a Base URL change</h2>
+<p>Changing Base URL left every <code translate="no" v-pre>.strm</code> already in <code translate="no" v-pre>strm/</code> pointing at the old
+address, and restarting did not help, because zurg only ever wrote the files
+that were missing. Now a <code translate="no" v-pre>.strm</code> whose URL differs from the one zurg would
+write is rewritten in place. That happens at every start, and straight away
+when Base URL is changed on the dashboard or <code translate="no" v-pre>save_strm_files</code> is switched on
+there. Files that are already right are left alone, so a media server does not
+re-read the whole folder on every scan.</p>
+<p>Jellyfin keeps the URL it read from a <code translate="no" v-pre>.strm</code> and picks up the new one at its
+next library scan. A <code translate="no" v-pre>.strm</code> still holding an account link from an older build is
+rewritten too, to the form that fails over between accounts and survives
+repairs. A <code translate="no" v-pre>.strm</code> edited by hand inside <code translate="no" v-pre>strm/</code> is overwritten, so point
+Base URL at the address you want instead.</p>
+<h2 id="turning-the-plex-watchlist-on-no-longer-empties-it">Turning the Plex watchlist on no longer empties it</h2>
+<p>Enabling the watchlist used to read your whole list as a backlog and work
+through it, deleting each title as it went. One first run took 121 titles off a
+163-item list in about four minutes. Plex keeps no record of a removed
+watchlist entry, so the only way back was a snapshot taken beforehand, and
+nothing in the config or the logs said this was about to happen.</p>
+<p>Two settings now decide what acquiring does to the list, which is yours rather
+than zurg&#x27;s.</p>
+<p><strong><code translate="no" v-pre>watchlist.only_new_items</code></strong> is on by default. Turning the watchlist on now
+starts watching it. Whatever is already on the list is taken as handled, and
+what you add afterwards is acquired. It applies once, at the first run, and
+never over a queue that already exists, so an install that has been working
+through a watchlist carries on exactly as before.</p>
+<p><strong><code translate="no" v-pre>watchlist.remove_after_grab</code></strong> is on by default, which is what the feature
+has always done, so nothing changes for you unless you ask. Turn it off to keep
+your watchlist a watchlist. It stays a list you browse to decide what to watch,
+and zurg satisfies it in the background without ever editing it. A title left
+in place costs nothing to re-check, because the receipt already covers it and
+no indexer is asked about it again.</p>
+<p>Both are on the config page, and both take effect at the next restart. An
+acquisition source you spell out under <code translate="no" v-pre>acquisition.sources</code> can set either per
+source. They mean nothing to a Seerr source, which owns no list zurg writes to.</p>
+<h2 id="watchlist-and-seerr-requests-wait-for-the-news-servers-before-they-are-cleared">Watchlist and Seerr requests wait for the news servers before they are cleared</h2>
+<p>A grab used to be finished the moment its NZB reached the watch directory. The
+indexer answered, the answer parsed as an NZB and the file was written. Those
+are three facts about the indexer and none about the post. The request was then
+cleared on the strength of them, which for a Plex watchlist means the entry is
+deleted, and Plex keeps no record of a removed one. A dead post therefore took
+the only record that you wanted the title, before anything had read a byte of
+it. One run over a 163-item watchlist removed 121 titles and 12 of the releases
+behind them could not be read.</p>
+<p>Each acquired release is now put to the news servers before anything is
+acknowledged, the same check the SABnzbd endpoint has made since the 08.28
+nightly. There are three answers and they are kept apart.</p>
+<ul>
+<li>
+<p><strong>The articles are gone.</strong> The grab does not count. The title stays on your
+watchlist, the request stays open, and the release is remembered as dead so
+the next attempt ranks the next candidate instead of settling on the one
+already sitting in your library. A release known dead costs nothing at all.
+It is not fetched and takes no place among the three candidates an attempt
+tries, so a run of dead posts at the top of a ranking is walked through
+rather than retried for ever. A season pack found dead puts its whole season
+back to being wanted, so the loose episodes get taken instead.</p>
+</li>
+<li>
+<p><strong>The servers could not be asked.</strong> A pool that is down, an account
+throttling, or simply a library that has not listed the new NZB yet. Nothing
+was established, so nothing is decided. The request waits and is asked again,
+and waiting costs it no retry attempt. A release that still cannot be checked
+after about two hours is set aside the way a dead one is, and the next
+release gets its turn. The title is never cleared on a release nobody could
+check.</p>
+</li>
+<li>
+<p><strong>The release is there.</strong> Exactly as before.</p>
+</li>
+</ul>
+<p>An install with no Usenet account has nothing to ask and is unaffected.</p>
+<h2 id="checking-a-big-release-no-longer-runs-out-of-time-on-a-slow-news-server">Checking a big release no longer runs out of time on a slow news server</h2>
+<p>Before a grab is reported finished, zurg asks the news servers about every file
+in it. It asked about one file at a time. Some accounts answer those questions
+slowly and strictly in turn, so sending them all at once down one connection is
+no faster. Frugal&#x27;s newswest took over five seconds per file, which made a
+133-volume 4K release about twelve minutes of questions, and every check is
+given five. The check could never finish, so Sonarr and Radarr waited three
+hours and then saw the grab failed, and the watchlist waited for ever.</p>
+<p>The files are now asked about several at a time, using every connection the
+account has except the one kept free for playback, so the more connections your
+account allows the quicker a big release is checked. Measured against the same
+133-volume release that could never be checked before: under two minutes on
+twelve connections. On four connections it still runs out of time, because the
+questions themselves are what take the while. A small release is no slower than
+before.</p>
+<p>A release the check cannot get through in time is not left to block the title
+any more. The watchlist sets it aside the way it sets aside a dead one and
+tries the next release, and the SABnzbd endpoint reports it failed as it always
+has, so Sonarr and Radarr go and find another.</p>
 <h2 id="cached-only-grabs-on-torbox-no-longer-download-the-releases-they-were-meant-to-skip">Cached-only grabs on TorBox no longer download the releases they were meant to skip</h2>
 <p>TorBox has a flag that makes an add refuse anything it does not already hold. It is in their
 API but in none of their documentation, and zurg was not using it: a cached-only grab added the

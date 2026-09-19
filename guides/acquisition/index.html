@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.843005907944">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.843108886810">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.843005907944" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.843108886810" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.843005907944" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.843108886810" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.843005907944" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.843005907944" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.843108886810" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.843108886810" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -182,7 +182,9 @@
 <p>Plex watchlist and <a href="https://github.com/seerr-team/seerr">Seerr</a> feed the same
 durable engine. Adapters discover requests and resolve media IDs. The engine
 owns progress, retries and acknowledgement. The shared Newznab executor selects
-releases and saves NZBs for zurg&#x27;s Usenet backend.</p>
+releases and saves NZBs for zurg&#x27;s Usenet backend. Every saved release is
+checked against the news servers before the engine acknowledges anything: see
+<doc-anchor-trigger to="#verifying-a-grab">Verifying a grab</doc-anchor-trigger>.</p>
 <h2 id="configuration">Configuration</h2>
 <div id="configuration-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">acquisition:
@@ -198,6 +200,8 @@ releases and saves NZBs for zurg&#x27;s Usenet backend.</p>
       type: plex_watchlist
       enabled: true
       check_every_secs: 60
+      remove_after_grab: true   # default; false keeps the watchlist intact
+      only_new_items: true      # default; false works through the existing list
     - name: requests
       type: seerr
       enabled: true
@@ -251,7 +255,8 @@ episodes. Specials (season 0) are unsupported and stay pending.</p>
 <li>
 <p>Makes no request-status or availability writes. Seerr&#x27;s media-server scan
 reports actual availability and notifies requesters. Saving an NZB does not
-prove it is indexed or playable.</p>
+prove it is indexed or playable, which is why the engine checks it before
+counting a season acquired.</p>
 </li>
 </ul>
 <p>Configure Seerr&#x27;s library scan to include the library served by this instance.
@@ -259,11 +264,73 @@ If Sonarr/Radarr already acquire the same requests, disable that overlapping
 workflow before enabling this adapter. The adapter does not emulate an *arr
 server or change Seerr&#x27;s service setup. Polling provides restart recovery;
 no webhook is required.</p>
+<h2 id="what-acquiring-does-to-the-sources-own-list">What acquiring does to the source&#x27;s own list</h2>
+<p>A Plex watchlist is a list somebody curated, and it is the only record that
+they wanted a title — Plex keeps no history of a removed entry. Two settings
+decide what zurg is allowed to do with it. Both apply to <code translate="no" v-pre>plex_watchlist</code>
+sources; a Seerr source owns no list zurg writes to, so both are inert there.</p>
+<p><code translate="no" v-pre>remove_after_grab</code> (default <code translate="no" v-pre>true</code>) takes an acquired title off the watchlist
+once the release behind it has been checked. That is what the feature has
+always done: the watchlist is read as a queue of things to get, and a title
+zurg has got is done with. Set it to <code translate="no" v-pre>false</code> and the watchlist stays a
+watchlist — a durable list to browse, which zurg satisfies in the background
+without editing. Leaving a title in place costs nothing to re-check: the
+receipt already covers it, so no indexer is asked about it again.</p>
+<p><code translate="no" v-pre>only_new_items</code> (default <code translate="no" v-pre>true</code>) adopts whatever the list already holds the
+first time a source runs, and acts only on what is added afterwards. Enabling
+the feature should start watching a list, not spend an evening working through
+everything on it. Set it to <code translate="no" v-pre>false</code> to treat the existing list as a backlog.</p>
+<p>It applies <strong>once, at a source&#x27;s first run</strong>. A source that already has a queue
+has been running, and that queue — not this switch — records what it has and
+has not done, so turning it on later never drops a backlog already in flight.
+An adopted title stays adopted for as long as it stays listed; removing it and
+adding it again is an ordinary new request.</p>
+<h2 id="verifying-a-grab">Verifying a grab</h2>
+<p>A saved NZB is not a release. The indexer answering, the answer parsing as an
+NZB and the file reaching <code translate="no" v-pre>nzbs/</code> are facts about the indexer, not about the
+post. So each acquired release is put to the configured news accounts — one
+<code translate="no" v-pre>STAT</code> for the first article of every content file, the same walk
+<code translate="no" v-pre>/api?mode=addfile</code> makes for Sonarr and Radarr — before the engine
+acknowledges the request. Three answers, and keeping them apart is the whole
+point:</p>
+<ul>
+<li>
+<p><strong>Articles gone.</strong> The grab does not count. The receipt is reopened, so the
+target is wanted again, and the release is recorded as dead for 30 days so
+the next attempt ranks the next candidate rather than settling on the one
+already in the library. A release on that list is not a candidate: it is not
+fetched, and it does not spend one of the three candidates an attempt tries,
+so a run of dead posts at the top of a ranking is walked through instead of
+putting everything under it out of reach. A dead season pack puts its whole
+season back to being wanted; the loose episodes are taken instead.</p>
+</li>
+<li>
+<p><strong>The accounts could not be asked.</strong> A pool that is down, an account
+throttling, or the ordinary case of a library that has not listed the new NZB
+yet. Nothing was established, so nothing is decided: the request is looked at
+again in two minutes and the wait costs it no retry attempt. Twenty checks
+across two hours that establish nothing set the release aside the way a dead
+one is, and the next attempt tries another release. The request is never
+acknowledged on a release nobody could check.</p>
+</li>
+<li>
+<p><strong>The release is there.</strong> The receipt drops what it was holding and the
+acknowledgement goes ahead.</p>
+</li>
+</ul>
+<p>An install with no <code translate="no" v-pre>nzb</code> provider has nobody to ask; acquisition does not start
+there at all. The check is read-only: it moves no article bodies into the cache
+and records no dead articles, so it cannot silence a file that plays.</p>
 <h2 id="persistence-and-recovery">Persistence and recovery</h2>
 <p><code translate="no" v-pre>data/acquisition.json</code> stores source/request IDs, attempts, retry deadlines,
-in-flight work and receipts for individual acquisitions, including episodes.
+in-flight work and receipts for individual acquisitions, including episodes. It
+also records, per source, that a first snapshot was adopted, so <code translate="no" v-pre>only_new_items</code>
+is decided once rather than at every restart.
 Matching media targets and editions reuse receipts across sources. Release
-filenames also deduplicate against the library and saved NZBs.</p>
+filenames also deduplicate against the library and saved NZBs. A receipt also
+carries the grabs it is still waiting on a news-server answer about, and the
+ledger carries the releases already found dead, so a restart mid-wait neither
+acknowledges an unchecked grab nor hands a dead release back to the ranking.</p>
 <p>Each attempt is saved before external work. Each saved release is checkpointed.
 Writes flush a temporary file, replace the ledger and flush the parent directory
 where supported. NZBs written before a crash are reused even if the last ledger
@@ -272,8 +339,9 @@ acquire the title again.</p>
 <p>Failures retry after 5, 10 and 15 minutes, then one hour, then every six hours
 while the source still wants the item. Counts and deadlines survive reboots,
 including long shutdowns. Open Seerr requests remain monitored. Plex items leave
-the watchlist only after all planned seasons are acquired. Its loose-episode
-fallback remains limited to episodes found in indexer results.</p>
+the watchlist only after all planned seasons are acquired <em>and</em> checked against
+the news servers, and only when <code translate="no" v-pre>remove_after_grab</code> allows it. Its loose-episode fallback remains limited to episodes found
+in indexer results.</p>
 <p>An unavailable source pauses its own work. A failed state write pauses further
 acquisition until saving succeeds. An unreadable or unsupported ledger pauses
 acquisition and preserves the file; repair or restore it and restart zurg.
@@ -300,7 +368,10 @@ open request monitored after current targets are acquired.</p>
 </li>
 <li>
 <p><code translate="no" v-pre>Complete(ctx, item)</code> acknowledges a one-shot acquisition. It must tolerate
-repeated calls after a crash. A read-only list can use a no-op.</p>
+repeated calls after a crash. A read-only list can use a no-op. The engine
+calls it only once every grab behind the item has answered, so an adapter
+never has to check a release itself — and must not treat being called as
+evidence of anything beyond that.</p>
 </li>
 </ol>
 <p>Register its configuration type and factory in the acquisition service. The
