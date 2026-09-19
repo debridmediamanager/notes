@@ -2,8 +2,10 @@
 
 Plex watchlist and [Seerr](https://github.com/seerr-team/seerr) feed the same
 durable engine. Adapters discover requests and resolve media IDs. The engine
-owns progress, retries and acknowledgement. The shared Newznab executor selects
-releases and saves NZBs for zurg's Usenet backend. Every saved release is
+owns progress, retries and acknowledgement. The shared executor selects releases
+from Newznab indexers, saving NZBs for zurg's Usenet backend, and from Torznab
+indexers, handing info hashes to a debrid account that already holds them: see
+[Newznab and Torznab](#newznab-and-torznab). Every saved release is
 checked against the news servers before the engine acknowledges anything: see
 [Verifying a grab](#verifying-a-grab).
 
@@ -12,12 +14,18 @@ checked against the news servers before the engine acknowledges anything: see
 ```yaml
 acquisition:
   quality: best
+  prefer: usenet          # usenet (default), torrents, or best
   max_size_gb: 40
   max_season_size_gb: 100
   indexers:
     - name: my-indexer
       url: https://indexer.example
       api_key: YOUR_INDEXER_API_KEY
+      # type: newznab      # default, a Usenet indexer
+    - name: my-trackers
+      url: https://prowlarr.example
+      api_key: YOUR_PROWLARR_API_KEY
+      type: torznab        # a torrent indexer, handed to a debrid account
   sources:
     - name: plex-watchlist
       type: plex_watchlist
@@ -77,6 +85,44 @@ If Sonarr/Radarr already acquire the same requests, disable that overlapping
 workflow before enabling this adapter. The adapter does not emulate an *arr
 server or change Seerr's service setup. Polling provides restart recovery;
 no webhook is required.
+
+## Newznab and Torznab
+
+An indexer entry says which it is with `type`. Absent means `newznab`, which is
+what every entry written before this existed meant. The query is identical for
+both; the answer is not. A Newznab result is an NZB, fetched and written to
+`nzbs/` for the Usenet backend. A Torznab result is an info hash, handed to a
+debrid account. A Torznab result carrying no magnet or `infohash` attribute is
+skipped: zurg never downloads a `.torrent`, so a result it can only reach that
+way is not one it can act on.
+
+**A torrent is only ever added to an account that already holds it.** Every
+account that takes adds is offered the hash, because the caches are independent
+and one account having purged a release says nothing about the next. The first
+that already has it takes it. A miss everywhere is an ordinary failed
+candidate, so the walk moves down the ranking to the next release, which may be
+another torrent or an NZB. Nothing is ever downloaded onto the account, no
+uncached add allowance is spent, and no transfer slot is left running for
+something nobody is waiting on. `watchlist: true` on a provider entry names the
+account offered first; `add_torrents: false` keeps an account out of it
+entirely.
+
+`prefer` decides which kind is reached for first when both could satisfy a
+target. `usenet` is the default, because a Usenet grab costs a download while a
+torrent spends one of the account's add slots, and because it is what the
+feature did before it could take a torrent at all. `torrents` reverses it, and
+`best` drops the distinction and takes whatever the ranking puts first.
+
+The verification a grab waits on differs with the source. A Usenet release is
+put to the news servers, which is the only way to know whether the post is
+still there. A torrent was added only because the account said it already held
+the content, so what is left to establish is that the release reached the
+library with files in it; that is what the check asks, and a release the
+account lists empty is set aside like a dead post.
+
+An install with no `nzb` provider can still run acquisition, with Torznab
+indexers alone. An install with no account that takes adds passes over Torznab
+results the same way.
 
 ## What acquiring does to the source's own list
 

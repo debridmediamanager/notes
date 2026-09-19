@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.843108886810">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.843109668036">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.843108886810" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.843109668036" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.843108886810" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.843109668036" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.843108886810" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.843108886810" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.843109668036" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.843109668036" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -181,20 +181,28 @@
 <h1 id="acquisition-sources">Acquisition sources</h1>
 <p>Plex watchlist and <a href="https://github.com/seerr-team/seerr">Seerr</a> feed the same
 durable engine. Adapters discover requests and resolve media IDs. The engine
-owns progress, retries and acknowledgement. The shared Newznab executor selects
-releases and saves NZBs for zurg&#x27;s Usenet backend. Every saved release is
+owns progress, retries and acknowledgement. The shared executor selects releases
+from Newznab indexers, saving NZBs for zurg&#x27;s Usenet backend, and from Torznab
+indexers, handing info hashes to a debrid account that already holds them: see
+<doc-anchor-trigger to="#newznab-and-torznab">Newznab and Torznab</doc-anchor-trigger>. Every saved release is
 checked against the news servers before the engine acknowledges anything: see
 <doc-anchor-trigger to="#verifying-a-grab">Verifying a grab</doc-anchor-trigger>.</p>
 <h2 id="configuration">Configuration</h2>
 <div id="configuration-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">acquisition:
   quality: best
+  prefer: usenet          # usenet (default), torrents, or best
   max_size_gb: 40
   max_season_size_gb: 100
   indexers:
     - name: my-indexer
       url: https://indexer.example
       api_key: YOUR_INDEXER_API_KEY
+      # type: newznab      # default, a Usenet indexer
+    - name: my-trackers
+      url: https://prowlarr.example
+      api_key: YOUR_PROWLARR_API_KEY
+      type: torznab        # a torrent indexer, handed to a debrid account
   sources:
     - name: plex-watchlist
       type: plex_watchlist
@@ -264,6 +272,38 @@ If Sonarr/Radarr already acquire the same requests, disable that overlapping
 workflow before enabling this adapter. The adapter does not emulate an *arr
 server or change Seerr&#x27;s service setup. Polling provides restart recovery;
 no webhook is required.</p>
+<h2 id="newznab-and-torznab">Newznab and Torznab</h2>
+<p>An indexer entry says which it is with <code translate="no" v-pre>type</code>. Absent means <code translate="no" v-pre>newznab</code>, which is
+what every entry written before this existed meant. The query is identical for
+both; the answer is not. A Newznab result is an NZB, fetched and written to
+<code translate="no" v-pre>nzbs/</code> for the Usenet backend. A Torznab result is an info hash, handed to a
+debrid account. A Torznab result carrying no magnet or <code translate="no" v-pre>infohash</code> attribute is
+skipped: zurg never downloads a <code translate="no" v-pre>.torrent</code>, so a result it can only reach that
+way is not one it can act on.</p>
+<p><strong>A torrent is only ever added to an account that already holds it.</strong> Every
+account that takes adds is offered the hash, because the caches are independent
+and one account having purged a release says nothing about the next. The first
+that already has it takes it. A miss everywhere is an ordinary failed
+candidate, so the walk moves down the ranking to the next release, which may be
+another torrent or an NZB. Nothing is ever downloaded onto the account, no
+uncached add allowance is spent, and no transfer slot is left running for
+something nobody is waiting on. <code translate="no" v-pre>watchlist: true</code> on a provider entry names the
+account offered first; <code translate="no" v-pre>add_torrents: false</code> keeps an account out of it
+entirely.</p>
+<p><code translate="no" v-pre>prefer</code> decides which kind is reached for first when both could satisfy a
+target. <code translate="no" v-pre>usenet</code> is the default, because a Usenet grab costs a download while a
+torrent spends one of the account&#x27;s add slots, and because it is what the
+feature did before it could take a torrent at all. <code translate="no" v-pre>torrents</code> reverses it, and
+<code translate="no" v-pre>best</code> drops the distinction and takes whatever the ranking puts first.</p>
+<p>The verification a grab waits on differs with the source. A Usenet release is
+put to the news servers, which is the only way to know whether the post is
+still there. A torrent was added only because the account said it already held
+the content, so what is left to establish is that the release reached the
+library with files in it; that is what the check asks, and a release the
+account lists empty is set aside like a dead post.</p>
+<p>An install with no <code translate="no" v-pre>nzb</code> provider can still run acquisition, with Torznab
+indexers alone. An install with no account that takes adds passes over Torznab
+results the same way.</p>
 <h2 id="what-acquiring-does-to-the-sources-own-list">What acquiring does to the source&#x27;s own list</h2>
 <p>A Plex watchlist is a list somebody curated, and it is the only record that
 they wanted a title — Plex keeps no history of a removed entry. Two settings
