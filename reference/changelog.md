@@ -6,6 +6,33 @@ order: 60
 
 # Changelog
 
+## The watchlist can take torrents now, from Torznab indexers
+
+Until now a watchlist or Seerr request could only be satisfied from Usenet. Add
+`type: torznab` to an indexer and zurg will search it too, and a torrent result
+is handed to a debrid account instead of being written to `nzbs/`.
+
+**It is only ever given to an account that already has it cached.** Every
+account that takes adds is offered the hash, because the caches are
+independent, and the first that already holds the release takes it. A miss
+everywhere is just a candidate that did not work out, so zurg moves down to the
+next release, which may be another torrent or an NZB. Nothing is downloaded
+onto your account, no uncached add allowance is spent, and nothing is left
+running for something nobody is waiting on.
+
+When both kinds of indexer could answer, `prefer` decides which is reached for
+first. It is `usenet` unless you say otherwise, so an install that had only
+Newznab indexers behaves exactly as it did. `torrents` reverses it and `best`
+takes whatever the ranking puts first, torrent or not.
+
+A torrent grab waits to be checked like any other, but it is asked a different
+question. The account already said it holds the content, so what is checked is
+that the release reached your library with files in it, and one that lists
+empty is set aside so the next release gets its turn.
+
+You can also run acquisition with Torznab indexers alone, without an `nzb`
+provider.
+
 ## Saved .strm files follow a Base URL change
 
 Changing Base URL left every `.strm` already in `strm/` pointing at the old
