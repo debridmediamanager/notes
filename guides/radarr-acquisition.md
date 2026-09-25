@@ -1,19 +1,21 @@
-# Let zurg fetch what Radarr wants
+# Let zurg fetch what Radarr and Sonarr want
+
+Radarr and Sonarr keep the list and the library. zurg does the fetching. The first half of this page is Radarr. [The second half](#sonarr) is Sonarr, which works the same way for episodes.
 
 Radarr keeps the list and the library. zurg does the fetching. Add a movie to Radarr however you like and zurg finds a release on your Usenet indexers. It checks that the release is still on the news servers. Then it puts the video in the movie's folder and asks Radarr to look. Nothing is downloaded to import and nothing is copied. The movie simply has a file.
 
 Radarr needs no indexers and no download client for this. It never searches and never grabs. Your quality profile still decides what zurg is allowed to take.
 
-Everything below was captured against the zurg build that ships as the 26 September 2026 nightly and Radarr 6.3.0.10514 in Docker. Radarr saw zurg's mount at `/mnt/zurg` inside its container. Nothing in the captured screens was altered.
+Everything below was captured against the zurg build that ships as the 26 September 2026 nightly, Radarr 6.3.0.10514 and Sonarr 4.0.20.3014 in Docker. Both saw zurg's mount at `/mnt/zurg` inside their containers. Nothing in the captured screens was altered.
 
 ## Before you start
 
 Four things have to be true.
 
 1. **zurg has a Usenet account and at least one Newznab indexer.** The indexers go in zurg's config under `acquisition.indexers`. The [Watchlist and Seerr](acquisition.md) page covers that block.
-2. **`magic.enabled` is `true`.** The Radarr source does not start without it and says so in the log. See [`__magic__`](magic.md).
+2. **`magic.enabled` is `true`.** The Radarr and Sonarr sources do not start without it and say so in the log. See [`__magic__`](magic.md).
 3. **Radarr can see the mount.** If Radarr runs in a container read [the Docker section](#if-your-radarr-is-in-docker) before you configure anything.
-4. **You run a nightly from 26 September 2026 or later.** Older builds do not know the `radarr` source.
+4. **You run a nightly from 26 September 2026 or later.** Older builds do not know the `radarr` or `sonarr` sources.
 
 ## 1. Tell zurg about Radarr
 
@@ -133,12 +135,78 @@ Radarr in a container sees the mount wherever you bind it. zurg needs to know th
 
 With that a movie Radarr keeps at `/mnt/zurg/__magic__/movies/Heat (1995)` is placed at `movies/Heat (1995)` inside zurg's `__magic__`. Windows paths such as `Z:\__magic__` work the same way. The screenshots on this page come from exactly this arrangement. zurg mounted the library at one path on the host and Radarr's container saw it at `/mnt/zurg`.
 
+## Sonarr
+
+Sonarr works the same way. Sonarr keeps the list of series and the library. zurg reads the episodes Sonarr is missing and finds a release for them on your indexers. It checks that the release is still on the news servers. Then it puts each episode in its season folder and asks Sonarr to look. Sonarr needs no indexers and no download client for this either.
+
+A season is one piece of work. When every episode of a season is missing and the season has finished airing zurg tries a season pack first. Otherwise it takes the missing episodes one by one. A season that already has some of its files never takes a pack, because that would put a second copy of those episodes in the folder.
+
+### 1. Tell zurg about Sonarr
+
+Add a `sonarr` source next to the Radarr one and restart zurg. The keys are the same.
+
+```yaml
+acquisition:
+  sources:
+    - name: sonarr
+      type: sonarr
+      enabled: true
+      url: http://sonarr:8989
+      api_key: YOUR_SONARR_API_KEY
+      library_path: /mnt/zurg/__magic__
+      check_every_secs: 30
+```
+
+The API key is under **Settings > General** in Sonarr. `library_path` is where Sonarr sees `__magic__`, exactly as it is for Radarr. Leave it out when Sonarr sees the mount where zurg mounts it. The same indexers serve both sources.
+
+### 2. Point Sonarr at `__magic__`
+
+Sonarr's root folder goes inside `__magic__` one level down, beside Radarr's. `/mnt/zurg/__magic__/tv` is the shape to copy. Open **Settings > Media Management** and add it under **Root Folders**.
+
+![Sonarr's root folder inside __magic__](../assets/radarr-acquisition/12-sonarr-root-folder.webp)
+
+**Season Folder Format** on the same page is the name zurg gives a new season folder. A season that already has files keeps the folder they are in.
+
+### 3. Add series with search off
+
+Add series the way you already do. When you add one by hand leave **Start search for missing episodes** unchecked and **Start search for cutoff unmet episodes** too. zurg is the one searching. **Monitor** decides what zurg goes after. This series is set to its first season.
+
+![Adding a series with both searches unchecked](../assets/radarr-acquisition/13-sonarr-add-series.webp)
+
+An import list has the same switch in its settings. Turn its search off too. Indexers and download clients can stay empty in Sonarr as they do in Radarr.
+
+### 4. Watch it work
+
+Sonarr's seasons show up on the same **Acquisition** page. One row is one season, or one episode file zurg is upgrading. Here are two series with their first season monitored, half a minute after they were added. Both seasons had finished airing and had no files, so zurg tried a season pack for each. The Severance pack is in its season folder and Sonarr is being told. The Only Murders pack is being checked with the news servers.
+
+![The acquisition page working on two seasons](../assets/radarr-acquisition/14-zurg-acquisition-sonarr-working.webp)
+
+About two minutes after they were added both seasons are done. The Only Murders pack was missing pieces on the news servers, so zurg set it aside and took the ten episodes one by one instead. Its row shows the last episode placed.
+
+![The acquisition page with both seasons done](../assets/radarr-acquisition/15-zurg-acquisition-sonarr-done.webp)
+
+When one episode of a season has nothing zurg can take yet the rest are still placed and Sonarr is told about them straight away. The missing episode is looked for again later on the usual retry schedule.
+
+### 5. What Sonarr shows
+
+The season fills in once the rescan lands. All ten episodes have their file in the season folder inside `__magic__`, with the quality Sonarr read from each name.
+
+![A season in Sonarr with every episode's file](../assets/radarr-acquisition/16-sonarr-season.webp)
+
+**Activity** stays empty for the same reason it does in Radarr.
+
+### How zurg picks an episode
+
+Every release is put through Sonarr's own parser and the series' quality profile. It has to be this series and this season. A pack has to be the whole season. An episode release has to be that one episode alone. The quality has to be allowed and the custom format score has to reach the profile's minimum. The size has to fit the limits under **Settings > Quality** for the runtime of the episodes the release holds.
+
+When the profile allows upgrades an episode file below the cutoff is an upgrade. Below the cutoff means below the cutoff quality or below the cutoff custom format score. zurg counts both as Sonarr's upgrade rule does, although Sonarr's own **Cutoff Unmet** list only shows the first. An upgrade replaces only its own episode. The other episodes in the season folder stay where they are.
+
 ## Things to know
 
-- **Movies only.** This source talks to Radarr. Sonarr is not part of it.
 - **A change to `indexer_concurrency` needs a restart.** The other keys are read on every poll.
 - **Radarr's rescan is the last step and it queues behind Radarr's own work.** Right after a list adds many movies Radarr refreshes each of them first. The files are already in place while that runs.
 - **Analyse video files in Radarr reads the head of each file over the mount.** It works. It is also the slowest part of a big list. Leave it on unless you know you do not want media info.
-- **Unmonitored movies are left alone.** So are movies whose folder is outside `__magic__`.
+- **Unmonitored movies are left alone.** So are movies whose folder is outside `__magic__`. The same goes for unmonitored series, seasons and episodes in Sonarr.
+- **Specials, daily shows and anime are skipped for now.** A daily show's episodes are dates and anime is released under absolute episode numbers. zurg searches by season and episode, so it cannot find either yet. Each skipped series gets one line in the log.
 
-The full description of the source lives in [Watchlist and Seerr](acquisition.md) under **Radarr behavior**.
+The full description of both sources lives in [Watchlist and Seerr](acquisition.md) under **Radarr behavior** and **Sonarr behavior**.
