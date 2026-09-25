@@ -58,7 +58,7 @@ Working with the library.
 - [Usenet](guides/usenet.md) — the `nzb` backend end to end: news accounts, NZBs, the mount, Plex
 - [Sonarr & Radarr](guides/sonarr-radarr.md) — zurg answering as a SABnzbd, so imports are a rename not a download
 - [Sonarr & Radarr, torrents](guides/sonarr-radarr-torrents.md) — the same, with zurg answering as a qBittorrent; Prowlarr too
-- [Radarr, zurg fetches](guides/radarr-acquisition.md). Radarr keeps the list and zurg finds and places the release. No indexers or download client in Radarr.
+- [Radarr and Sonarr, zurg fetches](guides/radarr-acquisition.md). Radarr and Sonarr keep the list and zurg finds and places the release. No indexers or download client in either.
 - [`__magic__`](guides/magic.md) — the one directory whose layout is stored, and therefore yours to arrange
 - [Renaming](guides/renaming.md) — rename a release or a file anywhere in the library. A move is refused and the page says why
 - [Plex](guides/plex.md) — what zurg does with a Plex token, and what it deliberately does not
