@@ -431,6 +431,41 @@ Two traps measured on this box:
 
 If you do not need Explorer at all — a headless box, or clients that speak HTTP — none of this matters: run zurg however you like and point things at `http://localhost:9999/dav/` or the endpoints. The session rule only governs the drive letter.
 
+## Keeping the cache small
+
+The mount saves every file it plays, in full, to `data\rclone-cache` inside the zurg folder (`$HOME\zurg\data\rclone-cache` if you used the one-line install). It keeps those files after playback ends and grows up to 256G by default.
+
+Don't count on the 72h age limit to clean it up. Plex's scheduled tasks read the cached files every night, which resets their age, so nothing ever expires. The size cap is the limit that actually holds.
+
+To use less disk, lower the cap in `config.yml`. `rclone_extra_args` is one list, so add the new lines under the `--links` you already have instead of writing a second `rclone_extra_args:`:
+
+```yaml
+rclone_extra_args:
+  - "--links"
+  - "--vfs-cache-max-size"
+  - "50G"
+  - "--vfs-cache-min-free-space"
+  - "20G"
+```
+
+`--vfs-cache-min-free-space` makes rclone stop caching when the drive gets that close to full. Then restart zurg:
+
+```powershell
+.\zurg.exe service restart
+```
+
+rclone trims the cache down to the new cap after the restart. To empty it right away, stop zurg first:
+
+```powershell
+.\zurg.exe service stop
+Remove-Item -Recurse -Force .\data\rclone-cache\vfs\*, .\data\rclone-cache\vfsMeta\* -ErrorAction SilentlyContinue
+.\zurg.exe service start
+```
+
+To check how much space it really takes, open the `rclone-cache` folder's Properties and read **Size on disk**. Partly downloaded files are sparse, so **Size** reports far more than the drive actually holds.
+
+More detail is in [Disk the mount uses](../reference/config.md#disk-the-mount-uses).
+
 ## Updating zurg
 
 A sponsor build replaces itself:
@@ -462,6 +497,7 @@ $env:ZURG_INSTALL_MODE = "update"; irm https://zurg.debridmediamanager.com/insta
 | `the save path "Z:/__magic__/__all__" is not absolute` | A false positive on drive-letter paths. The endpoint works; the clients open `Z:/__magic__/__all__` fine. |
 | Task start refused, `0x800710E0` | The task is still "running" — a launcher window never exited. `Stop-ScheduledTask zurg`, then start. |
 | `Get-PSDrive` shows no `Z:` from an SSH session | Expected — different logon session. See the session table. |
+| `data\rclone-cache` keeps growing | That is the mount's playback cache, capped at 256G by default. See [Keeping the cache small](#keeping-the-cache-small). |
 
 ## PowerShell over SSH, for the remote-minded
 
