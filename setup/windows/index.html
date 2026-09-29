@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.843636645131">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844036078985">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.843636645131" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844036078985" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.843636645131" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844036078985" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.843636645131" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.843636645131" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844036078985" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844036078985" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -597,6 +597,30 @@ Start-ScheduledTask -TaskName &quot;zurg&quot;</code></pre>
 <li><strong><code translate="no" v-pre>Get-PSDrive</code> in one window does not falsify the mount.</strong> The drive is visible to processes in the <em>same logon session</em> — your desktop apps — not to every PowerShell you happen to open. If <code translate="no" v-pre>Z:</code> is missing in a window, check where that window&#x27;s session came from before concluding the mount died.</li>
 </ul>
 <p>If you do not need Explorer at all — a headless box, or clients that speak HTTP — none of this matters: run zurg however you like and point things at <code translate="no" v-pre>http://localhost:9999/dav/</code> or the endpoints. The session rule only governs the drive letter.</p>
+<h2 id="keeping-the-cache-small">Keeping the cache small</h2>
+<p>The mount saves every file it plays, in full, to <code translate="no" v-pre>data\rclone-cache</code> inside the zurg folder (<code translate="no" v-pre>$HOME\zurg\data\rclone-cache</code> if you used the one-line install). It keeps those files after playback ends and grows up to 256G by default.</p>
+<p>Don&#x27;t count on the 72h age limit to clean it up. Plex&#x27;s scheduled tasks read the cached files every night, which resets their age, so nothing ever expires. The size cap is the limit that actually holds.</p>
+<p>To use less disk, lower the cap in <code translate="no" v-pre>config.yml</code>. <code translate="no" v-pre>rclone_extra_args</code> is one list, so add the new lines under the <code translate="no" v-pre>--links</code> you already have instead of writing a second <code translate="no" v-pre>rclone_extra_args:</code>:</p>
+<div id="keeping-the-cache-small-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">rclone_extra_args:
+  - &quot;--links&quot;
+  - &quot;--vfs-cache-max-size&quot;
+  - &quot;50G&quot;
+  - &quot;--vfs-cache-min-free-space&quot;
+  - &quot;20G&quot;</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>--vfs-cache-min-free-space</code> makes rclone stop caching when the drive gets that close to full. Then restart zurg:</p>
+<div id="keeping-the-cache-small-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">.\zurg.exe service restart</code></pre>
+</doc-codeblock></div>
+<p>rclone trims the cache down to the new cap after the restart. To empty it right away, stop zurg first:</p>
+<div id="keeping-the-cache-small-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">.\zurg.exe service stop
+Remove-Item -Recurse -Force .\data\rclone-cache\vfs\*, .\data\rclone-cache\vfsMeta\* -ErrorAction SilentlyContinue
+.\zurg.exe service start</code></pre>
+</doc-codeblock></div>
+<p>To check how much space it really takes, open the <code translate="no" v-pre>rclone-cache</code> folder&#x27;s Properties and read <strong>Size on disk</strong>. Partly downloaded files are sparse, so <strong>Size</strong> reports far more than the drive actually holds.</p>
+<p>More detail is in <a href="../../reference/config/#disk-the-mount-uses">Disk the mount uses</a>.</p>
 <h2 id="updating-zurg">Updating zurg</h2>
 <p>A sponsor build replaces itself:</p>
 <div id="updating-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
@@ -620,7 +644,8 @@ Start-ScheduledTask -TaskName &quot;zurg&quot;</code></pre>
 | `cannot truncate data\magic.journal: Access is denied` | The Windows journal-compaction refusal. Placements still persist across restarts; the journal just never compacts. |
 | `the save path &quot;Z:/__magic__/__all__&quot; is not absolute` | A false positive on drive-letter paths. The endpoint works; the clients open `Z:/__magic__/__all__` fine. |
 | Task start refused, `0x800710E0` | The task is still &quot;running&quot; — a launcher window never exited. `Stop-ScheduledTask zurg`, then start. |
-| `Get-PSDrive` shows no `Z:` from an SSH session | Expected — different logon session. See the session table. |">
+| `Get-PSDrive` shows no `Z:` from an SSH session | Expected — different logon session. See the session table. |
+| `data\rclone-cache` keeps growing | That is the mount's playback cache, capped at 256G by default. See [Keeping the cache small](#keeping-the-cache-small). |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -669,6 +694,10 @@ Start-ScheduledTask -TaskName &quot;zurg&quot;</code></pre>
 <tr>
 <td><code translate="no" v-pre>Get-PSDrive</code> shows no <code translate="no" v-pre>Z:</code> from an SSH session</td>
 <td>Expected — different logon session. See the session table.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>data\rclone-cache</code> keeps growing</td>
+<td>That is the mount&#x27;s playback cache, capped at 256G by default. See <doc-anchor-trigger to="#keeping-the-cache-small">Keeping the cache small</doc-anchor-trigger>.</td>
 </tr>
 </tbody>
 </table>
