@@ -100,7 +100,7 @@ directories:
 EOF
 ```
 
-Replace the placeholder token with your actual token from [real-debrid.com/apitoken](http://real-debrid.com/?id=440161):
+Replace the placeholder token with your actual token from [real-debrid.com/apitoken](http://real-debrid.com/?id=20474106):
 
 ```bash
 sed -i '' "s|YOUR_RD_API_TOKEN_HERE|PASTE_YOUR_TOKEN_HERE|g" ~/zurg/config.yml
@@ -409,7 +409,7 @@ tail -100 ~/zurg/logs/launchd-stderr.log
 
 Common causes:
 - Invalid `config.yml` syntax — validate with `cd ~/zurg && ./zurg` manually
-- Expired Real-Debrid token — get a new one from [real-debrid.com/apitoken](http://real-debrid.com/?id=440161)
+- Expired Real-Debrid token — get a new one from [real-debrid.com/apitoken](http://real-debrid.com/?id=20474106)
 - `/Volumes/Zurg` missing or not owned by your user — zurg cannot create it and fails with `ensure mount path: permission denied` (Step 4)
 - Port 9999 already in use — check with `lsof -i :9999`
 
