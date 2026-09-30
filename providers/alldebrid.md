@@ -8,14 +8,14 @@ order: 80
 
 `type: alldebrid`
 
-AllDebrid is the other backend that rotates credentials. So `download_tokens`
+[AllDebrid](https://alldebrid.com/?uid=1kk5i&lang=en) is the other backend that rotates credentials. So `download_tokens`
 and a separate `.strm` token both mean something here. Its file lists come from
 an endpoint of their own rather than from the magnet list. That changes what a
 first scan of a large library feels like.
 
 ## Get the API key
 
-Sign in and open [alldebrid.com/apikeys](https://alldebrid.com/apikeys).
+Sign in and open [alldebrid.com/apikeys](https://alldebrid.com/apikeys?uid=1kk5i).
 Generate a key and copy it.
 
 ## Configure it
@@ -119,7 +119,7 @@ ls /zurg_mnt/zurg/__alldebrid__/ | head
 
 **`AllDebrid rejected the API key` in the log.** The key was revoked or
 regenerated. Get a new one from
-[alldebrid.com/apikeys](https://alldebrid.com/apikeys) and update the entry.
+[alldebrid.com/apikeys](https://alldebrid.com/apikeys?uid=1kk5i) and update the entry.
 
 **A cold library appears slowly.** Expected. See the section above. It is one
 lookup per release and it does not repeat.
