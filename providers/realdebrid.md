@@ -14,11 +14,11 @@ selection and a dedicated `.strm` token.
 
 ## Get the API token
 
-Sign in and open [real-debrid.com/apitoken](http://real-debrid.com/?id=440161).
+Sign in and open [real-debrid.com/apitoken](http://real-debrid.com/?id=20474106).
 The token is a long hex string. Copy the whole thing.
 
 !!!warning Turn off automatic remote traffic first
-On your [account page](http://real-debrid.com/?id=440161) make sure **Use my
+On your [account page](http://real-debrid.com/?id=20474106) make sure **Use my
 Remote Traffic automatically when needed** is unchecked. Left on it spends your
 remote traffic allowance on ordinary streaming without telling you.
 !!!
@@ -150,7 +150,7 @@ ls /zurg_mnt/zurg/__realdebrid__/ | head
 ## When it goes wrong
 
 **`RD Permission denied` in the log.** The key was revoked or rotated. Get a new
-one from [real-debrid.com/apitoken](http://real-debrid.com/?id=440161) and
+one from [real-debrid.com/apitoken](http://real-debrid.com/?id=20474106) and
 update the entry in the Dashboard or in `config.yml`.
 
 **Every grab comes back 451.** Either the release name is one Real-Debrid refuses
