@@ -2,7 +2,7 @@
 
 `type: torbox`
 
-TorBox is the cheapest library for zurg to keep in sync and the most easily
+[TorBox](https://torbox.app/subscription?referral=74ffa560-7381-4a18-adb1-cef97378c670) is the cheapest library for zurg to keep in sync and the most easily
 throttled to read from. Its torrent list already carries every file. A library
 refresh costs one request rather than one per torrent. Its link resolution
 endpoint is a fixed allowance rather than a rate. zurg is deliberately careful

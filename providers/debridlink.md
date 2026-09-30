@@ -2,7 +2,7 @@
 
 `type: debridlink`
 
-Debrid-Link's seedbox listing carries every file. A library refresh costs one
+[Debrid-Link](https://debrid-link.com/id/diG1t)'s seedbox listing carries every file. A library refresh costs one
 paginated walk rather than a lookup per release. It is the cheapest of the three
 cloud backends to keep in sync.
 

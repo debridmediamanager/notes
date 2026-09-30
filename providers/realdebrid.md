@@ -2,7 +2,7 @@
 
 `type: realdebrid`
 
-zurg started as a Real-Debrid server and still knows it best. It is the only
+zurg started as a [Real-Debrid](http://real-debrid.com/?id=20474106) server and still knows it best. It is the only
 backend with per-file selection and a separate `__downloads__` list and CDN host
 selection and a dedicated `.strm` token.
 
