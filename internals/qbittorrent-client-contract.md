@@ -1405,7 +1405,7 @@ folder with two or more non-sample videos sets `OtherVideoFiles` and the downloa
 of the running for every file in it.
 
 **Why this matters on zurg.** Real-Debrid rewrites release names that trip its filename block —
-`WEB-DL`, `WEBRip`, `BDRip`, `HDRip`, `DVDRip`, and a source tag dot-adjacent to an old codec — and
+`WEB-DL`, `WEB.x264`, `WEB.H264`, `HDTV.x264` and `HDTV.XviD`, case-sensitively, since October 2026 — and
 zurg appends a suffix when two releases collide on a name. Either can make `torrent.name` stop
 parsing as the grabbed release. See the RD 451 section of the monorepo `CLAUDE.md`. The
 consequences, in order: identification falls back to grab history (still fine, if the hash matches);
@@ -1784,8 +1784,8 @@ the correct outcome, not an accident to rely on.
 Real qBittorrent reports the name from the torrent's metadata, and it does not change. Zurg's name
 comes from the library:
 
-- Real-Debrid renames releases whose filename trips its 451 block (`WEB-DL`, `WEBRip`, `BDRip`,
-  `HDRip`, `DVDRip`, and a source tag dot-adjacent to an old codec) — see the RD 451 section of the
+- Real-Debrid renames releases whose filename trips its 451 block (`WEB-DL`, `WEB.x264`,
+  `WEB.H264`, `HDTV.x264` and `HDTV.XviD`, case-sensitively, since October 2026) — see the RD 451 section of the
   monorepo `CLAUDE.md`.
 - zurg appends a suffix when two releases collide on a name, and a repair rebuilds a release under a
   new torrent id.

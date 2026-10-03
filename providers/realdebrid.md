@@ -112,9 +112,11 @@ keeps refusing through minutes of quiet. One production repair sweep spent
 four hours adding nothing because three adds landed within thirteen seconds of
 each other at the start of it.
 
-**Some releases are refused on their name alone.** A title carrying WEB-DL or
-one of the rip tags or a source tag dot-adjacent to an old codec is refused on
-the first request every time whatever is behind it. zurg knows the patterns and
+**Some releases are refused on their name alone.** Since October 2026 that is
+five exact strings, and the capitalization has to match: WEB-DL, WEB.x264,
+WEB.H264, HDTV.x264 and HDTV.XviD. A release named with one of them is refused
+on the first request every time whatever is behind it. A file inside a release
+whose own name matches is accepted but will not stream. zurg knows the patterns and
 refuses those grabs locally rather than spending an add slot and two sixty
 second retries on a certain failure.
 
