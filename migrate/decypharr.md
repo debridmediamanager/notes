@@ -26,10 +26,9 @@ at decypharr's mountpoint. Everything below is about the Usenet side.
 
 Two things to settle before you start.
 
-- **Providers.** zurg speaks `realdebrid` and `alldebrid` and `torbox` and
-  `nzb`. decypharr additionally supports Debrid-Link and Premiumize and zurg
-  has no backend for either. Content held only on those accounts cannot be
-  served by zurg. Re-acquire it on a supported account or accept losing it.
+- **Providers.** They do not limit the migration. zurg has a backend for
+  every service decypharr supports. Premiumize and Debrid-Link accounts come
+  across like the rest. Each has a page under [Providers](../providers/index.md).
 - **Do not change decypharr's `folder_naming` before migrating.** It renames
   every folder in the library at once. That breaks every symlink target and
   every mount-direct Plex path in one stroke.
@@ -186,7 +185,8 @@ Sometimes the torrent folders differ *systematically*. An extension is present
 or absent. The RD rename shows up instead of the original. In that case flip
 `retain_rd_torrent_name` or `retain_folder_name_extension` and rescan rather
 than fixing anything by hand. Folders only on the decypharr side are the Usenet
-jobs plus anything on a Debrid-Link or Premiumize account.
+jobs. Premiumize and Debrid-Link folder names were not compared against
+decypharr's. Check those accounts' folders here too.
 
 ## Cut over
 
@@ -220,14 +220,41 @@ mv "/mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv" \
    "/mnt/zurg/__magic__/tv/The Show/Season 01/S01E01.mkv"
 ```
 
-**If Sonarr and Radarr organised your old library then let them do it here
-too.** That is what `__magic__` is for and it replaces the symlink farm
-outright. Add `__magic__/tv` and `__magic__/movies` as *new* root folders. Then
-run a library import against them so the \*arrs adopt what is already there.
-Never change an existing series or movie root folder to point into `__magic__`.
-That makes the \*arr move the files across the mount boundary. It is a copy and
-it downloads your library. The full sequence and the number to watch are on
-[the shared page](index.md#coming-off-a-symlink-library).
+**If Sonarr and Radarr organised your old library then move it in with one
+script.** It renames every file the old library links to into a new root folder
+under `__magic__`. Each one lands at the path the \*arr already expects.
+Nothing is copied. Then you switch the \*arr's root folder without letting it
+move anything. The steps and the script are on
+[the shared page](index.md#coming-off-a-symlink-library). Never let an \*arr
+move the files itself. That crosses the mount boundary. It is a copy and it
+downloads your library.
+
+The script needs a `zurg_path` function for decypharr's links. Save this as
+`zurg_path.sh` beside it and set `OLDMOUNT` to where decypharr is mounted.
+
+```bash
+OLDMOUNT=/mnt/decypharr         # decypharr's mount, where the old links point
+zurg_path() {
+  local rel=${1#"$OLDMOUNT"/__all__/}
+  [ "$rel" = "$1" ] && return   # not a link into decypharr
+  local job=${rel%%/*} name=${1##*/} f videos
+  [ -f "$ZURG/__all__/$rel" ] && { echo "$ZURG/__all__/$rel"; return; }
+  # decypharr welded an archive's inner folder and file into one name.
+  for f in "$ZURG/__all__/$job"/*/*; do
+    [ "$(basename "$(dirname "$f")")$(basename "$f")" = "$name" ] && { echo "$f"; return; }
+  done
+  # decypharr named a lone video after the job. Take the job's one video.
+  case "$name" in "$job".*) ;; *) return ;; esac
+  videos=$(find "$ZURG/__all__/$job" -type f \( -iname '*.mkv' -o -iname '*.mp4' -o -iname '*.avi' \) ! -ipath '*sample*')
+  [ "$(printf '%s\n' "$videos" | grep -c .)" -eq 1 ] && echo "$videos"
+}
+```
+
+A link into a debrid release or a multi-file NZB release names the same file on
+both servers. decypharr renamed two kinds of NZB release. It named a lone video
+after the job and it welded an archive's folder and file into one name. The
+function finds zurg's copy of both. A job with more than one video is never
+guessed at. It prints `NOT IN ZURG` instead.
 
 **4. Point Plex at the root folders you made** — `__magic__/tv` and
 `__magic__/movies` — and at those only. Never the root of `__magic__`, which
@@ -257,16 +284,27 @@ can hand it an NZB, and an opt-in
 can hand it a magnet or a `.torrent` for a debrid account. Both import out of
 `__magic__/__all__` by rename. Your options.
 
-- **NZBs.** Turn on `sabnzbd.enabled` and point the \*arrs at zurg. The caveat
-  is that zurg does not yet check whether a post's articles are still on the
-  news server. So a dead release reports Completed and fails on the first read
-  instead of being blocklisted and re-grabbed.
+- **NZBs.** Turn on `sabnzbd.enabled` and point the \*arrs at zurg. zurg checks
+  each grab before it reports it finished. It asks the news servers for the
+  start and the end of every file. zurg rebuilds a release with any of that
+  gone from its PAR2 files where it can. One it cannot rebuild is reported
+  **Failed**. The \*arr then blocklists it and grabs another. A post that lost
+  a stretch further into a file still reports Completed and fails on the read
+  that reaches the gap.
 - **Torrents.** Turn on `qbittorrent.enabled` and add it as a second download
   client. A private tracker's release works when the indexer hands out a
   `.torrent` file rather than a bare magnet, because the file keys the account's
-  cache lookup by hash directly. The zurg dashboard, DMM and Plex watchlist
-  acquisition are still there for one-off adds; that last one is the
-  `watchlist:` block, which searches your own Newznab indexers.
+  cache lookup by hash directly.
+- **One-off adds.** zurg's dashboard has no add button. Add a magnet or a
+  `.torrent` through the qBittorrent endpoint with one \*arr's category and it
+  goes to that \*arr.
+  [Adding a release by hand](../guides/sonarr-radarr-torrents.md#11-adding-a-release-by-hand)
+  shows how. A magnet added through DMM and an NZB dropped into `nzbs/` both
+  list in zurg. Neither reaches Sonarr or Radarr on its own. zurg's own
+  [acquisition](../guides/acquisition.md) also fetches requests by itself.
+  They come from your Plex watchlist and from Seerr and the \*arrs. It takes
+  NZBs from Newznab indexers and torrents from Torznab indexers when your
+  account already has them cached.
 - **Hybrid.** Keep decypharr purely as the \*arrs' download client pushing into
   the same debrid accounts with zurg serving the mount. Both list the same
   account so zurg picks up what decypharr adds. The \*arr import step then needs

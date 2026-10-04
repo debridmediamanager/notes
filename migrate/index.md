@@ -112,35 +112,91 @@ You are not moving a library. You are rebuilding one. And `__magic__` gives the
 rename inside it as freely as before. Each move is a row write instead of a
 file operation.
 
-!!!danger Never ask an \*arr to relocate the old library into `__magic__`
-Changing a series or movie root folder makes Sonarr or Radarr **move** the
-files. A move inside `__magic__` is free. A move from anywhere else crosses the
+!!!danger Never let an \*arr move the old library into `__magic__`
+Changing a series or movie root folder makes Sonarr or Radarr offer to **move**
+the files. Say no. A move inside `__magic__` is free. A move from anywhere else crosses the
 mount boundary and that is a copy. A copy off a streaming mount pulls your
 entire library down through your news or debrid allowance. Your old library is
 a tree of symlinks so what gets copied is every target they resolve to.
 !!!
 
-Adopt the files where they already are instead.
+Move each file into place yourself instead. Every move is one rename through
+zurg's mount. Nothing is copied and nothing on your account changes. The script
+below does it from your old library of symlinks. A link's path under the old
+root folder is where Sonarr or Radarr expects the episode or film. Its target
+names the file. So each file lands at the same path under the new root folder
+that its link had under the old one. The old library is only read. It keeps
+working until you switch the \*arr over.
 
-1. Add `__magic__/tv` and `__magic__/movies` as **new** root folders. Leave the
-   old root folder in place for now.
-2. Point the \*arr's library import at those paths so it adopts what is there.
-   `__magic__/__all__` mirrors the library so every release is already
-   present there as a folder holding its own files. With renaming on the \*arr
-   applies its own scheme. That is a free row write because it never leaves the
-   namespace.
-3. Remove the old root folder **without deleting files**. Then point Plex at
-   the root folders you added, not at `__magic__` itself — the namespace holds
-   the whole library at `__magic__/__all__` as well, and a library scanning
-   both finds everything twice.
+1. **Build zurg beside the old server** as its page shows. Let it list the
+   whole library first.
+2. **Turn on `__magic__`** as its page shows. Keep Plex scans off and the
+   \*arr queues paused.
+3. **Save the `zurg_path` function from your server's page** as
+   `zurg_path.sh` beside the script. It turns an old link's target into the
+   file zurg serves. Each server lays its files out differently.
+4. **Run the script** once per root folder. Set `OLD` and `NEW` and `LOG` for
+   each one. A setup with `sonarr4k` and `radarr4k` beside the regular pair
+   needs four runs.
 
-Watch `data/local` on zurg's `/magic/` dashboard while step 2 runs. That number
-is the one that says whether something is importing by copying instead of
-moving. On a correct import it does not grow.
+   ```bash
+   #!/bin/bash
+   # adopt.sh — move every file an old root folder links to into __magic__.
+   # One rename per file through zurg's mount. Nothing is copied or downloaded.
+   # The old root folder is only read. GNU find and bash required.
+   ZURG=/mnt/zurg                  # zurg's own mount
+   OLD=/data/media/tv              # the old root folder, a tree of symlinks
+   NEW="$ZURG/__magic__/tv"        # the new root folder inside __magic__
+   LOG=./adopt-tv.log              # what went where
+   . ./zurg_path.sh                # the zurg_path function from your server's page
+   find "$OLD" -type l | while IFS= read -r link; do
+     dest="$NEW/${link#"$OLD"/}"
+     [ -e "$dest" ] && { echo "ALREADY THERE: $dest"; continue; }
+     src=$(zurg_path "$(readlink "$link")")
+     [ -n "$src" ] && [ -f "$src" ] || { echo "NOT IN ZURG: $link"; continue; }
+     mkdir -p "$(dirname "$dest")"
+     if mv "$src" "$dest"; then
+       printf '%s\t%s\n' "$src" "$dest" >> "$LOG"
+     else
+       echo "FAILED: $link"
+     fi
+   done
+   # Real files such as subtitles are small. They are copied and land on zurg's own disk.
+   find "$OLD" -type f -size -32M | while IFS= read -r file; do
+     dest="$NEW/${file#"$OLD"/}"
+     [ -e "$dest" ] || { mkdir -p "$(dirname "$dest")" && cp "$file" "$dest"; }
+   done
+   ```
 
-The zurg side of this is documented behaviour. The \*arr side is ordinary
-library import but it was not bench-tested for this guide. Do one series first
-and check the number before turning it loose on the library.
+   It prints a line for every link it leaves alone.
+
+   - `NOT IN ZURG` is a link to a file zurg does not have. Its NZB could not
+     be recovered or its account is not in zurg's config. A second link to a
+     file the script already moved prints this too. A file can sit at only one
+     path in `__magic__`.
+   - `ALREADY THERE` is a path the new root folder already holds. Running the
+     script again skips everything it placed before.
+
+5. **Switch each \*arr over.** Select every series or every movie and edit them
+   together. Set the root folder to the new one under `__magic__`. When it asks
+   whether to move the files answer **No, I'll Move the Files Myself**. The
+   script already put them there. Then run **Update All** so it finds them.
+6. **Point Plex at the new root folders** and at nothing else. The next box
+   says why.
+
+Each move took about 15 milliseconds on a test library and nothing was copied.
+Watch `data/local` on zurg's `/magic/` dashboard while the script runs. It
+grows only by the subtitles and other small files the script copies. A number
+that grows by gigabytes means something is being copied. Stop and look.
+
+One side effect lasts a while. The mount stops showing a moved file at its old
+`__all__` path even though zurg still serves it there. A restart of zurg makes
+the mount look again. Otherwise it looks on its own within 12 hours with the
+default settings. Keep Plex away from `__all__` until then.
+
+The zurg side of this was measured on 2026-10-03. The \*arr side is its
+ordinary root folder edit and was not tested for this guide. Do one series
+first.
 
 !!!warning Point each Plex library at one directory and not two
 A library that scans a filter directory such as `movies` or `shows` or
@@ -207,7 +263,7 @@ worth knowing before they surprise you.
 - [From decypharr](decypharr.md). Renames single-file and archive releases
 - [From InfiniDysk](infinidysk.md). Renames single-file and archive releases
 - [From nzbdav](nzbdav.md). Renames nothing and is the easiest of the five
-- [From streamnzb](streamnzb.md). No library to migrate and a change of model
+- [From streamnzb](streamnzb.md). No library to migrate. zurg has a Stremio addon of its own
 
 Naming behaviour on each page was measured on 2026-09-01 on a five-release
 corpus. The builds were zurg `bda7e3c3` and AltMount `0614008b` and InfiniDysk
