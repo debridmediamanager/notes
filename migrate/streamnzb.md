@@ -109,7 +109,7 @@ A library for your media server needs something to fill it.
 **Name the file before you drop it.** The release folder in the mount is named
 after the NZB *filename*. The `<meta type="name">` header is used only when the
 filename looks like a hash. That was measured across all five servers on
-2026-08-19. A file called `nzbgeek_download_48213.nzb` gives Plex nothing to
+2026-08-19. A file called `indexer_download_48213.nzb` gives Plex nothing to
 match so rename it to the release name first. This also means the folder name
 is fully under your control. Two different releases with the same name get a
 ` {shorthash}` suffix.
@@ -165,9 +165,9 @@ URL and API key. Acquisition uses the same list when it has none of its own.
 stremio:
   enabled: true
   indexers:
-    - name: nzbgeek
-      url: https://api.nzbgeek.info
-      api_key: YOUR_KEY
+    - name: my-indexer
+      url: https://indexer.example
+      api_key: YOUR_INDEXER_API_KEY
 ```
 
 Nothing else in streamnzb's `data/config.json` transfers. The `streams` and
@@ -273,9 +273,9 @@ par2_patch_cache_mb: 512
 stremio:                       # keeps Stremio working. Leave it out for a library alone
   enabled: true
   indexers:
-    - name: nzbgeek
-      url: https://api.nzbgeek.info
-      api_key: YOUR_KEY
+    - name: my-indexer
+      url: https://indexer.example
+      api_key: YOUR_INDEXER_API_KEY
 
 mount_path: "/mnt/zurg"
 rclone_enabled: true

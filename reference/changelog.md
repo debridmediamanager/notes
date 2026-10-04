@@ -73,10 +73,10 @@ server sent another file's article instead of blaming zurg.
 ## Usenet connections come back at full speed after another app stops using the account
 
 If your news provider ever turned zurg away for having too many connections,
-for example while nzbdav or an earlier zurg was still holding some, zurg kept
+for example while another program or an earlier zurg was still holding some, zurg kept
 adding connections one per second for as long as it ran, even once the room was
 back. After every quiet spell a burst of grabs started again from the two warm
-connections, so a 70-connection account took over a minute to get back to full
+connections, so a large account took over a minute to get back to full
 speed and imports queued behind it, with "waited 5s for a connection (queued
 for the account's allowance)" in the debug log. Once the provider has accepted
 a connection again and a minute has passed without another refusal, zurg now
@@ -370,8 +370,8 @@ Before repair or a first playback adds a torrent to TorBox, zurg checks whether
 the account has a free download slot. It used to count every torrent that was
 not fully downloaded. That missed torrents that are seeding, which TorBox
 counts against your plan for up to 30 days, and it counted torrents whose
-content had expired, which take no slot at all. Nine expired torrents in a
-library could make repair on a Pro account wait as if every slot were busy.
+content had expired, which take no slot at all. A few expired torrents in a
+library could make repair wait as if every slot were busy.
 zurg now counts exactly the torrents TorBox marks as active.
 
 ## TorBox can seed for private trackers
@@ -587,8 +587,8 @@ terminal refusing input. A typo in `config.yml` is now reported against
 
 ## A backup news server now fills in articles the main server answers wrongly
 
-Some news servers, Frugal among them, answer a request for one article with a
-piece of a different upload. zurg recognised the wrong piece but never asked
+Some news servers answer a request for one article with a piece of a
+different upload. zurg recognised the wrong piece but never asked
 the backup server for the right one, so the gap played as silence or the file
 would not open, even with a backup server that had it. zurg now asks the next
 server, the way SABnzbd does.
@@ -981,10 +981,10 @@ tries. A name is a filename, and the only characters that certainly cannot be in
 one are those no filesystem accepts: `/ \ : * ? " < > |`. Everything else now
 belongs to the title.
 
-Checked against every NZB in a 6,800 release watch directory: of the subjects
-that are a plain filename, twenty came out short before this change and two do
-now, and both of those are an indexer's per-download stamp being removed, which
-is what should happen to it.
+Checked against every NZB in a large watch directory: of the subjects that are
+a plain filename, almost every one that came out short before this change now
+keeps its whole name, and the only ones still shortened are an indexer's
+per-download stamp being removed, which is what should happen to it.
 
 ## A release whose files were renamed picks the new names up on its own
 
@@ -1259,7 +1259,7 @@ An install with no Usenet account has nothing to ask and is unaffected.
 Before a grab is reported finished, zurg asks the news servers about every file
 in it. It asked about one file at a time. Some accounts answer those questions
 slowly and strictly in turn, so sending them all at once down one connection is
-no faster. Frugal's newswest took over five seconds per file, which made a
+no faster. One provider's server took over five seconds per file, which made a
 133-volume 4K release about twelve minutes of questions, and every check is
 given five. The check could never finish, so Sonarr and Radarr waited three
 hours and then saw the grab failed, and the watchlist waited for ever.
