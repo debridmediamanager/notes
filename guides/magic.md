@@ -33,6 +33,8 @@ With `__magic__` the import is a rename inside one namespace: a row is written, 
 
 It only works if the \*arr's **root folder is also inside `__magic__`** — `/mnt/zurg/__magic__/tv`, not a directory elsewhere on the machine. A move whose destination is outside the namespace is a move between two filesystems, which is a copy again; zurg refuses it outright with a `403` rather than letting it happen quietly. The one place inside the namespace that is also refused is `__magic__/__all__`, which is the library's own layout rather than anywhere to put things. [sabnzbd.md](sonarr-radarr.md) has the exact settings.
 
+And the \*arr has to reach the download folder and the root folder **through one mount**. A container given `__magic__/__all__` and `__magic__/tv` as two separate volumes sees two filesystems even though both are zurg's, so the kernel refuses the rename inside the container before zurg hears of it, and the \*arr copies the whole file instead. zurg turns a copy like that back into a placement once it lands and logs `A client copied …`, but the download has already happened. Bind one directory holding zurg's whole mount into the container; see [One volume for the download folder and the root folders](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
+
 zurg's own acquisition places files here too. A Radarr source puts each release it confirms into the movie's folder with the same move an import makes, then asks Radarr to rescan: see [acquisition.md](acquisition.md#placing-the-file).
 
 Organising the library by hand is the other half, and it works with no \*arr involved.

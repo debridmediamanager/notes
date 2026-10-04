@@ -183,3 +183,61 @@ The invariant is now explicit: a method that returns a download body must never 
 a whole-request timeout. Short probes and metadata reads should carry a deadline on
 their own context; streaming bodies should live until completion, downstream
 cancellation, or a real transport error.
+
+## Bounded by progress, not by time
+
+Living until completion left one way for a read never to end: a delivery node
+that keeps the response open and stops feeding it, or never answers at all. In
+September 2026 a Plex scan sat for eleven hours on one Real-Debrid file whose
+read never failed. This client had no bound to give up on it with, and rclone's
+`--timeout` is an idle bound: zurg forwards a body in 256 KiB writes, so a node
+delivering 256 KiB every five minutes, under 1 KB/s, resets it for ever. A
+slower node does trip it, but rclone then sends the same request to the same
+node, logging one error per three timeouts. Measured on zen with rclone 1.75
+and the mount's own flags on 2026-10-03, a reader on such a node was still
+blocked after 30 minutes.
+
+`internal/universal/starved_read.go` now cuts a proxied read once the node has
+delivered less than 1 MiB across 30 seconds that zurg spent waiting on it. Only
+waiting on the node counts: from the moment the request has a connection until
+its headers arrive, and the time inside each read of the body. Time spent writing
+to the client does not, so the property above still holds and a paused or slow
+client can keep a stream open for as long as it likes. A cut file is answered
+`503` for two minutes so rclone's retries end at once instead of each waiting out
+another window. Locally served NZB reads are not watched.
+
+Reads of files inside an archive never reached `streamFileToResponse`, so they
+were left out of that bound until card 204. Their bytes come from spans of each
+volume, fetched through the same client by `providerDoer.Do` and read by the
+RAR parser, and a node could hold one of those for as long as it kept the
+connection. Each volume fetch is now watched by the same floor, the entry is
+refused for two minutes when one is cut, and a cut while the archive is being
+listed fails the listing rather than letting the parser leave the volume out as
+a damaged one, which on a real five-volume set served the entry's full length
+with the wrong bytes after the second volume.
+
+Card 222 found the same thing behind every other way a node can fail a volume
+read: a 5xx, a 429, a connection dropped part way through a header. The parser
+took each for a damaged volume and listed the archive without it, and that
+listing was cached, so on the same set a 503 on volume 3 served the wrong bytes
+from offset 16,057 and went on serving them after the node recovered. The
+parser now tells a volume whose bytes did not parse from one whose bytes never
+arrived (`rarstream.ErrVolumeUnavailable`, marked by `HTTPSrc` for the statuses
+it sees, by `providerDoer` for everything a remote read fails with, and by the
+NZB body for what its reader classes as the transport). The second fails the
+listing, a nested set and a volume-head grouping included, and the failure is
+answered `503` with a `Retry-After`, never cached as an archive failure, never
+recorded as a verdict, and never answered on a browse with the raw volumes in
+place of the archive's contents. Volumes that are damaged or absent are listed
+around as before.
+
+The 256 KiB writes named above went in card 204 too. The copy still fills
+its buffer while a node is fast, so a fast body leaves in whole buffers as
+before, but it sends the first bytes the moment they arrive and never holds a
+byte longer than 250 ms (`defaultCopyFlushAfter` in
+`internal/universal/downloader.go`), flushing the response with them. A slow
+node no longer keeps the client from its headers. Before it, on zen through
+rclone and the mount's own flags, an archive entry on a node sending 64 KiB and
+then 16 KiB every four minutes had sent rclone nothing at all when rclone gave
+up on it at exactly five minutes, three times over: everything the node had
+sent was still in the buffer.

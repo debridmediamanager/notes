@@ -96,6 +96,7 @@ their output to verify that FUSE, rclone, Plex and NNTP actually ran.
 | `rclone_mount_integration.sh` | yes | | |
 | `magic_mount_integration.sh` | yes | | |
 | `magic_move_refusal.sh` | yes | | |
+| `magic_library_move_integration.sh` | yes | | |
 | `plex_integration.sh` | yes | yes | |
 | `nzb_bench_integration.sh` | | | yes |
 

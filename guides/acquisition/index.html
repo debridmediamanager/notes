@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844464300615">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844464610366">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844464300615" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844464610366" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844464300615" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844464610366" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844464300615" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844464300615" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844464610366" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844464610366" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -434,6 +434,13 @@ for example <code translate="no" v-pre>/data/zurg/__magic__</code>. A movie at
 <code translate="no" v-pre>/data/zurg/__magic__/movies/Heat (1995)</code> is then placed in
 <code translate="no" v-pre>movies/Heat (1995)</code> inside zurg&#x27;s <code translate="no" v-pre>__magic__</code>. Windows paths such as
 <code translate="no" v-pre>Z:\__magic__</code> work too.</p>
+<p>If Radarr also takes grabs from zurg&#x27;s <a href="../sonarr-radarr/">SABnzbd</a> or
+<a href="../sonarr-radarr-torrents/">qBittorrent</a> endpoint, it has to see their download
+folder at <code translate="no" v-pre>library_path/__all__</code>, through the same volume as its root
+folders, or every import out of it is a copy of the whole file. zurg
+asks Radarr where it sees both and says so on the acquisition page, in
+its log and in <code translate="no" v-pre>zurg doctor</code> when they cannot share a mount; see
+<a href="../sonarr-radarr/#one-volume-for-the-download-folder-and-the-root-folders">One volume for the download folder and the root folders</a>.</p>
 </li>
 </ol>
 <h3 id="what-zurg-asks-radarr-for">What zurg asks Radarr for</h3>
@@ -569,8 +576,9 @@ the series zurg looks after.</p>
 </li>
 <li>
 <p><strong><code translate="no" v-pre>library_path</code> is where Sonarr sees <code translate="no" v-pre>__magic__</code>.</strong> It works exactly as
-it does for Radarr. Leave it out when Sonarr sees the mount where zurg
-mounts it.</p>
+it does for Radarr, including the check that Sonarr reaches zurg&#x27;s
+download folder and its root folders through one volume. Leave it out
+when Sonarr sees the mount where zurg mounts it.</p>
 </li>
 </ol>
 <h3 id="what-zurg-asks-sonarr-for">What zurg asks Sonarr for</h3>
@@ -622,9 +630,14 @@ have accepted.</p>
 to the same series. A title Sonarr matches to nothing is refused.</p>
 </li>
 <li>
-<p><strong>A pack must be the whole season.</strong> A partial pack or a multi-season pack
-is refused. A pack spelled as a range, such as <code translate="no" v-pre>Season 1 E01-E07</code>, counts
-when the range is the whole season.</p>
+<p><strong>A pack must be the whole season.</strong> A partial pack is refused. A pack
+spelled as a range, such as <code translate="no" v-pre>Season 1 E01-E07</code>, counts when the range is the
+whole season. A pack of several seasons counts for each season it names
+(see <doc-anchor-trigger to="#packs-of-several-seasons">Packs of several seasons</doc-anchor-trigger>). Sonarr reads
+<code translate="no" v-pre>S01-S05</code> as season 1 alone and never says where it ends, so zurg reads the
+range from the title. Sonarr must still match it to the series and call it
+a full, multi-season pack. Its size is judged against the runtime of every
+season it names.</p>
 </li>
 <li>
 <p><strong>An episode must be that one episode alone.</strong> A release holding two
@@ -693,6 +706,50 @@ not start and says so in the log and on the acquisition page.</p>
 <p><strong>Activity</strong> in Sonarr stays empty, as it does in Radarr. The episodes simply
 have files after the rescan zurg asks for. <code translate="no" v-pre>only_new_items</code> and
 <code translate="no" v-pre>remove_after_grab</code> do nothing for a Sonarr source.</p>
+<h2 id="packs-of-several-seasons">Packs of several seasons</h2>
+<p>A season can be taken from a pack that holds several, such as
+<code translate="no" v-pre>Game.of.Thrones.S01-08.BDRip.1080p</code> or <code translate="no" v-pre>Breaking Bad Season 1-5</code>. Indexers
+file such a pack under every season it covers. On DMM&#x27;s feed, 72 of the 691
+results for Breaking Bad season 3 were packs of several seasons. For some
+seasons one of them is the only copy an account holds.</p>
+<ul>
+<li>
+<p><strong>The title says which seasons.</strong> <code translate="no" v-pre>S01-S05</code>, <code translate="no" v-pre>S01-05</code>, <code translate="no" v-pre>[S01-08]</code>, <code translate="no" v-pre>S1-9</code>,
+<code translate="no" v-pre>Seasons 1-8</code>, <code translate="no" v-pre>Season 1 to 5</code>, <code translate="no" v-pre>Season 1 · 2 · 3</code>, <code translate="no" v-pre>Stagioni 01-05</code> and
+<code translate="no" v-pre>Temporadas 1-4</code> are all read. A title with no season numbers, such as
+<code translate="no" v-pre>Complete Series</code>, is not taken. Neither is one that names a single season
+only as a word, such as <code translate="no" v-pre>Season 3 Complete</code>. Those were never read as packs.</p>
+</li>
+<li>
+<p><strong>Only that season is placed.</strong> A pack taken for season 4 puts season 4&#x27;s
+episodes in the season folder. The other seasons&#x27; files stay where the
+library lists them. A pack whose files do not hold every episode of the
+season is refused before anything moves, whatever its title claims.</p>
+</li>
+<li>
+<p><strong>The size ceiling is per season.</strong> <code translate="no" v-pre>max_season_size_gb</code> applies to each
+season the pack names. A 346 GB pack of eight seasons is 43 GB a season, and
+fits under the default 100.</p>
+</li>
+<li>
+<p><strong>Quality still comes first.</strong> Packs rank like any other release:
+resolution, then size. A 2160p pack of one season is taken before a 1080p
+pack of eight. Within one resolution, a pack of several seasons is usually
+the largest, so it is usually tried first.</p>
+</li>
+<li>
+<p><strong>The show&#x27;s other seasons take the same pack.</strong> Once one season has taken
+a pack of several seasons, the show&#x27;s other seasons try that pack first,
+ahead of every pack of the same resolution their own search found. It is
+already on the account, so it costs nothing. While a show&#x27;s seasons are
+choosing among packs of several seasons, they choose one at a time, so
+seasons asked for together (a Sonarr series, all its seasons on one poll)
+do not each settle on a different copy of the show. Once one of them has
+chosen without such a pack, because none was on the account or the profile
+allowed none, the rest choose at once. A season asked for an hour later
+searches afresh.</p>
+</li>
+</ul>
 <h2 id="watching-it-work">Watching it work</h2>
 <p>The dashboard&#x27;s <strong>Acquisition</strong> link opens <code translate="no" v-pre>/acquisition/</code> on zurg&#x27;s own port.
 Each source gets a line with how many of its titles are done, running,

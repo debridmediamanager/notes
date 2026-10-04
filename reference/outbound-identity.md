@@ -7,7 +7,9 @@ The default is a generic browser agent. Blank restores that default; an explicit
 custom value is sent as entered, even if it identifies the application.
 `omit_user_agent: true` suppresses Go HTTP clients' User-Agent header and gives
 ffprobe an empty agent, overriding the configured string. Some services may
-reject requests without an agent.
+reject requests without an agent. GitHub refuses every one with a 403, so
+requests to GitHub (`zurg update` and the rclone and ffprobe downloads) still
+carry the configured agent, or the generic browser agent when none is set.
 
 Plex, Jellyfin and Emby also require client/device metadata. Configure it with
 `outbound_client_name`, `outbound_client_id`, `outbound_client_version`,

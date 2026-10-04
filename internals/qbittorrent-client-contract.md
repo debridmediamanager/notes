@@ -821,7 +821,11 @@ Three conjuncts, all required:
    `DownloadClientDefinition.RemoveCompletedDownloads` defaults to **`true`**
    (`src/NzbDrone.Core/Download/DownloadClientDefinition.cs:17`), surfaced in the UI as
    "Remove Completed". If the user turns it off, **imports become copies** and there is nothing a shim
-   can do about it.
+   can do about it. (A Move becomes a copy for a second reason the shim cannot see either: the \*arr's
+   container reaching the download folder and the root folder through two volumes, where `rename()`
+   answers `EXDEV` and .NET's `File.Move` copies and deletes. zurg reads both off an acquisition
+   source's API and adopts the copy afterwards; see `internal/arrlayout` and
+   `internal/handlers/magic_copies.go`.)
 2. **`state` is exactly `pausedUP` or `stoppedUP`.** `uploading`, `stalledUP`, `queuedUP` and
    `forcedUP` are Completed but not movable — the fixture pins that
    (Sonarr `QBittorrentFixture.cs:680-689`, Radarr `:679-688`).
