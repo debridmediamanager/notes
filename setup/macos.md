@@ -34,9 +34,11 @@ kextstat | grep macfuse
 
 ## Step 2: Download Zurg
 
-Download the latest zurg binary from [GitHub Releases](https://github.com/debridmediamanager/zurg/releases). That repository is sponsors-only, so download it in a browser where you are signed in — the API is not reachable without a token. Pick the newest release and grab the `darwin-arm64` zip (`darwin-amd64` on an Intel Mac).
+Open [GitHub Releases](https://github.com/debridmediamanager/zurg/releases) in a browser where you are signed in to the GitHub account that has zurg access. Take the newest nightly. It is the pre-release at the top of the list. Grab its `darwin-arm64` zip or `darwin-amd64` on an Intel Mac. Do not take the release GitHub marks **Latest**. That is v1.0.0. It is older than `zurg setup` and answers it with `unknown command`.
 
-Then unpack it:
+Nightlies are for sponsors. Until your GitHub account has access that page answers 404. The free public build is v1.0.0 from [zurg-public](https://github.com/debridmediamanager/zurg-public/releases). It has no `zurg setup`. Set it up by hand as [its README](https://github.com/debridmediamanager/zurg-public#readme) explains instead of following the steps below.
+
+Then unpack it.
 
 ```bash
 mkdir -p ~/zurg && cd ~/zurg
@@ -367,11 +369,13 @@ cd ~/zurg
 
 `update` takes the newest nightly. It downloads it, checks the new binary reports the version it expected, and only then swaps it in by rename, so the running process is never overwritten. When the installed build is already the newest it says so and changes nothing.
 
-On a build too old to carry the command, the installer does the same job:
+`update` signs in to GitHub with the account you used for the install. The installer keeps the GitHub CLI in `~/zurg/bin` for that. If `update` says it found no GitHub credential then your install is older than that change. Run the installer's update once and every `zurg update` after it works. The same command also updates a build too old to have `zurg update`.
 
 ```bash
 curl -fsSL https://zurg.debridmediamanager.com/install.sh | bash -s update
 ```
+
+You can also set `GITHUB_TOKEN` instead. Use a classic token with the `repo` scope from the GitHub account that has zurg access.
 
 By hand, download the new `darwin-arm64` zip from [Releases](https://github.com/debridmediamanager/zurg/releases) the same way as in Step 2, then:
 

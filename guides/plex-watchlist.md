@@ -8,9 +8,10 @@ order: 57
 
 Plex watchlist is an adapter on the [shared acquisition engine](acquisition.md),
 alongside Seerr. Existing `watchlist.enabled` and legacy Plex watchlist settings
-keep working. The adapter resolves cloud-watchlist titles and uses the shared
-Newznab executor to save NZBs. It starts after the library loads and needs an
-`nzb` provider on the same zurg instance.
+keep working. The adapter resolves cloud-watchlist titles and hands them to
+the shared executor. It starts after the library loads. It needs an `nzb`
+provider on the same zurg instance, a debrid account that takes torrents, or
+both.
 
 Progress lives in `data/acquisition.json`. The previous
 `data/plex-watchlist.json` is imported once without deleting it. History, retry
@@ -19,8 +20,9 @@ reboots. Both state files are included in normal backups. Keep `data/` and
 `nzbs/` when recreating containers.
 
 Releases come from Newznab indexers as NZBs and from Torznab indexers as info
-hashes handed to a debrid account that already holds them. See
-[Newznab and Torznab](acquisition.md#newznab-and-torznab).
+hashes handed to a debrid account that already holds them. An NZB needs the
+`nzb` provider. A torrent needs the debrid account. `prefer` decides which is
+tried first. See [Newznab and Torznab](acquisition.md#newznab-and-torznab).
 
 Successful acquisition removes an item from the watchlist, unless
 `remove_after_grab: false` says otherwise; with it off the title stays and zurg
@@ -34,12 +36,13 @@ acquires episodes found in indexer results, since the watchlist does not provide
 an expected episode inventory. This is not continuous monitoring of future
 episodes after the item leaves the watchlist.
 
-Removal waits for the news servers. A watchlist entry is the only record that
-you wanted a title — Plex keeps no history of a removed one — so it is not
-deleted on the strength of an NZB nobody has checked. A release the accounts no
-longer hold leaves the title where it is and is remembered as dead, so the
-retry ranks the next candidate; a check that could not be made leaves the title
-queued rather than deciding either way. See
+Removal waits for the check. A watchlist entry is the only record that you
+wanted a title. Plex keeps no history of a removed one. So a title is never
+removed on the strength of a grab nobody has checked. An NZB is checked against
+the news servers. A torrent has to reach the library with files in it. A
+release that fails the check leaves the title where it is and is remembered as
+dead. The retry then ranks the next candidate. A check that could not be made
+leaves the title queued rather than deciding either way. See
 [verifying a grab](acquisition.md#verifying-a-grab).
 
 Failures retry with persistent backoff while the item remains on the list.

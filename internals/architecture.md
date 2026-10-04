@@ -355,9 +355,10 @@ lifecycle events), `assign_links.go`, `unrestrict.go`, `opensubtitles.go`,
 
 `internal/handlers` builds the chi router and wires everything. WebDAV's
 non-standard methods (`PROPFIND`, `MKCOL`, `MOVE`) are registered on chi at
-`init`. Basic auth wraps everything *except* `version.txt` (so healthchecks
-work) and the `.strm` endpoints (a media player opening a `.strm` has no
-credentials to offer — the signed token in the path authorises it instead).
+`init`. Basic auth wraps everything *except* `version.txt` and `/ready` (so
+health checks work) and the `.strm` endpoints (a media player opening a `.strm`
+has no credentials to offer — the signed token in the path authorises it
+instead).
 
 Two routing lessons are recorded in comments and worth not relearning: chi
 applies a regex path param **within a single segment**, so a file addressed
@@ -438,6 +439,14 @@ responsive.
 listings with state detail, Plex matching, renames, per-file delete/restore/
 force-show, bulk delete and scan.
 
+Its duplicate view is `internal/duplicates`. `internal/arrinventory` and the
+`Inventory` readers beside the Radarr and Sonarr adapters read every file an
+\*arr holds, read-only and apart from acquisition. `magic.Resolver.HolderOf`
+traces each file's path to the release it came from, and the package groups
+releases that may hold the same movie or episodes. Grouping uses names, IMDb
+ids and \*arr history. Whether a release is in use is decided by the traced
+paths alone.
+
 `internal/static` embeds CSS, favicon, logo and robots.txt with `go:embed`, so
 the binary is self-contained.
 
@@ -474,9 +483,10 @@ Two distinct things share the word "Plex":
   Plex library items using file paths, IMDB ids and TVDb/TMDb identifiers,
   running periodically in worker pools with cached metadata, and backfills
   discovered IMDB ids onto torrents.
-- **`internal/acquisition`** owns the persistent acquisition queue and shared
-  Newznab executor. Plex watchlist and Seerr are source adapters that resolve
-  requests into movie, season or episode targets. `data/acquisition.json` holds
+- **`internal/acquisition`** owns the persistent acquisition queue and the
+  shared executor, which takes NZBs from Newznab indexers and cached torrents
+  from Torznab indexers. Plex watchlist, Seerr, Radarr and Sonarr are source
+  adapters that resolve requests into movie, season or episode targets. `data/acquisition.json` holds
   retry deadlines and per-target progress across restarts. See
   [acquisition sources](../guides/acquisition.md) for configuration and adapter contracts.
 

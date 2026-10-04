@@ -48,6 +48,10 @@ Without that setting the mount still works, but only the account running zurg ca
 
 Download the matching Linux archive from the [sponsor releases](https://github.com/debridmediamanager/zurg/releases). Choose `linux-amd64` for an Intel or AMD machine and `linux-arm64` for an ARM machine.
 
+Take the newest nightly. It is the pre-release at the top of the list. Do not take the release GitHub marks **Latest**. That is v1.0.0. It is older than `zurg setup` and answers it with `unknown command`.
+
+Nightlies are for sponsors. Until your GitHub account has access that page answers 404. The free public build is v1.0.0 from [zurg-public](https://github.com/debridmediamanager/zurg-public/releases). It has no `zurg setup`. Set it up by hand as [its README](https://github.com/debridmediamanager/zurg-public#readme) explains instead of following the steps below.
+
 Extract it into the directory that should hold the whole install:
 
 ```bash
@@ -123,6 +127,12 @@ ls /mnt/zurg/version.txt
 
 A large Real-Debrid library takes time to build on its first run. The service can already be active while the first mount listing waits for that scan to finish.
 
+`version.txt` answers as soon as zurg is running. A large library keeps loading after that. Its folders show up empty or as `Input/output error` until it is done. `/ready` tells you when it is.
+
+```bash
+curl -fsS http://127.0.0.1:9999/ready
+```
+
 ## Disk the mount uses
 
 The mount caches every file it reads under `~/zurg/data/rclone-cache`. It keeps the whole file after playback ends. Left alone that cache grows to **256G** and stays there. It is not cleared when a video stops. The 72h age limit will not save you either. rclone counts a file as touched whenever anything reads it and a media server's nightly maintenance pass reads the whole library.
@@ -187,13 +197,15 @@ cd ~/zurg
 ./zurg service restart
 ```
 
-`update` takes the newest nightly. It downloads it, checks the new binary reports the version it expected, and only then swaps it in by rename, so the running process is never overwritten. When the installed build is already the newest it says so and changes nothing. Credentials come from the GitHub CLI sign-in when there is one, and from `GITHUB_TOKEN` or `GH_TOKEN` otherwise.
+`update` takes the newest nightly. It downloads it, checks the new binary reports the version it expected, and only then swaps it in by rename, so the running process is never overwritten. When the installed build is already the newest it says so and changes nothing.
 
-On a build too old to carry the command, the installer does the same job and touches nothing else:
+`update` signs in to GitHub with the account you used for the install. The installer keeps the GitHub CLI in `~/zurg/bin` for that. If `update` says it found no GitHub credential then your install is older than that change. Run the installer's update once and every `zurg update` after it works. The same command also updates a build too old to have `zurg update`. It only swaps the binary and touches nothing else.
 
 ```bash
 curl -fsSL https://zurg.debridmediamanager.com/install.sh | bash -s update
 ```
+
+A server without the GitHub CLI can set `GITHUB_TOKEN` instead. Use a classic token with the `repo` scope from the GitHub account that has zurg access.
 
 ## Existing and unattended configs
 

@@ -51,7 +51,7 @@ docker version
 docker compose version
 ```
 
-Sign in to GitHub Container Registry with your GitHub username. When prompted for the password, paste a personal access token with `read:packages` access:
+Sign in to GitHub Container Registry with your GitHub username. When prompted for the password, paste a classic personal access token with both the `read:packages` and `repo` scopes. The image belongs to a private repository, and a token with `read:packages` alone can log in but still fail to pull:
 
 ```bash
 docker login ghcr.io -u YOUR_GITHUB_USERNAME
@@ -143,7 +143,7 @@ docker compose logs -f --tail=100 zurg
 
 Leave the log view with `Ctrl+C`; the container keeps running. The Dashboard is at `http://localhost:9999/config/` and edits the same `config.yml` stored beside the compose file.
 
-A large library can take a while to load on its first run. Until it has, `/dav/movies/` answers 503 and the mount may list nothing.
+A large library can take a while to load. Folders in the mount fail to list until it has. They show up empty or as `Input/output error` while the Dashboard and `version.txt` work as normal. That means zurg is still loading and not that the mount is broken. [Up versus ready](#up-versus-ready) shows how to tell when the load is done.
 
 ## 6. Verify with doctor
 
@@ -184,6 +184,61 @@ sudo systemctl enable rshared-zurg-mnt.service
 ```
 
 On the next reboot the host prepares the shared parent before Docker restores the zurg container.
+
+## Up versus ready
+
+zurg answers two different questions over HTTP. Neither needs a password even when `username` is set.
+
+| Address | Answers 200 when | While the library loads |
+|---|---|---|
+| `/http/version.txt` | zurg is running | 200 |
+| `/ready` | the library has finished loading | 503 with `Retry-After: 5` |
+
+The container's health check asks the first one. `docker compose ps` shows `healthy` as soon as zurg is running. A large library can keep loading for a long time after that. Ask `/ready` when you need the whole library. It prints `ready` once the load is done.
+
+```bash
+curl -fsS http://localhost:9999/ready
+docker compose exec zurg /app/healthcheck.sh --ready && echo ready
+```
+
+A script can wait for it like this.
+
+```bash
+until curl -fsS http://localhost:9999/ready >/dev/null; do sleep 10; done
+```
+
+### Why the health check does not wait for the library
+
+Docker keeps one health status per container. The tools that read it take it to mean "is zurg alive". autoheal and Docker Swarm restart a container that turns unhealthy. `depends_on` with `condition: service_healthy` holds other services back until zurg is healthy.
+
+Cold starts of 15 to 90 minutes have been reported on large libraries. A health check that waited for the library would hold every dependent service back for that long. An rclone container in front of zurg would leave its mount folder empty the whole time. An empty folder looks to a media server like a library that has been deleted. A load that outlasted the health check's retries would also be marked unhealthy. Anything that restarts unhealthy containers would then start the load over. It would never finish.
+
+### Using readiness with Compose
+
+Keep a mount container on the default health check so its mount comes up as soon as zurg is running.
+
+```yaml
+services:
+  rclone:
+    depends_on:
+      zurg:
+        condition: service_healthy
+```
+
+Wait on `/ready` in whatever needs the whole library. That could be a scan script or an import job.
+
+You can make the zurg container itself report healthy only once the library has loaded. Override its health check in `docker-compose.yml` and set `start_period` longer than your slowest load. Docker does not count failures inside the start period. Every service that depends on zurg then waits for the library as well. Do not combine this with autoheal.
+
+```yaml
+services:
+  zurg:
+    healthcheck:
+      test: ["CMD", "/app/healthcheck.sh", "--ready"]
+      interval: 30s
+      timeout: 10s
+      start_period: 3h
+      retries: 3
+```
 
 ## Managing and updating zurg
 
@@ -310,10 +365,13 @@ Check each layer in order:
 docker compose logs zurg 2>&1 | grep -i rclone
 docker compose exec zurg ls -la /zurg_mnt/zurg
 curl -fsS http://localhost:9999/http/version.txt
+curl -fsS http://localhost:9999/ready
 findmnt -o TARGET,PROPAGATION /zurg_mnt
 ```
 
 The host path must be a shared bind mount and the compose volume must bind the parent as `/zurg_mnt:/zurg_mnt:rshared`.
+
+If `/ready` fails with error 503 the library is still loading and the mount is fine. Its folders list as empty or show `Input/output error` until the load finishes. Wait for it instead of restarting zurg. A restart starts the load over.
 
 ### Mount appears twice in `mount` output
 

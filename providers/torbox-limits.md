@@ -205,6 +205,11 @@ does, via `TORBOX_CDN_EDGE`), so the ceiling below is what applies here.
 
 Source: [Account Restrictions](https://support.torbox.app/en/articles/9836418-account-restrictions).
 
+`/user/me` reports the plan as a number, and the numbers are not in price
+order: **0 Free, 1 Essential, 2 Pro, 3 Standard**. Standard was added after
+Pro. Zurg read plan 2 as Standard until 2026-10-03, which gave Pro accounts
+five slots and Standard's usage floor.
+
 **Active slots are TorBox's defining restriction**, where Real-Debrid's is
 bandwidth. A torrent occupies a slot while downloading *or seeding*, so on a
 paid plan a completed torrent can hold one for up to 30 days.
@@ -215,8 +220,18 @@ paid plan a completed torrent can hold one for up to 30 days.
   `plan` on the user record, so repair blocks and waits instead of queueing
   adds the account will reject. A provider reporting no ceiling is treated as
   unbounded rather than blocking forever.
-- **Added torrents are marked never-seed.** Seeding holds a slot for weeks and
-  bills outgoing traffic, neither of which helps a streaming mount.
+- **Added torrents are marked never-seed by default.** Seeding holds a slot for
+  weeks and bills outgoing traffic, neither of which helps a streaming mount.
+  `tb_seed_torrents` changes it for an operator whose private tracker counts
+  ratio: `never` sends `seed=3` (the default), `always` sends `seed=2`, and
+  `auto` leaves the field out. TorBox's own description of the field is "1 is
+  auto. 2 is seed. 3 is don't seed. Optional. Default is 1, or whatever the user
+  has in their settings. Overwrites option in settings", so any value sent,
+  `1` included, replaces the account's Seeding setting and only an absent field
+  lets it apply. The same mode goes on all three add paths: the magnet add, the
+  cached-only add and the `.torrent` upload. With seeding on, finished torrents
+  keep their slots, so repair and the download-client endpoints stall against
+  the ceiling once seeding torrents hold all of them.
 - **The cache is never checked before adding.** `checkcached` has no call site
   at all. Cached-only mode (`qbittorrent.download_timeout_mins: 0`) was the one
   exception until it was made to add the torrent and watch the instance like
@@ -307,8 +322,10 @@ Source: [The TorBox Abuse System](https://support.torbox.app/en/articles/1033677
 
 ### What zurg does
 
-- **Added torrents never seed**, so nothing is billed on the way out for
-  content zurg only ever reads.
+- **Added torrents never seed by default**, so nothing is billed on the way out
+  for content zurg only ever reads. `tb_seed_torrents: always` (or `auto` on an
+  account set to seed) is the one setting that changes this, and its upload is
+  billed like any other.
 - **Usage is sampled and differenced.** The API publishes no rolling figure,
   only a lifetime counter on `/user/me`, so the account refresher records that
   counter every 30 minutes to `data/torbox_usage.json` and differences the

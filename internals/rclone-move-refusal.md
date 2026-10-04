@@ -47,3 +47,12 @@ This correction does not suppress .NET's copy fallback or make damaged content
 readable. zurg's availability check before SABnzbd completion and its refused
 MOVE remain separate protections. Availability sampling is not a full-file
 verification; see `sabnzbd-client-contract.md`.
+
+The pinned patch also carries the file-alias correction used by the embedded
+union. With `action_policy: all`, local and WebDAV can both receive a file
+operation. A successful local Move or Remove paired with a WebDAV 404 is
+accepted only after a fresh lookup proves that the failed upstream's source is
+gone; all-failed operations, a source that still exists, a missing destination
+parent, and other I/O or permission errors remain failures. The resulting
+binary reports `v1.72.0-zurg-rename-sidecar-fix` so it is distinguishable from
+the original VFS-only build.

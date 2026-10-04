@@ -107,6 +107,8 @@ Downloads rclone and ffprobe into a folder and writes their paths into the confi
 
 Replaces the binary with the newest sponsor nightly. Inside a container it refuses because the next recreate would throw the new binary away. Pull a new image there instead. `--force` updates anyway.
 
+It signs in to GitHub through the GitHub CLI. That is the one on your PATH or the one the installers keep in `bin` beside zurg. A sign-in the GitHub CLI saved without a keyring works even when the CLI itself is gone. `GITHUB_TOKEN` works too. When it finds none it prints the installer command that puts the GitHub CLI back.
+
 ### zurg version
 
 Prints the build. `zurg --version` prints the same thing.

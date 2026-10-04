@@ -39,6 +39,8 @@ With `__magic__` the import is a rename inside one namespace: a row is written, 
 
 It only works if the \*arr's **root folder is also inside `__magic__`** — `/mnt/zurg/__magic__/tv`, not a directory elsewhere on the machine. A move whose destination is outside the namespace is a move between two filesystems, which is a copy again; zurg refuses it outright with a `403` rather than letting it happen quietly. The one place inside the namespace that is also refused is `__magic__/__all__`, which is the library's own layout rather than anywhere to put things. [sabnzbd.md](sonarr-radarr.md) has the exact settings.
 
+zurg's own acquisition places files here too. A Radarr source puts each release it confirms into the movie's folder with the same move an import makes, then asks Radarr to rescan: see [acquisition.md](acquisition.md#placing-the-file).
+
 Organising the library by hand is the other half, and it works with no \*arr involved.
 
 ## With nothing stored, it is `__all__`'s releases as real folders
@@ -113,6 +115,7 @@ The consequences, all deliberate:
 - **A repair keeps your layout.** The release comes back under a new id and the files are still where you put them.
 - **Renaming a release does not move anything.** A rename, and the suffix zurg adds when two different releases would share a folder name, both change what a release's default folder is called. Placements are unaffected.
 - **A file that goes missing is not forgotten.** If a repair changes the file set — Real-Debrid re-packing a rar'ed release is the usual cause — a row whose file no longer exists is *kept but not listed*. If the file comes back, so does its position. Rows in that state show up on the dashboard as **dangling**, where you can drop them.
+- **Deleting a release and adding it again keeps your layout too.** DMM's reinsert, or a delete followed by a fresh add of the same release, brings back the same hash. The files go back to where you put them, and a folder you deleted, such as the job folder an \*arr removes after an import, stays hidden. To have the release in `__magic__/__all__` again, search for it on the dashboard's `__magic__` page and press **Unhide** on its release tombstone.
 
 One backend needs more than an exact path match. A Usenet post's filenames are *resolved* rather than given, re-derived on every load and never stored, so a post first read while the news server was unreachable keeps its obfuscated names until a later load recovers the real ones. For those, a row falls back to the file's index inside the NZB, and then to basename-plus-size where exactly one file matches.
 
@@ -129,11 +132,17 @@ magic:
   allow_delete: true
 ```
 
-Then a **file** delete removes the content from the account as well. A release folder, a directory and an entry inside an archive never do, whatever this is set to: the first is what Sonarr deletes after every import, and the last has no file of its own to remove.
+Then a **file** delete removes the content from the account as well. A release folder and a directory never do, whatever this is set to: the first is what Sonarr deletes after every import.
+
+An entry inside an archive is the episode or movie of most Usenet releases. It has no file of its own. The archive holds everything else in the release too. So deleting one removes the whole release only once nothing under `__magic__` uses any of it. No file of it may still be placed anywhere. Its own folder must be deleted or have nothing left to import. That is the state an upgrade leaves a replaced Usenet episode in. Until this was handled the replaced release stayed in the library and its NZB in `nzbs/` for good.
+
+A plain video is deleted on its own. Its release goes too once nothing under `__magic__` uses any of it. The same two rules decide that. Releases post more than their video. An `.nfo` or subtitles or a poster sits beside it and nobody imports those. Until this was handled they kept the release in the library after its only video was deleted. Its NZB stayed in `nzbs/` and a debrid release stayed on the account. Another episode of the same pack keeps the release while it is placed or still in the release folder. So does a release folder that was moved somewhere. So does an episode that has stopped reading but may still be repaired. Deleting a sidecar where it was posted never removes the release. Deleting the last subtitle Sonarr or Radarr imported beside the video does.
 
 `dav_allow_rename`, and the mount's own ungated delete path, have nothing to do with any of this. Those cover the routes that rename and destroy what the debrid account holds; a write under `__magic__` reaches no account. `mount_read_only: true` still overrides everything, at the kernel.
 
 Undoing a tombstone is a click on the dashboard.
+
+So an upgrade leaves the release it replaced in your library. **Manage > Duplicates** lists those leftovers beside the release the \*arr uses now, and deletes the ones you choose: see [finding duplicate releases](acquisition.md#finding-duplicate-releases).
 
 ## Filters and `__all__` are untouched
 
@@ -169,6 +178,8 @@ Under `union_writable: server` that number stays at zero and the log is what say
 
 From there you can reset a placement (the file goes back to its default location), clear a tombstone (the entry comes back), drop a dangling row, prune all of them at once, and delete a sidecar. Each is confirmed before it runs.
 
+The stored rows list shows the first thousand rows, and on a library an \*arr organises that is a small part of the table, because every import leaves a tombstone behind. To reach one release, search for it: a release name, a path on the mount or a hash lists every row stored about that release with its buttons, however large the table is. The dangling list takes the same search. A release the library no longer holds has no name in the table, only its hash and the paths its rows put things at.
+
 Sidecars **nothing accounts for any more** are listed apart from the rest and counted: an `.nfo` beside a release that has left the library, or inside a placement that has been forgotten. They are still served — a real file is the last thing a path resolves to, and nothing above them is claiming the name — so what has gone is the reason they were put there. zurg never sweeps one. A directory you made for sidecars yourself, through the mount rather than through zurg, reads the same way, because that leaves no row either.
 
 If the SABnzbd endpoint is on, the page also lists its jobs — id, name, category, state, and the folder handed to the \*arr — which is the fastest way to answer "why is Sonarr still showing this as downloading".
@@ -176,6 +187,8 @@ If the SABnzbd endpoint is on, the page also lists its jobs — id, name, catego
 ## Durability
 
 Every change is appended to `data/magic.journal` and flushed to disk **before** the request is answered, so a move an \*arr believes it made is a move that survives a crash. The journal is folded into a `data/magic.json` snapshot at startup, when it grows past a threshold, and on shutdown.
+
+Neither file is a place to change the table. zurg keeps it in memory and writes `magic.json` out from there, so a row deleted from the file by hand while zurg is running is back after the next restart. Use the buttons on the dashboard.
 
 A torn last line from a power cut is dropped and everything before it is kept. A snapshot written by a different schema version is discarded rather than guessed at, and a journal line from one stops the replay there. A snapshot or journal that cannot be read is a warning and an empty table, not a failed start — and a table whose files cannot be *opened* leaves `__magic__` serving read-only, as the mirror of `__all__` it starts as, with every write refused. Writes arriving during shutdown are refused with `503` instead of being acknowledged and lost.
 
