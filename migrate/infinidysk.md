@@ -266,4 +266,6 @@ that gone from its PAR2 files where it can. One it cannot rebuild is reported
 **Failed**. The \*arr then blocklists it and grabs another. A post that lost a
 stretch further into a file still reports Completed and fails on the read that
 reaches the gap. Keep the \*arrs' root folders inside `__magic__`. A root
-folder anywhere else gets a full copy of every import.
+folder anywhere else gets a full copy of every import. In Docker give the \*arr one volume that holds zurg's whole mount. A
+download folder and root folders on two volumes copy every import too. See
+[one volume](../guides/sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).

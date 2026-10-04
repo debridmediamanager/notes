@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844409366003">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844464300615">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844409366003" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844464300615" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844464300615" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844409366003" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844464300615" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844464300615" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -533,7 +533,7 @@ $ ls -d /mnt/zurg_usenet/__magic__/tv /mnt/zurg_usenet/__magic__/movies
 <p>Then <strong>Settings → Media Management → Root Folders → Add Root Folder</strong>, and add <code translate="no" v-pre>/mnt/zurg_usenet/__magic__/movies</code>.</p>
 <p><strong>One zurg, two clients, one queue.</strong> zurg&#x27;s queue and history are filtered by category and nothing else. Two Sonarrs both using <code translate="no" v-pre>tv</code> will see each other&#x27;s jobs; Sonarr on <code translate="no" v-pre>tv</code> and Radarr on <code translate="no" v-pre>movies</code> will not. Keep one client per category and this never comes up.</p>
 <h2 id="8-if-your-arr-is-in-docker">8. If your *arr is in Docker</h2>
-<p>Two separate problems, and the second one does not bite until the first time zurg restarts.</p>
+<p>Three separate problems. The second one costs a download on every import. The third does not bite until the first time zurg restarts.</p>
 <h3 id="the-path-zurg-reports-must-be-a-path-the-client-can-open">The path zurg reports must be a path the client can open</h3>
 <p>If the container mounts the library somewhere other than zurg does, every import fails with <em>download doesn&#x27;t contain intermediate path</em> or a remote-path health check. Fix it either way — both are fine:</p>
 <ul>
@@ -550,8 +550,18 @@ $ ls -d /mnt/zurg_usenet/__magic__/tv /mnt/zurg_usenet/__magic__/movies
     <figcaption class="caption">The add remote path mapping dialog</figcaption>
 </figure>
 <p><strong>Host</strong> must be exactly the host string you typed into the download client. <strong>Remote Path</strong> is what zurg reports; <strong>Local Path</strong> is where the client sees it.</p>
+<h3 id="one-volume-for-the-download-folder-and-the-root-folders">One volume for the download folder and the root folders</h3>
+<p>An import out of <code translate="no" v-pre>__magic__/__all__</code> into <code translate="no" v-pre>__magic__/tv</code> is free because it is a rename. A rename only works inside one mount. Give the container the two folders as two volumes and it sees two filesystems. Both are zurg&#x27;s mount underneath and it still does not matter.</p>
+<div id="one-volume-for-the-download-folder-and-the-root-folders-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">    volumes:                                        # do not do this
+      - /mnt/zurg_usenet/__magic__/__all__:/downloads
+      - /mnt/zurg_usenet/__magic__/tv:/tv</code></pre>
+</doc-codeblock></div>
+<p>The kernel refuses the rename inside the container. Sonarr and Radarr then copy the file and delete the original without saying so. Every import downloads the whole release from your account and writes it to zurg&#x27;s disk. The import still succeeds. It is just slow. One 1.46 GB episode took 50 seconds and 2.9 GB of traffic this way. With one volume it took one second and read nothing.</p>
+<p>Give the container one volume that holds zurg&#x27;s whole mount. Reach the download folder and the root folders through it. The bind in the next section does exactly that. A remote path mapping or <code translate="no" v-pre>complete_dir</code> then points the client at <code translate="no" v-pre>__all__</code> inside that same volume.</p>
+<p>A manual import set to <strong>Hardlink/Copy Files</strong> copies too. Pick <strong>Move Files</strong>.</p>
 <h3 id="bind-the-mounts-parent-not-the-mountpoint">Bind the mount&#x27;s parent, not the mountpoint</h3>
-<p>This is the one that costs an afternoon. Restarting zurg unmounts <code translate="no" v-pre>/mnt/zurg_usenet</code> and mounts it again. A container that bound <strong>the mountpoint itself</strong> keeps the fuse connection it was started with — which is now dead. Every read then answers <code translate="no" v-pre>Socket not connected</code>, and because both clients check free space on the root folder before they grab, <em>every release is silently rejected</em>:</p>
+<p>This is the one that costs an afternoon. It is also the one volume the section above asks for. Restarting zurg unmounts <code translate="no" v-pre>/mnt/zurg_usenet</code> and mounts it again. A container that bound <strong>the mountpoint itself</strong> keeps the fuse connection it was started with — which is now dead. Every read then answers <code translate="no" v-pre>Socket not connected</code>, and because both clients check free space on the root folder before they grab, <em>every release is silently rejected</em>:</p>
 <div id="bind-the-mounts-parent-not-the-mountpoint-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-none"><code v-pre class="language-none">FreeSpaceSpecification: Socket not connected</code></pre>
 </doc-codeblock></div>
@@ -670,6 +680,7 @@ size=4920958828</code></pre>
 | &quot;Category … does not exist&quot; | The category in the \*arr is not in `sabnzbd.categories`. Add it and restart zurg. |
 | &quot;Downloads in root folder&quot; | A root folder is at or above the completed directory. Move it beside it — `__magic__/tv`, not `__magic__/__all__`, not `__magic__` and not `/mnt/zurg_usenet`. |
 | &quot;Remote path mapping&quot; / &quot;download doesn't contain intermediate path&quot; | The path zurg reports is not a path the client can open. See [step 8](#8-if-your-arr-is-in-docker). |
+| Imports succeed but take as long as a download and zurg's disk fills up | The client is copying out of `__magic__/__all__` instead of renaming. Its container has the download folder and the root folders on two volumes. Or a manual import was set to copy. See [one volume for the download folder and the root folders](#one-volume-for-the-download-folder-and-the-root-folders). |
 | Every release rejected, nothing in the log | A stale bind mount. Run `docker exec &lt;client&gt; df -h &lt;mount&gt;`; if it says `Socket not connected`, bind the parent with `rslave` and recreate the container. |
 | A job stays queued for a poll or two after the release appears | Expected, and it settles once per release. An NZB does not state how long a file is; the estimate is being replaced by the exact length from the PAR2 index or one article's own header. Reporting Completed early is what makes the client throw *File move incomplete, data loss may have occurred*. |
 | A job sits queued for ever | The release never appeared in the library. Check that the NZB parsed — `Loaded NZB &lt;name&gt;: N files` in the log — and that the `nzb` provider is configured at all. |
@@ -709,6 +720,10 @@ size=4920958828</code></pre>
 <tr>
 <td>&quot;Remote path mapping&quot; / &quot;download doesn&#x27;t contain intermediate path&quot;</td>
 <td>The path zurg reports is not a path the client can open. See <doc-anchor-trigger to="#8-if-your-arr-is-in-docker">step 8</doc-anchor-trigger>.</td>
+</tr>
+<tr>
+<td>Imports succeed but take as long as a download and zurg&#x27;s disk fills up</td>
+<td>The client is copying out of <code translate="no" v-pre>__magic__/__all__</code> instead of renaming. Its container has the download folder and the root folders on two volumes. Or a manual import was set to copy. See <doc-anchor-trigger to="#one-volume-for-the-download-folder-and-the-root-folders">one volume for the download folder and the root folders</doc-anchor-trigger>.</td>
 </tr>
 <tr>
 <td>Every release rejected, nothing in the log</td>

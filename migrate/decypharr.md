@@ -199,6 +199,13 @@ magic:
 not the mount root. Both \*arrs raise a health check for those; siblings trip
 neither.
 
+In Docker the \*arrs must reach `__all__` and these root folders through one
+volume. decypharr setups often bind a downloads folder and a media folder
+separately. Two volumes turn every import into a full copy. Bind the parent
+of zurg's mount once instead. The
+[walkthrough](../guides/sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders)
+shows it.
+
 ```bash
 mkdir -p /mnt/zurg/__magic__/tv /mnt/zurg/__magic__/movies
 ls /mnt/zurg/__magic__/__all__/   # your releases are already listed here
@@ -302,4 +309,5 @@ can hand it a magnet or a `.torrent` for a debrid account. Both import out of
 - **Hybrid.** Keep decypharr purely as the \*arrs' download client pushing into
   the same debrid accounts with zurg serving the mount. Both list the same
   account so zurg picks up what decypharr adds. The \*arr import step then needs
-  remote path mapping onto zurg's tree. Test one grab first.
+  remote path mapping onto zurg's tree. That tree and the root folders must
+  sit in one volume. Test one grab first.

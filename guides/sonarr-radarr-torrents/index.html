@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844409366003">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844464300615">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844409366003" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844464300615" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844464300615" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844409366003" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844464300615" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844464300615" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -335,6 +335,7 @@ $ ls -d /mnt/zurg_qbt/__magic__/tv /mnt/zurg_qbt/__magic__/movies
 <p>Substitute your own <code translate="no" v-pre>mount_path</code> for <code translate="no" v-pre>/mnt/zurg_qbt</code>.</p>
 <p><strong>The root folder goes beside the save path, not at it and not above it</strong> — the same rule as the Usenet walkthrough, for the same reason: zurg reports <code translate="no" v-pre>__magic__/__all__</code> as the save path, both clients raise a health check when a root folder <em>is</em> the download client&#x27;s output folder, Radarr also raises one when a root folder <em>contains</em> it, and siblings trip neither. <a href="../sonarr-radarr/#4-make-the-root-folders">That guide</a> has the screenshots of getting it wrong.</p>
 <p>There is a second reason that is specific to torrents: a move whose destination is outside <code translate="no" v-pre>__magic__</code> is a move between two filesystems, which is a copy — and a copy off a debrid mount reads the whole release back over the network. <code translate="no" v-pre>Remove Completed</code> staying on (<doc-anchor-trigger to="#if-the-import-copies-instead-of-moving">below</doc-anchor-trigger>) keeps the import a rename; a root folder outside the namespace would undo that anyway.</p>
+<p>A move between two volumes is a copy as well. That matters in Docker. Step 8 covers it.</p>
 <h2 id="5-add-the-client-in-sonarr">5. Add the client in Sonarr</h2>
 <p>A brand-new Sonarr blocks everything behind a first-run screen. Pick <strong>Forms (Login Page)</strong>, set a username and password, and click <strong>Save</strong>.</p>
 <figure class="content-center">
@@ -520,12 +521,13 @@ $ ls -d /mnt/zurg_qbt/__magic__/tv /mnt/zurg_qbt/__magic__/movies
 <p>Then <strong>Settings → Media Management → Root Folders → Add Root Folder</strong>, and add <code translate="no" v-pre>/mnt/zurg_qbt/__magic__/movies</code>.</p>
 <p><strong>One zurg, two clients, one queue.</strong> The torrent list each client sees is filtered by category and nothing else. Two Sonarrs both using <code translate="no" v-pre>tv-sonarr</code> will see each other&#x27;s grabs; Sonarr on <code translate="no" v-pre>tv-sonarr</code> and Radarr on <code translate="no" v-pre>radarr</code> will not. Keep one client per category and this never comes up.</p>
 <h2 id="8-if-your-arr-is-in-docker">8. If your *arr is in Docker</h2>
-<p>The same two problems as the Usenet walkthrough, with the same fixes — the mount is the mount — so this is the short version. <a href="../sonarr-radarr/#8-if-your-arr-is-in-docker">That guide&#x27;s step 8</a> has the detail.</p>
+<p>The same three problems as the Usenet walkthrough, with the same fixes — the mount is the mount — so this is the short version. <a href="../sonarr-radarr/#8-if-your-arr-is-in-docker">That guide&#x27;s step 8</a> has the detail.</p>
 <p><strong>The path zurg reports must be a path the client can open.</strong> If the container mounts the library somewhere other than zurg does, every import fails with <em>download doesn&#x27;t contain intermediate path</em> or a remote-path health check. Set <code translate="no" v-pre>qbittorrent.save_path</code> to the path <em>the client</em> sees, or add a remote path mapping:</p>
 <div id="8-if-your-arr-is-in-docker-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">qbittorrent:
   save_path: &quot;/data/zurg/__magic__/__all__&quot;   # what the *arr sees, not what zurg sees</code></pre>
 </doc-codeblock></div>
+<p><strong>One volume for the save path and the root folders.</strong> Do not give the container <code translate="no" v-pre>__magic__/__all__</code> and <code translate="no" v-pre>__magic__/tv</code> as two volumes. The rename between them fails inside the container. The client then copies every import from your account and writes it to zurg&#x27;s disk without saying so. Give it one volume that holds zurg&#x27;s whole mount and reach both folders through it. The bind below is that volume.</p>
 <p><strong>Bind the mount&#x27;s parent, not the mountpoint.</strong> Restarting zurg unmounts and remounts; a container that bound the mountpoint itself keeps the dead fuse connection and every read after that answers <code translate="no" v-pre>Socket not connected</code> — and because both clients check free space before a grab, <em>every release is silently rejected</em>. Bind the parent with <code translate="no" v-pre>rslave</code> and the remount arrives as a sub-mount event the container follows. This rig&#x27;s containers were started before zurg ever mounted, and the mount still appeared inside them:</p>
 <div id="8-if-your-arr-is-in-docker-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">$ docker exec sonarr df -h /mnt/zurg_qbt
@@ -753,14 +755,15 @@ came through it.</p>
 imported by rename into <code translate="no" v-pre>__magic__/movies</code> and nothing was copied. A Radarr set
 to another category never saw it. Sonarr was not tested.</p>
 <h2 id="if-the-import-copies-instead-of-moving">If the import copies instead of moving</h2>
-<p>Everything above depends on the import being a <strong>rename</strong>. One setting in the *arr decides that, and it is the only part of the decision zurg has no say in.</p>
+<p>Everything above depends on the import being a <strong>rename</strong>. Two things decide that and zurg has no say in either. One is how the container reaches the mount. A save path and root folders on two volumes copy every import whatever else is set. <doc-anchor-trigger to="#8-if-your-arr-is-in-docker">Step 8</doc-anchor-trigger> covers it. The other is one setting in the *arr.</p>
 <p>The client will only move an imported file when it believes it is free to remove the download afterwards, which is three things at once: <strong>Remove Completed</strong> on, a finished-and-paused torrent, and a seed limit it can see has been reached. zurg reports the last two exactly as they have to be — every completed torrent comes back paused, at ratio 0 against a ratio limit of 0. <strong>Remove Completed</strong> is the one that is yours.</p>
 <p>With it off the client copies instead, and off a debrid mount a copy means reading every byte of the release back over the network and writing it to local disk. The release in step 9 would go from a rename that moved nothing to a 17 GiB download, to import a file that was already there.</p>
 <p><strong>Nothing in the *arr says so.</strong> The import is reported as successful either way and the history row looks the same. The difference shows only in zurg&#x27;s log:</p>
 <retype-table copy-text="| The import | What zurg logs |
 |---|---|
 | moved — correct | one `MOVE __magic__` line |
-| copied | `MKCOL`, then a `PUT` carrying the release's full byte count |">
+| copied through zurg's own mount | a `DELETE __magic__` of the source with no `MOVE` before it |
+| copied through a mount of your own | `MKCOL`, then a `PUT` carrying the release's full byte count |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -775,14 +778,18 @@ to another category never saw it. Sonarr was not tested.</p>
 <td>one <code translate="no" v-pre>MOVE __magic__</code> line</td>
 </tr>
 <tr>
-<td>copied</td>
+<td>copied through zurg&#x27;s own mount</td>
+<td>a <code translate="no" v-pre>DELETE __magic__</code> of the source with no <code translate="no" v-pre>MOVE</code> before it</td>
+</tr>
+<tr>
+<td>copied through a mount of your own</td>
 <td><code translate="no" v-pre>MKCOL</code>, then a <code translate="no" v-pre>PUT</code> carrying the release&#x27;s full byte count</td>
 </tr>
 </tbody>
 </table>
 </div>
 </retype-table>
-<p>A <code translate="no" v-pre>PUT</code> of a media file arriving while an import is in flight is that import copying. The <code translate="no" v-pre>/magic/</code> page says the same thing more slowly: it reports the size of <code translate="no" v-pre>data/local</code>, which is where a copying client&#x27;s bytes land and where nothing else would put them. If that number grows every time something imports, this is why.</p>
+<p>zurg&#x27;s own mount writes the copy straight into <code translate="no" v-pre>data/local</code>. zurg only hears the delete. A <code translate="no" v-pre>PUT</code> of a media file arriving while an import is in flight is that import copying through some other mount. The <code translate="no" v-pre>/magic/</code> page says the same thing more slowly: it reports the size of <code translate="no" v-pre>data/local</code>, which is where a copying client&#x27;s bytes land and where nothing else would put them. If that number grows every time something imports, this is why.</p>
 <p>Turn <strong>Remove Completed</strong> back on and the next import is a rename again. <strong>Use Hardlinks instead of Copy</strong> is not a substitute — the client only consults it once it has already decided to copy, so it cannot turn a copy back into a move.</p>
 <h2 id="timeouts-and-cached-only-mode">Timeouts, and cached-only mode</h2>
 <p>A grab that stops moving comes off the account it is on and is offered to the next. One key decides it:</p>
@@ -886,7 +893,7 @@ to another category never saw it. Sonarr was not tested.</p>
 | A completed release sits in the queue as a warning | Either the client decided not to import it (an upgrade the profile refuses), or every account refused it. The queue row carries the reason. It clears nothing by itself — remove it by hand, and *Blocklist and Search* if the release is bad. |
 | &quot;Downloads in root folder&quot; / &quot;Remote path mapping&quot; | The same root-folder and path rules as the Usenet endpoint — see [steps 4](#4-make-the-root-folders) and [8](#8-if-your-arr-is-in-docker). |
 | Every release rejected, nothing in the log | A stale bind mount. Run `docker exec &lt;client&gt; df -h &lt;mount&gt;`; if it says `Socket not connected`, bind the parent with `rslave` and recreate the container. |
-| Imports succeed, but they take a long time and local disk fills | The \*arr is copying rather than renaming. zurg's log shows a `PUT` carrying the release's full size where a rename would be one `MOVE`. **Remove Completed** is off on the download client — see [If the import copies instead of moving](#if-the-import-copies-instead-of-moving). |">
+| Imports succeed, but they take a long time and local disk fills | The \*arr is copying rather than renaming. zurg's log shows a `DELETE` of the source with no `MOVE`, or a `PUT` carrying the release's full size. Either **Remove Completed** is off on the download client or the container has the save path and the root folders on two volumes. See [If the import copies instead of moving](#if-the-import-copies-instead-of-moving) and [step 8](#8-if-your-arr-is-in-docker). |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -930,7 +937,7 @@ to another category never saw it. Sonarr was not tested.</p>
 </tr>
 <tr>
 <td>Imports succeed, but they take a long time and local disk fills</td>
-<td>The *arr is copying rather than renaming. zurg&#x27;s log shows a <code translate="no" v-pre>PUT</code> carrying the release&#x27;s full size where a rename would be one <code translate="no" v-pre>MOVE</code>. <strong>Remove Completed</strong> is off on the download client — see <doc-anchor-trigger to="#if-the-import-copies-instead-of-moving">If the import copies instead of moving</doc-anchor-trigger>.</td>
+<td>The *arr is copying rather than renaming. zurg&#x27;s log shows a <code translate="no" v-pre>DELETE</code> of the source with no <code translate="no" v-pre>MOVE</code>, or a <code translate="no" v-pre>PUT</code> carrying the release&#x27;s full size. Either <strong>Remove Completed</strong> is off on the download client or the container has the save path and the root folders on two volumes. See <doc-anchor-trigger to="#if-the-import-copies-instead-of-moving">If the import copies instead of moving</doc-anchor-trigger> and <doc-anchor-trigger to="#8-if-your-arr-is-in-docker">step 8</doc-anchor-trigger>.</td>
 </tr>
 </tbody>
 </table>

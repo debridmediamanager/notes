@@ -109,7 +109,8 @@ file operation.
 !!!danger Never let an \*arr move the old library into `__magic__`
 Changing a series or movie root folder makes Sonarr or Radarr offer to **move**
 the files. Say no. A move inside `__magic__` is free. A move from anywhere else crosses the
-mount boundary and that is a copy. A copy off a streaming mount pulls your
+mount boundary and that is a copy. So is a move between two volumes of the same
+mount. In Docker give the \*arr one volume that holds zurg's whole mount. A copy off a streaming mount pulls your
 entire library down through your news or debrid allowance. Your old library is
 a tree of symlinks so what gets copied is every target they resolve to.
 !!!

@@ -164,6 +164,8 @@ Substitute your own `mount_path` for `/mnt/zurg_qbt`.
 
 There is a second reason that is specific to torrents: a move whose destination is outside `__magic__` is a move between two filesystems, which is a copy — and a copy off a debrid mount reads the whole release back over the network. `Remove Completed` staying on ([below](#if-the-import-copies-instead-of-moving)) keeps the import a rename; a root folder outside the namespace would undo that anyway.
 
+A move between two volumes is a copy as well. That matters in Docker. Step 8 covers it.
+
 ## 5. Add the client in Sonarr
 
 A brand-new Sonarr blocks everything behind a first-run screen. Pick **Forms (Login Page)**, set a username and password, and click **Save**.
@@ -276,7 +278,7 @@ Then **Settings → Media Management → Root Folders → Add Root Folder**, and
 
 ## 8. If your \*arr is in Docker
 
-The same two problems as the Usenet walkthrough, with the same fixes — the mount is the mount — so this is the short version. [That guide's step 8](sonarr-radarr.md#8-if-your-arr-is-in-docker) has the detail.
+The same three problems as the Usenet walkthrough, with the same fixes — the mount is the mount — so this is the short version. [That guide's step 8](sonarr-radarr.md#8-if-your-arr-is-in-docker) has the detail.
 
 **The path zurg reports must be a path the client can open.** If the container mounts the library somewhere other than zurg does, every import fails with *download doesn't contain intermediate path* or a remote-path health check. Set `qbittorrent.save_path` to the path *the client* sees, or add a remote path mapping:
 
@@ -284,6 +286,8 @@ The same two problems as the Usenet walkthrough, with the same fixes — the mou
 qbittorrent:
   save_path: "/data/zurg/__magic__/__all__"   # what the *arr sees, not what zurg sees
 ```
+
+**One volume for the save path and the root folders.** Do not give the container `__magic__/__all__` and `__magic__/tv` as two volumes. The rename between them fails inside the container. The client then copies every import from your account and writes it to zurg's disk without saying so. Give it one volume that holds zurg's whole mount and reach both folders through it. The bind below is that volume.
 
 **Bind the mount's parent, not the mountpoint.** Restarting zurg unmounts and remounts; a container that bound the mountpoint itself keeps the dead fuse connection and every read after that answers `Socket not connected` — and because both clients check free space before a grab, *every release is silently rejected*. Bind the parent with `rslave` and the remount arrives as a sub-mount event the container follows. This rig's containers were started before zurg ever mounted, and the mount still appeared inside them:
 
@@ -461,7 +465,7 @@ to another category never saw it. Sonarr was not tested.
 
 ## If the import copies instead of moving
 
-Everything above depends on the import being a **rename**. One setting in the \*arr decides that, and it is the only part of the decision zurg has no say in.
+Everything above depends on the import being a **rename**. Two things decide that and zurg has no say in either. One is how the container reaches the mount. A save path and root folders on two volumes copy every import whatever else is set. [Step 8](#8-if-your-arr-is-in-docker) covers it. The other is one setting in the \*arr.
 
 The client will only move an imported file when it believes it is free to remove the download afterwards, which is three things at once: **Remove Completed** on, a finished-and-paused torrent, and a seed limit it can see has been reached. zurg reports the last two exactly as they have to be — every completed torrent comes back paused, at ratio 0 against a ratio limit of 0. **Remove Completed** is the one that is yours.
 
@@ -472,9 +476,10 @@ With it off the client copies instead, and off a debrid mount a copy means readi
 | The import | What zurg logs |
 |---|---|
 | moved — correct | one `MOVE __magic__` line |
-| copied | `MKCOL`, then a `PUT` carrying the release's full byte count |
+| copied through zurg's own mount | a `DELETE __magic__` of the source with no `MOVE` before it |
+| copied through a mount of your own | `MKCOL`, then a `PUT` carrying the release's full byte count |
 
-A `PUT` of a media file arriving while an import is in flight is that import copying. The `/magic/` page says the same thing more slowly: it reports the size of `data/local`, which is where a copying client's bytes land and where nothing else would put them. If that number grows every time something imports, this is why.
+zurg's own mount writes the copy straight into `data/local`. zurg only hears the delete. A `PUT` of a media file arriving while an import is in flight is that import copying through some other mount. The `/magic/` page says the same thing more slowly: it reports the size of `data/local`, which is where a copying client's bytes land and where nothing else would put them. If that number grows every time something imports, this is why.
 
 Turn **Remove Completed** back on and the next import is a rename again. **Use Hardlinks instead of Copy** is not a substitute — the client only consults it once it has already decided to copy, so it cannot turn a copy back into a move.
 
@@ -545,7 +550,7 @@ Does not:
 | A completed release sits in the queue as a warning | Either the client decided not to import it (an upgrade the profile refuses), or every account refused it. The queue row carries the reason. It clears nothing by itself — remove it by hand, and *Blocklist and Search* if the release is bad. |
 | "Downloads in root folder" / "Remote path mapping" | The same root-folder and path rules as the Usenet endpoint — see [steps 4](#4-make-the-root-folders) and [8](#8-if-your-arr-is-in-docker). |
 | Every release rejected, nothing in the log | A stale bind mount. Run `docker exec <client> df -h <mount>`; if it says `Socket not connected`, bind the parent with `rslave` and recreate the container. |
-| Imports succeed, but they take a long time and local disk fills | The \*arr is copying rather than renaming. zurg's log shows a `PUT` carrying the release's full size where a rename would be one `MOVE`. **Remove Completed** is off on the download client — see [If the import copies instead of moving](#if-the-import-copies-instead-of-moving). |
+| Imports succeed, but they take a long time and local disk fills | The \*arr is copying rather than renaming. zurg's log shows a `DELETE` of the source with no `MOVE`, or a `PUT` carrying the release's full size. Either **Remove Completed** is off on the download client or the container has the save path and the root folders on two volumes. See [If the import copies instead of moving](#if-the-import-copies-instead-of-moving) and [step 8](#8-if-your-arr-is-in-docker). |
 
 ## Where the state lives
 
