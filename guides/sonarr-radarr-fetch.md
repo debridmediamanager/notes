@@ -18,7 +18,7 @@ The screenshots come from the zurg build that ships as the 26 September 2026 nig
 
 1. **zurg has a Usenet account and at least one Newznab indexer.** The indexers go in zurg's config under `acquisition.indexers`. The [Watchlist and Seerr](acquisition.md) page covers that block.
 2. **`magic.enabled` is `true`.** The Radarr and Sonarr sources do not start without it and say so in the log. See [`__magic__`](magic.md).
-3. **Radarr and Sonarr can see zurg's mount.** In Docker that means binding it into their containers.
+3. **Radarr and Sonarr can see zurg's mount.** In Docker that means binding it into their containers. Bind the parent of the mount once and reach everything through it. If they also take grabs from zurg as a download client then two volumes for the download folder and the root folders copy every import. See [one volume](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
 4. **You run a nightly from 26 September 2026 or later.** Older builds do not know the `radarr` or `sonarr` sources.
 
 ## 1. Tell zurg about Radarr and Sonarr

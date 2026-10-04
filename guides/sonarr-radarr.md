@@ -284,7 +284,7 @@ Then **Settings → Media Management → Root Folders → Add Root Folder**, and
 
 ## 8. If your \*arr is in Docker
 
-Two separate problems, and the second one does not bite until the first time zurg restarts.
+Three separate problems. The second one costs a download on every import. The third does not bite until the first time zurg restarts.
 
 ### The path zurg reports must be a path the client can open
 
@@ -304,9 +304,25 @@ For the second, go to **Settings → Download Clients** and use the **+** under 
 
 **Host** must be exactly the host string you typed into the download client. **Remote Path** is what zurg reports; **Local Path** is where the client sees it.
 
+### One volume for the download folder and the root folders
+
+An import out of `__magic__/__all__` into `__magic__/tv` is free because it is a rename. A rename only works inside one mount. Give the container the two folders as two volumes and it sees two filesystems. Both are zurg's mount underneath and it still does not matter.
+
+```yaml
+    volumes:                                        # do not do this
+      - /mnt/zurg_usenet/__magic__/__all__:/downloads
+      - /mnt/zurg_usenet/__magic__/tv:/tv
+```
+
+The kernel refuses the rename inside the container. Sonarr and Radarr then copy the file and delete the original without saying so. Every import downloads the whole release from your account and writes it to zurg's disk. The import still succeeds. It is just slow. One 1.46 GB episode took 50 seconds and 2.9 GB of traffic this way. With one volume it took one second and read nothing.
+
+Give the container one volume that holds zurg's whole mount. Reach the download folder and the root folders through it. The bind in the next section does exactly that. A remote path mapping or `complete_dir` then points the client at `__all__` inside that same volume.
+
+A manual import set to **Hardlink/Copy Files** copies too. Pick **Move Files**.
+
 ### Bind the mount's parent, not the mountpoint
 
-This is the one that costs an afternoon. Restarting zurg unmounts `/mnt/zurg_usenet` and mounts it again. A container that bound **the mountpoint itself** keeps the fuse connection it was started with — which is now dead. Every read then answers `Socket not connected`, and because both clients check free space on the root folder before they grab, *every release is silently rejected*:
+This is the one that costs an afternoon. It is also the one volume the section above asks for. Restarting zurg unmounts `/mnt/zurg_usenet` and mounts it again. A container that bound **the mountpoint itself** keeps the fuse connection it was started with — which is now dead. Every read then answers `Socket not connected`, and because both clients check free space on the root folder before they grab, *every release is silently rejected*:
 
 ```
 FreeSpaceSpecification: Socket not connected
@@ -449,6 +465,7 @@ Does not:
 | "Category … does not exist" | The category in the \*arr is not in `sabnzbd.categories`. Add it and restart zurg. |
 | "Downloads in root folder" | A root folder is at or above the completed directory. Move it beside it — `__magic__/tv`, not `__magic__/__all__`, not `__magic__` and not `/mnt/zurg_usenet`. |
 | "Remote path mapping" / "download doesn't contain intermediate path" | The path zurg reports is not a path the client can open. See [step 8](#8-if-your-arr-is-in-docker). |
+| Imports succeed but take as long as a download and zurg's disk fills up | The client is copying out of `__magic__/__all__` instead of renaming. Its container has the download folder and the root folders on two volumes. Or a manual import was set to copy. See [one volume for the download folder and the root folders](#one-volume-for-the-download-folder-and-the-root-folders). |
 | Every release rejected, nothing in the log | A stale bind mount. Run `docker exec <client> df -h <mount>`; if it says `Socket not connected`, bind the parent with `rslave` and recreate the container. |
 | A job stays queued for a poll or two after the release appears | Expected, and it settles once per release. An NZB does not state how long a file is; the estimate is being replaced by the exact length from the PAR2 index or one article's own header. Reporting Completed early is what makes the client throw *File move incomplete, data loss may have occurred*. |
 | A job sits queued for ever | The release never appeared in the library. Check that the NZB parsed — `Loaded NZB <name>: N files` in the log — and that the `nzb` provider is configured at all. |
