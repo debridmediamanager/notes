@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844343888590">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844409366003">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -12,7 +12,7 @@
     <!-- Primary Meta Tags -->
     <title>Acquisition sources</title>
     <meta name="title" content="Acquisition sources">
-    <meta name="description" content="Plex watchlist and Seerr feed the same durable engine. Adapters discover requests and resolve media IDs. The engine owns progress, retries and acknowledgement.">
+    <meta name="description" content="Plex watchlist, Seerr, Radarr and Sonarr feed the same durable engine. Adapters discover requests and resolve media IDs. The engine owns progress, retries and acknowledgement.">
 
     <!-- Canonical -->
     <link rel="canonical" href="https://notes.debridmediamanager.com/guides/acquisition/">
@@ -22,7 +22,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://notes.debridmediamanager.com/guides/acquisition/">
     <meta property="og:title" content="Acquisition sources">
-    <meta property="og:description" content="Plex watchlist and Seerr feed the same durable engine. Adapters discover requests and resolve media IDs. The engine owns progress, retries and acknowledgement.">
+    <meta property="og:description" content="Plex watchlist, Seerr, Radarr and Sonarr feed the same durable engine. Adapters discover requests and resolve media IDs. The engine owns progress, retries and acknowledgement.">
     <meta property="og:site_name" content="dmm+zurg">
     <meta property="og:locale" content="en_US">
 
@@ -30,19 +30,19 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://notes.debridmediamanager.com/guides/acquisition/">
     <meta name="twitter:title" content="Acquisition sources">
-    <meta name="twitter:description" content="Plex watchlist and Seerr feed the same durable engine. Adapters discover requests and resolve media IDs. The engine owns progress, retries and acknowledgement.">
+    <meta name="twitter:description" content="Plex watchlist, Seerr, Radarr and Sonarr feed the same durable engine. Adapters discover requests and resolve media IDs. The engine owns progress, retries and acknowledgement.">
 
     <!-- Alternate Markdown -->
     <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/guides/acquisition.md">
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844343888590" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844409366003" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844343888590" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844409366003" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -179,21 +179,26 @@
 
                 <!-- Page content  -->
 <h1 id="acquisition-sources">Acquisition sources</h1>
-<p>Plex watchlist and <a href="https://github.com/seerr-team/seerr">Seerr</a> feed the same
-durable engine. Adapters discover requests and resolve media IDs. The engine
+<p>Plex watchlist, <a href="https://github.com/seerr-team/seerr">Seerr</a>,
+<a href="https://radarr.video">Radarr</a> and <a href="https://sonarr.tv">Sonarr</a> feed the same durable engine. Adapters discover requests and resolve media IDs. The engine
 owns progress, retries and acknowledgement. The shared executor selects releases
 from Newznab indexers, saving NZBs for zurg&#x27;s Usenet backend, and from Torznab
 indexers, handing info hashes to a debrid account that already holds them: see
-<doc-anchor-trigger to="#newznab-and-torznab">Newznab and Torznab</doc-anchor-trigger>. Every saved release is
-checked against the news servers before the engine acknowledges anything: see
+<doc-anchor-trigger to="#newznab-and-torznab">Newznab and Torznab</doc-anchor-trigger>. Nothing is acknowledged until
+the grab has been checked. An NZB is put to the news servers. A torrent has to
+show up in the library with files in it. See
 <doc-anchor-trigger to="#verifying-a-grab">Verifying a grab</doc-anchor-trigger>.</p>
 <h2 id="configuration">Configuration</h2>
 <div id="configuration-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">acquisition:
   quality: best
   prefer: usenet          # usenet (default), torrents, or best
+  best_first: false       # true makes Radarr and Sonarr take the profile's best quality first
   max_size_gb: 40
   max_season_size_gb: 100
+  exclude_words: [DV, HDR10+]  # never take a release whose name says these
+  concurrency: 8          # titles worked on at once (default 8, at most 200)
+  indexer_concurrency: 3  # calls to one indexer at once (default 3, at most 16)
   indexers:
     - name: my-indexer
       url: https://indexer.example
@@ -215,13 +220,39 @@ checked against the news servers before the engine acknowledges anything: see
       enabled: true
       url: http://seerr:5055
       api_key: YOUR_SEERR_API_KEY
+      check_every_secs: 60
+    - name: movies
+      type: radarr
+      enabled: true
+      url: http://radarr:7878
+      api_key: YOUR_RADARR_API_KEY
+      library_path: /mnt/zurg/__magic__   # where Radarr sees __magic__
+      check_every_secs: 60
+    - name: shows
+      type: sonarr
+      enabled: true
+      url: http://sonarr:8989
+      api_key: YOUR_SONARR_API_KEY
+      library_path: /mnt/zurg/__magic__   # where Sonarr sees __magic__
       check_every_secs: 60</code></pre>
 </doc-codeblock></div>
-<p>Run this on the zurg instance with an <code translate="no" v-pre>nzb</code> provider. Acquired NZBs land in its
-<code translate="no" v-pre>nzbs/</code> directory. This path uses Newznab and Usenet; it does not add torrents
-to a debrid account. Plex needs the existing <code translate="no" v-pre>plex_token</code>. Seerr needs its base
-URL and API key, independently of any Plex settings in zurg. URL subpaths and
-URLs ending in <code translate="no" v-pre>/api/v1</code> are supported.</p>
+<p>Run this on a zurg instance with an <code translate="no" v-pre>nzb</code> provider, a debrid account that takes
+torrents, or both. NZBs from Newznab indexers land in its <code translate="no" v-pre>nzbs/</code> directory.
+Torrents from Torznab indexers go to a debrid account. They are added only when
+that account already has them cached. With neither kind of account the sources
+do not start. The acquisition page says why. Plex needs the existing
+<code translate="no" v-pre>plex_token</code>. Seerr needs its base URL and API key, independently of any Plex
+settings in zurg. URL subpaths and
+URLs ending in <code translate="no" v-pre>/api/v1</code> are supported. Radarr needs its base URL (a URL base
+such as <code translate="no" v-pre>/radarr</code> and a trailing <code translate="no" v-pre>/api/v3</code> are fine), its API key from
+<strong>Settings &gt; General</strong>, and <code translate="no" v-pre>library_path</code> when it sees zurg&#x27;s mount at a
+different path: see <doc-anchor-trigger to="#radarr-behavior">Radarr behavior</doc-anchor-trigger>. Sonarr takes the same
+three settings: see <doc-anchor-trigger to="#sonarr-behavior">Sonarr behavior</doc-anchor-trigger>.</p>
+<p><code translate="no" v-pre>concurrency</code> applies at the next poll, without a restart. <code translate="no" v-pre>indexer_concurrency</code>
+covers searches and NZB downloads together, because an indexer meters the key
+and not the endpoint. It is read when zurg starts. Indexer keys are often
+shared, and three calls per key is what measured safe on keys that also serve
+another application.</p>
 <p>Keep names and Seerr URLs stable: they identify saved queues. Rotating a Seerr
 key retains its queue. Restart after adding sources or changing their URL or
 credentials. Existing <code translate="no" v-pre>watchlist:</code> and <code translate="no" v-pre>plex_watchlist_enabled</code> settings keep
@@ -230,6 +261,103 @@ working through an automatic <code translate="no" v-pre>plex-watchlist</code> ad
 Only one Plex source can use the configured Plex account. Shared search
 settings fall back to <code translate="no" v-pre>watchlist:</code> and its existing defaults; omitted indexers
 fall back to watchlist/Stremio indexers.</p>
+<h2 id="excluding-releases-by-name">Excluding releases by name</h2>
+<div id="excluding-releases-by-name-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">acquisition:
+  exclude_words: [DV, HDR10+]</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>exclude_words</code> lists words that no acquired release may have in its name.
+Use it to keep Dolby Vision or HDR10+ off a player that cannot show them
+while still taking 4K. It applies to every source alike: the Plex watchlist,
+Seerr, Radarr and Sonarr. It applies to Usenet and torrent results alike. A
+release it excludes is never fetched, saved, added to a debrid account or put
+to Radarr or Sonarr. Leave it out to exclude nothing. zurg reads it at
+startup like the rest of <code translate="no" v-pre>config.yml</code>.</p>
+<p>How a name is matched:</p>
+<ul>
+<li>
+<p><strong>Whole words only.</strong> A name is read as words made of letters and digits.
+Dots, spaces, dashes, underscores, brackets and parentheses all separate
+words. Case does not matter. <code translate="no" v-pre>DV</code> excludes
+<code translate="no" v-pre>Avengers.Infinity.War.2018.DV.2160p.WEB.H265-RVKD</code> and
+<code translate="no" v-pre>Mortal_Kombat_II_2026_COMPLETE_BLURAY_2160p_DV_HDR_TrueHD</code>. It does not
+exclude <code translate="no" v-pre>DVDRip</code>, <code translate="no" v-pre>DVD9</code>, <code translate="no" v-pre>Come and See DvD 1</code> or a title such as
+<em>Adventures</em>, because none of them has the word DV.</p>
+</li>
+<li>
+<p><strong>Phrases match in order.</strong> <code translate="no" v-pre>Dolby Vision</code> or <code translate="no" v-pre>DV HDR</code> matches those words
+next to each other in that order, whatever separates them.</p>
+</li>
+<li>
+<p><strong>A trailing <code translate="no" v-pre>+</code> is part of the word.</strong> <code translate="no" v-pre>HDR10+</code> is its own word. Excluding
+<code translate="no" v-pre>HDR10</code> leaves HDR10+ releases alone and excluding <code translate="no" v-pre>HDR10+</code> leaves plain
+HDR10 alone. List both to exclude both. A <code translate="no" v-pre>+</code> between two words separates
+them, as in <code translate="no" v-pre>DD+7.1</code> or <code translate="no" v-pre>DV+HDR10</code>.</p>
+</li>
+<li>
+<p><strong>Two families of spellings count as one word.</strong> Any one spelling in the
+list excludes every spelling of its family.</p>
+<retype-table copy-text="| Write any of | Excludes names with any of |
+  |---|---|
+  | `DV`, `DoVi`, `Dolby Vision`, `DolbyVision` | `DV`, `DoVi`, `Dolby.Vision`, `Dolby-Vision`, `Dolby Vision`, `DolbyVision` |
+  | `HDR10+`, `HDR10Plus` | `HDR10+`, `HDR10Plus` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Write any of</th>
+<th>Excludes names with any of</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>DV</code>, <code translate="no" v-pre>DoVi</code>, <code translate="no" v-pre>Dolby Vision</code>, <code translate="no" v-pre>DolbyVision</code></td>
+<td><code translate="no" v-pre>DV</code>, <code translate="no" v-pre>DoVi</code>, <code translate="no" v-pre>Dolby.Vision</code>, <code translate="no" v-pre>Dolby-Vision</code>, <code translate="no" v-pre>Dolby Vision</code>, <code translate="no" v-pre>DolbyVision</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>HDR10+</code>, <code translate="no" v-pre>HDR10Plus</code></td>
+<td><code translate="no" v-pre>HDR10+</code>, <code translate="no" v-pre>HDR10Plus</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Nothing else is aliased. <code translate="no" v-pre>HDR</code> excludes names with the word HDR and not
+<code translate="no" v-pre>HDR10</code>, <code translate="no" v-pre>HDR10+</code> or <code translate="no" v-pre>HDRip</code>. <code translate="no" v-pre>WEB-DL</code> matches <code translate="no" v-pre>WEB-DL</code>, <code translate="no" v-pre>WEB.DL</code> and
+<code translate="no" v-pre>WEB DL</code> and not <code translate="no" v-pre>WEBDL</code>.</p>
+</li>
+<li>
+<p><strong>Only the release name is read.</strong> That is the title the indexer answers
+with, before anything is downloaded. The files inside are not read. A Dolby
+Vision release whose name does not say so is not excluded.</p>
+</li>
+</ul>
+<p>Excluding a word never touches resolution. With <code translate="no" v-pre>DV</code> excluded a 2160p release
+with plain HDR or HDR10 is still taken, and <code translate="no" v-pre>quality: 4k</code> still puts 2160p
+first. An excluded release counts as not found. A search keeps paging until it
+has enough releases it may take. A title whose every release is excluded fails
+with &quot;no eligible releases&quot;, just like one whose every release is over
+<code translate="no" v-pre>max_size_gb</code>, and is tried again later. A Seerr 4K request takes only 2160p
+releases, so it waits when every 2160p release is excluded.</p>
+<h3 id="exclusions-and-radarr-or-sonarr-profiles">Exclusions and Radarr or Sonarr profiles</h3>
+<p>With a <code translate="no" v-pre>radarr</code> or <code translate="no" v-pre>sonarr</code> source the exclusion comes first. An excluded
+release is never put to Radarr&#x27;s or Sonarr&#x27;s parser. No custom format score
+brings it back, and it does not count as a refusal by the profile. Every other
+release is judged by the profile as described under
+<doc-anchor-trigger to="#radarr-behavior">Radarr behavior</doc-anchor-trigger> and <doc-anchor-trigger to="#sonarr-behavior">Sonarr behavior</doc-anchor-trigger>. A
+release has to pass both. A custom format that scores Dolby Vision below the
+profile&#x27;s minimum does the same job inside the *arr, and keeping it does no
+harm.</p>
+<p>Upgrades follow the same rule. If the only releases that would lift a file to
+its profile&#x27;s cutoff are excluded, the file stays below the cutoff and zurg&#x27;s
+upgrade pass keeps looking without taking anything. That happens when a
+custom format gives Dolby Vision a high score and the cutoff score needs it.
+Lower the cutoff score or take that score off the custom format.</p>
+<p>When Radarr or Sonarr use zurg as a download client through the <code translate="no" v-pre>sabnzbd:</code> or
+<code translate="no" v-pre>qbittorrent:</code> block, they search their own indexers and pick the release
+themselves. <code translate="no" v-pre>exclude_words</code> does not apply there. Exclude the same words in
+the *arr with a custom format scored below the profile&#x27;s minimum or a release
+profile&#x27;s <strong>Must Not Contain</strong>.</p>
 <h2 id="seerr-behavior">Seerr behavior</h2>
 <p>The adapter follows seerr-team/seerr&#x27;s
 <a href="https://github.com/seerr-team/seerr/blob/c604bccc003d4d2f74a66d8cb74d9e14d5ffda89/server/routes/request.ts">request routes</a>,
@@ -272,6 +400,417 @@ If Sonarr/Radarr already acquire the same requests, disable that overlapping
 workflow before enabling this adapter. The adapter does not emulate an *arr
 server or change Seerr&#x27;s service setup. Polling provides restart recovery;
 no webhook is required.</p>
+<h2 id="radarr-behavior">Radarr behavior</h2>
+<p>Radarr keeps the list and owns the library. zurg does the searching and the
+downloading. Radarr never searches and never grabs: zurg reads what Radarr
+wants, picks a release from its own indexers, checks it with the news servers
+or the debrid account that holds it, puts the video in the movie&#x27;s folder
+inside <code translate="no" v-pre>__magic__</code> and asks Radarr to rescan that one movie. Nothing is copied: the video is a file in
+zurg&#x27;s library that Radarr now sees in its folder.</p>
+<h3 id="setting-up-radarr">Setting up Radarr</h3>
+<ol>
+<li>
+<p><strong>Root folder inside <code translate="no" v-pre>__magic__</code>, one level down.</strong> For example
+<code translate="no" v-pre>/mnt/zurg/__magic__/movies</code>. Not <code translate="no" v-pre>__magic__</code> itself, and not
+<code translate="no" v-pre>__magic__/__all__</code>, which lists every release in the library. A movie
+whose folder is anywhere else is skipped, with one warning in zurg&#x27;s log.</p>
+</li>
+<li>
+<p><strong>Import lists with search on add off.</strong> Add movies however you like (by
+hand, lists, Seerr pointed at Radarr). Leave <strong>Search for Movie</strong> off
+when adding, since zurg does the searching.</p>
+</li>
+<li>
+<p><strong>No indexers and no download client are needed.</strong> If Radarr has them,
+it can grab alongside zurg, so turn off automatic search on its indexers
+(or remove them) for the movies zurg looks after.</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>library_path</code> is where Radarr sees <code translate="no" v-pre>__magic__</code>.</strong> When Radarr runs on
+the same machine as zurg and sees the mount where zurg mounts it, leave
+it out: it defaults to zurg&#x27;s <code translate="no" v-pre>mount_path</code> plus <code translate="no" v-pre>/__magic__</code>. When Radarr
+runs in a container that mounts zurg somewhere else, set it to that path,
+for example <code translate="no" v-pre>/data/zurg/__magic__</code>. A movie at
+<code translate="no" v-pre>/data/zurg/__magic__/movies/Heat (1995)</code> is then placed in
+<code translate="no" v-pre>movies/Heat (1995)</code> inside zurg&#x27;s <code translate="no" v-pre>__magic__</code>. Windows paths such as
+<code translate="no" v-pre>Z:\__magic__</code> work too.</p>
+</li>
+</ol>
+<h3 id="what-zurg-asks-radarr-for">What zurg asks Radarr for</h3>
+<p>Every poll reads Radarr&#x27;s movie list and acts on each movie that is
+monitored, <strong>available</strong> by the movie&#x27;s minimum availability, and either has
+no file or has one below its quality profile&#x27;s cutoff while the profile
+allows upgrades. Below the cutoff means below the cutoff quality or below the
+cutoff custom-format score, as Radarr counts it. An unreleased film such as a
+movie dated months ahead waits until Radarr says it is available.</p>
+<p>Each candidate release zurg is about to inspect is put to Radarr&#x27;s own parser
+(<code translate="no" v-pre>/api/v3/parse</code>) and judged by the movie&#x27;s quality profile, so what zurg
+accepts is what Radarr would have accepted:</p>
+<ul>
+<li>
+<p><strong>It must be this movie.</strong> Radarr has to match the title to the same movie.
+An indexer&#x27;s ID search returns other films (a search for <em>Psycho</em> returned
+<em>Ed Gein: The Real Psycho</em>), and a title Radarr matches to nothing is
+refused. A year in the title more than one away from the movie&#x27;s is refused
+too.</p>
+</li>
+<li>
+<p><strong>The profile&#x27;s allow-list and minimum score apply first.</strong> The parsed
+quality must be allowed by the profile, the custom-format score must reach
+the profile&#x27;s minimum, and the size must fit the quality&#x27;s limits in
+<strong>Settings &gt; Quality</strong> for the movie&#x27;s runtime.</p>
+</li>
+<li>
+<p><strong>Upgrades head toward the cutoff later.</strong> A movie without a file takes any
+release that passes the checks above. Once it has a file below the cutoff,
+only a better release is taken: a higher quality in the profile&#x27;s order
+while the file is below the cutoff quality, or a higher custom-format score
+(by at least the profile&#x27;s upgrade step) while it is below the cutoff
+score. A lower quality is never taken. PROPER and REPACK releases of the
+same quality are not treated as upgrades.</p>
+</li>
+</ul>
+<p>The profile is applied to the release zurg is about to take as an allow-list:
+the right movie, an allowed quality, the minimum score and the size limits.
+By default its order of preference is not used to pick among the releases it
+allows. zurg takes the first allowed release that is cheapest to check, trying
+web releases (WEB-DL, WEBRip) before Blu-ray ones and those before the rest,
+because web releases are the ones most often posted as a single video file.
+If the profile prefers something better than what arrives and allows
+upgrades, Radarr sees the movie&#x27;s file below the cutoff, and zurg&#x27;s upgrade
+pass looks for the better release once the movie has one. The first file
+arrives quickly, and the profile&#x27;s order is served by the upgrade. Set
+<code translate="no" v-pre>best_first: true</code> to have the first grab follow the profile&#x27;s order instead.
+See <doc-anchor-trigger to="#taking-the-profiles-best-first">Taking the profile&#x27;s best first</doc-anchor-trigger>.</p>
+<p>When a search by the movie&#x27;s IMDb or TMDB id answers nothing at all, zurg
+searches again by title and year, as Radarr does. Many posts, small
+documentaries especially, are indexed with no id at all. Radarr&#x27;s parser
+decides whether each result is the movie, so a film of the same name is
+refused like any other wrong match.</p>
+<p>Radarr is asked about a release only when zurg is about to inspect it, one
+release at a time, so a movie with a single-file release costs one to three
+questions. Nothing more is asked once a direct post is saved. A title naming a
+resolution the profile has no allowed quality for, such as a 2160p release for
+an HD-1080p profile, is refused without asking Radarr at all. A title naming
+no resolution, or more than one, always goes to Radarr, and so does every
+title when the profile allows a quality whose name states none (SDTV, DVD,
+Unknown, Raw-HD, BR-DISK). zurg makes at most eight calls to one Radarr at
+once.</p>
+<p>If Radarr cannot be reached, nothing is decided: the movie waits for the next
+poll, and no release is set aside because Radarr did not answer.</p>
+<h3 id="placing-the-file">Placing the file</h3>
+<p>Once a release has been checked, zurg puts its video in the
+movie&#x27;s folder the way Radarr would have imported it, by moving it inside
+<code translate="no" v-pre>__magic__</code>. Nothing is copied or downloaded.</p>
+<ul>
+<li>
+<p><strong>The largest video is the one placed.</strong> That is the largest <code translate="no" v-pre>.mkv</code>, <code translate="no" v-pre>.mp4</code>,
+<code translate="no" v-pre>.m4v</code>, <code translate="no" v-pre>.avi</code>, <code translate="no" v-pre>.mov</code> or <code translate="no" v-pre>.ts</code> file in the release. For a release served
+out of one archive it is the largest video inside the archive. Samples,
+featurettes, subtitles and <code translate="no" v-pre>.nfo</code> files stay in <code translate="no" v-pre>__magic__/__all__</code>. The
+file keeps the name it has in the release.</p>
+</li>
+<li>
+<p><strong>It is refused before it is moved if it cannot be read.</strong> This is the check
+a Sonarr or Radarr import through the mount gets. A release whose articles
+the news servers no longer hold, or whose archive will never open, is set
+aside like a dead post, and the next candidate is tried. A release that
+cannot be read right now, such as one on an account that is cooling down,
+is tried again later.</p>
+</li>
+<li>
+<p><strong>Radarr keeps one file per movie, so an upgrade replaces the old file.</strong>
+When the new video is in the folder, every other video zurg&#x27;s library put
+there is hidden from the folder. Hidden means tombstoned, as a delete
+through the mount is: the old release stays in <code translate="no" v-pre>__all__</code> and on its
+account. A real file you put in the folder yourself is left alone. The old
+file goes after the new one is placed, so a placement that fails leaves the
+movie with the file it had.</p>
+</li>
+<li>
+<p><strong>Radarr rescans afterwards.</strong> zurg tells the mount which folders changed,
+so the rescan does not read a folder the mount still remembers as empty,
+and then asks Radarr to rescan that one movie.</p>
+</li>
+</ul>
+<p>A Radarr source needs <code translate="no" v-pre>__magic__</code> (<code translate="no" v-pre>magic.enabled</code>). Without it the source does
+not start and says so in the log and on the acquisition page.</p>
+<h3 id="what-radarr-shows">What Radarr shows</h3>
+<p><strong>Activity</strong> stays empty: no queue entries and no grab or import events,
+because Radarr grabbed nothing. The movie simply has a file after the rescan
+zurg asks for, and its quality and custom formats are Radarr&#x27;s reading of that
+file. zurg&#x27;s log records each movie it completes.</p>
+<p><code translate="no" v-pre>only_new_items</code> and <code translate="no" v-pre>remove_after_grab</code> do nothing for a Radarr source.
+Radarr&#x27;s wanted movies are work, like Seerr&#x27;s approved requests, and Radarr
+decides when a movie stops being wanted. Keep the source&#x27;s <code translate="no" v-pre>name</code> stable: it
+identifies the saved queue, while the URL and key can change freely.</p>
+<h2 id="sonarr-behavior">Sonarr behavior</h2>
+<p>Sonarr works the way Radarr does. Sonarr keeps the list and owns the library.
+zurg does the searching and the downloading. Sonarr never searches and never
+grabs. zurg reads the episodes Sonarr is missing and picks a release from its
+own indexers. It checks the release with the news servers or the debrid
+account that holds it, and puts each episode&#x27;s video in the series&#x27; season folder inside <code translate="no" v-pre>__magic__</code>. Then it asks
+Sonarr to rescan that one series. Nothing is copied.</p>
+<h3 id="setting-up-sonarr">Setting up Sonarr</h3>
+<ol>
+<li>
+<p><strong>Root folder inside <code translate="no" v-pre>__magic__</code>, one level down.</strong> For example
+<code translate="no" v-pre>/mnt/zurg/__magic__/tv</code>. A series whose folder is anywhere else is
+skipped with one warning in zurg&#x27;s log.</p>
+</li>
+<li>
+<p><strong>Search on add off.</strong> Add series however you like. Leave <strong>Start search
+for missing episodes</strong> off, since zurg does the searching.</p>
+</li>
+<li>
+<p><strong>No indexers and no download client are needed.</strong> If Sonarr has them it
+can grab alongside zurg, so turn off automatic search on its indexers for
+the series zurg looks after.</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>library_path</code> is where Sonarr sees <code translate="no" v-pre>__magic__</code>.</strong> It works exactly as
+it does for Radarr. Leave it out when Sonarr sees the mount where zurg
+mounts it.</p>
+</li>
+</ol>
+<h3 id="what-zurg-asks-sonarr-for">What zurg asks Sonarr for</h3>
+<p>Every poll reads Sonarr&#x27;s missing episodes. Those are monitored episodes of a
+monitored series that have aired and have no file. zurg groups them by season
+and works on each season as one piece of work.</p>
+<ul>
+<li>
+<p><strong>A whole season that has finished airing may come as a pack.</strong> When every
+episode of a season is missing and none is still to air, a season pack is
+tried first. Otherwise the season&#x27;s missing episodes are taken one by one
+from the season&#x27;s search results. A season with some of its files already
+never takes a pack. That would put a second copy of those episodes in the
+folder.</p>
+</li>
+<li>
+<p><strong>A new episode is new work.</strong> When next week&#x27;s episode airs, the season is
+listed again with that episode. zurg does not search again for the
+episodes it already has.</p>
+</li>
+<li>
+<p><strong>A deleted episode is wanted again.</strong> When Sonarr lists an episode zurg
+already acquired, zurg looks in the season folder. If no video for that
+episode is there any more, it is searched for again. If one is, Sonarr has
+not rescanned yet and nothing is searched.</p>
+</li>
+<li>
+<p><strong>Upgrades are per file.</strong> An episode file below its quality profile&#x27;s
+cutoff is an upgrade, while the profile allows upgrades. Below the cutoff
+means below the cutoff quality or below the cutoff custom format score.
+Sonarr&#x27;s own Cutoff Unmet list only counts the quality. On Sonarr 4.0.20 a
+file at the cutoff quality that scores 0 of a cutoff score of 40 is not on
+it. zurg counts both, as Sonarr&#x27;s own upgrade rule does. A file holding two
+episodes is one upgrade for both.</p>
+</li>
+<li>
+<p><strong>Specials are skipped.</strong> So are daily series and anime series. A daily
+show&#x27;s episodes are dates, and anime is released under absolute episode
+numbers. zurg searches by season and episode, so it cannot find either
+yet. Each skipped series gets one warning in the log.</p>
+</li>
+</ul>
+<p>Each candidate release is put to Sonarr&#x27;s own parser (<code translate="no" v-pre>/api/v3/parse</code>) and
+judged by the series&#x27; quality profile. What zurg accepts is what Sonarr would
+have accepted.</p>
+<ul>
+<li>
+<p><strong>It must be this series and this season.</strong> Sonarr has to match the title
+to the same series. A title Sonarr matches to nothing is refused.</p>
+</li>
+<li>
+<p><strong>A pack must be the whole season.</strong> A partial pack or a multi-season pack
+is refused. A pack spelled as a range, such as <code translate="no" v-pre>Season 1 E01-E07</code>, counts
+when the range is the whole season.</p>
+</li>
+<li>
+<p><strong>An episode must be that one episode alone.</strong> A release holding two
+episodes is refused for a single episode.</p>
+</li>
+<li>
+<p><strong>The profile applies as it does for Radarr.</strong> The quality must be allowed.
+The custom format score must reach the profile&#x27;s minimum. The size must fit
+the quality&#x27;s limits in <strong>Settings &gt; Quality</strong> for the runtime of the
+episodes the release holds. An upgrade must beat the current file by
+Sonarr&#x27;s rules.</p>
+</li>
+</ul>
+<p>Which allowed release comes first is decided differently from Radarr. A
+season pack is tried before the loose episodes because it is one grab where
+they are several. Among the releases Sonarr allows zurg takes the one its
+<code translate="no" v-pre>quality</code> setting ranks first. With <code translate="no" v-pre>best</code> that is the highest resolution and
+then the largest. So a finished season with a 1080p pack is filled from that
+pack even when the same search holds every episode in 2160p. The upgrade pass
+then replaces it episode by episode. A pack larger than <code translate="no" v-pre>max_season_size_gb</code> is
+never a candidate. <code translate="no" v-pre>best_first: true</code> changes both. See
+<doc-anchor-trigger to="#taking-the-profiles-best-first">Taking the profile&#x27;s best first</doc-anchor-trigger>.</p>
+<p>A title naming a resolution the profile has no allowed quality for is refused
+without asking Sonarr. zurg makes at most eight calls to one Sonarr at once.
+If Sonarr cannot be reached nothing is decided. The season waits for the next
+poll and no release is set aside.</p>
+<h3 id="placing-the-files">Placing the files</h3>
+<p>Once a release has been checked, each episode&#x27;s video goes in
+the season folder. That is the folder the season&#x27;s existing files are in. For
+a season with no files yet it is the folder Sonarr&#x27;s <strong>Season Folder Format</strong>
+names, such as <code translate="no" v-pre>Season 1</code>. A series set not to use season folders gets its
+files in the series folder.</p>
+<ul>
+<li>
+<p><strong>Each episode gets its own video.</strong> The video is found by the episode
+number in its name. A pack places every episode it was taken for. Samples
+and <code translate="no" v-pre>.nfo</code> files stay in <code translate="no" v-pre>__magic__/__all__</code>.</p>
+</li>
+<li>
+<p><strong>A pack missing an episode is refused before anything moves.</strong> It is set
+aside like a dead post, and the next pack or the loose episodes are tried.</p>
+</li>
+<li>
+<p><strong>A loose episode whose file names nothing gets the release&#x27;s largest
+video.</strong> Obfuscated posts often look like this.</p>
+</li>
+<li>
+<p><strong>An upgrade replaces only its own episode.</strong> The old video of that episode
+is hidden from the season folder once the new one is in. The other
+episodes in the folder are left alone. Hidden means tombstoned, as it does
+for Radarr.</p>
+</li>
+<li>
+<p><strong>Sonarr rescans afterwards.</strong> zurg tells the mount which folders changed
+and asks Sonarr to rescan the series.</p>
+</li>
+<li>
+<p><strong>One missing episode does not hold the rest back.</strong> When an episode has no
+release zurg can take yet, the episodes it did find are still checked and
+placed. Sonarr is asked to rescan for them straight away. The missing one is
+looked for again on the usual retry schedule.</p>
+</li>
+</ul>
+<p>A Sonarr source needs <code translate="no" v-pre>__magic__</code> (<code translate="no" v-pre>magic.enabled</code>). Without it the source does
+not start and says so in the log and on the acquisition page.</p>
+<p><strong>Activity</strong> in Sonarr stays empty, as it does in Radarr. The episodes simply
+have files after the rescan zurg asks for. <code translate="no" v-pre>only_new_items</code> and
+<code translate="no" v-pre>remove_after_grab</code> do nothing for a Sonarr source.</p>
+<h2 id="watching-it-work">Watching it work</h2>
+<p>The dashboard&#x27;s <strong>Acquisition</strong> link opens <code translate="no" v-pre>/acquisition/</code> on zurg&#x27;s own port.
+Each source gets a line with how many of its titles are done, running,
+waiting, set aside and queued, beside the number of titles zurg works on at
+once, the calls it makes to one indexer at once and the news connections its
+<code translate="no" v-pre>nzb</code> accounts are allowed. Below that each source has a table with a row per
+title. A row shows the state, what a running title is doing right now (the
+search, how many results have been judged and allowed so far, the candidate
+being inspected, the check against the news servers, the placement), its attempts, the release chosen with the quality and score
+the source gave it, where it was placed, and when a waiting title is tried
+next. The page refreshes itself every five seconds. The same snapshot is at
+<code translate="no" v-pre>/acquisition/status.json</code>. When no source is enabled, or acquisition is
+configured but paused, the page says so and why.</p>
+<p>Each movie a release is chosen for gets one line in the log, for measuring
+where the time goes:</p>
+<div id="watching-it-work-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Acquisition: chose &lt;release&gt; for &lt;title&gt;: results=143 local_refusals=97 radarr_refusals=1 inspected=2 radarr_calls=3 in 4.2s</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>results</code> is what the search returned, <code translate="no" v-pre>local_refusals</code> the results refused
+without asking the source, <code translate="no" v-pre>radarr_refusals</code> those the source&#x27;s own rules
+refused, <code translate="no" v-pre>inspected</code> the NZBs read, <code translate="no" v-pre>radarr_calls</code> the questions put to the
+source (the NZBs read plus the refusals on the way to them, when the source is
+Radarr), and the time runs from the start of the search. Releases refused
+without asking are logged one by one at debug level only.</p>
+<h2 id="finding-duplicate-releases">Finding duplicate releases</h2>
+<p>An upgrade leaves the release it replaced in your library. With
+<code translate="no" v-pre>magic.allow_delete</code> off, Radarr&#x27;s or Sonarr&#x27;s delete of the old file only hides
+it in <code translate="no" v-pre>__magic__</code>, so the old release stays in <code translate="no" v-pre>__all__</code> and on its account.
+Grabs from more than one indexer, or a season pack beside loose episodes, leave
+several releases of the same thing too. <strong>Manage &gt; Duplicates</strong>
+(<code translate="no" v-pre>/manage/duplicates/</code>) lists them, says which one Radarr or Sonarr is using,
+and lets you delete the others. It never deletes anything by itself.</p>
+<p><strong>Which release is in use is read from paths, not names.</strong> Every file Radarr and
+Sonarr hold is named by a path under <code translate="no" v-pre>__magic__</code>, and zurg knows which release
+each path comes from, because the move that put the file there wrote it down.
+The view reads every file each *arr has imported, monitored or not, at its
+cutoff or not, and traces each one to its release. A Sonarr file is traced
+episode by episode, so a season pack Sonarr takes three episodes from shows
+as in use for those three.</p>
+<p><strong>Which releases might be copies is a guess, and says so.</strong> Releases are
+grouped with a movie, or with a season, when:</p>
+<ul>
+<li>
+<p>an *arr file is in them,</p>
+</li>
+<li>
+<p>the *arr&#x27;s history says it imported from them, or that a file from them went
+missing from disk,</p>
+</li>
+<li>
+<p>zurg identified them as the movie&#x27;s or the series&#x27; IMDb id, or</p>
+</li>
+<li>
+<p>their name reads as the title and year (a year off by one, or Radarr&#x27;s second
+year for the movie, still counts) or as the series and season.</p>
+</li>
+</ul>
+<p>Each release lists which of these put it in the group. A season is only a
+group where releases hold the same episode: sixty single-episode releases of
+one season are sixty different episodes. A season group lists the episodes more
+than one release holds, which release holds each, which one Sonarr&#x27;s file is
+in, and how many episodes each release holds that nothing else in the group
+does. No release is picked as the winner. Releases no Radarr or Sonarr item
+matches are under <strong>Name matches only</strong>, grouped by their names and IMDb ids.</p>
+<p><strong>Each release is In use, No reference found or Unknown.</strong></p>
+<retype-table copy-text="| State | Meaning |
+|---|---|
+| In use | A file Radarr or Sonarr holds right now is in this release. It cannot be selected. |
+| No reference found | Every configured Radarr and Sonarr was read in full, and none of their files is in this release. Plex, Jellyfin and other clients reading the mount are not visible here, so this is not proof nothing plays it. |
+| Unknown | zurg cannot tell. Every release is Unknown while an \*arr cannot be read, while the library is still loading, or with `__magic__` off. A release is also Unknown when an \*arr file for the same movie or episode cannot be traced to any release, or when the \*arr's history shows a file from this release went missing from disk and the movie or episode has had no file since. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>State</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>In use</td>
+<td>A file Radarr or Sonarr holds right now is in this release. It cannot be selected.</td>
+</tr>
+<tr>
+<td>No reference found</td>
+<td>Every configured Radarr and Sonarr was read in full, and none of their files is in this release. Plex, Jellyfin and other clients reading the mount are not visible here, so this is not proof nothing plays it.</td>
+</tr>
+<tr>
+<td>Unknown</td>
+<td>zurg cannot tell. Every release is Unknown while an *arr cannot be read, while the library is still loading, or with <code translate="no" v-pre>__magic__</code> off. A release is also Unknown when an *arr file for the same movie or episode cannot be traced to any release, or when the *arr&#x27;s history shows a file from this release went missing from disk and the movie or episode has had no file since.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>Quality is shown in the profile&#x27;s terms.</strong> For a release the *arr uses, it is
+the *arr&#x27;s own grade of the file. For one it imported before, it is the grade
+it gave then. Otherwise it is read from the release name and says so. Each is
+placed in the item&#x27;s quality profile, for example &quot;rank 15 of 17 in 4K or best
+available (cutoff at 17)&quot;.</p>
+<p><strong>Deleting re-reads first.</strong> Select releases and choose <strong>Check again and
+delete</strong>. zurg reads every *arr&#x27;s current files again, and only then offers
+the delete. A release that has come into use since the page loaded is left out,
+and an Unknown release is only deleted if you tick it again in that dialog. The
+delete itself is the manage page&#x27;s bulk delete, which removes every copy of the
+release from every account that holds it.</p>
+<p><strong>When it reads.</strong> Opening the page the first time reads every Radarr and Sonarr
+under <code translate="no" v-pre>acquisition.sources</code>, including the import and deletion history. Reading
+a large library&#x27;s history can take a minute. After that the page shows what was
+last read and when, until you choose <strong>Read Radarr and Sonarr again</strong>. A source
+with <code translate="no" v-pre>enabled: false</code> is still read: switching acquisition off does not change
+what that *arr holds. The page shows each source&#x27;s counts: files read, traced to
+a release, on a path outside its <code translate="no" v-pre>library_path</code>, and inside <code translate="no" v-pre>__magic__</code> but
+leading to nothing. If not one of a source&#x27;s files traces to a release, check
+its <code translate="no" v-pre>library_path</code>.</p>
+<p>The same report is at <code translate="no" v-pre>/manage/duplicates/report.json</code>, and
+<code translate="no" v-pre>POST /manage/duplicates/check</code> with <code translate="no" v-pre>{&quot;hashes&quot;: [...]}</code> re-reads the *arrs and
+answers each release&#x27;s state.</p>
 <h2 id="newznab-and-torznab">Newznab and Torznab</h2>
 <p>An indexer entry says which it is with <code translate="no" v-pre>type</code>. Absent means <code translate="no" v-pre>newznab</code>, which is
 what every entry written before this existed meant. The query is identical for
@@ -285,30 +824,139 @@ account that takes adds is offered the hash, because the caches are independent
 and one account having purged a release says nothing about the next. The first
 that already has it takes it. A miss everywhere is an ordinary failed
 candidate, so the walk moves down the ranking to the next release, which may be
-another torrent or an NZB. Nothing is ever downloaded onto the account, no
-uncached add allowance is spent, and no transfer slot is left running for
-something nobody is waiting on. <code translate="no" v-pre>watchlist: true</code> on a provider entry names the
-account offered first; <code translate="no" v-pre>add_torrents: false</code> keeps an account out of it
-entirely.</p>
+another torrent or an NZB.</p>
+<p>zurg adds the torrent and watches it for up to 20 seconds. Cached content is
+ready within a second or two. Anything still downloading after that is removed
+again. So no download is ever left running on the account. A miss is not quite
+free though. It can still count against the account&#x27;s limit on adds. On TorBox
+it uses one of the 60 uncached adds allowed per hour.</p>
+<p>The account marked <code translate="no" v-pre>watchlist: true</code> is offered the torrent first. The rest
+follow in the order of your <code translate="no" v-pre>providers:</code> list. An account marked
+<code translate="no" v-pre>add_torrents: false</code> is never offered one.</p>
 <p><code translate="no" v-pre>prefer</code> decides which kind is reached for first when both could satisfy a
 target. <code translate="no" v-pre>usenet</code> is the default, because a Usenet grab costs a download while a
 torrent spends one of the account&#x27;s add slots, and because it is what the
 feature did before it could take a torrent at all. <code translate="no" v-pre>torrents</code> reverses it, and
 <code translate="no" v-pre>best</code> drops the distinction and takes whatever the ranking puts first.</p>
+<p>A movie tries up to three torrents per attempt. Each one costs an add. Up to
+24 of its NZBs are inspected on their own, as
+<doc-anchor-trigger to="#choosing-a-movies-release">choosing a movie&#x27;s release</doc-anchor-trigger> describes. With
+<code translate="no" v-pre>usenet</code> the NZBs are tried before any torrent. With <code translate="no" v-pre>torrents</code> the torrents
+come first. With <code translate="no" v-pre>best</code> each torrent waits its turn in the ranking. The NZBs
+are tried together at the place of the best one. A season pack tries three
+releases per attempt of either kind. So does each loose episode.</p>
 <p>The verification a grab waits on differs with the source. A Usenet release is
 put to the news servers, which is the only way to know whether the post is
 still there. A torrent was added only because the account said it already held
 the content, so what is left to establish is that the release reached the
 library with files in it; that is what the check asks, and a release the
 account lists empty is set aside like a dead post.</p>
-<p>An install with no <code translate="no" v-pre>nzb</code> provider can still run acquisition, with Torznab
-indexers alone. An install with no account that takes adds passes over Torznab
-results the same way.</p>
+<p>An install with no <code translate="no" v-pre>nzb</code> provider can still run acquisition from Torznab
+indexers alone. Its Newznab indexers are not searched there, because nothing on
+that install can play an NZB. The log says so once for each of them. An
+install with no account that takes torrents does not search its Torznab
+indexers, the same way. Either way, a release of a kind the install has
+nowhere to put is never a candidate, so it uses up none of the releases an
+attempt tries, and a source such as Radarr is never asked about it.</p>
+<h2 id="choosing-a-movies-release">Choosing a movie&#x27;s release</h2>
+<p>A movie&#x27;s Usenet candidates are tried in order of what they cost to confirm,
+not only of how good they are. A post holding one named video costs zurg two
+article reads and is usually complete; a forty-volume archive set costs a
+sizing pass and a read at both ends of every volume, and about two thirds of
+the multi-volume remux sets on the indexers are gone. The indexer&#x27;s own
+<code translate="no" v-pre>files</code> count predicts the shape, so candidates are ordered by it: ten files or
+fewer, then up to thirty, then more, then unknown, and by the count within
+each band. Among posts of equal cost, when a source such as Radarr judges
+releases by a profile of its own, a title naming WEB-DL or WEBRip comes first,
+then Blu-ray, then the rest, and the larger post first within each. The
+source&#x27;s own ranking is not used here, because it is only known by asking the
+source, and zurg asks about a release only when it is about to inspect it.
+Without a source, the quality ranking and then size decide. Where no source
+judges the candidates, the resolution the <code translate="no" v-pre>quality</code> setting asks for comes
+ahead of cost, so a watchlist set to <code translate="no" v-pre>best</code> still gets the best resolution on
+offer, cheapest post first within it. Results titled after one part of a split
+post (<code translate="no" v-pre>[1/9] &quot;Movie.part1.rar&quot;</code>) are never candidates, and of two posts under
+one name only the one with fewer files is kept, because the library can hold
+only one of them.</p>
+<p>Up to 24 candidates are then inspected: each NZB is fetched and read with
+zurg&#x27;s own parser. A post with at most two content files, one of them a named
+<code translate="no" v-pre>.mkv</code>, <code translate="no" v-pre>.mp4</code>, <code translate="no" v-pre>.m4v</code>, <code translate="no" v-pre>.avi</code>, <code translate="no" v-pre>.mov</code> or <code translate="no" v-pre>.ts</code> video of at least 500 MB, is a
+direct post; PAR2 volumes and sidecars such as <code translate="no" v-pre>.nfo</code>, <code translate="no" v-pre>.sfv</code>, <code translate="no" v-pre>.srr</code>, <code translate="no" v-pre>.nzb</code>,
+images, <code translate="no" v-pre>.txt</code>, <code translate="no" v-pre>.url</code> and <code translate="no" v-pre>.exe</code> do not count as content. The first direct
+post is saved at once. Archive posts are held back until the direct ones in
+view run out, then tried with the fewest volumes first, through a gate that
+lets no more than six archive releases wait on the news servers at once. A post
+holding nothing but repair data and sidecars is never saved. The NZBs inspected
+are remembered in memory, so when a saved release is found dead and the title
+is tried again, the next candidate is reached without fetching the earlier
+ones a second time. Searches and NZB downloads share one limit of requests in
+flight per indexer, and an indexer answering <code translate="no" v-pre>429</code> or <code translate="no" v-pre>503</code> is asked again
+after a pause, its <code translate="no" v-pre>Retry-After</code> honoured. The dashboard shows each step: the
+search, which candidate is being inspected, and what was saved. Series use the
+earlier walk: the three best-ranked releases that are not set aside. When the
+source judges releases, as Sonarr does, each one is put to it first, and a
+release it refuses costs none of the three. <code translate="no" v-pre>best_first</code> changes the order of
+both walks as the next section describes.</p>
+<h2 id="taking-the-profiles-best-first">Taking the profile&#x27;s best first</h2>
+<div id="taking-the-profiles-best-first-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">acquisition:
+  best_first: true</code></pre>
+</doc-codeblock></div>
+<p>Off by default. Turned on it makes a Radarr or Sonarr source&#x27;s first grab
+follow the quality profile&#x27;s order of preference instead of what a release
+costs to check. The Plex watchlist and Seerr have no profile and are not
+affected. The acquisition page says when it is on.</p>
+<ul>
+<li>
+<p><strong>The profile&#x27;s best resolution goes first.</strong> Each release is placed by the
+resolution its title names. Its place is the best quality the profile allows
+in that resolution. zurg reads this from the profile it already holds and
+asks Radarr and Sonarr nothing more. WEB-DL and Blu-ray and remux of one
+resolution share a place. Within a place a movie still takes the release
+that is cheapest to check. A series takes the one <code translate="no" v-pre>quality</code> ranks first. A
+title that names no resolution goes last.</p>
+</li>
+<li>
+<p><strong>The cutoff counts as the top.</strong> While the profile allows upgrades every
+quality at or above the cutoff counts the same as the cutoff. The upgrade
+pass would never replace any of them. A profile that upgrades until WEB 1080p
+gains nothing from best first even if it also allows 2160p. A profile that
+does not allow upgrades keeps its whole order. Its first file is the one it
+keeps.</p>
+</li>
+<li>
+<p><strong>It falls back down the profile.</strong> A release whose NZB cannot be fetched or
+read is passed over. One the news servers turn down is set aside as before.
+The next release in the profile&#x27;s order is tried. One attempt still reads no
+more than 24 NZBs in all whatever their place.</p>
+</li>
+<li>
+<p><strong>It comes before the Usenet or torrent preference.</strong> A 2160p torrent that an
+account already holds is taken before a 1080p NZB. <code translate="no" v-pre>prefer</code> still decides
+between an NZB and a torrent of the same place.</p>
+</li>
+<li>
+<p><strong>A season pack has to be as good as the loose episodes.</strong> A pack ranked
+below a loose episode from the same search is passed over. The episodes are
+then taken one by one. Sonarr makes the same choice. Only that one search is
+compared. An episode is not searched for again on its own in case a better
+release of it exists.</p>
+</li>
+</ul>
+<p>It has a cost. The top of a 2160p profile is mostly remux and Blu-ray sets of
+forty volumes or more rather than single video files. Such a set takes longer
+to check. It is more often gone from the news servers. It also waits for a
+place at the archive gate. So the first file usually arrives later. A title
+whose best releases are all gone has each of them grabbed and checked and set
+aside before zurg moves down the profile. A season taken as loose episodes is
+several grabs where a pack would have been one. What it saves is the second
+grab. A first file at the cutoff is never upgraded.</p>
 <h2 id="what-acquiring-does-to-the-sources-own-list">What acquiring does to the source&#x27;s own list</h2>
 <p>A Plex watchlist is a list somebody curated, and it is the only record that
 they wanted a title — Plex keeps no history of a removed entry. Two settings
 decide what zurg is allowed to do with it. Both apply to <code translate="no" v-pre>plex_watchlist</code>
-sources; a Seerr source owns no list zurg writes to, so both are inert there.</p>
+sources; Seerr and Radarr sources own no list zurg writes to, so both are
+inert there.</p>
 <p><code translate="no" v-pre>remove_after_grab</code> (default <code translate="no" v-pre>true</code>) takes an acquired title off the watchlist
 once the release behind it has been checked. That is what the feature has
 always done: the watchlist is read as a queue of things to get, and a title
@@ -328,10 +976,10 @@ adding it again is an ordinary new request.</p>
 <h2 id="verifying-a-grab">Verifying a grab</h2>
 <p>A saved NZB is not a release. The indexer answering, the answer parsing as an
 NZB and the file reaching <code translate="no" v-pre>nzbs/</code> are facts about the indexer, not about the
-post. So each acquired release is put to the configured news accounts — one
-<code translate="no" v-pre>STAT</code> for the first article of every content file, the same walk
-<code translate="no" v-pre>/api?mode=addfile</code> makes for Sonarr and Radarr — before the engine
-acknowledges the request. Three answers, and keeping them apart is the whole
+post. So each acquired NZB is put to the configured news accounts before the
+engine acknowledges the request. They are asked about the start and the end of
+every content file. That is the first sixteen articles and the last one. It is
+the same check <code translate="no" v-pre>/api?mode=addfile</code> makes for Sonarr and Radarr. Three answers, and keeping them apart is the whole
 point:</p>
 <ul>
 <li>
@@ -339,7 +987,7 @@ point:</p>
 target is wanted again, and the release is recorded as dead for 30 days so
 the next attempt ranks the next candidate rather than settling on the one
 already in the library. A release on that list is not a candidate: it is not
-fetched, and it does not spend one of the three candidates an attempt tries,
+fetched, and it does not spend one of the candidates an attempt tries,
 so a run of dead posts at the top of a ranking is walked through instead of
 putting everything under it out of reach. A dead season pack puts its whole
 season back to being wanted; the loose episodes are taken instead.</p>
@@ -348,7 +996,10 @@ season back to being wanted; the loose episodes are taken instead.</p>
 <p><strong>The accounts could not be asked.</strong> A pool that is down, an account
 throttling, or the ordinary case of a library that has not listed the new NZB
 yet. Nothing was established, so nothing is decided: the request is looked at
-again in two minutes and the wait costs it no retry attempt. Twenty checks
+again in twenty seconds, then after 40 and 80 seconds, then every two
+minutes, and the wait costs it no retry attempt. A check that simply ran out
+of time is not this case: it is started again at once with its full time, up
+to three times, before it waits. Twenty checks
 across two hours that establish nothing set the release aside the way a dead
 one is, and the next attempt tries another release. The request is never
 acknowledged on a release nobody could check.</p>
@@ -358,9 +1009,26 @@ acknowledged on a release nobody could check.</p>
 acknowledgement goes ahead.</p>
 </li>
 </ul>
-<p>An install with no <code translate="no" v-pre>nzb</code> provider has nobody to ask; acquisition does not start
-there at all. The check is read-only: it moves no article bodies into the cache
-and records no dead articles, so it cannot silence a file that plays.</p>
+<p>The check waits until zurg has finished learning the release&#x27;s exact file
+sizes, or has given up on them, which is the same point the SABnzbd endpoint
+checks at. Learning the sizes reads the first article of every file, and so
+does the check, so running both at once only made both slower: on a list of 99
+movies, checking each release the moment it was listed put the last file in
+Radarr&#x27;s folder after almost nine minutes. A check still waiting for sizes
+when its time runs out is started again at once, like a check that ran out of
+time. A release still being sized after 30 minutes is checked anyway. No more
+than six releases are checked at the same time, and the rest wait their turn.</p>
+<p>The check only reads. It moves no article bodies into the cache and records
+no dead articles, so it cannot silence a file that plays. When the sizing pass
+has just fetched a file&#x27;s first article, the check reads that copy instead of
+fetching it a second time.</p>
+<p>An install with no <code translate="no" v-pre>nzb</code> provider has no news servers to ask. Acquisition still
+runs there when a debrid account takes torrents. Each torrent is checked by
+whether it reaches the library with files in it, as
+<doc-anchor-trigger to="#newznab-and-torznab">Newznab and Torznab</doc-anchor-trigger> describes. An NZB grab is never
+acknowledged there, because nothing could check it or play it. One left
+waiting from before the <code translate="no" v-pre>nzb</code> provider was removed is set aside like a dead
+post, and the next release is tried.</p>
 <h2 id="persistence-and-recovery">Persistence and recovery</h2>
 <p><code translate="no" v-pre>data/acquisition.json</code> stores source/request IDs, attempts, retry deadlines,
 in-flight work and receipts for individual acquisitions, including episodes. It
@@ -414,6 +1082,9 @@ never has to check a release itself — and must not treat being called as
 evidence of anything beyond that.</p>
 </li>
 </ol>
+<p>A source with a quality profile of its own can also implement
+<code translate="no" v-pre>acquisition.Assessor</code>, judging each candidate release by its own rules; the
+Radarr and Sonarr adapters do, through their own parsers.</p>
 <p>Register its configuration type and factory in the acquisition service. The
 queue, persistence, retries and executor need no source-specific branch. Trakt,
 MDBList and Simkl can fit this contract, but are not implemented yet.</p>

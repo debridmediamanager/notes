@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844343888590">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844409366003">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844343888590" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844409366003" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844343888590" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844409366003" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -279,6 +279,16 @@ Neither cache pre-downloads the library. A read outside retained decoded blocks
 still needs decoding from the beginning of a compressed entry. Rclone&#x27;s VFS cache
 is separate and continues to serve complete cached ranges without entering these
 paths; these caches also benefit direct HTTP/WebDAV reads.</p>
+<p>A compressed entry can only be decoded from its beginning, so a read far into
+one is the whole archive fetched first. zurg holds such a read for 20 seconds
+and then answers <code translate="no" v-pre>503</code> instead of leaving the client without a reply. What the
+decode reached is kept, so a player that retries a forward seek gets further
+each time. A read that is refused near the end of an entry also starts one
+background decode of that entry, one entry at a time, which keeps the entry&#x27;s
+last 8 MiB in <code translate="no" v-pre>data/bytecache/decoded-tails/</code>. After that the end of the file
+reads at once, which is what a media server asks for when it analyses a file.
+That store takes the same budget as <code translate="no" v-pre>archive_decoded_disk_cache_mb</code> again and
+is turned off with it.</p>
 <p>Derived metadata grows with the library and is separate from these byte budgets.
 NZB scans remove manifests and article indexes for removed documents. Obsolete
 archive layout revisions can be removed with the instance stopped; they are

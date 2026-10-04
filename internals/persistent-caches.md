@@ -63,6 +63,17 @@ still needs decoding from the beginning of a compressed entry. Rclone's VFS cach
 is separate and continues to serve complete cached ranges without entering these
 paths; these caches also benefit direct HTTP/WebDAV reads.
 
+A compressed entry can only be decoded from its beginning, so a read far into
+one is the whole archive fetched first. zurg holds such a read for 20 seconds
+and then answers `503` instead of leaving the client without a reply. What the
+decode reached is kept, so a player that retries a forward seek gets further
+each time. A read that is refused near the end of an entry also starts one
+background decode of that entry, one entry at a time, which keeps the entry's
+last 8 MiB in `data/bytecache/decoded-tails/`. After that the end of the file
+reads at once, which is what a media server asks for when it analyses a file.
+That store takes the same budget as `archive_decoded_disk_cache_mb` again and
+is turned off with it.
+
 Derived metadata grows with the library and is separate from these byte budgets.
 NZB scans remove manifests and article indexes for removed documents. Obsolete
 archive layout revisions can be removed with the instance stopped; they are

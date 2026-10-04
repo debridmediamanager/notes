@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844343888590">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844409366003">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844343888590" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844409366003" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844343888590" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844409366003" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -214,7 +214,7 @@
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">docker version
 docker compose version</code></pre>
 </doc-codeblock></div>
-<p>Sign in to GitHub Container Registry with your GitHub username. When prompted for the password, paste a personal access token with <code translate="no" v-pre>read:packages</code> access:</p>
+<p>Sign in to GitHub Container Registry with your GitHub username. When prompted for the password, paste a classic personal access token with both the <code translate="no" v-pre>read:packages</code> and <code translate="no" v-pre>repo</code> scopes. The image belongs to a private repository, and a token with <code translate="no" v-pre>read:packages</code> alone can log in but still fail to pull:</p>
 <div id="1-install-docker-and-unlock-the-image-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">docker login ghcr.io -u YOUR_GITHUB_USERNAME</code></pre>
 </doc-codeblock></div>
@@ -280,7 +280,7 @@ cd ~/zurg</code></pre>
 docker compose logs -f --tail=100 zurg</code></pre>
 </doc-codeblock></div>
 <p>Leave the log view with <code translate="no" v-pre>Ctrl+C</code>; the container keeps running. The Dashboard is at <code translate="no" v-pre>http://localhost:9999/config/</code> and edits the same <code translate="no" v-pre>config.yml</code> stored beside the compose file.</p>
-<p>A large library can take a while to load on its first run. Until it has, <code translate="no" v-pre>/dav/movies/</code> answers 503 and the mount may list nothing.</p>
+<p>A large library can take a while to load. Folders in the mount fail to list until it has. They show up empty or as <code translate="no" v-pre>Input/output error</code> while the Dashboard and <code translate="no" v-pre>version.txt</code> work as normal. That means zurg is still loading and not that the mount is broken. <doc-anchor-trigger to="#up-versus-ready">Up versus ready</doc-anchor-trigger> shows how to tell when the load is done.</p>
 <h2 id="6-verify-with-doctor">6. Verify with doctor</h2>
 <p>Once the library is ready, run the same diagnostic tool used by a binary install:</p>
 <div id="6-verify-with-doctor-code-1" class="codeblock-wrapper"><doc-codeblock>
@@ -311,6 +311,69 @@ EOF
 sudo systemctl enable rshared-zurg-mnt.service</code></pre>
 </doc-codeblock></div>
 <p>On the next reboot the host prepares the shared parent before Docker restores the zurg container.</p>
+<h2 id="up-versus-ready">Up versus ready</h2>
+<p>zurg answers two different questions over HTTP. Neither needs a password even when <code translate="no" v-pre>username</code> is set.</p>
+<retype-table copy-text="| Address | Answers 200 when | While the library loads |
+|---|---|---|
+| `/http/version.txt` | zurg is running | 200 |
+| `/ready` | the library has finished loading | 503 with `Retry-After: 5` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Address</th>
+<th>Answers 200 when</th>
+<th>While the library loads</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>/http/version.txt</code></td>
+<td>zurg is running</td>
+<td>200</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>/ready</code></td>
+<td>the library has finished loading</td>
+<td>503 with <code translate="no" v-pre>Retry-After: 5</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>The container&#x27;s health check asks the first one. <code translate="no" v-pre>docker compose ps</code> shows <code translate="no" v-pre>healthy</code> as soon as zurg is running. A large library can keep loading for a long time after that. Ask <code translate="no" v-pre>/ready</code> when you need the whole library. It prints <code translate="no" v-pre>ready</code> once the load is done.</p>
+<div id="up-versus-ready-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -fsS http://localhost:9999/ready
+docker compose exec zurg /app/healthcheck.sh --ready &amp;&amp; echo ready</code></pre>
+</doc-codeblock></div>
+<p>A script can wait for it like this.</p>
+<div id="up-versus-ready-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">until curl -fsS http://localhost:9999/ready &gt;/dev/null; do sleep 10; done</code></pre>
+</doc-codeblock></div>
+<h3 id="why-the-health-check-does-not-wait-for-the-library">Why the health check does not wait for the library</h3>
+<p>Docker keeps one health status per container. The tools that read it take it to mean &quot;is zurg alive&quot;. autoheal and Docker Swarm restart a container that turns unhealthy. <code translate="no" v-pre>depends_on</code> with <code translate="no" v-pre>condition: service_healthy</code> holds other services back until zurg is healthy.</p>
+<p>Cold starts of 15 to 90 minutes have been reported on large libraries. A health check that waited for the library would hold every dependent service back for that long. An rclone container in front of zurg would leave its mount folder empty the whole time. An empty folder looks to a media server like a library that has been deleted. A load that outlasted the health check&#x27;s retries would also be marked unhealthy. Anything that restarts unhealthy containers would then start the load over. It would never finish.</p>
+<h3 id="using-readiness-with-compose">Using readiness with Compose</h3>
+<p>Keep a mount container on the default health check so its mount comes up as soon as zurg is running.</p>
+<div id="using-readiness-with-compose-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">services:
+  rclone:
+    depends_on:
+      zurg:
+        condition: service_healthy</code></pre>
+</doc-codeblock></div>
+<p>Wait on <code translate="no" v-pre>/ready</code> in whatever needs the whole library. That could be a scan script or an import job.</p>
+<p>You can make the zurg container itself report healthy only once the library has loaded. Override its health check in <code translate="no" v-pre>docker-compose.yml</code> and set <code translate="no" v-pre>start_period</code> longer than your slowest load. Docker does not count failures inside the start period. Every service that depends on zurg then waits for the library as well. Do not combine this with autoheal.</p>
+<div id="using-readiness-with-compose-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">services:
+  zurg:
+    healthcheck:
+      test: [&quot;CMD&quot;, &quot;/app/healthcheck.sh&quot;, &quot;--ready&quot;]
+      interval: 30s
+      timeout: 10s
+      start_period: 3h
+      retries: 3</code></pre>
+</doc-codeblock></div>
 <h2 id="managing-and-updating-zurg">Managing and updating zurg</h2>
 <p>Run these from <code translate="no" v-pre>~/zurg</code>:</p>
 <div id="managing-and-updating-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
@@ -434,9 +497,11 @@ echo fuse | sudo tee /etc/modules-load.d/fuse.conf</code></pre>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose logs zurg 2&gt;&amp;1 | grep -i rclone
 docker compose exec zurg ls -la /zurg_mnt/zurg
 curl -fsS http://localhost:9999/http/version.txt
+curl -fsS http://localhost:9999/ready
 findmnt -o TARGET,PROPAGATION /zurg_mnt</code></pre>
 </doc-codeblock></div>
 <p>The host path must be a shared bind mount and the compose volume must bind the parent as <code translate="no" v-pre>/zurg_mnt:/zurg_mnt:rshared</code>.</p>
+<p>If <code translate="no" v-pre>/ready</code> fails with error 503 the library is still loading and the mount is fine. Its folders list as empty or show <code translate="no" v-pre>Input/output error</code> until the load finishes. Wait for it instead of restarting zurg. A restart starts the load over.</p>
 <h3 id="mount-appears-twice-in-mount-output">Mount appears twice in <code translate="no" v-pre>mount</code> output</h3>
 <p>That is normal. The same FUSE mount is visible in the container and host mount namespaces because propagation is working.</p>
 

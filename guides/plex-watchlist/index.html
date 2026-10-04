@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844343888590">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844409366003">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -12,7 +12,7 @@
     <!-- Primary Meta Tags -->
     <title>Plex watchlist acquisition</title>
     <meta name="title" content="Plex watchlist acquisition">
-    <meta name="description" content="Plex watchlist is an adapter on the shared acquisition engine, alongside Seerr. Existing watchlist.enabled and legacy Plex watchlist settings keep working. The adapter resolves cloud-watchlist titles and uses the shared Newznab executor to save NZBs.">
+    <meta name="description" content="Plex watchlist is an adapter on the shared acquisition engine, alongside Seerr. Existing watchlist.enabled and legacy Plex watchlist settings keep working. The adapter resolves cloud-watchlist titles and hands them to the shared executor.">
 
     <!-- Canonical -->
     <link rel="canonical" href="https://notes.debridmediamanager.com/guides/plex-watchlist/">
@@ -22,7 +22,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://notes.debridmediamanager.com/guides/plex-watchlist/">
     <meta property="og:title" content="Plex watchlist acquisition">
-    <meta property="og:description" content="Plex watchlist is an adapter on the shared acquisition engine, alongside Seerr. Existing watchlist.enabled and legacy Plex watchlist settings keep working. The adapter resolves cloud-watchlist titles and uses the shared Newznab executor to save NZBs.">
+    <meta property="og:description" content="Plex watchlist is an adapter on the shared acquisition engine, alongside Seerr. Existing watchlist.enabled and legacy Plex watchlist settings keep working. The adapter resolves cloud-watchlist titles and hands them to the shared executor.">
     <meta property="og:site_name" content="dmm+zurg">
     <meta property="og:locale" content="en_US">
 
@@ -30,18 +30,18 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://notes.debridmediamanager.com/guides/plex-watchlist/">
     <meta name="twitter:title" content="Plex watchlist acquisition">
-    <meta name="twitter:description" content="Plex watchlist is an adapter on the shared acquisition engine, alongside Seerr. Existing watchlist.enabled and legacy Plex watchlist settings keep working. The adapter resolves cloud-watchlist titles and uses the shared Newznab executor to save NZBs.">
+    <meta name="twitter:description" content="Plex watchlist is an adapter on the shared acquisition engine, alongside Seerr. Existing watchlist.enabled and legacy Plex watchlist settings keep working. The adapter resolves cloud-watchlist titles and hands them to the shared executor.">
 
     <!-- Alternate Markdown -->
     <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/guides/plex-watchlist.md">
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844343888590" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844409366003" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -180,17 +180,19 @@
 <h1 id="plex-watchlist-acquisition">Plex watchlist acquisition</h1>
 <p>Plex watchlist is an adapter on the <a href="../acquisition/">shared acquisition engine</a>,
 alongside Seerr. Existing <code translate="no" v-pre>watchlist.enabled</code> and legacy Plex watchlist settings
-keep working. The adapter resolves cloud-watchlist titles and uses the shared
-Newznab executor to save NZBs. It starts after the library loads and needs an
-<code translate="no" v-pre>nzb</code> provider on the same zurg instance.</p>
+keep working. The adapter resolves cloud-watchlist titles and hands them to
+the shared executor. It starts after the library loads. It needs an <code translate="no" v-pre>nzb</code>
+provider on the same zurg instance, a debrid account that takes torrents, or
+both.</p>
 <p>Progress lives in <code translate="no" v-pre>data/acquisition.json</code>. The previous
 <code translate="no" v-pre>data/plex-watchlist.json</code> is imported once without deleting it. History, retry
 deadlines, attempt counts and acquisitions waiting only for Plex removal survive
 reboots. Both state files are included in normal backups. Keep <code translate="no" v-pre>data/</code> and
 <code translate="no" v-pre>nzbs/</code> when recreating containers.</p>
 <p>Releases come from Newznab indexers as NZBs and from Torznab indexers as info
-hashes handed to a debrid account that already holds them. See
-<a href="../acquisition/#newznab-and-torznab">Newznab and Torznab</a>.</p>
+hashes handed to a debrid account that already holds them. An NZB needs the
+<code translate="no" v-pre>nzb</code> provider. A torrent needs the debrid account. <code translate="no" v-pre>prefer</code> decides which is
+tried first. See <a href="../acquisition/#newznab-and-torznab">Newznab and Torznab</a>.</p>
 <p>Successful acquisition removes an item from the watchlist, unless
 <code translate="no" v-pre>remove_after_grab: false</code> says otherwise; with it off the title stays and zurg
 satisfies it in the background. <code translate="no" v-pre>only_new_items</code> (on by default) means turning
@@ -202,12 +204,13 @@ while missing ones retry. A season pack is preferred. The loose-episode fallback
 acquires episodes found in indexer results, since the watchlist does not provide
 an expected episode inventory. This is not continuous monitoring of future
 episodes after the item leaves the watchlist.</p>
-<p>Removal waits for the news servers. A watchlist entry is the only record that
-you wanted a title — Plex keeps no history of a removed one — so it is not
-deleted on the strength of an NZB nobody has checked. A release the accounts no
-longer hold leaves the title where it is and is remembered as dead, so the
-retry ranks the next candidate; a check that could not be made leaves the title
-queued rather than deciding either way. See
+<p>Removal waits for the check. A watchlist entry is the only record that you
+wanted a title. Plex keeps no history of a removed one. So a title is never
+removed on the strength of a grab nobody has checked. An NZB is checked against
+the news servers. A torrent has to reach the library with files in it. A
+release that fails the check leaves the title where it is and is remembered as
+dead. The retry then ranks the next candidate. A check that could not be made
+leaves the title queued rather than deciding either way. See
 <a href="../acquisition/#verifying-a-grab">verifying a grab</a>.</p>
 <p>Failures retry with persistent backoff while the item remains on the list.
 Once acquisition is recorded, failed or interrupted Plex removal retries only

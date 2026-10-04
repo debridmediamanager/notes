@@ -152,8 +152,8 @@ Each entry in `providers` is one account. Any number can run side by side — Re
 | `download_tokens` | list | `[]` | **Real-Debrid and AllDebrid:** backup API tokens for the same service, used when the active token's bandwidth allowance is exhausted. They use this entry's catalog, including a [local catalog](#local-debrid-catalogs), without importing the extra accounts' torrent libraries. **TorBox:** accepted, but rotation does not remap account-specific torrent/file IDs; use separate provider entries for different accounts. Unused by NZB. Premiumize, Debrid-Link and Offcloud require separate account entries because their stored file IDs belong to the listing account. |
 | `strm_link_token` | string | `""` | A separate API token that resolves the reads arriving at the `/strm/` endpoint, so a player opening a `.strm` does not spend the token the live mount streams on. Falls back to `token` if not set. **Real-Debrid and AllDebrid** — the two backends that rotate credentials, and so the two where pinning `.strm` traffic to a key of its own means something. Accepted and unused on `torbox` and `nzb` entries. Premiumize, Debrid-Link and Offcloud accept only the account’s own `token` here. |
 | `disabled` | bool | `false` | Keeps an account in the config without loading it. If every entry is disabled, the load fails. |
-| `watchlist` | bool | `false` | Marks the account tried first for new torrent adds (the download-client endpoints). At most one entry may set it, and never an `nzb` one. With none set, the first account that can add torrents is used. Plex watchlist acquisition itself goes through the Usenet backend, not this account — see [Watchlist](#watchlist). |
-| `add_torrents` | bool | `true` | Whether this account is offered new torrents at all — the ones the download-client endpoints are handed, and the ones the Plex watchlist asks for. Set it `false` for an archive account, or one whose quota is spoken for: it goes on serving and reading its library while nothing new is ever put on it. **The order of the `providers:` list is the order the accounts that do take adds are tried in**, so this key and that order are read together; an account marked `watchlist: true` is tried first wherever it sits. Cannot be combined with `watchlist: true` on the same entry, and on an `nzb` entry it is ignored with a startup warning, since a news server is never handed a torrent. See [`qbittorrent`](#qbittorrent-the-torrent-download-client-sonarr-and-radarr-see). |
+| `watchlist` | bool | `false` | Marks the account tried first for new torrent adds. That covers the download-client endpoints and acquisition's Torznab indexers. At most one entry may set it, and never an `nzb` one. With none set, the first account that can add torrents is used. Acquisition's NZBs go to the Usenet backend and never to this account. See [Watchlist](#watchlist). |
+| `add_torrents` | bool | `true` | Whether this account is offered new torrents at all — the ones the download-client endpoints are handed, and the ones acquisition takes from Torznab indexers. Set it `false` for an archive account, or one whose quota is spoken for: it goes on serving and reading its library while nothing new is ever put on it. **The order of the `providers:` list is the order the accounts that do take adds are tried in**, so this key and that order are read together; an account marked `watchlist: true` is tried first wherever it sits. Cannot be combined with `watchlist: true` on the same entry, and on an `nzb` entry it is ignored with a startup warning, since a news server is never handed a torrent. See [`qbittorrent`](#qbittorrent-the-torrent-download-client-sonarr-and-radarr-see). |
 | `warm_connections` | int | `1` | How many connections this account keeps dialled and handshaken **to each host it has been using**, so a read does not pay to open one. Capped at 4. `-1` keeps none. Ignored on an `nzb` entry, whose floor is per account and lives at [`nntp.warm_connections`](../guides/usenet.md). See [warm connections](#warm-connections). |
 | `nntp` | block | *(required for `nzb`)* | News server credentials. Required for type `nzb` and ignored by every other type. |
 
@@ -179,6 +179,38 @@ fallback that RD and AD locked links allow. Its resolver changes the API key
 while retaining the torrent/file IDs from the existing source. Separate TorBox
 provider entries keep each account's IDs and catalog independent. For a local
 library, put the portable manifests in each entry's own source directory.
+
+#### TorBox seeding
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `tb_seed_torrents` | string | `never` | Whether the torrents zurg adds to a TorBox account seed. `never` turns seeding off for every add. `auto` leaves the choice to the seeding setting on your TorBox account. `always` turns seeding on for every add. Applies to every TorBox account in the config, and to the next add as soon as it is changed. Any other value stops zurg from starting. |
+
+```yaml
+tb_seed_torrents: never
+```
+
+Leave it at `never` unless you need it. It is there for private trackers that
+count your ratio. A release grabbed through the
+[`qbittorrent`](#qbittorrent-the-torrent-download-client-sonarr-and-radarr-see)
+endpoint as a `.torrent` file is added with this setting, so with `always` (or
+`auto` on an account set to seed) TorBox uploads it back to the tracker's swarm.
+Importing it into Sonarr or Radarr does not stop that: a finished download the
+client removes stays on the account.
+
+**A seeding torrent holds one of your plan's active slots for as long as it
+seeds.** TorBox counts a torrent that is seeding the same as one that is
+downloading. Its plans allow 3, 5 or 10 at once (Essential, Standard, Pro) and
+seed for up to 24 hours, 14 days or 30 days. Once every slot is held by
+seeding torrents, new grabs and repairs on that account stall until a slot frees,
+either when a torrent's seeding time runs out or when you delete it on TorBox.
+Seeding also counts as upload against TorBox's fair-use limits. With `never`
+none of this happens, which is why it is the default.
+
+`auto` sends TorBox no seeding preference at all, so whatever your account's
+seeding setting says applies. On an account where nobody has changed it, that
+is TorBox's own Auto. `always` and `never` override the account setting for the
+torrents zurg adds and leave everything else on the account alone.
 
 #### Usenet accounts
 
@@ -356,9 +388,9 @@ plex_match_every_mins: 1440
 
 ### Watchlist
 
-Add something to your Plex watchlist and zurg fetches it: every new watchlist item is searched on your Newznab indexers and the chosen release's NZB drops into the Usenet backend, exactly as a Sonarr grab or a Stremio play would — the three surfaces share the naming rules, so they find each other's grabs instead of duplicating them. A movie becomes one release; a show is acquired season by season, preferring season packs over loose episodes — a season nobody posted a pack of falls back to the loose episodes the search surfaced, best release per episode. The item leaves the watchlist only once something was actually acquired; failures stay on the list and are retried a few times with backoff.
+Add something to your Plex watchlist and zurg fetches it. Every new watchlist item is searched on your indexers. A Newznab indexer gives an NZB. It drops into the Usenet backend exactly as a Sonarr grab or a Stremio play would. The three share the naming rules so they find each other's grabs instead of duplicating them. A Torznab indexer gives a torrent. It is added to a debrid account only when that account already has it cached. `prefer` decides which kind is tried first. A movie becomes one release. A show is acquired season by season and season packs come before loose episodes. A season nobody posted a pack of falls back to the loose episodes the search surfaced, the best release for each. The item leaves the watchlist only once the release behind it has been checked and only when `remove_after_grab` allows it. Failures stay on the list. They are tried again after 5, 10 and 15 minutes, then after an hour, then every six hours for as long as the item is listed.
 
-It needs a `plex_token` (the monitor talks to Plex's cloud service, so `plex_server_url` is not required), a configured `nzb` provider to read the watch directory, and at least one indexer — its own list, or the Stremio addon's.
+It needs a `plex_token` and at least one indexer. With no list of its own it borrows the Stremio addon's. The monitor talks to Plex's cloud service, so `plex_server_url` is not required. NZBs need an `nzb` provider on the same instance. Torrents need a debrid account that takes them. Either one is enough.
 
 Every option below is on the config page under **Plex Watchlist**, indexer list included; the dashboard writes this block rather than the legacy flat keys, and switching the monitor off there clears `plex_watchlist_enabled` too, since that one is ORed into the switch.
 
@@ -366,10 +398,15 @@ Every option below is on the config page under **Plex Watchlist**, indexer list 
 |--------|------|---------|-------------|
 | `enabled` | bool | `false` | Starts the monitor. The legacy `plex_watchlist_enabled` key still counts. |
 | `check_every_secs` | int | `60` | How often the watchlist is polled on Plex's cloud service. |
-| `indexers` | list | `[]` | Newznab endpoints to search, each with `name`, `url`, `api_key` and optional `api_path` — the same shape as `stremio.indexers`, which is borrowed wholesale when this list is empty. |
+| `indexers` | list | `[]` | Indexers to search, each with `name`, `url`, `api_key` and optional `api_path` and `type`. `type: torznab` marks a torrent indexer. Absent means `newznab`. The same shape as `stremio.indexers`, which is borrowed wholesale when this list is empty. |
+| `prefer` | string | `"usenet"` | Which kind is tried first when both an NZB and a torrent could do. `usenet` tries NZBs first, `torrents` tries torrents first, and `best` lets the ranking alone decide. See [Newznab and Torznab](../guides/acquisition.md#newznab-and-torznab). |
 | `max_size_gb` | int | `40` | Releases larger than this are dropped for movies and single episodes. Releases whose size the indexer did not state are kept. |
 | `max_season_size_gb` | int | `100` | The same ceiling for season packs, which are legitimately several times a movie. |
 | `quality` | string | `"best"` | Which release wins: `best` (resolution first, then size), `4k`, `1080p`, `720p` (prefer that resolution, fall back to best) or `smallest`. The legacy `watchlist_quality` key still counts. |
+
+The `acquisition` block also takes `concurrency` (default `8`, `1` to `200`), how many titles are searched, checked and placed at once, and `indexer_concurrency` (default `3`, `1` to `16`), how many calls are made to one indexer at once; keep the latter low when an indexer key is shared.
+
+`exclude_words` has no copy in this block. To keep words such as `DV` or `HDR10+` out of watchlist grabs, add an `acquisition:` block holding only `exclude_words`. Every setting above still applies. See [excluding releases by name](../guides/acquisition.md#excluding-releases-by-name).
 
 ```yaml
 plex_token: "your-plex-token"
@@ -383,6 +420,47 @@ watchlist:
     - name: nzbgeek
       url: https://api.nzbgeek.info
       api_key: your-api-key
+```
+
+### Acquisition sources
+
+`acquisition.sources` lists the services zurg acquires for, each on the shared queue described in [acquisition sources](../guides/acquisition.md). The search settings (`indexers`, `quality`, `prefer`, `max_size_gb`, `max_season_size_gb`) sit beside `sources` in the `acquisition:` block and fall back to the `watchlist:` block above.
+
+`best_first` belongs to the `acquisition:` block alone and is off by default. Turned on it makes a `radarr` or `sonarr` source's first grab follow the quality profile's order of preference. The best allowed resolution comes first. Anything at or above the cutoff counts as the cutoff. When a release fails zurg moves down the profile. When it is off a movie takes the allowed release that is cheapest to check. A series takes the one `quality` ranks first. The upgrade pass heads for the cutoff afterwards. The best release is more often a large archive set so the first file tends to arrive later. See [taking the profile's best first](../guides/acquisition.md#taking-the-profiles-best-first).
+
+`exclude_words` (list, default empty) sits there too and has no watchlist fallback. A release whose name has one of these words is never taken, from any source. Matching is by whole word and ignores case, so `DV` does not catch `DVDRip`. `DV`, `DoVi` and `Dolby Vision` count as one word, and so do `HDR10+` and `HDR10Plus`. `HDR10` and `HDR10+` are different words. An entry with no letter or digit is refused at startup. The full rules and how they combine with Radarr and Sonarr profiles are in [excluding releases by name](../guides/acquisition.md#excluding-releases-by-name).
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `name` | string | required | Letters, digits, `_` and `-`, unique. Identifies the source's saved queue, so keep it stable. |
+| `type` | string | required | `plex_watchlist`, `seerr`, `radarr` or `sonarr`. |
+| `enabled` | bool | `false` | A disabled source is kept in the file and not polled. A disabled `radarr` or `sonarr` source is still read, read-only, by the manage page's [duplicate view](../guides/acquisition.md#finding-duplicate-releases). |
+| `check_every_secs` | int | `60` | How often the source is polled. |
+| `url` | string | | `seerr`, `radarr` and `sonarr`: the service's HTTP(S) base URL, without credentials, query or fragment. A URL base and a trailing `/api/v1` (Seerr) or `/api/v3` (Radarr, Sonarr) are accepted. |
+| `api_key` | string | | `seerr`, `radarr` and `sonarr`: the service's API key. Sent as a header, never in a URL, and redacted from shared logs and configs. |
+| `library_path` | string | `mount_path` + `/__magic__` | `radarr` and `sonarr` only: where the \*arr sees zurg's `__magic__` directory, such as `/data/zurg/__magic__` for a container that mounts zurg at `/data/zurg`. A movie or series folder under it is placed at the same relative path inside `__magic__`; a folder elsewhere is skipped. Must be absolute; Windows paths such as `Z:\__magic__` are accepted. |
+| `remove_after_grab` | bool | `true` | `plex_watchlist` only; inert for `seerr`, `radarr` and `sonarr`. |
+| `only_new_items` | bool | `true` | `plex_watchlist` only; inert for `seerr`, `radarr` and `sonarr`, whose wanted items are always work. |
+
+```yaml
+acquisition:
+  indexers:
+    - name: my-indexer
+      url: https://indexer.example
+      api_key: YOUR_INDEXER_API_KEY
+  sources:
+    - name: movies
+      type: radarr
+      enabled: true
+      url: http://radarr:7878
+      api_key: YOUR_RADARR_API_KEY
+      library_path: /data/zurg/__magic__
+    - name: shows
+      type: sonarr
+      enabled: true
+      url: http://sonarr:8989
+      api_key: YOUR_SONARR_API_KEY
+      library_path: /data/zurg/__magic__
 ```
 
 ### Plex Library Maintenance (same host only)
@@ -475,6 +553,7 @@ plex_trash_sweep_max_percent: 10
 | `emby_server_url` | string | `""` | URL of your Emby server. Enables library refresh notifications when zurg detects changes. Example: `http://localhost:8096` |
 | `emby_token` | string | `""` | Emby API token for authentication. |
 | `dmm_api_key` | string | `""` | API key for DebridMediaManager integration. |
+| `dmm_metadata_secret` | string | `""` | Secret for DMM's internal metadata API. When set, torrents with no IMDb id (or only OpenSubtitles' miss marker) are identified at startup from their release name through DMM, which answers only when one title matches exactly. Torrents it cannot name keep an empty id, so the Plex matcher can still fill them. |
 
 ```yaml
 jellyfin_server_url: "http://localhost:8096"
@@ -606,7 +685,7 @@ Full write-up, including what survives a repair and what each refusal means, in 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `magic.enabled` | bool | `false` | Serve `__magic__` at all. Off by default: it is a writable tree, and an \*arr pointed at the wrong root folder can reorganise a library. With nothing moved its own `__all__` reads exactly as the library's does, and the root holds nothing else. |
-| `magic.allow_delete` | bool | `false` | When true, a DELETE of a **file** under `__magic__` also deletes the content, as a DELETE on the mount proper always does. Off by default, a delete only hides: the entry leaves `__magic__` and stays in `__all__` and in every filter directory. A release folder and a directory never delete content whatever this is set to — Sonarr deletes the job folder after every import. |
+| `magic.allow_delete` | bool | `false` | When true, a DELETE of a **file** under `__magic__` also deletes the content, as a DELETE on the mount proper always does. Off by default, a delete only hides: the entry leaves `__magic__` and stays in `__all__` and in every filter directory. A release folder and a directory never delete content whatever this is set to — Sonarr deletes the job folder after every import. Deleting a video or an entry inside an archive also deletes its whole release once nothing under `__magic__` uses any of it. |
 | `magic.sidecar_max_mb` | int | `32` | The largest single file a client may `PUT` into `__magic__`. Over it the write is refused with **413**. |
 | `magic.sidecar_budget_mb` | int | `2048` | The largest the whole sidecar tree may grow. Over it a write is refused with **507 Insufficient Storage**, which says what 413 does not: deleting something makes the same request succeed. The total is measured by walking the tree at startup, so a restart does not hand the allowance back to a tree that is already full, and again before any refusal — the tree is the same `data/local` directory zurg's own mount writes into, so a file removed there behind zurg's back must not go on being charged for. Zero or a negative takes the default; there is no way to ask for no cap. |
 
@@ -642,17 +721,19 @@ The dashboard has a page of its own for the namespace, at `/magic/`, linked from
 
 It reports how many rows are stored — placements, tombstones and directories, counted separately — what the journal and the snapshot take on disk, how much of `sidecar_budget_mb` the sidecar tree is using, and the size of the whole of `data/local`. That last number is the one to watch: a client that copies rather than moves puts the bytes there, so a `data/local` climbing into gigabytes means something is importing the wrong way round. The rows themselves are grouped by release; a very large table is truncated on the page and says by how much, and the counts above it are always of the whole table.
 
+The stored rows list shows the first thousand rows, and an \*arr leaves a tombstone behind on every import, so on an organised library most rows are past that point. A search box on the stored rows and dangling pages finds one release by name, by a path on the mount or by its hash, and lists every row stored about it with its buttons. `data/magic.json` is not a way round that: zurg writes it out from memory when it stops, so a row deleted from it by hand while zurg runs comes back.
+
 Three buttons, all of which go through the same one operation — a row ceasing to exist:
 
 - **Reset** a placement, and the file or folder goes back to where the library puts it.
-- **Unhide** a tombstone, and the entry is listed in `__magic__` again. Nothing was destroyed to hide it.
+- **Unhide** a tombstone, and the entry is listed in `__magic__` again. Nothing was destroyed to hide it. A release in `__all__` that never shows up in `__magic__/__all__`, even after deleting it and adding it again, has a release tombstone: the rows are keyed on its hash, which a re-add does not change. Search for it and unhide that row.
 - **Delete** a **dangling** row — one whose release, or whose file inside it, the library no longer holds. Such a row resolves to nothing, so it cannot be listed, moved or deleted through the mount, and it is kept rather than dropped because a repair that restores the release restores where you put it. Until this page there was no way to clean one up; **Clear all dangling rows** sweeps them in one go.
 
 Sidecars are listed as well, and the ones **nothing accounts for any more** are listed apart from the rest and counted. Those are the sidecar's equivalent of a dangling row: an `.nfo` or a poster written beside a release that has since left the library, or inside a folder whose placement has been forgotten. They are still served — a real file is the last thing a `__magic__` path resolves to, and nothing above them is claiming the name any longer — so the only thing that has gone is the reason they were put there. zurg never sweeps one: a file left beside a release that was deleted is still yours, and a repair that brings the release back accounts for the folder again. A directory you made for sidecars yourself, through the mount rather than through zurg, reads the same way here, because that leaves no row either.
 
 Deleting a sidecar from the page really deletes the file, the same way a `DELETE` through the mount does. Every button changes what the mount has cached for the paths involved, because the mount holds a directory listing for twelve hours with polling off.
 
-If the SABnzbd endpoint is on, the page also lists the jobs it has been handed — the id the client knows each by, its category, whether the release has arrived in the library yet, and the folder to import from once it has. That list is read-only: delete a job from the client, not from here.
+If the SABnzbd endpoint is on, the page also lists the jobs it has been handed — the id the client knows each by, its category, whether the release has arrived in the library yet, and the folder to import from once it has. Sonarr and Radarr remove their own jobs. A Failed or Stuck job that none of them will ever remove can be cleared from the page. That happens when zurg is no longer their download client. See [sabnzbd.md](../guides/sonarr-radarr.md).
 
 Both the `magic:` and the `sabnzbd:` block are editable in full from the [config page](#sabnzbd-the-download-client-sonarr-and-radarr-see), and both say **Restart Required**, which they mean literally: the routes that serve `__magic__` and the SABnzbd endpoint are registered once, at startup, out of these values. Turning either on writes it to `config.yml` and changes nothing about the run that answered — the `__magic__` page says so too rather than rendering an empty namespace.
 
@@ -718,7 +799,8 @@ zurg can be a Stremio addon that searches your own Newznab indexers and plays th
 | `stremio.enabled` | bool | `false` | Registers the addon routes under `/stremio/`. While off they answer 404. |
 | `stremio.token` | string | generated | The path segment that gates every addon route. It is the whole authorization. Left empty zurg generates one and keeps it in `data/stremio-token`. |
 | `stremio.indexers` | list | `[]` | Newznab endpoints to search. Each takes `name`, `url`, `api_key` and an optional `api_path`. |
-| `stremio.max_results` | int | `5` | How many releases each resolution keeps after ranking. The cap is per resolution. Each tier keeps a spread from its largest release to its smallest. `0` takes the default. |
+| `stremio.max_results` | int | `10` | How many releases each resolution keeps after ranking. The cap is per resolution. Each tier keeps a spread from its largest release to its smallest. `0` takes the default. |
+| `stremio.search_limit` | int | `100` | How many releases each indexer is asked for per search. Every other limit chooses among what this asked for, so it is the ceiling on the whole answer. `0` takes the default. |
 | `stremio.max_size_gb` | int | `40` | Drops releases larger than this before ranking. Releases with no stated size are kept. `0` takes the default. |
 | `stremio.cache_hours` | int | `24` | How long a full answer of five or more results is served from `data/stremio-cache` before the indexers are asked again. Thinner answers are kept for less time. An empty answer is never kept. `0` takes the default. |
 
@@ -999,11 +1081,12 @@ Zurg uses benchmark-tested rclone VFS settings optimized for streaming performan
 | `--async-read` | rclone default (on), not passed | Zurg does not put this flag on the command line, and rclone defaults it to true — so the mount reads asynchronously, and every figure on this page was measured that way. A tuning field once claimed to disable it; all it gated was appending the bare flag, which sets the default it already had. To actually turn it off: `rclone_extra_args: ["--async-read=false"]`. |
 | `--low-level-retries` | 3 | rclone's VFS downloader already restarts a failed read ten times per open, and each restart is retried by the backend pacer this many times. At rclone's default of 10 that is 100 requests for one open of a file zurg is answering 503 deliberately. |
 | `--retries` | 1 | Whole-command budget; for a mount that never exits it only multiplies a startup failure |
+| `--vfs-handle-caching` | 0, on rclone 1.74+ | rclone 1.74 started keeping a file's downloaders alive for five seconds after the last close, so touching a file costs five seconds of whatever the link can carry rather than what was read: measured against a 50 MB/s server, one 1 MiB read pulled 245-250 MiB instead of 3-6 MiB, and a twenty-file sweep went from 80 MiB to 4.2 GiB. The grace period exists for `serve nfs`, which zurg never runs. Older rclone has no such flag and refuses to start on an unknown one, so zurg asks the binary its version first and passes nothing below 1.74. |
 | `--log-level` | NOTICE | rclone's own verbosity, always passed |
 | `--cache-dir` | `data/rclone-cache` | Resolved against the working directory |
 | `--log-file` | `logs/rclone.log` | Resolved against the working directory |
 
-`--vfs-cache-max-size`, `--vfs-cache-min-free-space`, `--low-level-retries`, `--retries`, `--log-level`, `--cache-dir` and `--log-file` are constants in `internal/rclone/manager.go`; every other row comes from `tuneVFSOptions` in `internal/rclone/tuning.go` — `--vfs-cache-max-age` and `--vfs-cache-poll-interval` included, despite the names.
+`--vfs-cache-max-size`, `--vfs-cache-min-free-space`, `--low-level-retries`, `--retries`, `--vfs-handle-caching`, `--log-level`, `--cache-dir` and `--log-file` are constants in `internal/rclone/manager.go`; every other row comes from `tuneVFSOptions` in `internal/rclone/tuning.go` — `--vfs-cache-max-age` and `--vfs-cache-poll-interval` included, despite the names.
 
 ### Disk the mount uses
 
@@ -1179,7 +1262,7 @@ Two byte caches survive a restart. Both are shared across the instance and each 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `nzb_article_disk_cache_mb` | int | `512` | Decoded Usenet articles kept in `data/bytecache/articles/`. An article read once is served from disk the next time. `0` turns it off. |
-| `archive_decoded_disk_cache_mb` | int | `512` | Decompressed archive blocks kept in `data/bytecache/decoded/`. A backward seek or a restart does not decode from the start of the entry again. `0` turns it off. |
+| `archive_decoded_disk_cache_mb` | int | `512` | Decompressed archive blocks kept in `data/bytecache/decoded/`. A backward seek or a restart does not decode from the start of the entry again. The same budget again is used for `data/bytecache/decoded-tails/`, which keeps the last 8 MiB of a compressed entry once something has asked for it. `0` turns both off. |
 
 The oldest unused records go first when a budget fills. [persistent-caches.md](../internals/persistent-caches.md) covers every cache that survives a restart.
 

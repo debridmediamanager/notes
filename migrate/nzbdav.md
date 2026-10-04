@@ -149,14 +149,42 @@ mv "/mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv" \
    "/mnt/zurg/__magic__/tv/The Show/Season 01/S01E01.mkv"
 ```
 
-**If Sonarr and Radarr organised your old library then let them do it here
-too.** That is what `__magic__` is for and it replaces the symlink farm
-outright. Add `__magic__/tv` and `__magic__/movies` as *new* root folders. Then
-run a library import against them so the \*arrs adopt what is already there.
-Never change an existing series or movie root folder to point into `__magic__`.
-That makes the \*arr move the files across the mount boundary. It is a copy and
-it downloads your library. The full sequence and the number to watch are on
-[the shared page](index.md#coming-off-a-symlink-library).
+**If Sonarr and Radarr organised your old library then move it in with one
+script.** It renames every file the old library links to into a new root folder
+under `__magic__`. Each one lands at the path the \*arr already expects.
+Nothing is copied. Then you switch the \*arr's root folder without letting it
+move anything. The steps and the script are on
+[the shared page](index.md#coming-off-a-symlink-library). Never let an \*arr
+move the files itself. That crosses the mount boundary. It is a copy and it
+downloads your library.
+
+The script needs a `zurg_path` function for nzbdav's links. Save this as
+`zurg_path.sh` beside it and set `OLDMOUNT` to where nzbdav is mounted.
+
+```bash
+OLDMOUNT=/mnt/nzbdav            # nzbdav's mount, where the old links point
+# The map from each .ids name to its release and file. Built once while nzbdav runs.
+[ -s uuid-map.tsv ] || find "$OLDMOUNT/completed-symlinks" -type l | while IFS= read -r l; do
+  rel=${l#"$OLDMOUNT"/completed-symlinks/}      # <category>/<release>/<file>
+  printf '%s\t%s\n' "$(basename "$(readlink "$l")")" "${rel#*/}"
+done | sort -u > uuid-map.tsv
+zurg_path() {
+  local rel release name videos
+  rel=$(awk -F'\t' -v u="$(basename "$1")" '$1==u{print $2; exit}' uuid-map.tsv)
+  [ -n "$rel" ] || return
+  [ -f "$ZURG/__all__/$rel" ] && { echo "$ZURG/__all__/$rel"; return; }
+  # A file under another name. Take the release's one video.
+  release=${rel%%/*} name=${rel##*/}
+  case "$name" in "$release".*) ;; *) return ;; esac
+  videos=$(find "$ZURG/__all__/$release" -type f \( -iname '*.mkv' -o -iname '*.mp4' -o -iname '*.avi' \) ! -ipath '*sample*')
+  [ "$(printf '%s\n' "$videos" | grep -c .)" -eq 1 ] && echo "$videos"
+}
+```
+
+nzbdav's links point into its `.ids` store and zurg has no such thing. So the
+function reads nzbdav's `completed-symlinks` tree once to learn which release
+and file each `.ids` name stands for. Keep nzbdav running until the script is
+done. nzbdav renames nothing so every name it finds is one zurg serves.
 
 **4. Point Plex at the root folders you made** — `__magic__/tv` and
 `__magic__/movies` — and at those only. Never the root of `__magic__`, which
@@ -181,10 +209,14 @@ sudo systemctl stop nzbdav
 Keep nzbdav's config directory until you have streamed from a representative
 sample. It is the only other copy of your NZBs.
 
-Now think about acquisition. zurg has an opt-in
-[SABnzbd-compatible endpoint](../guides/sonarr-radarr.md) that Sonarr and
-Radarr can grab through. It imports by rename inside `__magic__` — out of
-`__magic__/__all__` where the grab lands — rather than by copying. One caveat before you switch a library over. zurg does not yet check
-whether a post's articles are still on the news server. So a dead release
-reports Completed and fails on the first read instead of being blocklisted and
-re-grabbed.
+Now think about acquisition. zurg has an opt-in [SABnzbd-compatible
+endpoint](../guides/sonarr-radarr.md) that Sonarr and Radarr can grab through.
+It replaces nzbdav as their download client. The grab lands in
+`__magic__/__all__` and the import moves it out by rename. Nothing is copied.
+zurg checks each grab before it reports it finished. It asks the news servers
+for the start and the end of every file. zurg rebuilds a release with any of
+that gone from its PAR2 files where it can. One it cannot rebuild is reported
+**Failed**. The \*arr then blocklists it and grabs another. A post that lost a
+stretch further into a file still reports Completed and fails on the read that
+reaches the gap. Keep the \*arrs' root folders inside `__magic__`. A root
+folder anywhere else gets a full copy of every import.

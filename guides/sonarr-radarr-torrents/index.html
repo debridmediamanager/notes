@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844343888590">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844409366003">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844343888590" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844409366003" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844343888590" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844409366003" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -703,6 +703,55 @@ size=1446325722</code></pre>
     <figcaption class="caption">Prowlarr's manual search with the push button</figcaption>
 </figure>
 <p>The release goes onto the account exactly as an *arr grab does — same add path, same categories, same <code translate="no" v-pre>__magic__</code> folder — and this one landed cached, <code translate="no" v-pre>finished</code> inside a second. But nothing imports it. It sits in the account and serves from the mount, which is the point: Prowlarr&#x27;s push is for <em>put this on my debrid account now</em>, not for the automated grab-import-clean pipeline. For that, keep Sonarr and Radarr pointed at the endpoint and let Prowlarr manage indexers.</p>
+<h2 id="11-adding-a-release-by-hand">11. Adding a release by hand</h2>
+<p>zurg&#x27;s dashboard has no add button. You can still hand zurg a release yourself
+and send it to the right Sonarr or Radarr. Add it through this endpoint with
+that app&#x27;s category. Each app only looks at its own category. Four apps with
+four categories each see only their own adds.</p>
+<div id="11-adding-a-release-by-hand-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">KEY=your-qbittorrent-api-key
+curl -H &quot;Authorization: Bearer $KEY&quot; http://localhost:9999/api/v2/torrents/add \
+  -F 'urls=magnet:?xt=urn:btih:&lt;hash&gt;&amp;dn=Movie.Title.2012.1080p.WEB-DL' \
+  -F category=radarr4k</code></pre>
+</doc-codeblock></div>
+<p>A <code translate="no" v-pre>.torrent</code> file works too. Send it as
+<code translate="no" v-pre>-F 'torrents=@Movie.Title.2012.1080p.WEB.torrent'</code> in place of <code translate="no" v-pre>urls</code>.</p>
+<p>Four things decide whether the app imports it.</p>
+<ol>
+<li>
+<p><strong>The film or show has to be in that app already.</strong> It imports only what it
+can match to something it manages.</p>
+</li>
+<li>
+<p><strong>The name has to say what it is.</strong> A magnet&#x27;s name is its <code translate="no" v-pre>dn</code>. A
+<code translate="no" v-pre>.torrent</code> file&#x27;s name is its filename. zurg ignores qBittorrent&#x27;s <code translate="no" v-pre>rename</code>
+field. Radarr could not parse <code translate="no" v-pre>Sintel</code> and held it as <em>Unable to parse
+download</em>. <code translate="no" v-pre>Sintel.2010.1080p.WEB-DL</code> imported. Give the name a year.</p>
+</li>
+<li>
+<p><strong>Get the name right before the app first sees it.</strong> Once Radarr has called
+a download unparseable it keeps that verdict until Radarr restarts. Adding it
+again with a better name did not change it. After a restart it imported.</p>
+</li>
+<li>
+<p><strong>The category is only a label.</strong> A category that is not in
+<code translate="no" v-pre>qbittorrent.categories</code> is accepted. It just does not show up in the
+category list. You can move a release to another app later. The app that
+owns the new category imports it on its next check.</p>
+</li>
+</ol>
+<div id="11-adding-a-release-by-hand-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -H &quot;Authorization: Bearer $KEY&quot; http://localhost:9999/api/v2/torrents/setCategory \
+  -F hashes=&lt;hash&gt; -F category=radarr</code></pre>
+</doc-codeblock></div>
+<p>A release that is already on your account works the same way. That covers one
+you sent there from DMM. zurg sees it is already in the library and records it
+under the category without adding it twice. A release you never add through
+this endpoint stays invisible to Sonarr and Radarr. zurg shows them only what
+came through it.</p>
+<p>Measured on 2026-10-04 on an AllDebrid account with Radarr 6.3. Each film was
+imported by rename into <code translate="no" v-pre>__magic__/movies</code> and nothing was copied. A Radarr set
+to another category never saw it. Sonarr was not tested.</p>
 <h2 id="if-the-import-copies-instead-of-moving">If the import copies instead of moving</h2>
 <p>Everything above depends on the import being a <strong>rename</strong>. One setting in the *arr decides that, and it is the only part of the decision zurg has no say in.</p>
 <p>The client will only move an imported file when it believes it is free to remove the download afterwards, which is three things at once: <strong>Remove Completed</strong> on, a finished-and-paused torrent, and a seed limit it can see has been reached. zurg reports the last two exactly as they have to be — every completed torrent comes back paused, at ratio 0 against a ratio limit of 0. <strong>Remove Completed</strong> is the one that is yours.</p>

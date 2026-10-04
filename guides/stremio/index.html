@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844343888590">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844409366003">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844343888590" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844409366003" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844343888590" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844409366003" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -204,7 +204,7 @@ one indexer:</p>
 <p>All of it is on the config page under <strong>Stremio Addon</strong> — the switch, the
 indexer list and the result cap — and the addon URL is shown there with a copy
 button, built from the address you opened the dashboard on. That is the address
-to use: see the note below.</p>
+to use: see <doc-anchor-trigger to="#installing-it-on-another-device">Installing it on another device</doc-anchor-trigger>.</p>
 <p>On startup zurg logs the addon URL:</p>
 <div id="configuration-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-none"><code v-pre class="language-none">&lt;zurg&gt;/stremio/&lt;token&gt;/manifest.json</code></pre>
@@ -215,10 +215,100 @@ so the routes sit outside basic auth the way the SABnzbd endpoint&#x27;s do. Tre
 the URL like a password: the play links it produces carry your indexer api
 keys, and anyone holding it can spend your indexer grabs and news-server
 connections.</p>
-<p>The address matters: Stremio fetches streams and plays them from whatever host
-the manifest URL names, so use an address the <em>player</em> can reach — a LAN
-address, a Tailscale name — not <code translate="no" v-pre>localhost</code>. Play URLs are minted for the host
-each request arrives on, so one zurg serves LAN and tailnet clients at once.</p>
+<h2 id="installing-it-on-another-device">Installing it on another device</h2>
+<p>Stremio only takes an addon over plain <code translate="no" v-pre>http</code> on the computer Stremio itself
+runs on. That means <code translate="no" v-pre>http://127.0.0.1</code> or <code translate="no" v-pre>http://localhost</code> on the zurg machine.
+Everywhere else it needs <code translate="no" v-pre>https</code>. A TV or a phone or a second computer shows
+<strong>failed to load manifest</strong> for an <code translate="no" v-pre>http://</code> address even when it can reach zurg
+just fine. That includes a LAN address and a Tailscale address. The config page
+says so next to the addon URL whenever you opened it over plain <code translate="no" v-pre>http</code> on such an
+address.</p>
+<p>zurg does not serve <code translate="no" v-pre>https</code> itself. Put something in front of it that does.
+Then open the config page on the <code translate="no" v-pre>https</code> address and copy the addon URL from
+there. zurg builds the addon URL and every play link from the address each
+request came in on. There is no public URL setting and <code translate="no" v-pre>base_url</code> is not used
+here. One zurg can serve a LAN player and a remote one at the same time.</p>
+<p>Whatever sits in front has to tell zurg two things. The name comes from the
+<code translate="no" v-pre>Host</code> header or from <code translate="no" v-pre>X-Forwarded-Host</code>. The scheme comes from
+<code translate="no" v-pre>X-Forwarded-Proto: https</code>. Without that header the addon loads but the play
+links come back as <code translate="no" v-pre>http://</code> and playback fails instead. Each option below sends
+both.</p>
+<p>Stremio uses two paths. <code translate="no" v-pre>/stremio/</code> is the addon. <code translate="no" v-pre>/strm/e/</code> is where pressing
+play sends the player for the video. Both work without zurg&#x27;s password because
+Stremio cannot send one. The token in the addon URL is what protects them. When
+zurg goes on the internet publish only those two paths. Everything else is your
+dashboard and your library.</p>
+<h3 id="tailscale-serve">Tailscale Serve</h3>
+<p>The simplest option when every device that runs Stremio can run Tailscale. zurg
+stays off the internet.</p>
+<ol>
+<li>In the Tailscale admin console turn on MagicDNS and HTTPS certificates.</li>
+<li>
+<p>Run this on the zurg machine. Use your own port if zurg is not on 9999.</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">tailscale serve --bg 9999</code></pre>
+</doc-codeblock></div>
+</li>
+<li>Open <code translate="no" v-pre>https://&lt;machine&gt;.&lt;tailnet&gt;.ts.net/config/</code> and copy the addon URL from
+the <strong>Stremio Addon</strong> card.</li>
+</ol>
+<p>Tailscale gets the certificate and sends both headers. <code translate="no" v-pre>tailscale serve reset</code>
+turns it off again.</p>
+<p>A device that cannot run Tailscale can use Tailscale Funnel instead. It puts the
+same address on the internet. Publish only what Stremio needs.</p>
+<div id="tailscale-serve-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">tailscale funnel --bg --set-path /stremio http://127.0.0.1:9999/stremio
+tailscale funnel --bg --set-path /strm/e http://127.0.0.1:9999/strm/e</code></pre>
+</doc-codeblock></div>
+<p>The config page is not on that address. Copy the addon URL from the page as you
+normally open it and swap the start for <code translate="no" v-pre>https://&lt;machine&gt;.&lt;tailnet&gt;.ts.net</code>.
+Tailscale limits how much bandwidth a Funnel gets. A 4K remux may stutter.</p>
+<h3 id="your-own-reverse-proxy">Your own reverse proxy</h3>
+<p>Already running a reverse proxy with a domain and a certificate? Add zurg to it.
+Caddy keeps the <code translate="no" v-pre>Host</code> header and sends <code translate="no" v-pre>X-Forwarded-Proto</code> on its own.
+This publishes the two Stremio paths and nothing else.</p>
+<div id="your-own-reverse-proxy-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">zurg.example.com {
+    handle /stremio/* {
+        reverse_proxy 127.0.0.1:9999
+    }
+    handle /strm/e/* {
+        reverse_proxy 127.0.0.1:9999
+    }
+    handle {
+        respond 404
+    }
+}</code></pre>
+</doc-codeblock></div>
+<p>nginx sends neither header unless you ask for both.</p>
+<div id="your-own-reverse-proxy-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-nginx"><code v-pre class="language-nginx">location ~ ^/(stremio|strm/e)/ {
+    proxy_pass http://127.0.0.1:9999;
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_buffering off;
+}</code></pre>
+</doc-codeblock></div>
+<p>Put that inside the <code translate="no" v-pre>server</code> block that already listens on 443 with your
+certificate. <code translate="no" v-pre>proxy_buffering off</code> lets the video stream straight through
+rather than through nginx&#x27;s buffers.</p>
+<h3 id="cloudflare-tunnel">Cloudflare Tunnel</h3>
+<p>A named tunnel gives zurg an <code translate="no" v-pre>https</code> address on a domain you have on Cloudflare
+without opening a port. Cloudflare keeps the <code translate="no" v-pre>Host</code> header and sends
+<code translate="no" v-pre>X-Forwarded-Proto</code> on its own. Route only the Stremio paths in the tunnel&#x27;s
+<code translate="no" v-pre>config.yml</code>.</p>
+<div id="cloudflare-tunnel-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">ingress:
+  - hostname: zurg.example.com
+    path: ^/(stremio|strm/e)/
+    service: http://127.0.0.1:9999
+  - service: http_status:404</code></pre>
+</doc-codeblock></div>
+<p>Two things to know first. Cloudflare gives up on a request after 100 seconds.
+The first play of a release can take longer than that. Press play again and it
+starts. And Cloudflare&#x27;s terms let it limit accounts that send a lot of
+video through its network without a paid plan. Every play goes through the
+tunnel.</p>
 <h2 id="what-a-play-does">What a play does</h2>
 <p>Picking a stream is a grab: zurg downloads the NZB from the indexer, drops it
 into <code translate="no" v-pre>nzbs/</code> (through the same naming rules as the SABnzbd endpoint, so a
@@ -234,17 +324,23 @@ pressing play again lands on the fast path. Every later play is immediate.</p>
 <p>A release that lists and turns out to hold nothing playable — usually one
 that has aged off the spool, every file marked broken by the news-server
 check — is not the end of the click. The play URL carries the request it was
-minted for, so zurg looks up the same ranked list the stream list showed and
-tries the rows after the one picked, up to two of them, each through the same
-grab-and-list path; the first that plays is what the player is redirected
-into. The rows <em>after</em> the pick on purpose: they are the same resolution and
+minted for, so zurg ranks the title&#x27;s releases again and tries the rows after
+the one picked, each through the same grab-and-list path; the first that plays
+is what the player is redirected into. It walks the whole answer rather than
+only the rows the list rendered: <code translate="no" v-pre>max_results</code> is how much a person wants to
+scroll, and letting it bound recovery too meant a title shown ten rows deep
+could only ever try nine, however much the search had already found. The rows <em>after</em> the pick on purpose: they are the same resolution and
 smaller, or the resolution below, never a bigger release the user passed over.
 A fallback that is itself still ingesting answers the same 503, and pressing
 play again resolves it — the refused release is refused at once and the
 fallback is found on the fast path. Only that final refusal falls through; a
 503 never does. Each try spends an indexer grab and leaves its release in the
-library like any other grab, which is why the count is small, and when every
-row tried is refused the answer is the 404 it always was. Each fallback is
+library like any other grab, so the chain is bounded by a budget of twenty-five
+seconds and a backstop of six tries. The budget is the governor because the
+tries do not cost the same: a release that has aged off the spool is refused in
+under a second, while one that ingests and opens an archive before turning out
+to hold nothing can take most of the budget alone. When every row tried is
+refused the answer is the 404 it always was. Each fallback is
 logged at info with the release refused and the one tried next.</p>
 <p>Measured against three other usenet-backed Stremio addons on 7 September 2026:
 stremio-addon-findings-2026-09-07.md.
@@ -260,12 +356,16 @@ fallback above is the first fix from that round; the bucket is still five deep.<
 the <code translate="no" v-pre>tt</code> form.</p>
 </li>
 <li>
+<p>Each indexer is asked for <code translate="no" v-pre>search_limit</code> releases (default 100). Every limit
+below chooses among what this asked for, so it is the ceiling on the answer.</p>
+</li>
+<li>
 <p>Indexers are searched in parallel; one refusing (a burst limit, a dead key)
 costs its results, not the list. Refusals are logged per indexer.</p>
 </li>
 <li>
 <p>Results are deduplicated by release name, ranked resolution-first then size,
-and capped at <code translate="no" v-pre>max_results</code> (default 5) <em>per resolution</em>. The cap counts per
+and capped at <code translate="no" v-pre>max_results</code> (default 10) <em>per resolution</em>. The cap counts per
 resolution because the sort leads with 2160p: a popular title has more UHD
 releases under the size ceiling than any cap, so counting across the whole
 list answers every popular title with nothing but remuxes, whatever else the

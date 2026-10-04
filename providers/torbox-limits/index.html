@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844343888590">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844409366003">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,11 +37,11 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844343888590" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844409366003" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -526,6 +526,10 @@ across the seam.</p>
 </div>
 </retype-table>
 <p>Source: <a href="https://support.torbox.app/en/articles/9836418-account-restrictions">Account Restrictions</a>.</p>
+<p><code translate="no" v-pre>/user/me</code> reports the plan as a number, and the numbers are not in price
+order: <strong>0 Free, 1 Essential, 2 Pro, 3 Standard</strong>. Standard was added after
+Pro. Zurg read plan 2 as Standard until 2026-10-03, which gave Pro accounts
+five slots and Standard&#x27;s usage floor.</p>
 <p><strong>Active slots are TorBox&#x27;s defining restriction</strong>, where Real-Debrid&#x27;s is
 bandwidth. A torrent occupies a slot while downloading <em>or seeding</em>, so on a
 paid plan a completed torrent can hold one for up to 30 days.</p>
@@ -538,8 +542,18 @@ adds the account will reject. A provider reporting no ceiling is treated as
 unbounded rather than blocking forever.</p>
 </li>
 <li>
-<p><strong>Added torrents are marked never-seed.</strong> Seeding holds a slot for weeks and
-bills outgoing traffic, neither of which helps a streaming mount.</p>
+<p><strong>Added torrents are marked never-seed by default.</strong> Seeding holds a slot for
+weeks and bills outgoing traffic, neither of which helps a streaming mount.
+<code translate="no" v-pre>tb_seed_torrents</code> changes it for an operator whose private tracker counts
+ratio: <code translate="no" v-pre>never</code> sends <code translate="no" v-pre>seed=3</code> (the default), <code translate="no" v-pre>always</code> sends <code translate="no" v-pre>seed=2</code>, and
+<code translate="no" v-pre>auto</code> leaves the field out. TorBox&#x27;s own description of the field is &quot;1 is
+auto. 2 is seed. 3 is don&#x27;t seed. Optional. Default is 1, or whatever the user
+has in their settings. Overwrites option in settings&quot;, so any value sent,
+<code translate="no" v-pre>1</code> included, replaces the account&#x27;s Seeding setting and only an absent field
+lets it apply. The same mode goes on all three add paths: the magnet add, the
+cached-only add and the <code translate="no" v-pre>.torrent</code> upload. With seeding on, finished torrents
+keep their slots, so repair and the download-client endpoints stall against
+the ceiling once seeding torrents hold all of them.</p>
 </li>
 <li>
 <p><strong>The cache is never checked before adding.</strong> <code translate="no" v-pre>checkcached</code> has no call site
@@ -649,8 +663,10 @@ concluding TorBox is unusable.</p>
 <h3 id="what-zurg-does-3">What zurg does</h3>
 <ul>
 <li>
-<p><strong>Added torrents never seed</strong>, so nothing is billed on the way out for
-content zurg only ever reads.</p>
+<p><strong>Added torrents never seed by default</strong>, so nothing is billed on the way out
+for content zurg only ever reads. <code translate="no" v-pre>tb_seed_torrents: always</code> (or <code translate="no" v-pre>auto</code> on an
+account set to seed) is the one setting that changes this, and its upload is
+billed like any other.</p>
 </li>
 <li>
 <p><strong>Usage is sampled and differenced.</strong> The API publishes no rolling figure,

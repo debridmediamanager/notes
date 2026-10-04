@@ -1,17 +1,26 @@
 # Migrating from streamnzb v5.1.0 to zurg
 
-Be clear about what this migration is before starting it. **It is a change of
-model rather than a cutover.** streamnzb has no filesystem and no WebDAV and no
-mount and no Plex library. It is a Stremio addon that searches your Newznab
-indexers per playback request. It ranks the results with jhin. It checks them
-against AvailNZB and streams the winner on the fly. Nothing is retained.
+streamnzb is a Stremio addon. When you press play it searches your Newznab
+indexers. It ranks the results with jhin. It checks them against AvailNZB and
+streams the winner. Nothing is kept. It has no filesystem and no WebDAV and no
+mount and no Plex library.
 
 So there is **no library on disk to preserve and no Plex watch state at risk**.
 None of the path-preservation machinery the other migration guides revolve
-around applies here. What you are actually doing is standing up a different
-kind of system. A persistent library over a directory of `.nzb` files mounted
-for Plex or Jellyfin or Emby. Then deciding what to do about the things
-streamnzb did that zurg deliberately does not.
+around applies here.
+
+zurg can take its place in two ways. Use one or both.
+
+- **Keep Stremio.** zurg has a [Stremio addon](../guides/stremio.md) of its
+  own. It searches your Newznab indexers when you press play and streams the
+  release you pick through your news account. That is how streamnzb works too.
+  It needs nothing but zurg. No rclone and no media server. Every release played
+  this way also stays in zurg's library.
+- **Build a library.** zurg keeps the releases it has in a library and mounts
+  it for Plex or Jellyfin or Emby. Sonarr and Radarr can fill it. So can zurg
+  itself from your watchlist.
+
+A few things streamnzb did have no zurg equivalent. This guide says which.
 
 This guide is shorter than its siblings because the problem is smaller.
 
@@ -43,30 +52,37 @@ worth having in place first.
 
 | | streamnzb | zurg |
 |---|---|---|
-| Content acquisition | Searches Newznab indexers per play request | None. You supply `.nzb` files |
-| Ranking and selection | jhin traits and filter profiles and an AvailNZB check | None. One NZB is one release |
-| Retention | Nothing kept. Every play is a fresh search | Persistent library rebuilt from `nzbs/` |
-| Client | Stremio. The addon is also the metadata provider | Any media server over the mount. Or WebDAV directly for Infuse |
+| Content acquisition | Searches Newznab indexers per play request | The [Stremio addon](../guides/stremio.md) searches Newznab indexers per play request. A library also fills from `.nzb` files and the SABnzbd endpoint and [acquisition](../guides/acquisition.md) |
+| Ranking and selection | jhin traits and filter profiles and an AvailNZB check | Resolution first and then a spread of sizes in each resolution. No traits and no filter profiles |
+| Retention | Nothing kept. Every play is a fresh search | Persistent library. A release played through the addon stays in it |
+| Client | Stremio. The addon is also the metadata provider | Stremio through zurg's addon, which answers streams only. Any media server over the mount. Or WebDAV directly for Infuse |
 | Filesystem | None | rclone FUSE mount plus WebDAV plus a plain HTTP index |
 | Archives | RAR and 7z **STORE only**. Compressed releases will not play | Compressed RAR and 7z streamed transparently |
 | Obfuscated posts | Refused | Names recovered from yEnc headers and PAR2. Payload presented under the release name |
-| Damaged posts | Skipped via AvailNZB | PAR2 repair rebuilds missing articles |
-| SABnzbd API | No. It has an NNTP proxy on 119 instead | Yes and opt-in and Usenet-only. No failure signal for a dead post yet |
+| Damaged posts | Skipped via AvailNZB | PAR2 repair rebuilds missing articles. The addon skips a release whose start is gone and tries the next one |
+| SABnzbd API | No. It has an NNTP proxy on 119 instead | Yes and opt-in. Each grab is checked against the news servers. A dead post is rebuilt from PAR2 where it can be and reported Failed where it cannot |
 
-Day to day the difference is this. With streamnzb you picked a title in Stremio
-and the addon found a release for you. **zurg has no indexer search of its
-own.** Acquiring content becomes a separate step and you need something to fill
-it.
+Day to day Stremio can stay as it is. Add zurg's addon and pick a title the way
+you did before. zurg searches your indexers and plays what you pick. The
+[Stremio page](../guides/stremio.md) covers the setup. The first play of a
+release waits while zurg fetches the NZB and lists the release. That is usually
+a few seconds. Every later play of that release starts at once.
+
+A library for your media server needs something to fill it.
 
 - **The SABnzbd endpoint.** Setting `sabnzbd.enabled: true` makes zurg answer
-  Sonarr and Radarr as a download client and the import is a rename inside
-  `__magic__` — out of `__magic__/__all__`, where the grab lands, into the root
-  folder beside it — rather than a copy. This is the closest thing to what streamnzb
-  did for you and it is what most setups should use. See
-  [Sonarr & Radarr](../guides/sonarr-radarr.md). One caveat to know before
-  switching a library over. zurg does not yet check whether a post's articles
-  are still on the news server. So a dead release reports Completed and fails
-  on the first read instead of being blocklisted and re-grabbed.
+  Sonarr and Radarr as a download client. The import is a rename inside
+  `__magic__`. The grab lands in `__magic__/__all__`. The import moves the file
+  from there into the root folder you made beside it. Nothing is copied. Most
+  library setups should use this. See [Sonarr &
+  Radarr](../guides/sonarr-radarr.md). zurg checks every grab against the news
+  servers before it reports it finished. It asks for the start and the end of
+  every file. zurg rebuilds a release with any of that gone from its PAR2 files
+  where it can. One it cannot rebuild is reported **Failed**. The \*arr then
+  blocklists it and grabs another.
+- **Acquisition.** zurg can fetch requests by itself. They come from your Plex
+  watchlist and from Seerr and the \*arrs. It searches your Newznab indexers and
+  checks each grab the same way. See [acquisition](../guides/acquisition.md).
 - **Manual drop.** Download the `.nzb` from your indexer's website and copy it
   into `nzbs/`. The name is fixed and the directory is rescanned every 15
   seconds or so and files are never moved or consumed. Always works and it is
@@ -87,7 +103,7 @@ it.
 **Name the file before you drop it.** The release folder in the mount is named
 after the NZB *filename*. The `<meta type="name">` header is used only when the
 filename looks like a hash. That was measured across all five servers on
-2026-08-19. A file called `nzbgeek_download_48213.nzb` gives Plex nothing to
+2026-08-19. A file called `indexer_download_48213.nzb` gives Plex nothing to
 match so rename it to the release name first. This also means the folder name
 is fully under your control. Two different releases with the same name get a
 ` {shorthash}` suffix.
@@ -96,7 +112,7 @@ is fully under your control. Two different releases with the same name get a
 
 ## Configuration that carries over
 
-Exactly one block does and that is the Usenet provider. streamnzb configures
+Two things do. The first is the Usenet provider. streamnzb configures
 providers under **Settings → Providers** with host and port and username and
 password and connections. Environment variables work too. The same account
 becomes zurg's `nntp` block.
@@ -136,11 +152,23 @@ primary says *no such article*. Setting `backbone` stops two accounts on the
 same spool being asked the same question twice. Only one `nzb` provider entry
 is allowed. Extra news accounts belong inside it rather than beside it.
 
-Nothing else in streamnzb's `data/config.json` transfers. The `indexers` block
-has no zurg counterpart at all. The `streams` and `filter_profiles` blocks
-shaped Stremio manifests that no longer exist. The nearest analogue of a filter
-profile is zurg's `directories:` filters. Those organise a library you already
-have rather than choosing which release to fetch.
+The second is your indexers. They go under `stremio.indexers` with the same
+URL and API key. Acquisition uses the same list when it has none of its own.
+
+```yaml
+stremio:
+  enabled: true
+  indexers:
+    - name: my-indexer
+      url: https://indexer.example
+      api_key: YOUR_INDEXER_API_KEY
+```
+
+Nothing else in streamnzb's `data/config.json` transfers. The `streams` and
+`filter_profiles` blocks shaped what streamnzb's addon offered. zurg's addon
+has one list per title and its own ranking. Its nearest knobs are two.
+`max_size_gb` drops releases above a size. `max_results` sets how many releases
+each resolution keeps. The [Stremio page](../guides/stremio.md) has the rest.
 
 ---
 
@@ -186,9 +214,10 @@ starts from zero and accrues in Plex from the first play.
   README is explicit that "Compressed RAR releases will not play". zurg streams
   video out of compressed archives and reproduces the inner directory structure
   while it does.
-- **No per-title cold start.** streamnzb ran a search and a ranking and an
-  availability check per play request. In zurg the release is already in the
-  library so a play is a ranged read.
+- **Second plays start at once.** streamnzb searched and checked on every
+  play. zurg keeps what you played. A release already in the library plays
+  straight away. Everything Sonarr or Radarr fetched is in that state from the
+  start.
 - **Multi-account depth.** Priorities and metered `backup` accounts and
   `backbone` dedup and a repair path when every account misses.
 
@@ -196,20 +225,22 @@ starts from zero and accrues in Plex from the first play.
 
 Do not undersell these. They were the product.
 
-- **Indexer search and ranking.** No Newznab search and no jhin traits and no
-  filter profiles and no scoring. You or an \*arr choose the release now.
-- **The AvailNZB check.** zurg does not know a release is bad until it tries
-  it. The failure mode moved from "skipped before play" to "PAR2 repair or an
-  empty folder for an unrecoverable one". Measured on the bench where a RAR set
-  missing volumes yields an empty directory rather than an error.
-- **The Stremio experience.** That includes streamnzb's built-in catalogs and
-  metadata and Continue Watching and Because You Watched. Your media server
-  provides its own equivalents but Stremio itself has no zurg addon.
+- **jhin and filter profiles.** zurg's addon searches your indexers too. It
+  ranks by resolution and size alone. There are no jhin traits or filter
+  profiles or scores.
+- **The AvailNZB check.** zurg asks nobody else whether a release is alive.
+  The addon finds out by reading the start of the release you picked. When that
+  is gone it moves on to the next release in the list. A grab from Sonarr or
+  Radarr is checked against your news servers before it counts as finished.
+  Damage further into a file turns up when a read reaches it. PAR2 repair then
+  rebuilds it where the post carries enough recovery data. On 2026-08-19 a RAR
+  set missing whole volumes listed as an empty folder rather than an error.
+- **streamnzb's catalogs and rows.** Its built-in catalogs and metadata and its
+  Continue Watching and Because You Watched rows came from its own history.
+  zurg's addon answers streams only. A media server has its own versions of
+  those rows for a library.
 - **The NNTP proxy on port 119.** If SABnzbd or NZBGet pointed at streamnzb as
   their news server then they need real provider credentials again.
-- **A single binary that needed no media server.** zurg is one binary too but
-  the setup it replaces streamnzb with is zurg and rclone and a media server.
-  Infuse can point at zurg's WebDAV directly and skip rclone.
 
 ---
 
@@ -232,6 +263,13 @@ providers:
 
 enable_repair: true            # PAR2 repair does not run without this
 par2_patch_cache_mb: 512
+
+stremio:                       # keeps Stremio working. Leave it out for a library alone
+  enabled: true
+  indexers:
+    - name: my-indexer
+      url: https://indexer.example
+      api_key: YOUR_INDEXER_API_KEY
 
 mount_path: "/mnt/zurg"
 rclone_enabled: true
@@ -259,8 +297,7 @@ and `has_episodes` instead.
 Then start it.
 
 ```bash
-mkdir -p nzbs        # zurg does not create it; a missing one is an empty library
-./zurg               # startup verifies the news account and says so, loudly
+./zurg               # startup verifies the news account and says so, loudly, and makes nzbs/
 ls /mnt/zurg/__nzb__/
 ```
 
@@ -302,12 +339,12 @@ Use `grep -o … | wc -l` rather than `grep -c`. grep exits non-zero when it
 finds nothing and that is the *good* case here. It aborts a `&&` chain or a
 `set -e` script right before the restart it was guarding.
 
-One known wart to expect. For files whose poster wrote no byte count into the
-subject zurg's listed size is the yEnc-encoded length. That runs up to roughly
-3% over the true size as measured and reading the file does not correct the
-listing. On a fresh library this costs nothing at scan time. But a later fix
-that changes advertised sizes will make those files look modified to Plex and
-can trigger re-analysis. It does not delete anything.
+File sizes settle a little after a release first lists. An NZB does not say
+how long a file is. So the first listing estimates it from the article sizes
+the NZB records. That can read up to about 3 per cent high. zurg then learns the
+exact length in the background and keeps it. A scan that ran before that sees
+the estimate. Plex then treats the file as modified and analyses it again once.
+Nothing is deleted.
 
 ---
 

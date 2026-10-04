@@ -1,5 +1,1071 @@
 # Changelog
 
+## zurg update works after the one-line install
+
+The one-line installers sign you in to GitHub through the GitHub CLI. They
+downloaded it for that and deleted it again when they finished. `zurg update`
+then looked for the GitHub CLI and found nothing. It stopped with "no GitHub
+credential found" even though your sign-in was still saved. Ubuntu's own
+GitHub CLI is too old to hand the sign-in over. Update stopped the same way
+there too.
+
+`zurg update` now also uses the GitHub CLI the installers keep in `bin` beside
+zurg. A sign-in the GitHub CLI saved without a keyring now works even when the
+CLI itself is gone. When it still finds nothing it prints the one command that
+fixes it. Run the installer's update once and every later `zurg update` signs
+in on its own.
+
+## Many old Real-Debrid links failing at once is no longer called an outage
+
+Real-Debrid links stop working a few months after they were made, so releases
+added around the same time stop playing around the same time. When more than
+five of them failed in one repair pass, zurg logged "suspected provider-wide
+outage" and held back the repair of all but five, so a large batch stayed
+broken much longer and looked like Real-Debrid was down. zurg now first asks
+Real-Debrid for a release on the same account that still plays. If it plays,
+the failing links are simply old and every release is repaired as usual. Only
+when Real-Debrid refuses working links as well does zurg treat it as an outage
+and wait.
+
+## The dashboard's Emby session links open Emby's dashboard
+
+The "active sessions" and "transcodes" links on the dashboard's Emby panel
+opened `/web/#/dashboard`, which is Jellyfin's address for that page, and Emby
+sat on its splash screen there forever. Both links now open
+`/web/index.html#!/dashboard`, the address Emby uses itself. The Jellyfin
+panel's links are unchanged.
+
+## A missing .nfo no longer sends a Usenet release to repair
+
+Old Usenet posts often lose their .nfo first while every video and archive
+part is still there. zurg treated that as damage to the whole release. It
+started a repair whenever it came across such an .nfo and that happened again
+after every restart. Real repairs then waited behind hundreds of pointless
+ones. Some releases that played fine were marked unrepairable and deleting the
+.nfo was the only way back.
+
+A missing .nfo or other small file kept beside the video now reads as blank
+and asks for no repair. It no longer marks a release unrepairable. A damaged
+video can be repaired again when the .nfo next to it is gone. Releases already
+marked unrepairable this way are checked again within about a day and come
+back on their own.
+
+## Usenet files no longer play silence where a server sent another upload's article
+
+Some news servers answer a request for one article of your file with an article
+from a different upload that has the same number. zurg only caught this when
+the other upload had fewer articles than your file. On shorter files such as
+RAR volumes and short episodes it took the wrong article and played silence for
+that stretch. The log called it `an internal mapping failure in zurg` and said
+the offset `falls between two articles that are both present and neither
+covers`. zurg now also checks the file size every article states. It refuses an
+article from another file and asks your other news accounts for the real one.
+Articles an older build already saved to its article cache are refused too.
+With a single account the stretch still plays as silence. The log now says a
+server sent another file's article instead of blaming zurg.
+
+## Usenet connections come back at full speed after another app stops using the account
+
+If your news provider ever turned zurg away for having too many connections,
+for example while another program or an earlier zurg was still holding some, zurg kept
+adding connections one per second for as long as it ran, even once the room was
+back. After every quiet spell a burst of grabs started again from the two warm
+connections, so a large account took over a minute to get back to full
+speed and imports queued behind it, with "waited 5s for a connection (queued
+for the account's allowance)" in the debug log. Once the provider has accepted
+a connection again and a minute has passed without another refusal, zurg now
+opens what it needs straight away.
+
+## The debug log says when a fetch waits for a connection with several news servers configured
+
+With one news server, a fetch that waited more than five seconds for a
+connection left a debug line saying so. With two or more it never did, so adding
+a second server made the line disappear whether or not the waiting had stopped.
+The line now appears for multi-server setups too and names the servers the fetch
+was waiting on.
+
+## A Usenet grab with no repair files and a dead first article fails at once
+
+A release posted without PAR2 files whose first article was gone from every
+news server was held for five minutes before Radarr or Sonarr heard it had
+failed, waiting for a repair that had nothing to repair from. zurg now sees that
+there is no recovery data and reports the grab failed straight away, so the
+client blocklists it and moves on.
+
+## A Usenet grab that repair fixed is no longer reported failed five minutes later
+
+When a grab was missing a few articles and its PAR2 files could rebuild them,
+zurg repaired it, but a read-ahead running during the repair could ask for the
+missing articles again and be refused a moment after the repair finished. That
+refusal put the release back on the damaged list, so the grab was held for five
+minutes and then reported failed, and Radarr or Sonarr blocklisted a release
+that played fine. A refusal for an article the repair has already rebuilt no
+longer counts as damage.
+
+## Upgraded downloads that came with an .nfo or subtitles are deleted too
+
+With `magic.allow_delete` on a deleted video that was not inside a RAR archive
+was deleted on its own. The `.nfo` and subtitles and poster posted beside it
+kept the download in your library. Its NZB stayed in `nzbs/` and its torrent
+stayed on your debrid account. Every upgrade of such a download left one
+behind. Now the whole download is deleted once nothing in `__magic__` uses it
+any more. A download stays while another episode of it is still in your
+library or still waiting in its own folder to be imported. Subtitles Sonarr or
+Radarr imported beside the video keep it until they are deleted too.
+
+## Replaced and failed Usenet downloads no longer pile up
+
+With `magic.allow_delete` on a deleted episode or movie that came out of a RAR
+archive was only hidden. The download it came from stayed in the library and
+its NZB stayed in `nzbs/` for good. Upgrading single episodes to a season pack
+left one of these behind for every episode. Now the whole download is deleted
+once nothing in `__magic__` uses it any more. A download stays while another
+episode from the same archive is still in your library. It also stays while
+its own folder still has something to import.
+
+Sonarr and Radarr ask for the files of a failed download to be deleted when
+they remove it. zurg kept the NZB anyway. It now deletes it when nothing was
+imported from that release. A download that finished and was imported keeps
+its NZB as before because the imported file still plays from it.
+
+## zurg now says when the library has finished loading
+
+Docker calls zurg healthy as soon as it is running. A large library can keep
+loading for over an hour after that. Folders in the mount fail with
+`Input/output error` the whole time and it looks like a broken install. The new
+`/ready` address tells the two apart. It answers 503 until the library has
+loaded and 200 once it has. It needs no password. Inside the container
+`/app/healthcheck.sh --ready` checks the same thing. The container's own health
+check still only asks whether zurg is running. That way a long first load
+cannot get the container restarted or hold back a mount that depends on it. The
+health check also reads the `PORT` environment variable now. A container that
+set `PORT` used to be checked on the wrong port.
+
+## Acquisition can skip releases by words in their names
+
+Set `exclude_words` in the `acquisition:` block and zurg never takes a release
+whose name has one of those words. `exclude_words: [DV, HDR10+]` keeps Dolby
+Vision and HDR10+ off a TV that cannot play them and still takes 4K with plain
+HDR. It works for the Plex watchlist, Seerr, Radarr and Sonarr, and for Usenet
+and torrents. Whole words only. `DV` does not catch `DVDRip` or a movie called
+Adventures. `DV` and `DoVi` and `Dolby Vision` all mean the same thing, and so
+do `HDR10+` and `HDR10Plus`. Radarr and Sonarr are never asked about an
+excluded release.
+
+## Radarr and Sonarr can take the profile's best quality first
+
+zurg normally takes the allowed release that is quickest to check. For a movie
+that is usually a 1080p WEB-DL. The upgrade pass then moves toward your
+profile's cutoff. Shows take a season pack before loose episodes. So a 1080p
+pack could fill a season even when 2160p episodes were there. Set
+`best_first: true` under `acquisition:` and the first grab follows your Radarr
+or Sonarr quality profile instead. The best resolution it allows comes first.
+Anything at or above the cutoff counts as good enough. When a release turns out
+to be gone zurg works down the profile. The first file can take longer to
+arrive because the best releases are often large multi-part posts. It is off by
+default.
+
+## Torrent results no longer crowd out NZBs where no account takes torrents
+
+On an instance with an nzb provider and no debrid account that takes torrents,
+acquisition still searched your Torznab indexers, and each torrent it found
+used up one of the three releases a show's episode or season pack gets per
+attempt. With `prefer: torrents`, or 4K torrents ranked above a 1080p NZB, the
+NZBs were never tried and the episode failed. Torznab indexers are now skipped
+there, with one line in the log saying so, and a release the instance has
+nowhere to put never counts as a try. Movies no longer ask Radarr about such
+torrents either.
+
+## Acquisition no longer counts an NZB as done where nothing can play it
+
+On an instance with a debrid account and no nzb provider, acquisition still
+searched your Newznab indexers, and an NZB it grabbed was counted as done
+without any check. A Plex watchlist title could come off the list for a file
+nothing on that instance can play. Newznab indexers are now skipped there, with
+one line in the log saying so, and an NZB is never counted as done on an
+instance without an nzb provider.
+
+## A release with nothing left to play is reported once instead of every day
+
+When every playable file of a release had been deleted, zurg warned that it
+"has no playable file that still reads" again every day. A library with a
+hundred such releases logged a hundred of those warnings a day for releases
+nobody had touched. The warning now appears once and the release is looked at
+again only after something about it changes. Restoring a file still brings it
+back straight away.
+
+## Broken releases on AllDebrid and TorBox come back when the files still play
+
+A release held only by AllDebrid, TorBox, Premiumize, Offcloud or Debrid-Link
+could stay broken and hidden for weeks while the account was still serving it. Repair doesn't re-add releases
+on those services by itself, because they remove content on purpose, and
+nothing else ever checked whether the files had started working. Repair now
+asks the account once a day whether a broken release's files still play and
+puts back the ones that do, without adding anything. Anything the account has
+really removed still needs the Repair button. The MCP repair outlook says
+the same thing instead of telling you no sweep will ever act on it.
+
+## Grabs TorBox queues for a free slot show as queued and finish
+
+When every download slot on a TorBox account was busy, TorBox put new grabs
+from Sonarr and Radarr in its queue, and zurg lost track of them. The grab
+showed as fetching metadata for about ten minutes and then as an error, so
+Sonarr and Radarr dropped it. When TorBox later downloaded it, nothing
+imported it. zurg now follows a queued grab until TorBox starts it and on
+until it finishes. While it waits it shows as queued, and the no-progress
+timeout doesn't run until TorBox has started it.
+
+## You can search for one release on the `__magic__` page
+
+On a library Sonarr or Radarr organises, every import leaves a hidden job
+folder behind, and the `__magic__` page lists only the first thousand stored
+rows. The release you came looking for was usually not among them, so its
+Unhide and Reset buttons were out of reach, and the note under the list
+pointed at data/magic.json instead. Editing that file while zurg runs does
+not work: zurg writes it out again from memory when it stops, so the rows come
+back after a restart.
+
+The stored rows and dangling pages now have a search box. Type a release name,
+a path from your mount or a hash, and every row stored about that release is
+listed with its buttons, however big the table is.
+
+It is also how to bring back a release that is in `__all__` but never shows up
+in `__magic__/__all__.` Deleting a release and adding it again, or reinserting
+it from DMM, keeps its hash, so it comes back with everything `__magic__` had
+stored about it, including the job folder that was deleted after its import.
+Search for it and press Unhide on its release-tombstone row.
+
+## `__magic__` on Windows stops growing its journal forever
+
+On Windows, zurg logged `cannot truncate data\magic.journal ... Access is
+denied.` every time it tried to tidy the file where `__magic__` records your
+moves and folders. The file was never emptied, so it grew with every change
+and every start read all of it again. After a few thousand changes in one run,
+each further change also rewrote the whole saved layout. zurg now empties it
+on Windows as it always did elsewhere, and the first start after updating
+clears what has piled up. If tidying ever fails, zurg tries again after more
+changes instead of on every one.
+
+## Restoring a file over MCP puts its release back right away
+
+Restoring a file with the `zurg_release_file_restore` MCP tool brought the file
+back but left its release marked broken and in `__unplayable__` until the next
+library refresh. It now does what the Restore button in the torrent manager
+does: the release leaves `__unplayable__`, goes back into its folders with its
+.strm files, and is saved that way. As before, it does not ask Plex, Jellyfin
+or your on_library_update script to rescan.
+
+## Bring back files a failed repair hid
+
+Older builds marked a file deleted when a repair gave up on one account, even
+when another account could still play it, and the release then vanished from
+every folder. The torrent manager has a new "Deleted, still served" filter that
+lists releases with nothing left to play whose deleted file an account still
+serves. Hold its Restore button and zurg checks each file's link and puts the
+ones that play back in their folders, the same as pressing Restore on each file.
+
+zurg does not do this by itself. A file you deleted on purpose is stored exactly
+the same way, so look through the list and restore only what you did not delete.
+Releases that still play something are left out, since deleting an extra or an
+episode is the usual deliberate delete.
+
+## Acquisition looks past the first page of search results
+
+Acquisition used to read only the first page an indexer returned. With DMM,
+which returns ten results a page with the biggest first, a size limit could
+remove every one of them, and the movie failed with "no eligible releases"
+every few hours even though smaller releases were on the next pages. It now
+keeps asking for more pages until it has enough releases that fit your limits,
+up to ten pages. For shows, an episode that the season search didn't turn up,
+usually an older one when the newest episode fills the results, is now
+searched for on its own.
+
+## Dead files in `__magic__` movie and show folders now drop out so Radarr and Sonarr notice
+
+A file that Radarr or Sonarr had imported into a folder under `__magic__` kept
+showing at its full size after the release stopped working, so a rescan still
+saw it and the movie or episode never went back to wanted. It now leaves the
+folder at the same moment it leaves every other listing: once repair can no
+longer bring it back, or a day after it broke when repair is off. The next
+rescan marks it missing and acquisition looks for a replacement. If the file
+starts working again it reappears in the same place.
+
+## Season Fix sorts multi-season packs and numbered extras
+
+Season Fix now reads the season each file names for itself, so a pack like
+`Full Metal Panic S2 - 01`, `Bakuman II - 01`, `KonoSuba 2 - 01` or
+`Demon Slayer Mugen Train Arc - 01` puts every episode in its own season
+instead of leaving Plex to stack all of them on season 1. Batches named in
+romaji or with a suffix, such as `Sergeant Keroro 001-358` or
+`Dragon Ball Z COMPLETE`, are recognised when their files share one title, and
+names with underscores, `Ep01`, `1.01.` or a number inside the episode title
+are read the way they were meant.
+
+Numbered extras like `Special 01`, `OVA 01`, `- 11 (OVA)` and `24.5` recaps
+used to sit on a real episode as a second version, and Play could pick the
+extra. They are now renamed with Plex's `-other` suffix so they show up as
+extras.
+
+## A dead Real-Debrid link no longer holds a library scan for minutes
+
+When Real-Debrid keeps answering a file with the same revoked link, zurg waits
+it out for a few minutes, since that is normal right after a download is
+removed. A file still refused that way after five minutes is now treated as a
+broken link and sent to repair, instead of telling the reader to come back
+again. Before, a single dead file could hold a Plex scan for about ten minutes.
+
+## Failed and stuck Usenet jobs can be cleared from the `__magic__` page
+
+A Failed or Stuck job in the SABnzbd list stayed there for good once Sonarr or
+Radarr stopped using zurg as a download client. A restart did not clear it.
+Deleting `data/sabnzbd-jobs.json` by hand was the only way. The jobs list on
+the `__magic__` page now has a **Clear** button on every Failed or Stuck job and
+a button above the list that clears them all. Hold it until the bar fills.
+Queued and Completed jobs are never touched. The job's NZB is deleted as well
+unless an import under `__magic__` still uses that release.
+
+## The Stremio addon says when it needs https
+
+Stremio only loads an addon over plain http on the computer it runs on. On a TV
+or a phone or another computer an http address fails with "failed to load
+manifest" even when the device can reach zurg. The config page now says so next
+to the addon URL whenever you opened it over http on such an address. The
+Stremio guide shows three ways to put zurg behind https. They are Tailscale
+Serve, your own reverse proxy and a Cloudflare tunnel.
+
+## Plex picks up a movie or episode as soon as Radarr or Sonarr imports it into `__magic__`
+
+After Radarr or Sonarr moved a file into a folder under `__magic__`, zurg asked
+Plex to scan the file itself. Plex only scans folders, so it answered as if
+everything was fine and added nothing, and the movie stayed missing until
+Plex's next scheduled scan. zurg now asks Plex to scan the folder the file
+landed in. The same goes for the file an upgrade replaces, so the old version
+drops out, and for the manual scan endpoints, the MCP `zurg_plex_scan_releases`
+tool, scans after a rename or a file delete, and the paths handed to
+`on_library_update`.
+
+## The Manage page lists duplicate releases and which one Radarr or Sonarr uses
+
+An upgrade leaves the release it replaced in your library, and grabs from
+different indexers can leave more than one copy of a movie or a season. The
+new Duplicates view on the Manage page groups releases that hold the same
+movie or the same episodes and shows which one Radarr or Sonarr is using. zurg
+works that out from where the file sits in `__magic__`, not from release names.
+For a season it lists each episode more than one release holds and which
+release Sonarr's file is in, so a pack Sonarr takes only a few episodes from
+still shows as in use. Every other release is marked "No reference found" or
+"Unknown", with the reason. Select the ones you want gone, and zurg reads
+Radarr and Sonarr again before deleting, leaving out anything that has come
+into use since. Nothing is ever deleted automatically.
+
+## TorBox's busy download slots are counted the way TorBox counts them
+
+Before repair or a first playback adds a torrent to TorBox, zurg checks whether
+the account has a free download slot. It used to count every torrent that was
+not fully downloaded. That missed torrents that are seeding, which TorBox
+counts against your plan for up to 30 days, and it counted torrents whose
+content had expired, which take no slot at all. A few expired torrents in a
+library could make repair wait as if every slot were busy.
+zurg now counts exactly the torrents TorBox marks as active.
+
+## TorBox can seed for private trackers
+
+A new setting, `tb_seed_torrents`, decides whether the torrents zurg adds to
+TorBox seed. It stays at `never` unless you change it, so nothing changes for
+anyone who leaves it alone. Set it to `always` if a private tracker needs your
+ratio, or to `auto` to let the seeding setting on your TorBox account decide.
+It can be changed from the dashboard's Health & Repairs section and takes
+effect on the next add.
+
+A torrent that is seeding takes up one of your TorBox plan's active slots for
+as long as it seeds, up to 30 days on Pro. When seeding torrents fill every
+slot, new grabs and repairs on that account have to wait for one to free up.
+
+## RAR sets whose volumes are named out of order now play
+
+A release whose RAR volumes each carry a different name, such as a random name
+per volume or `Movie 2026 part1.rar`, used to show up as one archive per
+volume. The first one listed the film but it stopped working after its first
+part, and the others showed nothing. zurg now reads where each volume belongs
+from inside the volume itself and puts the set back together, which is what
+renaming the volumes `part001.rar` onwards used to fix by hand. It only does
+this when the volumes number themselves into one complete set. If one is
+missing or two claim the same place, the release is left as it was and the log
+says why. Compressed archives whose volumes are posted out of order now play
+too.
+
+## A Plex scan that is still analysing is no longer reported as stuck
+
+Plex keeps a library scan's progress and current folder unchanged while it
+analyses the files the scan found, which can take a long time on a large or
+remote library. The dashboard used to call that a stuck scan and suggest
+restarting Plex in the middle of it. zurg now listens to Plex's own update
+feed and counts the items Plex reports working on, so only a scan that has
+really stopped is flagged.
+
+## Cached-only torrent uploads preserve the refusing add on rate-paced providers
+
+A `.torrent` submitted in cached-only mode now reaches TorBox's refusing add
+even when its hourly add limit wraps the backend. An uncached miss creates no
+transfer and occupies no active slot; it still spends one of TorBox's 60
+uncached adds per hour. Ordinary adds continue uploading the original file.
+The qBittorrent guide now lists all six torrent-upload providers and explains
+the distinct Debrid-Link and TorBox cached-only paths.
+
+## A file you delete while it is being restored stays deleted
+
+Deleting a file or release while a restore is still checking its link now waits
+for that check and then wins. A library refresh that was already running can no
+longer bring back a release you just deleted.
+
+## A seek far into a compressed archive no longer hangs the reader
+
+A file inside a compressed RAR or zip can only be decoded from its beginning,
+so a read near the end of a large one used to wait for the whole archive with
+no reply at all. Plex could sit on such a read for over an hour, which was
+enough to lock up its database. zurg now answers within 20 seconds, keeps the
+progress it made, and prepares the end of the file in the background so the
+next read of it is immediate.
+
+## Real-Debrid refusals follow the published filename rules
+
+When Real-Debrid refuses to re-add a release during repair, zurg now checks the
+release's name and its file names against the published filename rules. A
+release the rules block is marked infringing for good. Any other refusal is
+treated as Real-Debrid slowing down adds, and the release stays in line for the
+next repair pass instead of being retired.
+
+## Restoring a file puts it back where it belongs straight away
+
+The Restore action on a release's manage page now re-files the release into its
+directories, saves the recovered state and writes its STRM file as soon as the
+file checks out. A restored file no longer sits in the unplayable directory
+until the next provider refresh, and a release whose last broken file was
+restored is no longer reported broken after a restart. Files you deleted still
+stay deleted until you restore them.
+
+## Reject foreign Usenet articles before serving bytes
+
+Reject same-number Usenet articles whose positive yEnc total is below the NZB's highest listed number, including persisted cache and progressive paths, so valid account fallbacks supply the bytes.
+
+## Preserve evidence-backed RD refusal classification
+
+Keep quiet addMagnet 451 responses as release refusals unless account-local throttle evidence spans the operation, and preserve temporary errors through repair.
+
+## Clarify expired broken-file read windows
+
+Report an expired broken-file read retry window without claiming repair has given up.
+
+## Expose recorded file health in MCP
+
+Expose recorded per-file health counts in MCP release views and keep lazy file tables safe to inspect without claiming that a lifecycle state is a live serving probe.
+
+## Handle duplicate sidecar operations
+
+Recognize typed missing-source responses from duplicate WebDAV aliases while retaining genuine all-failed and permission errors.
+
+## A re-grab under the same name is repaired instead of failed
+
+Grabbing an NZB again under a name zurg already holds no longer checks and
+repairs the old copy while the new one is being read in. The grab waits for the
+new file, so a release with a missing article that PAR2 can rebuild is repaired
+and completed rather than reported failed.
+
+## Repair failures no longer masquerade as user deletions
+
+Automatic repair failures now mark only the failing provider source as broken,
+preserving healthy alternate copies and allowing later provider refreshes to
+restore file visibility.
+
+## Torrents without an IMDb id are identified by release name through DMM
+
+With `dmm_metadata_secret` set, the IMDb job no longer needs an OpenSubtitles key. Torrents with no id, or only OpenSubtitles' miss marker, are identified at startup from an `imdb-tt…` tag in their name, or else by DMM's resolver, which answers only when one title matches exactly: fansub romanisations like "Kaijuu 8-gou" resolve through DMM's aliases to Kaiju No. 8, and a name several shows share is left alone. A torrent DMM cannot name keeps an empty id, so a Plex match can still fill it.
+
+## A Radarr movie that no indexer knows by id is searched for by name
+
+Plenty of Usenet posts are indexed with no IMDb or TMDB id. zurg searched for a
+Radarr movie by id alone, so a documentary every indexer answered nothing for
+by id failed with "no eligible releases", while Radarr's own search by name
+found a clean release. When the id search finds nothing to take, zurg now
+searches for the title and year as well, and Radarr's own parser still decides
+whether each result is the movie. Only an id search that found nothing at all
+is followed by one by name: a movie the id search does find is indexed by id,
+and asking again by name would only fetch the same posts.
+
+## NZBs found through Prowlarr can be downloaded
+
+Prowlarr hands over every Usenet NZB by redirecting to the indexer, and it
+will not let that be turned off. zurg followed a redirect only to the same
+host, so with indexers configured through Prowlarr every NZB acquisition chose
+failed with "answered 301 Moved Permanently" and nothing was ever acquired. The
+redirect is now followed. The link's own API key still never reaches the other
+host, and a redirect from HTTPS to plain HTTP is still refused.
+
+## An indexer that refuses for hours no longer stalls acquisition
+
+Prowlarr answers a search on an indexer it has disabled with `429` and a
+`Retry-After` of many hours. zurg waited two minutes and asked again, three
+times, so every search spent six minutes on that one indexer. Acquisition gave
+up on each title after five, and threw away what every other indexer had
+already answered, so nothing was acquired at all until the indexer came back.
+An indexer asking to be left alone for longer than two minutes is now skipped
+until the time it named, and searches go ahead on the others.
+
+## A title deleted after acquisition is searched for again
+
+When a file zurg's acquisition had placed for Sonarr or Radarr was deleted,
+because it was not the version wanted or for any other reason, and the title
+came back on the missing list, zurg answered "completed without a search, the
+release was already held" and never looked for it again. zurg now checks the
+season or movie folder in `__magic__` first. An episode or movie whose video is
+no longer there is searched for again. One whose video is still there, which is
+what happens while Sonarr has not rescanned yet, is left alone.
+
+## "Scan in Plex" on the undetected list waits for the result
+
+The hold-to-scan button on the undetected list reloaded the page two seconds
+after it was pressed, while matching against Plex had not started yet. On a
+large library that match takes minutes, so the list always came back unchanged
+and the button looked like it did nothing. The button now shows that matching
+is running, waits for it to finish, says how many releases it matched, and then
+reloads.
+
+## A release whose name ends in a space is matched to Plex
+
+A release whose file name has a space before the extension, such as
+`... [Hurtom] v2 .mkv`, gets a directory whose name ends in a space. Plex found
+it, but zurg could never match it, so it stayed on the undetected list after
+every scan. It is matched now.
+
+## Deleting a file on the manage page keeps your place
+
+Deleting, restoring, renaming or force-showing one file on a release's manage
+page used to reload the page at the top, so pruning a big pack meant scrolling
+back down after every click. The page now comes back at that file's row and
+highlights it.
+
+## The dashboard takes a mount path typed with quotes
+
+A mount path pasted into the dashboard the way config.yml writes it, such as
+`"/Users/me/Plex Media Server/ZurgMount"` or `'Z:\'`, was refused with "mount
+path should be absolute" because the quotes were read as part of the path. The
+dashboard now drops a matching pair of quotes around the value and saves the
+path inside them.
+
+## A failed Plex watchlist fetch says why
+
+When Plex refuses a watchlist request, the log now carries Plex's own reason,
+such as `unexpected status: 401: Invalid token`, instead of the status alone.
+If you still see `Failed to fetch watchlist: ... unexpected status: 400`, that
+wording comes from a build older than August. Update zurg: current builds ask
+for the watchlist in pages Plex accepts.
+
+## A release too damaged for repair's memory fails at once
+
+When a Usenet release is missing more than PAR2 repair can hold in memory at
+once, zurg now says so and stops, and Sonarr or Radarr pick another release.
+It used to keep the grab waiting, then try again every few minutes, re-checking
+the whole release each time for the same answer. Damage that is not yet
+confirmed as gone, such as articles a server failed to answer, is still
+retried.
+
+## Setup gets past an empty config and says when the token prompt is hidden
+
+`zurg setup`, and the installers that run it, refused to go on while an empty
+`config.yml` was lying around, with an error that ended in a blank. An empty
+config is now replaced. One with content in it is still never overwritten, and
+the error now says which file it is and how to start over. The token prompt
+says that what you type or paste stays hidden, which had looked like the
+terminal refusing input. A typo in `config.yml` is now reported against
+`config.yml`, not an internal "outbound identity config".
+
+## A backup news server now fills in articles the main server answers wrongly
+
+Some news servers answer a request for one article with a piece of a
+different upload. zurg recognised the wrong piece but never asked
+the backup server for the right one, so the gap played as silence or the file
+would not open, even with a backup server that had it. zurg now asks the next
+server, the way SABnzbd does.
+
+## A RAR'd Usenet release reaches its directory without a restart
+
+A release posted as a RAR set is sorted into directories by its volume names
+until its archive has been opened, and by the files inside it after. Nothing
+sorted it again once the archive was opened, so a directory that looks for a
+`.mkv` or for episode numbers missed a freshly grabbed RAR'd release until
+zurg restarted, and Plex and Jellyfin never saw it there. The release now moves
+into the right directories as soon as its archive is first listed.
+
+## A movie posted under a random name is named after its release
+
+Some Usenet posts give the movie a random name, such as
+`eq5KVi5Y3iTwFEn1Nub8yPY9yd6oUzTu.mkv`, and repeat it everywhere in the post
+that could carry the real one. zurg kept that name, so Radarr and Sonarr had
+nothing in the filename to go by. zurg now names the file after the release,
+as SABnzbd does: only when it is clearly the one big file of the release, only
+for a video file, and never for a disc structure or an archive. This applies
+to releases grabbed from now on; one already in the library keeps its name.
+
+## Size rules now apply to files inside archives
+
+A Usenet movie posted as a RAR set is shown as the files inside the archive.
+Those files skipped a directory's `only_show_the_biggest_file` and
+`only_show_files_with_size_gte`/`_lte` settings, so anything else the post
+carried stayed visible beside the movie. Many posts include a small image named
+after the movie, a sheet of timestamped stills, and Jellyfin used it as the
+poster. The size settings now apply to archive contents the same way they apply
+to every other file.
+
+## Usenet releases whose largest PAR2 file is over 512 MB can be repaired
+
+When a release is missing pieces, zurg rebuilds them from the release's own
+PAR2 files. It refused to read any PAR2 file bigger than 512 MB, and on a large
+release that file holds more of the repair data than any other, and is often
+the only one there is. Such a release could not be repaired however little of
+it was missing, and zurg kept trying again, downloading all of its smaller PAR2
+files each time before giving up. zurg now reads a PAR2 file of any size.
+A release with more damage than one repair can hold in memory is turned down as
+soon as the damage is counted, before any of its PAR2 files are downloaded.
+
+## Sonarr can hand its missing episodes to zurg
+
+zurg can now take its list from Sonarr too. Add a `sonarr` source under
+`acquisition.sources` with Sonarr's URL and API key. zurg then works through
+the episodes Sonarr is missing and the episode files it wants to upgrade. It
+searches your indexers and checks that the news servers still hold the
+release. It puts each episode in its season folder inside `__magic__` and asks
+Sonarr to rescan the series. Sonarr needs no indexers or download client for
+this.
+
+A season that is missing whole and has finished airing can come as one season
+pack. Anything else comes episode by episode. Every release goes through
+Sonarr's own parser first. It has to be the right series and the right
+episode, and it has to fit the series' quality profile. Upgrades replace only
+the episode they upgrade. When one episode of a season has no release yet,
+the others are placed anyway and Sonarr rescans for them. Daily and anime
+series are skipped for now, with a note in the log. `docs/acquisition.md`
+covers the Sonarr side of the setup.
+
+## Acquisition works on many titles at once
+
+Titles from a watchlist or a request service used to be acquired one after
+another, so a long list took as long as all of its titles put together. zurg
+now works on up to eight at a time, set by `acquisition.concurrency`. A title
+that turns up late on the list no longer waits for the ones ahead of it to
+finish.
+
+A new release no longer sits for two minutes before zurg checks it. zurg
+checks every second until the release appears in the library, for up to a
+minute and a half. When the news servers no longer hold a release, zurg moves
+straight on to the next candidate instead of retrying five minutes later.
+Checking a release no longer has to fit in whatever time the search left over,
+so a slow search on a long list no longer delays titles by minutes.
+Upgrades to titles you already have wait until the missing titles from the
+same list are done, so they never compete with them for indexer calls or news
+connections.
+
+## A Usenet release repaired with PAR2 stays repaired while it is read
+
+When some articles of a release are gone from the news servers, zurg rebuilds
+them from the release's PAR2 files and serves the rebuilt bytes. The part of
+zurg that fetches ahead of the player did not know about the rebuilt pieces,
+so it asked the servers for the missing articles again. They were still
+missing, and zurg reported the release damaged again, even though every byte
+it served was correct. A release repaired during an import could be failed
+moments later, and a download client would throw away a good copy and grab
+another. zurg no longer asks the servers for anything it has already rebuilt.
+
+## Radarr can hand its wanted movies to zurg
+
+zurg can now take its list from Radarr. Add a `radarr` source under
+`acquisition.sources` with Radarr's URL and API key, and zurg works through
+the movies Radarr is missing or wants to upgrade. It searches your indexers,
+checks that the news servers still hold the release, puts the video in the
+movie's folder inside `__magic__` and asks Radarr to rescan that movie. Radarr
+needs no indexers or download client for this. Every release zurg takes has
+been through Radarr's own parser first, so it has to be the right movie and
+fit the movie's quality profile: an allowed quality, the minimum custom format
+score, the size limits, and upgrades only toward the cutoff. zurg takes the
+first allowed release that is quickest to check, web releases first, and
+leaves the profile's preferred qualities to the upgrade that follows. It asks
+Radarr about a release only when it is about to check it, one at a time, and
+never asks about one whose title names a resolution the profile has no quality
+for, so a busy Radarr answers one to three questions for most movies instead
+of one for every search result. If Radarr sees zurg's mount at a different
+path, set `library_path` to where it sees `__magic__`. A new Acquisition page
+on the dashboard shows every title zurg is working on, what it is doing right
+now and where each release was placed. `docs/acquisition.md` covers the Radarr
+side of the setup.
+
+## Acquisition picks the Usenet release that is quickest to confirm
+
+When zurg acquires a movie, it now looks first at the posts that hold a single
+video file, which are far more often still complete on the news servers and
+take two article reads to confirm. It reads each candidate's NZB before saving
+anything, saves the first single-video post it finds, and only falls back to
+multi-volume archive sets when none is on offer, smallest set first and no
+more than six at a time. Results titled after one part of a split post are
+skipped. In testing on the IMDb Top 100, choosing this way cut the NZBs zurg
+had to fetch from 517 to 156. Searches and NZB downloads now share a limit of
+requests in flight per indexer and wait out an indexer that says it is busy. A
+movie request with no quality profile behind it still gets the resolution it
+asked for first. Series acquisition is unchanged.
+
+## Acquisition checks a release once zurg knows its sizes
+
+zurg used to check a new release with the news servers the moment it appeared
+in the library, while it was still reading the same release to learn its file
+sizes. Both asked for the same articles over the same connections, so on a
+long list both crawled. On a list of 99 movies the last one reached Radarr
+after almost nine minutes. zurg now checks a release once its sizes are known,
+the way it already does for Sonarr and Radarr through the SABnzbd endpoint,
+checks no more than six releases at a time, and reuses the first article the
+size check already downloaded when it still has it. A burst of saved releases now leads to one
+library refresh instead of one per release.
+Checking a release now goes ahead of the size checks of other releases, though
+never ahead of playback, and an account with more than twelve connections now
+learns the sizes of up to sixteen releases at a time instead of eight.
+
+## A grabbed Usenet release with a few missing pieces is repaired before it is failed
+
+Before telling Radarr or Sonarr that a download finished, zurg checks that
+the release's pieces are still on the news servers. When that check found
+something missing, zurg failed the download on the spot, even when the
+release's own PAR2 files could have rebuilt what was gone. Radarr then threw
+the release away and went looking for another, often a worse one. zurg now
+rebuilds the missing pieces first and only reports the download failed if
+that does not work. In a week of real grabs, most of the releases failed this
+way had the PAR2 files that would have saved them.
+
+## Damaged Usenet releases wait their turn for a repair instead of being failed
+
+zurg repairs at most two damaged releases at a time, and a repair can take
+anywhere from a couple of minutes to over an hour. A third damaged download
+only had five minutes to get started before zurg told Radarr or Sonarr it
+had failed, so when several arrived together, all but two were thrown away
+without anyone trying to repair them, and the log said nothing about it.
+zurg now keeps a download waiting while its repair is in line, for up to
+three hours, and the log says when a repair is waiting for its turn.
+
+## A Usenet download no longer waits for ever on file sizes nothing is going to learn
+
+zurg holds a finished download back from Radarr and Sonarr until it knows each
+file's exact size, because the clients check the size when they import. After
+certain re-grabs, zurg could stop trying to learn the sizes while still waiting
+for them, so the download sat in the queue until the client gave up, often two
+hours later. zurg now sizes such a release again, and when no further sizing
+is possible and the release's pieces are all on the news servers, it tells
+the client the download is ready.
+
+## Usenet releases whose poster renamed only the first archive volume play again
+
+Some posters rename the first volume of an archive to the release name and
+leave the rest under their original names, so a release arrives as
+`Show.S02E03.part03.rar` plus `show.203.r00` to `show.203.r19`. zurg grouped
+the volumes by name, saw two incomplete archives, and could open neither. It
+now reads the first volume's header, recognises which volumes it belongs with,
+and names it to match, so the episode plays and imports. A folder whose
+archive really is missing a volume now says so with a clear message instead
+of a generic server error.
+
+## Obfuscated Usenet releases whose volumes are just numbered now play
+
+Some releases hide every filename behind a random string and a number, so a
+film arrives as `f342c135….01`, `….02` and so on, with the text files and
+cover art numbered in among them. zurg did not recognise these as parts of
+one archive, listed them as loose files, and Radarr and Sonarr found nothing
+to import. zurg now reads the start of each numbered file, puts the archive's
+parts together in the right order (even when the first part was posted last),
+and leaves the text files and images out of it.
+
+## Season-pack NZBs over 32 MB are accepted
+
+zurg refused any NZB larger than 32 MB sent through its SABnzbd endpoint,
+answering "request body too large". The NZBs for big season packs are often
+bigger than that: a 526 GB season came as a 49 MB NZB. zurg now accepts NZBs up
+to 256 MB. A 49 MB one with nearly half a million pieces loads in under half a
+minute.
+
+## Files from wrapped Usenet posts keep their real names
+
+Some posting tools wrap each filename in the subject line, as in
+`[PRiVATE]-[EnCrYpTnZb]-[Show - 48.mkv]-[3/4]`, and leave the usual quoted
+filename empty. zurg kept the wrapper as part of the name, so episodes were
+listed as `[PRiVATE]-[EnCrYpTnZb]-[Show - 48.mkv`, which Sonarr and media
+servers cannot match. zurg now takes the name out of the wrapper. Releases
+already in the library are re-read once to pick up the corrected names.
+
+## Downloads already reported failed no longer take repair slots from new ones
+
+Once zurg tells Radarr or Sonarr that a download failed, the client throws it
+away and looks for another. zurg kept trying to repair such downloads anyway,
+every time it restarted, and those pointless repairs could hold both of its
+repair slots while a fresh download that could still be saved waited. zurg now
+stops repairing a download once it has reported it failed.
+
+## Damage reports name every file
+
+When a Usenet release was missing pieces, zurg's failure message listed the
+damaged files by name, and a file the post itself never named showed up as a
+blank: "across 4 file(s): , , , ". Such a file is now listed by its place in
+the release, as in "file 12 of 73", so the message says which files are hit.
+
+## Stremio skips a release whose video starts with nothing
+
+When the start of a Usenet release's video is gone from the news servers,
+zurg filled it with silence and handed it to Stremio as if it were fine, so
+the player showed nothing and the film looked broken. zurg now looks at the
+first bytes before it starts playback. If there is nothing real there, it
+moves on to the next release in the list, the same way it already does for a
+release with nothing playable in it. A film with a gap somewhere later still
+plays.
+
+## Broken files stay in the library while zurg will still retry them
+
+When zurg could not repair a broken file on the first try, it took the file
+out of the mount, even when it was going to try again a day later. Plex reads
+a file that disappears as a deleted file, so a single library scan could move
+episodes, seasons and whole shows to the trash. Now a broken file stays in the
+mount for as long as zurg plans another repair attempt. It only leaves when
+zurg is sure the content is gone, for example when the service refuses the
+release outright or nothing playable is left in it.
+
+## Radarr and Sonarr search again when a release they grab twice is dead
+
+When the first release Radarr grabbed turned out to be dead, its next search
+often picked the same release from another indexer, under the same name. zurg
+filed that second grab under the job id of the first. Radarr and Sonarr
+remember every download they have seen fail by that id, so they treated the new
+grab as the old failure and never looked at it again: no failure, no blocklist,
+no new search. The movie simply stopped. In a run of the IMDb Top 100 through
+Radarr, 25 movies ended that way.
+
+A grab of a release zurg has already answered for now gets a job id of its own,
+the way SABnzbd itself names every download. When it is dead too, Radarr hears
+the second failure, blocklists it and searches again.
+
+## Dead Usenet releases are reported failed in minutes instead of up to half an hour
+
+zurg checks a grabbed release's articles before telling Radarr or Sonarr it
+finished, and it waits for the release's file sizes to settle before asking. A
+dead post is exactly the release whose sizes never arrive, so the check sat
+behind a thirty-minute wait while the client waited for news. Once zurg has
+tried and failed to learn a release's sizes, it now checks the articles straight
+away, and a release whose articles are gone is reported failed so the client
+moves on to another one.
+
+A release found damaged while being read was also held five minutes for a PAR2
+repair, even with `enable_repair: false`, where no repair ever starts. That wait
+is now skipped whenever no repair can run.
+
+In a run of the IMDb Top 100 through Radarr with more than half the grabbed
+releases dead, these two waits were most of the time a movie spent in zurg.
+
+## A release that turns out damaged during import is failed, so Radarr grabs another
+
+zurg checks one article per file before telling Radarr a release is ready, so a
+release with a gap in the middle of a file can pass. When Radarr's import then
+reached the gap, zurg refused to move the file, which is right, but it left the
+download looking unfinished instead of failed. Radarr parked the movie as
+"import blocked" and never looked for another copy. In a run of the IMDb Top
+100 through Radarr, five movies got stuck that way.
+
+The refused import now marks the download failed. Radarr blocklists that release
+and searches for a different one.
+
+## A fully obfuscated release no longer comes out with a nameless video file
+
+When a Usenet post hides every filename, zurg works out what the main file is
+from its first bytes and names it after the release, the way SABnzbd does. That
+check came last in a pass with a ninety-second limit, and when grabs arrived in
+a burst the limit could run out first. The video file was then published under
+the release's name with no extension at all, which Radarr and Sonarr skip, so
+the download sat in their queue waiting for a file they could import.
+
+A release is now named again, up to three times, until zurg has been able to
+look at the file, and only then shown to your library and your *arr. In a run
+of the IMDb Top 100 through Radarr this was Seven Samurai, a 42 GB .mkv.
+
+## Releases with accents or CJK in their filenames keep their whole names
+
+A release whose files are named with anything outside plain English letters came
+out of zurg with the front of every name missing. `Détective Conan S11E01 - 286
+[MULTI] [AVC].mkv` was served as `tective Conan S11E01 - 286 [MULTI] [AVC].mkv`,
+and a Chinese or Japanese title lost even more, because everything up to the last
+such character was dropped.
+
+Sonarr and Radarr could not do anything with what was left. A name like `tective
+Conan S11E01` matches no series, so they fell back to the download's grab history,
+refused to import on that alone, and parked the item with "release was matched to
+series by ID. Automatic import is not possible." The release sat in the queue and
+nothing moved it.
+
+It could also cost you files. When the only thing telling two files apart sits
+after the last accented character, both come out with the same name, and a name
+is a path. One French release with ten repair volumes had all ten reduced to the
+same name and published four files where the post holds thirteen, leaving the
+repair data with no way to reach it.
+
+zurg now reads every character above plain ASCII as part of the filename, which
+is what it always is: the part counters, the `yEnc` marker, the brackets and the
+file extensions posters write are all plain ASCII, so anything else belongs to
+the title. Releases named in plain ASCII are unaffected and come out exactly as
+before.
+
+Releases already in your library keep the names they were filed under, since
+zurg does not revisit a file list it has already recorded. Re-adding an affected
+release picks up the corrected names.
+
+## A name written in Japanese, Korean, Chinese, Thai or Arabic is left alone
+
+zurg renames a file inside an archive when its name says nothing about what it
+holds, so a release posted as a hash arrives under the release's own name
+instead. Deciding that meant weighing capital letters against lower case, and a
+great many scripts do not have either. A file called `오징어 게임 S01E01` counted
+zero of each, failed the test for an ordinary name, and was renamed as though it
+had been a hash, S01E01 and all. Han, kana, Hangul, Thai, Hebrew and Arabic were
+all affected.
+
+A letter with no upper or lower case now ends the question rather than failing
+it. Names in those scripts are kept as posted, and hashes are still renamed
+exactly as before.
+
+zurg also now says so in the log when two files in one release end up with the
+same name. A name is a path, so when that happens the release quietly offers
+fewer files than it holds and the extra ones cannot be opened at all. Nothing
+reported it before, which is why the accented-filename fault in the previous
+entry went unseen: the only evidence was a folder listing with fewer rows in it
+than expected.
+
+## The filename fixes now reach releases you already have
+
+The two entries above changed how zurg reads a filename out of a Usenet post,
+but zurg keeps the result of reading each NZB and reuses it at every start
+rather than working through your whole watch directory again. Those stored
+results were still the old ones, so after upgrading, a release you already had
+went on showing the same wrong name it had before. Only a newly added NZB got
+the corrected one.
+
+zurg now notices that it reads posts differently than the stored results were
+written with, and reads them again. The first start after upgrading re-reads
+every NZB in your watch directory once, which takes a little longer than usual
+and then goes back to normal. Nothing is re-downloaded and no articles are
+fetched; it is only re-reading files already on your disk.
+
+If a release was affected, its files come back under the names the post gave
+them. Your download client may still be holding the failed import from before,
+so a release that has been sitting in Sonarr or Radarr unable to import needs
+that queue item removed before it will try again.
+
+## Titles with punctuation in them keep their whole names too
+
+The filename fix further up this list stopped zurg cutting names at accented and
+Chinese characters. It did not go far enough. zurg decided what a filename was
+by listing the characters one is allowed to contain, and that list was missing
+twenty ordinary marks, so a title carrying one was cut at it in exactly the same
+way:
+
+    Tom & Jerry - The Movie.1992.1080p.mkv   ->   Jerry - The Movie.1992.1080p.mkv
+    Mairimashita! Iruma-kun (2026) [22].mp4  ->   Iruma-kun (2026) [22].mp4
+
+`!`, `&`, `#`, `$`, `%`, `@`, `~`, `;`, `=` and `^` all did it.
+
+Listing the characters a title may contain is a losing game, so zurg no longer
+tries. A name is a filename, and the only characters that certainly cannot be in
+one are those no filesystem accepts: `/ \ : * ? " < > |`. Everything else now
+belongs to the title.
+
+Checked against every NZB in a large watch directory: of the subjects that are
+a plain filename, almost every one that came out short before this change now
+keeps its whole name, and the only ones still shortened are an indexer's
+per-download stamp being removed, which is what should happen to it.
+
+## A release whose files were renamed picks the new names up on its own
+
+The filename fixes above changed what zurg calls the files inside a Usenet
+release, and a release already in your library did not always notice. zurg
+matches a release it already knows against a fresh listing by the link it stored
+for each file, and a Usenet link carries the file's position in the release. When
+a corrected name sorts differently from the old one, that position moves, the
+stored link no longer points at the same file, and there is nothing left to match
+on, so the old name stayed.
+
+It now falls back to the file's size, which does not change. Where exactly one
+file in the release has that size, it is that file and the name is taken. Where
+two files are the same size, nothing is renamed rather than guessing and filing
+one episode under another's name.
+
+Releases where the position did not move were already picking the new names up
+and are unaffected, and so is every non-Usenet backend, whose links do not move
+when a file is renamed.
+
+## A file the mount cannot read stops holding everything else up
+
+When a read failed for a reason zurg could not name, it told the client to try
+again, and kept telling it that for as long as the file kept failing. rclone
+takes that seriously: one read of such a file spent 55 seconds and three dozen
+requests before giving up, and because rclone slows down its whole connection to
+a server that keeps returning errors, the next healthy file took 3.66 seconds to
+open instead of 0.04.
+
+Now the retrying stops after a minute of the same failure. The read is answered
+the way a read of a broken file already was, the file keeps its place in your
+library listing, and the same read takes half a second.
+
+zurg still tries the download every time, so a file that comes back is picked up
+by the next read.
+
+## The mount stops downloading once you stop reading
+
+A library scan, a subtitle check or anything else that briefly touches a lot of
+files was pulling far more from your debrid account than it read.
+
+rclone 1.74 started keeping a file downloading for five seconds after the last
+program closed it. Nothing was waiting on those bytes, and on a fast account
+five seconds is a few hundred megabytes per file. Reading 1 MiB from each of
+twenty files pulled 4.2 GiB where it used to pull 80 MiB.
+
+zurg now turns that off. Mounts on rclone 1.73 and older are unaffected and
+unchanged, because the option does not exist there.
+
+If you run your own rclone rather than zurg's mount, add `--vfs-handle-caching 0`
+to your mount command on rclone 1.74 or newer. The README covers it.
+
+## A release that loses one archive volume no longer loses the rest
+
+Usenet releases posted as a multi part rar or 7z set could stop importing
+altogether. Sonarr and Radarr sat on "Waiting for import" and never moved off
+it, and the release's folder would turn up holding only the rar parts, or stop
+existing at all.
+
+When zurg could not read one volume of a set it put that volume aside and let
+the next listing go on without it. That listing found the set one volume short,
+stopped at the volume behind it and put that one aside too. A release lost its
+volumes one listing at a time, roughly one every ten minutes, and once it had
+none left it dropped out of the library and out of the folder the download
+client imports from. A path that is not there is not an empty folder to Sonarr,
+it is an import that fails forever.
+
+A volume known to be unreadable now stays in its set. Every listing stops at
+the same volume and says the same thing about it, so a release that is missing
+part of its post is reported as such once, and your client can blocklist it and
+go looking for another copy. Releases whose volumes are all readable are
+unaffected.
+
+## Scans follow the library into its new home under `__magic__`
+
+The mirror of your library moved from `__magic__` down to `__magic__/__all__` in
+2026.09.17.2240-nightly. Part of zurg went on naming the old spot.
+
+When a new release arrived, the scan zurg asked Plex or Jellyfin for pointed at
+a folder that had not existed since that release, so nothing was ever queued and
+new content waited for the media server's own scheduled scan. Anyone running an
+`on_library_update` script was handed the same path.
+
+Both now name the folder your download client was told to import from, and so
+does the listing zurg drops from the mount's cache when a release arrives or
+leaves.
+
 ## The watchlist can take torrents now, from Torznab indexers
 
 Until now a watchlist or Seerr request could only be satisfied from Usenet. Add
@@ -26,6 +1092,83 @@ empty is set aside so the next release gets its turn.
 
 You can also run acquisition with Torznab indexers alone, without an `nzb`
 provider.
+
+## An agent reading the library no longer calls every release empty
+
+zurg's MCP listings measure a release's size only when they are asked to,
+because walking the file table of a whole library costs real time. For the
+releases they had not measured they reported the size and the file count as
+zero, and nothing in the answer told a reader that zero meant "not measured"
+rather than "nothing there". An agent asked to list a directory would say a
+6.6 GB film held no files, while the tool for a single release had the right
+answer the whole time.
+
+A listing that did not measure now leaves both numbers out instead of
+reporting zero. Ask for them with `with_size`, by sorting on size, or with a
+size filter. `zurg_library_search` takes `with_size` as well, which it could
+not before, so getting sizes no longer costs you a narrowed or reordered
+result.
+
+## zurg doctor says whether the MCP endpoint is answering
+
+`zurg doctor` checked that the dashboard's port answered and stopped there,
+which says nothing about `/mcp`. An endpoint that the config switches on but
+the server then refuses to serve, which is what happens when `username` is
+empty, looked healthy from outside and explained itself in one line of the
+startup log and nowhere else.
+
+When `mcp.enabled` is set, `doctor` now speaks the protocol to `/mcp` and
+reports what came back: answering, refusing the configured credentials, or
+enabled but not served. An instance with the endpoint off is not asked about
+it and gets no line.
+
+## Opening the MCP endpoint in a browser now tells you what it is
+
+Loading `/mcp` in a browser answered "Bad Request: GET requires an
+Mcp-Session-Id header", which is a correct answer to a question nobody asked.
+The endpoint now describes itself when a browser opens it: what it speaks, the
+address to point a client at, the snippet for the stdio bridge, which build
+this is, and every tool it is currently offering, grouped by toolset and marked
+where a tool describes what it would do and waits to be confirmed.
+
+That list is what registration actually produced rather than a second copy kept
+by hand, so a tool withheld by `read_only`, by your toolsets or by the lifecycle
+switch is not advertised as one you can call. The page also says so when the
+endpoint is being served without authentication.
+
+No client is affected. The page is served only to a GET that asks for HTML and
+carries no session, which is a browser and never an MCP client, and a client's
+own GET opens the event stream exactly as before.
+
+## Usenet playback fills the connection allowance sooner
+
+Usenet reads now put the article at the playhead into the account scheduler
+before offering the rest of a requested range. When a large range is split
+across pipelined connections, consecutive articles are dealt across those
+connections instead of giving the first connection the first four, the second
+connection the next four, and so on. The first useful articles therefore come
+back in the first connection round rather than waiting behind later bytes.
+
+Small-article archive posts get a read-ahead window spanning at least 64 MiB;
+modern posts with multi-megabyte articles keep their existing window. The
+larger article count does not widen memory use: speculative bodies are limited
+to two readers and half of `cache_size_mb` (256 MiB at the default), while the
+article cache retains its existing hard limit. Playback-sized requests begin at
+64 MiB instead of 128 MiB, so a 90 MiB player buffer no longer falls onto the
+seek/probe path; small seeks still do.
+
+A stalled pipelined batch may hedge up to five distinct articles at once. The
+existing account limit of twenty second asks per minute is unchanged, and
+read-ahead, repairs and other work with no client blocked on it are still never
+hedged.
+
+Opening multi-volume archives is cheaper too. When PAR2 has already supplied
+the exact length of every volume, one volume's verified yEnc header can supply
+the common article stride for a large sibling set. Each sibling verifies that
+inference from its own header before serving its first byte, so resolution no
+longer pays one serial article per volume without trusting inferred geometry
+for data. Filename recovery likewise answers from the yEnc header instead of
+waiting for the rest of that article to download.
 
 ## Saved .strm files follow a Base URL change
 
@@ -110,7 +1253,7 @@ An install with no Usenet account has nothing to ask and is unaffected.
 Before a grab is reported finished, zurg asks the news servers about every file
 in it. It asked about one file at a time. Some accounts answer those questions
 slowly and strictly in turn, so sending them all at once down one connection is
-no faster. Frugal's newswest took over five seconds per file, which made a
+no faster. One provider's server took over five seconds per file, which made a
 133-volume 4K release about twelve minutes of questions, and every check is
 given five. The check could never finish, so Sonarr and Radarr waited three
 hours and then saw the grab failed, and the watchlist waited for ever.
@@ -165,7 +1308,7 @@ so it never read the reason and kept retrying an endpoint that had already
 said to wait an hour. It now recognises the lockout and stays off that endpoint
 until it clears.
 
-## __magic__ now mirrors your library at __magic__/__all__, leaving its root to you
+## `__magic__` now mirrors your library at `__magic__/__all__`, leaving its root to you
 
 The namespace used to mirror `__all__` at its own root, which made the folder a
 download client imports from the same folder every release already sits in. A

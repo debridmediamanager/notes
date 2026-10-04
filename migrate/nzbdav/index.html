@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844343888590">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844409366003">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844343888590" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844409366003" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844343888590" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844409366003" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -345,14 +345,39 @@ you organise anything.</p>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">mv &quot;/mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv&quot; \
    &quot;/mnt/zurg/__magic__/tv/The Show/Season 01/S01E01.mkv&quot;</code></pre>
 </doc-codeblock></div>
-<p><strong>If Sonarr and Radarr organised your old library then let them do it here
-too.</strong> That is what <code translate="no" v-pre>__magic__</code> is for and it replaces the symlink farm
-outright. Add <code translate="no" v-pre>__magic__/tv</code> and <code translate="no" v-pre>__magic__/movies</code> as <em>new</em> root folders. Then
-run a library import against them so the *arrs adopt what is already there.
-Never change an existing series or movie root folder to point into <code translate="no" v-pre>__magic__</code>.
-That makes the *arr move the files across the mount boundary. It is a copy and
-it downloads your library. The full sequence and the number to watch are on
-<a href="../#coming-off-a-symlink-library">the shared page</a>.</p>
+<p><strong>If Sonarr and Radarr organised your old library then move it in with one
+script.</strong> It renames every file the old library links to into a new root folder
+under <code translate="no" v-pre>__magic__</code>. Each one lands at the path the *arr already expects.
+Nothing is copied. Then you switch the *arr&#x27;s root folder without letting it
+move anything. The steps and the script are on
+<a href="../#coming-off-a-symlink-library">the shared page</a>. Never let an *arr
+move the files itself. That crosses the mount boundary. It is a copy and it
+downloads your library.</p>
+<p>The script needs a <code translate="no" v-pre>zurg_path</code> function for nzbdav&#x27;s links. Save this as
+<code translate="no" v-pre>zurg_path.sh</code> beside it and set <code translate="no" v-pre>OLDMOUNT</code> to where nzbdav is mounted.</p>
+<div id="cut-over-code-4" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">OLDMOUNT=/mnt/nzbdav            # nzbdav's mount, where the old links point
+# The map from each .ids name to its release and file. Built once while nzbdav runs.
+[ -s uuid-map.tsv ] || find &quot;$OLDMOUNT/completed-symlinks&quot; -type l | while IFS= read -r l; do
+  rel=${l#&quot;$OLDMOUNT&quot;/completed-symlinks/}      # &lt;category&gt;/&lt;release&gt;/&lt;file&gt;
+  printf '%s\t%s\n' &quot;$(basename &quot;$(readlink &quot;$l&quot;)&quot;)&quot; &quot;${rel#*/}&quot;
+done | sort -u &gt; uuid-map.tsv
+zurg_path() {
+  local rel release name videos
+  rel=$(awk -F'\t' -v u=&quot;$(basename &quot;$1&quot;)&quot; '$1==u{print $2; exit}' uuid-map.tsv)
+  [ -n &quot;$rel&quot; ] || return
+  [ -f &quot;$ZURG/__all__/$rel&quot; ] &amp;&amp; { echo &quot;$ZURG/__all__/$rel&quot;; return; }
+  # A file under another name. Take the release's one video.
+  release=${rel%%/*} name=${rel##*/}
+  case &quot;$name&quot; in &quot;$release&quot;.*) ;; *) return ;; esac
+  videos=$(find &quot;$ZURG/__all__/$release&quot; -type f \( -iname '*.mkv' -o -iname '*.mp4' -o -iname '*.avi' \) ! -ipath '*sample*')
+  [ &quot;$(printf '%s\n' &quot;$videos&quot; | grep -c .)&quot; -eq 1 ] &amp;&amp; echo &quot;$videos&quot;
+}</code></pre>
+</doc-codeblock></div>
+<p>nzbdav&#x27;s links point into its <code translate="no" v-pre>.ids</code> store and zurg has no such thing. So the
+function reads nzbdav&#x27;s <code translate="no" v-pre>completed-symlinks</code> tree once to learn which release
+and file each <code translate="no" v-pre>.ids</code> name stands for. Keep nzbdav running until the script is
+done. nzbdav renames nothing so every name it finds is one zurg serves.</p>
 <p><strong>4. Point Plex at the root folders you made</strong> — <code translate="no" v-pre>__magic__/tv</code> and
 <code translate="no" v-pre>__magic__/movies</code> — and at those only. Never the root of <code translate="no" v-pre>__magic__</code>, which
 holds the whole library at <code translate="no" v-pre>__magic__/__all__</code> as well, and never <code translate="no" v-pre>__magic__</code>
@@ -364,19 +389,23 @@ directly.</p>
 comes back through the GUID match. Collections and artwork choices do not.</p>
 <p>Leave nzbdav running until then. It costs nothing and it is your rollback. When
 you are done stop it.</p>
-<div id="cut-over-code-4" class="codeblock-wrapper"><doc-codeblock>
+<div id="cut-over-code-5" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo systemctl stop nzbdav</code></pre>
 </doc-codeblock></div>
 <h2 id="afterwards">Afterwards</h2>
 <p>Keep nzbdav&#x27;s config directory until you have streamed from a representative
 sample. It is the only other copy of your NZBs.</p>
-<p>Now think about acquisition. zurg has an opt-in
-<a href="../../guides/sonarr-radarr/">SABnzbd-compatible endpoint</a> that Sonarr and
-Radarr can grab through. It imports by rename inside <code translate="no" v-pre>__magic__</code> — out of
-<code translate="no" v-pre>__magic__/__all__</code> where the grab lands — rather than by copying. One caveat before you switch a library over. zurg does not yet check
-whether a post&#x27;s articles are still on the news server. So a dead release
-reports Completed and fails on the first read instead of being blocklisted and
-re-grabbed.</p>
+<p>Now think about acquisition. zurg has an opt-in <a href="../../guides/sonarr-radarr/">SABnzbd-compatible
+endpoint</a> that Sonarr and Radarr can grab through.
+It replaces nzbdav as their download client. The grab lands in
+<code translate="no" v-pre>__magic__/__all__</code> and the import moves it out by rename. Nothing is copied.
+zurg checks each grab before it reports it finished. It asks the news servers
+for the start and the end of every file. zurg rebuilds a release with any of
+that gone from its PAR2 files where it can. One it cannot rebuild is reported
+<strong>Failed</strong>. The *arr then blocklists it and grabs another. A post that lost a
+stretch further into a file still reports Completed and fails on the read that
+reaches the gap. Keep the *arrs&#x27; root folders inside <code translate="no" v-pre>__magic__</code>. A root
+folder anywhere else gets a full copy of every import.</p>
 
                 
                 <!-- Required only on API pages -->

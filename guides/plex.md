@@ -59,8 +59,8 @@
 - The client uses `discover.provider.plex.tv` and pages 100 items at a time.
   The Plex token is read fresh for each request, so re-authentication applies
   without restarting the adapter.
-- The shared Newznab executor acquires movies or each planned season, preferring
-  season packs. TV searches try TVDB before IMDb because indexer mappings differ.
+- The shared executor acquires movies or each planned season from Newznab and
+  Torznab indexers, preferring season packs. TV searches try TVDB before IMDb because indexer mappings differ.
 - Progress, retry deadlines and per-episode receipts survive restarts in
   `data/acquisition.json`. The earlier Plex ledger is imported automatically.
 - Removal follows acquisition of every planned target. Failed requests stay on

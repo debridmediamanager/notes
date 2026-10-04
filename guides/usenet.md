@@ -24,7 +24,7 @@ This guide goes end to end: news accounts, NZBs, the mount, Plex.
 
 - **At least one Usenet provider account.** Retention is what matters most — a 4000+ day provider will still have posts a 1000-day one has aged out. Your plan's *connection allowance* is the second number to know; it is what zurg reads at.
 - **More accounts, if you have them.** A second unlimited provider on a different backbone, or a cheap block account for the gaps, is the highest-value thing you can add to a Usenet setup — see [More than one Usenet provider](#more-than-one-usenet-provider).
-- **NZB files.** zurg does not search indexers. Download them from your indexer and drop them into `nzbs/` — or turn on the [SABnzbd-compatible endpoint](sonarr-radarr.md) and let Sonarr and Radarr hand them over, which writes into the same directory. The endpoint is opt-in and Usenet-only; there is no torrent equivalent.
+- **NZB files or something that fetches them.** Download them from your indexer and drop them into `nzbs/`. Or turn on the [SABnzbd-compatible endpoint](sonarr-radarr.md) and let Sonarr and Radarr hand them over. It writes into the same directory. zurg can also search your Newznab indexers by itself. It does that when you press play in [Stremio](stremio.md). It also does it for requests from your watchlist and from Seerr and the \*arrs through [acquisition](acquisition.md). Torrents for a debrid account have an endpoint of their own that speaks [qBittorrent](sonarr-radarr-torrents.md).
 - **zurg**, plus `rclone` if you want a filesystem mount rather than WebDAV directly. zurg downloads rclone for you on first run.
 
 ---
@@ -196,10 +196,9 @@ Usenet account block.example.com is not reachable: <reason>
 
 ## 3. Add NZB files
 
-Create the watch directory beside the zurg binary — **zurg does not create it for you**, and a missing one simply yields an empty library:
+zurg makes the `nzbs/` watch folder when it starts. It sits in the folder zurg runs from. Copy NZB files into it.
 
 ```bash
-mkdir -p nzbs
 cp ~/Downloads/Some.Release.2024.2160p.nzb nzbs/
 ```
 
@@ -269,7 +268,7 @@ Nothing else is needed. A protected release whose NZB carries no password meta c
 
 ### Obfuscated releases
 
-Posts whose filenames are random are handled, at a cost paid once at scan time. zurg tries the cheap source first — the filename an article still declares in its own yEnc header, one article per file — and falls back to the release's PAR2 index, which records each file's true name against the MD5 of its first 16 KiB. That first article also states the file's exact length, which is kept, so an obfuscated release is sized by the same articles that name it. It logs what it recovered:
+Posts whose filenames are random are handled, at a cost paid once at scan time. zurg tries the cheap source first — the filename an article still declares in its own yEnc header, one article per file — and falls back to the release's PAR2 index, which records each file's true name against the MD5 of its first 16 KiB. The name and exact length are both in the article's header, so the scan can answer as soon as that header arrives while the body continues into the cache for a later read. An obfuscated release is therefore named and sized by the same articles. It logs what it recovered:
 
 ```
 Recovered 27 filename(s) in Some.Release
@@ -362,8 +361,10 @@ pacer_min_sleep = 0
 ```
 
 ```bash
-rclone mount zurg: /mnt/zurg --config rclone.conf --dir-cache-time 10s
+rclone mount zurg: /mnt/zurg --config rclone.conf --dir-cache-time 10s --vfs-handle-caching 0
 ```
+
+`--vfs-handle-caching 0` needs rclone 1.74 or newer, and keeps rclone from downloading for five more seconds after a reader closes a file. The README explains what it costs to leave out.
 
 Still set `mount_path` in `config.yml` to wherever you mounted it, or media-server scan notifications are built from the wrong prefix.
 
@@ -426,7 +427,7 @@ Nothing here is Usenet-specific except the last subsection, but the order matter
    on_library_update: sh plex_update.sh "$@"
    ```
 
-**What Plex will not get from Usenet content:** no ffprobe-derived metadata from zurg (see section 4), so Plex does its own analysis on first play like it would for any local file. File sizes settle shortly after a release is scanned: the first listing may report a cheap estimate from the article count, and the exact length arrives behind it — from the recovery index where there is one, and otherwise from one article per file. Once it lands, the library is told the release changed, so the mount and Plex both see the real length.
+**What Plex will not get from Usenet content:** no ffprobe-derived metadata from zurg (see section 4), so Plex does its own analysis on first play like it would for any local file. File sizes settle shortly after a release is scanned: the first listing may report a cheap estimate from the article count, and the exact length arrives behind it — from the recovery index where there is one, and otherwise from one article per file. For a large multi-volume archive whose recovery index already states every exact length, one verified volume can establish the shared article stride; each sibling checks that inference against its own header before serving its first byte. Once a length lands, the library is told the release changed, so the mount and Plex both see the real length. zurg sizes up to eight releases at a time on an account of twelve connections or fewer and more on a larger one (twelve on 16 connections, sixteen from 20), and when acquisition is waiting to check a release with the news servers, that check is served before this sizing and before read-ahead, but never before a read a player is waiting on.
 
 ### Jellyfin / Emby / Infuse
 
@@ -479,16 +480,23 @@ Measured against a live Eweka account with 50 connections:
 | Single stream, out of a RAR set | 90–106 Mbit/s |
 | Two concurrent streams, aggregate | ~124 Mbit/s |
 
-The single-stream rate is set by the **connection allowance**, not by read-ahead depth — deeper read-ahead was measured and gained nothing. So:
+The connection allowance sets the first ceiling on single-stream rate. zurg keeps that allowance loaded by sizing read-ahead in both articles and bytes: small-article archive posts get at least 64 MiB of reach, while multi-megabyte posts keep the connection-and-pipeline window they already had. So:
 
 - **Set `connections` to your plan's real number.** This is the tuning knob. Eight connections will not stream a remux.
 - **Two primary accounts add up.** Reads are driven at the combined allowance of every non-`backup` account, so a second unlimited provider raises the ceiling as well as covering the first one's retention gaps. A `backup` account does not count toward it.
 - **`warm_connections` (2 by default) buys latency, not throughput.** It holds that many connections open, idle and authenticated, so the first read after a start or a quiet spell does not spend ~0.8s dialling before its first byte: 1.5s to first byte cold against 0.15s warm. Once a stream is running it changes nothing.
 - **The dials that do happen stick to one backend, so their TLS sessions resume.** A dial costs about 0.8s — measured against news.frugalusenet.com on 2026-08-29: 106ms TCP, 213ms TLS handshake, 256ms greeting, 218ms for the two `AUTHINFO` exchanges. A provider hostname is a rotation (that one resolves to 11 addresses) and a TLS session ticket is only good at the machine that issued it, so redialling whichever address the resolver named first resumed **0 of 3** sessions while redialling the same address resumed **3 of 3**. Each account now redials the address its last connection came from, which takes **110–140ms off every redial** there — a resumed handshake is 109–141ms against 225–261ms for a full one. Eweka's round trip is ~18ms, so the saving on it is smaller. The pin is dropped and the name resolved again as soon as that address stops answering, so nothing is stuck to a machine the provider has retired; a refusal that reaches NNTP — the account at its connection ceiling, a rejected password — keeps it, because that is the account's answer and not the backend's. Each dial logs its phases at debug level, `resumed=` included.
-- `cache_size_mb` (512 default) is shared across every file being read. Raise it if you run several concurrent streams; it does not make one stream faster.
+- `cache_size_mb` (512 default) is shared across every file being read. Raise it if you run several concurrent streams; it does not make one stream faster. Speculative reads may reserve at most half of it across at most two readers, leaving the other half for articles already consumed or about to be consumed.
 - Whether a release is RAR-packed or posted as plain files no longer matters much for throughput.
 
-**One slow article no longer stalls the stream.** A sequential read averaging ~90 MB/s still dips to 1–5 MB/s for about a second at a time, and every one of those dips is the same thing: a single article stops arriving while the other connections finish theirs and go idle, and the read cannot ask for anything further because everything it schedules is measured from the article it is stuck on. When a read has been standing on one article for longer than that reader has learned to expect, zurg now asks a **second connection** for the same article and serves whichever answer arrives first. The bounds are deliberately tight, because a second ask is by definition load the account did not need: the deadline is twice the reader's own recent wait, never under 250 ms and never over 2 s; a reader hedges one article at a time and never the same article twice; an account pays for at most 20 of them a minute; and only a read a client is actually waiting on is ever hedged — read-ahead, the next-volume prefetch and repair are not. An article the servers have just *refused* is not hedged either: that one is already waiting on its own confirmation a second later, and asking inside that window proves nothing. Each hedge writes one line at debug level saying how long the read had blocked, and the line that follows says whether the second ask won.
+**One slow article no longer stalls the stream.** A sequential read averaging ~90 MB/s still dips to 1–5 MB/s for about a second at a time, and every one of those dips is the same thing: an article stops arriving while the other connections finish theirs and go idle. When a read has been standing on one article for longer than that reader has learned to expect, zurg asks a **second connection** for the same article and serves whichever answer arrives first. A stalled pipelined batch may block several consecutive playhead articles on the same dead socket, so up to five distinct articles from one reader may now be hedged together; one is never asked twice. The account still pays for at most 20 second asks a minute. The deadline remains twice the reader's own recent wait, never under 250 ms and never over 2 s, and only a read a client is actually waiting on is hedged — read-ahead, next-volume prefetch and repair are not. An article the servers have just *refused* is not hedged either: that one is already waiting on its own confirmation a second later, and asking inside that window proves nothing. Each hedge writes one line at debug level saying how long the read had blocked, and the line that follows says whether the second ask won.
+
+For declared ranges, the playhead article enters the priority scheduler before
+later bytes are offered. Pipelined connections are then dealt consecutive
+article rounds rather than contiguous chunks, so the first useful articles are
+spread across the allowance. A request of at least 64 MiB is treated as
+playback and gets the full range frontier; a small seek remains a probe and
+opens only a narrow ramp.
 
 ### Crossing a volume boundary
 

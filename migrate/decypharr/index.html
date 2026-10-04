@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844343888590">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844409366003">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844343888590" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844409366003" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844343888590" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844409366003" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -229,10 +229,9 @@ at decypharr&#x27;s mountpoint. Everything below is about the Usenet side.</p>
 <p>Two things to settle before you start.</p>
 <ul>
 <li>
-<p><strong>Providers.</strong> zurg speaks <code translate="no" v-pre>realdebrid</code> and <code translate="no" v-pre>alldebrid</code> and <code translate="no" v-pre>torbox</code> and
-<code translate="no" v-pre>nzb</code>. decypharr additionally supports Debrid-Link and Premiumize and zurg
-has no backend for either. Content held only on those accounts cannot be
-served by zurg. Re-acquire it on a supported account or accept losing it.</p>
+<p><strong>Providers.</strong> They do not limit the migration. zurg has a backend for
+every service decypharr supports. Premiumize and Debrid-Link accounts come
+across like the rest. Each has a page under <a href="../../providers/">Providers</a>.</p>
 </li>
 <li>
 <p><strong>Do not change decypharr&#x27;s <code translate="no" v-pre>folder_naming</code> before migrating.</strong> It renames
@@ -419,7 +418,8 @@ diff decypharr-jobs.txt zurg-jobs.txt</code></pre>
 or absent. The RD rename shows up instead of the original. In that case flip
 <code translate="no" v-pre>retain_rd_torrent_name</code> or <code translate="no" v-pre>retain_folder_name_extension</code> and rescan rather
 than fixing anything by hand. Folders only on the decypharr side are the Usenet
-jobs plus anything on a Debrid-Link or Premiumize account.</p>
+jobs. Premiumize and Debrid-Link folder names were not compared against
+decypharr&#x27;s. Check those accounts&#x27; folders here too.</p>
 <h2 id="cut-over">Cut over</h2>
 <p>One path whatever you have today. Nothing here moves bytes.</p>
 <p><strong>1. Turn on <code translate="no" v-pre>__magic__</code></strong> and restart. The routes are registered at startup so
@@ -443,14 +443,38 @@ you organise anything.</p>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">mv &quot;/mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv&quot; \
    &quot;/mnt/zurg/__magic__/tv/The Show/Season 01/S01E01.mkv&quot;</code></pre>
 </doc-codeblock></div>
-<p><strong>If Sonarr and Radarr organised your old library then let them do it here
-too.</strong> That is what <code translate="no" v-pre>__magic__</code> is for and it replaces the symlink farm
-outright. Add <code translate="no" v-pre>__magic__/tv</code> and <code translate="no" v-pre>__magic__/movies</code> as <em>new</em> root folders. Then
-run a library import against them so the *arrs adopt what is already there.
-Never change an existing series or movie root folder to point into <code translate="no" v-pre>__magic__</code>.
-That makes the *arr move the files across the mount boundary. It is a copy and
-it downloads your library. The full sequence and the number to watch are on
-<a href="../#coming-off-a-symlink-library">the shared page</a>.</p>
+<p><strong>If Sonarr and Radarr organised your old library then move it in with one
+script.</strong> It renames every file the old library links to into a new root folder
+under <code translate="no" v-pre>__magic__</code>. Each one lands at the path the *arr already expects.
+Nothing is copied. Then you switch the *arr&#x27;s root folder without letting it
+move anything. The steps and the script are on
+<a href="../#coming-off-a-symlink-library">the shared page</a>. Never let an *arr
+move the files itself. That crosses the mount boundary. It is a copy and it
+downloads your library.</p>
+<p>The script needs a <code translate="no" v-pre>zurg_path</code> function for decypharr&#x27;s links. Save this as
+<code translate="no" v-pre>zurg_path.sh</code> beside it and set <code translate="no" v-pre>OLDMOUNT</code> to where decypharr is mounted.</p>
+<div id="cut-over-code-4" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">OLDMOUNT=/mnt/decypharr         # decypharr's mount, where the old links point
+zurg_path() {
+  local rel=${1#&quot;$OLDMOUNT&quot;/__all__/}
+  [ &quot;$rel&quot; = &quot;$1&quot; ] &amp;&amp; return   # not a link into decypharr
+  local job=${rel%%/*} name=${1##*/} f videos
+  [ -f &quot;$ZURG/__all__/$rel&quot; ] &amp;&amp; { echo &quot;$ZURG/__all__/$rel&quot;; return; }
+  # decypharr welded an archive's inner folder and file into one name.
+  for f in &quot;$ZURG/__all__/$job&quot;/*/*; do
+    [ &quot;$(basename &quot;$(dirname &quot;$f&quot;)&quot;)$(basename &quot;$f&quot;)&quot; = &quot;$name&quot; ] &amp;&amp; { echo &quot;$f&quot;; return; }
+  done
+  # decypharr named a lone video after the job. Take the job's one video.
+  case &quot;$name&quot; in &quot;$job&quot;.*) ;; *) return ;; esac
+  videos=$(find &quot;$ZURG/__all__/$job&quot; -type f \( -iname '*.mkv' -o -iname '*.mp4' -o -iname '*.avi' \) ! -ipath '*sample*')
+  [ &quot;$(printf '%s\n' &quot;$videos&quot; | grep -c .)&quot; -eq 1 ] &amp;&amp; echo &quot;$videos&quot;
+}</code></pre>
+</doc-codeblock></div>
+<p>A link into a debrid release or a multi-file NZB release names the same file on
+both servers. decypharr renamed two kinds of NZB release. It named a lone video
+after the job and it welded an archive&#x27;s folder and file into one name. The
+function finds zurg&#x27;s copy of both. A job with more than one video is never
+guessed at. It prints <code translate="no" v-pre>NOT IN ZURG</code> instead.</p>
 <p><strong>4. Point Plex at the root folders you made</strong> — <code translate="no" v-pre>__magic__/tv</code> and
 <code translate="no" v-pre>__magic__/movies</code> — and at those only. Never the root of <code translate="no" v-pre>__magic__</code>, which
 holds the whole library at <code translate="no" v-pre>__magic__/__all__</code> as well, and never <code translate="no" v-pre>__magic__</code>
@@ -463,7 +487,7 @@ comes back through the GUID match. Collections and artwork choices do not.</p>
 <p>Leave decypharr running until then. It costs nothing and it is your rollback.
 Do not delete its config or <code translate="no" v-pre>db/</code> or <code translate="no" v-pre>usenet/</code> state either. When you are done
 stop it.</p>
-<div id="cut-over-code-4" class="codeblock-wrapper"><doc-codeblock>
+<div id="cut-over-code-5" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo systemctl stop decypharr</code></pre>
 </doc-codeblock></div>
 <h2 id="afterwards">Afterwards</h2>
@@ -475,18 +499,31 @@ can hand it a magnet or a <code translate="no" v-pre>.torrent</code> for a debri
 <code translate="no" v-pre>__magic__/__all__</code> by rename. Your options.</p>
 <ul>
 <li>
-<p><strong>NZBs.</strong> Turn on <code translate="no" v-pre>sabnzbd.enabled</code> and point the *arrs at zurg. The caveat
-is that zurg does not yet check whether a post&#x27;s articles are still on the
-news server. So a dead release reports Completed and fails on the first read
-instead of being blocklisted and re-grabbed.</p>
+<p><strong>NZBs.</strong> Turn on <code translate="no" v-pre>sabnzbd.enabled</code> and point the *arrs at zurg. zurg checks
+each grab before it reports it finished. It asks the news servers for the
+start and the end of every file. zurg rebuilds a release with any of that
+gone from its PAR2 files where it can. One it cannot rebuild is reported
+<strong>Failed</strong>. The *arr then blocklists it and grabs another. A post that lost
+a stretch further into a file still reports Completed and fails on the read
+that reaches the gap.</p>
 </li>
 <li>
 <p><strong>Torrents.</strong> Turn on <code translate="no" v-pre>qbittorrent.enabled</code> and add it as a second download
 client. A private tracker&#x27;s release works when the indexer hands out a
 <code translate="no" v-pre>.torrent</code> file rather than a bare magnet, because the file keys the account&#x27;s
-cache lookup by hash directly. The zurg dashboard, DMM and Plex watchlist
-acquisition are still there for one-off adds; that last one is the
-<code translate="no" v-pre>watchlist:</code> block, which searches your own Newznab indexers.</p>
+cache lookup by hash directly.</p>
+</li>
+<li>
+<p><strong>One-off adds.</strong> zurg&#x27;s dashboard has no add button. Add a magnet or a
+<code translate="no" v-pre>.torrent</code> through the qBittorrent endpoint with one *arr&#x27;s category and it
+goes to that *arr.
+<a href="../../guides/sonarr-radarr-torrents/#11-adding-a-release-by-hand">Adding a release by hand</a>
+shows how. A magnet added through DMM and an NZB dropped into <code translate="no" v-pre>nzbs/</code> both
+list in zurg. Neither reaches Sonarr or Radarr on its own. zurg&#x27;s own
+<a href="../../guides/acquisition/">acquisition</a> also fetches requests by itself.
+They come from your Plex watchlist and from Seerr and the *arrs. It takes
+NZBs from Newznab indexers and torrents from Torznab indexers when your
+account already has them cached.</p>
 </li>
 <li>
 <p><strong>Hybrid.</strong> Keep decypharr purely as the *arrs&#x27; download client pushing into

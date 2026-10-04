@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844343888590">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844409366003">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844343888590" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844409366003" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844343888590" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844409366003" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -418,14 +418,35 @@ you organise anything.</p>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">mv &quot;/mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv&quot; \
    &quot;/mnt/zurg/__magic__/tv/The Show/Season 01/S01E01.mkv&quot;</code></pre>
 </doc-codeblock></div>
-<p><strong>If Sonarr and Radarr organised your old library then let them do it here
-too.</strong> That is what <code translate="no" v-pre>__magic__</code> is for and it replaces the symlink farm
-outright. Add <code translate="no" v-pre>__magic__/tv</code> and <code translate="no" v-pre>__magic__/movies</code> as <em>new</em> root folders. Then
-run a library import against them so the *arrs adopt what is already there.
-Never change an existing series or movie root folder to point into <code translate="no" v-pre>__magic__</code>.
-That makes the *arr move the files across the mount boundary. It is a copy and
-it downloads your library. The full sequence and the number to watch are on
-<a href="../#coming-off-a-symlink-library">the shared page</a>.</p>
+<p><strong>If Sonarr and Radarr organised your old library then move it in with one
+script.</strong> It renames every file the old library links to into a new root folder
+under <code translate="no" v-pre>__magic__</code>. Each one lands at the path the *arr already expects.
+Nothing is copied. Then you switch the *arr&#x27;s root folder without letting it
+move anything. The steps and the script are on
+<a href="../#coming-off-a-symlink-library">the shared page</a>. Never let an *arr
+move the files itself. That crosses the mount boundary. It is a copy and it
+downloads your library.</p>
+<p>The script needs a <code translate="no" v-pre>zurg_path</code> function for AltMount&#x27;s links. Save this as
+<code translate="no" v-pre>zurg_path.sh</code> beside it and set <code translate="no" v-pre>OLDMOUNT</code> to where AltMount is mounted.</p>
+<div id="cut-over-code-4" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">OLDMOUNT=/mnt/altmount          # AltMount's mount, where the old links point
+zurg_path() {
+  case &quot;$1&quot; in &quot;$OLDMOUNT&quot;/*) ;; *) return ;; esac   # not a link into AltMount
+  local name=${1##*/} f videos
+  local release; release=$(basename &quot;$(dirname &quot;$1&quot;)&quot;)
+  [ -f &quot;$ZURG/__all__/$release/$name&quot; ] &amp;&amp; { echo &quot;$ZURG/__all__/$release/$name&quot;; return; }
+  # AltMount named a lone video or an unpacked archive after the release. Take its one video.
+  case &quot;$name&quot; in &quot;$release&quot;.*) ;; *) return ;; esac
+  videos=$(find &quot;$ZURG/__all__/$release&quot; -type f \( -iname '*.mkv' -o -iname '*.mp4' -o -iname '*.avi' \) ! -ipath '*sample*')
+  [ &quot;$(printf '%s\n' &quot;$videos&quot; | grep -c .)&quot; -eq 1 ] &amp;&amp; echo &quot;$videos&quot;
+}</code></pre>
+</doc-codeblock></div>
+<p>The function expects the release folder just above the file in each link&#x27;s
+target. The exact path AltMount&#x27;s links use was not checked for this guide. Run
+<code translate="no" v-pre>readlink</code> on one link first. Where AltMount named a lone video or an unpacked
+archive after the release the function takes the one video zurg serves in that
+release. A release with more than one video is never guessed at. It prints
+<code translate="no" v-pre>NOT IN ZURG</code> instead.</p>
 <p><strong>4. Point Plex at the root folders you made</strong> — <code translate="no" v-pre>__magic__/tv</code> and
 <code translate="no" v-pre>__magic__/movies</code> — and at those only. Never the root of <code translate="no" v-pre>__magic__</code>, which
 holds the whole library at <code translate="no" v-pre>__magic__/__all__</code> as well, and never <code translate="no" v-pre>__magic__</code>
@@ -437,19 +458,23 @@ directly.</p>
 comes back through the GUID match. Collections and artwork choices do not.</p>
 <p>Leave AltMount running until then. It costs nothing and it is your rollback.
 When you are done stop it.</p>
-<div id="cut-over-code-4" class="codeblock-wrapper"><doc-codeblock>
+<div id="cut-over-code-5" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo systemctl stop altmount</code></pre>
 </doc-codeblock></div>
 <h2 id="afterwards">Afterwards</h2>
 <p>Do not decommission AltMount until you have streamed from a representative
 sample. Its config directory holds the <code translate="no" v-pre>.nzbz</code> store and that is the only other
 copy of your NZBs.</p>
-<p>Now think about acquisition. zurg has an opt-in
-<a href="../../guides/sonarr-radarr/">SABnzbd-compatible endpoint</a> that Sonarr and
-Radarr can grab through. One caveat before you switch a library over. zurg does
-not yet check whether a post&#x27;s articles are still on the news server. So a dead
-release reports Completed and fails on the first read rather than being
-blocklisted and re-grabbed.</p>
+<p>Now think about acquisition. zurg has an opt-in <a href="../../guides/sonarr-radarr/">SABnzbd-compatible
+endpoint</a> that Sonarr and Radarr can grab through.
+It replaces AltMount as their download client. zurg checks each grab before it
+reports it finished. It asks the news servers for the start and the end of
+every file. zurg rebuilds a release with any of that gone from its PAR2 files
+where it can. One it cannot rebuild is reported <strong>Failed</strong>. The *arr then
+blocklists it and grabs another. A post that lost a stretch further into a file
+still reports Completed and fails on the read that reaches the gap. Keep the
+*arrs&#x27; root folders inside <code translate="no" v-pre>__magic__</code>. A root folder anywhere else gets a
+full copy of every import.</p>
 
                 
                 <!-- Required only on API pages -->

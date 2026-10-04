@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844343888590">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844409366003">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844343888590" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844409366003" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844343888590" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844409366003" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -238,7 +238,7 @@
 <ul>
 <li><strong>At least one Usenet provider account.</strong> Retention is what matters most — a 4000+ day provider will still have posts a 1000-day one has aged out. Your plan&#x27;s <em>connection allowance</em> is the second number to know; it is what zurg reads at.</li>
 <li><strong>More accounts, if you have them.</strong> A second unlimited provider on a different backbone, or a cheap block account for the gaps, is the highest-value thing you can add to a Usenet setup — see <doc-anchor-trigger to="#more-than-one-usenet-provider">More than one Usenet provider</doc-anchor-trigger>.</li>
-<li><strong>NZB files.</strong> zurg does not search indexers. Download them from your indexer and drop them into <code translate="no" v-pre>nzbs/</code> — or turn on the <a href="../sonarr-radarr/">SABnzbd-compatible endpoint</a> and let Sonarr and Radarr hand them over, which writes into the same directory. The endpoint is opt-in and Usenet-only; there is no torrent equivalent.</li>
+<li><strong>NZB files or something that fetches them.</strong> Download them from your indexer and drop them into <code translate="no" v-pre>nzbs/</code>. Or turn on the <a href="../sonarr-radarr/">SABnzbd-compatible endpoint</a> and let Sonarr and Radarr hand them over. It writes into the same directory. zurg can also search your Newznab indexers by itself. It does that when you press play in <a href="../stremio/">Stremio</a>. It also does it for requests from your watchlist and from Seerr and the *arrs through <a href="../acquisition/">acquisition</a>. Torrents for a debrid account have an endpoint of their own that speaks <a href="../sonarr-radarr-torrents/">qBittorrent</a>.</li>
 <li><strong>zurg</strong>, plus <code translate="no" v-pre>rclone</code> if you want a filesystem mount rather than WebDAV directly. zurg downloads rclone for you on first run.</li>
 </ul>
 <hr>
@@ -460,10 +460,9 @@ providers:
 </doc-codeblock></div>
 <hr>
 <h2 id="3-add-nzb-files">3. Add NZB files</h2>
-<p>Create the watch directory beside the zurg binary — <strong>zurg does not create it for you</strong>, and a missing one simply yields an empty library:</p>
+<p>zurg makes the <code translate="no" v-pre>nzbs/</code> watch folder when it starts. It sits in the folder zurg runs from. Copy NZB files into it.</p>
 <div id="3-add-nzb-files-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p nzbs
-cp ~/Downloads/Some.Release.2024.2160p.nzb nzbs/</code></pre>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cp ~/Downloads/Some.Release.2024.2160p.nzb nzbs/</code></pre>
 </doc-codeblock></div>
 <p>Within a second or two zurg notices the file and reads it, and the library lists it as soon as the read finishes. The log says what it read:</p>
 <div id="3-add-nzb-files-code-2" class="codeblock-wrapper"><doc-codeblock>
@@ -517,7 +516,7 @@ nzbs/nzbgeek_download_48213.nzb</code></pre>
 </doc-codeblock></div>
 <p>Nothing else is needed. A protected release whose NZB carries no password meta cannot be opened.</p>
 <h3 id="obfuscated-releases">Obfuscated releases</h3>
-<p>Posts whose filenames are random are handled, at a cost paid once at scan time. zurg tries the cheap source first — the filename an article still declares in its own yEnc header, one article per file — and falls back to the release&#x27;s PAR2 index, which records each file&#x27;s true name against the MD5 of its first 16 KiB. That first article also states the file&#x27;s exact length, which is kept, so an obfuscated release is sized by the same articles that name it. It logs what it recovered:</p>
+<p>Posts whose filenames are random are handled, at a cost paid once at scan time. zurg tries the cheap source first — the filename an article still declares in its own yEnc header, one article per file — and falls back to the release&#x27;s PAR2 index, which records each file&#x27;s true name against the MD5 of its first 16 KiB. The name and exact length are both in the article&#x27;s header, so the scan can answer as soon as that header arrives while the body continues into the cache for a later read. An obfuscated release is therefore named and sized by the same articles. It logs what it recovered:</p>
 <div id="obfuscated-releases-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-none"><code v-pre class="language-none">Recovered 27 filename(s) in Some.Release</code></pre>
 </doc-codeblock></div>
@@ -587,8 +586,9 @@ vendor = other
 pacer_min_sleep = 0</code></pre>
 </doc-codeblock></div>
 <div id="the-manual-path-your-own-rclone-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">rclone mount zurg: /mnt/zurg --config rclone.conf --dir-cache-time 10s</code></pre>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">rclone mount zurg: /mnt/zurg --config rclone.conf --dir-cache-time 10s --vfs-handle-caching 0</code></pre>
 </doc-codeblock></div>
+<p><code translate="no" v-pre>--vfs-handle-caching 0</code> needs rclone 1.74 or newer, and keeps rclone from downloading for five more seconds after a reader closes a file. The README explains what it costs to leave out.</p>
 <p>Still set <code translate="no" v-pre>mount_path</code> in <code translate="no" v-pre>config.yml</code> to wherever you mounted it, or media-server scan notifications are built from the wrong prefix.</p>
 <h3 id="docker">Docker</h3>
 <p>zurg&#x27;s working directory in the image is <code translate="no" v-pre>/config</code>, and the watch directory and the repair cache both sit under it. One bind mount carries them along with everything else:</p>
@@ -647,7 +647,7 @@ curl -s &quot;http://localhost:32400/library/sections?X-Plex-Token=$TOKEN&quot; 
 </doc-codeblock></div>
 </li>
 </ol>
-<p><strong>What Plex will not get from Usenet content:</strong> no ffprobe-derived metadata from zurg (see section 4), so Plex does its own analysis on first play like it would for any local file. File sizes settle shortly after a release is scanned: the first listing may report a cheap estimate from the article count, and the exact length arrives behind it — from the recovery index where there is one, and otherwise from one article per file. Once it lands, the library is told the release changed, so the mount and Plex both see the real length.</p>
+<p><strong>What Plex will not get from Usenet content:</strong> no ffprobe-derived metadata from zurg (see section 4), so Plex does its own analysis on first play like it would for any local file. File sizes settle shortly after a release is scanned: the first listing may report a cheap estimate from the article count, and the exact length arrives behind it — from the recovery index where there is one, and otherwise from one article per file. For a large multi-volume archive whose recovery index already states every exact length, one verified volume can establish the shared article stride; each sibling checks that inference against its own header before serving its first byte. Once a length lands, the library is told the release changed, so the mount and Plex both see the real length. zurg sizes up to eight releases at a time on an account of twelve connections or fewer and more on a larger one (twelve on 16 connections, sixteen from 20), and when acquisition is waiting to check a release with the news servers, that check is served before this sizing and before read-ahead, but never before a read a player is waiting on.</p>
 <h3 id="jellyfin--emby--infuse">Jellyfin / Emby / Infuse</h3>
 <p>Jellyfin and Emby take <code translate="no" v-pre>jellyfin_server_url</code> / <code translate="no" v-pre>jellyfin_token</code> and <code translate="no" v-pre>emby_server_url</code> / <code translate="no" v-pre>emby_token</code> and get the same scan notifications; see <a href="../jellyfin/">jellyfin.md</a>. Infuse can point at <code translate="no" v-pre>http://&lt;host&gt;:9999/dav/</code> directly and skip rclone entirely.</p>
 <hr>
@@ -709,16 +709,22 @@ PAR2 repair of Some.Release rebuilt 5 slice(s) in 55s, keeping 3.4 MiB of them (
 </table>
 </div>
 </retype-table>
-<p>The single-stream rate is set by the <strong>connection allowance</strong>, not by read-ahead depth — deeper read-ahead was measured and gained nothing. So:</p>
+<p>The connection allowance sets the first ceiling on single-stream rate. zurg keeps that allowance loaded by sizing read-ahead in both articles and bytes: small-article archive posts get at least 64 MiB of reach, while multi-megabyte posts keep the connection-and-pipeline window they already had. So:</p>
 <ul>
 <li><strong>Set <code translate="no" v-pre>connections</code> to your plan&#x27;s real number.</strong> This is the tuning knob. Eight connections will not stream a remux.</li>
 <li><strong>Two primary accounts add up.</strong> Reads are driven at the combined allowance of every non-<code translate="no" v-pre>backup</code> account, so a second unlimited provider raises the ceiling as well as covering the first one&#x27;s retention gaps. A <code translate="no" v-pre>backup</code> account does not count toward it.</li>
 <li><strong><code translate="no" v-pre>warm_connections</code> (2 by default) buys latency, not throughput.</strong> It holds that many connections open, idle and authenticated, so the first read after a start or a quiet spell does not spend ~0.8s dialling before its first byte: 1.5s to first byte cold against 0.15s warm. Once a stream is running it changes nothing.</li>
 <li><strong>The dials that do happen stick to one backend, so their TLS sessions resume.</strong> A dial costs about 0.8s — measured against news.frugalusenet.com on 2026-08-29: 106ms TCP, 213ms TLS handshake, 256ms greeting, 218ms for the two <code translate="no" v-pre>AUTHINFO</code> exchanges. A provider hostname is a rotation (that one resolves to 11 addresses) and a TLS session ticket is only good at the machine that issued it, so redialling whichever address the resolver named first resumed <strong>0 of 3</strong> sessions while redialling the same address resumed <strong>3 of 3</strong>. Each account now redials the address its last connection came from, which takes <strong>110–140ms off every redial</strong> there — a resumed handshake is 109–141ms against 225–261ms for a full one. Eweka&#x27;s round trip is ~18ms, so the saving on it is smaller. The pin is dropped and the name resolved again as soon as that address stops answering, so nothing is stuck to a machine the provider has retired; a refusal that reaches NNTP — the account at its connection ceiling, a rejected password — keeps it, because that is the account&#x27;s answer and not the backend&#x27;s. Each dial logs its phases at debug level, <code translate="no" v-pre>resumed=</code> included.</li>
-<li><code translate="no" v-pre>cache_size_mb</code> (512 default) is shared across every file being read. Raise it if you run several concurrent streams; it does not make one stream faster.</li>
+<li><code translate="no" v-pre>cache_size_mb</code> (512 default) is shared across every file being read. Raise it if you run several concurrent streams; it does not make one stream faster. Speculative reads may reserve at most half of it across at most two readers, leaving the other half for articles already consumed or about to be consumed.</li>
 <li>Whether a release is RAR-packed or posted as plain files no longer matters much for throughput.</li>
 </ul>
-<p><strong>One slow article no longer stalls the stream.</strong> A sequential read averaging ~90 MB/s still dips to 1–5 MB/s for about a second at a time, and every one of those dips is the same thing: a single article stops arriving while the other connections finish theirs and go idle, and the read cannot ask for anything further because everything it schedules is measured from the article it is stuck on. When a read has been standing on one article for longer than that reader has learned to expect, zurg now asks a <strong>second connection</strong> for the same article and serves whichever answer arrives first. The bounds are deliberately tight, because a second ask is by definition load the account did not need: the deadline is twice the reader&#x27;s own recent wait, never under 250 ms and never over 2 s; a reader hedges one article at a time and never the same article twice; an account pays for at most 20 of them a minute; and only a read a client is actually waiting on is ever hedged — read-ahead, the next-volume prefetch and repair are not. An article the servers have just <em>refused</em> is not hedged either: that one is already waiting on its own confirmation a second later, and asking inside that window proves nothing. Each hedge writes one line at debug level saying how long the read had blocked, and the line that follows says whether the second ask won.</p>
+<p><strong>One slow article no longer stalls the stream.</strong> A sequential read averaging ~90 MB/s still dips to 1–5 MB/s for about a second at a time, and every one of those dips is the same thing: an article stops arriving while the other connections finish theirs and go idle. When a read has been standing on one article for longer than that reader has learned to expect, zurg asks a <strong>second connection</strong> for the same article and serves whichever answer arrives first. A stalled pipelined batch may block several consecutive playhead articles on the same dead socket, so up to five distinct articles from one reader may now be hedged together; one is never asked twice. The account still pays for at most 20 second asks a minute. The deadline remains twice the reader&#x27;s own recent wait, never under 250 ms and never over 2 s, and only a read a client is actually waiting on is hedged — read-ahead, next-volume prefetch and repair are not. An article the servers have just <em>refused</em> is not hedged either: that one is already waiting on its own confirmation a second later, and asking inside that window proves nothing. Each hedge writes one line at debug level saying how long the read had blocked, and the line that follows says whether the second ask won.</p>
+<p>For declared ranges, the playhead article enters the priority scheduler before
+later bytes are offered. Pipelined connections are then dealt consecutive
+article rounds rather than contiguous chunks, so the first useful articles are
+spread across the allowance. A request of at least 64 MiB is treated as
+playback and gets the full range frontier; a small seek remains a probe and
+opens only a narrow ramp.</p>
 <h3 id="crossing-a-volume-boundary">Crossing a volume boundary</h3>
 <p>A file inside a RAR set is served one volume at a time, and each volume is a separate read into the news account. zurg opens the next volume while the current one is still playing and reads its first four megabytes, so a crossing does not start cold. On a release posted in small volumes that head is not enough on its own: four megabytes is about ten articles of a release posted in ~395 KB parts, and volumes of ~26 MB put a boundary every 1.7 seconds of playback — so the stream drained the warm head from memory in a quarter of a second and then waited a round trip for everything behind it. Measured on a Hetzner CCX23 over ten connections on 8 September 2026, that release streamed at <strong>14–16 MB/s</strong> where a plain file on the same account reached <strong>86–99 MB/s</strong>, its one-second rate swinging between 1 and 29 MB/s, while 46 to 55 of the account&#x27;s 60 read-ahead slots sat unused.</p>
 <p>zurg now warms the next volume a whole read-ahead window deep once the stream comes within 32 MiB of the boundary, and a volume the stream has just crossed into keeps the window it earned instead of starting again at two articles. A volume the playhead will not reach for several seconds is still warmed only to its head, which is what keeps a library scan — a reader per entry, a few megabytes of each — from pulling a window of every next volume it will never read. Nothing here needs configuring, and it changes no memory ceiling: an account still carries two read-ahead windows at once, the volume being played and the one being warmed, inside <code translate="no" v-pre>cache_size_mb</code>.</p>

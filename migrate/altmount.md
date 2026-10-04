@@ -218,14 +218,38 @@ mv "/mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv" \
    "/mnt/zurg/__magic__/tv/The Show/Season 01/S01E01.mkv"
 ```
 
-**If Sonarr and Radarr organised your old library then let them do it here
-too.** That is what `__magic__` is for and it replaces the symlink farm
-outright. Add `__magic__/tv` and `__magic__/movies` as *new* root folders. Then
-run a library import against them so the \*arrs adopt what is already there.
-Never change an existing series or movie root folder to point into `__magic__`.
-That makes the \*arr move the files across the mount boundary. It is a copy and
-it downloads your library. The full sequence and the number to watch are on
-[the shared page](index.md#coming-off-a-symlink-library).
+**If Sonarr and Radarr organised your old library then move it in with one
+script.** It renames every file the old library links to into a new root folder
+under `__magic__`. Each one lands at the path the \*arr already expects.
+Nothing is copied. Then you switch the \*arr's root folder without letting it
+move anything. The steps and the script are on
+[the shared page](index.md#coming-off-a-symlink-library). Never let an \*arr
+move the files itself. That crosses the mount boundary. It is a copy and it
+downloads your library.
+
+The script needs a `zurg_path` function for AltMount's links. Save this as
+`zurg_path.sh` beside it and set `OLDMOUNT` to where AltMount is mounted.
+
+```bash
+OLDMOUNT=/mnt/altmount          # AltMount's mount, where the old links point
+zurg_path() {
+  case "$1" in "$OLDMOUNT"/*) ;; *) return ;; esac   # not a link into AltMount
+  local name=${1##*/} f videos
+  local release; release=$(basename "$(dirname "$1")")
+  [ -f "$ZURG/__all__/$release/$name" ] && { echo "$ZURG/__all__/$release/$name"; return; }
+  # AltMount named a lone video or an unpacked archive after the release. Take its one video.
+  case "$name" in "$release".*) ;; *) return ;; esac
+  videos=$(find "$ZURG/__all__/$release" -type f \( -iname '*.mkv' -o -iname '*.mp4' -o -iname '*.avi' \) ! -ipath '*sample*')
+  [ "$(printf '%s\n' "$videos" | grep -c .)" -eq 1 ] && echo "$videos"
+}
+```
+
+The function expects the release folder just above the file in each link's
+target. The exact path AltMount's links use was not checked for this guide. Run
+`readlink` on one link first. Where AltMount named a lone video or an unpacked
+archive after the release the function takes the one video zurg serves in that
+release. A release with more than one video is never guessed at. It prints
+`NOT IN ZURG` instead.
 
 **4. Point Plex at the root folders you made** — `__magic__/tv` and
 `__magic__/movies` — and at those only. Never the root of `__magic__`, which
@@ -251,9 +275,13 @@ Do not decommission AltMount until you have streamed from a representative
 sample. Its config directory holds the `.nzbz` store and that is the only other
 copy of your NZBs.
 
-Now think about acquisition. zurg has an opt-in
-[SABnzbd-compatible endpoint](../guides/sonarr-radarr.md) that Sonarr and
-Radarr can grab through. One caveat before you switch a library over. zurg does
-not yet check whether a post's articles are still on the news server. So a dead
-release reports Completed and fails on the first read rather than being
-blocklisted and re-grabbed.
+Now think about acquisition. zurg has an opt-in [SABnzbd-compatible
+endpoint](../guides/sonarr-radarr.md) that Sonarr and Radarr can grab through.
+It replaces AltMount as their download client. zurg checks each grab before it
+reports it finished. It asks the news servers for the start and the end of
+every file. zurg rebuilds a release with any of that gone from its PAR2 files
+where it can. One it cannot rebuild is reported **Failed**. The \*arr then
+blocklists it and grabs another. A post that lost a stretch further into a file
+still reports Completed and fails on the read that reaches the gap. Keep the
+\*arrs' root folders inside `__magic__`. A root folder anywhere else gets a
+full copy of every import.

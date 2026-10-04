@@ -411,6 +411,54 @@ Then **Search**, type what you want, and push a row at the client:
 
 The release goes onto the account exactly as an \*arr grab does — same add path, same categories, same `__magic__` folder — and this one landed cached, `finished` inside a second. But nothing imports it. It sits in the account and serves from the mount, which is the point: Prowlarr's push is for *put this on my debrid account now*, not for the automated grab-import-clean pipeline. For that, keep Sonarr and Radarr pointed at the endpoint and let Prowlarr manage indexers.
 
+## 11. Adding a release by hand
+
+zurg's dashboard has no add button. You can still hand zurg a release yourself
+and send it to the right Sonarr or Radarr. Add it through this endpoint with
+that app's category. Each app only looks at its own category. Four apps with
+four categories each see only their own adds.
+
+```bash
+KEY=your-qbittorrent-api-key
+curl -H "Authorization: Bearer $KEY" http://localhost:9999/api/v2/torrents/add \
+  -F 'urls=magnet:?xt=urn:btih:<hash>&dn=Movie.Title.2012.1080p.WEB-DL' \
+  -F category=radarr4k
+```
+
+A `.torrent` file works too. Send it as
+`-F 'torrents=@Movie.Title.2012.1080p.WEB.torrent'` in place of `urls`.
+
+Four things decide whether the app imports it.
+
+1. **The film or show has to be in that app already.** It imports only what it
+   can match to something it manages.
+2. **The name has to say what it is.** A magnet's name is its `dn`. A
+   `.torrent` file's name is its filename. zurg ignores qBittorrent's `rename`
+   field. Radarr could not parse `Sintel` and held it as *Unable to parse
+   download*. `Sintel.2010.1080p.WEB-DL` imported. Give the name a year.
+3. **Get the name right before the app first sees it.** Once Radarr has called
+   a download unparseable it keeps that verdict until Radarr restarts. Adding it
+   again with a better name did not change it. After a restart it imported.
+4. **The category is only a label.** A category that is not in
+   `qbittorrent.categories` is accepted. It just does not show up in the
+   category list. You can move a release to another app later. The app that
+   owns the new category imports it on its next check.
+
+```bash
+curl -H "Authorization: Bearer $KEY" http://localhost:9999/api/v2/torrents/setCategory \
+  -F hashes=<hash> -F category=radarr
+```
+
+A release that is already on your account works the same way. That covers one
+you sent there from DMM. zurg sees it is already in the library and records it
+under the category without adding it twice. A release you never add through
+this endpoint stays invisible to Sonarr and Radarr. zurg shows them only what
+came through it.
+
+Measured on 2026-10-04 on an AllDebrid account with Radarr 6.3. Each film was
+imported by rename into `__magic__/movies` and nothing was copied. A Radarr set
+to another category never saw it. Sonarr was not tested.
+
 ## If the import copies instead of moving
 
 Everything above depends on the import being a **rename**. One setting in the \*arr decides that, and it is the only part of the decision zurg has no say in.

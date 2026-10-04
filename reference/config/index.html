@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844343888590">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844409366003">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844343888590" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844409366003" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844343888590" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844409366003" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -367,8 +367,8 @@ base_url: &quot;http://192.168.0.123:9999&quot;</code></pre>
 | `download_tokens` | list | `[]` | **Real-Debrid and AllDebrid:** backup API tokens for the same service, used when the active token's bandwidth allowance is exhausted. They use this entry's catalog, including a [local catalog](#local-debrid-catalogs), without importing the extra accounts' torrent libraries. **TorBox:** accepted, but rotation does not remap account-specific torrent/file IDs; use separate provider entries for different accounts. Unused by NZB. Premiumize, Debrid-Link and Offcloud require separate account entries because their stored file IDs belong to the listing account. |
 | `strm_link_token` | string | `&quot;&quot;` | A separate API token that resolves the reads arriving at the `/strm/` endpoint, so a player opening a `.strm` does not spend the token the live mount streams on. Falls back to `token` if not set. **Real-Debrid and AllDebrid** — the two backends that rotate credentials, and so the two where pinning `.strm` traffic to a key of its own means something. Accepted and unused on `torbox` and `nzb` entries. Premiumize, Debrid-Link and Offcloud accept only the account’s own `token` here. |
 | `disabled` | bool | `false` | Keeps an account in the config without loading it. If every entry is disabled, the load fails. |
-| `watchlist` | bool | `false` | Marks the account tried first for new torrent adds (the download-client endpoints). At most one entry may set it, and never an `nzb` one. With none set, the first account that can add torrents is used. Plex watchlist acquisition itself goes through the Usenet backend, not this account — see [Watchlist](#watchlist). |
-| `add_torrents` | bool | `true` | Whether this account is offered new torrents at all — the ones the download-client endpoints are handed, and the ones the Plex watchlist asks for. Set it `false` for an archive account, or one whose quota is spoken for: it goes on serving and reading its library while nothing new is ever put on it. **The order of the `providers:` list is the order the accounts that do take adds are tried in**, so this key and that order are read together; an account marked `watchlist: true` is tried first wherever it sits. Cannot be combined with `watchlist: true` on the same entry, and on an `nzb` entry it is ignored with a startup warning, since a news server is never handed a torrent. See [`qbittorrent`](#qbittorrent-the-torrent-download-client-sonarr-and-radarr-see). |
+| `watchlist` | bool | `false` | Marks the account tried first for new torrent adds. That covers the download-client endpoints and acquisition's Torznab indexers. At most one entry may set it, and never an `nzb` one. With none set, the first account that can add torrents is used. Acquisition's NZBs go to the Usenet backend and never to this account. See [Watchlist](#watchlist). |
+| `add_torrents` | bool | `true` | Whether this account is offered new torrents at all — the ones the download-client endpoints are handed, and the ones acquisition takes from Torznab indexers. Set it `false` for an archive account, or one whose quota is spoken for: it goes on serving and reading its library while nothing new is ever put on it. **The order of the `providers:` list is the order the accounts that do take adds are tried in**, so this key and that order are read together; an account marked `watchlist: true` is tried first wherever it sits. Cannot be combined with `watchlist: true` on the same entry, and on an `nzb` entry it is ignored with a startup warning, since a news server is never handed a torrent. See [`qbittorrent`](#qbittorrent-the-torrent-download-client-sonarr-and-radarr-see). |
 | `warm_connections` | int | `1` | How many connections this account keeps dialled and handshaken **to each host it has been using**, so a read does not pay to open one. Capped at 4. `-1` keeps none. Ignored on an `nzb` entry, whose floor is per account and lives at [`nntp.warm_connections`](../guides/usenet.md). See [warm connections](#warm-connections). |
 | `nntp` | block | *(required for `nzb`)* | News server credentials. Required for type `nzb` and ignored by every other type. |">
 <div class="table-wrapper scrollbar overflow-hidden">
@@ -422,13 +422,13 @@ base_url: &quot;http://192.168.0.123:9999&quot;</code></pre>
 <td><code translate="no" v-pre>watchlist</code></td>
 <td>bool</td>
 <td><code translate="no" v-pre>false</code></td>
-<td>Marks the account tried first for new torrent adds (the download-client endpoints). At most one entry may set it, and never an <code translate="no" v-pre>nzb</code> one. With none set, the first account that can add torrents is used. Plex watchlist acquisition itself goes through the Usenet backend, not this account — see <doc-anchor-trigger to="#watchlist">Watchlist</doc-anchor-trigger>.</td>
+<td>Marks the account tried first for new torrent adds. That covers the download-client endpoints and acquisition&#x27;s Torznab indexers. At most one entry may set it, and never an <code translate="no" v-pre>nzb</code> one. With none set, the first account that can add torrents is used. Acquisition&#x27;s NZBs go to the Usenet backend and never to this account. See <doc-anchor-trigger to="#watchlist">Watchlist</doc-anchor-trigger>.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>add_torrents</code></td>
 <td>bool</td>
 <td><code translate="no" v-pre>true</code></td>
-<td>Whether this account is offered new torrents at all — the ones the download-client endpoints are handed, and the ones the Plex watchlist asks for. Set it <code translate="no" v-pre>false</code> for an archive account, or one whose quota is spoken for: it goes on serving and reading its library while nothing new is ever put on it. <strong>The order of the <code translate="no" v-pre>providers:</code> list is the order the accounts that do take adds are tried in</strong>, so this key and that order are read together; an account marked <code translate="no" v-pre>watchlist: true</code> is tried first wherever it sits. Cannot be combined with <code translate="no" v-pre>watchlist: true</code> on the same entry, and on an <code translate="no" v-pre>nzb</code> entry it is ignored with a startup warning, since a news server is never handed a torrent. See <doc-anchor-trigger to="#qbittorrent-the-torrent-download-client-sonarr-and-radarr-see"><code translate="no" v-pre>qbittorrent</code></doc-anchor-trigger>.</td>
+<td>Whether this account is offered new torrents at all — the ones the download-client endpoints are handed, and the ones acquisition takes from Torznab indexers. Set it <code translate="no" v-pre>false</code> for an archive account, or one whose quota is spoken for: it goes on serving and reading its library while nothing new is ever put on it. <strong>The order of the <code translate="no" v-pre>providers:</code> list is the order the accounts that do take adds are tried in</strong>, so this key and that order are read together; an account marked <code translate="no" v-pre>watchlist: true</code> is tried first wherever it sits. Cannot be combined with <code translate="no" v-pre>watchlist: true</code> on the same entry, and on an <code translate="no" v-pre>nzb</code> entry it is ignored with a startup warning, since a news server is never handed a torrent. See <doc-anchor-trigger to="#qbittorrent-the-torrent-download-client-sonarr-and-radarr-see"><code translate="no" v-pre>qbittorrent</code></doc-anchor-trigger>.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>warm_connections</code></td>
@@ -467,6 +467,53 @@ fallback that RD and AD locked links allow. Its resolver changes the API key
 while retaining the torrent/file IDs from the existing source. Separate TorBox
 provider entries keep each account&#x27;s IDs and catalog independent. For a local
 library, put the portable manifests in each entry&#x27;s own source directory.</p>
+<h4 id="torbox-seeding">TorBox seeding</h4>
+<retype-table copy-text="| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `tb_seed_torrents` | string | `never` | Whether the torrents zurg adds to a TorBox account seed. `never` turns seeding off for every add. `auto` leaves the choice to the seeding setting on your TorBox account. `always` turns seeding on for every add. Applies to every TorBox account in the config, and to the next add as soon as it is changed. Any other value stops zurg from starting. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>tb_seed_torrents</code></td>
+<td>string</td>
+<td><code translate="no" v-pre>never</code></td>
+<td>Whether the torrents zurg adds to a TorBox account seed. <code translate="no" v-pre>never</code> turns seeding off for every add. <code translate="no" v-pre>auto</code> leaves the choice to the seeding setting on your TorBox account. <code translate="no" v-pre>always</code> turns seeding on for every add. Applies to every TorBox account in the config, and to the next add as soon as it is changed. Any other value stops zurg from starting.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<div id="torbox-seeding-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">tb_seed_torrents: never</code></pre>
+</doc-codeblock></div>
+<p>Leave it at <code translate="no" v-pre>never</code> unless you need it. It is there for private trackers that
+count your ratio. A release grabbed through the
+<doc-anchor-trigger to="#qbittorrent-the-torrent-download-client-sonarr-and-radarr-see"><code translate="no" v-pre>qbittorrent</code></doc-anchor-trigger>
+endpoint as a <code translate="no" v-pre>.torrent</code> file is added with this setting, so with <code translate="no" v-pre>always</code> (or
+<code translate="no" v-pre>auto</code> on an account set to seed) TorBox uploads it back to the tracker&#x27;s swarm.
+Importing it into Sonarr or Radarr does not stop that: a finished download the
+client removes stays on the account.</p>
+<p><strong>A seeding torrent holds one of your plan&#x27;s active slots for as long as it
+seeds.</strong> TorBox counts a torrent that is seeding the same as one that is
+downloading. Its plans allow 3, 5 or 10 at once (Essential, Standard, Pro) and
+seed for up to 24 hours, 14 days or 30 days. Once every slot is held by
+seeding torrents, new grabs and repairs on that account stall until a slot frees,
+either when a torrent&#x27;s seeding time runs out or when you delete it on TorBox.
+Seeding also counts as upload against TorBox&#x27;s fair-use limits. With <code translate="no" v-pre>never</code>
+none of this happens, which is why it is the default.</p>
+<p><code translate="no" v-pre>auto</code> sends TorBox no seeding preference at all, so whatever your account&#x27;s
+seeding setting says applies. On an account where nobody has changed it, that
+is TorBox&#x27;s own Auto. <code translate="no" v-pre>always</code> and <code translate="no" v-pre>never</code> override the account setting for the
+torrents zurg adds and leave everything else on the account alone.</p>
 <h4 id="usenet-accounts">Usenet accounts</h4>
 <p>The <code translate="no" v-pre>nzb</code> type is Usenet rather than a debrid service: <code translate="no" v-pre>.nzb</code> files dropped into the <code translate="no" v-pre>nzbs/</code> directory become torrents in the library, and reads are satisfied by fetching articles from your news server and decoding them on demand. Only one enabled <code translate="no" v-pre>nzb</code> entry is supported, since both would scan the same directory — extra news servers go under that entry&#x27;s <code translate="no" v-pre>nntp.servers</code> instead, where they serve the same library rather than a second copy of it.</p>
 <retype-table copy-text="| Option | Type | Default | Description |
@@ -928,14 +975,15 @@ plex_token: &quot;your-plex-token&quot;
 plex_match_every_mins: 1440</code></pre>
 </doc-codeblock></div>
 <h3 id="watchlist">Watchlist</h3>
-<p>Add something to your Plex watchlist and zurg fetches it: every new watchlist item is searched on your Newznab indexers and the chosen release&#x27;s NZB drops into the Usenet backend, exactly as a Sonarr grab or a Stremio play would — the three surfaces share the naming rules, so they find each other&#x27;s grabs instead of duplicating them. A movie becomes one release; a show is acquired season by season, preferring season packs over loose episodes — a season nobody posted a pack of falls back to the loose episodes the search surfaced, best release per episode. The item leaves the watchlist only once something was actually acquired; failures stay on the list and are retried a few times with backoff.</p>
-<p>It needs a <code translate="no" v-pre>plex_token</code> (the monitor talks to Plex&#x27;s cloud service, so <code translate="no" v-pre>plex_server_url</code> is not required), a configured <code translate="no" v-pre>nzb</code> provider to read the watch directory, and at least one indexer — its own list, or the Stremio addon&#x27;s.</p>
+<p>Add something to your Plex watchlist and zurg fetches it. Every new watchlist item is searched on your indexers. A Newznab indexer gives an NZB. It drops into the Usenet backend exactly as a Sonarr grab or a Stremio play would. The three share the naming rules so they find each other&#x27;s grabs instead of duplicating them. A Torznab indexer gives a torrent. It is added to a debrid account only when that account already has it cached. <code translate="no" v-pre>prefer</code> decides which kind is tried first. A movie becomes one release. A show is acquired season by season and season packs come before loose episodes. A season nobody posted a pack of falls back to the loose episodes the search surfaced, the best release for each. The item leaves the watchlist only once the release behind it has been checked and only when <code translate="no" v-pre>remove_after_grab</code> allows it. Failures stay on the list. They are tried again after 5, 10 and 15 minutes, then after an hour, then every six hours for as long as the item is listed.</p>
+<p>It needs a <code translate="no" v-pre>plex_token</code> and at least one indexer. With no list of its own it borrows the Stremio addon&#x27;s. The monitor talks to Plex&#x27;s cloud service, so <code translate="no" v-pre>plex_server_url</code> is not required. NZBs need an <code translate="no" v-pre>nzb</code> provider on the same instance. Torrents need a debrid account that takes them. Either one is enough.</p>
 <p>Every option below is on the config page under <strong>Plex Watchlist</strong>, indexer list included; the dashboard writes this block rather than the legacy flat keys, and switching the monitor off there clears <code translate="no" v-pre>plex_watchlist_enabled</code> too, since that one is ORed into the switch.</p>
 <retype-table copy-text="| Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `enabled` | bool | `false` | Starts the monitor. The legacy `plex_watchlist_enabled` key still counts. |
 | `check_every_secs` | int | `60` | How often the watchlist is polled on Plex's cloud service. |
-| `indexers` | list | `[]` | Newznab endpoints to search, each with `name`, `url`, `api_key` and optional `api_path` — the same shape as `stremio.indexers`, which is borrowed wholesale when this list is empty. |
+| `indexers` | list | `[]` | Indexers to search, each with `name`, `url`, `api_key` and optional `api_path` and `type`. `type: torznab` marks a torrent indexer. Absent means `newznab`. The same shape as `stremio.indexers`, which is borrowed wholesale when this list is empty. |
+| `prefer` | string | `&quot;usenet&quot;` | Which kind is tried first when both an NZB and a torrent could do. `usenet` tries NZBs first, `torrents` tries torrents first, and `best` lets the ranking alone decide. See [Newznab and Torznab](../guides/acquisition.md#newznab-and-torznab). |
 | `max_size_gb` | int | `40` | Releases larger than this are dropped for movies and single episodes. Releases whose size the indexer did not state are kept. |
 | `max_season_size_gb` | int | `100` | The same ceiling for season packs, which are legitimately several times a movie. |
 | `quality` | string | `&quot;best&quot;` | Which release wins: `best` (resolution first, then size), `4k`, `1080p`, `720p` (prefer that resolution, fall back to best) or `smallest`. The legacy `watchlist_quality` key still counts. |">
@@ -966,7 +1014,13 @@ plex_match_every_mins: 1440</code></pre>
 <td><code translate="no" v-pre>indexers</code></td>
 <td>list</td>
 <td><code translate="no" v-pre>[]</code></td>
-<td>Newznab endpoints to search, each with <code translate="no" v-pre>name</code>, <code translate="no" v-pre>url</code>, <code translate="no" v-pre>api_key</code> and optional <code translate="no" v-pre>api_path</code> — the same shape as <code translate="no" v-pre>stremio.indexers</code>, which is borrowed wholesale when this list is empty.</td>
+<td>Indexers to search, each with <code translate="no" v-pre>name</code>, <code translate="no" v-pre>url</code>, <code translate="no" v-pre>api_key</code> and optional <code translate="no" v-pre>api_path</code> and <code translate="no" v-pre>type</code>. <code translate="no" v-pre>type: torznab</code> marks a torrent indexer. Absent means <code translate="no" v-pre>newznab</code>. The same shape as <code translate="no" v-pre>stremio.indexers</code>, which is borrowed wholesale when this list is empty.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>prefer</code></td>
+<td>string</td>
+<td><code translate="no" v-pre>&quot;usenet&quot;</code></td>
+<td>Which kind is tried first when both an NZB and a torrent could do. <code translate="no" v-pre>usenet</code> tries NZBs first, <code translate="no" v-pre>torrents</code> tries torrents first, and <code translate="no" v-pre>best</code> lets the ranking alone decide. See <a href="../../guides/acquisition/#newznab-and-torznab">Newznab and Torznab</a>.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>max_size_gb</code></td>
@@ -990,6 +1044,8 @@ plex_match_every_mins: 1440</code></pre>
 </table>
 </div>
 </retype-table>
+<p>The <code translate="no" v-pre>acquisition</code> block also takes <code translate="no" v-pre>concurrency</code> (default <code translate="no" v-pre>8</code>, <code translate="no" v-pre>1</code> to <code translate="no" v-pre>200</code>), how many titles are searched, checked and placed at once, and <code translate="no" v-pre>indexer_concurrency</code> (default <code translate="no" v-pre>3</code>, <code translate="no" v-pre>1</code> to <code translate="no" v-pre>16</code>), how many calls are made to one indexer at once; keep the latter low when an indexer key is shared.</p>
+<p><code translate="no" v-pre>exclude_words</code> has no copy in this block. To keep words such as <code translate="no" v-pre>DV</code> or <code translate="no" v-pre>HDR10+</code> out of watchlist grabs, add an <code translate="no" v-pre>acquisition:</code> block holding only <code translate="no" v-pre>exclude_words</code>. Every setting above still applies. See <a href="../../guides/acquisition/#excluding-releases-by-name">excluding releases by name</a>.</p>
 <div id="watchlist-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">plex_token: &quot;your-plex-token&quot;
 watchlist:
@@ -1002,6 +1058,110 @@ watchlist:
     - name: nzbgeek
       url: https://api.nzbgeek.info
       api_key: your-api-key</code></pre>
+</doc-codeblock></div>
+<h3 id="acquisition-sources">Acquisition sources</h3>
+<p><code translate="no" v-pre>acquisition.sources</code> lists the services zurg acquires for, each on the shared queue described in <a href="../../guides/acquisition/">acquisition sources</a>. The search settings (<code translate="no" v-pre>indexers</code>, <code translate="no" v-pre>quality</code>, <code translate="no" v-pre>prefer</code>, <code translate="no" v-pre>max_size_gb</code>, <code translate="no" v-pre>max_season_size_gb</code>) sit beside <code translate="no" v-pre>sources</code> in the <code translate="no" v-pre>acquisition:</code> block and fall back to the <code translate="no" v-pre>watchlist:</code> block above.</p>
+<p><code translate="no" v-pre>best_first</code> belongs to the <code translate="no" v-pre>acquisition:</code> block alone and is off by default. Turned on it makes a <code translate="no" v-pre>radarr</code> or <code translate="no" v-pre>sonarr</code> source&#x27;s first grab follow the quality profile&#x27;s order of preference. The best allowed resolution comes first. Anything at or above the cutoff counts as the cutoff. When a release fails zurg moves down the profile. When it is off a movie takes the allowed release that is cheapest to check. A series takes the one <code translate="no" v-pre>quality</code> ranks first. The upgrade pass heads for the cutoff afterwards. The best release is more often a large archive set so the first file tends to arrive later. See <a href="../../guides/acquisition/#taking-the-profiles-best-first">taking the profile&#x27;s best first</a>.</p>
+<p><code translate="no" v-pre>exclude_words</code> (list, default empty) sits there too and has no watchlist fallback. A release whose name has one of these words is never taken, from any source. Matching is by whole word and ignores case, so <code translate="no" v-pre>DV</code> does not catch <code translate="no" v-pre>DVDRip</code>. <code translate="no" v-pre>DV</code>, <code translate="no" v-pre>DoVi</code> and <code translate="no" v-pre>Dolby Vision</code> count as one word, and so do <code translate="no" v-pre>HDR10+</code> and <code translate="no" v-pre>HDR10Plus</code>. <code translate="no" v-pre>HDR10</code> and <code translate="no" v-pre>HDR10+</code> are different words. An entry with no letter or digit is refused at startup. The full rules and how they combine with Radarr and Sonarr profiles are in <a href="../../guides/acquisition/#excluding-releases-by-name">excluding releases by name</a>.</p>
+<retype-table copy-text="| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `name` | string | required | Letters, digits, `_` and `-`, unique. Identifies the source's saved queue, so keep it stable. |
+| `type` | string | required | `plex_watchlist`, `seerr`, `radarr` or `sonarr`. |
+| `enabled` | bool | `false` | A disabled source is kept in the file and not polled. A disabled `radarr` or `sonarr` source is still read, read-only, by the manage page's [duplicate view](../guides/acquisition.md#finding-duplicate-releases). |
+| `check_every_secs` | int | `60` | How often the source is polled. |
+| `url` | string | | `seerr`, `radarr` and `sonarr`: the service's HTTP(S) base URL, without credentials, query or fragment. A URL base and a trailing `/api/v1` (Seerr) or `/api/v3` (Radarr, Sonarr) are accepted. |
+| `api_key` | string | | `seerr`, `radarr` and `sonarr`: the service's API key. Sent as a header, never in a URL, and redacted from shared logs and configs. |
+| `library_path` | string | `mount_path` + `/__magic__` | `radarr` and `sonarr` only: where the \*arr sees zurg's `__magic__` directory, such as `/data/zurg/__magic__` for a container that mounts zurg at `/data/zurg`. A movie or series folder under it is placed at the same relative path inside `__magic__`; a folder elsewhere is skipped. Must be absolute; Windows paths such as `Z:\__magic__` are accepted. |
+| `remove_after_grab` | bool | `true` | `plex_watchlist` only; inert for `seerr`, `radarr` and `sonarr`. |
+| `only_new_items` | bool | `true` | `plex_watchlist` only; inert for `seerr`, `radarr` and `sonarr`, whose wanted items are always work. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>name</code></td>
+<td>string</td>
+<td>required</td>
+<td>Letters, digits, <code translate="no" v-pre>_</code> and <code translate="no" v-pre>-</code>, unique. Identifies the source&#x27;s saved queue, so keep it stable.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>type</code></td>
+<td>string</td>
+<td>required</td>
+<td><code translate="no" v-pre>plex_watchlist</code>, <code translate="no" v-pre>seerr</code>, <code translate="no" v-pre>radarr</code> or <code translate="no" v-pre>sonarr</code>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>enabled</code></td>
+<td>bool</td>
+<td><code translate="no" v-pre>false</code></td>
+<td>A disabled source is kept in the file and not polled. A disabled <code translate="no" v-pre>radarr</code> or <code translate="no" v-pre>sonarr</code> source is still read, read-only, by the manage page&#x27;s <a href="../../guides/acquisition/#finding-duplicate-releases">duplicate view</a>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>check_every_secs</code></td>
+<td>int</td>
+<td><code translate="no" v-pre>60</code></td>
+<td>How often the source is polled.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>url</code></td>
+<td>string</td>
+<td> </td>
+<td><code translate="no" v-pre>seerr</code>, <code translate="no" v-pre>radarr</code> and <code translate="no" v-pre>sonarr</code>: the service&#x27;s HTTP(S) base URL, without credentials, query or fragment. A URL base and a trailing <code translate="no" v-pre>/api/v1</code> (Seerr) or <code translate="no" v-pre>/api/v3</code> (Radarr, Sonarr) are accepted.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>api_key</code></td>
+<td>string</td>
+<td> </td>
+<td><code translate="no" v-pre>seerr</code>, <code translate="no" v-pre>radarr</code> and <code translate="no" v-pre>sonarr</code>: the service&#x27;s API key. Sent as a header, never in a URL, and redacted from shared logs and configs.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>library_path</code></td>
+<td>string</td>
+<td><code translate="no" v-pre>mount_path</code> + <code translate="no" v-pre>/__magic__</code></td>
+<td><code translate="no" v-pre>radarr</code> and <code translate="no" v-pre>sonarr</code> only: where the *arr sees zurg&#x27;s <code translate="no" v-pre>__magic__</code> directory, such as <code translate="no" v-pre>/data/zurg/__magic__</code> for a container that mounts zurg at <code translate="no" v-pre>/data/zurg</code>. A movie or series folder under it is placed at the same relative path inside <code translate="no" v-pre>__magic__</code>; a folder elsewhere is skipped. Must be absolute; Windows paths such as <code translate="no" v-pre>Z:\__magic__</code> are accepted.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>remove_after_grab</code></td>
+<td>bool</td>
+<td><code translate="no" v-pre>true</code></td>
+<td><code translate="no" v-pre>plex_watchlist</code> only; inert for <code translate="no" v-pre>seerr</code>, <code translate="no" v-pre>radarr</code> and <code translate="no" v-pre>sonarr</code>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>only_new_items</code></td>
+<td>bool</td>
+<td><code translate="no" v-pre>true</code></td>
+<td><code translate="no" v-pre>plex_watchlist</code> only; inert for <code translate="no" v-pre>seerr</code>, <code translate="no" v-pre>radarr</code> and <code translate="no" v-pre>sonarr</code>, whose wanted items are always work.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<div id="acquisition-sources-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">acquisition:
+  indexers:
+    - name: my-indexer
+      url: https://indexer.example
+      api_key: YOUR_INDEXER_API_KEY
+  sources:
+    - name: movies
+      type: radarr
+      enabled: true
+      url: http://radarr:7878
+      api_key: YOUR_RADARR_API_KEY
+      library_path: /data/zurg/__magic__
+    - name: shows
+      type: sonarr
+      enabled: true
+      url: http://sonarr:8989
+      api_key: YOUR_SONARR_API_KEY
+      library_path: /data/zurg/__magic__</code></pre>
 </doc-codeblock></div>
 <h3 id="plex-library-maintenance-same-host-only">Plex Library Maintenance (same host only)</h3>
 <p>These need Plex installed on the same machine as zurg, because they read its database file directly. <code translate="no" v-pre>plex_server_url</code> is frequently another host or container and no HTTP endpoint can hand over that file, so they are driven by an explicit path and stay off until you set one.</p>
@@ -1190,7 +1350,8 @@ plex_trash_sweep_max_percent: 10</code></pre>
 | `jellyfin_token` | string | `&quot;&quot;` | Jellyfin API token for authentication. |
 | `emby_server_url` | string | `&quot;&quot;` | URL of your Emby server. Enables library refresh notifications when zurg detects changes. Example: `http://localhost:8096` |
 | `emby_token` | string | `&quot;&quot;` | Emby API token for authentication. |
-| `dmm_api_key` | string | `&quot;&quot;` | API key for DebridMediaManager integration. |">
+| `dmm_api_key` | string | `&quot;&quot;` | API key for DebridMediaManager integration. |
+| `dmm_metadata_secret` | string | `&quot;&quot;` | Secret for DMM's internal metadata API. When set, torrents with no IMDb id (or only OpenSubtitles' miss marker) are identified at startup from their release name through DMM, which answers only when one title matches exactly. Torrents it cannot name keep an empty id, so the Plex matcher can still fill them. |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -1231,6 +1392,12 @@ plex_trash_sweep_max_percent: 10</code></pre>
 <td>string</td>
 <td><code translate="no" v-pre>&quot;&quot;</code></td>
 <td>API key for DebridMediaManager integration.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>dmm_metadata_secret</code></td>
+<td>string</td>
+<td><code translate="no" v-pre>&quot;&quot;</code></td>
+<td>Secret for DMM&#x27;s internal metadata API. When set, torrents with no IMDb id (or only OpenSubtitles&#x27; miss marker) are identified at startup from their release name through DMM, which answers only when one title matches exactly. Torrents it cannot name keep an empty id, so the Plex matcher can still fill them.</td>
 </tr>
 </tbody>
 </table>
@@ -1506,7 +1673,7 @@ move. <code translate="no" v-pre>docs/naming.txt</code> is the full set of namin
 <retype-table copy-text="| Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `magic.enabled` | bool | `false` | Serve `__magic__` at all. Off by default: it is a writable tree, and an \*arr pointed at the wrong root folder can reorganise a library. With nothing moved its own `__all__` reads exactly as the library's does, and the root holds nothing else. |
-| `magic.allow_delete` | bool | `false` | When true, a DELETE of a **file** under `__magic__` also deletes the content, as a DELETE on the mount proper always does. Off by default, a delete only hides: the entry leaves `__magic__` and stays in `__all__` and in every filter directory. A release folder and a directory never delete content whatever this is set to — Sonarr deletes the job folder after every import. |
+| `magic.allow_delete` | bool | `false` | When true, a DELETE of a **file** under `__magic__` also deletes the content, as a DELETE on the mount proper always does. Off by default, a delete only hides: the entry leaves `__magic__` and stays in `__all__` and in every filter directory. A release folder and a directory never delete content whatever this is set to — Sonarr deletes the job folder after every import. Deleting a video or an entry inside an archive also deletes its whole release once nothing under `__magic__` uses any of it. |
 | `magic.sidecar_max_mb` | int | `32` | The largest single file a client may `PUT` into `__magic__`. Over it the write is refused with **413**. |
 | `magic.sidecar_budget_mb` | int | `2048` | The largest the whole sidecar tree may grow. Over it a write is refused with **507 Insufficient Storage**, which says what 413 does not: deleting something makes the same request succeed. The total is measured by walking the tree at startup, so a restart does not hand the allowance back to a tree that is already full, and again before any refusal — the tree is the same `data/local` directory zurg's own mount writes into, so a file removed there behind zurg's back must not go on being charged for. Zero or a negative takes the default; there is no way to ask for no cap. |">
 <div class="table-wrapper scrollbar overflow-hidden">
@@ -1530,7 +1697,7 @@ move. <code translate="no" v-pre>docs/naming.txt</code> is the full set of namin
 <td><code translate="no" v-pre>magic.allow_delete</code></td>
 <td>bool</td>
 <td><code translate="no" v-pre>false</code></td>
-<td>When true, a DELETE of a <strong>file</strong> under <code translate="no" v-pre>__magic__</code> also deletes the content, as a DELETE on the mount proper always does. Off by default, a delete only hides: the entry leaves <code translate="no" v-pre>__magic__</code> and stays in <code translate="no" v-pre>__all__</code> and in every filter directory. A release folder and a directory never delete content whatever this is set to — Sonarr deletes the job folder after every import.</td>
+<td>When true, a DELETE of a <strong>file</strong> under <code translate="no" v-pre>__magic__</code> also deletes the content, as a DELETE on the mount proper always does. Off by default, a delete only hides: the entry leaves <code translate="no" v-pre>__magic__</code> and stays in <code translate="no" v-pre>__all__</code> and in every filter directory. A release folder and a directory never delete content whatever this is set to — Sonarr deletes the job folder after every import. Deleting a video or an entry inside an archive also deletes its whole release once nothing under <code translate="no" v-pre>__magic__</code> uses any of it.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>magic.sidecar_max_mb</code></td>
@@ -1570,15 +1737,16 @@ move. <code translate="no" v-pre>docs/naming.txt</code> is the full set of namin
 <h4 id="the-__magic__-page">The <code translate="no" v-pre>__magic__</code> page</h4>
 <p>The dashboard has a page of its own for the namespace, at <code translate="no" v-pre>/magic/</code>, linked from the dashboard&#x27;s quick links whenever <code translate="no" v-pre>__magic__</code> is configured or served. It is where the table is visible, and it is the only place two of its states can be reached at all.</p>
 <p>It reports how many rows are stored — placements, tombstones and directories, counted separately — what the journal and the snapshot take on disk, how much of <code translate="no" v-pre>sidecar_budget_mb</code> the sidecar tree is using, and the size of the whole of <code translate="no" v-pre>data/local</code>. That last number is the one to watch: a client that copies rather than moves puts the bytes there, so a <code translate="no" v-pre>data/local</code> climbing into gigabytes means something is importing the wrong way round. The rows themselves are grouped by release; a very large table is truncated on the page and says by how much, and the counts above it are always of the whole table.</p>
+<p>The stored rows list shows the first thousand rows, and an *arr leaves a tombstone behind on every import, so on an organised library most rows are past that point. A search box on the stored rows and dangling pages finds one release by name, by a path on the mount or by its hash, and lists every row stored about it with its buttons. <code translate="no" v-pre>data/magic.json</code> is not a way round that: zurg writes it out from memory when it stops, so a row deleted from it by hand while zurg runs comes back.</p>
 <p>Three buttons, all of which go through the same one operation — a row ceasing to exist:</p>
 <ul>
 <li><strong>Reset</strong> a placement, and the file or folder goes back to where the library puts it.</li>
-<li><strong>Unhide</strong> a tombstone, and the entry is listed in <code translate="no" v-pre>__magic__</code> again. Nothing was destroyed to hide it.</li>
+<li><strong>Unhide</strong> a tombstone, and the entry is listed in <code translate="no" v-pre>__magic__</code> again. Nothing was destroyed to hide it. A release in <code translate="no" v-pre>__all__</code> that never shows up in <code translate="no" v-pre>__magic__/__all__</code>, even after deleting it and adding it again, has a release tombstone: the rows are keyed on its hash, which a re-add does not change. Search for it and unhide that row.</li>
 <li><strong>Delete</strong> a <strong>dangling</strong> row — one whose release, or whose file inside it, the library no longer holds. Such a row resolves to nothing, so it cannot be listed, moved or deleted through the mount, and it is kept rather than dropped because a repair that restores the release restores where you put it. Until this page there was no way to clean one up; <strong>Clear all dangling rows</strong> sweeps them in one go.</li>
 </ul>
 <p>Sidecars are listed as well, and the ones <strong>nothing accounts for any more</strong> are listed apart from the rest and counted. Those are the sidecar&#x27;s equivalent of a dangling row: an <code translate="no" v-pre>.nfo</code> or a poster written beside a release that has since left the library, or inside a folder whose placement has been forgotten. They are still served — a real file is the last thing a <code translate="no" v-pre>__magic__</code> path resolves to, and nothing above them is claiming the name any longer — so the only thing that has gone is the reason they were put there. zurg never sweeps one: a file left beside a release that was deleted is still yours, and a repair that brings the release back accounts for the folder again. A directory you made for sidecars yourself, through the mount rather than through zurg, reads the same way here, because that leaves no row either.</p>
 <p>Deleting a sidecar from the page really deletes the file, the same way a <code translate="no" v-pre>DELETE</code> through the mount does. Every button changes what the mount has cached for the paths involved, because the mount holds a directory listing for twelve hours with polling off.</p>
-<p>If the SABnzbd endpoint is on, the page also lists the jobs it has been handed — the id the client knows each by, its category, whether the release has arrived in the library yet, and the folder to import from once it has. That list is read-only: delete a job from the client, not from here.</p>
+<p>If the SABnzbd endpoint is on, the page also lists the jobs it has been handed — the id the client knows each by, its category, whether the release has arrived in the library yet, and the folder to import from once it has. Sonarr and Radarr remove their own jobs. A Failed or Stuck job that none of them will ever remove can be cleared from the page. That happens when zurg is no longer their download client. See <a href="../../guides/sonarr-radarr/">sabnzbd.md</a>.</p>
 <p>Both the <code translate="no" v-pre>magic:</code> and the <code translate="no" v-pre>sabnzbd:</code> block are editable in full from the <doc-anchor-trigger to="#sabnzbd-the-download-client-sonarr-and-radarr-see">config page</doc-anchor-trigger>, and both say <strong>Restart Required</strong>, which they mean literally: the routes that serve <code translate="no" v-pre>__magic__</code> and the SABnzbd endpoint are registered once, at startup, out of these values. Turning either on writes it to <code translate="no" v-pre>config.yml</code> and changes nothing about the run that answered — the <code translate="no" v-pre>__magic__</code> page says so too rather than rendering an empty namespace.</p>
 <h3 id="sabnzbd-the-download-client-sonarr-and-radarr-see"><code translate="no" v-pre>sabnzbd</code>, the download client Sonarr and Radarr see</h3>
 <p>zurg can answer Sonarr and Radarr as though it were a SABnzbd. They hand it an NZB, it writes the file into <code translate="no" v-pre>nzbs/</code> for the Usenet backend, and once the release is in the library the job reports <strong>Completed</strong> with a job folder under <code translate="no" v-pre>__magic__/__all__</code> to import from. Nothing is downloaded to import: the *arr renames the file inside the mount, which is a row in the <code translate="no" v-pre>__magic__</code> table.</p>
@@ -1716,7 +1884,8 @@ move. <code translate="no" v-pre>docs/naming.txt</code> is the full set of namin
 | `stremio.enabled` | bool | `false` | Registers the addon routes under `/stremio/`. While off they answer 404. |
 | `stremio.token` | string | generated | The path segment that gates every addon route. It is the whole authorization. Left empty zurg generates one and keeps it in `data/stremio-token`. |
 | `stremio.indexers` | list | `[]` | Newznab endpoints to search. Each takes `name`, `url`, `api_key` and an optional `api_path`. |
-| `stremio.max_results` | int | `5` | How many releases each resolution keeps after ranking. The cap is per resolution. Each tier keeps a spread from its largest release to its smallest. `0` takes the default. |
+| `stremio.max_results` | int | `10` | How many releases each resolution keeps after ranking. The cap is per resolution. Each tier keeps a spread from its largest release to its smallest. `0` takes the default. |
+| `stremio.search_limit` | int | `100` | How many releases each indexer is asked for per search. Every other limit chooses among what this asked for, so it is the ceiling on the whole answer. `0` takes the default. |
 | `stremio.max_size_gb` | int | `40` | Drops releases larger than this before ranking. Releases with no stated size are kept. `0` takes the default. |
 | `stremio.cache_hours` | int | `24` | How long a full answer of five or more results is served from `data/stremio-cache` before the indexers are asked again. Thinner answers are kept for less time. An empty answer is never kept. `0` takes the default. |">
 <div class="table-wrapper scrollbar overflow-hidden">
@@ -1751,8 +1920,14 @@ move. <code translate="no" v-pre>docs/naming.txt</code> is the full set of namin
 <tr>
 <td><code translate="no" v-pre>stremio.max_results</code></td>
 <td>int</td>
-<td><code translate="no" v-pre>5</code></td>
+<td><code translate="no" v-pre>10</code></td>
 <td>How many releases each resolution keeps after ranking. The cap is per resolution. Each tier keeps a spread from its largest release to its smallest. <code translate="no" v-pre>0</code> takes the default.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>stremio.search_limit</code></td>
+<td>int</td>
+<td><code translate="no" v-pre>100</code></td>
+<td>How many releases each indexer is asked for per search. Every other limit chooses among what this asked for, so it is the ceiling on the whole answer. <code translate="no" v-pre>0</code> takes the default.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>stremio.max_size_gb</code></td>
@@ -2368,6 +2543,7 @@ union_writable: &quot;local&quot;</code></pre>
 | `--async-read` | rclone default (on), not passed | Zurg does not put this flag on the command line, and rclone defaults it to true — so the mount reads asynchronously, and every figure on this page was measured that way. A tuning field once claimed to disable it; all it gated was appending the bare flag, which sets the default it already had. To actually turn it off: `rclone_extra_args: [&quot;--async-read=false&quot;]`. |
 | `--low-level-retries` | 3 | rclone's VFS downloader already restarts a failed read ten times per open, and each restart is retried by the backend pacer this many times. At rclone's default of 10 that is 100 requests for one open of a file zurg is answering 503 deliberately. |
 | `--retries` | 1 | Whole-command budget; for a mount that never exits it only multiplies a startup failure |
+| `--vfs-handle-caching` | 0, on rclone 1.74+ | rclone 1.74 started keeping a file's downloaders alive for five seconds after the last close, so touching a file costs five seconds of whatever the link can carry rather than what was read: measured against a 50 MB/s server, one 1 MiB read pulled 245-250 MiB instead of 3-6 MiB, and a twenty-file sweep went from 80 MiB to 4.2 GiB. The grace period exists for `serve nfs`, which zurg never runs. Older rclone has no such flag and refuses to start on an unknown one, so zurg asks the binary its version first and passes nothing below 1.74. |
 | `--log-level` | NOTICE | rclone's own verbosity, always passed |
 | `--cache-dir` | `data/rclone-cache` | Resolved against the working directory |
 | `--log-file` | `logs/rclone.log` | Resolved against the working directory |">
@@ -2482,6 +2658,11 @@ union_writable: &quot;local&quot;</code></pre>
 <td>Whole-command budget; for a mount that never exits it only multiplies a startup failure</td>
 </tr>
 <tr>
+<td><code translate="no" v-pre>--vfs-handle-caching</code></td>
+<td>0, on rclone 1.74+</td>
+<td>rclone 1.74 started keeping a file&#x27;s downloaders alive for five seconds after the last close, so touching a file costs five seconds of whatever the link can carry rather than what was read: measured against a 50 MB/s server, one 1 MiB read pulled 245-250 MiB instead of 3-6 MiB, and a twenty-file sweep went from 80 MiB to 4.2 GiB. The grace period exists for <code translate="no" v-pre>serve nfs</code>, which zurg never runs. Older rclone has no such flag and refuses to start on an unknown one, so zurg asks the binary its version first and passes nothing below 1.74.</td>
+</tr>
+<tr>
 <td><code translate="no" v-pre>--log-level</code></td>
 <td>NOTICE</td>
 <td>rclone&#x27;s own verbosity, always passed</td>
@@ -2500,7 +2681,7 @@ union_writable: &quot;local&quot;</code></pre>
 </table>
 </div>
 </retype-table>
-<p><code translate="no" v-pre>--vfs-cache-max-size</code>, <code translate="no" v-pre>--vfs-cache-min-free-space</code>, <code translate="no" v-pre>--low-level-retries</code>, <code translate="no" v-pre>--retries</code>, <code translate="no" v-pre>--log-level</code>, <code translate="no" v-pre>--cache-dir</code> and <code translate="no" v-pre>--log-file</code> are constants in <code translate="no" v-pre>internal/rclone/manager.go</code>; every other row comes from <code translate="no" v-pre>tuneVFSOptions</code> in <code translate="no" v-pre>internal/rclone/tuning.go</code> — <code translate="no" v-pre>--vfs-cache-max-age</code> and <code translate="no" v-pre>--vfs-cache-poll-interval</code> included, despite the names.</p>
+<p><code translate="no" v-pre>--vfs-cache-max-size</code>, <code translate="no" v-pre>--vfs-cache-min-free-space</code>, <code translate="no" v-pre>--low-level-retries</code>, <code translate="no" v-pre>--retries</code>, <code translate="no" v-pre>--vfs-handle-caching</code>, <code translate="no" v-pre>--log-level</code>, <code translate="no" v-pre>--cache-dir</code> and <code translate="no" v-pre>--log-file</code> are constants in <code translate="no" v-pre>internal/rclone/manager.go</code>; every other row comes from <code translate="no" v-pre>tuneVFSOptions</code> in <code translate="no" v-pre>internal/rclone/tuning.go</code> — <code translate="no" v-pre>--vfs-cache-max-age</code> and <code translate="no" v-pre>--vfs-cache-poll-interval</code> included, despite the names.</p>
 <h3 id="disk-the-mount-uses">Disk the mount uses</h3>
 <p><code translate="no" v-pre>--vfs-cache-mode full</code> means a file read through the mount is downloaded <strong>in
 full</strong> to <code translate="no" v-pre>data/rclone-cache</code> and kept there after playback ends. It is not a
@@ -2779,7 +2960,7 @@ zrok_api_endpoint: &quot;&quot;    # self-hosted only; empty = the hosted servic
 <retype-table copy-text="| Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `nzb_article_disk_cache_mb` | int | `512` | Decoded Usenet articles kept in `data/bytecache/articles/`. An article read once is served from disk the next time. `0` turns it off. |
-| `archive_decoded_disk_cache_mb` | int | `512` | Decompressed archive blocks kept in `data/bytecache/decoded/`. A backward seek or a restart does not decode from the start of the entry again. `0` turns it off. |">
+| `archive_decoded_disk_cache_mb` | int | `512` | Decompressed archive blocks kept in `data/bytecache/decoded/`. A backward seek or a restart does not decode from the start of the entry again. The same budget again is used for `data/bytecache/decoded-tails/`, which keeps the last 8 MiB of a compressed entry once something has asked for it. `0` turns both off. |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -2801,7 +2982,7 @@ zrok_api_endpoint: &quot;&quot;    # self-hosted only; empty = the hosted servic
 <td><code translate="no" v-pre>archive_decoded_disk_cache_mb</code></td>
 <td>int</td>
 <td><code translate="no" v-pre>512</code></td>
-<td>Decompressed archive blocks kept in <code translate="no" v-pre>data/bytecache/decoded/</code>. A backward seek or a restart does not decode from the start of the entry again. <code translate="no" v-pre>0</code> turns it off.</td>
+<td>Decompressed archive blocks kept in <code translate="no" v-pre>data/bytecache/decoded/</code>. A backward seek or a restart does not decode from the start of the entry again. The same budget again is used for <code translate="no" v-pre>data/bytecache/decoded-tails/</code>, which keeps the last 8 MiB of a compressed entry once something has asked for it. <code translate="no" v-pre>0</code> turns both off.</td>
 </tr>
 </tbody>
 </table>

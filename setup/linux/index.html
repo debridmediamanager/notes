@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844343888590">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844409366003">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844343888590" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844409366003" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844343888590" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844409366003" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -205,6 +205,8 @@ test -c /dev/fuse</code></pre>
 <p>Without that setting the mount still works, but only the account running zurg can open it. <code translate="no" v-pre>zurg doctor</code> reports the difference.</p>
 <h2 id="2-download-zurg">2. Download zurg</h2>
 <p>Download the matching Linux archive from the <a href="https://github.com/debridmediamanager/zurg/releases">sponsor releases</a>. Choose <code translate="no" v-pre>linux-amd64</code> for an Intel or AMD machine and <code translate="no" v-pre>linux-arm64</code> for an ARM machine.</p>
+<p>Take the newest nightly. It is the pre-release at the top of the list. Do not take the release GitHub marks <strong>Latest</strong>. That is v1.0.0. It is older than <code translate="no" v-pre>zurg setup</code> and answers it with <code translate="no" v-pre>unknown command</code>.</p>
+<p>Nightlies are for sponsors. Until your GitHub account has access that page answers 404. The free public build is v1.0.0 from <a href="https://github.com/debridmediamanager/zurg-public/releases">zurg-public</a>. It has no <code translate="no" v-pre>zurg setup</code>. Set it up by hand as <a href="https://github.com/debridmediamanager/zurg-public#readme">its README</a> explains instead of following the steps below.</p>
 <p>Extract it into the directory that should hold the whole install:</p>
 <div id="2-download-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p ~/zurg
@@ -259,6 +261,10 @@ ls /mnt/zurg/version.txt</code></pre>
 </doc-codeblock></div>
 <p><code translate="no" v-pre>doctor</code> checks the config and its permissions, both downloaded tools, FUSE, the systemd unit, the HTTP endpoint and the mount reported by zurg.</p>
 <p>A large Real-Debrid library takes time to build on its first run. The service can already be active while the first mount listing waits for that scan to finish.</p>
+<p><code translate="no" v-pre>version.txt</code> answers as soon as zurg is running. A large library keeps loading after that. Its folders show up empty or as <code translate="no" v-pre>Input/output error</code> until it is done. <code translate="no" v-pre>/ready</code> tells you when it is.</p>
+<div id="4-verify-the-install-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -fsS http://127.0.0.1:9999/ready</code></pre>
+</doc-codeblock></div>
 <h2 id="disk-the-mount-uses">Disk the mount uses</h2>
 <p>The mount caches every file it reads under <code translate="no" v-pre>~/zurg/data/rclone-cache</code>. It keeps the whole file after playback ends. Left alone that cache grows to <strong>256G</strong> and stays there. It is not cleared when a video stops. The 72h age limit will not save you either. rclone counts a file as touched whenever anything reads it and a media server&#x27;s nightly maintenance pass reads the whole library.</p>
 <p>Check what it holds.</p>
@@ -303,11 +309,12 @@ ls /mnt/zurg/version.txt</code></pre>
 ./zurg update
 ./zurg service restart</code></pre>
 </doc-codeblock></div>
-<p><code translate="no" v-pre>update</code> takes the newest nightly. It downloads it, checks the new binary reports the version it expected, and only then swaps it in by rename, so the running process is never overwritten. When the installed build is already the newest it says so and changes nothing. Credentials come from the GitHub CLI sign-in when there is one, and from <code translate="no" v-pre>GITHUB_TOKEN</code> or <code translate="no" v-pre>GH_TOKEN</code> otherwise.</p>
-<p>On a build too old to carry the command, the installer does the same job and touches nothing else:</p>
+<p><code translate="no" v-pre>update</code> takes the newest nightly. It downloads it, checks the new binary reports the version it expected, and only then swaps it in by rename, so the running process is never overwritten. When the installed build is already the newest it says so and changes nothing.</p>
+<p><code translate="no" v-pre>update</code> signs in to GitHub with the account you used for the install. The installer keeps the GitHub CLI in <code translate="no" v-pre>~/zurg/bin</code> for that. If <code translate="no" v-pre>update</code> says it found no GitHub credential then your install is older than that change. Run the installer&#x27;s update once and every <code translate="no" v-pre>zurg update</code> after it works. The same command also updates a build too old to have <code translate="no" v-pre>zurg update</code>. It only swaps the binary and touches nothing else.</p>
 <div id="updating-zurg-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -fsSL https://zurg.debridmediamanager.com/install.sh | bash -s update</code></pre>
 </doc-codeblock></div>
+<p>A server without the GitHub CLI can set <code translate="no" v-pre>GITHUB_TOKEN</code> instead. Use a classic token with the <code translate="no" v-pre>repo</code> scope from the GitHub account that has zurg access.</p>
 <h2 id="existing-and-unattended-configs">Existing and unattended configs</h2>
 <p>Setup never replaces an existing <code translate="no" v-pre>config.yml</code>. For unattended setup repeat <code translate="no" v-pre>--provider</code> and supply the matching token-file or <code translate="no" v-pre>--nntp-*</code> flags. <code translate="no" v-pre>REALDEBRID_TOKEN</code>, <code translate="no" v-pre>TORBOX_TOKEN</code>, <code translate="no" v-pre>ALLDEBRID_TOKEN</code> and the <code translate="no" v-pre>NNTP_*</code> variables work too. Run <code translate="no" v-pre>./zurg setup --help</code> for the full list.</p>
 <p>See the <a href="../../reference/config/">configuration reference</a> for every setting.</p>

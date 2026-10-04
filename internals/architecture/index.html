@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844343888590">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844409366003">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,11 +37,11 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844343888590" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844409366003" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844343888590" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844409366003" data-turbo-eval="false" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -660,9 +660,10 @@ lifecycle events), <code translate="no" v-pre>assign_links.go</code>, <code tran
 <h3 id="router">Router</h3>
 <p><code translate="no" v-pre>internal/handlers</code> builds the chi router and wires everything. WebDAV&#x27;s
 non-standard methods (<code translate="no" v-pre>PROPFIND</code>, <code translate="no" v-pre>MKCOL</code>, <code translate="no" v-pre>MOVE</code>) are registered on chi at
-<code translate="no" v-pre>init</code>. Basic auth wraps everything <em>except</em> <code translate="no" v-pre>version.txt</code> (so healthchecks
-work) and the <code translate="no" v-pre>.strm</code> endpoints (a media player opening a <code translate="no" v-pre>.strm</code> has no
-credentials to offer — the signed token in the path authorises it instead).</p>
+<code translate="no" v-pre>init</code>. Basic auth wraps everything <em>except</em> <code translate="no" v-pre>version.txt</code> and <code translate="no" v-pre>/ready</code> (so
+health checks work) and the <code translate="no" v-pre>.strm</code> endpoints (a media player opening a <code translate="no" v-pre>.strm</code>
+has no credentials to offer — the signed token in the path authorises it
+instead).</p>
 <p>Two routing lessons are recorded in comments and worth not relearning: chi
 applies a regex path param <strong>within a single segment</strong>, so a file addressed
 through an archive (<code translate="no" v-pre>&lt;archive&gt;.rar/&lt;inner&gt;.mkv</code>) or a nested directory inside
@@ -741,6 +742,13 @@ responsive.</p>
 <p><code translate="no" v-pre>internal/handlers/manage</code> is the per-torrent operations UI: tags, file
 listings with state detail, Plex matching, renames, per-file delete/restore/
 force-show, bulk delete and scan.</p>
+<p>Its duplicate view is <code translate="no" v-pre>internal/duplicates</code>. <code translate="no" v-pre>internal/arrinventory</code> and the
+<code translate="no" v-pre>Inventory</code> readers beside the Radarr and Sonarr adapters read every file an
+*arr holds, read-only and apart from acquisition. <code translate="no" v-pre>magic.Resolver.HolderOf</code>
+traces each file&#x27;s path to the release it came from, and the package groups
+releases that may hold the same movie or episodes. Grouping uses names, IMDb
+ids and *arr history. Whether a release is in use is decided by the traced
+paths alone.</p>
 <p><code translate="no" v-pre>internal/static</code> embeds CSS, favicon, logo and robots.txt with <code translate="no" v-pre>go:embed</code>, so
 the binary is self-contained.</p>
 <h2 id="layer-5--the-mount">Layer 5 — The mount</h2>
@@ -776,9 +784,10 @@ running periodically in worker pools with cached metadata, and backfills
 discovered IMDB ids onto torrents.</p>
 </li>
 <li>
-<p><strong><code translate="no" v-pre>internal/acquisition</code></strong> owns the persistent acquisition queue and shared
-Newznab executor. Plex watchlist and Seerr are source adapters that resolve
-requests into movie, season or episode targets. <code translate="no" v-pre>data/acquisition.json</code> holds
+<p><strong><code translate="no" v-pre>internal/acquisition</code></strong> owns the persistent acquisition queue and the
+shared executor, which takes NZBs from Newznab indexers and cached torrents
+from Torznab indexers. Plex watchlist, Seerr, Radarr and Sonarr are source
+adapters that resolve requests into movie, season or episode targets. <code translate="no" v-pre>data/acquisition.json</code> holds
 retry deadlines and per-target progress across restarts. See
 <a href="../../guides/acquisition/">acquisition sources</a> for configuration and adapter contracts.</p>
 </li>
