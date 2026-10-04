@@ -303,7 +303,10 @@ When links stop serving bytes, repair escalates through strategies:
 
 1. **Restart in place** (`TorrentRestarter`) — cheapest: no new upload, no add
    slot spent, and the torrent keeps its id, so the library entry survives
-   rather than being deleted and rediscovered.
+   rather than being deleted and rediscovered. The refresh issues it for a
+   failed torrent it finds on the account, and only on an instance allowed to
+   act on failed torrents at all: `enable_repair` or `delete_error_torrents`.
+   With both off the account is left as it is (`mayRestartFailedTorrents`).
 2. **Re-download the broken files** — re-select only what is broken.
 3. **Reinsert** — re-add the magnet and harvest fresh links.
 4. **Archive** — last resort for releases that cannot be recovered.

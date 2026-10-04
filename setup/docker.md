@@ -117,6 +117,8 @@ services:
 
 Do not bind `/zurg_mnt/zurg` directly. The FUSE mount must be a child of the `rshared` bind for its mount event to reach the host.
 
+Containers that read the mount, Sonarr and Radarr above all, follow the same rule from the other side: bind the parent (`/zurg_mnt`) once, with `rslave`, and reach every folder through that one bind. Binding `__magic__/__all__` and `__magic__/tv` into an \*arr as two volumes turns every import into a copy of the whole file. See [sabnzbd.md](../guides/sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
+
 ## 4. Run the built-in setup
 
 From `~/zurg` run:

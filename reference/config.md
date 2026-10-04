@@ -408,7 +408,7 @@ Every option below is on the config page under **Plex Watchlist**, indexer list 
 | `indexers` | list | `[]` | Indexers to search, each with `name`, `url`, `api_key` and optional `api_path` and `type`. `type: torznab` marks a torrent indexer. Absent means `newznab`. The same shape as `stremio.indexers`, which is borrowed wholesale when this list is empty. |
 | `prefer` | string | `"usenet"` | Which kind is tried first when both an NZB and a torrent could do. `usenet` tries NZBs first, `torrents` tries torrents first, and `best` lets the ranking alone decide. See [Newznab and Torznab](../guides/acquisition.md#newznab-and-torznab). |
 | `max_size_gb` | int | `40` | Releases larger than this are dropped for movies and single episodes. Releases whose size the indexer did not state are kept. |
-| `max_season_size_gb` | int | `100` | The same ceiling for season packs, which are legitimately several times a movie. |
+| `max_season_size_gb` | int | `100` | The same ceiling for season packs, which are legitimately several times a movie. A pack of several seasons is held to it per season it names. |
 | `quality` | string | `"best"` | Which release wins: `best` (resolution first, then size), `4k`, `1080p`, `720p` (prefer that resolution, fall back to best) or `smallest`. The legacy `watchlist_quality` key still counts. |
 
 The `acquisition` block also takes `concurrency` (default `8`, `1` to `200`), how many titles are searched, checked and placed at once, and `indexer_concurrency` (default `3`, `1` to `16`), how many calls are made to one indexer at once; keep the latter low when an indexer key is shared.
@@ -445,7 +445,7 @@ watchlist:
 | `check_every_secs` | int | `60` | How often the source is polled. |
 | `url` | string | | `seerr`, `radarr` and `sonarr`: the service's HTTP(S) base URL, without credentials, query or fragment. A URL base and a trailing `/api/v1` (Seerr) or `/api/v3` (Radarr, Sonarr) are accepted. |
 | `api_key` | string | | `seerr`, `radarr` and `sonarr`: the service's API key. Sent as a header, never in a URL, and redacted from shared logs and configs. |
-| `library_path` | string | `mount_path` + `/__magic__` | `radarr` and `sonarr` only: where the \*arr sees zurg's `__magic__` directory, such as `/data/zurg/__magic__` for a container that mounts zurg at `/data/zurg`. A movie or series folder under it is placed at the same relative path inside `__magic__`; a folder elsewhere is skipped. Must be absolute; Windows paths such as `Z:\__magic__` are accepted. |
+| `library_path` | string | `mount_path` + `/__magic__` | `radarr` and `sonarr` only: where the \*arr sees zurg's `__magic__` directory, such as `/data/zurg/__magic__` for a container that mounts zurg at `/data/zurg`. A movie or series folder under it is placed at the same relative path inside `__magic__`; a folder elsewhere is skipped. Must be absolute; Windows paths such as `Z:\__magic__` are accepted. zurg also compares it with where the \*arr sees the download folder of a zurg download client, and reports a layout that makes imports copies; see [sabnzbd.md](../guides/sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders). |
 | `remove_after_grab` | bool | `true` | `plex_watchlist` only; inert for `seerr`, `radarr` and `sonarr`. |
 | `only_new_items` | bool | `true` | `plex_watchlist` only; inert for `seerr`, `radarr` and `sonarr`, whose wanted items are always work. |
 
@@ -756,7 +756,7 @@ It needs both halves to be useful — an `nzb` provider to read the NZB, and `ma
 | `sabnzbd.api_key` | string | generated | The only gate on the endpoint. Sonarr and Radarr send no basic auth, so these routes sit outside it and the key is what stands in. Left empty with the block enabled, zurg generates one, keeps it in `data/sabnzbd-apikey` so it survives a restart, and logs it once at startup. |
 | `sabnzbd.categories` | list | `[tv, movies]` | The categories reported to the clients. Every one of them resolves to the same directory, so this exists only to stop a client warning about a category it cannot find — add whatever you configured in the \*arr. `*` is always reported as well. |
 | `sabnzbd.history_limit` | int | `60` | How many history entries Sonarr and Radarr read. zurg holds finished jobs past this in the queue until a slot frees, which happens when the client clears one or when one has gone ten minutes uncleared while jobs wait. Match it to the client's `DownloadClientHistoryLimit` if you raised that. `0` keeps their default of 60. |
-| `sabnzbd.complete_dir` | string | `<mount_path>/__magic__/__all__` | The completed directory reported to the clients. It must be the path **the \*arr** sees, which is not zurg's own when the \*arr runs in a container that mounts the library elsewhere. |
+| `sabnzbd.complete_dir` | string | `<mount_path>/__magic__/__all__` | The completed directory reported to the clients. It must be the path **the \*arr** sees, which is not zurg's own when the \*arr runs in a container that mounts the library elsewhere, and it must sit in the same volume as the root folders, or every import is a copy. See [sabnzbd.md](../guides/sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders). |
 
 ```yaml
 sabnzbd:
@@ -779,7 +779,7 @@ Two halves make it useful. An account that can add torrents reads the magnet and
 | `qbittorrent.enabled` | bool | `false` | Register the endpoint at `/api/v2` and `/qbittorrent/api/v2`. While off, neither route exists. |
 | `qbittorrent.api_key` | string | generated | The only gate on the endpoint. The clients send it as a bearer token when their **API Key** field is set, and accept it as the password on `auth/login` when it is not. Left empty with the block enabled, zurg generates one, keeps it in `data/qbittorrent-apikey` so it survives a restart, and logs it once at startup. |
 | `qbittorrent.categories` | list | `[tv-sonarr, radarr]` | The categories reported to the clients — the two the \*arrs ship with. Every one of them resolves to the same directory, so this exists only to stop a client warning about a category it cannot find. |
-| `qbittorrent.save_path` | string | `<mount_path>/__magic__/__all__` | The save path reported to the clients, and the parent of every folder they import from. It must be the path **the \*arr** sees, which is not zurg's own when the \*arr runs in a container that mounts the library elsewhere. Set `sabnzbd.complete_dir` to the same value if you run both endpoints. |
+| `qbittorrent.save_path` | string | `<mount_path>/__magic__/__all__` | The save path reported to the clients, and the parent of every folder they import from. It must be the path **the \*arr** sees, which is not zurg's own when the \*arr runs in a container that mounts the library elsewhere. It must sit in the same volume as the root folders, or every import is a copy; see [sabnzbd.md](../guides/sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders). Set `sabnzbd.complete_dir` to the same value if you run both endpoints. |
 | `qbittorrent.download_timeout_mins` | int | `15` | How long a grab may go with no movement — no change of stage and no rise in progress — before that account is given up on and the next one that takes torrents is tried. `0` means cached-only: a grab is accepted only onto an account that already holds the content, and refused inside the add otherwise, which is the one refusal Sonarr and Radarr act on. A negative number never gives up. See [Timeouts and cached-only mode](../guides/sonarr-radarr-torrents.md#timeouts-and-cached-only-mode). |
 
 ```yaml
@@ -829,7 +829,7 @@ The "set it and forget it" section. Controls how zurg keeps your library healthy
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `enable_repair` | bool | `true` | Enables automatic torrent repair. Unset means enabled. When a torrent becomes unavailable (e.g., removed from RD cache), zurg will attempt to find and add a replacement. **Important:** Only one zurg instance should have repair enabled to avoid conflicts. |
+| `enable_repair` | bool | `true` | Enables automatic torrent repair. Unset means enabled. When a torrent becomes unavailable (e.g., removed from RD cache), zurg will attempt to find and add a replacement. On AllDebrid it also restarts a magnet that failed for a reason a second try can fix, such as no peers or a tracker error, instead of leaving it failed. **Important:** Only one zurg instance should have repair enabled to avoid conflicts. With this and `delete_error_torrents` both off, zurg leaves failed torrents on the account exactly as they are and only logs them. |
 | `repair_every_mins` | int | `60` | How often (in minutes) zurg scans for broken torrents that need repair. Lower values catch problems faster but increase API usage. |
 | `repair_timeout_mins` | int | `30` | Maximum time (in minutes) to wait for a repair operation to complete. If a repair takes longer than this, the torrent is marked as broken and skipped until the next repair cycle. |
 | `stalled_download_mins` | int | `10` | Minimum minutes before a downloading torrent is considered stalled. The actual threshold is `max(GB_downloaded, stalled_download_mins)` — so large downloads get more time automatically. Increase this for slow or low-seed torrents (e.g., public trackers) that need more time to complete. |
@@ -840,7 +840,7 @@ The "set it and forget it" section. Controls how zurg keeps your library healthy
 | `library_detail` | string | `resident` | `resident` keeps file details in memory. `lazy` releases idle details. `auto` releases idle details only under sustained memory pressure. All providers share this instance-wide policy. Restart required. See [Library detail](#library-detail). |
 | `library_detail_idle_secs` | int | `300` | Minimum time without a detail read before `lazy` or `auto` may release a table. The sweep runs every 30 seconds. Ignored by `resident`; zero or invalid values use 300. Restart required. |
 | `downloads_every_mins` | int | `720` | How often (in minutes) zurg re-fetches your RD downloads (unrestricted links, file locker links) and mounts them. These are non-torrent downloads from RD. |
-| `delete_error_torrents` | bool | `false` | When true, automatically deletes torrents from RD that are in an error state (e.g., dead torrents that can't be downloaded). Keeps your RD library clean but means the torrent is permanently removed. |
+| `delete_error_torrents` | bool | `false` | When true, automatically deletes torrents from RD that are in an error state (e.g., dead torrents that can't be downloaded). Keeps your RD library clean but means the torrent is permanently removed. On AllDebrid a failed magnet a second try can fix is restarted instead of deleted, even with repair off, and is deleted only if that restart does not help. |
 | `on_library_update` | string | `""` | A shell command executed whenever zurg detects library changes. Each changed directory path is passed as an argument. Commonly used to trigger Plex/Jellyfin library scans on specific folders for faster updates. |
 
 ```yaml
@@ -1211,7 +1211,7 @@ RC flags (`--rc`, `--rc-addr`, and anything else starting with `rc-`) are reject
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `user_agent` | string | Chrome UA | Shared HTTP User-Agent for providers, indexers, ffprobe and outbound integrations. Blank restores the generic browser default; explicit custom values are sent as entered. Requires restart. See [outbound request identity](outbound-identity.md). |
-| `omit_user_agent` | boolean | `false` | Suppress the HTTP User-Agent (ffprobe uses an empty value), overriding `user_agent`. Requires restart. |
+| `omit_user_agent` | boolean | `false` | Suppress the HTTP User-Agent (ffprobe uses an empty value), overriding `user_agent`. Requests to GitHub still send one, because GitHub refuses requests without it. Requires restart. |
 | `outbound_client_name` | string | `"Media Client"` | Product/client name for media-server integrations where supported. Blank restores the default. Requires restart. |
 | `outbound_client_id` | string | `"media-client"` | Plex client identifier, including sign-in for media-server integrations where supported. Blank restores the default. Requires restart. |
 | `outbound_client_version` | string | `"1.0"` | Client version for media-server integrations where supported. Blank restores the default. Requires restart. |

@@ -230,6 +230,14 @@ zurg's library that Radarr now sees in its folder.
    `movies/Heat (1995)` inside zurg's `__magic__`. Windows paths such as
    `Z:\__magic__` work too.
 
+   If Radarr also takes grabs from zurg's [SABnzbd](sonarr-radarr.md) or
+   [qBittorrent](sonarr-radarr-torrents.md) endpoint, it has to see their download
+   folder at `library_path/__all__`, through the same volume as its root
+   folders, or every import out of it is a copy of the whole file. zurg
+   asks Radarr where it sees both and says so on the acquisition page, in
+   its log and in `zurg doctor` when they cannot share a mount; see
+   [One volume for the download folder and the root folders](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
+
 ### What zurg asks Radarr for
 
 Every poll reads Radarr's movie list and acts on each movie that is
@@ -355,8 +363,9 @@ Sonarr to rescan that one series. Nothing is copied.
    can grab alongside zurg, so turn off automatic search on its indexers for
    the series zurg looks after.
 4. **`library_path` is where Sonarr sees `__magic__`.** It works exactly as
-   it does for Radarr. Leave it out when Sonarr sees the mount where zurg
-   mounts it.
+   it does for Radarr, including the check that Sonarr reaches zurg's
+   download folder and its root folders through one volume. Leave it out
+   when Sonarr sees the mount where zurg mounts it.
 
 ### What zurg asks Sonarr for
 
@@ -395,9 +404,14 @@ have accepted.
 
 - **It must be this series and this season.** Sonarr has to match the title
   to the same series. A title Sonarr matches to nothing is refused.
-- **A pack must be the whole season.** A partial pack or a multi-season pack
-  is refused. A pack spelled as a range, such as `Season 1 E01-E07`, counts
-  when the range is the whole season.
+- **A pack must be the whole season.** A partial pack is refused. A pack
+  spelled as a range, such as `Season 1 E01-E07`, counts when the range is the
+  whole season. A pack of several seasons counts for each season it names
+  (see [Packs of several seasons](#packs-of-several-seasons)). Sonarr reads
+  `S01-S05` as season 1 alone and never says where it ends, so zurg reads the
+  range from the title. Sonarr must still match it to the series and call it
+  a full, multi-season pack. Its size is judged against the runtime of every
+  season it names.
 - **An episode must be that one episode alone.** A release holding two
   episodes is refused for a single episode.
 - **The profile applies as it does for Radarr.** The quality must be allowed.
@@ -453,6 +467,41 @@ not start and says so in the log and on the acquisition page.
 **Activity** in Sonarr stays empty, as it does in Radarr. The episodes simply
 have files after the rescan zurg asks for. `only_new_items` and
 `remove_after_grab` do nothing for a Sonarr source.
+
+## Packs of several seasons
+
+A season can be taken from a pack that holds several, such as
+`Game.of.Thrones.S01-08.BDRip.1080p` or `Breaking Bad Season 1-5`. Indexers
+file such a pack under every season it covers. On DMM's feed, 72 of the 691
+results for Breaking Bad season 3 were packs of several seasons. For some
+seasons one of them is the only copy an account holds.
+
+- **The title says which seasons.** `S01-S05`, `S01-05`, `[S01-08]`, `S1-9`,
+  `Seasons 1-8`, `Season 1 to 5`, `Season 1 · 2 · 3`, `Stagioni 01-05` and
+  `Temporadas 1-4` are all read. A title with no season numbers, such as
+  `Complete Series`, is not taken. Neither is one that names a single season
+  only as a word, such as `Season 3 Complete`. Those were never read as packs.
+- **Only that season is placed.** A pack taken for season 4 puts season 4's
+  episodes in the season folder. The other seasons' files stay where the
+  library lists them. A pack whose files do not hold every episode of the
+  season is refused before anything moves, whatever its title claims.
+- **The size ceiling is per season.** `max_season_size_gb` applies to each
+  season the pack names. A 346 GB pack of eight seasons is 43 GB a season, and
+  fits under the default 100.
+- **Quality still comes first.** Packs rank like any other release:
+  resolution, then size. A 2160p pack of one season is taken before a 1080p
+  pack of eight. Within one resolution, a pack of several seasons is usually
+  the largest, so it is usually tried first.
+- **The show's other seasons take the same pack.** Once one season has taken
+  a pack of several seasons, the show's other seasons try that pack first,
+  ahead of every pack of the same resolution their own search found. It is
+  already on the account, so it costs nothing. While a show's seasons are
+  choosing among packs of several seasons, they choose one at a time, so
+  seasons asked for together (a Sonarr series, all its seasons on one poll)
+  do not each settle on a different copy of the show. Once one of them has
+  chosen without such a pack, because none was on the account or the profile
+  allowed none, the rest choose at once. A season asked for an hour later
+  searches afresh.
 
 ## Watching it work
 
