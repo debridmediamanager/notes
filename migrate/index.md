@@ -165,10 +165,12 @@ working until you switch the \*arr over.
 
    It prints a line for every link it leaves alone.
 
-   - `NOT IN ZURG` is a link to a file zurg does not have. Its NZB could not
-     be recovered or its account is not in zurg's config. A second link to a
-     file the script already moved prints this too. A file can sit at only one
-     path in `__magic__`.
+   - `NOT IN ZURG` is a link to a file zurg does not have. Its NZB could not be
+     recovered or its account is not in zurg's config.
+   - `FAILED` is a move zurg refused. A second link to a file the script
+     already moved prints this after a line from `mv` that says `No such file
+     or directory`. A file can sit at only one path in `__magic__`. It stays
+     where the first link put it.
    - `ALREADY THERE` is a path the new root folder already holds. Running the
      script again skips everything it placed before.
 
@@ -184,10 +186,11 @@ Watch `data/local` on zurg's `/magic/` dashboard while the script runs. It
 grows only by the subtitles and other small files the script copies. A number
 that grows by gigabytes means something is being copied. Stop and look.
 
-One side effect lasts a while. The mount stops showing a moved file at its old
-`__all__` path even though zurg still serves it there. A restart of zurg makes
-the mount look again. Otherwise it looks on its own within 12 hours with the
-default settings. Keep Plex away from `__all__` until then.
+The old links keep working. A moved file still shows at its old `__all__` path
+as well as at its new one. Builds before the 2026.10.04 nightly hid it at the
+old path for up to 12 hours even though zurg still served it there. On one of
+those builds restart zurg once the script is done. Keep Plex away from the old
+folders and from `__all__` until you have.
 
 The zurg side of this was measured on 2026-10-03. The \*arr side is its
 ordinary root folder edit and was not tested for this guide. Do one series
@@ -217,7 +220,7 @@ curl -s -X PUT "http://localhost:32400/:/prefs?autoEmptyTrash=0&X-Plex-Token=$TO
 Plex deletes softly. At `0` an item whose file stopped existing sits in the
 trash and comes back if the file does. At `1` it is gone permanently the moment
 a scan notices. A mount that blips for ten seconds during a scan takes the
-library with it. This has cost a 30,065-item library before.
+library with it. This has cost tens of thousands of items before.
 
 Under these simplified guides that setting is doing more work than it used to
 and not less. **The trash is where your old items wait while you check the new

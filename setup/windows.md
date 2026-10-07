@@ -323,7 +323,7 @@ INFO  router.sabnzbd  SABnzbd API on /api and /sabnzbd/api, completed directory 
 INFO  router.sabnzbd  SABnzbd: generated API key b7fb2b17e04244e2d36d0aae2d77b37a — paste it into Sonarr or Radarr, or pin it as sabnzbd.api_key in config.yml
 INFO  zurg      Starting server on http://[::]:9999
 INFO  rclone    rclone started with mount Z:, union local C:\Users\yowmamasita\zurg\data\local
-INFO  zurg      Usenet account nzb connected: nntps://news.frugalusenet.com:563 (8 connections)
+INFO  zurg      Usenet account nzb connected: nntps://news.example.com:563 (8 connections)
 ```
 
 zurg dials the news server the moment it starts and keeps the connections warm, TLS and all. The SABnzbd key lands in `data\sabnzbd-apikey`.

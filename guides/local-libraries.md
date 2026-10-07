@@ -94,6 +94,87 @@ uploads. Add entries by importing manifests. `add_torrents: false` still lets
 RD/AD redeem an existing shared reference but prevents playback from creating a
 provider-side attachment when one is needed.
 
+## Offload an online account into a local library
+
+AllDebrid takes at most 1000 magnets per account, and Real-Debrid accounts fill
+up too. A finished release does not need its torrent on the account to keep
+playing. A Real-Debrid `/d/` link keeps working after the torrent is deleted,
+and an AllDebrid locked `/f/` link keeps working after the magnet is deleted.
+Offloading relies on that. Zurg writes a finished release into a local library
+on the same service, then deletes the torrent from the online account, which
+frees its slot. The release keeps its folder in the mount and plays from the
+saved links.
+
+Configure two entries for the same account, one online and one local:
+
+```yaml
+providers:
+  - name: ad
+    type: alldebrid
+    token: YOUR_AD_TOKEN
+    library:
+      offload_to: ad-local     # the local entry below
+      offload_after_mins: 30   # optional, 30 is the default
+
+  - name: ad-local
+    type: alldebrid
+    token: YOUR_AD_TOKEN       # the same token
+    library:
+      source: local            # manifests live in torrents/ad-local/
+```
+
+New releases keep arriving on `ad`. After every complete listing of that
+account, and every five minutes, zurg moves the releases that qualify, one at
+a time. A release qualifies when:
+
+- It has been complete on the account for `offload_after_mins`, counted from
+  when this zurg process first saw it complete. A restart starts the wait again.
+- Every file has a working link on that account that another account could
+  redeem. A release with any file missing one stays online.
+- It is healthy, not being repaired, and no instance of it is still
+  downloading. No repair pass or download client holds its torrent.
+- No qBittorrent job from Sonarr or Radarr still lists it. Turn on Remove
+  Completed Downloads in the *arr so a job is removed after its import.
+  Otherwise the release stays online until you remove the job.
+- Acquisition did not add it within the last hour.
+- Moving it changes no directory it is in and keeps its folder name. A
+  directory with a `provider:` filter naming the online account would lose
+  it, so such a release stays online.
+
+The order is fixed. The manifest `<hash>.zurgtorrent` is written into the local
+library first, the release joins the local library next, and only then is the
+torrent deleted from the online account. If the manifest cannot be written,
+nothing is deleted. If the delete fails, the online copy stays beside the local
+one and the next refresh shows whether the torrent is still there. A manifest
+the local library already has for the release is updated in place rather than
+written twice. The online account's links in it are refreshed, its names and
+edits follow the release as the mount shows it, and the other service's links
+are kept.
+
+The release leaves `__ad__` and appears under `__ad-local__`. Every other
+directory, `__all__` and your own included, keeps listing it under the same
+name. No media server scan is started, because nothing a media server indexes
+has changed. Point Plex and other media servers at those directories rather
+than at a per-account one.
+
+With both entries on one token, local playback can attach a release to the
+same account again (see below), and that torrent then shows up in the online
+listing. Zurg never offloads a release whose online torrent is such an
+attachment, or while local playback is adding one, because deleting it would
+break the playback that just obtained it.
+
+Only Real-Debrid and AllDebrid can offload. TorBox, Premiumize, Offcloud and
+Debrid-Link have no link that survives the torrent, so their local playback
+adds the torrent back and an offload would free nothing. Zurg refuses
+`offload_to` on those accounts.
+
+The dashboard can move a single release as well. On a release's page, the
+Accounts table shows Move to local library next to each Real-Debrid or
+AllDebrid copy when a local library of the same type exists, even without
+`offload_to`. When the release cannot move yet, the button is disabled and says
+why. The account's settings on the config page offer the same choice and show
+how many releases moved since zurg started, and the last error.
+
 ## What travels in the file
 
 The versioned JSON format has `format: "zurgtorrent"` and numeric `version: 1`.
@@ -130,7 +211,8 @@ preparing torrent is checked only when playback is requested again.
 Recipient IDs and resolved native file handles stay privately in
 `data/local-torrents/`. That record survives a restart and is included in normal
 backups. Zurg never deletes those attachments automatically: an idempotent add
-may have returned a torrent the recipient already owned. Provider failures
+may have returned a torrent the recipient already owned. Offloading leaves
+them alone as well. Provider failures
 leave the local entry visible and back off rather than starting background
 repair or repeating an add for every scan.
 

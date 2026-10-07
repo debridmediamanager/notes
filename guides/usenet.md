@@ -249,7 +249,7 @@ So most of the time, *the NZB's filename is the release name*. Name the file the
 nzbs/Some.Movie.2024.2160p.UHD.BluRay.x265-GROUP.nzb
 
 # bad — Plex has nothing to work with
-nzbs/nzbgeek_download_48213.nzb
+nzbs/indexer_download_48213.nzb
 ```
 
 Two different releases that end up with the same name are told apart by a short hash tag (`Some.Release {a1b2c3}`), the same as anywhere else in zurg.
@@ -427,7 +427,7 @@ Nothing here is Usenet-specific except the last subsection, but the order matter
    on_library_update: sh plex_update.sh "$@"
    ```
 
-**What Plex will not get from Usenet content:** no ffprobe-derived metadata from zurg (see section 4), so Plex does its own analysis on first play like it would for any local file. File sizes settle shortly after a release is scanned: the first listing may report a cheap estimate from the article count, and the exact length arrives behind it — from the recovery index where there is one, and otherwise from one article per file. For a large multi-volume archive whose recovery index already states every exact length, one verified volume can establish the shared article stride; each sibling checks that inference against its own header before serving its first byte. Once a length lands, the library is told the release changed, so the mount and Plex both see the real length. zurg sizes up to eight releases at a time on an account of twelve connections or fewer and more on a larger one (twelve on 16 connections, sixteen from 20), and when acquisition is waiting to check a release with the news servers, that check is served before this sizing and before read-ahead, but never before a read a player is waiting on.
+**What Plex will not get from Usenet content:** no ffprobe-derived metadata from zurg (see section 4), so Plex does its own analysis on first play like it would for any local file. File sizes settle shortly after a release is scanned: the first listing may report a cheap estimate from the article count, and the exact length arrives behind it — from the recovery index where there is one, and otherwise from one article per file. For a large multi-volume archive whose recovery index already states every exact length, one verified volume can establish the shared article stride; each sibling checks that inference against its own header before serving its first byte. Once a length lands, the library is told the release changed, so the mount and Plex both see the real length. zurg sizes up to eight releases at a time on an account of twelve connections or fewer and more on a larger one (twelve on 16 connections, sixteen from 20), and when acquisition checks a release with the news servers, that check queues beside this sizing and read-ahead and never takes the connection kept for a read a player is waiting on.
 
 ### Jellyfin / Emby / Infuse
 
@@ -472,7 +472,7 @@ A release with no PAR2 files in its NZB and no second news account has no recove
 
 ## Performance
 
-Measured against a live Eweka account with 50 connections:
+Measured against a live news account with a large connection allowance:
 
 | | |
 |---|---|
@@ -485,7 +485,7 @@ The connection allowance sets the first ceiling on single-stream rate. zurg keep
 - **Set `connections` to your plan's real number.** This is the tuning knob. Eight connections will not stream a remux.
 - **Two primary accounts add up.** Reads are driven at the combined allowance of every non-`backup` account, so a second unlimited provider raises the ceiling as well as covering the first one's retention gaps. A `backup` account does not count toward it.
 - **`warm_connections` (2 by default) buys latency, not throughput.** It holds that many connections open, idle and authenticated, so the first read after a start or a quiet spell does not spend ~0.8s dialling before its first byte: 1.5s to first byte cold against 0.15s warm. Once a stream is running it changes nothing.
-- **The dials that do happen stick to one backend, so their TLS sessions resume.** A dial costs about 0.8s — measured against news.frugalusenet.com on 2026-08-29: 106ms TCP, 213ms TLS handshake, 256ms greeting, 218ms for the two `AUTHINFO` exchanges. A provider hostname is a rotation (that one resolves to 11 addresses) and a TLS session ticket is only good at the machine that issued it, so redialling whichever address the resolver named first resumed **0 of 3** sessions while redialling the same address resumed **3 of 3**. Each account now redials the address its last connection came from, which takes **110–140ms off every redial** there — a resumed handshake is 109–141ms against 225–261ms for a full one. Eweka's round trip is ~18ms, so the saving on it is smaller. The pin is dropped and the name resolved again as soon as that address stops answering, so nothing is stuck to a machine the provider has retired; a refusal that reaches NNTP — the account at its connection ceiling, a rejected password — keeps it, because that is the account's answer and not the backend's. Each dial logs its phases at debug level, `resumed=` included.
+- **The dials that do happen stick to one backend, so their TLS sessions resume.** A dial costs about 0.8s — measured against a live news server on 2026-08-29: 106ms TCP, 213ms TLS handshake, 256ms greeting, 218ms for the two `AUTHINFO` exchanges. A provider hostname is a rotation (that one resolves to 11 addresses) and a TLS session ticket is only good at the machine that issued it, so redialling whichever address the resolver named first resumed **0 of 3** sessions while redialling the same address resumed **3 of 3**. Each account now redials the address its last connection came from, which takes **110–140ms off every redial** there — a resumed handshake is 109–141ms against 225–261ms for a full one. A server with a ~18ms round trip saves less. The pin is dropped and the name resolved again as soon as that address stops answering, so nothing is stuck to a machine the provider has retired; a refusal that reaches NNTP — the account at its connection ceiling, a rejected password — keeps it, because that is the account's answer and not the backend's. Each dial logs its phases at debug level, `resumed=` included.
 - `cache_size_mb` (512 default) is shared across every file being read. Raise it if you run several concurrent streams; it does not make one stream faster. Speculative reads may reserve at most half of it across at most two readers, leaving the other half for articles already consumed or about to be consumed.
 - Whether a release is RAR-packed or posted as plain files no longer matters much for throughput.
 

@@ -76,10 +76,13 @@ A library for your media server needs something to fill it.
   from there into the root folder you made beside it. Nothing is copied. Most
   library setups should use this. See [Sonarr &
   Radarr](../guides/sonarr-radarr.md). zurg checks every grab against the news
-  servers before it reports it finished. It asks for the start and the end of
-  every file. zurg rebuilds a release with any of that gone from its PAR2 files
-  where it can. One it cannot rebuild is reported **Failed**. The \*arr then
-  blocklists it and grabs another.
+  servers before it reports it finished. It asks about the start and the end of
+  every file. It also downloads the first article of each file. That is up to
+  sixty-four of them plus a few more of a release with only a few files. Some
+  news servers still say an article exists after its content was taken down and
+  only a download shows that. zurg rebuilds a release with articles gone from
+  its PAR2 files where it can. One it cannot rebuild is reported **Failed**.
+  The \*arr then blocklists it and grabs another.
 - **Acquisition.** zurg can fetch requests by itself. They come from your Plex
   watchlist and from Seerr and the \*arrs. It searches your Newznab indexers and
   checks each grab the same way. See [acquisition](../guides/acquisition.md).
@@ -321,8 +324,8 @@ a scan.
    `autoEmptyTrash` is 0. If the mount disappears mid-scan then Plex concludes
    every file was deleted. A zurg restart or an rclone remount is enough to do
    it. With auto-empty on they are removed permanently and at once. With it off
-   they sit in the trash and come back with the mount. This has cost a
-   30,065-item library before.
+   they sit in the trash and come back with the mount. This has cost tens
+   of thousands of items before.
 2. **Uncheck "Generate video preview thumbnails".** On Usenet every thumbnail
    pass is a full read of the release through your connection allowance.
 

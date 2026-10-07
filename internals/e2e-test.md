@@ -427,7 +427,7 @@ six questions:
 
 **One account, one instance.** A second zurg on a news account competes with the
 first for its connection allowance, and the server refuses the *older* one — on
-`fun` the production `zurg-usenet` holds all 50 of the Eweka plan's connections,
+`fun` the production `zurg-usenet` holds every connection the account's plan allows,
 so the benchmark runs at 10 (`BENCH_NNTP_CONNECTIONS`) and a
 `Too many connections` refusal is reported as a **skip, not a failure**. The
 same goes for an unreachable server or a rejected `AUTHINFO`: the environment

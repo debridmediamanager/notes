@@ -376,6 +376,13 @@ and works on each season as one piece of work.
 - **A new episode is new work.** When next week's episode airs, the season is
   listed again with that episode. zurg does not search again for the
   episodes it already has.
+- **A new episode is searched for again within minutes.** Its release is
+  usually posted within the hour after it airs, so a search right at air time
+  often finds nothing. For six hours after an episode airs, zurg tries again
+  every two minutes, and for the next two days every ten. After that it backs
+  off as for anything else (see [persistence and recovery](#persistence-and-recovery)).
+  On a debrid account the release also has to be cached there already,
+  because zurg adds only what the account holds.
 - **A deleted episode is wanted again.** When Sonarr lists an episode zurg
   already acquired, zurg looks in the season folder. If no video for that
   episode is there any more, it is searched for again. If one is, Sonarr has
@@ -758,6 +765,14 @@ watchlist — a durable list to browse, which zurg satisfies in the background
 without editing. Leaving a title in place costs nothing to re-check: the
 receipt already covers it, so no indexer is asked about it again.
 
+A title zurg got nothing for stays on the watchlist whatever this says. When
+every release that settles it was already in the library, your own copy or
+one another request brought in, nothing was fetched or added, and removing it
+would only edit your list. Those releases are still checked, and the title
+still counts as done, so it is not searched for again while it stays listed.
+Removed and added again, it stays again. A show zurg fetched any season or
+episode of is one it got, and leaves as before.
+
 `only_new_items` (default `true`) adopts whatever the list already holds the
 first time a source runs, and acts only on what is added afterwards. Enabling
 the feature should start watching a list, not spend an evening working through
@@ -774,10 +789,12 @@ adding it again is an ordinary new request.
 A saved NZB is not a release. The indexer answering, the answer parsing as an
 NZB and the file reaching `nzbs/` are facts about the indexer, not about the
 post. So each acquired NZB is put to the configured news accounts before the
-engine acknowledges the request. They are asked about the start and the end of
-every content file. That is the first sixteen articles and the last one. It is
-the same check `/api?mode=addfile` makes for Sonarr and Radarr. Three answers, and keeping them apart is the whole
-point:
+engine acknowledges the request. The first sixteen articles and the last of
+every content file are asked about with `STAT`, and the first article of each
+file, plus a few more of a release of few files, is fetched whole (at most
+sixty-four), because a news server can answer `STAT` for an article whose
+content it has taken down. It is the same walk `/api?mode=addfile` makes for
+Sonarr and Radarr. Three answers, and keeping them apart is the whole point:
 
 - **Articles gone.** The grab does not count. The receipt is reopened, so the
   target is wanted again, and the release is recorded as dead for 30 days so
@@ -818,7 +835,13 @@ fetching it a second time.
 An install with no `nzb` provider has no news servers to ask. Acquisition still
 runs there when a debrid account takes torrents. Each torrent is checked by
 whether it reaches the library with files in it, as
-[Newznab and Torznab](#newznab-and-torznab) describes. An NZB grab is never
+[Newznab and Torznab](#newznab-and-torznab) describes. It also has to hold
+something to play: a video, audio, or an archive zurg streams from (RAR, 7z,
+zip or numbered parts). A torrent holding only a program, a disc image or text
+is a fake, which new episodes attract in the first hours after they air. It is
+set aside like a dead post and the next release is tried at once. If zurg added
+it to the account for this request, it is deleted from the account again. A
+torrent the account already held is left where it is. An NZB grab is never
 acknowledged there, because nothing could check it or play it. One left
 waiting from before the `nzb` provider was removed is set aside like a dead
 post, and the next release is tried.
@@ -841,11 +864,29 @@ where supported. NZBs written before a crash are reused even if the last ledger
 write did not finish. Once acquisition is recorded, Plex removal retries do not
 acquire the title again.
 
-Failures retry after 5, 10 and 15 minutes, then one hour, then every six hours
-while the source still wants the item. Counts and deadlines survive reboots,
-including long shutdowns. Open Seerr requests remain monitored. Plex items leave
+Failures retry after 5, 10 and 15 minutes, then one hour, then six hours. From
+there a title waits half as long as it has been failing, so the waits grow:
+about half a day after a day of failures, two days after four, a week at
+most. An attempt that runs out of its five minutes having found nothing counts
+as a failure too. A title that has failed for two weeks, over eight attempts at
+least, is **parked**: zurg stops asking the indexers about it. It stays on the
+acquisition page as parked, with how long it failed and why, and the log says
+so once. **Resume** on that page, for one title or for every parked title of a
+source, starts it again from the first short retry. A source that stops
+listing a title and lists it again has asked for it afresh, so that resumes
+it too. A grab the news servers confirm starts a title's two weeks again, so a
+season that is still finding episodes is never parked. Counts and deadlines
+survive reboots, including long shutdowns.
+
+A queue that fails forever is expensive in a way the title list does not show.
+On one install, thousands of Radarr and Sonarr titles nothing could be found
+for, retried every six hours for good, took an indexer from a few hundred
+queries a day to tens of thousands, and the indexer suspended the account.
+Most were films with no Usenet release and upgrades that every release the
+profile allowed had already been refused for. Open Seerr requests remain monitored. Plex items leave
 the watchlist only after all planned seasons are acquired *and* checked against
-the news servers, and only when `remove_after_grab` allows it. Its loose-episode fallback remains limited to episodes found
+the news servers, only when `remove_after_grab` allows it, and only when zurg
+fetched something for them. Its loose-episode fallback remains limited to episodes found
 in indexer results.
 
 An unavailable source pauses its own work. A failed state write pauses further

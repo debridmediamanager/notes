@@ -20,7 +20,9 @@ tried first. See [Newznab and Torznab](acquisition.md#newznab-and-torznab).
 
 Successful acquisition removes an item from the watchlist, unless
 `remove_after_grab: false` says otherwise; with it off the title stays and zurg
-satisfies it in the background. `only_new_items` (on by default) means turning
+satisfies it in the background. A title you already had stays either way: when
+every release that settles it was already in the library, zurg fetched nothing
+for it and leaves your list alone. `only_new_items` (on by default) means turning
 the feature on starts watching the list rather than working through everything
 already on it. Both are documented under
 [what acquiring does to the source's own list](acquisition.md#what-acquiring-does-to-the-sources-own-list). Every planned season

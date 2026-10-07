@@ -218,7 +218,7 @@ The `nzb` type is Usenet rather than a debrid service: `.nzb` files dropped into
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `host` | string | *(required)* | The news server hostname, e.g. `news.eweka.nl`. |
+| `host` | string | *(required)* | The news server hostname, e.g. `news.example.com`. |
 | `port` | int | `563` with TLS, `119` without | The news server port. |
 | `tls` | bool | `false` | Wraps the connection in TLS. |
 | `username` | string | `""` | The account username. |
@@ -388,7 +388,7 @@ plex_match_every_mins: 1440
 
 ### Watchlist
 
-Add something to your Plex watchlist and zurg fetches it. Every new watchlist item is searched on your indexers. A Newznab indexer gives an NZB. It drops into the Usenet backend exactly as a Sonarr grab or a Stremio play would. The three share the naming rules so they find each other's grabs instead of duplicating them. A Torznab indexer gives a torrent. It is added to a debrid account only when that account already has it cached. `prefer` decides which kind is tried first. A movie becomes one release. A show is acquired season by season and season packs come before loose episodes. A season nobody posted a pack of falls back to the loose episodes the search surfaced, the best release for each. The item leaves the watchlist only once the release behind it has been checked and only when `remove_after_grab` allows it. Failures stay on the list. They are tried again after 5, 10 and 15 minutes, then after an hour, then every six hours for as long as the item is listed.
+Add something to your Plex watchlist and zurg fetches it. Every new watchlist item is searched on your indexers. A Newznab indexer gives an NZB. It drops into the Usenet backend exactly as a Sonarr grab or a Stremio play would. The three share the naming rules so they find each other's grabs instead of duplicating them. A Torznab indexer gives a torrent. It is added to a debrid account only when that account already has it cached. `prefer` decides which kind is tried first. A movie becomes one release. A show is acquired season by season and season packs come before loose episodes. A season nobody posted a pack of falls back to the loose episodes the search surfaced, the best release for each. The item leaves the watchlist only once the release behind it has been checked and only when `remove_after_grab` allows it. Failures stay on the list. They are tried again after 5, 10 and 15 minutes, then after an hour, then further and further apart, and a title that has failed for two weeks is parked until you resume it on the acquisition page. See [persistence and recovery](../guides/acquisition.md#persistence-and-recovery).
 
 It needs a `plex_token` and at least one indexer. With no list of its own it borrows the Stremio addon's. The monitor talks to Plex's cloud service, so `plex_server_url` is not required. NZBs need an `nzb` provider on the same instance. Torrents need a debrid account that takes them. Either one is enough.
 
@@ -417,8 +417,8 @@ watchlist:
   max_season_size_gb: 100
   quality: best
   indexers:
-    - name: nzbgeek
-      url: https://api.nzbgeek.info
+    - name: my-indexer
+      url: https://indexer.example
       api_key: your-api-key
 ```
 
@@ -1335,12 +1335,15 @@ retry_503_errors: false
 | `load_dumped_torrents` | bool | `false` | When true, loads torrent data from the `dump/` folder on startup. This is a recovery mechanism — if zurg has previously dumped torrent state (e.g., during a crash), enabling this restores that state without re-fetching everything from RD. |
 | `log_requests` | bool | `false` | When true, logs detailed statistics for every download request (file path, response time, bytes served). Useful for debugging streaming issues or understanding access patterns. Generates significant log volume — disable in production. |
 | `log_level` | string | `DEBUG` | How much detail to log: `DEBUG`, `INFO`, `WARN`, `ERROR` or `FATAL`. Changing it from the dashboard takes effect immediately — no restart, and it re-levels every component at once. It overrides the `LOG_LEVEL` environment variable, so the dashboard control still works on a container that bakes one in; leave the key out to hand the choice back to `LOG_LEVEL`. A value that names no level is ignored with a warning at startup rather than being fatal. |
+| `traffic_alert_gb` | int | `0` | Warns when one debrid account moves more than this many GiB through zurg in a day (the day resets at 00:05 CET, with Real-Debrid's allowance). The warning names the files that used the most this hour and who read them, so a library scan or a client pulling whole files shows up while it is happening. zurg also logs a summary of the hour's largest files at the top of every hour, and a line for any single read of 1 GiB or more, whether or not the alert is set. `0` turns the alert off. |
+| `traffic_alert_webhook` | string | — | A Discord webhook the traffic alert is also posted to. Keep it private: anyone with the URL can post to that channel. |
 
 ```yaml
 get_downloads_limit: -1
 load_dumped_torrents: false
 log_requests: false
 log_level: DEBUG
+traffic_alert_gb: 500
 ```
 
 ## 7. Directories & Filters
@@ -1447,6 +1450,8 @@ Two consequences follow from accounts not holding identical content:
 
 The directory is named after the account's `name`, which defaults to its `type`. Two accounts on one service need distinct names (`rd-main`, `rd-backup`) and get a directory each. The Usenet backend is `nzb` by default, so it appears as `__nzb__`; set `name: usenet` on that provider entry if you would rather browse `__usenet__`.
 
+You can rename an account later. zurg sees the same releases listed under the new name and moves them there. The old directory goes away with the old name. If a media server reads that directory point it at the new one before you rename.
+
 Because the same release appears under every account holding it as well as in your filtered directories, point a media server at one part of the mount rather than all of it, or it will scan the same content several times.
 
 An account named after a directory zurg already uses (`all`, `unplayable`, `dump`, `downloads`) gets no per-account directory, and zurg logs a warning at startup rather than taking the existing one over.
@@ -1483,3 +1488,40 @@ portable files.
 
 See [portable libraries](../guides/local-libraries.md) for offline export, migration
 from `dump/`, sharing semantics and playback limits.
+
+#### Offloading an online account into a local library
+
+A Real-Debrid or AllDebrid account that owns its catalog (no `source`, or
+`source: provider`) can move its finished releases into a local library and
+delete them from the account, which frees their slots:
+
+```yaml
+providers:
+  - name: rd
+    type: realdebrid
+    token: YOUR_RD_TOKEN
+    library:
+      offload_to: rd-local      # a local entry of the same type
+      offload_after_mins: 30    # optional, 30 is the default
+
+  - name: rd-local
+    type: realdebrid
+    token: YOUR_RD_TOKEN        # the same account
+    library:
+      source: local
+```
+
+| Key | Default | Meaning |
+|---|---|---|
+| `library.offload_to` | none | Name of an enabled `source: local` entry of the same type. Only `realdebrid` and `alldebrid` accounts accept it, since only their links keep working after the torrent is deleted. It cannot name the account itself. |
+| `library.offload_after_mins` | `30` | How long a release must have been complete on the account before it is moved automatically. Counted from when zurg first saw it complete, so a restart starts the wait again. Requires `offload_to`. |
+
+A release moves only when every file has a link another account could
+redeem, nothing is repairing or downloading it, no Sonarr or Radarr job in the
+qBittorrent endpoint still lists it, and moving it keeps its folder name and
+every directory it is in. Its folder stays where it was and no media server
+scan is started. The release page in the dashboard can move one release by
+hand, with or without `offload_to`. See
+[portable libraries](../guides/local-libraries.md#offload-an-online-account-into-a-local-library)
+for the order of the steps, what happens when one fails, and how local playback
+on a shared token is protected.

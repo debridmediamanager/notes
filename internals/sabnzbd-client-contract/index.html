@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844632138034">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844691671266">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844632138034" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844691671266" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844632138034" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844691671266" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844632138034" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844632138034" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844691671266" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844691671266" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -2322,9 +2322,13 @@ Warnings that the client cannot resolve still require review; a larger window
 lets other jobs reach import while those warnings occupy history slots.</p>
 <p>The availability check before completion samples the first sixteen articles
 and the last article of each content file. This catches a missing article in
-the media header that the former first-article canary missed. It transfers one
-body per release to check article identity, then uses STAT for the remaining
-sample. It does not validate every article or prove that the media decodes.
+the media header that the former first-article canary missed. It transfers the
+first article of each content file, which checks article identity and that the
+body is still served (a provider can answer STAT for an article whose body it
+has taken down), plus randomly drawn articles up to sixteen bodies for a
+release of fewer files than that, and at most sixty-four bodies in all; a body
+the article cache already holds is not fetched again. STAT covers the rest of
+the sample. It does not validate every article or prove that the media decodes.
 STAT requests are batched per file so the sample pays for one pool reservation
 instead of seventeen, without raising the account&#x27;s connection allowance.
 An unusable batch falls back to individual STATs.

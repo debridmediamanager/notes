@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844632138034">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844691671266">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844632138034" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844691671266" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844632138034" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844691671266" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844632138034" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844632138034" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844691671266" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844691671266" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -600,6 +600,15 @@ listed again with that episode. zurg does not search again for the
 episodes it already has.</p>
 </li>
 <li>
+<p><strong>A new episode is searched for again within minutes.</strong> Its release is
+usually posted within the hour after it airs, so a search right at air time
+often finds nothing. For six hours after an episode airs, zurg tries again
+every two minutes, and for the next two days every ten. After that it backs
+off as for anything else (see <doc-anchor-trigger to="#persistence-and-recovery">persistence and recovery</doc-anchor-trigger>).
+On a debrid account the release also has to be cached there already,
+because zurg adds only what the account holds.</p>
+</li>
+<li>
 <p><strong>A deleted episode is wanted again.</strong> When Sonarr lists an episode zurg
 already acquired, zurg looks in the season folder. If no video for that
 episode is there any more, it is searched for again. If one is, Sonarr has
@@ -1021,6 +1030,13 @@ zurg has got is done with. Set it to <code translate="no" v-pre>false</code> and
 watchlist — a durable list to browse, which zurg satisfies in the background
 without editing. Leaving a title in place costs nothing to re-check: the
 receipt already covers it, so no indexer is asked about it again.</p>
+<p>A title zurg got nothing for stays on the watchlist whatever this says. When
+every release that settles it was already in the library, your own copy or
+one another request brought in, nothing was fetched or added, and removing it
+would only edit your list. Those releases are still checked, and the title
+still counts as done, so it is not searched for again while it stays listed.
+Removed and added again, it stays again. A show zurg fetched any season or
+episode of is one it got, and leaves as before.</p>
 <p><code translate="no" v-pre>only_new_items</code> (default <code translate="no" v-pre>true</code>) adopts whatever the list already holds the
 first time a source runs, and acts only on what is added afterwards. Enabling
 the feature should start watching a list, not spend an evening working through
@@ -1034,10 +1050,12 @@ adding it again is an ordinary new request.</p>
 <p>A saved NZB is not a release. The indexer answering, the answer parsing as an
 NZB and the file reaching <code translate="no" v-pre>nzbs/</code> are facts about the indexer, not about the
 post. So each acquired NZB is put to the configured news accounts before the
-engine acknowledges the request. They are asked about the start and the end of
-every content file. That is the first sixteen articles and the last one. It is
-the same check <code translate="no" v-pre>/api?mode=addfile</code> makes for Sonarr and Radarr. Three answers, and keeping them apart is the whole
-point:</p>
+engine acknowledges the request. The first sixteen articles and the last of
+every content file are asked about with <code translate="no" v-pre>STAT</code>, and the first article of each
+file, plus a few more of a release of few files, is fetched whole (at most
+sixty-four), because a news server can answer <code translate="no" v-pre>STAT</code> for an article whose
+content it has taken down. It is the same walk <code translate="no" v-pre>/api?mode=addfile</code> makes for
+Sonarr and Radarr. Three answers, and keeping them apart is the whole point:</p>
 <ul>
 <li>
 <p><strong>Articles gone.</strong> The grab does not count. The receipt is reopened, so the
@@ -1082,7 +1100,13 @@ fetching it a second time.</p>
 <p>An install with no <code translate="no" v-pre>nzb</code> provider has no news servers to ask. Acquisition still
 runs there when a debrid account takes torrents. Each torrent is checked by
 whether it reaches the library with files in it, as
-<doc-anchor-trigger to="#newznab-and-torznab">Newznab and Torznab</doc-anchor-trigger> describes. An NZB grab is never
+<doc-anchor-trigger to="#newznab-and-torznab">Newznab and Torznab</doc-anchor-trigger> describes. It also has to hold
+something to play: a video, audio, or an archive zurg streams from (RAR, 7z,
+zip or numbered parts). A torrent holding only a program, a disc image or text
+is a fake, which new episodes attract in the first hours after they air. It is
+set aside like a dead post and the next release is tried at once. If zurg added
+it to the account for this request, it is deleted from the account again. A
+torrent the account already held is left where it is. An NZB grab is never
 acknowledged there, because nothing could check it or play it. One left
 waiting from before the <code translate="no" v-pre>nzb</code> provider was removed is set aside like a dead
 post, and the next release is tried.</p>
@@ -1101,11 +1125,28 @@ Writes flush a temporary file, replace the ledger and flush the parent directory
 where supported. NZBs written before a crash are reused even if the last ledger
 write did not finish. Once acquisition is recorded, Plex removal retries do not
 acquire the title again.</p>
-<p>Failures retry after 5, 10 and 15 minutes, then one hour, then every six hours
-while the source still wants the item. Counts and deadlines survive reboots,
-including long shutdowns. Open Seerr requests remain monitored. Plex items leave
+<p>Failures retry after 5, 10 and 15 minutes, then one hour, then six hours. From
+there a title waits half as long as it has been failing, so the waits grow:
+about half a day after a day of failures, two days after four, a week at
+most. An attempt that runs out of its five minutes having found nothing counts
+as a failure too. A title that has failed for two weeks, over eight attempts at
+least, is <strong>parked</strong>: zurg stops asking the indexers about it. It stays on the
+acquisition page as parked, with how long it failed and why, and the log says
+so once. <strong>Resume</strong> on that page, for one title or for every parked title of a
+source, starts it again from the first short retry. A source that stops
+listing a title and lists it again has asked for it afresh, so that resumes
+it too. A grab the news servers confirm starts a title&#x27;s two weeks again, so a
+season that is still finding episodes is never parked. Counts and deadlines
+survive reboots, including long shutdowns.</p>
+<p>A queue that fails forever is expensive in a way the title list does not show.
+On one install, thousands of Radarr and Sonarr titles nothing could be found
+for, retried every six hours for good, took an indexer from a few hundred
+queries a day to tens of thousands, and the indexer suspended the account.
+Most were films with no Usenet release and upgrades that every release the
+profile allowed had already been refused for. Open Seerr requests remain monitored. Plex items leave
 the watchlist only after all planned seasons are acquired <em>and</em> checked against
-the news servers, and only when <code translate="no" v-pre>remove_after_grab</code> allows it. Its loose-episode fallback remains limited to episodes found
+the news servers, only when <code translate="no" v-pre>remove_after_grab</code> allows it, and only when zurg
+fetched something for them. Its loose-episode fallback remains limited to episodes found
 in indexer results.</p>
 <p>An unavailable source pauses its own work. A failed state write pauses further
 acquisition until saving succeeds. An unreadable or unsupported ledger pauses

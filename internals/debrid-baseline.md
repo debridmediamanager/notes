@@ -287,7 +287,7 @@ through, then zurg is started into it.
 
 **Starting zurg while its provider is down produces an empty mount.** That is the
 scenario that matters operationally — a host reboots during a Real-Debrid 503 spell —
-and it is the exact condition that destroyed 30,065 Plex items on `fun` in August,
+and it is the exact condition that destroyed tens of thousands of Plex items on `fun` in August,
 where a momentarily empty mount during a scan reads as "every file was deleted". The
 guard for that lives in Plex (`autoEmptyTrash 0`), not in zurg.
 
@@ -532,7 +532,7 @@ one thread and 23 minutes at eight**, before Plex's own work.
 ### Streaming while scanning
 
 The case worth fearing, since a scan against a momentarily unhappy mount is what cost
-30,065 Plex items on `fun`.
+tens of thousands of Plex items on `fun`.
 
 | scan concurrency | stream alone | stream during scan | kept | scan wall |
 |---|---|---|---|---|

@@ -286,12 +286,16 @@ can hand it a magnet or a `.torrent` for a debrid account. Both import out of
 `__magic__/__all__` by rename. Your options.
 
 - **NZBs.** Turn on `sabnzbd.enabled` and point the \*arrs at zurg. zurg checks
-  each grab before it reports it finished. It asks the news servers for the
-  start and the end of every file. zurg rebuilds a release with any of that
-  gone from its PAR2 files where it can. One it cannot rebuild is reported
-  **Failed**. The \*arr then blocklists it and grabs another. A post that lost
-  a stretch further into a file still reports Completed and fails on the read
-  that reaches the gap.
+  each grab before it reports it finished. It asks the news servers about the
+  start and the end of every file. It also downloads the first article of each
+  file. That is up to sixty-four of them plus a few more of a release with only
+  a few files. Some news servers still say an article exists after its content
+  was taken down and only a download shows that. zurg rebuilds a release with
+  articles gone from its PAR2 files where it can. One it cannot rebuild is
+  reported **Failed**. The \*arr then blocklists it and grabs another. The
+  check is a sample and not the whole post. A post that lost a stretch the
+  sample did not reach still reports Completed and fails on the read that
+  reaches the gap.
 - **Torrents.** Turn on `qbittorrent.enabled` and add it as a second download
   client. A private tracker's release works when the indexer hands out a
   `.torrent` file rather than a bare magnet, because the file keys the account's
