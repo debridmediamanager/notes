@@ -220,11 +220,16 @@ endpoint](../guides/sonarr-radarr.md) that Sonarr and Radarr can grab through.
 It replaces nzbdav as their download client. The grab lands in
 `__magic__/__all__` and the import moves it out by rename. Nothing is copied.
 zurg checks each grab before it reports it finished. It asks the news servers
-for the start and the end of every file. zurg rebuilds a release with any of
-that gone from its PAR2 files where it can. One it cannot rebuild is reported
-**Failed**. The \*arr then blocklists it and grabs another. A post that lost a
-stretch further into a file still reports Completed and fails on the read that
-reaches the gap. Keep the \*arrs' root folders inside `__magic__`. A root
-folder anywhere else gets a full copy of every import. In Docker give the \*arr one volume that holds zurg's whole mount. A
-download folder and root folders on two volumes copy every import too. See
+about the start and the end of every file. It also downloads the first article
+of each file. That is up to sixty-four of them plus a few more of a release
+with only a few files. Some news servers still say an article exists after its
+content was taken down and only a download shows that. zurg rebuilds a release
+with articles gone from its PAR2 files where it can. One it cannot rebuild is
+reported **Failed**. The \*arr then blocklists it and grabs another. The check
+is a sample and not the whole post. A post that lost a stretch the sample did
+not reach still reports Completed and fails on the read that reaches the gap.
+Keep the \*arrs' root folders inside `__magic__`. A root folder anywhere else
+gets a full copy of every import. In Docker give the \*arr one volume that
+holds zurg's whole mount. A download folder and root folders on two volumes
+copy every import too. See
 [one volume](../guides/sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
