@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844691671266">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844696297044">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844691671266" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844696297044" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844691671266" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844696297044" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844691671266" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844691671266" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844696297044" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844696297044" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -187,7 +187,7 @@
 <h1 id="sonarr-and-radarr-with-torrents-step-by-step">Sonarr and Radarr with torrents, step by step</h1>
 <p>The <a href="../sonarr-radarr/">previous walkthrough</a> pointed the *arrs at zurg for Usenet, with zurg answering as a SABnzbd. This is the other half: zurg answers as a <strong>qBittorrent</strong>, the *arrs hand it a magnet or a <code translate="no" v-pre>.torrent</code> instead of an NZB, and the release goes onto a debrid account instead of a news server. The import is the same trick — a rename inside <code translate="no" v-pre>__magic__</code>, nothing downloaded to import, nothing copied.</p>
 <p><strong>Which of the two the *arr sends is not cosmetic.</strong> A <code translate="no" v-pre>.torrent</code> is uploaded to the account as the file itself, on all three services; only a magnet is added by info hash alone. A magnet makes the account work out what the torrent holds from the hash, and a private tracker&#x27;s hash has no public swarm to work it out from — Real-Debrid dies in <code translate="no" v-pre>magnet_error</code> with no files, and TorBox accepts it and then sits in <code translate="no" v-pre>checking</code> with no file list, no size and a hundred-day estimate, so the grab neither fails nor finishes. The <code translate="no" v-pre>.torrent</code> file keys the account&#x27;s cache lookup by hash directly, so content the account already holds is added at once with no magnet resolution at all. That is what makes private indexers work here: their releases are addable exactly when the account already holds the content, which for anything a community shares is the common case. Point the *arr at an indexer that hands out <code translate="no" v-pre>.torrent</code> files rather than magnets — private ones do.</p>
-<p>Everything below was captured against zurg <code translate="no" v-pre>2026.08.30.0459-nightly-73-g5b4c9790</code>, Sonarr <code translate="no" v-pre>4.0.19.2979</code>, Radarr <code translate="no" v-pre>6.3.0.10514</code> and Prowlarr <code translate="no" v-pre>2.5.2.5491</code>, on a live install with a real AllDebrid account. Host and user names have been changed to <code translate="no" v-pre>yowmamasita@zurg-server</code>; nothing else in the captured output was altered, and API keys shown are illustrative.</p>
+<p>Everything below was captured against zurg <code translate="no" v-pre>2026.08.30.0459-nightly-73-g5b4c9790</code>, Sonarr <code translate="no" v-pre>4.0.19.2979</code>, Radarr <code translate="no" v-pre>6.3.0.10514</code> and Prowlarr <code translate="no" v-pre>2.5.2.5491</code>, on a live install with a real AllDebrid account. Host and user names have been changed to <code translate="no" v-pre>you@zurg-server</code>. Indexer names read <code translate="no" v-pre>my-indexer</code>. API keys and library counts are illustrative. Nothing else in the captured output was altered.</p>
 <h2 id="before-you-start">Before you start</h2>
 <p>Three things have to be true. Check all three now — every one of them fails later as something that looks unrelated.</p>
 <ol>
@@ -253,10 +253,10 @@ INFO  router.qbittorrent  qBittorrent: torrents are offered to alldebrid, in tha
 <p><strong>If you left <code translate="no" v-pre>api_key</code> empty</strong>, zurg generated one on first start, wrote it to <code translate="no" v-pre>data/qbittorrent-apikey</code>, and logged it once:</p>
 <div id="2-find-the-api-key-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">$ cat data/qbittorrent-apikey
-d09abba6e81524618e2d43a3748af385
+fedcba9876543210fedcba9876543210
 
 $ journalctl -u zurg | grep 'generated API key'
-qBittorrent: generated API key d09abba6e8… — paste it into Sonarr or Radarr's
+qBittorrent: generated API key fedcba9876… — paste it into Sonarr or Radarr's
 API Key field, or pin it as qbittorrent.api_key in config.yml</code></pre>
 </doc-codeblock></div>
 <p>Illustrative key — yours will differ. The file survives restarts, so the key is stable once generated.</p>
@@ -271,7 +271,7 @@ API Key field, or pin it as qbittorrent.api_key in config.yml</code></pre>
 <h2 id="3-prove-it-answers">3. Prove it answers</h2>
 <p>Do this before touching Sonarr. Ten seconds, and it separates &quot;zurg is wrong&quot; from &quot;the *arr is wrong&quot; for the rest of the setup.</p>
 <div id="3-prove-it-answers-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ KEY=d09abba6e81524618e2d43a3748af385
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ KEY=fedcba9876543210fedcba9876543210
 $ ZURG=192.168.88.244:9995
 
 $ curl -s &quot;http://$ZURG/api/v2/app/webapiVersion&quot;
@@ -620,7 +620,7 @@ INFO  router.qbittorrent  qBittorrent: [Polarwindz] Ghost in the Shell (1995) (B
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">$ F=&quot;/mnt/zurg_qbt/__magic__/tv/One Piece/Season 23/[AnoZu] One Piece S23E21 1080p CR WEB-DL AAC 2.0 H.264.mkv&quot;
 
 $ ls -la &quot;$F&quot;
--rw-rw-r-- 1 yowmamasita users 1446325722 Aug 31 00:44 …mkv
+-rw-rw-r-- 1 you users 1446325722 Aug 31 00:44 …mkv
 
 $ dd if=&quot;$F&quot; bs=1M count=1 &gt;/dev/null
 1048576 bytes (1.0 MB, 1.0 MiB) copied, 0.00592934 s, 177 MB/s

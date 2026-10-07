@@ -12,7 +12,7 @@ It uses GitHub browser sign-in and installs into `$HOME\zurg`. Existing binaries
 
 No Docker, no WSL: the zurg `.exe` in a folder, a `config.yml` you write once, and a `Z:` drive in Explorer. This page walks the whole thing in two passes — first **RealDebrid with the qBittorrent endpoint**, then a full reset and **Usenet with the SABnzbd endpoint** — because those are the two installs people actually make, and they exercise different halves of zurg.
 
-Everything below was captured on a live install: Windows 11 Pro 23H2 (build 22631), PowerShell 5.1, WinFsp 2.0.23075, zurg `2026.08.30.0459-nightly-73-g5b4c9790`, and a Real-Debrid account plus a Usenet news account. User names have been changed; API keys and credentials shown are illustrative.
+Everything below was captured on a live install: Windows 11 Pro 23H2 (build 22631), PowerShell 5.1, WinFsp 2.0.23075, zurg `2026.08.30.0459-nightly-73-g5b4c9790`, and a Real-Debrid account plus a Usenet news account. User names have been changed. API keys and library counts are illustrative. So are any credentials.
 
 ## What you need
 
@@ -66,8 +66,8 @@ The walkthrough below shows the files and configuration behind the installer and
 Make a folder, put the binary in it, run it once with no config file:
 
 ```powershell
-PS C:\Users\yowmamasita> mkdir C:\Users\yowmamasita\zurg
-PS C:\Users\yowmamasita\zurg> .\zurg.exe
+PS C:\Users\you> mkdir C:\Users\you\zurg
+PS C:\Users\you\zurg> .\zurg.exe
 ```
 
 zurg creates a provider-neutral default config, tells you what to do next and exits:
@@ -81,7 +81,7 @@ INFO  zurg   Run zurg setup to choose provider(s), or add a providers block to c
 Run `.\zurg.exe setup` to select providers and download the helpers. After setup the folder looks like:
 
 ```
-C:\Users\yowmamasita\zurg\
+C:\Users\you\zurg\
 ├── bin\                ffprobe.exe, rclone.exe
 ├── data\               library cache, keys, the __magic__ table
 ├── dump\
@@ -145,7 +145,7 @@ Three Windows specifics in there:
 Start zurg the plain way for now — a PowerShell window in the folder:
 
 ```powershell
-PS C:\Users\yowmamasita\zurg> .\zurg.exe --config config.yml
+PS C:\Users\you\zurg> .\zurg.exe --config config.yml
 ```
 
 The first thing it does is Real-Debrid's network test — it unrestricts test links at every download region and measures latency, taking about twenty seconds. Then the lines that matter:
@@ -155,13 +155,12 @@ INFO  network_test  Network test completed!
 INFO  zurg          Provider realdebrid ready (type=realdebrid)
 INFO  router        __magic__ serves sidecar files from data\local\__magic__
 INFO  router.qbittorrent  qBittorrent API on /api/v2 and /qbittorrent/api/v2, save path Z:/__magic__/__all__, categories tv-sonarr, radarr
-INFO  router.qbittorrent  qBittorrent: generated API key 9ec56e41e8c9afa4d5480e1222ad3173 — paste it into Sonarr or Radarr's API Key field, or pin it as qbittorrent.api_key in config.yml
+INFO  router.qbittorrent  qBittorrent: generated API key fedcba9876543210fedcba9876543210 — paste it into Sonarr or Radarr's API Key field, or pin it as qbittorrent.api_key in config.yml
 INFO  zurg          Starting server on http://[::]:9999
-INFO  rclone        rclone started with mount Z:, union local C:\Users\yowmamasita\zurg\data\local
-INFO  zurg          Your realdebrid account will expire in 1858 days
+INFO  rclone        rclone started with mount Z:, union local C:\Users\you\zurg\data\local
 ```
 
-The generated key is also in `data\qbittorrent-apikey`. Then the library walk begins — the first start reads every torrent on the account, and on a large account that takes a while (a 3,300-torrent account took roughly 40 minutes here, sharing the provider's API budget with everything else on the account). **While it walks, `__magic__` answers *Library is still loading*** — that is expected, not a fault.
+The generated key is also in `data\qbittorrent-apikey`. Then the library walk begins — the first start reads every torrent on the account, and on a large account that takes a while. The walk shares the provider's API budget with everything else on the account. **While it walks, `__magic__` answers *Library is still loading*** — that is expected, not a fault.
 
 Three warnings you may see, all known and none fatal:
 
@@ -249,7 +248,7 @@ Switching the install from Real-Debrid to Usenet is a wipe: stop zurg, delete ev
 ```powershell
 PS> Stop-ScheduledTask zurg           # or close the console window
 PS> taskkill /IM zurg.exe /F ; taskkill /IM rclone.exe /F
-PS> cd C:\Users\yowmamasita\zurg
+PS> cd C:\Users\you\zurg
 PS> Get-ChildItem -Exclude zurg.exe, bin | Remove-Item -Recurse -Force
 PS> Get-ChildItem
 
@@ -310,7 +309,7 @@ Eight connections is plenty for streaming; the account's plan states its own cap
 ### Start it
 
 ```powershell
-PS C:\Users\yowmamasita\zurg> .\zurg.exe --config config.yml
+PS C:\Users\you\zurg> .\zurg.exe --config config.yml
 ```
 
 The contrast with the first pass is immediate: no walk. An NZB library starts empty — there is nothing to fetch from anywhere until you put an NZB in it — so startup is the network test, the endpoint lines, and the news connection:
@@ -320,9 +319,9 @@ INFO  nzb       NZB articles are kept in memory for the life of the process (nzb
 INFO  zurg      Provider nzb ready (type=nzb)
 INFO  router    __magic__ serves sidecar files from data\local\__magic__
 INFO  router.sabnzbd  SABnzbd API on /api and /sabnzbd/api, completed directory Z:/__magic__/__all__, categories tv, movies
-INFO  router.sabnzbd  SABnzbd: generated API key b7fb2b17e04244e2d36d0aae2d77b37a — paste it into Sonarr or Radarr, or pin it as sabnzbd.api_key in config.yml
+INFO  router.sabnzbd  SABnzbd: generated API key 0123456789abcdef0123456789abcdef — paste it into Sonarr or Radarr, or pin it as sabnzbd.api_key in config.yml
 INFO  zurg      Starting server on http://[::]:9999
-INFO  rclone    rclone started with mount Z:, union local C:\Users\yowmamasita\zurg\data\local
+INFO  rclone    rclone started with mount Z:, union local C:\Users\you\zurg\data\local
 INFO  zurg      Usenet account nzb connected: nntps://news.example.com:563 (8 connections)
 ```
 
@@ -345,7 +344,7 @@ The providers block carries the news account, and the download-client block now 
 The `nzbs\` directory is the whole intake. Put one NZB there — downloaded from any indexer — and zurg picks it up:
 
 ```powershell
-PS> Copy-Item .\lanterns.nzb C:\Users\yowmamasita\zurg\nzbs\
+PS> Copy-Item .\lanterns.nzb C:\Users\you\zurg\nzbs\
 ```
 
 ```
@@ -384,7 +383,7 @@ A drive letter belongs to the logon session that mounted it. In practice, on the
 | How zurg was started | The mount |
 |---|---|
 | A PowerShell window you opened | `Z:` on your desktop |
-| SSH (`ssh ben@machine … zurg.exe`) | Works, serves, **invisible on the desktop** — the SSH logon session is not yours |
+| SSH (`ssh you@machine … zurg.exe`) | Works, serves, **invisible on the desktop** — the SSH logon session is not yours |
 | `Invoke-CimMethod Win32_Process Create` from SSH | Same — the new process inherits the caller's logon session |
 | PsExec `-i 1` | Process on the interactive session, but in its **own** logon session — mount still invisible to the desktop |
 | **An interactive scheduled task** | **`Z:` on your desktop** |
@@ -404,7 +403,7 @@ Stop and restart ask zurg to shut down gracefully first so its rclone child rele
 The manual equivalent is a scheduled task that runs as you only when you are logged on:
 
 ```powershell
-$wdir = "C:\Users\yowmamasita\zurg"
+$wdir = "C:\Users\you\zurg"
 Set-Content "$wdir\start-zurg.cmd" "@echo off`ncd /d $wdir`nzurg.exe --config config.yml"
 
 $action    = New-ScheduledTaskAction -Execute "cmd.exe" -Argument "/c $wdir\start-zurg.cmd"
@@ -484,9 +483,9 @@ $env:ZURG_INSTALL_MODE = "update"; irm https://zurg.debridmediamanager.com/insta
 | `Z:` not in Explorer | The session rule — see [above](#keeping-it-running-the-session-rules). The mount is probably fine; check `http://localhost:9999/http/` first. |
 | `zurg doctor` says the task is ready but not running | No interactive user is logged in. Log into the desktop and run `.\zurg.exe service start`. |
 | `symlinks not supported without the --links flag` | `--links` missing from `rclone_extra_args`. Cosmetic — rclone answering WinFsp's symlink probe of the mount root, once, as the drive comes up. The mount works without it; add the flag to silence the line. |
-| `Library is still loading` under `__magic__` or `/http/` | The first Real-Debrid run walks the account. Wait; a 3,300-torrent account took ~40 minutes here. An NZB library never says this — it starts empty. |
+| `Library is still loading` under `__magic__` or `/http/` | The first Real-Debrid run walks the account. Wait. On a large account it can take most of an hour. An NZB library never says this — it starts empty. |
 | `realdebrid will not take <name>: it refuses that name outright` | Real-Debrid blocks some release names (`WEBRip` and friends). Grab a differently-named release; nothing is wrong with the setup. |
-| An add fails with `could not read back id=…` or rate-limit text | The account's API budget is spent — on this box, the library walk plus a second zurg on the same token did it. Let the walk finish, or don't share the token across instances. |
+| An add fails with `could not read back id=…` or rate-limit text | The account's API budget is spent. A first library walk can spend it. So can a second zurg on the same token. Let the walk finish. Do not share one token across instances. |
 | `cannot truncate data\magic.journal: Access is denied` | The Windows journal-compaction refusal. Placements still persist across restarts; the journal just never compacts. |
 | `the save path "Z:/__magic__/__all__" is not absolute` | A false positive on drive-letter paths. The endpoint works; the clients open `Z:/__magic__/__all__` fine. |
 | Task start refused, `0x800710E0` | The task is still "running" — a launcher window never exited. `Stop-ScheduledTask zurg`, then start. |

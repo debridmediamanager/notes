@@ -4,7 +4,7 @@ The [previous walkthrough](sonarr-radarr.md) pointed the \*arrs at zurg for Usen
 
 **Which of the two the \*arr sends is not cosmetic.** A `.torrent` is uploaded to the account as the file itself, on all three services; only a magnet is added by info hash alone. A magnet makes the account work out what the torrent holds from the hash, and a private tracker's hash has no public swarm to work it out from — Real-Debrid dies in `magnet_error` with no files, and TorBox accepts it and then sits in `checking` with no file list, no size and a hundred-day estimate, so the grab neither fails nor finishes. The `.torrent` file keys the account's cache lookup by hash directly, so content the account already holds is added at once with no magnet resolution at all. That is what makes private indexers work here: their releases are addable exactly when the account already holds the content, which for anything a community shares is the common case. Point the \*arr at an indexer that hands out `.torrent` files rather than magnets — private ones do.
 
-Everything below was captured against zurg `2026.08.30.0459-nightly-73-g5b4c9790`, Sonarr `4.0.19.2979`, Radarr `6.3.0.10514` and Prowlarr `2.5.2.5491`, on a live install with a real AllDebrid account. Host and user names have been changed to `yowmamasita@zurg-server`; nothing else in the captured output was altered, and API keys shown are illustrative.
+Everything below was captured against zurg `2026.08.30.0459-nightly-73-g5b4c9790`, Sonarr `4.0.19.2979`, Radarr `6.3.0.10514` and Prowlarr `2.5.2.5491`, on a live install with a real AllDebrid account. Host and user names have been changed to `you@zurg-server`. Indexer names read `my-indexer`. API keys and library counts are illustrative. Nothing else in the captured output was altered.
 
 ## Before you start
 
@@ -87,10 +87,10 @@ The API key is the entire authentication on this endpoint, so get it right once 
 
 ```bash
 $ cat data/qbittorrent-apikey
-d09abba6e81524618e2d43a3748af385
+fedcba9876543210fedcba9876543210
 
 $ journalctl -u zurg | grep 'generated API key'
-qBittorrent: generated API key d09abba6e8… — paste it into Sonarr or Radarr's
+qBittorrent: generated API key fedcba9876… — paste it into Sonarr or Radarr's
 API Key field, or pin it as qbittorrent.api_key in config.yml
 ```
 
@@ -111,7 +111,7 @@ Three ways to present the key, all accepted:
 Do this before touching Sonarr. Ten seconds, and it separates "zurg is wrong" from "the \*arr is wrong" for the rest of the setup.
 
 ```bash
-$ KEY=d09abba6e81524618e2d43a3748af385
+$ KEY=fedcba9876543210fedcba9876543210
 $ ZURG=192.168.88.244:9995
 
 $ curl -s "http://$ZURG/api/v2/app/webapiVersion"
@@ -360,7 +360,7 @@ The import moved the file into the root folder. Read both ends of one and ask ff
 $ F="/mnt/zurg_qbt/__magic__/tv/One Piece/Season 23/[AnoZu] One Piece S23E21 1080p CR WEB-DL AAC 2.0 H.264.mkv"
 
 $ ls -la "$F"
--rw-rw-r-- 1 yowmamasita users 1446325722 Aug 31 00:44 …mkv
+-rw-rw-r-- 1 you users 1446325722 Aug 31 00:44 …mkv
 
 $ dd if="$F" bs=1M count=1 >/dev/null
 1048576 bytes (1.0 MB, 1.0 MiB) copied, 0.00592934 s, 177 MB/s

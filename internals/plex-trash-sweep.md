@@ -116,26 +116,26 @@ scope**:
 | `TorrentCopy.UnrepairableReason` | this account's copy is dead | anything about other accounts |
 | `Torrent.UnrepairableReason` | no account can repair this | how much of the release is affected |
 
-### 2.2 Live measurements (fun, 2026-08-16)
+### 2.2 Live measurements (a production library, 2026-08-16)
 
-zurg library: **6,339 torrents — 6,141 `ok_torrent`, 198 `broken_torrent`.**
+Shares below are of the broken torrents, which were about **3% of the library**.
 
-Of the 198 broken, **195 carry an `Unfixable` reason**:
+**Nearly all of the broken ones (98%) carry an `Unfixable` reason**:
 
-| Reason | Count |
+| Reason | Share of broken |
 |---|---|
-| stalled download | 76 |
-| infringing torrent | 74 |
-| repair failed | 30 |
-| duplicate file IDs (pack torrent) | 7 |
-| rar'ed by RD | 2 |
-| repair failed, no seeders | 2 |
-| the lone cached file is broken | 1 |
-| invalid file ids | 1 |
-| repair failed, download status: error | 1 |
-| provider cannot re-add torrents | 1 |
+| stalled download | 38% |
+| infringing torrent | 37% |
+| repair failed | 15% |
+| duplicate file IDs (pack torrent) | 4% |
+| rar'ed by RD | 1% |
+| repair failed, no seeders | 1% |
+| the lone cached file is broken | under 1% |
+| invalid file ids | under 1% |
+| repair failed, download status: error | under 1% |
+| provider cannot re-add torrents | under 1% |
 
-**3 are broken without a reason** — still repairable.
+**The rest (2%) are broken without a reason** — still repairable.
 
 **But `Unfixable` is not the same as dead.** zurg already sorts these reasons into
 permanent and recoverable (`internal/torrent/unrepairable_reasons.go:44-70`).
@@ -147,42 +147,42 @@ temporary: `stalled download`, `repair failed`, `duplicate file IDs`,
 `rar'ed by RD`, `not cached`, `the lone cached file is broken`,
 `full torrent repair failed`.
 
-`repair failed, no seeders` was the ninth when the counts above were taken, and
-the 2 entries carrying it here are the reason it no longer is: no backend zurg
+`repair failed, no seeders` was the ninth when the shares above were taken, and
+the entries carrying it here are the reason it no longer is: no backend zurg
 speaks to reports seeders, so nothing ever measured that verdict — it was
 inferred from a repair running out of clock. It is now transient, and
-unrecordable besides (`verdictClaims`), so those two entries retire and are
+unrecordable besides (`verdictClaims`), so those entries retire and are
 tried again like any other.
 
-Applying that split to the counts above:
+Applying that split to the shares above:
 
-| | Count |
+| | Share of broken |
 |---|---|
-| Permanently unrepairable | **78** |
-| Unrepairable but recoverable | **117** |
-| Broken, no reason yet | 3 |
+| Permanently unrepairable | **39%** |
+| Unrepairable but recoverable | **59%** |
+| Broken, no reason yet | 2% |
 
-An unrecognised reason (`provider cannot re-add torrents`, 1 here) is in neither
+An unrecognised reason (`provider cannot re-add torrents`, one entry here) is in neither
 list, and `IsPermanentlyUnrepairable` returns false for it — the conservative
 answer, which is the one we want.
 
 This is the single most important finding for the design: **a rule keyed on
-"`Unfixable` is set" would remove Plex entries for 195 releases, when only 78 are
-actually dead.**
+"`Unfixable` is set" would remove Plex entries for two and a half times as many
+releases as are actually dead.**
 
 Crucially, where those broken torrents sit relative to the mount:
 
-| | Count | What Plex sees |
+| | Share of broken | What Plex sees |
 |---|---|---|
-| Broken, **still on the mount** | 148 | File appears to exist → never tombstoned. No trash icon; it fails only on playback |
-| Broken, **gone from the mount** | 50 | File missing → tombstoned → **these are the sweep's candidates** |
+| Broken, **still on the mount** | about three in four | File appears to exist → never tombstoned. No trash icon; it fails only on playback |
+| Broken, **gone from the mount** | about one in four | File missing → tombstoned → **these are the sweep's candidates** |
 
 This is the key measurement. It means the sweep only ever meets the second group,
 and for that group zurg usually already holds a verdict.
 
-Plex side, same host: 1,122 trashed leaves, of which **0** are past the 14-day
-window (oldest tombstone 2026-08-11). Plus 4 empty show shells and 38 empty season
-shells.
+Plex side, same host: a backlog of trashed leaves, **none** of them past the 14-day
+window (oldest tombstone 2026-08-11). Plus a few empty show shells and a few dozen
+empty season shells.
 
 ---
 
@@ -323,8 +323,8 @@ as one commit; step 5 is the only one that changes what gets deleted.
 3. **`only_show_the_biggest_file`.** The movies directory hides files, so a Plex
    path may name a file that is not the one zurg would serve. The lookup must not
    assume the Plex filename appears in `File.Path` verbatim.
-4. **Cost.** Building the key index on every sweep is O(library). At 6,339
-   torrents that is trivial, and the sweep runs daily. Build per sweep, not per
+4. **Cost.** Building the key index on every sweep is O(library). At a few
+   thousand torrents that is trivial, and the sweep runs daily. Build per sweep, not per
    item.
 5. ~~**Does `Unfixable` ever clear?**~~ **Resolved: yes.**
    `refresh.go:851-857` clears it when a torrent verifies clean and returns to
@@ -332,7 +332,7 @@ as one commit; step 5 is the only one that changes what gets deleted.
    clears it — entry and every copy — when a repair is forced. So a recovered
    release does not carry a stale condemnation, and the design does not need to
    defend against one.
-6. **The 148 broken-but-present torrents.** Out of scope here: Plex never
+6. **The broken-but-present torrents.** Out of scope here: Plex never
    tombstones them, so the sweep never sees them. Worth noting that they are
    invisible to both Plex and this feature until playback fails.
 
@@ -375,9 +375,9 @@ from §4, the decision and its reason:
 ## 8. Explicitly out of scope
 
 - **Empty show and season shells.** The sweep removes leaves only, so a fully-dead
-  show leaves a husk (4 shows, 38 seasons on fun today). Real, separate, needs
+  show leaves a husk (a few shows and a few dozen seasons on the measured library). Real, separate, needs
   ordering care: remove leaves, re-check the parent, remove only at zero children.
 - Any change to repair behaviour, the repair queue, or when zurg marks something
   unrepairable.
 - Plex's own `autoEmptyTrash`, already handled by the warning in `4737b677`.
-- fun's existing 1,122-entry backlog, deliberately left for a manual decision.
+- The measured library's existing backlog, deliberately left for a manual decision.

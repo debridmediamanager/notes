@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844691671266">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844696297044">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844691671266" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844696297044" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844691671266" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844696297044" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844691671266" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844691671266" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844696297044" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844696297044" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -187,7 +187,7 @@
 <h1 id="sonarr-and-radarr-step-by-step">Sonarr and Radarr, step by step</h1>
 <p>Point Sonarr and Radarr at zurg and they grab from Usenet without a Usenet client — no download, no unpack, no disk. Every step below, with the screen you should be looking at.</p>
 <p>This is the Usenet half. SABnzbd carries NZBs and nothing else; the torrent half is a separate endpoint answering the same two clients as a qBittorrent, and the two share this folder — see <a href="../sonarr-radarr-torrents/">Sonarr &amp; Radarr, torrents</a>.</p>
-<p>Everything below was captured against zurg <code translate="no" v-pre>nightly-993-g99bcf9a4</code>, Sonarr <code translate="no" v-pre>4.0.19.2979</code> and Radarr <code translate="no" v-pre>6.3.0.10514</code>, on a live install with a real Usenet account. Host and user names have been changed to <code translate="no" v-pre>yowmamasita@zurg-server</code>; nothing else in the captured output was altered, and API keys shown are illustrative.</p>
+<p>Everything below was captured against zurg <code translate="no" v-pre>nightly-993-g99bcf9a4</code>, Sonarr <code translate="no" v-pre>4.0.19.2979</code> and Radarr <code translate="no" v-pre>6.3.0.10514</code>, on a live install with a real Usenet account. Host and user names have been changed to <code translate="no" v-pre>you@zurg-server</code>. Indexer names read <code translate="no" v-pre>my-indexer</code>. API keys and library counts are illustrative. Nothing else in the captured output was altered.</p>
 <h2 id="before-you-start">Before you start</h2>
 <p>Three things have to be true. Check all three now — every one of them fails later as something that looks unrelated.</p>
 <ol>
@@ -253,10 +253,10 @@ sabnzbd:
 <p><strong>If you left <code translate="no" v-pre>api_key</code> empty</strong>, zurg generated one on first start, wrote it to <code translate="no" v-pre>data/sabnzbd-apikey</code>, and logged it once:</p>
 <div id="2-find-the-api-key-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">$ cat data/sabnzbd-apikey
-a7f3c81e94d6b25f0c8e3a71d495b6e2
+0123456789abcdef0123456789abcdef
 
 $ journalctl -u zurg-usenet | grep 'generated API key'
-SABnzbd: generated API key a7f3c81e… — paste it into Sonarr or Radarr,
+SABnzbd: generated API key 0123456789… — paste it into Sonarr or Radarr,
 or pin it as sabnzbd.api_key in config.yml</code></pre>
 </doc-codeblock></div>
 <p>Illustrative key — yours will differ. The file survives restarts, so the key is stable once generated.</p>
@@ -265,7 +265,7 @@ or pin it as sabnzbd.api_key in config.yml</code></pre>
 <h2 id="3-prove-it-answers">3. Prove it answers</h2>
 <p>Do this before touching Sonarr. It takes ten seconds and it separates &quot;zurg is wrong&quot; from &quot;the *arr is wrong&quot; for the rest of the setup.</p>
 <div id="3-prove-it-answers-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ SAB=a7f3c81e94d6b25f0c8e3a71d495b6e2
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ SAB=0123456789abcdef0123456789abcdef
 $ ZURG=192.168.88.245:9996
 
 $ curl -s &quot;http://$ZURG/api?mode=version&amp;apikey=$SAB&amp;output=json&quot;
@@ -626,7 +626,7 @@ Aug 25 14:50:28 zurg-server zurg[3034965]: INFO  nzb  Loaded NZB
 <p>The import moved the file into the root folder. Read both ends of it and ask ffprobe what it is:</p>
 <div id="prove-the-file-is-real-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">$ ls -la &quot;/mnt/zurg_usenet/__magic__/movies/Untold - The Testimony of Vince Young (2026)/&quot;
--rw-r--r-- 1 yowmamasita yowmamasita 4920958828 Aug 25 14:53 Untold.The.Testimony…playWEB.mkv
+-rw-r--r-- 1 you you 4920958828 Aug 25 14:53 Untold.The.Testimony…playWEB.mkv
 
 $ dd if=&quot;$F&quot; bs=1M count=1 &gt;/dev/null
 1048576 bytes (1.0 MB, 1.0 MiB) copied, 0.0429446 s, 24.4 MB/s
