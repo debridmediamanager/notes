@@ -23,13 +23,13 @@ stremio:
   enabled: true
   # token: ""            # generated and kept in data/stremio-token when empty
   indexers:
-    - name: nzbgeek
-      url: https://api.nzbgeek.info
+    - name: my-indexer
+      url: https://indexer.example
       api_key: YOUR_KEY
-    - name: house-of-usenet
-      url: https://house-of-usenet.com
+    - name: second-indexer
+      url: https://second-indexer.example
       api_key: YOUR_KEY
-      api_path: /api/v1/api   # this one 404s the default /api
+      api_path: /api/v1/api   # for an indexer that 404s the default /api
 ```
 
 All of it is on the config page under **Stremio Addon** — the switch, the

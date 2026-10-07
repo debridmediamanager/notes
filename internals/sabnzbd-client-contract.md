@@ -1583,9 +1583,13 @@ lets other jobs reach import while those warnings occupy history slots.
 
 The availability check before completion samples the first sixteen articles
 and the last article of each content file. This catches a missing article in
-the media header that the former first-article canary missed. It transfers one
-body per release to check article identity, then uses STAT for the remaining
-sample. It does not validate every article or prove that the media decodes.
+the media header that the former first-article canary missed. It transfers the
+first article of each content file, which checks article identity and that the
+body is still served (a provider can answer STAT for an article whose body it
+has taken down), plus randomly drawn articles up to sixteen bodies for a
+release of fewer files than that, and at most sixty-four bodies in all; a body
+the article cache already holds is not fetched again. STAT covers the rest of
+the sample. It does not validate every article or prove that the media decodes.
 STAT requests are batched per file so the sample pays for one pool reservation
 instead of seventeen, without raising the account's connection allowance.
 An unusable batch falls back to individual STATs.
