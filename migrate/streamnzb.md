@@ -330,8 +330,8 @@ a scan.
    `autoEmptyTrash` is 0. If the mount disappears mid-scan then Plex concludes
    every file was deleted. A zurg restart or an rclone remount is enough to do
    it. With auto-empty on they are removed permanently and at once. With it off
-   they sit in the trash and come back with the mount. This has cost a
-   30,065-item library before.
+   they sit in the trash and come back with the mount. This has cost tens
+   of thousands of items before.
 2. **Uncheck "Generate video preview thumbnails".** On Usenet every thumbnail
    pass is a full read of the release through your connection allowance.
 

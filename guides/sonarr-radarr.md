@@ -27,7 +27,7 @@ $ grep -A6 '^providers:' config.yml
 providers:
 - type: nzb
   nntp:
-    host: news.eweka.nl
+    host: news.example.com
     port: 563
     tls: true
     username: <redacted>

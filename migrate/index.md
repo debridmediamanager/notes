@@ -226,7 +226,7 @@ curl -s -X PUT "http://localhost:32400/:/prefs?autoEmptyTrash=0&X-Plex-Token=$TO
 Plex deletes softly. At `0` an item whose file stopped existing sits in the
 trash and comes back if the file does. At `1` it is gone permanently the moment
 a scan notices. A mount that blips for ten seconds during a scan takes the
-library with it. This has cost a 30,065-item library before.
+library with it. This has cost tens of thousands of items before.
 
 Under these simplified guides that setting is doing more work than it used to
 and not less. **The trash is where your old items wait while you check the new
