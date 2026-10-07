@@ -37,7 +37,7 @@ deviations from shipped defaults are only those isolation demands:
 | `providers` | one per instance | attribute cost to a backend |
 | `rclone_enabled` | `false` | measured over HTTP, never through FUSE |
 | `directories` | one `all`, no filters | listing cost becomes a function of library size |
-| `enable_repair` | `false` | TorBox is shared with the zurg on `fun`, and only one instance may repair an account |
+| `enable_repair` | `false` | Another zurg was loaded with the same TorBox account, and only one instance may repair an account |
 
 Everything else is left at the shipped default *on purpose*, including two that shape
 the numbers badly and are themselves findings:

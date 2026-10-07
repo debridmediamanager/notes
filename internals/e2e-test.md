@@ -79,7 +79,7 @@ Movie '2 Fast 2 Furious (2003)' is playable via Plex
 ## Integration Suite
 
 ```bash
-ssh ben@zen
+ssh zen
 cd /path/to/isolated/zurg/source
 make integration-test
 ```

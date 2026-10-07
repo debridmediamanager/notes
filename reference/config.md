@@ -1176,9 +1176,9 @@ configuration does:
 
 | Union upstreams | Cache tree |
 |---|---|
-| `/home/ben/zurg/data/local :webdav:` | `vfs/zurg{t8Hwq}` |
-| `:webdav: /home/ben/zurg/data/local` (`union_writable: server`) | `vfs/zurg{K45Mp}` |
-| `/other/root/data/local :webdav:` (zurg moved) | `vfs/zurg{jFPsL}` |
+| `/home/you/zurg/data/local :webdav:` | `vfs/zurg{QaSkn}` |
+| `:webdav: /home/you/zurg/data/local` (`union_writable: server`) | `vfs/zurg{HdSp7}` |
+| `/other/root/data/local :webdav:` (zurg moved) | `vfs/zurg{Psid2}` |
 
 rclone only ever accounts for the tree it is using. A tree under an old name is
 counted against no cap, visited by no cleaner, and deleted by nothing — so

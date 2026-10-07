@@ -28,9 +28,9 @@ including on Ctrl-C.
 
 | Provider | Account | Why this one |
 |---|---|---|
-| Real-Debrid | test 2 | not the main account and not `bendav`, which zen's production zurg uses |
-| AllDebrid | test key | resolves to the `ymsita` account, which already held 39 magnets, so only ids the run created were ever deleted |
-| TorBox | main | the only TorBox account there is. **Shared with fun's `zurg-tb`**, which is not a footnote. See [Hazards](#hazards-found-on-the-way) |
+| Real-Debrid | a test account | no running zurg uses it, so nothing else touched it during the run |
+| AllDebrid | a test key | the account already held other magnets, so only ids the run created were ever deleted |
+| TorBox | a live key | **another zurg instance was loaded with the same account**, which is not a footnote. See [Hazards](#hazards-found-on-the-way) |
 
 Credentials come from `RD_TOKEN` `AD_KEY` `TB_KEY` in the environment. Nothing writes them to a
 capture.
@@ -411,11 +411,11 @@ zurg's shim hands Sonarr today when it has nothing to report.
 | cached | Big Buck Bunny | true | `cached`@0.0 | done in 0.83 s |
 | cached | Sintel | true | `cached`@0.0 | done in 0.94 s |
 | cached | Ubuntu 26.04.1 | true | `cached`@0.0 | done in 0.69 s |
-| uncached | Debian 13.6.0 arm64 DVD-1 | false | `metaDL`@0.0 `stalled (no seeds)`@7.3 `downloading`@24.1 then **gone**@48.6 | deleted by fun's zurg-tb at 86.7% |
-| uncached | Debian 13.2.0 amd64 DVD-1 | false | `metaDL`@0.0 `stalled (no seeds)`@13.8 `downloading`@27.8 `processing`@69.4 `downloading`@72.7 `uploading (no peers)`@83.1 then **gone**@86.7 | deleted by fun's zurg-tb |
+| uncached | Debian 13.6.0 arm64 DVD-1 | false | `metaDL`@0.0 `stalled (no seeds)`@7.3 `downloading`@24.1 then **gone**@48.6 | deleted by the other zurg at 86.7% |
+| uncached | Debian 13.2.0 amd64 DVD-1 | false | `metaDL`@0.0 `stalled (no seeds)`@13.8 `downloading`@27.8 `processing`@69.4 `downloading`@72.7 `uploading (no peers)`@83.1 then **gone**@86.7 | deleted by the other zurg |
 | webseed | Prelinger home movie | false | `metaDL`@0.0 `checking`@23.3 and never anything else | **capped at 911.3 s in `checking`**. TorBox did not use the webseed |
-| seedless | ubuntu-16.04.6-desktop-i386 | false | `metaDL`@0.0 `checking`@10.5 `downloading`@20.6 `processing`@184.4 then **gone**@200.4 | deleted by fun's zurg-tb at `processing` |
-| seedless | ubuntu-24.04-beta-live-server-s390x | false | `metaDL`@0.0 `checking`@18.9 `stalled (no seeds)`@169.3 `downloading`@230.9 then **gone**@462.3 | deleted by fun's zurg-tb at 91.9 percent |
+| seedless | ubuntu-16.04.6-desktop-i386 | false | `metaDL`@0.0 `checking`@10.5 `downloading`@20.6 `processing`@184.4 then **gone**@200.4 | deleted by the other zurg at `processing` |
+| seedless | ubuntu-24.04-beta-live-server-s390x | false | `metaDL`@0.0 `checking`@18.9 `stalled (no seeds)`@169.3 `downloading`@230.9 then **gone**@462.3 | deleted by the other zurg at 91.9 percent |
 | nometa | random 40-hex | false | `metaDL`@0.0 `checking`@10.2 and never anything else | **capped at 910.3 s in `checking`** |
 
 A separate run at a 0.5 s poll against Debian 13.5.0 amd64 netinst
@@ -515,16 +515,16 @@ the hazard below.
   `dead` and every AllDebrid code above 4 and every TorBox failure state are all unmeasured.
   Producing them needs content that is blocked or infected or expired rather than a FOSS ISO.
 - **TorBox could rarely be watched to completion.** Four campaign torrents and one follow-up were
-  deleted mid-download by fun's `zurg-tb`. See the hazard below. Only a 754 MiB image finished before
+  deleted mid-download by the other zurg on the account. See the hazard below. Only a 754 MiB image finished before
   that process next polled.
 
 ---
 
 ## Hazards found on the way
 
-### fun's zurg-tb deletes healthy TorBox downloads
+### A second zurg on the TorBox account deletes healthy downloads
 
-The TorBox account is shared with `zurg-tb` on fun. Its config reads
+Another zurg instance was loaded with the same TorBox account. Its config reads
 
 ```yaml
 enable_repair: true
@@ -533,13 +533,13 @@ stalled_download_mins: 120
 ```
 
 **Five** probe torrents were deleted while they were downloading normally. This is **observed** on
-both sides. The harness saw each torrent vanish and fun's journal says why.
+both sides. The harness saw each torrent vanish and the other instance's journal says why.
 
 ```
-Aug 30 12:43:26 fun zurg: INFO manager Deleting torrent 86695315 because it encountered an error status: error
-Aug 30 12:43:27 fun zurg: DEBUG torbox Deleted TorBox torrent id=86695315
-Aug 30 12:44:56 fun zurg: INFO manager Deleting torrent 86695708 because it encountered an error status: error
-Aug 30 12:47:41 fun zurg: INFO manager Deleting torrent 86697191 because it encountered an error status: error
+Aug 30 12:43:26 zurg-host zurg: INFO manager Deleting torrent 86695315 because it encountered an error status: error
+Aug 30 12:43:27 zurg-host zurg: DEBUG torbox Deleted TorBox torrent id=86695315
+Aug 30 12:44:56 zurg-host zurg: INFO manager Deleting torrent 86695708 because it encountered an error status: error
+Aug 30 12:47:41 zurg-host zurg: INFO manager Deleting torrent 86697191 because it encountered an error status: error
 ```
 
 The five are `86695315` `86695708` `86697191` `86702627` `86704212`. Every one of them carried the
@@ -555,8 +555,8 @@ if w.DownloadFinished && !w.DownloadPresent {
 
 That combination is a normal TorBox finalizing phase. The 0.5 s capture puts a number on it. On a
 754 MiB image the window from `download_finished` turning true to `download_present` turning true was
-**9.6 seconds**. On a 3.7 GiB image it was at least 17 s and the sweep landed inside it. fun's
-`zurg-tb` polls the library roughly every 15 s. Whether a healthy TorBox download survives its own
+**9.6 seconds**. On a 3.7 GiB image it was at least 17 s and the sweep landed inside it. The other
+zurg polls the library roughly every 15 s. Whether a healthy TorBox download survives its own
 completion is close to a coin toss.
 
 Three consequences. A TorBox download that a user watches finish in the TorBox UI can be gone from
@@ -567,11 +567,10 @@ account is racing that sweep.
 **Not fixed here.** Phase 0 measures. The fix belongs with the stage work. There
 `download_finished && !download_present` becomes `finalizing` rather than `failed`.
 
-### The AllDebrid account is shared with fun too and got away with it
+### A second zurg on the AllDebrid account got away with it
 
-fun's `zurg-ad` carries the **same AllDebrid key** as the one this campaign used. The md5 of the
-`token:` line in `~/zurg-ad/config.yml` on fun matches the md5 of the key in the environment here.
-Its sweep settings are the same three as `zurg-tb`.
+The AllDebrid key this campaign used was loaded by another zurg instance too, with the same three
+sweep settings as the TorBox one.
 
 ```yaml
 enable_repair: true
@@ -584,8 +583,8 @@ No AllDebrid probe was deleted. The reason is in the code and not in luck. `norm
 rule of the `download_finished && !download_present` kind. So a healthy AllDebrid download can never
 read as broken. The TorBox bug is that one extra rule and not sweeping in general.
 
-Real-Debrid is the odd one out. Test 2 is not the account behind fun's `zurg` and not the `bendav`
-account behind zen's. Nothing was sweeping it and nothing interfered.
+Real-Debrid is the odd one out. No other zurg was loaded with the test account. Nothing was sweeping
+it and nothing interfered.
 
 ### TorBox answers a delete for an unknown id with HTTP 500
 
@@ -596,7 +595,7 @@ POST /v1/api/torrents/controltorrent  {"torrent_id":86695315,"operation":"delete
 
 `GET /torrents/mylist?id=<gone>` answers the same way. So a torrent that no longer exists is
 indistinguishable from a TorBox outage by status code alone. zurg reports it as
-`account temporarily unavailable`. fun's journal shows it retrying the delete of an already deleted
+`account temporarily unavailable`. The other instance's journal shows it retrying the delete of an already deleted
 id every 15 s. The harness works around it by asking `mylist` after a failed delete and treating a
 gone torrent as deleted.
 
@@ -611,7 +610,7 @@ The 20 s floor is doing real work and is not superstition.
 ## Re-running the campaign
 
 ```bash
-export RD_TOKEN=…   # Real-Debrid test 2
+export RD_TOKEN=…   # a Real-Debrid test account
 export AD_KEY=…     # AllDebrid test
 export TB_KEY=…     # TorBox
 
@@ -642,14 +641,14 @@ done
 
 Run it from a machine with residential egress. AllDebrid answers `NO_SERVER` to datacenter IPs.
 
-Step 6 is not optional and step 3 is what makes it meaningful. After the 2026-08-30 campaign the
-three accounts held 500 and 39 and 469 items and not one of the 34 instance ids the harness had
-claimed was among them. Neither was any of the nine probe hashes.
+Step 6 is not optional and step 3 is what makes it meaningful. After the 2026-08-30 campaign not
+one of the 34 instance ids the harness had claimed was left on any of the three accounts. Neither was any of the nine probe hashes.
 
-Before touching TorBox read fun's `zurg-tb` config and expect the sweep described above.
+Before touching TorBox, check whether any other zurg is loaded with the same account, read its
+sweep settings and expect the sweep described above.
 
 ```bash
-ssh ben@fun 'grep -E "delete_error_torrents|stalled_download_mins|enable_repair" ~/zurg-tb/config.yml'
+grep -E "delete_error_torrents|stalled_download_mins|enable_repair" config.yml
 ```
 
 Never change it. A probe that disappears mid-run is data.

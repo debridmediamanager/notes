@@ -10,7 +10,7 @@ Point Sonarr and Radarr at zurg and they grab from Usenet without a Usenet clien
 
 This is the Usenet half. SABnzbd carries NZBs and nothing else; the torrent half is a separate endpoint answering the same two clients as a qBittorrent, and the two share this folder — see [Sonarr & Radarr, torrents](sonarr-radarr-torrents.md).
 
-Everything below was captured against zurg `nightly-993-g99bcf9a4`, Sonarr `4.0.19.2979` and Radarr `6.3.0.10514`, on a live install with a real Usenet account. Host and user names have been changed to `yowmamasita@zurg-server`; nothing else in the captured output was altered, and API keys shown are illustrative.
+Everything below was captured against zurg `nightly-993-g99bcf9a4`, Sonarr `4.0.19.2979` and Radarr `6.3.0.10514`, on a live install with a real Usenet account. Host and user names have been changed to `you@zurg-server`. Indexer names read `my-indexer`. API keys and library counts are illustrative. Nothing else in the captured output was altered.
 
 ## Before you start
 
@@ -90,10 +90,10 @@ The API key is the entire authentication on this endpoint, so get it right once 
 
 ```bash
 $ cat data/sabnzbd-apikey
-a7f3c81e94d6b25f0c8e3a71d495b6e2
+0123456789abcdef0123456789abcdef
 
 $ journalctl -u zurg-usenet | grep 'generated API key'
-SABnzbd: generated API key a7f3c81e… — paste it into Sonarr or Radarr,
+SABnzbd: generated API key 0123456789… — paste it into Sonarr or Radarr,
 or pin it as sabnzbd.api_key in config.yml
 ```
 
@@ -108,7 +108,7 @@ Illustrative key — yours will differ. The file survives restarts, so the key i
 Do this before touching Sonarr. It takes ten seconds and it separates "zurg is wrong" from "the \*arr is wrong" for the rest of the setup.
 
 ```bash
-$ SAB=a7f3c81e94d6b25f0c8e3a71d495b6e2
+$ SAB=0123456789abcdef0123456789abcdef
 $ ZURG=192.168.88.245:9996
 
 $ curl -s "http://$ZURG/api?mode=version&apikey=$SAB&output=json"
@@ -402,7 +402,7 @@ The import moved the file into the root folder. Read both ends of it and ask ffp
 
 ```bash
 $ ls -la "/mnt/zurg_usenet/__magic__/movies/Untold - The Testimony of Vince Young (2026)/"
--rw-r--r-- 1 yowmamasita yowmamasita 4920958828 Aug 25 14:53 Untold.The.Testimony…playWEB.mkv
+-rw-r--r-- 1 you you 4920958828 Aug 25 14:53 Untold.The.Testimony…playWEB.mkv
 
 $ dd if="$F" bs=1M count=1 >/dev/null
 1048576 bytes (1.0 MB, 1.0 MiB) copied, 0.0429446 s, 24.4 MB/s
