@@ -417,6 +417,11 @@ searches might not carry it, or a quality profile or custom format turns it
 down. You can hand zurg the NZB yourself under the category of the app that
 should import it. That app then imports it as if it had grabbed it.
 
+If the release is on an indexer the app searches, try the app first.
+**Interactive Search** lists rejected releases too. Grabbing one sends it to
+zurg like any other grab. Radarr grabbed an IMAX release its profile turned
+down for scoring 0 against a required custom format, and imported it.
+
 ```bash
 $ SAB=0123456789abcdef0123456789abcdef
 $ ZURG=192.168.88.245:9996
@@ -447,7 +452,10 @@ Five things decide what happens next.
 3. **The category picks the app.** `cat=movies` reaches the Radarr whose
    download client uses `movies`. Each app only looks at its own category.
 4. **The quality profile does not block it. The file you already have can.**
-   Radarr imported a 1080p WEBRip into a film whose profile only allows 720p.
+   Radarr checks neither the allowed qualities nor a minimum custom format
+   score on import. It imported a 720p BluRay at score 0 into a profile that
+   only allows 2160p and requires a score of 100. It also imported a 1080p
+   WEBRip into a film whose profile only allows 720p.
    It then took a 1080p BluRay over it as an upgrade and deleted the WEBRip. A
    WEB-DL added after that stopped in Activity as *Not an upgrade for existing
    movie file*. **Activity → Queue → Manual Import** brings it in anyway and
@@ -458,7 +466,8 @@ Five things decide what happens next.
    has failed wasn't grabbed by Radarr, skipping automatic download handling*.
    Remove it from the queue and pick another release.
 
-Measured on 2026-10-10 with Radarr 6.3, using both `addfile` and `addurl`. Every
+Measured on 2026-10-10 with Radarr 6.3, using both `addfile` and `addurl`, including
+a profile that requires a custom format built from a release name. Every
 import was a rename into `__magic__/movies` and nothing was copied. Sonarr was
 not tested.
 
