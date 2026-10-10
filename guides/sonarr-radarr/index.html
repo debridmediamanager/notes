@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844948505942">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.844954534713">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.844948505942" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.844954534713" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844948505942" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.844954534713" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844948505942" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844948505942" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.844954534713" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.844954534713" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -638,6 +638,64 @@ duration=4709.440000
 size=4920958828</code></pre>
 </doc-codeblock></div>
 <p>A 78-minute Matroska, streamed out of Usenet articles on demand. The bytes arrive when something reads them, not when the *arr imports.</p>
+<h2 id="10-adding-a-release-by-hand">10. Adding a release by hand</h2>
+<p>Sometimes Sonarr or Radarr never grabs the release you want. The indexers it
+searches might not carry it, or a quality profile or custom format turns it
+down. You can hand zurg the NZB yourself under the category of the app that
+should import it. That app then imports it as if it had grabbed it.</p>
+<div id="10-adding-a-release-by-hand-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ SAB=0123456789abcdef0123456789abcdef
+$ ZURG=192.168.88.245:9996
+
+# an NZB file you already have (the upload field is called name, as in SABnzbd)
+$ curl -s &quot;http://$ZURG/api?mode=addfile&amp;apikey=$SAB&amp;cat=movies&quot; \
+    -F 'name=@Movie.Title.2024.1080p.WEB-DL.nzb'
+{&quot;status&quot;:true,&quot;nzo_ids&quot;:[&quot;SABnzbd_nzo_…&quot;]}
+
+# or a link to one, which zurg downloads itself
+$ curl -s -G &quot;http://$ZURG/api&quot; \
+    --data-urlencode mode=addurl --data-urlencode &quot;apikey=$SAB&quot; --data-urlencode cat=movies \
+    --data-urlencode 'name=https://indexer.example/getnzb/&lt;id&gt;?r=&lt;indexer-key&gt;' \
+    --data-urlencode nzbname=Movie.Title.2024.1080p.WEB-DL
+{&quot;status&quot;:true,&quot;nzo_ids&quot;:[&quot;SABnzbd_nzo_…&quot;]}</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>--data-urlencode</code> keeps the link&#x27;s own <code translate="no" v-pre>?</code> and <code translate="no" v-pre>&amp;</code> inside <code translate="no" v-pre>name</code>. The job shows
+up in the app&#x27;s queue on its next check, within a minute.</p>
+<p>Five things decide what happens next.</p>
+<ol>
+<li>
+<p><strong>The film or show has to be in that app already.</strong> It imports only what it
+can match to something it manages.</p>
+</li>
+<li>
+<p><strong>The name has to say what it is.</strong> The job takes the NZB&#x27;s filename, or
+<code translate="no" v-pre>nzbname</code> when you pass one. Without <code translate="no" v-pre>nzbname</code>, <code translate="no" v-pre>addurl</code> uses the filename
+the indexer serves. Give the name a year.</p>
+</li>
+<li>
+<p><strong>The category picks the app.</strong> <code translate="no" v-pre>cat=movies</code> reaches the Radarr whose
+download client uses <code translate="no" v-pre>movies</code>. Each app only looks at its own category.</p>
+</li>
+<li>
+<p><strong>The quality profile does not block it. The file you already have can.</strong>
+Radarr imported a 1080p WEBRip into a film whose profile only allows 720p.
+It then took a 1080p BluRay over it as an upgrade and deleted the WEBRip. A
+WEB-DL added after that stopped in Activity as <em>Not an upgrade for existing
+movie file</em>. <strong>Activity → Queue → Manual Import</strong> brings it in anyway and
+replaces the file.</p>
+</li>
+<li>
+<p><strong>A failure is yours to clear.</strong> The app never blocklists or removes a
+download it did not grab. A release whose articles had aged off the news
+servers came back Failed from zurg and stayed in Radarr&#x27;s queue as <em>Download
+has failed wasn&#x27;t grabbed by Radarr, skipping automatic download handling</em>.
+Remove it from the queue and pick another release.</p>
+</li>
+</ol>
+<p>Measured on 2026-10-10 with Radarr 6.3, using both <code translate="no" v-pre>addfile</code> and <code translate="no" v-pre>addurl</code>. Every
+import was a rename into <code translate="no" v-pre>__magic__/movies</code> and nothing was copied. Sonarr was
+not tested.</p>
+<p>Thanks to <strong>.telmen</strong> on Discord for asking how to do this with Usenet.</p>
 <h2 id="watching-from-zurgs-side">Watching from zurg&#x27;s side</h2>
 <p>zurg&#x27;s <code translate="no" v-pre>/magic/</code> page lists every NZB the endpoint has ever been handed. It is read-only — a job is removed by the client that created it, and the record is kept for a week after that so a poll racing a delete answers the same way twice.</p>
 <figure class="content-center">
