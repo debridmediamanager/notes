@@ -416,6 +416,60 @@ size=4920958828
 
 A 78-minute Matroska, streamed out of Usenet articles on demand. The bytes arrive when something reads them, not when the \*arr imports.
 
+## 10. Adding a release by hand
+
+Sometimes Sonarr or Radarr never grabs the release you want. The indexers it
+searches might not carry it, or a quality profile or custom format turns it
+down. You can hand zurg the NZB yourself under the category of the app that
+should import it. That app then imports it as if it had grabbed it.
+
+```bash
+$ SAB=0123456789abcdef0123456789abcdef
+$ ZURG=192.168.88.245:9996
+
+# an NZB file you already have (the upload field is called name, as in SABnzbd)
+$ curl -s "http://$ZURG/api?mode=addfile&apikey=$SAB&cat=movies" \
+    -F 'name=@Movie.Title.2024.1080p.WEB-DL.nzb'
+{"status":true,"nzo_ids":["SABnzbd_nzo_…"]}
+
+# or a link to one, which zurg downloads itself
+$ curl -s -G "http://$ZURG/api" \
+    --data-urlencode mode=addurl --data-urlencode "apikey=$SAB" --data-urlencode cat=movies \
+    --data-urlencode 'name=https://indexer.example/getnzb/<id>?r=<indexer-key>' \
+    --data-urlencode nzbname=Movie.Title.2024.1080p.WEB-DL
+{"status":true,"nzo_ids":["SABnzbd_nzo_…"]}
+```
+
+`--data-urlencode` keeps the link's own `?` and `&` inside `name`. The job shows
+up in the app's queue on its next check, within a minute.
+
+Five things decide what happens next.
+
+1. **The film or show has to be in that app already.** It imports only what it
+   can match to something it manages.
+2. **The name has to say what it is.** The job takes the NZB's filename, or
+   `nzbname` when you pass one. Without `nzbname`, `addurl` uses the filename
+   the indexer serves. Give the name a year.
+3. **The category picks the app.** `cat=movies` reaches the Radarr whose
+   download client uses `movies`. Each app only looks at its own category.
+4. **The quality profile does not block it. The file you already have can.**
+   Radarr imported a 1080p WEBRip into a film whose profile only allows 720p.
+   It then took a 1080p BluRay over it as an upgrade and deleted the WEBRip. A
+   WEB-DL added after that stopped in Activity as *Not an upgrade for existing
+   movie file*. **Activity → Queue → Manual Import** brings it in anyway and
+   replaces the file.
+5. **A failure is yours to clear.** The app never blocklists or removes a
+   download it did not grab. A release whose articles had aged off the news
+   servers came back Failed from zurg and stayed in Radarr's queue as *Download
+   has failed wasn't grabbed by Radarr, skipping automatic download handling*.
+   Remove it from the queue and pick another release.
+
+Measured on 2026-10-10 with Radarr 6.3, using both `addfile` and `addurl`. Every
+import was a rename into `__magic__/movies` and nothing was copied. Sonarr was
+not tested.
+
+Thanks to **.telmen** on Discord for asking how to do this with Usenet.
+
 ## Watching from zurg's side
 
 zurg's `/magic/` page lists every NZB the endpoint has ever been handed. It is read-only — a job is removed by the client that created it, and the record is kept for a week after that so a poll racing a delete answers the same way twice.
