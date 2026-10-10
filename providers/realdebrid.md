@@ -114,13 +114,14 @@ each other at the start of it.
 
 **Some releases are refused on their name alone.** Since 10 October 2026 that is
 eleven strings in any case. They are WEB-DL, WEBRip, BDRip, HDRip, DVDRip,
-WEB.x264, WEB.h264, HDTV.x264, HDTV.XviD, BluRay.x264 and BluRay.DTS. Only the
-exact separator counts. WEB.DL and WEB-x264 and BluRay-x264 all go through. A
-release named with one of them is refused on the first request every time
-whatever is behind it. A file inside a release whose own name matches is
-accepted but will not stream. zurg knows the patterns and refuses those grabs
-locally rather than spending an add slot and two sixty second retries on a
-certain failure.
+WEB.x264, WEB.h264, HDTV.x264, HDTV.XviD, BluRay.x264 and p.BluRay.DTS. That
+last one needs a p right before it as in 1080p.BluRay.DTS. A 2002.BluRay.DTS
+release is fine. Only the exact separator counts. WEB.DL and WEB-x264 and
+BluRay-x264 all go through. A release named with one of them is refused on the
+first request every time whatever is behind it. A file inside a release whose
+own name matches is accepted but will not stream. zurg knows the patterns and
+refuses those grabs locally rather than spending an add slot and two sixty
+second retries on a certain failure.
 
 **A second copy of content the account already holds never downloads.** Real-Debrid
 takes the add and then fetches nothing for it. The instance sits at 0 percent

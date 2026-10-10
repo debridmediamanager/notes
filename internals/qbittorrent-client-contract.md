@@ -1410,7 +1410,7 @@ of the running for every file in it.
 
 **Why this matters on zurg.** Real-Debrid rewrites release names that trip its filename block —
 `WEB-DL`, `WEBRip`, `BDRip`, `HDRip`, `DVDRip`, `WEB.x264`, `WEB.h264`, `HDTV.x264`, `HDTV.XviD`,
-`BluRay.x264` and `BluRay.DTS`, in any case, as measured 2026-10-10 — and
+`BluRay.x264` and `p.BluRay.DTS`, in any case, as measured 2026-10-10 — and
 zurg appends a suffix when two releases collide on a name. Either can make `torrent.name` stop
 parsing as the grabbed release. See the RD 451 section of the monorepo `CLAUDE.md`. The
 consequences, in order: identification falls back to grab history (still fine, if the hash matches);
