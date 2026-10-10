@@ -543,7 +543,7 @@ Does not:
 
 **One grab does vanish from the queue rather than warning.** If no account ever took the release — none holds the hash and none is fetching it — it is reported errored after ten minutes and dropped from the torrent list after a day. There is no download to report a state for, and a queue entry for one that does not exist is worse than none. Every other failure stays visible.
 
-**Blocked release names, Real-Debrid only.** RD refuses some releases on the name alone. Since October 2026 that is five exact, case-sensitive strings: `WEB-DL`, `WEB.x264`, `WEB.H264`, `HDTV.x264` and `HDTV.XviD`. zurg knows the patterns and refuses such a grab immediately rather than spending an add slot and a minute of retries on a refusal that was certain. The client fails that grab and takes the next release, which is what you want. On TorBox and AllDebrid the same release is added normally.
+**Blocked release names, Real-Debrid only.** RD refuses some releases on the name alone. Since 10 October 2026 that is eleven strings in any case. They are `WEB-DL`, `WEBRip`, `BDRip`, `HDRip`, `DVDRip`, `WEB.x264`, `WEB.h264`, `HDTV.x264`, `HDTV.XviD`, `BluRay.x264` and `BluRay.DTS`. zurg knows the patterns and refuses such a grab immediately rather than spending an add slot and a minute of retries on a refusal that was certain. The client fails that grab and takes the next release, which is what you want. On TorBox and AllDebrid the same release is added normally.
 
 ## Troubleshooting
 
