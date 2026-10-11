@@ -1,5 +1,15 @@
 # Sonarr and Radarr, step by step
 
+There are three ways to use Sonarr and Radarr with zurg. Pick the one that matches the account you have.
+
+| Guide | Who searches | zurg acts as | You need |
+|---|---|---|---|
+| [Usenet](sonarr-radarr.md) | Sonarr and Radarr | a SABnzbd | a Usenet account and Usenet indexers in Prowlarr or the \*arrs |
+| [Torrents](sonarr-radarr-torrents.md) | Sonarr and Radarr | a qBittorrent | a debrid account and torrent indexers in Prowlarr or the \*arrs |
+| [zurg searches](sonarr-radarr-fetch.md) | zurg | no download client at all | a Usenet account and Usenet indexers in zurg's own config |
+
+The first two can run side by side. They share the same `__magic__` folder.
+
 Point Sonarr and Radarr at zurg and they grab from Usenet without a Usenet client — no download, no unpack, no disk. Every step below, with the screen you should be looking at.
 
 This is the Usenet half. SABnzbd carries NZBs and nothing else; the torrent half is a separate endpoint answering the same two clients as a qBittorrent, and the two share this folder — see [Sonarr & Radarr, torrents](sonarr-radarr-torrents.md).

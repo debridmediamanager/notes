@@ -1,10 +1,18 @@
 # Let zurg fetch what Sonarr and Radarr want
 
+There are three ways to use Sonarr and Radarr with zurg. Pick the one that matches the account you have.
+
+| Guide | Who searches | zurg acts as | You need |
+|---|---|---|---|
+| [Usenet](sonarr-radarr.md) | Sonarr and Radarr | a SABnzbd | a Usenet account and Usenet indexers in Prowlarr or the \*arrs |
+| [Torrents](sonarr-radarr-torrents.md) | Sonarr and Radarr | a qBittorrent | a debrid account and torrent indexers in Prowlarr or the \*arrs |
+| [zurg searches](sonarr-radarr-fetch.md) | zurg | no download client at all | a Usenet account and Usenet indexers in zurg's own config |
+
+The first two can run side by side. They share the same `__magic__` folder.
+
 Radarr and Sonarr keep the list and the library. zurg does the fetching. Add a movie or a series the way you already do and zurg finds a release on your Usenet indexers. It checks that the post is still on the news servers. Then it puts the file in its folder inside `__magic__` and asks Radarr or Sonarr to rescan. Nothing is downloaded to import and nothing is copied.
 
 Radarr and Sonarr need no indexers and no download client for this. They never search and never grab. Your quality profile still decides what zurg is allowed to take.
-
-This is not the same setup as [Sonarr & Radarr](sonarr-radarr.md). There zurg is the download client and the arrs do the searching. Here the arrs do no searching at all.
 
 The screenshots come from the zurg build that ships as the 26 September 2026 nightly with Radarr 6.3.0.10514 and Sonarr 4.0.20.3014 in Docker. Both saw zurg's mount at `/mnt/zurg` inside their containers. Nothing in them was altered.
 
