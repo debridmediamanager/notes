@@ -6,6 +6,16 @@ order: 78
 
 # Sonarr and Radarr with torrents, step by step
 
+There are three ways to use Sonarr and Radarr with zurg. Pick the one that matches the account you have.
+
+| Guide | Who searches | zurg acts as | You need |
+|---|---|---|---|
+| [Usenet](sonarr-radarr.md) | Sonarr and Radarr | a SABnzbd | a Usenet account and Usenet indexers in Prowlarr or the \*arrs |
+| [Torrents](sonarr-radarr-torrents.md) | Sonarr and Radarr | a qBittorrent | a debrid account and torrent indexers in Prowlarr or the \*arrs |
+| [zurg searches](sonarr-radarr-fetch.md) | zurg | no download client at all | a Usenet account and Usenet indexers in zurg's own config |
+
+The first two can run side by side. They share the same `__magic__` folder.
+
 The [previous walkthrough](sonarr-radarr.md) pointed the \*arrs at zurg for Usenet, with zurg answering as a SABnzbd. This is the other half: zurg answers as a **qBittorrent**, the \*arrs hand it a magnet or a `.torrent` instead of an NZB, and the release goes onto a debrid account instead of a news server. The import is the same trick — a rename inside `__magic__`, nothing downloaded to import, nothing copied.
 
 **Which of the two the \*arr sends is not cosmetic.** A `.torrent` is uploaded to the account as the file itself, on all three services; only a magnet is added by info hash alone. A magnet makes the account work out what the torrent holds from the hash, and a private tracker's hash has no public swarm to work it out from — Real-Debrid dies in `magnet_error` with no files, and TorBox accepts it and then sits in `checking` with no file list, no size and a hundred-day estimate, so the grab neither fails nor finishes. The `.torrent` file keys the account's cache lookup by hash directly, so content the account already holds is added at once with no magnet resolution at all. That is what makes private indexers work here: their releases are addable exactly when the account already holds the content, which for anything a community shares is the common case. Point the \*arr at an indexer that hands out `.torrent` files rather than magnets — private ones do.
