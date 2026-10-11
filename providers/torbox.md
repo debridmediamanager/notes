@@ -168,12 +168,15 @@ ls /zurg_mnt/zurg/__torbox__/ | head
 
 ## When it goes wrong
 
-**The whole mount went empty and the log repeats `TorBox rejected the API key`.**
-The plan ran out and the key is on the free plan now. The line carries
-`PLAN_RESTRICTED_FEATURE`. On nightlies up to 2026.10.10 zurg keeps retrying
-TorBox and never finishes loading the library. So content from your other
-accounts stops showing too. Renew the plan or comment the `torbox` provider out
-of `config.yml` and restart zurg. The other accounts load within seconds.
+**The log says `Account <name> refused zurg` or keeps repeating `TorBox rejected the API key`.**
+The plan ran out and the key is on the free plan now. From nightly 2026.10.11.2240
+zurg loads your other accounts without it. The account's card on the dashboard
+says `Refused: the account's plan does not include API access`. Its releases stay
+listed but do not play and nothing is deleted or trashed because of it. zurg asks
+TorBox again every 10 minutes and picks the account back up once the plan is
+paid. On older nightlies the whole library never finished loading so content from
+your other accounts stopped showing too. Update zurg or renew the plan. Commenting
+the `torbox` provider out of `config.yml` and restarting zurg also works.
 
 **Playback stops for five minutes at a time.** The requestdl allowance is spent
 and the 429 is account-wide. Something is resolving more links than it needs to.
