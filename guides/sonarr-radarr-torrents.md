@@ -463,6 +463,50 @@ Measured on 2026-10-04 on an AllDebrid account with Radarr 6.3. Each film was
 imported by rename into `__magic__/movies` and nothing was copied. A Radarr set
 to another category never saw it. Sonarr was not tested.
 
+## 12. Plex reads one set of folders
+
+An import does not take a release out of zurg's own folders. A film Radarr placed in `__magic__/movies` is still in `movies` and in `__all__`. So Plex has to read one set of folders and never both.
+
+| Plex reads | You get |
+|---|---|
+| `movies` and `shows` | Everything on your debrid accounts. Grabs by the \*arrs show up there too. Names are whatever the release is called. |
+| `__magic__/movies` and `__magic__/tv` | Only what Sonarr and Radarr imported. Names and folders are the ones the \*arrs chose. |
+
+If your Plex libraries already point at `movies` and `shows` then leave them. The \*arr grabs appear there without any change. Add the `__magic__` folders to Plex only if you want a library made of nothing but \*arr imports and then take the other folders out. Plex with both finds every title twice.
+
+Never add the root of `__magic__` either. It holds `__magic__/__all__` which is the whole library again.
+
+## 13. Indexers, and DMM for sponsors
+
+Sonarr and Radarr search through Prowlarr. Any public torrent indexer works here because zurg adds the magnet to your debrid account. Some public sites sit behind Cloudflare and Prowlarr refuses to add them without FlareSolverr. Skip those.
+
+If you sponsor zurg then DMM is an indexer too. It searches DMM's whole library and ranks what your debrid account already holds at the top. Those grabs are instant.
+
+1. Sign in at [debridmediamanager.com/torznab](https://debridmediamanager.com/torznab) and copy your API key.
+2. In Prowlarr open **Indexers → Add Indexer** and pick **Generic Torznab**.
+3. Put in the URL for your account and the key. Leave API Path at `/api`.
+
+| Your account | URL |
+|---|---|
+| Real-Debrid | `https://debridmediamanager.com/api/torznab/rd` |
+| AllDebrid | `https://debridmediamanager.com/api/torznab/ad` |
+| TorBox | `https://debridmediamanager.com/api/torznab/tb` |
+| Premiumize | `https://debridmediamanager.com/api/torznab/pm` |
+
+TorBox and Premiumize need your key for that service linked in DMM first. The DMM page shows where. Add `/cached` to the end of the URL to leave out anything your account does not hold yet.
+
+Prowlarr tests the indexer when you save it. A refused key means the sponsorship has lapsed or the key is wrong and the error says which. Prowlarr then hands DMM to Sonarr and Radarr by itself. One key allows 20 searches a minute across all your apps.
+
+## 14. Your Plex watchlist
+
+Sonarr and Radarr can follow your Plex watchlist. Anything you add on Plex gets added and searched and lands through zurg like any other grab.
+
+In each app open **Settings → Import Lists → + → Plex Watchlist** and press **Authenticate with Plex.tv**. Set the root folder to your `__magic__` folder and turn on search on add. Radarr picks up the movies on the list and Sonarr picks up the shows.
+
+zurg has a [watchlist of its own](plex-watchlist.md) that grabs from indexers you give zurg directly. Use one or the other. With both, the same title gets grabbed twice.
+
+To follow other lists such as a genre list see [Lists in Sonarr & Radarr](import-lists.md).
+
 ## If the import copies instead of moving
 
 Everything above depends on the import being a **rename**. Two things decide that and zurg has no say in either. One is how the container reaches the mount. A save path and root folders on two volumes copy every import whatever else is set. [Step 8](#8-if-your-arr-is-in-docker) covers it. The other is one setting in the \*arr.
@@ -548,6 +592,7 @@ Does not:
 | "Category … does not exist" | The category in the client is not in `qbittorrent.categories`. Add it and restart zurg. |
 | A grab sits *Downloading* for a long time | The account is genuinely downloading it. The queue carries the account's own rate and time left where it gives them; a release with no seeds reads as zero on both, which is not an error. |
 | A completed release sits in the queue as a warning | Either the client decided not to import it (an upgrade the profile refuses), or every account refused it. The queue row carries the reason. It clears nothing by itself — remove it by hand, and *Blocklist and Search* if the release is bad. |
+| "Download client zurg places downloads in …/__magic__/__all__ but Radarr cannot see this directory" | zurg has not finished loading the library. The top of the mount lists but `__all__` and `__magic__/__all__` do not and Plex sees nothing either. Grep zurg's log for `rejected the API key`. An account whose key or plan stopped working is the usual cause. See [TorBox](../providers/torbox.md#when-it-goes-wrong) for the free plan. The warning clears once the library loads. |
 | "Downloads in root folder" / "Remote path mapping" | The same root-folder and path rules as the Usenet endpoint — see [steps 4](#4-make-the-root-folders) and [8](#8-if-your-arr-is-in-docker). |
 | Every release rejected, nothing in the log | A stale bind mount. Run `docker exec <client> df -h <mount>`; if it says `Socket not connected`, bind the parent with `rslave` and recreate the container. |
 | Imports succeed, but they take a long time and local disk fills | The \*arr is copying rather than renaming. zurg's log shows a `DELETE` of the source with no `MOVE`, or a `PUT` carrying the release's full size. Either **Remove Completed** is off on the download client or the container has the save path and the root folders on two volumes. See [If the import copies instead of moving](#if-the-import-copies-instead-of-moving) and [step 8](#8-if-your-arr-is-in-docker). |

@@ -13,6 +13,11 @@ with it.
 Sign in and open [torbox.app/settings](https://torbox.app/settings). The API key
 is on that page.
 
+**A free account does not work with zurg.** TorBox answers every library
+request from a free key with `PLAN_RESTRICTED_FEATURE` so zurg cannot read
+what the account holds. Use a paid plan. A paid plan that lapses turns into a
+free one the same way.
+
 ## Configure it
 
 ```yaml
@@ -83,7 +88,7 @@ at once. Real-Debrid's is bandwidth. TorBox's is slots.
 
 | Plan | Active slots |
 |---|---|
-| Free | 1 |
+| Free | 1 but zurg cannot use a free key (see above) |
 | Essential | 3 |
 | Standard | 5 |
 | Pro | 10 |
@@ -156,6 +161,13 @@ ls /zurg_mnt/zurg/__torbox__/ | head
 ```
 
 ## When it goes wrong
+
+**The whole mount went empty and the log repeats `TorBox rejected the API key`.**
+The plan ran out and the key is on the free plan now. The line carries
+`PLAN_RESTRICTED_FEATURE`. On nightlies up to 2026.10.10 zurg keeps retrying
+TorBox and never finishes loading the library. So content from your other
+accounts stops showing too. Renew the plan or comment the `torbox` provider out
+of `config.yml` and restart zurg. The other accounts load within seconds.
 
 **Playback stops for five minutes at a time.** The requestdl allowance is spent
 and the 429 is account-wide. Something is resolving more links than it needs to.
