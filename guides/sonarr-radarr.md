@@ -12,7 +12,7 @@ The first two can run side by side. They share the same `__magic__` folder.
 
 Point Sonarr and Radarr at zurg and they grab from Usenet without a Usenet client — no download, no unpack, no disk. Every step below, with the screen you should be looking at.
 
-This is the Usenet half. SABnzbd carries NZBs and nothing else; the torrent half is a separate endpoint answering the same two clients as a qBittorrent, and the two share this folder — see [Sonarr & Radarr, torrents](sonarr-radarr-torrents.md).
+This is the Usenet half. SABnzbd carries NZBs and nothing else; the torrent half is a separate endpoint answering the same two clients as a qBittorrent, and the two share this folder — see [Sonarr & Radarr for torrents](sonarr-radarr-torrents.md).
 
 Everything below was captured against zurg `nightly-993-g99bcf9a4`, Sonarr `4.0.19.2979` and Radarr `6.3.0.10514`, on a live install with a real Usenet account. Host and user names have been changed to `you@zurg-server`. Indexer names read `my-indexer`. API keys and library counts are illustrative. Nothing else in the captured output was altered.
 

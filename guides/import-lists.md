@@ -2,7 +2,7 @@
 
 Sonarr and Radarr can follow a list of shows or movies. Every title on it gets added and searched. With zurg as the download client each grab lands on your debrid account and imports into `__magic__` like any other. So a list is a whole library section that fills itself. A horror list gives you a horror section and new titles show up as the list grows.
 
-This page assumes the \*arrs already grab through zurg. If they do not yet then start with [Sonarr & Radarr, torrents](sonarr-radarr-torrents.md).
+This page assumes the \*arrs already grab through zurg. If they do not yet then start with [Sonarr & Radarr for torrents](sonarr-radarr-torrents.md).
 
 ## Use MDBList and not IMDb
 

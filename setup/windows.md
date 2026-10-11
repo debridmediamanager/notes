@@ -499,7 +499,7 @@ Windows PowerShell parses some POSIX habits badly, and SSH eats quoting. `&&` is
 ## See also
 
 - [Linux](linux.md), [Docker](docker.md) and [macOS](macos.md) — the same install on other platforms
-- [Sonarr & Radarr, torrents](../guides/sonarr-radarr-torrents.md) — the qBittorrent endpoint end to end, client settings included
+- [Sonarr & Radarr for torrents](../guides/sonarr-radarr-torrents.md) — the qBittorrent endpoint end to end, client settings included
 - [Sonarr & Radarr](../guides/sonarr-radarr.md) — the SABnzbd endpoint, same
 - [Usenet](../guides/usenet.md) — news accounts, retention, repair, the `nzb` backend in depth
 - [`__magic__`](../guides/magic.md) — the directory both endpoints import from
