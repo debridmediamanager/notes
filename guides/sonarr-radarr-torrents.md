@@ -1,5 +1,5 @@
 ---
-label: Sonarr & Radarr, torrents
+label: Sonarr & Radarr for torrents
 icon: download
 order: 78
 ---

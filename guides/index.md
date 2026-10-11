@@ -9,10 +9,10 @@ order: 80
 Working with the library: Usenet, the arrs, `__magic__`, and media servers.
 
 - [Usenet](usenet.md)
-- [Sonarr & Radarr, Usenet](sonarr-radarr.md)
-- [Sonarr & Radarr, torrents](sonarr-radarr-torrents.md)
+- [Sonarr & Radarr for Usenet](sonarr-radarr.md)
+- [Sonarr & Radarr for torrents](sonarr-radarr-torrents.md)
 - [Lists in Sonarr & Radarr](import-lists.md)
-- [Sonarr & Radarr, zurg searches](sonarr-radarr-fetch.md)
+- [zurg searches for Sonarr & Radarr](sonarr-radarr-fetch.md)
 - [\_\_magic\_\_](magic.md)
 - [Renaming](renaming.md)
 - [Plex](plex.md)

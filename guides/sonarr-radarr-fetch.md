@@ -1,5 +1,5 @@
 ---
-label: Sonarr & Radarr, zurg searches
+label: zurg searches for Sonarr & Radarr
 icon: inbox
 order: 77
 ---
