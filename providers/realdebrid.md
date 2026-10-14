@@ -112,9 +112,10 @@ keeps refusing through minutes of quiet. One production repair sweep spent
 four hours adding nothing because three adds landed within thirteen seconds of
 each other at the start of it.
 
-**Some releases are refused on their name alone.** Since 10 October 2026 that is
-eleven strings in any case. They are WEB-DL, WEBRip, BDRip, HDRip, DVDRip,
-WEB.x264, WEB.h264, HDTV.x264, HDTV.XviD, BluRay.x264 and p.BluRay.DTS. That
+**Some releases are refused on their name alone.** Since 14 October 2026 that is
+eleven strings. WEB-DL, WEB.x264 and WEB.H264 count only in exactly that case,
+so web-dl, Web-Dl and the scene's WEB.h264 go through. WEBRip, BDRip, HDRip,
+DVDRip, HDTV.x264, HDTV.XviD, BluRay.x264 and p.BluRay.DTS count in any case. That
 last one needs a p right before it as in 1080p.BluRay.DTS. A 2002.BluRay.DTS
 release is fine. Only the exact separator counts. WEB.DL and WEB-x264 and
 BluRay-x264 all go through. A release named with one of them is refused on the
