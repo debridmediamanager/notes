@@ -25,7 +25,7 @@ rex opens as a closed beta for sponsors on October 15 and reaches the public on 
 | A machine | Linux (Ubuntu 22.04 or newer), macOS or Windows. A Proxmox LXC works, unprivileged is fine |
 | Its size | For a library of about 10,000 items: 4 cores, 8 GB of RAM and a 64 GB disk. rex keeps the library in memory and uses more while it fills the first time. zurg uses little |
 | zurg | A sponsor nightly from **2026.10.15 or later**. Older builds never tell rex where their files are, and the public v1.0.0 cannot feed rex at all |
-| rex | v0.3.0 or newer (step 2) |
+| rex | v0.3.0 or newer: the download (step 2) or the [Docker image](#run-rex-in-docker) |
 | A TMDB key | Free. Make one at [themoviedb.org/settings/api](https://www.themoviedb.org/settings/api) and copy the **API Key** |
 | Your Plex token | Not needed |
 
@@ -54,6 +54,8 @@ curl -s http://127.0.0.1:9999/dav/
 It lists `movies/` and `shows/`. While the library is still loading it answers 503.
 
 ## 2. Get rex
+
+Running Docker on Linux? Use the [Docker image](#run-rex-in-docker) instead and skip steps 2, 4 and 8.
 
 Download the build for your machine from [rex's releases](https://github.com/debridmediamanager/rex/releases): Linux (amd64 and arm64, Ubuntu 22.04 or newer), macOS (Intel and Apple Silicon) or Windows (64 bit). You need **v0.3.0 or newer**. v0.2.0 cannot take a library from zurg this way.
 
@@ -229,6 +231,61 @@ journalctl --user -u rex -f
 On Windows use `rust\target\release\rex.exe` everywhere and start it from Task Scheduler ("At startup"). On macOS: `launchctl submit -l com.rex -o rex.log -e rex.err -- /bin/bash "$PWD/run.sh"`.
 
 Back up `rex.db` with `sqlite3 ~/rex/rex.db ".backup rex.db.bak"`, together with `claim_state.json`. `rex.db` holds your watch state and zurg's login, so keep it private.
+
+## Run rex in Docker
+
+`ghcr.io/debridmediamanager/rex` carries the same Linux build as the release, for amd64 and arm64. Like zurg's sponsor image it is private, so log in once with your GitHub username and a classic personal access token with the `read:packages` and `repo` scopes:
+
+```bash
+docker login ghcr.io -u YOUR_GITHUB_USERNAME
+```
+
+Make a folder for it with this `compose.yml`:
+
+```yaml
+services:
+  rex:
+    image: ghcr.io/debridmediamanager/rex:latest
+    container_name: rex
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      TMDB_KEY: your_tmdb_api_key
+    volumes:
+      - ./config:/config
+    command: >
+      --friendly-name myrex --zurg-mount /zurg_mnt/zurg
+      --owner-username <your Plex username> --owner-email <your Plex email>
+```
+
+- Everything rex keeps (`rex.db`, `claim_state.json`) lands in `./config`. Back up that folder.
+- `network_mode: host` lets Plex apps on your network find rex on their own and lets rex reach zurg the same way it would without Docker.
+- `--zurg-mount` is zurg's `mount_path`; `/zurg_mnt/zurg` is what zurg's Docker setup uses.
+- Plex Media Server on the same machine? Add `--port 32500 --gdm off` to `command`.
+
+zurg has `anime` or other directories? Name them before the first start (step 3):
+
+```bash
+docker compose run --rm rex catalog --seed --name myrex --out /config/rex.db \
+  --movies movies --shows shows --shows anime
+```
+
+Start it and follow the log:
+
+```bash
+docker compose up -d
+docker compose logs -f rex
+```
+
+The first start logs `seeded /config/rex.db`. Then carry on with [step 5](#5-point-zurg-at-rex): `rex_url` is `http://<this machine's LAN IP>:32400`. The claim in step 6 is the same `curl` on this machine. For step 7, put the certificate files in `./config` and add `--tls-cert /config/<name>.crt --tls-key /config/<name>.pkcs8.key --announce-url ...` to `command`.
+
+To update:
+
+```bash
+docker compose pull && docker compose up -d
+```
+
+`latest` follows each release; pin a version such as `ghcr.io/debridmediamanager/rex:0.3.0` to update only when you choose. The image carries no FFmpeg, so [converting video](#converting-video-optional) stays off in it.
 
 ## Keep the port private
 
