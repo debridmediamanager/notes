@@ -10,11 +10,7 @@ order: 45
 
 This page sets up both from scratch on one machine. It takes about 15 minutes, plus a few hours for a big library to fill.
 
-```
-debrid account --> zurg (:9999) --library + media details--> rex (:32400) <-- Plex apps
-                    ^                                           |
-                    +--------- rex reads the file on play ------+
-```
+![zurg registers with rex and sends it the library; Plex apps play through rex, which reads each file from zurg](../assets/rex/how-it-fits.svg)
 
 - zurg tells rex where its files are and sends it every movie and episode with its media details.
 - rex keeps no files and reads no disk. You do not need rclone or a FUSE mount for rex.
@@ -29,7 +25,7 @@ rex opens as a closed beta for sponsors on October 15 and reaches the public on 
 | A machine | Linux (Ubuntu 22.04 or newer), macOS or Windows. A Proxmox LXC works, unprivileged is fine |
 | Its size | For a library of about 10,000 items: 4 cores, 8 GB of RAM and a 64 GB disk. rex keeps the library in memory and uses more while it fills the first time. zurg uses little |
 | zurg | A sponsor nightly from **2026.10.15 or later**. Older builds never tell rex where their files are, and the public v1.0.0 cannot feed rex at all |
-| rex | A build newer than v0.2.0 (see step 2) |
+| rex | v0.3.0 or newer (step 2) |
 | A TMDB key | Free. Make one at [themoviedb.org/settings/api](https://www.themoviedb.org/settings/api) and copy the **API Key** |
 | Your Plex token | Not needed |
 
@@ -59,22 +55,16 @@ It lists `movies/` and `shows/`. While the library is still loading it answers 5
 
 ## 2. Get rex
 
-Until a release newer than v0.2.0 is out, build rex from its repository. With Rust installed:
+Download the build for your machine from [rex's releases](https://github.com/debridmediamanager/rex/releases): Linux (amd64 and arm64, Ubuntu 22.04 or newer), macOS (Intel and Apple Silicon) or Windows (64 bit). You need **v0.3.0 or newer**. v0.2.0 cannot take a library from zurg this way.
 
 ```bash
-git clone https://github.com/debridmediamanager/rex ~/rex && cd ~/rex
-cargo build --release --manifest-path rust/Cargo.toml
+mkdir -p ~/rex && cd ~/rex
+tar xzf ~/Downloads/rex-v0.3.0-linux-amd64.tar.gz --strip-components=1
 ```
 
-Without Rust, build it in Docker. The result runs on any Linux of the same architecture:
+On Windows unpack the zip into a folder of its own and use `rust\target\release\rex.exe` wherever this page says `rust/target/release/rex`.
 
-```bash
-git clone https://github.com/debridmediamanager/rex ~/rex && cd ~/rex
-docker run --rm -u "$(id -u):$(id -g)" -e HOME=/tmp -v "$PWD":/src -w /src/rust \
-  -e CARGO_TARGET_DIR=/src/rust/target rust:1-bullseye cargo build --release
-```
-
-Either way rex is now at `~/rex/rust/target/release/rex`. Always start it from `~/rex`, because it reads its `data/` folder from there.
+rex is now at `~/rex/rust/target/release/rex`. Always start it from `~/rex`, because it reads its `data/` folder from there.
 
 Put your keys in `~/rex/rex.env`:
 
