@@ -17,6 +17,7 @@ Working with the library: Usenet, the arrs, `__magic__`, and media servers.
 - [Renaming](renaming.md)
 - [Plex](plex.md)
 - [Jellyfin](jellyfin.md)
+- [rex](rex.md)
 - [The Stremio addon](stremio.md)
 - [Watchlist and Seerr](acquisition.md)
 - [Plex watchlist](plex-watchlist.md)
