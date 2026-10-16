@@ -100,13 +100,12 @@ chmod 600 rex.env
 
 **What you should see.** `ls -l rex.env` shows `-rw-------`.
 
-Optional lines for the same file:
+Sponsors can add two more lines, so rex reads posters and episode lists from DMM first, where most shows are already cached. `TMDB_KEY` then becomes optional:
 
-| Line | What it does |
-|---|---|
-| `REX_METADATA_URL=https://debridmediamanager.com` and `REX_METADATA_KEY=<your DMM key>` | Sponsors only. rex reads posters and episode lists from DMM first, where most shows are already cached. `TMDB_KEY` then becomes optional |
-| `REX_ANIME_LISTS=on` | Places fansub releases (`Hibike Euphonium 3 - 01`) on the right TMDB season and episode |
-| `REX_IMDB_EPISODES=on` | Places long shows that TMDB files as one season, like Detective Conan, on the right episode |
+```bash
+REX_METADATA_URL=https://debridmediamanager.com
+REX_METADATA_KEY=<your DMM key>
+```
 
 ## Step 4. Check zurg's folders
 
@@ -200,6 +199,38 @@ Three rules for this line:
 - Use the **LAN IP**, not `localhost` and not a Tailscale address.
 - Leave `plex_server_url` in zurg's config pointing at your real Plex, or empty. Pointed at rex, zurg learns rex's own matches and a wrong match could never be fixed.
 - Running several zurgs (one per debrid service)? Give each its own name with an extra line, `rex_source: rd`, `rex_source: tb` and so on. They fill the same two libraries.
+
+### Sponsors: let zurg place every episode
+
+**What it does.** With your DMM sponsor key in zurg's config, zurg asks DMM what each release is and exactly which episode each file is, and tells rex. rex then puts every file where DMM says instead of guessing from its name.
+
+**Why it matters.** File names often number episodes differently from the episode lists Plex apps show:
+
+| Release | Named | Where it really is |
+|---|---|---|
+| `[SubsPlease] Hibike Euphonium 3 - 01` | season 1, episode 1 | Sound! Euphonium season 3, episode 1 |
+| `[HorribleSubs] One Piece - 486` | episode 486 | season 13, episode 486 |
+| `Fairy.Tail.E236` | episode 236 | season 6, episode 10 |
+| `Firefly.S01E02.The.Train.Job` (DVD order) | episode 2 | episode 1, "The Train Job" |
+
+Without the key rex places files by their names, which is right for most shows and wrong for these.
+
+Add one line to zurg's config, with the key from your DMM sponsor page, and restart zurg:
+
+```bash
+echo 'dmm_api_key: your_dmm_key' >> ~/zurg/config.yml
+systemctl --user restart zurg
+```
+
+You need zurg nightly 2026.10.16 or later.
+
+**What you should see.** zurg's log says `DMM placed N releases for rex` (`journalctl --user -u zurg -n 50`), and rex's log names each title with `(placed)`:
+
+```
+INFO    FEED identified "Firefly.S01.COMPLETE.REPACK.1080p.BRRip.AC3.x264-LESS" -> exact tt0303461 (placed)
+```
+
+Episodes rex had already placed move to their right numbers and keep their watch history. A file DMM cannot place is placed by its name as before, and a title you corrected with **Fix Match** stays as you set it.
 
 ## Step 7. Fill the library
 
