@@ -214,6 +214,8 @@ INFO    FEED zurg upsert: 2 created, 0 updated, 0 held, 0 unchanged, 0 rejected
 
 A handful of titles take seconds. zurg reads about 50 files a minute, so 10,000 items take a few hours; they appear as they go. If you restart zurg before it finishes, press the button again: it skips what is done.
 
+A title that stays `held` after the pass had its file read fail, usually a slow first read from the debrid service. zurg logs `Cannot probe file ...`. Press the button again: from zurg nightly 2026.10.16 it reads those files again straight away. Older builds wait a day before trying.
+
 From now on anything you add to your debrid account shows up by itself. On our test machine a 14-episode season added on Real-Debrid had its first episode in rex 10 seconds later and all 14 within half a minute.
 
 ## Step 8. Watch something
@@ -368,13 +370,37 @@ With an Intel or AMD graphics chip, also run `sudo usermod -aG render "$USER"` a
 
 ## Run rex in Docker
 
-`ghcr.io/debridmediamanager/rex` carries the same Linux build as the release, for amd64 and arm64. Like zurg's sponsor image it is private, so log in once with your GitHub username and a classic personal access token with the `read:packages` and `repo` scopes:
+The same setup with zurg and rex in containers on one Linux machine. The steps match the ones above; only how you start each part differs.
+
+### D1. Install zurg in Docker
+
+**What it does.** Runs zurg in a container whose mount shows up on the machine at `/zurg_mnt/zurg`.
+
+**Why it matters.** As in step 1, everything rex shows comes from zurg.
+
+Follow [zurg's Docker setup](../setup/docker.md). The one-line installer there does it all, and may first ask you to approve the `read:packages` and `repo` scopes for your GitHub sign-in with a one-time code in your browser. The manual steps on the same page do the same thing by hand.
+
+**What you should see.** `docker compose exec zurg /app/zurg doctor --working-dir /config` ends in `PASS` lines (`WARN service zurg is not installed` is expected: Docker restarts zurg, not systemd), and
+
+```bash
+ls /zurg_mnt/zurg/movies /zurg_mnt/zurg/shows
+```
+
+lists your library. Check the folders as in [step 4](#step-4-check-zurgs-folders), under `/zurg_mnt/zurg`.
+
+### D2. Start rex in Docker
+
+**What it does.** Runs rex from its image with your TMDB key, keeping everything it saves in a folder beside the compose file.
+
+**Why it matters.** It is steps 2, 3, 5 and 9 in one: the image is the program, the compose file holds the key and the start options, and Docker keeps it running.
+
+rex's image is private, like zurg's. Log in once with your GitHub username and a classic personal access token with the `read:packages` and `repo` scopes (the same login zurg's image uses):
 
 ```bash
 docker login ghcr.io -u YOUR_GITHUB_USERNAME
 ```
 
-Make a folder for it with this `compose.yml`:
+Make a folder, for example `~/rex`, with this `compose.yml`:
 
 ```yaml
 services:
@@ -392,34 +418,48 @@ services:
       --owner-username <your Plex username> --owner-email <your Plex email>
 ```
 
-- Everything rex keeps (`rex.db`, `claim_state.json`) lands in `./config`. Back up that folder.
-- `network_mode: host` lets Plex apps on your network find rex on their own and lets rex reach zurg the same way it would without Docker.
-- `--zurg-mount` is zurg's `mount_path`; `/zurg_mnt/zurg` is what zurg's Docker setup uses.
+- `network_mode: host` lets Plex apps on your network find rex by themselves, and lets rex reach zurg's container.
+- `./config` gets `rex.db` and, later, `claim_state.json`. They are readable by root only, because `rex.db` holds zurg's login.
 - Plex Media Server on the same machine? Add `--port 32500 --gdm off` to `command`.
-
-zurg has `anime` or other directories? Name them before the first start (step 4):
-
-```bash
-docker compose run --rm rex catalog --seed --name myrex --out /config/rex.db \
-  --movies movies --shows shows --shows anime
-```
-
-Start it and follow the log:
+- zurg has more folders than `movies` and `shows`? Before the first start, run `docker compose run --rm rex catalog --seed --name myrex --out /config/rex.db --movies movies --shows shows --shows anime`, naming every folder.
 
 ```bash
+chmod 600 compose.yml
 docker compose up -d
 docker compose logs -f rex
 ```
 
-The first start logs `seeded /config/rex.db`. Then carry on with [step 6](#step-6-connect-zurg-to-rex): `rex_url` is `http://<this machine's LAN IP>:32400`. The claim is the same `curl` on this machine. For HTTPS, put the certificate files in `./config` and add `--tls-cert /config/<name>.crt --tls-key /config/<name>.pkcs8.key --announce-url ...` to `command`.
+**What you should see.** The same lines as [step 5](#step-5-start-rex-for-the-first-time), with `seeded /config/rex.db` and `no source yet`. Leave the log open.
 
-To update:
+### D3. Connect zurg to rex
+
+**What it does.** Same as [step 6](#step-6-connect-zurg-to-rex). zurg's config sits in zurg's compose folder and belongs to root, so:
 
 ```bash
-docker compose pull && docker compose up -d
+cd ~/zurg
+echo 'rex_url: http://192.168.1.20:32400' | sudo tee -a config.yml
+docker compose restart zurg
 ```
 
-`latest` follows each release; pin a version such as `ghcr.io/debridmediamanager/rex:0.3.0` to update only when you choose. The image carries no FFmpeg, so [converting video](#converting-video-optional) stays off in it.
+**What you should see.** `SOURCES PUT /rex/sources/zurg -> 200` in rex's log, and `curl -s http://127.0.0.1:32400/rex/sources` shows zurg at its **container** address, for example `http://192.168.32.2:9999/dav`. That is right: rex runs on the same machine and reaches the container there.
+
+**zurg and rex on different machines?** rex cannot reach that container address. Give the zurg container `network_mode: host` (and remove its `ports:` lines) so it registers the machine's LAN IP instead.
+
+### D4. Fill the library and watch
+
+Exactly [step 7](#step-7-fill-the-library) and [step 8](#step-8-watch-something): press **Analyze & Tag Library** on zurg's dashboard, watch rex's log name each title, then open a Plex app on your network.
+
+**What you should see.** The titles appear in **Debrid Movies** and **Debrid TV**, and `docker compose restart rex` brings them back with `state file /config/rex.db: restored` and `source zurg: registered`.
+
+### D5. Update
+
+```bash
+cd ~/rex && docker compose pull && docker compose up -d
+```
+
+rex comes back with the same library. `latest` follows each release; pin a version such as `ghcr.io/debridmediamanager/rex:0.3.0` to update only when you choose. For zurg, see [Managing and updating zurg](../setup/docker.md#managing-and-updating-zurg).
+
+The image carries no FFmpeg, so [converting video](#converting-video-optional) needs the install without Docker. The claim and HTTPS work as above: the claim is the same `curl` on this machine, and certificate files go in `./config` with `--tls-cert /config/<name>.crt --tls-key /config/<name>.pkcs8.key --announce-url ...` added to `command`.
 
 ## Keep the port private
 

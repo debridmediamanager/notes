@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.845425351658">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.845428692048">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.845425351658" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.845428692048" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.845425351658" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.845428692048" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.845425351658" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.845425351658" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.845428692048" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.845428692048" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -405,6 +405,7 @@ INFO    FEED PUT /rex/feed/zurg/snapshot -&gt; 200</code></pre>
 INFO    FEED zurg upsert: 2 created, 0 updated, 0 held, 0 unchanged, 0 rejected</code></pre>
 </doc-codeblock></div>
 <p>A handful of titles take seconds. zurg reads about 50 files a minute, so 10,000 items take a few hours; they appear as they go. If you restart zurg before it finishes, press the button again: it skips what is done.</p>
+<p>A title that stays <code translate="no" v-pre>held</code> after the pass had its file read fail, usually a slow first read from the debrid service. zurg logs <code translate="no" v-pre>Cannot probe file ...</code>. Press the button again: from zurg nightly 2026.10.16 it reads those files again straight away. Older builds wait a day before trying.</p>
 <p>From now on anything you add to your debrid account shows up by itself. On our test machine a 14-episode season added on Real-Debrid had its first episode in rex 10 seconds later and all 14 within half a minute.</p>
 <h2 id="step-8-watch-something">Step 8. Watch something</h2>
 <p><strong>What it does.</strong> Opens rex in a Plex app, the same way you would open any Plex server.</p>
@@ -520,12 +521,25 @@ systemctl --user restart rex</code></pre>
 <p>With an Intel or AMD graphics chip, also run <code translate="no" v-pre>sudo usermod -aG render &quot;$USER&quot;</code> and log in again; in an LXC, pass the GPU through. The chip makes conversion fast; without one rex uses the processor.</p>
 <p><strong>What you should see.</strong> rex&#x27;s log has a <code translate="no" v-pre>transcoder:</code> line naming the FFmpeg and the hardware it found (<code translate="no" v-pre>hardware none</code> means the processor). A file that failed before now plays; the log shows what was converted, for example <code translate="no" v-pre>video=copy h264 audio=ac3-&gt;aac</code>.</p>
 <h2 id="run-rex-in-docker">Run rex in Docker</h2>
-<p><code translate="no" v-pre>ghcr.io/debridmediamanager/rex</code> carries the same Linux build as the release, for amd64 and arm64. Like zurg&#x27;s sponsor image it is private, so log in once with your GitHub username and a classic personal access token with the <code translate="no" v-pre>read:packages</code> and <code translate="no" v-pre>repo</code> scopes:</p>
-<div id="run-rex-in-docker-code-1" class="codeblock-wrapper"><doc-codeblock>
+<p>The same setup with zurg and rex in containers on one Linux machine. The steps match the ones above; only how you start each part differs.</p>
+<h3 id="d1-install-zurg-in-docker">D1. Install zurg in Docker</h3>
+<p><strong>What it does.</strong> Runs zurg in a container whose mount shows up on the machine at <code translate="no" v-pre>/zurg_mnt/zurg</code>.</p>
+<p><strong>Why it matters.</strong> As in step 1, everything rex shows comes from zurg.</p>
+<p>Follow <a href="../../setup/docker/">zurg&#x27;s Docker setup</a>. The one-line installer there does it all, and may first ask you to approve the <code translate="no" v-pre>read:packages</code> and <code translate="no" v-pre>repo</code> scopes for your GitHub sign-in with a one-time code in your browser. The manual steps on the same page do the same thing by hand.</p>
+<p><strong>What you should see.</strong> <code translate="no" v-pre>docker compose exec zurg /app/zurg doctor --working-dir /config</code> ends in <code translate="no" v-pre>PASS</code> lines (<code translate="no" v-pre>WARN service zurg is not installed</code> is expected: Docker restarts zurg, not systemd), and</p>
+<div id="d1-install-zurg-in-docker-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">ls /zurg_mnt/zurg/movies /zurg_mnt/zurg/shows</code></pre>
+</doc-codeblock></div>
+<p>lists your library. Check the folders as in <doc-anchor-trigger to="#step-4-check-zurgs-folders">step 4</doc-anchor-trigger>, under <code translate="no" v-pre>/zurg_mnt/zurg</code>.</p>
+<h3 id="d2-start-rex-in-docker">D2. Start rex in Docker</h3>
+<p><strong>What it does.</strong> Runs rex from its image with your TMDB key, keeping everything it saves in a folder beside the compose file.</p>
+<p><strong>Why it matters.</strong> It is steps 2, 3, 5 and 9 in one: the image is the program, the compose file holds the key and the start options, and Docker keeps it running.</p>
+<p>rex&#x27;s image is private, like zurg&#x27;s. Log in once with your GitHub username and a classic personal access token with the <code translate="no" v-pre>read:packages</code> and <code translate="no" v-pre>repo</code> scopes (the same login zurg&#x27;s image uses):</p>
+<div id="d2-start-rex-in-docker-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">docker login ghcr.io -u YOUR_GITHUB_USERNAME</code></pre>
 </doc-codeblock></div>
-<p>Make a folder for it with this <code translate="no" v-pre>compose.yml</code>:</p>
-<div id="run-rex-in-docker-code-2" class="codeblock-wrapper"><doc-codeblock>
+<p>Make a folder, for example <code translate="no" v-pre>~/rex</code>, with this <code translate="no" v-pre>compose.yml</code>:</p>
+<div id="d2-start-rex-in-docker-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">services:
   rex:
     image: ghcr.io/debridmediamanager/rex:latest
@@ -541,27 +555,35 @@ systemctl --user restart rex</code></pre>
       --owner-username &lt;your Plex username&gt; --owner-email &lt;your Plex email&gt;</code></pre>
 </doc-codeblock></div>
 <ul>
-<li>Everything rex keeps (<code translate="no" v-pre>rex.db</code>, <code translate="no" v-pre>claim_state.json</code>) lands in <code translate="no" v-pre>./config</code>. Back up that folder.</li>
-<li><code translate="no" v-pre>network_mode: host</code> lets Plex apps on your network find rex on their own and lets rex reach zurg the same way it would without Docker.</li>
-<li><code translate="no" v-pre>--zurg-mount</code> is zurg&#x27;s <code translate="no" v-pre>mount_path</code>; <code translate="no" v-pre>/zurg_mnt/zurg</code> is what zurg&#x27;s Docker setup uses.</li>
+<li><code translate="no" v-pre>network_mode: host</code> lets Plex apps on your network find rex by themselves, and lets rex reach zurg&#x27;s container.</li>
+<li><code translate="no" v-pre>./config</code> gets <code translate="no" v-pre>rex.db</code> and, later, <code translate="no" v-pre>claim_state.json</code>. They are readable by root only, because <code translate="no" v-pre>rex.db</code> holds zurg&#x27;s login.</li>
 <li>Plex Media Server on the same machine? Add <code translate="no" v-pre>--port 32500 --gdm off</code> to <code translate="no" v-pre>command</code>.</li>
+<li>zurg has more folders than <code translate="no" v-pre>movies</code> and <code translate="no" v-pre>shows</code>? Before the first start, run <code translate="no" v-pre>docker compose run --rm rex catalog --seed --name myrex --out /config/rex.db --movies movies --shows shows --shows anime</code>, naming every folder.</li>
 </ul>
-<p>zurg has <code translate="no" v-pre>anime</code> or other directories? Name them before the first start (step 4):</p>
-<div id="run-rex-in-docker-code-3" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose run --rm rex catalog --seed --name myrex --out /config/rex.db \
-  --movies movies --shows shows --shows anime</code></pre>
-</doc-codeblock></div>
-<p>Start it and follow the log:</p>
-<div id="run-rex-in-docker-code-4" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose up -d
+<div id="d2-start-rex-in-docker-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">chmod 600 compose.yml
+docker compose up -d
 docker compose logs -f rex</code></pre>
 </doc-codeblock></div>
-<p>The first start logs <code translate="no" v-pre>seeded /config/rex.db</code>. Then carry on with <doc-anchor-trigger to="#step-6-connect-zurg-to-rex">step 6</doc-anchor-trigger>: <code translate="no" v-pre>rex_url</code> is <code translate="no" v-pre>http://&lt;this machine's LAN IP&gt;:32400</code>. The claim is the same <code translate="no" v-pre>curl</code> on this machine. For HTTPS, put the certificate files in <code translate="no" v-pre>./config</code> and add <code translate="no" v-pre>--tls-cert /config/&lt;name&gt;.crt --tls-key /config/&lt;name&gt;.pkcs8.key --announce-url ...</code> to <code translate="no" v-pre>command</code>.</p>
-<p>To update:</p>
-<div id="run-rex-in-docker-code-5" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose pull &amp;&amp; docker compose up -d</code></pre>
+<p><strong>What you should see.</strong> The same lines as <doc-anchor-trigger to="#step-5-start-rex-for-the-first-time">step 5</doc-anchor-trigger>, with <code translate="no" v-pre>seeded /config/rex.db</code> and <code translate="no" v-pre>no source yet</code>. Leave the log open.</p>
+<h3 id="d3-connect-zurg-to-rex">D3. Connect zurg to rex</h3>
+<p><strong>What it does.</strong> Same as <doc-anchor-trigger to="#step-6-connect-zurg-to-rex">step 6</doc-anchor-trigger>. zurg&#x27;s config sits in zurg&#x27;s compose folder and belongs to root, so:</p>
+<div id="d3-connect-zurg-to-rex-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/zurg
+echo 'rex_url: http://192.168.1.20:32400' | sudo tee -a config.yml
+docker compose restart zurg</code></pre>
 </doc-codeblock></div>
-<p><code translate="no" v-pre>latest</code> follows each release; pin a version such as <code translate="no" v-pre>ghcr.io/debridmediamanager/rex:0.3.0</code> to update only when you choose. The image carries no FFmpeg, so <doc-anchor-trigger to="#converting-video-optional">converting video</doc-anchor-trigger> stays off in it.</p>
+<p><strong>What you should see.</strong> <code translate="no" v-pre>SOURCES PUT /rex/sources/zurg -&gt; 200</code> in rex&#x27;s log, and <code translate="no" v-pre>curl -s http://127.0.0.1:32400/rex/sources</code> shows zurg at its <strong>container</strong> address, for example <code translate="no" v-pre>http://192.168.32.2:9999/dav</code>. That is right: rex runs on the same machine and reaches the container there.</p>
+<p><strong>zurg and rex on different machines?</strong> rex cannot reach that container address. Give the zurg container <code translate="no" v-pre>network_mode: host</code> (and remove its <code translate="no" v-pre>ports:</code> lines) so it registers the machine&#x27;s LAN IP instead.</p>
+<h3 id="d4-fill-the-library-and-watch">D4. Fill the library and watch</h3>
+<p>Exactly <doc-anchor-trigger to="#step-7-fill-the-library">step 7</doc-anchor-trigger> and <doc-anchor-trigger to="#step-8-watch-something">step 8</doc-anchor-trigger>: press <strong>Analyze &amp; Tag Library</strong> on zurg&#x27;s dashboard, watch rex&#x27;s log name each title, then open a Plex app on your network.</p>
+<p><strong>What you should see.</strong> The titles appear in <strong>Debrid Movies</strong> and <strong>Debrid TV</strong>, and <code translate="no" v-pre>docker compose restart rex</code> brings them back with <code translate="no" v-pre>state file /config/rex.db: restored</code> and <code translate="no" v-pre>source zurg: registered</code>.</p>
+<h3 id="d5-update">D5. Update</h3>
+<div id="d5-update-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/rex &amp;&amp; docker compose pull &amp;&amp; docker compose up -d</code></pre>
+</doc-codeblock></div>
+<p>rex comes back with the same library. <code translate="no" v-pre>latest</code> follows each release; pin a version such as <code translate="no" v-pre>ghcr.io/debridmediamanager/rex:0.3.0</code> to update only when you choose. For zurg, see <a href="../../setup/docker/#managing-and-updating-zurg">Managing and updating zurg</a>.</p>
+<p>The image carries no FFmpeg, so <doc-anchor-trigger to="#converting-video-optional">converting video</doc-anchor-trigger> needs the install without Docker. The claim and HTTPS work as above: the claim is the same <code translate="no" v-pre>curl</code> on this machine, and certificate files go in <code translate="no" v-pre>./config</code> with <code translate="no" v-pre>--tls-cert /config/&lt;name&gt;.crt --tls-key /config/&lt;name&gt;.pkcs8.key --announce-url ...</code> added to <code translate="no" v-pre>command</code>.</p>
 <h2 id="keep-the-port-private">Keep the port private</h2>
 <p>rex takes no password from zurg. Anyone who can reach rex&#x27;s port can add to its library or remove what zurg sent. Never forward port 32400 (or 32500) on your router without the HTTPS setup above.</p>
 <h2 id="updating">Updating</h2>
