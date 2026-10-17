@@ -223,29 +223,83 @@ You are done. The sections below are optional.
 
 ## Use it outside your home (optional)
 
-**What it does.** Gives rex an HTTPS address and tells plex.tv about it.
+**What it does.** Gives rex an HTTPS address that Plex apps away from home can reach, and tells plex.tv about it.
 
-**Why it matters.** Plex apps away from home only connect to an HTTPS address they can reach. rex has no relay of its own, so something in front of it has to hold the certificate. It must be [claimed](#add-it-to-your-plex-account-optional) first: a claimed rex checks every request's Plex token, so it works behind any HTTPS proxy.
+**Why it matters.** Away from home, Plex apps only connect to an HTTPS address they can reach. A real Plex server can fall back to Plex's relay; rex cannot, so you choose how it is reached. rex must be [claimed](#add-it-to-your-plex-account-optional) first. A claimed rex checks the Plex token on every request, so it works behind any of the HTTPS proxies below.
 
-With Tailscale, one command gives rex an HTTPS address with a certificate Tailscale keeps renewed:
+Whichever you pick, every byte you watch away from home leaves through your home connection's **upload** speed. A 20 Mbit/s upload carries one 1080p WEB-DL comfortably, not a remux.
+
+### Which one to use
+
+| Your situation | Use | Why |
+|---|---|---|
+| You can install Tailscale on the devices you watch on | **[Tailscale serve](#tailscale-serve)** (best) | Nothing to open on your router, and it works behind any internet connection. The certificate renews by itself, and nobody outside your tailnet can reach rex |
+| Devices without Tailscale (a friend's TV, a hotel), and your router has a public IP | **[Caddy](#caddy)** with your own domain, or with a free `sslip.io` name | A direct connection with nobody in between, and a free certificate that renews by itself. You forward port 443 |
+| Your connection has no public IP (CGNAT, common on mobile and some fibre providers) and Tailscale on every device is not an option | Nothing works well yet | rex has no relay. Tailscale serve is the way out |
+
+Not recommended:
+
+- **Cloudflare tunnel.** Every byte goes through Cloudflare, which also drops the `Range` of a file's first read, so every play start pulls the whole file from your debrid service.
+- **Tailscale Funnel.** It puts every byte through Tailscale's servers, with limited bandwidth, and it publishes all of rex, including the API zurg pushes your library to. Anyone on the internet could add to or delete from that library.
+- **Forwarding port 32400 on your router.** rex speaks HTTPS there only with a certificate for a name you own, and it publishes the same API to the internet. See [Keep the port private](#keep-the-port-private).
+
+### Tailscale serve
+
+Install [Tailscale](https://tailscale.com/download) on the rex machine and on the devices you watch on, signed in to the same account. Then on the rex machine:
 
 ```bash
 sudo tailscale serve --bg 32400
 ```
 
-It prints the address, for example `https://myhost.tailnet.ts.net`. Devices signed in to your tailnet reach it; `sudo tailscale funnel --bg 32400` instead makes it reachable from anywhere. Then add the address to the end of the `ExecStart` line in `rex.service`:
+It prints the address, for example `https://myhost.tailnet.ts.net`. Add it to the end of the `ExecStart` line in `rex.service`:
 
 ```ini
 ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url https://myhost.tailnet.ts.net
 ```
 
-and run `systemctl --user daemon-reload && systemctl --user restart rex`.
+```bash
+systemctl --user daemon-reload && systemctl --user restart rex
+```
 
-Own a domain and forward port 443? [Caddy](https://caddyserver.com) does the same with a free certificate: a `Caddyfile` of `rex.example.com { reverse_proxy 127.0.0.1:32400 }`, then `--announce-url https://rex.example.com`.
+Tailscale connects your devices to each other directly, so the stream does not pass through Tailscale's servers except on networks that block that. In Docker, run the same `tailscale serve` on the machine and put `--announce-url ...` in the compose file's `command:`.
 
-**What you should see.** rex's log gets `plex.tv` lines without errors, and the server appears in app.plex.tv. If it logs `waiting for a claim`, do the previous section first.
+### Caddy
 
-Do not put a Cloudflare tunnel in front of rex. Cloudflare drops the range of the first read, so every play start pulls the whole file from your debrid service.
+You need port 443 on your router forwarded to the rex machine, and a name for your home's IP address:
+
+- **Your own domain:** an `A` record such as `rex.example.com` pointing at your home IP.
+- **No domain:** use `1-2-3-4.sslip.io` with your public IP's numbers (`curl -s ifconfig.me` shows it). It always resolves to that IP. If your IP changes, update the name.
+
+Install [Caddy](https://caddyserver.com/docs/install) and make `/etc/caddy/Caddyfile`:
+
+```
+rex.example.com {
+	respond /rex/* 403
+	reverse_proxy 127.0.0.1:32400
+}
+```
+
+`respond /rex/* 403` keeps the API zurg pushes to off the internet. zurg still reaches it at `http://127.0.0.1:32400`. Then:
+
+```bash
+sudo systemctl reload caddy
+```
+
+Caddy fetches a certificate on the first request and renews it by itself. Add `--announce-url https://rex.example.com` to `ExecStart` as above, and restart rex.
+
+### What you should see
+
+```bash
+curl -s -o /dev/null -w '%{http_code}\n' https://myhost.tailnet.ts.net/identity
+```
+
+answers `200`, and rex's log names the address:
+
+```
+INFO    heartbeat every 600s for machine ... -> https://myhost.tailnet.ts.net
+```
+
+The server then lists that address on plex.tv, and a Plex app away from home picks it. If rex logs `waiting for a claim`, do the previous section first.
 
 ## Converting video (optional)
 
@@ -354,11 +408,11 @@ cd ~/rex && docker compose pull && docker compose up -d
 
 rex comes back with the same library. `latest` follows each release; pin a version such as `ghcr.io/debridmediamanager/rex:0.3.0` to update only when you choose. For zurg, see [Managing and updating zurg](../setup/docker.md#managing-and-updating-zurg).
 
-The image carries no FFmpeg, so [converting video](#converting-video-optional) needs the install without Docker. The claim and HTTPS work as above: the claim is the same `curl` on this machine, `tailscale serve` runs on the machine itself, and `--announce-url ...` goes in `command`.
+The image carries no FFmpeg, so [converting video](#converting-video-optional) needs the install without Docker. The claim and HTTPS work as above: the claim is the same `curl` on this machine, the HTTPS options run on the machine itself, and `--announce-url ...` goes in `command`.
 
 ## Keep the port private
 
-rex takes no password from zurg. Anyone who can reach rex's port can add to its library or remove what zurg sent. Never forward port 32400 (or 32500) on your router without the HTTPS setup above.
+rex takes no password from zurg. Anyone who can reach rex's port can add to its library or remove what zurg sent. Never forward port 32400 (or 32500) on your router, and keep `/rex/*` blocked in any proxy that faces the internet, as the [Caddy](#caddy) example does.
 
 ## Updating
 
