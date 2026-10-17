@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.845524086864">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.845525201464">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.845524086864" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.845525201464" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.845524086864" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.845525201464" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.845524086864" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.845524086864" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.845525201464" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.845525201464" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -418,20 +418,90 @@ curl -s http://127.0.0.1:32400/identity</code></pre>
 </ol>
 <p><strong>What you should see.</strong> The second command shows <code translate="no" v-pre>claimed=&quot;1&quot;</code>, and <code translate="no" v-pre>~/rex/claim_state.json</code> exists. Back that file up and never claim the same server twice: if you lose it, you have to claim again.</p>
 <h2 id="use-it-outside-your-home-optional">Use it outside your home (optional)</h2>
-<p><strong>What it does.</strong> Gives rex an HTTPS address and tells plex.tv about it.</p>
-<p><strong>Why it matters.</strong> Plex apps away from home only connect to an HTTPS address they can reach. rex has no relay of its own, so something in front of it has to hold the certificate. It must be <doc-anchor-trigger to="#add-it-to-your-plex-account-optional">claimed</doc-anchor-trigger> first: a claimed rex checks every request&#x27;s Plex token, so it works behind any HTTPS proxy.</p>
-<p>With Tailscale, one command gives rex an HTTPS address with a certificate Tailscale keeps renewed:</p>
-<div id="use-it-outside-your-home-optional-code-1" class="codeblock-wrapper"><doc-codeblock>
+<p><strong>What it does.</strong> Gives rex an HTTPS address that Plex apps away from home can reach, and tells plex.tv about it.</p>
+<p><strong>Why it matters.</strong> Away from home, Plex apps only connect to an HTTPS address they can reach. A real Plex server can fall back to Plex&#x27;s relay; rex cannot, so you choose how it is reached. rex must be <doc-anchor-trigger to="#add-it-to-your-plex-account-optional">claimed</doc-anchor-trigger> first. A claimed rex checks the Plex token on every request, so it works behind any of the HTTPS proxies below.</p>
+<p>Whichever you pick, every byte you watch away from home leaves through your home connection&#x27;s <strong>upload</strong> speed. A 20 Mbit/s upload carries one 1080p WEB-DL comfortably, not a remux.</p>
+<h3 id="which-one-to-use">Which one to use</h3>
+<retype-table copy-text="| Your situation | Use | Why |
+|---|---|---|
+| You can install Tailscale on the devices you watch on | **[Tailscale serve](#tailscale-serve)** (best) | Nothing to open on your router, and it works behind any internet connection. The certificate renews by itself, and nobody outside your tailnet can reach rex |
+| Devices without Tailscale (a friend's TV, a hotel), and your router has a public IP | **[Caddy](#caddy)** with your own domain, or with a free `sslip.io` name | A direct connection with nobody in between, and a free certificate that renews by itself. You forward port 443 |
+| Your connection has no public IP (CGNAT, common on mobile and some fibre providers) and Tailscale on every device is not an option | Nothing works well yet | rex has no relay. Tailscale serve is the way out |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Your situation</th>
+<th>Use</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>You can install Tailscale on the devices you watch on</td>
+<td><strong><doc-anchor-trigger to="#tailscale-serve">Tailscale serve</doc-anchor-trigger></strong> (best)</td>
+<td>Nothing to open on your router, and it works behind any internet connection. The certificate renews by itself, and nobody outside your tailnet can reach rex</td>
+</tr>
+<tr>
+<td>Devices without Tailscale (a friend&#x27;s TV, a hotel), and your router has a public IP</td>
+<td><strong><doc-anchor-trigger to="#caddy">Caddy</doc-anchor-trigger></strong> with your own domain, or with a free <code translate="no" v-pre>sslip.io</code> name</td>
+<td>A direct connection with nobody in between, and a free certificate that renews by itself. You forward port 443</td>
+</tr>
+<tr>
+<td>Your connection has no public IP (CGNAT, common on mobile and some fibre providers) and Tailscale on every device is not an option</td>
+<td>Nothing works well yet</td>
+<td>rex has no relay. Tailscale serve is the way out</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Not recommended:</p>
+<ul>
+<li><strong>Cloudflare tunnel.</strong> Every byte goes through Cloudflare, which also drops the <code translate="no" v-pre>Range</code> of a file&#x27;s first read, so every play start pulls the whole file from your debrid service.</li>
+<li><strong>Tailscale Funnel.</strong> It puts every byte through Tailscale&#x27;s servers, with limited bandwidth, and it publishes all of rex, including the API zurg pushes your library to. Anyone on the internet could add to or delete from that library.</li>
+<li><strong>Forwarding port 32400 on your router.</strong> rex speaks HTTPS there only with a certificate for a name you own, and it publishes the same API to the internet. See <doc-anchor-trigger to="#keep-the-port-private">Keep the port private</doc-anchor-trigger>.</li>
+</ul>
+<h3 id="tailscale-serve">Tailscale serve</h3>
+<p>Install <a href="https://tailscale.com/download">Tailscale</a> on the rex machine and on the devices you watch on, signed in to the same account. Then on the rex machine:</p>
+<div id="tailscale-serve-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo tailscale serve --bg 32400</code></pre>
 </doc-codeblock></div>
-<p>It prints the address, for example <code translate="no" v-pre>https://myhost.tailnet.ts.net</code>. Devices signed in to your tailnet reach it; <code translate="no" v-pre>sudo tailscale funnel --bg 32400</code> instead makes it reachable from anywhere. Then add the address to the end of the <code translate="no" v-pre>ExecStart</code> line in <code translate="no" v-pre>rex.service</code>:</p>
-<div id="use-it-outside-your-home-optional-code-2" class="codeblock-wrapper"><doc-codeblock>
+<p>It prints the address, for example <code translate="no" v-pre>https://myhost.tailnet.ts.net</code>. Add it to the end of the <code translate="no" v-pre>ExecStart</code> line in <code translate="no" v-pre>rex.service</code>:</p>
+<div id="tailscale-serve-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-ini"><code v-pre class="language-ini">ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url https://myhost.tailnet.ts.net</code></pre>
 </doc-codeblock></div>
-<p>and run <code translate="no" v-pre>systemctl --user daemon-reload &amp;&amp; systemctl --user restart rex</code>.</p>
-<p>Own a domain and forward port 443? <a href="https://caddyserver.com">Caddy</a> does the same with a free certificate: a <code translate="no" v-pre>Caddyfile</code> of <code translate="no" v-pre>rex.example.com { reverse_proxy 127.0.0.1:32400 }</code>, then <code translate="no" v-pre>--announce-url https://rex.example.com</code>.</p>
-<p><strong>What you should see.</strong> rex&#x27;s log gets <code translate="no" v-pre>plex.tv</code> lines without errors, and the server appears in app.plex.tv. If it logs <code translate="no" v-pre>waiting for a claim</code>, do the previous section first.</p>
-<p>Do not put a Cloudflare tunnel in front of rex. Cloudflare drops the range of the first read, so every play start pulls the whole file from your debrid service.</p>
+<div id="tailscale-serve-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">systemctl --user daemon-reload &amp;&amp; systemctl --user restart rex</code></pre>
+</doc-codeblock></div>
+<p>Tailscale connects your devices to each other directly, so the stream does not pass through Tailscale&#x27;s servers except on networks that block that. In Docker, run the same <code translate="no" v-pre>tailscale serve</code> on the machine and put <code translate="no" v-pre>--announce-url ...</code> in the compose file&#x27;s <code translate="no" v-pre>command:</code>.</p>
+<h3 id="caddy">Caddy</h3>
+<p>You need port 443 on your router forwarded to the rex machine, and a name for your home&#x27;s IP address:</p>
+<ul>
+<li><strong>Your own domain:</strong> an <code translate="no" v-pre>A</code> record such as <code translate="no" v-pre>rex.example.com</code> pointing at your home IP.</li>
+<li><strong>No domain:</strong> use <code translate="no" v-pre>1-2-3-4.sslip.io</code> with your public IP&#x27;s numbers (<code translate="no" v-pre>curl -s ifconfig.me</code> shows it). It always resolves to that IP. If your IP changes, update the name.</li>
+</ul>
+<p>Install <a href="https://caddyserver.com/docs/install">Caddy</a> and make <code translate="no" v-pre>/etc/caddy/Caddyfile</code>:</p>
+<div id="caddy-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">rex.example.com {
+	respond /rex/* 403
+	reverse_proxy 127.0.0.1:32400
+}</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>respond /rex/* 403</code> keeps the API zurg pushes to off the internet. zurg still reaches it at <code translate="no" v-pre>http://127.0.0.1:32400</code>. Then:</p>
+<div id="caddy-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo systemctl reload caddy</code></pre>
+</doc-codeblock></div>
+<p>Caddy fetches a certificate on the first request and renews it by itself. Add <code translate="no" v-pre>--announce-url https://rex.example.com</code> to <code translate="no" v-pre>ExecStart</code> as above, and restart rex.</p>
+<h3 id="what-you-should-see">What you should see</h3>
+<div id="what-you-should-see-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s -o /dev/null -w '%{http_code}\n' https://myhost.tailnet.ts.net/identity</code></pre>
+</doc-codeblock></div>
+<p>answers <code translate="no" v-pre>200</code>, and rex&#x27;s log names the address:</p>
+<div id="what-you-should-see-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO    heartbeat every 600s for machine ... -&gt; https://myhost.tailnet.ts.net</code></pre>
+</doc-codeblock></div>
+<p>The server then lists that address on plex.tv, and a Plex app away from home picks it. If rex logs <code translate="no" v-pre>waiting for a claim</code>, do the previous section first.</p>
 <h2 id="converting-video-optional">Converting video (optional)</h2>
 <p><strong>What it does.</strong> Lets rex convert what a device cannot play, the way Plex does.</p>
 <p><strong>Why it matters.</strong> Without it a device that cannot play a file as it is gets &quot;This server is not powerful enough to convert video&quot;. Web browsers hit this most, for example with AC3 or DTS sound.</p>
@@ -504,9 +574,9 @@ docker compose restart zurg</code></pre>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/rex &amp;&amp; docker compose pull &amp;&amp; docker compose up -d</code></pre>
 </doc-codeblock></div>
 <p>rex comes back with the same library. <code translate="no" v-pre>latest</code> follows each release; pin a version such as <code translate="no" v-pre>ghcr.io/debridmediamanager/rex:0.3.0</code> to update only when you choose. For zurg, see <a href="../../setup/docker/#managing-and-updating-zurg">Managing and updating zurg</a>.</p>
-<p>The image carries no FFmpeg, so <doc-anchor-trigger to="#converting-video-optional">converting video</doc-anchor-trigger> needs the install without Docker. The claim and HTTPS work as above: the claim is the same <code translate="no" v-pre>curl</code> on this machine, <code translate="no" v-pre>tailscale serve</code> runs on the machine itself, and <code translate="no" v-pre>--announce-url ...</code> goes in <code translate="no" v-pre>command</code>.</p>
+<p>The image carries no FFmpeg, so <doc-anchor-trigger to="#converting-video-optional">converting video</doc-anchor-trigger> needs the install without Docker. The claim and HTTPS work as above: the claim is the same <code translate="no" v-pre>curl</code> on this machine, the HTTPS options run on the machine itself, and <code translate="no" v-pre>--announce-url ...</code> goes in <code translate="no" v-pre>command</code>.</p>
 <h2 id="keep-the-port-private">Keep the port private</h2>
-<p>rex takes no password from zurg. Anyone who can reach rex&#x27;s port can add to its library or remove what zurg sent. Never forward port 32400 (or 32500) on your router without the HTTPS setup above.</p>
+<p>rex takes no password from zurg. Anyone who can reach rex&#x27;s port can add to its library or remove what zurg sent. Never forward port 32400 (or 32500) on your router, and keep <code translate="no" v-pre>/rex/*</code> blocked in any proxy that faces the internet, as the <doc-anchor-trigger to="#caddy">Caddy</doc-anchor-trigger> example does.</p>
 <h2 id="updating">Updating</h2>
 <ul>
 <li><strong>zurg:</strong> <code translate="no" v-pre>zurg update</code>, then <code translate="no" v-pre>systemctl --user restart zurg</code>.</li>
