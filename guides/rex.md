@@ -175,6 +175,8 @@ Episodes rex had already placed move to their right numbers and keep their watch
 
 Open a Plex app on a phone, TV or computer **on the same home network**. rex shows up on its own under the machine's name, with **Debrid Movies** and **Debrid TV**. Pick a movie and press play.
 
+At home nothing else is needed: Plex apps find rex with Plex's own local discovery and connect to it over your network, never through the internet. That discovery needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN) and rex on port 32400. If you moved rex to 32500 because Plex runs on the same machine, discovery is off, and apps find rex only after you [add it to your Plex account](#add-it-to-your-plex-account-optional).
+
 ![rex's Debrid Movies library in Plex](../assets/rex/rex-movies.webp)
 
 **What you should see.** Posters, titles and years as on any Plex server. Playback starts within a few seconds.
@@ -245,11 +247,13 @@ Install [Tailscale](https://tailscale.com/download) on the rex machine and on th
 sudo tailscale serve --bg 32400
 ```
 
-It prints the address, for example `https://myhost.tailnet.ts.net`. Add it to the end of the `ExecStart` line in `rex.service`:
+It prints the address, for example `https://myhost.tailnet.ts.net`. Add it, and the machine's LAN address (`hostname -I` shows the IP), to the end of the `ExecStart` line in `rex.service`:
 
 ```ini
-ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url https://myhost.tailnet.ts.net
+ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url https://myhost.tailnet.ts.net,http://192.168.1.20:32400
 ```
+
+**Keep the LAN address in the list.** Once rex announces, Plex apps take its addresses from plex.tv, and plex.tv lists only what rex announces. Without the LAN address a TV at home that has no Tailscale is sent only to the tailnet address and cannot connect.
 
 ```bash
 systemctl --user daemon-reload && systemctl --user restart rex
@@ -279,7 +283,7 @@ rex.example.com {
 sudo systemctl reload caddy
 ```
 
-Caddy fetches a certificate on the first request and renews it by itself. Add `--announce-url https://rex.example.com` to `ExecStart` as above, and restart rex.
+Caddy fetches a certificate on the first request and renews it by itself. Add `--announce-url https://rex.example.com,http://192.168.1.20:32400` to `ExecStart` as above, with your LAN IP, and restart rex.
 
 ### What you should see
 
@@ -423,6 +427,7 @@ rex takes no password from zurg. Anyone who can reach rex's port can add to its 
 | Nothing plays, 401 or 403 | zurg refused its own login. Restart zurg so it sends rex the current one |
 | "This server is not powerful enough to convert video" | The device cannot play the file as it is. Try a Plex app on a TV or phone, or set up [Converting video](#converting-video-optional) |
 | rex exits with `unrecognized arguments` | Your `rex.service` or `run.sh` still passes `--sources` or a feed token from an older setup. Remove them |
+| After adding `--announce-url`, a device at home cannot connect | The LAN address is missing from `--announce-url`. Add `http://<LAN IP>:32400` after the HTTPS one |
 | rex is not in the Plex apps away from home | Not claimed, no `--announce-url`, or the device cannot reach the HTTPS address (a tailnet-only address needs Tailscale on that device) |
 | The log says `waiting for a claim` | Claim it. It announces right away |
 | zurg stops when you log out | Run `loginctl enable-linger "$USER"` (step 1) |

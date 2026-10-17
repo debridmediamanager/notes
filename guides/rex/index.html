@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.845525201464">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.845525635144">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.845525201464" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.845525635144" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.845525201464" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.845525635144" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.845525201464" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.845525201464" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.845525635144" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.845525635144" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -381,6 +381,7 @@ systemctl --user restart zurg</code></pre>
 <p><strong>What it does.</strong> Opens rex in a Plex app, the same way you would open any Plex server.</p>
 <p><strong>Why it matters.</strong> This is the point of the whole setup. It also proves the last link: rex reading a file from zurg while you watch.</p>
 <p>Open a Plex app on a phone, TV or computer <strong>on the same home network</strong>. rex shows up on its own under the machine&#x27;s name, with <strong>Debrid Movies</strong> and <strong>Debrid TV</strong>. Pick a movie and press play.</p>
+<p>At home nothing else is needed: Plex apps find rex with Plex&#x27;s own local discovery and connect to it over your network, never through the internet. That discovery needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN) and rex on port 32400. If you moved rex to 32500 because Plex runs on the same machine, discovery is off, and apps find rex only after you <doc-anchor-trigger to="#add-it-to-your-plex-account-optional">add it to your Plex account</doc-anchor-trigger>.</p>
 <figure class="content-center">
     <img src="../../assets/rex/rex-movies.webp" alt="rex's Debrid Movies library in Plex" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
     <figcaption class="caption">rex's Debrid Movies library in Plex</figcaption>
@@ -467,10 +468,11 @@ curl -s http://127.0.0.1:32400/identity</code></pre>
 <div id="tailscale-serve-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo tailscale serve --bg 32400</code></pre>
 </doc-codeblock></div>
-<p>It prints the address, for example <code translate="no" v-pre>https://myhost.tailnet.ts.net</code>. Add it to the end of the <code translate="no" v-pre>ExecStart</code> line in <code translate="no" v-pre>rex.service</code>:</p>
+<p>It prints the address, for example <code translate="no" v-pre>https://myhost.tailnet.ts.net</code>. Add it, and the machine&#x27;s LAN address (<code translate="no" v-pre>hostname -I</code> shows the IP), to the end of the <code translate="no" v-pre>ExecStart</code> line in <code translate="no" v-pre>rex.service</code>:</p>
 <div id="tailscale-serve-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-ini"><code v-pre class="language-ini">ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url https://myhost.tailnet.ts.net</code></pre>
+<pre translate="no" class="language-ini"><code v-pre class="language-ini">ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url https://myhost.tailnet.ts.net,http://192.168.1.20:32400</code></pre>
 </doc-codeblock></div>
+<p><strong>Keep the LAN address in the list.</strong> Once rex announces, Plex apps take its addresses from plex.tv, and plex.tv lists only what rex announces. Without the LAN address a TV at home that has no Tailscale is sent only to the tailnet address and cannot connect.</p>
 <div id="tailscale-serve-code-3" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">systemctl --user daemon-reload &amp;&amp; systemctl --user restart rex</code></pre>
 </doc-codeblock></div>
@@ -492,7 +494,7 @@ curl -s http://127.0.0.1:32400/identity</code></pre>
 <div id="caddy-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo systemctl reload caddy</code></pre>
 </doc-codeblock></div>
-<p>Caddy fetches a certificate on the first request and renews it by itself. Add <code translate="no" v-pre>--announce-url https://rex.example.com</code> to <code translate="no" v-pre>ExecStart</code> as above, and restart rex.</p>
+<p>Caddy fetches a certificate on the first request and renews it by itself. Add <code translate="no" v-pre>--announce-url https://rex.example.com,http://192.168.1.20:32400</code> to <code translate="no" v-pre>ExecStart</code> as above, with your LAN IP, and restart rex.</p>
 <h3 id="what-you-should-see">What you should see</h3>
 <div id="what-you-should-see-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s -o /dev/null -w '%{http_code}\n' https://myhost.tailnet.ts.net/identity</code></pre>
@@ -591,6 +593,7 @@ docker compose restart zurg</code></pre>
 | Nothing plays, 401 or 403 | zurg refused its own login. Restart zurg so it sends rex the current one |
 | &quot;This server is not powerful enough to convert video&quot; | The device cannot play the file as it is. Try a Plex app on a TV or phone, or set up [Converting video](#converting-video-optional) |
 | rex exits with `unrecognized arguments` | Your `rex.service` or `run.sh` still passes `--sources` or a feed token from an older setup. Remove them |
+| After adding `--announce-url`, a device at home cannot connect | The LAN address is missing from `--announce-url`. Add `http://&lt;LAN IP&gt;:32400` after the HTTPS one |
 | rex is not in the Plex apps away from home | Not claimed, no `--announce-url`, or the device cannot reach the HTTPS address (a tailnet-only address needs Tailscale on that device) |
 | The log says `waiting for a claim` | Claim it. It announces right away |
 | zurg stops when you log out | Run `loginctl enable-linger &quot;$USER&quot;` (step 1) |
@@ -627,6 +630,10 @@ docker compose restart zurg</code></pre>
 <tr>
 <td>rex exits with <code translate="no" v-pre>unrecognized arguments</code></td>
 <td>Your <code translate="no" v-pre>rex.service</code> or <code translate="no" v-pre>run.sh</code> still passes <code translate="no" v-pre>--sources</code> or a feed token from an older setup. Remove them</td>
+</tr>
+<tr>
+<td>After adding <code translate="no" v-pre>--announce-url</code>, a device at home cannot connect</td>
+<td>The LAN address is missing from <code translate="no" v-pre>--announce-url</code>. Add <code translate="no" v-pre>http://&lt;LAN IP&gt;:32400</code> after the HTTPS one</td>
 </tr>
 <tr>
 <td>rex is not in the Plex apps away from home</td>
