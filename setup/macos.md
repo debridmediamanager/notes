@@ -5,7 +5,7 @@
 The optional sponsor bootstrap installs macFUSE when needed, downloads the correct Intel or Apple silicon build and runs the provider chooser and diagnostics:
 
 ```bash
-curl -fsSL https://zurg.debridmediamanager.com/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.sh | bash
 ```
 
 It uses GitHub browser sign-in. macOS may still require approval under **System Settings > Privacy & Security** and a reboot. Existing binaries and configs are preserved. Continue below for the manual route.
@@ -366,7 +366,7 @@ cd ~/zurg
 `update` signs in to GitHub with the account you used for the install. The installer keeps the GitHub CLI in `~/zurg/bin` for that. If `update` says it found no GitHub credential then your install is older than that change. Run the installer's update once and every `zurg update` after it works. The same command also updates a build too old to have `zurg update`.
 
 ```bash
-curl -fsSL https://zurg.debridmediamanager.com/install.sh | bash -s update
+curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.sh | bash -s update
 ```
 
 You can also set `GITHUB_TOKEN` instead. Use a classic token with the `repo` scope from the GitHub account that has zurg access.

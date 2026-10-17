@@ -13,7 +13,7 @@ The container setup flow was verified on 4 September 2026 with Docker Engine 29.
 On a fresh Linux host, the optional bootstrap can install Docker when approved, configure persistent FUSE mount propagation, authenticate to the sponsor registry, write the Compose project, run the provider chooser, and verify the result:
 
 ```bash
-curl -fsSL https://zurg.debridmediamanager.com/install-docker.sh | bash
+curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install-docker.sh | bash
 ```
 
 Existing Compose files and configs are preserved. The sections below show every step for operators who prefer the manual route.
