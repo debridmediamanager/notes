@@ -11,7 +11,7 @@ order: 90
 The optional sponsor bootstrap installs the supported system packages, downloads the matching CPU build and runs setup plus diagnostics:
 
 ```bash
-curl -fsSL https://zurg.debridmediamanager.com/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.sh | bash
 ```
 
 It signs in through GitHub and keeps the install in `~/zurg`. Existing binaries and configs are preserved. Continue below for the manual route or a custom path.
@@ -202,7 +202,7 @@ cd ~/zurg
 `update` signs in to GitHub with the account you used for the install. The installer keeps the GitHub CLI in `~/zurg/bin` for that. If `update` says it found no GitHub credential then your install is older than that change. Run the installer's update once and every `zurg update` after it works. The same command also updates a build too old to have `zurg update`. It only swaps the binary and touches nothing else.
 
 ```bash
-curl -fsSL https://zurg.debridmediamanager.com/install.sh | bash -s update
+curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.sh | bash -s update
 ```
 
 A server without the GitHub CLI can set `GITHUB_TOKEN` instead. Use a classic token with the `repo` scope from the GitHub account that has zurg access.

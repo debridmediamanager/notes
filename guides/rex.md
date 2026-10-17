@@ -39,7 +39,7 @@ You do **not** need your Plex token, your Plex username or the machine's IP addr
 **Why it matters.** Everything rex shows comes from zurg. If zurg cannot see your library, rex never will.
 
 ```bash
-curl -fsSL https://zurg.debridmediamanager.com/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.sh | bash
 loginctl enable-linger "$USER"
 ```
 

@@ -11,7 +11,7 @@ order: 70
 Run the optional sponsor bootstrap from PowerShell. It installs WinFsp through UAC, downloads zurg and runs the provider chooser and diagnostics:
 
 ```powershell
-irm https://zurg.debridmediamanager.com/install.ps1 | iex
+irm https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.ps1 | iex
 ```
 
 It uses GitHub browser sign-in and installs into `$HOME\zurg`. Existing binaries and configs are preserved. Continue below for the manual route.
@@ -479,7 +479,7 @@ cd $HOME\zurg
 On a build too old to carry the command, the installer does the same job:
 
 ```powershell
-$env:ZURG_INSTALL_MODE = "update"; irm https://zurg.debridmediamanager.com/install.ps1 | iex
+$env:ZURG_INSTALL_MODE = "update"; irm https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.ps1 | iex
 ```
 
 ## Troubleshooting
