@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.845670683605">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.845673835982">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.845670683605" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.845673835982" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.845670683605" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.845673835982" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.845670683605" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.845670683605" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.845673835982" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.845673835982" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -438,6 +438,7 @@ sqlite3 ~/rex/rex.db &quot;.backup $HOME/rex/rex.db.bak&quot;</code></pre>
 <h3 id="which-one-to-use">Which one to use</h3>
 <retype-table copy-text="| Your situation | Use | Why |
 |---|---|---|
+| Your router has a public IP and you can forward a port | **[rex-direct](#rex-direct)** (simplest) | One line in `rex.env` and one port forward. DMM gives rex a name and a certificate, and keeps the name pointed at your home IP |
 | You can install Tailscale on the devices you watch on | **[Tailscale serve](#tailscale-serve)** (best) | Nothing to open on your router, and it works behind any internet connection. The certificate renews by itself, and nobody outside your tailnet can reach rex |
 | Devices without Tailscale (a friend's TV, a hotel), and your router has a public IP | **[Caddy](#caddy)** with your own domain, or with a free `sslip.io` name | A direct connection with nobody in between, and a free certificate that renews by itself. You forward port 443 |
 | Your connection has no public IP (CGNAT, common on mobile and some fibre providers) and Tailscale on every device is not an option | Nothing works well yet | rex has no relay, and the tunnels below are not recommended |">
@@ -451,6 +452,11 @@ sqlite3 ~/rex/rex.db &quot;.backup $HOME/rex/rex.db.bak&quot;</code></pre>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>Your router has a public IP and you can forward a port</td>
+<td><strong><doc-anchor-trigger to="#rex-direct">rex-direct</doc-anchor-trigger></strong> (simplest)</td>
+<td>One line in <code translate="no" v-pre>rex.env</code> and one port forward. DMM gives rex a name and a certificate, and keeps the name pointed at your home IP</td>
+</tr>
 <tr>
 <td>You can install Tailscale on the devices you watch on</td>
 <td><strong><doc-anchor-trigger to="#tailscale-serve">Tailscale serve</doc-anchor-trigger></strong> (best)</td>
@@ -474,8 +480,23 @@ sqlite3 ~/rex/rex.db &quot;.backup $HOME/rex/rex.db.bak&quot;</code></pre>
 <ul>
 <li><strong>Cloudflare tunnel.</strong> Every byte goes through Cloudflare, which also drops the <code translate="no" v-pre>Range</code> of a file&#x27;s first read, so every play start pulls the whole file from your debrid service.</li>
 <li><strong>Tailscale Funnel.</strong> It puts every byte through Tailscale&#x27;s servers, with limited bandwidth, and it publishes all of rex, including the API zurg pushes your library to. Anyone on the internet could add to or delete from that library.</li>
-<li><strong>Forwarding port 32400 on your router.</strong> rex speaks HTTPS there only with a certificate for a name you own, and it publishes the same API to the internet. See <doc-anchor-trigger to="#keep-the-port-private">Keep the port private</doc-anchor-trigger>.</li>
+<li><strong>Forwarding port 32400 without rex-direct or a certificate of your own.</strong> Plex apps would get a plain HTTP address, which app.plex.tv refuses.</li>
 </ul>
+<h3 id="rex-direct">rex-direct</h3>
+<p>rex-direct is DMM&#x27;s answer to plex.direct. It needs the same DMM API key zurg uses, from an active sponsorship. Add it to <code translate="no" v-pre>~/rex/rex.env</code> (in Docker, under the rex service&#x27;s <code translate="no" v-pre>environment:</code>):</p>
+<div id="rex-direct-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">echo 'DMM_API_KEY=your_dmm_key' &gt;&gt; ~/rex/rex.env &amp;&amp; chmod 600 ~/rex/rex.env</code></pre>
+</doc-codeblock></div>
+<p>On your router, forward port 32400 (TCP) to the rex machine. Then restart rex:</p>
+<div id="rex-direct-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">systemctl --user restart rex</code></pre>
+</doc-codeblock></div>
+<p>At start rex asks DMM for its own name, <code translate="no" v-pre>&lt;hash&gt;.rex-direct.debridmediamanager.com</code>, pointed at your home&#x27;s public IP, and for a certificate that covers it. Once claimed it announces <code translate="no" v-pre>https://&lt;hash&gt;.rex-direct.debridmediamanager.com:32400</code> after the addresses in <code translate="no" v-pre>--announce-url</code>. Keep the LAN address there, as in <doc-anchor-trigger to="#share-it-with-your-own-account">step 3</doc-anchor-trigger>. rex asks DMM again every six hours, so a new home IP is picked up by itself, and a renewed certificate too.</p>
+<p>rex&#x27;s log shows the name:</p>
+<div id="rex-direct-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO    rex-direct: https://&lt;hash&gt;.rex-direct.debridmediamanager.com:32400 -&gt; &lt;your public IP&gt;</code></pre>
+</doc-codeblock></div>
+<p>If your router forwards a different outside port to rex, add <code translate="no" v-pre>REX_DIRECT_PORT=&lt;that port&gt;</code> to <code translate="no" v-pre>rex.env</code>. If rex logs a <code translate="no" v-pre>rex-direct</code> WARNING instead, the key is wrong or the sponsorship has lapsed. The API zurg pushes to stays closed to the internet: rex answers it only from this machine, your home network and Tailscale.</p>
 <h3 id="tailscale-serve">Tailscale serve</h3>
 <p>Install <a href="https://tailscale.com/download">Tailscale</a> on the rex machine and on the devices you watch on, signed in to the same account. Then on the rex machine:</p>
 <div id="tailscale-serve-code-1" class="codeblock-wrapper"><doc-codeblock>
@@ -598,7 +619,7 @@ docker compose restart zurg</code></pre>
 <p>rex comes back with the same library. <code translate="no" v-pre>nightly</code> moves with each nightly build and <code translate="no" v-pre>latest</code> with each release; pin a version to update only when you choose. For zurg, see <a href="../../setup/docker/#managing-and-updating-zurg">Managing and updating zurg</a>.</p>
 <p>The image carries no FFmpeg, so <doc-anchor-trigger to="#converting-video-optional">converting video</doc-anchor-trigger> needs the install without Docker. HTTPS works as above: the options run on the machine itself, and <code translate="no" v-pre>--announce-url ...</code> goes in <code translate="no" v-pre>command</code>.</p>
 <h2 id="keep-the-port-private">Keep the port private</h2>
-<p>rex takes no password from zurg. Anyone who can reach rex&#x27;s port can add to its library or remove what zurg sent. Never forward port 32400 (or 32500) on your router, and keep <code translate="no" v-pre>/rex/*</code> blocked in any proxy that faces the internet, as the <doc-anchor-trigger to="#caddy">Caddy</doc-anchor-trigger> example does.</p>
+<p>rex takes no password from zurg. It answers the API zurg pushes to only from this machine, your home network and Tailscale, so forwarding rex&#x27;s port for <doc-anchor-trigger to="#rex-direct">rex-direct</doc-anchor-trigger> does not open it. A proxy on the rex machine looks local to rex, so keep <code translate="no" v-pre>/rex/*</code> blocked in any proxy that faces the internet, as the <doc-anchor-trigger to="#caddy">Caddy</doc-anchor-trigger> example does.</p>
 <h2 id="updating">Updating</h2>
 <ul>
 <li><strong>zurg:</strong> <code translate="no" v-pre>cd ~/zurg &amp;&amp; ./zurg update &amp;&amp; ./zurg service restart</code>.</li>

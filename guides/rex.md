@@ -245,6 +245,7 @@ Whichever you pick, every byte you watch away from home leaves through your home
 
 | Your situation | Use | Why |
 |---|---|---|
+| Your router has a public IP and you can forward a port | **[rex-direct](#rex-direct)** (simplest) | One line in `rex.env` and one port forward. DMM gives rex a name and a certificate, and keeps the name pointed at your home IP |
 | You can install Tailscale on the devices you watch on | **[Tailscale serve](#tailscale-serve)** (best) | Nothing to open on your router, and it works behind any internet connection. The certificate renews by itself, and nobody outside your tailnet can reach rex |
 | Devices without Tailscale (a friend's TV, a hotel), and your router has a public IP | **[Caddy](#caddy)** with your own domain, or with a free `sslip.io` name | A direct connection with nobody in between, and a free certificate that renews by itself. You forward port 443 |
 | Your connection has no public IP (CGNAT, common on mobile and some fibre providers) and Tailscale on every device is not an option | Nothing works well yet | rex has no relay, and the tunnels below are not recommended |
@@ -253,7 +254,31 @@ Not recommended:
 
 - **Cloudflare tunnel.** Every byte goes through Cloudflare, which also drops the `Range` of a file's first read, so every play start pulls the whole file from your debrid service.
 - **Tailscale Funnel.** It puts every byte through Tailscale's servers, with limited bandwidth, and it publishes all of rex, including the API zurg pushes your library to. Anyone on the internet could add to or delete from that library.
-- **Forwarding port 32400 on your router.** rex speaks HTTPS there only with a certificate for a name you own, and it publishes the same API to the internet. See [Keep the port private](#keep-the-port-private).
+- **Forwarding port 32400 without rex-direct or a certificate of your own.** Plex apps would get a plain HTTP address, which app.plex.tv refuses.
+
+### rex-direct
+
+rex-direct is DMM's answer to plex.direct. It needs the same DMM API key zurg uses, from an active sponsorship. Add it to `~/rex/rex.env` (in Docker, under the rex service's `environment:`):
+
+```bash
+echo 'DMM_API_KEY=your_dmm_key' >> ~/rex/rex.env && chmod 600 ~/rex/rex.env
+```
+
+On your router, forward port 32400 (TCP) to the rex machine. Then restart rex:
+
+```bash
+systemctl --user restart rex
+```
+
+At start rex asks DMM for its own name, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and for a certificate that covers it. Once claimed it announces `https://<hash>.rex-direct.debridmediamanager.com:32400` after the addresses in `--announce-url`. Keep the LAN address there, as in [step 3](#share-it-with-your-own-account). rex asks DMM again every six hours, so a new home IP is picked up by itself, and a renewed certificate too.
+
+rex's log shows the name:
+
+```
+INFO    rex-direct: https://<hash>.rex-direct.debridmediamanager.com:32400 -> <your public IP>
+```
+
+If your router forwards a different outside port to rex, add `REX_DIRECT_PORT=<that port>` to `rex.env`. If rex logs a `rex-direct` WARNING instead, the key is wrong or the sponsorship has lapsed. The API zurg pushes to stays closed to the internet: rex answers it only from this machine, your home network and Tailscale.
 
 ### Tailscale serve
 
@@ -440,7 +465,7 @@ The image carries no FFmpeg, so [converting video](#converting-video-optional) n
 
 ## Keep the port private
 
-rex takes no password from zurg. Anyone who can reach rex's port can add to its library or remove what zurg sent. Never forward port 32400 (or 32500) on your router, and keep `/rex/*` blocked in any proxy that faces the internet, as the [Caddy](#caddy) example does.
+rex takes no password from zurg. It answers the API zurg pushes to only from this machine, your home network and Tailscale, so forwarding rex's port for [rex-direct](#rex-direct) does not open it. A proxy on the rex machine looks local to rex, so keep `/rex/*` blocked in any proxy that faces the internet, as the [Caddy](#caddy) example does.
 
 ## Updating
 
