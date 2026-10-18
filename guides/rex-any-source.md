@@ -17,19 +17,19 @@ Four things to know before you start:
 - **Your app decides what each file is.** It says whether a file is a movie or an episode, which title it belongs to (by IMDb and TMDB id) and, for an episode, its season and number. rex never guesses from a file name.
 - **Plex describes it.** Once rex is on a Plex account, it shows each title with the name, poster, summary and episode names Plex's own metadata has for those ids.
 
-rex opens as a closed beta for sponsors on October 15 and reaches the public on October 31. See [rex.debridmediamanager.com](https://rex.debridmediamanager.com) for access.
+rex has been in closed beta for sponsors since October 15 and reaches the public on October 31. See [rex.debridmediamanager.com](https://rex.debridmediamanager.com) for access.
 
 ## Before you start
 
 | You need | Why |
 |---|---|
-| A Linux machine that stays on (Ubuntu 22.04 or newer). A Proxmox LXC works, unprivileged is fine | rex is a server: your Plex apps reach it whenever you press play. macOS and Windows work too; this page shows Linux, and [Docker](#run-rex-in-docker) is further down |
-| About 4 cores, 8 GB of RAM and a 64 GB disk for a library of 10,000 items | rex keeps the library in memory and uses the most while it fills for the first time |
+| A Linux machine that stays on (Ubuntu 22.04 or newer) | rex is a server: your Plex apps reach it whenever you press play. macOS and Windows work too; this page shows Linux, and [Docker](#run-rex-in-docker) is further down |
+| About 2 GB of RAM for a library of 40,000 titles | That is for rex 2026.10.18.0753-nightly and older, which keep the whole library in memory. Newer builds keep it in `rex.db` and need about 500 MB. Converting video wants more cores, or a graphics chip |
 | A GitHub account with access to rex's sponsor releases | rex is a private GitHub release |
 | An app that does what [What your app must do](#what-your-app-must-do) lists | That is where your library comes from |
-| A fresh Plex account, made just for rex | rex gets every title, poster, summary and episode name from Plex once it is [added to a Plex account](#step-4-add-it-to-a-plex-account). Until then titles keep their file names and have no posters |
+| A fresh Plex account, made just for rex | rex gets every title, poster, summary and episode name from Plex once it is [added to a Plex account](#step-3-add-it-to-a-plex-account). Until then titles keep their file names and have no posters |
 
-You do **not** need a TMDB key, your Plex token or the machine's IP address.
+You do **not** need a TMDB key or your Plex token.
 
 ## What your app must do
 
@@ -38,10 +38,10 @@ Give this list to whoever makes your app. rex's own API reference is `docs/feed-
 | Your app must | How | If it does not |
 |---|---|---|
 | Serve each file over HTTP | `GET <address>/<path>` answers the file. `Range` requests make seeking fast; redirects are followed. Basic auth or a bearer token is allowed | Nothing plays: rex logs 502 |
-| Register with rex | `PUT /rex/sources/<name>` with its address and, if it has one, its login. Again whenever it starts | rex has nowhere to read from |
-| Send every file it has | `POST /rex/feed/<name>/items`, a few hundred files a request | rex stays empty |
+| Register with rex | `PUT /rex/sources/<name>` (letters, digits, `-` and `_`) with `{"url": ...}` and, if it has a login, `"user"` and `"password"` or `"bearer"`, never inside the url. Again whenever it starts | rex has nowhere to read from |
+| Send every file it has | `POST /rex/feed/<name>/items`, a few hundred files a request, with each file's `size` in bytes, which rex uses to answer seeks | rex stays empty |
 | Send each file's ffprobe output | ffprobe's `-show_format -show_streams` JSON, whole, as `media_info` | The file is **held**: stored but not shown, because Plex apps refuse to play a file without it |
-| Say what each file is | `kind` (`movie`, `episode` or `extra`) and `ids`: the movie's or the **show's** `imdb` and `tmdb`, never an episode's. For an episode, `season` and `episode` as TMDB numbers them | The file is unmatched: a film titled as its file, an episode in a show named after its release, numbered in file order |
+| Say what each file is | `kind` (`movie`, `episode` or `extra`) and `ids`: the movie's or the **show's** `imdb` and `tmdb`, never an episode's. For an episode, `season` and `episode` on the item itself (beside `kind`, not inside `ids`), as TMDB numbers them; `episode_end` for a file holding several episodes | The file is unmatched: a film titled as its file, an episode in a show named after its release, numbered in file order |
 | Keep the same `id` for a file forever | Even when it renames it | A renamed file becomes a new title and loses its watch history |
 | Send changes as they happen | The same `POST` for new or changed files, `DELETE /rex/feed/<name>/items` for removed ones | The library goes stale |
 | Send the whole library now and then | `PUT /rex/feed/<name>/snapshot`. rex removes whatever the snapshot does not name | Files your app lost track of stay in rex |
@@ -57,13 +57,13 @@ rex's download uses the GitHub CLI. Install it (`sudo apt install -y gh`) and si
 
 ```bash
 mkdir -p ~/rex && cd ~/rex
-gh release download "$(gh release list -R debridmediamanager/rex -L 1 --json tagName -q '.[0].tagName')" \
-  -R debridmediamanager/rex -p '*-linux-amd64.tar.gz'
+TAG=$(gh api 'repos/debridmediamanager/rex/releases?per_page=1' --jq '.[0].tag_name')
+gh release download "$TAG" -R debridmediamanager/rex -p '*-linux-amd64.tar.gz'
 tar xzf rex-*-linux-amd64.tar.gz --strip-components=1 && rm rex-*-linux-amd64.tar.gz
-loginctl enable-linger "$USER"
+sudo loginctl enable-linger "$USER"
 ```
 
-This takes rex's newest build, a nightly until the next release. On an ARM machine (Raspberry Pi, Ampere) use `linux-arm64`. The last line keeps rex running when you log out.
+This takes rex's newest build, a nightly until the next release. On an ARM machine (Raspberry Pi, Ampere) use `linux-arm64` in all three places. The last line keeps rex running when you log out.
 
 Now make it a service. Create `~/.config/systemd/user/rex.service`:
 
@@ -83,10 +83,13 @@ EnvironmentFile=-%h/rex/rex.env
 ExecStart=%h/rex/rust/target/release/rex --catalog rex.db
 Restart=always
 RestartSec=5
+UMask=0077
 
 [Install]
 WantedBy=default.target
 ```
+
+`UMask=0077` makes the files rex writes readable by you only: `rex.db` will hold your app's login.
 
 **Plex Media Server runs on the same machine?** End the `ExecStart` line with `--port 32500 --gdm off` and use `32500` wherever this page says `32400`: Plex already holds port 32400 and the ports apps use to find servers.
 
@@ -118,7 +121,8 @@ You need `ffprobe`, `jq` and one video file. Put the file where a small web serv
 sudo apt install -y ffmpeg jq
 mkdir -p ~/rex-test/movies/Sintel.2010
 cp /path/to/any-video.mkv ~/rex-test/movies/Sintel.2010/Sintel.2010.mkv
-cd ~/rex-test && python3 -m http.server 8099 --bind 127.0.0.1 &
+cd ~/rex-test
+python3 -m http.server 8099 --bind 127.0.0.1 &
 ```
 
 Register it with rex, under the name `test`:
@@ -147,7 +151,7 @@ INFO    FEED identified "Sintel.2010" -> movie tmdb:45745 (placed)
 INFO    FEED test upsert: 1 created, 0 updated, 0 held, 0 unchanged, 0 rejected
 ```
 
-`placed` means rex took the title from what was sent, not from the file name. Sintel is now in **Debrid Movies**, playing from the little web server. Until [step 4](#step-4-add-it-to-a-plex-account) it shows as `Sintel.2010` with no poster.
+`placed` means rex took the title from what was sent, not from the file name. Sintel is now in **Debrid Movies**, playing from the little web server. Until [step 3](#step-3-add-it-to-a-plex-account) it shows as `Sintel.2010` with no poster.
 
 **Clean up** before you go on: removing the test source removes everything it sent. The first request answers a `confirm` path; send a `DELETE` to that path within five minutes.
 
@@ -160,10 +164,54 @@ kill %1
 **If not.**
 
 - `"held":1`: `media_info` is missing or has no streams. Check that `ffprobe` printed JSON for the file.
-- An answer with `rejected`: the file is not a video by its extension, or is a sample. rex's log says which.
+- An answer with `rejected`: the file is not a video by its extension, is a sample, or has no `id` or `path`. rex's log names each and why.
 - `404 no such source`: the `PUT /rex/sources/test` did not happen first.
 
-## Step 3. Connect your app
+## Step 3. Add it to a Plex account
+
+**What it does.** Registers rex on a Plex account, as you would a real Plex Media Server, and shares it with your own account.
+
+**Why it matters.** rex gets every title's name, poster, summary and episode names from Plex's own metadata, and it may only ask Plex once it is on an account. Do this before you connect your app, so every title arrives with its name and poster. What your app sends before the claim keeps its file name until rex names it in the background, about 300 titles an hour, and Fix Match has nothing to offer until then. It also removes the "unclaimed" notice and is needed before [using rex outside your home](#use-it-outside-your-home-optional).
+
+**Use a fresh Plex account for this, not your own.** rex is not made by Plex, and Plex could take action against an account that registers it. Keep your real account, with its watch history, friends and any Plex Pass, out of reach: make a new free account at [plex.tv](https://www.plex.tv) with an email address you do not use elsewhere, register rex on that one, and share rex with your own account. You then watch signed in as yourself, the way you would watch a friend's server. If you skip this step entirely, rex still plays on your home network, with file names instead of posters, and anyone on your home network can browse it and play from it.
+
+### Register rex on the fresh account
+
+1. Sign in to [plex.tv](https://www.plex.tv) **as the fresh account**, open [plex.tv/claim](https://www.plex.tv/claim) and copy the code. It expires in four minutes.
+2. On the rex machine:
+
+   ```bash
+   curl -X POST "http://127.0.0.1:32400/myplex/claim?token=claim-xxxxxxxxxxxx"
+   curl -s http://127.0.0.1:32400/identity
+   ```
+
+**What you should see.** The second command shows `claimed="1"`, and `~/rex/claim_state.json` exists. Back that file up: without it rex has to be claimed again, and rex refuses a second claim while the file is there. From now on titles arrive with their names and posters, without a restart.
+
+**If not.**
+
+- The first command answers `409 Conflict` and rex logs `already claimed`: rex is on a Plex account already.
+- It answers `500 Internal Server Error` and rex logs `claim exchange failed`: the code expired or was used. Get a new one from [plex.tv/claim](https://www.plex.tv/claim).
+
+### Share it with your own account
+
+1. Still signed in as the fresh account, open [app.plex.tv](https://app.plex.tv), then **Settings** (the wrench), **Manage Library Access** and **Grant Library Access**.
+2. Enter your own account's username or email, pick the rex server and both libraries, **Debrid Movies** and **Debrid TV**, and send the invite.
+3. Sign out, sign in as **yourself**, and accept the invite. It arrives by email and in app.plex.tv.
+4. Tell plex.tv rex's LAN address, so Plex apps signed in as you know where to reach it. `hostname -I` shows the machine's IPs; use the one on your home network (usually `192.168.x.x` or `10.x.x.x`). Add it to the end of the `ExecStart` line in `rex.service` (in Docker, as `command: --announce-url http://192.168.1.20:32400`):
+
+   ```ini
+   ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url http://192.168.1.20:32400
+   ```
+
+   ```bash
+   systemctl --user daemon-reload && systemctl --user restart rex
+   ```
+
+   rex then logs a warning that a CDN may strip `Range`; it does not apply to a LAN address, Tailscale or Caddy.
+
+**What you should see.** Signed in as yourself, Plex apps list the rex server beside your own servers, with both libraries. Your watch history on rex is your own: it is kept apart from the fresh account's. Share it the same way with anyone else in your household.
+
+## Step 4. Connect your app
 
 **What it does.** Points your app at rex. Your app registers, sends its whole library and then every change as it happens.
 
@@ -191,45 +239,8 @@ curl -s http://127.0.0.1:32400/rex/feed/myapp/held  | head -c 600   # what waits
 **If not.**
 
 - Nothing at all in rex's log: your app never reached rex. Check the address you gave it, and that rex's port is open between the two machines.
-- Files arrive but no `identified` lines: your app sends no `kind` and `ids`. Those titles stay unmatched until it does; you can still fix one by hand with **Fix Match** in a Plex app.
+- Files arrive but no `identified` lines: your app sends no `kind` and `ids` (held files and unchanged re-sends print none either). Those titles stay unmatched until it does; you can still fix one by hand with **Fix Match** in a Plex app signed in as the fresh account. Your own account, which rex is shared with, is refused.
 - `/rex/sources` shows an address rex cannot reach, such as a container's own address: your app has to register an address that works from the rex machine. Test it with `curl` from there.
-
-## Step 4. Add it to a Plex account
-
-**What it does.** Registers rex on a Plex account, as you would a real Plex Media Server, and shares it with your own account.
-
-**Why it matters.** rex gets every title's name, poster, summary and episode names from Plex's own metadata, and it may only ask Plex once it is on an account. Until then your library shows file names and no posters, and Fix Match has nothing to offer. It also removes the "unclaimed" notice and is needed before [using rex outside your home](#use-it-outside-your-home-optional).
-
-**Use a fresh Plex account for this, not your own.** rex is not made by Plex, and Plex could take action against an account that registers it. Keep your real account, with its watch history, friends and any Plex Pass, out of reach: make a new free account at [plex.tv](https://www.plex.tv) with an email address you do not use elsewhere, register rex on that one, and share rex with your own account. You then watch signed in as yourself, the way you would watch a friend's server. If you skip this step entirely, rex still plays on your home network, with file names instead of posters.
-
-### Register rex on the fresh account
-
-1. Sign in to [plex.tv](https://www.plex.tv) **as the fresh account**, open [plex.tv/claim](https://www.plex.tv/claim) and copy the code. It expires in four minutes.
-2. On the rex machine:
-
-   ```bash
-   curl -X POST "http://127.0.0.1:32400/myplex/claim?token=claim-xxxxxxxxxxxx"
-   curl -s http://127.0.0.1:32400/identity
-   ```
-
-**What you should see.** The second command shows `claimed="1"`, and `~/rex/claim_state.json` exists. Posters and titles fill in without a restart. Back that file up and never claim the same server twice: if you lose it, you have to claim again.
-
-### Share it with your own account
-
-1. Still signed in as the fresh account, open [app.plex.tv](https://app.plex.tv), then **Settings** (the wrench), **Manage Library Access** and **Grant Library Access**.
-2. Enter your own account's username or email, pick the rex server and both libraries, **Debrid Movies** and **Debrid TV**, and send the invite.
-3. Sign out, sign in as **yourself**, and accept the invite. It arrives by email and in app.plex.tv.
-4. Tell plex.tv rex's LAN address, so Plex apps signed in as you know where to reach it. `hostname -I` shows the IP. Add it to the end of the `ExecStart` line in `rex.service` (in Docker, as `command: --announce-url http://192.168.1.20:32400`):
-
-   ```ini
-   ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url http://192.168.1.20:32400
-   ```
-
-   ```bash
-   systemctl --user daemon-reload && systemctl --user restart rex
-   ```
-
-**What you should see.** Signed in as yourself, Plex apps list the rex server beside your own servers, with both libraries. Your watch history on rex is your own: it is kept apart from the fresh account's. Share it the same way with anyone else in your household.
 
 ## Step 5. Watch something
 
@@ -239,16 +250,16 @@ curl -s http://127.0.0.1:32400/rex/feed/myapp/held  | head -c 600   # what waits
 
 Open a Plex app on a phone, TV or computer **on the same home network**. rex shows up under the machine's name, with **Debrid Movies** and **Debrid TV**. Pick a movie and press play.
 
-At home nothing else is needed: Plex apps find rex with Plex's own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN) and rex on port 32400. If you moved rex to 32500, apps find it only through the Plex account it is [shared with](#share-it-with-your-own-account).
+At home nothing else is needed: Plex apps find rex with Plex's own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN) and rex on port 32400. If you moved rex to 32500, apps find it only through the Plex account it is [shared with](#share-it-with-your-own-account). app.plex.tv in a web browser is the exception: it needs the HTTPS address from [Use it outside your home](#use-it-outside-your-home-optional), even at home.
 
 **What you should see.** Posters, titles and years as on any Plex server. Playback starts within a few seconds.
 
 Two things you may meet:
 
-- **"yourhost server is unclaimed and not secure".** A Plex app says this about any server that is not on a Plex account. Do [step 4](#step-4-add-it-to-a-plex-account), or press **Don't show this again**.
+- **"yourhost server is unclaimed and not secure".** A Plex app says this about any server that is not on a Plex account. Do [step 3](#step-3-add-it-to-a-plex-account).
 - **"This server is not powerful enough to convert video".** The app cannot play the file as it is, often a web browser meeting AC3 or DTS sound. Plex apps on TVs and phones play most files as they are. To play everything everywhere, set up [Converting video](#converting-video-optional).
 
-Each file goes to **Debrid Movies** or **Debrid TV** by the `kind` your app sent. A file without one goes by its first folder, `movies` or `shows`.
+Each file goes to **Debrid Movies** or **Debrid TV** by the `kind` your app sent. A file without one goes by its first folder: `shows` to Debrid TV, anything else to Debrid Movies.
 
 **Back up** `~/rex/rex.db` (it holds your library, watch history and your app's login, so keep it private) and `claim_state.json`:
 
@@ -257,23 +268,25 @@ sudo apt install -y sqlite3    # once
 sqlite3 ~/rex/rex.db ".backup $HOME/rex/rex.db.bak"
 ```
 
+In Docker the files sit in `~/rex/config`, readable by root only. Back up from inside the container: `docker exec rex sqlite3 /config/rex.db ".backup /config/rex.db.bak"`.
+
 You are done. The sections below are optional.
 
 ## Use it outside your home (optional)
 
 **What it does.** Gives rex an HTTPS address that Plex apps away from home can reach, and tells plex.tv about it.
 
-**Why it matters.** Away from home, Plex apps only connect to an HTTPS address they can reach. A real Plex server can fall back to Plex's relay; rex cannot, so you choose how it is reached. rex must be [claimed](#step-4-add-it-to-a-plex-account) first. A claimed rex checks the Plex token on every request, so it works behind any of the HTTPS proxies below.
+**Why it matters.** Away from home, Plex apps only connect to an HTTPS address they can reach. A real Plex server can fall back to Plex's relay; rex cannot, so you choose how it is reached. rex must be [claimed](#step-3-add-it-to-a-plex-account) first. A claimed rex checks the Plex token on every request except `/identity` and its feed API (`/rex/...`), which is why a proxy that faces the internet must block `/rex/`.
 
-**Plex Pass.** Away from home, Plex apps play only when the server's owner or the person watching has Plex Pass or a Remote Watch Pass; this is Plex's rule for every server, checked by the app. The fresh account has neither, so watching away from home needs one on your own account. At home no pass is needed.
+**Plex Pass.** Away from home, Plex apps play only when the account you watch with has Plex Pass or a Remote Watch Pass, so you need one on your own account, not the fresh one. Plex checks this in the app, before rex sees any request. That is how Plex Web behaves; other Plex apps were not tested. At home, over the LAN address, Plex's rules ask for no pass. app.plex.tv in a browser uses the HTTPS address even at home, so it may ask for a pass there too.
 
-Whichever you pick, every byte you watch away from home leaves through your home connection's **upload** speed. A 20 Mbit/s upload carries one 1080p WEB-DL comfortably, not a remux.
+Whichever you pick, every byte you watch away from home leaves through your home connection's **upload** speed. As a rough guide, a 20 Mbit/s upload carries one 1080p WEB-DL, not a remux.
 
 | Your situation | Use | Why |
 |---|---|---|
 | You can install Tailscale on the devices you watch on | **[Tailscale serve](#tailscale-serve)** (best) | Nothing to open on your router, and it works behind any internet connection. The certificate renews by itself, and nobody outside your tailnet can reach rex |
 | Devices without Tailscale (a friend's TV, a hotel), and your router has a public IP | **[Caddy](#caddy)** with your own domain, or with a free `sslip.io` name | A direct connection with nobody in between, and a free certificate that renews by itself. You forward port 443 |
-| Your connection has no public IP (CGNAT) and Tailscale on every device is not an option | Nothing works well yet | rex has no relay. Tailscale serve is the way out |
+| Your connection has no public IP (CGNAT) | **[Tailscale serve](#tailscale-serve)**, with Tailscale on every device you watch on | rex has no relay, and the tunnels below are not recommended |
 
 Not recommended:
 
@@ -289,10 +302,10 @@ Install [Tailscale](https://tailscale.com/download) on the rex machine and on th
 sudo tailscale serve --bg 32400
 ```
 
-It prints the address, for example `https://myhost.tailnet.ts.net`. Put it first in the `--announce-url` list from [step 4](#share-it-with-your-own-account), before the LAN address:
+It prints the address, for example `https://myhost.tailnet.ts.net`. Put it first in the `--announce-url` list from [step 3](#share-it-with-your-own-account), with `:443` added, before the LAN address:
 
 ```ini
-ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url https://myhost.tailnet.ts.net,http://192.168.1.20:32400
+ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url https://myhost.tailnet.ts.net:443,http://192.168.1.20:32400
 ```
 
 **Keep the LAN address in the list.** Once rex announces, Plex apps take its addresses from plex.tv, and plex.tv lists only what rex announces. Without the LAN address a TV at home that has no Tailscale cannot connect.
@@ -300,6 +313,8 @@ ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url https:/
 ```bash
 systemctl --user daemon-reload && systemctl --user restart rex
 ```
+
+Everyone on your tailnet, including anyone you share this machine with, can use rex's feed API. Share the machine only with people you trust.
 
 ### Caddy
 
@@ -317,7 +332,7 @@ rex.example.com {
 }
 ```
 
-`respond /rex/* 403` keeps the feed API off the internet; your app still reaches rex directly. Then `sudo systemctl reload caddy`, add `--announce-url https://rex.example.com,http://192.168.1.20:32400` to `ExecStart` as above, with your LAN IP, and restart rex.
+`respond /rex/* 403` keeps the feed API off the internet; your app still reaches rex directly. Then `sudo systemctl reload caddy`, add `--announce-url https://rex.example.com:443,http://192.168.1.20:32400` to `ExecStart` as above, with your LAN IP, and restart rex.
 
 ### What you should see
 
@@ -325,13 +340,13 @@ rex.example.com {
 curl -s -o /dev/null -w '%{http_code}\n' https://myhost.tailnet.ts.net/identity
 ```
 
-answers `200`, and rex's log names the address:
+answers `200`, and rex's log names the addresses it announces:
 
 ```
-INFO    heartbeat every 600s for machine ... -> https://myhost.tailnet.ts.net
+INFO    heartbeat every 600s for machine ... -> https://myhost.tailnet.ts.net:443,http://192.168.1.20:32400
 ```
 
-The server then lists that address on plex.tv, and a Plex app away from home picks it. If rex logs `waiting for a claim`, do [step 4](#step-4-add-it-to-a-plex-account) first.
+rex prints this at every start. Trouble shows later as `heartbeat failed` or `announced but NOT visible`. Otherwise the server lists those addresses on plex.tv, and a Plex app away from home picks the one it can reach. If rex logs `waiting for a claim`, do [step 3](#step-3-add-it-to-a-plex-account) first.
 
 ## Converting video (optional)
 
@@ -339,16 +354,17 @@ The server then lists that address on plex.tv, and a Plex app away from home pic
 
 **Why it matters.** Without it a device that cannot play a file as it is gets "This server is not powerful enough to convert video". Web browsers hit this most, for example with AC3 or DTS sound.
 
-Install jellyfin-ffmpeg 8 as a package (Ubuntu's own FFmpeg 4.4 is too old; it goes in `/usr/lib/jellyfin-ffmpeg` beside it) and point rex at it:
+Install jellyfin-ffmpeg 8 as a package (Ubuntu 22.04's own FFmpeg 4.4 is too old; this one goes in `/usr/lib/jellyfin-ffmpeg` beside any other) and point rex at it. The first line picks the build for your system: there are builds for Ubuntu 22.04, 24.04 and 26.04 and Debian 12 and 13, on amd64 or arm64, and on any other `curl` stops with an error.
 
 ```bash
-curl -LO https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg8_8.1.3-1-jammy_amd64.deb
-sudo apt install -y ./jellyfin-ffmpeg8_8.1.3-1-jammy_amd64.deb && rm jellyfin-ffmpeg8_8.1.3-1-jammy_amd64.deb
-printf 'REX_TRANSCODER=/usr/lib/jellyfin-ffmpeg/ffmpeg\nLIBVA_DRIVER_NAME=iHD\n' >> ~/rex/rex.env && chmod 600 ~/rex/rex.env
+DEB=jellyfin-ffmpeg8_8.1.3-1-$(. /etc/os-release; echo "$VERSION_CODENAME")_$(dpkg --print-architecture).deb
+curl -fLO "https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/$DEB"
+sudo apt install -y "./$DEB" && rm "$DEB"
+printf 'REX_TRANSCODER=/usr/lib/jellyfin-ffmpeg/ffmpeg\n' >> ~/rex/rex.env && chmod 600 ~/rex/rex.env
 systemctl --user restart rex
 ```
 
-With an Intel or AMD graphics chip, also run `sudo usermod -aG render "$USER"` and reboot so the service gets the group; in an LXC, pass the GPU through. The chip makes conversion fast; without one rex uses the processor. On Intel, `sudo apt install intel-opencl-icd` also converts HDR and Dolby Vision on the chip.
+With an Intel or AMD graphics chip, also run `sudo usermod -aG render "$USER"` and reboot so the service gets the group; in an LXC, pass the GPU through. On Intel, also run `echo LIBVA_DRIVER_NAME=iHD >> ~/rex/rex.env`; AMD needs no such line. The chip makes conversion fast; without one rex uses the processor. With no Intel or AMD chip, rex also tries an NVIDIA card's encoder. On Intel, `sudo apt install intel-opencl-icd` also converts HDR and Dolby Vision on the chip.
 
 **What you should see.** rex's log has a `transcoder:` line naming the FFmpeg and the hardware it found (`hardware none` means the processor). A file that failed before now plays; the log shows what was converted, for example `video=copy h264 audio=ac3->aac`.
 
@@ -373,7 +389,7 @@ services:
       - ./config:/config
 ```
 
-- `:nightly` is the newest build until the next release; `latest` follows releases only.
+- `:nightly` follows the nightly builds; `latest` follows releases only.
 - `network_mode: host` lets Plex apps on your network find rex by themselves, and lets rex reach your app at the address it registers, as from the machine itself.
 - `./config` gets `rex.db` and, later, `claim_state.json`. They are readable by root only, because `rex.db` holds your app's login.
 - Plex Media Server on the same machine? Add `command: --port 32500 --gdm off`.
@@ -393,7 +409,7 @@ rex takes no password on its feed API. Anyone who can reach rex's port can regis
 
 ## Updating
 
-Run the `gh release download` and `tar` lines of [step 1](#step-1-install-rex) again in `~/rex` (they replace the program and `data/`, and leave `rex.db`, `rex.env` and `claim_state.json` alone), then `systemctl --user restart rex`.
+Run the `TAG=`, `gh release download` and `tar` lines of [step 1](#step-1-install-rex) again in `~/rex` (they replace the program and `data/`, and leave `rex.db`, `rex.env` and `claim_state.json` alone), then `systemctl --user restart rex`.
 
 ## When something is wrong
 
@@ -402,13 +418,13 @@ Run the `gh release download` and `tar` lines of [step 1](#step-1-install-rex) a
 | `/rex/sources` stays `{"size":0}` | Your app has not registered. Check the address it was given and that it can reach rex's port |
 | A push answers `404 no such source` | Your app pushed before registering. It must `PUT /rex/sources/<name>` first |
 | rex's log says `held ... no media_info yet` | Your app sent the file without ffprobe output. It appears once that arrives |
-| Titles show file names and no posters | rex is not on a Plex account. Do [step 4](#step-4-add-it-to-a-plex-account) |
-| A title is in the wrong show, or a film is titled as its file | Your app sent no `kind` and `ids` for it, or the wrong ones. Fix it in your app, or use **Fix Match** in a Plex app; a Fix Match stays as you set it |
+| Titles show file names and no posters | rex is not on a Plex account. Do [step 3](#step-3-add-it-to-a-plex-account). If rex was claimed after your app sent its library, they fill in by themselves, about 300 titles an hour |
+| A title is in the wrong show, or a film is titled as its file | Your app sent no `kind` and `ids` for it, or the wrong ones. Fix it in your app, or use **Fix Match** in a Plex app signed in as the fresh account; a Fix Match stays as you set it |
 | Nothing plays and rex's log shows 502 | rex cannot reach the address your app registered. `curl -s http://127.0.0.1:32400/rex/sources` shows it; test it with `curl` from the rex machine |
 | Nothing plays, 401 or 403 | Your app refused its own login. Have it register again with the current one |
-| A snapshot answers 409 `would remove more than half` | rex's guard against an app that sends a half-loaded library. If the removal is real, send the last part again with `"force": true` |
+| A snapshot answers 409 `would remove more than half` | rex's guard against an app that sends a half-loaded library. If the removal is real, your app must send the whole snapshot again from part 0, with `"force": true` on its last part. Resending only the last part is refused, and sending it alone with `force` removes everything the earlier parts named |
 | Deleting in a Plex app fails and rex logs `DELETE refused by the source` | Your app does not accept a `DELETE` of the file. Remove it in your app instead |
 | "This server is not powerful enough to convert video" | The device cannot play the file as it is. Try a Plex app on a TV or phone, or set up [Converting video](#converting-video-optional) |
 | After adding `--announce-url`, a device at home cannot connect | The LAN address is missing from `--announce-url`. Add `http://<LAN IP>:32400` after the HTTPS one |
 | rex is not in the Plex apps away from home | Not claimed, no `--announce-url`, or the device cannot reach the HTTPS address |
-| rex stops when you log out | Run `loginctl enable-linger "$USER"` (step 1) |
+| rex stops when you log out | Run `sudo loginctl enable-linger "$USER"` (step 1) |
