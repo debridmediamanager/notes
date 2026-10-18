@@ -366,6 +366,8 @@ With an Intel or AMD graphics chip, also run `sudo usermod -aG render "$USER"` a
 
 **What you should see.** rex's log has a `transcoder:` line naming the FFmpeg and the hardware it found (`hardware none` means the processor). A file that failed before now plays; the log shows what was converted, for example `video=copy h264 audio=ac3->aac`.
 
+Subtitles in a converted file: an image subtitle is burned into the picture and a subtitle you uploaded comes along. Plex for Android and iOS also keep a text subtitle; Plex Web and other players lose it for now.
+
 ## Run rex in Docker
 
 The same setup with zurg and rex in containers on one Linux machine. The steps match the ones above; only how you start each part differs.
@@ -483,7 +485,7 @@ rex takes no password from zurg. It answers the API zurg pushes to only from thi
 
 | What you see | What to do |
 |---|---|
-| `/rex/sources` stays `{"size":0}` | zurg is older than 2026.10.17, `rex_url` is wrong, or zurg's library is still loading. Update zurg as in [step 1](#step-1-install-zurg) and look at `tail -n 50 ~/zurg/logs/zurg.log` |
+| `/rex/sources` stays `{"size":0,"sources":[]}` | zurg is older than 2026.10.17, `rex_url` is wrong, or zurg's library is still loading. Update zurg as in [step 1](#step-1-install-zurg) and look at `tail -n 50 ~/zurg/logs/zurg.log` |
 | rex's log says `held ... no media_info yet` and the library stays empty | zurg has not read the files yet. Wait for its library to load; if zurg logs `segmentation fault`, update and restart it as in [step 1](#step-1-install-zurg) |
 | Titles show file names and no posters | rex is not on a Plex account: do [step 3](#step-3-add-it-to-a-plex-account). If you claimed it after zurg sent them, they fill in by themselves, about 300 films or shows an hour |
 | A film is titled as its file, or an episode sits in a show named after its release | DMM has not placed it yet: check `dmm_api_key` in zurg's config. zurg asks DMM again a day later |
