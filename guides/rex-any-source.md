@@ -49,7 +49,7 @@ Give this list to whoever makes your app. rex's own API reference is `docs/feed-
 
 ## Step 1. Install rex
 
-**What it does.** Downloads rex into `~/rex` and starts it as a service that comes back after a reboot.
+**What it does.** Downloads rex into `~/rex` and starts it as a service that comes back after a reboot, with everything the later steps need. Nothing after this step restarts rex.
 
 **Why it matters.** rex is what your Plex apps talk to. The first start creates `rex.db`, which holds your libraries, everything your app sends and your watch history.
 
@@ -64,6 +64,14 @@ sudo loginctl enable-linger "$USER"
 ```
 
 This takes rex's newest build, a nightly until the next release. On an ARM machine (Raspberry Pi, Ampere) use `linux-arm64` in all three places. The last line keeps rex running when you log out.
+
+If you sponsor DMM, put your DMM API key in `rex.env`. It gives rex its own HTTPS address for [watching away from home](#use-it-outside-your-home-optional):
+
+```bash
+(umask 077; echo 'DMM_API_KEY=your_dmm_key' > ~/rex/rex.env)
+```
+
+Find rex's LAN address: `hostname -I` prints several, so take the one on your home network (usually `192.168.x.x` or `10.x.x.x`). Plex apps signed in as you are sent there once rex is on a Plex account in step 3.
 
 Now make it a service. Create `~/.config/systemd/user/rex.service`:
 
@@ -80,7 +88,7 @@ After=network-online.target
 [Service]
 WorkingDirectory=%h/rex
 EnvironmentFile=-%h/rex/rex.env
-ExecStart=%h/rex/rust/target/release/rex --catalog rex.db
+ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url http://192.168.1.20:32400
 Restart=always
 RestartSec=5
 UMask=0077
@@ -89,7 +97,7 @@ UMask=0077
 WantedBy=default.target
 ```
 
-`UMask=0077` makes the files rex writes readable by you only: `rex.db` will hold your app's login.
+Put your LAN address in place of `192.168.1.20`. `UMask=0077` makes the files rex writes readable by you only: `rex.db` will hold your app's login.
 
 **Plex Media Server runs on the same machine?** End the `ExecStart` line with `--port 32500` and use `32500` wherever this page says `32400`: Plex already holds port 32400 and the ports apps use to find servers, and on any other port rex leaves those to Plex.
 
@@ -108,7 +116,7 @@ INFO    claim state: unclaimed
 INFO    rex on http://yourhost:32400  machine=...  items=0  parts=proxy
 ```
 
-rex names itself after the machine; your Plex apps show that name. `no source yet` is right: no app has registered yet. Leave the log open.
+rex names itself after the machine; your Plex apps show that name. `no source yet` is right: no app has registered yet. With `DMM_API_KEY` a `rex-direct: https://...` line names rex's HTTPS address. A `WARNING` that a CDN may strip `Range` is about the LAN address and can be ignored. Leave the log open.
 
 ## Step 2. See it work by hand
 
@@ -198,17 +206,8 @@ kill %1
 1. Still signed in as the fresh account, open [app.plex.tv](https://app.plex.tv), then **Settings** (the wrench), **Manage Library Access** and **Grant Library Access**.
 2. Enter your own account's username or email, pick the rex server and both libraries, **Debrid Movies** and **Debrid TV**, and send the invite.
 3. Sign out, sign in as **yourself**, and accept the invite. It arrives by email and in app.plex.tv.
-4. Tell plex.tv rex's LAN address, so Plex apps signed in as you know where to reach it. `hostname -I` shows the machine's IPs; use the one on your home network (usually `192.168.x.x` or `10.x.x.x`). Add it to the end of the `ExecStart` line in `rex.service` (in Docker, as `command: --announce-url http://192.168.1.20:32400`):
 
-   ```ini
-   ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url http://192.168.1.20:32400
-   ```
-
-   ```bash
-   systemctl --user daemon-reload && systemctl --user restart rex
-   ```
-
-   rex then logs a warning that a CDN may strip `Range`; it does not apply to a LAN address, Tailscale or Caddy.
+rex tells plex.tv the addresses from step 1 the moment it is claimed, with no restart.
 
 **What you should see.** Signed in as yourself, Plex apps list the rex server beside your own servers, with both libraries. Your watch history on rex is your own: it is kept apart from the fresh account's. Share it the same way with anyone else in your household.
 
@@ -285,7 +284,7 @@ Whichever you pick, every byte you watch away from home leaves through your home
 
 | Your situation | Use | Why |
 |---|---|---|
-| You sponsor DMM, your router has a public IP and you can forward a port | **[rex-direct](#rex-direct)** (simplest) | One line in `rex.env` and one port forward. DMM gives rex a name and a certificate, and keeps the name pointed at your home IP |
+| You sponsor DMM, your router has a public IP and you can forward a port | **[rex-direct](#rex-direct)** (simplest) | Already on with step 1's `DMM_API_KEY`: one port forward. DMM gives rex a name and a certificate, and keeps the name pointed at your home IP |
 | You can install Tailscale on the devices you watch on | **[Tailscale serve](#tailscale-serve)** (best) | Nothing to open on your router, and it works behind any internet connection. The certificate renews by itself, and nobody outside your tailnet can reach rex |
 | Devices without Tailscale (a friend's TV, a hotel), and your router has a public IP | **[Caddy](#caddy)** with your own domain, or with a free `sslip.io` name | A direct connection with nobody in between, and a free certificate that renews by itself. You forward port 443 |
 | Your connection has no public IP (CGNAT) | **[Tailscale serve](#tailscale-serve)**, with Tailscale on every device you watch on | rex has no relay, and the tunnels below are not recommended |
@@ -298,27 +297,11 @@ Not recommended:
 
 ### rex-direct
 
-rex-direct is DMM's answer to plex.direct. It needs a DMM API key from an active sponsorship. Add it to `~/rex/rex.env` (in Docker, under the rex service's `environment:`):
+rex-direct is DMM's answer to plex.direct, turned on by the `DMM_API_KEY` in `rex.env` from [step 1](#step-1-install-rex). On your router, forward port 32400 (TCP) to the rex machine. That is all, with nothing to restart.
 
-```bash
-echo 'DMM_API_KEY=your_dmm_key' >> ~/rex/rex.env && chmod 600 ~/rex/rex.env
-```
+At start rex got its own name from DMM, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and a certificate that covers it: that is the `rex-direct:` line in its log. Once claimed it announces `https://<hash>.rex-direct.debridmediamanager.com:32400` after the LAN address. rex asks DMM again every six hours, so a new home IP is picked up by itself, and a renewed certificate too.
 
-On your router, forward port 32400 (TCP) to the rex machine. Then restart rex:
-
-```bash
-systemctl --user restart rex
-```
-
-At start rex asks DMM for its own name, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and for a certificate that covers it. Once claimed it announces `https://<hash>.rex-direct.debridmediamanager.com:32400` after the addresses in `--announce-url`. Keep the LAN address there, as in [step 3](#share-it-with-your-own-account). rex asks DMM again every six hours, so a new home IP is picked up by itself, and a renewed certificate too.
-
-rex's log shows the name:
-
-```
-INFO    rex-direct: https://<hash>.rex-direct.debridmediamanager.com:32400 -> <your public IP>
-```
-
-If your router forwards a different outside port to rex, add `REX_DIRECT_PORT=<that port>` to `rex.env`. If rex logs a `rex-direct` WARNING instead, the key is wrong or the sponsorship has lapsed. The feed API stays closed to the internet: rex answers it only from this machine, your home network and Tailscale.
+If your router forwards a different outside port to rex, add `REX_DIRECT_PORT=<that port>` to `rex.env` and restart rex. If rex logs a `rex-direct` WARNING instead of the name, the key is wrong or the sponsorship has lapsed. The port forward does not open the feed API: see [Keep the port private](#keep-the-port-private).
 
 ### Tailscale serve
 
@@ -328,7 +311,7 @@ Install [Tailscale](https://tailscale.com/download) on the rex machine and on th
 sudo tailscale serve --bg 32400
 ```
 
-It prints the address, for example `https://myhost.tailnet.ts.net`. Put it first in the `--announce-url` list from [step 3](#share-it-with-your-own-account), with `:443` added, before the LAN address:
+It prints the address, for example `https://myhost.tailnet.ts.net`. Put it first in the `--announce-url` list from [step 1](#step-1-install-rex), with `:443` added, before the LAN address:
 
 ```ini
 ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url https://myhost.tailnet.ts.net:443,http://192.168.1.20:32400
@@ -358,7 +341,7 @@ rex.example.com {
 }
 ```
 
-`respond /rex/* 403` keeps the feed API off the internet; your app still reaches rex directly. Then `sudo systemctl reload caddy`, add `--announce-url https://rex.example.com:443,http://192.168.1.20:32400` to `ExecStart` as above, with your LAN IP, and restart rex.
+`respond /rex/* 403` keeps the feed API off the internet; your app still reaches rex directly. Then `sudo systemctl reload caddy`, make the `ExecStart` list `--announce-url https://rex.example.com:443,http://192.168.1.20:32400`, with your LAN IP, and restart rex as above.
 
 ### What you should see
 
@@ -413,14 +396,18 @@ services:
     container_name: rex
     restart: unless-stopped
     network_mode: host
+    command: --announce-url http://192.168.1.20:32400
+    environment:
+      DMM_API_KEY: your_dmm_key
     volumes:
       - ./config:/config
 ```
 
+- `command:` and `DMM_API_KEY` are [step 1](#step-1-install-rex)'s, with your LAN IP; leave `environment:` out if you do not sponsor DMM.
 - `:nightly` follows the nightly builds; `latest` follows releases only.
 - `network_mode: host` lets Plex apps on your network find rex by themselves, and lets rex reach your app at the address it registers, as from the machine itself.
 - `./config` gets `rex.db` and, later, `claim_state.json`. They are readable by root only, because `rex.db` holds your app's login.
-- Plex Media Server on the same machine? Add `command: --port 32500` and use `32500` wherever this page says `32400`. Flags you add later, such as `--announce-url`, go on that same `command:` line.
+- Plex Media Server on the same machine? Add `--port 32500` to `command:` and use `32500` wherever this page says `32400`.
 
 ```bash
 docker compose up -d
@@ -453,6 +440,6 @@ Run the `TAG=`, `gh release download` and `tar` lines of [step 1](#step-1-instal
 | A snapshot answers 409 `would remove more than half` | rex's guard against an app that sends a half-loaded library. If the removal is real, your app must send the whole snapshot again from part 0, with `"force": true` on its last part. Resending only the last part is refused, and sending it alone with `force` removes everything the earlier parts named |
 | Deleting in a Plex app fails and rex logs `DELETE refused by the source` | Your app does not accept a `DELETE` of the file. Remove it in your app instead |
 | "This server is not powerful enough to convert video" | The device cannot play the file as it is. Try a Plex app on a TV or phone, or set up [Converting video](#converting-video-optional) |
-| After adding `--announce-url`, a device at home cannot connect | The LAN address is missing from `--announce-url`. Add `http://<LAN IP>:32400` after the HTTPS one |
+| After adding an HTTPS address, a device at home cannot connect | The LAN address is missing from `--announce-url`. Add `http://<LAN IP>:32400` after the HTTPS one |
 | rex is not in the Plex apps away from home | Not claimed, no `--announce-url`, or the device cannot reach the HTTPS address |
 | rex stops when you log out | Run `sudo loginctl enable-linger "$USER"` (step 1) |
