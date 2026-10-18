@@ -96,6 +96,7 @@ journalctl --user -u rex -f
 **What you should see.**
 
 ```
+INFO    seeded rex.db: an empty library named yourhost at /mnt/zurg, machine=...
 INFO    no source yet: one registers at PUT /rex/sources/{name} (docs/feed-api.md)
 INFO    claim state: unclaimed
 INFO    rex on http://yourhost:32400  machine=...  items=0  parts=proxy
@@ -138,7 +139,7 @@ jq -n --arg p "$P" --argjson size "$(stat -c%s "$P")" \
     -H 'Content-Type: application/json' --data-binary @-
 ```
 
-**What you should see.** The answer is `{"created":1,"updated":0,"held":0,"unchanged":0}` and rex's log prints:
+**What you should see.** The answer is `{"created":1,"updated":0,"held":0,"unchanged":0,"rejected":[]}` and rex's log prints:
 
 ```
 INFO    FEED identified "Sintel.2010" -> movie tmdb:45745 (placed)
@@ -387,6 +388,8 @@ With an Intel or AMD graphics chip, also run `sudo usermod -aG render "$USER"` a
 
 **What you should see.** rex's log has a `transcoder:` line naming the FFmpeg and the hardware it found (`hardware none` means the processor). A file that failed before now plays; the log shows what was converted, for example `video=copy h264 audio=ac3->aac`.
 
+Subtitles in a converted file: an image subtitle is burned into the picture and a subtitle you uploaded comes along. Plex for Android and iOS also keep a text subtitle; Plex Web and other players lose it for now.
+
 ## Run rex in Docker
 
 rex's image is private, like the download. Log in once with your GitHub username and a classic personal access token with the `read:packages` and `repo` scopes:
@@ -434,7 +437,7 @@ Run the `TAG=`, `gh release download` and `tar` lines of [step 1](#step-1-instal
 
 | What you see | What to do |
 |---|---|
-| `/rex/sources` stays `{"size":0}` | Your app has not registered. Check the address it was given and that it can reach rex's port |
+| `/rex/sources` stays `{"size":0,"sources":[]}` | Your app has not registered. Check the address it was given and that it can reach rex's port |
 | A push answers `404 no such source` | Your app pushed before registering. It must `PUT /rex/sources/<name>` first |
 | rex's log says `held ... no media_info yet` | Your app sent the file without ffprobe output. It appears once that arrives |
 | Titles show file names and no posters | rex is not on a Plex account. Do [step 3](#step-3-add-it-to-a-plex-account). If rex was claimed after your app sent its library, they fill in by themselves, about 300 titles an hour |
