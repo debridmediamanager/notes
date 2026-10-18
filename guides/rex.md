@@ -26,7 +26,7 @@ rex opened as a closed beta for sponsors on October 15 and reaches the public on
 | You need | Why |
 |---|---|
 | A Linux machine that stays on (Ubuntu 22.04 or newer). A Proxmox LXC works, unprivileged is fine, once FUSE is turned on for it (Options > Features > FUSE): zurg's installer stops without `/dev/fuse` | rex and zurg are servers: your Plex apps reach them whenever you press play. macOS and Windows work too; this page shows Linux, and [Docker](#run-rex-in-docker) is further down |
-| About 2 GB of RAM for a library of 40,000 titles | That is for rex 2026.10.18.0753-nightly and older, which keep the whole library in memory. Newer builds keep it in `rex.db` and need about 500 MB. zurg needs little |
+| About 500 MB of RAM for a library of 40,000 titles | rex keeps the library in `rex.db` and holds only what it is serving in memory. zurg needs little |
 | A debrid account (Real-Debrid, TorBox, AllDebrid, Premiumize, Debrid-Link, Offcloud) or Usenet | That is where your movies and shows actually live |
 | A GitHub account with access to zurg's and rex's sponsor releases | Both are private GitHub releases. The zurg installer signs you in once and rex's download reuses that sign-in |
 | Your DMM API key, from sponsoring DMM | zurg asks DMM what each file is. Without it every file is unmatched: films are titled as their file and episodes are numbered in file order |

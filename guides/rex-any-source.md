@@ -24,7 +24,7 @@ rex has been in closed beta for sponsors since October 15 and reaches the public
 | You need | Why |
 |---|---|
 | A Linux machine that stays on (Ubuntu 22.04 or newer) | rex is a server: your Plex apps reach it whenever you press play. macOS and Windows work too; this page shows Linux, and [Docker](#run-rex-in-docker) is further down |
-| About 2 GB of RAM for a library of 40,000 titles | That is for rex 2026.10.18.0753-nightly and older, which keep the whole library in memory. Newer builds keep it in `rex.db` and need about 500 MB. Converting video wants more cores, or a graphics chip |
+| About 500 MB of RAM for a library of 40,000 titles | rex keeps the library in `rex.db` and holds only what it is serving in memory. Converting video wants more cores, or a graphics chip |
 | A GitHub account with access to rex's sponsor releases | rex is a private GitHub release |
 | An app that does what [What your app must do](#what-your-app-must-do) lists | That is where your library comes from |
 | A fresh Plex account, made just for rex | rex gets every title, poster, summary and episode name from Plex once it is [added to a Plex account](#step-3-add-it-to-a-plex-account). Until then titles keep their file names and have no posters |
