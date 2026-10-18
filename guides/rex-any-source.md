@@ -85,7 +85,7 @@ WantedBy=default.target
 
 `UMask=0077` makes the files rex writes readable by you only: `rex.db` will hold your app's login.
 
-**Plex Media Server runs on the same machine?** End the `ExecStart` line with `--port 32500 --gdm off` and use `32500` wherever this page says `32400`: Plex already holds port 32400 and the ports apps use to find servers.
+**Plex Media Server runs on the same machine?** End the `ExecStart` line with `--port 32500` and use `32500` wherever this page says `32400`: Plex already holds port 32400 and the ports apps use to find servers, and on any other port rex leaves those to Plex.
 
 ```bash
 systemctl --user daemon-reload
@@ -270,7 +270,7 @@ You are done. The sections below are optional.
 
 **What it does.** Gives rex an HTTPS address that Plex apps away from home can reach, and tells plex.tv about it.
 
-**Why it matters.** Away from home, Plex apps only connect to an HTTPS address they can reach. A real Plex server can fall back to Plex's relay; rex cannot, so you choose how it is reached. rex must be [claimed](#step-3-add-it-to-a-plex-account) first. A claimed rex checks the Plex token on every request except `/identity` and its feed API (`/rex/...`), which is why a proxy that faces the internet must block `/rex/`.
+**Why it matters.** Away from home, app.plex.tv only connects to an HTTPS address, and the other Plex apps prefer one. A real Plex server can fall back to Plex's relay; rex cannot, so you choose how it is reached. rex must be [claimed](#step-3-add-it-to-a-plex-account) first. A claimed rex checks the Plex token on every request except `/identity` and its feed API (`/rex/...`), which is why a proxy that faces the internet must block `/rex/`.
 
 **Plex Pass.** Away from home, Plex apps play only when the account you watch with has Plex Pass or a Remote Watch Pass, so you need one on your own account, not the fresh one. Plex checks this in the app, before rex sees any request. That is how Plex Web behaves; other Plex apps were not tested. At home, over the LAN address, Plex's rules ask for no pass. app.plex.tv in a browser uses the HTTPS address even at home, so it may ask for a pass there too.
 
@@ -386,7 +386,7 @@ services:
 - `:nightly` follows the nightly builds; `latest` follows releases only.
 - `network_mode: host` lets Plex apps on your network find rex by themselves, and lets rex reach your app at the address it registers, as from the machine itself.
 - `./config` gets `rex.db` and, later, `claim_state.json`. They are readable by root only, because `rex.db` holds your app's login.
-- Plex Media Server on the same machine? Add `command: --port 32500 --gdm off`.
+- Plex Media Server on the same machine? Add `command: --port 32500` and use `32500` wherever this page says `32400`. Flags you add later, such as `--announce-url`, go on that same `command:` line.
 
 ```bash
 docker compose up -d
