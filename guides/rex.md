@@ -23,7 +23,7 @@ rex opened as a closed beta for sponsors on October 15 and reaches the public on
 | About 500 MB of RAM for a library of 40,000 titles | rex keeps the library in `rex.db` and holds only what it is serving in memory. zurg needs little |
 | A debrid account (Real-Debrid, TorBox, AllDebrid, Premiumize, Debrid-Link, Offcloud) or Usenet | That is where your movies and shows actually live |
 | A GitHub account with access to zurg's and rex's sponsor releases | Both are private GitHub releases. The zurg installer signs you in once and rex's download reuses that sign-in |
-| Your DMM API key, from sponsoring DMM | zurg asks DMM what each file is. Without it every file is unmatched: films are titled as their file and episodes are numbered in file order |
+| Your DMM API key, from sponsoring DMM (optional) | zurg asks DMM what each file is. Without it every file is unmatched: films are titled as their file and episodes are numbered in file order |
 | A fresh Plex account, made just for rex | rex gets every title, poster, summary and episode name from Plex once it is [added to a Plex account](#step-3-add-it-to-a-plex-account). Until then titles keep their file names and have no posters |
 
 You do **not** need a TMDB key or your Plex token.
@@ -147,7 +147,7 @@ First check whether zurg's config already has either line:
 grep -n '^rex_url:\|^dmm_api_key:' ~/zurg/config.yml
 ```
 
-If it prints a line, that key is already set: change it there with `nano ~/zurg/config.yml` and leave it out of the `printf` below. zurg will not start with the same key twice, and zurg's dashboard writes `dmm_api_key` into this file when you enter your key there.
+If it prints a line, that key is already set: change it there with `nano ~/zurg/config.yml` and leave it out of the `printf` below. Without a DMM key, leave `dmm_api_key` out. zurg will not start with the same key twice, and zurg's dashboard writes `dmm_api_key` into this file when you enter your key there.
 
 ```bash
 printf '\nrex_url: http://192.168.1.20:32400\ndmm_api_key: your_dmm_key\n' >> ~/zurg/config.yml
