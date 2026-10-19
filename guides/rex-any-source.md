@@ -59,12 +59,6 @@ sudo loginctl enable-linger "$USER"
 
 This takes rex's newest build, a nightly until the next release. On an ARM machine (Raspberry Pi, Ampere) use `linux-arm64` in all three places. The last line keeps rex running when you log out.
 
-If you sponsor DMM, put your DMM API key in `rex.env`. It gives rex its own HTTPS address for [watching away from home](#use-it-outside-your-home-optional):
-
-```bash
-(umask 077; echo 'DMM_API_KEY=your_dmm_key' > ~/rex/rex.env)
-```
-
 Find rex's LAN address: `hostname -I` prints several, so take the one on your home network (usually `192.168.x.x` or `10.x.x.x`). Plex apps signed in as you are sent there once rex is on a Plex account in step 3.
 
 Now make it a service. Create `~/.config/systemd/user/rex.service`:
@@ -110,7 +104,7 @@ INFO    claim state: unclaimed
 INFO    rex on http://yourhost:32400  machine=...  items=0  parts=proxy
 ```
 
-rex names itself after the machine; your Plex apps show that name. `no source yet` is right: no app has registered yet. With `DMM_API_KEY` a `rex-direct: https://...` line names rex's HTTPS address. A `WARNING` that a CDN may strip `Range` is about the LAN address and can be ignored. Leave the log open.
+rex names itself after the machine; your Plex apps show that name. `no source yet` is right: no app has registered yet. A `WARNING` that a CDN may strip `Range` is about the LAN address and can be ignored. Leave the log open.
 
 ## Step 2. See it work by hand
 
@@ -201,7 +195,7 @@ kill %1
 2. Enter your own account's username or email, pick the rex server and both libraries, **Debrid Movies** and **Debrid TV**, and send the invite.
 3. Sign out, sign in as **yourself**, and accept the invite. It arrives by email and in app.plex.tv.
 
-rex tells plex.tv the addresses from step 1 the moment it is claimed, with no restart.
+rex tells plex.tv the address from step 1 the moment it is claimed, with no restart.
 
 **What you should see.** Signed in as yourself, Plex apps list the rex server beside your own servers, with both libraries. Your watch history on rex is your own: it is kept apart from the fresh account's. Share it the same way with anyone else in your household.
 
@@ -278,7 +272,7 @@ Whichever you pick, every byte you watch away from home leaves through your home
 
 | Your situation | Use | Why |
 |---|---|---|
-| You sponsor DMM, your router has a public IP and you can forward a port | **[rex-direct](#rex-direct)** (simplest) | Already on with step 1's `DMM_API_KEY`: one port forward. DMM gives rex a name and a certificate, and keeps the name pointed at your home IP |
+| Your router has a public IP and you can forward a port | **[rex-direct](#rex-direct)** (simplest) | On by default: one port forward. DMM gives rex a name and a certificate, and keeps the name pointed at your home IP |
 | You can install Tailscale on the devices you watch on | **[Tailscale serve](#tailscale-serve)** (best) | Nothing to open on your router, and it works behind any internet connection. The certificate renews by itself, and nobody outside your tailnet can reach rex |
 | Devices without Tailscale (a friend's TV, a hotel), and your router has a public IP | **[Caddy](#caddy)** with your own domain, or with a free `sslip.io` name | A direct connection with nobody in between, and a free certificate that renews by itself. You forward port 443 |
 | Your connection has no public IP (CGNAT) | **[Tailscale serve](#tailscale-serve)**, with Tailscale on every device you watch on | rex has no relay, and the tunnels below are not recommended |
@@ -291,11 +285,11 @@ Not recommended:
 
 ### rex-direct
 
-rex-direct is DMM's answer to plex.direct, turned on by the `DMM_API_KEY` in `rex.env` from [step 1](#step-1-install-rex). On your router, forward port 32400 (TCP) to the rex machine. That is all, with nothing to restart.
+rex-direct is DMM's answer to plex.direct, and it is on by default. On your router, forward port 32400 (TCP) to the rex machine. That is all, with nothing to restart.
 
-At start rex got its own name from DMM, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and a certificate that covers it: that is the `rex-direct:` line in its log. Once claimed it announces `https://<hash>.rex-direct.debridmediamanager.com:32400` after the LAN address. rex asks DMM again every six hours, so a new home IP is picked up by itself, and a renewed certificate too.
+Once claimed, rex gets its own name from DMM, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and a certificate for that name alone. The first certificate takes a few minutes; rex's log says it is being issued and then shows the name in a `rex-direct:` line. rex then announces `https://<hash>.rex-direct.debridmediamanager.com:32400` after the LAN address. rex asks DMM again every six hours, so a new home IP is picked up by itself, and a renewed certificate too.
 
-If your router forwards a different outside port to rex, add `REX_DIRECT_PORT=<that port>` to `rex.env` and restart rex. If rex logs a `rex-direct` WARNING instead of the name, the key is wrong or the sponsorship has lapsed. The port forward does not open the feed API: see [Keep the port private](#keep-the-port-private).
+If your router forwards a different outside port to rex, add `REX_DIRECT_PORT=<that port>` to `rex.env` and restart rex. To use another provider, set `REX_DIRECT_URL` (rex's `docs/rex-direct-api.md` is the contract), or `REX_DIRECT_URL=off` to turn it off. The port forward does not open the feed API: see [Keep the port private](#keep-the-port-private).
 
 ### Tailscale serve
 
@@ -391,13 +385,11 @@ services:
     restart: unless-stopped
     network_mode: host
     command: --announce-url http://192.168.1.20:32400
-    environment:
-      DMM_API_KEY: your_dmm_key
     volumes:
       - ./config:/config
 ```
 
-- `command:` and `DMM_API_KEY` are [step 1](#step-1-install-rex)'s, with your LAN IP; leave `environment:` out if you do not sponsor DMM.
+- `command:` is [step 1](#step-1-install-rex)'s, with your LAN IP.
 - `:nightly` follows the nightly builds; `latest` follows releases only.
 - `network_mode: host` lets Plex apps on your network find rex by themselves, and lets rex reach your app at the address it registers, as from the machine itself.
 - `./config` gets `rex.db` and, later, `claim_state.json`. They are readable by root only, because `rex.db` holds your app's login.
