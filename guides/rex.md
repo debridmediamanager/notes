@@ -238,12 +238,12 @@ Whichever you pick, every byte you watch away from home leaves through your home
 | Your router has a public IP and you can forward a port | **[rex-direct](#rex-direct)** (simplest) | On by default: one port forward. DMM gives rex a name and a certificate, and keeps the name pointed at your home IP |
 | You can install Tailscale on the devices you watch on | **[Tailscale serve](#tailscale-serve)** (best) | Nothing to open on your router, and it works behind any internet connection. The certificate renews by itself, and nobody outside your tailnet can reach rex |
 | Devices without Tailscale (a friend's TV, a hotel), and your router has a public IP | **[Caddy](#caddy)** with your own domain, or with a free `sslip.io` name | A direct connection with nobody in between, and a free certificate that renews by itself. You forward port 443 |
-| Your connection has no public IP (CGNAT, common on mobile and some fibre providers) and Tailscale on every device is not an option | Nothing works well yet | rex has no relay, and the tunnels below are not recommended |
+| Your connection has no public IP (CGNAT, common on mobile and some fibre providers), and devices without Tailscale | **[A small VPS](#a-small-vps)** | rex has no relay and will not get one. A VPS you rent has the public IP and a tunnel carries everything to rex, at the VPS's full bandwidth |
 
 Not recommended:
 
 - **Cloudflare tunnel.** Every byte goes through Cloudflare, which also drops the `Range` of a file's first read, so every play start pulls the whole file from your debrid service.
-- **Tailscale Funnel.** It puts every byte through Tailscale's servers, with limited bandwidth, and it publishes all of rex, including the API zurg pushes your library to. Anyone on the internet could add to or delete from that library.
+- **Tailscale Funnel, ngrok and other hosted tunnels.** They cap bandwidth or monthly data, which a film runs through quickly. Tailscale Funnel also publishes all of rex, including the API zurg pushes to: anyone on the internet could add to or delete from that library.
 - **Forwarding port 32400 without rex-direct or a certificate of your own.** Plex apps would get a plain HTTP address, which app.plex.tv refuses.
 
 ### rex-direct
@@ -299,6 +299,52 @@ sudo systemctl reload caddy
 ```
 
 Caddy fetches a certificate when it loads the file and renews it by itself. Make the `ExecStart` list `--announce-url https://rex.example.com:443,http://192.168.1.20:32400`, and restart rex as above.
+
+### A small VPS
+
+For a connection with no public IP (CGNAT). rex has no relay and will not get one, so a server you rent stands in for your router: it has the public IP, and a tunnel from the rex machine carries everything to rex. Any VPS with a public IPv4 works, a few euros a month. **Pick one whose monthly traffic covers what you watch away from home:** every byte passes through it, and a plan with a small data cap will run out. Tested 2026-10-19 with a stand-in VPS: playback and seeking pass through unchanged.
+
+You need the VPS's IP (`1.2.3.4` below), ports 443, 80 and 7000 open on it, and a long random string for the tunnel (`openssl rand -hex 32`).
+
+**On the VPS**, install [frp](https://github.com/fatedier/frp/releases) (the `frps` program) and [Caddy](https://caddyserver.com/docs/install). Make `frps.toml`:
+
+```toml
+bindPort = 7000
+auth.token = "your-long-random-string"
+proxyBindAddr = "127.0.0.1"
+```
+
+`proxyBindAddr` keeps the tunnel's end on the VPS's loopback, so the internet reaches rex only through Caddy. Make `/etc/caddy/Caddyfile`, with the VPS's IP as `1-2-3-4.sslip.io` (a free name that always points at that IP) or your own domain pointed at it:
+
+```
+1-2-3-4.sslip.io {
+	respond /rex/* 403
+	reverse_proxy 127.0.0.1:32400
+}
+```
+
+`respond /rex/* 403` keeps the API zurg pushes to off the internet. Start `frps -c frps.toml` as a service and run `sudo systemctl reload caddy`.
+
+**On the rex machine**, install frp too (the `frpc` program) and make `frpc.toml`:
+
+```toml
+serverAddr = "1.2.3.4"
+serverPort = 7000
+auth.token = "your-long-random-string"
+
+[[proxies]]
+name = "rex"
+type = "tcp"
+localIP = "192.168.1.20"
+localPort = 32400
+remotePort = 32400
+```
+
+Run it as a service, for example `~/.config/systemd/user/frpc.service` with `ExecStart=%h/frp/frpc -c %h/frp/frpc.toml` and `Restart=always`. Then put the VPS's name first in the `--announce-url` list, add `REX_DIRECT_URL=off` to `~/rex/rex.env` (rex-direct cannot work without a public IP at home, so plex.tv should not list it), and restart rex:
+
+```ini
+ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url https://1-2-3-4.sslip.io:443,http://192.168.1.20:32400
+```
 
 ### What you should see
 

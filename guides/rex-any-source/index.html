@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.845718535831">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.845720171769">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.845718535831" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.845720171769" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.845718535831" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.845720171769" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.845718535831" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.845718535831" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.845720171769" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.845720171769" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -477,7 +477,7 @@ sqlite3 ~/rex/rex.db &quot;.backup $HOME/rex/rex.db.bak&quot;</code></pre>
 | Your router has a public IP and you can forward a port | **[rex-direct](#rex-direct)** (simplest) | On by default: one port forward. DMM gives rex a name and a certificate, and keeps the name pointed at your home IP |
 | You can install Tailscale on the devices you watch on | **[Tailscale serve](#tailscale-serve)** (best) | Nothing to open on your router, and it works behind any internet connection. The certificate renews by itself, and nobody outside your tailnet can reach rex |
 | Devices without Tailscale (a friend's TV, a hotel), and your router has a public IP | **[Caddy](#caddy)** with your own domain, or with a free `sslip.io` name | A direct connection with nobody in between, and a free certificate that renews by itself. You forward port 443 |
-| Your connection has no public IP (CGNAT) | **[Tailscale serve](#tailscale-serve)**, with Tailscale on every device you watch on | rex has no relay, and the tunnels below are not recommended |">
+| Your connection has no public IP (CGNAT, common on mobile and some fibre providers), and devices without Tailscale | **[A small VPS](#a-small-vps)** | rex has no relay and will not get one. A VPS you rent has the public IP and a tunnel carries everything to rex, at the VPS's full bandwidth |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -504,9 +504,9 @@ sqlite3 ~/rex/rex.db &quot;.backup $HOME/rex/rex.db.bak&quot;</code></pre>
 <td>A direct connection with nobody in between, and a free certificate that renews by itself. You forward port 443</td>
 </tr>
 <tr>
-<td>Your connection has no public IP (CGNAT)</td>
-<td><strong><doc-anchor-trigger to="#tailscale-serve">Tailscale serve</doc-anchor-trigger></strong>, with Tailscale on every device you watch on</td>
-<td>rex has no relay, and the tunnels below are not recommended</td>
+<td>Your connection has no public IP (CGNAT, common on mobile and some fibre providers), and devices without Tailscale</td>
+<td><strong><doc-anchor-trigger to="#a-small-vps">A small VPS</doc-anchor-trigger></strong></td>
+<td>rex has no relay and will not get one. A VPS you rent has the public IP and a tunnel carries everything to rex, at the VPS&#x27;s full bandwidth</td>
 </tr>
 </tbody>
 </table>
@@ -515,7 +515,7 @@ sqlite3 ~/rex/rex.db &quot;.backup $HOME/rex/rex.db.bak&quot;</code></pre>
 <p>Not recommended:</p>
 <ul>
 <li><strong>Cloudflare tunnel.</strong> Every byte goes through Cloudflare, which also drops the <code translate="no" v-pre>Range</code> of a file&#x27;s first read, so every play start pulls the whole file from your app.</li>
-<li><strong>Tailscale Funnel.</strong> It puts every byte through Tailscale&#x27;s servers, with limited bandwidth, and it publishes all of rex, including the feed API. Anyone on the internet could add to or delete from your library.</li>
+<li><strong>Tailscale Funnel, ngrok and other hosted tunnels.</strong> They cap bandwidth or monthly data, which a film runs through quickly. Tailscale Funnel also publishes all of rex, including the feed API: anyone on the internet could add to or delete from your library.</li>
 <li><strong>Forwarding port 32400 without rex-direct or a certificate of your own.</strong> Plex apps would get a plain HTTP address, which app.plex.tv refuses.</li>
 </ul>
 <h3 id="rex-direct">rex-direct</h3>
@@ -550,6 +550,40 @@ sqlite3 ~/rex/rex.db &quot;.backup $HOME/rex/rex.db.bak&quot;</code></pre>
 }</code></pre>
 </doc-codeblock></div>
 <p><code translate="no" v-pre>respond /rex/* 403</code> keeps the feed API off the internet; your app still reaches rex directly. Then <code translate="no" v-pre>sudo systemctl reload caddy</code>, make the <code translate="no" v-pre>ExecStart</code> list <code translate="no" v-pre>--announce-url https://rex.example.com:443,http://192.168.1.20:32400</code>, and restart rex as above.</p>
+<h3 id="a-small-vps">A small VPS</h3>
+<p>For a connection with no public IP (CGNAT). rex has no relay and will not get one, so a server you rent stands in for your router: it has the public IP, and a tunnel from the rex machine carries everything to rex. Any VPS with a public IPv4 works, a few euros a month. <strong>Pick one whose monthly traffic covers what you watch away from home:</strong> every byte passes through it, and a plan with a small data cap will run out. Tested 2026-10-19 with a stand-in VPS: playback and seeking pass through unchanged.</p>
+<p>You need the VPS&#x27;s IP (<code translate="no" v-pre>1.2.3.4</code> below), ports 443, 80 and 7000 open on it, and a long random string for the tunnel (<code translate="no" v-pre>openssl rand -hex 32</code>).</p>
+<p><strong>On the VPS</strong>, install <a href="https://github.com/fatedier/frp/releases">frp</a> (the <code translate="no" v-pre>frps</code> program) and <a href="https://caddyserver.com/docs/install">Caddy</a>. Make <code translate="no" v-pre>frps.toml</code>:</p>
+<div id="a-small-vps-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-toml"><code v-pre class="language-toml">bindPort = 7000
+auth.token = &quot;your-long-random-string&quot;
+proxyBindAddr = &quot;127.0.0.1&quot;</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>proxyBindAddr</code> keeps the tunnel&#x27;s end on the VPS&#x27;s loopback, so the internet reaches rex only through Caddy. Make <code translate="no" v-pre>/etc/caddy/Caddyfile</code>, with the VPS&#x27;s IP as <code translate="no" v-pre>1-2-3-4.sslip.io</code> (a free name that always points at that IP) or your own domain pointed at it:</p>
+<div id="a-small-vps-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">1-2-3-4.sslip.io {
+	respond /rex/* 403
+	reverse_proxy 127.0.0.1:32400
+}</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>respond /rex/* 403</code> keeps the feed API off the internet. Start <code translate="no" v-pre>frps -c frps.toml</code> as a service and run <code translate="no" v-pre>sudo systemctl reload caddy</code>.</p>
+<p><strong>On the rex machine</strong>, install frp too (the <code translate="no" v-pre>frpc</code> program) and make <code translate="no" v-pre>frpc.toml</code>:</p>
+<div id="a-small-vps-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-toml"><code v-pre class="language-toml">serverAddr = &quot;1.2.3.4&quot;
+serverPort = 7000
+auth.token = &quot;your-long-random-string&quot;
+
+[[proxies]]
+name = &quot;rex&quot;
+type = &quot;tcp&quot;
+localIP = &quot;192.168.1.20&quot;
+localPort = 32400
+remotePort = 32400</code></pre>
+</doc-codeblock></div>
+<p>Run it as a service, for example <code translate="no" v-pre>~/.config/systemd/user/frpc.service</code> with <code translate="no" v-pre>ExecStart=%h/frp/frpc -c %h/frp/frpc.toml</code> and <code translate="no" v-pre>Restart=always</code>. Then put the VPS&#x27;s name first in the <code translate="no" v-pre>--announce-url</code> list, add <code translate="no" v-pre>REX_DIRECT_URL=off</code> to <code translate="no" v-pre>~/rex/rex.env</code> (rex-direct cannot work without a public IP at home, so plex.tv should not list it), and restart rex:</p>
+<div id="a-small-vps-code-4" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-ini"><code v-pre class="language-ini">ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url https://1-2-3-4.sslip.io:443,http://192.168.1.20:32400</code></pre>
+</doc-codeblock></div>
 <h3 id="what-you-should-see">What you should see</h3>
 <div id="what-you-should-see-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s -o /dev/null -w '%{http_code}\n' https://myhost.tailnet.ts.net/identity</code></pre>
