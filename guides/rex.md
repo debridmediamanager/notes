@@ -61,7 +61,7 @@ tar xzf rex-*-linux-amd64.tar.gz --strip-components=1 && rm rex-*-linux-amd64.ta
 
 This takes rex's newest build, a nightly until the next release. On an ARM machine (Raspberry Pi, Ampere) use `linux-arm64` in all three places.
 
-Find rex's LAN address: `hostname -I` prints several, so take the one on your home network, such as `192.168.1.20`, not one starting with `172.17.` (Docker) or `100.` (Tailscale). Plex apps signed in as you are sent there once rex is on a Plex account in step 3.
+Find rex's LAN IP: `hostname -I` prints several, so take the one on your home network, not one starting with `172.17.` (Docker) or `100.` (Tailscale). **This page writes it as `192.168.1.20` everywhere: put yours in its place.** Plex apps, zurg and your own commands all reach rex there.
 
 Now make it a service. Create `~/.config/systemd/user/rex.service`:
 
@@ -86,8 +86,6 @@ RestartSec=5
 WantedBy=default.target
 ```
 
-Put your LAN address in place of `192.168.1.20`.
-
 **Plex Media Server runs on the same machine?** End the `ExecStart` line with `--port 32500` and use `32500` wherever this page says `32400`: Plex already holds port 32400 and the ports apps use to find servers, and on any other port rex leaves those to Plex.
 
 ```bash
@@ -105,7 +103,7 @@ INFO    claim state: unclaimed
 INFO    rex on http://yourhost:32400  machine=...  items=0  parts=proxy
 ```
 
-rex names itself after the machine; your Plex apps show that name. `no source yet` is right: zurg has not been told about rex. A `WARNING` that a CDN may strip `Range` is about the LAN address and can be ignored. Leave the log open.
+rex names itself after the machine; your Plex apps show that name. `no source yet` is right: zurg has not been told about rex. A `WARNING` that a CDN may strip `Range` is about the LAN IP and can be ignored. Leave the log open.
 
 ## Step 3. Add it to a Plex account
 
@@ -121,8 +119,8 @@ rex names itself after the machine; your Plex apps show that name. `no source ye
 2. On the rex machine:
 
    ```bash
-   curl -X POST "http://127.0.0.1:32400/myplex/claim?token=claim-xxxxxxxxxxxx"
-   curl -s http://127.0.0.1:32400/identity
+   curl -X POST "http://192.168.1.20:32400/myplex/claim?token=claim-xxxxxxxxxxxx"
+   curl -s http://192.168.1.20:32400/identity
    ```
 
 **What you should see.** The second command shows `claimed="1"`, and `~/rex/claim_state.json` exists. Back that file up: without it you have to claim again with a new code. While it exists, rex refuses a second claim.
@@ -152,7 +150,7 @@ grep -n '^rex_url:\|^dmm_api_key:' ~/zurg/config.yml
 If it prints a line, that key is already set: change it there with `nano ~/zurg/config.yml` and leave it out of the `printf` below. zurg will not start with the same key twice, and zurg's dashboard writes `dmm_api_key` into this file when you enter your key there.
 
 ```bash
-printf '\nrex_url: http://127.0.0.1:32400\ndmm_api_key: your_dmm_key\n' >> ~/zurg/config.yml
+printf '\nrex_url: http://192.168.1.20:32400\ndmm_api_key: your_dmm_key\n' >> ~/zurg/config.yml
 cd ~/zurg && ./zurg service restart
 ```
 
@@ -173,10 +171,7 @@ INFO    FEED zurg upsert: 2 created, 0 updated, 0 held, 0 unchanged, 0 rejected
 - A title stays `held` and zurg logs `Cannot probe file ...`: the first read from the debrid service failed. zurg tries again by itself; **Analyze & Tag Library** under **Utilities** on zurg's dashboard tries at once.
 - Titles arrive but no `identified` lines: `dmm_api_key` is missing, or zurg logs `DMM refused the API key for placement`, which means the key is not a sponsor's. zurg keeps that refusal until it restarts, so restart it once the key is right. Those titles stay unmatched until zurg can place them.
 
-Two rules for this line:
-
-- `127.0.0.1` is right when zurg and rex are on the same machine. Otherwise use rex's LAN IP.
-- Leave `plex_server_url` in zurg's config pointing at your real Plex, or empty. Pointed at rex, zurg would take rex's own matches and give them to DMM as the answer, wrong ones included.
+Leave `plex_server_url` in zurg's config pointing at your real Plex, or empty. Pointed at rex, zurg would take rex's own matches and give them to DMM as the answer, wrong ones included.
 
 Running several zurgs (one per debrid service)? Give each its own name with an extra line, `rex_source: rd`, `rex_source: tb` and so on. They fill the same two libraries.
 
@@ -232,7 +227,7 @@ You are done. The sections below are optional.
 
 **Why it matters.** Away from home, app.plex.tv only connects to an HTTPS address, and the other Plex apps prefer one. A real Plex server can fall back to Plex's relay; rex cannot, so you choose how it is reached. rex must be [claimed](#step-3-add-it-to-a-plex-account) first. A claimed rex checks the Plex token on every request except `/identity` and its feed API (`/rex/...`), which is why a proxy that faces the internet must block `/rex/`.
 
-**Plex Pass.** Away from home, Plex apps play only when the account you watch with has Plex Pass or a Remote Watch Pass, so you need one on your own account, not the fresh one. Plex checks this in the app, before rex sees any request. That is how Plex Web behaves; other Plex apps were not tested. At home, over the LAN address, Plex's rules ask for no pass. app.plex.tv in a browser uses the HTTPS address even at home, so it may ask for a pass there too.
+**Plex Pass.** Away from home, Plex apps play only when the account you watch with has Plex Pass or a Remote Watch Pass, so you need one on your own account, not the fresh one. Plex checks this in the app, before rex sees any request. That is how Plex Web behaves; other Plex apps were not tested. At home, over the LAN IP, Plex's rules ask for no pass. app.plex.tv in a browser uses the HTTPS address even at home, so it may ask for a pass there too.
 
 Whichever you pick, every byte you watch away from home leaves through your home connection's **upload** speed. A 20 Mbit/s upload carries one 1080p WEB-DL comfortably, not a remux.
 
@@ -255,7 +250,7 @@ Not recommended:
 
 rex-direct is DMM's answer to plex.direct, and it is on by default. On your router, forward port 32400 (TCP) to the rex machine. That is all, with nothing to restart.
 
-Once claimed, rex gets its own name from DMM, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and a certificate for that name alone. The first certificate takes a few minutes; rex's log says it is being issued and then shows the name in a `rex-direct:` line. rex then announces `https://<hash>.rex-direct.debridmediamanager.com:32400` after the LAN address. rex asks DMM again every six hours, so a new home IP is picked up by itself, and a renewed certificate too.
+Once claimed, rex gets its own name from DMM, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and a certificate for that name alone. The first certificate takes a few minutes; rex's log says it is being issued and then shows the name in a `rex-direct:` line. rex then announces `https://<hash>.rex-direct.debridmediamanager.com:32400` after the LAN IP. rex asks DMM again every six hours, so a new home IP is picked up by itself, and a renewed certificate too.
 
 If your router forwards a different outside port to rex, add `REX_DIRECT_PORT=<that port>` to `rex.env` and restart rex. To use another provider, set `REX_DIRECT_URL` (rex's `docs/rex-direct-api.md` is the contract), or `REX_DIRECT_URL=off` to turn it off. The port forward does not open the API zurg pushes to: see [Keep the port private](#keep-the-port-private).
 
@@ -267,13 +262,13 @@ Install [Tailscale](https://tailscale.com/download) on the rex machine and on th
 sudo tailscale serve --bg 32400
 ```
 
-It prints the address, for example `https://myhost.tailnet.ts.net`. Put it first in the `--announce-url` list from [step 2](#step-2-install-rex), with `:443` added, before the LAN address:
+It prints the address, for example `https://myhost.tailnet.ts.net`. Put it first in the `--announce-url` list from [step 2](#step-2-install-rex), with `:443` added, before the LAN IP:
 
 ```ini
 ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url https://myhost.tailnet.ts.net:443,http://192.168.1.20:32400
 ```
 
-**Keep the LAN address in the list.** Once rex announces, Plex apps take its addresses from plex.tv, and plex.tv lists only what rex announces. Without the LAN address a TV at home that has no Tailscale can be sent only to the tailnet address and fail to connect.
+**Keep the LAN IP in the list.** Once rex announces, Plex apps take its addresses from plex.tv, and plex.tv lists only what rex announces. Without the LAN IP a TV at home that has no Tailscale can be sent only to the tailnet address and fail to connect.
 
 ```bash
 systemctl --user daemon-reload && systemctl --user restart rex
@@ -293,17 +288,17 @@ Install [Caddy](https://caddyserver.com/docs/install) and make `/etc/caddy/Caddy
 ```
 rex.example.com {
 	respond /rex/* 403
-	reverse_proxy 127.0.0.1:32400
+	reverse_proxy 192.168.1.20:32400
 }
 ```
 
-`respond /rex/* 403` keeps the API zurg pushes to off the internet. zurg still reaches it at `http://127.0.0.1:32400`. Then:
+`respond /rex/* 403` keeps the API zurg pushes to off the internet. zurg still reaches it at `http://192.168.1.20:32400`. Then:
 
 ```bash
 sudo systemctl reload caddy
 ```
 
-Caddy fetches a certificate when it loads the file and renews it by itself. Make the `ExecStart` list `--announce-url https://rex.example.com:443,http://192.168.1.20:32400`, with your LAN IP, and restart rex as above.
+Caddy fetches a certificate when it loads the file and renews it by itself. Make the `ExecStart` list `--announce-url https://rex.example.com:443,http://192.168.1.20:32400`, and restart rex as above.
 
 ### What you should see
 
@@ -391,7 +386,7 @@ services:
       - ./config:/config
 ```
 
-- `command:` is [step 2](#step-2-install-rex)'s, with your LAN IP.
+- `command:` is [step 2](#step-2-install-rex)'s.
 - `network_mode: host` lets Plex apps on your network find rex by themselves, and lets rex reach zurg's container.
 - `:nightly` follows the nightly builds; `latest` follows releases only.
 - `./config` gets `rex.db` and, later, `claim_state.json`. They are readable by root only, because `rex.db` holds zurg's login.
@@ -426,7 +421,7 @@ printf '\nrex_url: http://192.168.1.20:32400\ndmm_api_key: your_dmm_key\n' | sud
 docker compose restart zurg
 ```
 
-**What you should see.** `SOURCES PUT /rex/sources/zurg -> 200` in rex's log, and `curl -s http://127.0.0.1:32400/rex/sources` shows zurg at its **container** address, for example `http://172.18.0.2:9999/dav`. That is right: rex runs on the same machine and reaches the container there.
+**What you should see.** `SOURCES PUT /rex/sources/zurg -> 200` in rex's log, and `curl -s http://192.168.1.20:32400/rex/sources` shows zurg at its **container** address, for example `http://172.18.0.2:9999/dav`. That is right: rex runs on the same machine and reaches the container there.
 
 **zurg and rex on different machines?** rex cannot reach that container address. Give the zurg container `network_mode: host` (and remove its `ports:` lines) so it registers the machine's LAN IP instead.
 
@@ -469,7 +464,7 @@ rex takes no password from zurg. It answers the API zurg pushes to only from thi
 | Nothing plays and rex's log shows `PART ... upstream 401` or `403` | zurg refused its own login. Restart zurg (`cd ~/zurg && ./zurg service restart`) so it sends rex the current one |
 | "This server is not powerful enough to convert video" | The device cannot play the file as it is. Try a Plex app on a TV or phone, or set up [Converting video](#converting-video-optional) |
 | rex exits with `unrecognized arguments` | Your `rex.service` or `run.sh` still passes `--sources` from an older setup. Remove it; an old `REX_FEED_TOKEN` in `rex.env` is ignored |
-| After adding an HTTPS address, a device at home cannot connect | The LAN address is missing from `--announce-url`. Add `http://<LAN IP>:32400` after the HTTPS one |
+| After adding an HTTPS address, a device at home cannot connect | The LAN IP is missing from `--announce-url`. Add `http://192.168.1.20:32400` after the HTTPS one |
 | rex is not in the Plex apps away from home | Not claimed, no `--announce-url`, or the device cannot reach the HTTPS address (a tailnet-only address needs Tailscale on that device) |
 | The log says `waiting for a claim` | Claim it. It announces right away |
 | zurg stops when you log out | Run `sudo loginctl enable-linger "$USER"` (step 1) |

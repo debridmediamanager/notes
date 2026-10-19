@@ -59,7 +59,7 @@ sudo loginctl enable-linger "$USER"
 
 This takes rex's newest build, a nightly until the next release. On an ARM machine (Raspberry Pi, Ampere) use `linux-arm64` in all three places. The last line keeps rex running when you log out.
 
-Find rex's LAN address: `hostname -I` prints several, so take the one on your home network (usually `192.168.x.x` or `10.x.x.x`). Plex apps signed in as you are sent there once rex is on a Plex account in step 3.
+Find rex's LAN IP: `hostname -I` prints several, so take the one on your home network (usually `192.168.x.x` or `10.x.x.x`). **This page writes it as `192.168.1.20` everywhere: put yours in its place.** Plex apps, your app and your own commands all reach rex there.
 
 Now make it a service. Create `~/.config/systemd/user/rex.service`:
 
@@ -85,7 +85,7 @@ UMask=0077
 WantedBy=default.target
 ```
 
-Put your LAN address in place of `192.168.1.20`. `UMask=0077` makes the files rex writes readable by you only: `rex.db` will hold your app's login.
+`UMask=0077` makes the files rex writes readable by you only: `rex.db` will hold your app's login.
 
 **Plex Media Server runs on the same machine?** End the `ExecStart` line with `--port 32500` and use `32500` wherever this page says `32400`: Plex already holds port 32400 and the ports apps use to find servers, and on any other port rex leaves those to Plex.
 
@@ -104,7 +104,7 @@ INFO    claim state: unclaimed
 INFO    rex on http://yourhost:32400  machine=...  items=0  parts=proxy
 ```
 
-rex names itself after the machine; your Plex apps show that name. `no source yet` is right: no app has registered yet. A `WARNING` that a CDN may strip `Range` is about the LAN address and can be ignored. Leave the log open.
+rex names itself after the machine; your Plex apps show that name. `no source yet` is right: no app has registered yet. A `WARNING` that a CDN may strip `Range` is about the LAN IP and can be ignored. Leave the log open.
 
 ## Step 2. See it work by hand
 
@@ -125,7 +125,7 @@ python3 -m http.server 8099 --bind 127.0.0.1 &
 Register it with rex, under the name `test`:
 
 ```bash
-curl -s -X PUT http://127.0.0.1:32400/rex/sources/test \
+curl -s -X PUT http://192.168.1.20:32400/rex/sources/test \
   -H 'Content-Type: application/json' -d '{"url": "http://127.0.0.1:8099"}'
 ```
 
@@ -137,7 +137,7 @@ jq -n --arg p "$P" --argjson size "$(stat -c%s "$P")" \
   --argjson probe "$(ffprobe -v quiet -print_format json -show_format -show_streams "$P")" \
   '{items: [{id: $p, path: $p, name: "Sintel.2010", size: $size,
              kind: "movie", ids: {imdb: "tt1727587", tmdb: 45745}, media_info: $probe}]}' \
-| curl -s -X POST http://127.0.0.1:32400/rex/feed/test/items \
+| curl -s -X POST http://192.168.1.20:32400/rex/feed/test/items \
     -H 'Content-Type: application/json' --data-binary @-
 ```
 
@@ -153,8 +153,8 @@ INFO    FEED test upsert: 1 created, 0 updated, 0 held, 0 unchanged, 0 rejected
 **Clean up** before you go on: removing the test source removes everything it sent. The first request answers a `confirm` path; send a `DELETE` to that path within five minutes.
 
 ```bash
-curl -s -X DELETE http://127.0.0.1:32400/rex/sources/test
-curl -s -X DELETE "http://127.0.0.1:32400/rex/sources/test/confirm/<code from the answer>"
+curl -s -X DELETE http://192.168.1.20:32400/rex/sources/test
+curl -s -X DELETE "http://192.168.1.20:32400/rex/sources/test/confirm/<code from the answer>"
 kill %1
 ```
 
@@ -178,8 +178,8 @@ kill %1
 2. On the rex machine:
 
    ```bash
-   curl -X POST "http://127.0.0.1:32400/myplex/claim?token=claim-xxxxxxxxxxxx"
-   curl -s http://127.0.0.1:32400/identity
+   curl -X POST "http://192.168.1.20:32400/myplex/claim?token=claim-xxxxxxxxxxxx"
+   curl -s http://192.168.1.20:32400/identity
    ```
 
 **What you should see.** The second command shows `claimed="1"`, and `~/rex/claim_state.json` exists. Back that file up: without it rex has to be claimed again, and rex refuses a second claim while the file is there. From now on titles arrive with their names and posters, without a restart.
@@ -205,7 +205,7 @@ rex tells plex.tv the address from step 1 the moment it is claimed, with no rest
 
 **Why it matters.** This is the only link between the two. rex has no setting for your app: your app finds rex, not the other way round.
 
-Give your app rex's address: `http://127.0.0.1:32400` when both run on this machine, otherwise `http://<rex's LAN IP>:32400`. How you enter it depends on your app.
+Give your app rex's address, `http://192.168.1.20:32400`. How you enter it depends on your app.
 
 **What you should see.** rex's log prints, under the name your app registered as:
 
@@ -219,9 +219,9 @@ INFO    FEED myapp upsert: 180 created, 0 updated, 20 held, 0 unchanged, 0 rejec
 `held` files are waiting for their ffprobe output and appear as soon as your app sends it. Check what rex has from your app at any time:
 
 ```bash
-curl -s http://127.0.0.1:32400/rex/sources                # the apps that registered, and their addresses
-curl -s http://127.0.0.1:32400/rex/feed/myapp/items | head -c 600   # what is shown
-curl -s http://127.0.0.1:32400/rex/feed/myapp/held  | head -c 600   # what waits for ffprobe output
+curl -s http://192.168.1.20:32400/rex/sources                # the apps that registered, and their addresses
+curl -s http://192.168.1.20:32400/rex/feed/myapp/items | head -c 600   # what is shown
+curl -s http://192.168.1.20:32400/rex/feed/myapp/held  | head -c 600   # what waits for ffprobe output
 ```
 
 **If not.**
@@ -266,7 +266,7 @@ You are done. The sections below are optional.
 
 **Why it matters.** Away from home, app.plex.tv only connects to an HTTPS address, and the other Plex apps prefer one. A real Plex server can fall back to Plex's relay; rex cannot, so you choose how it is reached. rex must be [claimed](#step-3-add-it-to-a-plex-account) first. A claimed rex checks the Plex token on every request except `/identity` and its feed API (`/rex/...`), which is why a proxy that faces the internet must block `/rex/`.
 
-**Plex Pass.** Away from home, Plex apps play only when the account you watch with has Plex Pass or a Remote Watch Pass, so you need one on your own account, not the fresh one. Plex checks this in the app, before rex sees any request. That is how Plex Web behaves; other Plex apps were not tested. At home, over the LAN address, Plex's rules ask for no pass. app.plex.tv in a browser uses the HTTPS address even at home, so it may ask for a pass there too.
+**Plex Pass.** Away from home, Plex apps play only when the account you watch with has Plex Pass or a Remote Watch Pass, so you need one on your own account, not the fresh one. Plex checks this in the app, before rex sees any request. That is how Plex Web behaves; other Plex apps were not tested. At home, over the LAN IP, Plex's rules ask for no pass. app.plex.tv in a browser uses the HTTPS address even at home, so it may ask for a pass there too.
 
 Whichever you pick, every byte you watch away from home leaves through your home connection's **upload** speed. As a rough guide, a 20 Mbit/s upload carries one 1080p WEB-DL, not a remux.
 
@@ -287,7 +287,7 @@ Not recommended:
 
 rex-direct is DMM's answer to plex.direct, and it is on by default. On your router, forward port 32400 (TCP) to the rex machine. That is all, with nothing to restart.
 
-Once claimed, rex gets its own name from DMM, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and a certificate for that name alone. The first certificate takes a few minutes; rex's log says it is being issued and then shows the name in a `rex-direct:` line. rex then announces `https://<hash>.rex-direct.debridmediamanager.com:32400` after the LAN address. rex asks DMM again every six hours, so a new home IP is picked up by itself, and a renewed certificate too.
+Once claimed, rex gets its own name from DMM, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and a certificate for that name alone. The first certificate takes a few minutes; rex's log says it is being issued and then shows the name in a `rex-direct:` line. rex then announces `https://<hash>.rex-direct.debridmediamanager.com:32400` after the LAN IP. rex asks DMM again every six hours, so a new home IP is picked up by itself, and a renewed certificate too.
 
 If your router forwards a different outside port to rex, add `REX_DIRECT_PORT=<that port>` to `rex.env` and restart rex. To use another provider, set `REX_DIRECT_URL` (rex's `docs/rex-direct-api.md` is the contract), or `REX_DIRECT_URL=off` to turn it off. The port forward does not open the feed API: see [Keep the port private](#keep-the-port-private).
 
@@ -299,13 +299,13 @@ Install [Tailscale](https://tailscale.com/download) on the rex machine and on th
 sudo tailscale serve --bg 32400
 ```
 
-It prints the address, for example `https://myhost.tailnet.ts.net`. Put it first in the `--announce-url` list from [step 1](#step-1-install-rex), with `:443` added, before the LAN address:
+It prints the address, for example `https://myhost.tailnet.ts.net`. Put it first in the `--announce-url` list from [step 1](#step-1-install-rex), with `:443` added, before the LAN IP:
 
 ```ini
 ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url https://myhost.tailnet.ts.net:443,http://192.168.1.20:32400
 ```
 
-**Keep the LAN address in the list.** Once rex announces, Plex apps take its addresses from plex.tv, and plex.tv lists only what rex announces. Without the LAN address a TV at home that has no Tailscale cannot connect.
+**Keep the LAN IP in the list.** Once rex announces, Plex apps take its addresses from plex.tv, and plex.tv lists only what rex announces. Without the LAN IP a TV at home that has no Tailscale cannot connect.
 
 ```bash
 systemctl --user daemon-reload && systemctl --user restart rex
@@ -325,11 +325,11 @@ Install [Caddy](https://caddyserver.com/docs/install) and make `/etc/caddy/Caddy
 ```
 rex.example.com {
 	respond /rex/* 403
-	reverse_proxy 127.0.0.1:32400
+	reverse_proxy 192.168.1.20:32400
 }
 ```
 
-`respond /rex/* 403` keeps the feed API off the internet; your app still reaches rex directly. Then `sudo systemctl reload caddy`, make the `ExecStart` list `--announce-url https://rex.example.com:443,http://192.168.1.20:32400`, with your LAN IP, and restart rex as above.
+`respond /rex/* 403` keeps the feed API off the internet; your app still reaches rex directly. Then `sudo systemctl reload caddy`, make the `ExecStart` list `--announce-url https://rex.example.com:443,http://192.168.1.20:32400`, and restart rex as above.
 
 ### What you should see
 
@@ -389,7 +389,7 @@ services:
       - ./config:/config
 ```
 
-- `command:` is [step 1](#step-1-install-rex)'s, with your LAN IP.
+- `command:` is [step 1](#step-1-install-rex)'s.
 - `:nightly` follows the nightly builds; `latest` follows releases only.
 - `network_mode: host` lets Plex apps on your network find rex by themselves, and lets rex reach your app at the address it registers, as from the machine itself.
 - `./config` gets `rex.db` and, later, `claim_state.json`. They are readable by root only, because `rex.db` holds your app's login.
@@ -400,7 +400,7 @@ docker compose up -d
 docker compose logs -f rex
 ```
 
-You should see the same lines as [step 1](#step-1-install-rex). Then do steps 2 to 5 as above: your app uses `http://<the machine's LAN IP>:32400`, and the claim is the same `curl` on this machine. If your app runs in a container too, it must register an address rex can reach from the machine, not one only other containers can see.
+You should see the same lines as [step 1](#step-1-install-rex). Then do steps 2 to 5 as above. If your app runs in a container too, it must register an address rex can reach from the machine, not one only other containers can see.
 
 Update with `docker compose pull && docker compose up -d`. The image carries no FFmpeg, so [converting video](#converting-video-optional) needs the install without Docker. HTTPS works as above: the options run on the machine itself, and `--announce-url ...` goes in `command`.
 
@@ -421,11 +421,11 @@ Run the `TAG=`, `gh release download` and `tar` lines of [step 1](#step-1-instal
 | rex's log says `held ... no media_info yet` | Your app sent the file without ffprobe output. It appears once that arrives |
 | Titles show file names and no posters | rex is not on a Plex account. Do [step 3](#step-3-add-it-to-a-plex-account). If rex was claimed after your app sent its library, they fill in by themselves, about 300 titles an hour |
 | A title is in the wrong show, or a film is titled as its file | Your app sent no `kind` and `ids` for it, or the wrong ones. Fix it in your app, or use **Fix Match** in a Plex app signed in as the fresh account; a Fix Match stays as you set it |
-| Nothing plays and rex's log shows 502 | rex cannot reach the address your app registered. `curl -s http://127.0.0.1:32400/rex/sources` shows it; test it with `curl` from the rex machine |
+| Nothing plays and rex's log shows 502 | rex cannot reach the address your app registered. `curl -s http://192.168.1.20:32400/rex/sources` shows it; test it with `curl` from the rex machine |
 | Nothing plays, 401 or 403 | Your app refused its own login. Have it register again with the current one |
 | A snapshot answers 409 `would remove more than half` | rex's guard against an app that sends a half-loaded library. If the removal is real, your app must send the whole snapshot again from part 0, with `"force": true` on its last part. Resending only the last part is refused, and sending it alone with `force` removes everything the earlier parts named |
 | Deleting in a Plex app fails and rex logs `DELETE refused by the source` | Your app does not accept a `DELETE` of the file. Remove it in your app instead |
 | "This server is not powerful enough to convert video" | The device cannot play the file as it is. Try a Plex app on a TV or phone, or set up [Converting video](#converting-video-optional) |
-| After adding an HTTPS address, a device at home cannot connect | The LAN address is missing from `--announce-url`. Add `http://<LAN IP>:32400` after the HTTPS one |
+| After adding an HTTPS address, a device at home cannot connect | The LAN IP is missing from `--announce-url`. Add `http://192.168.1.20:32400` after the HTTPS one |
 | rex is not in the Plex apps away from home | Not claimed, no `--announce-url`, or the device cannot reach the HTTPS address |
 | rex stops when you log out | Run `sudo loginctl enable-linger "$USER"` (step 1) |
