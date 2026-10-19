@@ -148,7 +148,7 @@ INFO    FEED identified "Sintel.2010" -> movie tmdb:45745 (placed)
 INFO    FEED test upsert: 1 created, 0 updated, 0 held, 0 unchanged, 0 rejected
 ```
 
-`placed` means rex took the title from what was sent, not from the file name. Sintel is now in **Debrid Movies**, playing from the little web server. Until [step 3](#step-3-add-it-to-a-plex-account) it shows as `Sintel.2010` with no poster.
+`placed` means rex took the title from what was sent, not from the file name. Sintel is now in **Debrid Movies**, playing from the little web server. No Plex app can open rex before [step 3](#step-3-add-it-to-a-plex-account), so this step checks the feed only.
 
 **Clean up** before you go on: removing the test source removes everything it sent. The first request answers a `confirm` path; send a `DELETE` to that path within five minutes.
 
@@ -170,7 +170,7 @@ kill %1
 
 **Why it matters.** rex gets every title's name, poster, summary and episode names from Plex's own metadata, and it may only ask Plex once it is on an account. Do this before you connect your app, so every title arrives with its name and poster. What your app sends before the claim keeps its file name until rex names it in the background, about 300 titles an hour, and Fix Match has nothing to offer until then. It also removes the "unclaimed" notice and is needed before [using rex outside your home](#use-it-outside-your-home-optional).
 
-**Use a fresh Plex account for this, not your own.** rex is not made by Plex, and Plex could take action against an account that registers it. Keep your real account, with its watch history, friends and any Plex Pass, out of reach: make a new free account at [plex.tv](https://www.plex.tv) with an email address you do not use elsewhere, register rex on that one, and share rex with your own account. You then watch signed in as yourself, the way you would watch a friend's server. If you skip this step entirely, rex still plays on your home network, with file names instead of posters, and anyone on your home network can browse it and play from it.
+**Use a fresh Plex account for this, not your own.** rex is not made by Plex, and Plex could take action against an account that registers it. Keep your real account, with its watch history, friends and any Plex Pass, out of reach: make a new free account at [plex.tv](https://www.plex.tv) with an email address you do not use elsewhere, register rex on that one, and share rex with your own account. You then watch signed in as yourself, the way you would watch a friend's server. rex plays nothing until this step is done.
 
 ### Register rex on the fresh account
 
@@ -244,7 +244,7 @@ At home nothing else is needed: Plex apps find rex with Plex's own local discove
 
 Two things you may meet:
 
-- **"yourhost server is unclaimed and not secure".** A Plex app says this about any server that is not on a Plex account. Do [step 3](#step-3-add-it-to-a-plex-account).
+- **"yourhost server is unclaimed and not secure".** A Plex app says this about any server that is not on a Plex account, and rex plays nothing until it is on one. Do [step 3](#step-3-add-it-to-a-plex-account).
 - **"This server is not powerful enough to convert video".** The app cannot play the file as it is, often a web browser meeting AC3 or DTS sound. Plex apps on TVs and phones play most files as they are. To play everything everywhere, set up [Converting video](#converting-video-optional).
 
 Each file goes to **Debrid Movies** or **Debrid TV** by the `kind` your app sent. A file without one goes by its first folder: `shows` to Debrid TV, anything else to Debrid Movies.

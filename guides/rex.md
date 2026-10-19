@@ -111,7 +111,7 @@ rex names itself after the machine; your Plex apps show that name. `no source ye
 
 **Why it matters.** rex gets every title's name, poster, summary and episode names from Plex's own metadata, and it may only ask Plex once it is on an account. Do it now, before zurg sends anything: titles that arrive after the claim come with their posters, while titles sent before it fill in slowly, about 300 films or shows an hour. It also makes Fix Match work, removes the "unclaimed" notice and is needed before [using rex outside your home](#use-it-outside-your-home-optional).
 
-**Use a fresh Plex account for this, not your own.** rex is not made by Plex, and Plex could take action against an account that registers it. Keep your real account, with its watch history, friends and any Plex Pass, out of reach: make a new free account at [plex.tv](https://www.plex.tv) with an email address you do not use elsewhere, register rex on that one, and share rex with your own account. You then watch signed in as yourself, the way you would watch a friend's server. If you skip this step entirely, rex still plays on your home network, with file names instead of posters.
+**Use a fresh Plex account for this, not your own.** rex is not made by Plex, and Plex could take action against an account that registers it. Keep your real account, with its watch history, friends and any Plex Pass, out of reach: make a new free account at [plex.tv](https://www.plex.tv) with an email address you do not use elsewhere, register rex on that one, and share rex with your own account. You then watch signed in as yourself, the way you would watch a friend's server. rex plays nothing until this step is done.
 
 ### Register rex on the fresh account
 
@@ -203,7 +203,7 @@ At home nothing else is needed: Plex apps find rex with Plex's own local discove
 
 Two things you may meet:
 
-- **"yourhost server is unclaimed and not secure".** A Plex app says this about any server that is not on a Plex account. Do [step 3](#step-3-add-it-to-a-plex-account), or press **Don't show this again**. Do not press **Claim it now** while signed in as yourself: it registers rex on your own account.
+- **"yourhost server is unclaimed and not secure".** A Plex app says this about any server that is not on a Plex account, and rex plays nothing until it is on one. Do [step 3](#step-3-add-it-to-a-plex-account). Do not press **Claim it now** while signed in as yourself: it registers rex on your own account.
 - **"This server is not powerful enough to convert video".** The app cannot play the file as it is, often a web browser meeting AC3 or DTS sound. Plex apps on TVs and phones play most files as they are. To play everything everywhere, set up [Converting video](#converting-video-optional).
 
 ![The unclaimed-server notice in Plex](../assets/rex/rex-unclaimed.webp)
