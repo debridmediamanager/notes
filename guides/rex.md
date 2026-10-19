@@ -29,7 +29,7 @@ rex opened as a closed beta for sponsors on October 15 and reaches the public on
 | About 500 MB of RAM for a library of 40,000 titles | rex keeps the library in `rex.db` and holds only what it is serving in memory. zurg needs little |
 | A debrid account (Real-Debrid, TorBox, AllDebrid, Premiumize, Debrid-Link, Offcloud) or Usenet | That is where your movies and shows actually live |
 | A GitHub account with access to zurg's and rex's sponsor releases | Both are private GitHub releases. The zurg installer signs you in once and rex's download reuses that sign-in |
-| Your DMM API key, from sponsoring DMM (optional) | zurg asks DMM what each file is. Without it every file is unmatched: films are titled as their file and episodes are numbered in file order |
+| Your DMM API key, from sponsoring DMM (optional) | zurg asks DMM what each file is. Without it zurg works it out from the release name, through DMM's free title search: fewer titles match, and an anime numbered across the whole series stays in file order |
 | A fresh Plex account, made just for rex | rex gets every title, poster, summary and episode name from Plex once it is [added to a Plex account](#step-3-add-it-to-a-plex-account). Until then titles keep their file names and have no posters |
 
 You do **not** need a TMDB key or your Plex token.
@@ -175,7 +175,7 @@ INFO    FEED zurg upsert: 2 created, 0 updated, 0 held, 0 unchanged, 0 rejected
 
 - Nothing at all in rex's log: zurg is still loading its library, zurg is older than 2026.10.17 (update it as in [step 1](#step-1-install-zurg)), or `rex_url` has a typo. `grep 'rex feed' ~/zurg/logs/zurg.log | tail -n 5` shows zurg's side: with no `rex feed: pushing the library to ...` line zurg did not read `rex_url`, and `rex feed: snapshot failed, retrying in ...` means it cannot reach rex at that address.
 - A title stays `held` and zurg logs `Cannot probe file ...`: the first read from the debrid service failed. zurg tries again by itself; **Analyze & Tag Library** under **Utilities** on zurg's dashboard tries at once.
-- Titles arrive but no `identified` lines: `dmm_api_key` is missing, or zurg logs `DMM refused the API key for placement`, which means the key is not a sponsor's. zurg keeps that refusal until it restarts, so restart it once the key is right. Those titles stay unmatched until zurg can place them.
+- Titles arrive but no `identified` lines: zurg could not match them by name, and with `dmm_api_key` set it logs `DMM refused the API key for placement` when the key is not a sponsor's. zurg then matches by name and tries the key again a day later, or at once when it restarts.
 
 Leave `plex_server_url` in zurg's config pointing at your real Plex, or empty. Pointed at rex, zurg would take rex's own matches and give them to DMM as the answer, wrong ones included.
 
@@ -191,7 +191,7 @@ File names often number episodes differently from the episode lists Plex apps sh
 | `[HorribleSubs] One Piece - 486` | episode 486 | season 13, episode 486 |
 | `Firefly.S01E02.The.Train.Job` (DVD order) | episode 2 | episode 1, "The Train Job" |
 
-A file DMM cannot place yet stays unmatched: a film titled as its file, or an episode in a show named after its release, numbered in file order. zurg asks DMM about it again a day later, and you can fix it yourself with **Fix Match** in a Plex app, signed in as the fresh account that owns rex (rex refuses it to the accounts it is shared with). A title you corrected with Fix Match stays as you set it.
+A file zurg cannot place stays unmatched: a film titled as its file, or an episode in a show named after its release, numbered in file order. With a DMM key zurg asks DMM about it again a day later, and you can fix it yourself with **Fix Match** in a Plex app, signed in as the fresh account that owns rex (rex refuses it to the accounts it is shared with). A title you corrected with Fix Match stays as you set it.
 
 ## Step 5. Watch something
 
@@ -501,7 +501,7 @@ rex takes no password from zurg. It answers the API zurg pushes to only from thi
 
 - **zurg:** `cd ~/zurg && ./zurg update && ./zurg service restart`.
 - **rex:** run the first block of [step 2](#step-2-install-rex) again (it replaces the program and `data/`, and leaves `rex.db`, `rex.env` and `claim_state.json` alone), then `systemctl --user restart rex`.
-- **Coming from an older rex?** `TMDB_KEY`, `REX_METADATA_URL` and `REX_METADATA_KEY` are no longer read; delete them from `rex.env` or leave them, rex starts either way. Add `dmm_api_key` to zurg and claim rex, or titles lose their posters and matches.
+- **Coming from an older rex?** `TMDB_KEY`, `REX_METADATA_URL` and `REX_METADATA_KEY` are no longer read; delete them from `rex.env` or leave them, rex starts either way. Claim rex, or titles lose their posters and matches; add `dmm_api_key` to zurg for DMM's matches.
 
 ## When something is wrong
 
@@ -510,7 +510,7 @@ rex takes no password from zurg. It answers the API zurg pushes to only from thi
 | `/rex/sources` stays `{"size":0,"sources":[]}` | zurg is older than 2026.10.17, `rex_url` is wrong, or zurg's library is still loading. Update zurg as in [step 1](#step-1-install-zurg) and look at `tail -n 50 ~/zurg/logs/zurg.log` |
 | rex's log says `held ... no media_info yet` and the library stays empty | zurg has not read the files yet. Wait for its library to load; if zurg logs `segmentation fault`, update and restart it as in [step 1](#step-1-install-zurg) |
 | Titles show file names and no posters | rex is not on a Plex account: do [step 3](#step-3-add-it-to-a-plex-account). If you claimed it after zurg sent them, they fill in by themselves, about 300 films or shows an hour |
-| A film is titled as its file, or an episode sits in a show named after its release | DMM has not placed it yet: check `dmm_api_key` in zurg's config. zurg asks DMM again a day later |
+| A film is titled as its file, or an episode sits in a show named after its release | zurg could not place it. Without `dmm_api_key` that is a name its title search did not find; with it, DMM has not placed it yet and zurg asks again a day later. **Fix Match** fixes it by hand |
 | A title is in the wrong show or matched to the wrong film | DMM placed it wrong, and zurg does not ask again. Use **Fix Match** in a Plex app, signed in as the fresh account that owns rex; rex refuses it (403) to the accounts it is shared with |
 | Nothing plays and rex's log shows 502 | rex cannot reach the address zurg gave it. Run `curl` on that URL from the rex machine. In Docker, see the Docker section |
 | Nothing plays and rex's log shows `PART ... upstream 401` or `403` | zurg refused its own login. Restart zurg (`cd ~/zurg && ./zurg service restart`) so it sends rex the current one |
