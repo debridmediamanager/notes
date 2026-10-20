@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.845736529152">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.845832824188">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.845736529152" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.845832824188" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.845736529152" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.845832824188" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.845736529152" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.845736529152" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.845832824188" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.845832824188" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -563,6 +563,16 @@ systemctl --user restart rex</code></pre>
 <p>With an Intel or AMD graphics chip, also run <code translate="no" v-pre>sudo usermod -aG render &quot;$USER&quot;</code> and reboot so the service gets the group; in an LXC, pass the GPU through. On Intel, also run <code translate="no" v-pre>echo LIBVA_DRIVER_NAME=iHD &gt;&gt; ~/rex/rex.env</code>; AMD needs no such line. The chip makes conversion fast; without one rex uses the processor. With no Intel or AMD chip, rex also tries an NVIDIA card&#x27;s encoder. On Intel, <code translate="no" v-pre>sudo apt install intel-opencl-icd</code> also converts HDR and Dolby Vision on the chip.</p>
 <p><strong>What you should see.</strong> rex&#x27;s log has a <code translate="no" v-pre>transcoder:</code> line naming the FFmpeg and the hardware it found (<code translate="no" v-pre>hardware none</code> means the processor). A file that failed before now plays; the log shows what was converted, for example <code translate="no" v-pre>video=copy h264 audio=ac3-&gt;aac</code>.</p>
 <p>Subtitles in a converted file: an image subtitle is burned into the picture and a subtitle you uploaded comes along. Plex for Android and iOS also keep a text subtitle; Plex Web and other players lose it for now.</p>
+<h2 id="subtitles-optional">Subtitles (optional)</h2>
+<p><strong>What it does.</strong> Search Subtitles in a Plex app finds subtitles from Plex&#x27;s own provider once rex is claimed. rex checks the one you pick against the file and fixes its timing when it runs late or was made for another frame rate. When your Plex account is set to show subtitles and a title has none in your language, rex finds one before it starts.</p>
+<p><strong>Why it matters.</strong> We tested 120 files. Where a subtitle&#x27;s timing could be checked, Plex&#x27;s own first result was in sync for about half of them and rex&#x27;s pick was right for about seven in ten.</p>
+<p>That part needs no setup. To also search a Stremio subtitle addon, name it in <code translate="no" v-pre>rex.env</code> (several, separated by commas) and restart rex:</p>
+<div id="subtitles-optional-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">printf 'REX_SUBTITLE_ADDONS=https://opensubtitles-v3.strem.io\n' &gt;&gt; ~/rex/rex.env &amp;&amp; chmod 600 ~/rex/rex.env
+systemctl --user restart rex</code></pre>
+</doc-codeblock></div>
+<p>rex checks a subtitle against the file&#x27;s own text subtitle when it has one, which takes a few small reads. A file without one is checked against its sound when you press play, which needs <doc-anchor-trigger to="#converting-video-optional">Converting video</doc-anchor-trigger> set up and reads six 90-second pieces of the file.</p>
+<p><strong>What you should see.</strong> rex&#x27;s log has a <code translate="no" v-pre>SUBTITLE measured</code> line for each subtitle it checks, and <code translate="no" v-pre>SUBTITLE applied ... corrected by</code> when it fixed one.</p>
 <h2 id="run-rex-in-docker">Run rex in Docker</h2>
 <p>The same setup with zurg and rex in containers on one Linux machine. The steps match the ones above; only how you start each part differs.</p>
 <h3 id="d1-install-zurg-in-docker">D1. Install zurg in Docker</h3>
