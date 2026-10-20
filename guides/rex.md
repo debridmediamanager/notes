@@ -388,20 +388,13 @@ With an Intel or AMD graphics chip, also run `sudo usermod -aG render "$USER"` a
 
 Subtitles in a converted file: an image subtitle is burned into the picture and a subtitle you uploaded comes along. Plex for Android and iOS also keep a text subtitle; Plex Web and other players lose it for now.
 
-## Subtitles (optional)
+## Subtitles
 
 **What it does.** Search Subtitles in a Plex app finds subtitles from Plex's own provider once rex is claimed. rex checks the one you pick against the file and fixes its timing when it runs late or was made for another frame rate. When your Plex account is set to show subtitles and a title has none in your language, rex finds one before it starts.
 
-**Why it matters.** We tested 120 files. Where a subtitle's timing could be checked, Plex's own first result was in sync for about half of them and rex's pick was right for about seven in ten.
+**Why it matters.** We tested 120 files. Where a subtitle's timing could be checked, Plex's own first result was in sync for about half of them and rex's pick was right for about three in four.
 
-That part needs no setup. To also search a Stremio subtitle addon, name it in `rex.env` (several, separated by commas) and restart rex:
-
-```bash
-printf 'REX_SUBTITLE_ADDONS=https://opensubtitles-v3.strem.io\n' >> ~/rex/rex.env && chmod 600 ~/rex/rex.env
-systemctl --user restart rex
-```
-
-rex checks a subtitle against the file's own text subtitle when it has one, which takes a few small reads. A file without one is checked against its sound when you press play, which needs [Converting video](#converting-video-optional) set up and reads six 90-second pieces of the file.
+There is nothing to set up. rex checks a subtitle against the file's own text subtitle when it has one, which takes a few small reads. A file without one is checked against its sound when you press play, which needs [Converting video](#converting-video-optional) set up and reads six 90-second pieces of the file.
 
 **What you should see.** rex's log has a `SUBTITLE measured` line for each subtitle it checks, and `SUBTITLE applied ... corrected by` when it fixed one.
 
