@@ -272,7 +272,7 @@ You are done. The sections below are optional.
 
 **Why it matters.** Away from home, app.plex.tv only connects to an HTTPS address, and the other Plex apps prefer one. A real Plex server can fall back to Plex's relay; rex cannot, so you choose how it is reached. rex must be [claimed](#step-3-add-it-to-a-plex-account) first. A claimed rex checks the Plex token on every request except `/identity` and its feed API (`/rex/...`), which is why a proxy that faces the internet must block `/rex/`.
 
-**Plex Pass.** Away from home, Plex apps play only when the account you watch with has Plex Pass or a Remote Watch Pass, so you need one on your own account, not the fresh one. Plex checks this in the app, before rex sees any request. That is how Plex Web behaves; other Plex apps were not tested. At home, over the LAN IP, Plex's rules ask for no pass. app.plex.tv in a browser uses the HTTPS address even at home, so it may ask for a pass there too.
+**Plex Pass.** With the October 21 remote-playback update, Plex Web 4.163.0 plays away from home without a Plex Pass or Remote Watch Pass on either the fresh claiming account or your viewing account. rex advertises that capability locally; it changes no subscription at plex.tv. Older builds can still show Plex's paywall. Other Plex apps have not been playback-tested.
 
 Whichever you pick, every byte you watch away from home leaves through your home connection's **upload** speed. As a rough guide, a 20 Mbit/s upload carries one 1080p WEB-DL, not a remux.
 
