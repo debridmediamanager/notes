@@ -266,7 +266,7 @@ You are done. The sections below are optional.
 
 **What it does.** Gives rex an HTTPS address that Plex apps away from home can reach, and tells plex.tv about it.
 
-**Why it matters.** Away from home, app.plex.tv only connects to an HTTPS address, and the other Plex apps prefer one. A real Plex server can fall back to Plex's relay; rex cannot, so you choose how it is reached. rex must be [claimed](#step-3-add-it-to-a-plex-account) first. A claimed rex checks the Plex token on every request except a few public pages (`/identity`, `/web`) and its feed API (`/rex/feed/` and `/rex/sources`), which answers only this machine, your home network and Tailscale. A proxy on the rex machine counts as home, which is why a proxy that faces the internet must block `/rex/`.
+**Why it matters.** app.plex.tv only connects to an HTTPS address, even at home, and the other Plex apps prefer one away from home. A real Plex server can fall back to Plex's relay; rex cannot, so you choose how it is reached. rex must be [claimed](#step-3-add-it-to-a-plex-account) first. A claimed rex checks the Plex token on every request except a few public pages (`/identity`, `/web`) and its feed API (`/rex/feed/` and `/rex/sources`), which answers only this machine, your home network and Tailscale. A proxy on the rex machine counts as home, which is why a proxy that faces the internet must block `/rex/`.
 
 **Plex Pass.** With the October 21 remote-playback update, Plex Web 4.163.0 plays away from home without a Plex Pass or Remote Watch Pass on either the fresh claiming account or your viewing account. rex advertises that capability locally; it changes no subscription at plex.tv. Older builds can still show Plex's paywall. Other Plex apps have not been playback-tested.
 
@@ -289,7 +289,7 @@ Not recommended:
 
 rex-direct is DMM's answer to plex.direct, and it is on by default. On your router, forward port 32400 (TCP) to the rex machine. That is all, with nothing to restart.
 
-Once claimed, rex gets its own name from DMM, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and a certificate for that name alone. The first certificate takes a few minutes; rex's log says it is being issued and then shows the name in a `rex-direct:` line. rex then announces `https://<hash>.rex-direct.debridmediamanager.com:32400` after the LAN IP. rex asks DMM again every six hours, so a new home IP is picked up by itself, and a renewed certificate too. One Plex account can hold up to ten rex-direct names. At home, Plex apps can pick this name over the LAN IP: your router then sends the connection straight back to rex, so the stream stays inside your home.
+Once claimed, rex gets its own name from DMM, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and a certificate for that name alone. The first certificate takes a few minutes; rex's log says it is being issued and then shows the name in a `rex-direct:` line. rex then announces `https://<hash>.rex-direct.debridmediamanager.com:32400` after the LAN IP. rex asks DMM again every six hours, so a new home IP is picked up by itself, and a renewed certificate too. One Plex account can hold up to ten rex-direct names. At home, Plex apps can pick this name over the LAN IP, and unless you also set up Tailscale serve or Caddy, app.plex.tv in a browser has no other address it can use. So at home your router has to send the connection straight back to rex, or your home DNS has to point the name at rex: [What you should see](#what-you-should-see) checks which.
 
 If your router forwards a different outside port to rex, add `REX_DIRECT_PORT=<that port>` to `rex.env` and restart rex. To use another provider, set `REX_DIRECT_URL` to its `https://` address (`docs/rex-direct-api.md` in rex's repository is the contract), or `REX_DIRECT_URL=off` to turn it off. The port forward does not open the feed API: see [Keep the port private](#keep-the-port-private).
 
@@ -385,7 +385,11 @@ ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url https:/
 curl -s -o /dev/null -w '%{http_code}\n' https://myhost.tailnet.ts.net/identity
 ```
 
-answers `200`, and rex's log names the addresses it announces:
+answers `200` on a computer at home. Use your own address: with rex-direct it is the one `journalctl --user -u rex | grep 'rex-direct: https'` prints (in Docker, `docker logs rex 2>&1 | grep 'rex-direct: https'`), with `/identity` added. Open the same address in a phone's browser with Wi-Fi off: it shows a short XML page with no certificate warning. With Tailscale serve, both the computer and the phone need Tailscale on.
+
+With rex-direct or Caddy, if the phone gets it and the computer at home does not, your router does not send connections back inside. Point the name at rex's LAN IP in your home network's DNS (your router's, or Pi-hole's; a router with DNS rebind protection needs an exception for it) and the rex machine answers it at home with the same certificate. If the phone fails too, the port is not forwarded, your connection is behind CGNAT, or rex-direct's certificate is still being issued (rex's log says so while it is).
+
+rex's log names the addresses it announces:
 
 ```
 INFO    heartbeat every 600s for machine ... -> https://myhost.tailnet.ts.net:443,http://192.168.1.20:32400
