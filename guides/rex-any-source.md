@@ -6,7 +6,7 @@ This page takes you from nothing to playing a movie, one step at a time. It does
 
 Four things to know before you start:
 
-- **Your app serves the files.** rex fetches every byte from your app over plain HTTP, the way a browser downloads a file. rex keeps no files and needs no disk or mount for media.
+- **Your app serves the files.** rex fetches every byte from your app over HTTP or HTTPS, the way a browser downloads a file. rex keeps no files and needs no disk or mount for media.
 - **Your app tells rex what it has.** It sends rex a list of files over rex's feed API, and every change after that. rex never lists a folder or scans anything.
 - **Your app decides what each file is.** It says whether a file is a movie or an episode, which title it belongs to (by IMDb and TMDB id) and, for an episode, its season and number. rex never guesses from a file name.
 - **Plex describes it.** Once rex is on a Plex account, it shows each title with the name, poster, summary and episode names Plex's own metadata has for those ids.
@@ -18,7 +18,7 @@ rex has been in closed beta for sponsors since October 15 and reaches the public
 | You need | Why |
 |---|---|
 | A Linux machine that stays on (Ubuntu 22.04 or newer) | rex is a server: your Plex apps reach it whenever you press play. macOS and Windows work too; this page shows Linux, and [Docker](#run-rex-in-docker) is further down |
-| About 500 MB of RAM for a library of 40,000 titles | rex keeps the library in `rex.db` and holds only what it is serving in memory. Converting video wants more cores, or a graphics chip |
+| 2 GB of RAM for a library of 40,000 titles | rex keeps the library in `rex.db` and uses about 400-800 MB once running, more while it starts. Converting video wants more cores, or a graphics chip |
 | A GitHub account with access to rex's sponsor releases | rex is a private GitHub release |
 | An app that does what [What your app must do](#what-your-app-must-do) lists | That is where your library comes from |
 | A fresh Plex account, made just for rex | rex gets every title, poster, summary and episode name from Plex once it is [added to a Plex account](#step-3-add-it-to-a-plex-account). Until then titles keep their file names and have no posters |
@@ -57,7 +57,7 @@ tar xzf rex-*-linux-amd64.tar.gz --strip-components=1 && rm rex-*-linux-amd64.ta
 sudo loginctl enable-linger "$USER"
 ```
 
-This takes rex's newest build, a nightly until the next release. On an ARM machine (Raspberry Pi, Ampere) use `linux-arm64` in all three places. The last line keeps rex running when you log out.
+This takes rex's newest build, usually a nightly. On an ARM machine (Raspberry Pi, Ampere) use `linux-arm64` in all three places. The last line keeps rex running when you log out.
 
 Find rex's LAN IP: `hostname -I` prints several, so take the one on your home network (usually `192.168.x.x` or `10.x.x.x`). **This page writes it as `192.168.1.20` everywhere: put yours in its place.** Plex apps, your app and your own commands all reach rex there.
 
@@ -95,7 +95,7 @@ systemctl --user enable --now rex
 journalctl --user -u rex -f
 ```
 
-**What you should see.**
+**What you should see.** Among the first lines:
 
 ```
 INFO    seeded rex.db: an empty library named yourhost at /mnt/zurg, machine=...
@@ -161,7 +161,7 @@ kill %1
 **If not.**
 
 - `"held":1`: `media_info` is missing or has no streams. Check that `ffprobe` printed JSON for the file.
-- An answer with `rejected`: the file is not a video by its extension, is a sample, or has no `id` or `path`. rex's log names each and why.
+- An answer with `rejected`: the file is not a video by its extension, is a sample, has no `id` or `path`, or has a malformed path. The answer and rex's log give each reason.
 - `404 no such source`: the `PUT /rex/sources/test` did not happen first.
 
 ## Step 3. Add it to a Plex account
@@ -238,7 +238,7 @@ curl -s http://192.168.1.20:32400/rex/feed/myapp/held  | head -c 600   # what wa
 
 Open a Plex app on a phone, TV or computer **on the same home network**. rex shows up under the machine's name, with **Debrid Movies** and **Debrid TV**. Pick a movie and press play.
 
-At home nothing else is needed: Plex apps find rex with Plex's own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN) and rex on port 32400. If you moved rex to 32500, apps find it only through the Plex account it is [shared with](#share-it-with-your-own-account). app.plex.tv in a web browser is the exception: it needs the HTTPS address from [Use it outside your home](#use-it-outside-your-home-optional), even at home.
+At home nothing else is needed: Plex apps find rex with Plex's own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN). Discovery runs on UDP ports 32410 and 32414, so a firewall on the rex machine must let those in. rex answers discovery when it uses port 32400. If you moved rex to 32500 because Plex runs on the same machine, discovery is left to that Plex, and apps find rex through the Plex account it is [shared with](#share-it-with-your-own-account). app.plex.tv in a web browser is the exception: it needs the HTTPS address from [Use it outside your home](#use-it-outside-your-home-optional), even at home.
 
 **What you should see.** Posters, titles and years as on any Plex server. Playback starts within a few seconds.
 
@@ -266,7 +266,7 @@ You are done. The sections below are optional.
 
 **What it does.** Gives rex an HTTPS address that Plex apps away from home can reach, and tells plex.tv about it.
 
-**Why it matters.** Away from home, app.plex.tv only connects to an HTTPS address, and the other Plex apps prefer one. A real Plex server can fall back to Plex's relay; rex cannot, so you choose how it is reached. rex must be [claimed](#step-3-add-it-to-a-plex-account) first. A claimed rex checks the Plex token on every request except `/identity` and its feed API (`/rex/...`), which is why a proxy that faces the internet must block `/rex/`.
+**Why it matters.** Away from home, app.plex.tv only connects to an HTTPS address, and the other Plex apps prefer one. A real Plex server can fall back to Plex's relay; rex cannot, so you choose how it is reached. rex must be [claimed](#step-3-add-it-to-a-plex-account) first. A claimed rex checks the Plex token on every request except a few public pages (`/identity`, `/web`) and its feed API (`/rex/feed/` and `/rex/sources`), which answers only this machine, your home network and Tailscale. A proxy on the rex machine counts as home, which is why a proxy that faces the internet must block `/rex/`.
 
 **Plex Pass.** With the October 21 remote-playback update, Plex Web 4.163.0 plays away from home without a Plex Pass or Remote Watch Pass on either the fresh claiming account or your viewing account. rex advertises that capability locally; it changes no subscription at plex.tv. Older builds can still show Plex's paywall. Other Plex apps have not been playback-tested.
 
@@ -289,9 +289,9 @@ Not recommended:
 
 rex-direct is DMM's answer to plex.direct, and it is on by default. On your router, forward port 32400 (TCP) to the rex machine. That is all, with nothing to restart.
 
-Once claimed, rex gets its own name from DMM, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and a certificate for that name alone. The first certificate takes a few minutes; rex's log says it is being issued and then shows the name in a `rex-direct:` line. rex then announces `https://<hash>.rex-direct.debridmediamanager.com:32400` after the LAN IP. rex asks DMM again every six hours, so a new home IP is picked up by itself, and a renewed certificate too.
+Once claimed, rex gets its own name from DMM, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and a certificate for that name alone. The first certificate takes a few minutes; rex's log says it is being issued and then shows the name in a `rex-direct:` line. rex then announces `https://<hash>.rex-direct.debridmediamanager.com:32400` after the LAN IP. rex asks DMM again every six hours, so a new home IP is picked up by itself, and a renewed certificate too. One Plex account can hold up to ten rex-direct names.
 
-If your router forwards a different outside port to rex, add `REX_DIRECT_PORT=<that port>` to `rex.env` and restart rex. To use another provider, set `REX_DIRECT_URL` (rex's `docs/rex-direct-api.md` is the contract), or `REX_DIRECT_URL=off` to turn it off. The port forward does not open the feed API: see [Keep the port private](#keep-the-port-private).
+If your router forwards a different outside port to rex, add `REX_DIRECT_PORT=<that port>` to `rex.env` and restart rex. To use another provider, set `REX_DIRECT_URL` to its `https://` address (`docs/rex-direct-api.md` in rex's repository is the contract), or `REX_DIRECT_URL=off` to turn it off. The port forward does not open the feed API: see [Keep the port private](#keep-the-port-private).
 
 ### Tailscale serve
 
@@ -409,7 +409,7 @@ printf 'REX_TRANSCODER=/usr/lib/jellyfin-ffmpeg/ffmpeg\n' >> ~/rex/rex.env && ch
 systemctl --user restart rex
 ```
 
-With an Intel or AMD graphics chip, also run `sudo usermod -aG render "$USER"` and reboot so the service gets the group; in an LXC, pass the GPU through. On Intel, also run `echo LIBVA_DRIVER_NAME=iHD >> ~/rex/rex.env`; AMD needs no such line. The chip makes conversion fast; without one rex uses the processor. With no Intel or AMD chip, rex also tries an NVIDIA card's encoder. On Intel, `sudo apt install intel-opencl-icd` also converts HDR and Dolby Vision on the chip.
+With an Intel or AMD graphics chip, also run `sudo usermod -aG render "$USER"` and reboot so the service gets the group; in an LXC, pass the GPU through. On Intel, also run `echo LIBVA_DRIVER_NAME=iHD >> ~/rex/rex.env`; AMD needs no such line. The chip makes conversion fast; without one rex uses the processor. With no Intel or AMD chip, rex also tries an NVIDIA card's encoder. HDR and Dolby Vision are tonemapped on the processor with Plex's default tonemapping setting, which a low-power Intel cannot do in real time at 4K.
 
 **What you should see.** rex's log has a `transcoder:` line naming the FFmpeg and the hardware it found (`hardware none` means the processor). A file that failed before now plays; the log shows what was converted, for example `video=copy h264 audio=ac3->aac`.
 
@@ -417,7 +417,7 @@ Subtitles in a converted file: an image subtitle is burned into the picture and 
 
 ## Subtitles
 
-**What it does.** Search Subtitles in a Plex app finds subtitles from Plex's own provider once rex is claimed. rex checks the one you pick against the file and fixes its timing when it runs late or was made for another frame rate. When your Plex account is set to show subtitles and a title has none in your language, rex finds one before it starts.
+**What it does.** Search Subtitles in a Plex app finds subtitles from Plex's own provider once rex is claimed. rex checks the one you pick against the file and fixes its timing when it runs late or was made for another frame rate. When your Plex account is set to show subtitles and a title has none in your language, rex looks for one for up to 3 seconds before it starts.
 
 **Why it matters.** We tested 120 files. Where a subtitle's timing could be checked, Plex's own first result was in sync for about half of them and rex's pick was right for about three in four.
 
@@ -427,7 +427,7 @@ There is nothing to set up. rex checks a subtitle against the file's own text su
 
 ## Movie and TV capabilities
 
-Use a build whose release notes include the movie and TV capability update, or build current `main`. Older downloads do not gain it from a claim change.
+Use a build newer than 2026.10.22.0040-nightly, or build current `main`. Older downloads do not gain it from a claim change.
 
 Movie-edition editing and the full server Dashboard work with a free claiming account. rex also implements account-owned Downloads with restart recovery, local intro and credits analysis, chapter and 10-second seek thumbnails, subtitle adjustment, hardware and HDR controls, dialogue enhancement and loudness normalization, remote stream limits, tighter local sharing restrictions, local webhooks and source-provided cinema trailers and pre-rolls. [The capability guide](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities) gives the settings and owner APIs.
 
@@ -470,11 +470,11 @@ docker compose logs -f rex
 
 You should see the same lines as [step 1](#step-1-install-rex). Then do steps 2 to 5 as above. If your app runs in a container too, it must register an address rex can reach from the machine, not one only other containers can see.
 
-Update with `docker compose pull && docker compose up -d`. The image carries no FFmpeg, so [converting video](#converting-video-optional) needs the install without Docker. HTTPS works as above: the options run on the machine itself, and `--announce-url ...` goes in `command`.
+Update with `docker compose pull && docker compose up -d`. The image carries no FFmpeg, so [converting video](#converting-video-optional), intro and credits markers, thumbnails and checking subtitles against the sound need the install without Docker. HTTPS works as above: the options run on the machine itself, and `--announce-url ...` goes in `command`.
 
 ## Keep the port private
 
-rex takes no password on its feed API. It answers that API only from this machine, your home network (10.x, 172.16-31.x, 192.168.x) and Tailscale (100.64-127.x), and refuses everyone else with 403, so forwarding rex's port for [rex-direct](#rex-direct) does not open it. Your app must therefore push from one of those networks. A proxy on the rex machine looks local to rex, so keep `/rex/*` blocked in any proxy that faces the internet, as the [Caddy](#caddy) example does.
+rex takes no password on its feed API. It answers that API only from this machine, your home network (10.x, 172.16-31.x, 192.168.x, 169.254.x and private IPv6 addresses) and Tailscale (100.64-127.x), and to everyone else answers as if the API were not there, so forwarding rex's port for [rex-direct](#rex-direct) does not open it. A router that gives outside visitors its own address makes them look local, and that opens the feed to the internet. Your app must therefore push from one of those networks. A proxy on the rex machine looks local to rex, so keep `/rex/*` blocked in any proxy that faces the internet, as the [Caddy](#caddy) example does.
 
 ## Updating
 
@@ -491,7 +491,7 @@ Run the `TAG=`, `gh release download` and `tar` lines of [step 1](#step-1-instal
 | A title is in the wrong show, or a film is titled as its file | Your app sent no `kind` and `ids` for it, or the wrong ones. Fix it in your app, or use **Fix Match** in a Plex app signed in as the fresh account; a Fix Match stays as you set it |
 | Nothing plays and rex's log shows 502 | rex cannot reach the address your app registered. `curl -s http://192.168.1.20:32400/rex/sources` shows it; test it with `curl` from the rex machine |
 | Nothing plays, 401 or 403 | Your app refused its own login. Have it register again with the current one |
-| A snapshot answers 409 `would remove more than half` | rex's guard against an app that sends a half-loaded library. If the removal is real, your app must send the whole snapshot again from part 0, with `"force": true` on its last part. Resending only the last part is refused, and sending it alone with `force` removes everything the earlier parts named |
+| A snapshot answers 409 `would remove more than half` | rex's guard against an app that sends a half-loaded library. If the removal is real, your app must send the whole snapshot again from part 0, with `"force": true` on its last part. Resending only the last part is refused, and sending it as a new snapshot of its own with `force` removes everything the earlier parts named |
 | Deleting in a Plex app fails and rex logs `DELETE refused by the source` | Your app does not accept a `DELETE` of the file. Remove it in your app instead |
 | "This server is not powerful enough to convert video" | The device cannot play the file as it is. Try a Plex app on a TV or phone, or set up [Converting video](#converting-video-optional) |
 | After adding an HTTPS address, a device at home cannot connect | The LAN IP is missing from `--announce-url`. Add `http://192.168.1.20:32400` after the HTTPS one |
