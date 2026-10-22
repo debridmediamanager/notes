@@ -383,13 +383,20 @@ rex prints this at every start. Trouble shows later as `heartbeat failed` or `an
 
 **Why it matters.** Without it a device that cannot play a file as it is gets "This server is not powerful enough to convert video". Web browsers hit this most, for example with AC3 or DTS sound.
 
-Install jellyfin-ffmpeg 8 as a package (Ubuntu 22.04's own FFmpeg 4.4 is too old; this one goes in `/usr/lib/jellyfin-ffmpeg` beside any other); rex finds it on its own. The first line picks the build for your system: there are builds for Ubuntu 22.04, 24.04 and 26.04 and Debian 12 and 13, on amd64 or arm64, and on any other `curl` stops with an error.
+Install **jellyfin-ffmpeg** 8, not the `ffmpeg` your system offers: it is the build rex is measured with and the only one that converts every Dolby Vision file, tonemaps HDR on the graphics chip and draws subtitles there. Another FFmpeg converts ordinary video and rex's log says what it lacks (Ubuntu 22.04's own also seeks a few seconds off). The package goes in `/usr/lib/jellyfin-ffmpeg` beside any other FFmpeg, and rex finds it on its own. The first line picks the build for your system: there are builds for Ubuntu 22.04, 24.04 and 26.04 and Debian 12 and 13, on amd64 or arm64, and on any other `curl` stops with an error.
 
 ```bash
 DEB=jellyfin-ffmpeg8_8.1.3-1-$(. /etc/os-release; echo "$VERSION_CODENAME")_$(dpkg --print-architecture).deb
 curl -fLO "https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/$DEB"
 sudo apt install -y "./$DEB" && rm "$DEB"
 systemctl --user restart rex
+```
+
+On another Linux, unpack jellyfin-ffmpeg's portable build into `~/rex/ffmpeg`, where rex looks for it, and restart rex. It uses your system's own graphics driver, so on an older system it converts on the processor only; use the package wherever there is one. Windows and macOS are in [rex's setup guide](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#which-ffmpeg).
+
+```bash
+B=$( [ "$(uname -m)" = aarch64 ] && echo linuxarm64 || echo linux64 )
+mkdir -p ~/rex/ffmpeg && curl -fL "https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg_8.1.3-1_portable_${B}-gpl.tar.xz" | tar xJ -C ~/rex/ffmpeg
 ```
 
 With an Intel or AMD graphics chip, also run `sudo usermod -aG render "$USER"` and reboot so the service gets the group; in an LXC, pass the GPU through. The chip makes conversion fast; without one rex uses the processor. With no Intel or AMD chip, rex also tries an NVIDIA card's encoder. On Intel, `sudo apt install intel-opencl-icd` also converts HDR and Dolby Vision on the chip, at about real time for 4K on a small Intel (builds newer than 2026.10.22.0040-nightly); without it they are converted on the processor, which a low-power Intel cannot do in real time at 4K.
