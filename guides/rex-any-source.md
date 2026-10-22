@@ -413,7 +413,7 @@ With an Intel or AMD graphics chip, also run `sudo usermod -aG render "$USER"` a
 
 **What you should see.** rex's log has a `transcoder:` line naming the FFmpeg and the hardware it found (`hardware none` means the processor). A file that failed before now plays; the log shows what was converted, for example `video=copy h264 audio=ac3->aac`.
 
-Subtitles in a converted file: an image subtitle is burned into the picture and a subtitle you uploaded comes along. Plex for Android and iOS also keep a text subtitle; Plex Web and other players lose it for now.
+Subtitles in a converted file: an image subtitle is burned into the picture and a subtitle you uploaded comes along. Plex for Android and iOS also keep a text subtitle as a track; other apps get it drawn into the picture. Converted offline downloads still omit text subtitles.
 
 ## Subtitles
 
@@ -424,6 +424,16 @@ Subtitles in a converted file: an image subtitle is burned into the picture and 
 There is nothing to set up. rex checks a subtitle against the file's own text subtitle when it has one, which takes a few small reads. A file without one is checked against its sound when you press play, which needs [Converting video](#converting-video-optional) set up and reads six 90-second pieces of the file.
 
 **What you should see.** rex's log has a `SUBTITLE measured` line for each subtitle it checks, and `SUBTITLE applied ... corrected by` when it fixed one.
+
+## Movie and TV capabilities
+
+Use a build whose release notes include the movie and TV capability update, or build current `main`. Older downloads do not gain it from a claim change.
+
+Movie-edition editing and the full server Dashboard work with a free claiming account. rex also implements account-owned Downloads with restart recovery, local intro and credits analysis, chapter and 10-second seek thumbnails, subtitle adjustment, hardware and HDR controls, dialogue enhancement and loudness normalization, remote stream limits, tighter local sharing restrictions, local webhooks and source-provided cinema trailers and pre-rolls. [The capability guide](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities) gives the settings and owner APIs.
+
+Generation needs FFmpeg and reads source media, uses CPU and keeps files beside the state database. It defaults to off; run Analyze manually or opt in to generation on source additions. Keep `<state>.analysis` and `<state>.downloads` with the state database for durable results.
+
+These are server capabilities, not a Plex subscription. Client account checks, app Downloads eligibility, cloud rollouts and Plex Home membership remain unchanged. Music, Live TV and DVR are not supported.
 
 ## Run rex in Docker
 
