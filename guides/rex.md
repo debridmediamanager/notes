@@ -115,7 +115,7 @@ rex names itself after the machine; your Plex apps show that name. `no source ye
 
 ### Register rex on the fresh account
 
-1. Sign in to [plex.tv](https://www.plex.tv) **as the fresh account**, open [plex.tv/claim](https://www.plex.tv/claim) and copy the code. It expires in four minutes.
+1. Sign in to [plex.tv](https://www.plex.tv) **as the fresh account**, open [plex.tv/claim](https://www.plex.tv/claim) and copy the code. It expires after about five minutes.
 2. On the rex machine:
 
    ```bash
@@ -261,7 +261,7 @@ Not recommended:
 
 rex-direct is DMM's answer to plex.direct, and it is on by default. On your router, forward port 32400 (TCP) to the rex machine. That is all, with nothing to restart.
 
-Once claimed, rex gets its own name from DMM, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and a certificate for that name alone. The first certificate takes a few minutes; rex's log says it is being issued and then shows the name in a `rex-direct:` line. rex then announces `https://<hash>.rex-direct.debridmediamanager.com:32400` after the LAN IP. rex asks DMM again every six hours, so a new home IP is picked up by itself, and a renewed certificate too. One Plex account can hold up to ten rex-direct names.
+Once claimed, rex gets its own name from DMM, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and a certificate for that name alone. The first certificate takes a few minutes; rex's log says it is being issued and then shows the name in a `rex-direct:` line. rex then announces `https://<hash>.rex-direct.debridmediamanager.com:32400` after the LAN IP. rex asks DMM again every six hours, so a new home IP is picked up by itself, and a renewed certificate too. One Plex account can hold up to ten rex-direct names. At home, Plex apps can pick this name over the LAN IP: your router then sends the connection straight back to rex, so the stream stays inside your home.
 
 If your router forwards a different outside port to rex, add `REX_DIRECT_PORT=<that port>` to `rex.env` and restart rex. To use another provider, set `REX_DIRECT_URL` to its `https://` address (`docs/rex-direct-api.md` in rex's repository is the contract), or `REX_DIRECT_URL=off` to turn it off. The port forward does not open the API zurg pushes to: see [Keep the port private](#keep-the-port-private).
 
