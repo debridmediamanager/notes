@@ -249,6 +249,8 @@ Two things you may meet:
 
 Each file goes to **Debrid Movies** or **Debrid TV** by the `kind` your app sent. A file without one goes by its first folder: `shows` to Debrid TV, anything else to Debrid Movies.
 
+To give a folder libraries of its own, your app adds `directories` to its registration, naming the first folder of the files' paths and the libraries' titles: `{"url": ..., "directories": [{"name": "anime", "shows": "Anime", "movies": "Anime Movies"}]}`, either title alone being fine. rex makes them when your app registers and moves what that folder already has into them as it was: watch history, Fix Match and edits included. A malformed entry is skipped, never the registration, and the answer lists it under `ignored` with why. Rename them in a Plex app as you like. Delete one and it stays deleted, its files going back to Debrid Movies or Debrid TV, until you add it again with **Add Library**, whose folder list shows your app's folders under its `mount`. `docs/feed-api.md` has the rules, under "Libraries a source declares".
+
 **Back up** `~/rex/rex.db` (it holds your library, watch history and your app's login, so keep it private) and `claim_state.json`:
 
 ```bash
