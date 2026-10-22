@@ -414,7 +414,7 @@ sudo apt install -y "./$DEB" && rm "$DEB"
 systemctl --user restart rex
 ```
 
-On another Linux, unpack jellyfin-ffmpeg's portable build into `~/rex/ffmpeg`, where rex looks for it, and restart rex. It uses your system's own graphics driver, so on an older system it converts on the processor only; use the package wherever there is one. Windows and macOS are in [rex's setup guide](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#which-ffmpeg).
+On another Linux, unpack jellyfin-ffmpeg's portable build into `~/rex/ffmpeg`, where rex looks for it, and restart rex. It uses your system's own graphics driver, so on an older system it converts on the processor only; use the package wherever there is one. On Windows or macOS, download the portable build for your machine from [jellyfin-ffmpeg's release page](https://github.com/jellyfin/jellyfin-ffmpeg/releases/tag/v8.1.3-1) (`win64-clang` for Windows, `macarm64` for Apple Silicon, `mac64` for an Intel Mac) and unpack it into an `ffmpeg` folder inside rex's folder. rex finds it there.
 
 ```bash
 B=$( [ "$(uname -m)" = aarch64 ] && echo linuxarm64 || echo linux64 )
@@ -441,7 +441,7 @@ There is nothing to set up. rex checks a subtitle against the file's own text su
 
 Use a build newer than 2026.10.22.0040-nightly, or build current `main`. Older downloads do not gain it from a claim change.
 
-Movie-edition editing and the full server Dashboard work with a free claiming account. rex also implements account-owned Downloads with restart recovery, local intro and credits analysis, chapter and 10-second seek thumbnails, subtitle adjustment, hardware and HDR controls, dialogue enhancement and loudness normalization, remote stream limits, tighter local sharing restrictions, local webhooks and source-provided cinema trailers and pre-rolls. [The capability guide](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities) gives the settings and owner APIs.
+Movie-edition editing and the full server Dashboard work with a free claiming account. rex also implements account-owned Downloads with restart recovery, local intro and credits analysis, chapter and 10-second seek thumbnails, subtitle adjustment, hardware and HDR controls, dialogue enhancement and loudness normalization, remote stream limits, tighter local sharing restrictions, local webhooks and source-provided cinema trailers and pre-rolls. `docs/setup.md` in your rex download ("Movie and TV capabilities") gives the settings and owner APIs.
 
 Generation needs FFmpeg and reads source media, uses CPU and keeps files beside the state database. It defaults to off; run Analyze manually or opt in to generation on source additions. Keep `<state>.analysis` and `<state>.downloads` with the state database for durable results.
 
