@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.845966859345">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.845983932439">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.845966859345" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.845983932439" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.845966859345" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.845983932439" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.845966859345" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.845966859345" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.845983932439" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.845983932439" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -560,15 +560,14 @@ remotePort = 32400</code></pre>
 <h2 id="converting-video-optional">Converting video (optional)</h2>
 <p><strong>What it does.</strong> Lets rex convert what a device cannot play, the way Plex does.</p>
 <p><strong>Why it matters.</strong> Without it a device that cannot play a file as it is gets &quot;This server is not powerful enough to convert video&quot;. Web browsers hit this most, for example with AC3 or DTS sound.</p>
-<p>Install jellyfin-ffmpeg 8 as a package (Ubuntu 22.04&#x27;s own FFmpeg 4.4 is too old; this one goes in <code translate="no" v-pre>/usr/lib/jellyfin-ffmpeg</code> beside any other) and point rex at it. The first line picks the build for your system: there are builds for Ubuntu 22.04, 24.04 and 26.04 and Debian 12 and 13, on amd64 or arm64, and on any other <code translate="no" v-pre>curl</code> stops with an error.</p>
+<p>Install jellyfin-ffmpeg 8 as a package (Ubuntu 22.04&#x27;s own FFmpeg 4.4 is too old; this one goes in <code translate="no" v-pre>/usr/lib/jellyfin-ffmpeg</code> beside any other); rex finds it on its own. The first line picks the build for your system: there are builds for Ubuntu 22.04, 24.04 and 26.04 and Debian 12 and 13, on amd64 or arm64, and on any other <code translate="no" v-pre>curl</code> stops with an error.</p>
 <div id="converting-video-optional-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">DEB=jellyfin-ffmpeg8_8.1.3-1-$(. /etc/os-release; echo &quot;$VERSION_CODENAME&quot;)_$(dpkg --print-architecture).deb
 curl -fLO &quot;https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/$DEB&quot;
 sudo apt install -y &quot;./$DEB&quot; &amp;&amp; rm &quot;$DEB&quot;
-printf 'REX_TRANSCODER=/usr/lib/jellyfin-ffmpeg/ffmpeg\n' &gt;&gt; ~/rex/rex.env &amp;&amp; chmod 600 ~/rex/rex.env
 systemctl --user restart rex</code></pre>
 </doc-codeblock></div>
-<p>With an Intel or AMD graphics chip, also run <code translate="no" v-pre>sudo usermod -aG render &quot;$USER&quot;</code> and reboot so the service gets the group; in an LXC, pass the GPU through. On Intel, also run <code translate="no" v-pre>echo LIBVA_DRIVER_NAME=iHD &gt;&gt; ~/rex/rex.env</code>; AMD needs no such line. The chip makes conversion fast; without one rex uses the processor. With no Intel or AMD chip, rex also tries an NVIDIA card&#x27;s encoder. HDR and Dolby Vision are tonemapped on the processor with Plex&#x27;s default tonemapping setting, which a low-power Intel cannot do in real time at 4K.</p>
+<p>With an Intel or AMD graphics chip, also run <code translate="no" v-pre>sudo usermod -aG render &quot;$USER&quot;</code> and reboot so the service gets the group; in an LXC, pass the GPU through. The chip makes conversion fast; without one rex uses the processor. With no Intel or AMD chip, rex also tries an NVIDIA card&#x27;s encoder. On Intel, <code translate="no" v-pre>sudo apt install intel-opencl-icd</code> also converts HDR and Dolby Vision on the chip, at about real time for 4K on a small Intel (builds newer than 2026.10.22.0040-nightly); without it they are converted on the processor, which a low-power Intel cannot do in real time at 4K.</p>
 <p><strong>What you should see.</strong> rex&#x27;s log has a <code translate="no" v-pre>transcoder:</code> line naming the FFmpeg and the hardware it found (<code translate="no" v-pre>hardware none</code> means the processor). A file that failed before now plays; the log shows what was converted, for example <code translate="no" v-pre>video=copy h264 audio=ac3-&gt;aac 6ch</code>.</p>
 <p>Subtitles in a converted file: an image subtitle is burned into the picture and a subtitle you uploaded comes along. Plex for Android and iOS also keep a text subtitle as a track; other apps get it drawn into the picture. Converted offline downloads still omit text subtitles.</p>
 <h2 id="subtitles">Subtitles</h2>
@@ -617,6 +616,7 @@ systemctl --user restart rex</code></pre>
 <li><code translate="no" v-pre>command:</code> is <doc-anchor-trigger to="#step-2-install-rex">step 2</doc-anchor-trigger>&#x27;s.</li>
 <li><code translate="no" v-pre>network_mode: host</code> lets Plex apps on your network find rex by themselves, and lets rex reach zurg&#x27;s container.</li>
 <li><code translate="no" v-pre>:nightly</code> follows the nightly builds; <code translate="no" v-pre>latest</code> follows releases only.</li>
+<li>Intel or AMD graphics chip? Add <code translate="no" v-pre>devices: [&quot;/dev/dri:/dev/dri&quot;]</code> so rex converts video on it.</li>
 <li><code translate="no" v-pre>./config</code> gets <code translate="no" v-pre>rex.db</code> and, later, <code translate="no" v-pre>claim_state.json</code>. They are readable by root only, because <code translate="no" v-pre>rex.db</code> holds zurg&#x27;s login.</li>
 <li>Plex Media Server on the same machine? Add <code translate="no" v-pre>--port 32500</code> to <code translate="no" v-pre>command:</code> and use <code translate="no" v-pre>32500</code> wherever this page says <code translate="no" v-pre>32400</code>.</li>
 </ul>
@@ -649,7 +649,7 @@ docker compose restart zurg</code></pre>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/rex &amp;&amp; docker compose pull &amp;&amp; docker compose up -d</code></pre>
 </doc-codeblock></div>
 <p>rex comes back with the same library. <code translate="no" v-pre>nightly</code> moves with each nightly build and <code translate="no" v-pre>latest</code> with each release; pin a version to update only when you choose. For zurg, see <a href="../../setup/docker/#managing-and-updating-zurg">Managing and updating zurg</a>.</p>
-<p>The image carries no FFmpeg, so <doc-anchor-trigger to="#converting-video-optional">converting video</doc-anchor-trigger>, intro and credits markers, thumbnails and checking subtitles against the sound need the install without Docker. HTTPS works as above: the options run on the machine itself, and <code translate="no" v-pre>--announce-url ...</code> goes in <code translate="no" v-pre>command</code>.</p>
+<p>The image carries jellyfin-ffmpeg, so <doc-anchor-trigger to="#converting-video-optional">converting video</doc-anchor-trigger> needs only the graphics chip handed in (images newer than 2026.10.22.0040-nightly). HTTPS works as above: the options run on the machine itself, and <code translate="no" v-pre>--announce-url ...</code> goes in <code translate="no" v-pre>command</code>.</p>
 <h2 id="keep-the-port-private">Keep the port private</h2>
 <p>rex takes no password from zurg. It answers the API zurg pushes to only from this machine, your home network and Tailscale, so forwarding rex&#x27;s port for <doc-anchor-trigger to="#rex-direct">rex-direct</doc-anchor-trigger> does not open it. A router that gives outside visitors its own address makes them look local, and that opens the feed to the internet. A proxy on the rex machine looks local to rex, so keep <code translate="no" v-pre>/rex/*</code> blocked in any proxy that faces the internet, as the <doc-anchor-trigger to="#caddy">Caddy</doc-anchor-trigger> example does.</p>
 <h2 id="updating">Updating</h2>

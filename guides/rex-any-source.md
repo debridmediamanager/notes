@@ -399,17 +399,16 @@ rex prints this at every start. Trouble shows later as `heartbeat failed` or `an
 
 **Why it matters.** Without it a device that cannot play a file as it is gets "This server is not powerful enough to convert video". Web browsers hit this most, for example with AC3 or DTS sound.
 
-Install jellyfin-ffmpeg 8 as a package (Ubuntu 22.04's own FFmpeg 4.4 is too old; this one goes in `/usr/lib/jellyfin-ffmpeg` beside any other) and point rex at it. The first line picks the build for your system: there are builds for Ubuntu 22.04, 24.04 and 26.04 and Debian 12 and 13, on amd64 or arm64, and on any other `curl` stops with an error.
+Install jellyfin-ffmpeg 8 as a package (Ubuntu 22.04's own FFmpeg 4.4 is too old; this one goes in `/usr/lib/jellyfin-ffmpeg` beside any other); rex finds it on its own. The first line picks the build for your system: there are builds for Ubuntu 22.04, 24.04 and 26.04 and Debian 12 and 13, on amd64 or arm64, and on any other `curl` stops with an error.
 
 ```bash
 DEB=jellyfin-ffmpeg8_8.1.3-1-$(. /etc/os-release; echo "$VERSION_CODENAME")_$(dpkg --print-architecture).deb
 curl -fLO "https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/$DEB"
 sudo apt install -y "./$DEB" && rm "$DEB"
-printf 'REX_TRANSCODER=/usr/lib/jellyfin-ffmpeg/ffmpeg\n' >> ~/rex/rex.env && chmod 600 ~/rex/rex.env
 systemctl --user restart rex
 ```
 
-With an Intel or AMD graphics chip, also run `sudo usermod -aG render "$USER"` and reboot so the service gets the group; in an LXC, pass the GPU through. On Intel, also run `echo LIBVA_DRIVER_NAME=iHD >> ~/rex/rex.env`; AMD needs no such line. The chip makes conversion fast; without one rex uses the processor. With no Intel or AMD chip, rex also tries an NVIDIA card's encoder. HDR and Dolby Vision are tonemapped on the processor with Plex's default tonemapping setting, which a low-power Intel cannot do in real time at 4K.
+With an Intel or AMD graphics chip, also run `sudo usermod -aG render "$USER"` and reboot so the service gets the group; in an LXC, pass the GPU through. The chip makes conversion fast; without one rex uses the processor. With no Intel or AMD chip, rex also tries an NVIDIA card's encoder. On Intel, `sudo apt install intel-opencl-icd` also converts HDR and Dolby Vision on the chip, at about real time for 4K on a small Intel (builds newer than 2026.10.22.0040-nightly); without it they are converted on the processor, which a low-power Intel cannot do in real time at 4K.
 
 **What you should see.** rex's log has a `transcoder:` line naming the FFmpeg and the hardware it found (`hardware none` means the processor). A file that failed before now plays; the log shows what was converted, for example `video=copy h264 audio=ac3->aac`.
 
@@ -459,6 +458,7 @@ services:
 
 - `command:` is [step 1](#step-1-install-rex)'s.
 - `:nightly` follows the nightly builds; `latest` follows releases only.
+- Intel or AMD graphics chip? Add `devices: ["/dev/dri:/dev/dri"]` so rex converts video on it.
 - `network_mode: host` lets Plex apps on your network find rex by themselves, and lets rex reach your app at the address it registers, as from the machine itself.
 - `./config` gets `rex.db` and, later, `claim_state.json`. They are readable by root only, because `rex.db` holds your app's login.
 - Plex Media Server on the same machine? Add `--port 32500` to `command:` and use `32500` wherever this page says `32400`.
@@ -470,7 +470,7 @@ docker compose logs -f rex
 
 You should see the same lines as [step 1](#step-1-install-rex). Then do steps 2 to 5 as above. If your app runs in a container too, it must register an address rex can reach from the machine, not one only other containers can see.
 
-Update with `docker compose pull && docker compose up -d`. The image carries no FFmpeg, so [converting video](#converting-video-optional), intro and credits markers, thumbnails and checking subtitles against the sound need the install without Docker. HTTPS works as above: the options run on the machine itself, and `--announce-url ...` goes in `command`.
+Update with `docker compose pull && docker compose up -d`. The image carries jellyfin-ffmpeg, so [converting video](#converting-video-optional) needs only the graphics chip handed in (images newer than 2026.10.22.0040-nightly). HTTPS works as above: the options run on the machine itself, and `--announce-url ...` goes in `command`.
 
 ## Keep the port private
 
