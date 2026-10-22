@@ -179,7 +179,7 @@ INFO    FEED zurg upsert: 2 created, 0 updated, 0 held, 0 unchanged, 0 rejected
 
 Leave `plex_server_url` in zurg's config pointing at your real Plex, or empty. Pointed at rex, zurg would take rex's own matches and give them to DMM as the answer, wrong ones included.
 
-Running several zurgs (one per debrid service)? Give each its own name with an extra line, `rex_source: rd`, `rex_source: tb` and so on. They fill the same two libraries.
+Running several zurgs (one per debrid service)? Give each its own name with an extra line, `rex_source: rd`, `rex_source: tb` and so on. They fill the same libraries.
 
 ### Why DMM places the files
 
@@ -215,6 +215,17 @@ Two things you may meet:
 ![The unclaimed-server notice in Plex](../assets/rex/rex-unclaimed.webp)
 
 zurg's folders other than `movies` and `shows`, such as `anime`, need nothing: each file goes to **Debrid Movies** or **Debrid TV** by what zurg says it is. A file zurg cannot tell is an episode waits in **Debrid Movies**.
+
+To give one of those folders libraries of its own, add `rex_shows` and/or `rex_movies` under it in `~/zurg/config.yml`, beside its filters, then restart zurg (`cd ~/zurg && ./zurg service restart`). This needs zurg's next nightly after 2026-10-22 (update it as in [step 1](#step-1-install-zurg)):
+
+```yaml
+directories:
+  anime:
+    rex_shows: Anime
+    rex_movies: Anime Movies
+```
+
+Once zurg has loaded, rex makes **Anime** and **Anime Movies** and moves what it already showed from `anime` into them as it was: watch history, Fix Match and edits included. An open Plex Web lists them at once under **More** in its sidebar, where you can pin them. Share them with your own account as in [step 3](#share-it-with-your-own-account). Rename them in a Plex app as you like. Delete one and it stays deleted, its files going back to **Debrid Movies** or **Debrid TV**, until you add it again with **Add Library**: its folder list shows `/mnt/zurg/anime`. A mistyped line is skipped and rex's log says why.
 
 **Back up** `~/rex/rex.db` (it holds your library, watch history and zurg's login, so keep it private) and, once you have one, `claim_state.json`:
 
