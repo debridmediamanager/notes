@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.845983932439">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.845984759303">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.845983932439" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.845984759303" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.845983932439" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.845984759303" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.845983932439" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.845983932439" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.845984759303" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.845984759303" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -560,12 +560,17 @@ remotePort = 32400</code></pre>
 <h2 id="converting-video-optional">Converting video (optional)</h2>
 <p><strong>What it does.</strong> Lets rex convert what a device cannot play, the way Plex does.</p>
 <p><strong>Why it matters.</strong> Without it a device that cannot play a file as it is gets &quot;This server is not powerful enough to convert video&quot;. Web browsers hit this most, for example with AC3 or DTS sound.</p>
-<p>Install jellyfin-ffmpeg 8 as a package (Ubuntu 22.04&#x27;s own FFmpeg 4.4 is too old; this one goes in <code translate="no" v-pre>/usr/lib/jellyfin-ffmpeg</code> beside any other); rex finds it on its own. The first line picks the build for your system: there are builds for Ubuntu 22.04, 24.04 and 26.04 and Debian 12 and 13, on amd64 or arm64, and on any other <code translate="no" v-pre>curl</code> stops with an error.</p>
+<p>Install <strong>jellyfin-ffmpeg</strong> 8, not the <code translate="no" v-pre>ffmpeg</code> your system offers: it is the build rex is measured with and the only one that converts every Dolby Vision file, tonemaps HDR on the graphics chip and draws subtitles there. Another FFmpeg converts ordinary video and rex&#x27;s log says what it lacks (Ubuntu 22.04&#x27;s own also seeks a few seconds off). The package goes in <code translate="no" v-pre>/usr/lib/jellyfin-ffmpeg</code> beside any other FFmpeg, and rex finds it on its own. The first line picks the build for your system: there are builds for Ubuntu 22.04, 24.04 and 26.04 and Debian 12 and 13, on amd64 or arm64, and on any other <code translate="no" v-pre>curl</code> stops with an error.</p>
 <div id="converting-video-optional-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">DEB=jellyfin-ffmpeg8_8.1.3-1-$(. /etc/os-release; echo &quot;$VERSION_CODENAME&quot;)_$(dpkg --print-architecture).deb
 curl -fLO &quot;https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/$DEB&quot;
 sudo apt install -y &quot;./$DEB&quot; &amp;&amp; rm &quot;$DEB&quot;
 systemctl --user restart rex</code></pre>
+</doc-codeblock></div>
+<p>On another Linux, unpack jellyfin-ffmpeg&#x27;s portable build into <code translate="no" v-pre>~/rex/ffmpeg</code>, where rex looks for it, and restart rex. It uses your system&#x27;s own graphics driver, so on an older system it converts on the processor only; use the package wherever there is one. Windows and macOS are in <a href="https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#which-ffmpeg">rex&#x27;s setup guide</a>.</p>
+<div id="converting-video-optional-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">B=$( [ &quot;$(uname -m)&quot; = aarch64 ] &amp;&amp; echo linuxarm64 || echo linux64 )
+mkdir -p ~/rex/ffmpeg &amp;&amp; curl -fL &quot;https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg_8.1.3-1_portable_${B}-gpl.tar.xz&quot; | tar xJ -C ~/rex/ffmpeg</code></pre>
 </doc-codeblock></div>
 <p>With an Intel or AMD graphics chip, also run <code translate="no" v-pre>sudo usermod -aG render &quot;$USER&quot;</code> and reboot so the service gets the group; in an LXC, pass the GPU through. The chip makes conversion fast; without one rex uses the processor. With no Intel or AMD chip, rex also tries an NVIDIA card&#x27;s encoder. On Intel, <code translate="no" v-pre>sudo apt install intel-opencl-icd</code> also converts HDR and Dolby Vision on the chip, at about real time for 4K on a small Intel (builds newer than 2026.10.22.0040-nightly); without it they are converted on the processor, which a low-power Intel cannot do in real time at 4K.</p>
 <p><strong>What you should see.</strong> rex&#x27;s log has a <code translate="no" v-pre>transcoder:</code> line naming the FFmpeg and the hardware it found (<code translate="no" v-pre>hardware none</code> means the processor). A file that failed before now plays; the log shows what was converted, for example <code translate="no" v-pre>video=copy h264 audio=ac3-&gt;aac 6ch</code>.</p>
