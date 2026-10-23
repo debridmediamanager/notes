@@ -128,7 +128,7 @@ rex names itself after the machine; your Plex apps show that name. `no source ye
 ### Share it with your own account
 
 1. Still signed in as the fresh account, open [app.plex.tv](https://app.plex.tv), then **Settings** (the wrench), **Manage Library Access** and **Grant Library Access**.
-2. Enter your own account's username or email, pick the rex server and both libraries, **Debrid Movies** and **Debrid TV**, and send the invite.
+2. Enter your own account's username or email, pick the rex server and both libraries, **Movies** and **TV Shows**, and send the invite.
 3. Sign out, sign in as **yourself**, and accept the invite. It arrives by email and in app.plex.tv.
 
 rex tells plex.tv the address from step 2 the moment it is claimed, with no restart.
@@ -193,11 +193,11 @@ A file zurg cannot place stays unmatched: a film titled as its file, or an episo
 
 **Why it matters.** This is the point of the whole setup. It also proves the last link: rex reading a file from zurg while you watch.
 
-Open a Plex app (not a web browser) on a phone, TV or computer **on the same home network**. rex shows up on its own under the machine's name, with **Debrid Movies** and **Debrid TV**. Pick a movie and press play.
+Open a Plex app (not a web browser) on a phone, TV or computer **on the same home network**. rex shows up on its own under the machine's name, with **Movies** and **TV Shows**. Pick a movie and press play.
 
 At home nothing else is needed: Plex apps find rex with Plex's own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN). Discovery runs on UDP ports 32410 and 32414, so a firewall on the rex machine must let those in. rex answers discovery when it uses port 32400. If you moved rex to 32500 because Plex runs on the same machine, discovery is left to that Plex, and apps find rex through the Plex account it is [shared with](#share-it-with-your-own-account). app.plex.tv in a web browser is the exception: it needs the HTTPS address from [Use it outside your home](#use-it-outside-your-home-optional), even at home.
 
-![rex's Debrid Movies library in Plex](../assets/rex/rex-movies.webp)
+![rex's Movies library in Plex](../assets/rex/rex-movies.webp)
 
 **What you should see.** Posters, titles and years as on any Plex server, and the movie plays.
 
@@ -208,7 +208,7 @@ Two things you may meet:
 
 ![The unclaimed-server notice in Plex](../assets/rex/rex-unclaimed.webp)
 
-zurg's folders other than `movies` and `shows`, such as `anime`, need nothing: each file goes to **Debrid Movies** or **Debrid TV** by what zurg says it is. A file zurg cannot tell is an episode waits in **Debrid Movies**.
+zurg's folders other than `movies` and `shows`, such as `anime`, need nothing: each file goes to **Movies** or **TV Shows** by what zurg says it is. A file zurg cannot tell is an episode waits in **Movies**.
 
 To give one of those folders libraries of its own, add `rex_shows` and/or `rex_movies` under it in `~/zurg/config.yml`, beside its filters, then restart zurg (`cd ~/zurg && ./zurg service restart`). This needs zurg's next nightly after 2026-10-22 (update it as in [step 1](#step-1-install-zurg)):
 
@@ -219,7 +219,7 @@ directories:
     rex_movies: Anime Movies
 ```
 
-Once zurg has loaded, rex makes **Anime** and **Anime Movies** and moves what it already showed from `anime` into them as it was: watch history, Fix Match and edits included. An open Plex Web lists them at once under **More** in its sidebar, where you can pin them. Share them with your own account as in [step 3](#share-it-with-your-own-account). Rename them in a Plex app as you like. Delete one and it stays deleted, its files going back to **Debrid Movies** or **Debrid TV**, until you add it again with **Add Library**: its folder list shows `/mnt/zurg/anime`. A mistyped line is skipped and zurg's log (`~/zurg/logs/zurg.log`) says why. If rex refuses one, rex's log says why.
+Once zurg has loaded, rex makes **Anime** and **Anime Movies** and moves what it already showed from `anime` into them as it was: watch history, Fix Match and edits included. An open Plex Web lists them at once under **More** in its sidebar, where you can pin them. Share them with your own account as in [step 3](#share-it-with-your-own-account). Rename them in a Plex app as you like. Delete one and it stays deleted, its files going back to **Movies** or **TV Shows**, until you add it again with **Add Library**: its folder list shows `/mnt/zurg/anime`. A mistyped line is skipped and zurg's log (`~/zurg/logs/zurg.log`) says why. If rex refuses one, rex's log says why.
 
 **Back up** `~/rex/rex.db` (it holds your library, watch history and zurg's login, so keep it private) and, once you have one, `claim_state.json`:
 
@@ -517,7 +517,7 @@ docker compose restart zurg
 
 rex's log names each title as zurg reads it, as in [step 4](#step-4-connect-zurg-to-rex). Open a Plex app on your network as in [step 5](#step-5-watch-something).
 
-**What you should see.** The titles appear in **Debrid Movies** and **Debrid TV**, and `docker compose restart rex` brings them back with `state file /config/rex.db: restored` and `source zurg: registered`.
+**What you should see.** The titles appear in **Movies** and **TV Shows**, and `docker compose restart rex` brings them back with `state file /config/rex.db: restored` and `source zurg: registered`.
 
 ### D6. Update
 
