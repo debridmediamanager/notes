@@ -25,9 +25,9 @@ To bring your Stremio addons' catalogs into rex, there is nothing to write: [rex
 | You need | Why |
 |---|---|
 | rex, set up as in [rex with your own app](rex-any-source.md) (steps 1 to 3) | That is where your addon's library shows up |
-| A rex nightly dated 2026.10.24 or newer | `display` and HLS streams arrived then. Older builds reject what this page sends |
+| A rex nightly dated 2026.10.25 or newer | This page is written for it |
 | FFmpeg where rex runs, if your addon serves streams | rex plays a stream by converting it (a copy, cheap). rex finds FFmpeg itself; see [rex](rex.md) |
-| Your addon on the same machine as rex, or on your home network | rex's feed answers only private networks: loopback, `192.168.x.x`, `10.x.x.x`, Tailscale |
+| Your addon on the same machine as rex, or on your home network | rex's feed answers only private networks: loopback, `192.168.x.x`, `10.x.x.x`, `172.16-31.x.x`, Tailscale |
 
 This page writes rex's address as `192.168.1.20:32400` and the addon's as `127.0.0.1:9981`. Put yours in their place. rex's full API reference is `docs/feed-api.md` in every rex download.
 
@@ -58,7 +58,7 @@ Optional, but worth it:
 ```bash
 curl -X PUT http://192.168.1.20:32400/rex/sources/myaddon \
   -H 'Content-Type: application/json' \
-  -d '{"url": "http://127.0.0.1:9981", "mount": "/mnt/myaddon",
+  -d '{"url": "http://127.0.0.1:9981",
        "directories": [{"name": "kids", "shows": "Kids"}]}'
 ```
 
@@ -66,7 +66,6 @@ curl -X PUT http://192.168.1.20:32400/rex/sources/myaddon \
 |---|---|
 | `url` | Where your bytes are. A video's bytes are `GET <url>/<path>` |
 | `user` and `password`, or `bearer` | Your addon's login, if it has one. Never inside `url` |
-| `mount` | The folder prefix Plex apps show in Get Info. Nothing is read from it |
 | `directories` | The libraries your addon fills. Each entry is a first path segment (`name`) and the library's title: `shows` for a TV library, `movies` for a movie library, or both. rex makes each library the first time; renaming it in Plex sticks |
 
 A path's first segment picks its library: with the example above, every path that starts `kids/` lands in **Kids**. Use a different first segment for each library.
@@ -85,7 +84,6 @@ A path's first segment picks its library: with the example above, every path tha
   "path": "kids/ms-rachel/w264Mn-2MnQ.m3u8",
   "kind": "episode", "season": 1, "episode": 3,
   "name": "Ms Rachel",
-  "release": "youtube:UCG2CL6EUjG8TVT1Tpl9nJdg",
   "media_info": { "...": "ffprobe's output, whole" },
   "display": {
     "title": "Learn to Talk for Babies and Toddlers",
@@ -105,13 +103,11 @@ A path's first segment picks its library: with the example above, every path tha
 | `media_info` | yes, in practice | ffprobe's `-show_format -show_streams` JSON for the video (for a stream, probe its URL). Without it a file is **held**: stored but not shown, because Plex apps will not play a video they know nothing about. A stream (`.m3u8`) without one is rejected as `not a video file`, so send a stream only once you have probed it |
 | `kind` | for a show | `episode` or `movie`. Without it nothing places the video: in a TV library it is an episode of a show named after `name`, numbered in file order; in a movie library a film titled as its file |
 | `season`, `episode` | for an episode | Where it goes. Number episodes so a new one never shifts the others |
-| `name` | for a show | The show's name, and what groups its episodes |
-| `release` | no | Groups videos that belong together; give every episode of a show the same one |
-| `size` | for a file | Bytes. rex uses it to answer seeks. Streams have none |
-| `file` | no | What Get Info shows. Default `<mount>/<path>`. One video per file: see the rules below |
+| `name` | no | The show's name, and what groups its episodes. Default: its folder's name (the file's name for a path with no folder) |
+| `release` | no | Groups videos that belong together. Default: the video's folder |
 | `display` | for what no agent knows | Title, summary, date and artwork: Step 4 |
 
-A stream's `path` and `file` end in `.m3u8`, and its `media_info` says `"format_name": "hls"`. rex accepts it only with both. Any other file must have a video extension.
+A stream's `path` ends in `.m3u8`, and its `media_info` says `"format_name": "hls"`. rex accepts it only with both. Any other file must have a video extension.
 
 ## Step 4. Name and dress it
 
@@ -165,17 +161,17 @@ rex's log names every refused video and why: `FEED myaddon rejected <id>: <reaso
 | Rule | What happens if you break it |
 |---|---|
 | **An id is forever.** Change it and the video is a new title | Watch history and edits stay on the old row, which the next snapshot removes |
-| **One video, one file.** Two ids may not share a `file` | The second is rejected: `<file> is already <id>'s file` |
-| **A video's bytes are fixed per id.** rex keeps the streams it was first probed with | If the bytes change (another format, a fixed upload), give the video a new id and file |
+| **One video, one path.** Two ids may not share a `path` | The second is rejected: `... is already <id>'s file` |
+| **A video's bytes are fixed per id.** rex keeps the streams it was first probed with | If the bytes change (another format, a fixed upload), give the video a new id and path |
 | **Probe everything.** No `media_info`, no video | A file waits in `held` until a send brings one; a stream is rejected |
 | **Keep the source name.** Rows belong to (source, id) | Another name starts an empty source; the old one's rows stay until you delete it |
 | **Snapshots are complete.** One that misses a channel removes it | Do not send a snapshot after a partial failure: skip that round |
 
-To **replace** an addon (or a script) that already filled a library, keep its source name, ids, `mount` and first path segment. Your first send then updates its rows in place, watch history and all, instead of making new ones.
+To **replace** an addon (or a script) that already filled a library, keep its source name, ids and first path segment. Your first send then updates its rows in place, watch history and all, instead of making new ones.
 
 ## Example: the YouTube addon
 
-We run an addon that turns YouTube channels into TV shows. It is one Python file, about 700 lines, and does Steps 1 to 5. It does not take deletes: YouTube videos are not ours to delete.
+We run an addon that turns YouTube channels into TV shows. It does Steps 1 to 5. It does not take deletes: YouTube videos are not ours to delete.
 
 **Serving.** YouTube's links expire after a few hours and only work from the address that asked for them, so the addon stores no links. It serves a URL per video, `/<library>/<channel>/<video>.m3u8`, and answers it with a redirect to YouTube's current stream, asked of [yt-dlp](https://github.com/yt-dlp/yt-dlp) at that moment and cached until shortly before it expires:
 
@@ -214,10 +210,10 @@ The same addon takes more than YouTube. Each kind is a different answer to Steps
 |---|---|---|
 | `rejected`: `not a video file` | The file name has no video extension, or an `.m3u8` whose probe is not `hls` | Name streams `.m3u8` and send their probe |
 | A video never shows up | A file is held, or a stream was rejected: no `media_info`, or one with no streams | Probe it and send it again |
-| `rejected`: `... is already <id>'s file` | Another id has that `file` | Keep one id per file |
+| `rejected`: `... is already <id>'s file` | Another id has that `path` | Keep one id per path |
 | Episodes titled "Episode 1" and blank tiles | No `display` | Send `display` with each video |
 | A film sent with its IMDb id keeps your `display` title, not Plex's | rex asks Plex for titles only once it is claimed | Claim rex ([rex](rex.md)) |
-| Pictures do not show | The URL is on your home network but not under your addon's registered `url`, or is not http(s) | Serve them from your addon's own address, or host them on the public internet. Pictures from your addon's address need a rex nightly dated 2026.10.24 or newer |
+| Pictures do not show | The URL is on your home network but not under your addon's registered `url`, or is not http(s) | Serve them from your addon's own address, or host them on the public internet. |
 | Playing fails with 502 in rex's log | Your addon did not answer, or the stream's site refused it | Check your addon's own log first |
 | A title deleted in a Plex app stays | Your addon answered the `DELETE` with something other than `2xx` or `404` | Delete it on your side, then answer `2xx` |
 | A deleted title comes back | Your addon still sends the video | Stop sending what was deleted |
