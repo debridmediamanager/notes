@@ -79,9 +79,9 @@ such as `/radarr` and a trailing `/api/v3` are fine), its API key from
 different path: see [Radarr behavior](#radarr-behavior). Sonarr takes the same
 three settings: see [Sonarr behavior](#sonarr-behavior).
 
-`concurrency` applies at the next poll, without a restart. `indexer_concurrency`
+Both are read when zurg starts, like the rest of the block. `indexer_concurrency`
 covers searches and NZB downloads together, because an indexer meters the key
-and not the endpoint. It is read when zurg starts. Indexer keys are often
+and not the endpoint. Indexer keys are often
 shared, and three calls per key is what measured safe on keys that also serve
 another application.
 
@@ -312,8 +312,9 @@ movie's folder the way Radarr would have imported it, by moving it inside
 - **The largest video is the one placed.** That is the largest `.mkv`, `.mp4`,
   `.m4v`, `.avi`, `.mov` or `.ts` file in the release, counting what is inside
   its archives. A video named as a sample (`sample-…`, `….sample.mkv`, a
-  `Sample/` folder) is left out however large, unless the release's own name
-  says sample too. A release whose only video is its sample is set aside and
+  `Sample/` folder) is left out however large. If the release's own name
+  says sample too, as with `Sample.Size.2019`, it is left out only when it is
+  under a fifth of the release. A release whose only video is its sample is set aside and
   the next candidate is tried. Samples,
   featurettes, subtitles and `.nfo` files stay in `__magic__/__all__`. The
   file keeps the name it has in the release.
@@ -391,7 +392,7 @@ and works on each season as one piece of work.
 - **A new episode is searched for again within minutes.** Its release is
   usually posted within the hour after it airs, so a search right at air time
   often finds nothing. For six hours after an episode airs, zurg tries again
-  every two minutes, and for the next two days every ten. After that it backs
+  every two minutes, and after that every ten until two days after it aired. After that it backs
   off as for anything else (see [persistence and recovery](#persistence-and-recovery)).
   On a debrid account the release also has to be cached there already,
   because zurg adds only what the account holds.
@@ -627,14 +628,16 @@ skipped: zurg never downloads a `.torrent`, so a result it can only reach that
 way is not one it can act on.
 
 **A torrent is only ever added to an account that already holds it.** Every
-account that takes adds is offered the hash, because the caches are independent
+account that takes adds is offered the hash, except that a Real-Debrid account
+is skipped for a release name it refuses outright, because the caches are independent
 and one account having purged a release says nothing about the next. The first
 that already has it takes it. A miss everywhere is an ordinary failed
 candidate, so the walk moves down the ranking to the next release, which may be
 another torrent or an NZB.
 
-On TorBox and Debrid-Link a miss adds nothing, and on AllDebrid it is deleted
-at once. Other accounts get the torrent added and watched for up to 20 seconds.
+On TorBox and Debrid-Link a miss adds nothing, and on AllDebrid and Offcloud it
+is deleted at once. Real-Debrid and Premiumize get the torrent added and watched
+for up to 20 seconds.
 Cached content is ready within a second or two. Anything still downloading
 after that is removed again. So no download is ever left running on the account. A miss is not quite
 free though. It can still count against the account's limit on adds. On TorBox
@@ -879,8 +882,9 @@ acquire the title again.
 
 Failures retry after 5, 10 and 15 minutes, then one hour, then six hours. From
 there a title waits half as long as it has been failing, so the waits grow:
-about half a day after a day of failures, two days after four, a week at
-most. An attempt that runs out of its five minutes having found nothing counts
+about half a day after a day of failures, two days after four, about a week at
+most, give or take a quarter, so titles that failed together do not retry
+together. An attempt that runs out of its five minutes having found nothing counts
 as a failure too. A title that has failed for two weeks, over eight attempts at
 least, is **parked**: zurg stops asking the indexers about it. It stays on the
 acquisition page as parked, with how long it failed and why, and the log says
@@ -897,8 +901,9 @@ for, retried every six hours for good, took an indexer from a few hundred
 queries a day to tens of thousands, and the indexer suspended the account.
 Most were films with no Usenet release and upgrades that every release the
 profile allowed had already been refused for. Open Seerr requests remain monitored. Plex items leave
-the watchlist only after all planned seasons are acquired *and* checked against
-the news servers, only when `remove_after_grab` allows it, and only when zurg
+the watchlist only after all planned seasons are acquired *and* checked (an NZB
+against the news servers, a torrent by reaching the library with something to
+play), only when `remove_after_grab` allows it, and only when zurg
 fetched something for them. Its loose-episode fallback remains limited to episodes found
 in indexer results.
 

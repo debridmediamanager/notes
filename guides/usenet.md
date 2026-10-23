@@ -19,7 +19,7 @@ This guide goes end to end: news accounts, NZBs, the mount, Plex.
 | Config reference | [config.md → Usenet accounts](../reference/config.md#usenet-accounts) |
 | Dashboard | `http://localhost:9999/config/` → Essentials → Providers |
 | Where the code lives | `internal/nzb` (backend), `internal/nntp` (news client), `internal/par2` (repair math) |
-| Watch directory | `nzbs/`, beside the zurg binary |
+| Watch directory | `nzbs/`, in zurg's working directory (`/config` in Docker) |
 | Repair cache | `data/par2/` |
 | Resolved filenames | `data/nzb-names/`, so an obfuscated release is read for its names once rather than once per restart |
 | Article index | `data/nzb-index/`, under `nzb_segments: mmap` — the default on Linux, macOS and BSD |
@@ -120,7 +120,7 @@ Three keys shape who gets asked:
 |---|---|---|
 | `name` | value of `host` | Labels the account in logs. |
 | `priority` | `0` | Who is asked first, lowest first. Accounts sharing a priority are asked in written order, except that one with a free connection is preferred over one whose allowance is spent — so two equal accounts share the load rather than queueing on one. |
-| `backup` | `false` | Marks a metered block account, consulted only once every primary has answered *no such article* or sent a damaged copy. A primary being merely **busy** is not enough: zurg waits for it rather than spending metered bytes on something an unlimited account would have served. |
+| `backup` | `false` | Marks a metered block account, consulted only once every primary has said it lacks the article, sent a damaged copy, failed partway through, or cannot be reached. A primary being merely **busy** is not enough: zurg waits for it rather than spending metered bytes on something an unlimited account would have served. |
 | `backbone` | `""` | Names the article spool an account resolves to. Two accounts on one backbone hold the same articles, so once one has said it lacks an article the others on that spool are skipped instead of being charged a round trip for the same answer. |
 
 Every account keeps a warm floor of its own as well, out of its own allowance: a retention gap sends a read straight past the primary, so the account reached for the first time is exactly the one whose dial nobody has paid yet. A two-connection block account can be told to hold none with `warm_connections: -1`.
@@ -133,7 +133,7 @@ At startup zurg names every account it will use:
 Usenet account nzb connected: nntps://unlimited.example.com:563 (30 connections) + nntps://second-unlimited.example.com:563 (20 connections) [usenetexpress] + nntps://block.example.com:563 (10 connections) [backup] [omicron]
 ```
 
-The census that decides whether a release needs repairing asks every account before calling an article missing, and asks each one only about what its predecessors lacked. A transport failure is never mistaken for an aged-out article: if any account failed to answer *at all*, that failure is what gets reported, so a timeout never causes silence to be served and a repair to be scheduled for something that was never gone.
+The census that decides whether a release needs repairing asks every account before calling an article missing, and asks each one only about what its predecessors lacked. A transport failure is never mistaken for an aged-out article: if an account timed out or dropped the article partway, that failure is what gets reported, so a timeout never causes silence to be served and a repair to be scheduled for something that was never gone. An account that could not be reached at all does not count: if another account says the article is gone, it is treated as gone.
 
 ### Configuring providers in the Dashboard
 
@@ -156,7 +156,7 @@ For an `nzb` row the Token column shows the **news server host** instead of a to
 5. Leave **Watchlist target** unchecked — the backend cannot add content and saving it checked is rejected. **Disabled** keeps the entry in `config.yml` without loading it.
 6. **Save**.
 
-The form is validated as if the edit had been applied, so mistakes come back as an alert rather than a broken config. Adding a **second** `nzb` provider is refused there — the error points you at **Further news servers**, which is where further news accounts belong.
+The form is validated as if the edit had been applied, so mistakes come back as an alert rather than a broken config. Adding a **second** `nzb` provider is refused there — the error points you at **Further news servers** (or `nntp.servers`), which is where further news accounts belong.
 
 **To add another news server** — a second account, or a block account on another backbone — click **Edit** on the `nzb` row, then **Add news server** under **Further news servers**. Each server has its own **Name**, **NNTP host**, **Port**, **TLS**, **Username**, **Password**, **Connections**, **Priority**, **Backbone** and **Backup only**. **Remove server** takes one out. **Save** writes them all to `nntp.servers`.
 
@@ -322,7 +322,7 @@ Alongside those, the account gets a directory of its own — `__nzb__` by defaul
 
 Four Usenet-specific things to know when writing filters:
 
-- **Tag filters will not match Usenet content.** Every `zurg_*` tag (resolution, HDR, bitrate, duration, language) comes from ffprobe, and ffprobe is an external binary handed a URL — a link zurg assembles itself is not something it can open, so analysis is skipped for this backend entirely. Filter Usenet content on names, file extensions, sizes and `has_episodes` instead. A directory keyed on `tags_match_any` will simply never contain a Usenet release.
+- **Tag filters match Usenet content once it is analysed.** Every `zurg_*` tag (resolution, HDR, bitrate, duration, language) comes from ffprobe. zurg runs ffprobe on Usenet files itself, through its own server and at a pace the news server can carry, so a Usenet release gets its tags like any other once it has been analysed. Until then a directory keyed on `tags_match_any` does not hold it.
 - **`.par2` and `.sfv` files are hidden.** They are repair scaffolding; zurg reads them itself and no media server has any use for eight of them per season pack. `.nfo` is kept, because Kodi, Emby and Jellyfin read it.
 - **RAR sets are content, not archives to unpack.** `.rar` and `.rNN` stay visible and a volume set appears in the mount as a *folder* whose contents are the files inside it — zurg streams video straight out of the archive without extracting anything. A release that is *only* one volume set stands in for its own contents instead, with no archive folder in between: the payload sits directly in the release folder, which is where a media server looks for it. Files posted beside the set — the `.nfo`, the poster's `.txt`, artwork, subtitles — stay listed there too.
 - **`force_select_playable_files` does not apply.** A Usenet post is whole; there is nothing to select. Every content file is already offered.
@@ -433,7 +433,7 @@ Nothing here is Usenet-specific except the last subsection, but the order matter
    on_library_update: sh plex_update.sh "$@"
    ```
 
-**What Plex will not get from Usenet content:** no ffprobe-derived metadata from zurg (see section 4), so Plex does its own analysis on first play like it would for any local file. File sizes settle shortly after a release is scanned: the first listing may report a cheap estimate from the article count, and the exact length arrives behind it — from the recovery index where there is one, and otherwise from one article per file. For a large multi-volume archive whose recovery index already states every exact length, one verified volume can establish the shared article stride; each sibling checks that inference against its own header before serving its first byte. Once a length lands, the library is told the release changed, so the mount and Plex both see the real length. zurg sizes up to eight releases at a time on an account of twelve connections or fewer and more on a larger one (twelve on 16 connections, sixteen from 20), and when acquisition checks a release with the news servers, that check queues beside this sizing and read-ahead and never takes the connection kept for a read a player is waiting on.
+**What Plex will not get from Usenet content:** nothing until zurg has analysed it (see section 4), so Plex may do its own analysis on first play like it would for any local file. File sizes settle shortly after a release is scanned: the first listing may report a cheap estimate from the article count, and the exact length arrives behind it — from the recovery index where there is one, and otherwise from one article per file. For a large multi-volume archive whose recovery index already states every exact length, one verified volume can establish the shared article stride; each sibling checks that inference against its own header before serving its first byte. Once a length lands, the library is told the release changed, so the mount and Plex both see the real length. zurg sizes up to eight releases at a time on an account of twelve connections or fewer and more on a larger one (twelve on 16 connections, sixteen from 20), and when acquisition checks a release with the news servers, that check queues beside this sizing and read-ahead and never takes the connection kept for a read a player is waiting on.
 
 ### Jellyfin / Emby / Infuse
 
@@ -464,7 +464,7 @@ A repair announces itself and then says what it cost:
 
 ```
 PAR2 repair of Some.Release: 5 slice(s) missing; reading the release to rebuild them
-PAR2 repair of Some.Release rebuilt 5 slice(s) in 55s, keeping 3.4 MiB of them (library holds 3.4 MiB in memory, 3.4 MiB on disk)
+PAR2 repair of Some.Release rebuilt 5 slice(s) in 55s on the avx2 kernel, keeping 3.4 MiB of them (library holds 3.4 MiB in memory, 3.4 MiB on disk)
 ```
 
 Two things worth knowing:
@@ -571,7 +571,7 @@ The index rewrites itself whenever the NZB changes, repairs itself if it is ever
 | A second provider never seems to be asked | Both accounts carry the same `backbone`, so the second is skipped once the first says the article is gone | Correct the `backbone` values — only accounts genuinely on one spool should share a name |
 | One of several accounts is dead but startup looked fine | Startup only fails when *every* account is unreachable | Grep the log for `is not reachable` — each bad account warns by name |
 | A block account is being billed for articles the unlimited one has | `backup: true` missing on it | Set it; a primary being merely busy will then no longer push reads onto the metered account |
-| A release is missing from a tag-filtered directory | ffprobe never runs on Usenet content, so it carries no `zurg_*` tags | Filter on names, extensions, size or `has_episodes` |
+| A release is missing from a tag-filtered directory | It has not been analysed yet, so it carries no `zurg_*` tags | Wait for the analysis, or run Analyze & Tag Library from the dashboard |
 | `.par2` files not visible in the mount | Deliberate — they are hidden as repair scaffolding | Nothing to fix; zurg still reads them |
 | Changed a provider in the Dashboard and nothing happened | Provider changes are written to `config.yml` but not hot-reloaded | Restart zurg — the banner under the providers table says so |
 | Plex emptied the library after a zurg restart | A scan was in flight while the mount was away, with auto-empty-trash on | Turn auto-empty off, and pre-flight sessions *and* refreshing state before any restart |
@@ -613,5 +613,5 @@ a probe cannot silence a file that plays.
 - [plex.md](plex.md) — how zurg drives Plex scanning, matching and the trash sweep
 - [jellyfin.md](jellyfin.md) — Jellyfin integration
 - [docker.md](../setup/docker.md) — Docker setup, FUSE propagation and troubleshooting
-- [tags.md](../reference/tags.md) — the tag system, and therefore what Usenet content does not get
+- [tags.md](../reference/tags.md) — the tag system
 - [architecture.md](../internals/architecture.md) — `internal/nzb` and `internal/nntp` in context

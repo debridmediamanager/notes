@@ -347,7 +347,7 @@ The hash is the info hash the client sent. `added … as 720824192` is the accou
 
 A stalled swarm reports **Downloading** with the rate and the seed count at zero rather than as a stall warning — `stalledDL` is a state the \*arrs act on for their failed-download handling, and a swarm with no seeds is not a verdict on the release.
 
-The whole magnet reaches the account. zurg passes on the display name the client grabbed under and any trackers it named. On an indexer that publishes only magnets the display name is the one place the release name exists. Without it TorBox lists an unresolved grab under its forty-character hash for as long as the metadata stays unresolved. A `.torrent` carries its own name and trackers so nothing is added to it.
+With `cached_only: false`, the whole magnet reaches the account. zurg passes on the display name the client grabbed under and any trackers it named. On an indexer that publishes only magnets the display name is the one place the release name exists. Without it TorBox lists an unresolved grab under its forty-character hash for as long as the metadata stays unresolved. A `.torrent` carries its own name and trackers so nothing is added to it. In cached-only mode, the default, TorBox and Debrid-Link are asked by hash alone, since a cached hit comes back under its real name.
 
 ### The import happens
 
@@ -568,8 +568,8 @@ qbittorrent:
 |---|---|
 | TorBox | A magnet with `add_only_if_cached=true`, so a miss adds nothing. It still uses one of TorBox's 60 uncached adds an hour. |
 | Debrid-Link | The bare info hash, which Debrid-Link refuses without adding anything when it does not hold the content. |
-| AllDebrid | The upload itself answers — AllDebrid says on the response whether it already had the content, and a miss is deleted again straight away. |
-| Real-Debrid, Premiumize, Offcloud | The torrent is added, its files are selected, and it is watched for up to five seconds. Cached content completes almost at once (0.4 to 1.5 seconds after file selection on Real-Debrid); anything still going at five seconds is a real download and is deleted again. |
+| AllDebrid, Offcloud | The add itself answers — the service says on the response whether it already had the content, and a miss is deleted again straight away. |
+| Real-Debrid, Premiumize | The torrent is added, its files are selected, and it is watched for up to five seconds. Cached content completes almost at once (0.4 to 1.5 seconds after file selection on Real-Debrid); anything still going at five seconds is a real download and is deleted again. |
 
 zurg does not ask TorBox's `checkcached` or the other cache lookups. They say whether the service has the content, not whether your account ends up holding a usable copy.
 

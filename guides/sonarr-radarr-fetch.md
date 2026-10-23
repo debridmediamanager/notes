@@ -187,7 +187,7 @@ An episode file below the cutoff is an upgrade when the profile allows upgrades.
 
 ## Things to know
 
-- **A change to `indexer_concurrency`, a new source, or a source's URL or API key needs a restart.** `concurrency`, `check_every_secs` and turning a source on or off take effect at the next poll.
+- **Any change to the `acquisition` block in `config.yml` needs a restart.** zurg reads the file only when it starts.
 - **The rescan is the last step and it queues behind the app's own work.** Right after a list adds many movies Radarr refreshes each of them first. The files are already in place while that runs.
 - **Analyse video files reads the head of each file over the mount.** It works. It is also the slowest part of a big list. Leave it on unless you know you do not want media info.
 - **Unmonitored titles are left alone.** That covers movies and series and seasons and episodes. So are titles whose folder is outside `__magic__`.

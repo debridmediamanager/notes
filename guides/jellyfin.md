@@ -30,7 +30,7 @@ order: 50
 - Activity tracking: `GetRunningTasks` returns detailed `TaskActivity` structs with ID, Name, State, Progress (from `CurrentProgressPercentage`), Description, and stuck status for dashboard display.
 - Server status: `GetServerStatus` polls `/Sessions` to count active streaming sessions, transcodes (non-direct video/audio), and bandwidth usage for dashboard display.
 - Library discovery: `GetSections` calls `/Library/VirtualFolders`, returns sections with ID/Title/Paths (every folder of the library)/Type, and augments each with an item count via `Items?ParentId=<id>&Recursive=true&Limit=0`.
-- Refreshing: `ProcessJob` reports every changed path of a job in one `POST /Library/Media/Updated`, with normalized forward-slash paths (Windows-safe). A job with no path refreshes the whole library with `POST /Items/{id}/Refresh`. It returns `ServerBusyError` on 503, a "library may have been deleted" error on 404, and the response body on any other 4xx/5xx. `RefreshSection` enqueues jobs.
+- Refreshing: `ProcessJob` reports every changed path of a job in one `POST /Library/Media/Updated`, with each path in the body exactly as the server sees it on its own filesystem. A job with no path refreshes the whole library with `POST /Items/{id}/Refresh`. It returns `ServerBusyError` on 503, a "library may have been deleted" error on 404, and the response body on any other 4xx/5xx. `RefreshSection` enqueues jobs.
 - Helpers: `FindSectionNormalized` matches by path prefix (first match wins) and returns the path with its prefix rewritten to the library location's casing. The prefix test is case-insensitive on macOS and Windows and exact elsewhere (`pkg/common/pathutil.go`).
 
 ## Media Scanner Integration (`pkg/scan/scanner.go`)
@@ -53,4 +53,4 @@ order: 50
 
 ## Miscellaneous
 - Emby is a sibling integration with its own config keys (`emby_server_url`, `emby_token`) and the same shared core, but no QuickConnect: you sign in with an API key, or pick a user and enter a password (`/emby/users`, `/emby/auth`). Its dashboard card shows libraries with scan buttons (`/emby/scan/{sectionID}`, `/emby/scan-all`), activities and sessions like Jellyfin's (`EmbyStatusFetcher`).
-- Windows path normalization is tested to ensure backslashes are converted before sending refresh requests (`pkg/jellyfin/windows_path_test.go`); `find_section_test.go` covers prefix matching.
+- `pkg/jellyfin/windows_path_test.go` checks that a Windows path stays out of the request URL and reaches the body unchanged; `find_section_test.go` covers prefix matching.

@@ -209,8 +209,8 @@ locations, active slots, quotas and rate limits still apply.
 RD and AD use shared locked references when present. Hash-only manifests, and
 an RD reference the API definitively reports missing, can establish content on
 the recipient's account. TorBox always needs that account attachment and first reuses a matching torrent already on the recipient account. Adds use
-the existing provider pacing and are serialized per account. An add waits for a free
-slot when the account reports its slot count or zurg knows it. AllDebrid, Premiumize and
+the existing provider pacing and are serialized per account. When the account reports its slot count, or zurg knows it, an add to a full
+account is refused and tried again a minute later. AllDebrid, Premiumize and
 Offcloud report none, so the add goes ahead and a full account refuses it. An uncertain add is held for 30 minutes before another attempt; a
 preparing torrent is checked only when playback is requested again.
 

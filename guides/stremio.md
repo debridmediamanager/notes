@@ -206,7 +206,7 @@ stremio-addon-findings-2026-09-07.md.
 The short version is that the per-resolution cap fixed what the previous round
 found and coverage still halved, because a five-deep bucket has nowhere to go
 when its first playable entry is a release that has aged off the spool. The
-fallback above is the first fix from that round; the bucket is still five deep.
+fallback above is the first fix from that round; the bucket has since grown from five to ten.
 
 ## Search behaviour
 

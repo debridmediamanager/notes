@@ -91,8 +91,8 @@ Updating from a build that carried its own engine leaves the app without one.
 Install an engine from Updates once, and your providers and library settings
 carry over untouched.
 
-The app and the engine update separately. Updates lists every engine version
-the sponsor repository still publishes, marks the one you have, and installs any
+The app and the engine update separately. Updates lists the engine versions in
+the sponsor repository's 30 newest releases, marks the one you have, and installs any
 of them. If a new nightly misbehaves on your device, install the one that worked
 for you. Stop your library on Status before changing the engine. The app only
 runs an engine package signed with its own key, and it checks that again on
