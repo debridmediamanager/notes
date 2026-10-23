@@ -558,7 +558,7 @@ qbittorrent:
 
 **What a timeout deletes.** The instance on that account, and only that one: the delete reaches an instance zurg added itself for this grab and that never finished, and nothing else. Once no account is left the grab is reported errored with a reason naming every account and what it did.
 
-**A torrent you delete by hand on the account** moves the grab to the next account at once on Real-Debrid, Premiumize, Debrid-Link and Offcloud, which say plainly when a torrent is gone. TorBox and AllDebrid answer that the same way they answer a passing fault, so there zurg keeps asking and the no-movement clock is what ends it.
+**A torrent you delete by hand on the account** moves the grab to the next account at once. All six services say plainly when a torrent is gone.
 
 **The whole add is budgeted at 75 seconds.** The \*arrs cancel a `torrents/add` at 100 seconds and report the expiry as a connection failure, with no way to raise it. Every account shares the one deadline, so three accounts fit comfortably and a fourth gets whatever the first three did not spend.
 
@@ -569,7 +569,7 @@ qbittorrent:
 | TorBox | A magnet with `add_only_if_cached=true`, so a miss adds nothing. It still uses one of TorBox's 60 uncached adds an hour. |
 | Debrid-Link | The bare info hash, which Debrid-Link refuses without adding anything when it does not hold the content. |
 | AllDebrid | The upload itself answers — AllDebrid says on the response whether it already had the content, and a miss is deleted again straight away. |
-| Real-Debrid, Premiumize, Offcloud | The torrent is added and watched for what is left of the add's 75 seconds. Cached content completes almost at once (0.4 to 1.5 seconds after file selection on Real-Debrid); anything still going at the end is a real download and is deleted again. |
+| Real-Debrid, Premiumize, Offcloud | The torrent is added, its files are selected, and it is watched for up to five seconds. Cached content completes almost at once (0.4 to 1.5 seconds after file selection on Real-Debrid); anything still going at five seconds is a real download and is deleted again. |
 
 zurg does not ask TorBox's `checkcached` or the other cache lookups. They say whether the service has the content, not whether your account ends up holding a usable copy.
 
@@ -608,7 +608,7 @@ Does not:
 | "Download client zurg places downloads in …/__magic__/__all__ but Radarr cannot see this directory" | zurg has not finished loading the library. The top of the mount lists but `__all__` and `__magic__/__all__` do not and Plex sees nothing either. Grep zurg's log for `rejected the API key`. An account whose key or plan stopped working is the usual cause. See [TorBox](../providers/torbox.md#when-it-goes-wrong) for the free plan. The warning clears once the library loads. |
 | "Downloads in root folder" / "Remote path mapping" | The same root-folder and path rules as the Usenet endpoint — see [steps 4](#4-make-the-root-folders) and [8](#8-if-your-arr-is-in-docker). |
 | Every release rejected, nothing in the log | A stale bind mount. Run `docker exec <client> df -h <mount>`; if it says `Socket not connected`, bind the parent with `rslave` and recreate the container. |
-| Imports succeed, but they take a long time and local disk fills | The \*arr is copying rather than renaming. zurg's log shows a `DELETE` of the source with no `MOVE`, or a `PUT` carrying the release's full size. Either **Remove Completed** is off on the download client or the container has the save path and the root folders on two volumes. See [If the import copies instead of moving](#if-the-import-copies-instead-of-moving) and [step 8](#8-if-your-arr-is-in-docker). |
+| Imports succeed, but each one downloads the whole release | The \*arr is copying rather than renaming. zurg logs `A client copied …` and shows a banner on its dashboard. Either **Remove Completed** is off on the download client or the container has the save path and the root folders on two volumes. See [If the import copies instead of moving](#if-the-import-copies-instead-of-moving) and [step 8](#8-if-your-arr-is-in-docker). |
 
 ## Where the state lives
 

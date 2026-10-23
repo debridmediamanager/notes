@@ -633,9 +633,10 @@ that already has it takes it. A miss everywhere is an ordinary failed
 candidate, so the walk moves down the ranking to the next release, which may be
 another torrent or an NZB.
 
-zurg adds the torrent and watches it for up to 20 seconds. Cached content is
-ready within a second or two. Anything still downloading after that is removed
-again. So no download is ever left running on the account. A miss is not quite
+On TorBox and Debrid-Link a miss adds nothing, and on AllDebrid it is deleted
+at once. Other accounts get the torrent added and watched for up to 20 seconds.
+Cached content is ready within a second or two. Anything still downloading
+after that is removed again. So no download is ever left running on the account. A miss is not quite
 free though. It can still count against the account's limit on adds. On TorBox
 it uses one of the 60 uncached adds allowed per hour.
 

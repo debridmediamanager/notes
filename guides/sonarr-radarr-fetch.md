@@ -16,7 +16,7 @@ There are three ways to use Sonarr and Radarr with zurg. Pick the one that match
 
 The first two can run side by side. They share the same `__magic__` folder.
 
-Radarr and Sonarr keep the list and the library. zurg does the fetching. Add a movie or a series the way you already do and zurg finds a release on your Usenet indexers. It checks that the post is still on the news servers. Then it puts the file in its folder inside `__magic__` and asks Radarr or Sonarr to rescan. Nothing is downloaded to import and nothing is copied.
+Radarr and Sonarr keep the list and the library. zurg does the fetching. Add a movie or a series the way you already do and zurg finds a release on your indexers. It checks that an NZB is still on the news servers, or that your debrid account already holds a torrent. Then it puts the file in its folder inside `__magic__` and asks Radarr or Sonarr to rescan. Nothing is downloaded to import and nothing is copied.
 
 Radarr and Sonarr need no indexers and no download client for this. They never search and never grab. Your quality profile still decides what zurg is allowed to take.
 
@@ -24,7 +24,7 @@ The screenshots come from the zurg build that ships as the 26 September 2026 nig
 
 ## Before you start
 
-1. **zurg has a Usenet account and at least one Newznab indexer.** The indexers go in zurg's config under `acquisition.indexers`. The [Watchlist and Seerr](acquisition.md) page covers that block.
+1. **zurg has a Usenet or debrid account and at least one Newznab or Torznab indexer.** The indexers go in zurg's config under `acquisition.indexers`. The [Watchlist and Seerr](acquisition.md) page covers that block.
 2. **`magic.enabled` is `true`.** The Radarr and Sonarr sources do not start without it and say so in the log. See [`__magic__`](magic.md).
 3. **Radarr and Sonarr can see zurg's mount.** In Docker that means binding it into their containers. Bind the parent of the mount once and reach everything through it. If they also take grabs from zurg as a download client then two volumes for the download folder and the root folders copy every import. See [one volume](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
 4. **You run a nightly from 26 September 2026 or later.** Older builds do not know the `radarr` or `sonarr` sources.

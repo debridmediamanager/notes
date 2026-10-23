@@ -6,7 +6,7 @@ order: 40
 
 # zurg for Android and Google TV
 
-The Android app runs its bundled zurg engine on the device. One app adapts to
+The Android app runs a zurg engine on the device, installed from inside the app. One app adapts to
 phones, tablets, Android TV and Google TV. Android 8.0 or newer is required.
 Fire TV can sideload the same APK; use a WebDAV player when no system Files app
 is installed. Usenet requires 64-bit Android.
@@ -69,7 +69,7 @@ Loopback is the default. Player intents never contain your server password.
 ## Settings, backups and updates
 
 Settings covers connection, providers, library, repair, resources and logging.
-Advanced accepts raw YAML and asks the bundled engine to validate it before
+Advanced accepts raw YAML and asks the installed engine to validate it before
 saving. Saving a running configuration asks before restarting the server.
 Web dashboard opens the local dashboard for desktop integration settings.
 

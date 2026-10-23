@@ -10,7 +10,7 @@ Every other directory zurg serves is computed. `movies` holds what matches the m
 
 `__magic__` is the one directory whose paths are **stored**. A move inside it rewrites a row in a small table; no bytes move, nothing is copied, and the release stays exactly where it was on the debrid account. What you get is a tree you can arrange — by hand, or by pointing Sonarr or Radarr at it.
 
-It holds two things. `__magic__/__all__` is the library exactly as `__all__` lists it, and it is the folder the download clients import from; it is computed, so nothing can be created at its top level, and a release's own files cannot be replaced (a release folder takes sidecars at names it does not use). Everything beside it at the root of `__magic__` is yours:
+It holds two things. `__magic__/__all__` is the library exactly as `__all__` lists it, and it is the folder the download clients import from; it is computed, so nothing can be created at its top level, and no file's bytes can be written over a name a release folder already holds (a release folder takes sidecars at names it does not use). Everything beside it at the root of `__magic__` is yours:
 
 ```
 /mnt/zurg/__magic__
@@ -172,7 +172,7 @@ magic:
   sidecar_budget_mb: 2048  # the whole tree
 ```
 
-Over the first is `413`, over the second `507`. They bound what *zurg* writes. With the default `union_writable: local`, rclone's own local upstream cannot be refused from here, though the tree is re-measured before any refusal, so files it put there do count against the budget the next time zurg is asked to write one. `union_writable: server` flips that: the create itself arrives at zurg, so the caps decide every write through the mount too, and anything outside `__magic__` is refused outright.
+Over the first is `413`, over the second `507`. They bound what *zurg* writes. With the default `union_writable: local`, rclone's own local upstream cannot be refused from here, though the tree is re-measured before any refusal, so files it put there count against the budget the next time zurg is asked to write one, apart from any larger than `sidecar_max_mb`, which are left out. `union_writable: server` flips that: the create itself arrives at zurg, so the caps decide every write through the mount too, and anything outside `__magic__` is refused outright.
 
 A sidecar can also go inside a release folder, which is where an \*arr writes the `.nfo` for a file it imported there. zurg writes and renames one at any name the release does not already hold, and refuses one that would take the name of the release's own file. A `DELETE` of a sidecar really deletes it, which is the one place in `__magic__` where a delete is not a tombstone: a tombstone hides an entry the library still holds elsewhere, and a sidecar's bytes live in `data/local` and nowhere else.
 
@@ -208,7 +208,7 @@ Useful if you drive the namespace over WebDAV directly; the mount handles all of
 | `204` | DELETE, or a PUT that replaced a sidecar |
 | `400` | a path this namespace cannot store, or a `Destination` header that is missing or unreadable |
 | `403` | a destination outside `__magic__`, a path the library answers for, a path running through a file, `__magic__` itself, or a table that is read-only |
-| `404` | nothing there, or a MOVE out of an archive that no longer holds the entry |
+| `404` | nothing there (a DELETE of nothing still answers `204`), or a MOVE out of an archive that no longer holds the entry |
 | `405` | MKCOL where something already exists, or PUT onto a directory |
 | `409` | missing parent, non-empty directory, an occupied destination with `Overwrite: T`, or a MOVE out of an archive that will not open |
 | `412` | occupied destination with `Overwrite: F` |

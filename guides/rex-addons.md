@@ -23,7 +23,7 @@ If what you bring are movies and shows Plex already knows (it has their IMDb or 
 | You need | Why |
 |---|---|
 | rex, set up as in [rex with your own app](rex-any-source.md) (steps 1 to 3) | That is where your addon's library shows up |
-| A rex nightly from the night of October 23, 2026, or newer | `display` and HLS streams arrived then. Older builds reject what this page sends |
+| A rex nightly dated 2026.10.24 or newer | `display` and HLS streams arrived then. Older builds reject what this page sends |
 | FFmpeg where rex runs, if your addon serves streams | rex plays a stream by converting it (a copy, cheap). rex finds FFmpeg itself; see [rex](rex.md) |
 | Your addon on the same machine as rex, or on your home network | rex's feed answers only private networks: loopback, `192.168.x.x`, `10.x.x.x`, Tailscale |
 
@@ -215,7 +215,7 @@ The same addon takes more than YouTube. Each kind is a different answer to Steps
 | `rejected`: `... is already <id>'s file` | Another id has that `file` | Keep one id per file |
 | Episodes titled "Episode 1" and blank tiles | No `display` | Send `display` with each video |
 | A film sent with its IMDb id keeps your `display` title, not Plex's | rex asks Plex for titles only once it is claimed | Claim rex ([rex](rex.md)) |
-| Pictures do not show | The URL is on your home network but not under your addon's registered `url`, or is not http(s) | Serve them from your addon's own address, or host them on the public internet. Pictures from your addon's address need a rex from October 23, 2026 or newer |
+| Pictures do not show | The URL is on your home network but not under your addon's registered `url`, or is not http(s) | Serve them from your addon's own address, or host them on the public internet. Pictures from your addon's address need a rex nightly dated 2026.10.24 or newer |
 | Playing fails with 502 in rex's log | Your addon did not answer, or the stream's site refused it | Check your addon's own log first |
 | A title deleted in a Plex app stays | Your addon answered the `DELETE` with something other than `2xx` or `404` | Delete it on your side, then answer `2xx` |
 | A deleted title comes back | Your addon still sends the video | Stop sending what was deleted |
