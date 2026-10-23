@@ -2,7 +2,7 @@
 
 [rex](https://rex.debridmediamanager.com) shows whatever its sources tell it about. zurg is one source. An **addon** is a small program of your own that is another: it brings something into your Plex apps that no Plex agent knows, such as a YouTube channel, home videos or recordings, and names it itself.
 
-This page is for people who write addons. It covers what rex needs from one, how to name and dress what it brings, and the rules that trip people up. It ends with a worked example: the YouTube addon we run, which streams every video of a channel into a TV show, nothing downloaded.
+This page is for people who write addons. It covers what rex needs from one, how to name and dress what it brings, and the rules that trip people up. It ends with a worked example: the addon we run, which streams every video of a YouTube channel into a TV show, nothing downloaded, and the same way other video sites, podcast feeds, folders of your own videos and Stremio catalogs.
 
 An addon does three things:
 
@@ -167,7 +167,7 @@ To **replace** an addon (or a script) that already filled a library, keep its so
 
 ## Example: the YouTube addon
 
-We run an addon that turns YouTube channels into TV shows. It is one Python file, about 350 lines, and does Steps 1 to 5. It does not take deletes: YouTube videos are not ours to delete.
+We run an addon that turns YouTube channels into TV shows. It is one Python file, about 700 lines, and does Steps 1 to 5. It does not take deletes: YouTube videos are not ours to delete.
 
 **Serving.** YouTube's links expire after a few hours and only work from the address that asked for them, so the addon stores no links. It serves a URL per video, `/<library>/<channel>/<video>.m3u8`, and answers it with a redirect to YouTube's current stream, asked of [yt-dlp](https://github.com/yt-dlp/yt-dlp) at that moment and cached until shortly before it expires:
 
@@ -189,6 +189,17 @@ rex follows the redirect, and its FFmpeg reads the stream straight from YouTube.
 
 **What YouTube adds.** YouTube asks addresses that fetch a lot to "sign in to confirm you're not a bot", and then nothing plays. The addon gives yt-dlp a signed-in account's cookies. Sign the account out in the browser they came from and the cookies stop working.
 
+### What else it takes
+
+The same addon takes more than YouTube. Each kind is a different answer to Steps 1 and 3; everything else stays the same.
+
+| It takes | How it serves the bytes | How it names and places them |
+|---|---|---|
+| **Other video sites** yt-dlp lists, such as Dailymotion channels and Twitch past broadcasts | A redirect to the site's stream, as for YouTube | The site's titles, dates and pictures, numbered by upload date |
+| **Video podcast feeds** (RSS) and **single video pages**, such as an Internet Archive film | A redirect to the site's MP4 file. rex sends its seeks through the redirect, so seeking works | The feed's own titles and dates. A feed's episode numbers are kept, because a feed lists only its latest episodes and counting them would renumber everything whenever an old one drops off. A film known only by its year is sent as `"date": "1940"` |
+| **A folder of your own videos**, such as a camera roll or a share on your NAS | The addon serves the file itself, with seeking | Titled by the file name and dated when the camera recorded it. Its picture is a frame from the video, which the addon serves from its own address |
+| **A Stremio catalog**, such as Cinemeta's top films or your DMM Cast list | A redirect to the first ordinary video link the catalog's stream addons give, asked again at every play because those links can expire. Torrent-only streams are skipped | Sent with `kind` and its IMDb id in `ids`, so Plex names it as in [rex with your own app](rex-any-source.md). The catalog's own title and poster go in `display`, which shows only until Plex names it |
+
 ## Troubleshooting
 
 | You see | Why | Fix |
@@ -197,6 +208,7 @@ rex follows the redirect, and its FFmpeg reads the stream straight from YouTube.
 | A video never shows up | It is held: no `media_info`, or one with no streams | Probe it and send it again |
 | `rejected`: `... is already <id>'s file` | Another id has that `file` | Keep one id per file |
 | Episodes titled "Episode 1" and blank tiles | No `display` | Send `display` with each video |
+| A film sent with its IMDb id keeps your `display` title, not Plex's | rex asks Plex for titles only once it is claimed | Claim rex ([rex](rex.md)) |
 | Pictures do not show | The URL is on your home network but not under your addon's registered `url`, or is not http(s) | Serve them from your addon's own address, or host them on the public internet. Pictures from your addon's address need a rex from October 23, 2026 or newer |
 | Playing fails with 502 in rex's log | Your addon did not answer, or the stream's site refused it | Check your addon's own log first |
 | A title deleted in a Plex app stays | Your addon answered the `DELETE` with something other than `2xx` or `404` | Delete it on your side, then answer `2xx` |
