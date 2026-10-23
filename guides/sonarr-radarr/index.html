@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846109223389">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846109968835">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.846109223389" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.846109968835" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.846109223389" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.846109968835" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.846109223389" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.846109223389" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.846109968835" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.846109968835" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -190,7 +190,7 @@
 |---|---|---|---|
 | [Usenet](sonarr-radarr.md) | Sonarr and Radarr | a SABnzbd | a Usenet account and Usenet indexers in Prowlarr or the \*arrs |
 | [Torrents](sonarr-radarr-torrents.md) | Sonarr and Radarr | a qBittorrent | a debrid account and torrent indexers in Prowlarr or the \*arrs |
-| [zurg searches](sonarr-radarr-fetch.md) | zurg | no download client at all | a Usenet account and Usenet indexers in zurg's own config |">
+| [zurg searches](sonarr-radarr-fetch.md) | zurg | no download client at all | a Usenet or debrid account, and Newznab or Torznab indexers in zurg's own config |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -218,7 +218,7 @@
 <td><a href="../sonarr-radarr-fetch/">zurg searches</a></td>
 <td>zurg</td>
 <td>no download client at all</td>
-<td>a Usenet account and Usenet indexers in zurg&#x27;s own config</td>
+<td>a Usenet or debrid account, and Newznab or Torznab indexers in zurg&#x27;s own config</td>
 </tr>
 </tbody>
 </table>
@@ -742,12 +742,12 @@ import was a rename into <code translate="no" v-pre>__magic__/movies</code> and 
 not tested.</p>
 <p>Thanks to <strong>.telmen</strong> on Discord for asking how to do this with Usenet.</p>
 <h2 id="watching-from-zurgs-side">Watching from zurg&#x27;s side</h2>
-<p>zurg&#x27;s <code translate="no" v-pre>/magic/</code> page lists every NZB the endpoint has ever been handed. It is read-only — a job is removed by the client that created it, and the record is kept for a week after that so a poll racing a delete answers the same way twice.</p>
+<p>zurg&#x27;s <code translate="no" v-pre>/magic/</code> page lists every NZB the endpoint has ever been handed. Sonarr and Radarr remove the jobs they grabbed, and the record is kept for a week after that so a poll racing a delete answers the same way twice. A <strong>Failed</strong> or <strong>Stuck</strong> job (queued for more than an hour) that no client will ever remove, for example after you stop using zurg as their download client, can be cleared here by holding its <strong>Clear</strong> button. Clearing one deletes its NZB unless an import still uses it.</p>
 <figure class="content-center">
     <img src="../../assets/sonarr-radarr/41-zurg-magic-header.webp" alt="The magic page header showing placements and tombstones" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
     <figcaption class="caption">The magic page header showing placements and tombstones</figcaption>
 </figure>
-<p><strong>Placements</strong> are files the clients moved; <strong>tombstones</strong> are the job folders they deleted afterwards. A rising <strong>sidecars</strong> number is the warning sign: it means a client is copying rather than moving.</p>
+<p><strong>Placements</strong> are files the clients moved; <strong>tombstones</strong> are the job folders they deleted afterwards. If a client copies instead of moving, the page shows a red <strong>Imports that were copies</strong> table. zurg turns those copies back into placements and deletes them, but each one was still a full download, so fix the volumes.</p>
 <figure class="content-center">
     <img src="../../assets/sonarr-radarr/42-zurg-magic-sabnzbd-jobs.webp" alt="The SABnzbd jobs table on the magic page" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
     <figcaption class="caption">The SABnzbd jobs table on the magic page</figcaption>
@@ -759,7 +759,7 @@ not tested.</p>
 <ul>
 <li>The connection test, all four checks, in both clients.</li>
 <li>Grabbing, queue, history, import by rename, and the post-import cleanup.</li>
-<li>Re-grabbing the same release. The job id comes from the NZB&#x27;s filename, so it names the same job rather than a second one. A re-grab of a release an earlier import already emptied is reported <strong>Failed</strong>. Its folder under <code translate="no" v-pre>__magic__/__all__</code> has nothing left to import and Failed makes the client blocklist it and take another. The grab that did the emptying keeps reporting Completed until the client deletes it.</li>
+<li>Re-grabbing the same release. Each later grab gets a job id of its own, so the client acts on it rather than reusing the old job&#x27;s result. The release underneath stays the same one. A re-grab of a release an earlier import already emptied is reported <strong>Failed</strong>. Its folder under <code translate="no" v-pre>__magic__/__all__</code> has nothing left to import and Failed makes the client blocklist it and take another. The grab that did the emptying keeps reporting Completed until the client deletes it.</li>
 <li>Removing a job from the queue, with or without deleting the NZB.</li>
 <li><code translate="no" v-pre>mode=addurl</code>, for a human or an automation passing a URL instead of uploading. Neither *arr uses it.</li>
 </ul>
@@ -767,7 +767,7 @@ not tested.</p>
 <ul>
 <li><strong>No progress.</strong> A job is queued or completed; there is no percentage between, because there is no download to measure. The queue reports the NZB&#x27;s declared size so the row is not blank.</li>
 <li><strong>No pause, resume, speed limit, priority or post-processing script.</strong> SABnzbd has all of these; zurg has nothing to apply them to.</li>
-<li><strong><code translate="no" v-pre>del_files</code> on a history delete is ignored.</strong> The client means &quot;the job folder is yours again&quot;, but the file it just imported is still served out of that NZB. The folder it wanted gone is gone — it deleted that itself, through the mount.</li>
+<li><strong><code translate="no" v-pre>del_files</code> on a history delete of a finished job is ignored.</strong> (For a Failed job it deletes the NZB when nothing imported from it.) The client means &quot;the job folder is yours again&quot;, but the file it just imported is still served out of that NZB. The folder it wanted gone is gone — it deleted that itself, through the mount.</li>
 <li><strong>Basic auth cannot protect this endpoint.</strong> The API key is the only gate.</li>
 </ul>
 <p><strong>The failure signal.</strong> A release with nothing importable in it is reported <strong>Failed</strong>, and both clients blocklist it and grab an alternative. That covers a release whose files are all broken, deleted or filtered away; one holding nothing but <code translate="no" v-pre>.par2</code>, <code translate="no" v-pre>.sfv</code> and sidecars; one whose every file is a shape nothing plays, which is what an obfuscated post naming its RAR set <code translate="no" v-pre>.z001</code>…<code translate="no" v-pre>.z133</code> looks like; and an archive already opened and found to hold no media. A RAR set is content, not scaffolding: zurg streams the video straight out of it. If a release really does carry something zurg has no extension for, widen <code translate="no" v-pre>addl_playable_extensions</code> rather than blocklisting it.</p>
@@ -783,7 +783,7 @@ not tested.</p>
 | &quot;Category … does not exist&quot; | The category in the \*arr is not in `sabnzbd.categories`. Add it and restart zurg. |
 | &quot;Downloads in root folder&quot; | A root folder is at or above the completed directory. Move it beside it — `__magic__/tv`, not `__magic__/__all__`, not `__magic__` and not `/mnt/zurg_usenet`. |
 | &quot;Remote path mapping&quot; / &quot;download doesn't contain intermediate path&quot; | The path zurg reports is not a path the client can open. See [step 8](#8-if-your-arr-is-in-docker). |
-| Imports succeed but take as long as a download and zurg's disk fills up | The client is copying out of `__magic__/__all__` instead of renaming. Its container has the download folder and the root folders on two volumes. Or a manual import was set to copy. See [one volume for the download folder and the root folders](#one-volume-for-the-download-folder-and-the-root-folders). |
+| Imports succeed but take as long as a download, and zurg's `/magic/` page lists them under **Imports that were copies** | The client is copying out of `__magic__/__all__` instead of renaming. Its container has the download folder and the root folders on two volumes. Or a manual import was set to copy. See [one volume for the download folder and the root folders](#one-volume-for-the-download-folder-and-the-root-folders). |
 | Every release rejected, nothing in the log | A stale bind mount. Run `docker exec &lt;client&gt; df -h &lt;mount&gt;`; if it says `Socket not connected`, bind the parent with `rslave` and recreate the container. |
 | A job stays queued for a poll or two after the release appears | Expected, and it settles once per release. An NZB does not state how long a file is; the estimate is being replaced by the exact length from the PAR2 index or one article's own header. Reporting Completed early is what makes the client throw *File move incomplete, data loss may have occurred*. |
 | A job sits queued for ever | The release never appeared in the library. Check that the NZB parsed — `Loaded NZB &lt;name&gt;: N files` in the log — and that the `nzb` provider is configured at all. |
@@ -825,7 +825,7 @@ not tested.</p>
 <td>The path zurg reports is not a path the client can open. See <doc-anchor-trigger to="#8-if-your-arr-is-in-docker">step 8</doc-anchor-trigger>.</td>
 </tr>
 <tr>
-<td>Imports succeed but take as long as a download and zurg&#x27;s disk fills up</td>
+<td>Imports succeed but take as long as a download, and zurg&#x27;s <code translate="no" v-pre>/magic/</code> page lists them under <strong>Imports that were copies</strong></td>
 <td>The client is copying out of <code translate="no" v-pre>__magic__/__all__</code> instead of renaming. Its container has the download folder and the root folders on two volumes. Or a manual import was set to copy. See <doc-anchor-trigger to="#one-volume-for-the-download-folder-and-the-root-folders">one volume for the download folder and the root folders</doc-anchor-trigger>.</td>
 </tr>
 <tr>

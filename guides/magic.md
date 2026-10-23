@@ -4,7 +4,7 @@ Every other directory zurg serves is computed. `movies` holds what matches the m
 
 `__magic__` is the one directory whose paths are **stored**. A move inside it rewrites a row in a small table; no bytes move, nothing is copied, and the release stays exactly where it was on the debrid account. What you get is a tree you can arrange — by hand, or by pointing Sonarr or Radarr at it.
 
-It holds two things. `__magic__/__all__` is the library exactly as `__all__` lists it, and it is the folder the download clients import from; it is computed, so nothing can be written into it. Everything beside it at the root of `__magic__` is yours:
+It holds two things. `__magic__/__all__` is the library exactly as `__all__` lists it, and it is the folder the download clients import from; it is computed, so nothing can be created at its top level, and a release's own files cannot be replaced (a release folder takes sidecars at names it does not use). Everything beside it at the root of `__magic__` is yours:
 
 ```
 /mnt/zurg/__magic__
@@ -31,7 +31,7 @@ An \*arr imports by **moving** the file out of the download folder into the libr
 
 With `__magic__` the import is a rename inside one namespace: a row is written, the file appears where the \*arr put it, and nothing is downloaded. That is what makes [the SABnzbd endpoint](sonarr-radarr.md) worth having — it is a thin layer on top of this, and without it every import would be a full download.
 
-It only works if the \*arr's **root folder is also inside `__magic__`** — `/mnt/zurg/__magic__/tv`, not a directory elsewhere on the machine. A move whose destination is outside the namespace is a move between two filesystems, which is a copy again; zurg refuses it outright with a `403` rather than letting it happen quietly. The one place inside the namespace that is also refused is `__magic__/__all__`, which is the library's own layout rather than anywhere to put things. [sabnzbd.md](sonarr-radarr.md) has the exact settings.
+It only works if the \*arr's **root folder is also inside `__magic__`** — `/mnt/zurg/__magic__/tv`, not a directory elsewhere on the machine. A move whose destination is outside the namespace is a move between two filesystems, which is a copy again; zurg refuses it outright with a `403` rather than letting it happen quietly. The one place inside the namespace that is also refused is the top of `__magic__/__all__`, which is the library's own layout rather than anywhere to put things. [sabnzbd.md](sonarr-radarr.md) has the exact settings.
 
 A file placed out of `__all__` stays listed there, and a delete in `__all__` deletes from the account, so zurg refuses to delete a file through `__all__` or any other library folder while a placement here streams from it. Delete it under `__magic__` instead. That is what keeps an \*arr that imports out of `__all__` and then cleans up its download folder there, as one fed by DMM's SABnzbd proxy does, from deleting the release it has just imported.
 
@@ -168,7 +168,7 @@ magic:
 
 Over the first is `413`, over the second `507`. They bound what *zurg* writes. With the default `union_writable: local`, rclone's own local upstream cannot be refused from here, though the tree is re-measured before any refusal, so files it put there do count against the budget the next time zurg is asked to write one. `union_writable: server` flips that: the create itself arrives at zurg, so the caps decide every write through the mount too, and anything outside `__magic__` is refused outright.
 
-A sidecar cannot be created inside a release folder — the library owns every name in there, so a file put among its entries would be listed by nothing — and a real file cannot be moved into one for the same reason. A `DELETE` of a sidecar really deletes it, which is the one place in `__magic__` where a delete is not a tombstone: a tombstone hides an entry the library still holds elsewhere, and a sidecar's bytes live in `data/local` and nowhere else.
+A sidecar can also go inside a release folder, which is where an \*arr writes the `.nfo` for a file it imported there. zurg writes and renames one at any name the release does not already hold, and refuses one that would take the name of the release's own file. A `DELETE` of a sidecar really deletes it, which is the one place in `__magic__` where a delete is not a tombstone: a tombstone hides an entry the library still holds elsewhere, and a sidecar's bytes live in `data/local` and nowhere else.
 
 ## The dashboard
 

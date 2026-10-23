@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846109223389">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846109968835">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.846109223389" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.846109968835" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.846109223389" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.846109968835" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.846109223389" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.846109223389" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.846109968835" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.846109968835" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -333,7 +333,7 @@
 |---|---|---|
 | `id` | yes | Your key for this video, **for good**. rex keeps watch history on it |
 | `path` | yes | Where its bytes are under your `url`. Its first segment picks the library |
-| `media_info` | yes, in practice | ffprobe's `-show_format -show_streams` JSON for the video (for a stream, probe its URL). Without it the video is **held**: stored but not shown, because Plex apps will not play a video they know nothing about |
+| `media_info` | yes, in practice | ffprobe's `-show_format -show_streams` JSON for the video (for a stream, probe its URL). Without it a file is **held**: stored but not shown, because Plex apps will not play a video they know nothing about. A stream (`.m3u8`) without one is rejected as `not a video file`, so send a stream only once you have probed it |
 | `kind` | for a show | `episode` or `movie`. Without it nothing places the video: in a TV library it is an episode of a show named after `name`, numbered in file order; in a movie library a film titled as its file |
 | `season`, `episode` | for an episode | Where it goes. Number episodes so a new one never shifts the others |
 | `name` | for a show | The show's name, and what groups its episodes |
@@ -364,7 +364,7 @@
 <tr>
 <td><code translate="no" v-pre>media_info</code></td>
 <td>yes, in practice</td>
-<td>ffprobe&#x27;s <code translate="no" v-pre>-show_format -show_streams</code> JSON for the video (for a stream, probe its URL). Without it the video is <strong>held</strong>: stored but not shown, because Plex apps will not play a video they know nothing about</td>
+<td>ffprobe&#x27;s <code translate="no" v-pre>-show_format -show_streams</code> JSON for the video (for a stream, probe its URL). Without it a file is <strong>held</strong>: stored but not shown, because Plex apps will not play a video they know nothing about. A stream (<code translate="no" v-pre>.m3u8</code>) without one is rejected as <code translate="no" v-pre>not a video file</code>, so send a stream only once you have probed it</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>kind</code></td>
@@ -457,7 +457,7 @@
 <p>Every field is optional. Pictures are <code translate="no" v-pre>http://</code> or <code translate="no" v-pre>https://</code> URLs. rex fetches them itself: from the public internet, or from your addon&#x27;s own address (the <code translate="no" v-pre>url</code> you registered), with your addon&#x27;s login. Any other address on your home network is refused. So an addon can serve its own pictures, such as a frame from each home video. A 2:3 picture makes the best poster, a 16:9 one the best still and background.</p>
 <p>How rex treats them:</p>
 <ul>
-<li><strong>Only for what nothing names.</strong> A video sent with <code translate="no" v-pre>ids</code> Plex knows is shown as Plex describes it, and <code translate="no" v-pre>display</code> is ignored.</li>
+<li><strong>Only for what nothing names.</strong> A video sent with <code translate="no" v-pre>kind</code> and <code translate="no" v-pre>ids</code> Plex knows is shown as Plex describes it, and <code translate="no" v-pre>display</code> is ignored.</li>
 <li><strong>Later sends update.</strong> Send a video again with a new <code translate="no" v-pre>display</code> and its row, show and season change in place; apps redraw new pictures. A show keeps the title it was made with.</li>
 <li><strong>People win.</strong> A field someone edited and locked in a Plex app keeps their value, and a poster they uploaded stays.</li>
 <li><strong>It is checked.</strong> A picture that is no http(s) URL, or a date of another shape, refuses the video and says which field.</li>
@@ -512,7 +512,7 @@ curl -s http://192.168.1.20:32400/rex/feed/myaddon/held                  # what 
 | **An id is forever.** Change it and the video is a new title | Watch history and edits stay on the old row, which the next snapshot removes |
 | **One video, one file.** Two ids may not share a `file` | The second is rejected: `&lt;file&gt; is already &lt;id&gt;'s file` |
 | **A video's bytes are fixed per id.** rex keeps the streams it was first probed with | If the bytes change (another format, a fixed upload), give the video a new id and file |
-| **Probe everything.** No `media_info`, no video | It waits in `held` until a send brings one |
+| **Probe everything.** No `media_info`, no video | A file waits in `held` until a send brings one; a stream is rejected |
 | **Keep the source name.** Rows belong to (source, id) | Another name starts an empty source; the old one's rows stay until you delete it |
 | **Snapshots are complete.** One that misses a channel removes it | Do not send a snapshot after a partial failure: skip that round |">
 <div class="table-wrapper scrollbar overflow-hidden">
@@ -538,7 +538,7 @@ curl -s http://192.168.1.20:32400/rex/feed/myaddon/held                  # what 
 </tr>
 <tr>
 <td><strong>Probe everything.</strong> No <code translate="no" v-pre>media_info</code>, no video</td>
-<td>It waits in <code translate="no" v-pre>held</code> until a send brings one</td>
+<td>A file waits in <code translate="no" v-pre>held</code> until a send brings one; a stream is rejected</td>
 </tr>
 <tr>
 <td><strong>Keep the source name.</strong> Rows belong to (source, id)</td>
@@ -613,7 +613,7 @@ self.send_header(&quot;Location&quot;, url)</code></pre>
 <retype-table copy-text="| You see | Why | Fix |
 |---|---|---|
 | `rejected`: `not a video file` | The file name has no video extension, or an `.m3u8` whose probe is not `hls` | Name streams `.m3u8` and send their probe |
-| A video never shows up | It is held: no `media_info`, or one with no streams | Probe it and send it again |
+| A video never shows up | A file is held, or a stream was rejected: no `media_info`, or one with no streams | Probe it and send it again |
 | `rejected`: `... is already &lt;id&gt;'s file` | Another id has that `file` | Keep one id per file |
 | Episodes titled &quot;Episode 1&quot; and blank tiles | No `display` | Send `display` with each video |
 | A film sent with its IMDb id keeps your `display` title, not Plex's | rex asks Plex for titles only once it is claimed | Claim rex ([rex](rex.md)) |
@@ -638,7 +638,7 @@ self.send_header(&quot;Location&quot;, url)</code></pre>
 </tr>
 <tr>
 <td>A video never shows up</td>
-<td>It is held: no <code translate="no" v-pre>media_info</code>, or one with no streams</td>
+<td>A file is held, or a stream was rejected: no <code translate="no" v-pre>media_info</code>, or one with no streams</td>
 <td>Probe it and send it again</td>
 </tr>
 <tr>

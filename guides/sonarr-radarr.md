@@ -6,7 +6,7 @@ There are three ways to use Sonarr and Radarr with zurg. Pick the one that match
 |---|---|---|---|
 | [Usenet](sonarr-radarr.md) | Sonarr and Radarr | a SABnzbd | a Usenet account and Usenet indexers in Prowlarr or the \*arrs |
 | [Torrents](sonarr-radarr-torrents.md) | Sonarr and Radarr | a qBittorrent | a debrid account and torrent indexers in Prowlarr or the \*arrs |
-| [zurg searches](sonarr-radarr-fetch.md) | zurg | no download client at all | a Usenet account and Usenet indexers in zurg's own config |
+| [zurg searches](sonarr-radarr-fetch.md) | zurg | no download client at all | a Usenet or debrid account, and Newznab or Torznab indexers in zurg's own config |
 
 The first two can run side by side. They share the same `__magic__` folder.
 
@@ -482,11 +482,11 @@ Thanks to **.telmen** on Discord for asking how to do this with Usenet.
 
 ## Watching from zurg's side
 
-zurg's `/magic/` page lists every NZB the endpoint has ever been handed. It is read-only — a job is removed by the client that created it, and the record is kept for a week after that so a poll racing a delete answers the same way twice.
+zurg's `/magic/` page lists every NZB the endpoint has ever been handed. Sonarr and Radarr remove the jobs they grabbed, and the record is kept for a week after that so a poll racing a delete answers the same way twice. A **Failed** or **Stuck** job (queued for more than an hour) that no client will ever remove, for example after you stop using zurg as their download client, can be cleared here by holding its **Clear** button. Clearing one deletes its NZB unless an import still uses it.
 
 ![The __magic__ page header showing placements and tombstones](../assets/sonarr-radarr/41-zurg-magic-header.webp)
 
-**Placements** are files the clients moved; **tombstones** are the job folders they deleted afterwards. A rising **sidecars** number is the warning sign: it means a client is copying rather than moving.
+**Placements** are files the clients moved; **tombstones** are the job folders they deleted afterwards. If a client copies instead of moving, the page shows a red **Imports that were copies** table. zurg turns those copies back into placements and deletes them, but each one was still a full download, so fix the volumes.
 
 ![The SABnzbd jobs table on the __magic__ page](../assets/sonarr-radarr/42-zurg-magic-sabnzbd-jobs.webp)
 
@@ -500,7 +500,7 @@ Works:
 
 - The connection test, all four checks, in both clients.
 - Grabbing, queue, history, import by rename, and the post-import cleanup.
-- Re-grabbing the same release. The job id comes from the NZB's filename, so it names the same job rather than a second one. A re-grab of a release an earlier import already emptied is reported **Failed**. Its folder under `__magic__/__all__` has nothing left to import and Failed makes the client blocklist it and take another. The grab that did the emptying keeps reporting Completed until the client deletes it.
+- Re-grabbing the same release. Each later grab gets a job id of its own, so the client acts on it rather than reusing the old job's result. The release underneath stays the same one. A re-grab of a release an earlier import already emptied is reported **Failed**. Its folder under `__magic__/__all__` has nothing left to import and Failed makes the client blocklist it and take another. The grab that did the emptying keeps reporting Completed until the client deletes it.
 - Removing a job from the queue, with or without deleting the NZB.
 - `mode=addurl`, for a human or an automation passing a URL instead of uploading. Neither \*arr uses it.
 
@@ -508,7 +508,7 @@ Does not:
 
 - **No progress.** A job is queued or completed; there is no percentage between, because there is no download to measure. The queue reports the NZB's declared size so the row is not blank.
 - **No pause, resume, speed limit, priority or post-processing script.** SABnzbd has all of these; zurg has nothing to apply them to.
-- **`del_files` on a history delete is ignored.** The client means "the job folder is yours again", but the file it just imported is still served out of that NZB. The folder it wanted gone is gone — it deleted that itself, through the mount.
+- **`del_files` on a history delete of a finished job is ignored.** (For a Failed job it deletes the NZB when nothing imported from it.) The client means "the job folder is yours again", but the file it just imported is still served out of that NZB. The folder it wanted gone is gone — it deleted that itself, through the mount.
 - **Basic auth cannot protect this endpoint.** The API key is the only gate.
 
 **The failure signal.** A release with nothing importable in it is reported **Failed**, and both clients blocklist it and grab an alternative. That covers a release whose files are all broken, deleted or filtered away; one holding nothing but `.par2`, `.sfv` and sidecars; one whose every file is a shape nothing plays, which is what an obfuscated post naming its RAR set `.z001`…`.z133` looks like; and an archive already opened and found to hold no media. A RAR set is content, not scaffolding: zurg streams the video straight out of it. If a release really does carry something zurg has no extension for, widen `addl_playable_extensions` rather than blocklisting it.
@@ -529,7 +529,7 @@ Does not:
 | "Category … does not exist" | The category in the \*arr is not in `sabnzbd.categories`. Add it and restart zurg. |
 | "Downloads in root folder" | A root folder is at or above the completed directory. Move it beside it — `__magic__/tv`, not `__magic__/__all__`, not `__magic__` and not `/mnt/zurg_usenet`. |
 | "Remote path mapping" / "download doesn't contain intermediate path" | The path zurg reports is not a path the client can open. See [step 8](#8-if-your-arr-is-in-docker). |
-| Imports succeed but take as long as a download and zurg's disk fills up | The client is copying out of `__magic__/__all__` instead of renaming. Its container has the download folder and the root folders on two volumes. Or a manual import was set to copy. See [one volume for the download folder and the root folders](#one-volume-for-the-download-folder-and-the-root-folders). |
+| Imports succeed but take as long as a download, and zurg's `/magic/` page lists them under **Imports that were copies** | The client is copying out of `__magic__/__all__` instead of renaming. Its container has the download folder and the root folders on two volumes. Or a manual import was set to copy. See [one volume for the download folder and the root folders](#one-volume-for-the-download-folder-and-the-root-folders). |
 | Every release rejected, nothing in the log | A stale bind mount. Run `docker exec <client> df -h <mount>`; if it says `Socket not connected`, bind the parent with `rslave` and recreate the container. |
 | A job stays queued for a poll or two after the release appears | Expected, and it settles once per release. An NZB does not state how long a file is; the estimate is being replaced by the exact length from the PAR2 index or one article's own header. Reporting Completed early is what makes the client throw *File move incomplete, data loss may have occurred*. |
 | A job sits queued for ever | The release never appeared in the library. Check that the NZB parsed — `Loaded NZB <name>: N files` in the log — and that the `nzb` provider is configured at all. |

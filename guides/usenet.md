@@ -139,7 +139,7 @@ The census that decides whether a release needs repairing asks every account bef
 2  nzb         nzb         news.example.com     —          [Edit] [Delete]
 ```
 
-For an `nzb` row the Token column shows the **news server host** instead of a token hint — there is no token to redact.
+For an `nzb` row the Token column shows the **news server host** instead of a token hint — there is no token to redact — followed by how many further news servers it has.
 
 **To add a Usenet account:**
 
@@ -150,9 +150,11 @@ For an `nzb` row the Token column shows the **news server host** instead of a to
 5. Leave **Watchlist target** unchecked — the backend cannot add content and saving it checked is rejected. **Disabled** keeps the entry in `config.yml` without loading it.
 6. **Save**.
 
-The form is validated as if the edit had been applied, so mistakes come back as an alert rather than a broken config. Adding a **second** `nzb` provider is refused there — the error points you at `nntp.servers`, which is where further news accounts belong.
+The form is validated as if the edit had been applied, so mistakes come back as an alert rather than a broken config. Adding a **second** `nzb` provider is refused there — the error points you at **Further news servers**, which is where further news accounts belong.
 
-**To edit one**, click **Edit** on its row. The form loads everything except the password, which stays blank and means *keep the existing one* — type a new password only to change it.
+**To add another news server** — a second account, or a block account on another backbone — click **Edit** on the `nzb` row, then **Add news server** under **Further news servers**. Each server has its own **Name**, **NNTP host**, **Port**, **TLS**, **Username**, **Password**, **Connections**, **Priority**, **Backbone** and **Backup only**. **Remove server** takes one out. **Save** writes them all to `nntp.servers`.
+
+**To edit one**, click **Edit** on its row. The form loads everything except the passwords, the first account's and each further server's alike, which stay blank and mean *keep the existing one* — type a new password only to change it. Settings the form has no field for are kept as `config.yml` has them.
 
 **Delete** asks to confirm, then removes the provider entry from `config.yml`. It does not touch your `nzbs/` directory — the NZB files stay where they are and come back with the provider. The last enabled provider can be neither deleted nor disabled.
 
@@ -161,8 +163,6 @@ Every change here writes straight to `config.yml` and shows:
 > Provider changes saved to config.yml — restart zurg to apply
 
 Provider edits are **not** hot-reloaded. Restart zurg before expecting anything to change.
-
-> **The Dashboard cannot see `nntp.servers`.** The form has fields for one news account, and saving an `nzb` provider rewrites its whole `nntp` block from those fields — so the extra accounts are written out of the config. If you run more than one Usenet provider, keep them in `config.yml` and use the Dashboard's other sections rather than this provider's Edit button.
 
 ---
 
@@ -445,7 +445,7 @@ zurg's answer, in order of preference:
 2. **Rebuild it from the release's own PAR2 files.** This is what they are posted for. It costs a read of the *entire release* — Reed-Solomon has to fold every surviving slice to solve for a missing one — so on a 200 GB post it is 200 GB of reading to recover a few megabytes.
 3. **Serve silence.** Only when neither of the above can answer.
 
-PAR2 repair is a background job, at most one release at a time, and it needs:
+PAR2 repair is a background job, at most two releases at a time, and it needs:
 
 ```yaml
 enable_repair: true            # PAR2 repair does not run without this
@@ -567,7 +567,6 @@ The index rewrites itself whenever the NZB changes, repairs itself if it is ever
 | A block account is being billed for articles the unlimited one has | `backup: true` missing on it | Set it; a primary being merely busy will then no longer push reads onto the metered account |
 | A release is missing from a tag-filtered directory | ffprobe never runs on Usenet content, so it carries no `zurg_*` tags | Filter on names, extensions, size or `has_episodes` |
 | `.par2` files not visible in the mount | Deliberate — they are hidden as repair scaffolding | Nothing to fix; zurg still reads them |
-| Edited the provider in the Dashboard and the extra news accounts vanished | The Dashboard's provider form covers one account and rewrites the whole `nntp` block, dropping `nntp.servers` | Restore them in `config.yml`; edit that provider by hand from then on |
 | Changed a provider in the Dashboard and nothing happened | Provider changes are written to `config.yml` but not hot-reloaded | Restart zurg — the banner under the providers table says so |
 | Plex emptied the library after a zurg restart | A scan was in flight while the mount was away, with auto-empty-trash on | Turn auto-empty off, and pre-flight sessions *and* refreshing state before any restart |
 | A file's size changed slightly a moment after the release appeared | The first listing can only estimate from the article count; the exact length arrives behind it, from the PAR2 index or from the file's own yEnc header | Expected, and it settles once — the length is written to `data/nzb-sizes/` and never learned again |

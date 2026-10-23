@@ -6,13 +6,13 @@ There are three ways to use Sonarr and Radarr with zurg. Pick the one that match
 |---|---|---|---|
 | [Usenet](sonarr-radarr.md) | Sonarr and Radarr | a SABnzbd | a Usenet account and Usenet indexers in Prowlarr or the \*arrs |
 | [Torrents](sonarr-radarr-torrents.md) | Sonarr and Radarr | a qBittorrent | a debrid account and torrent indexers in Prowlarr or the \*arrs |
-| [zurg searches](sonarr-radarr-fetch.md) | zurg | no download client at all | a Usenet account and Usenet indexers in zurg's own config |
+| [zurg searches](sonarr-radarr-fetch.md) | zurg | no download client at all | a Usenet or debrid account, and Newznab or Torznab indexers in zurg's own config |
 
 The first two can run side by side. They share the same `__magic__` folder.
 
 The [previous walkthrough](sonarr-radarr.md) pointed the \*arrs at zurg for Usenet, with zurg answering as a SABnzbd. This is the other half: zurg answers as a **qBittorrent**, the \*arrs hand it a magnet or a `.torrent` instead of an NZB, and the release goes onto a debrid account instead of a news server. The import is the same trick — a rename inside `__magic__`, nothing downloaded to import, nothing copied.
 
-**Which of the two the \*arr sends is not cosmetic.** A `.torrent` is uploaded to the account as the file itself, on all three services; only a magnet is added by info hash alone. A magnet makes the account work out what the torrent holds from the hash, and a private tracker's hash has no public swarm to work it out from — Real-Debrid dies in `magnet_error` with no files, and TorBox accepts it and then sits in `checking` with no file list, no size and a hundred-day estimate, so the grab neither fails nor finishes. The `.torrent` file keys the account's cache lookup by hash directly, so content the account already holds is added at once with no magnet resolution at all. That is what makes private indexers work here: their releases are addable exactly when the account already holds the content, which for anything a community shares is the common case. Point the \*arr at an indexer that hands out `.torrent` files rather than magnets — private ones do.
+**Which of the two the \*arr sends is not cosmetic.** A `.torrent` is normally uploaded to the account as the file itself; only a magnet is added by info hash alone. In cached-only mode, the default, TorBox and Debrid-Link get the info hash instead, because that is how they refuse an uncached release without adding it. A magnet makes the account work out what the torrent holds from the hash, and a private tracker's hash has no public swarm to work it out from — Real-Debrid dies in `magnet_error` with no files, and TorBox accepts it and then sits in `checking` with no file list, no size and a hundred-day estimate, so the grab neither fails nor finishes. The `.torrent` file keys the account's cache lookup by hash directly, so content the account already holds is added at once with no magnet resolution at all. That is what makes private indexers work here: their releases are addable exactly when the account already holds the content, which for anything a community shares is the common case. Point the \*arr at an indexer that hands out `.torrent` files rather than magnets — private ones do.
 
 Everything below was captured against zurg `2026.08.30.0459-nightly-73-g5b4c9790`, Sonarr `4.0.19.2979`, Radarr `6.3.0.10514` and Prowlarr `2.5.2.5491`, on a live install with a real AllDebrid account. Host and user names have been changed to `you@zurg-server`. Indexer names read `my-indexer`. API keys and library counts are illustrative. Nothing else in the captured output was altered.
 
@@ -20,7 +20,7 @@ Everything below was captured against zurg `2026.08.30.0459-nightly-73-g5b4c9790
 
 Three things have to be true. Check all three now — every one of them fails later as something that looks unrelated.
 
-1. **zurg has an account that can add torrents** — Real-Debrid, TorBox or AllDebrid. All three take the uploaded `.torrent` file itself, which is what makes a private tracker's release addable. A Usenet account takes a torrent in neither form: an install whose only provider is `nzb` accepts every grab and then refuses it. zurg says so at startup.
+1. **zurg has an account that can add torrents** — Real-Debrid, AllDebrid, TorBox, Premiumize, Debrid-Link or Offcloud. All six take the uploaded `.torrent` file itself, which is what makes a private tracker's release addable. A Usenet account takes a torrent in neither form: an install whose only provider is `nzb` accepts every grab and then refuses it. zurg says so at startup.
 2. **`magic.enabled` is `true`.** Without it the save path does not exist and every import fails. See [`__magic__`](magic.md).
 3. **The mount is visible to the \*arr** at the path zurg reports. If the \*arr runs in a container, read [step 8](#8-if-your-arr-is-in-docker) before you configure anything.
 
@@ -71,7 +71,7 @@ qbittorrent:
   api_key: ""                   # empty = zurg generates one and keeps it
   categories: [tv-sonarr, radarr]
   save_path: ""                 # empty = <mount_path>/__magic__/__all__
-  download_timeout_mins: 15     # 0 accepts only cached content, negative never gives up
+  cached_only: true             # the default: only take what an account already holds
 ```
 
 **The categories are not folders.** They all resolve to the same place — the release's own folder under `__magic__/__all__`. The list exists only so a client stops warning about a category it cannot find. If Sonarr's category is `tv-sonarr`, `tv-sonarr` must be in this list. Prowlarr, if you use it, wants `prowlarr` — see [step 10](#10-prowlarr-manual-grabs).
@@ -80,7 +80,7 @@ Restart zurg, then confirm the endpoint registered and the provider took:
 
 ![The providers block on the zurg config page](../assets/sonarr-radarr-torrents/43-zurg-config-providers.webp)
 
-One `alldebrid` row is all the endpoint needs — any of the three torrent-capable types.
+One `alldebrid` row is all the endpoint needs — any of the six torrent-capable types.
 
 The startup log says the same two things, and it is worth reading them once:
 
@@ -516,38 +516,34 @@ To follow other lists such as a genre list see [Lists in Sonarr & Radarr](import
 
 ## If the import copies instead of moving
 
-Everything above depends on the import being a **rename**. Two things decide that and zurg has no say in either. One is how the container reaches the mount. A save path and root folders on two volumes copy every import whatever else is set. [Step 8](#8-if-your-arr-is-in-docker) covers it. The other is one setting in the \*arr.
+Everything above depends on the import being a **rename**. Two things decide that. One is how the container reaches the mount, which only you can change. A save path and root folders on two volumes copy every import whatever else is set. [Step 8](#8-if-your-arr-is-in-docker) covers it. The other is one setting in the \*arr.
 
 The client will only move an imported file when it believes it is free to remove the download afterwards, which is three things at once: **Remove Completed** on, a finished-and-paused torrent, and a seed limit it can see has been reached. zurg reports the last two exactly as they have to be — every completed torrent comes back paused, at ratio 0 against a ratio limit of 0. **Remove Completed** is the one that is yours.
 
 With it off the client copies instead, and off a debrid mount a copy means reading every byte of the release back over the network and writing it to local disk. The release in step 9 would go from a rename that moved nothing to a 17 GiB download, to import a file that was already there.
 
-**Nothing in the \*arr says so.** The import is reported as successful either way and the history row looks the same. The difference shows only in zurg's log:
+**zurg turns it back on** when it has the \*arr's API key, through a [Radarr or Sonarr source](acquisition.md) (one with `enabled: false` is enough) or the dashboard banner that asks for it. It checks at start, every ten minutes and when the \*arr first calls zurg, and switches **Remove Completed** on through the \*arr's own API. A client that fails its own **Test** cannot be changed, and zurg keeps a warning with the reason.
 
-| The import | What zurg logs |
-|---|---|
-| moved — correct | one `MOVE __magic__` line |
-| copied through zurg's own mount | a `DELETE __magic__` of the source with no `MOVE` before it |
-| copied through a mount of your own | `MKCOL`, then a `PUT` carrying the release's full byte count |
+**Nothing in the \*arr says it copied.** The import is reported as successful either way. A move is one `MOVE __magic__` line in zurg's log. A copy through zurg's own mount lands in `data/local`, and zurg finds it there within about two minutes, turns it back into a placement, deletes the copy and logs `A client copied …` with a banner on the dashboard. A copy through a mount of your own is a `PUT` carrying the release's full byte count, which zurg refuses. The download the copy took cannot be given back.
 
-zurg's own mount writes the copy straight into `data/local`. zurg only hears the delete. A `PUT` of a media file arriving while an import is in flight is that import copying through some other mount. The `/magic/` page says the same thing more slowly: it reports the size of `data/local`, which is where a copying client's bytes land and where nothing else would put them. If that number grows every time something imports, this is why.
-
-Turn **Remove Completed** back on and the next import is a rename again. **Use Hardlinks instead of Copy** is not a substitute — the client only consults it once it has already decided to copy, so it cannot turn a copy back into a move.
+**Use Hardlinks instead of Copy** is not a substitute: the client only consults it once it has already decided to copy, so it cannot turn a copy back into a move.
 
 ## Timeouts, and cached-only mode
 
-A grab that stops moving comes off the account it is on and is offered to the next. One key decides it:
+By default zurg only accepts a grab an account already holds cached. Turn that off and an uncached grab downloads on the account, and one that stops moving comes off that account and is offered to the next.
 
 ```yaml
 qbittorrent:
+  cached_only: true
   download_timeout_mins: 15
 ```
 
-| Value | What it does |
+| Setting | What it does |
 |---|---|
-| `15` | The default. Fifteen minutes with no movement — no stage change, no rise in progress — and the account is given up on. |
-| `0` | Cached-only. A grab is accepted only onto an account that already holds the content, and refused inside the add otherwise. |
-| negative | Never give up. The grab stays on the first account that took it. |
+| `cached_only: true` | The default. A grab is accepted only onto an account that already holds the content, and refused outright otherwise. `download_timeout_mins` is not used. |
+| `cached_only: false` | An uncached grab downloads on the account. One that goes `download_timeout_mins` (default fifteen) without moving is given up on and the next account is tried. A negative timeout never gives up. |
+
+**Older configs.** Before `cached_only` existed, cached-only was spelled `download_timeout_mins: 0`. A config that writes `download_timeout_mins` and not `cached_only` keeps that meaning: `0` is cached-only and any other value downloads. When both are written and disagree, `cached_only` wins and zurg logs a warning at startup.
 
 **What counts as moving** is a change of stage or a rise in progress, judged on the raw fraction the account reports rather than whole percent — one percent of a 100 GB release is a gigabyte. A release the account is unpacking is exempt from the clock: that stage sits at one figure for as long as it takes.
 
@@ -555,17 +551,20 @@ qbittorrent:
 
 **What a timeout deletes.** The instance on that account, and only that one: the delete reaches an instance zurg added itself for this grab and that never finished, and nothing else. Once no account is left the grab is reported errored with a reason naming every account and what it did.
 
-**A torrent you delete by hand on the account** is only noticed on Real-Debrid, which answers an unknown id with a 404 and means it. TorBox answers HTTP 500 with a database error, which is also what it answers when its own database is unhappy, and AllDebrid's error does not separate the two — so on those two zurg keeps asking and the no-movement clock is what ends it. On Real-Debrid the grab moves to the next account immediately.
+**A torrent you delete by hand on the account** moves the grab to the next account at once on Real-Debrid, Premiumize, Debrid-Link and Offcloud, which say plainly when a torrent is gone. TorBox and AllDebrid answer that the same way they answer a passing fault, so there zurg keeps asking and the no-movement clock is what ends it.
 
 **The whole add is budgeted at 75 seconds.** The \*arrs cancel a `torrents/add` at 100 seconds and report the expiry as a connection failure, with no way to raise it. Every account shares the one deadline, so three accounts fit comfortably and a fourth gets whatever the first three did not spend.
 
-**Cached-only mode** is the one worth knowing as a policy choice: the refusal happens inside the add, synchronously, and a synchronous refusal is the only signal the \*arrs act on — they fail the grab and move to the next release in the list. Everything after the add reaches them as a warning about a download in progress, which they wait on. Set `download_timeout_mins: 0` and an uncached release is rejected on the spot instead of being downloaded. How the question gets answered is each service's own business:
+**Cached-only mode** refuses inside the add, and a refusal there is the only signal the \*arrs act on: they fail the grab and move to the next release in the list. Everything after the add reaches them as a warning about a download in progress, which they wait on. How each account is asked:
 
 | Account | How zurg asks |
 |---|---|
-| TorBox | `checkcached`, which answers without adding anything. A miss costs no add slot and leaves nothing behind. |
+| TorBox | A magnet with `add_only_if_cached=true`, so a miss adds nothing. It still uses one of TorBox's 60 uncached adds an hour. |
+| Debrid-Link | The bare info hash, which Debrid-Link refuses without adding anything when it does not hold the content. |
 | AllDebrid | The upload itself answers — AllDebrid says on the response whether it already had the content, and a miss is deleted again straight away. |
-| Real-Debrid | Nothing answers it, so the torrent is added, its files are selected, and it is watched for up to five seconds. Cached content completes 0.4 to 1.5 seconds after the selection; anything still going at five seconds is a real download and is deleted again. |
+| Real-Debrid, Premiumize, Offcloud | The torrent is added and watched for what is left of the add's 75 seconds. Cached content completes almost at once (0.4 to 1.5 seconds after file selection on Real-Debrid); anything still going at the end is a real download and is deleted again. |
+
+zurg does not ask TorBox's `checkcached` or the other cache lookups. They say whether the service has the content, not whether your account ends up holding a usable copy.
 
 ## What works, and what does not
 

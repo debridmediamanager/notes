@@ -263,7 +263,10 @@ accepts is what Radarr would have accepted:
   same quality are not treated as upgrades.
 
 The profile is applied to the release zurg is about to take as an allow-list:
-the right movie, an allowed quality, the minimum score and the size limits.
+the right movie, an allowed quality, the profile's language, the minimum score
+and the size limits. With the language set to **Original**, the default, a
+release in another language is refused; a title that names no language counts
+as the original.
 By default its order of preference is not used to pick among the releases it
 allows. zurg takes the first allowed release that is cheapest to check, trying
 web releases (WEB-DL, WEBRip) before Blu-ray ones and those before the rest,
@@ -301,8 +304,11 @@ movie's folder the way Radarr would have imported it, by moving it inside
 `__magic__`. Nothing is copied or downloaded.
 
 - **The largest video is the one placed.** That is the largest `.mkv`, `.mp4`,
-  `.m4v`, `.avi`, `.mov` or `.ts` file in the release. For a release served
-  out of one archive it is the largest video inside the archive. Samples,
+  `.m4v`, `.avi`, `.mov` or `.ts` file in the release, counting what is inside
+  its archives. A video named as a sample (`sample-…`, `….sample.mkv`, a
+  `Sample/` folder) is left out however large, unless the release's own name
+  says sample too. A release whose only video is its sample is set aside and
+  the next candidate is tried. Samples,
   featurettes, subtitles and `.nfo` files stay in `__magic__/__all__`. The
   file keeps the name it has in the release.
 - **It is refused before it is moved if it cannot be read.** This is the check
