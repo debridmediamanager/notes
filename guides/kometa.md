@@ -83,7 +83,7 @@ Movies Library Connection Successful
 Overlays Applied: Overlay File (0) 1080P, Overlay File (1) Rating1Fresh
 ```
 
-In a Plex app, the movie library has a **Collections** tab with the genre collections, and the posters carry their badges. A first run on a large library takes a while: Kometa reads every title and redraws every poster it badges.
+In a Plex app, the movie library has a **Collections** tab with the genre collections, and the posters carry their badges. Your own account and everyone else you shared rex with see the same collections and badges. A first run on a large library takes a while: Kometa reads every title and redraws every poster it badges.
 
 ## If it does not work
 
