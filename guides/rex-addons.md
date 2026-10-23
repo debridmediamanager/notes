@@ -1,6 +1,6 @@
 # Building rex addons
 
-[rex](https://rex.debridmediamanager.com) shows whatever its sources tell it about. zurg is one source. An **addon** is a small program of your own that is another: it brings something into your Plex apps that no Plex agent knows, such as a YouTube channel, home videos or recordings, and names it itself.
+[rex](https://rex.debridmediamanager.com) shows whatever its sources tell it about. A source is any program that tells rex what it has over rex's feed API and serves the videos when rex asks; rex treats every source the same. An **addon** is a source you write yourself: it brings something into your Plex apps that no Plex agent knows, such as a YouTube channel, home videos or recordings, and names it itself.
 
 This page is for people who write addons. It covers what rex needs from one, how to name and dress what it brings, and the rules that trip people up. It ends with a worked example: the addon we run, which streams every video of a YouTube channel into a TV show, nothing downloaded, and the same way other video sites, podcast feeds, folders of your own videos and Stremio catalogs.
 

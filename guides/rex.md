@@ -97,7 +97,7 @@ journalctl --user -u rex -f
 **What you should see.** Among the first lines:
 
 ```
-INFO    seeded rex.db: an empty library named yourhost at /mnt/zurg, machine=...
+INFO    seeded rex.db: an empty library named yourhost at /mnt/rex, machine=...
 INFO    no source yet: one registers at PUT /rex/sources/{name} (docs/feed-api.md)
 INFO    claim state: unclaimed
 INFO    rex on http://yourhost:32400  machine=...  items=0  parts=proxy
