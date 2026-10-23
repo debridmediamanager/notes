@@ -96,15 +96,12 @@ One `nzb` row is all the endpoint needs.
 
 The API key is the entire authentication on this endpoint, so get it right once and don't paste it anywhere public.
 
-**If you left `api_key` empty**, zurg generated one on first start, wrote it to `data/sabnzbd-apikey`, and logged it once:
+**If you left `api_key` empty**, zurg generated one on first start and wrote it to `data/sabnzbd-apikey`:
 
 ```bash
 $ cat data/sabnzbd-apikey
 0123456789abcdef0123456789abcdef
 
-$ journalctl -u zurg-usenet | grep 'generated API key'
-SABnzbd: generated API key 0123456789… — paste it into Sonarr or Radarr,
-or pin it as sabnzbd.api_key in config.yml
 ```
 
 Illustrative key — yours will differ. The file survives restarts, so the key is stable once generated.
