@@ -9,7 +9,7 @@ Four things to know before you start:
 - **Your app serves the files.** rex fetches every byte from your app over HTTP or HTTPS, the way a browser downloads a file. rex keeps no files and needs no disk or mount for media.
 - **Your app tells rex what it has.** It sends rex a list of files over rex's feed API, and every change after that. rex never lists a folder or scans anything.
 - **Your app decides what each file is.** It says whether a file is a movie or an episode, which title it belongs to (by IMDb and TMDB id) and, for an episode, its season and number. rex never guesses from a file name.
-- **Plex describes it.** Once rex is on a Plex account, it shows each title with the name, poster, summary and episode names Plex's own metadata has for those ids.
+- **Plex describes it.** Once rex is on a Plex account, it shows each title with the name, poster, summary and episode names Plex's own metadata has for those ids. For things no Plex agent knows, your app names them itself: see [Building rex addons](rex-addons.md).
 
 rex has been in closed beta for sponsors since October 15 and reaches the public on October 31. See [rex.debridmediamanager.com](https://rex.debridmediamanager.com) for access.
 
