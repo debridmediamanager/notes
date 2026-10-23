@@ -142,7 +142,8 @@ How a name is matched:
 Excluding a word never touches resolution. With `DV` excluded a 2160p release
 with plain HDR or HDR10 is still taken, and `quality: 4k` still puts 2160p
 first. An excluded release counts as not found. A movie or episode search keeps
-paging until it has ten releases it may take. A season search reads one page,
+paging each indexer until it has ten releases it may take, the indexer runs
+out, or ten pages have been read. A season search reads one page,
 and searches separately for any episode that page leaves without one. A title whose every release is excluded fails
 with "no eligible releases", just like one whose every release is over
 `max_size_gb`, and is tried again later. A Seerr 4K request takes only 2160p
@@ -189,7 +190,7 @@ and [API contract](https://github.com/seerr-team/seerr/blob/c604bccc003d4d2f74a6
   newly aired episodes in requested seasons. Unannounced episodes become work
   only once they appear in Seerr's metadata.
 - Prefers packs after all known episodes have aired. Airing seasons use loose
-  episodes. Specials (season 0) are unsupported. A request that includes season 0 is not acquired at all, and fails until it is parked.
+  episodes. Specials (season 0) are unsupported. A request with season 0 approved is not acquired at all, and fails until it is parked.
 - Makes no request-status or availability writes. Seerr's media-server scan
   reports actual availability and notifies requesters. Saving an NZB does not
   prove it is indexed or playable, which is why the engine checks it before
@@ -420,7 +421,7 @@ judged by the series' quality profile. What zurg accepts is what Sonarr would
 have accepted.
 
 - **It must be this series and this season.** Sonarr has to match the title
-  to the same series. A title Sonarr matches to nothing is refused, unless Sonarr's own series lookup finds this series first by the name in the title (a foreign-language title, for example).
+  to the same series. A title Sonarr matches to nothing is refused, unless the series is not on scene numbering and Sonarr's own series lookup finds this series first by the name in the title (a foreign-language title, for example).
 - **A pack must be the whole season.** A partial pack is refused. A pack
   spelled as a range, such as `Season 1 E01-E07`, counts when the range is the
   whole season. A pack of several seasons counts for each season it names

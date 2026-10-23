@@ -6,7 +6,7 @@ order: 90
 
 # Usenet with zurg
 
-zurg's `nzb` backend turns a directory of `.nzb` files into a mounted library. There is no downloader and no completed folder, and nothing is downloaded ahead of play: on disk there are only the NZBs and small caches (file heads and tails under `data/bytecache/articles`, 512 MiB by default as `nzb_article_disk_cache_mb`, and the index, name, size and repair records under `data/`). When a player seeks into a file, zurg fetches exactly the articles covering those bytes, yEnc-decodes them in memory, and answers the ranged read. A 60 GB remux costs 60 GB of disk nowhere.
+zurg's `nzb` backend turns a directory of `.nzb` files into a mounted library. There is no downloader and no completed folder, and nothing is downloaded ahead of play: on disk there are only the NZBs and bounded caches (file heads and tails under `data/bytecache/articles`, 512 MiB by default as `nzb_article_disk_cache_mb`; decoded archive blocks under `data/bytecache/decoded`; PAR2-rebuilt spans under `data/par2/`; and the index, name and size records under `data/`). When a player seeks into a file, zurg fetches exactly the articles covering those bytes, yEnc-decodes them in memory, and answers the ranged read. A 60 GB remux costs 60 GB of disk nowhere.
 
 It is a debrid backend as far as the rest of zurg is concerned — the same library model, the same directory filters, the same mount, the same media-server integration — so a Usenet release sits alongside your Real-Debrid or TorBox content in one tree. It can also be the only account you configure; no debrid service is required.
 
@@ -295,7 +295,7 @@ Only the file that is clearly the release is renamed: the biggest entry in the a
 
 - **Removing** an NZB from `nzbs/` removes the release from the library, drops its cached reader and article cache, and forgets any repaired bytes it held.
 - **Deleting a Usenet release from the Dashboard deletes the `.nzb` file from disk.** There is nowhere else for it to live. This is not the same as deleting a torrent from a debrid account, where the file stays on the service.
-- **Replacing an NZB in place is the slow way to do it.** Writing over a file does not change the directory, so the watch above cannot see it; what notices is the periodic change check, which reads the file's modification time and re-parses it — up to the later of 15 seconds and the next `check_for_changes_every_secs` check. Removing the old file and adding the new one is noticed within a second or two, and is what an indexer or the SABnzbd endpoint does anyway.
+- **Replacing an NZB in place is the slow way to do it.** Writing over a file does not change the directory, so the watch above cannot see it; what notices is the periodic change check, which reads the file's modification time and re-parses it — up to the first `check_for_changes_every_secs` check that comes more than 15 seconds after the last directory read (about 30 seconds at the default). Removing the old file and adding the new one is noticed within a second or two, and is what an indexer or the SABnzbd endpoint does anyway.
 
 ---
 
@@ -600,7 +600,7 @@ curl -u user:pass 'http://localhost:9999/debug/nzb/probe?release=<nzb id>&articl
 ```
 
 It answers `{"probes": [...]}` with one object for the `nzb` provider — `found`,
-`missing` and how long it took — after asking every news account in turn. It
+`missing` and how long it took — after asking the news accounts in priority order until one has it (a backup only once the primaries miss). It
 does not say which news account held the article. It is read-only: nothing it fetches enters the
 article cache, and an article it fails to find is not recorded as a dead one, so
 a probe cannot silence a file that plays.
