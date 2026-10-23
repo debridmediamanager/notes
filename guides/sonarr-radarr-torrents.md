@@ -93,15 +93,12 @@ INFO  router.qbittorrent  qBittorrent: torrents are offered to alldebrid, in tha
 
 The API key is the entire authentication on this endpoint, so get it right once and don't paste it anywhere public.
 
-**If you left `api_key` empty**, zurg generated one on first start, wrote it to `data/qbittorrent-apikey`, and logged it once:
+**If you left `api_key` empty**, zurg generated one on first start and wrote it to `data/qbittorrent-apikey`:
 
 ```bash
 $ cat data/qbittorrent-apikey
 fedcba9876543210fedcba9876543210
 
-$ journalctl -u zurg | grep 'generated API key'
-qBittorrent: generated API key fedcba9876… — paste it into Sonarr or Radarr's
-API Key field, or pin it as qbittorrent.api_key in config.yml
 ```
 
 Illustrative key — yours will differ. The file survives restarts, so the key is stable once generated.
