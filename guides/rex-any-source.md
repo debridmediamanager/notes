@@ -186,7 +186,7 @@ kill %1
 
 **If not.**
 
-- The first command answers `409 Conflict` and rex logs `already claimed`: rex is on a Plex account already.
+- The first command answers `409` with `rex: already claimed`: rex is on a Plex account already.
 - It answers `500 Internal Server Error` and rex logs `claim exchange failed`: the code expired or was used. Get a new one from [plex.tv/claim](https://www.plex.tv/claim).
 
 ### Share it with your own account
@@ -236,7 +236,7 @@ curl -s http://192.168.1.20:32400/rex/feed/myapp/held  | head -c 600   # what wa
 
 **Why it matters.** This is the point of the whole setup. It also proves the last link: rex reading a file from your app while you watch.
 
-Open a Plex app on a phone, TV or computer **on the same home network**. rex shows up under the machine's name, with **Movies** and **TV Shows**. Pick a movie and press play.
+Open a Plex app on a phone, TV or computer **on the same home network**. rex shows up under the machine's name, with **Movies** and **TV Shows**. Pick a movie and press play. A `rex.db` first made by a rex older than the 2026.10.24 nightly calls them **Debrid Movies** and **Debrid TV**; rename them in a Plex app if you like.
 
 At home nothing else is needed: Plex apps find rex with Plex's own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN). Discovery runs on UDP ports 32410 and 32414, so a firewall on the rex machine must let those in. rex answers discovery when it uses port 32400. If you moved rex to 32500 because Plex runs on the same machine, discovery is left to that Plex, and apps find rex through the Plex account it is [shared with](#share-it-with-your-own-account). app.plex.tv in a web browser is the exception: it needs the HTTPS address from [Use it outside your home](#use-it-outside-your-home-optional), even at home.
 
@@ -249,7 +249,7 @@ Two things you may meet:
 
 Each file goes to **Movies** or **TV Shows** by the `kind` your app sent. A file without one goes by its first folder: `shows` to TV Shows, anything else to Movies.
 
-To give a folder libraries of its own, your app adds `directories` to its registration, naming the first folder of the files' paths and the libraries' titles: `{"url": ..., "directories": [{"name": "anime", "shows": "Anime", "movies": "Anime Movies"}]}`, either title alone being fine. rex makes them when your app registers and moves what that folder already has into them as it was: watch history, Fix Match and edits included. A malformed entry is skipped, never the registration, and the answer lists it under `ignored` with why. Rename them in a Plex app as you like. Delete one and it stays deleted, its files going back to Movies or TV Shows, until you add it again with **Add Library**, whose folder list shows your app's folders under its `mount`. `docs/feed-api.md` has the rules, under "Libraries a source declares".
+To give a folder libraries of its own, your app adds `directories` to its registration, naming the first folder of the files' paths and the libraries' titles: `{"url": ..., "directories": [{"name": "anime", "shows": "Anime", "movies": "Anime Movies"}]}`, either title alone being fine. rex makes them when your app registers and moves what that folder already has into them as it was: watch history, Fix Match and edits included. A malformed entry is skipped, never the registration, and the answer lists it under `ignored` with why. Rename them in a Plex app as you like. Delete one and it stays deleted, its files going back to Movies or TV Shows, until you add it again with **Add Library**, whose folder list shows your app's folders under its `mount`, or, if it registered none, under the folder rex's own Movies and TV Shows libraries sit in (`/mnt/rex` unless rex was first started with another `--mount`). `docs/feed-api.md` has the rules, under "Libraries a source declares".
 
 **Back up** `~/rex/rex.db` (it holds your library, watch history and your app's login, so keep it private) and `claim_state.json`:
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846111605025">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846112128731">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.846111605025" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.846112128731" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.846111605025" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.846112128731" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.846111605025" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.846111605025" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.846112128731" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.846112128731" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -181,7 +181,7 @@
 <h1 id="__magic__-a-directory-you-can-organise"><code translate="no" v-pre>__magic__</code>, a directory you can organise</h1>
 <p>Every other directory zurg serves is computed. <code translate="no" v-pre>movies</code> holds what matches the movies filter, <code translate="no" v-pre>__all__</code> holds everything, and a release&#x27;s folder holds the files its account says it has — so the layout is a view of the library, recomputed on every refresh, and there is nowhere to put anything.</p>
 <p><code translate="no" v-pre>__magic__</code> is the one directory whose paths are <strong>stored</strong>. A move inside it rewrites a row in a small table; no bytes move, nothing is copied, and the release stays exactly where it was on the debrid account. What you get is a tree you can arrange — by hand, or by pointing Sonarr or Radarr at it.</p>
-<p>It holds two things. <code translate="no" v-pre>__magic__/__all__</code> is the library exactly as <code translate="no" v-pre>__all__</code> lists it, and it is the folder the download clients import from; it is computed, so nothing can be created at its top level, and a release&#x27;s own files cannot be replaced (a release folder takes sidecars at names it does not use). Everything beside it at the root of <code translate="no" v-pre>__magic__</code> is yours:</p>
+<p>It holds two things. <code translate="no" v-pre>__magic__/__all__</code> is the library exactly as <code translate="no" v-pre>__all__</code> lists it, and it is the folder the download clients import from; it is computed, so nothing can be created at its top level, and no file&#x27;s bytes can be written over a name a release folder already holds (a release folder takes sidecars at names it does not use). Everything beside it at the root of <code translate="no" v-pre>__magic__</code> is yours:</p>
 <div id="__magic__-a-directory-you-can-organise-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-none"><code v-pre class="language-none">/mnt/zurg/__magic__
 ├── __all__     &lt;- every release, where a grab lands
@@ -283,7 +283,7 @@ mv /mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv \
   sidecar_max_mb: 32       # per file
   sidecar_budget_mb: 2048  # the whole tree</code></pre>
 </doc-codeblock></div>
-<p>Over the first is <code translate="no" v-pre>413</code>, over the second <code translate="no" v-pre>507</code>. They bound what <em>zurg</em> writes. With the default <code translate="no" v-pre>union_writable: local</code>, rclone&#x27;s own local upstream cannot be refused from here, though the tree is re-measured before any refusal, so files it put there do count against the budget the next time zurg is asked to write one. <code translate="no" v-pre>union_writable: server</code> flips that: the create itself arrives at zurg, so the caps decide every write through the mount too, and anything outside <code translate="no" v-pre>__magic__</code> is refused outright.</p>
+<p>Over the first is <code translate="no" v-pre>413</code>, over the second <code translate="no" v-pre>507</code>. They bound what <em>zurg</em> writes. With the default <code translate="no" v-pre>union_writable: local</code>, rclone&#x27;s own local upstream cannot be refused from here, though the tree is re-measured before any refusal, so files it put there count against the budget the next time zurg is asked to write one, apart from any larger than <code translate="no" v-pre>sidecar_max_mb</code>, which are left out. <code translate="no" v-pre>union_writable: server</code> flips that: the create itself arrives at zurg, so the caps decide every write through the mount too, and anything outside <code translate="no" v-pre>__magic__</code> is refused outright.</p>
 <p>A sidecar can also go inside a release folder, which is where an *arr writes the <code translate="no" v-pre>.nfo</code> for a file it imported there. zurg writes and renames one at any name the release does not already hold, and refuses one that would take the name of the release&#x27;s own file. A <code translate="no" v-pre>DELETE</code> of a sidecar really deletes it, which is the one place in <code translate="no" v-pre>__magic__</code> where a delete is not a tombstone: a tombstone hides an entry the library still holds elsewhere, and a sidecar&#x27;s bytes live in <code translate="no" v-pre>data/local</code> and nowhere else.</p>
 <h2 id="the-dashboard">The dashboard</h2>
 <p>Once the library has loaded, zurg logs one line saying how many rows the table holds and how many of them are dangling, so a library that has lost content does not keep a growing set of rows nothing mentions. <code translate="no" v-pre>/magic/</code> on zurg&#x27;s normal port shows what the table holds: every stored row grouped by release, what each one is and where it came from, the dangling ones in their own section, and the sidecar tree with its size against the budget. It also reports the journal and snapshot sizes, and the size of the whole of <code translate="no" v-pre>data/local</code> — the number that says whether something is importing by copying, because under the default <code translate="no" v-pre>union_writable: local</code> a client that copies rather than moves puts the bytes there and nothing else would ever show it.</p>
@@ -304,7 +304,7 @@ mv /mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv \
 | `204` | DELETE, or a PUT that replaced a sidecar |
 | `400` | a path this namespace cannot store, or a `Destination` header that is missing or unreadable |
 | `403` | a destination outside `__magic__`, a path the library answers for, a path running through a file, `__magic__` itself, or a table that is read-only |
-| `404` | nothing there, or a MOVE out of an archive that no longer holds the entry |
+| `404` | nothing there (a DELETE of nothing still answers `204`), or a MOVE out of an archive that no longer holds the entry |
 | `405` | MKCOL where something already exists, or PUT onto a directory |
 | `409` | missing parent, non-empty directory, an occupied destination with `Overwrite: T`, or a MOVE out of an archive that will not open |
 | `412` | occupied destination with `Overwrite: F` |
@@ -337,7 +337,7 @@ mv /mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv \
 </tr>
 <tr>
 <td><code translate="no" v-pre>404</code></td>
-<td>nothing there, or a MOVE out of an archive that no longer holds the entry</td>
+<td>nothing there (a DELETE of nothing still answers <code translate="no" v-pre>204</code>), or a MOVE out of an archive that no longer holds the entry</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>405</code></td>

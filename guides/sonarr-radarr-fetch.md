@@ -10,7 +10,7 @@ There are three ways to use Sonarr and Radarr with zurg. Pick the one that match
 
 The first two can run side by side. They share the same `__magic__` folder.
 
-Radarr and Sonarr keep the list and the library. zurg does the fetching. Add a movie or a series the way you already do and zurg finds a release on your Usenet indexers. It checks that the post is still on the news servers. Then it puts the file in its folder inside `__magic__` and asks Radarr or Sonarr to rescan. Nothing is downloaded to import and nothing is copied.
+Radarr and Sonarr keep the list and the library. zurg does the fetching. Add a movie or a series the way you already do and zurg finds a release on your indexers. It checks that an NZB is still on the news servers, or that your debrid account already holds a torrent. Then it puts the file in its folder inside `__magic__` and asks Radarr or Sonarr to rescan. Nothing is downloaded to import and nothing is copied.
 
 Radarr and Sonarr need no indexers and no download client for this. They never search and never grab. Your quality profile still decides what zurg is allowed to take.
 
@@ -18,7 +18,7 @@ The screenshots come from the zurg build that ships as the 26 September 2026 nig
 
 ## Before you start
 
-1. **zurg has a Usenet account and at least one Newznab indexer.** The indexers go in zurg's config under `acquisition.indexers`. The [Watchlist and Seerr](acquisition.md) page covers that block.
+1. **zurg has a Usenet or debrid account and at least one Newznab or Torznab indexer.** The indexers go in zurg's config under `acquisition.indexers`. The [Watchlist and Seerr](acquisition.md) page covers that block.
 2. **`magic.enabled` is `true`.** The Radarr and Sonarr sources do not start without it and say so in the log. See [`__magic__`](magic.md).
 3. **Radarr and Sonarr can see zurg's mount.** In Docker that means binding it into their containers. Bind the parent of the mount once and reach everything through it. If they also take grabs from zurg as a download client then two volumes for the download folder and the root folders copy every import. See [one volume](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
 4. **You run a nightly from 26 September 2026 or later.** Older builds do not know the `radarr` or `sonarr` sources.
@@ -181,7 +181,7 @@ An episode file below the cutoff is an upgrade when the profile allows upgrades.
 
 ## Things to know
 
-- **A change to `indexer_concurrency`, a new source, or a source's URL or API key needs a restart.** `concurrency`, `check_every_secs` and turning a source on or off take effect at the next poll.
+- **Any change to the `acquisition` block in `config.yml` needs a restart.** zurg reads the file only when it starts.
 - **The rescan is the last step and it queues behind the app's own work.** Right after a list adds many movies Radarr refreshes each of them first. The files are already in place while that runs.
 - **Analyse video files reads the head of each file over the mount.** It works. It is also the slowest part of a big list. Leave it on unless you know you do not want media info.
 - **Unmonitored titles are left alone.** That covers movies and series and seasons and episodes. So are titles whose folder is outside `__magic__`.

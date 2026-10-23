@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846111605025">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846112128731">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.846111605025" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.846112128731" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.846111605025" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.846112128731" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.846111605025" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.846111605025" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.846112128731" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.846112128731" defer></script>
 </head>
 <body>
     <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
@@ -248,9 +248,9 @@ such as <code translate="no" v-pre>/radarr</code> and a trailing <code translate
 <strong>Settings &gt; General</strong>, and <code translate="no" v-pre>library_path</code> when it sees zurg&#x27;s mount at a
 different path: see <doc-anchor-trigger to="#radarr-behavior">Radarr behavior</doc-anchor-trigger>. Sonarr takes the same
 three settings: see <doc-anchor-trigger to="#sonarr-behavior">Sonarr behavior</doc-anchor-trigger>.</p>
-<p><code translate="no" v-pre>concurrency</code> applies at the next poll, without a restart. <code translate="no" v-pre>indexer_concurrency</code>
+<p>Both are read when zurg starts, like the rest of the block. <code translate="no" v-pre>indexer_concurrency</code>
 covers searches and NZB downloads together, because an indexer meters the key
-and not the endpoint. It is read when zurg starts. Indexer keys are often
+and not the endpoint. Indexer keys are often
 shared, and three calls per key is what measured safe on keys that also serve
 another application.</p>
 <p>Keep names and Seerr URLs stable: they identify saved queues. Rotating a Seerr
@@ -334,8 +334,10 @@ Vision release whose name does not say so is not excluded.</p>
 </ul>
 <p>Excluding a word never touches resolution. With <code translate="no" v-pre>DV</code> excluded a 2160p release
 with plain HDR or HDR10 is still taken, and <code translate="no" v-pre>quality: 4k</code> still puts 2160p
-first. An excluded release counts as not found. A search keeps paging until it
-has enough releases it may take. A title whose every release is excluded fails
+first. An excluded release counts as not found. A movie or episode search keeps
+paging each indexer until it has ten releases it may take, the indexer runs
+out, or ten pages have been read. A season search reads one page,
+and searches separately for any episode that page leaves without one. A title whose every release is excluded fails
 with &quot;no eligible releases&quot;, just like one whose every release is over
 <code translate="no" v-pre>max_size_gb</code>, and is tried again later. A Seerr 4K request takes only 2160p
 releases, so it waits when every 2160p release is excluded.</p>
@@ -386,7 +388,7 @@ only once they appear in Seerr&#x27;s metadata.</p>
 </li>
 <li>
 <p>Prefers packs after all known episodes have aired. Airing seasons use loose
-episodes. Specials (season 0) are unsupported and stay pending.</p>
+episodes. Specials (season 0) are unsupported. A request with season 0 approved is not acquired at all, and fails until it is parked.</p>
 </li>
 <li>
 <p>Makes no request-status or availability writes. Seerr&#x27;s media-server scan
@@ -517,11 +519,14 @@ movie&#x27;s folder the way Radarr would have imported it, by moving it inside
 <p><strong>The largest video is the one placed.</strong> That is the largest <code translate="no" v-pre>.mkv</code>, <code translate="no" v-pre>.mp4</code>,
 <code translate="no" v-pre>.m4v</code>, <code translate="no" v-pre>.avi</code>, <code translate="no" v-pre>.mov</code> or <code translate="no" v-pre>.ts</code> file in the release, counting what is inside
 its archives. A video named as a sample (<code translate="no" v-pre>sample-…</code>, <code translate="no" v-pre>….sample.mkv</code>, a
-<code translate="no" v-pre>Sample/</code> folder) is left out however large, unless the release&#x27;s own name
-says sample too. A release whose only video is its sample is set aside and
+<code translate="no" v-pre>Sample/</code> folder) is left out however large. If the release&#x27;s own name
+says sample too, as with <code translate="no" v-pre>Sample.Size.2019</code>, it is left out only when it is
+under a fifth of the release. A release whose only video is its sample is set aside and
 the next candidate is tried. Samples,
 featurettes, subtitles and <code translate="no" v-pre>.nfo</code> files stay in <code translate="no" v-pre>__magic__/__all__</code>. The
-file keeps the name it has in the release.</p>
+file keeps the name it has in the release, unless that name says nothing
+about the film (no year and no word of its title); then it takes the
+release&#x27;s name, so Radarr can read its quality.</p>
 </li>
 <li>
 <p><strong>It is refused before it is moved if it cannot be read.</strong> This is the check
@@ -609,7 +614,7 @@ episodes it already has.</p>
 <p><strong>A new episode is searched for again within minutes.</strong> Its release is
 usually posted within the hour after it airs, so a search right at air time
 often finds nothing. For six hours after an episode airs, zurg tries again
-every two minutes, and for the next two days every ten. After that it backs
+every two minutes, and after that every ten until two days after it aired. After that it backs
 off as for anything else (see <doc-anchor-trigger to="#persistence-and-recovery">persistence and recovery</doc-anchor-trigger>).
 On a debrid account the release also has to be cached there already,
 because zurg adds only what the account holds.</p>
@@ -642,7 +647,7 @@ have accepted.</p>
 <ul>
 <li>
 <p><strong>It must be this series and this season.</strong> Sonarr has to match the title
-to the same series. A title Sonarr matches to nothing is refused.</p>
+to the same series. A title Sonarr matches to nothing is refused, unless the series is not on scene numbering and Sonarr&#x27;s own series lookup finds this series first by the name in the title (a foreign-language title, for example).</p>
 </li>
 <li>
 <p><strong>A pack must be the whole season.</strong> A partial pack is refused. A pack
@@ -811,8 +816,8 @@ grouped with a movie, or with a season, when:</p>
 <p>an *arr file is in them,</p>
 </li>
 <li>
-<p>the *arr&#x27;s history says it imported from them, or that a file from them went
-missing from disk,</p>
+<p>the *arr&#x27;s history says it imported from them, or deleted a file that came
+from them (an upgrade, by hand, or missing from disk),</p>
 </li>
 <li>
 <p>zurg identified them as the movie&#x27;s or the series&#x27; IMDb id, or</p>
@@ -892,14 +897,17 @@ debrid account. A Torznab result carrying no magnet or <code translate="no" v-pr
 skipped: zurg never downloads a <code translate="no" v-pre>.torrent</code>, so a result it can only reach that
 way is not one it can act on.</p>
 <p><strong>A torrent is only ever added to an account that already holds it.</strong> Every
-account that takes adds is offered the hash, because the caches are independent
+account that takes adds is offered the hash, except that a Real-Debrid account
+is skipped for a release name it refuses outright, because the caches are independent
 and one account having purged a release says nothing about the next. The first
 that already has it takes it. A miss everywhere is an ordinary failed
 candidate, so the walk moves down the ranking to the next release, which may be
 another torrent or an NZB.</p>
-<p>zurg adds the torrent and watches it for up to 20 seconds. Cached content is
-ready within a second or two. Anything still downloading after that is removed
-again. So no download is ever left running on the account. A miss is not quite
+<p>On TorBox and Debrid-Link a miss adds nothing, and on AllDebrid and Offcloud it
+is deleted at once. Real-Debrid and Premiumize get the torrent added and watched
+for up to 20 seconds.
+Cached content is ready within a second or two. Anything still downloading
+after that is removed again. So no download is ever left running on the account. A miss is not quite
 free though. It can still count against the account&#x27;s limit on adds. On TorBox
 it uses one of the 60 uncached adds allowed per hour.</p>
 <p>The account marked <code translate="no" v-pre>watchlist: true</code> is offered the torrent first. The rest
@@ -1126,15 +1134,16 @@ filenames also deduplicate against the library and saved NZBs. A receipt also
 carries the grabs it is still waiting on a news-server answer about, and the
 ledger carries the releases already found dead, so a restart mid-wait neither
 acknowledges an unchecked grab nor hands a dead release back to the ranking.</p>
-<p>Each attempt is saved before external work. Each saved release is checkpointed.
+<p>Each saved release is written to disk at once. Attempt counts and retry times are written within a minute, so a crash can lose up to a minute of them but never a grab.
 Writes flush a temporary file, replace the ledger and flush the parent directory
 where supported. NZBs written before a crash are reused even if the last ledger
 write did not finish. Once acquisition is recorded, Plex removal retries do not
 acquire the title again.</p>
 <p>Failures retry after 5, 10 and 15 minutes, then one hour, then six hours. From
 there a title waits half as long as it has been failing, so the waits grow:
-about half a day after a day of failures, two days after four, a week at
-most. An attempt that runs out of its five minutes having found nothing counts
+about half a day after a day of failures, two days after four, about a week at
+most, give or take a quarter, so titles that failed together do not retry
+together. An attempt that runs out of its five minutes having found nothing counts
 as a failure too. A title that has failed for two weeks, over eight attempts at
 least, is <strong>parked</strong>: zurg stops asking the indexers about it. It stays on the
 acquisition page as parked, with how long it failed and why, and the log says
@@ -1150,8 +1159,9 @@ for, retried every six hours for good, took an indexer from a few hundred
 queries a day to tens of thousands, and the indexer suspended the account.
 Most were films with no Usenet release and upgrades that every release the
 profile allowed had already been refused for. Open Seerr requests remain monitored. Plex items leave
-the watchlist only after all planned seasons are acquired <em>and</em> checked against
-the news servers, only when <code translate="no" v-pre>remove_after_grab</code> allows it, and only when zurg
+the watchlist only after all planned seasons are acquired <em>and</em> checked (an NZB
+against the news servers, a torrent by reaching the library with something to
+play), only when <code translate="no" v-pre>remove_after_grab</code> allows it, and only when zurg
 fetched something for them. Its loose-episode fallback remains limited to episodes found
 in indexer results.</p>
 <p>An unavailable source pauses its own work. A failed state write pauses further

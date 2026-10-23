@@ -93,7 +93,7 @@ It also travels: an exported `.zurgtorrent` carries the renames, so a
 [local library](local-libraries.md) arrives named the way you named it.
 
 One thing it does not survive is `ignore_renames: true`, which is the point of
-that key — zurg disregards every stored name and shows the computed one. The
+that key — zurg disregards every stored name, shows the computed one, and refuses new renames through the mount. The
 renames are not deleted, only ignored, so turning it back off brings them back.
 
 ## What a rename changes around it
@@ -141,7 +141,7 @@ rewritten, but anything that copied a URL out of it is not.
 | Key | Default | Effect |
 |---|---|---|
 | `dav_allow_rename` | `true` | `false` refuses a mount `MOVE` with `403`, naming the key in the body |
-| `ignore_renames` | `false` | `true` disregards every stored rename and serves computed names |
+| `ignore_renames` | `false` | `true` disregards every stored rename, serves computed names, and refuses new renames through the mount with `403` |
 | `mount_read_only` | `false` | `true` starts rclone with `--read-only`, so the kernel refuses the write before zurg sees it |
 
 `dav_allow_rename` covers the mount. It does not gate the dashboard endpoints,

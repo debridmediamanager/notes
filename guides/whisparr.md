@@ -8,9 +8,9 @@ Everything below was tested on 2026-10-23 with Whisparr `3.6.5.1886` (the `ghcr.
 
 Set up zurg for Radarr first, with [Sonarr & Radarr for torrents](sonarr-radarr-torrents.md): an account that takes torrents, `__magic__` on and the qBittorrent endpoint on. Whisparr reuses all of it.
 
-## 1. Add Whisparr's category to zurg
+## 1. Whisparr's category in zurg
 
-Whisparr sends its grabs under the category `whisparr`. Add it to zurg's list, beside the ones already there, and restart zurg:
+Whisparr sends its grabs under the category `whisparr`. Its **Test** button in step 3 creates that category in zurg, so nothing needs adding. To list it in `config.yml` anyway, add it beside the ones already there:
 
 ```yaml
 qbittorrent:

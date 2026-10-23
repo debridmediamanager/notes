@@ -23,9 +23,9 @@
 - Load/stuck detection: `CheckServerLoad` polls `/ScheduledTasks`, watches running tasks whose name contains "scan", tracks per-task stuck counts, and reports busy when scans are active; `IsJobStuck` flags tasks exceeding the stuck threshold.
 - Activity tracking: `GetRunningTasks` returns detailed `TaskActivity` structs with ID, Name, State, Progress (from `CurrentProgressPercentage`), Description, and stuck status for dashboard display.
 - Server status: `GetServerStatus` polls `/Sessions` to count active streaming sessions, transcodes (non-direct video/audio), and bandwidth usage for dashboard display.
-- Library discovery: `GetSections` calls `/Library/VirtualFolders`, returns sections with ID/Title/Path/Type, and augments each with an item count via `Items?ParentId=<id>&Recursive=true&Limit=0`.
-- Refreshing: `ProcessJob` reports every changed path of a job in one `POST /Library/Media/Updated`, with normalized forward-slash paths (Windows-safe). A job with no path refreshes the whole library with `POST /Items/{id}/Refresh`. It returns `ServerBusyError` on 503, a "library may have been deleted" error on 404, and the response body on any other 4xx/5xx. `RefreshSection` enqueues jobs.
-- Helpers: `FindSectionNormalized` matches by path prefix (first match wins) and returns the path with its prefix rewritten to the library location's casing. The prefix test is case-insensitive on darwin and exact elsewhere (`pkg/common/pathutil.go`).
+- Library discovery: `GetSections` calls `/Library/VirtualFolders`, returns sections with ID/Title/Paths (every folder of the library)/Type, and augments each with an item count via `Items?ParentId=<id>&Recursive=true&Limit=0`.
+- Refreshing: `ProcessJob` reports every changed path of a job in one `POST /Library/Media/Updated`, with each path in the body exactly as the server sees it on its own filesystem. A job with no path refreshes the whole library with `POST /Items/{id}/Refresh`. It returns `ServerBusyError` on 503, a "library may have been deleted" error on 404, and the response body on any other 4xx/5xx. `RefreshSection` enqueues jobs.
+- Helpers: `FindSectionNormalized` matches by path prefix (first match wins) and returns the path with its prefix rewritten to the library location's casing. The prefix test is case-insensitive on macOS and Windows and exact elsewhere (`pkg/common/pathutil.go`).
 
 ## Media Scanner Integration (`pkg/scan/scanner.go`)
 - Initializes the Jellyfin client when `mount_path`, server URL, and token are present; logs success and keeps the client nil on failures. No retry loop (unlike Plex), but manual reinit is supported.
@@ -36,9 +36,9 @@
 ## Dashboard & Routes
 - Router mounts Jellyfin endpoints: `/jellyfin/check-server`, `/jellyfin/auth`, `/jellyfin/auth/status`, `/jellyfin/server`, `/jellyfin/logout`, `/jellyfin/scan/{sectionID}`, `/jellyfin/scan-all` (`internal/handlers/router.go`).
 - Dashboard modal (templates/scripts) drives QuickConnect, displays status/errors, and saves/removes credentials; queue size, library cards with scan buttons, and server activities surface in `dashboard.tmpl`.
-- `JellyfinStatusFetcher` (`internal/handlers/dashboard/mediabrowser_status.go`) fills the dashboard JSON from a background cache rather than blocking the page: it validates the token, marks connectivity, populates the library list (ID/Name/Path/Type/ItemCount), and collects running task activities plus session/transcode/bandwidth counts. Activities and sessions refresh every 30s; the full fetch, libraries included, every 5 minutes. `response.go` serves the cached copy (`JellyfinServerInfo`, `jellyfin_queue_size`).
+- `JellyfinStatusFetcher` (`internal/handlers/dashboard/mediabrowser_status.go`) fills the dashboard JSON from a background cache rather than blocking the page: it validates the token, marks connectivity, populates the library list (ID/Name/Paths/Type/ItemCount), and collects running task activities plus session/transcode/bandwidth counts. Activities and sessions refresh every 30s; the full fetch, libraries included, every 5 minutes. `response.go` serves the cached copy (`JellyfinServerInfo`, `jellyfin_queue_size`).
 - Library scan endpoints (`HandleJellyfinScan`, `HandleJellyfinScanAll`) queue a whole-library refresh with no path for individual or all library sections, as the Plex equivalents do, and 503 when no Jellyfin client is configured (`internal/handlers/dashboard/dashboard.go`).
-- `jellyfin_server_url` and `jellyfin_token` are also writable through the generic config-update handlers, so they can be set without the QuickConnect modal (`handlers["jellyfin_server_url"]`/`["jellyfin_token"]` in `dashboard.go`; `updateJellyfinServerURL`/`updateJellyfinToken` in `scripts.tmpl`).
+- `jellyfin_server_url` and `jellyfin_token` are also writable through the generic config-update handlers, so they can be set without the QuickConnect modal (`handlers["jellyfin_server_url"]`/`["jellyfin_token"]` in `dashboard.go`; `updateJellyfinServerURL` in `scripts.tmpl`).
 
 ## Library Side Effects & Refresh
 - Any library side effects (directory assignment changes, STRM sync, repairs) invoke `MediaScanner.TriggerScan`, which includes Jellyfin refreshes when the client is connected (`internal/torrent/hooks.go:TriggerLibrarySideEffects` → `pkg/scan/scanner.go`).
@@ -47,4 +47,4 @@
 
 ## Miscellaneous
 - Emby is a sibling integration with its own config keys (`emby_server_url`, `emby_token`) and the same shared core, but no QuickConnect: you sign in with an API key, or pick a user and enter a password (`/emby/users`, `/emby/auth`). Its dashboard card shows libraries with scan buttons (`/emby/scan/{sectionID}`, `/emby/scan-all`), activities and sessions like Jellyfin's (`EmbyStatusFetcher`).
-- Windows path normalization is tested to ensure backslashes are converted before sending refresh requests (`pkg/jellyfin/windows_path_test.go`); `find_section_test.go` covers prefix matching.
+- `pkg/jellyfin/windows_path_test.go` checks that a Windows path stays out of the request URL and reaches the body unchanged; `find_section_test.go` covers prefix matching.

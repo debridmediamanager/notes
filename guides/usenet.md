@@ -1,6 +1,6 @@
 # Usenet with zurg
 
-zurg's `nzb` backend turns a directory of `.nzb` files into a mounted library. There is no downloader, no completed folder, and nothing on disk but the NZB files themselves: when a player seeks into a file, zurg fetches exactly the articles covering those bytes, yEnc-decodes them in memory, and answers the ranged read. A 60 GB remux costs 60 GB of disk nowhere.
+zurg's `nzb` backend turns a directory of `.nzb` files into a mounted library. There is no downloader and no completed folder, and nothing is downloaded ahead of play: on disk there are only the NZBs and bounded caches (file heads and tails under `data/bytecache/articles`, 512 MiB by default as `nzb_article_disk_cache_mb`; decoded archive blocks under `data/bytecache/decoded`; PAR2-rebuilt spans under `data/par2/`; and the index, name and size records under `data/`). When a player seeks into a file, zurg fetches exactly the articles covering those bytes, yEnc-decodes them in memory, and answers the ranged read. A 60 GB remux costs 60 GB of disk nowhere.
 
 It is a debrid backend as far as the rest of zurg is concerned — the same library model, the same directory filters, the same mount, the same media-server integration — so a Usenet release sits alongside your Real-Debrid or TorBox content in one tree. It can also be the only account you configure; no debrid service is required.
 
@@ -13,7 +13,7 @@ This guide goes end to end: news accounts, NZBs, the mount, Plex.
 | Config reference | [config.md → Usenet accounts](../reference/config.md#usenet-accounts) |
 | Dashboard | `http://localhost:9999/config/` → Essentials → Providers |
 | Where the code lives | `internal/nzb` (backend), `internal/nntp` (news client), `internal/par2` (repair math) |
-| Watch directory | `nzbs/`, beside the zurg binary |
+| Watch directory | `nzbs/`, in zurg's working directory (`/config` in Docker) |
 | Repair cache | `data/par2/` |
 | Resolved filenames | `data/nzb-names/`, so an obfuscated release is read for its names once rather than once per restart |
 | Article index | `data/nzb-index/`, under `nzb_segments: mmap` — the default on Linux, macOS and BSD |
@@ -66,7 +66,7 @@ providers:
 | `tls` | `false` | Turn it on. Plaintext NNTP sends your password in the clear and your reads to anyone on the path. |
 | `username` / `password` | `""` | |
 | `connections` | `8` | **Set this to your plan's real allowance.** It is not a rate limit to be polite about: a single connection carries a fraction of a provider's throughput, so zurg reads at this number. Too low and streaming is slow; over the plan's limit and the server starts refusing connections. |
-| `warm_connections` | `2` | Idle, authenticated connections held open so a read never waits on a dial. A dial is about 0.8s of TCP, TLS, greeting and `AUTHINFO`, and without a floor it was paid on the demand path after every start and every quiet spell. They come out of `connections` rather than being extra — the plan counts them as open connections, and zurg keeps them alive with a periodic `DATE` — so the floor is capped at the allowance. `-1` keeps none, which is what a plan metered by connection time wants. The top-level `warm_connections` sets the default for an account that states none — see [warm connections](../reference/config.md#warm-connections). |
+| `warm_connections` | `4` | Idle, authenticated connections held open so a read never waits on a dial. A dial is about 0.8s of TCP, TLS, greeting and `AUTHINFO`, and without a floor it was paid on the demand path after every start and every quiet spell. They come out of `connections` rather than being extra — the plan counts them as open connections, and zurg keeps them alive with a periodic `DATE` — so the floor is capped at the allowance. `-1` keeps none, which is what a plan metered by connection time wants. The top-level `warm_connections` sets the default for an account that states none — see [warm connections](../reference/config.md#warm-connections). |
 | `cache_size_mb` | `512` | Decoded article data held in memory, shared across every file being read rather than per file. |
 | `servers` | `[]` | Further news accounts — see [More than one Usenet provider](#more-than-one-usenet-provider). |
 
@@ -79,7 +79,7 @@ Two rules the config validator enforces:
 
 Retention is per-provider, and the difference between one extra fetch and a full-release PAR2 rebuild is whether some other account still has the article. That is why a second account is worth more here than redundancy usually is.
 
-The keys already in the `nntp` block describe the first account. Anything under `servers` is another one, asked only when the accounts before it did not have the article. An existing single-account config keeps working untouched:
+The keys already in the `nntp` block describe the first account. Anything under `servers` is another account. Accounts at the same `priority` share the load, a higher number is asked only after the lower ones, and a `backup` account only once every primary has failed to deliver it. An existing single-account config keeps working untouched:
 
 ```yaml
 providers:
@@ -106,7 +106,7 @@ providers:
           backbone: omicron
 ```
 
-Each account keeps its own connection allowance, and reads are driven at the **combined allowance of the non-backup accounts** — 30 + 20 = 50 in the example above. A second unlimited provider therefore buys throughput as well as retention insurance; a `backup` account buys neither, by design, since it only ever carries what the primaries could not supply and counting it would widen every read-ahead window for capacity steady-state playback never touches.
+Each account keeps its own connection allowance, and reads are driven at the **combined allowance of the non-backup accounts that share the lowest live `priority`** — 30 + 20 = 50 in the example above, where both are at the default priority. A second unlimited provider at the same priority therefore buys throughput as well as retention insurance; a `backup` account buys neither, by design, since it only ever carries what the primaries could not supply and counting it would widen every read-ahead window for capacity steady-state playback never touches.
 
 Three keys shape who gets asked:
 
@@ -114,7 +114,7 @@ Three keys shape who gets asked:
 |---|---|---|
 | `name` | value of `host` | Labels the account in logs. |
 | `priority` | `0` | Who is asked first, lowest first. Accounts sharing a priority are asked in written order, except that one with a free connection is preferred over one whose allowance is spent — so two equal accounts share the load rather than queueing on one. |
-| `backup` | `false` | Marks a metered block account, consulted only once every primary has answered *no such article*. A primary being merely **busy** is not enough: zurg waits for it rather than spending metered bytes on something an unlimited account would have served. |
+| `backup` | `false` | Marks a metered block account, consulted only once every primary has said it lacks the article, sent a damaged copy, failed partway through, or cannot be reached. A primary being merely **busy** is not enough: zurg waits for it rather than spending metered bytes on something an unlimited account would have served. |
 | `backbone` | `""` | Names the article spool an account resolves to. Two accounts on one backbone hold the same articles, so once one has said it lacks an article the others on that spool are skipped instead of being charged a round trip for the same answer. |
 
 Every account keeps a warm floor of its own as well, out of its own allowance: a retention gap sends a read straight past the primary, so the account reached for the first time is exactly the one whose dial nobody has paid yet. A two-connection block account can be told to hold none with `warm_connections: -1`.
@@ -127,7 +127,7 @@ At startup zurg names every account it will use:
 Usenet account nzb connected: nntps://unlimited.example.com:563 (30 connections) + nntps://second-unlimited.example.com:563 (20 connections) [usenetexpress] + nntps://block.example.com:563 (10 connections) [backup] [omicron]
 ```
 
-The census that decides whether a release needs repairing asks every account before calling an article missing, and asks each one only about what its predecessors lacked. A transport failure is never mistaken for an aged-out article: if any account failed to answer *at all*, that failure is what gets reported, so a timeout never causes silence to be served and a repair to be scheduled for something that was never gone.
+The census that decides whether a release needs repairing asks every account before calling an article missing, and asks each one only about what its predecessors lacked. A transport failure is never mistaken for an aged-out article: if an account timed out or dropped the article partway, that failure is what gets reported, so a timeout never causes silence to be served and a repair to be scheduled for something that was never gone. An account that could not be reached at all does not count: if another account says the article is gone, it is treated as gone.
 
 ### Configuring providers in the Dashboard
 
@@ -150,7 +150,7 @@ For an `nzb` row the Token column shows the **news server host** instead of a to
 5. Leave **Watchlist target** unchecked — the backend cannot add content and saving it checked is rejected. **Disabled** keeps the entry in `config.yml` without loading it.
 6. **Save**.
 
-The form is validated as if the edit had been applied, so mistakes come back as an alert rather than a broken config. Adding a **second** `nzb` provider is refused there — the error points you at **Further news servers**, which is where further news accounts belong.
+The form is validated as if the edit had been applied, so mistakes come back as an alert rather than a broken config. Adding a **second** `nzb` provider is refused there — the error points you at **Further news servers** (or `nntp.servers`), which is where further news accounts belong.
 
 **To add another news server** — a second account, or a block account on another backbone — click **Edit** on the `nzb` row, then **Add news server** under **Further news servers**. Each server has its own **Name**, **NNTP host**, **Port**, **TLS**, **Username**, **Password**, **Connections**, **Priority**, **Backbone** and **Backup only**. **Remove server** takes one out. **Save** writes them all to `nntp.servers`.
 
@@ -289,7 +289,7 @@ Only the file that is clearly the release is renamed: the biggest entry in the a
 
 - **Removing** an NZB from `nzbs/` removes the release from the library, drops its cached reader and article cache, and forgets any repaired bytes it held.
 - **Deleting a Usenet release from the Dashboard deletes the `.nzb` file from disk.** There is nowhere else for it to live. This is not the same as deleting a torrent from a debrid account, where the file stays on the service.
-- **Replacing an NZB in place is the slow way to do it.** Writing over a file does not change the directory, so the watch above cannot see it; what notices is the periodic change check, which reads the file's modification time and re-parses it — up to `check_for_changes_every_secs` later. Removing the old file and adding the new one is noticed within a second or two, and is what an indexer or the SABnzbd endpoint does anyway.
+- **Replacing an NZB in place is the slow way to do it.** Writing over a file does not change the directory, so the watch above cannot see it; what notices is the periodic change check, which reads the file's modification time and re-parses it — up to the first `check_for_changes_every_secs` check that comes more than 15 seconds after the last directory read (about 30 seconds at the default). Removing the old file and adding the new one is noticed within a second or two, and is what an indexer or the SABnzbd endpoint does anyway.
 
 ---
 
@@ -316,7 +316,7 @@ Alongside those, the account gets a directory of its own — `__nzb__` by defaul
 
 Four Usenet-specific things to know when writing filters:
 
-- **Tag filters will not match Usenet content.** Every `zurg_*` tag (resolution, HDR, bitrate, duration, language) comes from ffprobe, and ffprobe is an external binary handed a URL — a link zurg assembles itself is not something it can open, so analysis is skipped for this backend entirely. Filter Usenet content on names, file extensions, sizes and `has_episodes` instead. A directory keyed on `tags_match_any` will simply never contain a Usenet release.
+- **Tag filters match Usenet content once it is analysed.** Every `zurg_*` tag (resolution, HDR, bitrate, duration, language) comes from ffprobe. zurg runs ffprobe on Usenet files itself, through its own server and at a pace the news server can carry, so a Usenet release gets its tags like any other once it has been analysed. Until then a directory keyed on `tags_match_any` does not hold it.
 - **`.par2` and `.sfv` files are hidden.** They are repair scaffolding; zurg reads them itself and no media server has any use for eight of them per season pack. `.nfo` is kept, because Kodi, Emby and Jellyfin read it.
 - **RAR sets are content, not archives to unpack.** `.rar` and `.rNN` stay visible and a volume set appears in the mount as a *folder* whose contents are the files inside it — zurg streams video straight out of the archive without extracting anything. A release that is *only* one volume set stands in for its own contents instead, with no archive folder in between: the payload sits directly in the release folder, which is where a media server looks for it. Files posted beside the set — the `.nfo`, the poster's `.txt`, artwork, subtitles — stay listed there too.
 - **`force_select_playable_files` does not apply.** A Usenet post is whole; there is nothing to select. Every content file is already offered.
@@ -427,7 +427,7 @@ Nothing here is Usenet-specific except the last subsection, but the order matter
    on_library_update: sh plex_update.sh "$@"
    ```
 
-**What Plex will not get from Usenet content:** no ffprobe-derived metadata from zurg (see section 4), so Plex does its own analysis on first play like it would for any local file. File sizes settle shortly after a release is scanned: the first listing may report a cheap estimate from the article count, and the exact length arrives behind it — from the recovery index where there is one, and otherwise from one article per file. For a large multi-volume archive whose recovery index already states every exact length, one verified volume can establish the shared article stride; each sibling checks that inference against its own header before serving its first byte. Once a length lands, the library is told the release changed, so the mount and Plex both see the real length. zurg sizes up to eight releases at a time on an account of twelve connections or fewer and more on a larger one (twelve on 16 connections, sixteen from 20), and when acquisition checks a release with the news servers, that check queues beside this sizing and read-ahead and never takes the connection kept for a read a player is waiting on.
+**What Plex will not get from Usenet content:** nothing until zurg has analysed it (see section 4), so Plex may do its own analysis on first play like it would for any local file. File sizes settle shortly after a release is scanned: the first listing may report a cheap estimate from the article count, and the exact length arrives behind it — from the recovery index where there is one, and otherwise from one article per file. For a large multi-volume archive whose recovery index already states every exact length, one verified volume can establish the shared article stride; each sibling checks that inference against its own header before serving its first byte. Once a length lands, the library is told the release changed, so the mount and Plex both see the real length. zurg sizes up to eight releases at a time (never more than the account's connections) on an account of twelve connections or fewer and more on a larger one (twelve on 16 connections, sixteen from 20), and when acquisition checks a release with the news servers, that check queues beside this sizing and read-ahead and never takes the connection kept for a read a player is waiting on.
 
 ### Jellyfin / Emby / Infuse
 
@@ -448,7 +448,7 @@ zurg's answer, in order of preference:
 PAR2 repair is a background job, at most two releases at a time, and it needs:
 
 ```yaml
-enable_repair: true            # PAR2 repair does not run without this
+enable_repair: true            # the default; set false to turn PAR2 repair off
 par2_patch_cache_mb: 512       # budget for data/par2/; -1 keeps repairs in memory only
 ```
 
@@ -458,7 +458,7 @@ A repair announces itself and then says what it cost:
 
 ```
 PAR2 repair of Some.Release: 5 slice(s) missing; reading the release to rebuild them
-PAR2 repair of Some.Release rebuilt 5 slice(s) in 55s, keeping 3.4 MiB of them (library holds 3.4 MiB in memory, 3.4 MiB on disk)
+PAR2 repair of Some.Release rebuilt 5 slice(s) in 55s on the avx2 kernel, keeping 3.4 MiB of them (library holds 3.4 MiB in memory, 3.4 MiB on disk)
 ```
 
 Two things worth knowing:
@@ -483,13 +483,13 @@ Measured against a live news account with a large connection allowance:
 The connection allowance sets the first ceiling on single-stream rate. zurg keeps that allowance loaded by sizing read-ahead in both articles and bytes: small-article archive posts get at least 64 MiB of reach, while multi-megabyte posts keep the connection-and-pipeline window they already had. So:
 
 - **Set `connections` to your plan's real number.** This is the tuning knob. Eight connections will not stream a remux.
-- **Two primary accounts add up.** Reads are driven at the combined allowance of every non-`backup` account, so a second unlimited provider raises the ceiling as well as covering the first one's retention gaps. A `backup` account does not count toward it.
-- **`warm_connections` (2 by default) buys latency, not throughput.** It holds that many connections open, idle and authenticated, so the first read after a start or a quiet spell does not spend ~0.8s dialling before its first byte: 1.5s to first byte cold against 0.15s warm. Once a stream is running it changes nothing.
+- **Two primary accounts add up.** Reads are driven at the combined allowance of the non-`backup` accounts that share the lowest live `priority`, so a second unlimited provider at the same priority raises the ceiling as well as covering the first one's retention gaps. A `backup` account does not count toward it.
+- **`warm_connections` (4 by default) buys latency, not throughput.** It holds that many connections open, idle and authenticated, so the first read after a start or a quiet spell does not spend ~0.8s dialling before its first byte: 1.5s to first byte cold against 0.15s warm. Once a stream is running it changes nothing.
 - **The dials that do happen stick to one backend, so their TLS sessions resume.** A dial costs about 0.8s — measured against a live news server on 2026-08-29: 106ms TCP, 213ms TLS handshake, 256ms greeting, 218ms for the two `AUTHINFO` exchanges. A provider hostname is a rotation (that one resolves to 11 addresses) and a TLS session ticket is only good at the machine that issued it, so redialling whichever address the resolver named first resumed **0 of 3** sessions while redialling the same address resumed **3 of 3**. Each account now redials the address its last connection came from, which takes **110–140ms off every redial** there — a resumed handshake is 109–141ms against 225–261ms for a full one. A server with a ~18ms round trip saves less. The pin is dropped and the name resolved again as soon as that address stops answering, so nothing is stuck to a machine the provider has retired; a refusal that reaches NNTP — the account at its connection ceiling, a rejected password — keeps it, because that is the account's answer and not the backend's. Each dial logs its phases at debug level, `resumed=` included.
 - `cache_size_mb` (512 default) is shared across every file being read. Raise it if you run several concurrent streams; it does not make one stream faster. Speculative reads may reserve at most half of it across at most two readers, leaving the other half for articles already consumed or about to be consumed.
 - Whether a release is RAR-packed or posted as plain files no longer matters much for throughput.
 
-**One slow article no longer stalls the stream.** A sequential read averaging ~90 MB/s still dips to 1–5 MB/s for about a second at a time, and every one of those dips is the same thing: an article stops arriving while the other connections finish theirs and go idle. When a read has been standing on one article for longer than that reader has learned to expect, zurg asks a **second connection** for the same article and serves whichever answer arrives first. A stalled pipelined batch may block several consecutive playhead articles on the same dead socket, so up to five distinct articles from one reader may now be hedged together; one is never asked twice. The account still pays for at most 20 second asks a minute. The deadline remains twice the reader's own recent wait, never under 250 ms and never over 2 s, and only a read a client is actually waiting on is hedged — read-ahead, next-volume prefetch and repair are not. An article the servers have just *refused* is not hedged either: that one is already waiting on its own confirmation a second later, and asking inside that window proves nothing. Each hedge writes one line at debug level saying how long the read had blocked, and the line that follows says whether the second ask won.
+**One slow article no longer stalls the stream.** A sequential read averaging ~90 MB/s still dips to 1–5 MB/s for about a second at a time, and every one of those dips is the same thing: an article stops arriving while the other connections finish theirs and go idle. When a read has been standing on one article for longer than that reader has learned to expect, zurg asks a **second connection** for the same article and serves whichever answer arrives first. A stalled pipelined batch may block several consecutive playhead articles on the same dead socket, so up to five distinct articles from one reader may be hedged together, or one or two on a post whose articles are under 1 MiB; one is never asked twice. The account still pays for at most 20 second asks a minute. The deadline remains twice the reader's own recent wait, never under 250 ms (125 ms for posts whose articles are under 1 MiB) and never over 2 s, and only a read a client is actually waiting on is hedged — read-ahead, next-volume prefetch and repair are not. An article the servers have just *refused* is not hedged either: that one is already waiting on its own confirmation a second later, and asking inside that window proves nothing. Each hedge writes one line at debug level saying how long the read had blocked, and the line that follows says whether the second ask won.
 
 For declared ranges, the playhead article enters the priority scheduler before
 later bytes are offered. Pipelined connections are then dealt consecutive
@@ -558,18 +558,18 @@ The index rewrites itself whenever the NZB changes, repairs itself if it is ever
 | Files have random names inside the release | Obfuscated post whose recovery failed | Check for `Recovered N filename(s)`; without PAR2 files in the NZB there is no source for the real names |
 | The video still has a random name, though the folder is right | A fully obfuscated post, where the archive holds several files of a similar size | Only a clear single payload is renamed to the release; a season pack in one archive keeps the names the archive gave it |
 | Streaming is slow | `connections` left at the default 8 | Set it to the plan's allowance |
-| The first play after a quiet spell takes a second to start, then runs fine | The warm floor is off, or capped to nothing by a one-connection account | Leave `warm_connections` unset — it defaults to 2 — and check neither it nor the top-level `warm_connections` has been set negative |
+| The first play after a quiet spell takes a second to start, then runs fine | The warm floor is off, or capped to nothing by a one-connection account | Leave `warm_connections` unset — it defaults to 4 — and check neither it nor the top-level `warm_connections` has been set negative |
 | Connections refused by the provider | `connections` above what the plan permits | Lower it to the real figure |
 | Playback stutters or a gap plays silent | Missing articles | Look for `PAR2 repair of …` in the log; confirm `enable_repair: true`; add [another Usenet provider](#more-than-one-usenet-provider) |
 | A gap stays silent and no repair line ever appears | `enable_repair` is off, or the NZB carries no `.par2` files | Set `enable_repair: true`; if the post has no recovery files, only another news account can help |
 | A second provider never seems to be asked | Both accounts carry the same `backbone`, so the second is skipped once the first says the article is gone | Correct the `backbone` values — only accounts genuinely on one spool should share a name |
 | One of several accounts is dead but startup looked fine | Startup only fails when *every* account is unreachable | Grep the log for `is not reachable` — each bad account warns by name |
 | A block account is being billed for articles the unlimited one has | `backup: true` missing on it | Set it; a primary being merely busy will then no longer push reads onto the metered account |
-| A release is missing from a tag-filtered directory | ffprobe never runs on Usenet content, so it carries no `zurg_*` tags | Filter on names, extensions, size or `has_episodes` |
+| A release is missing from a tag-filtered directory | It has not been analysed yet, so it carries no `zurg_*` tags | Wait for the analysis, or run Analyze & Tag Library from the dashboard |
 | `.par2` files not visible in the mount | Deliberate — they are hidden as repair scaffolding | Nothing to fix; zurg still reads them |
 | Changed a provider in the Dashboard and nothing happened | Provider changes are written to `config.yml` but not hot-reloaded | Restart zurg — the banner under the providers table says so |
 | Plex emptied the library after a zurg restart | A scan was in flight while the mount was away, with auto-empty-trash on | Turn auto-empty off, and pre-flight sessions *and* refreshing state before any restart |
-| A file's size changed slightly a moment after the release appeared | The first listing can only estimate from the article count; the exact length arrives behind it, from the PAR2 index or from the file's own yEnc header | Expected, and it settles once — the length is written to `data/nzb-sizes/` and never learned again |
+| A file's size changed slightly a moment after the release appeared | The first listing can only estimate from the article count; the exact length arrives behind it, from the PAR2 index or from the file's own yEnc header | Expected, and it settles once — the length is written to `data/nzb-sizes/` and kept until the NZB changes |
 
 ### Asking about one article
 
@@ -593,9 +593,9 @@ curl -u user:pass 'http://localhost:9999/debug/nzb/probe?release=<nzb id>&file=0
 curl -u user:pass 'http://localhost:9999/debug/nzb/probe?release=<nzb id>&article=3&body=1'
 ```
 
-It answers one JSON object per configured Usenet account — `found`, `missing`,
-which account answered, and how long it took — so "which of my providers still
-has this" is a single call. It is read-only: nothing it fetches enters the
+It answers `{"probes": [...]}` with one object for the `nzb` provider — `found`,
+`missing` and how long it took — after asking the news accounts in priority order until one has it (a backup only once the primaries miss). It
+does not say which news account held the article. It is read-only: nothing it fetches enters the
 article cache, and an article it fails to find is not recorded as a dead one, so
 a probe cannot silence a file that plays.
 
@@ -607,5 +607,5 @@ a probe cannot silence a file that plays.
 - [plex.md](plex.md) — how zurg drives Plex scanning, matching and the trash sweep
 - [jellyfin.md](jellyfin.md) — Jellyfin integration
 - [docker.md](../setup/docker.md) — Docker setup, FUSE propagation and troubleshooting
-- [tags.md](../reference/tags.md) — the tag system, and therefore what Usenet content does not get
+- [tags.md](../reference/tags.md) — the tag system
 - [architecture.md](../internals/architecture.md) — `internal/nzb` and `internal/nntp` in context

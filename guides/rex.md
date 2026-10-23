@@ -193,7 +193,7 @@ A file zurg cannot place stays unmatched: a film titled as its file, or an episo
 
 **Why it matters.** This is the point of the whole setup. It also proves the last link: rex reading a file from zurg while you watch.
 
-Open a Plex app (not a web browser) on a phone, TV or computer **on the same home network**. rex shows up on its own under the machine's name, with **Movies** and **TV Shows**. Pick a movie and press play.
+Open a Plex app (not a web browser) on a phone, TV or computer **on the same home network**. rex shows up on its own under the machine's name, with **Movies** and **TV Shows**. Pick a movie and press play. A `rex.db` first made by a rex older than the 2026.10.24 nightly calls them **Debrid Movies** and **Debrid TV**; rename them in a Plex app if you like.
 
 At home nothing else is needed: Plex apps find rex with Plex's own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN). Discovery runs on UDP ports 32410 and 32414, so a firewall on the rex machine must let those in. rex answers discovery when it uses port 32400. If you moved rex to 32500 because Plex runs on the same machine, discovery is left to that Plex, and apps find rex through the Plex account it is [shared with](#share-it-with-your-own-account). app.plex.tv in a web browser is the exception: it needs the HTTPS address from [Use it outside your home](#use-it-outside-your-home-optional), even at home.
 
@@ -210,7 +210,7 @@ Two things you may meet:
 
 zurg's folders other than `movies` and `shows`, such as `anime`, need nothing: each file goes to **Movies** or **TV Shows** by what zurg says it is. A file zurg cannot tell is an episode waits in **Movies**.
 
-To give one of those folders libraries of its own, add `rex_shows` and/or `rex_movies` under it in `~/zurg/config.yml`, beside its filters, then restart zurg (`cd ~/zurg && ./zurg service restart`). This needs zurg's next nightly after 2026-10-22 (update it as in [step 1](#step-1-install-zurg)):
+To give one of those folders libraries of its own, add `rex_shows` and/or `rex_movies` under it in `~/zurg/config.yml`, beside its filters, then restart zurg (`cd ~/zurg && ./zurg service restart`). This needs zurg 2026.10.22 or later and rex 2026.10.23 or later (update zurg as in [step 1](#step-1-install-zurg)):
 
 ```yaml
 directories:
@@ -547,7 +547,7 @@ rex takes no password from zurg. It answers the API zurg pushes to only from thi
 | rex's log says `held ... no media_info yet` and the library stays empty | zurg has not read the files yet. Wait for its library to load; if zurg logs `segmentation fault`, update and restart it as in [step 1](#step-1-install-zurg) |
 | Titles show file names and no posters | rex is not on a Plex account: do [step 3](#step-3-add-it-to-a-plex-account). If you claimed it after zurg sent them, they fill in by themselves, about 300 films or shows an hour |
 | A film is titled as its file, or an episode sits in a show named after its release | zurg could not place it. Without `dmm_api_key` that is a name its title search did not find; with it, DMM has not placed it yet and zurg asks again a day later. **Fix Match** fixes it by hand |
-| A title is in the wrong show or matched to the wrong film | DMM placed it wrong. zurg asks DMM again once a week, which helps once DMM has learned better. Until then use **Fix Match** in a Plex app, signed in as the fresh account that owns rex; rex refuses it (403) to the accounts it is shared with |
+| A title is in the wrong show or matched to the wrong film | DMM placed it wrong. With `dmm_api_key` set, zurg asks DMM again once a week, which helps once DMM has learned better. Until then, and always without a key, use **Fix Match** in a Plex app, signed in as the fresh account that owns rex; rex refuses it (403) to the accounts it is shared with |
 | Nothing plays and rex's log shows 502 | rex cannot reach the address zurg gave it. Run `curl` on that URL from the rex machine. In Docker, see the Docker section |
 | Nothing plays and rex's log shows `PART ... upstream 401` or `403` | zurg refused its own login. Restart zurg (`cd ~/zurg && ./zurg service restart`) so it sends rex the current one |
 | "This server is not powerful enough to convert video" | The device cannot play the file as it is. Try a Plex app on a TV or phone, or set up [Converting video](#converting-video-optional) |
