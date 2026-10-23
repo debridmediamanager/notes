@@ -154,7 +154,7 @@ INFO    FEED identified "Sintel.2010" -> movie tmdb:45745 (placed)
 INFO    FEED test upsert: 1 created, 0 updated, 0 held, 0 unchanged, 0 rejected
 ```
 
-`placed` means rex took the title from what was sent, not from the file name. Sintel is now in **Debrid Movies**, playing from the little web server. No Plex app can open rex before [step 3](#step-3-add-it-to-a-plex-account), so this step checks the feed only.
+`placed` means rex took the title from what was sent, not from the file name. Sintel is now in **Movies**, playing from the little web server. No Plex app can open rex before [step 3](#step-3-add-it-to-a-plex-account), so this step checks the feed only.
 
 **Clean up** before you go on: removing the test source removes everything it sent. The first request answers a `confirm` path; send a `DELETE` to that path within five minutes.
 
@@ -198,7 +198,7 @@ kill %1
 ### Share it with your own account
 
 1. Still signed in as the fresh account, open [app.plex.tv](https://app.plex.tv), then **Settings** (the wrench), **Manage Library Access** and **Grant Library Access**.
-2. Enter your own account's username or email, pick the rex server and both libraries, **Debrid Movies** and **Debrid TV**, and send the invite.
+2. Enter your own account's username or email, pick the rex server and both libraries, **Movies** and **TV Shows**, and send the invite.
 3. Sign out, sign in as **yourself**, and accept the invite. It arrives by email and in app.plex.tv.
 
 rex tells plex.tv the address from step 1 the moment it is claimed, with no restart.
@@ -242,7 +242,7 @@ curl -s http://192.168.1.20:32400/rex/feed/myapp/held  | head -c 600   # what wa
 
 **Why it matters.** This is the point of the whole setup. It also proves the last link: rex reading a file from your app while you watch.
 
-Open a Plex app on a phone, TV or computer **on the same home network**. rex shows up under the machine's name, with **Debrid Movies** and **Debrid TV**. Pick a movie and press play.
+Open a Plex app on a phone, TV or computer **on the same home network**. rex shows up under the machine's name, with **Movies** and **TV Shows**. Pick a movie and press play.
 
 At home nothing else is needed: Plex apps find rex with Plex's own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN). Discovery runs on UDP ports 32410 and 32414, so a firewall on the rex machine must let those in. rex answers discovery when it uses port 32400. If you moved rex to 32500 because Plex runs on the same machine, discovery is left to that Plex, and apps find rex through the Plex account it is [shared with](#share-it-with-your-own-account). app.plex.tv in a web browser is the exception: it needs the HTTPS address from [Use it outside your home](#use-it-outside-your-home-optional), even at home.
 
@@ -253,9 +253,9 @@ Two things you may meet:
 - **"yourhost server is unclaimed and not secure".** A Plex app says this about any server that is not on a Plex account, and rex plays nothing until it is on one. Do [step 3](#step-3-add-it-to-a-plex-account).
 - **"This server is not powerful enough to convert video".** The app cannot play the file as it is, often a web browser meeting AC3 or DTS sound. Plex apps on TVs and phones play most files as they are. To play everything everywhere, set up [Converting video](#converting-video-optional).
 
-Each file goes to **Debrid Movies** or **Debrid TV** by the `kind` your app sent. A file without one goes by its first folder: `shows` to Debrid TV, anything else to Debrid Movies.
+Each file goes to **Movies** or **TV Shows** by the `kind` your app sent. A file without one goes by its first folder: `shows` to TV Shows, anything else to Movies.
 
-To give a folder libraries of its own, your app adds `directories` to its registration, naming the first folder of the files' paths and the libraries' titles: `{"url": ..., "directories": [{"name": "anime", "shows": "Anime", "movies": "Anime Movies"}]}`, either title alone being fine. rex makes them when your app registers and moves what that folder already has into them as it was: watch history, Fix Match and edits included. A malformed entry is skipped, never the registration, and the answer lists it under `ignored` with why. Rename them in a Plex app as you like. Delete one and it stays deleted, its files going back to Debrid Movies or Debrid TV, until you add it again with **Add Library**, whose folder list shows your app's folders under its `mount`. `docs/feed-api.md` has the rules, under "Libraries a source declares".
+To give a folder libraries of its own, your app adds `directories` to its registration, naming the first folder of the files' paths and the libraries' titles: `{"url": ..., "directories": [{"name": "anime", "shows": "Anime", "movies": "Anime Movies"}]}`, either title alone being fine. rex makes them when your app registers and moves what that folder already has into them as it was: watch history, Fix Match and edits included. A malformed entry is skipped, never the registration, and the answer lists it under `ignored` with why. Rename them in a Plex app as you like. Delete one and it stays deleted, its files going back to Movies or TV Shows, until you add it again with **Add Library**, whose folder list shows your app's folders under its `mount`. `docs/feed-api.md` has the rules, under "Libraries a source declares".
 
 **Back up** `~/rex/rex.db` (it holds your library, watch history and your app's login, so keep it private) and `claim_state.json`:
 
