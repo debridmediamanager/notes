@@ -16,6 +16,7 @@ Working with the library: Usenet, the arrs, `__magic__`, and media servers.
 - [rex](rex.md)
 - [rex with your own app](rex-any-source.md)
 - [Building rex addons](rex-addons.md)
+- [Kometa with rex](kometa.md)
 - [The Stremio addon](stremio.md)
 - [Watchlist and Seerr](acquisition.md)
 - [Plex watchlist](plex-watchlist.md)
