@@ -114,7 +114,7 @@ A stream's `path` and `file` end in `.m3u8`, and its `media_info` says `"format_
 | Field | Where it shows |
 |---|---|
 | `title`, `summary` | The video's title and summary, exactly as sent |
-| `date` | Its release date (`YYYY-MM-DD`), and the year from it |
+| `date` | Its release date (`YYYY-MM-DD`), and the year from it. Or the year alone (`YYYY`) for something known only by its year, such as an old film: Plex apps then show the year and no release day |
 | `thumb` | A film's poster, or an episode's still |
 | `art` | A film's background |
 | `show.title`, `show.summary`, `show.poster`, `show.art` | The episode's show |
