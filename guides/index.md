@@ -13,6 +13,8 @@ Working with the library: Usenet, the arrs, `__magic__`, and media servers.
 - [Sonarr & Radarr for torrents](sonarr-radarr-torrents.md)
 - [Lists in Sonarr & Radarr](import-lists.md)
 - [zurg searches for Sonarr & Radarr](sonarr-radarr-fetch.md)
+- [Subtitles with Bazarr](subtitles.md)
+- [Whisparr](whisparr.md)
 - [\_\_magic\_\_](magic.md)
 - [Renaming](renaming.md)
 - [Plex](plex.md)
