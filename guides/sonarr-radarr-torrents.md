@@ -348,7 +348,7 @@ The hash is the info hash the client sent. `added … as 720824192` is the accou
 
 A stalled swarm reports **Downloading** with the rate and the seed count at zero rather than as a stall warning — `stalledDL` is a state the \*arrs act on for their failed-download handling, and a swarm with no seeds is not a verdict on the release.
 
-With `cached_only: false`, the whole magnet reaches the account. zurg passes on the display name the client grabbed under and any trackers it named. On an indexer that publishes only magnets the display name is the one place the release name exists. Without it TorBox lists an unresolved grab under its forty-character hash for as long as the metadata stays unresolved. A `.torrent` carries its own name and trackers so nothing is added to it. In cached-only mode, the default, TorBox and Debrid-Link are asked by hash alone, since a cached hit comes back under its real name.
+The whole magnet reaches the account. zurg passes on the display name the client grabbed under and any trackers it named. On an indexer that publishes only magnets the display name is the one place the release name exists. Without it TorBox lists an unresolved grab under its forty-character hash for as long as the metadata stays unresolved. A `.torrent` carries its own name and trackers so nothing is added to it. The exception is cached-only mode (the default) on TorBox and Debrid-Link, which are asked by hash alone, since a cached hit comes back under its real name.
 
 ### The import happens
 

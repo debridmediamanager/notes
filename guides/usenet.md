@@ -85,7 +85,7 @@ Two rules the config validator enforces:
 
 Retention is per-provider, and the difference between one extra fetch and a full-release PAR2 rebuild is whether some other account still has the article. That is why a second account is worth more here than redundancy usually is.
 
-The keys already in the `nntp` block describe the first account. Anything under `servers` is another account. Accounts at the same `priority` share the load, a higher number is asked only after the lower ones, and a `backup` account only when every primary lacks the article. An existing single-account config keeps working untouched:
+The keys already in the `nntp` block describe the first account. Anything under `servers` is another account. Accounts at the same `priority` share the load, a higher number is asked only after the lower ones, and a `backup` account only once every primary has failed to deliver it. An existing single-account config keeps working untouched:
 
 ```yaml
 providers:
