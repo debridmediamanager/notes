@@ -12,7 +12,7 @@ There are three ways to use Sonarr and Radarr with zurg. Pick the one that match
 |---|---|---|---|
 | [Usenet](sonarr-radarr.md) | Sonarr and Radarr | a SABnzbd | a Usenet account and Usenet indexers in Prowlarr or the \*arrs |
 | [Torrents](sonarr-radarr-torrents.md) | Sonarr and Radarr | a qBittorrent | a debrid account and torrent indexers in Prowlarr or the \*arrs |
-| [zurg searches](sonarr-radarr-fetch.md) | zurg | no download client at all | a Usenet account and Usenet indexers in zurg's own config |
+| [zurg searches](sonarr-radarr-fetch.md) | zurg | no download client at all | a Usenet or debrid account, and Newznab or Torznab indexers in zurg's own config |
 
 The first two can run side by side. They share the same `__magic__` folder.
 
@@ -187,7 +187,7 @@ An episode file below the cutoff is an upgrade when the profile allows upgrades.
 
 ## Things to know
 
-- **A change to `indexer_concurrency` needs a restart.** The other keys are read on every poll.
+- **A change to `indexer_concurrency`, a new source, or a source's URL or API key needs a restart.** `concurrency`, `check_every_secs` and turning a source on or off take effect at the next poll.
 - **The rescan is the last step and it queues behind the app's own work.** Right after a list adds many movies Radarr refreshes each of them first. The files are already in place while that runs.
 - **Analyse video files reads the head of each file over the mount.** It works. It is also the slowest part of a big list. Leave it on unless you know you do not want media info.
 - **Unmonitored titles are left alone.** That covers movies and series and seasons and episodes. So are titles whose folder is outside `__magic__`.

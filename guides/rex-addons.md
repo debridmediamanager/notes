@@ -100,7 +100,7 @@ A path's first segment picks its library: with the example above, every path tha
 |---|---|---|
 | `id` | yes | Your key for this video, **for good**. rex keeps watch history on it |
 | `path` | yes | Where its bytes are under your `url`. Its first segment picks the library |
-| `media_info` | yes, in practice | ffprobe's `-show_format -show_streams` JSON for the video (for a stream, probe its URL). Without it the video is **held**: stored but not shown, because Plex apps will not play a video they know nothing about |
+| `media_info` | yes, in practice | ffprobe's `-show_format -show_streams` JSON for the video (for a stream, probe its URL). Without it a file is **held**: stored but not shown, because Plex apps will not play a video they know nothing about. A stream (`.m3u8`) without one is rejected as `not a video file`, so send a stream only once you have probed it |
 | `kind` | for a show | `episode` or `movie`. Without it nothing places the video: in a TV library it is an episode of a show named after `name`, numbered in file order; in a movie library a film titled as its file |
 | `season`, `episode` | for an episode | Where it goes. Number episodes so a new one never shifts the others |
 | `name` | for a show | The show's name, and what groups its episodes |
@@ -130,7 +130,7 @@ Every field is optional. Pictures are `http://` or `https://` URLs. rex fetches 
 
 How rex treats them:
 
-- **Only for what nothing names.** A video sent with `ids` Plex knows is shown as Plex describes it, and `display` is ignored.
+- **Only for what nothing names.** A video sent with `kind` and `ids` Plex knows is shown as Plex describes it, and `display` is ignored.
 - **Later sends update.** Send a video again with a new `display` and its row, show and season change in place; apps redraw new pictures. A show keeps the title it was made with.
 - **People win.** A field someone edited and locked in a Plex app keeps their value, and a poster they uploaded stays.
 - **It is checked.** A picture that is no http(s) URL, or a date of another shape, refuses the video and says which field.
@@ -165,7 +165,7 @@ rex's log names every refused video and why: `FEED myaddon rejected <id>: <reaso
 | **An id is forever.** Change it and the video is a new title | Watch history and edits stay on the old row, which the next snapshot removes |
 | **One video, one file.** Two ids may not share a `file` | The second is rejected: `<file> is already <id>'s file` |
 | **A video's bytes are fixed per id.** rex keeps the streams it was first probed with | If the bytes change (another format, a fixed upload), give the video a new id and file |
-| **Probe everything.** No `media_info`, no video | It waits in `held` until a send brings one |
+| **Probe everything.** No `media_info`, no video | A file waits in `held` until a send brings one; a stream is rejected |
 | **Keep the source name.** Rows belong to (source, id) | Another name starts an empty source; the old one's rows stay until you delete it |
 | **Snapshots are complete.** One that misses a channel removes it | Do not send a snapshot after a partial failure: skip that round |
 
@@ -211,7 +211,7 @@ The same addon takes more than YouTube. Each kind is a different answer to Steps
 | You see | Why | Fix |
 |---|---|---|
 | `rejected`: `not a video file` | The file name has no video extension, or an `.m3u8` whose probe is not `hls` | Name streams `.m3u8` and send their probe |
-| A video never shows up | It is held: no `media_info`, or one with no streams | Probe it and send it again |
+| A video never shows up | A file is held, or a stream was rejected: no `media_info`, or one with no streams | Probe it and send it again |
 | `rejected`: `... is already <id>'s file` | Another id has that `file` | Keep one id per file |
 | Episodes titled "Episode 1" and blank tiles | No `display` | Send `display` with each video |
 | A film sent with its IMDb id keeps your `display` title, not Plex's | rex asks Plex for titles only once it is claimed | Claim rex ([rex](rex.md)) |

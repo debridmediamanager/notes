@@ -7,8 +7,8 @@ order: 60
 # Plex Features & Capabilities
 
 ## Configuration & Storage
-- Config keys documented in [`config.md`](../reference/config.md)/`config.example.yml`: `plex_server_url`, `plex_token`, `plex_match_every_mins` (default 1440), `plex_watchlist_enabled`, `plex_watchlist_check_every_secs` (default 5s), `mount_path` (required for matching/scan path building). Dashboard-authored settings are saved directly to `config.yml` via the config writer (`updateConfigFileAtomic`).
-- Both intervals fall back to their default only when the value is exactly `0` (`intOr`, `internal/config/config.go:9-14`); neither can be disabled. The dashboard rejects anything below 1 (`internal/handlers/dashboard/dashboard.go:1168-1190`), and a negative `plex_match_every_mins` written straight into `config.yml` panics the scheduler's ticker rather than turning matching off.
+- Config keys documented in [`config.md`](../reference/config.md)/`config.example.yml`: `plex_server_url`, `plex_token`, `plex_match_every_mins` (default 1440), `plex_watchlist_enabled`, `plex_watchlist_check_every_secs` (the legacy spelling of `watchlist.check_every_secs`, default 60s), `mount_path` (required for matching/scan path building). Dashboard-authored settings are saved directly to `config.yml` via the config writer (`updateConfigFileAtomic`).
+- The watchlist interval falls back to its default for any value of 0 or below (`GetWatchlistCheckEverySecs`); `plex_match_every_mins` falls back only when it is exactly `0` (`intOr`, `internal/config/config.go`). Neither can be disabled. The dashboard rejects anything below 1 (`internal/handlers/dashboard/dashboard.go:1168-1190`), and a negative `plex_match_every_mins` written straight into `config.yml` panics the scheduler's ticker rather than turning matching off.
 - Watchlist acquisition is configured by the `watchlist:` block — `enabled`, `check_every_secs`, `indexers`, `max_size_gb`, `max_season_size_gb` and `quality` (default `best`). An empty `indexers` borrows `stremio.indexers`. The flat `plex_watchlist_enabled`, `plex_watchlist_check_every_secs` and `watchlist_quality` keys still count as the legacy spellings of the first, second and last of those. See [config.md](../reference/config.md#watchlist).
 - `mount_path` is also the prefix for scan paths sent to Plex and the managed rclone mount ([`config.md`](../reference/config.md), `pkg/scan/scanner.go`).
 - On-library-update hook (`on_library_update`) is fed every changed path as arguments, debounced 500 ms and deduped, with one invocation at a time, enabling Plex autoscan scripts (`internal/torrent/hooks.go`).
@@ -37,14 +37,14 @@ order: 60
 
 ## Matching & Metadata Sync (`internal/plex/matcher.go`, `internal/plex/schedule.go`)
 - Preconditions: requires configured Plex URL/token, `mount_path`, and a live `scanner.PlexClient`; otherwise returns explicit errors.
-- The only Plex state stored on a torrent is `PlexRatingKey` (show-level for episodic content) plus `IMDBID` (`internal/torrent/torrent_types.go:99,106`). Plex GUIDs are used in-flight for ID extraction and reporting but are never persisted.
+- The only Plex state stored on a torrent is `PlexRatingKey` (show-level for episodic content) plus `IMDBID` (`internal/torrent/torrent_types.go`). Plex GUIDs are used in-flight for ID extraction and reporting but are never persisted.
 - Data gathering: pulls all torrents from the directory map and all Plex items via `GetAllMediaItemsConcurrent`, prefixed by a `GetShowLevelIMDBIndex` pass so episodes inherit the show's IMDB/TVDB/TMDB ID instead of an episode-level one. Items are keyed by `GrandparentRatingKey` when present.
 - Sync steps:
   - Validate every stored rating key against the freshly fetched Plex items; a key Plex no longer has is cleared along with the torrent's IMDB ID, and the torrent is requeued for matching.
   - Path-based matching for torrents without a rating key: `buildPlexDirIndex` indexes every lowercased path component of every Plex file, and the torrent's `GetKey` is looked up in it (O(1), first entry wins). Torrents whose assigned directories match no Plex section location are skipped first.
   - IMDB backfill: first from the already-fetched batch (no API calls), then per torrent via `GetMetadataSummary` (max 20 concurrent).
   - Detects Plex items with no torrents.
-  - Sends every hash+IMDB pair to the DMM API — only when `dmm_api_key` is set (`sendHashImdbPairs` → `TorrentManager.SendHashImdbPairs`, `internal/torrent/mediainfo.go:254-258`).
+  - Sends DMM the hash+IMDB pairs a person set by hand, never IDs Plex guessed; DMM takes them without a key, and `dmm_api_key` goes along when it is set (`sendHashImdbPairs` → `TorrentManager.SendHashImdbPairs`, `internal/torrent/mediainfo.go`).
 - `MatchSingleTorrent` runs the same path lookup for one torrent, for use right after a targeted scan; it no-ops if the torrent already has a rating key.
 - Reporting: writes `logs/match_report.txt` summarizing counts, unmatched torrents, skipped torrents, Plex items without torrents, and matches missing IMDB.
 - Scheduling (`internal/plex/schedule.go`): each completed run stamps `data/plex_match_timestamp`. On start, `StartMatchingJob` runs immediately only if that stamp is missing or older than `plex_match_every_mins`; otherwise it waits out the remainder first. It listens for manual triggers on `TorrentManager.PlexMatchTrigger`, for live interval changes on `ResetPlexMatchTicker`, and retries background panics up to 3 times.
@@ -89,7 +89,7 @@ order: 60
 
 ## Infrastructure & Scripts
 - Sample Nginx vhost for proxying Plex traffic (`nginx/plex.conf`).
-- `plex_update.sh` is the reference partial-scan script for `on_library_update: sh plex_update.sh "$@"`; `docker-compose.yml` carries a commented-out bind mount for it, to be uncommented when you use it.
+- `plex_update.sh` is the reference partial-scan script for `on_library_update: sh plex_update.sh "$@"`; put it beside `docker-compose.yml`, whose folder is mounted at `/config`, so the script is already inside the container.
 - `integration/plex_integration.sh` runs under `make integration-test` and `make integration-test-media`; it skips loudly on a host with no Plex server, so read the output rather than the exit code. `scripts/plex-e2e-test.sh` is a standalone playback check that reads `plex_server_url`/`plex_token` out of `config.yml`.
 
 ## Recommended Plex Settings

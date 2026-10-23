@@ -54,12 +54,12 @@ hash. A file name has to be unique inside its own release.
 | Renamed | `201` |
 | Empty name, a separator in it, or a destination naming only a directory | `400` |
 | The name is taken | `412` |
-| Source not found, or inside an archive | `404` |
-| Refused (see below) | `403` |
+| Source not found | `404` |
+| Inside an archive, or refused (see below) | `403` |
 
 Renaming a file *inside an archive* is not possible. The archive's interior is
-generated from the archive, so there is nothing to write a name onto, and the
-source lookup fails with a `404`.
+generated from the archive, so there is nothing to write a name onto, and zurg
+refuses it with a `403` that says files inside an archive cannot be renamed.
 
 ## Renaming from the dashboard and the API
 

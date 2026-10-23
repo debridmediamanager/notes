@@ -269,7 +269,7 @@ rex-direct is DMM's answer to plex.direct, and it is on by default. On your rout
 
 Once claimed, rex gets its own name from DMM, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and a certificate for that name alone. The first certificate takes a few minutes; rex's log says it is being issued and then shows the name in a `rex-direct:` line. rex then announces `https://<hash>.rex-direct.debridmediamanager.com:32400` after the LAN IP. rex asks DMM again every six hours, so a new home IP is picked up by itself, and a renewed certificate too. One Plex account can hold up to ten rex-direct names. At home, Plex apps can pick this name over the LAN IP, and unless you also set up Tailscale serve or Caddy, app.plex.tv in a browser has no other address it can use. So at home your router has to send the connection straight back to rex, or your home DNS has to point the name at rex: [What you should see](#what-you-should-see) checks which.
 
-If your router forwards a different outside port to rex, add `REX_DIRECT_PORT=<that port>` to `rex.env` and restart rex. To use another provider, set `REX_DIRECT_URL` to its `https://` address (`docs/rex-direct-api.md` in rex's repository is the contract), or `REX_DIRECT_URL=off` to turn it off. The port forward does not open the API zurg pushes to: see [Keep the port private](#keep-the-port-private).
+If your router forwards a different outside port to rex, add `REX_DIRECT_PORT=<that port>` to `rex.env` and restart rex. To use another provider, set `REX_DIRECT_URL` to its `https://` address, or `REX_DIRECT_URL=off` to turn it off. The port forward does not open the API zurg pushes to: see [Keep the port private](#keep-the-port-private).
 
 ### Tailscale serve
 
@@ -553,11 +553,11 @@ rex takes no password from zurg. It answers the API zurg pushes to only from thi
 | rex's log says `held ... no media_info yet` and the library stays empty | zurg has not read the files yet. Wait for its library to load; if zurg logs `segmentation fault`, update and restart it as in [step 1](#step-1-install-zurg) |
 | Titles show file names and no posters | rex is not on a Plex account: do [step 3](#step-3-add-it-to-a-plex-account). If you claimed it after zurg sent them, they fill in by themselves, about 300 films or shows an hour |
 | A film is titled as its file, or an episode sits in a show named after its release | zurg could not place it. Without `dmm_api_key` that is a name its title search did not find; with it, DMM has not placed it yet and zurg asks again a day later. **Fix Match** fixes it by hand |
-| A title is in the wrong show or matched to the wrong film | DMM placed it wrong, and zurg does not ask again. Use **Fix Match** in a Plex app, signed in as the fresh account that owns rex; rex refuses it (403) to the accounts it is shared with |
+| A title is in the wrong show or matched to the wrong film | DMM placed it wrong. zurg asks DMM again once a week, which helps once DMM has learned better. Until then use **Fix Match** in a Plex app, signed in as the fresh account that owns rex; rex refuses it (403) to the accounts it is shared with |
 | Nothing plays and rex's log shows 502 | rex cannot reach the address zurg gave it. Run `curl` on that URL from the rex machine. In Docker, see the Docker section |
 | Nothing plays and rex's log shows `PART ... upstream 401` or `403` | zurg refused its own login. Restart zurg (`cd ~/zurg && ./zurg service restart`) so it sends rex the current one |
 | "This server is not powerful enough to convert video" | The device cannot play the file as it is. Try a Plex app on a TV or phone, or set up [Converting video](#converting-video-optional) |
-| rex exits with `unrecognized arguments` | Your `rex.service` or `run.sh` still passes `--sources` from an older setup. Remove it; an old `REX_FEED_TOKEN` in `rex.env` is ignored |
+| rex exits with `unrecognized arguments` | Your `rex.service` or `run.sh` still passes `--sources` or `--zurg-mount` from an older setup. Remove `--sources`, and change `--zurg-mount` to `--mount`; an old `REX_FEED_TOKEN` in `rex.env` is ignored |
 | After adding an HTTPS address, a device at home cannot connect | The LAN IP is missing from `--announce-url`. Add `http://192.168.1.20:32400` after the HTTPS one |
 | rex is not in the Plex apps away from home | Not claimed, no `--announce-url`, or the device cannot reach the HTTPS address (a tailnet-only address needs Tailscale on that device) |
 | The log says `waiting for a claim` | Claim it. It announces right away |
