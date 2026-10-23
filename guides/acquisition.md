@@ -141,8 +141,9 @@ How a name is matched:
 
 Excluding a word never touches resolution. With `DV` excluded a 2160p release
 with plain HDR or HDR10 is still taken, and `quality: 4k` still puts 2160p
-first. An excluded release counts as not found. A search keeps paging until it
-has enough releases it may take. A title whose every release is excluded fails
+first. An excluded release counts as not found. A movie or episode search keeps
+paging until it has ten releases it may take. A season search reads one page,
+and searches separately for any episode that page leaves without one. A title whose every release is excluded fails
 with "no eligible releases", just like one whose every release is over
 `max_size_gb`, and is tried again later. A Seerr 4K request takes only 2160p
 releases, so it waits when every 2160p release is excluded.
@@ -188,7 +189,7 @@ and [API contract](https://github.com/seerr-team/seerr/blob/c604bccc003d4d2f74a6
   newly aired episodes in requested seasons. Unannounced episodes become work
   only once they appear in Seerr's metadata.
 - Prefers packs after all known episodes have aired. Airing seasons use loose
-  episodes. Specials (season 0) are unsupported and stay pending.
+  episodes. Specials (season 0) are unsupported. A request that includes season 0 is not acquired at all, and fails until it is parked.
 - Makes no request-status or availability writes. Seerr's media-server scan
   reports actual availability and notifies requesters. Saving an NZB does not
   prove it is indexed or playable, which is why the engine checks it before
@@ -317,7 +318,9 @@ movie's folder the way Radarr would have imported it, by moving it inside
   under a fifth of the release. A release whose only video is its sample is set aside and
   the next candidate is tried. Samples,
   featurettes, subtitles and `.nfo` files stay in `__magic__/__all__`. The
-  file keeps the name it has in the release.
+  file keeps the name it has in the release, unless that name says nothing
+  about the film (no year and no word of its title); then it takes the
+  release's name, so Radarr can read its quality.
 - **It is refused before it is moved if it cannot be read.** This is the check
   a Sonarr or Radarr import through the mount gets. A release whose articles
   the news servers no longer hold, or whose archive will never open, is set
@@ -417,7 +420,7 @@ judged by the series' quality profile. What zurg accepts is what Sonarr would
 have accepted.
 
 - **It must be this series and this season.** Sonarr has to match the title
-  to the same series. A title Sonarr matches to nothing is refused.
+  to the same series. A title Sonarr matches to nothing is refused, unless Sonarr's own series lookup finds this series first by the name in the title (a foreign-language title, for example).
 - **A pack must be the whole season.** A partial pack is refused. A pack
   spelled as a range, such as `Season 1 E01-E07`, counts when the range is the
   whole season. A pack of several seasons counts for each season it names
@@ -568,8 +571,8 @@ as in use for those three.
 grouped with a movie, or with a season, when:
 
 - an \*arr file is in them,
-- the \*arr's history says it imported from them, or that a file from them went
-  missing from disk,
+- the \*arr's history says it imported from them, or deleted a file that came
+  from them (an upgrade, by hand, or missing from disk),
 - zurg identified them as the movie's or the series' IMDb id, or
 - their name reads as the title and year (a year off by one, or Radarr's second
   year for the movie, still counts) or as the series and season.
@@ -874,7 +877,7 @@ carries the grabs it is still waiting on a news-server answer about, and the
 ledger carries the releases already found dead, so a restart mid-wait neither
 acknowledges an unchecked grab nor hands a dead release back to the ranking.
 
-Each attempt is saved before external work. Each saved release is checkpointed.
+Each saved release is written to disk at once. Attempt counts and retry times are written within a minute, so a crash can lose up to a minute of them but never a grab.
 Writes flush a temporary file, replace the ledger and flush the parent directory
 where supported. NZBs written before a crash are reused even if the last ledger
 write did not finish. Once acquisition is recorded, Plex removal retries do not

@@ -80,7 +80,7 @@ qbittorrent:
   cached_only: true             # the default: only take what an account already holds
 ```
 
-**The categories are not folders.** They all resolve to the same place — the release's own folder under `__magic__/__all__`. The list exists only so a client stops warning about a category it cannot find. If Sonarr's category is `tv-sonarr`, `tv-sonarr` must be in this list. Prowlarr, if you use it, wants `prowlarr` — see [step 10](#10-prowlarr-manual-grabs).
+**The categories are not folders.** They all resolve to the same place — the release's own folder under `__magic__/__all__`. The list only creates categories ahead of time: a client's **Test** creates any category it is missing, and zurg keeps it in `data/qbittorrent-categories.json`. Prowlarr, if you use it, wants `prowlarr` — see [step 10](#10-prowlarr-manual-grabs).
 
 Restart zurg, then confirm the endpoint registered and the provider took:
 
@@ -88,10 +88,11 @@ Restart zurg, then confirm the endpoint registered and the provider took:
 
 One `alldebrid` row is all the endpoint needs — any of the six torrent-capable types.
 
-The startup log says the same two things, and it is worth reading them once:
+The startup log says the same things, and it is worth reading them once:
 
 ```
 INFO  router.qbittorrent  qBittorrent API on /api/v2 and /qbittorrent/api/v2, save path /mnt/zurg_qbt/__magic__/__all__, categories tv-sonarr, radarr
+INFO  router.qbittorrent  qBittorrent: cached-only, so a grab is only accepted onto an account that already holds the content; anything else is refused and the *arr takes its next release. Set qbittorrent.cached_only: false to let accounts download
 INFO  router.qbittorrent  qBittorrent: torrents are offered to alldebrid, in that order
 ```
 
@@ -223,7 +224,7 @@ The dialog opens with qBittorrent's own defaults — `localhost`, port `8080`, n
 | URL Base | empty | `/qbittorrent` also works — see step 3. |
 | API Key | from step 2 | The whole gate. Sent as a bearer token. |
 | Username / Password | empty | Leave both empty — the key replaces them. |
-| Category | `tv-sonarr` | Must appear in `qbittorrent.categories`. The \*arr default, so it already does. |
+| Category | `tv-sonarr` | The \*arr default. zurg already lists it, and **Test** creates any category it does not. |
 | Initial State / Sequential / First-Last | defaults | There is no swarm here; none of these do anything. |
 | **Remove Completed** | **on** | **The one that matters** — see [If the import copies instead of moving](#if-the-import-copies-instead-of-moving). |
 
@@ -328,7 +329,7 @@ The **Source** column reads `torrent` — that is the protocol this endpoint tak
 
 ### The account takes it
 
-Two lines in zurg's log, and they are the whole add:
+Three lines in zurg's log are the whole add: the account taking it, the job being filed, and `finished`. The capture below is from an older build that logged only the last two:
 
 ```
 INFO  router.qbittorrent  qBittorrent: [Polarwindz] Ghost in the Shell (1995) (BD 1080p HEVC FLAC) (0c5e4077…) added to alldebrid as 720824192
@@ -412,7 +413,7 @@ Prowlarr's first run is the same Forms-auth screen as the other two.
 
 | Field | Value | Why |
 |---|---|---|
-| Default Category | `prowlarr` | Prowlarr's own default, and its help text is worth reading: *adding a category specific to Prowlarr avoids conflicts with unrelated non-Prowlarr downloads*. Add `prowlarr` to `qbittorrent.categories` and restart zurg, or the connection test warns about a category it cannot find. |
+| Default Category | `prowlarr` | Prowlarr's own default, and its help text is worth reading: *adding a category specific to Prowlarr avoids conflicts with unrelated non-Prowlarr downloads*. Its **Test** creates the category in zurg, so nothing needs adding to `qbittorrent.categories`. |
 | Priority | `Last` | Nothing to apply it to. |
 
 ![Prowlarr's qBittorrent dialog filled in](../assets/sonarr-radarr-torrents/73-prowlarr-qbittorrent-dialog-filled.webp)
@@ -589,11 +590,11 @@ Does not:
 - **Seeding, queueing and priorities.** There is no swarm. Pause, force-start, reprioritise, recheck, relocate and share limits are accepted and do nothing.
 - **Failure as a first-class state.** qBittorrent's API has no way to say a download failed, so a release no account would take reaches the \*arr as a *warning*, never as a blocklist entry. It is visible in the queue with the reason attached, one click from *Remove → Blocklist and Search*, but it does not clear itself and nothing re-grabs unattended. This is the real difference from the SABnzbd endpoint, which can report a failed job and have the client react.
 - **Adding by plain HTTP URL.** `torrents/add` takes magnets and uploaded `.torrent` files. Both \*arrs send one of those; a bare `http://…/x.torrent` is refused.
-- **Basic auth on the endpoint.** The API key is the only gate.
+- **zurg's dashboard login challenge on the endpoint.** It is not applied; the endpoint takes the API key (as a bearer token, the login password or a Basic header) or zurg's dashboard username and password.
 
 **One grab does vanish from the queue rather than warning.** If no account ever took the release — none holds the hash and none is fetching it — it is reported errored after ten minutes and dropped from the torrent list after a day. There is no download to report a state for, and a queue entry for one that does not exist is worse than none. Every other failure stays visible.
 
-**Blocked release names, Real-Debrid only.** RD refuses some releases on the name alone. Since 14 October 2026 that is eleven strings. `WEB-DL`, `WEB.x264` and `WEB.H264` count only in exactly that case, so `web-dl`, `Web-Dl` and the scene's `WEB.h264` are fine. `WEBRip`, `BDRip`, `HDRip`, `DVDRip`, `HDTV.x264`, `HDTV.XviD`, `BluRay.x264` and `p.BluRay.DTS` count in any case. That last one needs a p right before it as in `1080p.BluRay.DTS`. A `2002.BluRay.DTS` release is fine. zurg knows the patterns and refuses such a grab immediately rather than spending an add slot and a minute of retries on a refusal that was certain. The client fails that grab and takes the next release, which is what you want. On TorBox and AllDebrid the same release is added normally.
+**Blocked release names, Real-Debrid only.** RD refuses some releases on the name alone. Since 14 October 2026 that is eleven strings. `WEB-DL`, `WEB.x264` and `WEB.H264` count only in exactly that case, so `web-dl`, `Web-Dl` and the scene's `WEB.h264` are fine. `WEBRip`, `BDRip`, `HDRip`, `DVDRip`, `HDTV.x264`, `HDTV.XviD`, `BluRay.x264` and `p.BluRay.DTS` count in any case. That last one needs a p right before it as in `1080p.BluRay.DTS`. A `2002.BluRay.DTS` release is fine. zurg knows the patterns and skips Real-Debrid for such a name without asking it, offering the grab to the next account instead. With Real-Debrid alone the grab is refused at once and the client takes its next release. On TorBox and AllDebrid the same release is added normally.
 
 ## Troubleshooting
 
@@ -602,7 +603,7 @@ Does not:
 | "Unable to connect to qBittorrent" | zurg is not reachable at that host and port, or something in front of it answered a non-200. Check `qbittorrent.enabled` — while it is off, `/api/v2` is a plain 404. In Docker, check you did not use `localhost` or the bare hostname. |
 | Test passes, grabs fail with *Download client failed to add torrent* | The client reached zurg and zurg refused the add. zurg logs every refusal — grep the log for `qBittorrent: refusing`. The line names the reason and every account it was tried on. |
 | `every account that takes torrents refused or timed out` in zurg's log | No account would take the release. If it names a rate limit where you expected a healthy account, count the *other* zurg instances on the same token: this rig's first grab failed exactly that way while a second zurg on the same Real-Debrid account was walking a large library and the two were sharing one API budget. |
-| "Category … does not exist" | The category in the client is not in `qbittorrent.categories`. Add it and restart zurg. |
+| "Category … does not exist" | The client has not created it yet. Click **Test** on the download client, which creates it in zurg. |
 | A grab sits *Downloading* for a long time | The account is genuinely downloading it. The queue carries the account's own rate and time left where it gives them; a release with no seeds reads as zero on both, which is not an error. |
 | A completed release sits in the queue as a warning | Either the client decided not to import it (an upgrade the profile refuses), or every account refused it. The queue row carries the reason. It clears nothing by itself — remove it by hand, and *Blocklist and Search* if the release is bad. |
 | "Download client zurg places downloads in …/__magic__/__all__ but Radarr cannot see this directory" | zurg has not finished loading the library. The top of the mount lists but `__all__` and `__magic__/__all__` do not and Plex sees nothing either. Grep zurg's log for `rejected the API key`. An account whose key or plan stopped working is the usual cause. See [TorBox](../providers/torbox.md#when-it-goes-wrong) for the free plan. The warning clears once the library loads. |

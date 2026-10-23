@@ -6,7 +6,7 @@ order: 90
 
 # Usenet with zurg
 
-zurg's `nzb` backend turns a directory of `.nzb` files into a mounted library. There is no downloader, no completed folder, and nothing on disk but the NZB files themselves: when a player seeks into a file, zurg fetches exactly the articles covering those bytes, yEnc-decodes them in memory, and answers the ranged read. A 60 GB remux costs 60 GB of disk nowhere.
+zurg's `nzb` backend turns a directory of `.nzb` files into a mounted library. There is no downloader and no completed folder, and nothing is downloaded ahead of play: on disk there are only the NZBs and small caches (file heads and tails under `data/bytecache/articles`, 512 MiB by default as `nzb_article_disk_cache_mb`, and the index, name, size and repair records under `data/`). When a player seeks into a file, zurg fetches exactly the articles covering those bytes, yEnc-decodes them in memory, and answers the ranged read. A 60 GB remux costs 60 GB of disk nowhere.
 
 It is a debrid backend as far as the rest of zurg is concerned — the same library model, the same directory filters, the same mount, the same media-server integration — so a Usenet release sits alongside your Real-Debrid or TorBox content in one tree. It can also be the only account you configure; no debrid service is required.
 
@@ -112,7 +112,7 @@ providers:
           backbone: omicron
 ```
 
-Each account keeps its own connection allowance, and reads are driven at the **combined allowance of the non-backup accounts** — 30 + 20 = 50 in the example above. A second unlimited provider therefore buys throughput as well as retention insurance; a `backup` account buys neither, by design, since it only ever carries what the primaries could not supply and counting it would widen every read-ahead window for capacity steady-state playback never touches.
+Each account keeps its own connection allowance, and reads are driven at the **combined allowance of the non-backup accounts that share the lowest live `priority`** — 30 + 20 = 50 in the example above, where both are at the default priority. A second unlimited provider at the same priority therefore buys throughput as well as retention insurance; a `backup` account buys neither, by design, since it only ever carries what the primaries could not supply and counting it would widen every read-ahead window for capacity steady-state playback never touches.
 
 Three keys shape who gets asked:
 
@@ -295,7 +295,7 @@ Only the file that is clearly the release is renamed: the biggest entry in the a
 
 - **Removing** an NZB from `nzbs/` removes the release from the library, drops its cached reader and article cache, and forgets any repaired bytes it held.
 - **Deleting a Usenet release from the Dashboard deletes the `.nzb` file from disk.** There is nowhere else for it to live. This is not the same as deleting a torrent from a debrid account, where the file stays on the service.
-- **Replacing an NZB in place is the slow way to do it.** Writing over a file does not change the directory, so the watch above cannot see it; what notices is the periodic change check, which reads the file's modification time and re-parses it — up to `check_for_changes_every_secs` later. Removing the old file and adding the new one is noticed within a second or two, and is what an indexer or the SABnzbd endpoint does anyway.
+- **Replacing an NZB in place is the slow way to do it.** Writing over a file does not change the directory, so the watch above cannot see it; what notices is the periodic change check, which reads the file's modification time and re-parses it — up to the later of 15 seconds and the next `check_for_changes_every_secs` check. Removing the old file and adding the new one is noticed within a second or two, and is what an indexer or the SABnzbd endpoint does anyway.
 
 ---
 
@@ -433,7 +433,7 @@ Nothing here is Usenet-specific except the last subsection, but the order matter
    on_library_update: sh plex_update.sh "$@"
    ```
 
-**What Plex will not get from Usenet content:** nothing until zurg has analysed it (see section 4), so Plex may do its own analysis on first play like it would for any local file. File sizes settle shortly after a release is scanned: the first listing may report a cheap estimate from the article count, and the exact length arrives behind it — from the recovery index where there is one, and otherwise from one article per file. For a large multi-volume archive whose recovery index already states every exact length, one verified volume can establish the shared article stride; each sibling checks that inference against its own header before serving its first byte. Once a length lands, the library is told the release changed, so the mount and Plex both see the real length. zurg sizes up to eight releases at a time on an account of twelve connections or fewer and more on a larger one (twelve on 16 connections, sixteen from 20), and when acquisition checks a release with the news servers, that check queues beside this sizing and read-ahead and never takes the connection kept for a read a player is waiting on.
+**What Plex will not get from Usenet content:** nothing until zurg has analysed it (see section 4), so Plex may do its own analysis on first play like it would for any local file. File sizes settle shortly after a release is scanned: the first listing may report a cheap estimate from the article count, and the exact length arrives behind it — from the recovery index where there is one, and otherwise from one article per file. For a large multi-volume archive whose recovery index already states every exact length, one verified volume can establish the shared article stride; each sibling checks that inference against its own header before serving its first byte. Once a length lands, the library is told the release changed, so the mount and Plex both see the real length. zurg sizes up to eight releases at a time (never more than the account's connections) on an account of twelve connections or fewer and more on a larger one (twelve on 16 connections, sixteen from 20), and when acquisition checks a release with the news servers, that check queues beside this sizing and read-ahead and never takes the connection kept for a read a player is waiting on.
 
 ### Jellyfin / Emby / Infuse
 
@@ -454,7 +454,7 @@ zurg's answer, in order of preference:
 PAR2 repair is a background job, at most two releases at a time, and it needs:
 
 ```yaml
-enable_repair: true            # PAR2 repair does not run without this
+enable_repair: true            # the default; set false to turn PAR2 repair off
 par2_patch_cache_mb: 512       # budget for data/par2/; -1 keeps repairs in memory only
 ```
 
@@ -489,7 +489,7 @@ Measured against a live news account with a large connection allowance:
 The connection allowance sets the first ceiling on single-stream rate. zurg keeps that allowance loaded by sizing read-ahead in both articles and bytes: small-article archive posts get at least 64 MiB of reach, while multi-megabyte posts keep the connection-and-pipeline window they already had. So:
 
 - **Set `connections` to your plan's real number.** This is the tuning knob. Eight connections will not stream a remux.
-- **Two primary accounts add up.** Reads are driven at the combined allowance of every non-`backup` account, so a second unlimited provider raises the ceiling as well as covering the first one's retention gaps. A `backup` account does not count toward it.
+- **Two primary accounts add up.** Reads are driven at the combined allowance of the non-`backup` accounts that share the lowest live `priority`, so a second unlimited provider at the same priority raises the ceiling as well as covering the first one's retention gaps. A `backup` account does not count toward it.
 - **`warm_connections` (4 by default) buys latency, not throughput.** It holds that many connections open, idle and authenticated, so the first read after a start or a quiet spell does not spend ~0.8s dialling before its first byte: 1.5s to first byte cold against 0.15s warm. Once a stream is running it changes nothing.
 - **The dials that do happen stick to one backend, so their TLS sessions resume.** A dial costs about 0.8s — measured against a live news server on 2026-08-29: 106ms TCP, 213ms TLS handshake, 256ms greeting, 218ms for the two `AUTHINFO` exchanges. A provider hostname is a rotation (that one resolves to 11 addresses) and a TLS session ticket is only good at the machine that issued it, so redialling whichever address the resolver named first resumed **0 of 3** sessions while redialling the same address resumed **3 of 3**. Each account now redials the address its last connection came from, which takes **110–140ms off every redial** there — a resumed handshake is 109–141ms against 225–261ms for a full one. A server with a ~18ms round trip saves less. The pin is dropped and the name resolved again as soon as that address stops answering, so nothing is stuck to a machine the provider has retired; a refusal that reaches NNTP — the account at its connection ceiling, a rejected password — keeps it, because that is the account's answer and not the backend's. Each dial logs its phases at debug level, `resumed=` included.
 - `cache_size_mb` (512 default) is shared across every file being read. Raise it if you run several concurrent streams; it does not make one stream faster. Speculative reads may reserve at most half of it across at most two readers, leaving the other half for articles already consumed or about to be consumed.
@@ -575,7 +575,7 @@ The index rewrites itself whenever the NZB changes, repairs itself if it is ever
 | `.par2` files not visible in the mount | Deliberate — they are hidden as repair scaffolding | Nothing to fix; zurg still reads them |
 | Changed a provider in the Dashboard and nothing happened | Provider changes are written to `config.yml` but not hot-reloaded | Restart zurg — the banner under the providers table says so |
 | Plex emptied the library after a zurg restart | A scan was in flight while the mount was away, with auto-empty-trash on | Turn auto-empty off, and pre-flight sessions *and* refreshing state before any restart |
-| A file's size changed slightly a moment after the release appeared | The first listing can only estimate from the article count; the exact length arrives behind it, from the PAR2 index or from the file's own yEnc header | Expected, and it settles once — the length is written to `data/nzb-sizes/` and never learned again |
+| A file's size changed slightly a moment after the release appeared | The first listing can only estimate from the article count; the exact length arrives behind it, from the PAR2 index or from the file's own yEnc header | Expected, and it settles once — the length is written to `data/nzb-sizes/` and kept until the NZB changes |
 
 ### Asking about one article
 
@@ -599,9 +599,9 @@ curl -u user:pass 'http://localhost:9999/debug/nzb/probe?release=<nzb id>&file=0
 curl -u user:pass 'http://localhost:9999/debug/nzb/probe?release=<nzb id>&article=3&body=1'
 ```
 
-It answers one JSON object per configured Usenet account — `found`, `missing`,
-which account answered, and how long it took — so "which of my providers still
-has this" is a single call. It is read-only: nothing it fetches enters the
+It answers `{"probes": [...]}` with one object for the `nzb` provider — `found`,
+`missing` and how long it took — after asking every news account in turn. It
+does not say which news account held the article. It is read-only: nothing it fetches enters the
 article cache, and an article it fails to find is not recorded as a dead one, so
 a probe cannot silence a file that plays.
 
