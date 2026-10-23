@@ -154,6 +154,8 @@ For a media server, point it at **one** of the two. A Plex library that scans bo
 
 An \*arr writes metadata next to the video, and Bazarr writes subtitles. Those are real files and zurg has nowhere to put them in a debrid library, so they go to local disk under `data/local/__magic__/`.
 
+Setting Bazarr up, and how its subtitles reach rex, is in [Subtitles with Bazarr](subtitles.md).
+
 If you use zurg's built-in mount, this already happens and needs nothing from you: the mount is a union of `data/local` and zurg's WebDAV, and rclone sends every newly created file to the local half. Zurg never even sees the write. This is also why Sonarr's "is this folder writable?" test passes.
 
 If you mount `/dav` yourself — your own rclone, Infuse, a Windows WebDAV drive — zurg accepts the `PUT` and writes into that same tree, so both views agree. Two caps apply:
