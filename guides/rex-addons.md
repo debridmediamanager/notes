@@ -120,7 +120,7 @@ A stream's `path` and `file` end in `.m3u8`, and its `media_info` says `"format_
 | `show.title`, `show.summary`, `show.poster`, `show.art` | The episode's show |
 | `season.summary`, `season.poster` | The episode's season (the show's poster when there is none) |
 
-Every field is optional. Pictures are `http://` or `https://` URLs on the public internet; rex fetches them itself and never from your home network, so host them somewhere public. A 2:3 picture makes the best poster, a 16:9 one the best still and background.
+Every field is optional. Pictures are `http://` or `https://` URLs. rex fetches them itself: from the public internet, or from your addon's own address (the `url` you registered), with your addon's login. Any other address on your home network is refused. So an addon can serve its own pictures, such as a frame from each home video. A 2:3 picture makes the best poster, a 16:9 one the best still and background.
 
 How rex treats them:
 
@@ -197,7 +197,7 @@ rex follows the redirect, and its FFmpeg reads the stream straight from YouTube.
 | A video never shows up | It is held: no `media_info`, or one with no streams | Probe it and send it again |
 | `rejected`: `... is already <id>'s file` | Another id has that `file` | Keep one id per file |
 | Episodes titled "Episode 1" and blank tiles | No `display` | Send `display` with each video |
-| Pictures do not show | The URL is not public, or not http(s) | Host pictures on the public internet |
+| Pictures do not show | The URL is on your home network but not under your addon's registered `url`, or is not http(s) | Serve them from your addon's own address, or host them on the public internet. Pictures from your addon's address need a rex from October 23, 2026 or newer |
 | Playing fails with 502 in rex's log | Your addon did not answer, or the stream's site refused it | Check your addon's own log first |
 | A title deleted in a Plex app stays | Your addon answered the `DELETE` with something other than `2xx` or `404` | Delete it on your side, then answer `2xx` |
 | A deleted title comes back | Your addon still sends the video | Stop sending what was deleted |
