@@ -57,7 +57,7 @@ Paste the line for the system you picked in step 1.
 #### Linux and macOS
 
 ```bash
-mkdir -p ~/sshx && cd ~/sshx && curl -fsSL "https://s3.amazonaws.com/sshx/sshx-$(uname -m | sed 's/arm64/aarch64/;s/armv7l/armv7/')-$(uname -s | sed 's/Linux/unknown-linux-musl/;s/Darwin/apple-darwin/')$(uname -m | grep -q armv7 && echo eabihf).tar.gz" | tar -xz && ./sshx --server https://sshx.debridmediamanager.com
+mkdir -p ~/sshx && cd ~/sshx && curl -fsSL "https://sshx.debridmediamanager.com/dl/sshx-$(uname -m | sed 's/arm64/aarch64/;s/armv7l/armv7/')-$(uname -s | sed 's/Linux/unknown-linux-musl/;s/Darwin/apple-darwin/')$(uname -m | grep -q armv7 && echo eabihf).tar.gz" | tar -xz && ./sshx --server https://sshx.debridmediamanager.com
 ```
 
 #### Windows
@@ -65,7 +65,7 @@ mkdir -p ~/sshx && cd ~/sshx && curl -fsSL "https://s3.amazonaws.com/sshx/sshx-$
 Open PowerShell. It does not need to run as administrator.
 
 ```powershell
-$d = "$env:LOCALAPPDATA\sshx"; New-Item -ItemType Directory -Force $d | Out-Null; Invoke-WebRequest https://s3.amazonaws.com/sshx/sshx-x86_64-pc-windows-msvc.zip -OutFile "$d\sshx.zip"; Expand-Archive -Force "$d\sshx.zip" $d; & "$d\sshx.exe" --server https://sshx.debridmediamanager.com
+$d = "$env:LOCALAPPDATA\sshx"; New-Item -ItemType Directory -Force $d | Out-Null; Invoke-WebRequest https://sshx.debridmediamanager.com/dl/sshx-x86_64-pc-windows-msvc.zip -OutFile "$d\sshx.zip"; Expand-Archive -Force "$d\sshx.zip" $d; & "$d\sshx.exe" --server https://sshx.debridmediamanager.com
 ```
 
 On an ARM laptop like a Surface Pro X replace `x86_64` with `aarch64`.
