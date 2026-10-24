@@ -1891,7 +1891,7 @@ The watchlist monitor now works, and it works off your own indexers. The old ver
 
 Configure it with the new `watchlist:` block: `enabled`, `check_every_secs` (default 60), `indexers` (empty borrows `stremio.indexers`), `max_size_gb` (default 40, movies and single episodes), `max_season_size_gb` (default 100, season packs) and `quality` (`best`, `4k`, `1080p`, `720p`, `smallest`). The legacy `plex_watchlist_*` keys keep their meaning. A `plex_token` is all the Plex it needs — the monitor talks to Plex's cloud service, so it runs fine on an instance with no `plex_server_url`. TV searches lead with the TVDB id and retry once by IMDb id when that finds nothing — indexers key TV on TVDB, and their show-level IMDb mapping is patchy enough that a heavily indexed show can answer an imdbid search with zero results.
 
-Every key is on the config page under **Plex Watchlist**, and in [the configuration reference](../reference/config.md#watchlist).
+Every key is on the config page under **Plex Watchlist**, and in [the configuration reference](config.md#watchlist).
 
 ## A Stremio addon over your Newznab indexers
 

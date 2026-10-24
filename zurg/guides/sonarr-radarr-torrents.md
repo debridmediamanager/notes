@@ -56,11 +56,11 @@ Two ways, same result. Both write to `config.yml` and both need a restart: the r
 
 Open zurg's dashboard, click **Config**, and scroll to **\_\_magic\_\_ & Download Clients**. Turn on **Serve \_\_magic\_\_** and **qBittorrent Endpoint**.
 
-![The zurg dashboard's Quick Links](../assets/sonarr-radarr-torrents/44-zurg-dashboard-home.webp)
+![The zurg dashboard's Quick Links](../../assets/sonarr-radarr-torrents/44-zurg-dashboard-home.webp)
 
 **Config** is where the setting lives; **Magic** is where you will watch grabs arrive later.
 
-![The __magic__ and download clients block on the config page](../assets/sonarr-radarr-torrents/40-zurg-config-magic-qbittorrent.webp)
+![The __magic__ and download clients block on the config page](../../assets/sonarr-radarr-torrents/40-zurg-config-magic-qbittorrent.webp)
 
 Leave **qBittorrent Save Path** empty unless your \*arr mounts zurg somewhere other than zurg does — see [step 8](#8-if-your-arr-is-in-docker). The orange **Restart Required** chip is telling the truth: nothing here takes effect until zurg restarts.
 
@@ -84,7 +84,7 @@ qbittorrent:
 
 Restart zurg, then confirm the endpoint registered and the provider took:
 
-![The providers block on the zurg config page](../assets/sonarr-radarr-torrents/43-zurg-config-providers.webp)
+![The providers block on the zurg config page](../../assets/sonarr-radarr-torrents/43-zurg-config-providers.webp)
 
 One `alldebrid` row is all the endpoint needs — any of the six torrent-capable types.
 
@@ -184,33 +184,33 @@ A move between two volumes is a copy as well. That matters in Docker. Step 8 cov
 
 A brand-new Sonarr blocks everything behind a first-run screen. Pick **Forms (Login Page)**, set a username and password, and click **Save**.
 
-![Sonarr's first-run authentication screen](../assets/sonarr-radarr-torrents/01-sonarr-firstrun-auth.webp)
+![Sonarr's first-run authentication screen](../../assets/sonarr-radarr-torrents/01-sonarr-firstrun-auth.webp)
 
 It will not let you past until **Authentication Method** is something other than None.
 
-![The same screen filled in](../assets/sonarr-radarr-torrents/02-sonarr-firstrun-auth-filled.webp)
+![The same screen filled in](../../assets/sonarr-radarr-torrents/02-sonarr-firstrun-auth-filled.webp)
 
 After Save you are signed out once and land on the login page.
 
-![Sonarr's login page](../assets/sonarr-radarr-torrents/04-sonarr-login.webp)
+![Sonarr's login page](../../assets/sonarr-radarr-torrents/04-sonarr-login.webp)
 
 ### Settings → Download Clients
 
 Go to **Settings → Download Clients**. On a fresh install there is nothing here but the **+** card.
 
-![Sonarr's empty download clients page](../assets/sonarr-radarr-torrents/05-sonarr-downloadclients-empty.webp)
+![Sonarr's empty download clients page](../../assets/sonarr-radarr-torrents/05-sonarr-downloadclients-empty.webp)
 
 Click the **+** under "Download Clients" — not the one further down under "Remote Path Mappings".
 
 Choose **qBittorrent** from the **Torrents** column.
 
-![The add download client picker with qBittorrent visible](../assets/sonarr-radarr-torrents/06-sonarr-add-client-picker.webp)
+![The add download client picker with qBittorrent visible](../../assets/sonarr-radarr-torrents/06-sonarr-add-client-picker.webp)
 
 zurg impersonates qBittorrent specifically, so nothing else in this list will work. The two columns are the give-away for which guide you are following: SABnzbd sits under Usenet, qBittorrent under Torrents.
 
 The dialog opens with qBittorrent's own defaults — `localhost`, port `8080`, no key.
 
-![The untouched qBittorrent download client dialog](../assets/sonarr-radarr-torrents/07-sonarr-qbittorrent-dialog-empty.webp)
+![The untouched qBittorrent download client dialog](../../assets/sonarr-radarr-torrents/07-sonarr-qbittorrent-dialog-empty.webp)
 
 ### What to put in each field
 
@@ -228,7 +228,7 @@ The dialog opens with qBittorrent's own defaults — `localhost`, port `8080`, n
 | Initial State / Sequential / First-Last | defaults | There is no swarm here; none of these do anything. |
 | **Remove Completed** | **on** | **The one that matters** — see [If the import copies instead of moving](#if-the-import-copies-instead-of-moving). |
 
-![The qBittorrent dialog filled in](../assets/sonarr-radarr-torrents/08-sonarr-qbittorrent-dialog-filled.webp)
+![The qBittorrent dialog filled in](../../assets/sonarr-radarr-torrents/08-sonarr-qbittorrent-dialog-filled.webp)
 
 The API key shown is illustrative — paste your own.
 
@@ -236,33 +236,33 @@ The API key shown is illustrative — paste your own.
 
 Click **Test**. A green tick means the client's checks passed — API version, authentication, the category and the torrent list.
 
-![The dialog footer showing a successful test](../assets/sonarr-radarr-torrents/09-sonarr-qbittorrent-test-ok.webp)
+![The dialog footer showing a successful test](../../assets/sonarr-radarr-torrents/09-sonarr-qbittorrent-test-ok.webp)
 
 Now click **Save**.
 
-![The saved download client card in Sonarr](../assets/sonarr-radarr-torrents/10-sonarr-downloadclient-saved.webp)
+![The saved download client card in Sonarr](../../assets/sonarr-radarr-torrents/10-sonarr-downloadclient-saved.webp)
 
 ## 6. Add the root folder in Sonarr
 
 Go to **Settings → Media Management** and scroll to the bottom.
 
-![The empty root folders section in Sonarr](../assets/sonarr-radarr-torrents/11-sonarr-rootfolders-empty.webp)
+![The empty root folders section in Sonarr](../../assets/sonarr-radarr-torrents/11-sonarr-rootfolders-empty.webp)
 
 Click **Add Root Folder**. A file browser opens on the container's filesystem.
 
-![Sonarr's file browser at the filesystem root](../assets/sonarr-radarr-torrents/12-sonarr-rootfolder-dialog.webp)
+![Sonarr's file browser at the filesystem root](../../assets/sonarr-radarr-torrents/12-sonarr-rootfolder-dialog.webp)
 
 Type or navigate. If the mount is genuinely visible to Sonarr, `__magic__` opens and shows what you made in step 4, beside the `__all__` zurg puts there itself — the fastest proof you will get that the bind mount is correct.
 
-![The file browser inside __magic__, listing tv and movies](../assets/sonarr-radarr-torrents/13-sonarr-rootfolder-browse.webp)
+![The file browser inside __magic__, listing tv and movies](../../assets/sonarr-radarr-torrents/13-sonarr-rootfolder-browse.webp)
 
 If this is empty or errors, stop and fix the mount before going further.
 
-![The path finished at __magic__/tv](../assets/sonarr-radarr-torrents/14-sonarr-rootfolder-typed.webp)
+![The path finished at __magic__/tv](../../assets/sonarr-radarr-torrents/14-sonarr-rootfolder-typed.webp)
 
 Finish the path at `__magic__/tv` and click **Ok**.
 
-![The root folder added, showing free space](../assets/sonarr-radarr-torrents/15-sonarr-rootfolder-added.webp)
+![The root folder added, showing free space](../../assets/sonarr-radarr-torrents/15-sonarr-rootfolder-added.webp)
 
 **Free Space** reading `1 PiB` is zurg reporting a virtual filesystem, not a disk — that is expected, and it is what satisfies the \*arr's free-space check before a grab.
 
@@ -270,21 +270,21 @@ Finish the path at `__magic__/tv` and click **Ok**.
 
 Identical, with two values changed: the category is `radarr` and the root folder is `__magic__/movies`.
 
-![Radarr's login page](../assets/sonarr-radarr-torrents/20-radarr-login.webp)
+![Radarr's login page](../../assets/sonarr-radarr-torrents/20-radarr-login.webp)
 
 Radarr's first run works the same way — set Forms auth, then sign in.
 
-![Radarr's add download client picker](../assets/sonarr-radarr-torrents/21-radarr-add-client-picker.webp)
+![Radarr's add download client picker](../../assets/sonarr-radarr-torrents/21-radarr-add-client-picker.webp)
 
 **Settings → Download Clients → +**, then **qBittorrent** under Torrents.
 
-![Radarr's qBittorrent dialog filled in with the radarr category](../assets/sonarr-radarr-torrents/22-radarr-qbittorrent-dialog-filled.webp)
+![Radarr's qBittorrent dialog filled in with the radarr category](../../assets/sonarr-radarr-torrents/22-radarr-qbittorrent-dialog-filled.webp)
 
 Same host, same port, same key. Only **Category** differs — `radarr`, not `tv-sonarr`.
 
 **Test**, green tick, **Save**.
 
-![The saved download client card in Radarr](../assets/sonarr-radarr-torrents/24-radarr-downloadclient-saved.webp)
+![The saved download client card in Radarr](../../assets/sonarr-radarr-torrents/24-radarr-downloadclient-saved.webp)
 
 Then **Settings → Media Management → Root Folders → Add Root Folder**, and add `/mnt/zurg_qbt/__magic__/movies`.
 
@@ -319,11 +319,11 @@ Add one thing, grab it by hand, and follow it the whole way. Everything below is
 
 Open the movie, click **Interactive Search**, and pick a release.
 
-![Radarr's interactive search results](../assets/sonarr-radarr-torrents/60-radarr-interactive-search.webp)
+![Radarr's interactive search results](../../assets/sonarr-radarr-torrents/60-radarr-interactive-search.webp)
 
 The **Source** column reads `torrent` — that is the protocol this endpoint takes. Click the circled-arrow button at the end of the row to grab it. If the client wants you to confirm the mapping first:
 
-![Radarr's Override and Grab dialog](../assets/sonarr-radarr-torrents/60b-radarr-override-and-grab.webp)
+![Radarr's Override and Grab dialog](../../assets/sonarr-radarr-torrents/60b-radarr-override-and-grab.webp)
 
 **Override and Grab** appears when the release does not match cleanly. Check the mapping and click **Grab Release**. A normal grab never shows this.
 
@@ -354,15 +354,15 @@ The whole magnet reaches the account. zurg passes on the display name the client
 
 **Activity → Queue**, then **Activity → History**. Two events, seconds apart — **Grabbed**, then **Movie Imported**:
 
-![Radarr's history: the imported file, its source and destination both under __magic__](../assets/sonarr-radarr-torrents/62-radarr-history.webp)
+![Radarr's history: the imported file, its source and destination both under __magic__](../../assets/sonarr-radarr-torrents/62-radarr-history.webp)
 
 Expand the imported row and read the paths. **Source** is `/mnt/zurg_qbt/__magic__/__all__/[Polarwindz] …/[Polarwindz] ….mkv` and **Imported To** is `/mnt/zurg_qbt/__magic__/movies/Ghost in the Shell (1995)/…` — the file never left `__magic__`, which is what makes the import a rename. The screenshot was taken before the library moved down into `__all__`, so its source path is one level up from what yours will read.
 
 A grab the client decides not to import stays in the queue as a warning instead. The one in this screenshot's queue row is an upgrade the quality profile refused — visible, one click from *Remove*, and clearing nothing by itself:
 
-![Radarr's queue holding a completed release the client will not import](../assets/sonarr-radarr-torrents/61-radarr-queue.webp)
+![Radarr's queue holding a completed release the client will not import](../../assets/sonarr-radarr-torrents/61-radarr-queue.webp)
 
-![The Radarr movie page showing Downloaded status](../assets/sonarr-radarr-torrents/63-radarr-movie-imported.webp)
+![The Radarr movie page showing Downloaded status](../../assets/sonarr-radarr-torrents/63-radarr-movie-imported.webp)
 
 **Status: Downloaded, Size 17.2 GiB** — and nothing was downloaded to make that true. The bytes are read off the account when something plays the file.
 
@@ -390,9 +390,9 @@ That one is a Sonarr grab — an episode pulled the same way, imported into `tv/
 
 ### From Sonarr, it looks the same
 
-![Sonarr's interactive search on one episode](../assets/sonarr-radarr-torrents/50-sonarr-interactive-search.webp)
+![Sonarr's interactive search on one episode](../../assets/sonarr-radarr-torrents/50-sonarr-interactive-search.webp)
 
-![Sonarr's history with the imported episode detail expanded](../assets/sonarr-radarr-torrents/52-sonarr-history.webp)
+![Sonarr's history with the imported episode detail expanded](../../assets/sonarr-radarr-torrents/52-sonarr-history.webp)
 
 The same two history events, the same import-by-rename, and a queue that empties the moment the import lands — a cached release goes from grab to imported in a handful of seconds, which is why there is no mid-download screenshot of it here.
 
@@ -402,13 +402,13 @@ Prowlarr speaks to the same endpoint — it shares the qBittorrent client code w
 
 Prowlarr's first run is the same Forms-auth screen as the other two.
 
-![Prowlarr's login page](../assets/sonarr-radarr-torrents/70-prowlarr-login.webp)
+![Prowlarr's login page](../../assets/sonarr-radarr-torrents/70-prowlarr-login.webp)
 
-![Prowlarr's empty download clients page](../assets/sonarr-radarr-torrents/71-prowlarr-downloadclients-empty.webp)
+![Prowlarr's empty download clients page](../../assets/sonarr-radarr-torrents/71-prowlarr-downloadclients-empty.webp)
 
 **Settings → Download Clients → +**, then **qBittorrent** — in Prowlarr's picker every client sits in one alphabetical list rather than the two columns the \*arrs use. Same host, port and API key. Two fields differ from the \*arrs:
 
-![Prowlarr's add download client picker](../assets/sonarr-radarr-torrents/72-prowlarr-add-client-picker.webp)
+![Prowlarr's add download client picker](../../assets/sonarr-radarr-torrents/72-prowlarr-add-client-picker.webp)
 
 
 | Field | Value | Why |
@@ -416,17 +416,17 @@ Prowlarr's first run is the same Forms-auth screen as the other two.
 | Default Category | `prowlarr` | Prowlarr's own default, and its help text is worth reading: *adding a category specific to Prowlarr avoids conflicts with unrelated non-Prowlarr downloads*. Its **Test** creates the category in zurg, so nothing needs adding to `qbittorrent.categories`. |
 | Priority | `Last` | Nothing to apply it to. |
 
-![Prowlarr's qBittorrent dialog filled in](../assets/sonarr-radarr-torrents/73-prowlarr-qbittorrent-dialog-filled.webp)
+![Prowlarr's qBittorrent dialog filled in](../../assets/sonarr-radarr-torrents/73-prowlarr-qbittorrent-dialog-filled.webp)
 
 **Test**, green tick, **Save**.
 
-![Prowlarr's dialog footer showing a successful test](../assets/sonarr-radarr-torrents/74-prowlarr-qbittorrent-test-ok.webp)
+![Prowlarr's dialog footer showing a successful test](../../assets/sonarr-radarr-torrents/74-prowlarr-qbittorrent-test-ok.webp)
 
-![The saved download client card in Prowlarr](../assets/sonarr-radarr-torrents/75-prowlarr-downloadclient-saved.webp)
+![The saved download client card in Prowlarr](../../assets/sonarr-radarr-torrents/75-prowlarr-downloadclient-saved.webp)
 
 Then **Search**, type what you want, and push a row at the client:
 
-![Prowlarr's manual search with the push button](../assets/sonarr-radarr-torrents/76-prowlarr-manual-search.webp)
+![Prowlarr's manual search with the push button](../../assets/sonarr-radarr-torrents/76-prowlarr-manual-search.webp)
 
 The release goes onto the account exactly as an \*arr grab does — same add path, same categories, same `__magic__` folder — and this one landed cached, `finished` inside a second. But nothing imports it. It sits in the account and serves from the mount, which is the point: Prowlarr's push is for *put this on my debrid account now*, not for the automated grab-import-clean pipeline. For that, keep Sonarr and Radarr pointed at the endpoint and let Prowlarr manage indexers.
 
@@ -621,8 +621,8 @@ Does not:
 
 The `__magic__` page on zurg's dashboard shows the results of the imports: placements are files the clients moved, tombstones are the job folders they deleted afterwards, and the releases the endpoint took are listed as rows against the folders they were imported out of.
 
-![The __magic__ page header with placements and tombstones counted](../assets/sonarr-radarr-torrents/41-zurg-magic-header.webp)
+![The __magic__ page header with placements and tombstones counted](../../assets/sonarr-radarr-torrents/41-zurg-magic-header.webp)
 
-![The __magic__ overlay listing the two grabbed releases](../assets/sonarr-radarr-torrents/42-zurg-magic-overlay.webp)
+![The __magic__ overlay listing the two grabbed releases](../../assets/sonarr-radarr-torrents/42-zurg-magic-overlay.webp)
 
 The [reference](../reference/config.md#qbittorrent-the-torrent-download-client-sonarr-and-radarr-see) has every `qbittorrent:` key, and [the client contract](../internals/qbittorrent-client-contract.md) — written against the Sonarr and Radarr source — is the specification the endpoint answers to, with the file and line of every claim.

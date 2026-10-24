@@ -12,7 +12,7 @@ The container setup flow was verified on 4 September 2026 with Docker Engine 29.
 
 > **Sponsor image:** `ghcr.io/debridmediamanager/zurg` is sponsors-only. See [Patreon](https://www.patreon.com/debridmediamanager) for access.
 
-> **Linux host required:** the host-visible mount below depends on Linux mount propagation. Docker Desktop runs containers inside a VM on macOS and Windows and cannot propagate this FUSE mount into Finder or Explorer. Use the [macOS](https://notes.debridmediamanager.com/setup/macos/) or [Windows](https://notes.debridmediamanager.com/setup/windows/) binary guide when the media server runs on either host.
+> **Linux host required:** the host-visible mount below depends on Linux mount propagation. Docker Desktop runs containers inside a VM on macOS and Windows and cannot propagate this FUSE mount into Finder or Explorer. Use the [macOS](https://notes.debridmediamanager.com/zurg/setup/macos/) or [Windows](https://notes.debridmediamanager.com/zurg/setup/windows/) binary guide when the media server runs on either host.
 
 ## One-line option
 

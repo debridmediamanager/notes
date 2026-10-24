@@ -33,7 +33,7 @@ run zurg.
 |---|---|
 | [SABnzbd client contract](sabnzbd-client-contract.md) | The exact shapes Sonarr and Radarr expect from a SABnzbd. |
 | [qBittorrent client contract](qbittorrent-client-contract.md) | The same for a qBittorrent. |
-| [plex_api.json](plex_api.json) | The raw Plex API surface zurg codes against. 1.2 MB. |
+| [plex_api.json](../../internals/plex_api.json) | The raw Plex API surface zurg codes against. 1.2 MB. |
 
 ## Things that went wrong
 

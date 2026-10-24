@@ -1,33 +1,40 @@
 ---
 label: Guides
 icon: book
-order: 80
+order: 60
 ---
 
 # Guides
 
-Working with the library: Usenet, the arrs, `__magic__`, and media servers.
+Every guide on this site, by project.
 
-- [Usenet](usenet.md)
-- [Sonarr & Radarr for Usenet](sonarr-radarr.md)
-- [Sonarr & Radarr for torrents](sonarr-radarr-torrents.md)
-- [Lists in Sonarr & Radarr](import-lists.md)
-- [zurg searches for Sonarr & Radarr](sonarr-radarr-fetch.md)
-- [Subtitles with Bazarr](subtitles.md)
-- [Whisparr](whisparr.md)
-- [\_\_magic\_\_](magic.md)
-- [Renaming](renaming.md)
-- [Plex](plex.md)
-- [Jellyfin](jellyfin.md)
-- [rex](rex.md)
-- [rex with your own app](rex-any-source.md)
-- [Building rex addons](rex-addons.md)
-- [Kometa with rex](kometa.md)
-- [The Stremio addon](stremio.md)
-- [Watchlist and Seerr](acquisition.md)
-- [Plex watchlist](plex-watchlist.md)
-- [Local libraries](local-libraries.md)
-- [Android and Google TV](android.md)
-- [Getting remote help](remote-help.md)
+## General
 
-Pointing zurg at an account is the [Providers](../providers/index.md) section with one page per service. Getting zurg itself running is the [Setup](../setup/windows.md) section — [Windows](../setup/windows.md) is a from-scratch walkthrough of the binary install, RealDebrid with the qBittorrent endpoint first, then Usenet with SABnzbd.
+- [Getting remote help](remote-help.md) lets a helper type in your terminal while you watch
+
+## zurg
+
+- [Usenet](../zurg/guides/usenet.md)
+- [Sonarr & Radarr for Usenet](../zurg/guides/sonarr-radarr.md)
+- [Sonarr & Radarr for torrents](../zurg/guides/sonarr-radarr-torrents.md)
+- [Lists in Sonarr & Radarr](../zurg/guides/import-lists.md)
+- [zurg searches for Sonarr & Radarr](../zurg/guides/sonarr-radarr-fetch.md)
+- [Subtitles with Bazarr](../zurg/guides/subtitles.md)
+- [Whisparr](../zurg/guides/whisparr.md)
+- [\_\_magic\_\_](../zurg/guides/magic.md)
+- [Renaming](../zurg/guides/renaming.md)
+- [Plex](../zurg/guides/plex.md)
+- [Jellyfin](../zurg/guides/jellyfin.md)
+- [The Stremio addon](../zurg/guides/stremio.md)
+- [Watchlist and Seerr](../zurg/guides/acquisition.md)
+- [Plex watchlist](../zurg/guides/plex-watchlist.md)
+- [Local libraries](../zurg/guides/local-libraries.md)
+- [Android and Google TV](../zurg/guides/android.md)
+- [Migrating from another tool](../zurg/migrate/index.md)
+
+## rex
+
+- [rex with zurg](../rex/with-zurg.md)
+- [rex with your own app](../rex/any-source.md)
+- [Building rex addons](../rex/addons.md)
+- [Kometa with rex](../rex/kometa.md)

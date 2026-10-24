@@ -69,11 +69,11 @@ The root folder has to be inside `__magic__` and one level down. `/mnt/zurg/__ma
 
 In Radarr open **Settings > Media Management** and add the root folder.
 
-![Radarr's root folder inside __magic__](../assets/sonarr-radarr-fetch/02-radarr-root-folder.webp)
+![Radarr's root folder inside __magic__](../../assets/sonarr-radarr-fetch/02-radarr-root-folder.webp)
 
 Sonarr has the same page. Add its root folder under **Root Folders**.
 
-![Sonarr's root folder inside __magic__](../assets/sonarr-radarr-fetch/12-sonarr-root-folder.webp)
+![Sonarr's root folder inside __magic__](../../assets/sonarr-radarr-fetch/12-sonarr-root-folder.webp)
 
 **Season Folder Format** on Sonarr's page is the name zurg gives a new season folder. A season that already has files keeps the folder they are in. The free space either app reports is what the mount reports. Neither app ever writes there.
 
@@ -85,11 +85,11 @@ Add movies and series the way you already do. By hand or from a list or from a r
 
 This walkthrough uses an import list. Open **Settings > Import Lists** and add or edit yours.
 
-![The import lists page with one list](../assets/sonarr-radarr-fetch/03-radarr-import-lists.webp)
+![The import lists page with one list](../../assets/sonarr-radarr-fetch/03-radarr-import-lists.webp)
 
 In the list's settings keep **Enable Automatic Add** on and turn **Search on Add** off. Pick the quality profile and the root folder from step 2. Set **Minimum Availability** to what you want. zurg waits for Radarr to call a movie available before it looks for it.
 
-![Search on Add unchecked in the list's settings](../assets/sonarr-radarr-fetch/04-radarr-import-list-edit.webp)
+![Search on Add unchecked in the list's settings](../../assets/sonarr-radarr-fetch/04-radarr-import-list-edit.webp)
 
 When you add a single movie by hand the same switch is called **Start search for missing movie**. Leave it off too.
 
@@ -97,7 +97,7 @@ When you add a single movie by hand the same switch is called **Start search for
 
 When you add a series by hand leave **Start search for missing episodes** and **Start search for cutoff unmet episodes** unchecked. **Monitor** decides what zurg goes after. This series is set to its first season.
 
-![Adding a series with both searches unchecked](../assets/sonarr-radarr-fetch/13-sonarr-add-series.webp)
+![Adding a series with both searches unchecked](../../assets/sonarr-radarr-fetch/13-sonarr-add-series.webp)
 
 An import list in Sonarr has the same switch in its settings. Turn its search off too.
 
@@ -105,11 +105,11 @@ An import list in Sonarr has the same switch in its settings. Turn its search of
 
 That is the whole setup on the arr side. The indexers page can stay empty.
 
-![Radarr's indexers page with nothing in it](../assets/sonarr-radarr-fetch/05-radarr-indexers-empty.webp)
+![Radarr's indexers page with nothing in it](../../assets/sonarr-radarr-fetch/05-radarr-indexers-empty.webp)
 
 So can the download clients page.
 
-![Radarr's download clients page with nothing in it](../assets/sonarr-radarr-fetch/06-radarr-download-clients-empty.webp)
+![Radarr's download clients page with nothing in it](../../assets/sonarr-radarr-fetch/06-radarr-download-clients-empty.webp)
 
 Sonarr is the same. If either app already has indexers and a download client from an earlier setup they keep working. The app would then grab alongside zurg for the same titles. Turn off automatic search on those indexers or remove them for the titles zurg looks after.
 
@@ -117,7 +117,7 @@ Sonarr is the same. If either app already has indexers and a download client fro
 
 Open zurg's dashboard. **Acquisition** is a new entry in the quick links.
 
-![The zurg dashboard's quick links with Acquisition](../assets/sonarr-radarr-fetch/01-zurg-quick-links.webp)
+![The zurg dashboard's quick links with Acquisition](../../assets/sonarr-radarr-fetch/01-zurg-quick-links.webp)
 
 The page shows every title zurg is working on and what it is doing right now. The same data is at `/acquisition/status.json` if you want to read it from a script.
 
@@ -125,41 +125,41 @@ The page shows every title zurg is working on and what it is doing right now. Th
 
 This is a list of ten movies about half a minute after Radarr added them. Five have their file and Radarr is being told about them. The rest are done.
 
-![The acquisition page while zurg is working](../assets/sonarr-radarr-fetch/07-zurg-acquisition-working.webp)
+![The acquisition page while zurg is working](../../assets/sonarr-radarr-fetch/07-zurg-acquisition-working.webp)
 
 Each row is one movie. **State** is where it stands. **Stage** is what zurg is doing for it right now. It reads the indexers first. Then it judges the candidates. Then it reads a release's NZB and checks the post with the news servers. Then it places the file. **Release** is the post zurg took and what Radarr's parser made of it. **Placed at** is the path inside `__magic__` where the video now sits. A title the news servers no longer hold moves on to the next candidate at once. A title with nothing usable is set aside with the reason shown.
 
 A minute later everything is done.
 
-![The acquisition page with every title done](../assets/sonarr-radarr-fetch/08-zurg-acquisition-done.webp)
+![The acquisition page with every title done](../../assets/sonarr-radarr-fetch/08-zurg-acquisition-done.webp)
 
 ### Series
 
 Sonarr's seasons show up on the same page. One row is one season or one episode file zurg is upgrading. Here are two series with their first season monitored half a minute after they were added. Both seasons had finished airing and had no files so zurg tried a season pack for each. The Severance pack is in its season folder and Sonarr is being told. The Only Murders pack is being checked with the news servers.
 
-![The acquisition page working on two seasons](../assets/sonarr-radarr-fetch/14-zurg-acquisition-sonarr-working.webp)
+![The acquisition page working on two seasons](../../assets/sonarr-radarr-fetch/14-zurg-acquisition-sonarr-working.webp)
 
 About two minutes after they were added both seasons are done. The Only Murders pack was missing pieces on the news servers. zurg set it aside and took the ten episodes one by one instead. Its row shows the last episode placed.
 
-![The acquisition page with both seasons done](../assets/sonarr-radarr-fetch/15-zurg-acquisition-sonarr-done.webp)
+![The acquisition page with both seasons done](../../assets/sonarr-radarr-fetch/15-zurg-acquisition-sonarr-done.webp)
 
 ## 6. What Radarr and Sonarr show
 
 The libraries fill in as the rescans land. Every movie in this list has its file.
 
-![Radarr's movie grid with every movie downloaded](../assets/sonarr-radarr-fetch/09-radarr-movies.webp)
+![Radarr's movie grid with every movie downloaded](../../assets/sonarr-radarr-fetch/09-radarr-movies.webp)
 
 A movie's page shows the file in its folder inside `__magic__` with the quality Radarr read from the name.
 
-![One movie's page showing its file](../assets/sonarr-radarr-fetch/10-radarr-movie-detail.webp)
+![One movie's page showing its file](../../assets/sonarr-radarr-fetch/10-radarr-movie-detail.webp)
 
 In Sonarr all ten episodes have their file in the season folder with the quality Sonarr read from each name.
 
-![A season in Sonarr with every episode's file](../assets/sonarr-radarr-fetch/16-sonarr-season.webp)
+![A season in Sonarr with every episode's file](../../assets/sonarr-radarr-fetch/16-sonarr-season.webp)
 
 **Activity** stays empty in both. There is no queue entry and no grab or import event because nothing was grabbed. The file simply appeared in the folder and the rescan zurg asked for picked it up.
 
-![Radarr's queue is empty](../assets/sonarr-radarr-fetch/11-radarr-queue-empty.webp)
+![Radarr's queue is empty](../../assets/sonarr-radarr-fetch/11-radarr-queue-empty.webp)
 
 Two things follow from that. The arrs' blocklist is never written. zurg keeps its own record of posts the news servers no longer hold and does not pick them again. And a title you delete in Radarr or Sonarr is not deleted from your account. The file goes back to being listed under `__all__` like any other release.
 

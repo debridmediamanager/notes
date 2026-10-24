@@ -1,12 +1,12 @@
 ---
-label: rex
+label: rex with zurg
 icon: server
-order: 45
+order: 90
 ---
 
 # rex with zurg
 
-[rex](https://rex.debridmediamanager.com) is a Plex Media Server that owns no files. The official Plex apps see it as a normal Plex server. Any app can fill it ([rex with your own app](rex-any-source.md)); this page sets it up with zurg, which sends it your debrid library, and when you press play rex streams the file straight from zurg. Nothing is downloaded first.
+[rex](https://rex.debridmediamanager.com) is a Plex Media Server that owns no files. The official Plex apps see it as a normal Plex server. Any app can fill it ([rex with your own app](any-source.md)); this page sets it up with zurg, which sends it your debrid library, and when you press play rex streams the file straight from zurg. Nothing is downloaded first.
 
 This page takes you from nothing to playing a movie, one step at a time. Every step says what it does, why it matters and what you should see before you move on. If what you see does not match, stop there: the next step will not fix it.
 
@@ -429,7 +429,7 @@ The same setup with zurg and rex in containers on one Linux machine. The steps m
 
 **Why it matters.** As in step 1, everything rex shows comes from zurg.
 
-Follow [zurg's Docker setup](../setup/docker.md). The one-line installer there does it all, and may first ask you to approve the `read:packages` and `repo` scopes for your GitHub sign-in with a one-time code in your browser. The manual steps on the same page do the same thing by hand.
+Follow [zurg's Docker setup](../zurg/setup/docker.md). The one-line installer there does it all, and may first ask you to approve the `read:packages` and `repo` scopes for your GitHub sign-in with a one-time code in your browser. The manual steps on the same page do the same thing by hand.
 
 **What you should see.** `docker compose exec zurg /app/zurg doctor --working-dir /config` ends in `PASS` lines (`WARN service zurg is not installed` is expected: Docker restarts zurg, not systemd), and
 
@@ -518,7 +518,7 @@ rex's log names each title as zurg reads it, as in [step 4](#step-4-connect-zurg
 cd ~/rex && docker compose pull && docker compose up -d
 ```
 
-rex comes back with the same library. For zurg, see [Managing and updating zurg](../setup/docker.md#managing-and-updating-zurg).
+rex comes back with the same library. For zurg, see [Managing and updating zurg](../zurg/setup/docker.md#managing-and-updating-zurg).
 
 The image carries jellyfin-ffmpeg, so [converting video](#converting-video-optional) needs only the graphics chip handed in. HTTPS works as above: Tailscale, Caddy and frp run on the machine itself, and `--announce-url ...` goes in the compose file's `command:`.
 

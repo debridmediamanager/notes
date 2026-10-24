@@ -74,7 +74,7 @@ The subtitle is a real file on zurg's disk, in `data/local/__magic__/` (see [Sid
 
 ## In rex
 
-zurg sends rex every subtitle that sits beside a video in `__magic__`, wherever Radarr or Sonarr moved that video. zurg looks for new, changed and removed subtitles once a minute, so a subtitle Bazarr saves shows up in rex within about a minute, and one you delete goes away just as fast. Nothing needs setting up beyond `rex_url` in zurg's config, which [the rex guide](rex.md) already has you set.
+zurg sends rex every subtitle that sits beside a video in `__magic__`, wherever Radarr or Sonarr moved that video. zurg looks for new, changed and removed subtitles once a minute, so a subtitle Bazarr saves shows up in rex within about a minute, and one you delete goes away just as fast. Nothing needs setting up beyond `rex_url` in zurg's config, which [the rex guide](../../rex/with-zurg.md) already has you set.
 
 The file name says what the subtitle is, the same way Plex reads subtitle names:
 
@@ -89,4 +89,4 @@ The file name says what the subtitle is, the same way Plex reads subtitle names:
 
 Only subtitles in `__magic__` reach rex. One saved next to a file in another of zurg's folders, such as `/mnt/zurg/movies`, is not sent.
 
-rex can also find subtitles itself: **Search Subtitles** in any Plex app, with no Bazarr at all. See [rex's subtitles](rex.md#subtitles).
+rex can also find subtitles itself: **Search Subtitles** in any Plex app, with no Bazarr at all. See [rex's subtitles](../../rex/with-zurg.md#subtitles).

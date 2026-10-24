@@ -61,11 +61,11 @@ Two ways, same result. Both write to `config.yml` and both need a restart: the r
 
 Open zurg's dashboard, click **Config**, and scroll to **\_\_magic\_\_ & Download Clients**. Turn on **Serve \_\_magic\_\_** and **SABnzbd Endpoint**, then set **SABnzbd Categories** to `tv, movies`.
 
-![The zurg dashboard's Quick Links](../assets/sonarr-radarr/44-zurg-dashboard-home.webp)
+![The zurg dashboard's Quick Links](../../assets/sonarr-radarr/44-zurg-dashboard-home.webp)
 
 **Config** is where the setting lives; **Magic** is where you will watch grabs arrive later.
 
-![The __magic__ and download clients block on the config page](../assets/sonarr-radarr/40-zurg-config-magic-sabnzbd.webp)
+![The __magic__ and download clients block on the config page](../../assets/sonarr-radarr/40-zurg-config-magic-sabnzbd.webp)
 
 Leave **SABnzbd Completed Directory** empty unless your \*arr mounts zurg somewhere other than zurg does — see [step 8](#8-if-your-arr-is-in-docker). The orange **Restart Required** chip is telling the truth: nothing here takes effect until zurg restarts.
 
@@ -88,7 +88,7 @@ sabnzbd:
 
 Restart zurg, then confirm the provider took:
 
-![The providers block on the zurg config page](../assets/sonarr-radarr/43-zurg-config-providers.webp)
+![The providers block on the zurg config page](../../assets/sonarr-radarr/43-zurg-config-providers.webp)
 
 One `nzb` row is all the endpoint needs.
 
@@ -168,11 +168,11 @@ Substitute your own `mount_path` for `/mnt/zurg_usenet`. The folder names are yo
 
 This is what getting it wrong looks like. Both are real, from the two clients. They were taken before the completed directory moved down to `__magic__/__all__`, so the paths in them are one level up from yours — the two rules they show are the same ones:
 
-![Sonarr health check warning about a root folder at the completed directory](../assets/sonarr-radarr/30-sonarr-health-rootfolder-warning.webp)
+![Sonarr health check warning about a root folder at the completed directory](../../assets/sonarr-radarr/30-sonarr-health-rootfolder-warning.webp)
 
 Sonarr with the completed directory itself added as a root folder — it warns because the root folder *is* the output folder.
 
-![Radarr health check warning about a root folder above the completed directory](../assets/sonarr-radarr/31-radarr-health-rootfolder-warning.webp)
+![Radarr health check warning about a root folder above the completed directory](../../assets/sonarr-radarr/31-radarr-health-rootfolder-warning.webp)
 
 Radarr with `/mnt/zurg_usenet` added — it warns for the parent too, which Sonarr does not. Move the root folder beside the completed directory and both warnings go.
 
@@ -180,33 +180,33 @@ Radarr with `/mnt/zurg_usenet` added — it warns for the parent too, which Sona
 
 A brand-new Sonarr blocks everything behind a first-run screen. Pick **Forms (Login Page)**, set a username and password, and click **Save**.
 
-![Sonarr's first-run authentication screen](../assets/sonarr-radarr/01-sonarr-firstrun-auth.webp)
+![Sonarr's first-run authentication screen](../../assets/sonarr-radarr/01-sonarr-firstrun-auth.webp)
 
 It will not let you past until **Authentication Method** is something other than None.
 
-![The same screen filled in](../assets/sonarr-radarr/02-sonarr-firstrun-auth-filled.webp)
+![The same screen filled in](../../assets/sonarr-radarr/02-sonarr-firstrun-auth-filled.webp)
 
 After Save you are signed out once and land on the login page.
 
-![Sonarr's login page](../assets/sonarr-radarr/04-sonarr-login.webp)
+![Sonarr's login page](../../assets/sonarr-radarr/04-sonarr-login.webp)
 
 ### Settings → Download Clients
 
 Go to **Settings → Download Clients**. On a fresh install there is nothing here but the **+** card.
 
-![Sonarr's empty download clients page](../assets/sonarr-radarr/05-sonarr-downloadclients-empty.webp)
+![Sonarr's empty download clients page](../../assets/sonarr-radarr/05-sonarr-downloadclients-empty.webp)
 
 Click the **+** under "Download Clients" — not the one further down under "Remote Path Mappings".
 
 Choose **SABnzbd** from the **Usenet** column.
 
-![The add download client picker with SABnzbd visible](../assets/sonarr-radarr/06-sonarr-add-client-picker.webp)
+![The add download client picker with SABnzbd visible](../../assets/sonarr-radarr/06-sonarr-add-client-picker.webp)
 
 zurg impersonates SABnzbd specifically, so nothing else in this list will work.
 
 The dialog opens with SABnzbd's own defaults — `localhost`, port `8080`, no key.
 
-![The untouched SABnzbd download client dialog](../assets/sonarr-radarr/07-sonarr-sab-dialog-empty.webp)
+![The untouched SABnzbd download client dialog](../../assets/sonarr-radarr/07-sonarr-sab-dialog-empty.webp)
 
 ### What to put in each field
 
@@ -225,7 +225,7 @@ The dialog opens with SABnzbd's own defaults — `localhost`, port `8080`, no ke
 | Remove Completed | on | Lets the client clean up its own job records. Leave it on. |
 | Remove Failed | on | Same. |
 
-![The SABnzbd dialog filled in](../assets/sonarr-radarr/08-sonarr-sab-dialog-filled.webp)
+![The SABnzbd dialog filled in](../../assets/sonarr-radarr/08-sonarr-sab-dialog-filled.webp)
 
 The API key shown is illustrative — paste your own.
 
@@ -233,33 +233,33 @@ The API key shown is illustrative — paste your own.
 
 Click **Test**. A green tick means all four of the client's checks passed: version, API key, global config, and the category.
 
-![The dialog footer showing a successful test](../assets/sonarr-radarr/09-sonarr-sab-test-ok.webp)
+![The dialog footer showing a successful test](../../assets/sonarr-radarr/09-sonarr-sab-test-ok.webp)
 
 Now click **Save**.
 
-![The saved download client card in Sonarr](../assets/sonarr-radarr/10-sonarr-downloadclient-saved.webp)
+![The saved download client card in Sonarr](../../assets/sonarr-radarr/10-sonarr-downloadclient-saved.webp)
 
 ## 6. Add the root folder in Sonarr
 
 Go to **Settings → Media Management** and scroll to the bottom.
 
-![The empty root folders section in Sonarr](../assets/sonarr-radarr/11-sonarr-rootfolders-empty.webp)
+![The empty root folders section in Sonarr](../../assets/sonarr-radarr/11-sonarr-rootfolders-empty.webp)
 
 Click **Add Root Folder**. A file browser opens on the container's filesystem.
 
-![Sonarr's file browser at the filesystem root](../assets/sonarr-radarr/12-sonarr-rootfolder-dialog.webp)
+![Sonarr's file browser at the filesystem root](../../assets/sonarr-radarr/12-sonarr-rootfolder-dialog.webp)
 
 Type the path into the box at the top. If the mount is genuinely visible to Sonarr, what is inside `__magic__` appears as you type — `__all__` with every release in it, and whatever you made beside it. That is the fastest proof you will get that the bind mount is correct.
 
-![The file browser listing what is inside __magic__](../assets/sonarr-radarr/13-sonarr-rootfolder-browse.webp)
+![The file browser listing what is inside __magic__](../../assets/sonarr-radarr/13-sonarr-rootfolder-browse.webp)
 
 If this is empty or errors, stop and fix the mount before going further.
 
-![The path finished at __magic__/tv](../assets/sonarr-radarr/14-sonarr-rootfolder-typed.webp)
+![The path finished at __magic__/tv](../../assets/sonarr-radarr/14-sonarr-rootfolder-typed.webp)
 
 Finish the path at `__magic__/tv` and click **Ok**.
 
-![The root folder added, showing free space and unmapped folders](../assets/sonarr-radarr/15-sonarr-rootfolder-added.webp)
+![The root folder added, showing free space and unmapped folders](../../assets/sonarr-radarr/15-sonarr-rootfolder-added.webp)
 
 **Free Space** reading a plausible number means Sonarr can stat the mount; **Unmapped Folders** counts releases already sitting there.
 
@@ -267,23 +267,23 @@ Finish the path at `__magic__/tv` and click **Ok**.
 
 Identical, with two values changed: the category is `movies` and the root folder is `__magic__/movies`.
 
-![Radarr's login page](../assets/sonarr-radarr/20-radarr-login.webp)
+![Radarr's login page](../../assets/sonarr-radarr/20-radarr-login.webp)
 
 Radarr's first run works the same way — set Forms auth, then sign in.
 
-![Radarr's add download client picker](../assets/sonarr-radarr/21-radarr-add-client-picker.webp)
+![Radarr's add download client picker](../../assets/sonarr-radarr/21-radarr-add-client-picker.webp)
 
 **Settings → Download Clients → +**, then **SABnzbd** under Usenet.
 
-![Radarr's SABnzbd dialog filled in with the movies category](../assets/sonarr-radarr/22-radarr-sab-dialog-filled.webp)
+![Radarr's SABnzbd dialog filled in with the movies category](../../assets/sonarr-radarr/22-radarr-sab-dialog-filled.webp)
 
 Same host, same port, same key. Only **Category** differs — `movies`, not `tv`.
 
-![Radarr's dialog footer showing a successful test](../assets/sonarr-radarr/23-radarr-sab-test-ok.webp)
+![Radarr's dialog footer showing a successful test](../../assets/sonarr-radarr/23-radarr-sab-test-ok.webp)
 
 **Test**, green tick, **Save**.
 
-![The saved download client card in Radarr](../assets/sonarr-radarr/24-radarr-downloadclient-saved.webp)
+![The saved download client card in Radarr](../../assets/sonarr-radarr/24-radarr-downloadclient-saved.webp)
 
 Then **Settings → Media Management → Root Folders → Add Root Folder**, and add `/mnt/zurg_usenet/__magic__/movies`.
 
@@ -307,7 +307,7 @@ sabnzbd:
 
 For the second, go to **Settings → Download Clients** and use the **+** under **Remote Path Mappings** — the lower one on the page, not the one you used in step 5.
 
-![The add remote path mapping dialog](../assets/sonarr-radarr/16-sonarr-remote-path-mapping.webp)
+![The add remote path mapping dialog](../../assets/sonarr-radarr/16-sonarr-remote-path-mapping.webp)
 
 **Host** must be exactly the host string you typed into the download client. **Remote Path** is what zurg reports; **Local Path** is where the client sees it.
 
@@ -366,19 +366,19 @@ Add one thing, grab it by hand, and follow it the whole way. Everything below is
 
 Open a movie (or an episode), click **Interactive Search**, and pick a release.
 
-![Radarr's interactive search results](../assets/sonarr-radarr/60-radarr-interactive-search.webp)
+![Radarr's interactive search results](../../assets/sonarr-radarr/60-radarr-interactive-search.webp)
 
 The **Source** column reads `nzb` — that is the protocol zurg can take.
 
 Click the circled-arrow button at the end of the row to grab it. If the release does not match cleanly, the client asks you to confirm the mapping first:
 
-![Radarr's Override and Grab dialog](../assets/sonarr-radarr/60b-radarr-override-and-grab.webp)
+![Radarr's Override and Grab dialog](../../assets/sonarr-radarr/60b-radarr-override-and-grab.webp)
 
 **Override and Grab** appears when the client wants you to confirm what the release is. Check the mapping and click **Grab Release**. A normal automatic grab never shows this.
 
 ### It lands in the queue
 
-![Radarr's queue immediately after the grab](../assets/sonarr-radarr/61-radarr-queue-01.webp)
+![Radarr's queue immediately after the grab](../../assets/sonarr-radarr/61-radarr-queue-01.webp)
 
 **Activity → Queue** immediately after the grab. Note the progress bar: it is full, and **Time Left** is a dash. There is no download to measure, so a job is queued or completed and nothing in between. *The other rows here belong to a second Radarr pointed at the same zurg on the same category* — see the note in step 7.
 
@@ -395,11 +395,11 @@ Aug 25 14:50:28 zurg-server zurg[3034965]: INFO  nzb  Loaded NZB
 
 ### The import happens
 
-![Radarr's history showing Grabbed then Movie Imported](../assets/sonarr-radarr/62-radarr-history.webp)
+![Radarr's history showing Grabbed then Movie Imported](../../assets/sonarr-radarr/62-radarr-history.webp)
 
 **Activity → History**. Two events, seconds apart: **Grabbed**, then **Movie Imported**.
 
-![The Radarr movie page showing Downloaded status](../assets/sonarr-radarr/63-radarr-movie-imported.webp)
+![The Radarr movie page showing Downloaded status](../../assets/sonarr-radarr/63-radarr-movie-imported.webp)
 
 **Status: Downloaded**, **Size 4.7 GiB** — and nothing was downloaded.
 
@@ -490,11 +490,11 @@ Thanks to **.telmen** on Discord for asking how to do this with Usenet.
 
 zurg's `/magic/` page lists every NZB the endpoint has ever been handed. Sonarr and Radarr remove the jobs they grabbed, and the record is kept for a week after that so a poll racing a delete answers the same way twice. A **Failed** or **Stuck** job (queued for more than an hour) that no client will ever remove, for example after you stop using zurg as their download client, can be cleared here by holding its **Clear** button. Clearing one deletes its NZB unless an import still uses it.
 
-![The __magic__ page header showing placements and tombstones](../assets/sonarr-radarr/41-zurg-magic-header.webp)
+![The __magic__ page header showing placements and tombstones](../../assets/sonarr-radarr/41-zurg-magic-header.webp)
 
 **Placements** are files the clients moved; **tombstones** are the job folders they deleted afterwards. If a client copies instead of moving, the page shows a red **Imports that were copies** table. zurg turns those copies back into placements and deletes them, but each one was still a full download, so fix the volumes.
 
-![The SABnzbd jobs table on the __magic__ page](../assets/sonarr-radarr/42-zurg-magic-sabnzbd-jobs.webp)
+![The SABnzbd jobs table on the __magic__ page](../../assets/sonarr-radarr/42-zurg-magic-sabnzbd-jobs.webp)
 
 **State** is the whole story — **Queued** means zurg is not done with the release yet, whether because the library has not listed it, its file sizes have not settled, or its articles have not been checked; **Completed** means it is ready to import; and **Release** names the folder the client imports from.
 

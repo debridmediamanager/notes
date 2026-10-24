@@ -176,31 +176,31 @@ Three warnings you may see, all known and none fatal:
 | `cannot truncate data\magic.journal: Access is denied` | A real Windows quirk, cosmetic in effect: zurg holds the journal open and then tries to compact it, which Windows refuses. Your placements are still written and still survive restarts — verified on this install — the journal just never shrinks. |
 | `Debug logging is enabled` | The generated config is verbose by default. Add `log_level: INFO` to quiet it. |
 
-![zurg running in a PowerShell window](../assets/windows-setup/20-console-rd.webp)
+![zurg running in a PowerShell window](../../assets/windows-setup/20-console-rd.webp)
 
 ### The dashboard
 
 `http://localhost:9999/` — library size climbing as the walk proceeds, traffic served, memory. The **Quick Links** are the whole UI: Torrent Manager, Config, Directories, Magic, Logs.
 
-![The zurg dashboard on Windows](../assets/windows-setup/10-dashboard-home.webp)
+![The zurg dashboard on Windows](../../assets/windows-setup/10-dashboard-home.webp)
 
 **Config** is where everything lives after the first run. The providers block shows the one account:
 
-![The providers block with the Real-Debrid row](../assets/windows-setup/12-config-providers.webp)
+![The providers block with the Real-Debrid row](../../assets/windows-setup/12-config-providers.webp)
 
 The download-client block — the same toggles you set in `config.yml`, editable here, every change stamped **Restart Required**, which is literal: both endpoints register their routes once at startup.
 
-![The __magic__ and download clients block with the qBittorrent endpoint on](../assets/windows-setup/13-config-magic-qbittorrent.webp)
+![The __magic__ and download clients block with the qBittorrent endpoint on](../../assets/windows-setup/13-config-magic-qbittorrent.webp)
 
 And the mount block, showing the drive letter and the rclone supervision:
 
-![The rclone mount block with Z: configured](../assets/windows-setup/14-config-rclone.webp)
+![The rclone mount block with Z: configured](../../assets/windows-setup/14-config-rclone.webp)
 
 ### The Z: drive
 
 When zurg runs, `Z:` is a petabyte-scale filesystem in Explorer:
 
-![File Explorer at the Z: drive](../assets/windows-setup/21-explorer-z.webp)
+![File Explorer at the Z: drive](../../assets/windows-setup/21-explorer-z.webp)
 
 **But only if zurg runs where Explorer can see it — and that is the one genuinely Windows-shaped rule in this setup.** A drive-letter mount belongs to the *logon session* that created it. Start zurg from an SSH connection or from a service and the mount exists, works, and is invisible to your desktop. This is not a bug in WinFsp or rclone; it is how Windows scopes drive letters. [The last section](#keeping-it-running-the-session-rules) has the working recipe — an interactive scheduled task — and what was measured trying the alternatives.
 
@@ -333,17 +333,17 @@ INFO  zurg      Usenet account nzb connected: nntps://news.example.com:563 (8 co
 
 zurg dials the news server the moment it starts and keeps the connections warm, TLS and all. The SABnzbd key lands in `data\sabnzbd-apikey`.
 
-![zurg serving Usenet in a PowerShell window](../assets/windows-setup/50-console-usenet.webp)
+![zurg serving Usenet in a PowerShell window](../../assets/windows-setup/50-console-usenet.webp)
 
 The dashboard now shows a library of nothing, which is correct:
 
-![The dashboard with the Usenet provider, one item after the NZB below](../assets/windows-setup/40-dashboard-usenet.webp)
+![The dashboard with the Usenet provider, one item after the NZB below](../../assets/windows-setup/40-dashboard-usenet.webp)
 
 The providers block carries the news account, and the download-client block now shows the SABnzbd half:
 
-![The providers block with the nzb row](../assets/windows-setup/41-config-providers-nzb.webp)
+![The providers block with the nzb row](../../assets/windows-setup/41-config-providers-nzb.webp)
 
-![The __magic__ and download clients block with the SABnzbd endpoint on](../assets/windows-setup/42-config-magic-sabnzbd.webp)
+![The __magic__ and download clients block with the SABnzbd endpoint on](../../assets/windows-setup/42-config-magic-sabnzbd.webp)
 
 ### Drop an NZB in
 
@@ -359,7 +359,7 @@ INFO  nzb  Loaded NZB lanterns.nzb: 8 files
 
 That is the line that says the NZB parsed. The release appears as a folder under `__magic__\__all__` on the mount, and because a Usenet release names its files however the poster felt like, the inner file may look like `J8AZfuVQCD4yPpRIF566Bv0xKoEpYa3M.mkv` — the release folder carries the NZB's name, the files carry the poster's:
 
-![File Explorer inside the library folder, showing the release folder](../assets/windows-setup/51-explorer-magic-lanterns.webp)
+![File Explorer inside the library folder, showing the release folder](../../assets/windows-setup/51-explorer-magic-lanterns.webp)
 
 Nothing has been downloaded at this point, and nothing will be until something reads a file. The first read of the episode — 162 MB — fetched exactly the articles covering the requested range, yEnc-decoded them, and answered; later reads were instant because the VFS had read ahead around them. A 60 GB remux costs 60 GB of disk nowhere, Usenet or debrid.
 
