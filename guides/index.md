@@ -22,6 +22,7 @@ Every guide on this site, by project.
 - [The Stremio addon](../zurg/guides/stremio.md)
 - [Watchlist and Seerr](../zurg/guides/acquisition.md)
 - [Plex watchlist](../zurg/guides/plex-watchlist.md)
+- [DMM wanted list](../zurg/guides/dmm-wanted.md)
 - [Local libraries](../zurg/guides/local-libraries.md)
 - [Android and Google TV](../zurg/guides/android.md)
 - [Migrating from another tool](../zurg/migrate/index.md)

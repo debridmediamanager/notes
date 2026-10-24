@@ -1,6 +1,6 @@
 # Acquisition sources
 
-Plex watchlist, [Seerr](https://github.com/seerr-team/seerr),
+Plex watchlist, your [DMM wanted list](#dmm-wanted-list), [Seerr](https://github.com/seerr-team/seerr),
 [Radarr](https://radarr.video) and [Sonarr](https://sonarr.tv) feed the same durable engine. Adapters discover requests and resolve media IDs. The engine
 owns progress, retries and acknowledgement. The shared executor selects releases
 from Newznab indexers, saving NZBs for zurg's Usenet backend, and from Torznab
@@ -165,6 +165,46 @@ When Radarr or Sonarr use zurg as a download client through the `sabnzbd:` or
 themselves. `exclude_words` does not apply there. Exclude the same words in
 the *arr with a custom format scored below the profile's minimum or a release
 profile's **Must Not Contain**.
+
+## DMM wanted list
+
+A DMM sponsor adds films and shows to a wanted list with the **Want** button on their
+pages at debridmediamanager.com, and lists them at `/wanted`. zurg reads that list
+whenever `dmm_api_key` is set: there is nothing else to write. Nothing is mounted and
+no Sonarr or Radarr is involved. The source is named `dmm-wanted` and is polled every
+60 seconds.
+
+- **What is fetched.** A film once. A show's aired episodes in the seasons wanted, or
+  in every season when the whole show is wanted, and its new episodes as they air.
+  DMM sends each title's IMDb, TMDB and TVDB ids, its year, and for a show the episodes
+  aired so far, numbered as TMDB numbers them. Specials are never listed. A season
+  still airing is fetched as loose episodes, since no pack covers it yet.
+- **Where it goes.** The same as any source: an NZB from a Newznab indexer to this
+  instance's Usenet backend, or a torrent from a Torznab indexer onto a debrid account
+  that already has it cached, whichever `prefer` reaches for first. `quality`,
+  `max_size_gb`, `max_season_size_gb` and `exclude_words` apply.
+- **Indexers.** With no indexer written under `acquisition:`, `watchlist:` or
+  `stremio:`, the key also searches DMM's own: its Usenet indexer and the torrents it
+  knows Real-Debrid or AllDebrid hold (`/api/torznab/cached`). Writing any indexer
+  replaces both.
+- **Acknowledging.** Once a film's grab is checked zurg tells DMM, and the film leaves
+  the list zurg reads; `/wanted` shows when. A show stays on the list and keeps being
+  followed until you remove it there. Removing a title stops work on it.
+- **Without a grabbing account.** An instance with neither an `nzb` provider nor a
+  debrid account that takes torrents does not read the list.
+
+**Two zurgs on one key both fetch every title.** Each reads the same list, so run the
+wanted list on one of them and turn it off on the others by writing it disabled:
+
+```yaml
+acquisition:
+  sources:
+    - name: dmm-wanted
+      type: dmm
+      enabled: false
+```
+
+A lapsed sponsorship or a reset key stops the list. zurg logs a warning that DMM refused `dmm_api_key` and asks again an hour later, or at once when you set a new key. What it already fetched stays in your library.
 
 ## Seerr behavior
 
