@@ -26,7 +26,7 @@ rex opened as a closed beta for sponsors on October 15 and reaches the public on
 | Your DMM API key, from sponsoring DMM (optional) | zurg asks DMM what each file is. Without it zurg works it out from the release name, through DMM's free title search: fewer titles match, and an anime numbered across the whole series stays in file order |
 | A fresh Plex account, made just for rex | rex gets every title, poster, summary and episode name from Plex once it is [added to a Plex account](#step-3-add-it-to-a-plex-account). Until then titles keep their file names and have no posters |
 
-You do **not** need a TMDB key or your Plex token.
+This page needs rex nightly **2026.10.25 or newer** and zurg nightly **2026.10.22 or newer**.
 
 ## Step 1. Install zurg
 
@@ -43,7 +43,7 @@ The installer asks which services you use (type `1` for Real-Debrid) and then fo
 
 **What you should see.** The installer ends with a list of `PASS` lines and `==> zurg is installed in /home/you/zurg`. zurg then loads your library: a few seconds for a small account, about ten minutes for one with a thousand releases on Real-Debrid. Open zurg's dashboard at `http://<this machine>:9999`: **Library Size** counts your items once it is done.
 
-Already run zurg? Update and restart it with `cd ~/zurg && ./zurg update && ./zurg service restart`. You need nightly **2026.10.19 or later**.
+Already run zurg? Update and restart it with `cd ~/zurg && ./zurg update && ./zurg service restart`.
 
 ## Step 2. Install rex
 
@@ -54,12 +54,13 @@ Already run zurg? Update and restart it with `cd ~/zurg && ./zurg update && ./zu
 ```bash
 mkdir -p ~/rex && cd ~/rex
 export PATH="$PATH:$HOME/zurg/bin"
+A=$(dpkg --print-architecture)
 TAG=$(gh api 'repos/debridmediamanager/rex/releases?per_page=1' --jq '.[0].tag_name')
-gh release download "$TAG" -R debridmediamanager/rex -p '*-linux-amd64.tar.gz'
-tar xzf rex-*-linux-amd64.tar.gz --strip-components=1 && rm rex-*-linux-amd64.tar.gz
+gh release download "$TAG" -R debridmediamanager/rex -p "*-linux-$A.tar.gz"
+tar xzf rex-*-linux-$A.tar.gz --strip-components=1 && rm rex-*-linux-$A.tar.gz
 ```
 
-This takes rex's newest build, usually a nightly. On an ARM machine (Raspberry Pi, Ampere) use `linux-arm64` in all three places.
+This takes rex's newest build, usually a nightly, for your machine's processor.
 
 Find rex's LAN IP: `hostname -I` prints several, so take the one on your home network, not one starting with `172.17.` (Docker) or `100.` (Tailscale). **This page writes it as `192.168.1.20` everywhere: put yours in its place.** Plex apps, zurg and your own commands all reach rex there.
 
@@ -77,8 +78,7 @@ Description=rex
 [Service]
 WorkingDirectory=%h/rex
 EnvironmentFile=-%h/rex/rex.env
-ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url http://192.168.1.20:32400
-UMask=0077
+ExecStart=%h/rex/rust/target/release/rex
 Restart=always
 RestartSec=5
 
@@ -97,13 +97,13 @@ journalctl --user -u rex -f
 **What you should see.** Among the first lines:
 
 ```
-INFO    seeded rex.db: an empty library named yourhost at /mnt/rex, machine=...
+INFO    seeded rex.db: an empty library named yourhost, machine=...
 INFO    no source yet: one registers at PUT /rex/sources/{name} (docs/feed-api.md)
 INFO    claim state: unclaimed
 INFO    rex on http://yourhost:32400  machine=...  items=0  parts=proxy
 ```
 
-rex names itself after the machine; your Plex apps show that name. `no source yet` is right: zurg has not been told about rex. A `WARNING` that a CDN may strip `Range` is about the LAN IP and can be ignored. Leave the log open.
+rex names itself after the machine; your Plex apps show that name. `no source yet` is right: zurg has not been told about rex. Leave the log open.
 
 ## Step 3. Add it to a Plex account
 
@@ -130,8 +130,6 @@ rex names itself after the machine; your Plex apps show that name. `no source ye
 1. Still signed in as the fresh account, open [app.plex.tv](https://app.plex.tv), then **Settings** (the wrench), **Manage Library Access** and **Grant Library Access**.
 2. Enter your own account's username or email, pick the rex server and both libraries, **Movies** and **TV Shows**, and send the invite.
 3. Sign out, sign in as **yourself**, and accept the invite. It arrives by email and in app.plex.tv.
-
-rex tells plex.tv the address from step 2 the moment it is claimed, with no restart.
 
 **What you should see.** Signed in as yourself, Plex apps list the rex server beside your own servers, with both libraries, empty until the next step. Your watch history on rex is your own: it is kept apart from the fresh account's. Share it the same way with anyone else in your household.
 
@@ -167,7 +165,7 @@ INFO    FEED zurg upsert: 2 created, 0 updated, 0 held, 0 unchanged, 0 rejected
 
 **If not.**
 
-- Nothing at all in rex's log: zurg is still loading its library, zurg is older than 2026.10.19 (update it as in [step 1](#step-1-install-zurg)), or `rex_url` has a typo. `grep 'rex feed' ~/zurg/logs/zurg.log | tail -n 5` shows zurg's side: with no `rex feed: pushing the library to ...` line zurg did not read `rex_url`, and `rex feed: snapshot failed, retrying in ...` means it cannot reach rex at that address.
+- Nothing at all in rex's log: zurg is still loading its library, zurg is out of date (update it as in [step 1](#step-1-install-zurg)), or `rex_url` has a typo. `grep 'rex feed' ~/zurg/logs/zurg.log | tail -n 5` shows zurg's side: with no `rex feed: pushing the library to ...` line zurg did not read `rex_url`, and `rex feed: snapshot failed, retrying in ...` means it cannot reach rex at that address.
 - A title stays `held` and zurg logs `Cannot probe file ...`: the first read from the debrid service failed. zurg tries again by itself; **Analyze & Tag Library** under **Utilities** on zurg's dashboard tries at once.
 - Titles arrive but no `identified` lines: zurg could not match them by name, and with `dmm_api_key` set it logs `DMM refused the API key for placement` when the key is not a sponsor's. zurg then matches by name and tries the key again a day later, or at once when it restarts.
 
@@ -193,7 +191,7 @@ A file zurg cannot place stays unmatched: a film titled as its file, or an episo
 
 **Why it matters.** This is the point of the whole setup. It also proves the last link: rex reading a file from zurg while you watch.
 
-Open a Plex app (not a web browser) on a phone, TV or computer **on the same home network**. rex shows up on its own under the machine's name, with **Movies** and **TV Shows**. Pick a movie and press play. A `rex.db` first made by a rex older than the 2026.10.24 nightly calls them **Debrid Movies** and **Debrid TV**; rename them in a Plex app if you like.
+Open a Plex app (not a web browser) on a phone, TV or computer **on the same home network**. rex shows up on its own under the machine's name, with **Movies** and **TV Shows**. Pick a movie and press play.
 
 At home nothing else is needed: Plex apps find rex with Plex's own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN). Discovery runs on UDP ports 32410 and 32414, so a firewall on the rex machine must let those in. rex answers discovery when it uses port 32400. If you moved rex to 32500 because Plex runs on the same machine, discovery is left to that Plex, and apps find rex through the Plex account it is [shared with](#share-it-with-your-own-account). app.plex.tv in a web browser is the exception: it needs the HTTPS address from [Use it outside your home](#use-it-outside-your-home-optional), even at home.
 
@@ -210,7 +208,7 @@ Two things you may meet:
 
 zurg's folders other than `movies` and `shows`, such as `anime`, need nothing: each file goes to **Movies** or **TV Shows** by what zurg says it is. A file zurg cannot tell is an episode waits in **Movies**.
 
-To give one of those folders libraries of its own, add `rex_shows` and/or `rex_movies` under it in `~/zurg/config.yml`, beside its filters, then restart zurg (`cd ~/zurg && ./zurg service restart`). This needs zurg 2026.10.22 or later and rex 2026.10.23 or later (update zurg as in [step 1](#step-1-install-zurg)):
+To give one of those folders libraries of its own, add `rex_shows` and/or `rex_movies` under it in `~/zurg/config.yml`, beside its filters, then restart zurg (`cd ~/zurg && ./zurg service restart`):
 
 ```yaml
 directories:
@@ -219,7 +217,7 @@ directories:
     rex_movies: Anime Movies
 ```
 
-Once zurg has loaded, rex makes **Anime** and **Anime Movies** and moves what it already showed from `anime` into them as it was: watch history, Fix Match and edits included. An open Plex Web lists them at once under **More** in its sidebar, where you can pin them. Share them with your own account as in [step 3](#share-it-with-your-own-account). Rename them in a Plex app as you like. Delete one and it stays deleted, its files going back to **Movies** or **TV Shows**, until you add it again with **Add Library**: its folder list shows `/mnt/zurg/anime`. A mistyped line is skipped and zurg's log (`~/zurg/logs/zurg.log`) says why. If rex refuses one, rex's log says why.
+Once zurg has loaded, rex makes **Anime** and **Anime Movies** and moves what it already showed from `anime` into them as it was: watch history, Fix Match and edits included. An open Plex Web lists them at once under **More** in its sidebar, where you can pin them. Share them with your own account as in [step 3](#share-it-with-your-own-account). Rename them in a Plex app as you like. Delete one and it stays deleted, its files going back to **Movies** or **TV Shows**, until you add it again with **Add Library**, whose folder list shows zurg's folders. If a library does not appear, zurg's log (`~/zurg/logs/zurg.log`) or rex's says why.
 
 **Back up** `~/rex/rex.db` (it holds your library, watch history and zurg's login, so keep it private) and, once you have one, `claim_state.json`:
 
@@ -236,9 +234,9 @@ You are done. The sections below are optional.
 
 **What it does.** Gives rex an HTTPS address that Plex apps away from home can reach, and tells plex.tv about it.
 
-**Why it matters.** app.plex.tv only connects to an HTTPS address, even at home, and the other Plex apps prefer one away from home. A real Plex server can fall back to Plex's relay; rex cannot, so you choose how it is reached. rex must be [claimed](#step-3-add-it-to-a-plex-account) first. A claimed rex checks the Plex token on every request except a few public pages (`/identity`, `/web`) and its feed API (`/rex/feed/` and `/rex/sources`), which answers only this machine, your home network and Tailscale. A proxy on the rex machine counts as home, which is why a proxy that faces the internet must block `/rex/`.
+**Why it matters.** app.plex.tv only connects to an HTTPS address, even at home, and the other Plex apps prefer one away from home. A real Plex server can fall back to Plex's relay; rex cannot, so you choose how it is reached. rex must be [claimed](#step-3-add-it-to-a-plex-account) first, and a proxy that faces the internet must block `/rex/` ([Keep the port private](#keep-the-port-private)).
 
-**Plex Pass.** With the October 21 remote-playback update, Plex Web 4.163.0 plays away from home without a Plex Pass or Remote Watch Pass on either the fresh claiming account or your viewing account. rex advertises that capability locally; it changes no subscription at plex.tv. Older builds can still show Plex's paywall. Other Plex apps have not been playback-tested.
+**Plex Pass.** Plex Web plays away from home without a Plex Pass or Remote Watch Pass on either account. Other Plex apps have not been tested away from home.
 
 Whichever you pick, every byte you watch away from home leaves through your home connection's **upload** speed. A 20 Mbit/s upload carries one 1080p WEB-DL comfortably, not a remux.
 
@@ -261,9 +259,9 @@ Not recommended:
 
 rex-direct is DMM's answer to plex.direct, and it is on by default. On your router, forward port 32400 (TCP) to the rex machine. That is all, with nothing to restart.
 
-Once claimed, rex gets its own name from DMM, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and a certificate for that name alone. The first certificate takes a few minutes; rex's log says it is being issued and then shows the name in a `rex-direct:` line. rex then announces `https://<hash>.rex-direct.debridmediamanager.com:32400` after the LAN IP. rex asks DMM again every six hours, so a new home IP is picked up by itself, and a renewed certificate too. One Plex account can hold up to ten rex-direct names. At home, Plex apps can pick this name over the LAN IP, and unless you also set up Tailscale serve or Caddy, app.plex.tv in a browser has no other address it can use. So at home your router has to send the connection straight back to rex, or your home DNS has to point the name at rex: [What you should see](#what-you-should-see) checks which.
+Once claimed, rex gets its own name from DMM, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and a certificate for that name alone. The first certificate takes a few minutes; rex's log says it is being issued and then shows the name in a `rex-direct:` line. A new home IP and certificate renewals are picked up by themselves. One Plex account can hold up to ten rex-direct names. At home, Plex apps can pick this name over the LAN IP, and unless you also set up Tailscale serve or Caddy, app.plex.tv in a browser has no other address it can use. So at home your router has to send the connection straight back to rex, or your home DNS has to point the name at rex: [What you should see](#what-you-should-see) checks which.
 
-If your router forwards a different outside port to rex, add `REX_DIRECT_PORT=<that port>` to `rex.env` and restart rex. To use another provider, set `REX_DIRECT_URL` to its `https://` address, or `REX_DIRECT_URL=off` to turn it off. The port forward does not open the API zurg pushes to: see [Keep the port private](#keep-the-port-private).
+If your router forwards a different outside port to rex, add `REX_DIRECT_PORT=<that port>` to `rex.env` and restart rex. The port forward does not open the API zurg pushes to: see [Keep the port private](#keep-the-port-private).
 
 ### Tailscale serve
 
@@ -273,19 +271,17 @@ Install [Tailscale](https://tailscale.com/download) on the rex machine and on th
 sudo tailscale serve --bg 32400
 ```
 
-It prints the address, for example `https://myhost.tailnet.ts.net`. Put it first in the `--announce-url` list from [step 2](#step-2-install-rex), with `:443` added, before the LAN IP:
+It prints the address, for example `https://myhost.tailnet.ts.net`. Add it, with `:443`, to the `ExecStart` line from [step 2](#step-2-install-rex):
 
 ```ini
-ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url https://myhost.tailnet.ts.net:443,http://192.168.1.20:32400
+ExecStart=%h/rex/rust/target/release/rex --announce-url https://myhost.tailnet.ts.net:443
 ```
-
-**Keep the LAN IP in the list.** Once rex announces, Plex apps take its addresses from plex.tv, and plex.tv lists only what rex announces. Without the LAN IP a TV at home that has no Tailscale can be sent only to the tailnet address and fail to connect.
 
 ```bash
 systemctl --user daemon-reload && systemctl --user restart rex
 ```
 
-Tailscale connects your devices to each other directly, so the stream does not pass through Tailscale's servers except on networks that block that. In Docker, run the same `tailscale serve` on the machine and put `--announce-url ...` in the compose file's `command:`.
+Tailscale connects your devices to each other directly, so the stream does not pass through Tailscale's servers except on networks that block that.
 
 ### Caddy
 
@@ -309,11 +305,11 @@ rex.example.com {
 sudo systemctl reload caddy
 ```
 
-Caddy fetches a certificate when it loads the file and renews it by itself. Make the `ExecStart` list `--announce-url https://rex.example.com:443,http://192.168.1.20:32400`, and restart rex as above.
+Caddy fetches a certificate when it loads the file and renews it by itself. End the `ExecStart` line with `--announce-url https://rex.example.com:443`, and restart rex as above.
 
 ### A small VPS
 
-For a connection with no public IP (CGNAT). rex has no relay and will not get one, so a server you rent stands in for your router: it has the public IP, and a tunnel from the rex machine carries everything to rex. Any VPS with a public IPv4 works, a few euros a month. **Pick one whose monthly traffic covers what you watch away from home:** every byte passes through it, and a plan with a small data cap will run out. Tested 2026-10-19 with a stand-in VPS: playback and seeking pass through unchanged.
+For a connection with no public IP (CGNAT). rex has no relay and will not get one, so a server you rent stands in for your router: it has the public IP, and a tunnel from the rex machine carries everything to rex. Any VPS with a public IPv4 works, a few euros a month. **Pick one whose monthly traffic covers what you watch away from home:** every byte passes through it, and a plan with a small data cap will run out.
 
 You need the VPS's IP (`1.2.3.4` below), ports 443, 80 and 7000 open on it, and a long random string for the tunnel (`openssl rand -hex 32`).
 
@@ -351,10 +347,10 @@ localPort = 32400
 remotePort = 32400
 ```
 
-Run it as a service, for example `~/.config/systemd/user/frpc.service` with `ExecStart=%h/frp/frpc -c %h/frp/frpc.toml` and `Restart=always`. Then put the VPS's name first in the `--announce-url` list, add `REX_DIRECT_URL=off` to `~/rex/rex.env` (rex-direct cannot work without a public IP at home, so plex.tv should not list it), and restart rex:
+Run it as a service, for example `~/.config/systemd/user/frpc.service` with `ExecStart=%h/frp/frpc -c %h/frp/frpc.toml` and `Restart=always`. Then add the VPS's name to the `ExecStart` line, add `REX_DIRECT_URL=off` to `~/rex/rex.env` (rex-direct cannot work without a public IP at home, so plex.tv should not list it), and restart rex:
 
 ```ini
-ExecStart=%h/rex/rust/target/release/rex --catalog rex.db --announce-url https://1-2-3-4.sslip.io:443,http://192.168.1.20:32400
+ExecStart=%h/rex/rust/target/release/rex --announce-url https://1-2-3-4.sslip.io:443
 ```
 
 ### What you should see
@@ -397,7 +393,7 @@ B=$( [ "$(uname -m)" = aarch64 ] && echo linuxarm64 || echo linux64 )
 mkdir -p ~/rex/ffmpeg && curl -fL "https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg_8.1.3-1_portable_${B}-gpl.tar.xz" | tar xJ -C ~/rex/ffmpeg
 ```
 
-With an Intel or AMD graphics chip, also run `sudo usermod -aG render "$USER"` and reboot so the service gets the group; in an LXC, pass the GPU through. The chip makes conversion fast; without one rex uses the processor. With no Intel or AMD chip, rex also tries an NVIDIA card's encoder. On Intel, `sudo apt install intel-opencl-icd` also converts HDR and Dolby Vision on the chip, at about real time for 4K on a small Intel (builds newer than 2026.10.22.0040-nightly); without it they are converted on the processor, which a low-power Intel cannot do in real time at 4K.
+With an Intel or AMD graphics chip, also run `sudo usermod -aG render "$USER"` and reboot so the service gets the group; in an LXC, pass the GPU through. The chip makes conversion fast; without one rex uses the processor. With no Intel or AMD chip, rex also tries an NVIDIA card's encoder. On Intel, `sudo apt install intel-opencl-icd` also converts HDR and Dolby Vision on the chip, at about real time for 4K on a small Intel; without it they are converted on the processor, which a low-power Intel cannot do in real time at 4K.
 
 **What you should see.** rex's log has a `transcoder:` line naming the FFmpeg and the hardware it found (`hardware none` means the processor). A file that failed before now plays; the log shows what was converted, for example `video=copy h264 audio=ac3->aac 6ch`.
 
@@ -407,21 +403,15 @@ Subtitles in a converted file: an image subtitle is burned into the picture and 
 
 **What it does.** Search Subtitles in a Plex app finds subtitles from Plex's own provider once rex is claimed. rex checks the one you pick against the file and fixes its timing when it runs late or was made for another frame rate. When your Plex account is set to show subtitles and a title has none in your language, rex looks for one for up to 3 seconds before it starts.
 
-**Why it matters.** We tested 120 files. Where a subtitle's timing could be checked, Plex's own first result was in sync for about half of them and rex's pick was right for about three in four.
+**Why it matters.** Plex's own first result is often out of sync with the file.
 
-There is nothing to set up. rex checks a subtitle against the file's own text subtitle when it has one, which takes a few small reads. A file without one is checked against its sound when you press play, which needs [Converting video](#converting-video-optional) set up and reads six 90-second pieces of the file.
+There is nothing to set up. rex checks a subtitle against the file's own text subtitle when it has one. A file without one is checked against its sound when you press play, which needs [Converting video](#converting-video-optional) set up and reads six 90-second pieces of the file.
 
 **What you should see.** rex's log has a `SUBTITLE measured` line for each subtitle it checks, and `SUBTITLE applied ... corrected by` when it fixed one.
 
 ## Movie and TV capabilities
 
-Use a build newer than 2026.10.22.0040-nightly, or build current `main`. Older downloads do not gain it from a claim change.
-
-Movie-edition editing and the full server Dashboard work with a free claiming account. rex also implements account-owned Downloads with restart recovery, local intro and credits analysis, chapter and 10-second seek thumbnails, subtitle adjustment, hardware and HDR controls, dialogue enhancement and loudness normalization, remote stream limits, tighter local sharing restrictions, local webhooks and source-provided cinema trailers and pre-rolls. `docs/setup.md` in your rex download ("Movie and TV capabilities") gives the settings and owner APIs.
-
-Generation needs FFmpeg and reads source media, uses CPU and keeps files beside the state database. It defaults to off; run Analyze manually or opt in to generation on source additions. Keep `<state>.analysis` and `<state>.downloads` with the state database for durable results.
-
-These are server capabilities, not a Plex subscription. Client account checks, app Downloads eligibility, cloud rollouts and Plex Home membership remain unchanged. Music, Live TV and DVR are not supported.
+Downloads, intro and credits skipping, seek thumbnails and the other server settings are in `docs/setup.md` in your rex download ("Movie and TV capabilities"). Music, Live TV and DVR are not supported.
 
 ## Run rex in Docker
 
@@ -443,7 +433,7 @@ ls /zurg_mnt/zurg/movies /zurg_mnt/zurg/shows
 
 lists your library.
 
-Already run zurg in Docker? rex needs zurg 2026.10.19 or later: `cd ~/zurg && docker compose pull zurg && docker compose up -d zurg`. If `ZURG_TAG` in `~/zurg/.env` names a dated build, set it to `latest` first.
+Already run zurg in Docker? Update it: `cd ~/zurg && docker compose pull zurg && docker compose up -d zurg`. If `ZURG_TAG` in `~/zurg/.env` names a dated build, set it to `latest` first.
 
 ### D2. Start rex in Docker
 
@@ -468,17 +458,14 @@ services:
     container_name: rex
     restart: unless-stopped
     network_mode: host
-    command: --announce-url http://192.168.1.20:32400
     volumes:
       - ./config:/config
 ```
 
-- `command:` is [step 2](#step-2-install-rex)'s.
 - `network_mode: host` lets Plex apps on your network find rex by themselves, and lets rex reach zurg's container.
-- `:nightly` follows the nightly builds; `latest` follows releases only.
 - Intel or AMD graphics chip? Add `devices: ["/dev/dri:/dev/dri"]` so rex converts video on it.
 - `./config` gets `rex.db` and, later, `claim_state.json`. They are readable by root only, because `rex.db` holds zurg's login.
-- Plex Media Server on the same machine? Add `--port 32500` to `command:` and use `32500` wherever this page says `32400`.
+- Plex Media Server on the same machine? Add `command: --port 32500` and use `32500` wherever this page says `32400`.
 
 ```bash
 docker compose up -d
@@ -525,9 +512,9 @@ rex's log names each title as zurg reads it, as in [step 4](#step-4-connect-zurg
 cd ~/rex && docker compose pull && docker compose up -d
 ```
 
-rex comes back with the same library. `nightly` moves with each nightly build and `latest` with each release; pin a version to update only when you choose. For zurg, see [Managing and updating zurg](../setup/docker.md#managing-and-updating-zurg).
+rex comes back with the same library. For zurg, see [Managing and updating zurg](../setup/docker.md#managing-and-updating-zurg).
 
-The image carries jellyfin-ffmpeg, so [converting video](#converting-video-optional) needs only the graphics chip handed in (images newer than 2026.10.22.0040-nightly). HTTPS works as above: the options run on the machine itself, and `--announce-url ...` goes in `command`.
+The image carries jellyfin-ffmpeg, so [converting video](#converting-video-optional) needs only the graphics chip handed in. HTTPS works as above: Tailscale, Caddy and frp run on the machine itself, and `--announce-url ...` goes in the compose file's `command:`.
 
 ## Keep the port private
 
@@ -537,13 +524,12 @@ rex takes no password from zurg. It answers the API zurg pushes to only from thi
 
 - **zurg:** `cd ~/zurg && ./zurg update && ./zurg service restart`.
 - **rex:** run the first block of [step 2](#step-2-install-rex) again (it replaces the program and `data/`, and leaves `rex.db`, `rex.env` and `claim_state.json` alone), then `systemctl --user restart rex`.
-- **Coming from an older rex?** `TMDB_KEY`, `REX_METADATA_URL` and `REX_METADATA_KEY` are no longer read; delete them from `rex.env` or leave them, rex starts either way. Claim rex, or titles lose their posters and matches; add `dmm_api_key` to zurg for DMM's matches.
 
 ## When something is wrong
 
 | What you see | What to do |
 |---|---|
-| `/rex/sources` stays `{"size":0,"sources":[]}` | zurg is older than 2026.10.19, `rex_url` is wrong, or zurg's library is still loading. Update zurg as in [step 1](#step-1-install-zurg) and look at `tail -n 50 ~/zurg/logs/zurg.log` |
+| `/rex/sources` stays `{"size":0}` | zurg is out of date, `rex_url` is wrong, or zurg's library is still loading. Update zurg as in [step 1](#step-1-install-zurg) and look at `tail -n 50 ~/zurg/logs/zurg.log` |
 | rex's log says `held ... no media_info yet` and the library stays empty | zurg has not read the files yet. Wait for its library to load; if zurg logs `segmentation fault`, update and restart it as in [step 1](#step-1-install-zurg) |
 | Titles show file names and no posters | rex is not on a Plex account: do [step 3](#step-3-add-it-to-a-plex-account). If you claimed it after zurg sent them, they fill in by themselves, about 300 films or shows an hour |
 | A film is titled as its file, or an episode sits in a show named after its release | zurg could not place it. Without `dmm_api_key` that is a name its title search did not find; with it, DMM has not placed it yet and zurg asks again a day later. **Fix Match** fixes it by hand |
@@ -551,9 +537,9 @@ rex takes no password from zurg. It answers the API zurg pushes to only from thi
 | Nothing plays and rex's log shows 502 | rex cannot reach the address zurg gave it. Run `curl` on that URL from the rex machine. In Docker, see the Docker section |
 | Nothing plays and rex's log shows `PART ... upstream 401` or `403` | zurg refused its own login. Restart zurg (`cd ~/zurg && ./zurg service restart`) so it sends rex the current one |
 | "This server is not powerful enough to convert video" | The device cannot play the file as it is. Try a Plex app on a TV or phone, or set up [Converting video](#converting-video-optional) |
-| rex exits with `unrecognized arguments` | Your `rex.service` or `run.sh` still passes `--sources` or `--zurg-mount` from an older setup. Remove `--sources`, and change `--zurg-mount` to `--mount`; an old `REX_FEED_TOKEN` in `rex.env` is ignored |
-| After adding an HTTPS address, a device at home cannot connect | The LAN IP is missing from `--announce-url`. Add `http://192.168.1.20:32400` after the HTTPS one |
-| rex is not in the Plex apps away from home | Not claimed, no `--announce-url`, or the device cannot reach the HTTPS address (a tailnet-only address needs Tailscale on that device) |
-| The log says `waiting for a claim` | Claim it. It announces right away |
+| rex exits with `unrecognized arguments` | Your `rex.service` still passes `--sources` or `--zurg-mount` from an older setup. Delete them; keep `--port` and `--announce-url` |
+| A device at home cannot connect, and rex's `heartbeat ... ->` line shows no `http://192.168.1.20:32400` | rex announces the private address of the network it reaches the internet through; behind a VPN or a Tailscale exit node that is not your home network. Add `--announce-url http://192.168.1.20:32400` to the `ExecStart` line and restart rex |
+| rex is not in the Plex apps away from home | Not claimed, or the device cannot reach the HTTPS address (a tailnet-only address needs Tailscale on that device) |
+| The log says `waiting for a claim` | Do [step 3](#step-3-add-it-to-a-plex-account) |
 | zurg stops when you log out | Run `sudo loginctl enable-linger "$USER"` (step 1) |
-| zurg will not start after you edited `config.yml` | A zurg older than 2026.10.17 wrote the file without a final newline, so the added line joined the last one: put it on its own line. Or the key was already in the file and zurg reports `mapping key "..." already defined`: delete one of the two |
+| zurg will not start after you edited `config.yml` | The key was already in the file and zurg reports `mapping key "..." already defined`: delete one of the two |
