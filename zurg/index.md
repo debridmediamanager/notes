@@ -67,6 +67,7 @@ Working with the library.
 - [The Stremio addon](guides/stremio.md) — Stremio searching your own indexers, playing straight out of the Usenet backend
 - [Watchlist and Seerr](guides/acquisition.md) fetches what you ask for through your own indexers
 - [Plex watchlist](guides/plex-watchlist.md) is the Plex side of that
+- [DMM wanted list](guides/dmm-wanted.md) fetches what you press Want on at DMM, with nothing else to set up
 - [Local libraries](guides/local-libraries.md) plays a shared list of releases through your own account
 - [Android and Google TV](guides/android.md) runs the whole library on a phone or a TV box
 
