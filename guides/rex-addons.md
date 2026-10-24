@@ -1,8 +1,8 @@
 # Building rex addons
 
-[rex](https://rex.debridmediamanager.com) shows whatever its sources tell it about. A source is any program that tells rex what it has over rex's feed API and serves the videos when rex asks; rex treats every source the same. An **addon** is a source you write yourself: it brings something into your Plex apps that no Plex agent knows, such as a YouTube channel, home videos or recordings, and names it itself.
+[rex](https://rex.debridmediamanager.com) shows whatever its sources tell it about. A source is any program that tells rex what it has over rex's feed API and serves the videos when rex asks; rex treats every source the same. An **addon** is a source you write yourself: it brings something into your Plex apps that no Plex agent knows, such as home videos, recordings or a Stremio catalog, and names it itself.
 
-This page is for people who write addons. It covers what rex needs from one, how to name and dress what it brings, and the rules that trip people up. It ends with a worked example: the addon we run, which streams every video of a YouTube channel into a TV show, nothing downloaded, and the same way other video sites, podcast feeds, folders of your own videos and Stremio catalogs.
+This page is for people who write addons. It covers what rex needs from one, how to name and dress what it brings, and the rules that trip people up. It ends with a worked example: [rex-stremio](https://github.com/debridmediamanager/rex-stremio), the addon that brings your Stremio addons' catalogs into rex, nothing downloaded. Its source is one Python file you can read alongside this page.
 
 An addon does three things:
 
@@ -12,7 +12,7 @@ An addon does three things:
 
 If what you bring are movies and shows Plex already knows (it has their IMDb or TMDB ids), you want [rex with your own app](rex-any-source.md) instead: Plex then names and describes everything for you.
 
-To bring your Stremio addons' catalogs into rex, there is nothing to write: [rex-stremio](https://github.com/debridmediamanager/rex-stremio) is a ready-made addon. You paste your addons' links on its settings page and tick the catalogs you want.
+To bring your Stremio addons' catalogs into rex, there is nothing to write: rex-stremio is ready-made. You paste your addons' links on its settings page and tick the catalogs you want.
 
 ## Before you start
 
@@ -74,17 +74,17 @@ A path's first segment picks its library: with the example above, every path tha
 
 ```json
 {
-  "id": "yt-w264Mn-2MnQ",
-  "path": "kids/ms-rachel/w264Mn-2MnQ.m3u8",
+  "id": "home-2026-07-22-beach",
+  "path": "kids/summer-2026/beach.mp4",
   "kind": "episode", "season": 1, "episode": 3,
-  "name": "Ms Rachel",
+  "name": "Summer 2026",
   "media_info": { "...": "ffprobe's output, whole" },
   "display": {
-    "title": "Learn to Talk for Babies and Toddlers",
+    "title": "First day at the beach",
     "summary": "...",
     "date": "2026-07-22",
-    "thumb": "https://i.ytimg.com/vi/w264Mn-2MnQ/maxresdefault.jpg",
-    "show": {"title": "Ms Rachel", "summary": "...", "poster": "https://...", "art": "https://..."},
+    "thumb": "http://127.0.0.1:9981/kids/summer-2026/beach.jpg",
+    "show": {"title": "Summer 2026", "summary": "...", "poster": "https://...", "art": "https://..."},
     "season": {"poster": "https://..."}
   }
 }
@@ -163,40 +163,31 @@ rex's log names every refused video and why: `FEED myaddon rejected <id>: <reaso
 
 To **replace** an addon (or a script) that already filled a library, keep its source name, ids and first path segment. Your first send then updates its rows in place, watch history and all, instead of making new ones.
 
-## Example: the YouTube addon
+## Example: rex-stremio
 
-We run an addon that turns YouTube channels into TV shows. It does Steps 1 to 5. It does not take deletes: YouTube videos are not ours to delete.
+[rex-stremio](https://github.com/debridmediamanager/rex-stremio) turns the catalogs of your Stremio addons into rex libraries: films into a movie library, series into a TV library. It does Steps 1 to 5 and is one Python file, standard library only. It does not take deletes: a catalog's titles are not its to delete.
 
-**Serving.** YouTube's links expire after a few hours and only work from the address that asked for them, so the addon stores no links. It serves a URL per video, `/<library>/<channel>/<video>.m3u8`, and answers it with a redirect to YouTube's current stream, asked of [yt-dlp](https://github.com/yt-dlp/yt-dlp) at that moment and cached until shortly before it expires:
+**Registering.** Every catalog you tick names a library. rex-stremio registers as `stremio` with one directory per library, `movies` for film catalogs and `shows` for series catalogs.
+
+**Serving.** Stream addons' links expire, so rex-stremio stores no links. It serves a URL per title, `/<library>/<catalog>/<id>.<ext>`, and answers it with a redirect to a link it asks for at that moment:
 
 ```python
-url = run([yt_dlp, "-f", "b[protocol^=m3u8][vcodec^=avc1]", "-g", watch_url])   # 1080p H.264 + AAC
+url = app.sync.resolve(vid)   # ask every stream addon, rank, take the first link that opens
 self.send_response(302)
 self.send_header("Location", url)
 ```
 
-rex follows the redirect, and its FFmpeg reads the stream straight from YouTube. The format is YouTube's best stream with picture and sound together: 1080p H.264 with AAC for most channels.
+It asks each addon that serves the title (`/stream/<movie or series>/<id>.json`), keeps only plain `http(s)` links (a torrent's `infoHash` is not a file rex can read), drops what is above your resolution or size limits, and tries the rest highest resolution first. The link that opens is cached for an hour, or until shortly before it expires. rex follows the redirect and reads the file, with seeking, straight from the link.
 
-**Probing.** Once per video, the addon runs ffprobe on its own URL, so `media_info` describes exactly what rex will read, and caches the result.
+**Probing.** Once per title, rex-stremio runs ffprobe on its own URL, so `media_info` describes exactly what rex will read, and caches the result. The stream that probe came from is remembered and tried first at every play, so what plays is what rex was told about. The probe's container picks the path's extension: `.mkv`, `.mp4` or `.m3u8` for HLS.
 
-**Naming.** yt-dlp lists the channel (`--flat-playlist -J`) and describes each video (`-j`): title, description, upload date, thumbnails. They become `display`. The channel's name, description, avatar and banner become the show's, unless the addon's settings give a poster of its own.
+**Naming.** Each title goes to rex with `kind` and its IMDb id in `ids`, so Plex names it as in [rex with your own app](rex-any-source.md). The catalog's own title, summary, date and poster go in `display`, which shows only until Plex names it.
 
-**Numbering.** Episodes are numbered by upload date, oldest first, so a new upload is the next episode and no number moves. Everything goes in Season 1, or a season per year, or every video becomes a film.
+**Numbering.** A film is a film. A series' seasons and episodes come from Cinemeta, whose ids are IMDb's, and keep its numbers, so a new episode never shifts the others.
 
-**Sending.** Every few hours: register, then one snapshot of every channel. A channel that fails that round skips the snapshot, so its episodes are not removed.
+**Ids.** An id is the catalog plus the IMDb id (and season and episode), such as `st-<catalog>-tt0111161`. It never changes, and one film in two catalogs is two titles, each in its own library.
 
-**What YouTube adds.** YouTube asks addresses that fetch a lot to "sign in to confirm you're not a bot", and then nothing plays. The addon gives yt-dlp a signed-in account's cookies. Sign the account out in the browser they came from and the cookies stop working.
-
-### What else it takes
-
-The same addon takes more than YouTube. Each kind is a different answer to Steps 1 and 3; everything else stays the same.
-
-| It takes | How it serves the bytes | How it names and places them |
-|---|---|---|
-| **Other video sites** yt-dlp lists, such as Dailymotion channels and Twitch past broadcasts | A redirect to the site's stream, as for YouTube | The site's titles, dates and pictures, numbered by upload date |
-| **Video podcast feeds** (RSS) and **single video pages**, such as an Internet Archive film | A redirect to the site's MP4 file. rex sends its seeks through the redirect, so seeking works | The feed's own titles and dates. A feed's episode numbers are kept, because a feed lists only its latest episodes and counting them would renumber everything whenever an old one drops off. A film known only by its year is sent as `"date": "1940"` |
-| **A folder of your own videos**, such as a camera roll or a share on your NAS | The addon serves the file itself, with seeking | Titled by the file name and dated when the camera recorded it. Its picture is a frame from the video, which the addon serves from its own address |
-| **A Stremio catalog**, such as Cinemeta's top films or your DMM Cast list | A redirect to the first ordinary video link the catalog's stream addons give, asked again at every play because those links can expire. Torrent-only streams are skipped | Sent with `kind` and its IMDb id in `ids`, so Plex names it as in [rex with your own app](rex-any-source.md). The catalog's own title and poster go in `display`, which shows only until Plex names it. [rex-stremio](https://github.com/debridmediamanager/rex-stremio) does only this, with a settings page and a choice of quality |
+**Sending.** Every six hours and after every save: register, then one snapshot of every catalog, in parts of 200. A catalog that answers empty or only in part makes the round a plain `POST .../items` instead: it adds and updates, removes nothing, and a later complete round removes what really left.
 
 ## Troubleshooting
 
