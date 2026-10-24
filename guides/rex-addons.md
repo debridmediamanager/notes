@@ -18,6 +18,8 @@ An addon does three things:
 
 If what you bring are movies and shows Plex already knows (it has their IMDb or TMDB ids), you want [rex with your own app](rex-any-source.md) instead: Plex then names and describes everything for you.
 
+To bring your Stremio addons' catalogs into rex, there is nothing to write: [rex-stremio](https://github.com/debridmediamanager/rex-stremio) is a ready-made addon. You paste your addons' links on its settings page and tick the catalogs you want.
+
 ## Before you start
 
 | You need | Why |
@@ -204,7 +206,7 @@ The same addon takes more than YouTube. Each kind is a different answer to Steps
 | **Other video sites** yt-dlp lists, such as Dailymotion channels and Twitch past broadcasts | A redirect to the site's stream, as for YouTube | The site's titles, dates and pictures, numbered by upload date |
 | **Video podcast feeds** (RSS) and **single video pages**, such as an Internet Archive film | A redirect to the site's MP4 file. rex sends its seeks through the redirect, so seeking works | The feed's own titles and dates. A feed's episode numbers are kept, because a feed lists only its latest episodes and counting them would renumber everything whenever an old one drops off. A film known only by its year is sent as `"date": "1940"` |
 | **A folder of your own videos**, such as a camera roll or a share on your NAS | The addon serves the file itself, with seeking | Titled by the file name and dated when the camera recorded it. Its picture is a frame from the video, which the addon serves from its own address |
-| **A Stremio catalog**, such as Cinemeta's top films or your DMM Cast list | A redirect to the first ordinary video link the catalog's stream addons give, asked again at every play because those links can expire. Torrent-only streams are skipped | Sent with `kind` and its IMDb id in `ids`, so Plex names it as in [rex with your own app](rex-any-source.md). The catalog's own title and poster go in `display`, which shows only until Plex names it |
+| **A Stremio catalog**, such as Cinemeta's top films or your DMM Cast list | A redirect to the first ordinary video link the catalog's stream addons give, asked again at every play because those links can expire. Torrent-only streams are skipped | Sent with `kind` and its IMDb id in `ids`, so Plex names it as in [rex with your own app](rex-any-source.md). The catalog's own title and poster go in `display`, which shows only until Plex names it. [rex-stremio](https://github.com/debridmediamanager/rex-stremio) does only this, with a settings page and a choice of quality |
 
 ## Troubleshooting
 
