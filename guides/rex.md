@@ -47,7 +47,7 @@ Already run zurg? Update and restart it with `cd ~/zurg && ./zurg update && ./zu
 
 ## Step 2. Install rex
 
-**What it does.** Downloads rex into `~/rex` and starts it as a service, with everything the later steps need. Nothing after this step restarts rex.
+**What it does.** Downloads rex into `~/rex` and starts it as a service, with everything the later steps need. The steps after this one need no restart; only the optional sections further down do.
 
 **Why it matters.** rex is what your Plex apps talk to. The first start creates `rex.db`, which holds your libraries, everything zurg sends and your watch history.
 
@@ -523,7 +523,7 @@ rex takes no password from zurg. It answers the API zurg pushes to only from thi
 ## Updating
 
 - **zurg:** `cd ~/zurg && ./zurg update && ./zurg service restart`.
-- **rex:** run the first block of [step 2](#step-2-install-rex) again (it replaces the program and `data/`, and leaves `rex.db`, `rex.env` and `claim_state.json` alone), then `systemctl --user restart rex`.
+- **rex:** run the first block of [step 2](#step-2-install-rex) again (it replaces the program and `data/`, and leaves `rex.db`, `rex.env` and `claim_state.json` alone), then `systemctl --user restart rex`. If rex then exits with `unrecognized arguments`, delete the flags it names from `rex.service`: rex no longer has them.
 
 ## When something is wrong
 
@@ -537,7 +537,6 @@ rex takes no password from zurg. It answers the API zurg pushes to only from thi
 | Nothing plays and rex's log shows 502 | rex cannot reach the address zurg gave it. Run `curl` on that URL from the rex machine. In Docker, see the Docker section |
 | Nothing plays and rex's log shows `PART ... upstream 401` or `403` | zurg refused its own login. Restart zurg (`cd ~/zurg && ./zurg service restart`) so it sends rex the current one |
 | "This server is not powerful enough to convert video" | The device cannot play the file as it is. Try a Plex app on a TV or phone, or set up [Converting video](#converting-video-optional) |
-| rex exits with `unrecognized arguments` | Your `rex.service` still passes `--sources` or `--zurg-mount` from an older setup. Delete them; keep `--port` and `--announce-url` |
 | A device at home cannot connect, and rex's `heartbeat ... ->` line shows no `http://192.168.1.20:32400` | rex announces the private address of the network it reaches the internet through; behind a VPN or a Tailscale exit node that is not your home network. Add `--announce-url http://192.168.1.20:32400` to the `ExecStart` line and restart rex |
 | rex is not in the Plex apps away from home | Not claimed, or the device cannot reach the HTTPS address (a tailnet-only address needs Tailscale on that device) |
 | The log says `waiting for a claim` | Do [step 3](#step-3-add-it-to-a-plex-account) |

@@ -2,9 +2,9 @@
 
 Bazarr finds subtitles for what Sonarr and Radarr import and saves each one next to its video. With zurg the video sits in `__magic__`, and so does the subtitle. Plex and Jellyfin libraries pointed at `__magic__` read it like any subtitle on disk, and rex shows it too, as **English (SRT External)** in the subtitle menu.
 
-rex needs zurg and rex from the 2026-10-24 nightly or later. Older builds left the subtitle on disk and rex never showed it.
+This needs zurg and rex from the 2026-10-24 nightly or later.
 
-Everything below was tested on 2026-10-23 with Radarr `6.3.0.10514`, the current `lscr.io/linuxserver/bazarr` image, zurg and rex built from that day's `main`, and a Real-Debrid account.
+Everything below was tested on 2026-10-23 with Radarr `6.3.0.10514`, the current `lscr.io/linuxserver/bazarr` image, zurg and rex of that day, and a Real-Debrid account.
 
 ## Before you start
 

@@ -17,7 +17,7 @@ rex has been in closed beta for sponsors since October 15 and reaches the public
 
 | You need | Why |
 |---|---|
-| rex's nightly dated 2026.10.25 or newer | Step 1 downloads the newest. Older builds need flags this page leaves out |
+| rex's nightly dated 2026.10.25 or newer | Step 1 downloads the newest |
 | A Linux machine that stays on (Ubuntu 22.04 or newer) | rex is a server: your Plex apps reach it whenever you press play. macOS and Windows work too; this page shows Linux, and [Docker](#run-rex-in-docker) is further down |
 | 2 GB of RAM for a library of 40,000 titles | rex keeps the library in `rex.db` and uses about 400-800 MB once running, more while it starts. Converting video wants more cores, or a graphics chip |
 | A GitHub account with access to rex's sponsor releases | rex is a private GitHub release |
@@ -42,7 +42,7 @@ Give this list to whoever makes your app. rex's own API reference is `docs/feed-
 
 ## Step 1. Install rex
 
-**What it does.** Downloads rex into `~/rex` and starts it as a service that comes back after a reboot, with everything the later steps need. Nothing after this step restarts rex.
+**What it does.** Downloads rex into `~/rex` and starts it as a service that comes back after a reboot, with everything the later steps need. The steps after this one need no restart; only the optional sections further down do.
 
 **Why it matters.** rex is what your Plex apps talk to. The first start creates `rex.db`, which holds your libraries, everything your app sends and your watch history.
 
@@ -472,7 +472,7 @@ rex takes no password on its feed API. It answers that API only from this machin
 
 ## Updating
 
-Run the first block of [step 1](#step-1-install-rex) again in `~/rex` (they replace the program and `data/`, and leave `rex.db`, `rex.env` and `claim_state.json` alone), then `systemctl --user restart rex`.
+Run the first block of [step 1](#step-1-install-rex) again in `~/rex` (it replaces the program and `data/`, and leaves `rex.db`, `rex.env` and `claim_state.json` alone), then `systemctl --user restart rex`.
 
 ## When something is wrong
 
