@@ -23,13 +23,13 @@ Post in the [Discord](https://discord.com/invite/7u4YjMThXP) forum for what you 
 
 When a thread does not get it fixed, a helper can type in your terminal while you watch. **Remote help with zurg and rex is offered only to sponsors, and it is free: there is no charge on top of the sponsorship.** [Become a sponsor on gatekeeper](https://gatekeeper.debridmediamanager.com/), connect your Discord account there to get the sponsor role, then ask for remote help in your support thread.
 
-The rest of this page sets it up with [sshx](https://sshx.io), through our own server at `sshx.debridmediamanager.com`. It works on Linux and macOS and Windows.
+The rest of this page sets it up with [upterm](https://github.com/owenthereal/upterm), through our own server at `upterm.debridmediamanager.com`. It works on Linux and macOS and Windows.
 
-You need no account and no password and no router changes, and nothing to install first: the lines below download sshx and start it. Your helper types in a terminal on your machine from their browser. The session ends when you press `Ctrl+C`.
+You need no account and no password and no router changes, and nothing to install first: the lines below download upterm and start it. Your helper types in your terminal while you watch it in the same window. The session ends when you type `exit`.
 
 ### 1. Pick the machine
 
-Run sshx on the machine that runs zurg. If zurg is not installed yet then pick the machine it will run on. That is often not the computer in front of you.
+Run upterm on the machine that runs zurg. If zurg is not installed yet then pick the machine it will run on. That is often not the computer in front of you.
 
 | Where zurg runs | What to do |
 |---|---|
@@ -57,7 +57,7 @@ Paste the line for the system you picked in step 1.
 #### Linux and macOS
 
 ```bash
-mkdir -p ~/sshx && cd ~/sshx && curl -fsSL "https://sshx.debridmediamanager.com/dl/sshx-$(uname -m | sed 's/arm64/aarch64/;s/armv7l/armv7/')-$(uname -s | sed 's/Linux/unknown-linux-musl/;s/Darwin/apple-darwin/')$(uname -m | grep -q armv7 && echo eabihf).tar.gz" | tar -xz && ./sshx --server https://sshx.debridmediamanager.com
+mkdir -p ~/upterm && cd ~/upterm && curl -fsSL "https://github.com/owenthereal/upterm/releases/latest/download/upterm_$(uname -s | tr A-Z a-z)_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/;s/armv7l/armv6/').tar.gz" | tar -xz && ./upterm host --server ssh://upterm.debridmediamanager.com:2222 --accept
 ```
 
 #### Windows
@@ -65,33 +65,41 @@ mkdir -p ~/sshx && cd ~/sshx && curl -fsSL "https://sshx.debridmediamanager.com/
 Open PowerShell. It does not need to run as administrator.
 
 ```powershell
-$d = "$env:LOCALAPPDATA\sshx"; New-Item -ItemType Directory -Force $d | Out-Null; Invoke-WebRequest https://sshx.debridmediamanager.com/dl/sshx-x86_64-pc-windows-msvc.zip -OutFile "$d\sshx.zip"; Expand-Archive -Force "$d\sshx.zip" $d; & "$d\sshx.exe" --server https://sshx.debridmediamanager.com
+$d = "$env:LOCALAPPDATA\upterm"; New-Item -ItemType Directory -Force $d | Out-Null; Invoke-WebRequest https://github.com/owenthereal/upterm/releases/latest/download/upterm_windows_amd64.tar.gz -OutFile "$d\upterm.tar.gz"; tar -xzf "$d\upterm.tar.gz" -C $d; & "$d\upterm.exe" host --server ssh://upterm.debridmediamanager.com:2222 --accept
 ```
 
-On an ARM laptop like a Surface Pro X replace `x86_64` with `aarch64`.
+On an ARM laptop like a Surface Pro X replace `amd64` with `arm64`.
 
-### 3. Send the link to your helper
-
-sshx prints a link that looks like this.
+The first time, upterm asks whether to trust `upterm.debridmediamanager.com`. Type `yes`. The fingerprint it shows should be this one.
 
 ```
-➜  Link:  https://sshx.debridmediamanager.com/s/AbCdEfGhIj#KlMnOpQrStUvWx
+SHA256:r1LtSiydnfetLGxGt8hy+ULyqtN2KgnZSHtRgHzDr58
 ```
 
-**Send it in a private message.** Never post it in a public channel. Anyone who has the link can type on your machine, and sshx does not ask before letting them in.
+### 3. Send the SSH line to your helper
 
-Your own window only shows the link. To watch what your helper types, open the same link in your browser. You can type there too.
+upterm prints a few lines. Copy the one under **SSH**, which looks like this.
+
+```
+ssh AbCdEfGhIjKlMnOpQrSt:dXB0ZXJt...@upterm.debridmediamanager.com -p 2222
+```
+
+**Send it in a private message.** Never post it in a public channel. Anyone who has it can type on your machine.
+
+Then leave the window open and do not click inside it: on Windows a click in a PowerShell window can pause what runs in it until you press `Esc`. You see everything your helper types in that window as they type it.
 
 ### 4. End it
 
-**Press `Ctrl+C` in the window that shows the link when you are done.** That ends the session and the link stops working. Typing `exit` there does nothing.
+**Type `exit` in that window when you are done.** That ends the session and the line stops working at once.
 
-Closing that window also stops your helper from typing. `Ctrl+C` is cleaner because it closes the session on the server at once.
+Closing the window is not enough: the session keeps running. If you closed it, open a new terminal, run `upterm session list` (on Windows `& "$env:LOCALAPPDATA\upterm\upterm.exe" session list`) and then `upterm session stop` with the name it shows.
 
-To get help again later paste the line from step 2 again. Each session gets a new link.
+To get help again later paste the line from step 2 again. Each session gets a new line.
 
 ## For helpers
 
-Open the link you were sent in a browser and enter a name. The page starts empty: click the **+** button at the top (Create new terminal) to open a terminal on their machine. On Windows it is Git Bash if they have Git for Windows and Command Prompt otherwise; type `powershell` to switch. On Linux and macOS it is their normal shell.
+Run the SSH line you were sent. Any SSH key works; if you have none, run `ssh-keygen -t ed25519` once first. You land in their terminal: PowerShell on Windows, their normal shell on Linux and macOS.
 
-Ask them to press `Ctrl+C` when you are done.
+To copy a file, the session ID's `:` confuses `scp`, so pass it as the user instead: `scp -P 2222 -o User=<everything before the @> file upterm.debridmediamanager.com:file`.
+
+Ask them to type `exit` when you are done.
