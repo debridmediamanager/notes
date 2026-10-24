@@ -167,9 +167,9 @@ To **replace** an addon (or a script) that already filled a library, keep its so
 
 [rex-stremio](https://github.com/debridmediamanager/rex-stremio) turns the catalogs of your Stremio addons into rex libraries: films into a movie library, series into a TV library. It does Steps 1 to 5 and is one Python file, standard library only. It does not take deletes: a catalog's titles are not its to delete.
 
-**Registering.** Every catalog you tick names a library. rex-stremio registers as `stremio` with one directory per library, `movies` for film catalogs and `shows` for series catalogs.
+**Registering.** Every catalog you tick names a library: Stremio Films or Stremio Shows unless you rename it. rex-stremio registers as `stremio` with one directory per library, named after it (`stremio-films`), and declares that library as the directory's `movies` title for film catalogs or its `shows` title for series catalogs.
 
-**Serving.** Stream addons' links expire, so rex-stremio stores no links. It serves a URL per title, `/<library>/<catalog>/<id>.<ext>`, and answers it with a redirect to a link it asks for at that moment:
+**Serving.** Stream addons' links expire, so rex-stremio stores no links. It serves a URL per title, `/<directory>/<catalog>/<id>.<ext>`, and answers it with a redirect to a link it asks for at that moment:
 
 ```python
 url = app.sync.resolve(vid)   # ask every stream addon, rank, take the first link that opens
