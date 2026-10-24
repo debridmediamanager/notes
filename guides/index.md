@@ -10,7 +10,7 @@ Every guide on this site, by project.
 
 ## General
 
-- [Getting remote help](remote-help.md) lets a helper type in your terminal while you watch
+- [Getting help](remote-help.md) with zurg and rex: where to ask, what to include, and remote help for sponsors
 
 ## zurg
 

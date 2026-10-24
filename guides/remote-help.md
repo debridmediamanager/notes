@@ -1,16 +1,39 @@
 ---
-label: Getting remote help
+label: Getting help
 icon: people
 order: 30
 ---
 
-# Getting remote help
+# Getting help with zurg and rex
 
-Sometimes the fastest fix is for a helper to type in your terminal while you watch. This page sets that up with [upterm](https://github.com/owenthereal/upterm). It works on Linux and macOS and Windows.
+## Ask in Discord
+
+Post in the [Discord](https://discord.com/invite/7u4YjMThXP) forum for what you are using: **zurg-support**, **rex-support** or **dmm-support**. Open one thread per problem. Say what you did, what you expected and what happened instead, and include the following.
+
+**For zurg**, click **Export Logs** on zurg's dashboard and paste the links it gives you. It uploads zurg's log and config with your tokens, passwords and API keys removed. If it cannot upload, **Download Logs** gives you the same thing as a file to attach. Also paste what `zurg doctor` prints:
+
+| zurg runs as | Run |
+|---|---|
+| The binary on Linux or macOS | `./zurg doctor` in zurg's folder |
+| The binary on Windows | `.\zurg.exe doctor` in zurg's folder |
+| Docker | `docker compose exec zurg /app/zurg doctor --working-dir /config` |
+
+**For rex**, paste the end of rex's log. rex masks Plex tokens in it.
+
+| rex runs as | Run |
+|---|---|
+| A service | `journalctl --user -u rex -n 200 --no-pager` |
+| Docker | `docker compose logs --tail=200 rex` |
+
+## Remote help for sponsors
+
+When a thread does not get it fixed, a helper can type in your terminal while you watch. **Remote help with zurg and rex is offered only to sponsors, and it is free: there is no charge on top of the sponsorship.** [Become a sponsor on gatekeeper](https://gatekeeper.debridmediamanager.com/), connect your Discord account there to get the sponsor role, then ask for remote help in your support thread.
+
+The rest of this page sets it up with [upterm](https://github.com/owenthereal/upterm). It works on Linux and macOS and Windows.
 
 You need no account and no password and no router changes. You do not need to share an SSH key. Your helper only ever sees the one terminal window you open for them. The session ends when you type `exit`.
 
-## 1. Pick the machine
+### 1. Pick the machine
 
 Run upterm on the machine that runs zurg. If zurg is not installed yet then pick the machine it will run on. That is often not the computer in front of you.
 
@@ -33,17 +56,17 @@ If step 2 says `cannot create directory` on Synology then turn on Control Panel 
 
 **Unraid** has a terminal in its web page. Click the `>_` icon at the top right.
 
-## 2. Start a session
+### 2. Start a session
 
 Paste the line for the system you picked in step 1.
 
-### Linux and macOS
+#### Linux and macOS
 
 ```bash
 mkdir -p ~/upterm && cd ~/upterm && curl -fsSL "https://github.com/owenthereal/upterm/releases/latest/download/upterm_$(uname -s | tr A-Z a-z)_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/;s/armv7l/armv6/').tar.gz" | tar -xz && ./upterm host --name zurg-help
 ```
 
-### Windows
+#### Windows
 
 Open PowerShell. It does not need to run as administrator.
 
@@ -53,7 +76,7 @@ $d = "$env:LOCALAPPDATA\upterm"; New-Item -ItemType Directory -Force $d | Out-Nu
 
 On an ARM laptop like a Surface Pro X replace `amd64` with `arm64`.
 
-## 3. Trust the server once
+### 3. Trust the server once
 
 The first run asks whether to trust `uptermd.upterm.dev`. Type `yes`. The fingerprint it shows should match this one.
 
@@ -61,7 +84,7 @@ The first run asks whether to trust `uptermd.upterm.dev`. Type `yes`. The finger
 SHA256:9ajV8JqMe6jJE/s3TYjb/9xw7T0pfJ2+gADiBIJWDPE
 ```
 
-## 4. Send the line to your helper
+### 4. Send the line to your helper
 
 upterm prints a line that looks like this.
 
@@ -71,11 +94,11 @@ ssh AbCdEfGhIjKlMnOpQrSt@uptermd.upterm.dev
 
 **Send it in a private message.** Never post it in a public channel. Anyone who has the line can get in.
 
-## 5. Let them in
+### 5. Let them in
 
 upterm asks `Accept connections? [y/n]`. Type `y` once you have sent the line. From then on you see everything your helper types as they type it. You can type too.
 
-## 6. End it
+### 6. End it
 
 **Type `exit` when you are done.** That ends the session and the line stops working right away.
 
