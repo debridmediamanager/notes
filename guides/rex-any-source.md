@@ -164,7 +164,7 @@ kill %1
 
 **What it does.** Registers rex on a Plex account, as you would a real Plex Media Server, and shares it with your own account.
 
-**Why it matters.** rex gets every title's name, poster, summary and episode names from Plex's own metadata, and it may only ask Plex once it is on an account. Do this before you connect your app, so every title arrives with its name and poster. What your app sends before the claim keeps its file name until rex names it in the background, about 300 titles an hour, and Fix Match has nothing to offer until then. It also removes the "unclaimed" notice and is needed before [using rex outside your home](#use-it-outside-your-home-optional).
+**Why it matters.** rex gets every title's name, poster, summary and episode names from Plex's own metadata, and it may only ask Plex once it is on an account. What your app sends before the claim is named as soon as it lands, and Fix Match has nothing to offer until then. It also removes the "unclaimed" notice and is needed before [using rex outside your home](#use-it-outside-your-home-optional).
 
 **Use a fresh Plex account for this, not your own.** rex is not made by Plex, and Plex could take action against an account that registers it. Keep your real account, with its watch history, friends and any Plex Pass, out of reach: make a new free account at [plex.tv](https://www.plex.tv) with an email address you do not use elsewhere, register rex on that one, and share rex with your own account. You then watch signed in as yourself, the way you would watch a friend's server. rex plays nothing until this step is done.
 
@@ -481,7 +481,7 @@ Run the first block of [step 1](#step-1-install-rex) again in `~/rex` (it replac
 | `/rex/sources` stays `{"size":0}` | Your app has not registered. Check the address it was given and that it can reach rex's port |
 | A push answers `404 no such source` | Your app pushed before registering. It must `PUT /rex/sources/<name>` first |
 | rex's log says `held ... no media_info yet` | Your app sent the file without ffprobe output. It appears once that arrives |
-| Titles show file names and no posters | rex is not on a Plex account. Do [step 3](#step-3-add-it-to-a-plex-account). If rex was claimed after your app sent its library, they fill in by themselves, about 300 titles an hour |
+| Titles show file names and no posters | rex is not on a Plex account. Do [step 3](#step-3-add-it-to-a-plex-account). If rex was claimed after your app sent its library, they are named by themselves once the claim lands |
 | A title is in the wrong show, or a film is titled as its file | Your app sent no `kind` and `ids` for it, or the wrong ones. Fix it in your app, or use **Fix Match** in a Plex app signed in as the fresh account; a Fix Match stays as you set it |
 | Nothing plays and rex's log shows 502 | rex cannot reach the address your app registered. `curl -s http://192.168.1.20:32400/rex/sources` shows it; test it with `curl` from the rex machine |
 | Nothing plays, 401 or 403 | Your app refused its own login. Have it register again with the current one |

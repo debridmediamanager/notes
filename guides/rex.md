@@ -109,7 +109,7 @@ rex names itself after the machine; your Plex apps show that name. `no source ye
 
 **What it does.** Registers rex on a Plex account, as you would a real Plex Media Server, and shares it with your own account.
 
-**Why it matters.** rex gets every title's name, poster, summary and episode names from Plex's own metadata, and it may only ask Plex once it is on an account. Do it now, before zurg sends anything: titles that arrive after the claim come with their posters, while titles sent before it fill in slowly, about 300 films or shows an hour. It also makes Fix Match work, removes the "unclaimed" notice and is needed before [using rex outside your home](#use-it-outside-your-home-optional).
+**Why it matters.** rex gets every title's name, poster, summary and episode names from Plex's own metadata, and it may only ask Plex once it is on an account. Titles zurg sent before the claim are named as soon as it lands. It also makes Fix Match work, removes the "unclaimed" notice and is needed before [using rex outside your home](#use-it-outside-your-home-optional).
 
 **Use a fresh Plex account for this, not your own.** rex is not made by Plex, and Plex could take action against an account that registers it. Keep your real account, with its watch history, friends and any Plex Pass, out of reach: make a new free account at [plex.tv](https://www.plex.tv) with an email address you do not use elsewhere, register rex on that one, and share rex with your own account. You then watch signed in as yourself, the way you would watch a friend's server. rex plays nothing until this step is done.
 
@@ -531,7 +531,7 @@ rex takes no password from zurg. It answers the API zurg pushes to only from thi
 |---|---|
 | `/rex/sources` stays `{"size":0}` | zurg is out of date, `rex_url` is wrong, or zurg's library is still loading. Update zurg as in [step 1](#step-1-install-zurg) and look at `tail -n 50 ~/zurg/logs/zurg.log` |
 | rex's log says `held ... no media_info yet` and the library stays empty | zurg has not read the files yet. Wait for its library to load; if zurg logs `segmentation fault`, update and restart it as in [step 1](#step-1-install-zurg) |
-| Titles show file names and no posters | rex is not on a Plex account: do [step 3](#step-3-add-it-to-a-plex-account). If you claimed it after zurg sent them, they fill in by themselves, about 300 films or shows an hour |
+| Titles show file names and no posters | rex is not on a Plex account: do [step 3](#step-3-add-it-to-a-plex-account). If you claimed it after zurg sent them, they are named by themselves once the claim lands |
 | A film is titled as its file, or an episode sits in a show named after its release | zurg could not place it. Without `dmm_api_key` that is a name its title search did not find; with it, DMM has not placed it yet and zurg asks again a day later. **Fix Match** fixes it by hand |
 | A title is in the wrong show or matched to the wrong film | DMM placed it wrong. With `dmm_api_key` set, zurg asks DMM again once a week, which helps once DMM has learned better. Until then, and always without a key, use **Fix Match** in a Plex app, signed in as the fresh account that owns rex; rex refuses it (403) to the accounts it is shared with |
 | Nothing plays and rex's log shows 502 | rex cannot reach the address zurg gave it. Run `curl` on that URL from the rex machine. In Docker, see the Docker section |
