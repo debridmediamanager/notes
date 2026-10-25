@@ -10,11 +10,13 @@ Every other directory zurg serves is computed. `movies` holds what matches the m
 
 `__magic__` is the one directory whose paths are **stored**. A move inside it rewrites a row in a small table; no bytes move, nothing is copied, and the release stays exactly where it was on the debrid account. What you get is a tree you can arrange — by hand, or by pointing Sonarr or Radarr at it.
 
-It holds two things. `__magic__/__all__` is the library exactly as `__all__` lists it, and it is the folder the download clients import from; it is computed, so nothing can be created at its top level, and no file's bytes can be written over a name a release folder already holds (a release folder takes sidecars at names it does not use). Everything beside it at the root of `__magic__` is yours:
+It holds three kinds of thing. `__magic__/__all__` holds every release nothing has placed yet, and it is the folder the download clients import from; it is computed, so nothing can be created at its top level, and no file's bytes can be written over a name a release folder already holds (a release folder takes sidecars at names it does not use). With a DMM sponsor key, zurg files everything DMM has identified into `__movies__` and `__shows__`, by title ([below](#__movies__-and-__shows__-sorted-by-title)). Everything else at the root of `__magic__` is yours:
 
 ```
 /mnt/zurg/__magic__
-├── __all__     <- every release, where a grab lands
+├── __all__     <- what nothing has placed yet, where a grab lands
+├── __movies__  <- films zurg filed by title
+├── __shows__   <- shows zurg filed by title
 ├── anime
 ├── movies
 └── tv          <- your *arr root folders
@@ -45,11 +47,13 @@ And the \*arr has to reach the download folder and the root folder **through one
 
 zurg's own acquisition places files here too. A Radarr source puts each release it confirms into the movie's folder with the same move an import makes, then asks Radarr to rescan: see [acquisition.md](acquisition.md#placing-the-file).
 
+zurg also places files here on its own, into `__movies__` and `__shows__`: see [below](#__movies__-and-__shows__-sorted-by-title).
+
 Organising the library by hand is the other half, and it works with no \*arr involved.
 
 ## With nothing stored, it is `__all__`'s releases as real folders
 
-Open `__magic__/__all__` on a fresh install and you get every release `__all__` holds, as a folder each. The table starts empty and only ever stores **deviations** from that default, so an untouched library stores nothing at all, the root of `__magic__` holds nothing but the mirror, and new releases appear in it the moment they appear anywhere else.
+Open `__magic__/__all__` on a fresh install and you get every release `__all__` holds, as a folder each. The table starts empty and only ever stores **deviations** from that default, so an untouched library stores nothing at all, the root of `__magic__` holds nothing but the mirror, and new releases appear in it the moment they appear anywhere else. Once something places a release, an \*arr's import or zurg's own filing into `__movies__` and `__shows__`, it leaves `__magic__/__all__`: the mirror is what nothing has placed yet.
 
 There is no directory config behind it: no `only_show_the_biggest_file`, no size filters. What the release has is what you see.
 
@@ -108,6 +112,67 @@ The rows end up exactly where you asked: zurg serves the new path and 404s the o
 
 `rm` hides things — see [Deleting hides, it does not destroy](#deleting-hides-it-does-not-destroy).
 
+## `__movies__` and `__shows__`, sorted by title
+
+Kodi and Plex work out what a file is from its folder and file names, and a release name such as `Succession.S01.MULTi.1080p.BluRay.REMUX.AVC-DEMS` is often more than they can read. Pointed at release names, Kodi recognised 8 of 56 shows in our test. With a DMM sponsor key, zurg files every release DMM has identified into two folders, under names players match straight away:
+
+```
+__magic__/__movies__/Casper (1995) {tmdb-8839}/Casper (1995) {tmdb-8839}.mkv
+__magic__/__movies__/Casper (1995) {tmdb-8839}/Casper (1995) {tmdb-8839}.nfo
+__magic__/__shows__/Detective Conan (1996) {tmdb-30983}/tvshow.nfo
+__magic__/__shows__/Detective Conan (1996) {tmdb-30983}/Season 01/Detective Conan (1996) - S01E1194 [tmdbid-30983].mkv
+```
+
+The same library filed this way had Kodi and Plex match all 70 films, all 44 shows and all 554 episodes.
+
+### Turning it on
+
+You need a zurg nightly from 2026-10-26 or later, `__magic__` on, and your DMM API key, the one you get for sponsoring DMM:
+
+```yaml
+magic:
+  enabled: true
+dmm_api_key: YOUR_DMM_API_KEY
+```
+
+Restart zurg. The two folders fill once the library has loaded and DMM has identified it, which on a large library takes a few minutes the first time; after that a new release is filed within a minute of DMM identifying it. Then add a **Movies** library pointed at `/mnt/zurg/__magic__/__movies__` and a **TV** library pointed at `/mnt/zurg/__magic__/__shows__`, and scan. In Kodi, set the TV source's scraper to **The Movie Database**, as it is by default, and keep it updated: the `tvshow.nfo` files need version 1.7 or later of Kodi's TMDb TV scraper.
+
+Point each library at its folder, never at `__magic__` itself: that would scan `__all__` and your other folders too, and find everything twice.
+
+### What it does
+
+- **Film or show is what DMM says it is**, never a folder rule. A film that came inside a show's pack is filed as that film.
+- **Every release of a show lands in one folder**, with seasons and episodes numbered the way TMDB numbers them, the order Plex uses by default. Anime numbered by its run is placed in its season: `Detective Conan - 1194` is S01E1194.
+- **The TMDB id is in the folder, in every file name and in the `.nfo`**, so each player finds it where it looks: Plex in the folder, Kodi in the `.nfo`, and players that read only file names in the file name.
+- **One copy per title.** When two releases are the same episode or film, the better one is filed, by resolution and then size; the other stays in `__all__`.
+- **Extras and samples are left in `__all__`**, and so is anything DMM has not identified. A release is filed once DMM identifies it.
+
+### With the DMM wanted list
+
+Press **Want** on DMM and zurg fetches the title ([DMM wanted list](dmm-wanted.md)). What it fetches is filed here like everything else, so the film or show shows up in Kodi and Plex under its own name, with no Sonarr or Radarr involved. A torrent it grabbed can take up to an hour to be filed; an NZB is filed as soon as DMM identifies it.
+
+### With Sonarr and Radarr
+
+They keep their own libraries. A release Sonarr or Radarr grabbed through zurg is left in `__all__` for them to import, from the moment they grab it, and zurg never files anything they placed. If one of them imports a title zurg already filed, by moving it into its own root folder, it is theirs from then on and zurg leaves it there.
+
+To have Kodi and Plex match their libraries the same way:
+
+- Turn on **Settings → Metadata → Kodi (XBMC) / Emby** in each. They then write an `.nfo` with the title's ids beside every film and show, which zurg keeps for them.
+- Put the id in their folder names, under **Settings → Media Management**:
+
+  | | Folder format |
+  |---|---|
+  | Radarr | `{Movie CleanTitle} ({Release Year}) {tmdb-{TmdbId}}` |
+  | Sonarr | `{Series TitleYear} {tvdb-{TvdbId}}` |
+
+### Good to know
+
+- **Deleting in a player hides the file**, as any delete in `__magic__` does. It stays on your debrid account, and zurg does not file it again.
+- **Nothing can be moved into `__movies__` or `__shows__`**: they are zurg's to fill. Moving something out of them, as an \*arr import does, works.
+- **When DMM's identification of a release changes**, zurg moves its files to the new name.
+- **A file that breaks keeps its place** while zurg repairs it, so your media server does not lose it.
+- **Without a DMM sponsor key nothing is filed.** Removing the key, or turning `__magic__` off, leaves what was filed where it is.
+
 ## A move survives repair, rename and re-listing
 
 This is the part that matters most, because getting it wrong would quietly empty an organised library.
@@ -154,7 +219,7 @@ A release you have moved is still in `movies`, still in `recent`, still in `__al
 
 This surprises people, so it is worth saying plainly: **moving something in `__magic__` changes only `__magic__`.** The filter directories are computed from the release, and the release has not changed.
 
-For a media server, point it at **one** of the two. A Plex library that scans both `shows/` and `__magic__/tv` will find every episode twice.
+For a media server, point it at **one** of the two. A Plex library that scans both `shows/` and `__magic__/tv` will find every episode twice. The same goes for `__movies__` and `__shows__`: point a library at one of them, never at `__magic__` itself.
 
 ## Sidecars: `.nfo`, posters, subtitles
 
@@ -207,7 +272,7 @@ Useful if you drive the namespace over WebDAV directly; the mount handles all of
 | `201` | MOVE, MKCOL or PUT created something |
 | `204` | DELETE, or a PUT that replaced a sidecar |
 | `400` | a path this namespace cannot store, or a `Destination` header that is missing or unreadable |
-| `403` | a destination outside `__magic__`, a path the library answers for, a path running through a file, `__magic__` itself, or a table that is read-only |
+| `403` | a destination outside `__magic__` or inside `__movies__` or `__shows__`, a path the library answers for, a path running through a file, `__magic__` itself, or a table that is read-only |
 | `404` | nothing there (a DELETE of nothing still answers `204`), or a MOVE out of an archive that no longer holds the entry |
 | `405` | MKCOL where something already exists, or PUT onto a directory |
 | `409` | missing parent, non-empty directory, an occupied destination with `Overwrite: T`, or a MOVE out of an archive that will not open |
@@ -230,5 +295,6 @@ A `MOVE` **out of an archive** is also checked against the archive itself before
 ## See also
 
 - [sabnzbd.md](sonarr-radarr.md) — pointing Sonarr and Radarr at zurg, which is what `__magic__` was built to make possible
+- [DMM wanted list](dmm-wanted.md) — press Want on DMM and zurg fetches it into `__movies__` and `__shows__`
 - [usenet.md](usenet.md) — the NZB backend those grabs land in
 - [config.md](../reference/config.md#__magic__-a-directory-you-can-organise) — every key in the `magic:` block

@@ -83,6 +83,17 @@ searches DMM's own. Quality, size limits, words to avoid and the audio and subti
 languages a release must have are zurg's [acquisition settings](acquisition.md#configuration),
 the same for every source.
 
+## Watching it in Kodi or Plex
+
+With `__magic__` on, zurg files what it fetches by title, into `__magic__/__movies__` and
+`__magic__/__shows__`, named the way Kodi and Plex match it. Point a Movies library and a TV
+library at those two folders: see [`__movies__` and `__shows__`](magic.md#__movies__-and-__shows__-sorted-by-title).
+
+```yaml
+magic:
+  enabled: true
+```
+
 ## Two zurgs on one key
 
 Each zurg reads the same list, so two of them fetch every title twice. Keep the list on
