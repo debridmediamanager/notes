@@ -34,6 +34,9 @@ That is the whole setup. zurg reads your list once a minute from the moment it s
 3. Your list is at [debridmediamanager.com/wanted](https://debridmediamanager.com/wanted).
    It says when your zurg last read it, and when it fetched each film.
 
+Requests from Seerr, Overseerr or Jellyseerr can land on the same list: see
+[Seerr through DMM](seerr-dmm.md).
+
 ## Moving from Radarr or Sonarr
 
 Bring over everything they are still looking for:

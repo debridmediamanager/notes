@@ -23,6 +23,7 @@ Working with the library: Usenet, the arrs, `__magic__`, and media servers. rex 
 - [Watchlist and Seerr](acquisition.md)
 - [Plex watchlist](plex-watchlist.md)
 - [DMM wanted list](dmm-wanted.md)
+- [Seerr through DMM](seerr-dmm.md)
 - [Local libraries](local-libraries.md)
 - [Android and Google TV](android.md)
 
