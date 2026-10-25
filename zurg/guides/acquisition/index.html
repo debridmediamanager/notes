@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846202293351">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846203130591">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../../resources/css/retype.css?v=4.6.0.846202293351" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.846203130591" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846202293351" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846203130591" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846202293351" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846202293351" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846203130591" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846203130591" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -206,6 +206,8 @@ show up in the library with files in it. See
   max_size_gb: 40
   max_season_size_gb: 100
   exclude_words: [DV, HDR10+]  # never take a release whose name says these
+  audio_languages: [original]  # take only releases with this audio (any one), read from the streams
+  subtitle_languages: [en]     # and with these subtitles
   concurrency: 8          # titles worked on at once (default 8, at most 200)
   indexer_concurrency: 3  # calls to one indexer at once (default 3, at most 16)
   indexers:
@@ -369,6 +371,58 @@ Lower the cutoff score or take that score off the custom format.</p>
 themselves. <code translate="no" v-pre>exclude_words</code> does not apply there. Exclude the same words in
 the *arr with a custom format scored below the profile&#x27;s minimum or a release
 profile&#x27;s <strong>Must Not Contain</strong>.</p>
+<h2 id="choosing-by-audio-and-subtitle-language">Choosing by audio and subtitle language</h2>
+<div id="choosing-by-audio-and-subtitle-language-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">acquisition:
+  audio_languages: [original]   # or [de], [de, en], ...
+  subtitle_languages: [en]</code></pre>
+</doc-codeblock></div>
+<p>Needs a zurg nightly from 2026-10-26 or later.</p>
+<p><code translate="no" v-pre>audio_languages</code> takes only releases with an audio track in one of the
+listed languages, and <code translate="no" v-pre>subtitle_languages</code> only releases with a subtitle track
+in one of them. Leave either out to ask nothing. Both apply to every source.</p>
+<p>zurg reads the language from the release&#x27;s streams, not from its name. Most
+releases do not name their languages: almost none of Parasite&#x27;s say KOREAN.
+Write ISO 639 codes, two or three letters: <code translate="no" v-pre>en</code>, <code translate="no" v-pre>eng</code>, <code translate="no" v-pre>de</code>, <code translate="no" v-pre>deu</code> and <code translate="no" v-pre>ger</code>
+all work, and so does <code translate="no" v-pre>pt-BR</code>. A name such as <code translate="no" v-pre>german</code> is refused at startup.</p>
+<p><code translate="no" v-pre>original</code> means the language the title was made in, as TMDB records it:
+Korean for Parasite, French for Anatomy of a Fall. zurg asks DMM for it, so it
+needs <code translate="no" v-pre>dmm_api_key</code>. Without the key <code translate="no" v-pre>original</code> asks nothing.</p>
+<h3 id="how-a-release-is-judged">How a release is judged</h3>
+<ul>
+<li>
+<p><strong>Before a torrent is added.</strong> DMM keeps the ffprobe data of every release a
+zurg has analysed. With <code translate="no" v-pre>dmm_api_key</code> set, zurg reads it for every torrent
+result in one call. A torrent whose streams lack the language is never
+added. One that has it goes ahead of the torrents nothing is known about.
+In a measurement of five films on 2026-10-25, DMM held this data for about a
+third of the torrents Real-Debrid had cached.</p>
+</li>
+<li>
+<p><strong>After the grab.</strong> Every grab, torrent or Usenet, is probed once it is in
+the library: with DMM&#x27;s data where it has it, else with ffprobe. A grab
+whose streams lack the language is set aside like a dead post. It is taken
+off the debrid account or out of the watch directory, and the next
+candidate is tried at once. The dashboard says why, for example &quot;it has no
+English audio, only French&quot;.</p>
+</li>
+<li>
+<p><strong>Unknown is taken.</strong> A release is never refused for what cannot be read.
+That covers untagged tracks, a track tagged <code translate="no" v-pre>und</code> or <code translate="no" v-pre>mul</code>, a release only
+reached through its archives, or no probe within a minute. zurg logs that it
+took it as it is.</p>
+</li>
+</ul>
+<p>Commentary and audio description tracks do not count as the film&#x27;s audio.
+That includes a commentary named only in its title, such as Parasite&#x27;s
+&quot;Commentary by Bong Joon Ho&quot;. Subtitle tracks titled forced, signs or songs do
+not count as subtitles. The forced flag alone does not exclude a track: remuxes
+of foreign films flag their full English subtitles forced so players show them.</p>
+<p>Only a release&#x27;s main video files are judged, those at least a fifth as long as
+the longest. Extras often have fewer dubs than the film. In a season pack every
+episode must have the language.</p>
+<p>A release set aside for its language stays set aside for 30 days, as a dead
+post does, even if you change the languages.</p>
 <h2 id="dmm-wanted-list">DMM wanted list</h2>
 <p>A DMM sponsor adds films and shows to a wanted list with the <strong>Want</strong> button on their
 pages at debridmediamanager.com, and lists them at <code translate="no" v-pre>/wanted</code>. zurg reads that list
@@ -387,7 +441,8 @@ still airing is fetched as loose episodes, since no pack covers it yet.</p>
 <p><strong>Where it goes.</strong> The same as any source: an NZB from a Newznab indexer to this
 instance&#x27;s Usenet backend, or a torrent from a Torznab indexer onto a debrid account
 that already has it cached, whichever <code translate="no" v-pre>prefer</code> reaches for first. <code translate="no" v-pre>quality</code>,
-<code translate="no" v-pre>max_size_gb</code>, <code translate="no" v-pre>max_season_size_gb</code> and <code translate="no" v-pre>exclude_words</code> apply.</p>
+<code translate="no" v-pre>max_size_gb</code>, <code translate="no" v-pre>max_season_size_gb</code>, <code translate="no" v-pre>exclude_words</code> and the
+<doc-anchor-trigger to="#choosing-by-audio-and-subtitle-language">languages</doc-anchor-trigger> apply.</p>
 </li>
 <li>
 <p><strong>Indexers.</strong> With no indexer written under <code translate="no" v-pre>acquisition:</code>, <code translate="no" v-pre>watchlist:</code> or
