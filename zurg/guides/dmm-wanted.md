@@ -28,6 +28,42 @@ That is the whole setup. zurg reads your list once a minute from the moment it s
 3. Your list is at [debridmediamanager.com/wanted](https://debridmediamanager.com/wanted).
    It says when your zurg last read it, and when it fetched each film.
 
+## Moving from Radarr or Sonarr
+
+Bring over everything they are still looking for:
+
+1. In Radarr or Sonarr, open **System → Backup**, press **Backup Now** and download the
+   zip. The scheduled backups in its `Backups` folder work too.
+2. On your [wanted list](https://debridmediamanager.com/wanted), press **Import a Radarr or
+   Sonarr backup** and pick the zip. Then do the same with the other app's backup.
+
+What comes over:
+
+- From Radarr, every monitored film without a file that has reached its minimum
+  availability. Films with no IMDb id are left out; the page says how many.
+- From Sonarr, every monitored show with aired episodes missing, with just those seasons.
+- Titles already on your list stay as they are.
+
+Only the database inside the zip is uploaded. The rest of the backup, the app's API key
+included, stays on your computer.
+
+Two things do not come over:
+
+- **Quality profiles.** zurg chooses releases by its own
+  [acquisition settings](acquisition.md#configuration). Radarr usually refuses camera and
+  telesync copies; to keep them out, add them to
+  [`exclude_words`](acquisition.md#excluding-releases-by-name):
+
+  ```yaml
+  acquisition:
+    exclude_words: [CAM, CAMRip, HDCAM, TS, HDTS, TELESYNC, TC, HDTC, TELECINE]
+  ```
+
+- **Sonarr's season numbers, where they differ.** Your list numbers seasons as TMDB does.
+  Sonarr follows TheTVDB, which splits some long-running anime into more seasons, so a
+  Sonarr season that TMDB does not have is not fetched. Check those shows on their DMM
+  page and press **Want** on the seasons you are missing.
+
 ## What zurg fetches
 
 - **A film** once. It then leaves the list zurg reads.
