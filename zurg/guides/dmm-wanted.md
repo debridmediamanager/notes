@@ -29,7 +29,7 @@ That is the whole setup. zurg reads your list once a minute from the moment it s
    It says when your zurg last read it, and when it fetched each film.
 
 Requests from Seerr, Overseerr or Jellyseerr can land on the same list: see
-[Seerr through DMM](seerr-dmm.md).
+[Seerr through DMM](../../dmm/seerr.md).
 
 ## Moving from Radarr or Sonarr
 
