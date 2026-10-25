@@ -39,3 +39,4 @@ Every guide on this site, by project.
 - [rex with your own app](../rex/any-source.md)
 - [Building rex addons](../rex/addons.md)
 - [Kometa with rex](../rex/kometa.md)
+- [Apps download from your provider](../rex/direct-download.md)
