@@ -23,6 +23,7 @@ Every guide on this site, by project.
 - [Watchlist and Seerr](../zurg/guides/acquisition.md)
 - [Plex watchlist](../zurg/guides/plex-watchlist.md)
 - [DMM wanted list](../zurg/guides/dmm-wanted.md)
+- [Seerr through DMM](../zurg/guides/seerr-dmm.md)
 - [Local libraries](../zurg/guides/local-libraries.md)
 - [Android and Google TV](../zurg/guides/android.md)
 - [Migrating from another tool](../zurg/migrate/index.md)
