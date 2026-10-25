@@ -26,6 +26,8 @@ acquisition:
   max_size_gb: 40
   max_season_size_gb: 100
   exclude_words: [DV, HDR10+]  # never take a release whose name says these
+  audio_languages: [original]  # take only releases with this audio (any one), read from the streams
+  subtitle_languages: [en]     # and with these subtitles
   concurrency: 8          # titles worked on at once (default 8, at most 200)
   indexer_concurrency: 3  # calls to one indexer at once (default 3, at most 16)
   indexers:
@@ -172,6 +174,61 @@ themselves. `exclude_words` does not apply there. Exclude the same words in
 the *arr with a custom format scored below the profile's minimum or a release
 profile's **Must Not Contain**.
 
+## Choosing by audio and subtitle language
+
+```yaml
+acquisition:
+  audio_languages: [original]   # or [de], [de, en], ...
+  subtitle_languages: [en]
+```
+
+Needs a zurg nightly from 2026-10-26 or later.
+
+`audio_languages` takes only releases with an audio track in one of the
+listed languages, and `subtitle_languages` only releases with a subtitle track
+in one of them. Leave either out to ask nothing. Both apply to every source.
+
+zurg reads the language from the release's streams, not from its name. Most
+releases do not name their languages: almost none of Parasite's say KOREAN.
+Write ISO 639 codes, two or three letters: `en`, `eng`, `de`, `deu` and `ger`
+all work, and so does `pt-BR`. A name such as `german` is refused at startup.
+
+`original` means the language the title was made in, as TMDB records it:
+Korean for Parasite, French for Anatomy of a Fall. zurg asks DMM for it, so it
+needs `dmm_api_key`. Without the key `original` asks nothing.
+
+### How a release is judged
+
+- **Before a torrent is added.** DMM keeps the ffprobe data of every release a
+  zurg has analysed. With `dmm_api_key` set, zurg reads it for every torrent
+  result in one call. A torrent whose streams lack the language is never
+  added. One that has it goes ahead of the torrents nothing is known about.
+  In a measurement of five films on 2026-10-25, DMM held this data for about a
+  third of the torrents Real-Debrid had cached.
+- **After the grab.** Every grab, torrent or Usenet, is probed once it is in
+  the library: with DMM's data where it has it, else with ffprobe. A grab
+  whose streams lack the language is set aside like a dead post. It is taken
+  off the debrid account or out of the watch directory, and the next
+  candidate is tried at once. The dashboard says why, for example "it has no
+  English audio, only French".
+- **Unknown is taken.** A release is never refused for what cannot be read.
+  That covers untagged tracks, a track tagged `und` or `mul`, a release only
+  reached through its archives, or no probe within a minute. zurg logs that it
+  took it as it is.
+
+Commentary and audio description tracks do not count as the film's audio.
+That includes a commentary named only in its title, such as Parasite's
+"Commentary by Bong Joon Ho". Subtitle tracks titled forced, signs or songs do
+not count as subtitles. The forced flag alone does not exclude a track: remuxes
+of foreign films flag their full English subtitles forced so players show them.
+
+Only a release's main video files are judged, those at least a fifth as long as
+the longest. Extras often have fewer dubs than the film. In a season pack every
+episode must have the language.
+
+A release set aside for its language stays set aside for 30 days, as a dead
+post does, even if you change the languages.
+
 ## DMM wanted list
 
 A DMM sponsor adds films and shows to a wanted list with the **Want** button on their
@@ -188,7 +245,8 @@ no Sonarr or Radarr is involved. The source is named `dmm-wanted` and is polled 
 - **Where it goes.** The same as any source: an NZB from a Newznab indexer to this
   instance's Usenet backend, or a torrent from a Torznab indexer onto a debrid account
   that already has it cached, whichever `prefer` reaches for first. `quality`,
-  `max_size_gb`, `max_season_size_gb` and `exclude_words` apply.
+  `max_size_gb`, `max_season_size_gb`, `exclude_words` and the
+  [languages](#choosing-by-audio-and-subtitle-language) apply.
 - **Indexers.** With no indexer written under `acquisition:`, `watchlist:` or
   `stremio:`, the key also searches DMM's own: its Usenet indexer and the torrents it
   knows Real-Debrid or AllDebrid hold (`/api/torznab/cached`). Writing any indexer

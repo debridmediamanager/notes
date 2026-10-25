@@ -43,8 +43,9 @@ That is the whole setup. zurg reads your list once a minute from the moment it s
 
 Releases come from Usenet as NZBs and from torrents your debrid account already has
 cached; uncached torrents are never added. If you have not set up any indexers, zurg
-searches DMM's own. Quality, size limits and words to avoid are zurg's
-[acquisition settings](acquisition.md#configuration), the same for every source.
+searches DMM's own. Quality, size limits, words to avoid and the audio and subtitle
+languages a release must have are zurg's [acquisition settings](acquisition.md#configuration),
+the same for every source.
 
 ## Two zurgs on one key
 
