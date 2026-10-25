@@ -11,6 +11,7 @@ Every guide on this site, by project.
 ## General
 
 - [Getting help](remote-help.md) with zurg and rex: where to ask, what to include, and remote help for sponsors
+- [DMM buttons in Safari](safari.md): the browser extension as a userscript on Mac, iPhone and iPad
 
 ## zurg
 
