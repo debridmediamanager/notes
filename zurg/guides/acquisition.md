@@ -105,6 +105,15 @@ release it excludes is never fetched, saved, added to a debrid account or put
 to Radarr or Sonarr. Leave it out to exclude nothing. zurg reads it at
 startup like the rest of `config.yml`.
 
+A film's release is also never taken when its name gives a year more than one
+off the film's, whatever the source. Indexers file some posts under another
+film's IMDb id: DrunkenSlug files The Aswang Chronicles (2012) under its 2014
+sequel. A name without a year is not refused for it. For the DMM wanted list,
+which sends every title a film is known by (original, alternatives and
+translations), a release whose name gives none of them is refused too:
+DrunkenSlug files Przesluchanie (1982) under An Affair (1982). Accents and
+umlauts match either way, so `Les.Miserables` and `Verwuenscht.nochmal` count.
+
 How a name is matched:
 
 - **Whole words only.** A name is read as words made of letters and digits.
