@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846257616150">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846260525997">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../../resources/css/retype.css?v=4.6.0.846257616150" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.846260525997" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846257616150" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846260525997" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846257616150" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846257616150" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846260525997" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846260525997" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -190,10 +190,12 @@
 <h1 id="__magic__-a-directory-you-can-organise"><code translate="no" v-pre>__magic__</code>, a directory you can organise</h1>
 <p>Every other directory zurg serves is computed. <code translate="no" v-pre>movies</code> holds what matches the movies filter, <code translate="no" v-pre>__all__</code> holds everything, and a release&#x27;s folder holds the files its account says it has — so the layout is a view of the library, recomputed on every refresh, and there is nowhere to put anything.</p>
 <p><code translate="no" v-pre>__magic__</code> is the one directory whose paths are <strong>stored</strong>. A move inside it rewrites a row in a small table; no bytes move, nothing is copied, and the release stays exactly where it was on the debrid account. What you get is a tree you can arrange — by hand, or by pointing Sonarr or Radarr at it.</p>
-<p>It holds two things. <code translate="no" v-pre>__magic__/__all__</code> is the library exactly as <code translate="no" v-pre>__all__</code> lists it, and it is the folder the download clients import from; it is computed, so nothing can be created at its top level, and no file&#x27;s bytes can be written over a name a release folder already holds (a release folder takes sidecars at names it does not use). Everything beside it at the root of <code translate="no" v-pre>__magic__</code> is yours:</p>
+<p>It holds three kinds of thing. <code translate="no" v-pre>__magic__/__all__</code> holds every release nothing has placed yet, and it is the folder the download clients import from; it is computed, so nothing can be created at its top level, and no file&#x27;s bytes can be written over a name a release folder already holds (a release folder takes sidecars at names it does not use). With a DMM sponsor key, zurg files everything DMM has identified into <code translate="no" v-pre>__movies__</code> and <code translate="no" v-pre>__shows__</code>, by title (<doc-anchor-trigger to="#__movies__-and-__shows__-sorted-by-title">below</doc-anchor-trigger>). Everything else at the root of <code translate="no" v-pre>__magic__</code> is yours:</p>
 <div id="__magic__-a-directory-you-can-organise-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-none"><code v-pre class="language-none">/mnt/zurg/__magic__
-├── __all__     &lt;- every release, where a grab lands
+├── __all__     &lt;- what nothing has placed yet, where a grab lands
+├── __movies__  &lt;- films zurg filed by title
+├── __shows__   &lt;- shows zurg filed by title
 ├── anime
 ├── movies
 └── tv          &lt;- your *arr root folders</code></pre>
@@ -212,9 +214,10 @@
 <p>A file placed out of <code translate="no" v-pre>__all__</code> stays listed there, and a delete in <code translate="no" v-pre>__all__</code> deletes from the account, so zurg refuses to delete a file through <code translate="no" v-pre>__all__</code> or any other library folder while a placement here streams from it. Delete it under <code translate="no" v-pre>__magic__</code> instead. That is what keeps an *arr that imports out of <code translate="no" v-pre>__all__</code> and then cleans up its download folder there, as one fed by DMM&#x27;s SABnzbd proxy does, from deleting the release it has just imported.</p>
 <p>And the *arr has to reach the download folder and the root folder <strong>through one mount</strong>. A container given <code translate="no" v-pre>__magic__/__all__</code> and <code translate="no" v-pre>__magic__/tv</code> as two separate volumes sees two filesystems even though both are zurg&#x27;s, so the kernel refuses the rename inside the container before zurg hears of it, and the *arr copies the whole file instead. zurg turns a copy like that back into a placement once it lands and logs <code translate="no" v-pre>A client copied …</code>, but the download has already happened. Bind one directory holding zurg&#x27;s whole mount into the container; see <a href="../sonarr-radarr/#one-volume-for-the-download-folder-and-the-root-folders">One volume for the download folder and the root folders</a>.</p>
 <p>zurg&#x27;s own acquisition places files here too. A Radarr source puts each release it confirms into the movie&#x27;s folder with the same move an import makes, then asks Radarr to rescan: see <a href="../acquisition/#placing-the-file">acquisition.md</a>.</p>
+<p>zurg also places files here on its own, into <code translate="no" v-pre>__movies__</code> and <code translate="no" v-pre>__shows__</code>: see <doc-anchor-trigger to="#__movies__-and-__shows__-sorted-by-title">below</doc-anchor-trigger>.</p>
 <p>Organising the library by hand is the other half, and it works with no *arr involved.</p>
 <h2 id="with-nothing-stored-it-is-__all__s-releases-as-real-folders">With nothing stored, it is <code translate="no" v-pre>__all__</code>&#x27;s releases as real folders</h2>
-<p>Open <code translate="no" v-pre>__magic__/__all__</code> on a fresh install and you get every release <code translate="no" v-pre>__all__</code> holds, as a folder each. The table starts empty and only ever stores <strong>deviations</strong> from that default, so an untouched library stores nothing at all, the root of <code translate="no" v-pre>__magic__</code> holds nothing but the mirror, and new releases appear in it the moment they appear anywhere else.</p>
+<p>Open <code translate="no" v-pre>__magic__/__all__</code> on a fresh install and you get every release <code translate="no" v-pre>__all__</code> holds, as a folder each. The table starts empty and only ever stores <strong>deviations</strong> from that default, so an untouched library stores nothing at all, the root of <code translate="no" v-pre>__magic__</code> holds nothing but the mirror, and new releases appear in it the moment they appear anywhere else. Once something places a release, an *arr&#x27;s import or zurg&#x27;s own filing into <code translate="no" v-pre>__movies__</code> and <code translate="no" v-pre>__shows__</code>, it leaves <code translate="no" v-pre>__magic__/__all__</code>: the mirror is what nothing has placed yet.</p>
 <p>There is no directory config behind it: no <code translate="no" v-pre>only_show_the_biggest_file</code>, no size filters. What the release has is what you see.</p>
 <p>The one difference from <code translate="no" v-pre>__all__</code> is <strong>what a release folder looks like inside</strong>. Everywhere else zurg flattens a release into a single directory, keyed by filename, with a suffix where two files would collide:</p>
 <div id="with-nothing-stored-it-is-__all__s-releases-as-real-folders-code-1" class="codeblock-wrapper"><doc-codeblock>
@@ -253,6 +256,76 @@ mv /mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv \
 </doc-codeblock></div>
 <p>The rows end up exactly where you asked: zurg serves the new path and 404s the old one. But <code translate="no" v-pre>mv</code> exits 1, and the mount is left showing the emptied source directory and not the destination until its listing is re-read. No request for that removal ever reaches zurg, so nothing zurg does can prevent it. Moving files, and moving a whole release folder, work under either order. If you reorganise directories through the mount, set <a href="../../reference/config/#rclone-settings"><code translate="no" v-pre>union_writable: server</code></a>, where the directory exists only in the namespace and the rename is one server-side operation. Measured on rclone 1.71.2.</p>
 <p><code translate="no" v-pre>rm</code> hides things — see <doc-anchor-trigger to="#deleting-hides-it-does-not-destroy">Deleting hides, it does not destroy</doc-anchor-trigger>.</p>
+<h2 id="__movies__-and-__shows__-sorted-by-title"><code translate="no" v-pre>__movies__</code> and <code translate="no" v-pre>__shows__</code>, sorted by title</h2>
+<p>Kodi and Plex work out what a file is from its folder and file names, and a release name such as <code translate="no" v-pre>Succession.S01.MULTi.1080p.BluRay.REMUX.AVC-DEMS</code> is often more than they can read. Pointed at release names, Kodi recognised 8 of 56 shows in our test. With a DMM sponsor key, zurg files every release DMM has identified into two folders, under names players match straight away:</p>
+<div id="__movies__-and-__shows__-sorted-by-title-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">__magic__/__movies__/Casper (1995) {tmdb-8839}/Casper (1995) {tmdb-8839}.mkv
+__magic__/__movies__/Casper (1995) {tmdb-8839}/Casper (1995) {tmdb-8839}.nfo
+__magic__/__shows__/Detective Conan (1996) {tmdb-30983}/tvshow.nfo
+__magic__/__shows__/Detective Conan (1996) {tmdb-30983}/Season 01/Detective Conan (1996) - S01E1194 [tmdbid-30983].mkv</code></pre>
+</doc-codeblock></div>
+<p>The same library filed this way had Kodi and Plex match all 70 films, all 44 shows and all 554 episodes.</p>
+<h3 id="turning-it-on">Turning it on</h3>
+<p>You need a zurg nightly from 2026-10-26 or later, <code translate="no" v-pre>__magic__</code> on, and your DMM API key, the one you get for sponsoring DMM:</p>
+<div id="turning-it-on-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">magic:
+  enabled: true
+dmm_api_key: YOUR_DMM_API_KEY</code></pre>
+</doc-codeblock></div>
+<p>Restart zurg. The two folders fill once the library has loaded and DMM has identified it, which on a large library takes a few minutes the first time; after that a new release is filed within a minute of DMM identifying it. Then add a <strong>Movies</strong> library pointed at <code translate="no" v-pre>/mnt/zurg/__magic__/__movies__</code> and a <strong>TV</strong> library pointed at <code translate="no" v-pre>/mnt/zurg/__magic__/__shows__</code>, and scan. In Kodi, set the TV source&#x27;s scraper to <strong>The Movie Database</strong>, as it is by default, and keep it updated: the <code translate="no" v-pre>tvshow.nfo</code> files need version 1.7 or later of Kodi&#x27;s TMDb TV scraper.</p>
+<p>Point each library at its folder, never at <code translate="no" v-pre>__magic__</code> itself: that would scan <code translate="no" v-pre>__all__</code> and your other folders too, and find everything twice.</p>
+<h3 id="what-it-does">What it does</h3>
+<ul>
+<li><strong>Film or show is what DMM says it is</strong>, never a folder rule. A film that came inside a show&#x27;s pack is filed as that film.</li>
+<li><strong>Every release of a show lands in one folder</strong>, with seasons and episodes numbered the way TMDB numbers them, the order Plex uses by default. Anime numbered by its run is placed in its season: <code translate="no" v-pre>Detective Conan - 1194</code> is S01E1194.</li>
+<li><strong>The TMDB id is in the folder, in every file name and in the <code translate="no" v-pre>.nfo</code></strong>, so each player finds it where it looks: Plex in the folder, Kodi in the <code translate="no" v-pre>.nfo</code>, and players that read only file names in the file name.</li>
+<li><strong>One copy per title.</strong> When two releases are the same episode or film, the better one is filed, by resolution and then size; the other stays in <code translate="no" v-pre>__all__</code>.</li>
+<li><strong>Extras and samples are left in <code translate="no" v-pre>__all__</code></strong>, and so is anything DMM has not identified. A release is filed once DMM identifies it.</li>
+</ul>
+<h3 id="with-the-dmm-wanted-list">With the DMM wanted list</h3>
+<p>Press <strong>Want</strong> on DMM and zurg fetches the title (<a href="../dmm-wanted/">DMM wanted list</a>). What it fetches is filed here like everything else, so the film or show shows up in Kodi and Plex under its own name, with no Sonarr or Radarr involved. A torrent it grabbed can take up to an hour to be filed; an NZB is filed as soon as DMM identifies it.</p>
+<h3 id="with-sonarr-and-radarr">With Sonarr and Radarr</h3>
+<p>They keep their own libraries. A release Sonarr or Radarr grabbed through zurg is left in <code translate="no" v-pre>__all__</code> for them to import, from the moment they grab it, and zurg never files anything they placed. If one of them imports a title zurg already filed, by moving it into its own root folder, it is theirs from then on and zurg leaves it there.</p>
+<p>To have Kodi and Plex match their libraries the same way:</p>
+<ul>
+<li>Turn on <strong>Settings → Metadata → Kodi (XBMC) / Emby</strong> in each. They then write an <code translate="no" v-pre>.nfo</code> with the title&#x27;s ids beside every film and show, which zurg keeps for them.</li>
+<li>
+<p>Put the id in their folder names, under <strong>Settings → Media Management</strong>:</p>
+<retype-table copy-text="| | Folder format |
+  |---|---|
+  | Radarr | `{Movie CleanTitle} ({Release Year}) {tmdb-{TmdbId}}` |
+  | Sonarr | `{Series TitleYear} {tvdb-{TvdbId}}` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>Folder format</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Radarr</td>
+<td><code translate="no" v-pre>{Movie CleanTitle} ({Release Year}) {tmdb-{TmdbId}}</code></td>
+</tr>
+<tr>
+<td>Sonarr</td>
+<td><code translate="no" v-pre>{Series TitleYear} {tvdb-{TvdbId}}</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+</li>
+</ul>
+<h3 id="good-to-know">Good to know</h3>
+<ul>
+<li><strong>Deleting in a player hides the file</strong>, as any delete in <code translate="no" v-pre>__magic__</code> does. It stays on your debrid account, and zurg does not file it again.</li>
+<li><strong>Nothing can be moved into <code translate="no" v-pre>__movies__</code> or <code translate="no" v-pre>__shows__</code></strong>: they are zurg&#x27;s to fill. Moving something out of them, as an *arr import does, works.</li>
+<li><strong>When DMM&#x27;s identification of a release changes</strong>, zurg moves its files to the new name.</li>
+<li><strong>A file that breaks keeps its place</strong> while zurg repairs it, so your media server does not lose it.</li>
+<li><strong>Without a DMM sponsor key nothing is filed.</strong> Removing the key, or turning <code translate="no" v-pre>__magic__</code> off, leaves what was filed where it is.</li>
+</ul>
 <h2 id="a-move-survives-repair-rename-and-re-listing">A move survives repair, rename and re-listing</h2>
 <p>This is the part that matters most, because getting it wrong would quietly empty an organised library.</p>
 <p>Zurg repairs a broken release by re-adding it to the account. The torrent id changes, the access key changes, the file ids change — so a table keyed on any of those would lose every placement the first time a link rotted. Rows are instead keyed on the release&#x27;s <strong>content hash</strong> plus the file&#x27;s <strong>path inside the release</strong>, neither of which repair changes.</p>
@@ -281,7 +354,7 @@ mv /mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv \
 <h2 id="filters-and-__all__-are-untouched">Filters and <code translate="no" v-pre>__all__</code> are untouched</h2>
 <p>A release you have moved is still in <code translate="no" v-pre>movies</code>, still in <code translate="no" v-pre>recent</code>, still in <code translate="no" v-pre>__all__</code>, under its original name. <code translate="no" v-pre>__magic__</code> is a second view of the same library, not a relocation.</p>
 <p>This surprises people, so it is worth saying plainly: <strong>moving something in <code translate="no" v-pre>__magic__</code> changes only <code translate="no" v-pre>__magic__</code>.</strong> The filter directories are computed from the release, and the release has not changed.</p>
-<p>For a media server, point it at <strong>one</strong> of the two. A Plex library that scans both <code translate="no" v-pre>shows/</code> and <code translate="no" v-pre>__magic__/tv</code> will find every episode twice.</p>
+<p>For a media server, point it at <strong>one</strong> of the two. A Plex library that scans both <code translate="no" v-pre>shows/</code> and <code translate="no" v-pre>__magic__/tv</code> will find every episode twice. The same goes for <code translate="no" v-pre>__movies__</code> and <code translate="no" v-pre>__shows__</code>: point a library at one of them, never at <code translate="no" v-pre>__magic__</code> itself.</p>
 <h2 id="sidecars-nfo-posters-subtitles">Sidecars: <code translate="no" v-pre>.nfo</code>, posters, subtitles</h2>
 <p>An *arr writes metadata next to the video, and Bazarr writes subtitles. Those are real files and zurg has nowhere to put them in a debrid library, so they go to local disk under <code translate="no" v-pre>data/local/__magic__/</code>.</p>
 <p>Setting Bazarr up, and how its subtitles reach rex, is in <a href="../subtitles/">Subtitles with Bazarr</a>.</p>
@@ -312,7 +385,7 @@ mv /mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv \
 | `201` | MOVE, MKCOL or PUT created something |
 | `204` | DELETE, or a PUT that replaced a sidecar |
 | `400` | a path this namespace cannot store, or a `Destination` header that is missing or unreadable |
-| `403` | a destination outside `__magic__`, a path the library answers for, a path running through a file, `__magic__` itself, or a table that is read-only |
+| `403` | a destination outside `__magic__` or inside `__movies__` or `__shows__`, a path the library answers for, a path running through a file, `__magic__` itself, or a table that is read-only |
 | `404` | nothing there (a DELETE of nothing still answers `204`), or a MOVE out of an archive that no longer holds the entry |
 | `405` | MKCOL where something already exists, or PUT onto a directory |
 | `409` | missing parent, non-empty directory, an occupied destination with `Overwrite: T`, or a MOVE out of an archive that will not open |
@@ -342,7 +415,7 @@ mv /mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv \
 </tr>
 <tr>
 <td><code translate="no" v-pre>403</code></td>
-<td>a destination outside <code translate="no" v-pre>__magic__</code>, a path the library answers for, a path running through a file, <code translate="no" v-pre>__magic__</code> itself, or a table that is read-only</td>
+<td>a destination outside <code translate="no" v-pre>__magic__</code> or inside <code translate="no" v-pre>__movies__</code> or <code translate="no" v-pre>__shows__</code>, a path the library answers for, a path running through a file, <code translate="no" v-pre>__magic__</code> itself, or a table that is read-only</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>404</code></td>
@@ -385,6 +458,7 @@ mv /mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv \
 <h2 id="see-also">See also</h2>
 <ul>
 <li><a href="../sonarr-radarr/">sabnzbd.md</a> — pointing Sonarr and Radarr at zurg, which is what <code translate="no" v-pre>__magic__</code> was built to make possible</li>
+<li><a href="../dmm-wanted/">DMM wanted list</a> — press Want on DMM and zurg fetches it into <code translate="no" v-pre>__movies__</code> and <code translate="no" v-pre>__shows__</code></li>
 <li><a href="../usenet/">usenet.md</a> — the NZB backend those grabs land in</li>
 <li><a href="../../reference/config/#__magic__-a-directory-you-can-organise">config.md</a> — every key in the <code translate="no" v-pre>magic:</code> block</li>
 </ul>

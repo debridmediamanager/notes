@@ -53,7 +53,7 @@ Working with the library.
 - [Sonarr & Radarr for Usenet](guides/sonarr-radarr.md) — the \*arrs search and zurg answers as a SABnzbd, so imports are a rename not a download
 - [Sonarr & Radarr for torrents](guides/sonarr-radarr-torrents.md) — the same, with zurg answering as a qBittorrent; Prowlarr too
 - [zurg searches for Sonarr & Radarr](guides/sonarr-radarr-fetch.md). Radarr and Sonarr keep the list and zurg finds and places the release. No indexers or download client in either.
-- [`__magic__`](guides/magic.md) — the one directory whose layout is stored, and therefore yours to arrange
+- [`__magic__`](guides/magic.md) — the one directory whose layout is stored, and therefore yours to arrange, with your library filed by title for Kodi and Plex
 - [Renaming](guides/renaming.md) — rename a release or a file anywhere in the library. A move is refused and the page says why
 - [Plex](guides/plex.md) — what zurg does with a Plex token, and what it deliberately does not
 - [Jellyfin](guides/jellyfin.md) — the same, for Jellyfin
