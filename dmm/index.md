@@ -8,7 +8,7 @@ order: 70
 
 [Debrid Media Manager](https://debridmediamanager.com) is a website for finding movies and shows and keeping them as a library on your debrid account.
 
-The DMM browser extension adds a button to IMDb, Trakt and other movie and TV sites that opens the title on DMM. To use it in Safari, see [DMM buttons in Safari](../guides/safari.md).
+The DMM browser extension adds a button to IMDb, Trakt and other movie and TV sites that opens the title on DMM. To use it in Safari, see [DMM buttons in Safari](safari.md).
 
 DMM also serves the other projects:
 
