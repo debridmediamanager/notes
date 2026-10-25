@@ -2,6 +2,8 @@
 
 [Debrid Media Manager](https://debridmediamanager.com) is a website for finding movies and shows and keeping them as a library on your debrid account.
 
+The DMM browser extension adds a button to IMDb, Trakt and other movie and TV sites that opens the title on DMM. To use it in Safari, see [DMM buttons in Safari](safari.md).
+
 DMM also serves the other projects:
 
 - **zurg** asks DMM which movie or episode each file is, using the DMM API key you get by sponsoring DMM. Without a key zurg works it out from the file names, and fewer titles match. [rex with zurg](../rex/with-zurg.md#why-dmm-places-the-files) shows what that changes.
