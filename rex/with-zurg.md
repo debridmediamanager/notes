@@ -16,7 +16,7 @@ Four things to know before you start:
 
 - **zurg is the part that talks to your debrid service.** It lists what is in your account and serves the files.
 - **rex is the part your Plex apps talk to.** It keeps no files and needs no disk for media. It does not need rclone or a mount.
-- **zurg tells rex about itself.** You give zurg the address of rex, and zurg does the rest. You never type zurg's details into rex.
+- **zurg tells rex about itself.** You sign zurg in to Plex and pick rex, and zurg does the rest. You never type zurg's details into rex.
 - **zurg and DMM decide what each file is; Plex describes it.** zurg asks DMM which movie or episode each file is, and rex shows that title with the posters and summaries Plex's own metadata gives it once rex is on a Plex account. rex never guesses from a file name.
 
 rex opened as a closed beta for sponsors on October 15 and reaches the public on October 31. See [rex.debridmediamanager.com](https://rex.debridmediamanager.com) for access.
@@ -32,7 +32,7 @@ rex opened as a closed beta for sponsors on October 15 and reaches the public on
 | Your DMM API key, from sponsoring DMM (optional) | zurg asks DMM what each file is. Without it zurg works it out from the release name, through DMM's free title search: fewer titles match, and an anime numbered across the whole series stays in file order |
 | A fresh Plex account, made just for rex | rex gets every title, poster, summary and episode name from Plex once it is [added to a Plex account](#step-3-add-it-to-a-plex-account). Until then titles keep their file names and have no posters |
 
-This page needs rex nightly **2026.10.25 or newer** and zurg nightly **2026.10.22 or newer**.
+This page needs rex nightly **2026.10.25 or newer** and zurg nightly **2026.10.27 or newer**.
 
 ## Step 1. Install zurg
 
@@ -141,24 +141,18 @@ rex names itself after the machine; your Plex apps show that name. `no source ye
 
 ## Step 4. Connect zurg to rex
 
-**What it does.** Tells zurg where rex is. zurg introduces itself to rex, sends its whole library, reads each file's video and audio details and sends those too, then every change as it happens.
+**What it does.** Signs zurg in to Plex and has it pick rex. zurg introduces itself to rex, sends its whole library, reads each file's video and audio details and sends those too, then every change as it happens.
 
-**Why it matters.** This is the only link between the two. rex has no setting for zurg: if `rex_url` is missing, rex stays empty. Your DMM key lets zurg ask DMM which movie or episode each file is; without one zurg works it out from the name, and fewer titles match.
+**Why it matters.** This is the only link between the two. rex has no setting for zurg: until zurg has picked it, rex stays empty. Your DMM key lets zurg ask DMM which movie or episode each file is; without one zurg works it out from the name, and fewer titles match.
 
-First check whether zurg's config already has either line:
+1. Open zurg's dashboard at `http://<this machine>:9999` and go to **Config**.
+2. Under **Media Server Integration**, press **Login with Plex** and sign in **as the fresh account**. rex belongs to that account; your own only has it shared, and zurg lists only servers the account owns.
+3. Pick rex. It is listed under the machine's name at `HTTP://192.168.1.20:32400` and marked `rex: zurg will send it your library`.
+4. With a DMM key, paste it into **DMM API Key** further down the same page.
 
-```bash
-grep -n '^rex_url:\|^dmm_api_key:' ~/zurg/config.yml
-```
+There is nothing to restart. zurg keeps rex as its Plex server and as its `rex_url` in `~/zurg/config.yml`.
 
-If it prints a line, that key is already set: change it there with `nano ~/zurg/config.yml` and leave it out of the `printf` below. Without a DMM key, leave `dmm_api_key` out. zurg will not start with the same key twice, and zurg's dashboard writes `dmm_api_key` into this file when you enter your key there.
-
-```bash
-printf '\nrex_url: http://192.168.1.20:32400\ndmm_api_key: your_dmm_key\n' >> ~/zurg/config.yml
-cd ~/zurg && ./zurg service restart
-```
-
-**What you should see.** Once zurg has loaded the library again, zurg's log (`~/zurg/logs/zurg.log`) says `DMM placed N releases for rex` (without a DMM key: `Placed N releases for rex by their names`) and rex's log prints:
+**What you should see.** zurg answers `rex connected: zurg is sending it your library now.` Its log (`~/zurg/logs/zurg.log`) says `rex feed: pushing the library to http://192.168.1.20:32400`, then `DMM placed N releases for rex` (without a DMM key: `Placed N releases for rex by their names`), and rex's log prints:
 
 ```
 INFO    SOURCES PUT /rex/sources/zurg -> 200
@@ -167,17 +161,20 @@ INFO    FEED identified "Sintel.mp4" -> movie tmdb:45745 (placed)
 INFO    FEED zurg upsert: 2 created, 0 updated, 0 held, 0 unchanged, 0 rejected
 ```
 
-`held` means zurg has not read that file's details yet. zurg starts reading them as soon as its library has loaded, one release at a time, and a season pack's episodes arrive together. With a DMM key, up to about 20 releases a minute come from DMM's stored details. A large library fills over several hours. Each title appears in rex as its details arrive. Anything you add to your debrid account later shows up by itself once zurg has read it.
+`held` means zurg has not read that file's details yet. zurg starts reading them at once, one release at a time, and a season pack's episodes arrive together. With a DMM key, up to about 20 releases a minute come from DMM's stored details. A large library fills over several hours. Each title appears in rex as its details arrive. Anything you add to your debrid account later shows up by itself once zurg has read it.
 
 **If not.**
 
-- Nothing at all in rex's log: zurg is still loading its library, zurg is out of date (update it as in [step 1](#step-1-install-zurg)), or `rex_url` has a typo. `grep 'rex feed' ~/zurg/logs/zurg.log | tail -n 5` shows zurg's side: with no `rex feed: pushing the library to ...` line zurg did not read `rex_url`, and `rex feed: snapshot failed, retrying in ...` means it cannot reach rex at that address.
+- rex is not in the list: zurg is out of date (update it as in [step 1](#step-1-install-zurg)), you signed in as your own account instead of the fresh one, rex is not claimed yet ([step 3](#step-3-add-it-to-a-plex-account)), or zurg cannot reach rex at `192.168.1.20`. zurg lists rex only at the addresses rex takes it from: your home network and Tailscale.
+- Nothing at all in rex's log: zurg is still loading its library. `grep 'rex feed' ~/zurg/logs/zurg.log | tail -n 5` shows zurg's side: `rex feed: snapshot failed, retrying in ...` means it cannot reach rex at that address.
 - A title stays `held` and zurg logs `Cannot probe file ...`: the first read from the debrid service failed. zurg tries again by itself; **Analyze & Tag Library** under **Utilities** on zurg's dashboard tries at once.
-- Titles arrive but no `identified` lines: zurg could not match them by name, and with `dmm_api_key` set it logs `DMM refused the API key for placement` when the key is not a sponsor's. zurg then matches by name and tries the key again a day later, or at once when it restarts.
+- Titles arrive but no `identified` lines: zurg could not match them by name, and with a DMM key set it logs `DMM refused the API key for placement` when the key is not a sponsor's. zurg then matches by name and tries the key again a day later, or at once when it restarts.
 
-Leave `plex_server_url` in zurg's config pointing at your real Plex, or empty. Pointed at rex, zurg would take rex's own matches and give them to DMM as the answer, wrong ones included.
+With rex as its Plex server, zurg skips its Plex matching, season fix, Plex backups and trash sweep: they work on a Plex database, and rex has none.
 
-Running several zurgs (one per debrid service)? Give each its own name with an extra line, `rex_source: rd`, `rex_source: tb` and so on. They fill the same libraries.
+Running several zurgs (one per debrid service)? Before picking rex in each, give each its own name with an extra line in its `config.yml`, `rex_source: rd`, `rex_source: tb` and so on, and restart it. They fill the same libraries.
+
+Rather not sign zurg in to Plex? Add `rex_url: http://192.168.1.20:32400` to `~/zurg/config.yml` and restart zurg (`cd ~/zurg && ./zurg service restart`) instead.
 
 ### Why DMM places the files
 
@@ -488,19 +485,7 @@ Follow step 3: its `curl` commands work as written on this machine. `claim_state
 
 ### D4. Connect zurg to rex
 
-**What it does.** Same as [step 4](#step-4-connect-zurg-to-rex). zurg's config sits in zurg's compose folder and belongs to root. Check it first, as in step 4:
-
-```bash
-cd ~/zurg
-sudo grep -n '^rex_url:\|^dmm_api_key:' config.yml
-```
-
-If it prints a line, change that key there with `sudo nano config.yml` and leave it out of the `printf`. Then:
-
-```bash
-printf '\nrex_url: http://192.168.1.20:32400\ndmm_api_key: your_dmm_key\n' | sudo tee -a config.yml >/dev/null
-docker compose restart zurg
-```
+**What it does.** Same as [step 4](#step-4-connect-zurg-to-rex), on the container's dashboard at `http://<this machine>:9999`: **Config**, **Login with Plex** as the fresh account, pick rex. Nothing to restart.
 
 **What you should see.** `SOURCES PUT /rex/sources/zurg -> 200` in rex's log, and `curl -s http://192.168.1.20:32400/rex/sources` shows zurg at its **container** address, for example `http://172.18.0.2:9999/dav`. That is right: rex runs on the same machine and reaches the container there.
 
@@ -535,7 +520,7 @@ rex takes no password from zurg. It answers the API zurg pushes to only from thi
 
 | What you see | What to do |
 |---|---|
-| `/rex/sources` stays `{"size":0}` | zurg is out of date, `rex_url` is wrong, or zurg's library is still loading. Update zurg as in [step 1](#step-1-install-zurg) and look at `tail -n 50 ~/zurg/logs/zurg.log` |
+| `/rex/sources` stays `{"size":0}` | zurg is out of date, it has not picked rex ([step 4](#step-4-connect-zurg-to-rex)), or zurg's library is still loading. Update zurg as in [step 1](#step-1-install-zurg) and look at `tail -n 50 ~/zurg/logs/zurg.log` |
 | rex's log says `held ... no media_info yet` and the library stays empty | zurg has not read the files yet. Wait for its library to load; if zurg logs `segmentation fault`, update and restart it as in [step 1](#step-1-install-zurg) |
 | Titles show file names and no posters | rex is not on a Plex account: do [step 3](#step-3-add-it-to-a-plex-account). If you claimed it after zurg sent them, they are named by themselves once the claim lands |
 | A film is titled as its file, or an episode sits in a show named after its release | zurg could not place it. Without `dmm_api_key` that is a name its title search did not find; with it, DMM has not placed it yet and zurg asks again a day later. **Fix Match** fixes it by hand |

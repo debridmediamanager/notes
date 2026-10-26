@@ -374,7 +374,7 @@ entry and do not rotate through another account's file IDs.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `plex_server_url` | string | `""` | URL of your Plex server. Required for Plex matching and watchlist features. Example: `http://localhost:32400` |
+| `plex_server_url` | string | `""` | URL of your Plex server. Required for Plex matching and watchlist features. Example: `http://localhost:32400`. The dashboard's Plex sign-in writes it for the server you pick. A rex picked there is written to `rex_url` as well; with rex as the Plex server zurg runs no Plex matching, season fix, Plex backups or trash sweep, since rex keeps no Plex database and takes what each title is from zurg (see [plex.md](../guides/plex.md#when-the-plex-server-is-rex)). |
 | `plex_token` | string | `""` | Your Plex authentication token. Required alongside `plex_server_url`. |
 | `plex_scan_check_url` | string | value of `plex_server_url` | The Plex server zurg asks whether a library scan is running before it restarts the mount. It waits while one is. A mount that vanishes in the middle of a scan makes Plex trash everything it could not see. Set this on an instance that runs no Plex integration of its own. One instance per provider is the usual case. Setting `plex_server_url` there would also start Plex matching. |
 | `plex_scan_check_token` | string | value of `plex_token` | The token for `plex_scan_check_url`. |
