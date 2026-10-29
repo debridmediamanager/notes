@@ -19,7 +19,7 @@ Four things to know before you start:
 - **zurg tells rex about itself.** You give zurg the address of rex, and zurg does the rest. You never type zurg's details into rex.
 - **zurg and DMM decide what each file is; Plex describes it.** zurg asks DMM which movie or episode each file is, and rex shows that title with the posters and summaries Plex's own metadata gives it once rex is on a Plex account. rex never guesses from a file name.
 
-rex opened as a closed beta for sponsors on October 15 and reaches the public on October 31. See [rex.debridmediamanager.com](https://rex.debridmediamanager.com) for access.
+rex goes public with its source code on Halloween, October 31, and is free for everyone: no sponsor tier and no waiting period. Until then its download needs a sponsor's GitHub access. zurg's nightly, which this guide uses, stays a sponsor release; [Any source](any-source.md) runs rex without it. See [rex.debridmediamanager.com](https://rex.debridmediamanager.com).
 
 ## Before you start
 
