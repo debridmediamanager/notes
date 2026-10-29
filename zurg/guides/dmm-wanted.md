@@ -103,7 +103,11 @@ Two things do not come over:
 
 ## What zurg fetches
 
-- **A film** once. It then leaves the list zurg reads.
+- **A film** once. It then leaves the list zurg reads. With `upgrades: true` under
+  `acquisition:` in zurg's config, a film fetched below the resolution `quality` heads for
+  (2160p for `best`) stays on the list, and zurg fetches a better copy when one comes out.
+  The copy you already have is kept. `/wanted` shows what zurg took and the resolution it
+  is still waiting for.
 - **A show**: every aired episode of the seasons you picked, as a season pack where one
   covers the season and as single episodes where it is still airing. It keeps checking
   for new episodes until you remove the show. Specials are not fetched.
