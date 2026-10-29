@@ -37,6 +37,34 @@ That is the whole setup. zurg reads your list once a minute from the moment it s
 Requests from Seerr, Overseerr or Jellyseerr can land on the same list: see
 [Seerr through DMM](../../dmm/seerr.md).
 
+## Following a list
+
+Paste the page of a Trakt or MDBList list on your [wanted list](https://debridmediamanager.com/wanted)
+and press **Follow**. Every film and show on it is wanted, and DMM reads the list again
+every six hours, so what is added to it later is wanted too. Pages it takes:
+
+- `https://trakt.tv/users/<user>/lists/<list>` and `https://trakt.tv/lists/<id>`
+- `https://trakt.tv/users/<user>/watchlist`, if that Trakt profile is public
+- `https://mdblist.com/lists/<user>/<list>`
+
+On DMM's own Trakt pages, your watchlist and each of your lists have a **Follow with Want**
+button that does the same.
+
+An IMDb, Letterboxd, Rotten Tomatoes or Plex watchlist: on mdblist.com, make an
+[external list](https://docs.mdblist.com/docs/external_lists.html) from its URL and follow
+that. MDBList keeps it in step with the source.
+
+What following does:
+
+- A show is wanted whole, new seasons included.
+- Only titles new on the list since it was last read are added. A title you remove from
+  your wanted list stays removed, and a title that leaves the list stays wanted.
+  **Unfollow** keeps what the list added.
+- The page shows each list with how many titles it has, how many it added so far and when
+  it was last read. **Read again** reads it now. Titles without an IMDb id are left out, and
+  the count says how many.
+- Your list holds 5,000 titles. A list that keeps growing, like a trending one, fills it.
+
 ## Moving from Radarr or Sonarr
 
 Bring over everything they are still looking for:
