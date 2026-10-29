@@ -51,7 +51,7 @@ On DMM's own Trakt pages, your watchlist and each of your lists have a **Follow 
 button that does the same.
 
 An IMDb, Letterboxd, Rotten Tomatoes or Plex watchlist: on mdblist.com, make an
-[external list](https://docs.mdblist.com/docs/external_lists.html) from its URL and follow
+[external list](https://docs.mdblist.com/docs/external_lists) from its URL and follow
 that. MDBList keeps it in step with the source.
 
 What following does:
