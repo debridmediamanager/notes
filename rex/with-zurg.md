@@ -377,6 +377,10 @@ INFO    heartbeat every 600s for machine ... -> https://myhost.tailnet.ts.net:44
 
 rex prints this at every start. Trouble shows later as `heartbeat failed` or `announced but NOT visible`. Otherwise the server lists those addresses on plex.tv, and a Plex app away from home picks the one it can reach. If rex logs `waiting for a claim`, do [step 3](#step-3-add-it-to-a-plex-account) first.
 
+## Your watch history from another Plex server (optional)
+
+Watched on another Plex server before? Once your library is in rex, [Bring your watch history](import-watched.md) copies what you watched, where you stopped and your star ratings from it, for each person on their own.
+
 ## Converting video (optional)
 
 **What it does.** Lets rex convert what a device cannot play, the way Plex does.
