@@ -15,7 +15,7 @@ You run it once, from any computer at home. Everyone you share rex with can do t
 | You need | Why |
 |---|---|
 | rex set up, with your library in it, as in [rex with zurg](with-zurg.md) or [rex with your own app](any-source.md) | rex copies history only onto titles it already has. If your library is still filling, run the import again later: it only adds what is new |
-| rex 2026-10-30 nightly or later | Update as in [rex's Updating section](with-zurg.md#updating) |
+| rex 2026-10-31 nightly or later | Update as in [rex's Updating section](with-zurg.md#updating) |
 | Your old Plex server, running | rex reads the history from it. Start it again if you stopped it when you moved to rex |
 | A computer on your home network, with `curl` | The import only runs from your home network. Windows 10 and 11, macOS and Linux all have `curl` |
 
