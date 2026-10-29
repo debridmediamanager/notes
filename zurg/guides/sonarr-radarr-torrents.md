@@ -490,7 +490,7 @@ Sonarr and Radarr search through Prowlarr. Any public torrent indexer works here
 
 If you sponsor zurg then DMM is an indexer too. It searches DMM's whole library and ranks what your debrid account already holds at the top. Those grabs are instant.
 
-1. Sign in at [debridmediamanager.com/torznab](https://debridmediamanager.com/torznab) and copy your API key.
+1. Get your DMM API key from [gatekeeper](https://gatekeeper.debridmediamanager.com): press **Connect GitHub**, and if you sponsor on Patreon link Patreon after that. Copy the **DMM API Key** it shows. This is not the zurg key from [step 2](#2-find-the-api-key), and it is the same key for DMM's Usenet indexer, set up at [debridmediamanager.com/newznab](https://debridmediamanager.com/newznab).
 2. In Prowlarr open **Indexers → Add Indexer** and pick **Generic Torznab**.
 3. Put in the URL for your account and the key. Leave API Path at `/api`.
 
