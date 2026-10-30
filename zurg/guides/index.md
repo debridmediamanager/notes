@@ -26,4 +26,4 @@ Working with the library: Usenet, the arrs, `__magic__`, and media servers. rex 
 - [Local libraries](local-libraries.md)
 - [Android and Google TV](android.md)
 
-Pointing zurg at an account is the [Providers](../providers/index.md) section with one page per service. Getting zurg itself running is the [Setup](../setup/windows.md) section — [Windows](../setup/windows.md) is a from-scratch walkthrough of the binary install, RealDebrid with the qBittorrent endpoint first, then Usenet with SABnzbd.
+Pointing zurg at an account is the [Providers](../providers/index.md) section with one page per service. Getting zurg itself running is the [Setup](../setup/index.md) section, with a page each for [Linux](../setup/linux.md), [macOS](../setup/macos.md), [Windows](../setup/windows.md) and [Docker](../setup/docker.md) on Linux. The Windows page is a from-scratch walkthrough of the binary install, RealDebrid with the qBittorrent endpoint first, then Usenet with SABnzbd.

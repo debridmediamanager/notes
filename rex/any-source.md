@@ -24,7 +24,7 @@ rex goes public with its source code on Halloween, October 31, and is free for e
 | You need | Why |
 |---|---|
 | rex's nightly dated 2026.10.25 or newer | Step 1 downloads the newest |
-| A Linux machine that stays on (Ubuntu 22.04 or newer) | rex is a server: your Plex apps reach it whenever you press play. macOS and Windows work too; this page shows Linux, and [Docker](#run-rex-in-docker) is further down |
+| A machine that stays on: Linux (Ubuntu 22.04 or newer), macOS, or Windows (64 bit) | rex is a server: your Plex apps reach it whenever you press play. Where the commands differ, a step has a tab for each system. [Docker](#run-rex-in-docker) is further down, for Linux |
 | 1 GB of RAM for a library of 40,000 titles | rex keeps the library in `rex.db` and uses about 450 MB with 40,000 titles, starting included. Converting video takes more, and more cores or a graphics chip |
 | A GitHub account with access to rex's sponsor releases | rex is a private GitHub release |
 | An app that does what [What your app must do](#what-your-app-must-do) lists | That is where your library comes from |
@@ -48,26 +48,41 @@ Give this list to whoever makes your app. rex's own API reference is `docs/feed-
 
 ## Step 1. Install rex
 
-**What it does.** Downloads rex into `~/rex` and starts it as a service that comes back after a reboot, with everything the later steps need. The steps after this one need no restart; only the optional sections further down do.
+**What it does.** Downloads rex into `~/rex` (`$HOME\rex` on Windows) and starts it as a service that comes back after a reboot, with everything the later steps need. The steps after this one need no restart; only the optional sections further down do.
 
 **Why it matters.** rex is what your Plex apps talk to. The first start creates `rex.db`, which holds your libraries, everything your app sends and your watch history.
 
-rex's download uses the GitHub CLI. Install it (`sudo apt install -y gh`) and sign in once with `gh auth login`. Then:
+rex's download uses the GitHub CLI. Install it (`sudo apt install -y gh` on Linux, `brew install gh` on macOS, `winget install GitHub.cli` on Windows, then a new terminal) and sign in once with `gh auth login`. Then:
 
++++ Linux and macOS
 ```bash
 mkdir -p ~/rex && cd ~/rex
 TAG=$(gh api 'repos/debridmediamanager/rex/releases?per_page=1' --jq '.[0].tag_name')
-A=$(dpkg --print-architecture)
-gh release download "$TAG" -R debridmediamanager/rex -p "*-linux-$A.tar.gz"
-tar xzf rex-*-linux-$A.tar.gz --strip-components=1 && rm rex-*-linux-$A.tar.gz
-sudo loginctl enable-linger "$USER"
+P=$(uname -s | tr A-Z a-z)-$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
+gh release download "$TAG" -R debridmediamanager/rex -p "*-$P.tar.gz"
+tar xzf rex-*-$P.tar.gz --strip-components=1 && rm rex-*-$P.tar.gz
 ```
++++ Windows
+In PowerShell:
 
-This takes rex's newest build, usually a nightly, for your machine's processor. The last line keeps rex running when you log out.
+```powershell
+New-Item -ItemType Directory -Force $HOME\rex | Out-Null; cd $HOME\rex
+$tag = gh api 'repos/debridmediamanager/rex/releases?per_page=1' --jq '.[0].tag_name'
+gh release download $tag -R debridmediamanager/rex -p '*-windows-amd64.zip'
+tar -xf "rex-$tag-windows-amd64.zip" --strip-components=1; Remove-Item "rex-$tag-windows-amd64.zip"
+```
++++
 
-Find rex's LAN IP: `hostname -I` prints several, so take the one on your home network (usually `192.168.x.x` or `10.x.x.x`). **This page writes it as `192.168.1.20` everywhere: put yours in its place.** Plex apps, your app and your own commands all reach rex there.
+This takes rex's newest build, usually a nightly, for your machine.
 
-Now make it a service. Create `~/.config/systemd/user/rex.service`:
+Find rex's LAN IP, its address on your home network. On Linux `hostname -I` prints several: take the one on your home network, not one starting with `172.17.` (Docker) or `100.` (Tailscale). On macOS `ipconfig getifaddr en0` prints it (`en1` if that prints nothing). On Windows `ipconfig` lists it as **IPv4 Address** under your Wi-Fi or Ethernet adapter. **This page writes it as `192.168.1.20` everywhere: put yours in its place.** Plex apps, your app and your own commands all reach rex there.
+
+**Plex Media Server runs on the same machine?** End rex's start command below with `--port 32500` and use `32500` wherever this page says `32400`, the Windows firewall rule included: Plex already holds port 32400 and the ports apps use to find servers, and on any other port rex leaves those to Plex.
+
+Now make it a service:
+
++++ Linux
+Create `~/.config/systemd/user/rex.service`:
 
 ```bash
 mkdir -p ~/.config/systemd/user
@@ -90,13 +105,66 @@ RestartSec=5
 WantedBy=default.target
 ```
 
-**Plex Media Server runs on the same machine?** End the `ExecStart` line with `--port 32500` and use `32500` wherever this page says `32400`: Plex already holds port 32400 and the ports apps use to find servers, and on any other port rex leaves those to Plex.
-
 ```bash
 systemctl --user daemon-reload
 systemctl --user enable --now rex
+sudo loginctl enable-linger "$USER"
 journalctl --user -u rex -f
 ```
+
+rex's **start command** is the `ExecStart` line, and keys go in `~/rex/rex.env`, one `NAME=value` a line. After a change, `systemctl --user daemon-reload && systemctl --user restart rex` restarts rex. `journalctl --user -u rex -f` shows its log. `loginctl enable-linger` keeps rex running when you log out.
++++ macOS
+`run.sh` starts rex in its folder, and a LaunchAgent starts `run.sh` when you log in:
+
+```bash
+cp ~/rex/examples/run.sh.example ~/rex/run.sh
+mkdir -p ~/Library/LaunchAgents
+cat > ~/Library/LaunchAgents/com.rex.plist <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.rex</string>
+  <key>ProgramArguments</key><array><string>/bin/bash</string><string>$HOME/rex/run.sh</string></array>
+  <key>RunAtLoad</key><true/><key>KeepAlive</key><true/>
+  <key>StandardOutPath</key><string>$HOME/rex/rex.log</string>
+  <key>StandardErrorPath</key><string>$HOME/rex/rex.log</string>
+</dict></plist>
+PLIST
+launchctl load ~/Library/LaunchAgents/com.rex.plist
+tail -F ~/rex/rex.log
+```
+
+rex's **start command** is the last line of `~/rex/run.sh`, and keys go in `~/rex/rex.env`, one `NAME=value` a line. After a change, `launchctl kickstart -k gui/$(id -u)/com.rex` restarts rex. `tail -f ~/rex/rex.log` shows its log.
+
+rex runs while you are logged in to the Mac. For a Mac that restarts by itself, turn on automatic login (**System Settings**, **Users & Groups**). If the macOS firewall is on, allow rex when macOS asks, or add `~/rex/rust/target/release/rex` under the firewall's **Options**.
++++ Windows
+Open PowerShell **as administrator** and go to rex's folder with `cd $HOME\rex`. First make `run.cmd`, which starts rex in its folder and writes its log to `rex.log`. Notepad offers to create the file:
+
+```powershell
+notepad run.cmd
+```
+
+```bat
+@echo off
+cd /d "%~dp0"
+rust\target\release\rex.exe 2>> rex.log
+```
+
+Save it. Then let your network through Windows Firewall to rex's port and the two discovery ports, and start rex now and whenever you log in:
+
+```powershell
+New-NetFirewallRule -DisplayName rex -Protocol TCP -LocalPort 32400
+New-NetFirewallRule -DisplayName "rex discovery" -Protocol UDP -LocalPort 32410,32414
+$settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit 0 -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+Register-ScheduledTask rex -Action (New-ScheduledTaskAction -Execute "$HOME\rex\run.cmd") -Trigger (New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME) -Settings $settings
+Start-ScheduledTask rex; Start-Sleep 3
+Get-Content rex.log -Wait
+```
+
+rex's **start command** is the `rex.exe` line of `run.cmd`, and keys go above it, one `set NAME=value` a line. After a change, `Stop-ScheduledTask rex; Start-ScheduledTask rex` restarts rex. `Get-Content $HOME\rex\rex.log -Wait` shows its log.
+
+rex runs while you are logged in to Windows, in a window of its own: leave it open. In PowerShell, type `curl.exe` wherever this page says `curl`: Windows PowerShell's own `curl` is a different command.
++++
 
 **What you should see.** Among the first lines:
 
@@ -115,24 +183,26 @@ rex names itself after the machine; your Plex apps show that name. `no source ye
 
 **Why it matters.** It proves rex works on this machine before your app is involved. If this step works and your app does not, the problem is in your app. Skip it if your app is already set up.
 
-You need `ffprobe`, `jq` and one video file. Put the file where a small web server can serve it:
+You need `ffprobe`, a small web server and one video file. You register the file's folder with rex under the name `test`, then send rex the file, saying it is the movie Sintel (IMDb `tt1727587`, TMDB `45745`) with ffprobe's output.
+
++++ Linux and macOS
+Install `ffprobe` and `jq` (`sudo apt install -y ffmpeg jq` on Linux, `brew install ffmpeg jq` on macOS). Put the file where a small web server can serve it:
 
 ```bash
-sudo apt install -y ffmpeg jq
 mkdir -p ~/rex-test/movies/Sintel.2010
 cp /path/to/any-video.mkv ~/rex-test/movies/Sintel.2010/Sintel.2010.mkv
 cd ~/rex-test
 python3 -m http.server 8099 --bind 127.0.0.1 &
 ```
 
-Register it with rex, under the name `test`:
+Register it with rex:
 
 ```bash
 curl -s -X PUT http://192.168.1.20:32400/rex/sources/test \
   -H 'Content-Type: application/json' -d '{"url": "http://127.0.0.1:8099"}'
 ```
 
-Send rex the file. It says the file is the movie Sintel (IMDb `tt1727587`, TMDB `45745`) and carries ffprobe's output:
+Send rex the file:
 
 ```bash
 P=movies/Sintel.2010/Sintel.2010.mkv
@@ -142,6 +212,33 @@ jq -n --arg p "$P" \
 | curl -s -X POST http://192.168.1.20:32400/rex/feed/test/items \
     -H 'Content-Type: application/json' --data-binary @-
 ```
++++ Windows
+Install `ffprobe` and Python with `winget install Gyan.FFmpeg` and `winget install Python.Python.3.13`, then open a new PowerShell window. Put the file where a small web server can serve it:
+
+```powershell
+New-Item -ItemType Directory -Force $HOME\rex-test\movies\Sintel.2010 | Out-Null
+Copy-Item C:\path\to\any-video.mkv $HOME\rex-test\movies\Sintel.2010\Sintel.2010.mkv
+cd $HOME\rex-test
+$server = Start-Process py '-m http.server 8099 --bind 127.0.0.1' -WindowStyle Hidden -PassThru
+```
+
+Register it with rex:
+
+```powershell
+Invoke-RestMethod -Method Put http://192.168.1.20:32400/rex/sources/test -ContentType application/json -Body '{"url": "http://127.0.0.1:8099"}'
+```
+
+Send rex the file:
+
+```powershell
+$p = 'movies/Sintel.2010/Sintel.2010.mkv'
+$probe = ffprobe -v quiet -print_format json -show_format -show_streams $p | Out-String | ConvertFrom-Json
+$item = @{ id = $p; path = $p; kind = 'movie'; ids = @{ imdb = 'tt1727587'; tmdb = 45745 }; media_info = $probe }
+Invoke-RestMethod -Method Post http://192.168.1.20:32400/rex/feed/test/items -ContentType application/json -Body (ConvertTo-Json @{ items = @($item) } -Depth 20)
+```
+
+PowerShell shows rex's answers as lists rather than JSON.
++++
 
 **What you should see.** The answer is `{"created":1,"updated":0,"held":0,"unchanged":0,"rejected":[]}` and rex's log prints:
 
@@ -154,11 +251,19 @@ Sintel is now in **Movies**, playing from the little web server. No Plex app can
 
 **Clean up** before you go on: removing the test source removes everything it sent. The first request answers a `confirm` path; send a `DELETE` to that path within five minutes.
 
++++ Linux and macOS
 ```bash
 curl -s -X DELETE http://192.168.1.20:32400/rex/sources/test
 curl -s -X DELETE "http://192.168.1.20:32400/rex/sources/test/confirm/<code from the answer>"
 kill %1
 ```
++++ Windows
+```powershell
+Invoke-RestMethod -Method Delete http://192.168.1.20:32400/rex/sources/test
+Invoke-RestMethod -Method Delete "http://192.168.1.20:32400/rex/sources/test/confirm/<code from the answer>"
+Stop-Process -InputObject $server
+```
++++
 
 **If not.**
 
@@ -177,14 +282,14 @@ kill %1
 ### Register rex on the fresh account
 
 1. Sign in to [plex.tv](https://www.plex.tv) **as the fresh account**, open [plex.tv/claim](https://www.plex.tv/claim) and copy the code. It expires after about five minutes.
-2. On the rex machine:
+2. On the rex machine (`curl.exe` on Windows):
 
    ```bash
    curl -X POST "http://192.168.1.20:32400/myplex/claim?token=claim-xxxxxxxxxxxx"
    curl -s http://192.168.1.20:32400/identity
    ```
 
-**What you should see.** The second command shows `claimed="1"`, and `~/rex/claim_state.json` exists. Back that file up: without it rex has to be claimed again, and rex refuses a second claim while the file is there. From now on titles arrive with their names and posters, without a restart.
+**What you should see.** The second command shows `claimed="1"`, and `claim_state.json` exists in rex's folder. Back that file up: without it rex has to be claimed again, and rex refuses a second claim while the file is there. From now on titles arrive with their names and posters, without a restart.
 
 **If not.**
 
@@ -216,7 +321,7 @@ INFO    FEED identified "Some.Movie.2019.1080p" -> movie tmdb:12345 (placed)
 INFO    FEED myapp upsert: 180 created, 0 updated, 20 held, 0 unchanged, 0 rejected
 ```
 
-`held` files are waiting for their ffprobe output and appear as soon as your app sends it. Check what rex has from your app at any time:
+`held` files are waiting for their ffprobe output and appear as soon as your app sends it. Check what rex has from your app at any time (on Windows, `curl.exe` without `| head -c 600`):
 
 ```bash
 curl -s http://192.168.1.20:32400/rex/sources                # the apps that registered, and their addresses
@@ -238,7 +343,7 @@ curl -s http://192.168.1.20:32400/rex/feed/myapp/held  | head -c 600   # what wa
 
 Open a Plex app on a phone, TV or computer **on the same home network**. rex shows up under the machine's name, with **Movies** and **TV Shows**. Pick a movie and press play.
 
-At home nothing else is needed: Plex apps find rex with Plex's own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN). Discovery runs on UDP ports 32410 and 32414, so a firewall on the rex machine must let those in. rex answers discovery when it uses port 32400. If you moved rex to 32500 because Plex runs on the same machine, discovery is left to that Plex, and apps find rex through the Plex account it is [shared with](#share-it-with-your-own-account). app.plex.tv in a web browser is the exception: it needs the HTTPS address from [Use it outside your home](#use-it-outside-your-home-optional), even at home.
+At home nothing else is needed: Plex apps find rex with Plex's own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN). Discovery runs on UDP ports 32410 and 32414, so a firewall on the rex machine must let those in (on Windows, step 1's firewall rules do). rex answers discovery when it uses port 32400. If you moved rex to 32500 because Plex runs on the same machine, discovery is left to that Plex, and apps find rex through the Plex account it is [shared with](#share-it-with-your-own-account). app.plex.tv in a web browser is the exception: it needs the HTTPS address from [Use it outside your home](#use-it-outside-your-home-optional), even at home.
 
 **What you should see.** Posters, titles and years as on any Plex server. Playback starts within a few seconds.
 
@@ -251,12 +356,23 @@ Each file goes to **Movies** or **TV Shows** by the `kind` your app sent. A file
 
 To give a folder libraries of its own, your app adds `directories` to its registration, naming the first folder of the files' paths and the libraries' titles: `{"url": ..., "directories": [{"name": "anime", "shows": "Anime", "movies": "Anime Movies"}]}`, either title alone being fine. rex makes them when your app registers and moves what that folder already has into them as it was: watch history, Fix Match and edits included. A malformed entry is skipped and listed under `ignored` in the answer, with why. Rename them in a Plex app as you like. Delete one and it stays deleted, its files going back to Movies or TV Shows, until you add it again with **Add Library**, whose folder list shows your app's folders. `docs/feed-api.md` has the rules, under "Libraries a source declares".
 
-**Back up** `~/rex/rex.db` (it holds your library, watch history and your app's login, so keep it private) and `claim_state.json`:
+**Back up** `rex.db` in rex's folder (it holds your library, watch history and your app's login, so keep it private) and `claim_state.json`:
 
++++ Linux and macOS
 ```bash
-sudo apt install -y sqlite3    # once
+sudo apt install -y sqlite3    # once, on Linux; macOS has it
 sqlite3 ~/rex/rex.db ".backup $HOME/rex/rex.db.bak"
 ```
++++ Windows
+Windows has no `sqlite3`, so stop rex for a moment and copy `rex.db` with the two files beside it that start the same way:
+
+```powershell
+Stop-ScheduledTask rex
+New-Item -ItemType Directory -Force $HOME\rex-backup | Out-Null
+Copy-Item $HOME\rex\rex.db*, $HOME\rex\claim_state.json $HOME\rex-backup
+Start-ScheduledTask rex
+```
++++
 
 In Docker the files sit in `~/rex/config`, readable by root only. Back up from inside the container: `docker exec rex sqlite3 /config/rex.db ".backup /config/rex.db.bak"`.
 
@@ -291,7 +407,7 @@ rex-direct is DMM's answer to plex.direct, and it is on by default. On your rout
 
 Once claimed, rex gets its own name from DMM, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and a certificate for that name alone. The first certificate takes a few minutes; rex's log says it is being issued and then shows the name in a `rex-direct:` line. A new home IP and certificate renewals are picked up by themselves. One Plex account can hold up to ten rex-direct names. At home, Plex apps can pick this name over the LAN IP, and unless you also set up Tailscale serve or Caddy, app.plex.tv in a browser has no other address it can use. So at home your router has to send the connection straight back to rex, or your home DNS has to point the name at rex: [What you should see](#what-you-should-see) checks which.
 
-If your router forwards a different outside port to rex, add `REX_DIRECT_PORT=<that port>` to `rex.env` and restart rex. The port forward does not open the feed API: see [Keep the port private](#keep-the-port-private).
+If your router forwards a different outside port to rex, add the key `REX_DIRECT_PORT=<that port>` as [step 1](#step-1-install-rex) shows for your system and restart rex. The port forward does not open the feed API: see [Keep the port private](#keep-the-port-private).
 
 ### Tailscale serve
 
@@ -301,15 +417,9 @@ Install [Tailscale](https://tailscale.com/download) on the rex machine and on th
 sudo tailscale serve --bg 32400
 ```
 
-It prints the address, for example `https://myhost.tailnet.ts.net`. Give it to rex with `:443` added, on the `ExecStart` line from [step 1](#step-1-install-rex):
+On Windows, run it in PowerShell as administrator without `sudo`. On macOS, use the Tailscale app's [command-line tool](https://tailscale.com/kb/1080/cli) without `sudo`.
 
-```ini
-ExecStart=%h/rex/rust/target/release/rex --announce-url https://myhost.tailnet.ts.net:443
-```
-
-```bash
-systemctl --user daemon-reload && systemctl --user restart rex
-```
+It prints the address, for example `https://myhost.tailnet.ts.net`. Give it to rex with `:443` added: end rex's start command from [step 1](#step-1-install-rex) with `--announce-url https://myhost.tailnet.ts.net:443`, and restart rex.
 
 Everyone on your tailnet, including anyone you share this machine with, can use rex's feed API. Share the machine only with people you trust.
 
@@ -320,7 +430,7 @@ You need port 443 on your router forwarded to the rex machine, and a name for yo
 - **Your own domain:** an `A` record such as `rex.example.com` pointing at your home IP.
 - **No domain:** use `1-2-3-4.sslip.io` with your public IP's numbers (`curl -s ifconfig.me` shows it). If your IP changes, update the name.
 
-Install [Caddy](https://caddyserver.com/docs/install) and make `/etc/caddy/Caddyfile`:
+Install [Caddy](https://caddyserver.com/docs/install) and give it this Caddyfile (`/etc/caddy/Caddyfile` with Caddy's Linux package):
 
 ```
 rex.example.com {
@@ -329,7 +439,7 @@ rex.example.com {
 }
 ```
 
-`respond /rex/* 403` keeps the feed API off the internet; your app still reaches rex directly. Then `sudo systemctl reload caddy`, end the `ExecStart` line with `--announce-url https://rex.example.com:443`, and restart rex as above.
+`respond /rex/* 403` keeps the feed API off the internet; your app still reaches rex directly. Then reload Caddy (`sudo systemctl reload caddy` with the Linux package), end rex's start command with `--announce-url https://rex.example.com:443`, and restart rex.
 
 ### A small VPS
 
@@ -371,19 +481,15 @@ localPort = 32400
 remotePort = 32400
 ```
 
-Run it as a service, for example `~/.config/systemd/user/frpc.service` with `ExecStart=%h/frp/frpc -c %h/frp/frpc.toml` and `Restart=always`. Then give rex the VPS's name with `--announce-url`, add `REX_DIRECT_URL=off` to `~/rex/rex.env` (rex-direct cannot work without a public IP at home, so plex.tv should not list it), and restart rex:
-
-```ini
-ExecStart=%h/rex/rust/target/release/rex --announce-url https://1-2-3-4.sslip.io:443
-```
+Run it as a service: on Linux, for example `~/.config/systemd/user/frpc.service` with `ExecStart=%h/frp/frpc -c %h/frp/frpc.toml` and `Restart=always`; on macOS and Windows, start `frpc -c frpc.toml` the way [step 1](#step-1-install-rex) starts rex. Then end rex's start command with `--announce-url https://1-2-3-4.sslip.io:443`, add the key `REX_DIRECT_URL=off` (rex-direct cannot work without a public IP at home, so plex.tv should not list it), and restart rex.
 
 ### What you should see
 
 ```bash
-curl -s -o /dev/null -w '%{http_code}\n' https://myhost.tailnet.ts.net/identity
+curl -s https://myhost.tailnet.ts.net/identity
 ```
 
-answers `200` on a computer at home. Use your own address: with rex-direct it is the one `journalctl --user -u rex | grep 'rex-direct: https'` prints (in Docker, `docker logs rex 2>&1 | grep 'rex-direct: https'`), with `/identity` added. Open the same address in a phone's browser with Wi-Fi off: it shows a short XML page with no certificate warning. With Tailscale serve, both the computer and the phone need Tailscale on.
+shows a short XML page with rex's `machineIdentifier` on a computer at home; `curl` shows nothing when the address or its certificate is wrong. Use your own address: with rex-direct it is the one in rex's `rex-direct: https://...` log line, with `/identity` added. Open the same address in a phone's browser with Wi-Fi off: it shows a short XML page with no certificate warning. With Tailscale serve, both the computer and the phone need Tailscale on.
 
 With rex-direct or Caddy, if the phone gets it and the computer at home does not, your router does not send connections back inside. Point the name at rex's LAN IP in your home network's DNS (your router's, or Pi-hole's; a router with DNS rebind protection needs an exception for it) and the rex machine answers it at home with the same certificate. If the phone fails too, the port is not forwarded, your connection is behind CGNAT, or rex-direct's certificate is still being issued (rex's log says so while it is).
 
@@ -405,7 +511,10 @@ Watched on another Plex server before? Once your library is in rex, [Bring your 
 
 **Why it matters.** Without it a device that cannot play a file as it is gets "This server is not powerful enough to convert video". Web browsers hit this most, for example with AC3 or DTS sound.
 
-Install **jellyfin-ffmpeg** 8, not the `ffmpeg` your system offers: it is the build rex is measured with and the only one that converts every Dolby Vision file, tonemaps HDR on the graphics chip and draws subtitles there. Another FFmpeg converts ordinary video and rex's log says what it lacks (Ubuntu 22.04's own also seeks a few seconds off). The package goes in `/usr/lib/jellyfin-ffmpeg` beside any other FFmpeg, and rex finds it on its own. The first line picks the build for your system: there are builds for Ubuntu 22.04, 24.04 and 26.04 and Debian 12 and 13, on amd64 or arm64, and on any other `curl` stops with an error.
+Install **jellyfin-ffmpeg** 8, not the `ffmpeg` your system offers: it is the build rex is measured with and the only one that converts every Dolby Vision file, tonemaps HDR on the graphics chip and draws subtitles there. Another FFmpeg converts ordinary video and rex's log says what it lacks (Ubuntu 22.04's own also seeks a few seconds off). rex finds it on its own.
+
++++ Linux
+The package goes in `/usr/lib/jellyfin-ffmpeg` beside any other FFmpeg. The first line picks the build for your system: there are builds for Ubuntu 22.04, 24.04 and 26.04 and Debian 12 and 13, on amd64 or arm64, and on any other `curl` stops with an error.
 
 ```bash
 DEB=jellyfin-ffmpeg8_8.1.3-1-$(. /etc/os-release; echo "$VERSION_CODENAME")_$(dpkg --print-architecture).deb
@@ -414,7 +523,7 @@ sudo apt install -y "./$DEB" && rm "$DEB"
 systemctl --user restart rex
 ```
 
-On another Linux, unpack jellyfin-ffmpeg's portable build into `~/rex/ffmpeg`, where rex looks for it, and restart rex. It uses your system's own graphics driver, so on an older system it converts on the processor only; use the package wherever there is one. On Windows or macOS, download the portable build for your machine from [jellyfin-ffmpeg's release page](https://github.com/jellyfin/jellyfin-ffmpeg/releases/tag/v8.1.3-1) (`win64-clang` for Windows, `macarm64` for Apple Silicon, `mac64` for an Intel Mac) and unpack it into an `ffmpeg` folder inside rex's folder. rex finds it there.
+On another Linux, unpack jellyfin-ffmpeg's portable build into `~/rex/ffmpeg`, where rex looks for it, and restart rex. It uses your system's own graphics driver, so on an older system it converts on the processor only; use the package wherever there is one.
 
 ```bash
 B=$( [ "$(uname -m)" = aarch64 ] && echo linuxarm64 || echo linux64 )
@@ -422,6 +531,29 @@ mkdir -p ~/rex/ffmpeg && curl -fL "https://github.com/jellyfin/jellyfin-ffmpeg/r
 ```
 
 With an Intel or AMD graphics chip, also run `sudo usermod -aG render "$USER"` and reboot so the service gets the group; in an LXC, pass the GPU through. The chip makes conversion fast; without one rex uses the processor. With no Intel or AMD chip, rex also tries an NVIDIA card's encoder. On Intel, `sudo apt install intel-opencl-icd` also converts HDR and Dolby Vision on the chip, at about real time for 4K on a small Intel; without it they are converted on the processor, which a low-power Intel cannot do in real time at 4K.
++++ macOS
+The portable build goes into `~/rex/ffmpeg`, where rex looks for it:
+
+```bash
+B=$( [ "$(uname -m)" = arm64 ] && echo macarm64 || echo mac64 )
+mkdir -p ~/rex/ffmpeg && curl -fL "https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg_8.1.3-1_portable_${B}-gpl.tar.xz" | tar xJ -C ~/rex/ffmpeg
+launchctl kickstart -k gui/$(id -u)/com.rex
+```
+
+On a Mac rex always converts on the processor: it has no way to use a Mac's graphics chip.
++++ Windows
+The portable build goes into an `ffmpeg` folder in rex's folder, where rex looks for it:
+
+```powershell
+cd $HOME\rex
+curl.exe -fLO https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg_8.1.3-1_portable_win64-clang-gpl.zip
+Expand-Archive jellyfin-ffmpeg_8.1.3-1_portable_win64-clang-gpl.zip ffmpeg
+Remove-Item jellyfin-ffmpeg_8.1.3-1_portable_win64-clang-gpl.zip
+Stop-ScheduledTask rex; Start-ScheduledTask rex
+```
+
+On Windows rex converts on an NVIDIA card's encoder when there is one, and on the processor otherwise.
++++
 
 **What you should see.** rex's log has a `transcoder:` line naming the FFmpeg and the hardware it found (`hardware none` means the processor). A file that failed before now plays; the log shows what was converted, for example `video=copy h264 audio=ac3->aac`.
 
@@ -442,6 +574,8 @@ There is nothing to set up. rex checks a subtitle against the file's own text su
 Downloads, intro and credits detection, seek thumbnails and the other Plex server features rex has, and their settings, are in `docs/setup.md` in your rex download ("Movie and TV capabilities"). Music, Live TV and DVR are not supported.
 
 ## Run rex in Docker
+
+These steps are for a Linux machine. On macOS and Windows, Docker Desktop runs containers inside a virtual machine, so host networking, LAN discovery and the graphics chip do not work there as they do on Linux: use the steps above instead.
 
 rex's image is private, like the download. Log in once with your GitHub username and a classic personal access token with the `read:packages` and `repo` scopes:
 
@@ -482,7 +616,7 @@ rex takes no password on its feed API. It answers that API only from this machin
 
 ## Updating
 
-Run the first block of [step 1](#step-1-install-rex) again in `~/rex` (it replaces the program and `data/`, and leaves `rex.db`, `rex.env` and `claim_state.json` alone), then `systemctl --user restart rex`.
+Run the download block of [step 1](#step-1-install-rex) again (it replaces the program and `data/`, and leaves `rex.db`, your keys and `claim_state.json` alone), then restart rex as step 1 shows. On Windows, stop rex first with `Stop-ScheduledTask rex`: Windows does not let a running `rex.exe` be replaced.
 
 ## When something is wrong
 
@@ -498,6 +632,6 @@ Run the first block of [step 1](#step-1-install-rex) again in `~/rex` (it replac
 | A snapshot answers 409 `would remove more than half` | rex's guard against an app that sends a half-loaded library. If the removal is real, your app must send the whole snapshot again from part 0, with `"force": true` on its last part. Resending only the last part is refused, and sending it as a new snapshot of its own with `force` removes everything the earlier parts named |
 | Deleting in a Plex app fails and rex logs `DELETE refused by the source` | Your app does not accept a `DELETE` of the file. Remove it in your app instead |
 | "This server is not powerful enough to convert video" | The device cannot play the file as it is. Try a Plex app on a TV or phone, or set up [Converting video](#converting-video-optional) |
-| A device at home cannot connect, and rex's `heartbeat ... ->` line shows no `http://192.168.1.20:32400` | rex announces the private address of the network it reaches the internet through; behind a VPN or a Tailscale exit node that is not your home network. Add `--announce-url http://192.168.1.20:32400` to the `ExecStart` line and restart rex |
+| A device at home cannot connect, and rex's `heartbeat ... ->` line shows no `http://192.168.1.20:32400` | rex announces the private address of the network it reaches the internet through; behind a VPN or a Tailscale exit node that is not your home network. End rex's start command ([step 1](#step-1-install-rex)) with `--announce-url http://192.168.1.20:32400` and restart rex |
 | rex is not in the Plex apps away from home | Not claimed, or the device cannot reach the HTTPS address |
-| rex stops when you log out | Run `sudo loginctl enable-linger "$USER"` (step 1) |
+| rex stops when you log out | On Linux, run `sudo loginctl enable-linger "$USER"` (step 1). On macOS and Windows, rex as step 1 sets it up runs while you are logged in |

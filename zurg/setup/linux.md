@@ -29,6 +29,8 @@ sudo apt-get update
 sudo apt-get install -y fuse3
 ```
 
+Other distributions call the package `fuse3` too: `sudo dnf install fuse3` on Fedora, `sudo pacman -S fuse3` on Arch, `sudo zypper install fuse3` on openSUSE.
+
 Check that the helper and device are present:
 
 ```bash
@@ -77,6 +79,9 @@ Setup asks which providers to configure. Choose one or several in priority order
   2) TorBox
   3) AllDebrid
   4) Usenet (NZB)
+  5) Premiumize
+  6) Debrid-Link
+  7) Offcloud
 ```
 
 For example enter `2,4` for TorBox followed by Usenet. Setup asks only for the selected credentials. It then:

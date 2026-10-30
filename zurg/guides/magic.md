@@ -22,6 +22,8 @@ It holds three kinds of thing. `__magic__/__all__` holds every release nothing h
 └── tv          <- your *arr root folders
 ```
 
+Paths on this page use the Linux mount, `/mnt/zurg`. On macOS it is `/Volumes/Zurg` and on Windows `Z:\`, so `/mnt/zurg/__magic__/tv` is `/Volumes/Zurg/__magic__/tv` or `Z:\__magic__\tv`.
+
 That separation is the point. The folder a client imports *from* and the folders it imports *into* are siblings, so neither contains the other: a manual import pointed at the download folder does not walk your library tree, and neither Sonarr nor Radarr warns about the arrangement.
 
 It is off by default. Turn it on with:
@@ -86,19 +88,44 @@ Everything else about a release folder is unchanged, including an archive: a RAR
 
 Through the mount, with ordinary commands:
 
++++ Linux
 ```bash
 mkdir -p /mnt/zurg/__magic__/tv/The\ Show/Season\ 01
 mv /mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv \
    /mnt/zurg/__magic__/tv/The\ Show/Season\ 01/S01E01.mkv
 ```
++++ macOS
+```bash
+mkdir -p /Volumes/Zurg/__magic__/tv/The\ Show/Season\ 01
+mv /Volumes/Zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv \
+   /Volumes/Zurg/__magic__/tv/The\ Show/Season\ 01/S01E01.mkv
+```
++++ Windows
+```powershell
+New-Item -ItemType Directory -Force "Z:\__magic__\tv\The Show\Season 01"
+Move-Item -LiteralPath "Z:\__magic__\__all__\Some.Release.S01E01.1080p\ep1.mkv" `
+  -Destination "Z:\__magic__\tv\The Show\Season 01\S01E01.mkv"
+```
+`-LiteralPath` keeps the square brackets many release names carry from being read as a wildcard.
++++
 
 The file now lives at the new path and is gone from the old one. It streams from the same account it always did.
 
 Whole release folders move too, as a single row:
 
++++ Linux
 ```bash
 mv /mnt/zurg/__magic__/__all__/Some.Movie.2024.2160p /mnt/zurg/__magic__/movies/Some\ Movie\ \(2024\)
 ```
++++ macOS
+```bash
+mv /Volumes/Zurg/__magic__/__all__/Some.Movie.2024.2160p /Volumes/Zurg/__magic__/movies/Some\ Movie\ \(2024\)
+```
++++ Windows
+```powershell
+Move-Item -LiteralPath "Z:\__magic__\__all__\Some.Movie.2024.2160p" -Destination "Z:\__magic__\movies\Some Movie (2024)"
+```
++++
 
 Directories move with everything under them, as one batch. Moves go both ways: a file can be moved *into* a release folder as well as out of one, and the folder lists it beside the release's own entries — which is what a program that puts something back into the folder it is importing from needs to see. Where a name arrives from two places at once the deliberate one wins: what you moved beats what the release calls that name, which beats a real file in `data/local`, and the loser is left out rather than listed twice.
 
@@ -135,7 +162,7 @@ magic:
 dmm_api_key: YOUR_DMM_API_KEY
 ```
 
-Restart zurg. The two folders fill once the library has loaded and DMM has identified it, which on a large library takes a few minutes the first time; after that a new release is filed within a minute of DMM identifying it. Then add a **Movies** library pointed at `/mnt/zurg/__magic__/__movies__` and a **TV** library pointed at `/mnt/zurg/__magic__/__shows__`, and scan. In Kodi, set the TV source's scraper to **The Movie Database**, as it is by default, and keep it updated: the `tvshow.nfo` files need version 1.7 or later of Kodi's TMDb TV scraper.
+Restart zurg. The two folders fill once the library has loaded and DMM has identified it, which on a large library takes a few minutes the first time; after that a new release is filed within a minute of DMM identifying it. Then add a **Movies** library pointed at `/mnt/zurg/__magic__/__movies__` and a **TV** library pointed at `/mnt/zurg/__magic__/__shows__` (`/Volumes/Zurg/__magic__/...` on macOS, `Z:\__magic__\__movies__` and `Z:\__magic__\__shows__` on Windows), and scan. In Kodi, set the TV source's scraper to **The Movie Database**, as it is by default, and keep it updated: the `tvshow.nfo` files need version 1.7 or later of Kodi's TMDb TV scraper.
 
 Point each library at its folder, never at `__magic__` itself: that would scan `__all__` and your other folders too, and find everything twice.
 

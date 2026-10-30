@@ -22,8 +22,9 @@ Post in the [Discord](https://discord.com/invite/7u4YjMThXP) forum for what you 
 
 | rex runs as | Run |
 |---|---|
-| A service | `journalctl --user -u rex -n 200 --no-pager` |
+| A systemd service on Linux | `journalctl --user -u rex -n 200 --no-pager` |
 | Docker | `docker compose logs --tail=200 rex` |
+| A terminal window, launchd or Task Scheduler | The last 200 lines of that window, or of the file its output goes to |
 
 ## Remote help for sponsors
 
@@ -71,7 +72,7 @@ mkdir -p ~/upterm && cd ~/upterm && curl -fsSL "https://github.com/owenthereal/u
 Open PowerShell. It does not need to run as administrator.
 
 ```powershell
-$d = "$env:LOCALAPPDATA\upterm"; New-Item -ItemType Directory -Force $d | Out-Null; Invoke-WebRequest https://github.com/owenthereal/upterm/releases/latest/download/upterm_windows_amd64.tar.gz -OutFile "$d\upterm.tar.gz"; tar -xzf "$d\upterm.tar.gz" -C $d; & "$d\upterm.exe" host --server ssh://upterm.debridmediamanager.com:2222 --accept
+$d = "$env:LOCALAPPDATA\upterm"; New-Item -ItemType Directory -Force $d | Out-Null; Invoke-WebRequest https://github.com/owenthereal/upterm/releases/latest/download/upterm_windows_amd64.tar.gz -OutFile "$d\upterm.tar.gz" -UseBasicParsing; tar -xzf "$d\upterm.tar.gz" -C $d; & "$d\upterm.exe" host --server ssh://upterm.debridmediamanager.com:2222 --accept
 ```
 
 On an ARM laptop like a Surface Pro X replace `amd64` with `arm64`.
@@ -98,7 +99,7 @@ Then leave the window open and do not click inside it: on Windows a click in a P
 
 **Type `exit` in that window when you are done.** That ends the session and the line stops working at once.
 
-Closing the window is not enough: the session keeps running. If you closed it, open a new terminal, run `upterm session list` (on Windows `& "$env:LOCALAPPDATA\upterm\upterm.exe" session list`) and then `upterm session stop` with the name it shows.
+Closing the window is not enough: the session keeps running. If you closed it, open a new terminal, run `~/upterm/upterm session list` (on Windows `& "$env:LOCALAPPDATA\upterm\upterm.exe" session list`) and then the same program with `session stop` and the name it shows.
 
 To get help again later paste the line from step 2 again. Each session gets a new line.
 

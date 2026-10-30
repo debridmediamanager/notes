@@ -23,9 +23,15 @@ Everything below was tested on 2026-10-23 with Kometa 2.5.3 (the `kometateam/kom
 
 Kometa signs in to rex with a Plex token. Use the token rex was given when you registered it. On the rex machine:
 
++++ Linux and macOS
 ```bash
 grep -o '"token": "[^"]*"' ~/rex/claim_state.json
 ```
++++ Windows
+```powershell
+(Select-String '"token": "[^"]*"' $HOME\rex\claim_state.json).Matches.Value
+```
++++
 
 With [rex in Docker](with-zurg.md#run-rex-in-docker) the file is root-only: `sudo grep -o '"token": "[^"]*"' ~/rex/config/claim_state.json`.
 
@@ -35,7 +41,7 @@ With [rex in Docker](with-zurg.md#run-rex-in-docker) the file is root-only: `sud
 
 ## 2. Write Kometa's config
 
-Make a folder for Kometa, for example `~/kometa/config`, and put this in `~/kometa/config/config.yml`:
+Make a folder for Kometa, for example `~/kometa/config` (`$HOME\kometa\config` on Windows), and put this in `config.yml` inside it:
 
 ```yaml
 libraries:
@@ -67,9 +73,15 @@ This is a small start. Kometa's docs list [every default collection and overlay]
 
 ## 3. Run it once
 
++++ Linux and macOS
 ```bash
 docker run --rm -v ~/kometa/config:/config kometateam/kometa:latest --run
 ```
++++ Windows
+```powershell
+docker run --rm -v "$HOME\kometa\config:/config" kometateam/kometa:latest --run
+```
++++
 
 `--run` makes Kometa do one pass now and exit. Without it Kometa stays running and waits for its daily schedule.
 

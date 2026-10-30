@@ -6,32 +6,37 @@ order: 90
 
 # Setup
 
-The binary installer is the shortest path on Linux, macOS and Windows. Docker remains available when a container fits the host better.
+The binary installer is the shortest path on Linux, macOS and Windows. Docker remains available on a Linux host when a container fits better. Docker Desktop on macOS and Windows runs containers in a VM, so the mount cannot show up in Finder or Explorer: use the binary there.
 
 ## One-line convenience installers
 
 For a fresh sponsor install, choose the command for the host:
 
++++ Linux and macOS
 ```bash
-# Linux or macOS
 curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.sh | bash
-
-# Docker on Linux
+```
++++ Docker on Linux
+```bash
 curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install-docker.sh | bash
 ```
-
++++ Windows
+In PowerShell:
 ```powershell
-# Windows PowerShell
 irm https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.ps1 | iex
 ```
++++
 
 The bootstrap checks platform prerequisites, signs in to GitHub for sponsor access, downloads the matching build and runs the provider chooser. Existing binaries and configs are preserved. Each guide below also keeps the complete manual route.
 
 - [Linux](linux.md)
-- [Docker](docker.md)
+- [Docker](docker.md) (Linux hosts)
 - [macOS](macos.md)
 - [Windows](windows.md)
 
 Once zurg is installed [Providers](../providers/index.md) covers pointing it at
 an account. There is a page per service with the credential and the `config.yml`
-entry and what that service does differently.
+entry and what that service does differently. Those pages are written for Docker. On a
+binary install the `config.yml` entry and the Dashboard steps are the same, and
+`./zurg service restart` (`.\zurg.exe service restart` on Windows) takes the place of
+`docker compose restart zurg`.

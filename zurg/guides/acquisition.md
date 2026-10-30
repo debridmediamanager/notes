@@ -57,14 +57,14 @@ acquisition:
       enabled: true
       url: http://radarr:7878
       api_key: YOUR_RADARR_API_KEY
-      library_path: /mnt/zurg/__magic__   # where Radarr sees __magic__
+      library_path: /mnt/zurg/__magic__   # where Radarr sees __magic__; leave out if it sees zurg's own mount
       check_every_secs: 60
     - name: shows
       type: sonarr
       enabled: true
       url: http://sonarr:8989
       api_key: YOUR_SONARR_API_KEY
-      library_path: /mnt/zurg/__magic__   # where Sonarr sees __magic__
+      library_path: /mnt/zurg/__magic__   # where Sonarr sees __magic__; leave out if it sees zurg's own mount
       check_every_secs: 60
 ```
 
@@ -321,9 +321,13 @@ zurg's library that Radarr now sees in its folder.
 ### Setting up Radarr
 
 1. **Root folder inside `__magic__`, one level down.** For example
-   `/mnt/zurg/__magic__/movies`. Not `__magic__` itself, and not
+   `/mnt/zurg/__magic__/movies` (`/Volumes/Zurg/__magic__/movies` on macOS,
+   `Z:\__magic__\movies` on Windows). Not `__magic__` itself, and not
    `__magic__/__all__`, which lists every release in the library. A movie
    whose folder is anywhere else is skipped, with one warning in zurg's log.
+   On Windows Radarr sees `Z:` only when it runs in the same logon session
+   as zurg, so not as a Windows service: see
+   [the session rules](../setup/windows.md#keeping-it-running-the-session-rules).
 2. **Import lists with search on add off.** Add movies however you like (by
    hand, lists, Seerr pointed at Radarr). Leave **Search for Movie** off
    when adding, since zurg does the searching.
@@ -337,7 +341,9 @@ zurg's library that Radarr now sees in its folder.
    for example `/data/zurg/__magic__`. A movie at
    `/data/zurg/__magic__/movies/Heat (1995)` is then placed in
    `movies/Heat (1995)` inside zurg's `__magic__`. Windows paths such as
-   `Z:\__magic__` work too.
+   `Z:\__magic__` work too. A Radarr container is covered on a Linux host
+   only: Docker Desktop on macOS and Windows runs containers in a VM, and
+   passing zurg's mount into it is untested, so run Radarr natively there.
 
    If Radarr also takes grabs from zurg's [SABnzbd](sonarr-radarr.md) or
    [qBittorrent](sonarr-radarr-torrents.md) endpoint, it has to see their download
@@ -473,8 +479,10 @@ Sonarr to rescan that one series. Nothing is copied.
 ### Setting up Sonarr
 
 1. **Root folder inside `__magic__`, one level down.** For example
-   `/mnt/zurg/__magic__/tv`. A series whose folder is anywhere else is
+   `/mnt/zurg/__magic__/tv` (`/Volumes/Zurg/__magic__/tv` on macOS,
+   `Z:\__magic__\tv` on Windows). A series whose folder is anywhere else is
    skipped with one warning in zurg's log.
+   On Windows Sonarr has to run in zurg's logon session, as Radarr does.
 2. **Search on add off.** Add series however you like. Leave **Start search
    for missing episodes** off, since zurg does the searching.
 3. **No indexers and no download client are needed.** If Sonarr has them it

@@ -89,7 +89,7 @@ order: 60
 
 ## Infrastructure & Scripts
 - Sample Nginx vhost for proxying Plex traffic (`nginx/plex.conf`).
-- `plex_update.sh` is the reference partial-scan script for `on_library_update: sh plex_update.sh "$@"`; put it beside `docker-compose.yml`, whose folder is mounted at `/config`, so the script is already inside the container.
+- `plex_update.sh` is the reference partial-scan script for `on_library_update: sh plex_update.sh "$@"`; put it beside `docker-compose.yml`, whose folder is mounted at `/config`, so the script is already inside the container. On Windows the hook runs through PowerShell rather than `/bin/sh` (`pkg/script/script.go`), so this script does not run there; [Usenet → Point Plex at it](usenet.md#6-point-plex-at-it) shows the PowerShell form.
 - `integration/plex_integration.sh` runs under `make integration-test` and `make integration-test-media`; it skips loudly on a host with no Plex server, so read the output rather than the exit code. `scripts/plex-e2e-test.sh` is a standalone playback check that reads `plex_server_url`/`plex_token` out of `config.yml`.
 
 ## Recommended Plex Settings
@@ -126,7 +126,23 @@ Turning `autoEmptyTrash` off leaves a job undone. Plex has been told not to clea
 
 zurg now takes the job it took away. With `plex_trash_sweep_every_mins` unset, the [trash sweep](../internals/plex-trash-sweep.md) removes entries every 60 minutes — but only when nothing else is doing it. If Plex is still emptying its own trash, because `plex_settings_policy` is `off` or `warn` or because `autoEmptyTrash` is in `plex_settings_ignore`, zurg stands down and leaves it to Plex. Two collectors on one library is how a disagreement between them becomes a deletion.
 
-The sweep is much narrower than Plex's own emptying, which is the point of preferring it: it removes one entry at a time, never one that still has a file, only from a mount that reads at that moment, capped at 50 removals and 10% of the trash per pass, and entries it has no verdict on stay visible as broken for 14 days first. It also needs `plex_database_path` set, so it only runs where Plex is on this host.
+The sweep is much narrower than Plex's own emptying, which is the point of preferring it: it removes one entry at a time, never one that still has a file, only from a mount that reads at that moment, capped at 50 removals and 10% of the trash per pass, and entries it has no verdict on stay visible as broken for 14 days first. It also needs `plex_database_path` set, so it only runs where Plex is on this host. zurg reads that database with the `Plex SQLite` program Plex installs, and `plex_sqlite_binary` defaults to where the Linux package puts it, so on macOS and Windows set both:
+
++++ Linux
+```yaml
+plex_database_path: "/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db"
+```
++++ macOS
+```yaml
+plex_database_path: "/Users/YOU/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db"
+plex_sqlite_binary: "/Applications/Plex Media Server.app/Contents/MacOS/Plex SQLite"
+```
++++ Windows
+```yaml
+plex_database_path: "C:/Users/YOU/AppData/Local/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db"
+plex_sqlite_binary: "C:/Program Files/Plex/Plex Media Server/Plex SQLite.exe"
+```
++++
 
 To keep removal off and empty the trash yourself, write `plex_trash_sweep_every_mins: 0`. That is the explicit no, and it is distinct from leaving the key out.
 
@@ -192,6 +208,15 @@ zurg does not touch `ButlerStartHour`/`ButlerEndHour`, because there is no hour 
 
 Changing a preference stops *future* runs, not the one already going. Plex Media Server respawns its scanner children, so killing them does nothing:
 
++++ Linux and macOS
 ```bash
 curl -X DELETE "http://localhost:32400/butler?X-Plex-Token=$TOKEN"
 ```
++++ Windows
+```powershell
+curl.exe -X DELETE "http://localhost:32400/butler?X-Plex-Token=$TOKEN"
+```
+In Windows PowerShell 5.1 `curl` is another name for `Invoke-WebRequest`, so type `curl.exe`.
++++
+
+`$TOKEN` is your Plex token.

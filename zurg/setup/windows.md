@@ -47,7 +47,7 @@ Set-Location "$HOME\zurg"
 .\zurg.exe doctor
 ```
 
-`setup` asks which providers to configure. Choose one or several of Real-Debrid, TorBox, AllDebrid and Usenet in priority order. It asks only for the selected credentials. It then:
+`setup` asks which providers to configure. Choose one or several of Real-Debrid, TorBox, AllDebrid, Usenet, Premiumize, Debrid-Link and Offcloud in priority order. It asks only for the selected credentials. It then:
 
 1. Creates and validates `config.yml`.
 2. Restricts its ACL to your user, SYSTEM and Administrators.
@@ -168,12 +168,10 @@ INFO  rclone        rclone started with mount Z:, union local C:\Users\you\zurg\
 
 The generated key is also in `data\qbittorrent-apikey`. Then the library walk begins — the first start reads every torrent on the account, and on a large account that takes a while. The walk shares the provider's API budget with everything else on the account. **While it walks, `__magic__` answers *Library is still loading*** — that is expected, not a fault.
 
-Three warnings you may see, all known and none fatal:
+One warning you may see, known and not fatal:
 
 | Warning | What it is |
 |---|---|
-| `the save path "Z:/__magic__/__all__" is not absolute` | A false positive on Windows: zurg checks the path with a POSIX rule, and a drive letter is absolute everywhere else. The endpoint is fine — the clients open `Z:/__magic__/__all__` without trouble. |
-| `cannot truncate data\magic.journal: Access is denied` | A real Windows quirk, cosmetic in effect: zurg holds the journal open and then tries to compact it, which Windows refuses. Your placements are still written and still survive restarts — verified on this install — the journal just never shrinks. |
 | `Debug logging is enabled` | The generated config is verbose by default. Add `log_level: INFO` to quiet it. |
 
 ![zurg running in a PowerShell window](../../assets/windows-setup/20-console-rd.webp)
@@ -219,7 +217,7 @@ PS> (Invoke-RestMethod "http://localhost:9999/api/v2/app/preferences" -Headers @
 Z:/__magic__/__all__
 ```
 
-And add a torrent to it. A `.torrent` file goes up with `curl -F`, or any client does it for you:
+And add a torrent to it. A `.torrent` file goes up with `curl.exe -F` (plain `curl` in Windows PowerShell is `Invoke-WebRequest`, which has no `-F`), or any client does it for you:
 
 ```
 INFO  router.qbittorrent  qBittorrent: added op1176 (dc98af37…) to realdebrid as W7FRRMVJWUOMS
@@ -252,9 +250,9 @@ Pick a differently-named release and it goes through. The [torrent walkthrough](
 Switching the install from Real-Debrid to Usenet is a wipe: stop zurg, delete everything the first pass created, keep the binary and `bin\` so the helper downloads do not repeat.
 
 ```powershell
-PS> Stop-ScheduledTask zurg           # or close the console window
-PS> taskkill /IM zurg.exe /F ; taskkill /IM rclone.exe /F
 PS> cd C:\Users\you\zurg
+PS> .\zurg.exe service uninstall      # removes the task setup made; or Unregister-ScheduledTask zurg for the manual one, or close the console window
+PS> taskkill /IM zurg.exe /F ; taskkill /IM rclone.exe /F
 PS> Get-ChildItem -Exclude zurg.exe, bin | Remove-Item -Recurse -Force
 PS> Get-ChildItem
 
@@ -430,6 +428,16 @@ Two traps measured on this box:
 
 If you do not need Explorer at all — a headless box, or clients that speak HTTP — none of this matters: run zurg however you like and point things at `http://localhost:9999/dav/` or the endpoints. The session rule only governs the drive letter.
 
+## Reaching zurg from another machine
+
+Programs on this PC reach zurg at `localhost`. Windows Firewall keeps everything else on your network out until you let it in. For Sonarr, Radarr, a media server or a browser on another machine, run this once in PowerShell as administrator (with another `port:` in `config.yml`, use that number):
+
+```powershell
+New-NetFirewallRule -DisplayName zurg -Protocol TCP -LocalPort 9999
+```
+
+The other machine then uses this PC's IPv4 address, which `ipconfig` prints, in place of `localhost`.
+
 ## Keeping the cache small
 
 The mount saves every file it plays, in full, to `data\rclone-cache` inside the zurg folder (`$HOME\zurg\data\rclone-cache` if you used the one-line install). It keeps those files after playback ends and grows up to 256G by default.
@@ -472,9 +480,10 @@ A sponsor build replaces itself:
 ```powershell
 cd $HOME\zurg
 .\zurg.exe update
+.\zurg.exe service restart
 ```
 
-`update` takes the newest nightly, checks the download reports the version it expected before replacing anything, and moves the running `zurg.exe` aside so Windows will let the new one land. When the installed build is already the newest it says so and changes nothing. Restart the zurg task afterwards to run the new build.
+`update` takes the newest nightly, checks the download reports the version it expected before replacing anything, and moves the running `zurg.exe` aside so Windows will let the new one land. When the installed build is already the newest it says so and changes nothing. The restart runs the new build.
 
 On a build too old to carry the command, the installer does the same job:
 
@@ -492,8 +501,6 @@ $env:ZURG_INSTALL_MODE = "update"; irm https://raw.githubusercontent.com/debridm
 | `Library is still loading` under `__magic__` or `/http/` | The first Real-Debrid run walks the account. Wait. On a large account it can take most of an hour. An NZB library never says this — it starts empty. |
 | `realdebrid will not take <name>: it refuses that name outright` | Real-Debrid blocks some release names (`WEBRip` and friends). Grab a differently-named release; nothing is wrong with the setup. |
 | An add fails with `could not read back id=…` or rate-limit text | The account's API budget is spent. A first library walk can spend it. So can a second zurg on the same token. Let the walk finish. Do not share one token across instances. |
-| `cannot truncate data\magic.journal: Access is denied` | The Windows journal-compaction refusal. Placements still persist across restarts; the journal just never compacts. |
-| `the save path "Z:/__magic__/__all__" is not absolute` | A false positive on drive-letter paths. The endpoint works; the clients open `Z:/__magic__/__all__` fine. |
 | Task start refused, `0x800710E0` | The task is still "running" — a launcher window never exited. `Stop-ScheduledTask zurg`, then start. |
 | `Get-PSDrive` shows no `Z:` from an SSH session | Expected — different logon session. See the session table. |
 | `data\rclone-cache` keeps growing | That is the mount's playback cache, capped at 256G by default. See [Keeping the cache small](#keeping-the-cache-small). |

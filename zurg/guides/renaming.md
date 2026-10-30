@@ -23,14 +23,27 @@ only.
 ## Renaming through the mount
 
 A rename in the mount is a WebDAV `MOVE` whose destination differs from the
-source in the last path segment alone. rclone turns a FUSE `rename(2)` into
-exactly that, so `mv` in the mount, F2 in a file manager and a WebDAV client all
-arrive at the same handler.
+source in the last path segment alone. rclone turns a rename on the mount (a
+FUSE `rename(2)`, or its WinFsp counterpart on Windows) into exactly that, so
+`mv` or `Rename-Item` in the mount, renaming in Finder, Explorer or another file
+manager, and a WebDAV client all arrive at the same handler.
 
-```
++++ Linux and macOS
+
+```bash
 mv "/mnt/zurg/shows/Show.S01.1080p.WEB-DL/Show.S01E01.mkv" \
    "/mnt/zurg/shows/Show.S01.1080p.WEB-DL/Show - s01e01.mkv"
 ```
+
+On macOS the mount is `/Volumes/Zurg` unless you changed `mount_path`.
+
++++ Windows
+
+```powershell
+Rename-Item -LiteralPath "Z:\shows\Show.S01.1080p.WEB-DL\Show.S01E01.mkv" -NewName "Show - s01e01.mkv"
+```
+
++++
 
 Both levels work:
 

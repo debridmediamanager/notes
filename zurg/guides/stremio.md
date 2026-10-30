@@ -90,6 +90,10 @@ stays off the internet.
    tailscale serve --bg 9999
    ```
 
+   The same command works in PowerShell on Windows. On macOS, if `tailscale` is
+   not found, the Tailscale app's own copy is
+   `/Applications/Tailscale.app/Contents/MacOS/Tailscale`.
+
 3. Open `https://<machine>.<tailnet>.ts.net/config/` and copy the addon URL from
    the **Stremio Addon** card.
 

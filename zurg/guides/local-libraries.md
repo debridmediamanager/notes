@@ -15,9 +15,15 @@ links. Playback resolves the requested file through your configured account.
 
 From the exporting instance's working directory:
 
++++ Linux and macOS
 ```sh
 ./zurg --config config.yml export-torrents data --provider realdebrid --output exported/realdebrid
 ```
++++ Windows
+```powershell
+.\zurg.exe --config config.yml export-torrents data --provider realdebrid --output exported/realdebrid
+```
++++
 
 `--provider` is the configured account **name**, including a custom name. Omit
 it to export all supported debrid copies. The input can also be one runtime

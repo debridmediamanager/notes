@@ -28,9 +28,12 @@ Three things have to be true. Check all three now — every one of them fails la
 
 1. **zurg has an account that can add torrents** — Real-Debrid, AllDebrid, TorBox, Premiumize, Debrid-Link or Offcloud. All six take the uploaded `.torrent` file itself, which is what makes a private tracker's release addable. A Usenet account takes a torrent in neither form: an install whose only provider is `nzb` accepts every grab and then refuses it. zurg says so at startup.
 2. **`magic.enabled` is `true`.** Without it the save path does not exist and every import fails. See [`__magic__`](magic.md).
-3. **The mount is visible to the \*arr** at the path zurg reports. If the \*arr runs in a container, read [step 8](#8-if-your-arr-is-in-docker) before you configure anything.
+3. **The mount is visible to the \*arr** at the path zurg reports. If the \*arr runs in a container, read [step 8](#8-if-your-arr-is-in-docker) before you configure anything. Installed as an ordinary app on the same machine, it sees the mount where zurg mounts it, with one catch on each system:
+   - **Linux:** an \*arr running as a different user from zurg sees an empty folder until `user_allow_other` is enabled. See [Linux setup](../setup/linux.md#1-install-fuse-3).
+   - **macOS:** run it as the same user as zurg. The mount is `/Volumes/Zurg` unless you changed `mount_path`.
+   - **Windows:** run Sonarr and Radarr as the tray app, not as a Windows service. A service cannot see zurg's `Z:` drive. See [the session rules](../setup/windows.md#keeping-it-running-the-session-rules).
 
-Check the first two straight out of the config file, in zurg's working directory:
+Check the first two straight out of the config file, in zurg's working directory. On Windows, open `config.yml` in Notepad instead.
 
 ```bash
 $ grep -A3 '^providers:' config.yml
@@ -124,6 +127,8 @@ Three ways to present the key, all accepted:
 
 Do this before touching Sonarr. Ten seconds, and it separates "zurg is wrong" from "the \*arr is wrong" for the rest of the setup.
 
++++ Linux and macOS
+
 ```bash
 $ KEY=fedcba9876543210fedcba9876543210
 $ ZURG=192.168.88.244:9995
@@ -141,15 +146,49 @@ $ curl -s -H "Authorization: Bearer $KEY" "http://$ZURG/api/v2/app/preferences" 
 "/mnt/zurg_qbt/__magic__/__all__"
 ```
 
++++ Windows
+
+In PowerShell. Type `curl.exe`, not `curl`: Windows PowerShell's `curl` is a different command.
+
+```powershell
+PS> $KEY = "fedcba9876543210fedcba9876543210"
+PS> $ZURG = "192.168.88.244:9995"
+
+PS> curl.exe -s "http://$ZURG/api/v2/app/webapiVersion"
+Forbidden
+
+PS> curl.exe -s -H "Authorization: Bearer $KEY" "http://$ZURG/api/v2/app/webapiVersion"
+2.11.2
+
+PS> curl.exe -s -H "Authorization: Bearer $KEY" "http://$ZURG/api/v2/app/version"
+v5.0.4
+
+PS> (Invoke-RestMethod "http://$ZURG/api/v2/app/preferences" -Headers @{ Authorization = "Bearer $KEY" }).save_path
+Z:/__magic__/__all__
+```
+
++++
+
 **The bare `Forbidden` is the healthy answer.** The clients' first probe is an *unauthenticated* `GET /api/v2/app/webapiVersion`, and real qBittorrent answers it `403` when the API is there but nobody is logged in — so that is what zurg answers, and the client reads it as "v2 supported, authenticate now". A plain **404** instead means `qbittorrent.enabled` is still false or zurg has not been restarted since you changed it.
 
 Then check that a wrong key is actually refused:
+
++++ Linux and macOS
 
 ```bash
 $ curl -s -o /dev/null -w "%{http_code}\n" -H "Authorization: Bearer wrongkey" \
     "http://$ZURG/api/v2/torrents/info"
 403
 ```
+
++++ Windows
+
+```powershell
+PS> curl.exe -s -o NUL -w "%{http_code}\n" -H "Authorization: Bearer wrongkey" "http://$ZURG/api/v2/torrents/info"
+403
+```
+
++++
 
 `save_path` is the path zurg will hand the clients — check now that it is a path *they* can open.
 
@@ -164,6 +203,8 @@ Both URL shapes work, so either is fine in the client's **URL Base** field:
 
 Make them before you add them, because the \*arr's Add Root Folder dialog browses the live filesystem and will not offer a folder that does not exist.
 
++++ Linux and macOS
+
 ```bash
 $ mkdir -p /mnt/zurg_qbt/__magic__/tv /mnt/zurg_qbt/__magic__/movies
 
@@ -172,7 +213,17 @@ $ ls -d /mnt/zurg_qbt/__magic__/tv /mnt/zurg_qbt/__magic__/movies
 /mnt/zurg_qbt/__magic__/tv
 ```
 
-Substitute your own `mount_path` for `/mnt/zurg_qbt`.
++++ Windows
+
+```powershell
+PS> New-Item -ItemType Directory -Force Z:\__magic__\tv, Z:\__magic__\movies
+```
+
+Or make the two folders in Explorer.
+
++++
+
+Substitute your own `mount_path` for `/mnt/zurg_qbt`. Left unset, it is `/mnt/zurg` on Linux, `/Volumes/Zurg` on macOS and `Z:` on Windows.
 
 **The root folder goes beside the save path, not at it and not above it** — the same rule as the Usenet walkthrough, for the same reason: zurg reports `__magic__/__all__` as the save path, both clients raise a health check when a root folder *is* the download client's output folder, Radarr also raises one when a root folder *contains* it, and siblings trip neither. [That guide](sonarr-radarr.md#4-make-the-root-folders) has the screenshots of getting it wrong.
 
@@ -218,7 +269,7 @@ The dialog opens with qBittorrent's own defaults — `localhost`, port `8080`, n
 |---|---|---|
 | Name | `zurg (torrents)` | Anything. It is only a label. |
 | Enable | on | Leave it checked. |
-| Host | `192.168.88.244` | The host zurg runs on, as *the \*arr* can reach it. In Docker, see the warning below. |
+| Host | `192.168.88.244` | The host zurg runs on, as *the \*arr* can reach it. `localhost` when the \*arr is an ordinary app on the same machine. In Docker, see the warning below. |
 | Port | `9995` | zurg's normal port — `9999` on a default install. |
 | Use SSL | off | Only if you put zurg behind TLS yourself. |
 | URL Base | empty | `/qbittorrent` also works — see step 3. |
@@ -248,7 +299,7 @@ Go to **Settings → Media Management** and scroll to the bottom.
 
 ![The empty root folders section in Sonarr](../../assets/sonarr-radarr-torrents/11-sonarr-rootfolders-empty.webp)
 
-Click **Add Root Folder**. A file browser opens on the container's filesystem.
+Click **Add Root Folder**. A file browser opens on Sonarr's filesystem, which in Docker is the container's.
 
 ![Sonarr's file browser at the filesystem root](../../assets/sonarr-radarr-torrents/12-sonarr-rootfolder-dialog.webp)
 
@@ -260,7 +311,7 @@ If this is empty or errors, stop and fix the mount before going further.
 
 ![The path finished at __magic__/tv](../../assets/sonarr-radarr-torrents/14-sonarr-rootfolder-typed.webp)
 
-Finish the path at `__magic__/tv` and click **Ok**.
+Finish the path at `__magic__/tv` (`Z:\__magic__\tv` on Windows) and click **Ok**.
 
 ![The root folder added, showing free space](../../assets/sonarr-radarr-torrents/15-sonarr-rootfolder-added.webp)
 
@@ -291,6 +342,8 @@ Then **Settings → Media Management → Root Folders → Add Root Folder**, and
 **One zurg, two clients, one queue.** The torrent list each client sees is filtered by category and nothing else. Two Sonarrs both using `tv-sonarr` will see each other's grabs; Sonarr on `tv-sonarr` and Radarr on `radarr` will not. Keep one client per category and this never comes up.
 
 ## 8. If your \*arr is in Docker
+
+This step is for Docker on a Linux host. On macOS and Windows install the \*arrs as ordinary apps instead, as [Before you start](#before-you-start) describes; the Usenet walkthrough's step 8 says why.
 
 The same three problems as the Usenet walkthrough, with the same fixes — the mount is the mount — so this is the short version. [That guide's step 8](sonarr-radarr.md#8-if-your-arr-is-in-docker) has the detail.
 
@@ -370,6 +423,8 @@ A grab the client decides not to import stays in the queue as a warning instead.
 
 The import moved the file into the root folder. Read both ends of one and ask ffprobe what it is:
 
++++ Linux and macOS
+
 ```bash
 $ F="/mnt/zurg_qbt/__magic__/tv/One Piece/Season 23/[AnoZu] One Piece S23E21 1080p CR WEB-DL AAC 2.0 H.264.mkv"
 
@@ -385,6 +440,23 @@ format_name=matroska,webm
 duration=1415.808000
 size=1446325722
 ```
+
++++ Windows
+
+In PowerShell, from zurg's folder, which holds `bin\ffprobe.exe`:
+
+```powershell
+PS> $F = Get-Item -LiteralPath "Z:\__magic__\tv\One Piece\Season 23\[AnoZu] One Piece S23E21 1080p CR WEB-DL AAC 2.0 H.264.mkv"
+PS> $F.Length
+1446325722
+
+PS> bin\ffprobe.exe -v error -show_entries format=duration,size,format_name -of default=noprint_wrappers=1 $F.FullName
+format_name=matroska,webm
+duration=1415.808000
+size=1446325722
+```
+
++++
 
 That one is a Sonarr grab — an episode pulled the same way, imported into `tv/One Piece/Season 23/`. A 23-minute Matroska, read straight off the debrid account. The bytes arrive when something reads them, not when the \*arr imports.
 
@@ -437,12 +509,27 @@ and send it to the right Sonarr or Radarr. Add it through this endpoint with
 that app's category. Each app only looks at its own category. Four apps with
 four categories each see only their own adds.
 
++++ Linux and macOS
+
 ```bash
 KEY=your-qbittorrent-api-key
 curl -H "Authorization: Bearer $KEY" http://localhost:9999/api/v2/torrents/add \
   -F 'urls=magnet:?xt=urn:btih:<hash>&dn=Movie.Title.2012.1080p.WEB-DL' \
   -F category=radarr4k
 ```
+
++++ Windows
+
+In PowerShell, with `curl.exe` rather than `curl`:
+
+```powershell
+$KEY = "your-qbittorrent-api-key"
+curl.exe -H "Authorization: Bearer $KEY" http://localhost:9999/api/v2/torrents/add `
+  -F 'urls=magnet:?xt=urn:btih:<hash>&dn=Movie.Title.2012.1080p.WEB-DL' `
+  -F category=radarr4k
+```
+
++++
 
 A `.torrent` file works too. Send it as
 `-F 'torrents=@Movie.Title.2012.1080p.WEB.torrent'` in place of `urls`.
@@ -467,6 +554,8 @@ Four things decide whether the app imports it.
 curl -H "Authorization: Bearer $KEY" http://localhost:9999/api/v2/torrents/setCategory \
   -F hashes=<hash> -F category=radarr
 ```
+
+On Windows that is `curl.exe` on one line, with `$KEY` set as above.
 
 A release that is already on your account works the same way. That covers one
 you sent there from DMM. zurg sees it is already in the library and records it
@@ -608,6 +697,7 @@ Does not:
 | A completed release sits in the queue as a warning | Either the client decided not to import it (an upgrade the profile refuses), or every account refused it. The queue row carries the reason. It clears nothing by itself — remove it by hand, and *Blocklist and Search* if the release is bad. |
 | "Download client zurg places downloads in …/__magic__/__all__ but Radarr cannot see this directory" | zurg has not finished loading the library. The top of the mount lists but `__all__` and `__magic__/__all__` do not and Plex sees nothing either. Grep zurg's log for `rejected the API key`. An account whose key or plan stopped working is the usual cause. See [TorBox](../providers/torbox.md#when-it-goes-wrong) for the free plan. The warning clears once the library loads. |
 | "Downloads in root folder" / "Remote path mapping" | The same root-folder and path rules as the Usenet endpoint — see [steps 4](#4-make-the-root-folders) and [8](#8-if-your-arr-is-in-docker). |
+| The root folder browser shows zurg's mount empty, or no `Z:` drive at all | The \*arr cannot see the mount. On Linux it runs as another user without `user_allow_other`; on Windows it runs as a service. See [Before you start](#before-you-start). |
 | Every release rejected, nothing in the log | A stale bind mount. Run `docker exec <client> df -h <mount>`; if it says `Socket not connected`, bind the parent with `rslave` and recreate the container. |
 | Imports succeed, but each one downloads the whole release | The \*arr is copying rather than renaming. zurg logs `A client copied …` and shows a banner on its dashboard. Either **Remove Completed** is off on the download client or the container has the save path and the root folders on two volumes. See [If the import copies instead of moving](#if-the-import-copies-instead-of-moving) and [step 8](#8-if-your-arr-is-in-docker). |
 

@@ -26,7 +26,7 @@ qbittorrent:
 
 ## 2. Run Whisparr
 
-Give Whisparr the same volume as Radarr, the folder **above** zurg's mount with `rslave` ([why](sonarr-radarr-torrents.md#8-if-your-arr-is-in-docker)):
+On a Linux host, give Whisparr the same volume as Radarr, the folder **above** zurg's mount with `rslave` ([why](sonarr-radarr-torrents.md#8-if-your-arr-is-in-docker)):
 
 ```yaml
 services:
@@ -46,6 +46,10 @@ services:
     restart: unless-stopped
 ```
 
+`PUID` and `PGID` are the Linux user Whisparr runs as. zurg's own Docker image lets any user read its mount. A zurg installed as a plain binary does that only with `user_allow_other` enabled ([Linux setup](../setup/linux.md#1-install-fuse-3)); without it, set `PUID` and `PGID` to the user zurg runs as (`id -u` and `id -g` print it), or Whisparr sees the mount empty.
+
+On macOS and Windows this compose file does not apply, for the reason the [Usenet guide's step 8](sonarr-radarr.md#8-if-your-arr-is-in-docker) gives. Install Whisparr as an ordinary app there, with the catches listed under [Before you start](sonarr-radarr.md#before-you-start) in that guide: the same user as zurg on macOS, the tray app and not the Windows service on Windows. Only the Docker image above was tested.
+
 Open `http://<your server>:6969`.
 
 ## 3. Add zurg as the download client
@@ -56,9 +60,25 @@ Open `http://<your server>:6969`.
 
 Make the folder on the mount, then add it under **Settings → Media Management → Root Folders**:
 
++++ Linux
+
 ```bash
 mkdir -p /mnt/zurg/__magic__/whisparr
 ```
+
++++ macOS
+
+```bash
+mkdir -p /Volumes/Zurg/__magic__/whisparr
+```
+
++++ Windows
+
+```powershell
+New-Item -ItemType Directory -Force Z:\__magic__\whisparr
+```
+
++++
 
 It sits beside `__magic__/movies`, not inside it. Whisparr files each film under its studio, as `__magic__/whisparr/movies/<Studio>/<Title (Year)>/`.
 
@@ -79,10 +99,10 @@ $ ls "/mnt/zurg/__magic__/whisparr/movies/<Studio>/<Title (Year)>/"
 <Title> 1080p.mkv
 ```
 
-Nothing lands in zurg's `data/local` folder. The file streams from your account.
+On macOS the path starts `/Volumes/Zurg`; on Windows look in `Z:\__magic__\whisparr\movies` in Explorer. Nothing lands in zurg's `data/local` folder. The file streams from your account.
 
 ## Watching it
 
-Point a Plex or Jellyfin library at `/mnt/zurg/__magic__/whisparr` to keep these films in a library of their own.
+Point a Plex or Jellyfin library at `/mnt/zurg/__magic__/whisparr` (`/Volumes/Zurg/__magic__/whisparr` on macOS, `Z:\__magic__\whisparr` on Windows) to keep these films in a library of their own.
 
 In rex they appear in whichever library zurg's folders put them, like every other release, which on most setups is the movies library.

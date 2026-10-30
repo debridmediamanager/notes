@@ -15,6 +15,7 @@ Every guide on this site, by project.
 ## DMM
 
 - [DMM buttons in Safari](../dmm/safari.md): the browser extension as a userscript on Mac, iPhone and iPad
+- [Seerr through DMM](../dmm/seerr.md)
 
 ## zurg
 
@@ -36,10 +37,6 @@ Every guide on this site, by project.
 - [Local libraries](../zurg/guides/local-libraries.md)
 - [Android and Google TV](../zurg/guides/android.md)
 - [Migrating from another tool](../zurg/migrate/index.md)
-
-## DMM
-
-- [Seerr through DMM](../dmm/seerr.md)
 
 ## rex
 
