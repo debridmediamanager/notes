@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846662835645">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846718512227">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../../resources/css/retype.css?v=4.6.0.846662835645" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.846718512227" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846662835645" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846718512227" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846662835645" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846662835645" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846718512227" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846718512227" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -203,8 +203,8 @@ show up in the library with files in it. See
   quality: best
   prefer: usenet          # usenet (default), torrents, or best
   best_first: false       # true makes Radarr and Sonarr take the profile's best quality first
-  max_size_gb: 40
-  max_season_size_gb: 100
+  max_size_gb: 40         # a film or episode, and each episode of a season pack
+  max_season_size_gb: 0   # a cap on each season a pack holds; 0, the default, is none
   exclude_words: [DV, HDR10+]  # never take a release whose name says these
   audio_languages: [original]  # take only releases with this audio (any one), read from the streams
   subtitle_languages: [en]     # and with these subtitles
@@ -449,8 +449,9 @@ still airing is fetched as loose episodes, since no pack covers it yet.</p>
 <p><strong>Where it goes.</strong> The same as any source: an NZB from a Newznab indexer to this
 instance&#x27;s Usenet backend, or a torrent from a Torznab indexer onto a debrid account
 that already has it cached, whichever <code translate="no" v-pre>prefer</code> reaches for first. <code translate="no" v-pre>quality</code>,
-<code translate="no" v-pre>max_size_gb</code>, <code translate="no" v-pre>max_season_size_gb</code>, <code translate="no" v-pre>exclude_words</code> and the
-<doc-anchor-trigger to="#choosing-by-audio-and-subtitle-language">languages</doc-anchor-trigger> apply.</p>
+<code translate="no" v-pre>max_size_gb</code> (per episode for a season pack), <code translate="no" v-pre>exclude_words</code> and the
+<doc-anchor-trigger to="#choosing-by-audio-and-subtitle-language">languages</doc-anchor-trigger> apply, and
+<code translate="no" v-pre>max_season_size_gb</code> when you write one.</p>
 </li>
 <li>
 <p><strong>Indexers.</strong> With no indexer written under <code translate="no" v-pre>acquisition:</code>, <code translate="no" v-pre>watchlist:</code> or
@@ -801,10 +802,11 @@ Sonarr&#x27;s rules.</p>
 season pack is tried before the loose episodes because it is one grab where
 they are several. Among the releases Sonarr allows zurg takes the one its
 <code translate="no" v-pre>quality</code> setting ranks first. With <code translate="no" v-pre>best</code> that is the highest resolution and
-then the largest. So a finished season with a 1080p pack is filled from that
+then the largest, a pack by what it holds per episode. So a finished season with a 1080p pack is filled from that
 pack even when the same search holds every episode in 2160p. The upgrade pass
-then replaces it episode by episode. A pack larger than <code translate="no" v-pre>max_season_size_gb</code> is
-never a candidate. <code translate="no" v-pre>best_first: true</code> changes both. See
+then replaces it episode by episode. A pack holding more than <code translate="no" v-pre>max_size_gb</code> an
+episode, or more than a <code translate="no" v-pre>max_season_size_gb</code> you wrote a season, is never a
+candidate. <code translate="no" v-pre>best_first: true</code> changes both. See
 <doc-anchor-trigger to="#taking-the-profiles-best-first">Taking the profile&#x27;s best first</doc-anchor-trigger>.</p>
 <p>A title naming a resolution the profile has no allowed quality for is refused
 without asking Sonarr. zurg makes at most eight calls to one Sonarr at once.
@@ -873,15 +875,21 @@ library lists them. A pack whose files do not hold every episode of the
 season is refused before anything moves, whatever its title claims.</p>
 </li>
 <li>
-<p><strong>The size ceiling is per season.</strong> <code translate="no" v-pre>max_season_size_gb</code> applies to each
-season the pack names. A 346 GB pack of eight seasons is 43 GB a season, and
-fits under the default 100.</p>
+<p><strong>Size is judged per episode.</strong> A pack&#x27;s size is divided by the seasons it
+names and then by the season&#x27;s episodes, and held to <code translate="no" v-pre>max_size_gb</code>, as the
+same encode posted episode by episode would be. A 346 GB pack of eight
+ten-episode seasons is 4.3 GB an episode. I Love Lucy&#x27;s 31-episode season 2
+remux is 106 GiB, 3.4 GiB an episode, and fits under the default 40. Where
+the source did not list the season&#x27;s episodes, packs are held to no
+per-episode ceiling. A <code translate="no" v-pre>max_season_size_gb</code> you write caps each season the
+pack names on top; by default there is none.</p>
 </li>
 <li>
 <p><strong>Quality still comes first.</strong> Packs rank like any other release:
-resolution, then size. A 2160p pack of one season is taken before a 1080p
-pack of eight. Within one resolution, a pack of several seasons is usually
-the largest, so it is usually tried first.</p>
+resolution, then what they hold per episode, as DMM&#x27;s season page ranks
+them. A 2160p pack of one season is taken before a 1080p pack of eight.
+Within one resolution, a season&#x27;s own remux comes before a pack of eight
+seasons that is bigger in total but smaller per episode.</p>
 </li>
 <li>
 <p><strong>The show&#x27;s other seasons take the same pack.</strong> Once one season has taken

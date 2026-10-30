@@ -17,8 +17,8 @@ acquisition:
   quality: best
   prefer: usenet          # usenet (default), torrents, or best
   best_first: false       # true makes Radarr and Sonarr take the profile's best quality first
-  max_size_gb: 40
-  max_season_size_gb: 100
+  max_size_gb: 40         # a film or episode, and each episode of a season pack
+  max_season_size_gb: 0   # a cap on each season a pack holds; 0, the default, is none
   exclude_words: [DV, HDR10+]  # never take a release whose name says these
   audio_languages: [original]  # take only releases with this audio (any one), read from the streams
   subtitle_languages: [en]     # and with these subtitles
@@ -248,8 +248,9 @@ no Sonarr or Radarr is involved. The source is named `dmm-wanted` and is polled 
 - **Where it goes.** The same as any source: an NZB from a Newznab indexer to this
   instance's Usenet backend, or a torrent from a Torznab indexer onto a debrid account
   that already has it cached, whichever `prefer` reaches for first. `quality`,
-  `max_size_gb`, `max_season_size_gb`, `exclude_words` and the
-  [languages](#choosing-by-audio-and-subtitle-language) apply.
+  `max_size_gb` (per episode for a season pack), `exclude_words` and the
+  [languages](#choosing-by-audio-and-subtitle-language) apply, and
+  `max_season_size_gb` when you write one.
 - **Indexers.** With no indexer written under `acquisition:`, `watchlist:` or
   `stremio:`, the key also searches DMM's own: its Usenet indexer and the torrents it
   knows Real-Debrid or AllDebrid hold (`/api/torznab/cached`). Writing any indexer
@@ -551,10 +552,11 @@ Which allowed release comes first is decided differently from Radarr. A
 season pack is tried before the loose episodes because it is one grab where
 they are several. Among the releases Sonarr allows zurg takes the one its
 `quality` setting ranks first. With `best` that is the highest resolution and
-then the largest. So a finished season with a 1080p pack is filled from that
+then the largest, a pack by what it holds per episode. So a finished season with a 1080p pack is filled from that
 pack even when the same search holds every episode in 2160p. The upgrade pass
-then replaces it episode by episode. A pack larger than `max_season_size_gb` is
-never a candidate. `best_first: true` changes both. See
+then replaces it episode by episode. A pack holding more than `max_size_gb` an
+episode, or more than a `max_season_size_gb` you wrote a season, is never a
+candidate. `best_first: true` changes both. See
 [Taking the profile's best first](#taking-the-profiles-best-first).
 
 A title naming a resolution the profile has no allowed quality for is refused
@@ -612,13 +614,19 @@ seasons one of them is the only copy an account holds.
   episodes in the season folder. The other seasons' files stay where the
   library lists them. A pack whose files do not hold every episode of the
   season is refused before anything moves, whatever its title claims.
-- **The size ceiling is per season.** `max_season_size_gb` applies to each
-  season the pack names. A 346 GB pack of eight seasons is 43 GB a season, and
-  fits under the default 100.
+- **Size is judged per episode.** A pack's size is divided by the seasons it
+  names and then by the season's episodes, and held to `max_size_gb`, as the
+  same encode posted episode by episode would be. A 346 GB pack of eight
+  ten-episode seasons is 4.3 GB an episode. I Love Lucy's 31-episode season 2
+  remux is 106 GiB, 3.4 GiB an episode, and fits under the default 40. Where
+  the source did not list the season's episodes, packs are held to no
+  per-episode ceiling. A `max_season_size_gb` you write caps each season the
+  pack names on top; by default there is none.
 - **Quality still comes first.** Packs rank like any other release:
-  resolution, then size. A 2160p pack of one season is taken before a 1080p
-  pack of eight. Within one resolution, a pack of several seasons is usually
-  the largest, so it is usually tried first.
+  resolution, then what they hold per episode, as DMM's season page ranks
+  them. A 2160p pack of one season is taken before a 1080p pack of eight.
+  Within one resolution, a season's own remux comes before a pack of eight
+  seasons that is bigger in total but smaller per episode.
 - **The show's other seasons take the same pack.** Once one season has taken
   a pack of several seasons, the show's other seasons try that pack first,
   ahead of every pack of the same resolution their own search found. It is
