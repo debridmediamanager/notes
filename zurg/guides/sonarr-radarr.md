@@ -31,7 +31,7 @@ Three things have to be true. Check all three now — every one of them fails la
 3. **The mount is visible to the \*arr** at the path zurg reports. If Sonarr runs in a container, read [step 8](#8-if-your-arr-is-in-docker) before you configure anything. Installed as an ordinary app on the same machine, it sees the mount where zurg mounts it, with one catch on each system:
    - **Linux:** an \*arr running as a different user from zurg sees an empty folder until `user_allow_other` is enabled. See [Linux setup](../setup/linux.md#1-install-fuse-3).
    - **macOS:** run it as the same user as zurg. The mount is `/Volumes/Zurg` unless you changed `mount_path`.
-   - **Windows:** run Sonarr and Radarr as the tray app, not as a Windows service. A service cannot see zurg's `Z:` drive. See [the session rules](../setup/windows.md#keeping-it-running-the-session-rules).
+   - **Windows:** run Sonarr and Radarr as the tray app, which their installer offers, not as a Windows service. zurg's `Z:` drive belongs to the session you are logged in to, and a service runs outside it, so it does not see the drive. See [the session rules](../setup/windows.md#keeping-it-running-the-session-rules).
 
 Check the first two straight out of the config file, in zurg's working directory. On Windows, open `config.yml` in Notepad instead.
 
@@ -445,6 +445,8 @@ The import moved the file into the root folder. Read both ends of it and ask ffp
 
 +++ Linux and macOS
 
+If your shell does not find `ffprobe`, use `~/zurg/bin/ffprobe`: setup puts its own copy there when none was installed.
+
 ```bash
 $ ls -la "/mnt/zurg_usenet/__magic__/movies/Untold - The Testimony of Vince Young (2026)/"
 -rw-r--r-- 1 you you 4920958828 Aug 25 14:53 Untold.The.Testimony…playWEB.mkv
@@ -461,7 +463,7 @@ size=4920958828
 
 +++ Windows
 
-In PowerShell, from zurg's folder, which holds `bin\ffprobe.exe`:
+In PowerShell, from zurg's folder. Setup put `bin\ffprobe.exe` there unless an `ffprobe` was already on your PATH; in that case type `ffprobe` instead:
 
 ```powershell
 PS> $F = Get-Item "Z:\__magic__\movies\Untold - The Testimony of Vince Young (2026)\*.mkv"
@@ -511,22 +513,20 @@ $ curl -s -G "http://$ZURG/api" \
 
 +++ Windows
 
-In PowerShell, with `curl.exe` rather than `curl`:
+In PowerShell, with `curl.exe` rather than `curl`. Each answers `{"status":true,"nzo_ids":[…]}` as above.
 
 ```powershell
-PS> $SAB = "0123456789abcdef0123456789abcdef"
-PS> $ZURG = "192.168.88.245:9996"
+$SAB = "0123456789abcdef0123456789abcdef"
+$ZURG = "192.168.88.245:9996"
 
 # an NZB file you already have (the upload field is called name, as in SABnzbd)
-PS> curl.exe -s "http://$ZURG/api?mode=addfile&apikey=$SAB&cat=movies" -F "name=@Movie.Title.2024.1080p.WEB-DL.nzb"
-{"status":true,"nzo_ids":["SABnzbd_nzo_…"]}
+curl.exe -s "http://$ZURG/api?mode=addfile&apikey=$SAB&cat=movies" -F "name=@Movie.Title.2024.1080p.WEB-DL.nzb"
 
 # or a link to one, which zurg downloads itself
-PS> curl.exe -s -G "http://$ZURG/api" `
-      --data-urlencode mode=addurl --data-urlencode "apikey=$SAB" --data-urlencode cat=movies `
-      --data-urlencode "name=https://indexer.example/getnzb/<id>?r=<indexer-key>" `
-      --data-urlencode nzbname=Movie.Title.2024.1080p.WEB-DL
-{"status":true,"nzo_ids":["SABnzbd_nzo_…"]}
+curl.exe -s -G "http://$ZURG/api" `
+  --data-urlencode mode=addurl --data-urlencode "apikey=$SAB" --data-urlencode cat=movies `
+  --data-urlencode "name=https://indexer.example/getnzb/<id>?r=<indexer-key>" `
+  --data-urlencode nzbname=Movie.Title.2024.1080p.WEB-DL
 ```
 
 +++

@@ -339,7 +339,7 @@ And never restart zurg while Plex is scanning. Pre-flight and both must be
 zero.
 
 ```bash
-TOKEN=$(grep ^plex_token: config.yml | awk '{print $2}')
+TOKEN=$(grep ^plex_token: config.yml | awk '{print $2}' | tr -d "\"'")
 curl -s "http://localhost:32400/status/sessions?X-Plex-Token=$TOKEN" | grep -o 'size="[0-9]*"'          # want size="0"
 curl -s "http://localhost:32400/library/sections?X-Plex-Token=$TOKEN" | grep -o 'refreshing="1"' | wc -l # want 0
 ```

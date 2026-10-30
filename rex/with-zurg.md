@@ -340,7 +340,7 @@ sqlite3 ~/rex/rex.db ".backup $HOME/rex/rex.db.bak"
 Windows has no `sqlite3`, so stop rex for a moment and copy `rex.db` with the two files beside it that start the same way:
 
 ```powershell
-Stop-Process -Name rex
+Stop-Process -Name rex; Start-Sleep 1
 New-Item -ItemType Directory -Force $HOME\rex-backup | Out-Null
 Copy-Item $HOME\rex\rex.db*, $HOME\rex\claim_state.json $HOME\rex-backup
 Start-ScheduledTask rex
@@ -405,7 +405,7 @@ You need port 443 on your router forwarded to the rex machine, and a name for yo
 - **Your own domain:** an `A` record such as `rex.example.com` pointing at your home IP.
 - **No domain:** use `1-2-3-4.sslip.io` with your public IP's numbers (`curl -s ifconfig.me` shows it). It always resolves to that IP. If your IP changes, update the name.
 
-Install [Caddy](https://caddyserver.com/docs/install) and give it this Caddyfile (`/etc/caddy/Caddyfile` with Caddy's Linux package):
+Install [Caddy](https://caddyserver.com/docs/install) and give it this Caddyfile (`/etc/caddy/Caddyfile` with Caddy's Linux package; on macOS and Windows a file named `Caddyfile` in a folder of its own, which `caddy run` in that folder reads):
 
 ```
 rex.example.com {
@@ -414,7 +414,7 @@ rex.example.com {
 }
 ```
 
-`respond /rex/* 403` keeps the API zurg pushes to off the internet. zurg still reaches it at `http://192.168.1.20:32400`. Then reload Caddy (`sudo systemctl reload caddy` with the Linux package).
+`respond /rex/* 403` keeps the API zurg pushes to off the internet. zurg still reaches it at `http://192.168.1.20:32400`. Then reload Caddy (`sudo systemctl reload caddy` with the Linux package). On macOS and Windows, start `caddy run` in its folder instead and keep it running the way [step 2](#step-2-install-rex) keeps rex; on Windows, also let TCP port 443 through the firewall as step 2 does for 32400.
 
 Caddy fetches a certificate when it loads the file and renews it by itself. End rex's start command with `--announce-url https://rex.example.com:443`, and restart rex.
 
@@ -660,7 +660,7 @@ rex takes no password from zurg. It answers the API zurg pushes to only from thi
 ## Updating
 
 - **zurg:** as in [step 1](#step-1-install-zurg).
-- **rex:** run the download block of [step 2](#step-2-install-rex) again (it replaces the program and `data/`, and leaves `rex.db`, your keys and `claim_state.json` alone), then restart rex as step 2 shows. On Windows, stop rex first with `Stop-Process -Name rex`: Windows does not let a running `rex.exe` be replaced. If rex then exits with `unrecognized arguments`, delete the flags it names from rex's start command: rex no longer has them.
+- **rex:** run the download block of [step 2](#step-2-install-rex) again (it replaces the program and `data/`, and leaves `rex.db`, your keys and `claim_state.json` alone), then restart rex as step 2 shows. On Windows, run `Stop-Process -Name rex` before the download block, as Windows does not let a running `rex.exe` be replaced, and `Start-ScheduledTask rex` after it. If rex then exits with `unrecognized arguments`, delete the flags it names from rex's start command: rex no longer has them.
 
 ## When something is wrong
 
@@ -675,6 +675,7 @@ rex takes no password from zurg. It answers the API zurg pushes to only from thi
 | Nothing plays and rex's log shows `PART ... upstream 401` or `403` | zurg refused its own login. Restart zurg ([step 4](#step-4-connect-zurg-to-rex)) so it sends rex the current one |
 | "This server is not powerful enough to convert video" | The device cannot play the file as it is. Try a Plex app on a TV or phone, or set up [Converting video](#converting-video-optional) |
 | A device at home cannot connect, and rex's `heartbeat ... ->` line shows no `http://192.168.1.20:32400` | rex announces the private address of the network it reaches the internet through; behind a VPN or a Tailscale exit node that is not your home network. End rex's start command ([step 2](#step-2-install-rex)) with `--announce-url http://192.168.1.20:32400` and restart rex |
+| Another machine cannot reach rex on Windows, although step 2's firewall rules exist | If you ever clicked **Cancel** when Windows asked whether to allow rex, Windows saved a rule that blocks it, and that wins over the port rules. Remove it in PowerShell as administrator: <code>Get-NetFirewallApplicationFilter -Program "$HOME\rex\rust\target\release\rex.exe" &#124; Get-NetFirewallRule &#124; Where-Object Action -eq Block &#124; Remove-NetFirewallRule</code> |
 | rex is not in the Plex apps away from home | Not claimed, or the device cannot reach the HTTPS address (a tailnet-only address needs Tailscale on that device) |
 | The log says `waiting for a claim` | Do [step 3](#step-3-add-it-to-a-plex-account) |
 | zurg stops when you log out | On Linux, run `sudo loginctl enable-linger "$USER"` (step 1) |

@@ -31,7 +31,7 @@ Three things have to be true. Check all three now — every one of them fails la
 3. **The mount is visible to the \*arr** at the path zurg reports. If the \*arr runs in a container, read [step 8](#8-if-your-arr-is-in-docker) before you configure anything. Installed as an ordinary app on the same machine, it sees the mount where zurg mounts it, with one catch on each system:
    - **Linux:** an \*arr running as a different user from zurg sees an empty folder until `user_allow_other` is enabled. See [Linux setup](../setup/linux.md#1-install-fuse-3).
    - **macOS:** run it as the same user as zurg. The mount is `/Volumes/Zurg` unless you changed `mount_path`.
-   - **Windows:** run Sonarr and Radarr as the tray app, not as a Windows service. A service cannot see zurg's `Z:` drive. See [the session rules](../setup/windows.md#keeping-it-running-the-session-rules).
+   - **Windows:** run Sonarr and Radarr as the tray app, which their installer offers, not as a Windows service. zurg's `Z:` drive belongs to the session you are logged in to, and a service runs outside it, so it does not see the drive. See [the session rules](../setup/windows.md#keeping-it-running-the-session-rules).
 
 Check the first two straight out of the config file, in zurg's working directory. On Windows, open `config.yml` in Notepad instead.
 
@@ -425,6 +425,8 @@ The import moved the file into the root folder. Read both ends of one and ask ff
 
 +++ Linux and macOS
 
+If your shell does not find `ffprobe`, use `~/zurg/bin/ffprobe`: setup puts its own copy there when none was installed.
+
 ```bash
 $ F="/mnt/zurg_qbt/__magic__/tv/One Piece/Season 23/[AnoZu] One Piece S23E21 1080p CR WEB-DL AAC 2.0 H.264.mkv"
 
@@ -443,7 +445,7 @@ size=1446325722
 
 +++ Windows
 
-In PowerShell, from zurg's folder, which holds `bin\ffprobe.exe`:
+In PowerShell, from zurg's folder. Setup put `bin\ffprobe.exe` there unless an `ffprobe` was already on your PATH; in that case type `ffprobe` instead:
 
 ```powershell
 PS> $F = Get-Item -LiteralPath "Z:\__magic__\tv\One Piece\Season 23\[AnoZu] One Piece S23E21 1080p CR WEB-DL AAC 2.0 H.264.mkv"

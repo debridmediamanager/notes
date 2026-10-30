@@ -90,8 +90,10 @@ stays off the internet.
    tailscale serve --bg 9999
    ```
 
-   The same command works in PowerShell on Windows. On macOS, if `tailscale` is
-   not found, the Tailscale app's own copy is
+   On Windows run the same command in a PowerShell opened as administrator. On
+   Linux put `sudo` in front unless you made yourself Tailscale's operator
+   (`sudo tailscale set --operator=$USER`). On macOS, if `tailscale` is not
+   found, the Tailscale app's own copy is
    `/Applications/Tailscale.app/Contents/MacOS/Tailscale`.
 
 3. Open `https://<machine>.<tailnet>.ts.net/config/` and copy the addon URL from

@@ -34,8 +34,8 @@ Getting zurg running on your machine.
 
 Pointing zurg at an account. Each page covers the credential and the
 `config.yml` entry and what that service does differently. All of them assume
-the Docker install. On a binary install the `config.yml` entry is the same and
-`zurg service restart` takes the place of `docker compose restart zurg`.
+the Docker install. On a binary install the `config.yml` entry is the same; see
+[Setup](setup/index.md) for the commands that replace the Docker ones.
 
 | Page | What is different about it |
 |---|---|

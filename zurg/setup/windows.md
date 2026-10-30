@@ -33,7 +33,7 @@ Everything below was captured on a live install: Windows 11 Pro 23H2 (build 2263
 
 - **An account** — a Real-Debrid API token for the first pass, a news server for the second.
 
-Nothing else. The built-in installer downloads rclone and ffprobe.
+Nothing else. The built-in installer downloads rclone, and ffprobe too unless one is already on your PATH.
 
 ## Recommended: let zurg finish the setup
 
@@ -51,7 +51,7 @@ Set-Location "$HOME\zurg"
 
 1. Creates and validates `config.yml`.
 2. Restricts its ACL to your user, SYSTEM and Administrators.
-3. Downloads `bin\rclone.exe` and `bin\ffprobe.exe`.
+3. Downloads `bin\rclone.exe`, and `bin\ffprobe.exe` unless an ffprobe is already on your PATH (then `config.yml` says `ffprobe_binary: ffprobe`).
 4. Enables the rclone mount at `Z:`.
 5. Registers `\Zurg\zurg` as an interactive logon task and starts it when a desktop user is logged in.
 
@@ -88,7 +88,7 @@ Run `.\zurg.exe setup` to select providers and download the helpers. After setup
 
 ```
 C:\Users\you\zurg\
-├── bin\                ffprobe.exe, rclone.exe
+├── bin\                rclone.exe, and ffprobe.exe unless ffprobe was on your PATH
 ├── data\               library cache, keys, the __magic__ table
 ├── dump\
 ├── logs\               zurg.log, rclone.log
@@ -123,7 +123,7 @@ directories:
     group_order: 20
     only_show_the_biggest_file: true
 
-ffprobe_binary: bin\ffprobe.exe
+ffprobe_binary: bin\ffprobe.exe   # or ffprobe, if that is what setup wrote
 rclone_binary: bin\rclone.exe
 
 rclone_enabled: true
@@ -161,12 +161,12 @@ INFO  network_test  Network test completed!
 INFO  zurg          Provider realdebrid ready (type=realdebrid)
 INFO  router        __magic__ serves sidecar files from data\local\__magic__
 INFO  router.qbittorrent  qBittorrent API on /api/v2 and /qbittorrent/api/v2, save path Z:/__magic__/__all__, categories tv-sonarr, radarr
-INFO  router.qbittorrent  qBittorrent: generated API key fedcba9876543210fedcba9876543210 — paste it into Sonarr or Radarr's API Key field, or pin it as qbittorrent.api_key in config.yml
+INFO  router.qbittorrent  qBittorrent: generated an API key in data/qbittorrent-apikey — paste it into Sonarr or Radarr's API Key field, or pin one as qbittorrent.api_key in config.yml
 INFO  zurg          Starting server on http://[::]:9999
 INFO  rclone        rclone started with mount Z:, union local C:\Users\you\zurg\data\local
 ```
 
-The generated key is also in `data\qbittorrent-apikey`. Then the library walk begins — the first start reads every torrent on the account, and on a large account that takes a while. The walk shares the provider's API budget with everything else on the account. **While it walks, `__magic__` answers *Library is still loading*** — that is expected, not a fault.
+The log never prints the key itself. It is in `data\qbittorrent-apikey`. Then the library walk begins — the first start reads every torrent on the account, and on a large account that takes a while. The walk shares the provider's API budget with everything else on the account. **While it walks, `__magic__` answers *Library is still loading*** — that is expected, not a fault.
 
 One warning you may see, known and not fatal:
 
@@ -291,7 +291,7 @@ directories:
     group_order: 20
     only_show_the_biggest_file: true
 
-ffprobe_binary: bin\ffprobe.exe
+ffprobe_binary: bin\ffprobe.exe   # or ffprobe, if that is what setup wrote
 rclone_binary: bin\rclone.exe
 
 rclone_enabled: true
@@ -323,7 +323,7 @@ INFO  nzb       NZB articles are kept in memory for the life of the process (nzb
 INFO  zurg      Provider nzb ready (type=nzb)
 INFO  router    __magic__ serves sidecar files from data\local\__magic__
 INFO  router.sabnzbd  SABnzbd API on /api and /sabnzbd/api, completed directory Z:/__magic__/__all__, categories tv, movies
-INFO  router.sabnzbd  SABnzbd: generated API key 0123456789abcdef0123456789abcdef — paste it into Sonarr or Radarr, or pin it as sabnzbd.api_key in config.yml
+INFO  router.sabnzbd  SABnzbd: generated an API key in data/sabnzbd-apikey — paste it into Sonarr or Radarr, or pin one as sabnzbd.api_key in config.yml
 INFO  zurg      Starting server on http://[::]:9999
 INFO  rclone    rclone started with mount Z:, union local C:\Users\you\zurg\data\local
 INFO  zurg      Usenet account nzb connected: nntps://news.example.com:563 (8 connections)
@@ -437,6 +437,12 @@ New-NetFirewallRule -DisplayName zurg -Protocol TCP -LocalPort 9999
 ```
 
 The other machine then uses this PC's IPv4 address, which `ipconfig` prints, in place of `localhost`.
+
+If it still gets no answer, look for a rule that blocks zurg. Clicking Cancel on Windows' prompt to allow zurg.exe saves one, and a block rule wins over the rule above. This removes those for `zurg.exe` in `$HOME\zurg`, also as administrator (change the path if zurg is elsewhere):
+
+```powershell
+Get-NetFirewallApplicationFilter -Program "$HOME\zurg\zurg.exe" | Get-NetFirewallRule | Where-Object Action -eq Block | Remove-NetFirewallRule
+```
 
 ## Keeping the cache small
 

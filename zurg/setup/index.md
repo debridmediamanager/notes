@@ -37,6 +37,8 @@ The bootstrap checks platform prerequisites, signs in to GitHub for sponsor acce
 Once zurg is installed [Providers](../providers/index.md) covers pointing it at
 an account. There is a page per service with the credential and the `config.yml`
 entry and what that service does differently. Those pages are written for Docker. On a
-binary install the `config.yml` entry and the Dashboard steps are the same, and
+binary install the `config.yml` entry and the Dashboard steps are the same,
 `./zurg service restart` (`.\zurg.exe service restart` on Windows) takes the place of
-`docker compose restart zurg`.
+`docker compose restart zurg`, and their `docker compose run --rm zurg setup` line
+becomes `./zurg setup` with the same `--provider` but without the container's
+`--no-service --skip-downloads --mount-path`.

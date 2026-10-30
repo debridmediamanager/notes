@@ -549,6 +549,15 @@ plex_trash_sweep_max_items: 50
 plex_trash_sweep_max_percent: 10
 ```
 
+That path is where the Linux package keeps the database. On macOS and Windows set both keys, written out in full: zurg does not expand `~` or `%LOCALAPPDATA%`.
+
+| Plex on | `plex_sqlite_binary` | `plex_database_path` |
+|---|---|---|
+| macOS | `/Applications/Plex Media Server.app/Contents/MacOS/Plex SQLite` | `/Users/you/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db` |
+| Windows (64-bit Plex) | `C:\Program Files\Plex\Plex Media Server\Plex SQLite.exe` | `C:\Users\you\AppData\Local\Plex Media Server\Plug-in Support\Databases\com.plexapp.plugins.library.db` |
+
+Put a Windows path in single quotes in YAML so its backslashes stay as written.
+
 > **Related Plex setting, outside zurg:** turn **off** Plex's *Settings → Library → Empty trash automatically after every scan*. It is enabled by default in Plex and is unsafe on a zurg mount — a scan that meets a briefly unreadable mount deletes the library permanently instead of parking it in the trash, where it would come back with the mount. zurg turns it off itself under the default `guard` policy, and says so on the dashboard and in the log. If your files move between library folders and you need that cleanup back, the config page's **Let Plex Empty Its Own Trash** switch hands it to Plex again at your own risk.
 
 ### Other Integrations

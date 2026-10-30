@@ -25,12 +25,13 @@ macFUSE lets rclone mount zurg's virtual filesystem as a real directory on your 
 3. During installation, macOS will block the system extension. Go to **System Settings > Privacy & Security**, scroll down, and click **Allow**
 4. **Reboot your Mac** (required for the kernel extension to load)
 
-After rebooting, open **Terminal** (press `Cmd + Space`, type "Terminal", press Enter) and verify. macOS loads the extension only when something asks for it, so load it first, the same way `zurg setup` checks it:
+After rebooting, open **Terminal** (press `Cmd + Space`, type "Terminal", press Enter) and check that macOS will load macFUSE. It is the same check `zurg setup` makes:
 
 ```bash
-/Library/Filesystems/macfuse.fs/Contents/Resources/load_macfuse && kextstat | grep macfuse
-# Should output a line containing: io.macfuse.filesystems.macfuse
+/Library/Filesystems/macfuse.fs/Contents/Resources/load_macfuse && echo "macFUSE is ready"
 ```
+
+If `macFUSE is ready` does not appear, macOS has not allowed the extension yet. On Apple silicon enable third-party kernel extensions in Recovery, allow macFUSE in **System Settings > Privacy & Security**, then reboot and check again.
 
 ## Step 2: Download Zurg
 
@@ -61,7 +62,7 @@ From the extracted directory, run:
 ./zurg doctor
 ```
 
-`setup` asks which providers to configure. Choose one or several of Real-Debrid, TorBox, AllDebrid, Usenet, Premiumize, Debrid-Link and Offcloud in priority order. For example enter `2,4` for TorBox followed by Usenet. It asks only for the selected credentials, creates `config.yml` with mode `0600`, downloads rclone and ffprobe, prepares `/Volumes/Zurg` and installs auto-start.
+`setup` asks which providers to configure. Choose one or several of Real-Debrid, TorBox, AllDebrid, Usenet, Premiumize, Debrid-Link and Offcloud in priority order. For example enter `2,4` for TorBox followed by Usenet. It asks only for the selected credentials, creates `config.yml` with mode `0600`, downloads rclone (and ffprobe, unless one is already on your PATH), prepares `/Volumes/Zurg` and installs auto-start.
 
 It chooses a LaunchAgent when the current user has a GUI launchd domain. On a headless Mac with no logged-in GUI user it installs a system LaunchDaemon that still runs zurg as the current user. That path does not require auto-login.
 
@@ -355,6 +356,7 @@ If you edit `config.yml`, just restart zurg:
 
 ```bash
 cd ~/zurg && ./zurg service restart
+# manual LaunchAgent: launchctl stop com.zurg && sleep 2 && launchctl start com.zurg
 ```
 
 ### Update Zurg
@@ -381,11 +383,11 @@ By hand, download the new `darwin-arm64` zip (`darwin-amd64` on an Intel Mac) fr
 
 ```bash
 cd ~/zurg
-./zurg service stop && sleep 2
+./zurg service stop && sleep 2     # manual LaunchAgent: launchctl stop com.zurg
 rm -f zurg
 unzip -o ~/Downloads/zurg-*-darwin-arm64.zip   # on an Intel Mac: zurg-*-darwin-amd64.zip
 chmod +x zurg
-./zurg service start
+./zurg service start               # manual LaunchAgent: launchctl start com.zurg
 ```
 
 Delete the old binary rather than overwriting it in place. Rewriting the file keeps the same inode and invalidates its ad-hoc code signature, and macOS then kills the new build on exec — the symptom is an immediate exit with no output at all. `zurg update` swaps by rename for exactly this reason.
@@ -465,6 +467,8 @@ launchd (PID 1)
 ```
 
 ## Quick Reference
+
+Run these in `~/zurg`. The `zurg service` lines are for an install made by `zurg setup`; the manual LaunchAgent uses the launchctl commands in [Managing the Services](#managing-the-services).
 
 | Action | Command |
 |--------|---------|

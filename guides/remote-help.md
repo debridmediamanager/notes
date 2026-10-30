@@ -23,8 +23,10 @@ Post in the [Discord](https://discord.com/invite/7u4YjMThXP) forum for what you 
 | rex runs as | Run |
 |---|---|
 | A systemd service on Linux | `journalctl --user -u rex -n 200 --no-pager` |
+| launchd on macOS | `tail -n 200 ~/rex/rex.log` |
+| Task Scheduler on Windows | `Get-Content $HOME\rex\rex.log -Tail 200` |
 | Docker | `docker compose logs --tail=200 rex` |
-| A terminal window, launchd or Task Scheduler | The last 200 lines of that window, or of the file its output goes to |
+| A terminal window | The last 200 lines in that window |
 
 ## Remote help for sponsors
 

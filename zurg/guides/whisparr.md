@@ -46,7 +46,7 @@ services:
     restart: unless-stopped
 ```
 
-`PUID` and `PGID` are the Linux user Whisparr runs as. zurg's own Docker image lets any user read its mount. A zurg installed as a plain binary does that only with `user_allow_other` enabled ([Linux setup](../setup/linux.md#1-install-fuse-3)); without it, set `PUID` and `PGID` to the user zurg runs as (`id -u` and `id -g` print it), or Whisparr sees the mount empty.
+`PUID` and `PGID` are the Linux user Whisparr runs as. zurg's own Docker image lets any user read its mount. A zurg installed as a plain binary does that only when it runs as root or with `user_allow_other` enabled ([Linux setup](../setup/linux.md#1-install-fuse-3)); otherwise set `PUID` and `PGID` to the user zurg runs as (`id -u` and `id -g` print it), or Whisparr sees the mount empty.
 
 On macOS and Windows this compose file does not apply, for the reason the [Usenet guide's step 8](sonarr-radarr.md#8-if-your-arr-is-in-docker) gives. Install Whisparr as an ordinary app there, with the catches listed under [Before you start](sonarr-radarr.md#before-you-start) in that guide: the same user as zurg on macOS, the tray app and not the Windows service on Windows. Only the Docker image above was tested.
 

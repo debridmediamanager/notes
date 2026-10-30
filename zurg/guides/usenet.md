@@ -403,17 +403,21 @@ pacer_min_sleep = 0
 ```
 
 +++ Linux
+rclone does not create the mount point, and `/mnt` belongs to root:
+
 ```bash
+sudo mkdir -p /mnt/zurg && sudo chown "$USER" /mnt/zurg
 rclone mount zurg: /mnt/zurg --config rclone.conf --dir-cache-time 10s --vfs-handle-caching 0
 ```
 +++ macOS
-Needs [macFUSE](../setup/macos.md#step-1-install-macfuse).
+Needs [macFUSE](../setup/macos.md#step-1-install-macfuse) and rclone from [rclone.org](https://rclone.org/downloads/): Homebrew's rclone cannot mount. rclone does not create the mount point, and `/Volumes` belongs to root:
 
 ```bash
+sudo mkdir -p /Volumes/Zurg && sudo chown "$USER" /Volumes/Zurg
 rclone mount zurg: /Volumes/Zurg --config rclone.conf --dir-cache-time 10s --vfs-handle-caching 0
 ```
 +++ Windows
-Needs [WinFsp](https://winfsp.dev). The drive letter must not be in use.
+Needs [WinFsp](https://winfsp.dev). The drive letter must not be in use, and only programs in the logon session that runs rclone see it ([the session rules](../setup/windows.md#keeping-it-running-the-session-rules)).
 
 ```powershell
 rclone mount zurg: Z: --config rclone.conf --dir-cache-time 10s --vfs-handle-caching 0
@@ -474,7 +478,7 @@ Nothing here is Usenet-specific except the last subsection, but the order matter
 4. **Never restart zurg during a Plex scan.** Check before you do:
 
    ```bash
-   TOKEN=$(grep ^plex_token: config.yml | awk '{print $2}')
+   TOKEN=$(grep ^plex_token: config.yml | awk '{print $2}' | tr -d "\"'")
    curl -s "http://localhost:32400/status/sessions?X-Plex-Token=$TOKEN" | grep -o 'size="[0-9]*"'
    curl -s "http://localhost:32400/library/sections?X-Plex-Token=$TOKEN" | grep -o 'refreshing="1"' | wc -l
    ```
@@ -482,12 +486,12 @@ Nothing here is Usenet-specific except the last subsection, but the order matter
    On Windows, in PowerShell from the zurg folder:
 
    ```powershell
-   $TOKEN = ((Select-String -Path config.yml -Pattern '^plex_token:').Line -split '\s+')[1]
+   $TOKEN = ((Select-String -Path config.yml -Pattern '^plex_token:').Line -split '\s+')[1].Trim('"', "'")
    (Invoke-RestMethod "http://localhost:32400/status/sessions?X-Plex-Token=$TOKEN").MediaContainer.size
    @((Invoke-RestMethod "http://localhost:32400/library/sections?X-Plex-Token=$TOKEN").MediaContainer.Directory | Where-Object refreshing -eq 1).Count
    ```
 
-   Sessions at `size="0"` (`0` on Windows) and a refreshing count of `0` mean it is safe. (Use `grep -o … | wc -l`, not `grep -c`: grep exits non-zero when it finds nothing, which is the *good* case, and will abort a `&&` chain right before the restart it was guarding.)
+   Sessions at `size="0"` (`0` on Windows) and a refreshing count of `0` mean it is safe. If the sessions line prints nothing at all, Plex refused the token and the `0` below it means nothing: check `plex_token` before restarting. (PowerShell shows the refusal as a `401` error instead.) (Use `grep -o … | wc -l`, not `grep -c`: grep exits non-zero when it finds nothing, which is the *good* case, and will abort a `&&` chain right before the restart it was guarding.)
 
 5. **Partial scans.** `on_library_update` is handed every changed path; `plex_update.sh` in the repo root is the reference script:
 
@@ -495,7 +499,7 @@ Nothing here is Usenet-specific except the last subsection, but the order matter
    on_library_update: sh plex_update.sh "$@"
    ```
 
-   The script needs `curl`, `xmllint` and `python3`, which the Docker image has, and its `zurg_mount` line set to your mount path. On Windows the hook runs in PowerShell rather than `sh`, so this script does not run there. Each changed path arrives as one element of `$args`; hand them to a PowerShell script with `@args`:
+   The script needs `curl`, `xmllint` and `python3`, which the Docker image has, and its `zurg_mount` line set to your mount path. On Windows the hook runs in PowerShell rather than `sh`, so this script does not run there. Each changed path arrives as one element of `$args`, relative to the mount and with forward slashes (`movies/Big Buck Bunny`); hand them to a PowerShell script with `@args`:
 
    ```yaml
    on_library_update: '& C:\zurg\my_update.ps1 @args'
