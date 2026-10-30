@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846638225405">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846660769868">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../../resources/css/retype.css?v=4.6.0.846638225405" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.846660769868" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846638225405" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846660769868" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846638225405" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846638225405" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846660769868" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846660769868" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -200,7 +200,7 @@
   categories: [tv-sonarr, radarr, whisparr]</code></pre>
 </doc-codeblock></div>
 <h2 id="2-run-whisparr">2. Run Whisparr</h2>
-<p>Give Whisparr the same volume as Radarr, the folder <strong>above</strong> zurg&#x27;s mount with <code translate="no" v-pre>rslave</code> (<a href="../sonarr-radarr-torrents/#8-if-your-arr-is-in-docker">why</a>):</p>
+<p>On a Linux host, give Whisparr the same volume as Radarr, the folder <strong>above</strong> zurg&#x27;s mount with <code translate="no" v-pre>rslave</code> (<a href="../sonarr-radarr-torrents/#8-if-your-arr-is-in-docker">why</a>):</p>
 <div id="2-run-whisparr-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">services:
   whisparr:
@@ -218,14 +218,33 @@
       - 6969:6969
     restart: unless-stopped</code></pre>
 </doc-codeblock></div>
+<p><code translate="no" v-pre>PUID</code> and <code translate="no" v-pre>PGID</code> are the Linux user Whisparr runs as. zurg&#x27;s own Docker image lets any user read its mount. A zurg installed as a plain binary does that only when it runs as root or with <code translate="no" v-pre>user_allow_other</code> enabled (<a href="../../setup/linux/#1-install-fuse-3">Linux setup</a>); otherwise set <code translate="no" v-pre>PUID</code> and <code translate="no" v-pre>PGID</code> to the user zurg runs as (<code translate="no" v-pre>id -u</code> and <code translate="no" v-pre>id -g</code> print it), or Whisparr sees the mount empty.</p>
+<p>On macOS and Windows this compose file does not apply, for the reason the <a href="../sonarr-radarr/#8-if-your-arr-is-in-docker">Usenet guide&#x27;s step 8</a> gives. Install Whisparr as an ordinary app there, with the catches listed under <a href="../sonarr-radarr/#before-you-start">Before you start</a> in that guide: the same user as zurg on macOS, the tray app and not the Windows service on Windows. Only the Docker image above was tested.</p>
 <p>Open <code translate="no" v-pre>http://&lt;your server&gt;:6969</code>.</p>
 <h2 id="3-add-zurg-as-the-download-client">3. Add zurg as the download client</h2>
 <p><strong>Settings → Download Clients → + → qBittorrent</strong>, filled in exactly as for Radarr (<a href="../sonarr-radarr-torrents/#what-to-put-in-each-field">the fields</a>), except <strong>Category</strong> is <code translate="no" v-pre>whisparr</code>. Leave <strong>Remove Completed</strong> on. <strong>Test</strong>, then <strong>Save</strong>.</p>
 <h2 id="4-add-the-root-folder">4. Add the root folder</h2>
 <p>Make the folder on the mount, then add it under <strong>Settings → Media Management → Root Folders</strong>:</p>
-<div id="4-add-the-root-folder-code-1" class="codeblock-wrapper"><doc-codeblock>
+<doc-tabs>
+<doc-tab v-cloak id="linux">
+<template #title>Linux</template>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p /mnt/zurg/__magic__/whisparr</code></pre>
 </doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="macos">
+<template #title>macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p /Volumes/Zurg/__magic__/whisparr</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">New-Item -ItemType Directory -Force Z:\__magic__\whisparr</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
 <p>It sits beside <code translate="no" v-pre>__magic__/movies</code>, not inside it. Whisparr files each film under its studio, as <code translate="no" v-pre>__magic__/whisparr/movies/&lt;Studio&gt;/&lt;Title (Year)&gt;/</code>.</p>
 <h2 id="5-indexers">5. Indexers</h2>
 <p>DMM&#x27;s indexer has no adult category, so Whisparr needs other indexers. In Prowlarr, the public indexers <strong>Knaben</strong> and <strong>The Pirate Bay</strong> both worked. <strong>XXXClub</strong> is behind Cloudflare and Prowlarr cannot add it without a Cloudflare solver.</p>
@@ -237,9 +256,9 @@
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">$ ls &quot;/mnt/zurg/__magic__/whisparr/movies/&lt;Studio&gt;/&lt;Title (Year)&gt;/&quot;
 &lt;Title&gt; 1080p.mkv</code></pre>
 </doc-codeblock></div>
-<p>Nothing lands in zurg&#x27;s <code translate="no" v-pre>data/local</code> folder. The file streams from your account.</p>
+<p>On macOS the path starts <code translate="no" v-pre>/Volumes/Zurg</code>; on Windows look in <code translate="no" v-pre>Z:\__magic__\whisparr\movies</code> in Explorer. Nothing lands in zurg&#x27;s <code translate="no" v-pre>data/local</code> folder. The file streams from your account.</p>
 <h2 id="watching-it">Watching it</h2>
-<p>Point a Plex or Jellyfin library at <code translate="no" v-pre>/mnt/zurg/__magic__/whisparr</code> to keep these films in a library of their own.</p>
+<p>Point a Plex or Jellyfin library at <code translate="no" v-pre>/mnt/zurg/__magic__/whisparr</code> (<code translate="no" v-pre>/Volumes/Zurg/__magic__/whisparr</code> on macOS, <code translate="no" v-pre>Z:\__magic__\whisparr</code> on Windows) to keep these films in a library of their own.</p>
 <p>In rex they appear in whichever library zurg&#x27;s folders put them, like every other release, which on most setups is the movies library.</p>
 
                 

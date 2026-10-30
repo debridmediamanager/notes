@@ -37,7 +37,7 @@ To build your own list sign in to MDBList and create one. It can follow filters 
 | Enable Automatic Add | on |
 | Search on Add | read the warning below first |
 | Monitor | Movie Only |
-| Root Folder | your movies folder inside `__magic__`, for example `/mnt/zurg/__magic__/movies` |
+| Root Folder | your movies folder inside `__magic__`, for example `/mnt/zurg/__magic__/movies` (`/Volumes/Zurg/__magic__/movies` on macOS, `Z:\__magic__\movies` on Windows) |
 | Quality Profile | the one you use |
 | List URL | the movie feed URL |
 
@@ -52,7 +52,7 @@ Press **Test** and then **Save**.
 | Name | anything, for example `Horror Shows` |
 | Enable Automatic Add | on |
 | Monitor | All Episodes, or Pilot Episode to try a show first |
-| Root Folder | your TV folder inside `__magic__`, for example `/mnt/zurg/__magic__/tv` |
+| Root Folder | your TV folder inside `__magic__`, for example `/mnt/zurg/__magic__/tv` (`/Volumes/Zurg/__magic__/tv` on macOS, `Z:\__magic__\tv` on Windows) |
 | Quality Profile | the one you use |
 | Series Type | Standard |
 | Season Folder | on |

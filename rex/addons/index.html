@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846638225405">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846660769868">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.846638225405" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.846660769868" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.846638225405" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.846660769868" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.846638225405" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.846638225405" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.846660769868" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.846660769868" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -203,7 +203,7 @@
 |---|---|
 | rex, set up as in [rex with your own app](any-source.md) (steps 1 to 3) | That is where your addon's library shows up |
 | A rex nightly dated 2026.10.25 or newer | This page is written for it |
-| FFmpeg where rex runs, if your addon serves streams | rex plays a stream by converting it (a copy, cheap). rex finds FFmpeg itself; see [rex](with-zurg.md) |
+| FFmpeg where rex runs, if your addon serves streams | rex plays a stream by converting it (a copy, cheap). rex finds FFmpeg itself; see [Converting video](any-source.md#converting-video-optional) |
 | Your addon on the same machine as rex, or on your home network | rex's feed answers only private networks: loopback, `192.168.x.x`, `10.x.x.x`, `172.16-31.x.x`, Tailscale |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
@@ -224,7 +224,7 @@
 </tr>
 <tr>
 <td>FFmpeg where rex runs, if your addon serves streams</td>
-<td>rex plays a stream by converting it (a copy, cheap). rex finds FFmpeg itself; see <a href="../with-zurg/">rex</a></td>
+<td>rex plays a stream by converting it (a copy, cheap). rex finds FFmpeg itself; see <a href="../any-source/#converting-video-optional">Converting video</a></td>
 </tr>
 <tr>
 <td>Your addon on the same machine as rex, or on your home network</td>
@@ -275,12 +275,24 @@
 <h2 id="step-2-register-with-rex">Step 2. Register with rex</h2>
 <p><strong>What it does.</strong> Tells rex your addon&#x27;s name, where its bytes are and which libraries it fills.</p>
 <p><strong>Why it matters.</strong> rex reads nothing from a source it does not know. Registering again changes nothing, so do it every time your addon starts.</p>
-<div id="step-2-register-with-rex-code-1" class="codeblock-wrapper"><doc-codeblock>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos">
+<template #title>Linux and macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -X PUT http://192.168.1.20:32400/rex/sources/myaddon \
   -H 'Content-Type: application/json' \
   -d '{&quot;url&quot;: &quot;http://127.0.0.1:9981&quot;,
        &quot;directories&quot;: [{&quot;name&quot;: &quot;kids&quot;, &quot;shows&quot;: &quot;Kids&quot;}]}'</code></pre>
 </doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">Invoke-RestMethod -Method Put http://192.168.1.20:32400/rex/sources/myaddon -ContentType application/json `
+  -Body '{&quot;url&quot;: &quot;http://127.0.0.1:9981&quot;, &quot;directories&quot;: [{&quot;name&quot;: &quot;kids&quot;, &quot;shows&quot;: &quot;Kids&quot;}]}'</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
 <retype-table copy-text="| Field | Meaning |
 |---|---|
 | `url` | Where your bytes are. A video's bytes are `GET &lt;url&gt;/&lt;path&gt;` |
@@ -493,10 +505,22 @@
 </retype-table>
 <p>Send a few hundred videos per request. A snapshot that names nothing removes nothing, and one that would remove more than half of your videos is refused unless its last part says <code translate="no" v-pre>&quot;force&quot;: true</code>: an addon that lost track of things cannot empty your library by accident.</p>
 <p><strong>What you should see.</strong></p>
-<div id="step-5-send-it-code-1" class="codeblock-wrapper"><doc-codeblock>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos-1">
+<template #title>Linux and macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s http://192.168.1.20:32400/rex/feed/myaddon/items | head -c 400   # what rex shows, with each ratingKey
 curl -s http://192.168.1.20:32400/rex/feed/myaddon/held                  # what waits for a probe</code></pre>
 </doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-1">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">curl.exe -s http://192.168.1.20:32400/rex/feed/myaddon/items   # what rex shows, with each ratingKey
+curl.exe -s http://192.168.1.20:32400/rex/feed/myaddon/held    # what waits for a probe</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
 <p>rex&#x27;s log names every refused video and why: <code translate="no" v-pre>FEED myaddon rejected &lt;id&gt;: &lt;reason&gt;</code>.</p>
 <h2 id="the-rules-that-trip-people-up">The rules that trip people up</h2>
 <retype-table copy-text="| Rule | What happens if you break it |

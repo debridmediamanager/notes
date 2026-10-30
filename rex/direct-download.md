@@ -33,6 +33,7 @@ Whichever you pick, every app and person you share rex with gets your provider's
 
 **Why it matters.** rex can only pass on a link zurg gives it. Without this, rex still gets the file itself. The setting is zurg's, so anything else reading zurg (rclone, a Plex or Jellyfin server on zurg's mount) gets the links too; zurg's [config reference](../zurg/reference/config.md) has the details.
 
++++ Linux and macOS
 See whether the setting is already in zurg's config:
 
 ```bash
@@ -45,6 +46,13 @@ If it prints a line, change it to `disable_stream_proxy: true` with `nano ~/zurg
 printf '\ndisable_stream_proxy: true\n' >> ~/zurg/config.yml
 cd ~/zurg && ./zurg service restart
 ```
++++ Windows
+Open zurg's config with `notepad $HOME\zurg\config.yml`. If it has a `disable_stream_proxy:` line, change it to `disable_stream_proxy: true`; if not, add that line at the end. Save it and restart zurg:
+
+```powershell
+cd $HOME\zurg; .\zurg.exe service restart
+```
++++
 
 **What you should see.** zurg starts again as usual. Movies still play through rex at this point: rex follows zurg's links itself until step 2.
 
@@ -52,24 +60,13 @@ cd ~/zurg && ./zurg service restart
 
 **What it does.** rex hands the app the link zurg gave it, instead of downloading the movie for it.
 
-Open rex's service file:
-
-```bash
-nano ~/.config/systemd/user/rex.service
-```
-
-End the `ExecStart` line with `--part-mode redirect` (or `--part-mode redirect-only`). With nothing else on the line it reads:
+End rex's start command with `--part-mode redirect` (or `--part-mode redirect-only`), then restart rex and open its log. [rex with zurg, step 2](with-zurg.md#step-2-install-rex) shows where the start command is on your system and how to restart rex and see its log. On Linux the `ExecStart` line in `~/.config/systemd/user/rex.service` then reads, with nothing else on it:
 
 ```ini
 ExecStart=%h/rex/rust/target/release/rex --part-mode redirect
 ```
 
-Keep anything already on the line, such as `--port 32500` or `--announce-url ...`. Then:
-
-```bash
-systemctl --user daemon-reload && systemctl --user restart rex
-journalctl --user -u rex -f
-```
+Keep anything already on the line, such as `--port 32500` or `--announce-url ...`.
 
 **What you should see.** The start line ends in `parts=redirect`:
 
@@ -137,4 +134,4 @@ Already have `command: --port 32500`? Make it `command: --port 32500 --part-mode
 
 ## Going back
 
-Remove `--part-mode ...` from the `ExecStart` line (or the `command:` line in Docker) and restart rex. Setting `disable_stream_proxy` back to `false` and restarting zurg makes zurg pass the files itself again too; with the rex setting gone, leaving zurg as it is also works.
+Remove `--part-mode ...` from rex's start command (or the `command:` line in Docker) and restart rex. Setting `disable_stream_proxy` back to `false` and restarting zurg makes zurg pass the files itself again too; with the rex setting gone, leaving zurg as it is also works.

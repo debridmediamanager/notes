@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846638225405">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846660769868">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.846638225405" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.846660769868" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.846638225405" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.846660769868" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.846638225405" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.846638225405" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.846660769868" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.846660769868" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -202,7 +202,7 @@
 <retype-table copy-text="| You need | Why |
 |---|---|
 | rex's nightly dated 2026.10.25 or newer | Step 1 downloads the newest |
-| A Linux machine that stays on (Ubuntu 22.04 or newer) | rex is a server: your Plex apps reach it whenever you press play. macOS and Windows work too; this page shows Linux, and [Docker](#run-rex-in-docker) is further down |
+| A machine that stays on: Linux (Ubuntu 22.04 or newer), macOS, or Windows (64 bit) | rex is a server: your Plex apps reach it whenever you press play. Where the commands differ, a step has a tab for each system. [Docker](#run-rex-in-docker) is further down, for Linux |
 | 1 GB of RAM for a library of 40,000 titles | rex keeps the library in `rex.db` and uses about 450 MB with 40,000 titles, starting included. Converting video takes more, and more cores or a graphics chip |
 | A GitHub account with access to rex's sponsor releases | rex is a private GitHub release |
 | An app that does what [What your app must do](#what-your-app-must-do) lists | That is where your library comes from |
@@ -221,8 +221,8 @@
 <td>Step 1 downloads the newest</td>
 </tr>
 <tr>
-<td>A Linux machine that stays on (Ubuntu 22.04 or newer)</td>
-<td>rex is a server: your Plex apps reach it whenever you press play. macOS and Windows work too; this page shows Linux, and <doc-anchor-trigger to="#run-rex-in-docker">Docker</doc-anchor-trigger> is further down</td>
+<td>A machine that stays on: Linux (Ubuntu 22.04 or newer), macOS, or Windows (64 bit)</td>
+<td>rex is a server: your Plex apps reach it whenever you press play. Where the commands differ, a step has a tab for each system. <doc-anchor-trigger to="#run-rex-in-docker">Docker</doc-anchor-trigger> is further down, for Linux</td>
 </tr>
 <tr>
 <td>1 GB of RAM for a library of 40,000 titles</td>
@@ -317,25 +317,44 @@
 </div>
 </retype-table>
 <h2 id="step-1-install-rex">Step 1. Install rex</h2>
-<p><strong>What it does.</strong> Downloads rex into <code translate="no" v-pre>~/rex</code> and starts it as a service that comes back after a reboot, with everything the later steps need. The steps after this one need no restart; only the optional sections further down do.</p>
+<p><strong>What it does.</strong> Downloads rex into <code translate="no" v-pre>~/rex</code> (<code translate="no" v-pre>$HOME\rex</code> on Windows) and starts it as a service, with everything the later steps need. The steps after this one need no restart; only the optional sections further down do.</p>
 <p><strong>Why it matters.</strong> rex is what your Plex apps talk to. The first start creates <code translate="no" v-pre>rex.db</code>, which holds your libraries, everything your app sends and your watch history.</p>
-<p>rex&#x27;s download uses the GitHub CLI. Install it (<code translate="no" v-pre>sudo apt install -y gh</code>) and sign in once with <code translate="no" v-pre>gh auth login</code>. Then:</p>
-<div id="step-1-install-rex-code-1" class="codeblock-wrapper"><doc-codeblock>
+<p>rex&#x27;s download uses the GitHub CLI. Install it (<code translate="no" v-pre>sudo apt install -y gh</code> on Linux, <code translate="no" v-pre>brew install gh</code> on macOS, <code translate="no" v-pre>winget install GitHub.cli</code> on Windows, then a new terminal) and sign in once with <code translate="no" v-pre>gh auth login</code>. Then:</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos">
+<template #title>Linux and macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p ~/rex &amp;&amp; cd ~/rex
 TAG=$(gh api 'repos/debridmediamanager/rex/releases?per_page=1' --jq '.[0].tag_name')
-A=$(dpkg --print-architecture)
-gh release download &quot;$TAG&quot; -R debridmediamanager/rex -p &quot;*-linux-$A.tar.gz&quot;
-tar xzf rex-*-linux-$A.tar.gz --strip-components=1 &amp;&amp; rm rex-*-linux-$A.tar.gz
-sudo loginctl enable-linger &quot;$USER&quot;</code></pre>
+P=$(uname -s | tr A-Z a-z)-$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
+gh release download &quot;$TAG&quot; -R debridmediamanager/rex -p &quot;*-$P.tar.gz&quot;
+tar xzf rex-*-$P.tar.gz --strip-components=1 &amp;&amp; rm rex-*-$P.tar.gz</code></pre>
 </doc-codeblock></div>
-<p>This takes rex&#x27;s newest build, usually a nightly, for your machine&#x27;s processor. The last line keeps rex running when you log out.</p>
-<p>Find rex&#x27;s LAN IP: <code translate="no" v-pre>hostname -I</code> prints several, so take the one on your home network (usually <code translate="no" v-pre>192.168.x.x</code> or <code translate="no" v-pre>10.x.x.x</code>). <strong>This page writes it as <code translate="no" v-pre>192.168.1.20</code> everywhere: put yours in its place.</strong> Plex apps, your app and your own commands all reach rex there.</p>
-<p>Now make it a service. Create <code translate="no" v-pre>~/.config/systemd/user/rex.service</code>:</p>
-<div id="step-1-install-rex-code-2" class="codeblock-wrapper"><doc-codeblock>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<p>In PowerShell:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">New-Item -ItemType Directory -Force $HOME\rex | Out-Null; cd $HOME\rex
+$tag = gh api 'repos/debridmediamanager/rex/releases?per_page=1' --jq '.[0].tag_name'
+gh release download $tag -R debridmediamanager/rex -p '*-windows-amd64.zip'
+tar -xf &quot;rex-$tag-windows-amd64.zip&quot; --strip-components=1; Remove-Item &quot;rex-$tag-windows-amd64.zip&quot;</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p>This takes rex&#x27;s newest build, usually a nightly, for your machine.</p>
+<p>Find rex&#x27;s LAN IP, its address on your home network. On Linux <code translate="no" v-pre>hostname -I</code> prints several: take the one on your home network, not one starting with <code translate="no" v-pre>172.17.</code> (Docker) or <code translate="no" v-pre>100.</code> (Tailscale). On macOS <code translate="no" v-pre>ipconfig getifaddr en0</code> prints it (<code translate="no" v-pre>en1</code> if that prints nothing). On Windows <code translate="no" v-pre>ipconfig</code> lists it as <strong>IPv4 Address</strong> under your Wi-Fi or Ethernet adapter. <strong>This page writes it as <code translate="no" v-pre>192.168.1.20</code> everywhere: put yours in its place.</strong> Plex apps, your app and your own commands all reach rex there.</p>
+<p><strong>Plex Media Server runs on the same machine?</strong> End rex&#x27;s start command below with <code translate="no" v-pre>--port 32500</code> and use <code translate="no" v-pre>32500</code> wherever this page says <code translate="no" v-pre>32400</code>, the Windows firewall rule included: Plex already holds port 32400 and the ports apps use to find servers, and on any other port rex leaves those to Plex.</p>
+<p>Now make it a service:</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux">
+<template #title>Linux</template>
+<p>Create <code translate="no" v-pre>~/.config/systemd/user/rex.service</code>:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p ~/.config/systemd/user
 nano ~/.config/systemd/user/rex.service</code></pre>
 </doc-codeblock></div>
-<div id="step-1-install-rex-code-3" class="codeblock-wrapper"><doc-codeblock>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-ini"><code v-pre class="language-ini">[Unit]
 Description=rex
 After=network-online.target
@@ -350,14 +369,63 @@ RestartSec=5
 [Install]
 WantedBy=default.target</code></pre>
 </doc-codeblock></div>
-<p><strong>Plex Media Server runs on the same machine?</strong> End the <code translate="no" v-pre>ExecStart</code> line with <code translate="no" v-pre>--port 32500</code> and use <code translate="no" v-pre>32500</code> wherever this page says <code translate="no" v-pre>32400</code>: Plex already holds port 32400 and the ports apps use to find servers, and on any other port rex leaves those to Plex.</p>
-<div id="step-1-install-rex-code-4" class="codeblock-wrapper"><doc-codeblock>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">systemctl --user daemon-reload
 systemctl --user enable --now rex
+sudo loginctl enable-linger &quot;$USER&quot;
 journalctl --user -u rex -f</code></pre>
 </doc-codeblock></div>
+<p>rex&#x27;s <strong>start command</strong> is the <code translate="no" v-pre>ExecStart</code> line, and keys go in <code translate="no" v-pre>~/rex/rex.env</code>, one <code translate="no" v-pre>NAME=value</code> a line. After a change, <code translate="no" v-pre>systemctl --user daemon-reload &amp;&amp; systemctl --user restart rex</code> restarts rex. <code translate="no" v-pre>journalctl --user -u rex -f</code> shows its log. <code translate="no" v-pre>loginctl enable-linger</code> keeps rex running when you log out.</p>
+</doc-tab>
+<doc-tab v-cloak id="macos">
+<template #title>macOS</template>
+<p><code translate="no" v-pre>run.sh</code> starts rex in its folder, and a LaunchAgent starts <code translate="no" v-pre>run.sh</code> when you log in:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cp ~/rex/examples/run.sh.example ~/rex/run.sh
+mkdir -p ~/Library/LaunchAgents
+cat &gt; ~/Library/LaunchAgents/com.rex.plist &lt;&lt;PLIST
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot; &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;
+&lt;plist version=&quot;1.0&quot;&gt;&lt;dict&gt;
+  &lt;key&gt;Label&lt;/key&gt;&lt;string&gt;com.rex&lt;/string&gt;
+  &lt;key&gt;ProgramArguments&lt;/key&gt;&lt;array&gt;&lt;string&gt;/bin/bash&lt;/string&gt;&lt;string&gt;$HOME/rex/run.sh&lt;/string&gt;&lt;/array&gt;
+  &lt;key&gt;RunAtLoad&lt;/key&gt;&lt;true/&gt;&lt;key&gt;KeepAlive&lt;/key&gt;&lt;true/&gt;
+  &lt;key&gt;StandardOutPath&lt;/key&gt;&lt;string&gt;$HOME/rex/rex.log&lt;/string&gt;
+  &lt;key&gt;StandardErrorPath&lt;/key&gt;&lt;string&gt;$HOME/rex/rex.log&lt;/string&gt;
+&lt;/dict&gt;&lt;/plist&gt;
+PLIST
+launchctl load ~/Library/LaunchAgents/com.rex.plist
+tail -F ~/rex/rex.log</code></pre>
+</doc-codeblock></div>
+<p>rex&#x27;s <strong>start command</strong> is the last line of <code translate="no" v-pre>~/rex/run.sh</code>, and keys go in <code translate="no" v-pre>~/rex/rex.env</code>, one <code translate="no" v-pre>NAME=value</code> a line. After a change, <code translate="no" v-pre>launchctl kickstart -k gui/$(id -u)/com.rex</code> restarts rex. <code translate="no" v-pre>tail -f ~/rex/rex.log</code> shows its log.</p>
+<p>rex runs while you are logged in to the Mac. For a Mac that restarts by itself, turn on automatic login (<strong>System Settings</strong>, <strong>Users &amp; Groups</strong>). If the macOS firewall is on, allow rex when macOS asks, or add <code translate="no" v-pre>~/rex/rust/target/release/rex</code> under the firewall&#x27;s <strong>Options</strong>.</p>
+</doc-tab>
+<doc-tab v-cloak id="windows-1">
+<template #title>Windows</template>
+<p>Open PowerShell <strong>as administrator</strong> and go to rex&#x27;s folder with <code translate="no" v-pre>cd $HOME\rex</code>. First make <code translate="no" v-pre>run.cmd</code>, which starts rex in its folder and writes its log to <code translate="no" v-pre>rex.log</code>. Notepad offers to create the file:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">notepad run.cmd</code></pre>
+</doc-codeblock></div>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-batch"><code v-pre class="language-batch">@echo off
+cd /d &quot;%~dp0&quot;
+rust\target\release\rex.exe 2&gt;&gt; rex.log</code></pre>
+</doc-codeblock></div>
+<p>Save it. Then let your network through Windows Firewall to rex&#x27;s port and the two discovery ports, and start rex now and whenever you log in:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">New-NetFirewallRule -DisplayName rex -Protocol TCP -LocalPort 32400
+New-NetFirewallRule -DisplayName &quot;rex discovery&quot; -Protocol UDP -LocalPort 32410,32414
+$settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit 0 -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+Register-ScheduledTask rex -Action (New-ScheduledTaskAction -Execute &quot;$HOME\rex\run.cmd&quot;) -Trigger (New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME) -Settings $settings
+Start-ScheduledTask rex; Start-Sleep 3
+Get-Content rex.log -Wait</code></pre>
+</doc-codeblock></div>
+<p>rex&#x27;s <strong>start command</strong> is the <code translate="no" v-pre>rex.exe</code> line of <code translate="no" v-pre>run.cmd</code>, and keys go above it, one <code translate="no" v-pre>set NAME=value</code> a line. After a change, <code translate="no" v-pre>Stop-Process -Name rex; Start-Sleep 1; Start-ScheduledTask rex</code> restarts rex. <code translate="no" v-pre>Get-Content $HOME\rex\rex.log -Wait</code> shows its log.</p>
+<p>rex runs while you are logged in to Windows, in a window of its own: leave it open. In PowerShell, type <code translate="no" v-pre>curl.exe</code> wherever this page says <code translate="no" v-pre>curl</code>: Windows PowerShell&#x27;s own <code translate="no" v-pre>curl</code> is a different command.</p>
+</doc-tab>
+</doc-tabs>
 <p><strong>What you should see.</strong> Among the first lines:</p>
-<div id="step-1-install-rex-code-5" class="codeblock-wrapper"><doc-codeblock>
+<div id="step-1-install-rex-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-none"><code v-pre class="language-none">INFO    seeded rex.db: an empty library named yourhost, machine=...
 INFO    no source yet: one registers at PUT /rex/sources/{name} (docs/feed-api.md)
 INFO    claim state: unclaimed
@@ -367,21 +435,24 @@ INFO    rex on http://yourhost:32400  machine=...  items=0  parts=proxy</code></
 <h2 id="step-2-see-it-work-by-hand">Step 2. See it work by hand</h2>
 <p><strong>What it does.</strong> Plays the part of your app for one movie, with a throwaway file server and two <code translate="no" v-pre>curl</code> commands.</p>
 <p><strong>Why it matters.</strong> It proves rex works on this machine before your app is involved. If this step works and your app does not, the problem is in your app. Skip it if your app is already set up.</p>
-<p>You need <code translate="no" v-pre>ffprobe</code>, <code translate="no" v-pre>jq</code> and one video file. Put the file where a small web server can serve it:</p>
-<div id="step-2-see-it-work-by-hand-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo apt install -y ffmpeg jq
-mkdir -p ~/rex-test/movies/Sintel.2010
+<p>You need <code translate="no" v-pre>ffprobe</code>, a small web server and one video file. You register the file&#x27;s folder with rex under the name <code translate="no" v-pre>test</code>, then send rex the file, saying it is the movie Sintel (IMDb <code translate="no" v-pre>tt1727587</code>, TMDB <code translate="no" v-pre>45745</code>) with ffprobe&#x27;s output.</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos-1">
+<template #title>Linux and macOS</template>
+<p>Install <code translate="no" v-pre>ffprobe</code> and <code translate="no" v-pre>jq</code> (<code translate="no" v-pre>sudo apt install -y ffmpeg jq</code> on Linux, <code translate="no" v-pre>brew install ffmpeg jq</code> on macOS). Put the file where a small web server can serve it:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p ~/rex-test/movies/Sintel.2010
 cp /path/to/any-video.mkv ~/rex-test/movies/Sintel.2010/Sintel.2010.mkv
 cd ~/rex-test
 python3 -m http.server 8099 --bind 127.0.0.1 &amp;</code></pre>
 </doc-codeblock></div>
-<p>Register it with rex, under the name <code translate="no" v-pre>test</code>:</p>
-<div id="step-2-see-it-work-by-hand-code-2" class="codeblock-wrapper"><doc-codeblock>
+<p>Register it with rex:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s -X PUT http://192.168.1.20:32400/rex/sources/test \
   -H 'Content-Type: application/json' -d '{&quot;url&quot;: &quot;http://127.0.0.1:8099&quot;}'</code></pre>
 </doc-codeblock></div>
-<p>Send rex the file. It says the file is the movie Sintel (IMDb <code translate="no" v-pre>tt1727587</code>, TMDB <code translate="no" v-pre>45745</code>) and carries ffprobe&#x27;s output:</p>
-<div id="step-2-see-it-work-by-hand-code-3" class="codeblock-wrapper"><doc-codeblock>
+<p>Send rex the file:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">P=movies/Sintel.2010/Sintel.2010.mkv
 jq -n --arg p &quot;$P&quot; \
   --argjson probe &quot;$(ffprobe -v quiet -print_format json -show_format -show_streams &quot;$P&quot;)&quot; \
@@ -389,18 +460,55 @@ jq -n --arg p &quot;$P&quot; \
 | curl -s -X POST http://192.168.1.20:32400/rex/feed/test/items \
     -H 'Content-Type: application/json' --data-binary @-</code></pre>
 </doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-2">
+<template #title>Windows</template>
+<p>Install <code translate="no" v-pre>ffprobe</code> and Python with <code translate="no" v-pre>winget install Gyan.FFmpeg</code> and <code translate="no" v-pre>winget install Python.Python.3.13</code>, then open a new PowerShell window. Put the file where a small web server can serve it:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">New-Item -ItemType Directory -Force $HOME\rex-test\movies\Sintel.2010 | Out-Null
+Copy-Item C:\path\to\any-video.mkv $HOME\rex-test\movies\Sintel.2010\Sintel.2010.mkv
+cd $HOME\rex-test
+$server = Start-Process py '-m http.server 8099 --bind 127.0.0.1' -WindowStyle Hidden -PassThru</code></pre>
+</doc-codeblock></div>
+<p>Register it with rex:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">Invoke-RestMethod -Method Put http://192.168.1.20:32400/rex/sources/test -ContentType application/json -Body '{&quot;url&quot;: &quot;http://127.0.0.1:8099&quot;}'</code></pre>
+</doc-codeblock></div>
+<p>Send rex the file:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$p = 'movies/Sintel.2010/Sintel.2010.mkv'
+$probe = ffprobe -v quiet -print_format json -show_format -show_streams $p | Out-String | ConvertFrom-Json
+$item = @{ id = $p; path = $p; kind = 'movie'; ids = @{ imdb = 'tt1727587'; tmdb = 45745 }; media_info = $probe }
+Invoke-RestMethod -Method Post http://192.168.1.20:32400/rex/feed/test/items -ContentType application/json -Body (ConvertTo-Json @{ items = @($item) } -Depth 20)</code></pre>
+</doc-codeblock></div>
+<p>PowerShell shows rex&#x27;s answers as lists rather than JSON.</p>
+</doc-tab>
+</doc-tabs>
 <p><strong>What you should see.</strong> The answer is <code translate="no" v-pre>{&quot;created&quot;:1,&quot;updated&quot;:0,&quot;held&quot;:0,&quot;unchanged&quot;:0,&quot;rejected&quot;:[]}</code> and rex&#x27;s log prints:</p>
-<div id="step-2-see-it-work-by-hand-code-4" class="codeblock-wrapper"><doc-codeblock>
+<div id="step-2-see-it-work-by-hand-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-none"><code v-pre class="language-none">INFO    FEED identified &quot;Sintel.2010&quot; -&gt; movie tmdb:45745 (placed)
 INFO    FEED test upsert: 1 created, 0 updated, 0 held, 0 unchanged, 0 rejected</code></pre>
 </doc-codeblock></div>
 <p>Sintel is now in <strong>Movies</strong>, playing from the little web server. No Plex app can open rex before <doc-anchor-trigger to="#step-3-add-it-to-a-plex-account">step 3</doc-anchor-trigger>, so this step checks the feed only.</p>
 <p><strong>Clean up</strong> before you go on: removing the test source removes everything it sent. The first request answers a <code translate="no" v-pre>confirm</code> path; send a <code translate="no" v-pre>DELETE</code> to that path within five minutes.</p>
-<div id="step-2-see-it-work-by-hand-code-5" class="codeblock-wrapper"><doc-codeblock>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos-2">
+<template #title>Linux and macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s -X DELETE http://192.168.1.20:32400/rex/sources/test
 curl -s -X DELETE &quot;http://192.168.1.20:32400/rex/sources/test/confirm/&lt;code from the answer&gt;&quot;
 kill %1</code></pre>
 </doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-3">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">Invoke-RestMethod -Method Delete http://192.168.1.20:32400/rex/sources/test
+Invoke-RestMethod -Method Delete &quot;http://192.168.1.20:32400/rex/sources/test/confirm/&lt;code from the answer&gt;&quot;
+Stop-Process -InputObject $server</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
 <p><strong>If not.</strong></p>
 <ul>
 <li><code translate="no" v-pre>&quot;held&quot;:1</code>: <code translate="no" v-pre>media_info</code> is missing or has no streams. Check that <code translate="no" v-pre>ffprobe</code> printed JSON for the file.</li>
@@ -415,14 +523,14 @@ kill %1</code></pre>
 <ol>
 <li>Sign in to <a href="https://www.plex.tv">plex.tv</a> <strong>as the fresh account</strong>, open <a href="https://www.plex.tv/claim">plex.tv/claim</a> and copy the code. It expires after about five minutes.</li>
 <li>
-<p>On the rex machine:</p>
+<p>On the rex machine (<code translate="no" v-pre>curl.exe</code> on Windows):</p>
 <div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -X POST &quot;http://192.168.1.20:32400/myplex/claim?token=claim-xxxxxxxxxxxx&quot;
 curl -s http://192.168.1.20:32400/identity</code></pre>
 </doc-codeblock></div>
 </li>
 </ol>
-<p><strong>What you should see.</strong> The second command shows <code translate="no" v-pre>claimed=&quot;1&quot;</code>, and <code translate="no" v-pre>~/rex/claim_state.json</code> exists. Back that file up: without it rex has to be claimed again, and rex refuses a second claim while the file is there. From now on titles arrive with their names and posters, without a restart.</p>
+<p><strong>What you should see.</strong> The second command shows <code translate="no" v-pre>claimed=&quot;1&quot;</code>, and <code translate="no" v-pre>claim_state.json</code> exists in rex&#x27;s folder. Back that file up: without it rex has to be claimed again, and rex refuses a second claim while the file is there. From now on titles arrive with their names and posters, without a restart.</p>
 <p><strong>If not.</strong></p>
 <ul>
 <li>The first command answers <code translate="no" v-pre>409</code> with <code translate="no" v-pre>rex: already claimed</code>: rex is on a Plex account already.</li>
@@ -446,7 +554,7 @@ INFO    FEED myapp upsert: 0 created, 0 updated, 200 held, 0 unchanged, 0 reject
 INFO    FEED identified &quot;Some.Movie.2019.1080p&quot; -&gt; movie tmdb:12345 (placed)
 INFO    FEED myapp upsert: 180 created, 0 updated, 20 held, 0 unchanged, 0 rejected</code></pre>
 </doc-codeblock></div>
-<p><code translate="no" v-pre>held</code> files are waiting for their ffprobe output and appear as soon as your app sends it. Check what rex has from your app at any time:</p>
+<p><code translate="no" v-pre>held</code> files are waiting for their ffprobe output and appear as soon as your app sends it. Check what rex has from your app at any time (on Windows, <code translate="no" v-pre>curl.exe</code> without <code translate="no" v-pre>| head -c 600</code>):</p>
 <div id="step-4-connect-your-app-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s http://192.168.1.20:32400/rex/sources                # the apps that registered, and their addresses
 curl -s http://192.168.1.20:32400/rex/feed/myapp/items | head -c 600   # what is shown
@@ -462,7 +570,7 @@ curl -s http://192.168.1.20:32400/rex/feed/myapp/held  | head -c 600   # what wa
 <p><strong>What it does.</strong> Opens rex in a Plex app, the same way you would open any Plex server.</p>
 <p><strong>Why it matters.</strong> This is the point of the whole setup. It also proves the last link: rex reading a file from your app while you watch.</p>
 <p>Open a Plex app on a phone, TV or computer <strong>on the same home network</strong>. rex shows up under the machine&#x27;s name, with <strong>Movies</strong> and <strong>TV Shows</strong>. Pick a movie and press play.</p>
-<p>At home nothing else is needed: Plex apps find rex with Plex&#x27;s own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN). Discovery runs on UDP ports 32410 and 32414, so a firewall on the rex machine must let those in. rex answers discovery when it uses port 32400. If you moved rex to 32500 because Plex runs on the same machine, discovery is left to that Plex, and apps find rex through the Plex account it is <doc-anchor-trigger to="#share-it-with-your-own-account">shared with</doc-anchor-trigger>. app.plex.tv in a web browser is the exception: it needs the HTTPS address from <doc-anchor-trigger to="#use-it-outside-your-home-optional">Use it outside your home</doc-anchor-trigger>, even at home.</p>
+<p>At home nothing else is needed: Plex apps find rex with Plex&#x27;s own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN). Discovery runs on UDP ports 32410 and 32414, so a firewall on the rex machine must let those in (on Windows, step 1&#x27;s firewall rules do). rex answers discovery when it uses port 32400. If you moved rex to 32500 because Plex runs on the same machine, discovery is left to that Plex, and apps find rex through the Plex account it is <doc-anchor-trigger to="#share-it-with-your-own-account">shared with</doc-anchor-trigger>. app.plex.tv in a web browser is the exception: it needs the HTTPS address from <doc-anchor-trigger to="#use-it-outside-your-home-optional">Use it outside your home</doc-anchor-trigger>, even at home.</p>
 <p><strong>What you should see.</strong> Posters, titles and years as on any Plex server. Playback starts within a few seconds.</p>
 <p>Two things you may meet:</p>
 <ul>
@@ -471,11 +579,26 @@ curl -s http://192.168.1.20:32400/rex/feed/myapp/held  | head -c 600   # what wa
 </ul>
 <p>Each file goes to <strong>Movies</strong> or <strong>TV Shows</strong> by the <code translate="no" v-pre>kind</code> your app sent. A file without one goes by its first folder: <code translate="no" v-pre>shows</code> to TV Shows, anything else to Movies.</p>
 <p>To give a folder libraries of its own, your app adds <code translate="no" v-pre>directories</code> to its registration, naming the first folder of the files&#x27; paths and the libraries&#x27; titles: <code translate="no" v-pre>{&quot;url&quot;: ..., &quot;directories&quot;: [{&quot;name&quot;: &quot;anime&quot;, &quot;shows&quot;: &quot;Anime&quot;, &quot;movies&quot;: &quot;Anime Movies&quot;}]}</code>, either title alone being fine. rex makes them when your app registers and moves what that folder already has into them as it was: watch history, Fix Match and edits included. A malformed entry is skipped and listed under <code translate="no" v-pre>ignored</code> in the answer, with why. Rename them in a Plex app as you like. Delete one and it stays deleted, its files going back to Movies or TV Shows, until you add it again with <strong>Add Library</strong>, whose folder list shows your app&#x27;s folders. <code translate="no" v-pre>docs/feed-api.md</code> has the rules, under &quot;Libraries a source declares&quot;.</p>
-<p><strong>Back up</strong> <code translate="no" v-pre>~/rex/rex.db</code> (it holds your library, watch history and your app&#x27;s login, so keep it private) and <code translate="no" v-pre>claim_state.json</code>:</p>
-<div id="step-5-watch-something-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo apt install -y sqlite3    # once
+<p><strong>Back up</strong> <code translate="no" v-pre>rex.db</code> in rex&#x27;s folder (it holds your library, watch history and your app&#x27;s login, so keep it private) and <code translate="no" v-pre>claim_state.json</code>:</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos-3">
+<template #title>Linux and macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo apt install -y sqlite3    # once, on Linux; macOS has it
 sqlite3 ~/rex/rex.db &quot;.backup $HOME/rex/rex.db.bak&quot;</code></pre>
 </doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-4">
+<template #title>Windows</template>
+<p>Windows has no <code translate="no" v-pre>sqlite3</code>, so stop rex for a moment and copy <code translate="no" v-pre>rex.db</code> with the two files beside it that start the same way:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">Stop-Process -Name rex; Start-Sleep 1
+New-Item -ItemType Directory -Force $HOME\rex-backup | Out-Null
+Copy-Item $HOME\rex\rex.db*, $HOME\rex\claim_state.json $HOME\rex-backup
+Start-ScheduledTask rex</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
 <p>In Docker the files sit in <code translate="no" v-pre>~/rex/config</code>, readable by root only. Back up from inside the container: <code translate="no" v-pre>docker exec rex sqlite3 /config/rex.db &quot;.backup /config/rex.db.bak&quot;</code>.</p>
 <p>You are done. The sections below are optional.</p>
 <h2 id="use-it-outside-your-home-optional">Use it outside your home (optional)</h2>
@@ -532,19 +655,14 @@ sqlite3 ~/rex/rex.db &quot;.backup $HOME/rex/rex.db.bak&quot;</code></pre>
 <h3 id="rex-direct">rex-direct</h3>
 <p>rex-direct is DMM&#x27;s answer to plex.direct, and it is on by default. On your router, forward port 32400 (TCP) to the rex machine. That is all, with nothing to restart.</p>
 <p>Once claimed, rex gets its own name from DMM, <code translate="no" v-pre>&lt;hash&gt;.rex-direct.debridmediamanager.com</code>, pointed at your home&#x27;s public IP, and a certificate for that name alone. The first certificate takes a few minutes; rex&#x27;s log says it is being issued and then shows the name in a <code translate="no" v-pre>rex-direct:</code> line. A new home IP and certificate renewals are picked up by themselves. One Plex account can hold up to ten rex-direct names. At home, Plex apps can pick this name over the LAN IP, and unless you also set up Tailscale serve or Caddy, app.plex.tv in a browser has no other address it can use. So at home your router has to send the connection straight back to rex, or your home DNS has to point the name at rex: <doc-anchor-trigger to="#what-you-should-see">What you should see</doc-anchor-trigger> checks which.</p>
-<p>If your router forwards a different outside port to rex, add <code translate="no" v-pre>REX_DIRECT_PORT=&lt;that port&gt;</code> to <code translate="no" v-pre>rex.env</code> and restart rex. The port forward does not open the feed API: see <doc-anchor-trigger to="#keep-the-port-private">Keep the port private</doc-anchor-trigger>.</p>
+<p>If your router forwards a different outside port to rex, add the key <code translate="no" v-pre>REX_DIRECT_PORT=&lt;that port&gt;</code> as <doc-anchor-trigger to="#step-1-install-rex">step 1</doc-anchor-trigger> shows for your system and restart rex. The port forward does not open the feed API: see <doc-anchor-trigger to="#keep-the-port-private">Keep the port private</doc-anchor-trigger>.</p>
 <h3 id="tailscale-serve">Tailscale serve</h3>
 <p>Install <a href="https://tailscale.com/download">Tailscale</a> on the rex machine and on the devices you watch on, signed in to the same account. Then on the rex machine:</p>
 <div id="tailscale-serve-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo tailscale serve --bg 32400</code></pre>
 </doc-codeblock></div>
-<p>It prints the address, for example <code translate="no" v-pre>https://myhost.tailnet.ts.net</code>. Give it to rex with <code translate="no" v-pre>:443</code> added, on the <code translate="no" v-pre>ExecStart</code> line from <doc-anchor-trigger to="#step-1-install-rex">step 1</doc-anchor-trigger>:</p>
-<div id="tailscale-serve-code-2" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-ini"><code v-pre class="language-ini">ExecStart=%h/rex/rust/target/release/rex --announce-url https://myhost.tailnet.ts.net:443</code></pre>
-</doc-codeblock></div>
-<div id="tailscale-serve-code-3" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">systemctl --user daemon-reload &amp;&amp; systemctl --user restart rex</code></pre>
-</doc-codeblock></div>
+<p>On Windows, run it in PowerShell as administrator without <code translate="no" v-pre>sudo</code>. On macOS, use the Tailscale app&#x27;s <a href="https://tailscale.com/kb/1080/cli">command-line tool</a> without <code translate="no" v-pre>sudo</code>.</p>
+<p>It prints the address, for example <code translate="no" v-pre>https://myhost.tailnet.ts.net</code>. Give it to rex with <code translate="no" v-pre>:443</code> added: end rex&#x27;s start command from <doc-anchor-trigger to="#step-1-install-rex">step 1</doc-anchor-trigger> with <code translate="no" v-pre>--announce-url https://myhost.tailnet.ts.net:443</code>, and restart rex.</p>
 <p>Everyone on your tailnet, including anyone you share this machine with, can use rex&#x27;s feed API. Share the machine only with people you trust.</p>
 <h3 id="caddy">Caddy</h3>
 <p>You need port 443 on your router forwarded to the rex machine, and a name for your home&#x27;s IP address:</p>
@@ -552,14 +670,14 @@ sqlite3 ~/rex/rex.db &quot;.backup $HOME/rex/rex.db.bak&quot;</code></pre>
 <li><strong>Your own domain:</strong> an <code translate="no" v-pre>A</code> record such as <code translate="no" v-pre>rex.example.com</code> pointing at your home IP.</li>
 <li><strong>No domain:</strong> use <code translate="no" v-pre>1-2-3-4.sslip.io</code> with your public IP&#x27;s numbers (<code translate="no" v-pre>curl -s ifconfig.me</code> shows it). If your IP changes, update the name.</li>
 </ul>
-<p>Install <a href="https://caddyserver.com/docs/install">Caddy</a> and make <code translate="no" v-pre>/etc/caddy/Caddyfile</code>:</p>
+<p>Install <a href="https://caddyserver.com/docs/install">Caddy</a> and give it this Caddyfile (<code translate="no" v-pre>/etc/caddy/Caddyfile</code> with Caddy&#x27;s Linux package; on macOS and Windows a file named <code translate="no" v-pre>Caddyfile</code> in a folder of its own, which <code translate="no" v-pre>caddy run</code> in that folder reads):</p>
 <div id="caddy-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-none"><code v-pre class="language-none">rex.example.com {
 	respond /rex/* 403
 	reverse_proxy 192.168.1.20:32400
 }</code></pre>
 </doc-codeblock></div>
-<p><code translate="no" v-pre>respond /rex/* 403</code> keeps the feed API off the internet; your app still reaches rex directly. Then <code translate="no" v-pre>sudo systemctl reload caddy</code>, end the <code translate="no" v-pre>ExecStart</code> line with <code translate="no" v-pre>--announce-url https://rex.example.com:443</code>, and restart rex as above.</p>
+<p><code translate="no" v-pre>respond /rex/* 403</code> keeps the feed API off the internet; your app still reaches rex directly. Then reload Caddy (<code translate="no" v-pre>sudo systemctl reload caddy</code> with the Linux package). On macOS and Windows, start <code translate="no" v-pre>caddy run</code> in its folder instead and keep it running the way <doc-anchor-trigger to="#step-1-install-rex">step 1</doc-anchor-trigger> keeps rex; on Windows, also let TCP port 443 through the firewall as step 1 does for 32400. Then end rex&#x27;s start command with <code translate="no" v-pre>--announce-url https://rex.example.com:443</code>, and restart rex.</p>
 <h3 id="a-small-vps">A small VPS</h3>
 <p>For a connection with no public IP (CGNAT). rex has no relay and will not get one, so a server you rent stands in for your router: it has the public IP, and a tunnel from the rex machine carries everything to rex. Any VPS with a public IPv4 works, a few euros a month. <strong>Pick one whose monthly traffic covers what you watch away from home:</strong> every byte passes through it, and a plan with a small data cap will run out.</p>
 <p>You need the VPS&#x27;s IP (<code translate="no" v-pre>1.2.3.4</code> below), ports 443, 80 and 7000 open on it, and a long random string for the tunnel (<code translate="no" v-pre>openssl rand -hex 32</code>).</p>
@@ -590,15 +708,12 @@ localIP = &quot;192.168.1.20&quot;
 localPort = 32400
 remotePort = 32400</code></pre>
 </doc-codeblock></div>
-<p>Run it as a service, for example <code translate="no" v-pre>~/.config/systemd/user/frpc.service</code> with <code translate="no" v-pre>ExecStart=%h/frp/frpc -c %h/frp/frpc.toml</code> and <code translate="no" v-pre>Restart=always</code>. Then give rex the VPS&#x27;s name with <code translate="no" v-pre>--announce-url</code>, add <code translate="no" v-pre>REX_DIRECT_URL=off</code> to <code translate="no" v-pre>~/rex/rex.env</code> (rex-direct cannot work without a public IP at home, so plex.tv should not list it), and restart rex:</p>
-<div id="a-small-vps-code-4" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-ini"><code v-pre class="language-ini">ExecStart=%h/rex/rust/target/release/rex --announce-url https://1-2-3-4.sslip.io:443</code></pre>
-</doc-codeblock></div>
+<p>Run it as a service: on Linux, for example <code translate="no" v-pre>~/.config/systemd/user/frpc.service</code> with <code translate="no" v-pre>ExecStart=%h/frp/frpc -c %h/frp/frpc.toml</code> and <code translate="no" v-pre>Restart=always</code>; on macOS and Windows, start <code translate="no" v-pre>frpc -c frpc.toml</code> the way <doc-anchor-trigger to="#step-1-install-rex">step 1</doc-anchor-trigger> starts rex. Then end rex&#x27;s start command with <code translate="no" v-pre>--announce-url https://1-2-3-4.sslip.io:443</code>, add the key <code translate="no" v-pre>REX_DIRECT_URL=off</code> (rex-direct cannot work without a public IP at home, so plex.tv should not list it), and restart rex.</p>
 <h3 id="what-you-should-see">What you should see</h3>
 <div id="what-you-should-see-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s -o /dev/null -w '%{http_code}\n' https://myhost.tailnet.ts.net/identity</code></pre>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s https://myhost.tailnet.ts.net/identity</code></pre>
 </doc-codeblock></div>
-<p>answers <code translate="no" v-pre>200</code> on a computer at home. Use your own address: with rex-direct it is the one <code translate="no" v-pre>journalctl --user -u rex | grep 'rex-direct: https'</code> prints (in Docker, <code translate="no" v-pre>docker logs rex 2&gt;&amp;1 | grep 'rex-direct: https'</code>), with <code translate="no" v-pre>/identity</code> added. Open the same address in a phone&#x27;s browser with Wi-Fi off: it shows a short XML page with no certificate warning. With Tailscale serve, both the computer and the phone need Tailscale on.</p>
+<p>shows a short XML page with rex&#x27;s <code translate="no" v-pre>machineIdentifier</code> on a computer at home; <code translate="no" v-pre>curl</code> shows nothing when the address or its certificate is wrong. Use your own address: with rex-direct it is the one in rex&#x27;s <code translate="no" v-pre>rex-direct: https://...</code> log line, with <code translate="no" v-pre>/identity</code> added. Open the same address in a phone&#x27;s browser with Wi-Fi off: it shows a short XML page with no certificate warning. With Tailscale serve, both the computer and the phone need Tailscale on.</p>
 <p>With rex-direct or Caddy, if the phone gets it and the computer at home does not, your router does not send connections back inside. Point the name at rex&#x27;s LAN IP in your home network&#x27;s DNS (your router&#x27;s, or Pi-hole&#x27;s; a router with DNS rebind protection needs an exception for it) and the rex machine answers it at home with the same certificate. If the phone fails too, the port is not forwarded, your connection is behind CGNAT, or rex-direct&#x27;s certificate is still being issued (rex&#x27;s log says so while it is).</p>
 <p>rex&#x27;s log names the addresses it announces:</p>
 <div id="what-you-should-see-code-2" class="codeblock-wrapper"><doc-codeblock>
@@ -610,19 +725,47 @@ remotePort = 32400</code></pre>
 <h2 id="converting-video-optional">Converting video (optional)</h2>
 <p><strong>What it does.</strong> Lets rex convert what a device cannot play, the way Plex does.</p>
 <p><strong>Why it matters.</strong> Without it a device that cannot play a file as it is gets &quot;This server is not powerful enough to convert video&quot;. Web browsers hit this most, for example with AC3 or DTS sound.</p>
-<p>Install <strong>jellyfin-ffmpeg</strong> 8, not the <code translate="no" v-pre>ffmpeg</code> your system offers: it is the build rex is measured with and the only one that converts every Dolby Vision file, tonemaps HDR on the graphics chip and draws subtitles there. Another FFmpeg converts ordinary video and rex&#x27;s log says what it lacks (Ubuntu 22.04&#x27;s own also seeks a few seconds off). The package goes in <code translate="no" v-pre>/usr/lib/jellyfin-ffmpeg</code> beside any other FFmpeg, and rex finds it on its own. The first line picks the build for your system: there are builds for Ubuntu 22.04, 24.04 and 26.04 and Debian 12 and 13, on amd64 or arm64, and on any other <code translate="no" v-pre>curl</code> stops with an error.</p>
-<div id="converting-video-optional-code-1" class="codeblock-wrapper"><doc-codeblock>
+<p>Install <strong>jellyfin-ffmpeg</strong> 8, not the <code translate="no" v-pre>ffmpeg</code> your system offers: it is the build rex is measured with and the only one that converts every Dolby Vision file, tonemaps HDR on the graphics chip and draws subtitles there. Another FFmpeg converts ordinary video and rex&#x27;s log says what it lacks (Ubuntu 22.04&#x27;s own also seeks a few seconds off). rex finds it on its own.</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-1">
+<template #title>Linux</template>
+<p>The package goes in <code translate="no" v-pre>/usr/lib/jellyfin-ffmpeg</code> beside any other FFmpeg. The first line picks the build for your system: there are builds for Ubuntu 22.04, 24.04 and 26.04 and Debian 12 and 13, on amd64 or arm64, and on any other <code translate="no" v-pre>curl</code> stops with an error.</p>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">DEB=jellyfin-ffmpeg8_8.1.3-1-$(. /etc/os-release; echo &quot;$VERSION_CODENAME&quot;)_$(dpkg --print-architecture).deb
 curl -fLO &quot;https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/$DEB&quot;
 sudo apt install -y &quot;./$DEB&quot; &amp;&amp; rm &quot;$DEB&quot;
 systemctl --user restart rex</code></pre>
 </doc-codeblock></div>
-<p>On another Linux, unpack jellyfin-ffmpeg&#x27;s portable build into <code translate="no" v-pre>~/rex/ffmpeg</code>, where rex looks for it, and restart rex. It uses your system&#x27;s own graphics driver, so on an older system it converts on the processor only; use the package wherever there is one. On Windows or macOS, download the portable build for your machine from <a href="https://github.com/jellyfin/jellyfin-ffmpeg/releases/tag/v8.1.3-1">jellyfin-ffmpeg&#x27;s release page</a> (<code translate="no" v-pre>win64-clang</code> for Windows, <code translate="no" v-pre>macarm64</code> for Apple Silicon, <code translate="no" v-pre>mac64</code> for an Intel Mac) and unpack it into an <code translate="no" v-pre>ffmpeg</code> folder inside rex&#x27;s folder. rex finds it there.</p>
-<div id="converting-video-optional-code-2" class="codeblock-wrapper"><doc-codeblock>
+<p>On another Linux, unpack jellyfin-ffmpeg&#x27;s portable build into <code translate="no" v-pre>~/rex/ffmpeg</code>, where rex looks for it, and restart rex. It uses your system&#x27;s own graphics driver, so on an older system it converts on the processor only; use the package wherever there is one.</p>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">B=$( [ &quot;$(uname -m)&quot; = aarch64 ] &amp;&amp; echo linuxarm64 || echo linux64 )
 mkdir -p ~/rex/ffmpeg &amp;&amp; curl -fL &quot;https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg_8.1.3-1_portable_${B}-gpl.tar.xz&quot; | tar xJ -C ~/rex/ffmpeg</code></pre>
 </doc-codeblock></div>
 <p>With an Intel or AMD graphics chip, also run <code translate="no" v-pre>sudo usermod -aG render &quot;$USER&quot;</code> and reboot so the service gets the group; in an LXC, pass the GPU through. The chip makes conversion fast; without one rex uses the processor. With no Intel or AMD chip, rex also tries an NVIDIA card&#x27;s encoder. On Intel, <code translate="no" v-pre>sudo apt install intel-opencl-icd</code> also converts HDR and Dolby Vision on the chip, at about real time for 4K on a small Intel; without it they are converted on the processor, which a low-power Intel cannot do in real time at 4K.</p>
+</doc-tab>
+<doc-tab v-cloak id="macos-1">
+<template #title>macOS</template>
+<p>The portable build goes into <code translate="no" v-pre>~/rex/ffmpeg</code>, where rex looks for it:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">B=$( [ &quot;$(uname -m)&quot; = arm64 ] &amp;&amp; echo macarm64 || echo mac64 )
+mkdir -p ~/rex/ffmpeg &amp;&amp; curl -fL &quot;https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg_8.1.3-1_portable_${B}-gpl.tar.xz&quot; | tar xJ -C ~/rex/ffmpeg
+launchctl kickstart -k gui/$(id -u)/com.rex</code></pre>
+</doc-codeblock></div>
+<p>On a Mac rex always converts on the processor: it has no way to use a Mac&#x27;s graphics chip.</p>
+</doc-tab>
+<doc-tab v-cloak id="windows-5">
+<template #title>Windows</template>
+<p>The portable build goes into an <code translate="no" v-pre>ffmpeg</code> folder in rex&#x27;s folder, where rex looks for it:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">cd $HOME\rex
+curl.exe -fLO https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg_8.1.3-1_portable_win64-clang-gpl.zip
+Expand-Archive jellyfin-ffmpeg_8.1.3-1_portable_win64-clang-gpl.zip ffmpeg
+Remove-Item jellyfin-ffmpeg_8.1.3-1_portable_win64-clang-gpl.zip
+Stop-Process -Name rex; Start-Sleep 1; Start-ScheduledTask rex</code></pre>
+</doc-codeblock></div>
+<p>On Windows rex converts on an NVIDIA card&#x27;s encoder when there is one, and on the processor otherwise.</p>
+</doc-tab>
+</doc-tabs>
 <p><strong>What you should see.</strong> rex&#x27;s log has a <code translate="no" v-pre>transcoder:</code> line naming the FFmpeg and the hardware it found (<code translate="no" v-pre>hardware none</code> means the processor). A file that failed before now plays; the log shows what was converted, for example <code translate="no" v-pre>video=copy h264 audio=ac3-&gt;aac</code>.</p>
 <p>Subtitles in a converted file: an image subtitle is burned into the picture and a subtitle you uploaded comes along. Plex for Android and iOS also keep a text subtitle as a track; other apps get it drawn into the picture. Converted offline downloads still omit text subtitles.</p>
 <h2 id="subtitles">Subtitles</h2>
@@ -633,6 +776,7 @@ mkdir -p ~/rex/ffmpeg &amp;&amp; curl -fL &quot;https://github.com/jellyfin/jell
 <h2 id="movie-and-tv-capabilities">Movie and TV capabilities</h2>
 <p>Downloads, intro and credits detection, seek thumbnails and the other Plex server features rex has, and their settings, are in <code translate="no" v-pre>docs/setup.md</code> in your rex download (&quot;Movie and TV capabilities&quot;). Music, Live TV and DVR are not supported.</p>
 <h2 id="run-rex-in-docker">Run rex in Docker</h2>
+<p>These steps are for a Linux machine. On macOS and Windows, Docker Desktop runs containers inside a virtual machine, so host networking, LAN discovery and the graphics chip do not work there as they do on Linux: use the steps above instead.</p>
 <p>rex&#x27;s image is private, like the download. Log in once with your GitHub username and a classic personal access token with the <code translate="no" v-pre>read:packages</code> and <code translate="no" v-pre>repo</code> scopes:</p>
 <div id="run-rex-in-docker-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">docker login ghcr.io -u YOUR_GITHUB_USERNAME</code></pre>
@@ -663,7 +807,7 @@ docker compose logs -f rex</code></pre>
 <h2 id="keep-the-port-private">Keep the port private</h2>
 <p>rex takes no password on its feed API. It answers that API only from this machine, your home network (10.x, 172.16-31.x, 192.168.x, 169.254.x and private IPv6 addresses) and Tailscale (100.64-127.x), and to everyone else answers as if the API were not there, so forwarding rex&#x27;s port for <doc-anchor-trigger to="#rex-direct">rex-direct</doc-anchor-trigger> does not open it. A router that gives outside visitors its own address makes them look local, and that opens the feed to the internet. Your app must therefore push from one of those networks. A proxy on the rex machine looks local to rex, so keep <code translate="no" v-pre>/rex/*</code> blocked in any proxy that faces the internet, as the <doc-anchor-trigger to="#caddy">Caddy</doc-anchor-trigger> example does.</p>
 <h2 id="updating">Updating</h2>
-<p>Run the first block of <doc-anchor-trigger to="#step-1-install-rex">step 1</doc-anchor-trigger> again in <code translate="no" v-pre>~/rex</code> (it replaces the program and <code translate="no" v-pre>data/</code>, and leaves <code translate="no" v-pre>rex.db</code>, <code translate="no" v-pre>rex.env</code> and <code translate="no" v-pre>claim_state.json</code> alone), then <code translate="no" v-pre>systemctl --user restart rex</code>.</p>
+<p>Run the download block of <doc-anchor-trigger to="#step-1-install-rex">step 1</doc-anchor-trigger> again (it replaces the program and <code translate="no" v-pre>data/</code>, and leaves <code translate="no" v-pre>rex.db</code>, your keys and <code translate="no" v-pre>claim_state.json</code> alone), then restart rex as step 1 shows. On Windows, run <code translate="no" v-pre>Stop-Process -Name rex</code> before the download block, as Windows does not let a running <code translate="no" v-pre>rex.exe</code> be replaced, and <code translate="no" v-pre>Start-ScheduledTask rex</code> after it.</p>
 <h2 id="when-something-is-wrong">When something is wrong</h2>
 <retype-table copy-text="| What you see | What to do |
 |---|---|
@@ -677,9 +821,10 @@ docker compose logs -f rex</code></pre>
 | A snapshot answers 409 `would remove more than half` | rex's guard against an app that sends a half-loaded library. If the removal is real, your app must send the whole snapshot again from part 0, with `&quot;force&quot;: true` on its last part. Resending only the last part is refused, and sending it as a new snapshot of its own with `force` removes everything the earlier parts named |
 | Deleting in a Plex app fails and rex logs `DELETE refused by the source` | Your app does not accept a `DELETE` of the file. Remove it in your app instead |
 | &quot;This server is not powerful enough to convert video&quot; | The device cannot play the file as it is. Try a Plex app on a TV or phone, or set up [Converting video](#converting-video-optional) |
-| A device at home cannot connect, and rex's `heartbeat ... -&gt;` line shows no `http://192.168.1.20:32400` | rex announces the private address of the network it reaches the internet through; behind a VPN or a Tailscale exit node that is not your home network. Add `--announce-url http://192.168.1.20:32400` to the `ExecStart` line and restart rex |
+| A device at home cannot connect, and rex's `heartbeat ... -&gt;` line shows no `http://192.168.1.20:32400` | rex announces the private address of the network it reaches the internet through; behind a VPN or a Tailscale exit node that is not your home network. End rex's start command ([step 1](#step-1-install-rex)) with `--announce-url http://192.168.1.20:32400` and restart rex |
+| Another machine cannot reach rex on Windows, although step 1's firewall rules exist | If you ever clicked **Cancel** when Windows asked whether to allow rex, Windows saved a rule that blocks it, and that wins over the port rules. Remove it in PowerShell as administrator: &lt;code&gt;Get-NetFirewallApplicationFilter -Program &quot;$HOME\rex\rust\target\release\rex.exe&quot; &amp;#124; Get-NetFirewallRule &amp;#124; Where-Object Action -eq Block &amp;#124; Remove-NetFirewallRule&lt;/code&gt; |
 | rex is not in the Plex apps away from home | Not claimed, or the device cannot reach the HTTPS address |
-| rex stops when you log out | Run `sudo loginctl enable-linger &quot;$USER&quot;` (step 1) |">
+| rex stops when you log out | On Linux, run `sudo loginctl enable-linger &quot;$USER&quot;` (step 1). On macOS and Windows, rex as step 1 sets it up runs while you are logged in |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -731,7 +876,11 @@ docker compose logs -f rex</code></pre>
 </tr>
 <tr>
 <td>A device at home cannot connect, and rex&#x27;s <code translate="no" v-pre>heartbeat ... -&gt;</code> line shows no <code translate="no" v-pre>http://192.168.1.20:32400</code></td>
-<td>rex announces the private address of the network it reaches the internet through; behind a VPN or a Tailscale exit node that is not your home network. Add <code translate="no" v-pre>--announce-url http://192.168.1.20:32400</code> to the <code translate="no" v-pre>ExecStart</code> line and restart rex</td>
+<td>rex announces the private address of the network it reaches the internet through; behind a VPN or a Tailscale exit node that is not your home network. End rex&#x27;s start command (<doc-anchor-trigger to="#step-1-install-rex">step 1</doc-anchor-trigger>) with <code translate="no" v-pre>--announce-url http://192.168.1.20:32400</code> and restart rex</td>
+</tr>
+<tr>
+<td>Another machine cannot reach rex on Windows, although step 1&#x27;s firewall rules exist</td>
+<td>If you ever clicked <strong>Cancel</strong> when Windows asked whether to allow rex, Windows saved a rule that blocks it, and that wins over the port rules. Remove it in PowerShell as administrator: <code>Get-NetFirewallApplicationFilter -Program &quot;$HOME\rex\rust\target\release\rex.exe&quot; | Get-NetFirewallRule | Where-Object Action -eq Block | Remove-NetFirewallRule</code></td>
 </tr>
 <tr>
 <td>rex is not in the Plex apps away from home</td>
@@ -739,7 +888,7 @@ docker compose logs -f rex</code></pre>
 </tr>
 <tr>
 <td>rex stops when you log out</td>
-<td>Run <code translate="no" v-pre>sudo loginctl enable-linger &quot;$USER&quot;</code> (step 1)</td>
+<td>On Linux, run <code translate="no" v-pre>sudo loginctl enable-linger &quot;$USER&quot;</code> (step 1). On macOS and Windows, rex as step 1 sets it up runs while you are logged in</td>
 </tr>
 </tbody>
 </table>

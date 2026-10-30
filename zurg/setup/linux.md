@@ -10,7 +10,7 @@ curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/p
 
 It signs in through GitHub and keeps the install in `~/zurg`. Existing binaries and configs are preserved. Continue below for the manual route or a custom path.
 
-The zurg binary can build the rest of its install itself. It writes the config, downloads the correct rclone and ffprobe binaries for the machine, creates the mount and registers an enabled systemd service.
+The zurg binary can build the rest of its install itself. It writes the config, downloads the correct rclone (and ffprobe, unless one is already on your PATH) for the machine, creates the mount and registers an enabled systemd service.
 
 This flow was verified on 4 September 2026 on fresh Ubuntu 24.04 ARM64 and x86_64 servers.
 
@@ -22,6 +22,8 @@ On Debian, Ubuntu and their derivatives:
 sudo apt-get update
 sudo apt-get install -y fuse3
 ```
+
+Other distributions call the package `fuse3` too: `sudo dnf install fuse3` on Fedora, `sudo pacman -S fuse3` on Arch, `sudo zypper install fuse3` on openSUSE.
 
 Check that the helper and device are present:
 
@@ -71,13 +73,16 @@ Setup asks which providers to configure. Choose one or several in priority order
   2) TorBox
   3) AllDebrid
   4) Usenet (NZB)
+  5) Premiumize
+  6) Debrid-Link
+  7) Offcloud
 ```
 
 For example enter `2,4` for TorBox followed by Usenet. Setup asks only for the selected credentials. It then:
 
 1. Creates and validates `config.yml`.
 2. Restricts the config to its owner with mode `0600`.
-3. Downloads native rclone and ffprobe binaries into `bin/`.
+3. Downloads a native rclone into `bin/`, and ffprobe too unless one is already on your PATH.
 4. Enables the rclone mount at `/mnt/zurg`.
 5. Installs and starts an enabled systemd service.
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846638225405">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846660769868">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../../resources/css/retype.css?v=4.6.0.846638225405" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.846660769868" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846638225405" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846660769868" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846638225405" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846638225405" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846660769868" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846660769868" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -192,9 +192,9 @@
 <p>This needs zurg and rex from the 2026-10-24 nightly or later.</p>
 <p>Everything below was tested on 2026-10-23 with Radarr <code translate="no" v-pre>6.3.0.10514</code>, the current <code translate="no" v-pre>lscr.io/linuxserver/bazarr</code> image, zurg and rex of that day, and a Real-Debrid account.</p>
 <h2 id="before-you-start">Before you start</h2>
-<p>Radarr (or Sonarr) already imports through zurg, with its root folder inside <code translate="no" v-pre>__magic__</code>, for example <code translate="no" v-pre>/mnt/zurg/__magic__/movies</code>. If it does not yet, follow <a href="../sonarr-radarr-torrents/">Sonarr &amp; Radarr for torrents</a> or <a href="../sonarr-radarr/">for Usenet</a> first.</p>
+<p>Radarr (or Sonarr) already imports through zurg, with its root folder inside <code translate="no" v-pre>__magic__</code>, for example <code translate="no" v-pre>/mnt/zurg/__magic__/movies</code> (<code translate="no" v-pre>/Volumes/Zurg/__magic__/movies</code> on macOS, <code translate="no" v-pre>Z:\__magic__\movies</code> on Windows). If it does not yet, follow <a href="../sonarr-radarr-torrents/">Sonarr &amp; Radarr for torrents</a> or <a href="../sonarr-radarr/">for Usenet</a> first.</p>
 <h2 id="1-run-bazarr">1. Run Bazarr</h2>
-<p>Give Bazarr the same volume as Radarr, so the two see the movie at the same path and no path mapping is needed:</p>
+<p>On a Linux host, give Bazarr the same volume as Radarr, so the two see the movie at the same path and no path mapping is needed:</p>
 <div id="1-run-bazarr-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">services:
   bazarr:
@@ -211,7 +211,8 @@
       - 6767:6767
     restart: unless-stopped</code></pre>
 </doc-codeblock></div>
-<p>The bind is the folder <strong>above</strong> zurg&#x27;s mount (<code translate="no" v-pre>/mnt</code>, holding <code translate="no" v-pre>/mnt/zurg</code>), not the mount itself. A container that binds the mount itself keeps a dead mount once zurg restarts, and every read answers <code translate="no" v-pre>Socket not connected</code>. <a href="../sonarr-radarr-torrents/#8-if-your-arr-is-in-docker">The torrent guide&#x27;s Docker step</a> explains why.</p>
+<p>The bind is the folder <strong>above</strong> zurg&#x27;s mount (<code translate="no" v-pre>/mnt</code>, holding <code translate="no" v-pre>/mnt/zurg</code>), not the mount itself. A container that binds the mount itself keeps a dead mount once zurg restarts, and every read answers <code translate="no" v-pre>Socket not connected</code>. <a href="../sonarr-radarr-torrents/#8-if-your-arr-is-in-docker">The torrent guide&#x27;s Docker step</a> explains why. <code translate="no" v-pre>PUID</code> and <code translate="no" v-pre>PGID</code> need the same care as for Whisparr: <a href="../whisparr/#2-run-whisparr">see there</a>.</p>
+<p>On macOS and Windows this compose file does not apply, for the reason the <a href="../sonarr-radarr/#8-if-your-arr-is-in-docker">Usenet guide&#x27;s step 8</a> gives. Run Bazarr from source (<code translate="no" v-pre>python bazarr.py</code>) on the same machine as Radarr and zurg, as the same user as zurg, following Bazarr&#x27;s own pages for <a href="https://wiki.bazarr.media/Getting-Started/Installation/MacOS/macos/">macOS</a> and <a href="https://wiki.bazarr.media/Getting-Started/Installation/Windows/source/">Windows</a>. On Windows, skip Bazarr&#x27;s installer: it sets Bazarr up as a Windows service, and a service does not see zurg&#x27;s <code translate="no" v-pre>Z:</code> drive (<a href="../sonarr-radarr/#before-you-start">why</a>). Start <code translate="no" v-pre>bazarr.py</code> from your own logged-in session instead. It then sees each movie at the path Radarr reports, and no path mapping is needed. Only the Docker image above was tested.</p>
 <p>Open <code translate="no" v-pre>http://&lt;your server&gt;:6767</code>.</p>
 <h2 id="2-connect-it-to-radarr-and-sonarr">2. Connect it to Radarr and Sonarr</h2>
 <p><strong>Settings → Radarr</strong>: turn it on and enter Radarr&#x27;s address, port and API key (Radarr&#x27;s <strong>Settings → General</strong>). From inside a container use the host&#x27;s LAN IP, not <code translate="no" v-pre>localhost</code>. <strong>Test</strong>, then <strong>Save</strong>. Sonarr is the same under <strong>Settings → Sonarr</strong>.</p>
@@ -226,7 +227,7 @@
 <h2 id="5-embedded-subtitles">5. Embedded subtitles</h2>
 <p>Many releases already carry an English track inside the video file. Bazarr counts that as English being there and downloads nothing. If you want a subtitle file anyway, turn off <strong>Use Embedded Subtitles</strong> under <strong>Settings → Subtitles</strong>.</p>
 <h2 id="6-check-one">6. Check one</h2>
-<p>Bazarr&#x27;s <strong>Movies</strong> page shows what each film is missing. Search one from there, and the subtitle lands beside the video:</p>
+<p>Bazarr&#x27;s <strong>Movies</strong> page shows what each film is missing. Search one from there, and the subtitle lands beside the video (on Windows, look in the same folder under <code translate="no" v-pre>Z:\__magic__\movies</code> in Explorer):</p>
 <div id="6-check-one-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">$ ls &quot;/mnt/zurg/__magic__/movies/Night of the Living Dead (1968)/&quot;
 Night Of The Living Dead 1968 Upscaled BluRay 2160p HDR10 HEVC.en.hi.srt

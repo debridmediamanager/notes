@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846638225405">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846660769868">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../../resources/css/retype.css?v=4.6.0.846638225405" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.846660769868" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846638225405" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846660769868" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846638225405" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846638225405" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846660769868" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846660769868" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -297,7 +297,7 @@ and <a href="../acquisition/">acquisition sources</a> for the shared configurati
 <h2 id="infrastructure--scripts">Infrastructure &amp; Scripts</h2>
 <ul>
 <li>Sample Nginx vhost for proxying Plex traffic (<code translate="no" v-pre>nginx/plex.conf</code>).</li>
-<li><code translate="no" v-pre>plex_update.sh</code> is the reference partial-scan script for <code translate="no" v-pre>on_library_update: sh plex_update.sh &quot;$@&quot;</code>; put it beside <code translate="no" v-pre>docker-compose.yml</code>, whose folder is mounted at <code translate="no" v-pre>/config</code>, so the script is already inside the container.</li>
+<li><code translate="no" v-pre>plex_update.sh</code> is the reference partial-scan script for <code translate="no" v-pre>on_library_update: sh plex_update.sh &quot;$@&quot;</code>; put it beside <code translate="no" v-pre>docker-compose.yml</code>, whose folder is mounted at <code translate="no" v-pre>/config</code>, so the script is already inside the container. On Windows the hook runs through PowerShell rather than <code translate="no" v-pre>/bin/sh</code> (<code translate="no" v-pre>pkg/script/script.go</code>), so this script does not run there; <a href="../usenet/#6-point-plex-at-it">Usenet → Point Plex at it</a> shows the PowerShell form.</li>
 <li><code translate="no" v-pre>integration/plex_integration.sh</code> runs under <code translate="no" v-pre>make integration-test</code> and <code translate="no" v-pre>make integration-test-media</code>; it skips loudly on a host with no Plex server, so read the output rather than the exit code. <code translate="no" v-pre>scripts/plex-e2e-test.sh</code> is a standalone playback check that reads <code translate="no" v-pre>plex_server_url</code>/<code translate="no" v-pre>plex_token</code> out of <code translate="no" v-pre>config.yml</code>.</li>
 </ul>
 <h2 id="recommended-plex-settings">Recommended Plex Settings</h2>
@@ -319,7 +319,31 @@ plex_settings_ignore:
 <h3 id="who-empties-the-trash">Who empties the trash</h3>
 <p>Turning <code translate="no" v-pre>autoEmptyTrash</code> off leaves a job undone. Plex has been told not to clear entries whose files are gone, and for a long time zurg&#x27;s own removal was opt-in, so out of the box a library accumulated dead entries and nothing collected them. Neither side was wrong and the gap was real: it is what someone hits when a file moves between library folders and the old entry stays forever.</p>
 <p>zurg now takes the job it took away. With <code translate="no" v-pre>plex_trash_sweep_every_mins</code> unset, the <a href="../../internals/plex-trash-sweep/">trash sweep</a> removes entries every 60 minutes — but only when nothing else is doing it. If Plex is still emptying its own trash, because <code translate="no" v-pre>plex_settings_policy</code> is <code translate="no" v-pre>off</code> or <code translate="no" v-pre>warn</code> or because <code translate="no" v-pre>autoEmptyTrash</code> is in <code translate="no" v-pre>plex_settings_ignore</code>, zurg stands down and leaves it to Plex. Two collectors on one library is how a disagreement between them becomes a deletion.</p>
-<p>The sweep is much narrower than Plex&#x27;s own emptying, which is the point of preferring it: it removes one entry at a time, never one that still has a file, only from a mount that reads at that moment, capped at 50 removals and 10% of the trash per pass, and entries it has no verdict on stay visible as broken for 14 days first. It also needs <code translate="no" v-pre>plex_database_path</code> set, so it only runs where Plex is on this host.</p>
+<p>The sweep is much narrower than Plex&#x27;s own emptying, which is the point of preferring it: it removes one entry at a time, never one that still has a file, only from a mount that reads at that moment, capped at 50 removals and 10% of the trash per pass, and entries it has no verdict on stay visible as broken for 14 days first. It also needs <code translate="no" v-pre>plex_database_path</code> set, so it only runs where Plex is on this host, and zurg running the mount itself (<code translate="no" v-pre>rclone_enabled</code> with <code translate="no" v-pre>mount_path</code> set). zurg reads that database with the <code translate="no" v-pre>Plex SQLite</code> program Plex installs, and <code translate="no" v-pre>plex_sqlite_binary</code> defaults to where the Linux package puts it, so on macOS and Windows set both:</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux">
+<template #title>Linux</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">plex_database_path: &quot;/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db&quot;</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="macos">
+<template #title>macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">plex_database_path: &quot;/Users/YOU/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db&quot;
+plex_sqlite_binary: &quot;/Applications/Plex Media Server.app/Contents/MacOS/Plex SQLite&quot;</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">plex_database_path: 'C:\Users\YOU\AppData\Local\Plex Media Server\Plug-in Support\Databases\com.plexapp.plugins.library.db'
+plex_sqlite_binary: 'C:\Program Files\Plex\Plex Media Server\Plex SQLite.exe'</code></pre>
+</doc-codeblock></div>
+<p>Keep the single quotes: inside double quotes YAML reads a backslash as an escape. A 32-bit Plex installs under <code translate="no" v-pre>C:\Program Files (x86)\Plex\Plex Media Server\</code>.</p>
+</doc-tab>
+</doc-tabs>
+<p>Replace <code translate="no" v-pre>YOU</code> with your user name: zurg expands neither <code translate="no" v-pre>~</code> nor <code translate="no" v-pre>%LOCALAPPDATA%</code>. The sweep matches the paths Plex stores against <code translate="no" v-pre>mount_path</code>, which handles a drive letter such as <code translate="no" v-pre>Z:</code> (<code translate="no" v-pre>pkg/utils/path_within.go</code>).</p>
 <p>To keep removal off and empty the trash yourself, write <code translate="no" v-pre>plex_trash_sweep_every_mins: 0</code>. That is the explicit no, and it is distinct from leaving the key out.</p>
 <p>That key only turns off zurg&#x27;s own removal. It does not hand Plex&#x27;s setting back. Under <code translate="no" v-pre>guard</code> zurg still writes <code translate="no" v-pre>autoEmptyTrash</code> off, so Plex still will not empty its trash after a scan and the entries pile up with nothing collecting them. Use the dashboard switch or <code translate="no" v-pre>plex_settings_ignore</code> to give Plex the job back.</p>
 <h3 id="safety--corrected-under-guard-and-enforce">Safety — corrected under <code translate="no" v-pre>guard</code> and <code translate="no" v-pre>enforce</code></h3>
@@ -542,9 +566,22 @@ plex_settings_ignore:
 <p>zurg does not touch <code translate="no" v-pre>ButlerStartHour</code>/<code translate="no" v-pre>ButlerEndHour</code>, because there is no hour that is right for everyone. It is worth setting by hand: Plex defaults to 02:00–05:00, and a window overlapping the hours anyone watches turns every maintenance task into a stall. Whatever survives in the bandwidth tier runs inside it.</p>
 <h3 id="stopping-a-pass-already-in-flight">Stopping a pass already in flight</h3>
 <p>Changing a preference stops <em>future</em> runs, not the one already going. Plex Media Server respawns its scanner children, so killing them does nothing:</p>
-<div id="stopping-a-pass-already-in-flight-code-1" class="codeblock-wrapper"><doc-codeblock>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos">
+<template #title>Linux and macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -X DELETE &quot;http://localhost:32400/butler?X-Plex-Token=$TOKEN&quot;</code></pre>
 </doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-1">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">curl.exe -X DELETE &quot;http://localhost:32400/butler?X-Plex-Token=$TOKEN&quot;</code></pre>
+</doc-codeblock></div>
+<p>In Windows PowerShell 5.1 <code translate="no" v-pre>curl</code> is another name for <code translate="no" v-pre>Invoke-WebRequest</code>, so type <code translate="no" v-pre>curl.exe</code>.</p>
+</doc-tab>
+</doc-tabs>
+<p>Set <code translate="no" v-pre>$TOKEN</code> to your Plex token first: <code translate="no" v-pre>TOKEN=your-token</code> in a shell, <code translate="no" v-pre>$TOKEN = 'your-token'</code> in PowerShell.</p>
 
                 
                 <!-- Required only on API pages -->

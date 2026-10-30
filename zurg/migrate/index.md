@@ -99,6 +99,11 @@ straight at it. So **Plex shows the server's own filenames** and the renaming
 tables describe precisely what you will see change. The [Windows
 setup](../setup/windows.md) page covers the drive letter and its session rule.
 
+The shell commands on the per-server pages are written for Linux and macOS
+(on macOS read `/mnt/zurg` as `/Volumes/Zurg`). On Windows read `/mnt/zurg` as `Z:\`, stop the old server however you started
+it, and make folders and move files in `__magic__` with the PowerShell
+commands in [the `__magic__` guide](../guides/magic.md).
+
 ### Coming off a symlink library
 
 You are not moving a library. You are rebuilding one. And `__magic__` gives the
@@ -216,6 +221,17 @@ curl -s "http://localhost:32400/:/prefs?X-Plex-Token=$TOKEN" | tr '>' '\n' | gre
 # set it if needed:
 curl -s -X PUT "http://localhost:32400/:/prefs?autoEmptyTrash=0&X-Plex-Token=$TOKEN"
 ```
+
+On Windows, in PowerShell:
+
+```powershell
+$TOKEN = 'your-plex-token'
+((Invoke-RestMethod "http://localhost:32400/:/prefs?X-Plex-Token=$TOKEN").MediaContainer.Setting | Where-Object id -eq autoEmptyTrash).value
+# set it if needed:
+curl.exe -s -X PUT "http://localhost:32400/:/prefs?autoEmptyTrash=0&X-Plex-Token=$TOKEN"
+```
+
+Plex reports the setting as `0` or `false` when it is off.
 
 Plex deletes softly. At `0` an item whose file stopped existing sits in the
 trash and comes back if the file does. At `1` it is gone permanently the moment

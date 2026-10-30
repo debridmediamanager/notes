@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846638225405">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846660769868">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../../resources/css/retype.css?v=4.6.0.846638225405" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.846660769868" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846638225405" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846660769868" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846638225405" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846638225405" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846660769868" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846660769868" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -200,6 +200,7 @@
 ├── movies
 └── tv          &lt;- your *arr root folders</code></pre>
 </doc-codeblock></div>
+<p>Paths on this page use the Linux mount, <code translate="no" v-pre>/mnt/zurg</code>. On macOS it is <code translate="no" v-pre>/Volumes/Zurg</code> and on Windows <code translate="no" v-pre>Z:\</code>, so <code translate="no" v-pre>/mnt/zurg/__magic__/tv</code> is <code translate="no" v-pre>/Volumes/Zurg/__magic__/tv</code> or <code translate="no" v-pre>Z:\__magic__\tv</code>.</p>
 <p>That separation is the point. The folder a client imports <em>from</em> and the folders it imports <em>into</em> are siblings, so neither contains the other: a manual import pointed at the download folder does not walk your library tree, and neither Sonarr nor Radarr warns about the arrangement.</p>
 <p>It is off by default. Turn it on with:</p>
 <div id="__magic__-a-directory-you-can-organise-code-2" class="codeblock-wrapper"><doc-codeblock>
@@ -239,19 +240,58 @@ __magic__/__all__/Show.S01/Extras/Gag Reel.mkv</code></pre>
 <p><code translate="no" v-pre>__all__</code> and the <code translate="no" v-pre>directories:</code> filters stay flat. They are what a media server should be pointed at, and nothing about them moves.</p>
 <h2 id="organising-it">Organising it</h2>
 <p>Through the mount, with ordinary commands:</p>
-<div id="organising-it-code-1" class="codeblock-wrapper"><doc-codeblock>
+<doc-tabs>
+<doc-tab v-cloak id="linux">
+<template #title>Linux</template>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p /mnt/zurg/__magic__/tv/The\ Show/Season\ 01
 mv /mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv \
    /mnt/zurg/__magic__/tv/The\ Show/Season\ 01/S01E01.mkv</code></pre>
 </doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="macos">
+<template #title>macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p /Volumes/Zurg/__magic__/tv/The\ Show/Season\ 01
+mv /Volumes/Zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv \
+   /Volumes/Zurg/__magic__/tv/The\ Show/Season\ 01/S01E01.mkv</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">New-Item -ItemType Directory -Force &quot;Z:\__magic__\tv\The Show\Season 01&quot;
+Move-Item -LiteralPath &quot;Z:\__magic__\__all__\Some.Release.S01E01.1080p\ep1.mkv&quot; `
+  -Destination &quot;Z:\__magic__\tv\The Show\Season 01\S01E01.mkv&quot;</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>-LiteralPath</code> keeps the square brackets many release names carry from being read as a wildcard.</p>
+</doc-tab>
+</doc-tabs>
 <p>The file now lives at the new path and is gone from the old one. It streams from the same account it always did.</p>
 <p>Whole release folders move too, as a single row:</p>
-<div id="organising-it-code-2" class="codeblock-wrapper"><doc-codeblock>
+<doc-tabs>
+<doc-tab v-cloak id="linux-1">
+<template #title>Linux</template>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">mv /mnt/zurg/__magic__/__all__/Some.Movie.2024.2160p /mnt/zurg/__magic__/movies/Some\ Movie\ \(2024\)</code></pre>
 </doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="macos-1">
+<template #title>macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">mv /Volumes/Zurg/__magic__/__all__/Some.Movie.2024.2160p /Volumes/Zurg/__magic__/movies/Some\ Movie\ \(2024\)</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-1">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">Move-Item -LiteralPath &quot;Z:\__magic__\__all__\Some.Movie.2024.2160p&quot; -Destination &quot;Z:\__magic__\movies\Some Movie (2024)&quot;</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
 <p>Directories move with everything under them, as one batch. Moves go both ways: a file can be moved <em>into</em> a release folder as well as out of one, and the folder lists it beside the release&#x27;s own entries — which is what a program that puts something back into the folder it is importing from needs to see. Where a name arrives from two places at once the deliberate one wins: what you moved beats what the release calls that name, which beats a real file in <code translate="no" v-pre>data/local</code>, and the loser is left out rather than listed twice.</p>
 <p>One shape fails through the built-in mount, and only under the default <code translate="no" v-pre>union_writable: local</code>: renaming a directory <em>you created through the mount</em>, so <code translate="no" v-pre>mkdir</code> and then, later, <code translate="no" v-pre>mv</code> of that directory. Under the default order <code translate="no" v-pre>mkdir</code> creates the directory on rclone&#x27;s own local upstream while the rows beneath it make the same directory exist server-side, so rclone renames its local copy, moves the rows one file at a time — zurg answers every one of those correctly — and then fails removing a source it has already renamed away:</p>
-<div id="organising-it-code-3" class="codeblock-wrapper"><doc-codeblock>
+<div id="organising-it-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-none"><code v-pre class="language-none">ERROR : __magic__/tv/Saul: Dir.Rename error: RenameDir rmdir: object not found</code></pre>
 </doc-codeblock></div>
 <p>The rows end up exactly where you asked: zurg serves the new path and 404s the old one. But <code translate="no" v-pre>mv</code> exits 1, and the mount is left showing the emptied source directory and not the destination until its listing is re-read. No request for that removal ever reaches zurg, so nothing zurg does can prevent it. Moving files, and moving a whole release folder, work under either order. If you reorganise directories through the mount, set <a href="../../reference/config/#rclone-settings"><code translate="no" v-pre>union_writable: server</code></a>, where the directory exists only in the namespace and the rename is one server-side operation. Measured on rclone 1.71.2.</p>
@@ -272,7 +312,7 @@ __magic__/__shows__/Detective Conan (1996) {tmdb-30983}/Season 01/Detective Cona
   enabled: true
 dmm_api_key: YOUR_DMM_API_KEY</code></pre>
 </doc-codeblock></div>
-<p>Restart zurg. The two folders fill once the library has loaded and DMM has identified it, which on a large library takes a few minutes the first time; after that a new release is filed within a minute of DMM identifying it. Then add a <strong>Movies</strong> library pointed at <code translate="no" v-pre>/mnt/zurg/__magic__/__movies__</code> and a <strong>TV</strong> library pointed at <code translate="no" v-pre>/mnt/zurg/__magic__/__shows__</code>, and scan. In Kodi, set the TV source&#x27;s scraper to <strong>The Movie Database</strong>, as it is by default, and keep it updated: the <code translate="no" v-pre>tvshow.nfo</code> files need version 1.7 or later of Kodi&#x27;s TMDb TV scraper.</p>
+<p>Restart zurg. The two folders fill once the library has loaded and DMM has identified it, which on a large library takes a few minutes the first time; after that a new release is filed within a minute of DMM identifying it. Then add a <strong>Movies</strong> library pointed at <code translate="no" v-pre>/mnt/zurg/__magic__/__movies__</code> and a <strong>TV</strong> library pointed at <code translate="no" v-pre>/mnt/zurg/__magic__/__shows__</code> (<code translate="no" v-pre>/Volumes/Zurg/__magic__/...</code> on macOS, <code translate="no" v-pre>Z:\__magic__\__movies__</code> and <code translate="no" v-pre>Z:\__magic__\__shows__</code> on Windows), and scan. In Kodi, set the TV source&#x27;s scraper to <strong>The Movie Database</strong>, as it is by default, and keep it updated: the <code translate="no" v-pre>tvshow.nfo</code> files need version 1.7 or later of Kodi&#x27;s TMDb TV scraper.</p>
 <p>Point each library at its folder, never at <code translate="no" v-pre>__magic__</code> itself: that would scan <code translate="no" v-pre>__all__</code> and your other folders too, and find everything twice.</p>
 <h3 id="what-it-does">What it does</h3>
 <ul>

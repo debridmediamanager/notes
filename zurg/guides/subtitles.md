@@ -8,11 +8,11 @@ Everything below was tested on 2026-10-23 with Radarr `6.3.0.10514`, the current
 
 ## Before you start
 
-Radarr (or Sonarr) already imports through zurg, with its root folder inside `__magic__`, for example `/mnt/zurg/__magic__/movies`. If it does not yet, follow [Sonarr & Radarr for torrents](sonarr-radarr-torrents.md) or [for Usenet](sonarr-radarr.md) first.
+Radarr (or Sonarr) already imports through zurg, with its root folder inside `__magic__`, for example `/mnt/zurg/__magic__/movies` (`/Volumes/Zurg/__magic__/movies` on macOS, `Z:\__magic__\movies` on Windows). If it does not yet, follow [Sonarr & Radarr for torrents](sonarr-radarr-torrents.md) or [for Usenet](sonarr-radarr.md) first.
 
 ## 1. Run Bazarr
 
-Give Bazarr the same volume as Radarr, so the two see the movie at the same path and no path mapping is needed:
+On a Linux host, give Bazarr the same volume as Radarr, so the two see the movie at the same path and no path mapping is needed:
 
 ```yaml
 services:
@@ -31,7 +31,9 @@ services:
     restart: unless-stopped
 ```
 
-The bind is the folder **above** zurg's mount (`/mnt`, holding `/mnt/zurg`), not the mount itself. A container that binds the mount itself keeps a dead mount once zurg restarts, and every read answers `Socket not connected`. [The torrent guide's Docker step](sonarr-radarr-torrents.md#8-if-your-arr-is-in-docker) explains why.
+The bind is the folder **above** zurg's mount (`/mnt`, holding `/mnt/zurg`), not the mount itself. A container that binds the mount itself keeps a dead mount once zurg restarts, and every read answers `Socket not connected`. [The torrent guide's Docker step](sonarr-radarr-torrents.md#8-if-your-arr-is-in-docker) explains why. `PUID` and `PGID` need the same care as for Whisparr: [see there](whisparr.md#2-run-whisparr).
+
+On macOS and Windows this compose file does not apply, for the reason the [Usenet guide's step 8](sonarr-radarr.md#8-if-your-arr-is-in-docker) gives. Run Bazarr from source (`python bazarr.py`) on the same machine as Radarr and zurg, as the same user as zurg, following Bazarr's own pages for [macOS](https://wiki.bazarr.media/Getting-Started/Installation/MacOS/macos/) and [Windows](https://wiki.bazarr.media/Getting-Started/Installation/Windows/source/). On Windows, skip Bazarr's installer: it sets Bazarr up as a Windows service, and a service does not see zurg's `Z:` drive ([why](sonarr-radarr.md#before-you-start)). Start `bazarr.py` from your own logged-in session instead. It then sees each movie at the path Radarr reports, and no path mapping is needed. Only the Docker image above was tested.
 
 Open `http://<your server>:6767`.
 
@@ -56,7 +58,7 @@ Many releases already carry an English track inside the video file. Bazarr count
 
 ## 6. Check one
 
-Bazarr's **Movies** page shows what each film is missing. Search one from there, and the subtitle lands beside the video:
+Bazarr's **Movies** page shows what each film is missing. Search one from there, and the subtitle lands beside the video (on Windows, look in the same folder under `Z:\__magic__\movies` in Explorer):
 
 ```bash
 $ ls "/mnt/zurg/__magic__/movies/Night of the Living Dead (1968)/"

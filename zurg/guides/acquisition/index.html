@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846638225405">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846660769868">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../../resources/css/retype.css?v=4.6.0.846638225405" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.846660769868" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846638225405" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846660769868" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846638225405" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846638225405" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846660769868" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846660769868" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -237,14 +237,14 @@ show up in the library with files in it. See
       enabled: true
       url: http://radarr:7878
       api_key: YOUR_RADARR_API_KEY
-      library_path: /mnt/zurg/__magic__   # where Radarr sees __magic__
+      library_path: /mnt/zurg/__magic__   # where Radarr sees __magic__; leave out if it sees zurg's own mount
       check_every_secs: 60
     - name: shows
       type: sonarr
       enabled: true
       url: http://sonarr:8989
       api_key: YOUR_SONARR_API_KEY
-      library_path: /mnt/zurg/__magic__   # where Sonarr sees __magic__
+      library_path: /mnt/zurg/__magic__   # where Sonarr sees __magic__; leave out if it sees zurg's own mount
       check_every_secs: 60</code></pre>
 </doc-codeblock></div>
 <p>Run this on a zurg instance with an <code translate="no" v-pre>nzb</code> provider, a debrid account that takes
@@ -531,9 +531,13 @@ zurg&#x27;s library that Radarr now sees in its folder.</p>
 <ol>
 <li>
 <p><strong>Root folder inside <code translate="no" v-pre>__magic__</code>, one level down.</strong> For example
-<code translate="no" v-pre>/mnt/zurg/__magic__/movies</code>. Not <code translate="no" v-pre>__magic__</code> itself, and not
+<code translate="no" v-pre>/mnt/zurg/__magic__/movies</code> (<code translate="no" v-pre>/Volumes/Zurg/__magic__/movies</code> on macOS,
+<code translate="no" v-pre>Z:\__magic__\movies</code> on Windows). Not <code translate="no" v-pre>__magic__</code> itself, and not
 <code translate="no" v-pre>__magic__/__all__</code>, which lists every release in the library. A movie
-whose folder is anywhere else is skipped, with one warning in zurg&#x27;s log.</p>
+whose folder is anywhere else is skipped, with one warning in zurg&#x27;s log.
+On Windows Radarr sees <code translate="no" v-pre>Z:</code> only when it runs in the same logon session
+as zurg, so not as a Windows service: see
+<a href="../../setup/windows/#keeping-it-running-the-session-rules">the session rules</a>.</p>
 </li>
 <li>
 <p><strong>Import lists with search on add off.</strong> Add movies however you like (by
@@ -553,7 +557,9 @@ runs in a container that mounts zurg somewhere else, set it to that path,
 for example <code translate="no" v-pre>/data/zurg/__magic__</code>. A movie at
 <code translate="no" v-pre>/data/zurg/__magic__/movies/Heat (1995)</code> is then placed in
 <code translate="no" v-pre>movies/Heat (1995)</code> inside zurg&#x27;s <code translate="no" v-pre>__magic__</code>. Windows paths such as
-<code translate="no" v-pre>Z:\__magic__</code> work too.</p>
+<code translate="no" v-pre>Z:\__magic__</code> work too. A Radarr container is covered on a Linux host
+only: Docker Desktop on macOS and Windows runs containers in a VM, and
+passing zurg&#x27;s mount into it is untested, so run Radarr natively there.</p>
 <p>If Radarr also takes grabs from zurg&#x27;s <a href="../sonarr-radarr/">SABnzbd</a> or
 <a href="../sonarr-radarr-torrents/">qBittorrent</a> endpoint, it has to see their download
 folder at <code translate="no" v-pre>library_path/__all__</code>, through the same volume as its root
@@ -691,8 +697,10 @@ Sonarr to rescan that one series. Nothing is copied.</p>
 <ol>
 <li>
 <p><strong>Root folder inside <code translate="no" v-pre>__magic__</code>, one level down.</strong> For example
-<code translate="no" v-pre>/mnt/zurg/__magic__/tv</code>. A series whose folder is anywhere else is
-skipped with one warning in zurg&#x27;s log.</p>
+<code translate="no" v-pre>/mnt/zurg/__magic__/tv</code> (<code translate="no" v-pre>/Volumes/Zurg/__magic__/tv</code> on macOS,
+<code translate="no" v-pre>Z:\__magic__\tv</code> on Windows). A series whose folder is anywhere else is
+skipped with one warning in zurg&#x27;s log.
+On Windows Sonarr has to run in zurg&#x27;s logon session, as Radarr does.</p>
 </li>
 <li>
 <p><strong>Search on add off.</strong> Add series however you like. Leave <strong>Start search

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846638225405">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846660769868">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.846638225405" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.846660769868" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.846638225405" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.846660769868" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.846638225405" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.846638225405" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.846660769868" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.846660769868" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -268,33 +268,37 @@
 <h2 id="step-1-let-zurg-hand-out-links">Step 1. Let zurg hand out links</h2>
 <p><strong>What it does.</strong> zurg answers each read with your provider&#x27;s own download link instead of the file.</p>
 <p><strong>Why it matters.</strong> rex can only pass on a link zurg gives it. Without this, rex still gets the file itself. The setting is zurg&#x27;s, so anything else reading zurg (rclone, a Plex or Jellyfin server on zurg&#x27;s mount) gets the links too; zurg&#x27;s <a href="../../zurg/reference/config/">config reference</a> has the details.</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos">
+<template #title>Linux and macOS</template>
 <p>See whether the setting is already in zurg&#x27;s config:</p>
-<div id="step-1-let-zurg-hand-out-links-code-1" class="codeblock-wrapper"><doc-codeblock>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">grep -n '^disable_stream_proxy:' ~/zurg/config.yml</code></pre>
 </doc-codeblock></div>
 <p>If it prints a line, change it to <code translate="no" v-pre>disable_stream_proxy: true</code> with <code translate="no" v-pre>nano ~/zurg/config.yml</code>. If it prints nothing, add it:</p>
-<div id="step-1-let-zurg-hand-out-links-code-2" class="codeblock-wrapper"><doc-codeblock>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">printf '\ndisable_stream_proxy: true\n' &gt;&gt; ~/zurg/config.yml
 cd ~/zurg &amp;&amp; ./zurg service restart</code></pre>
 </doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<p>Open zurg&#x27;s config with <code translate="no" v-pre>notepad $HOME\zurg\config.yml</code>. If it has a <code translate="no" v-pre>disable_stream_proxy:</code> line, change it to <code translate="no" v-pre>disable_stream_proxy: true</code>; if not, add that line at the end. Save it and restart zurg:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">cd $HOME\zurg; .\zurg.exe service restart</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
 <p><strong>What you should see.</strong> zurg starts again as usual. Movies still play through rex at this point: rex follows zurg&#x27;s links itself until step 2.</p>
 <h2 id="step-2-let-rex-pass-the-links-on">Step 2. Let rex pass the links on</h2>
 <p><strong>What it does.</strong> rex hands the app the link zurg gave it, instead of downloading the movie for it.</p>
-<p>Open rex&#x27;s service file:</p>
+<p>End rex&#x27;s start command with <code translate="no" v-pre>--part-mode redirect</code> (or <code translate="no" v-pre>--part-mode redirect-only</code>), then restart rex and open its log. <a href="../with-zurg/#step-2-install-rex">rex with zurg, step 2</a> shows where the start command is on your system and how to restart rex and see its log. On Linux the <code translate="no" v-pre>ExecStart</code> line in <code translate="no" v-pre>~/.config/systemd/user/rex.service</code> then reads, with nothing else on it:</p>
 <div id="step-2-let-rex-pass-the-links-on-code-1" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">nano ~/.config/systemd/user/rex.service</code></pre>
-</doc-codeblock></div>
-<p>End the <code translate="no" v-pre>ExecStart</code> line with <code translate="no" v-pre>--part-mode redirect</code> (or <code translate="no" v-pre>--part-mode redirect-only</code>). With nothing else on the line it reads:</p>
-<div id="step-2-let-rex-pass-the-links-on-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-ini"><code v-pre class="language-ini">ExecStart=%h/rex/rust/target/release/rex --part-mode redirect</code></pre>
 </doc-codeblock></div>
-<p>Keep anything already on the line, such as <code translate="no" v-pre>--port 32500</code> or <code translate="no" v-pre>--announce-url ...</code>. Then:</p>
-<div id="step-2-let-rex-pass-the-links-on-code-3" class="codeblock-wrapper"><doc-codeblock>
-<pre translate="no" class="language-bash"><code v-pre class="language-bash">systemctl --user daemon-reload &amp;&amp; systemctl --user restart rex
-journalctl --user -u rex -f</code></pre>
-</doc-codeblock></div>
+<p>Keep anything already on the line, such as <code translate="no" v-pre>--port 32500</code> or <code translate="no" v-pre>--announce-url ...</code>.</p>
 <p><strong>What you should see.</strong> The start line ends in <code translate="no" v-pre>parts=redirect</code>:</p>
-<div id="step-2-let-rex-pass-the-links-on-code-4" class="codeblock-wrapper"><doc-codeblock>
+<div id="step-2-let-rex-pass-the-links-on-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-none"><code v-pre class="language-none">INFO    rex on http://yourhost:32400  machine=...  items=...  parts=redirect</code></pre>
 </doc-codeblock></div>
 <p>With <code translate="no" v-pre>redirect-only</code> it ends in <code translate="no" v-pre>parts=redirect-only</code>, and just before it rex says <code translate="no" v-pre>transcoder off: --part-mode redirect-only</code>.</p>
@@ -404,7 +408,7 @@ docker compose restart zurg</code></pre>
 </div>
 </retype-table>
 <h2 id="going-back">Going back</h2>
-<p>Remove <code translate="no" v-pre>--part-mode ...</code> from the <code translate="no" v-pre>ExecStart</code> line (or the <code translate="no" v-pre>command:</code> line in Docker) and restart rex. Setting <code translate="no" v-pre>disable_stream_proxy</code> back to <code translate="no" v-pre>false</code> and restarting zurg makes zurg pass the files itself again too; with the rex setting gone, leaving zurg as it is also works.</p>
+<p>Remove <code translate="no" v-pre>--part-mode ...</code> from rex&#x27;s start command (or the <code translate="no" v-pre>command:</code> line in Docker) and restart rex. Setting <code translate="no" v-pre>disable_stream_proxy</code> back to <code translate="no" v-pre>false</code> and restarting zurg makes zurg pass the files itself again too; with the rex setting gone, leaving zurg as it is also works.</p>
 
                 
                 <!-- Required only on API pages -->

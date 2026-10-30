@@ -20,7 +20,7 @@ The screenshots come from the zurg build that ships as the 26 September 2026 nig
 
 1. **zurg has a Usenet or debrid account and at least one Newznab or Torznab indexer.** The indexers go in zurg's config under `acquisition.indexers`. The [Watchlist and Seerr](acquisition.md) page covers that block.
 2. **`magic.enabled` is `true`.** The Radarr and Sonarr sources do not start without it and say so in the log. See [`__magic__`](magic.md).
-3. **Radarr and Sonarr can see zurg's mount.** In Docker that means binding it into their containers. Bind the parent of the mount once and reach everything through it. If they also take grabs from zurg as a download client then two volumes for the download folder and the root folders copy every import. See [one volume](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
+3. **Radarr and Sonarr can see zurg's mount.** Installed as ordinary apps, each system has one catch, listed in [the Usenet guide](sonarr-radarr.md#before-you-start). In Docker on a Linux host it means binding the mount into their containers. Bind the parent of the mount once and reach everything through it. If they also take grabs from zurg as a download client then two volumes for the download folder and the root folders copy every import. See [one volume](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
 4. **You run a nightly from 26 September 2026 or later.** Older builds do not know the `radarr` or `sonarr` sources.
 
 ## 1. Tell zurg about Radarr and Sonarr
@@ -38,14 +38,14 @@ acquisition:
     - name: radarr
       type: radarr
       enabled: true
-      url: http://radarr:7878
+      url: http://radarr:7878         # http://localhost:7878 when Radarr is an ordinary app beside zurg
       api_key: YOUR_RADARR_API_KEY
       library_path: /mnt/zurg/__magic__
       check_every_secs: 30
     - name: sonarr
       type: sonarr
       enabled: true
-      url: http://sonarr:8989
+      url: http://sonarr:8989         # http://localhost:8989 likewise
       api_key: YOUR_SONARR_API_KEY
       library_path: /mnt/zurg/__magic__
       check_every_secs: 30
@@ -59,7 +59,7 @@ acquisition:
 
 ## 2. Put the root folders inside `__magic__`
 
-The root folder has to be inside `__magic__` and one level down. `/mnt/zurg/__magic__/movies` for Radarr and `/mnt/zurg/__magic__/tv` for Sonarr is the shape to copy. Not `__magic__` itself and not `__magic__/__all__`. A title whose folder is anywhere else is skipped and zurg says so once in its log.
+The root folder has to be inside `__magic__` and one level down. `/mnt/zurg/__magic__/movies` for Radarr and `/mnt/zurg/__magic__/tv` for Sonarr is the shape to copy (`/Volumes/Zurg/__magic__/movies` on macOS, `Z:\__magic__\movies` on Windows). Not `__magic__` itself and not `__magic__/__all__`. A title whose folder is anywhere else is skipped and zurg says so once in its log.
 
 In Radarr open **Settings > Media Management** and add the root folder.
 

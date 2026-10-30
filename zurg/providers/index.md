@@ -26,6 +26,15 @@ Every page here assumes the container install from
 host. `/config` is that same directory seen from inside the container. There is
 one `config.yml` and both names reach it.
 
+On a binary install on Linux, macOS or Windows, [Setup](../setup/index.md)
+lists what replaces `docker compose restart zurg` and the `setup` line. The
+checks translate the same way. Run them from zurg's folder. Read
+`logs/zurg.log` instead of `docker compose logs` (`Get-Content logs\zurg.log -Tail 100 -Wait`
+in PowerShell). Run `./zurg doctor` (`.\zurg.exe doctor`) without
+`--working-dir /config`. List your own mount instead of `/zurg_mnt/zurg`:
+`/mnt/zurg`, `/Volumes/Zurg` or `Z:\` unless you changed `mount_path`. In
+Windows PowerShell 5.1 type `curl.exe`, not `curl`.
+
 ## Three ways to add an account
 
 Which one you want depends on whether `config.yml` exists yet.

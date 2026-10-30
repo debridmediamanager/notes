@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846638225405">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846660769868">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../../resources/css/retype.css?v=4.6.0.846638225405" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.846660769868" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846638225405" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846660769868" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846638225405" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846638225405" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846660769868" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846660769868" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -242,9 +242,15 @@
 <ol>
 <li><strong>zurg has an account that can add torrents</strong> — Real-Debrid, AllDebrid, TorBox, Premiumize, Debrid-Link or Offcloud. All six take the uploaded <code translate="no" v-pre>.torrent</code> file itself, which is what makes a private tracker&#x27;s release addable. A Usenet account takes a torrent in neither form: an install whose only provider is <code translate="no" v-pre>nzb</code> accepts every grab and then refuses it. zurg says so at startup.</li>
 <li><strong><code translate="no" v-pre>magic.enabled</code> is <code translate="no" v-pre>true</code>.</strong> Without it the save path does not exist and every import fails. See <a href="../magic/"><code translate="no" v-pre>__magic__</code></a>.</li>
-<li><strong>The mount is visible to the *arr</strong> at the path zurg reports. If the *arr runs in a container, read <doc-anchor-trigger to="#8-if-your-arr-is-in-docker">step 8</doc-anchor-trigger> before you configure anything.</li>
+<li><strong>The mount is visible to the *arr</strong> at the path zurg reports. If the *arr runs in a container, read <doc-anchor-trigger to="#8-if-your-arr-is-in-docker">step 8</doc-anchor-trigger> before you configure anything. Installed as an ordinary app on the same machine, it sees the mount where zurg mounts it, with one catch on each system:
+<ul>
+<li><strong>Linux:</strong> an *arr running as a different user from zurg sees an empty folder until <code translate="no" v-pre>user_allow_other</code> is enabled. See <a href="../../setup/linux/#1-install-fuse-3">Linux setup</a>.</li>
+<li><strong>macOS:</strong> run it as the same user as zurg. The mount is <code translate="no" v-pre>/Volumes/Zurg</code> unless you changed <code translate="no" v-pre>mount_path</code>.</li>
+<li><strong>Windows:</strong> run Sonarr and Radarr as the tray app, which their installer offers, not as a Windows service. zurg&#x27;s <code translate="no" v-pre>Z:</code> drive belongs to the session you are logged in to, and a service runs outside it, so it does not see the drive. See <a href="../../setup/windows/#keeping-it-running-the-session-rules">the session rules</a>.</li>
+</ul>
+</li>
 </ol>
-<p>Check the first two straight out of the config file, in zurg&#x27;s working directory:</p>
+<p>Check the first two straight out of the config file, in zurg&#x27;s working directory. On Windows, open <code translate="no" v-pre>config.yml</code> in Notepad instead.</p>
 <div id="before-you-start-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">$ grep -A3 '^providers:' config.yml
 providers:
@@ -317,7 +323,10 @@ fedcba9876543210fedcba9876543210
 </ul>
 <h2 id="3-prove-it-answers">3. Prove it answers</h2>
 <p>Do this before touching Sonarr. Ten seconds, and it separates &quot;zurg is wrong&quot; from &quot;the *arr is wrong&quot; for the rest of the setup.</p>
-<div id="3-prove-it-answers-code-1" class="codeblock-wrapper"><doc-codeblock>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos">
+<template #title>Linux and macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">$ KEY=fedcba9876543210fedcba9876543210
 $ ZURG=192.168.88.244:9995
 
@@ -333,13 +342,47 @@ v5.0.4
 $ curl -s -H &quot;Authorization: Bearer $KEY&quot; &quot;http://$ZURG/api/v2/app/preferences&quot; | jq .save_path
 &quot;/mnt/zurg_qbt/__magic__/__all__&quot;</code></pre>
 </doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<p>In PowerShell. Type <code translate="no" v-pre>curl.exe</code>, not <code translate="no" v-pre>curl</code>: Windows PowerShell&#x27;s <code translate="no" v-pre>curl</code> is a different command.</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; $KEY = &quot;fedcba9876543210fedcba9876543210&quot;
+PS&gt; $ZURG = &quot;192.168.88.244:9995&quot;
+
+PS&gt; curl.exe -s &quot;http://$ZURG/api/v2/app/webapiVersion&quot;
+Forbidden
+
+PS&gt; curl.exe -s -H &quot;Authorization: Bearer $KEY&quot; &quot;http://$ZURG/api/v2/app/webapiVersion&quot;
+2.11.2
+
+PS&gt; curl.exe -s -H &quot;Authorization: Bearer $KEY&quot; &quot;http://$ZURG/api/v2/app/version&quot;
+v5.0.4
+
+PS&gt; (Invoke-RestMethod &quot;http://$ZURG/api/v2/app/preferences&quot; -Headers @{ Authorization = &quot;Bearer $KEY&quot; }).save_path
+Z:/__magic__/__all__</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
 <p><strong>The bare <code translate="no" v-pre>Forbidden</code> is the healthy answer.</strong> The clients&#x27; first probe is an <em>unauthenticated</em> <code translate="no" v-pre>GET /api/v2/app/webapiVersion</code>, and real qBittorrent answers it <code translate="no" v-pre>403</code> when the API is there but nobody is logged in — so that is what zurg answers, and the client reads it as &quot;v2 supported, authenticate now&quot;. A plain <strong>404</strong> instead means <code translate="no" v-pre>qbittorrent.enabled</code> is still false or zurg has not been restarted since you changed it.</p>
 <p>Then check that a wrong key is actually refused:</p>
-<div id="3-prove-it-answers-code-2" class="codeblock-wrapper"><doc-codeblock>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos-1">
+<template #title>Linux and macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">$ curl -s -o /dev/null -w &quot;%{http_code}\n&quot; -H &quot;Authorization: Bearer wrongkey&quot; \
     &quot;http://$ZURG/api/v2/torrents/info&quot;
 403</code></pre>
 </doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-1">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; curl.exe -s -o NUL -w &quot;%{http_code}\n&quot; -H &quot;Authorization: Bearer wrongkey&quot; &quot;http://$ZURG/api/v2/torrents/info&quot;
+403</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
 <p><code translate="no" v-pre>save_path</code> is the path zurg will hand the clients — check now that it is a path <em>they</em> can open.</p>
 <p>Both URL shapes work, so either is fine in the client&#x27;s <strong>URL Base</strong> field:</p>
 <retype-table copy-text="| Path | URL Base in Sonarr / Radarr | Answers |
@@ -372,14 +415,26 @@ $ curl -s -H &quot;Authorization: Bearer $KEY&quot; &quot;http://$ZURG/api/v2/ap
 </retype-table>
 <h2 id="4-make-the-root-folders">4. Make the root folders</h2>
 <p>Make them before you add them, because the *arr&#x27;s Add Root Folder dialog browses the live filesystem and will not offer a folder that does not exist.</p>
-<div id="4-make-the-root-folders-code-1" class="codeblock-wrapper"><doc-codeblock>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos-2">
+<template #title>Linux and macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">$ mkdir -p /mnt/zurg_qbt/__magic__/tv /mnt/zurg_qbt/__magic__/movies
 
 $ ls -d /mnt/zurg_qbt/__magic__/tv /mnt/zurg_qbt/__magic__/movies
 /mnt/zurg_qbt/__magic__/movies
 /mnt/zurg_qbt/__magic__/tv</code></pre>
 </doc-codeblock></div>
-<p>Substitute your own <code translate="no" v-pre>mount_path</code> for <code translate="no" v-pre>/mnt/zurg_qbt</code>.</p>
+</doc-tab>
+<doc-tab v-cloak id="windows-2">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; New-Item -ItemType Directory -Force Z:\__magic__\tv, Z:\__magic__\movies</code></pre>
+</doc-codeblock></div>
+<p>Or make the two folders in Explorer.</p>
+</doc-tab>
+</doc-tabs>
+<p>Substitute your own <code translate="no" v-pre>mount_path</code> for <code translate="no" v-pre>/mnt/zurg_qbt</code>. Left unset, it is <code translate="no" v-pre>/mnt/zurg</code> on Linux, <code translate="no" v-pre>/Volumes/Zurg</code> on macOS and <code translate="no" v-pre>Z:</code> on Windows.</p>
 <p><strong>The root folder goes beside the save path, not at it and not above it</strong> — the same rule as the Usenet walkthrough, for the same reason: zurg reports <code translate="no" v-pre>__magic__/__all__</code> as the save path, both clients raise a health check when a root folder <em>is</em> the download client&#x27;s output folder, Radarr also raises one when a root folder <em>contains</em> it, and siblings trip neither. <a href="../sonarr-radarr/#4-make-the-root-folders">That guide</a> has the screenshots of getting it wrong.</p>
 <p>There is a second reason that is specific to torrents: a move whose destination is outside <code translate="no" v-pre>__magic__</code> is a move between two filesystems, which is a copy — and a copy off a debrid mount reads the whole release back over the network. <code translate="no" v-pre>Remove Completed</code> staying on (<doc-anchor-trigger to="#if-the-import-copies-instead-of-moving">below</doc-anchor-trigger>) keeps the import a rename; a root folder outside the namespace would undo that anyway.</p>
 <p>A move between two volumes is a copy as well. That matters in Docker. Step 8 covers it.</p>
@@ -422,7 +477,7 @@ $ ls -d /mnt/zurg_qbt/__magic__/tv /mnt/zurg_qbt/__magic__/movies
 |---|---|---|
 | Name | `zurg (torrents)` | Anything. It is only a label. |
 | Enable | on | Leave it checked. |
-| Host | `192.168.88.244` | The host zurg runs on, as *the \*arr* can reach it. In Docker, see the warning below. |
+| Host | `192.168.88.244` | The host zurg runs on, as *the \*arr* can reach it. `localhost` when the \*arr is an ordinary app on the same machine. In Docker, see the warning below. |
 | Port | `9995` | zurg's normal port — `9999` on a default install. |
 | Use SSL | off | Only if you put zurg behind TLS yourself. |
 | URL Base | empty | `/qbittorrent` also works — see step 3. |
@@ -454,7 +509,7 @@ $ ls -d /mnt/zurg_qbt/__magic__/tv /mnt/zurg_qbt/__magic__/movies
 <tr>
 <td>Host</td>
 <td><code translate="no" v-pre>192.168.88.244</code></td>
-<td>The host zurg runs on, as <em>the *arr</em> can reach it. In Docker, see the warning below.</td>
+<td>The host zurg runs on, as <em>the *arr</em> can reach it. <code translate="no" v-pre>localhost</code> when the *arr is an ordinary app on the same machine. In Docker, see the warning below.</td>
 </tr>
 <tr>
 <td>Port</td>
@@ -522,7 +577,7 @@ $ ls -d /mnt/zurg_qbt/__magic__/tv /mnt/zurg_qbt/__magic__/movies
     <img src="../../../assets/sonarr-radarr-torrents/11-sonarr-rootfolders-empty.webp" alt="The empty root folders section in Sonarr" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
     <figcaption class="caption">The empty root folders section in Sonarr</figcaption>
 </figure>
-<p>Click <strong>Add Root Folder</strong>. A file browser opens on the container&#x27;s filesystem.</p>
+<p>Click <strong>Add Root Folder</strong>. A file browser opens on Sonarr&#x27;s filesystem, which in Docker is the container&#x27;s.</p>
 <figure class="content-center">
     <img src="../../../assets/sonarr-radarr-torrents/12-sonarr-rootfolder-dialog.webp" alt="Sonarr's file browser at the filesystem root" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
     <figcaption class="caption">Sonarr's file browser at the filesystem root</figcaption>
@@ -537,7 +592,7 @@ $ ls -d /mnt/zurg_qbt/__magic__/tv /mnt/zurg_qbt/__magic__/movies
     <img src="../../../assets/sonarr-radarr-torrents/14-sonarr-rootfolder-typed.webp" alt="The path finished at magic/tv" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
     <figcaption class="caption">The path finished at magic/tv</figcaption>
 </figure>
-<p>Finish the path at <code translate="no" v-pre>__magic__/tv</code> and click <strong>Ok</strong>.</p>
+<p>Finish the path at <code translate="no" v-pre>__magic__/tv</code> (<code translate="no" v-pre>Z:\__magic__\tv</code> on Windows) and click <strong>Ok</strong>.</p>
 <figure class="content-center">
     <img src="../../../assets/sonarr-radarr-torrents/15-sonarr-rootfolder-added.webp" alt="The root folder added, showing free space" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
     <figcaption class="caption">The root folder added, showing free space</figcaption>
@@ -568,6 +623,7 @@ $ ls -d /mnt/zurg_qbt/__magic__/tv /mnt/zurg_qbt/__magic__/movies
 <p>Then <strong>Settings → Media Management → Root Folders → Add Root Folder</strong>, and add <code translate="no" v-pre>/mnt/zurg_qbt/__magic__/movies</code>.</p>
 <p><strong>One zurg, two clients, one queue.</strong> The torrent list each client sees is filtered by category and nothing else. Two Sonarrs both using <code translate="no" v-pre>tv-sonarr</code> will see each other&#x27;s grabs; Sonarr on <code translate="no" v-pre>tv-sonarr</code> and Radarr on <code translate="no" v-pre>radarr</code> will not. Keep one client per category and this never comes up.</p>
 <h2 id="8-if-your-arr-is-in-docker">8. If your *arr is in Docker</h2>
+<p>This step is for Docker on a Linux host. On macOS and Windows install the *arrs as ordinary apps instead, as <doc-anchor-trigger to="#before-you-start">Before you start</doc-anchor-trigger> describes; the Usenet walkthrough&#x27;s step 8 says why.</p>
 <p>The same three problems as the Usenet walkthrough, with the same fixes — the mount is the mount — so this is the short version. <a href="../sonarr-radarr/#8-if-your-arr-is-in-docker">That guide&#x27;s step 8</a> has the detail.</p>
 <p><strong>The path zurg reports must be a path the client can open.</strong> If the container mounts the library somewhere other than zurg does, every import fails with <em>download doesn&#x27;t contain intermediate path</em> or a remote-path health check. Set <code translate="no" v-pre>qbittorrent.save_path</code> to the path <em>the client</em> sees, or add a remote path mapping:</p>
 <div id="8-if-your-arr-is-in-docker-code-1" class="codeblock-wrapper"><doc-codeblock>
@@ -663,7 +719,11 @@ INFO  router.qbittorrent  qBittorrent: [Polarwindz] Ghost in the Shell (1995) (B
 <p><strong>Status: Downloaded, Size 17.2 GiB</strong> — and nothing was downloaded to make that true. The bytes are read off the account when something plays the file.</p>
 <h3 id="prove-the-file-is-real">Prove the file is real</h3>
 <p>The import moved the file into the root folder. Read both ends of one and ask ffprobe what it is:</p>
-<div id="prove-the-file-is-real-code-1" class="codeblock-wrapper"><doc-codeblock>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos-3">
+<template #title>Linux and macOS</template>
+<p>If your shell does not find <code translate="no" v-pre>ffprobe</code>, use <code translate="no" v-pre>~/zurg/bin/ffprobe</code>: setup puts its own copy there when none was installed.</p>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">$ F=&quot;/mnt/zurg_qbt/__magic__/tv/One Piece/Season 23/[AnoZu] One Piece S23E21 1080p CR WEB-DL AAC 2.0 H.264.mkv&quot;
 
 $ ls -la &quot;$F&quot;
@@ -678,6 +738,22 @@ format_name=matroska,webm
 duration=1415.808000
 size=1446325722</code></pre>
 </doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-3">
+<template #title>Windows</template>
+<p>In PowerShell, from zurg&#x27;s folder. Setup put <code translate="no" v-pre>bin\ffprobe.exe</code> there unless an <code translate="no" v-pre>ffprobe</code> was already on your PATH; in that case type <code translate="no" v-pre>ffprobe</code> instead:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; $F = Get-Item -LiteralPath &quot;Z:\__magic__\tv\One Piece\Season 23\[AnoZu] One Piece S23E21 1080p CR WEB-DL AAC 2.0 H.264.mkv&quot;
+PS&gt; $F.Length
+1446325722
+
+PS&gt; bin\ffprobe.exe -v error -show_entries format=duration,size,format_name -of default=noprint_wrappers=1 $F.FullName
+format_name=matroska,webm
+duration=1415.808000
+size=1446325722</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
 <p>That one is a Sonarr grab — an episode pulled the same way, imported into <code translate="no" v-pre>tv/One Piece/Season 23/</code>. A 23-minute Matroska, read straight off the debrid account. The bytes arrive when something reads them, not when the *arr imports.</p>
 <h3 id="from-sonarr-it-looks-the-same">From Sonarr, it looks the same</h3>
 <figure class="content-center">
@@ -757,12 +833,27 @@ size=1446325722</code></pre>
 and send it to the right Sonarr or Radarr. Add it through this endpoint with
 that app&#x27;s category. Each app only looks at its own category. Four apps with
 four categories each see only their own adds.</p>
-<div id="11-adding-a-release-by-hand-code-1" class="codeblock-wrapper"><doc-codeblock>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos-4">
+<template #title>Linux and macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">KEY=your-qbittorrent-api-key
 curl -H &quot;Authorization: Bearer $KEY&quot; http://localhost:9999/api/v2/torrents/add \
   -F 'urls=magnet:?xt=urn:btih:&lt;hash&gt;&amp;dn=Movie.Title.2012.1080p.WEB-DL' \
   -F category=radarr4k</code></pre>
 </doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-4">
+<template #title>Windows</template>
+<p>In PowerShell, with <code translate="no" v-pre>curl.exe</code> rather than <code translate="no" v-pre>curl</code>:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$KEY = &quot;your-qbittorrent-api-key&quot;
+curl.exe -H &quot;Authorization: Bearer $KEY&quot; http://localhost:9999/api/v2/torrents/add `
+  -F 'urls=magnet:?xt=urn:btih:&lt;hash&gt;&amp;dn=Movie.Title.2012.1080p.WEB-DL' `
+  -F category=radarr4k</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
 <p>A <code translate="no" v-pre>.torrent</code> file works too. Send it as
 <code translate="no" v-pre>-F 'torrents=@Movie.Title.2012.1080p.WEB.torrent'</code> in place of <code translate="no" v-pre>urls</code>.</p>
 <p>Four things decide whether the app imports it.</p>
@@ -789,10 +880,11 @@ category list. You can move a release to another app later. The app that
 owns the new category imports it on its next check.</p>
 </li>
 </ol>
-<div id="11-adding-a-release-by-hand-code-2" class="codeblock-wrapper"><doc-codeblock>
+<div id="11-adding-a-release-by-hand-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -H &quot;Authorization: Bearer $KEY&quot; http://localhost:9999/api/v2/torrents/setCategory \
   -F hashes=&lt;hash&gt; -F category=radarr</code></pre>
 </doc-codeblock></div>
+<p>On Windows that is <code translate="no" v-pre>curl.exe</code> on one line, with <code translate="no" v-pre>$KEY</code> set as above.</p>
 <p>A release that is already on your account works the same way. That covers one
 you sent there from DMM. zurg sees it is already in the library and records it
 under the category without adding it twice. A release you never add through
@@ -992,6 +1084,7 @@ to another category never saw it. Sonarr was not tested.</p>
 | A completed release sits in the queue as a warning | Either the client decided not to import it (an upgrade the profile refuses), or every account refused it. The queue row carries the reason. It clears nothing by itself — remove it by hand, and *Blocklist and Search* if the release is bad. |
 | &quot;Download client zurg places downloads in …/__magic__/__all__ but Radarr cannot see this directory&quot; | zurg has not finished loading the library. The top of the mount lists but `__all__` and `__magic__/__all__` do not and Plex sees nothing either. Grep zurg's log for `rejected the API key`. An account whose key or plan stopped working is the usual cause. See [TorBox](../providers/torbox.md#when-it-goes-wrong) for the free plan. The warning clears once the library loads. |
 | &quot;Downloads in root folder&quot; / &quot;Remote path mapping&quot; | The same root-folder and path rules as the Usenet endpoint — see [steps 4](#4-make-the-root-folders) and [8](#8-if-your-arr-is-in-docker). |
+| The root folder browser shows zurg's mount empty, or no `Z:` drive at all | The \*arr cannot see the mount. On Linux it runs as another user without `user_allow_other`; on Windows it runs as a service. See [Before you start](#before-you-start). |
 | Every release rejected, nothing in the log | A stale bind mount. Run `docker exec &lt;client&gt; df -h &lt;mount&gt;`; if it says `Socket not connected`, bind the parent with `rslave` and recreate the container. |
 | Imports succeed, but each one downloads the whole release | The \*arr is copying rather than renaming. zurg logs `A client copied …` and shows a banner on its dashboard. Either **Remove Completed** is off on the download client or the container has the save path and the root folders on two volumes. See [If the import copies instead of moving](#if-the-import-copies-instead-of-moving) and [step 8](#8-if-your-arr-is-in-docker). |">
 <div class="table-wrapper scrollbar overflow-hidden">
@@ -1034,6 +1127,10 @@ to another category never saw it. Sonarr was not tested.</p>
 <tr>
 <td>&quot;Downloads in root folder&quot; / &quot;Remote path mapping&quot;</td>
 <td>The same root-folder and path rules as the Usenet endpoint — see <doc-anchor-trigger to="#4-make-the-root-folders">steps 4</doc-anchor-trigger> and <doc-anchor-trigger to="#8-if-your-arr-is-in-docker">8</doc-anchor-trigger>.</td>
+</tr>
+<tr>
+<td>The root folder browser shows zurg&#x27;s mount empty, or no <code translate="no" v-pre>Z:</code> drive at all</td>
+<td>The *arr cannot see the mount. On Linux it runs as another user without <code translate="no" v-pre>user_allow_other</code>; on Windows it runs as a service. See <doc-anchor-trigger to="#before-you-start">Before you start</doc-anchor-trigger>.</td>
 </tr>
 <tr>
 <td>Every release rejected, nothing in the log</td>

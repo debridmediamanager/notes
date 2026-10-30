@@ -168,9 +168,17 @@ Provider edits are **not** hot-reloaded. Restart zurg before expecting anything 
 
 ## 2. Start zurg and confirm the accounts
 
++++ Linux and macOS
 ```bash
 ./zurg
 ```
++++ Windows
+```powershell
+.\zurg.exe
+```
++++
+
+If `zurg setup` installed zurg to start on its own, restart it with `zurg service restart` instead (`./zurg service restart`, or `.\zurg.exe service restart` on Windows).
 
 zurg verifies the news accounts once at startup, because a wrong password otherwise shows up much later as every file failing to play:
 
@@ -198,9 +206,15 @@ Usenet account block.example.com is not reachable: <reason>
 
 zurg makes the `nzbs/` watch folder when it starts. It sits in the folder zurg runs from. Copy NZB files into it.
 
++++ Linux and macOS
 ```bash
 cp ~/Downloads/Some.Release.2024.2160p.nzb nzbs/
 ```
++++ Windows
+```powershell
+Copy-Item "$HOME\Downloads\Some.Release.2024.2160p.nzb" nzbs\
+```
++++
 
 Within a second or two zurg notices the file and reads it, and the library lists it as soon as the read finishes. The log says what it read:
 
@@ -323,9 +337,17 @@ Four Usenet-specific things to know when writing filters:
 
 Browse the result before involving a media server. `http://localhost:9999/http/` is a plain HTML index of exactly what the mount will show:
 
++++ Linux and macOS
 ```bash
 curl -s http://localhost:9999/http/__nzb__/ | head
 ```
++++ Windows
+Type `curl.exe`, not `curl`: in Windows PowerShell 5.1 `curl` is another name for `Invoke-WebRequest`.
+
+```powershell
+curl.exe -s http://localhost:9999/http/__nzb__/ | Select-Object -First 10
+```
++++
 
 ---
 
@@ -343,10 +365,24 @@ zurg starts rclone with a VFS profile already tuned for its own read pattern (bu
 
 Verify:
 
++++ Linux
 ```bash
 ls /mnt/zurg/
 ls /mnt/zurg/__nzb__/
 ```
++++ macOS
+```bash
+ls /Volumes/Zurg/
+ls /Volumes/Zurg/__nzb__/
+```
++++ Windows
+Run it in a PowerShell window on your desktop: the drive is only visible in the logon session that mounted it ([the session rules](../setup/windows.md#keeping-it-running-the-session-rules)).
+
+```powershell
+Get-ChildItem Z:\
+Get-ChildItem Z:\__nzb__\
+```
++++
 
 ### The manual path: your own rclone
 
@@ -360,9 +396,27 @@ vendor = other
 pacer_min_sleep = 0
 ```
 
++++ Linux
+rclone does not create the mount point, and `/mnt` belongs to root:
+
 ```bash
+sudo mkdir -p /mnt/zurg && sudo chown "$USER" /mnt/zurg
 rclone mount zurg: /mnt/zurg --config rclone.conf --dir-cache-time 10s --vfs-handle-caching 0
 ```
++++ macOS
+Needs [macFUSE](../setup/macos.md#step-1-install-macfuse) and rclone from [rclone.org](https://rclone.org/downloads/): Homebrew's rclone cannot mount. rclone does not create the mount point, and `/Volumes` belongs to root:
+
+```bash
+sudo mkdir -p /Volumes/Zurg && sudo chown "$USER" /Volumes/Zurg
+rclone mount zurg: /Volumes/Zurg --config rclone.conf --dir-cache-time 10s --vfs-handle-caching 0
+```
++++ Windows
+Needs [WinFsp](https://winfsp.dev). The drive letter must not be in use, and only programs in the logon session that runs rclone see it ([the session rules](../setup/windows.md#keeping-it-running-the-session-rules)).
+
+```powershell
+rclone mount zurg: Z: --config rclone.conf --dir-cache-time 10s --vfs-handle-caching 0
+```
++++
 
 `--vfs-handle-caching 0` needs rclone 1.74 or newer, and keeps rclone from downloading for five more seconds after a reader closes a file. The README explains what it costs to leave out.
 
@@ -384,6 +438,8 @@ services:
 
 Dropping an NZB into `./nzbs` on the host is then picked up inside the container without a restart.
 
+This needs a Linux host for the mount. Docker Desktop on macOS and Windows runs the container inside a VM, and the mount does not reach Finder, Explorer or a Plex installed on the host: use the [macOS](../setup/macos.md) or [Windows](../setup/windows.md) binary there ([why](../setup/docker.md)).
+
 > Installs made before `/config` bind-mounted `/app/config.yml`, `/app/nzbs` and `/app/data` separately. Those keep working exactly as they did — see [docker.md](../setup/docker.md#upgrading-an-install-that-mounted-app).
 
 ---
@@ -401,8 +457,10 @@ Nothing here is Usenet-specific except the last subsection, but the order matter
 
 2. **Add libraries pointing at subdirectories of the mount**, never at the mount root:
 
-   - Movies → `/mnt/zurg/movies`
-   - TV Shows → `/mnt/zurg/shows`
+   - Movies → `/mnt/zurg/movies` (`/Volumes/Zurg/movies` on macOS, `Z:\movies` on Windows)
+   - TV Shows → `/mnt/zurg/shows` (`/Volumes/Zurg/shows` on macOS, `Z:\shows` on Windows)
+
+   On Windows Plex sees `Z:` only when it runs in the same logon session as zurg, which is what `zurg setup`'s logon task gives you: see [the session rules](../setup/windows.md#keeping-it-running-the-session-rules).
 
    The same release appears in every directory whose filter matches it *and* under `__all__` and `__nzb__`. Point Plex at the root and it scans the same file several times over.
 
@@ -414,18 +472,34 @@ Nothing here is Usenet-specific except the last subsection, but the order matter
 4. **Never restart zurg during a Plex scan.** Check before you do:
 
    ```bash
-   TOKEN=$(grep ^plex_token: config.yml | awk '{print $2}')
+   TOKEN=$(grep ^plex_token: config.yml | awk '{print $2}' | tr -d "\"'")
    curl -s "http://localhost:32400/status/sessions?X-Plex-Token=$TOKEN" | grep -o 'size="[0-9]*"'
    curl -s "http://localhost:32400/library/sections?X-Plex-Token=$TOKEN" | grep -o 'refreshing="1"' | wc -l
    ```
 
-   Sessions at `size="0"` and a refreshing count of `0` mean it is safe. (Use `grep -o … | wc -l`, not `grep -c`: grep exits non-zero when it finds nothing, which is the *good* case, and will abort a `&&` chain right before the restart it was guarding.)
+   On Windows, in PowerShell from the zurg folder:
+
+   ```powershell
+   $TOKEN = ((Select-String -Path config.yml -Pattern '^plex_token:').Line -split '\s+')[1].Trim('"', "'")
+   (Invoke-RestMethod "http://localhost:32400/status/sessions?X-Plex-Token=$TOKEN").MediaContainer.size
+   @((Invoke-RestMethod "http://localhost:32400/library/sections?X-Plex-Token=$TOKEN").MediaContainer.Directory | Where-Object refreshing -eq 1).Count
+   ```
+
+   Sessions at `size="0"` (`0` on Windows) and a refreshing count of `0` mean it is safe. If the sessions line prints nothing at all, Plex refused the token or did not answer, and the `0` below it means nothing: check `plex_token` before restarting. (PowerShell shows the refusal as a `401` error instead.) (Use `grep -o … | wc -l`, not `grep -c`: grep exits non-zero when it finds nothing, which is the *good* case, and will abort a `&&` chain right before the restart it was guarding.)
 
 5. **Partial scans.** `on_library_update` is handed every changed path; `plex_update.sh` in the repo root is the reference script:
 
    ```yaml
    on_library_update: sh plex_update.sh "$@"
    ```
+
+   The script needs `curl`, `xmllint` and `python3`, which the Docker image has, and its `zurg_mount` line set to your mount path. On Windows the hook runs in PowerShell rather than `sh`, so this script does not run there. Each changed path arrives as one element of `$args`, relative to the mount and with forward slashes (`movies/Big Buck Bunny`); hand them to a PowerShell script with `@args`:
+
+   ```yaml
+   on_library_update: '& C:\zurg\my_update.ps1 @args'
+   ```
+
+   zurg already asks Plex to scan the changed paths once step 1 is done and `mount_path` is set, so a hook is only needed for anything else.
 
 **What Plex will not get from Usenet content:** nothing until zurg has analysed it (see section 4), so Plex may do its own analysis on first play like it would for any local file. File sizes settle shortly after a release is scanned: the first listing may report a cheap estimate from the article count, and the exact length arrives behind it — from the recovery index where there is one, and otherwise from one article per file. For a large multi-volume archive whose recovery index already states every exact length, one verified volume can establish the shared article stride; each sibling checks that inference against its own header before serving its first byte. Once a length lands, the library is told the release changed, so the mount and Plex both see the real length. zurg sizes up to eight releases at a time (never more than the account's connections) on an account of twelve connections or fewer and more on a larger one (twelve on 16 connections, sixteen from 20), and when acquisition checks a release with the news servers, that check queues beside this sizing and read-ahead and never takes the connection kept for a read a player is waiting on.
 
@@ -578,6 +652,7 @@ pool zurg is already using, at the priority a demand read gets. It exists
 because the alternative did not work: an account gives out eight connections and
 zurg holds all of them, so probing a post by hand meant a second account or a
 stopped server — and stopping the server destroys the state being diagnosed.
+On Windows type `curl.exe` instead of `curl` in these commands.
 
 ```bash
 # Is this article still there? A STAT, so nothing is transferred.

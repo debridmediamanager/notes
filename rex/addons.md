@@ -20,7 +20,7 @@ To bring your Stremio addons' catalogs into rex, there is nothing to write: rex-
 |---|---|
 | rex, set up as in [rex with your own app](any-source.md) (steps 1 to 3) | That is where your addon's library shows up |
 | A rex nightly dated 2026.10.25 or newer | This page is written for it |
-| FFmpeg where rex runs, if your addon serves streams | rex plays a stream by converting it (a copy, cheap). rex finds FFmpeg itself; see [rex](with-zurg.md) |
+| FFmpeg where rex runs, if your addon serves streams | rex plays a stream by converting it (a copy, cheap). rex finds FFmpeg itself; see [Converting video](any-source.md#converting-video-optional) |
 | Your addon on the same machine as rex, or on your home network | rex's feed answers only private networks: loopback, `192.168.x.x`, `10.x.x.x`, `172.16-31.x.x`, Tailscale |
 
 This page writes rex's address as `192.168.1.20:32400` and the addon's as `127.0.0.1:9981`. Put yours in their place. rex's full API reference is `docs/feed-api.md` in every rex download.
@@ -49,12 +49,19 @@ Optional, but worth it:
 
 **Why it matters.** rex reads nothing from a source it does not know. Registering again changes nothing, so do it every time your addon starts.
 
++++ Linux and macOS
 ```bash
 curl -X PUT http://192.168.1.20:32400/rex/sources/myaddon \
   -H 'Content-Type: application/json' \
   -d '{"url": "http://127.0.0.1:9981",
        "directories": [{"name": "kids", "shows": "Kids"}]}'
 ```
++++ Windows
+```powershell
+Invoke-RestMethod -Method Put http://192.168.1.20:32400/rex/sources/myaddon -ContentType application/json `
+  -Body '{"url": "http://127.0.0.1:9981", "directories": [{"name": "kids", "shows": "Kids"}]}'
+```
++++
 
 | Field | Meaning |
 |---|---|
@@ -143,10 +150,17 @@ Send a few hundred videos per request. A snapshot that names nothing removes not
 
 **What you should see.**
 
++++ Linux and macOS
 ```bash
 curl -s http://192.168.1.20:32400/rex/feed/myaddon/items | head -c 400   # what rex shows, with each ratingKey
 curl -s http://192.168.1.20:32400/rex/feed/myaddon/held                  # what waits for a probe
 ```
++++ Windows
+```powershell
+curl.exe -s http://192.168.1.20:32400/rex/feed/myaddon/items   # what rex shows, with each ratingKey
+curl.exe -s http://192.168.1.20:32400/rex/feed/myaddon/held    # what waits for a probe
+```
++++
 
 rex's log names every refused video and why: `FEED myaddon rejected <id>: <reason>`.
 

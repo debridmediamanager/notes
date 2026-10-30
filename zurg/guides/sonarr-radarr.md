@@ -22,9 +22,12 @@ Three things have to be true. Check all three now — every one of them fails la
 
 1. **zurg has an `nzb` provider.** Without one there is nothing to read what the endpoint writes, and every job sits queued for ever. zurg says so at startup. See [Usenet](usenet.md).
 2. **`magic.enabled` is `true`.** Without it the completed directory does not exist and every import fails. See [`__magic__`](magic.md).
-3. **The mount is visible to the \*arr** at the path zurg reports. If Sonarr runs in a container, read [step 8](#8-if-your-arr-is-in-docker) before you configure anything.
+3. **The mount is visible to the \*arr** at the path zurg reports. If Sonarr runs in a container, read [step 8](#8-if-your-arr-is-in-docker) before you configure anything. Installed as an ordinary app on the same machine, it sees the mount where zurg mounts it, with one catch on each system:
+   - **Linux:** an \*arr running as a different user from zurg sees an empty folder until `user_allow_other` is enabled. See [Linux setup](../setup/linux.md#1-install-fuse-3).
+   - **macOS:** run it as the same user as zurg. The mount is `/Volumes/Zurg` unless you changed `mount_path`.
+   - **Windows:** run Sonarr and Radarr as the tray app, which their installer offers, not as a Windows service. zurg's `Z:` drive belongs to the session you are logged in to, and a service runs outside it, so it does not see the drive. See [the session rules](../setup/windows.md#keeping-it-running-the-session-rules).
 
-Check the first two straight out of the config file, in zurg's working directory:
+Check the first two straight out of the config file, in zurg's working directory. On Windows, open `config.yml` in Notepad instead.
 
 ```bash
 $ grep -A6 '^providers:' config.yml
@@ -108,6 +111,8 @@ Illustrative key — yours will differ. The file survives restarts, so the key i
 
 Do this before touching Sonarr. It takes ten seconds and it separates "zurg is wrong" from "the \*arr is wrong" for the rest of the setup.
 
++++ Linux and macOS
+
 ```bash
 $ SAB=0123456789abcdef0123456789abcdef
 $ ZURG=192.168.88.245:9996
@@ -121,9 +126,26 @@ $ curl -s "http://$ZURG/api?mode=get_config&apikey=$SAB&output=json" \
 [ "*", "tv", "movies" ]
 ```
 
++++ Windows
+
+In PowerShell. Type `curl.exe`, not `curl`: Windows PowerShell's `curl` is a different command.
+
+```powershell
+PS> $SAB = "0123456789abcdef0123456789abcdef"
+PS> $ZURG = "192.168.88.245:9996"
+
+PS> curl.exe -s "http://$ZURG/api?mode=version&apikey=$SAB&output=json"
+{"version":"4.5.1"}
+
+PS> (Invoke-RestMethod "http://$ZURG/api?mode=get_config&apikey=$SAB&output=json").config.misc.complete_dir
+Z:/__magic__/__all__
+```
+
++++
+
 `complete_dir` is the path zurg will hand the clients — check now that it is a path *they* can open.
 
-Then check that a wrong key is actually refused:
+Then check that a wrong key is actually refused (on Windows, `curl.exe` with the same URLs):
 
 ```bash
 $ curl -s "http://$ZURG/api?mode=queue&apikey=wrongkey&output=json"
@@ -148,6 +170,8 @@ If `/api` returns a plain **404**, `sabnzbd.enabled` is still false or zurg has 
 
 Make them before you add them, because the \*arr's Add Root Folder dialog browses the live filesystem and will not offer a folder that does not exist.
 
++++ Linux and macOS
+
 ```bash
 $ mkdir -p /mnt/zurg_usenet/__magic__/tv /mnt/zurg_usenet/__magic__/movies
 
@@ -156,7 +180,17 @@ $ ls -d /mnt/zurg_usenet/__magic__/tv /mnt/zurg_usenet/__magic__/movies
 /mnt/zurg_usenet/__magic__/tv
 ```
 
-Substitute your own `mount_path` for `/mnt/zurg_usenet`. The folder names are yours to choose; `tv` and `movies` just match the categories.
++++ Windows
+
+```powershell
+PS> New-Item -ItemType Directory -Force Z:\__magic__\tv, Z:\__magic__\movies
+```
+
+Or make the two folders in Explorer.
+
++++
+
+Substitute your own `mount_path` for `/mnt/zurg_usenet`. Left unset, it is `/mnt/zurg` on Linux, `/Volumes/Zurg` on macOS and `Z:` on Windows. The folder names are yours to choose; `tv` and `movies` just match the categories.
 
 **The root folder goes beside the completed directory, not at it and not above it.** zurg hands the clients `__magic__/__all__`, which is your library as `__all__` lists it. Your root folders sit next to it, at `__magic__/tv` and `__magic__/movies`. **Not** `__magic__/__all__`, **not** `__magic__` itself and **not** `/mnt/zurg_usenet`. Both clients raise a health check when a root folder *is* the download client's output folder, and Radarr also raises one when a root folder *contains* it. Siblings trip neither, and a manual import pointed at the completed directory then has one release to look at rather than your whole library.
 
@@ -208,7 +242,7 @@ The dialog opens with SABnzbd's own defaults — `localhost`, port `8080`, no ke
 |---|---|---|
 | Name | `zurg (Usenet)` | Anything. It is only a label. |
 | Enable | on | Leave it checked. |
-| Host | `192.168.88.245` | The host zurg runs on, as *the \*arr* can reach it. In Docker, see the warning below. |
+| Host | `192.168.88.245` | The host zurg runs on, as *the \*arr* can reach it. `localhost` when the \*arr is an ordinary app on the same machine. In Docker, see the warning below. |
 | Port | `9996` | zurg's normal port — `9999` on a default install. |
 | Use SSL | off | Only if you put zurg behind TLS yourself. |
 | API Key | from step 2 | The whole gate. |
@@ -239,7 +273,7 @@ Go to **Settings → Media Management** and scroll to the bottom.
 
 ![The empty root folders section in Sonarr](../../assets/sonarr-radarr/11-sonarr-rootfolders-empty.webp)
 
-Click **Add Root Folder**. A file browser opens on the container's filesystem.
+Click **Add Root Folder**. A file browser opens on Sonarr's filesystem, which in Docker is the container's.
 
 ![Sonarr's file browser at the filesystem root](../../assets/sonarr-radarr/12-sonarr-rootfolder-dialog.webp)
 
@@ -251,7 +285,7 @@ If this is empty or errors, stop and fix the mount before going further.
 
 ![The path finished at __magic__/tv](../../assets/sonarr-radarr/14-sonarr-rootfolder-typed.webp)
 
-Finish the path at `__magic__/tv` and click **Ok**.
+Finish the path at `__magic__/tv` (`Z:\__magic__\tv` on Windows) and click **Ok**.
 
 ![The root folder added, showing free space and unmapped folders](../../assets/sonarr-radarr/15-sonarr-rootfolder-added.webp)
 
@@ -284,6 +318,8 @@ Then **Settings → Media Management → Root Folders → Add Root Folder**, and
 **One zurg, two clients, one queue.** zurg's queue and history are filtered by category and nothing else. Two Sonarrs both using `tv` will see each other's jobs; Sonarr on `tv` and Radarr on `movies` will not. Keep one client per category and this never comes up.
 
 ## 8. If your \*arr is in Docker
+
+This step is for Docker on a Linux host. Docker Desktop on macOS and Windows runs containers inside a virtual machine. The `rslave` bind below relies on Linux mount propagation (see [Docker setup](../setup/docker.md)), and handing zurg's mount to a container on those systems has not been tested. On macOS and Windows install Sonarr and Radarr as ordinary apps instead, as [Before you start](#before-you-start) describes.
 
 Three separate problems. The second one costs a download on every import. The third does not bite until the first time zurg restarts.
 
@@ -401,6 +437,10 @@ Aug 25 14:50:28 zurg-server zurg[3034965]: INFO  nzb  Loaded NZB
 
 The import moved the file into the root folder. Read both ends of it and ask ffprobe what it is:
 
++++ Linux and macOS
+
+If your shell does not find `ffprobe`, use `~/zurg/bin/ffprobe`: setup puts its own copy there when none was installed.
+
 ```bash
 $ ls -la "/mnt/zurg_usenet/__magic__/movies/Untold - The Testimony of Vince Young (2026)/"
 -rw-r--r-- 1 you you 4920958828 Aug 25 14:53 Untold.The.Testimony…playWEB.mkv
@@ -415,6 +455,23 @@ duration=4709.440000
 size=4920958828
 ```
 
++++ Windows
+
+In PowerShell, from zurg's folder. Setup put `bin\ffprobe.exe` there unless an `ffprobe` was already on your PATH; in that case type `ffprobe` instead:
+
+```powershell
+PS> $F = Get-Item "Z:\__magic__\movies\Untold - The Testimony of Vince Young (2026)\*.mkv"
+PS> $F.Length
+4920958828
+
+PS> bin\ffprobe.exe -v error -show_entries format=duration,size,format_name -of default=noprint_wrappers=1 $F.FullName
+format_name=matroska,webm
+duration=4709.440000
+size=4920958828
+```
+
++++
+
 A 78-minute Matroska, streamed out of Usenet articles on demand. The bytes arrive when something reads them, not when the \*arr imports.
 
 ## 10. Adding a release by hand
@@ -428,6 +485,8 @@ If the release is on an indexer the app searches, try the app first.
 **Interactive Search** lists rejected releases too. Grabbing one sends it to
 zurg like any other grab. Radarr grabbed an IMAX release its profile turned
 down for scoring 0 against a required custom format, and imported it.
+
++++ Linux and macOS
 
 ```bash
 $ SAB=0123456789abcdef0123456789abcdef
@@ -445,6 +504,26 @@ $ curl -s -G "http://$ZURG/api" \
     --data-urlencode nzbname=Movie.Title.2024.1080p.WEB-DL
 {"status":true,"nzo_ids":["SABnzbd_nzo_…"]}
 ```
+
++++ Windows
+
+In PowerShell, with `curl.exe` rather than `curl`. Each answers `{"status":true,"nzo_ids":[…]}` as above.
+
+```powershell
+$SAB = "0123456789abcdef0123456789abcdef"
+$ZURG = "192.168.88.245:9996"
+
+# an NZB file you already have (the upload field is called name, as in SABnzbd)
+curl.exe -s "http://$ZURG/api?mode=addfile&apikey=$SAB&cat=movies" -F "name=@Movie.Title.2024.1080p.WEB-DL.nzb"
+
+# or a link to one, which zurg downloads itself
+curl.exe -s -G "http://$ZURG/api" `
+  --data-urlencode mode=addurl --data-urlencode "apikey=$SAB" --data-urlencode cat=movies `
+  --data-urlencode "name=https://indexer.example/getnzb/<id>?r=<indexer-key>" `
+  --data-urlencode nzbname=Movie.Title.2024.1080p.WEB-DL
+```
+
++++
 
 `--data-urlencode` keeps the link's own `?` and `&` inside `name`. The job shows
 up in the app's queue on its next check, within a minute.
@@ -530,6 +609,7 @@ Does not:
 | "Downloads in root folder" | A root folder is at or above the completed directory. Move it beside it — `__magic__/tv`, not `__magic__/__all__`, not `__magic__` and not `/mnt/zurg_usenet`. |
 | "Remote path mapping" / "download doesn't contain intermediate path" | The path zurg reports is not a path the client can open. See [step 8](#8-if-your-arr-is-in-docker). |
 | Imports succeed but take as long as a download, and zurg's `/magic/` page lists them under **Imports that were copies** | The client is copying out of `__magic__/__all__` instead of renaming. Its container has the download folder and the root folders on two volumes. Or a manual import was set to copy. See [one volume for the download folder and the root folders](#one-volume-for-the-download-folder-and-the-root-folders). |
+| The root folder browser shows zurg's mount empty, or no `Z:` drive at all | The \*arr cannot see the mount. On Linux it runs as another user without `user_allow_other`; on Windows it runs as a service. See [Before you start](#before-you-start). |
 | Every release rejected, nothing in the log | A stale bind mount. Run `docker exec <client> df -h <mount>`; if it says `Socket not connected`, bind the parent with `rslave` and recreate the container. |
 | A job stays queued for a poll or two after the release appears | Expected, and it settles once per release. An NZB does not state how long a file is; the estimate is being replaced by the exact length from the PAR2 index or one article's own header. Reporting Completed early is what makes the client throw *File move incomplete, data loss may have occurred*. |
 | A job sits queued for ever | The release never appeared in the library. Check that the NZB parsed — `Loaded NZB <name>: N files` in the log — and that the `nzb` provider is configured at all. |

@@ -20,7 +20,7 @@ Four views onto the same library:
 Getting zurg running on your machine.
 
 - [Linux](setup/linux.md) — FUSE 3 and a systemd service created by the binary
-- [Docker](setup/docker.md) — containers, FUSE propagation, and what breaks a host-visible mount
+- [Docker](setup/docker.md) — containers on a Linux host, FUSE propagation, and what breaks a host-visible mount
 - [macOS](setup/macos.md) — macFUSE and launchd auto-start created by the binary
 - [Windows](setup/windows.md) — WinFsp and an interactive drive-letter task created by the binary
 
@@ -28,7 +28,8 @@ Getting zurg running on your machine.
 
 Pointing zurg at an account. Each page covers the credential and the
 `config.yml` entry and what that service does differently. All of them assume
-the Docker install.
+the Docker install. On a binary install the `config.yml` entry is the same; see
+[Setup](setup/index.md) for the commands that replace the Docker ones.
 
 | Page | What is different about it |
 |---|---|

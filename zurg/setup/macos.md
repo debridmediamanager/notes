@@ -19,12 +19,13 @@ macFUSE lets rclone mount zurg's virtual filesystem as a real directory on your 
 3. During installation, macOS will block the system extension. Go to **System Settings > Privacy & Security**, scroll down, and click **Allow**
 4. **Reboot your Mac** (required for the kernel extension to load)
 
-After rebooting, open **Terminal** (press `Cmd + Space`, type "Terminal", press Enter) and verify:
+After rebooting, open **Terminal** (press `Cmd + Space`, type "Terminal", press Enter) and check that macOS will load macFUSE. It is the same check `zurg setup` makes:
 
 ```bash
-kextstat | grep macfuse
-# Should output a line containing: io.macfuse.filesystems.macfuse
+/Library/Filesystems/macfuse.fs/Contents/Resources/load_macfuse && echo "macFUSE is ready"
 ```
+
+If `macFUSE is ready` does not appear, macOS has not allowed the extension yet. On Apple silicon enable third-party kernel extensions in Recovery, allow macFUSE in **System Settings > Privacy & Security**, then reboot and check again.
 
 ## Step 2: Download Zurg
 
@@ -36,7 +37,7 @@ Then unpack it.
 
 ```bash
 mkdir -p ~/zurg && cd ~/zurg
-unzip -o ~/Downloads/zurg-*-darwin-arm64.zip
+unzip -o ~/Downloads/zurg-*-darwin-arm64.zip   # on an Intel Mac: zurg-*-darwin-amd64.zip
 chmod +x zurg
 ```
 
@@ -55,7 +56,7 @@ From the extracted directory, run:
 ./zurg doctor
 ```
 
-`setup` asks which providers to configure. Choose one or several of Real-Debrid, TorBox, AllDebrid and Usenet in priority order. For example enter `2,4` for TorBox followed by Usenet. It asks only for the selected credentials, creates `config.yml` with mode `0600`, downloads rclone and ffprobe, prepares `/Volumes/Zurg` and installs auto-start.
+`setup` asks which providers to configure. Choose one or several of Real-Debrid, TorBox, AllDebrid, Usenet, Premiumize, Debrid-Link and Offcloud in priority order. For example enter `2,4` for TorBox followed by Usenet. It asks only for the selected credentials, creates `config.yml` with mode `0600`, downloads rclone (and ffprobe, unless one is already on your PATH), prepares `/Volumes/Zurg` and installs auto-start.
 
 It chooses a LaunchAgent when the current user has a GUI launchd domain. On a headless Mac with no logged-in GUI user it installs a system LaunchDaemon that still runs zurg as the current user. That path does not require auto-login.
 
@@ -279,7 +280,7 @@ curl -s -o /dev/null -w "%{http_code}" http://localhost:32400/identity && echo "
 # 4. Processes
 ps -eo pid,command | grep -E "[z]urg|[r]clone.*mount|[P]lex Media Server" | head -5
 
-# 5. Zurg service
+# 5. Zurg service (for the manual LaunchAgent from Step 7: launchctl list | grep com.zurg)
 cd ~/zurg && ./zurg service status
 ```
 
@@ -311,7 +312,7 @@ cd ~/zurg
 ./zurg service uninstall
 ```
 
-`uninstall` removes auto-start only. It leaves the binary, config, data, logs and cache in place. The launchctl commands below are the manual equivalents.
+`uninstall` removes auto-start only. It leaves the binary, config, data, logs and cache in place. The launchctl commands below are for the manual LaunchAgent from Step 7 (`com.zurg`). `zurg setup` names its own `com.zurg.zurg`.
 
 ### Start / Stop / Restart
 
@@ -330,7 +331,7 @@ launchctl stop com.zurg && sleep 2 && launchctl start com.zurg
 
 ```bash
 # Zurg logs
-tail -50 ~/zurg/logs/launchd-stdout.log
+tail -50 ~/zurg/logs/zurg.log
 
 # Rclone logs
 tail -50 ~/zurg/logs/rclone.log
@@ -349,6 +350,7 @@ If you edit `config.yml`, just restart zurg:
 
 ```bash
 cd ~/zurg && ./zurg service restart
+# manual LaunchAgent: launchctl stop com.zurg && sleep 2 && launchctl start com.zurg
 ```
 
 ### Update Zurg
@@ -371,15 +373,15 @@ curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/p
 
 You can also set `GITHUB_TOKEN` instead. Use a classic token with the `repo` scope from the GitHub account that has zurg access.
 
-By hand, download the new `darwin-arm64` zip from [Releases](https://github.com/debridmediamanager/zurg/releases) the same way as in Step 2, then:
+By hand, download the new `darwin-arm64` zip (`darwin-amd64` on an Intel Mac) from [Releases](https://github.com/debridmediamanager/zurg/releases) the same way as in Step 2, then:
 
 ```bash
 cd ~/zurg
-./zurg service stop && sleep 2
+./zurg service stop && sleep 2     # manual LaunchAgent: launchctl stop com.zurg
 rm -f zurg
-unzip -o ~/Downloads/zurg-*-darwin-arm64.zip
+unzip -o ~/Downloads/zurg-*-darwin-arm64.zip   # on an Intel Mac: zurg-*-darwin-amd64.zip
 chmod +x zurg
-./zurg service start
+./zurg service start               # manual LaunchAgent: launchctl start com.zurg
 ```
 
 Delete the old binary rather than overwriting it in place. Rewriting the file keeps the same inode and invalidates its ad-hoc code signature, and macOS then kills the new build on exec — the symptom is an immediate exit with no output at all. `zurg update` swaps by rename for exactly this reason.
@@ -400,7 +402,8 @@ The mount point may be stale from a previous crash:
 ```bash
 umount -f /Volumes/Zurg 2>/dev/null
 diskutil unmount force /Volumes/Zurg 2>/dev/null
-launchctl stop com.zurg && sleep 2 && launchctl start com.zurg
+cd ~/zurg && ./zurg service restart
+# manual LaunchAgent: launchctl stop com.zurg && sleep 2 && launchctl start com.zurg
 ```
 
 ### Zurg keeps restarting (crash loop)
@@ -408,7 +411,7 @@ launchctl stop com.zurg && sleep 2 && launchctl start com.zurg
 Check the logs for the error:
 
 ```bash
-tail -100 ~/zurg/logs/launchd-stderr.log
+tail -100 ~/zurg/logs/service-stderr.log   # manual LaunchAgent: launchd-stderr.log
 ```
 
 Common causes:
@@ -459,6 +462,8 @@ launchd (PID 1)
 
 ## Quick Reference
 
+Run these in `~/zurg`. The `zurg service` lines are for an install made by `zurg setup`; the manual LaunchAgent uses the launchctl commands in [Managing the Services](#managing-the-services).
+
 | Action | Command |
 |--------|---------|
 | Start zurg | `./zurg service start` |
@@ -466,7 +471,7 @@ launchd (PID 1)
 | Restart zurg | `./zurg service restart` |
 | Check the install | `./zurg doctor` |
 | Remove auto-start | `./zurg service uninstall` |
-| View zurg logs | `tail -f ~/zurg/logs/launchd-stdout.log` |
+| View zurg logs | `tail -f ~/zurg/logs/zurg.log` |
 | View rclone logs | `tail -f ~/zurg/logs/rclone.log` |
 | Check mount | `ls /Volumes/Zurg/` |
 | Check zurg health | `curl http://localhost:9999/http/version.txt` |

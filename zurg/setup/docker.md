@@ -338,7 +338,7 @@ docker compose up -d zurg
 The old FUSE mount is stale:
 
 ```bash
-sudo fusermount -uz /zurg_mnt/zurg
+sudo umount -l /zurg_mnt/zurg
 docker compose restart zurg
 ```
 

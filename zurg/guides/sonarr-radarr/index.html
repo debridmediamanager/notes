@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846638225405">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846660769868">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../../resources/css/retype.css?v=4.6.0.846638225405" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.846660769868" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846638225405" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846660769868" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846638225405" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846638225405" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846660769868" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846660769868" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -242,9 +242,15 @@
 <ol>
 <li><strong>zurg has an <code translate="no" v-pre>nzb</code> provider.</strong> Without one there is nothing to read what the endpoint writes, and every job sits queued for ever. zurg says so at startup. See <a href="../usenet/">Usenet</a>.</li>
 <li><strong><code translate="no" v-pre>magic.enabled</code> is <code translate="no" v-pre>true</code>.</strong> Without it the completed directory does not exist and every import fails. See <a href="../magic/"><code translate="no" v-pre>__magic__</code></a>.</li>
-<li><strong>The mount is visible to the *arr</strong> at the path zurg reports. If Sonarr runs in a container, read <doc-anchor-trigger to="#8-if-your-arr-is-in-docker">step 8</doc-anchor-trigger> before you configure anything.</li>
+<li><strong>The mount is visible to the *arr</strong> at the path zurg reports. If Sonarr runs in a container, read <doc-anchor-trigger to="#8-if-your-arr-is-in-docker">step 8</doc-anchor-trigger> before you configure anything. Installed as an ordinary app on the same machine, it sees the mount where zurg mounts it, with one catch on each system:
+<ul>
+<li><strong>Linux:</strong> an *arr running as a different user from zurg sees an empty folder until <code translate="no" v-pre>user_allow_other</code> is enabled. See <a href="../../setup/linux/#1-install-fuse-3">Linux setup</a>.</li>
+<li><strong>macOS:</strong> run it as the same user as zurg. The mount is <code translate="no" v-pre>/Volumes/Zurg</code> unless you changed <code translate="no" v-pre>mount_path</code>.</li>
+<li><strong>Windows:</strong> run Sonarr and Radarr as the tray app, which their installer offers, not as a Windows service. zurg&#x27;s <code translate="no" v-pre>Z:</code> drive belongs to the session you are logged in to, and a service runs outside it, so it does not see the drive. See <a href="../../setup/windows/#keeping-it-running-the-session-rules">the session rules</a>.</li>
+</ul>
+</li>
 </ol>
-<p>Check the first two straight out of the config file, in zurg&#x27;s working directory:</p>
+<p>Check the first two straight out of the config file, in zurg&#x27;s working directory. On Windows, open <code translate="no" v-pre>config.yml</code> in Notepad instead.</p>
 <div id="before-you-start-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">$ grep -A6 '^providers:' config.yml
 providers:
@@ -310,7 +316,10 @@ sabnzbd:
 <p><strong>This endpoint is outside zurg&#x27;s basic auth.</strong> Neither Sonarr nor Radarr ever sends basic auth to a download client, and their HTTP layer turns a 401 into &quot;unable to connect&quot; with nothing actionable in it — so zurg deliberately exempts <code translate="no" v-pre>/api</code>. The API key is the whole gate. Treat the port the way you treat the rest of zurg&#x27;s: on a trusted network, or behind something that is.</p>
 <h2 id="3-prove-it-answers">3. Prove it answers</h2>
 <p>Do this before touching Sonarr. It takes ten seconds and it separates &quot;zurg is wrong&quot; from &quot;the *arr is wrong&quot; for the rest of the setup.</p>
-<div id="3-prove-it-answers-code-1" class="codeblock-wrapper"><doc-codeblock>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos">
+<template #title>Linux and macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">$ SAB=0123456789abcdef0123456789abcdef
 $ ZURG=192.168.88.245:9996
 
@@ -322,9 +331,25 @@ $ curl -s &quot;http://$ZURG/api?mode=get_config&amp;apikey=$SAB&amp;output=json
 &quot;/mnt/zurg_usenet/__magic__/__all__&quot;
 [ &quot;*&quot;, &quot;tv&quot;, &quot;movies&quot; ]</code></pre>
 </doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<p>In PowerShell. Type <code translate="no" v-pre>curl.exe</code>, not <code translate="no" v-pre>curl</code>: Windows PowerShell&#x27;s <code translate="no" v-pre>curl</code> is a different command.</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; $SAB = &quot;0123456789abcdef0123456789abcdef&quot;
+PS&gt; $ZURG = &quot;192.168.88.245:9996&quot;
+
+PS&gt; curl.exe -s &quot;http://$ZURG/api?mode=version&amp;apikey=$SAB&amp;output=json&quot;
+{&quot;version&quot;:&quot;4.5.1&quot;}
+
+PS&gt; (Invoke-RestMethod &quot;http://$ZURG/api?mode=get_config&amp;apikey=$SAB&amp;output=json&quot;).config.misc.complete_dir
+Z:/__magic__/__all__</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
 <p><code translate="no" v-pre>complete_dir</code> is the path zurg will hand the clients — check now that it is a path <em>they</em> can open.</p>
-<p>Then check that a wrong key is actually refused:</p>
-<div id="3-prove-it-answers-code-2" class="codeblock-wrapper"><doc-codeblock>
+<p>Then check that a wrong key is actually refused (on Windows, <code translate="no" v-pre>curl.exe</code> with the same URLs):</p>
+<div id="3-prove-it-answers-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">$ curl -s &quot;http://$ZURG/api?mode=queue&amp;apikey=wrongkey&amp;output=json&quot;
 {&quot;status&quot;:false,&quot;error&quot;:&quot;API Key Incorrect&quot;}
 
@@ -364,14 +389,26 @@ $ curl -s &quot;http://$ZURG/api?mode=queue&amp;output=json&quot;
 <p>If <code translate="no" v-pre>/api</code> returns a plain <strong>404</strong>, <code translate="no" v-pre>sabnzbd.enabled</code> is still false or zurg has not been restarted since you changed it.</p>
 <h2 id="4-make-the-root-folders">4. Make the root folders</h2>
 <p>Make them before you add them, because the *arr&#x27;s Add Root Folder dialog browses the live filesystem and will not offer a folder that does not exist.</p>
-<div id="4-make-the-root-folders-code-1" class="codeblock-wrapper"><doc-codeblock>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos-1">
+<template #title>Linux and macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">$ mkdir -p /mnt/zurg_usenet/__magic__/tv /mnt/zurg_usenet/__magic__/movies
 
 $ ls -d /mnt/zurg_usenet/__magic__/tv /mnt/zurg_usenet/__magic__/movies
 /mnt/zurg_usenet/__magic__/movies
 /mnt/zurg_usenet/__magic__/tv</code></pre>
 </doc-codeblock></div>
-<p>Substitute your own <code translate="no" v-pre>mount_path</code> for <code translate="no" v-pre>/mnt/zurg_usenet</code>. The folder names are yours to choose; <code translate="no" v-pre>tv</code> and <code translate="no" v-pre>movies</code> just match the categories.</p>
+</doc-tab>
+<doc-tab v-cloak id="windows-1">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; New-Item -ItemType Directory -Force Z:\__magic__\tv, Z:\__magic__\movies</code></pre>
+</doc-codeblock></div>
+<p>Or make the two folders in Explorer.</p>
+</doc-tab>
+</doc-tabs>
+<p>Substitute your own <code translate="no" v-pre>mount_path</code> for <code translate="no" v-pre>/mnt/zurg_usenet</code>. Left unset, it is <code translate="no" v-pre>/mnt/zurg</code> on Linux, <code translate="no" v-pre>/Volumes/Zurg</code> on macOS and <code translate="no" v-pre>Z:</code> on Windows. The folder names are yours to choose; <code translate="no" v-pre>tv</code> and <code translate="no" v-pre>movies</code> just match the categories.</p>
 <p><strong>The root folder goes beside the completed directory, not at it and not above it.</strong> zurg hands the clients <code translate="no" v-pre>__magic__/__all__</code>, which is your library as <code translate="no" v-pre>__all__</code> lists it. Your root folders sit next to it, at <code translate="no" v-pre>__magic__/tv</code> and <code translate="no" v-pre>__magic__/movies</code>. <strong>Not</strong> <code translate="no" v-pre>__magic__/__all__</code>, <strong>not</strong> <code translate="no" v-pre>__magic__</code> itself and <strong>not</strong> <code translate="no" v-pre>/mnt/zurg_usenet</code>. Both clients raise a health check when a root folder <em>is</em> the download client&#x27;s output folder, and Radarr also raises one when a root folder <em>contains</em> it. Siblings trip neither, and a manual import pointed at the completed directory then has one release to look at rather than your whole library.</p>
 <p>This is what getting it wrong looks like. Both are real, from the two clients. They were taken before the completed directory moved down to <code translate="no" v-pre>__magic__/__all__</code>, so the paths in them are one level up from yours — the two rules they show are the same ones:</p>
 <figure class="content-center">
@@ -423,7 +460,7 @@ $ ls -d /mnt/zurg_usenet/__magic__/tv /mnt/zurg_usenet/__magic__/movies
 |---|---|---|
 | Name | `zurg (Usenet)` | Anything. It is only a label. |
 | Enable | on | Leave it checked. |
-| Host | `192.168.88.245` | The host zurg runs on, as *the \*arr* can reach it. In Docker, see the warning below. |
+| Host | `192.168.88.245` | The host zurg runs on, as *the \*arr* can reach it. `localhost` when the \*arr is an ordinary app on the same machine. In Docker, see the warning below. |
 | Port | `9996` | zurg's normal port — `9999` on a default install. |
 | Use SSL | off | Only if you put zurg behind TLS yourself. |
 | API Key | from step 2 | The whole gate. |
@@ -456,7 +493,7 @@ $ ls -d /mnt/zurg_usenet/__magic__/tv /mnt/zurg_usenet/__magic__/movies
 <tr>
 <td>Host</td>
 <td><code translate="no" v-pre>192.168.88.245</code></td>
-<td>The host zurg runs on, as <em>the *arr</em> can reach it. In Docker, see the warning below.</td>
+<td>The host zurg runs on, as <em>the *arr</em> can reach it. <code translate="no" v-pre>localhost</code> when the *arr is an ordinary app on the same machine. In Docker, see the warning below.</td>
 </tr>
 <tr>
 <td>Port</td>
@@ -529,7 +566,7 @@ $ ls -d /mnt/zurg_usenet/__magic__/tv /mnt/zurg_usenet/__magic__/movies
     <img src="../../../assets/sonarr-radarr/11-sonarr-rootfolders-empty.webp" alt="The empty root folders section in Sonarr" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
     <figcaption class="caption">The empty root folders section in Sonarr</figcaption>
 </figure>
-<p>Click <strong>Add Root Folder</strong>. A file browser opens on the container&#x27;s filesystem.</p>
+<p>Click <strong>Add Root Folder</strong>. A file browser opens on Sonarr&#x27;s filesystem, which in Docker is the container&#x27;s.</p>
 <figure class="content-center">
     <img src="../../../assets/sonarr-radarr/12-sonarr-rootfolder-dialog.webp" alt="Sonarr's file browser at the filesystem root" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
     <figcaption class="caption">Sonarr's file browser at the filesystem root</figcaption>
@@ -544,7 +581,7 @@ $ ls -d /mnt/zurg_usenet/__magic__/tv /mnt/zurg_usenet/__magic__/movies
     <img src="../../../assets/sonarr-radarr/14-sonarr-rootfolder-typed.webp" alt="The path finished at magic/tv" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
     <figcaption class="caption">The path finished at magic/tv</figcaption>
 </figure>
-<p>Finish the path at <code translate="no" v-pre>__magic__/tv</code> and click <strong>Ok</strong>.</p>
+<p>Finish the path at <code translate="no" v-pre>__magic__/tv</code> (<code translate="no" v-pre>Z:\__magic__\tv</code> on Windows) and click <strong>Ok</strong>.</p>
 <figure class="content-center">
     <img src="../../../assets/sonarr-radarr/15-sonarr-rootfolder-added.webp" alt="The root folder added, showing free space and unmapped folders" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
     <figcaption class="caption">The root folder added, showing free space and unmapped folders</figcaption>
@@ -579,6 +616,7 @@ $ ls -d /mnt/zurg_usenet/__magic__/tv /mnt/zurg_usenet/__magic__/movies
 <p>Then <strong>Settings → Media Management → Root Folders → Add Root Folder</strong>, and add <code translate="no" v-pre>/mnt/zurg_usenet/__magic__/movies</code>.</p>
 <p><strong>One zurg, two clients, one queue.</strong> zurg&#x27;s queue and history are filtered by category and nothing else. Two Sonarrs both using <code translate="no" v-pre>tv</code> will see each other&#x27;s jobs; Sonarr on <code translate="no" v-pre>tv</code> and Radarr on <code translate="no" v-pre>movies</code> will not. Keep one client per category and this never comes up.</p>
 <h2 id="8-if-your-arr-is-in-docker">8. If your *arr is in Docker</h2>
+<p>This step is for Docker on a Linux host. Docker Desktop on macOS and Windows runs containers inside a virtual machine. The <code translate="no" v-pre>rslave</code> bind below relies on Linux mount propagation (see <a href="../../setup/docker/">Docker setup</a>), and handing zurg&#x27;s mount to a container on those systems has not been tested. On macOS and Windows install Sonarr and Radarr as ordinary apps instead, as <doc-anchor-trigger to="#before-you-start">Before you start</doc-anchor-trigger> describes.</p>
 <p>Three separate problems. The second one costs a download on every import. The third does not bite until the first time zurg restarts.</p>
 <h3 id="the-path-zurg-reports-must-be-a-path-the-client-can-open">The path zurg reports must be a path the client can open</h3>
 <p>If the container mounts the library somewhere other than zurg does, every import fails with <em>download doesn&#x27;t contain intermediate path</em> or a remote-path health check. Fix it either way — both are fine:</p>
@@ -670,7 +708,11 @@ Aug 25 14:50:28 zurg-server zurg[3034965]: INFO  nzb  Loaded NZB
 <p><strong>Status: Downloaded</strong>, <strong>Size 4.7 GiB</strong> — and nothing was downloaded.</p>
 <h3 id="prove-the-file-is-real">Prove the file is real</h3>
 <p>The import moved the file into the root folder. Read both ends of it and ask ffprobe what it is:</p>
-<div id="prove-the-file-is-real-code-1" class="codeblock-wrapper"><doc-codeblock>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos-2">
+<template #title>Linux and macOS</template>
+<p>If your shell does not find <code translate="no" v-pre>ffprobe</code>, use <code translate="no" v-pre>~/zurg/bin/ffprobe</code>: setup puts its own copy there when none was installed.</p>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">$ ls -la &quot;/mnt/zurg_usenet/__magic__/movies/Untold - The Testimony of Vince Young (2026)/&quot;
 -rw-r--r-- 1 you you 4920958828 Aug 25 14:53 Untold.The.Testimony…playWEB.mkv
 
@@ -683,6 +725,22 @@ format_name=matroska,webm
 duration=4709.440000
 size=4920958828</code></pre>
 </doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-2">
+<template #title>Windows</template>
+<p>In PowerShell, from zurg&#x27;s folder. Setup put <code translate="no" v-pre>bin\ffprobe.exe</code> there unless an <code translate="no" v-pre>ffprobe</code> was already on your PATH; in that case type <code translate="no" v-pre>ffprobe</code> instead:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; $F = Get-Item &quot;Z:\__magic__\movies\Untold - The Testimony of Vince Young (2026)\*.mkv&quot;
+PS&gt; $F.Length
+4920958828
+
+PS&gt; bin\ffprobe.exe -v error -show_entries format=duration,size,format_name -of default=noprint_wrappers=1 $F.FullName
+format_name=matroska,webm
+duration=4709.440000
+size=4920958828</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
 <p>A 78-minute Matroska, streamed out of Usenet articles on demand. The bytes arrive when something reads them, not when the *arr imports.</p>
 <h2 id="10-adding-a-release-by-hand">10. Adding a release by hand</h2>
 <p>Sometimes Sonarr or Radarr never grabs the release you want. The indexers it
@@ -693,7 +751,10 @@ should import it. That app then imports it as if it had grabbed it.</p>
 <strong>Interactive Search</strong> lists rejected releases too. Grabbing one sends it to
 zurg like any other grab. Radarr grabbed an IMAX release its profile turned
 down for scoring 0 against a required custom format, and imported it.</p>
-<div id="10-adding-a-release-by-hand-code-1" class="codeblock-wrapper"><doc-codeblock>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos-3">
+<template #title>Linux and macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-bash"><code v-pre class="language-bash">$ SAB=0123456789abcdef0123456789abcdef
 $ ZURG=192.168.88.245:9996
 
@@ -709,6 +770,25 @@ $ curl -s -G &quot;http://$ZURG/api&quot; \
     --data-urlencode nzbname=Movie.Title.2024.1080p.WEB-DL
 {&quot;status&quot;:true,&quot;nzo_ids&quot;:[&quot;SABnzbd_nzo_…&quot;]}</code></pre>
 </doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-3">
+<template #title>Windows</template>
+<p>In PowerShell, with <code translate="no" v-pre>curl.exe</code> rather than <code translate="no" v-pre>curl</code>. Each answers <code translate="no" v-pre>{&quot;status&quot;:true,&quot;nzo_ids&quot;:[…]}</code> as above.</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$SAB = &quot;0123456789abcdef0123456789abcdef&quot;
+$ZURG = &quot;192.168.88.245:9996&quot;
+
+# an NZB file you already have (the upload field is called name, as in SABnzbd)
+curl.exe -s &quot;http://$ZURG/api?mode=addfile&amp;apikey=$SAB&amp;cat=movies&quot; -F &quot;name=@Movie.Title.2024.1080p.WEB-DL.nzb&quot;
+
+# or a link to one, which zurg downloads itself
+curl.exe -s -G &quot;http://$ZURG/api&quot; `
+  --data-urlencode mode=addurl --data-urlencode &quot;apikey=$SAB&quot; --data-urlencode cat=movies `
+  --data-urlencode &quot;name=https://indexer.example/getnzb/&lt;id&gt;?r=&lt;indexer-key&gt;&quot; `
+  --data-urlencode nzbname=Movie.Title.2024.1080p.WEB-DL</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
 <p><code translate="no" v-pre>--data-urlencode</code> keeps the link&#x27;s own <code translate="no" v-pre>?</code> and <code translate="no" v-pre>&amp;</code> inside <code translate="no" v-pre>name</code>. The job shows
 up in the app&#x27;s queue on its next check, within a minute.</p>
 <p>Five things decide what happens next.</p>
@@ -793,6 +873,7 @@ not tested.</p>
 | &quot;Downloads in root folder&quot; | A root folder is at or above the completed directory. Move it beside it — `__magic__/tv`, not `__magic__/__all__`, not `__magic__` and not `/mnt/zurg_usenet`. |
 | &quot;Remote path mapping&quot; / &quot;download doesn't contain intermediate path&quot; | The path zurg reports is not a path the client can open. See [step 8](#8-if-your-arr-is-in-docker). |
 | Imports succeed but take as long as a download, and zurg's `/magic/` page lists them under **Imports that were copies** | The client is copying out of `__magic__/__all__` instead of renaming. Its container has the download folder and the root folders on two volumes. Or a manual import was set to copy. See [one volume for the download folder and the root folders](#one-volume-for-the-download-folder-and-the-root-folders). |
+| The root folder browser shows zurg's mount empty, or no `Z:` drive at all | The \*arr cannot see the mount. On Linux it runs as another user without `user_allow_other`; on Windows it runs as a service. See [Before you start](#before-you-start). |
 | Every release rejected, nothing in the log | A stale bind mount. Run `docker exec &lt;client&gt; df -h &lt;mount&gt;`; if it says `Socket not connected`, bind the parent with `rslave` and recreate the container. |
 | A job stays queued for a poll or two after the release appears | Expected, and it settles once per release. An NZB does not state how long a file is; the estimate is being replaced by the exact length from the PAR2 index or one article's own header. Reporting Completed early is what makes the client throw *File move incomplete, data loss may have occurred*. |
 | A job sits queued for ever | The release never appeared in the library. Check that the NZB parsed — `Loaded NZB &lt;name&gt;: N files` in the log — and that the `nzb` provider is configured at all. |
@@ -836,6 +917,10 @@ not tested.</p>
 <tr>
 <td>Imports succeed but take as long as a download, and zurg&#x27;s <code translate="no" v-pre>/magic/</code> page lists them under <strong>Imports that were copies</strong></td>
 <td>The client is copying out of <code translate="no" v-pre>__magic__/__all__</code> instead of renaming. Its container has the download folder and the root folders on two volumes. Or a manual import was set to copy. See <doc-anchor-trigger to="#one-volume-for-the-download-folder-and-the-root-folders">one volume for the download folder and the root folders</doc-anchor-trigger>.</td>
+</tr>
+<tr>
+<td>The root folder browser shows zurg&#x27;s mount empty, or no <code translate="no" v-pre>Z:</code> drive at all</td>
+<td>The *arr cannot see the mount. On Linux it runs as another user without <code translate="no" v-pre>user_allow_other</code>; on Windows it runs as a service. See <doc-anchor-trigger to="#before-you-start">Before you start</doc-anchor-trigger>.</td>
 </tr>
 <tr>
 <td>Every release rejected, nothing in the log</td>
