@@ -205,7 +205,7 @@ It asks each addon that serves the title (`/stream/<movie or series>/<id>.json`)
 
 **Numbering.** A film is a film. A series' seasons and episodes come from Cinemeta, whose ids are IMDb's, and keep its numbers, so a new episode never shifts the others. rex places them on TMDB's numbers, so where Cinemeta's differ, an episode lands in the wrong place.
 
-**Ids.** An id is the catalog plus the IMDb id (and season and episode), such as `st-<catalog>-tt0111161`. It never changes, so one film in two catalogs is two items. With **Catalogs as collections** on, a film several catalogs of one library list is one item there, in each catalog's collection.
+**Ids.** An id is the catalog plus the IMDb id (and season and episode), such as `st-<catalog>-tt0111161`. It never changes, so one film in two catalogs is two items. With **Catalogs as collections** on, a film or series several catalogs of one library list is one title there, in each catalog's collection.
 
 **Sending.** Every six hours and after every save: register, then each catalog's videos as soon as that catalog is checked (`POST .../items`, 200 a request), then one snapshot of every catalog, in parts of 200. The first snapshot after a save carries `"force": true`, since unticking catalogs can remove more than half. If a catalog answers empty or only in part, the round sends no snapshot: it adds and updates, removes nothing, and a later complete round removes what really left.
 
@@ -214,7 +214,7 @@ It asks each addon that serves the title (`/stream/<movie or series>/<id>.json`)
 | You see | Why | Fix |
 |---|---|---|
 | `rejected`: `not a video file` | The file name has no video extension, or an `.m3u8` whose probe is not `hls` | Name streams `.m3u8` and send their probe |
-| A video never shows up | A file is held, or a stream was rejected: no `media_info`, or one with no streams | Probe it and send it again |
+| A video never shows up | It is held (its `media_info` has no streams, or a file was sent without one), or a stream sent without `media_info` was rejected | Probe it and send it again |
 | `rejected`: `... is already <id>'s file` | Another id has that `path` | Keep one id per path |
 | Episodes titled "Episode 1" and blank tiles | No `display` | Send `display` with each video |
 | A film sent with its IMDb id keeps your `display` title, not Plex's | rex asks Plex for titles only once it is claimed | Claim rex: [step 3 of rex with your own app](any-source.md#step-3-add-it-to-a-plex-account) |
