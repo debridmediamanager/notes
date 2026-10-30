@@ -40,5 +40,6 @@ Every guide on this site, by project.
 - [rex with zurg](../rex/with-zurg.md)
 - [rex with your own app](../rex/any-source.md)
 - [Building rex addons](../rex/addons.md)
+- [Bring your watch history](../rex/import-watched.md)
 - [Kometa with rex](../rex/kometa.md)
 - [Apps download from your provider](../rex/direct-download.md)
