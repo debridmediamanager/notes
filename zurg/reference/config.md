@@ -407,8 +407,8 @@ Every option below is on the config page under **Plex Watchlist**, indexer list 
 | `check_every_secs` | int | `60` | How often the watchlist is polled on Plex's cloud service. |
 | `indexers` | list | `[]` | Indexers to search, each with `name`, `url`, `api_key` and optional `api_path` and `type`. `type: torznab` marks a torrent indexer. Absent means `newznab`. The same shape as `stremio.indexers`, which is borrowed wholesale when this list is empty. |
 | `prefer` | string | `"usenet"` | Which kind is tried first when both an NZB and a torrent could do. `usenet` tries NZBs first, `torrents` tries torrents first, and `best` lets the ranking alone decide. See [Newznab and Torznab](../guides/acquisition.md#newznab-and-torznab). |
-| `max_size_gb` | int | `40` | Releases larger than this are dropped for movies and single episodes. Releases whose size the indexer did not state are kept. |
-| `max_season_size_gb` | int | `100` | The same ceiling for season packs, which are legitimately several times a movie. A pack of several seasons is held to it per season it names. |
+| `max_size_gb` | int | `40` | Releases larger than this are dropped for movies and single episodes, and season packs holding more than this an episode. Releases whose size the indexer did not state are kept. |
+| `max_season_size_gb` | int | `0` | A cap on each season a season pack holds, per season it names. `0` is none: a pack is held to `max_size_gb` per episode instead, so the remux of a long season still counts. |
 | `quality` | string | `"best"` | Which release wins: `best` (resolution first, then size), `4k`, `1080p`, `720p` (prefer that resolution, fall back to best) or `smallest`. The legacy `watchlist_quality` key still counts. |
 
 The `acquisition` block also takes `concurrency` (default `8`, `1` to `200`), how many titles are searched, checked and placed at once, and `indexer_concurrency` (default `3`, `1` to `16`), how many calls are made to one indexer at once; keep the latter low when an indexer key is shared.
@@ -421,7 +421,6 @@ watchlist:
   enabled: true
   check_every_secs: 60
   max_size_gb: 40
-  max_season_size_gb: 100
   quality: best
   indexers:
     - name: my-indexer
