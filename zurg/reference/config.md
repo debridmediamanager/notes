@@ -479,7 +479,7 @@ zurg only ever **reads** this database, through a read-only handle. It never wri
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `plex_database_path` | string | `""` | Full path to `com.plexapp.plugins.library.db`. Empty turns every feature in this section off. |
-| `plex_sqlite_binary` | string | `/usr/lib/plexmediaserver/Plex SQLite` | Plex ships its own SQLite build. A stock `sqlite3` can fail on, or damage, this database. |
+| `plex_sqlite_binary` | string | where Plex installs it: `/usr/lib/plexmediaserver/Plex SQLite` on Linux, `/Applications/Plex Media Server.app/Contents/MacOS/Plex SQLite` on macOS, `%ProgramFiles%\Plex\Plex Media Server\Plex SQLite.exe` on Windows | Plex ships its own SQLite build. A stock `sqlite3` can fail on, or damage, this database. |
 | `plex_backups_keep` | int | `5` | Snapshots retained. Each is the size of the whole database. An explicit `0` observes without ever snapshotting. |
 | `plex_backups_every_mins` | int | `15` | Minimum gap between snapshots, so a crash-looping zurg does not copy the database on every restart. |
 | `plex_trash_sweep_every_mins` | int | unset (see note) | How often to remove Plex entries whose files are gone from the mount. Unset lets zurg decide: removal runs every 60 minutes when nothing else is emptying Plex's trash, and stands down when Plex still is. An explicit `0` keeps zurg's own removal off and leaves the trash to you; a negative value turns the whole sweep off, repairing half included. `0` does **not** hand Plex's own trash emptying back, which is `plex_settings_ignore` and the dashboard's **Let Plex Empty Its Own Trash** switch. See [Who empties the trash](../guides/plex.md#who-empties-the-trash). |
@@ -549,12 +549,12 @@ plex_trash_sweep_max_items: 50
 plex_trash_sweep_max_percent: 10
 ```
 
-That path is where the Linux package keeps the database. On macOS and Windows set both keys, written out in full: zurg does not expand `~` or `%LOCALAPPDATA%`.
+That path is where the Linux package keeps the database. On macOS and Windows write it out in full, since zurg does not expand `~` or `%LOCALAPPDATA%`. `plex_sqlite_binary` already defaults to where Plex installs it on each system.
 
-| Plex on | `plex_sqlite_binary` | `plex_database_path` |
-|---|---|---|
-| macOS | `/Applications/Plex Media Server.app/Contents/MacOS/Plex SQLite` | `/Users/you/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db` |
-| Windows (64-bit Plex) | `C:\Program Files\Plex\Plex Media Server\Plex SQLite.exe` | `C:\Users\you\AppData\Local\Plex Media Server\Plug-in Support\Databases\com.plexapp.plugins.library.db` |
+| Plex on | `plex_database_path` |
+|---|---|
+| macOS | `/Users/you/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db` |
+| Windows | `C:\Users\you\AppData\Local\Plex Media Server\Plug-in Support\Databases\com.plexapp.plugins.library.db` |
 
 Put a Windows path in single quotes in YAML so its backslashes stay as written.
 

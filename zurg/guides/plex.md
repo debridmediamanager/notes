@@ -126,7 +126,7 @@ Turning `autoEmptyTrash` off leaves a job undone. Plex has been told not to clea
 
 zurg now takes the job it took away. With `plex_trash_sweep_every_mins` unset, the [trash sweep](../internals/plex-trash-sweep.md) removes entries every 60 minutes — but only when nothing else is doing it. If Plex is still emptying its own trash, because `plex_settings_policy` is `off` or `warn` or because `autoEmptyTrash` is in `plex_settings_ignore`, zurg stands down and leaves it to Plex. Two collectors on one library is how a disagreement between them becomes a deletion.
 
-The sweep is much narrower than Plex's own emptying, which is the point of preferring it: it removes one entry at a time, never one that still has a file, only from a mount that reads at that moment, capped at 50 removals and 10% of the trash per pass, and entries it has no verdict on stay visible as broken for 14 days first. It also needs `plex_database_path` set, so it only runs where Plex is on this host, and zurg running the mount itself (`rclone_enabled` with `mount_path` set). zurg reads that database with the `Plex SQLite` program Plex installs, and `plex_sqlite_binary` defaults to where the Linux package puts it, so on macOS and Windows set both:
+The sweep is much narrower than Plex's own emptying, which is the point of preferring it: it removes one entry at a time, never one that still has a file, only from a mount that reads at that moment, capped at 50 removals and 10% of the trash per pass, and entries it has no verdict on stay visible as broken for 14 days first. It also needs `plex_database_path` set, so it only runs where Plex is on this host, and zurg running the mount itself (`rclone_enabled` with `mount_path` set). zurg reads that database with the `Plex SQLite` program Plex installs, and finds it where Plex's installer puts it on Linux, macOS and Windows, so `plex_database_path` is the one key to set:
 
 +++ Linux
 ```yaml
@@ -135,14 +135,12 @@ plex_database_path: "/var/lib/plexmediaserver/Library/Application Support/Plex M
 +++ macOS
 ```yaml
 plex_database_path: "/Users/YOU/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db"
-plex_sqlite_binary: "/Applications/Plex Media Server.app/Contents/MacOS/Plex SQLite"
 ```
 +++ Windows
 ```yaml
 plex_database_path: 'C:\Users\YOU\AppData\Local\Plex Media Server\Plug-in Support\Databases\com.plexapp.plugins.library.db'
-plex_sqlite_binary: 'C:\Program Files\Plex\Plex Media Server\Plex SQLite.exe'
 ```
-Keep the single quotes: inside double quotes YAML reads a backslash as an escape. A 32-bit Plex installs under `C:\Program Files (x86)\Plex\Plex Media Server\`.
+Keep the single quotes: inside double quotes YAML reads a backslash as an escape. Set `plex_sqlite_binary` only for a Plex installed somewhere else, such as a 32-bit Plex: `'C:\Program Files (x86)\Plex\Plex Media Server\Plex SQLite.exe'`.
 +++
 
 Replace `YOU` with your user name: zurg expands neither `~` nor `%LOCALAPPDATA%`. The sweep matches the paths Plex stores against `mount_path`, which handles a drive letter such as `Z:` (`pkg/utils/path_within.go`).
