@@ -6,7 +6,7 @@ order: 80
 
 # rex with your own app
 
-[rex](https://rex.debridmediamanager.com) is a Plex Media Server that owns no files. The official Plex apps see it as a normal Plex server. Another program, which this page calls **your app**, tells rex what is in your library and serves the files. When you press play, rex streams the file straight from your app. Nothing is downloaded first.
+[rex](https://rex.debridmediamanager.com) is a media server for the official Plex apps that owns no files. The official Plex apps see it as a normal Plex server. Another program, which this page calls **your app**, tells rex what is in your library and serves the files. When you press play, rex streams the file straight from your app. Nothing is downloaded first.
 
 This page takes you from nothing to playing a movie, one step at a time. It does not assume any particular app. It says exactly what rex expects from one, so you can check that yours does it, or build one. Every step says what it does, why it matters and what you should see before you move on.
 
@@ -17,7 +17,7 @@ Four things to know before you start:
 - **Your app decides what each file is.** It says whether a file is a movie or an episode, which title it belongs to (by IMDb and TMDB id) and, for an episode, its season and number. rex never guesses from a file name.
 - **Plex describes it.** Once rex is on a Plex account, it shows each title with the name, poster, summary and episode names Plex's own metadata has for those ids. For things no Plex agent knows, your app names them itself: see [Building rex addons](addons.md).
 
-rex goes public with its source code on Halloween, October 31, and is free for everyone: no sponsor tier and no waiting period. Until then its download needs a sponsor's GitHub access. See [rex.debridmediamanager.com](https://rex.debridmediamanager.com).
+rex is free and open source (MIT): no sponsor tier and no account needed to download it. See [rex.debridmediamanager.com](https://rex.debridmediamanager.com).
 
 ## Before you start
 
@@ -26,7 +26,6 @@ rex goes public with its source code on Halloween, October 31, and is free for e
 | rex's nightly dated 2026.10.25 or newer | Step 1 downloads the newest |
 | A machine that stays on: Linux (Ubuntu 22.04 or newer), macOS, or Windows (64 bit) | rex is a server: your Plex apps reach it whenever you press play. Where the commands differ, a step has a tab for each system. [Docker](#run-rex-in-docker) is further down, for Linux |
 | 1 GB of RAM for a library of 40,000 titles | rex keeps the library in `rex.db` and uses about 450 MB with 40,000 titles, starting included. Converting video takes more, and more cores or a graphics chip |
-| A GitHub account with access to rex's sponsor releases | rex is a private GitHub release |
 | An app that does what [What your app must do](#what-your-app-must-do) lists | That is where your library comes from |
 | A fresh Plex account, made just for rex | rex gets every title, poster, summary and episode name from Plex once it is [added to a Plex account](#step-3-add-it-to-a-plex-account). Until then titles keep their file names and have no posters |
 
@@ -52,23 +51,20 @@ Give this list to whoever makes your app. rex's own API reference is `docs/feed-
 
 **Why it matters.** rex is what your Plex apps talk to. The first start creates `rex.db`, which holds your libraries, everything your app sends and your watch history.
 
-rex's download uses the GitHub CLI. Install it (`sudo apt install -y gh` on Linux, `brew install gh` on macOS, `winget install GitHub.cli` on Windows, then a new terminal) and sign in once with `gh auth login`. Then:
-
 +++ Linux and macOS
 ```bash
 mkdir -p ~/rex && cd ~/rex
-TAG=$(gh api 'repos/debridmediamanager/rex/releases?per_page=1' --jq '.[0].tag_name')
+TAG=$(curl -fsSL 'https://api.github.com/repos/debridmediamanager/rex/releases?per_page=1' | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -1)
 P=$(uname -s | tr A-Z a-z)-$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
-gh release download "$TAG" -R debridmediamanager/rex -p "*-$P.tar.gz"
-tar xzf rex-*-$P.tar.gz --strip-components=1 && rm rex-*-$P.tar.gz
+curl -fL "https://github.com/debridmediamanager/rex/releases/download/$TAG/rex-$TAG-$P.tar.gz" | tar xz --strip-components=1
 ```
 +++ Windows
 In PowerShell:
 
 ```powershell
 New-Item -ItemType Directory -Force $HOME\rex | Out-Null; cd $HOME\rex
-$tag = gh api 'repos/debridmediamanager/rex/releases?per_page=1' --jq '.[0].tag_name'
-gh release download $tag -R debridmediamanager/rex -p '*-windows-amd64.zip'
+$tag = (Invoke-RestMethod 'https://api.github.com/repos/debridmediamanager/rex/releases?per_page=1')[0].tag_name
+curl.exe -fLO "https://github.com/debridmediamanager/rex/releases/download/$tag/rex-$tag-windows-amd64.zip"
 tar -xf "rex-$tag-windows-amd64.zip" --strip-components=1; Remove-Item "rex-$tag-windows-amd64.zip"
 ```
 +++
@@ -170,9 +166,9 @@ rex runs while you are logged in to Windows, in a window of its own: leave it op
 
 ```
 INFO    seeded rex.db: an empty library named yourhost, machine=...
-INFO    no source yet: one registers at PUT /rex/sources/{name} (docs/feed-api.md)
+INFO    no source yet: a source registers itself once pointed at this server (zurg: rex_url; others: PUT /rex/sources/{name}, docs/feed-api.md)
 INFO    claim state: unclaimed
-INFO    rex on http://yourhost:32400  machine=...  items=0  parts=proxy
+INFO    rex on http://192.168.1.20:32400  machine=...  items=0  parts=proxy
 ```
 
 rex names itself after the machine; your Plex apps show that name. `no source yet` is right: no app has registered yet. Leave the log open.
@@ -240,7 +236,7 @@ Invoke-RestMethod -Method Post http://192.168.1.20:32400/rex/feed/test/items -Co
 PowerShell shows rex's answers as lists rather than JSON.
 +++
 
-**What you should see.** The answer is `{"created":1,"updated":0,"held":0,"unchanged":0,"rejected":[]}` and rex's log prints:
+**What you should see.** The answer is `{"created":1,"updated":0,"held":0,"unchanged":0}` and rex's log prints:
 
 ```
 INFO    FEED identified "Sintel.2010" -> movie tmdb:45745 (placed)
@@ -268,7 +264,7 @@ Stop-Process -InputObject $server
 **If not.**
 
 - `"held":1`: `media_info` is missing or has no streams. Check that `ffprobe` printed JSON for the file.
-- An answer with `rejected`: the file is not a video by its extension, is a sample, has no `id` or `path`, or has a malformed path. The answer and rex's log give each reason.
+- An answer with `rejected`: the file is not a video by its extension, is a sample, has no `id` or `path`, has a malformed path, or another `id` already has its path. The answer and rex's log give each reason.
 - `404 no such source`: the `PUT /rex/sources/test` did not happen first.
 
 ## Step 3. Add it to a Plex account
@@ -577,7 +573,7 @@ Downloads, intro and credits detection, seek thumbnails and the other Plex serve
 
 These steps are for a Linux machine. On macOS and Windows, Docker Desktop runs containers inside a virtual machine, so host networking, LAN discovery and the graphics chip do not work there as they do on Linux: use the steps above instead.
 
-rex's image is private, like the download. Log in once with your GitHub username and a classic personal access token with the `read:packages` and `repo` scopes:
+rex's Docker image is private (the download in step 1 is not). Log in once with your GitHub username and a classic personal access token with the `read:packages` and `repo` scopes:
 
 ```bash
 docker login ghcr.io -u YOUR_GITHUB_USERNAME

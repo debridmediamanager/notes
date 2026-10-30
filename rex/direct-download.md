@@ -77,10 +77,10 @@ Keep anything already on the line, such as `--port 32500` or `--announce-url ...
 **What you should see.** The start line ends in `parts=redirect`:
 
 ```
-INFO    rex on http://yourhost:32400  machine=...  items=...  parts=redirect
+INFO    rex on http://192.168.1.20:32400  machine=...  items=...  parts=redirect
 ```
 
-With `redirect-only` it ends in `parts=redirect-only`, and just before it rex says `transcoder off: --part-mode redirect-only`.
+With `redirect-only` it ends in `parts=redirect-only`, and a few lines above it rex says `transcoder off: --part-mode redirect-only`.
 
 ## Step 3. Play something
 
