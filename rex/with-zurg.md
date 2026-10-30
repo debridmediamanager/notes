@@ -182,7 +182,7 @@ Start-ScheduledTask rex; Start-Sleep 3
 Get-Content rex.log -Wait
 ```
 
-rex's **start command** is the `rex.exe` line of `run.cmd`, and keys go above it, one `set NAME=value` a line. After a change, `Stop-ScheduledTask rex; Start-ScheduledTask rex` restarts rex. `Get-Content $HOME\rex\rex.log -Wait` shows its log.
+rex's **start command** is the `rex.exe` line of `run.cmd`, and keys go above it, one `set NAME=value` a line. After a change, `Stop-Process -Name rex; Start-Sleep 1; Start-ScheduledTask rex` restarts rex. `Get-Content $HOME\rex\rex.log -Wait` shows its log.
 
 rex runs while you are logged in to Windows, in a window of its own: leave it open. In PowerShell, type `curl.exe` wherever this page says `curl`: Windows PowerShell's own `curl` is a different command.
 +++
@@ -262,7 +262,7 @@ cd $HOME\zurg; .\zurg.exe service restart
 ```
 +++
 
-**What you should see.** Once zurg has loaded the library again, zurg's log (`~/zurg/logs/zurg.log`, on Windows `$HOME\zurg\logs\zurg.log`) says `DMM placed N releases for rex` (without a DMM key: `Placed N releases for rex by their names`) and rex's log prints:
+**What you should see.** Once zurg has loaded the library again, zurg's log (`~/zurg/logs/zurg.log`, on Windows `$HOME\zurg\logs\zurg.log`) says `DMM placed N releases` (without a DMM key: `Placed N releases by their names (no DMM sponsor key)`) and rex's log prints:
 
 ```
 INFO    SOURCES PUT /rex/sources/zurg -> 200
@@ -340,7 +340,7 @@ sqlite3 ~/rex/rex.db ".backup $HOME/rex/rex.db.bak"
 Windows has no `sqlite3`, so stop rex for a moment and copy `rex.db` with the two files beside it that start the same way:
 
 ```powershell
-Stop-ScheduledTask rex
+Stop-Process -Name rex
 New-Item -ItemType Directory -Force $HOME\rex-backup | Out-Null
 Copy-Item $HOME\rex\rex.db*, $HOME\rex\claim_state.json $HOME\rex-backup
 Start-ScheduledTask rex
@@ -526,7 +526,7 @@ cd $HOME\rex
 curl.exe -fLO https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg_8.1.3-1_portable_win64-clang-gpl.zip
 Expand-Archive jellyfin-ffmpeg_8.1.3-1_portable_win64-clang-gpl.zip ffmpeg
 Remove-Item jellyfin-ffmpeg_8.1.3-1_portable_win64-clang-gpl.zip
-Stop-ScheduledTask rex; Start-ScheduledTask rex
+Stop-Process -Name rex; Start-Sleep 1; Start-ScheduledTask rex
 ```
 
 On Windows rex converts on an NVIDIA card's encoder when there is one, and on the processor otherwise.
@@ -660,7 +660,7 @@ rex takes no password from zurg. It answers the API zurg pushes to only from thi
 ## Updating
 
 - **zurg:** as in [step 1](#step-1-install-zurg).
-- **rex:** run the download block of [step 2](#step-2-install-rex) again (it replaces the program and `data/`, and leaves `rex.db`, your keys and `claim_state.json` alone), then restart rex as step 2 shows. On Windows, stop rex first with `Stop-ScheduledTask rex`: Windows does not let a running `rex.exe` be replaced. If rex then exits with `unrecognized arguments`, delete the flags it names from rex's start command: rex no longer has them.
+- **rex:** run the download block of [step 2](#step-2-install-rex) again (it replaces the program and `data/`, and leaves `rex.db`, your keys and `claim_state.json` alone), then restart rex as step 2 shows. On Windows, stop rex first with `Stop-Process -Name rex`: Windows does not let a running `rex.exe` be replaced. If rex then exits with `unrecognized arguments`, delete the flags it names from rex's start command: rex no longer has them.
 
 ## When something is wrong
 
