@@ -539,7 +539,7 @@ None of these states touch files. The file was already gone from the mount — t
 
 A snapshot is taken before anything is removed, and a snapshot failure aborts the sweep.
 
-> **Turning it off:** set `plex_trash_sweep_every_mins: 0`, or remove the key. Changing it needs a zurg restart. That turns off zurg's removal only. To have Plex empty its own trash again, use the **Let Plex Empty Its Own Trash** switch on the dashboard, or list `autoEmptyTrash` in `plex_settings_ignore`.
+> **Turning it off:** set `plex_trash_sweep_every_mins: 0` (removing the key is not the same: zurg then decides by whether Plex empties its own trash). Changing it needs a zurg restart. That turns off zurg's removal only. To have Plex empty its own trash again, use the **Let Plex Empty Its Own Trash** switch on the dashboard, or list `autoEmptyTrash` in `plex_settings_ignore`.
 
 ```yaml
 plex_database_path: "/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db"

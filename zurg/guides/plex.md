@@ -139,10 +139,10 @@ plex_sqlite_binary: "/Applications/Plex Media Server.app/Contents/MacOS/Plex SQL
 ```
 +++ Windows
 ```yaml
-plex_database_path: "C:/Users/YOU/AppData/Local/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db"
-plex_sqlite_binary: "C:/Program Files/Plex/Plex Media Server/Plex SQLite.exe"
+plex_database_path: 'C:\Users\YOU\AppData\Local\Plex Media Server\Plug-in Support\Databases\com.plexapp.plugins.library.db'
+plex_sqlite_binary: 'C:\Program Files\Plex\Plex Media Server\Plex SQLite.exe'
 ```
-Write the paths with forward slashes: inside double quotes YAML reads a backslash as an escape. A 32-bit Plex installs under `C:/Program Files (x86)/Plex/Plex Media Server/`.
+Keep the single quotes: inside double quotes YAML reads a backslash as an escape. A 32-bit Plex installs under `C:\Program Files (x86)\Plex\Plex Media Server\`.
 +++
 
 Replace `YOU` with your user name: zurg expands neither `~` nor `%LOCALAPPDATA%`. The sweep matches the paths Plex stores against `mount_path`, which handles a drive letter such as `Z:` (`pkg/utils/path_within.go`).

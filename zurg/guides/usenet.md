@@ -491,7 +491,7 @@ Nothing here is Usenet-specific except the last subsection, but the order matter
    @((Invoke-RestMethod "http://localhost:32400/library/sections?X-Plex-Token=$TOKEN").MediaContainer.Directory | Where-Object refreshing -eq 1).Count
    ```
 
-   Sessions at `size="0"` (`0` on Windows) and a refreshing count of `0` mean it is safe. If the sessions line prints nothing at all, Plex refused the token and the `0` below it means nothing: check `plex_token` before restarting. (PowerShell shows the refusal as a `401` error instead.) (Use `grep -o … | wc -l`, not `grep -c`: grep exits non-zero when it finds nothing, which is the *good* case, and will abort a `&&` chain right before the restart it was guarding.)
+   Sessions at `size="0"` (`0` on Windows) and a refreshing count of `0` mean it is safe. If the sessions line prints nothing at all, Plex refused the token or did not answer, and the `0` below it means nothing: check `plex_token` before restarting. (PowerShell shows the refusal as a `401` error instead.) (Use `grep -o … | wc -l`, not `grep -c`: grep exits non-zero when it finds nothing, which is the *good* case, and will abort a `&&` chain right before the restart it was guarding.)
 
 5. **Partial scans.** `on_library_update` is handed every changed path; `plex_update.sh` in the repo root is the reference script:
 
