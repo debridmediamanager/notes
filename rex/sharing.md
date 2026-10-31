@@ -26,6 +26,8 @@ Your own account gets no more than anyone else you share with. Why: [Is my Plex 
 2. Enter the person's Plex username or email, pick the rex server and the libraries to share, and send the invite.
 3. They accept it, signed in as themselves. It arrives by email and in app.plex.tv. Each invite is accepted on its own.
 
+![The Grant Library Access dialog with the rex server's Movies and TV Shows ticked](../assets/rex/21-plex-grant-library-access.webp)
+
 **A library you add later** (an **Anime** library from `rex_shows`, or one made with **Add Library**) is not in anyone's share yet. Add it to each share in Manage Library Access.
 
 **What they should see.** Signed in as themselves, their Plex apps list rex beside their own servers. At home that is enough. Away from home, read on.

@@ -78,6 +78,10 @@ Open `http://127.0.0.1:9982/` in a browser on the rex machine. rex runs on a mac
 3. Under **Streams**, set the **Highest resolution** and **Largest file** you want played, or leave them at any.
 4. Under **rex**, set **rex's address** to `http://192.168.1.20:32400`, and press **Save and sync**.
 
+![rex-stremio's Addons section with two addons added](../assets/rex/90-stremio-addons.webp)
+
+![rex-stremio's Catalogs, Streams and rex sections, with the Save and sync button](../assets/rex/91-stremio-catalogs-rex.webp)
+
 **What you should see.** In rex's log, as in [step 4 of rex with your own app](any-source.md#step-4-connect-your-app):
 
 ```

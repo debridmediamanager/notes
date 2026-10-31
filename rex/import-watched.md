@@ -24,7 +24,9 @@ You run it once, from any computer at home. Everyone you share rex with can do t
 1. Open [app.plex.tv](https://app.plex.tv) in a browser and sign in as **yourself**, the account whose history you want.
 2. Pick your old server and open any movie on it.
 3. Click **⋯** (More), then **Get Info**.
-4. Click **View XML** at the bottom left of the box that opens. A new tab opens, full of text.
+4. Click **View XML** at the bottom left of the **Media Info** box that opens. A new tab opens, full of text.
+
+   ![The Media Info box that Get Info opens, with View XML at the bottom left](../assets/rex/40-plex-get-info.webp)
 5. Copy the **whole address** from that tab's address bar.
 
 It looks like this, all on one line, and it ends with `X-Plex-Token=` followed by a code:

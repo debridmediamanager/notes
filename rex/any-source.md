@@ -301,6 +301,10 @@ Stop-Process -InputObject $server
 2. Enter your own account's username or email, pick the rex server and both libraries, **Movies** and **TV Shows**, and send the invite.
 3. Sign out, sign in as **yourself**, and accept the invite. It arrives by email and in app.plex.tv.
 
+![Manage Library Access in app.plex.tv's settings, with the Grant Library Access button](../assets/rex/20-plex-manage-library-access.webp)
+
+![The Grant Library Access dialog with the rex server's Movies and TV Shows ticked](../assets/rex/21-plex-grant-library-access.webp)
+
 **What you should see.** Signed in as yourself, Plex apps list the rex server beside your own servers, with both libraries. Your watch history on rex is your own: it is kept apart from the fresh account's. Share it the same way with anyone else in your household.
 
 ## Step 4. Connect your app
@@ -342,6 +346,8 @@ curl -s http://192.168.1.20:32400/rex/feed/myapp/held  | head -c 600   # what wa
 
 Open a Plex app on a phone, TV or computer **on the same home network**. rex shows up under the machine's name, with **Movies** and **TV Shows**. Pick a movie and press play.
 
+![A Plex app showing the rex server's Movies and TV Shows in the sidebar beside a grid of films](../assets/rex/10-plex-server-libraries.webp)
+
 At home nothing else is needed: Plex apps find rex with Plex's own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN). Discovery runs on UDP ports 32410 and 32414, so a firewall on the rex machine must let those in (on Windows, step 1's firewall rules do). rex answers discovery when it uses port 32400. If you moved rex to 32500 because Plex runs on the same machine, discovery is left to that Plex, and apps find rex through the Plex account it is [shared with](#share-it-with-your-own-account). app.plex.tv in a web browser is the exception: it needs the HTTPS address from [Use it outside your home](#use-it-outside-your-home-optional), even at home. `http://192.168.1.20:32400/web` is not Plex Web: rex has no web app of its own, and that page only says whether rex is claimed and where to watch.
 
 **What you should see.** Posters, titles and years as on any Plex server. Playback starts within a few seconds.
@@ -351,7 +357,11 @@ Two things you may meet:
 - **"yourhost server is unclaimed and not secure".** A Plex app says this about any server that is not on a Plex account, and rex plays nothing until it is on one. Do [step 3](#step-3-add-it-to-a-plex-account).
 - **"This server is not powerful enough to convert video".** The app cannot play the file as it is, often a web browser meeting AC3 or DTS sound. Plex apps on TVs and phones play most files as they are. To play everything everywhere, set up [Converting video](#converting-video-optional).
 
-**Deleting deletes at your app.** Signed in as the fresh account, **Delete** on a title in a Plex app has rex ask your app to delete the file, as [What your app must do](#what-your-app-must-do) says. The accounts rex is shared with cannot delete. To turn deleting off: in app.plex.tv as the fresh account, open **Settings**, the rex server's **Library**, **Show Advanced**, untick **Allow media deletion** and save. A file your app removes goes to the library's trash as it would in Plex: it stays, unavailable, with its watch history, and comes back as it was if your app sends it again. **Empty Trash** on the library removes it for good, and **Empty trash automatically after every scan** (Settings, Library), which is off, does that by itself.
+**Deleting deletes at your app.** Signed in as the fresh account, **Delete** on a title in a Plex app has rex ask your app to delete the file, as [What your app must do](#what-your-app-must-do) says. The accounts rex is shared with cannot delete. To turn deleting off: in app.plex.tv as the fresh account, open **Settings**, the rex server's **Library**, **Show Advanced**, untick **Allow media deletion** and save. ![The rex server's Library settings with Show Advanced open and Allow media deletion outlined](../assets/rex/32-plex-allow-media-deletion.webp)
+
+
+
+A file your app removes goes to the library's trash as it would in Plex: it stays, unavailable, with its watch history, and comes back as it was if your app sends it again. **Empty Trash** on the library removes it for good, and **Empty trash automatically after every scan** (Settings, Library), which is off, does that by itself.
 
 Each file goes to **Movies** or **TV Shows** by the `kind` your app sent. A file without one goes by its first folder: `shows` to TV Shows, anything else to Movies.
 

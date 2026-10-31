@@ -114,6 +114,8 @@ rex introduces itself to the apps and to plex.tv as a Plex Media Server, so the 
 
 rex has no web app of its own. Opening `http://192.168.1.20:32400/web` (with rex's LAN IP in place of `192.168.1.20`) shows a short page that says what to do next. Watch in a Plex app, or in a browser at [app.plex.tv](https://app.plex.tv), which needs rex's HTTPS address even at home ([Use it outside your home](with-zurg.md#use-it-outside-your-home-optional)).
 
+![The page rex shows at /web while it is not claimed yet](../assets/rex/80-rex-web-page.webp)
+
 ### What leaves my machine?
 
 | To | What | When |

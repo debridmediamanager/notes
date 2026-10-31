@@ -222,6 +222,10 @@ rex names itself after the machine; your Plex apps show that name. `no source ye
 2. Enter your own account's username or email, pick the rex server and both libraries, **Movies** and **TV Shows**, and send the invite.
 3. Sign out, sign in as **yourself**, and accept the invite. It arrives by email and in app.plex.tv.
 
+![Manage Library Access in app.plex.tv's settings, with the Grant Library Access button](../assets/rex/20-plex-manage-library-access.webp)
+
+![The Grant Library Access dialog with the rex server's Movies and TV Shows ticked](../assets/rex/21-plex-grant-library-access.webp)
+
 **What you should see.** Signed in as yourself, Plex apps list the rex server beside your own servers, with both libraries, empty until the next step. Your watch history on rex is your own: it is kept apart from the fresh account's. Share it the same way with anyone else in your household.
 
 ## Step 4. Connect zurg to rex
@@ -275,9 +279,13 @@ INFO    FEED zurg upsert: 2 created, 0 updated, 0 held, 0 unchanged, 0 rejected
 
 - Nothing at all in rex's log: zurg is still loading its library, zurg is out of date (update it as in [step 1](#step-1-install-zurg)), or `rex_url` has a typo. `grep 'rex feed' ~/zurg/logs/zurg.log | tail -n 5` shows zurg's side (on Windows, `Select-String 'rex feed' $HOME\zurg\logs\zurg.log | Select-Object -Last 5`): with no `rex feed: pushing the library to ...` line zurg did not read `rex_url`, and `rex feed: snapshot failed, retrying in ...` means it cannot reach rex at that address.
 - A title stays `held` and zurg logs `Cannot probe file ...`: the first read from the debrid service failed. zurg tries again by itself; **Analyze & Tag Library** under **Utilities** on zurg's dashboard tries at once.
+![zurg's Library Management card on the Utilities page with Analyze & Tag Library](../assets/rex/72-zurg-analyze-tag.webp)
+
+
 - Titles arrive but no `identified` lines: zurg could not match them by name, and with `dmm_api_key` set it logs `DMM refused the API key for placement` when the key is not a sponsor's. zurg then matches by name and tries the key again a day later, or at once when it restarts.
 
 Running several zurgs (one per debrid service)? Give each its own name with an extra line, `rex_source: rd`, `rex_source: tb` and so on. They fill the same libraries.
+
 
 ### Why DMM places the files
 
@@ -291,6 +299,14 @@ File names often number episodes differently from the episode lists Plex apps sh
 
 A file zurg cannot place stays unmatched: a film titled as its file, or an episode in a show named after its release, numbered in file order. With a DMM key zurg asks DMM about it again a day later, and you can fix it yourself with **Fix Match** in a Plex app, signed in as the fresh account that owns rex (rex refuses it to the accounts it is shared with). A title you corrected with Fix Match stays as you set it.
 
+![A movie's ⋯ menu in a Plex app with Fix Match in it](../assets/rex/30-plex-fix-match-menu.webp)
+
+![The Fix Match dialog with the search result to pick](../assets/rex/31-plex-fix-match-results.webp)
+
+zurg's dashboard shows what it did with each release: open the release in **Torrent Manager** and look at **Placement**. **Place again** asks DMM once more, and an IMDb id typed into **External ID** places it by that id.
+
+![A release page in zurg's Torrent Manager with its External ID and the Placement section](../assets/rex/70-zurg-placement-row.webp)
+
 ## Step 5. Watch something
 
 **What it does.** Opens rex in a Plex app, the same way you would open any Plex server.
@@ -298,6 +314,8 @@ A file zurg cannot place stays unmatched: a film titled as its file, or an episo
 **Why it matters.** This is the point of the whole setup. It also proves the last link: rex reading a file from zurg while you watch.
 
 Open a Plex app (not a web browser) on a phone, TV or computer **on the same home network**. rex shows up on its own under the machine's name, with **Movies** and **TV Shows**. Pick a movie and press play.
+
+![A Plex app showing the rex server's Movies and TV Shows in the sidebar beside a grid of films](../assets/rex/10-plex-server-libraries.webp)
 
 At home nothing else is needed: Plex apps find rex with Plex's own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN). Discovery runs on UDP ports 32410 and 32414, so a firewall on the rex machine must let those in (on Windows, step 2's firewall rules do). rex answers discovery when it uses port 32400. If you moved rex to 32500 because Plex runs on the same machine, discovery is left to that Plex, and apps find rex through the Plex account it is [shared with](#share-it-with-your-own-account). app.plex.tv in a web browser is the exception: it needs the HTTPS address from [Use it outside your home](#use-it-outside-your-home-optional), even at home. `http://192.168.1.20:32400/web` is not Plex Web: rex has no web app of its own, and that page only says whether rex is claimed and where to watch.
 
@@ -324,6 +342,8 @@ Once zurg has loaded, rex makes **Anime** and **Anime Movies** and moves what it
 !!!warning Deleting in a Plex app deletes from your debrid account
 Signed in as the fresh account, **Delete** on a movie or episode deletes its file at zurg too, and zurg removes the torrent from your debrid account once none of its files is left. The accounts rex is shared with, yours included, cannot delete. To turn deleting off: in app.plex.tv as the fresh account, open **Settings**, the rex server's **Library**, **Show Advanced**, untick **Allow media deletion** and save. rex then refuses every delete.
 !!!
+
+![The rex server's Library settings with Show Advanced open and Allow media deletion outlined](../assets/rex/32-plex-allow-media-deletion.webp)
 
 A title that leaves your debrid account the other way, removed there or by zurg, goes to the library's trash in rex as it would in Plex: it stays, unavailable, with its watch history, and comes back as it was if zurg has it again. **Empty Trash** on the library removes it for good, and **Empty trash automatically after every scan** (Settings, Library) does that by itself; it is off.
 
