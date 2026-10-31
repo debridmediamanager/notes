@@ -338,6 +338,8 @@ directories:
 
 Once zurg has loaded, rex makes **Anime** and **Anime Movies** and moves what it already showed from `anime` into them as it was: watch history, Fix Match and edits included. An open Plex Web lists them at once under **More** in its sidebar, where you can pin them. Share them with your own account as in [step 3](#share-it-with-your-own-account). Rename them in a Plex app as you like. Delete one and it stays deleted, its files going back to **Movies** or **TV Shows**, until you add it again with **Add Library**, whose folder list shows zurg's folders. If a library does not appear, zurg's log or rex's says why.
 
+![Add Library's folder picker listing the source's folders anime, kids and movies](../assets/rex/14-plex-add-library-folders.webp)
+
 !!!warning Deleting in a Plex app deletes from your debrid account
 Signed in as the fresh account, **Delete** on a movie or episode deletes its file at zurg too, and zurg removes the torrent from your debrid account once none of its files is left. The accounts rex is shared with, yours included, cannot delete. To turn deleting off: in app.plex.tv as the fresh account, open **Settings**, the rex server's **Library**, **Show Advanced**, untick **Allow media deletion** and save. rex then refuses every delete.
 !!!
@@ -566,6 +568,8 @@ Subtitles in a converted file: an image subtitle is burned into the picture and 
 **What it does.** Search Subtitles in a Plex app finds subtitles from Plex's own provider once rex is claimed. rex checks the one you pick against the file and fixes its timing when it runs late or was made for another frame rate. When your Plex account is set to show subtitles and a title has none in your language, rex looks for one for up to 3 seconds before it starts.
 
 **Why it matters.** Plex's own first result is often out of sync with the file.
+
+![The Subtitles search dialog in a Plex app, listing English results for Sintel](../assets/rex/51-plex-search-subtitles.webp)
 
 There is nothing to set up. rex checks a subtitle against the file's own text subtitle when it has one. A file without one is checked against its sound when you press play, which needs [Converting video](#converting-video-optional) set up and reads six 90-second pieces of the file.
 

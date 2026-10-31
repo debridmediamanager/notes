@@ -41,6 +41,8 @@ Your own account gets no more than anyone else you share with. Why: [Is my Plex 
 **Your upload speed is the limit.** Every stream watched away from home leaves through your home connection's upload, at the file's own bitrate unless it is converted, so two people watching at once need the upload for both. Three things help:
 
 - **Lower quality.** A person who picks a quality below Original in the player gets a converted stream, which is smaller. That needs FFmpeg on the rex machine ([Converting video](with-zurg.md#converting-video-optional)). The Plex phone apps on mobile data cap quality at 720p and 4 Mbps, so without FFmpeg a 1080p title there is refused until they set mobile quality to Original.
+  ![The Plex Web player's quality menu with Play Original Quality above the Convert to choices](../assets/rex/50-plex-quality-original.webp)
+
 - **Apps download from your provider.** Plezy and Plex for Android can fetch a file from your debrid service themselves, so your connection carries none of it: [Apps download from your provider](direct-download.md). Your provider then sees each person download from their own address, so check your provider's rules before sharing that way.
 - **A limit per person** (below).
 
@@ -60,6 +62,10 @@ You choose these per person, in their share in Manage Library Access, as on any 
 | Ratings | Only titles with the ratings you allow, such as G and PG. A title with no rating is hidden too |
 | Labels | Hide the titles you gave a label, or show only those |
 | Downloads | Whether their Plex apps may download for offline viewing |
+
+Plex shows **Ratings** and **Labels** in a share only when the owner account has Plex Pass. On a free fresh account the share offers **Allow Downloads** alone; rex's own limits below set ratings and labels without it.
+
+![The restrictions step of Grant Library Access on a free account, with Allow Downloads alone](../assets/rex/22-plex-share-restrictions.webp)
 
 rex hears of a change from plex.tv as you make it. If one does not show, restart rex.
 
@@ -93,3 +99,5 @@ To set limits, sign in as the owner and open the server's settings:
 | **Maximum simultaneous CPU transcodes** | Transcoder | 0, no limit. Counts every video conversion, on the graphics chip too. A copied video is never counted |
 
 rex refuses a play over the limit.
+
+![The rex server's Network and Transcoder settings with Remote streams allowed per user and the conversion limits outlined](../assets/rex/33-plex-server-limits.webp)

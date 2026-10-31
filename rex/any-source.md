@@ -580,6 +580,8 @@ Subtitles in a converted file: an image subtitle is burned into the picture and 
 
 **Why it matters.** Plex's own first result is often out of sync with the file.
 
+![The Subtitles search dialog in a Plex app, listing English results for Sintel](../assets/rex/51-plex-search-subtitles.webp)
+
 There is nothing to set up. rex checks a subtitle against the file's own text subtitle when it has one. A file without one is checked against its sound when you press play, which needs [Converting video](#converting-video-optional) set up and reads six 90-second pieces of the file.
 
 **What you should see.** rex's log has a `SUBTITLE measured` line for each subtitle it checks, and `SUBTITLE applied ... corrected by` when it fixed one.
