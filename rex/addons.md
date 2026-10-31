@@ -29,7 +29,7 @@ To bring your Stremio addons' catalogs into rex, there is nothing to write: rex-
 | FFmpeg where rex runs, if your addon serves streams | rex plays a stream by converting it (a copy, cheap). rex finds FFmpeg itself; see [Converting video](any-source.md#converting-video-optional) |
 | Your addon on the same machine as rex, or on your home network | rex's feed answers only those: see [Keep the port private](any-source.md#keep-the-port-private) |
 
-This page writes rex's address as `192.168.1.20:32400` and the addon's as `127.0.0.1:9981`. Put yours in their place. rex's full API reference is `docs/feed-api.md` in every rex download.
+This page writes rex's address as `192.168.1.20:32400` and the addon's as `127.0.0.1:9981`. Put yours in their place. rex's full API reference is [docs/feed-api.md](https://github.com/debridmediamanager/rex/blob/main/docs/feed-api.md).
 
 ## Step 1. Serve the bytes
 
