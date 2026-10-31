@@ -243,11 +243,11 @@ fallback above is the first fix from that round; the bucket has since grown from
   the indexer said. Ageing off the news server was the most common reason a
   play failed in the 7 September round, and the post date is the one signal
   a viewer can steer around it with.
-- Releases larger than `max_size_gb` (default 40) are dropped before ranking —
-  the resolution-first sort would otherwise put full-disc UHD remuxes at the
-  top of every list. Sizes the indexer did not state are kept. The gate is
-  applied when the list is rendered, so changing the ceiling takes effect on
-  cached titles too.
+- Releases larger than `max_size_gb` are dropped before ranking, for a player
+  that cannot take a remux. There is none by default: the spread above already
+  lists each resolution's smallest release beside its remuxes. Sizes the
+  indexer did not state are kept. The gate is applied when the list is
+  rendered, so changing the ceiling takes effect on cached titles too.
 - Results are cached on disk (`data/stremio-cache/`, one file per title), so
   reopening a title costs no indexer calls — they are often day-quota'd, and
   Treasure Maps refuses after roughly six rapid ones. How long an answer

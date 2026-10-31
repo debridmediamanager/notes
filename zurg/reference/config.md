@@ -395,7 +395,7 @@ plex_match_every_mins: 1440
 
 ### Watchlist
 
-Add something to your Plex watchlist and zurg fetches it. Every new watchlist item is searched on your indexers. A Newznab indexer gives an NZB. It drops into the Usenet backend exactly as a Sonarr grab or a Stremio play would. The three share the naming rules so they find each other's grabs instead of duplicating them. A Torznab indexer gives a torrent. It is added to a debrid account only when that account already has it cached. `prefer` decides which kind is tried first. A movie becomes one release. A show is acquired season by season and season packs come before loose episodes. A season nobody posted a pack of falls back to the loose episodes the search surfaced, the best release for each. The item leaves the watchlist only once the release behind it has been checked and only when `remove_after_grab` allows it. Failures stay on the list. They are tried again after 5, 10 and 15 minutes, then after an hour, then further and further apart, and a title that has failed for two weeks is parked until you resume it on the acquisition page. See [persistence and recovery](../guides/acquisition.md#persistence-and-recovery).
+Add something to your Plex watchlist and zurg fetches it. Every new watchlist item is searched on your indexers. A Newznab indexer gives an NZB. It drops into the Usenet backend exactly as a Sonarr grab or a Stremio play would. The three share the naming rules so they find each other's grabs instead of duplicating them. A Torznab indexer gives a torrent. It is added to a debrid account only when that account already has it cached. `prefer` decides which kind is tried first between releases of the same resolution. A movie becomes one release. A show is acquired season by season and season packs come before loose episodes. A season nobody posted a pack of falls back to the loose episodes the search surfaced, the best release for each. The item leaves the watchlist only once the release behind it has been checked and only when `remove_after_grab` allows it. Failures stay on the list. They are tried again after 5, 10 and 15 minutes, then after an hour, then further and further apart, and a title that has failed for two weeks is parked until you resume it on the acquisition page. See [persistence and recovery](../guides/acquisition.md#persistence-and-recovery).
 
 It needs a `plex_token` and at least one indexer. With no list of its own it borrows the Stremio addon's. The monitor talks to Plex's cloud service, so `plex_server_url` is not required. NZBs need an `nzb` provider on the same instance. Torrents need a debrid account that takes them. Either one is enough.
 
@@ -406,9 +406,9 @@ Every option below is on the config page under **Plex Watchlist**, indexer list 
 | `enabled` | bool | `false` | Starts the monitor. The legacy `plex_watchlist_enabled` key still counts. |
 | `check_every_secs` | int | `60` | How often the watchlist is polled on Plex's cloud service. |
 | `indexers` | list | `[]` | Indexers to search, each with `name`, `url`, `api_key` and optional `api_path` and `type`. `type: torznab` marks a torrent indexer. Absent means `newznab`. The same shape as `stremio.indexers`, which is borrowed wholesale when this list is empty. |
-| `prefer` | string | `"usenet"` | Which kind is tried first when both an NZB and a torrent could do. `usenet` tries NZBs first, `torrents` tries torrents first, and `best` lets the ranking alone decide. See [Newznab and Torznab](../guides/acquisition.md#newznab-and-torznab). |
-| `max_size_gb` | int | `40` | Releases larger than this are dropped for movies and single episodes, and season packs holding more than this an episode. Releases whose size the indexer did not state are kept. |
-| `max_season_size_gb` | int | `0` | A cap on each season a season pack holds, per season it names. `0` is none: a pack is held to `max_size_gb` per episode instead, so the remux of a long season still counts. |
+| `prefer` | string | `"usenet"` | Which kind is tried first when an NZB and a torrent of the same resolution could both do. The resolution decides first, so a 2160p torrent goes before a 1080p NZB. `usenet` tries NZBs first, `torrents` tries torrents first, and `best` lets the ranking alone decide. See [Newznab and Torznab](../guides/acquisition.md#newznab-and-torznab). |
+| `max_size_gb` | int | `0` | Releases larger than this are dropped for movies and single episodes, and season packs holding more than this an episode. `0` is none, so `best` takes a full-disc remux. Releases whose size the indexer did not state are kept. |
+| `max_season_size_gb` | int | `0` | A cap on each season a season pack holds, per season it names. `0` is none: a pack is held only to `max_size_gb` per episode, when that is written, so the remux of a long season still counts. |
 | `quality` | string | `"best"` | Which release wins: `best` (resolution first, then size), `4k`, `1080p`, `720p` (prefer that resolution, fall back to best) or `smallest`. The legacy `watchlist_quality` key still counts. |
 
 The `acquisition` block also takes `concurrency` (default `8`, `1` to `200`), how many titles are searched, checked and placed at once, and `indexer_concurrency` (default `3`, `1` to `16`), how many calls are made to one indexer at once; keep the latter low when an indexer key is shared.
@@ -420,7 +420,6 @@ plex_token: "your-plex-token"
 watchlist:
   enabled: true
   check_every_secs: 60
-  max_size_gb: 40
   quality: best
   indexers:
     - name: my-indexer
@@ -816,7 +815,7 @@ zurg can be a Stremio addon that searches your own Newznab indexers and plays th
 | `stremio.indexers` | list | `[]` | Newznab endpoints to search. Each takes `name`, `url`, `api_key` and an optional `api_path`. |
 | `stremio.max_results` | int | `10` | How many releases each resolution keeps after ranking. The cap is per resolution. Each tier keeps a spread from its largest release to its smallest. `0` takes the default. |
 | `stremio.search_limit` | int | `100` | How many releases each indexer is asked for per search. Every other limit chooses among what this asked for, so it is the ceiling on the whole answer. `0` takes the default. |
-| `stremio.max_size_gb` | int | `40` | Drops releases larger than this before ranking. Releases with no stated size are kept. `0` takes the default. |
+| `stremio.max_size_gb` | int | `0` | Drops releases larger than this before ranking, for a player that cannot take a remux. `0`, the default, drops none. Releases with no stated size are kept. |
 | `stremio.cache_hours` | int | `24` | How long a full answer of five or more results is served from `data/stremio-cache` before the indexers are asked again. Thinner answers are kept for less time. An empty answer is never kept. `0` takes the default. |
 
 ### Media Analysis

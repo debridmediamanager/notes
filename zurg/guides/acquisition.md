@@ -23,7 +23,7 @@ acquisition:
   quality: best
   prefer: usenet          # usenet (default), torrents, or best
   best_first: false       # true makes Radarr and Sonarr take the profile's best quality first
-  max_size_gb: 40         # a film or episode, and each episode of a season pack
+  max_size_gb: 0          # a cap on a film or episode, and each episode of a season pack; 0, the default, is none
   max_season_size_gb: 0   # a cap on each season a pack holds; 0, the default, is none
   exclude_words: [DV, HDR10+]  # never take a release whose name says these
   audio_languages: [original]  # take only releases with this audio (any one), read from the streams
@@ -624,7 +624,7 @@ seasons one of them is the only copy an account holds.
   names and then by the season's episodes, and held to `max_size_gb`, as the
   same encode posted episode by episode would be. A 346 GB pack of eight
   ten-episode seasons is 4.3 GB an episode. I Love Lucy's 31-episode season 2
-  remux is 106 GiB, 3.4 GiB an episode, and fits under the default 40. Where
+  remux is 106 GiB, 3.4 GiB an episode, and fits under a written 40. Where
   the source did not list the season's episodes, packs are held to no
   per-episode ceiling. A `max_season_size_gb` you write caps each season the
   pack names on top; by default there is none.
@@ -775,17 +775,21 @@ follow in the order of your `providers:` list. An account marked
 `add_torrents: false` is never offered one.
 
 `prefer` decides which kind is reached for first when both could satisfy a
-target. `usenet` is the default, because a Usenet grab costs a download while a
-torrent spends one of the account's add slots, and because it is what the
-feature did before it could take a torrent at all. `torrents` reverses it, and
-`best` drops the distinction and takes whatever the ranking puts first.
+target at the same resolution. The resolution comes first: a 2160p torrent an
+account already holds is taken before a 1080p NZB, whatever `prefer` says.
+`usenet` is the default, because a Usenet grab costs a download while a
+torrent spends one of the account's add slots. `torrents` reverses it, and
+`best` drops the distinction and takes whatever the ranking puts first, the
+larger release within a resolution.
 
 A movie tries up to three torrents per attempt. Each one costs an add. Up to
 24 of its NZBs are inspected on their own, as
 [choosing a movie's release](#choosing-a-movies-release) describes. With
-`usenet` the NZBs are tried before any torrent. With `torrents` the torrents
-come first. With `best` each torrent waits its turn in the ranking. The NZBs
-are tried together at the place of the best one. A season pack tries three
+`usenet` a resolution's NZBs are tried before its torrents. With `torrents`
+its torrents come first. With `best` each torrent waits its turn in the
+ranking. A resolution's NZBs are tried together at the place of its best one.
+With a Radarr source the NZBs of every resolution are tried together at the
+place of the best one, cheapest first, as that section describes. A season pack tries three
 releases per attempt of either kind. So does each loose episode.
 
 The verification a grab waits on differs with the source. A Usenet release is
@@ -874,9 +878,9 @@ affected. The acquisition page says when it is on.
   read is passed over. One the news servers turn down is set aside as before.
   The next release in the profile's order is tried. One attempt still reads no
   more than 24 NZBs in all whatever their place.
-- **It comes before the Usenet or torrent preference.** A 2160p torrent that an
-  account already holds is taken before a 1080p NZB. `prefer` still decides
-  between an NZB and a torrent of the same place.
+- **It comes before the Usenet or torrent preference.** A torrent that an
+  account already holds is taken before an NZB the profile places lower.
+  `prefer` still decides between an NZB and a torrent of the same place.
 - **A season pack has to be as good as the loose episodes.** A pack ranked
   below a loose episode from the same search is passed over. The episodes are
   then taken one by one. Sonarr makes the same choice. Only that one search is
