@@ -10,6 +10,7 @@ Every guide on this site, by project.
 
 - [DMM buttons in Safari](../dmm/safari.md): the browser extension as a userscript on Mac, iPhone and iPad
 - [Seerr through DMM](../dmm/seerr.md)
+- [DMM wanted list](../zurg/guides/dmm-wanted.md): zurg fetches what you press **Want** on
 
 ## zurg
 
