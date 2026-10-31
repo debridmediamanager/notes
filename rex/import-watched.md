@@ -93,3 +93,5 @@ Running it again changes nothing you already have, so run it whenever more of yo
 | `run the import from your home network` | You sent the command to rex's outside address. Use rex's LAN IP, as in step 3 |
 | An `Unauthorized` page | rex did not accept the token from step 2. Copy it again, from a movie on rex |
 | `notInRex` is much higher than you expect | Most of your library is not in rex yet, or your old library uses one of Plex's older agents. Run it again once your library has arrived |
+
+Still stuck? Ask in the **rex-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) says what to include.

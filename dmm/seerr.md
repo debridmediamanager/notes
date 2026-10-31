@@ -87,6 +87,8 @@ Open the title in Seerr, press the gear button and then **Remove from Radarr** (
 **Remove from Sonarr**). That takes it off your wanted list. What zurg already fetched stays
 in your library. **Open in Radarr** next to it opens the title on DMM.
 
+Stuck? Ask in the **dmm-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) says what to include.
+
 ## Seerr through DMM or zurg's own Seerr source
 
 zurg can also read Seerr itself, with a [`seerr` source](../zurg/guides/acquisition.md#configuration).

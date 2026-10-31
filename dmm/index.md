@@ -17,3 +17,5 @@ DMM also serves the other projects:
 - **Your wanted list**: press **Want** on a film or show, or follow a Trakt or MDBList list, and zurg fetches it, with new episodes as they air. Needs an active sponsorship. See [DMM wanted list](../zurg/guides/dmm-wanted.md).
 - **Seerr, Overseerr and Jellyseerr** can use DMM as their Radarr and Sonarr, so requests land on your wanted list for zurg to fetch. Needs an active sponsorship. See [Seerr through DMM](seerr.md).
 - **rex-direct** gives a claimed rex its own address and certificate from DMM. See [rex-direct](../rex/with-zurg.md#rex-direct).
+
+Stuck? Ask in the **dmm-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) says what to include.

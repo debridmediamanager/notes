@@ -105,7 +105,7 @@ Downloads rclone and ffprobe into a folder and writes their paths into the confi
 
 ### zurg update
 
-Replaces the binary with the newest sponsor nightly. Inside a container it refuses because the next recreate would throw the new binary away. Pull a new image there instead. `--force` updates anyway.
+Replaces the binary with the newest sponsor nightly. The GitHub account it uses needs sponsor access from [gatekeeper](https://gatekeeper.debridmediamanager.com/). Inside a container it refuses because the next recreate would throw the new binary away. Pull a new image there instead. `--force` updates anyway.
 
 It signs in to GitHub through the GitHub CLI. That is the one on your PATH or the one the installers keep in `bin` beside zurg. A sign-in the GitHub CLI saved without a keyring works even when the CLI itself is gone. `GITHUB_TOKEN` works too. When it finds none it prints the installer command that puts the GitHub CLI back.
 
