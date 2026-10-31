@@ -118,16 +118,14 @@ rex has no web app of its own. Opening `http://192.168.1.20:32400/web` (with rex
 
 ### What leaves my machine?
 
-| To | What | When |
-|---|---|---|
-| plex.tv | The server's id, name and version, to read Plex's public list of releases for the newest version number | At start and once a day, registered or not |
-| plex.tv | The claim, the server's addresses (its LAN address and its HTTPS address) and its library names | Once registered on a Plex account |
-| Plex's metadata service | The id of each title, to get its name, poster, summary and episodes. A subtitle search, by **Search Subtitles** or a person's automatic subtitle setting, sends the file's name and fingerprint | Once registered |
-| Artwork hosts | Requests for the posters and pictures your sources name | When an app shows them |
-| DMM, for rex-direct | The server's id and its token on the Plex account. DMM checks with plex.tv that the server is yours, sees your public IP and points your rex-direct name at it | Once registered, then every 6 hours. Turn it off with `REX_DIRECT_URL=off` |
-| Your sources | Requests for the files you play, and deletes (below) | When you play or delete |
-| Your old Plex server | Requests for your watch history | Only when you [bring your watch history](import-watched.md) |
-| Webhooks | Events, to the addresses you set | Only if you set any |
+- **plex.tv, at start and once a day, registered or not:** the server's id, name and version, to read Plex's public list of releases for the newest version number.
+- **plex.tv, once registered on a Plex account:** the claim, the server's addresses (its LAN address and its HTTPS address) and its library names.
+- **Plex's metadata service, once registered:** the id of each title, to get its name, poster, summary and episodes. A subtitle search, by **Search Subtitles** or a person's automatic subtitle setting, sends the file's name and fingerprint.
+- **Artwork hosts, when an app shows them:** requests for the posters and pictures your sources name.
+- **DMM, for rex-direct, once registered and then every 6 hours:** the server's id and its token on the Plex account. DMM checks with plex.tv that the server is yours, sees your public IP and points your rex-direct name at it. Turn it off with `REX_DIRECT_URL=off`.
+- **Your sources, when you play or delete:** requests for the files you play, and deletes (below).
+- **Your old Plex server, only when you [bring your watch history](import-watched.md):** requests for your watch history.
+- **Webhooks, only if you set any:** events, to the addresses you set.
 
 Asking DMM what each release is happens in zurg, not rex: [Why DMM places the files](with-zurg.md#why-dmm-places-the-files).
 
