@@ -357,9 +357,9 @@ Two things you may meet:
 - **"yourhost server is unclaimed and not secure".** A Plex app says this about any server that is not on a Plex account, and rex plays nothing until it is on one. Do [step 3](#step-3-add-it-to-a-plex-account).
 - **"This server is not powerful enough to convert video".** The app cannot play the file as it is, often a web browser meeting AC3 or DTS sound. Plex apps on TVs and phones play most files as they are. To play everything everywhere, set up [Converting video](#converting-video-optional).
 
-**Deleting deletes at your app.** Signed in as the fresh account, **Delete** on a title in a Plex app has rex ask your app to delete the file, as [What your app must do](#what-your-app-must-do) says. The accounts rex is shared with cannot delete. To turn deleting off: in app.plex.tv as the fresh account, open **Settings**, the rex server's **Library**, **Show Advanced**, untick **Allow media deletion** and save. ![The rex server's Library settings with Show Advanced open and Allow media deletion outlined](../assets/rex/32-plex-allow-media-deletion.webp)
+**Deleting deletes at your app.** Signed in as the fresh account, **Delete** on a title in a Plex app has rex ask your app to delete the file, as [What your app must do](#what-your-app-must-do) says. The accounts rex is shared with cannot delete. To turn deleting off: in app.plex.tv as the fresh account, open **Settings**, the rex server's **Library**, **Show Advanced**, untick **Allow media deletion** and save.
 
-
+![The rex server's Library settings with Show Advanced open and Allow media deletion outlined](../assets/rex/32-plex-allow-media-deletion.webp)
 
 A file your app removes goes to the library's trash as it would in Plex: it stays, unavailable, with its watch history, and comes back as it was if your app sends it again. **Empty Trash** on the library removes it for good, and **Empty trash automatically after every scan** (Settings, Library), which is off, does that by itself.
 

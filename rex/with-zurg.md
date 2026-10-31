@@ -279,13 +279,12 @@ INFO    FEED zurg upsert: 2 created, 0 updated, 0 held, 0 unchanged, 0 rejected
 
 - Nothing at all in rex's log: zurg is still loading its library, zurg is out of date (update it as in [step 1](#step-1-install-zurg)), or `rex_url` has a typo. `grep 'rex feed' ~/zurg/logs/zurg.log | tail -n 5` shows zurg's side (on Windows, `Select-String 'rex feed' $HOME\zurg\logs\zurg.log | Select-Object -Last 5`): with no `rex feed: pushing the library to ...` line zurg did not read `rex_url`, and `rex feed: snapshot failed, retrying in ...` means it cannot reach rex at that address.
 - A title stays `held` and zurg logs `Cannot probe file ...`: the first read from the debrid service failed. zurg tries again by itself; **Analyze & Tag Library** under **Utilities** on zurg's dashboard tries at once.
-![zurg's Library Management card on the Utilities page with Analyze & Tag Library](../assets/rex/72-zurg-analyze-tag.webp)
 
+  ![zurg's Library Management card on the Utilities page, with Analyze & Tag Library](../assets/rex/72-zurg-analyze-tag.webp)
 
 - Titles arrive but no `identified` lines: zurg could not match them by name, and with `dmm_api_key` set it logs `DMM refused the API key for placement` when the key is not a sponsor's. zurg then matches by name and tries the key again a day later, or at once when it restarts.
 
 Running several zurgs (one per debrid service)? Give each its own name with an extra line, `rex_source: rd`, `rex_source: tb` and so on. They fill the same libraries.
-
 
 ### Why DMM places the files
 

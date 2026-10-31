@@ -74,11 +74,12 @@ Open `http://127.0.0.1:9982/` in a browser on the rex machine. rex runs on a mac
 1. Under **Addons**, paste an addon's manifest link, as you would in Stremio, and press **Add**. Do it for:
    - **Catalogs**, for example Cinemeta: `https://v3-cinemeta.strem.io/manifest.json`.
    - **Streams**: an addon that finds releases and plays them through your debrid service. Open its configure page, pick your debrid service, paste its API key and copy the manifest link it makes. If it offers cached results only, pick that. The link holds your debrid key: keep it to yourself.
+
+   ![rex-stremio's Addons section with Cinemeta and Public Domain Movies added](../assets/rex/90-stremio-addons.webp)
+
 2. Under **Catalogs**, tick the catalogs you want. Name the library each goes into and set **How many** films, episodes or channels to take. For one library with a collection per catalog, give the catalogs the same library and tick **Catalogs as collections**.
 3. Under **Streams**, set the **Highest resolution** and **Largest file** you want played, or leave them at any.
 4. Under **rex**, set **rex's address** to `http://192.168.1.20:32400`, and press **Save and sync**.
-
-![rex-stremio's Addons section with two addons added](../assets/rex/90-stremio-addons.webp)
 
 ![rex-stremio's Catalogs, Streams and rex sections, with the Save and sync button](../assets/rex/91-stremio-catalogs-rex.webp)
 
