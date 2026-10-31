@@ -18,14 +18,14 @@ What may cost something is around it:
 
 | | |
 |---|---|
+| [rex-stremio](stremio.md), your own app or an addon as the source | Free |
 | zurg nightly, a source for a debrid or Usenet library | A perk for [DMM sponsors](https://gatekeeper.debridmediamanager.com) |
 | A DMM API key, for DMM's exact matches in zurg | Optional, also from sponsoring DMM |
 | rex's Docker image | Private, so a pull may be refused. The download works for everyone |
-| [rex-stremio](stremio.md), your own app or an addon as the source | Free |
 
 ### Is my Plex account at risk?
 
-rex is not made by Plex, and Plex could take action against an account that registers it. That is why every guide has you register rex on a **fresh free Plex account** made just for it, and share rex from there with your own account. Your own account then only accepts a share, the way it would from a friend's server, and your watch history, friends and any Plex Pass stay where they are. [Step 3 of rex with zurg](with-zurg.md#step-3-add-it-to-a-plex-account) walks through it. You use rex at your own risk.
+rex is not made by Plex, and Plex could take action against an account that registers it. That is why every guide has you register rex on a **fresh free Plex account** made just for it, and share rex from there with your own account. Your own account then only accepts a share, the way it would from a friend's server, and your watch history, friends and any Plex Pass stay where they are. [Add it to a Plex account](any-source.md#step-3-add-it-to-a-plex-account) walks through it. You use rex at your own risk.
 
 ### Which Plex apps work?
 
@@ -49,7 +49,7 @@ Away from home, only Plex Web has been tested.
 
 ### Does it play 4K, HDR and Dolby Vision?
 
-Yes. Files play in their original quality: rex hands the app the file as it is, and the app decides what it can show. When an app cannot play a file as it is, rex converts it, if FFmpeg is set up ([Converting video](with-zurg.md#converting-video-optional)). A conversion turns HDR and Dolby Vision into a standard picture (Settings, Transcoder, **Enable HDR tone mapping**, on by default), on the graphics chip where it can. With Intel's OpenCL runtime installed, a small Intel machine (a J4105) converts 4K HDR10 and Dolby Vision profile 5 to 1080p at about real time. Without FFmpeg, a file the app cannot play shows "This server is not powerful enough to convert video".
+Yes. Files play in their original quality: rex hands the app the file as it is, and the app decides what it can show. When an app cannot play a file as it is, rex converts it, if FFmpeg is set up ([Converting video](any-source.md#converting-video-optional)). A conversion turns HDR and Dolby Vision into a standard picture (Settings, Transcoder, **Enable HDR tone mapping**, on by default), on the graphics chip where it can. With Intel's OpenCL runtime installed, a small Intel machine (a J4105) converts 4K HDR10 and Dolby Vision profile 5 to 1080p at about real time. Without FFmpeg, a file the app cannot play shows "This server is not powerful enough to convert video".
 
 **Plex for iOS and Dolby Vision.** Plex for iOS 2026.20.0 sits at 0:00 when it plays a Dolby Vision file as it is. A real Plex Media Server serving the same file stalls the same way, so the fault is in the app. HDR10 and SDR 4K files play.
 
@@ -96,17 +96,17 @@ Several sources can fill the same Movies and TV libraries.
 
 ### What does it not do?
 
-Movies and TV shows only. Music and photo libraries stay empty, and there is no Live TV guide or DVR: live channels come only as a library from a source, such as [rex-stremio](stremio.md). rex has no relay: to use it away from home it needs an address of its own ([Use it outside your home](with-zurg.md#use-it-outside-your-home-optional)).
+Movies and TV shows only. Music and photo libraries stay empty, and there is no Live TV guide or DVR: live channels come only as a library from a source, such as [rex-stremio](stremio.md). rex has no relay: to use it away from home it needs an address of its own ([Use it outside your home](any-source.md#use-it-outside-your-home-optional)).
 
 ## After you install
 
 ### Why does the app show a Plex version, and "Check for Updates"?
 
-rex introduces itself to the apps and to plex.tv as a Plex Media Server, so the apps show a Plex Media Server version number. That number is not rex's. **Check for Updates** always answers that the server is up to date: rex never updates itself. To update rex, download a newer nightly as in [Updating](with-zurg.md#updating).
+rex introduces itself to the apps and to plex.tv as a Plex Media Server, so the apps show a Plex Media Server version number. That number is not rex's. **Check for Updates** always answers that the server is up to date: rex never updates itself. To update rex, download a newer nightly as in [Updating](any-source.md#updating).
 
 ### Why does my browser at port 32400/web not open a library?
 
-rex has no web app of its own. Opening `http://192.168.1.20:32400/web` (with rex's LAN IP in place of `192.168.1.20`) shows a short page that says what to do next. Watch in a Plex app, or in a browser at [app.plex.tv](https://app.plex.tv), which needs rex's HTTPS address even at home ([Use it outside your home](with-zurg.md#use-it-outside-your-home-optional)).
+rex has no web app of its own. Opening `http://192.168.1.20:32400/web` (with rex's LAN IP in place of `192.168.1.20`) shows a short page that says what to do next. Watch in a Plex app, or in a browser at [app.plex.tv](https://app.plex.tv), which needs rex's HTTPS address even at home ([Use it outside your home](any-source.md#use-it-outside-your-home-optional)).
 
 ![The page rex shows at /web while it is not claimed yet](../assets/rex/80-rex-web-page.webp)
 
@@ -121,15 +121,15 @@ rex has no web app of its own. Opening `http://192.168.1.20:32400/web` (with rex
 - **Your old Plex server, only when you [bring your watch history](import-watched.md):** requests for your watch history.
 - **Webhooks, only if you set any:** events, to the addresses you set.
 
-Asking DMM what each release is happens in zurg, not rex: [Why DMM places the files](with-zurg.md#why-dmm-places-the-files).
+rex asks no one what a release is: the source decides and tells rex. zurg, for one, asks DMM ([Why DMM places the files](with-zurg.md#why-dmm-places-the-files)).
 
 ### Does deleting in a Plex app delete the file?
 
-Yes. Deleting a movie or episode in a Plex app, signed in as the account rex is registered on, deletes its files at the source, as a Plex server deletes files from its disk. With zurg that reaches your debrid account. If the source refuses, the title stays and the app says it could not be deleted. People you share with cannot delete. [Deleting in a Plex app](with-zurg.md#step-5-watch-something) says how to turn it off.
+Yes. Deleting a movie or episode in a Plex app, signed in as the account rex is registered on, deletes its files at the source, as a Plex server deletes files from its disk. A source on a debrid account, such as zurg, deletes them there. If the source refuses, the title stays and the app says it could not be deleted. People you share with cannot delete. [Deleting in a Plex app](any-source.md#step-5-watch-something) says how to turn it off.
 
 ### A title is matched wrong. How do I fix it?
 
-The source decides what each file is, and rex shows that title. Sign in as the account rex is registered on and use **Fix Match**: rex keeps your pick, and zurg takes it back as that release's match. [Why DMM places the files](with-zurg.md#why-dmm-places-the-files) has more.
+The source decides what each file is, and rex shows that title. Sign in as the account rex is registered on and use **Fix Match**: rex keeps your pick, and a source can read it back to keep it as that release's match, as zurg does ([Why DMM places the files](with-zurg.md#why-dmm-places-the-files)).
 
 ### Where do I get help?
 

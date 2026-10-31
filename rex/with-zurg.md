@@ -183,7 +183,7 @@ rex runs while you are logged in to Windows, in a window of its own: leave it op
 
 ```
 INFO    seeded rex.db: an empty library named yourhost, machine=...
-INFO    no source yet: a source registers itself once pointed at this server (zurg: rex_url; others: PUT /rex/sources/{name}, docs/feed-api.md)
+INFO    no source yet: a source registers itself once pointed at this server (PUT /rex/sources/{name}, docs/feed-api.md)
 INFO    claim state: unclaimed
 INFO    rex on http://192.168.1.20:32400  machine=...  items=0  parts=proxy
 ```
@@ -674,7 +674,7 @@ The image carries jellyfin-ffmpeg, so [converting video](#converting-video-optio
 
 ## Keep the port private
 
-rex takes no password from zurg. It answers the API zurg pushes to only from this machine, your home network and Tailscale, so forwarding rex's port for [rex-direct](#rex-direct) does not open it. A router that gives outside visitors its own address makes them look local, and that opens the feed to the internet. A proxy on the rex machine looks local to rex, so keep `/rex/*` blocked in any proxy that faces the internet, as the [Caddy](#caddy) example does.
+rex's feed API, the one zurg pushes to, takes no password. It answers only from this machine, your home network and Tailscale, so forwarding rex's port for [rex-direct](#rex-direct) does not open it. A router that gives outside visitors its own address makes them look local, and that opens the feed to the internet. A proxy on the rex machine looks local to rex, so keep `/rex/*` blocked in any proxy that faces the internet, as the [Caddy](#caddy) example does.
 
 ## Updating
 

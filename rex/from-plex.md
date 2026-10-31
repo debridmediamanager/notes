@@ -1,14 +1,14 @@
 # Move from Plex to rex
 
-You run Plex Media Server today, perhaps on a zurg mount through rclone, and want to try rex. This page moves you over. The Plex apps stay the same; what changes is where the library comes from and which server your apps talk to.
+You run Plex Media Server today and want to try rex. This page moves you over. The Plex apps stay the same; what changes is where the library comes from and which server your apps talk to.
 
 ## What changes
 
 | | Plex Media Server | rex |
 |---|---|---|
-| Where the library comes from | Plex scans folders on a disk or a mount | zurg (or another app) tells rex what it has. rex never scans a folder and needs no mount |
-| What each file is | Plex matches it from its file name | zurg works it out (with a DMM key, DMM tells it) and tells rex. rex never reads a file name |
-| A wrong match | Fix Match on the server | **Fix Match** in a Plex app, signed in as the account that owns rex. zurg takes your pick back and keeps it ([why titles are placed as they are](with-zurg.md#why-dmm-places-the-files)) |
+| Where the library comes from | Plex scans folders on a disk or a mount | A source (zurg, rex-stremio or your own app) tells rex what it has. rex never scans a folder and needs no mount |
+| What each file is | Plex matches it from its file name | The source works it out and tells rex. rex never reads a file name |
+| A wrong match | Fix Match on the server | **Fix Match** in a Plex app, signed in as the account that owns rex. rex keeps your pick, and a source can take it back and keep it, as zurg does ([why titles are placed as they are](with-zurg.md#why-dmm-places-the-files)) |
 | The account the server is on | Usually your own | A fresh Plex account made for rex, shared with your own |
 | Music, photos, Live TV and DVR | Yes | No. Movies and TV shows only |
 
@@ -24,15 +24,13 @@ Start beside Plex even if you mean to replace it: copying your watch history nee
 
 ## Step 1. Set up rex beside Plex
 
-Follow [rex with zurg](with-zurg.md), steps 1 to 5. Already run zurg? Skip installing it and update it as step 1 there shows: this page needs zurg nightly **2026.10.27 or newer**.
+Set rex up with the source that will fill it, as in [rex with zurg](with-zurg.md), [rex with your Stremio addons](stremio.md) or [rex with your own app](any-source.md), up to watching something. Already run zurg for Plex? Skip installing it and update it as step 1 of rex with zurg shows: rex needs zurg nightly **2026.10.27 or newer**.
 
-- **Plex runs on the same machine?** Put rex on port `32500`, as [step 2](with-zurg.md#step-2-install-rex) says for that case, zurg's `rex_url` included.
-- **Register rex on a fresh Plex account,** not the one your Plex server is on, as [step 3](with-zurg.md#step-3-add-it-to-a-plex-account) explains.
+- **Plex runs on the same machine?** Put rex on port `32500`, as [Install rex](any-source.md#step-1-install-rex) says for that case, and give your source that port too.
+- **Register rex on a fresh Plex account,** not the one your Plex server is on, as [Add it to a Plex account](any-source.md#step-3-add-it-to-a-plex-account) explains.
 - **Away from home with rex-direct?** Your router's port 32400 already goes to Plex. Forward port `32500` to the rex machine as well.
 
-While both run, zurg feeds both. Leave everything zurg has for Plex as it is (`plex_server_url`, `plex_token`, your rclone mount and any scan script): Plex keeps working as before, and `rex_url` adds rex.
-
-Not using zurg? [rex with your own app](any-source.md) and [rex with your Stremio addons](stremio.md) set rex up with other sources; steps 2 to 4 work the same, without the zurg parts.
+Using zurg? While both run, zurg feeds both. Leave everything zurg has for Plex as it is (`plex_server_url`, `plex_token`, your rclone mount and any scan script): Plex keeps working as before, and `rex_url` adds rex.
 
 ## Step 2. Bring your watch history
 
@@ -50,14 +48,14 @@ Only to replace Plex. Skip this to keep both.
 
 **Move rex to port 32400** if it was on `32500` beside Plex on the same machine:
 
-1. Take `--port 32500` out of rex's start command (or the `command:` line in Docker) and restart rex, as [step 2](with-zurg.md#step-2-install-rex) shows for your system. On Windows, let 32400 and the two discovery ports through the firewall as that step does.
-2. Change zurg's `rex_url` to `http://192.168.1.20:32400` (rex's LAN IP) and restart zurg.
+1. Take `--port 32500` out of rex's start command (or the `command:` line in Docker) and restart rex, as [Install rex](any-source.md#step-1-install-rex) shows for your system. On Windows, let 32400 and the two discovery ports through the firewall as that step does.
+2. Give your source rex's new address, `http://192.168.1.20:32400` (rex's LAN IP), and restart it: zurg's `rex_url`, or **rex's address** on rex-stremio's settings page.
 3. Change `32500` to `32400` anywhere else you gave rex's address, such as Kometa.
 4. With rex-direct, point your router's port 32400 forward at the rex machine and remove the `32500` one.
 
 rex then answers on port 32400 and Plex apps at home find it on your network by themselves.
 
-**Tidy zurg's Plex settings.** zurg's config may still point at the Plex you stopped:
+**Using zurg? Tidy its Plex settings.** zurg's config may still point at the Plex you stopped:
 
 | In zurg's `config.yml` | What to do |
 |---|---|
@@ -72,12 +70,12 @@ Restart zurg after editing its config.
 
 | Comes along | How |
 |---|---|
-| Your movies and shows | zurg sends them, from the same debrid account |
+| Your movies and shows | Your source sends them to rex. With zurg they come from the same debrid account Plex read |
 | What you watched, where you stopped, your star ratings on movies and episodes | [Bring your watch history](import-watched.md), each person on their own |
 
 | Does not come along | Why |
 |---|---|
-| Fix Matches you made on Plex | rex does not use Plex's matches. zurg says what each file is; fix what it gets wrong with **Fix Match** in rex |
+| Fix Matches you made on Plex | rex does not use Plex's matches. Your source says what each file is; fix what it gets wrong with **Fix Match** in rex |
 | Collections | Not copied. [Kometa with rex](kometa.md) builds them again from your Kometa config |
 | Posters and artwork you picked | Kept on the old server only |
 | Playlists, and the server's play history list | Kept on the old server only |
