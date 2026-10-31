@@ -20,7 +20,8 @@ and TV interfaces are both included in every architecture's APK.
 
 The app does not contain zurg itself. The engine that serves your library is a
 second package you install from inside the app after signing in to GitHub, so
-the app is not usable without a sponsor account. Setup walks you through it.
+the app is not usable without a sponsor account. Sponsor on [gatekeeper](https://gatekeeper.debridmediamanager.com/)
+to give your GitHub account access. Setup walks you through it.
 
 Allow installation from the app used to open the APK. Android or Play Protect
 may ask you to confirm sideloading. The application ID is

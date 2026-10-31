@@ -52,7 +52,7 @@ Download the matching Linux archive from the [sponsor releases](https://github.c
 
 Take the newest nightly. It is the pre-release at the top of the list. Do not take the release GitHub marks **Latest**. That is v1.0.0. It is older than `zurg setup` and answers it with `unknown command`.
 
-Nightlies are for sponsors. Until your GitHub account has access that page answers 404. The free public build is v1.0.0 from [zurg-public](https://github.com/debridmediamanager/zurg-public/releases). It has no `zurg setup`. Set it up by hand as [its README](https://github.com/debridmediamanager/zurg-public#readme) explains instead of following the steps below.
+Nightlies are for sponsors. Until your GitHub account has access that page answers 404. Sponsor on [gatekeeper](https://gatekeeper.debridmediamanager.com/) to give it access. The free public build is v1.0.0 from [zurg-public](https://github.com/debridmediamanager/zurg-public/releases). It has no `zurg setup`. Set it up by hand as [its README](https://github.com/debridmediamanager/zurg-public#readme) explains instead of following the steps below.
 
 Extract it into the directory that should hold the whole install:
 
@@ -217,6 +217,8 @@ A server without the GitHub CLI can set `GITHUB_TOKEN` instead. Use a classic to
 Setup never replaces an existing `config.yml`. For unattended setup repeat `--provider` and supply the matching token-file or `--nntp-*` flags. `REALDEBRID_TOKEN`, `TORBOX_TOKEN`, `ALLDEBRID_TOKEN` and the `NNTP_*` variables work too. Run `./zurg setup --help` for the full list.
 
 See the [configuration reference](../reference/config.md) for every setting.
+
+Still stuck? Ask in the **zurg-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) says what to include.
 
 ## See also
 

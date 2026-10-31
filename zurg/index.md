@@ -107,4 +107,4 @@ How zurg is built, what it was measured at, and the design notes behind the awkw
 ---
 
 zurg is distributed to sponsors: [GitHub Releases](https://github.com/debridmediamanager/zurg/releases)
-· [Patreon](https://www.patreon.com/debridmediamanager) · [Discord](https://discord.com/invite/7u4YjMThXP)
+· [Sponsor](https://gatekeeper.debridmediamanager.com/) · [Discord](https://discord.com/invite/7u4YjMThXP)

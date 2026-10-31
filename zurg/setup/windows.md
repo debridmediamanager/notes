@@ -22,7 +22,7 @@ Everything below was captured on a live install: Windows 11 Pro 23H2 (build 2263
 
 ## What you need
 
-- **zurg.exe** — from the [sponsor releases](https://github.com/debridmediamanager/zurg/releases). This page assumes you have downloaded it.
+- **zurg.exe** — from the [sponsor releases](https://github.com/debridmediamanager/zurg/releases). Sponsor on [gatekeeper](https://gatekeeper.debridmediamanager.com/) to give your GitHub account access. This page assumes you have downloaded it.
 - **WinFsp** — zurg mounts the library through rclone, and rclone needs WinFsp for a drive letter on Windows. Install it silently, or from the [installer](https://github.com/winfsp/winfsp/releases):
 
   ```powershell
@@ -510,6 +510,8 @@ $env:ZURG_INSTALL_MODE = "update"; irm https://raw.githubusercontent.com/debridm
 | Task start refused, `0x800710E0` | The task is still "running" — a launcher window never exited. `Stop-ScheduledTask zurg`, then start. |
 | `Get-PSDrive` shows no `Z:` from an SSH session | Expected — different logon session. See the session table. |
 | `data\rclone-cache` keeps growing | That is the mount's playback cache, capped at 256G by default. See [Keeping the cache small](#keeping-the-cache-small). |
+
+Still stuck? Ask in the **zurg-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) says what to include.
 
 ## PowerShell over SSH, for the remote-minded
 

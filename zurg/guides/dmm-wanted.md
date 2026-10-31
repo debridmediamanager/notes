@@ -15,7 +15,7 @@ It is for sponsors: zurg reads your list with your DMM API key.
 ## What you need
 
 - A zurg nightly from 2026-10-25 or later.
-- Your DMM API key in zurg's `config.yml`. It is the key you get for sponsoring DMM:
+- Your DMM API key in zurg's `config.yml`. It is the key [gatekeeper](https://gatekeeper.debridmediamanager.com/) shows you once you sponsor:
 
   ```yaml
   dmm_api_key: YOUR_DMM_API_KEY

@@ -11,7 +11,7 @@ request approved in Seerr then lands on your [DMM wanted list](../zurg/guides/dm
 zurg fetches it. There is no real Radarr or Sonarr to run, and Seerr only has to reach
 debridmediamanager.com, not your zurg. Overseerr and Jellyseerr work the same way.
 
-It is for sponsors: Seerr signs in to DMM with your DMM API key.
+It is for sponsors: Seerr signs in to DMM with your DMM API key, which [gatekeeper](https://gatekeeper.debridmediamanager.com/) shows you once you sponsor.
 
 ## What you need
 

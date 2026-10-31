@@ -37,7 +37,7 @@ If `macFUSE is ready` does not appear, macOS has not allowed the extension yet. 
 
 Open [GitHub Releases](https://github.com/debridmediamanager/zurg/releases) in a browser where you are signed in to the GitHub account that has zurg access. Take the newest nightly. It is the pre-release at the top of the list. Grab its `darwin-arm64` zip or `darwin-amd64` on an Intel Mac. Do not take the release GitHub marks **Latest**. That is v1.0.0. It is older than `zurg setup` and answers it with `unknown command`.
 
-Nightlies are for sponsors. Until your GitHub account has access that page answers 404. The free public build is v1.0.0 from [zurg-public](https://github.com/debridmediamanager/zurg-public/releases). It has no `zurg setup`. Set it up by hand as [its README](https://github.com/debridmediamanager/zurg-public#readme) explains instead of following the steps below.
+Nightlies are for sponsors. Until your GitHub account has access that page answers 404. Sponsor on [gatekeeper](https://gatekeeper.debridmediamanager.com/) to give it access. The free public build is v1.0.0 from [zurg-public](https://github.com/debridmediamanager/zurg-public/releases). It has no `zurg setup`. Set it up by hand as [its README](https://github.com/debridmediamanager/zurg-public#readme) explains instead of following the steps below.
 
 Then unpack it.
 
@@ -442,6 +442,8 @@ If you installed the manual LaunchAgent and auto-login is not enabled, you must 
 - Use VNC/Screen Sharing to log in remotely
 
 An install created by `zurg setup` on a headless Mac uses a LaunchDaemon and does not need a GUI login. Check it with `cd ~/zurg && ./zurg service status`.
+
+Still stuck? Ask in the **zurg-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) says what to include.
 
 ## Architecture Overview
 

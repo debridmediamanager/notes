@@ -28,8 +28,8 @@ rex is free for personal use (PolyForm Noncommercial): no sponsor tier and no ac
 | A machine that stays on: Linux (Ubuntu 22.04 or newer), macOS, or Windows (64 bit). A Proxmox LXC works, unprivileged is fine, once FUSE is turned on for it (Options > Features > FUSE): zurg's installer stops without `/dev/fuse` | rex and zurg are servers: your Plex apps reach them whenever you press play. Where the commands differ, a step has a tab for each system. [Docker](#run-rex-in-docker) is further down, for Linux |
 | 1 GB of RAM | With 4,062 movies and 656 shows (34,678 episodes), rex used under 500 MB while it started and about 730 MB while the library was browsed; converting video takes more. zurg needs little |
 | A debrid account (Real-Debrid, TorBox, AllDebrid, Premiumize, Debrid-Link, Offcloud) or Usenet | That is where your movies and shows actually live |
-| A GitHub account with access to zurg's sponsor releases | zurg's nightly is a private GitHub release. The zurg installer signs you in once |
-| Your DMM API key, from sponsoring DMM (optional) | zurg asks DMM what each file is. Without it zurg works it out from the release name, through DMM's free title search: fewer titles match, and an anime numbered across the whole series stays in file order |
+| A GitHub account with access to zurg's sponsor releases | zurg's nightly is a private GitHub release. [gatekeeper](https://gatekeeper.debridmediamanager.com/) gives your account access when you sponsor. The zurg installer signs you in once |
+| Your DMM API key, from [gatekeeper](https://gatekeeper.debridmediamanager.com/) once you sponsor (optional) | zurg asks DMM what each file is. Without it zurg works it out from the release name, through DMM's free title search: fewer titles match, and an anime numbered across the whole series stays in file order |
 | A fresh Plex account, made just for rex | rex gets every title, poster, summary and episode name from Plex once it is [added to a Plex account](#step-3-add-it-to-a-plex-account). Until then titles keep their file names and have no posters |
 
 This page needs rex nightly **2026.10.25 or newer** and zurg nightly **2026.10.27 or newer**.

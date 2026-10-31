@@ -10,6 +10,8 @@ The binary installer is the shortest path on Linux, macOS and Windows. Docker re
 
 ## One-line convenience installers
 
+The installers download a sponsor nightly. Sponsor on [gatekeeper](https://gatekeeper.debridmediamanager.com/) first. It gives your GitHub account access.
+
 For a fresh sponsor install, choose the command for the host:
 
 +++ Linux and macOS
