@@ -16,7 +16,7 @@ reboots. Both state files are included in normal backups. Keep `data/` and
 Releases come from Newznab indexers as NZBs and from Torznab indexers as info
 hashes handed to a debrid account that already holds them. An NZB needs the
 `nzb` provider. A torrent needs the debrid account. `prefer` decides which is
-tried first. See [Newznab and Torznab](acquisition.md#newznab-and-torznab).
+tried first between releases of the same resolution. See [Newznab and Torznab](acquisition.md#newznab-and-torznab).
 
 Successful acquisition removes an item from the watchlist, unless
 `remove_after_grab: false` says otherwise; with it off the title stays and zurg

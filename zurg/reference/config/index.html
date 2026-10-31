@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846718512227">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846721519044">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../../resources/css/retype.css?v=4.6.0.846718512227" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.846721519044" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846718512227" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846721519044" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846718512227" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846718512227" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846721519044" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846721519044" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -984,7 +984,7 @@ plex_token: &quot;your-plex-token&quot;
 plex_match_every_mins: 1440</code></pre>
 </doc-codeblock></div>
 <h3 id="watchlist">Watchlist</h3>
-<p>Add something to your Plex watchlist and zurg fetches it. Every new watchlist item is searched on your indexers. A Newznab indexer gives an NZB. It drops into the Usenet backend exactly as a Sonarr grab or a Stremio play would. The three share the naming rules so they find each other&#x27;s grabs instead of duplicating them. A Torznab indexer gives a torrent. It is added to a debrid account only when that account already has it cached. <code translate="no" v-pre>prefer</code> decides which kind is tried first. A movie becomes one release. A show is acquired season by season and season packs come before loose episodes. A season nobody posted a pack of falls back to the loose episodes the search surfaced, the best release for each. The item leaves the watchlist only once the release behind it has been checked and only when <code translate="no" v-pre>remove_after_grab</code> allows it. Failures stay on the list. They are tried again after 5, 10 and 15 minutes, then after an hour, then further and further apart, and a title that has failed for two weeks is parked until you resume it on the acquisition page. See <a href="../../guides/acquisition/#persistence-and-recovery">persistence and recovery</a>.</p>
+<p>Add something to your Plex watchlist and zurg fetches it. Every new watchlist item is searched on your indexers. A Newznab indexer gives an NZB. It drops into the Usenet backend exactly as a Sonarr grab or a Stremio play would. The three share the naming rules so they find each other&#x27;s grabs instead of duplicating them. A Torznab indexer gives a torrent. It is added to a debrid account only when that account already has it cached. <code translate="no" v-pre>prefer</code> decides which kind is tried first between releases of the same resolution. A movie becomes one release. A show is acquired season by season and season packs come before loose episodes. A season nobody posted a pack of falls back to the loose episodes the search surfaced, the best release for each. The item leaves the watchlist only once the release behind it has been checked and only when <code translate="no" v-pre>remove_after_grab</code> allows it. Failures stay on the list. They are tried again after 5, 10 and 15 minutes, then after an hour, then further and further apart, and a title that has failed for two weeks is parked until you resume it on the acquisition page. See <a href="../../guides/acquisition/#persistence-and-recovery">persistence and recovery</a>.</p>
 <p>It needs a <code translate="no" v-pre>plex_token</code> and at least one indexer. With no list of its own it borrows the Stremio addon&#x27;s. The monitor talks to Plex&#x27;s cloud service, so <code translate="no" v-pre>plex_server_url</code> is not required. NZBs need an <code translate="no" v-pre>nzb</code> provider on the same instance. Torrents need a debrid account that takes them. Either one is enough.</p>
 <p>Every option below is on the config page under <strong>Plex Watchlist</strong>, indexer list included; the dashboard writes this block rather than the legacy flat keys, and switching the monitor off there clears <code translate="no" v-pre>plex_watchlist_enabled</code> too, since that one is ORed into the switch.</p>
 <retype-table copy-text="| Option | Type | Default | Description |
@@ -992,9 +992,9 @@ plex_match_every_mins: 1440</code></pre>
 | `enabled` | bool | `false` | Starts the monitor. The legacy `plex_watchlist_enabled` key still counts. |
 | `check_every_secs` | int | `60` | How often the watchlist is polled on Plex's cloud service. |
 | `indexers` | list | `[]` | Indexers to search, each with `name`, `url`, `api_key` and optional `api_path` and `type`. `type: torznab` marks a torrent indexer. Absent means `newznab`. The same shape as `stremio.indexers`, which is borrowed wholesale when this list is empty. |
-| `prefer` | string | `&quot;usenet&quot;` | Which kind is tried first when both an NZB and a torrent could do. `usenet` tries NZBs first, `torrents` tries torrents first, and `best` lets the ranking alone decide. See [Newznab and Torznab](../guides/acquisition.md#newznab-and-torznab). |
-| `max_size_gb` | int | `40` | Releases larger than this are dropped for movies and single episodes, and season packs holding more than this an episode. Releases whose size the indexer did not state are kept. |
-| `max_season_size_gb` | int | `0` | A cap on each season a season pack holds, per season it names. `0` is none: a pack is held to `max_size_gb` per episode instead, so the remux of a long season still counts. |
+| `prefer` | string | `&quot;usenet&quot;` | Which kind is tried first when an NZB and a torrent of the same resolution could both do. The resolution decides first, so a 2160p torrent goes before a 1080p NZB. `usenet` tries NZBs first, `torrents` tries torrents first, and `best` lets the ranking alone decide. See [Newznab and Torznab](../guides/acquisition.md#newznab-and-torznab). |
+| `max_size_gb` | int | `0` | Releases larger than this are dropped for movies and single episodes, and season packs holding more than this an episode. `0` is none, so `best` takes a full-disc remux. Releases whose size the indexer did not state are kept. |
+| `max_season_size_gb` | int | `0` | A cap on each season a season pack holds, per season it names. `0` is none: a pack is held only to `max_size_gb` per episode, when that is written, so the remux of a long season still counts. |
 | `quality` | string | `&quot;best&quot;` | Which release wins: `best` (resolution first, then size), `4k`, `1080p`, `720p` (prefer that resolution, fall back to best) or `smallest`. The legacy `watchlist_quality` key still counts. |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
@@ -1029,19 +1029,19 @@ plex_match_every_mins: 1440</code></pre>
 <td><code translate="no" v-pre>prefer</code></td>
 <td>string</td>
 <td><code translate="no" v-pre>&quot;usenet&quot;</code></td>
-<td>Which kind is tried first when both an NZB and a torrent could do. <code translate="no" v-pre>usenet</code> tries NZBs first, <code translate="no" v-pre>torrents</code> tries torrents first, and <code translate="no" v-pre>best</code> lets the ranking alone decide. See <a href="../../guides/acquisition/#newznab-and-torznab">Newznab and Torznab</a>.</td>
+<td>Which kind is tried first when an NZB and a torrent of the same resolution could both do. The resolution decides first, so a 2160p torrent goes before a 1080p NZB. <code translate="no" v-pre>usenet</code> tries NZBs first, <code translate="no" v-pre>torrents</code> tries torrents first, and <code translate="no" v-pre>best</code> lets the ranking alone decide. See <a href="../../guides/acquisition/#newznab-and-torznab">Newznab and Torznab</a>.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>max_size_gb</code></td>
 <td>int</td>
-<td><code translate="no" v-pre>40</code></td>
-<td>Releases larger than this are dropped for movies and single episodes, and season packs holding more than this an episode. Releases whose size the indexer did not state are kept.</td>
+<td><code translate="no" v-pre>0</code></td>
+<td>Releases larger than this are dropped for movies and single episodes, and season packs holding more than this an episode. <code translate="no" v-pre>0</code> is none, so <code translate="no" v-pre>best</code> takes a full-disc remux. Releases whose size the indexer did not state are kept.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>max_season_size_gb</code></td>
 <td>int</td>
 <td><code translate="no" v-pre>0</code></td>
-<td>A cap on each season a season pack holds, per season it names. <code translate="no" v-pre>0</code> is none: a pack is held to <code translate="no" v-pre>max_size_gb</code> per episode instead, so the remux of a long season still counts.</td>
+<td>A cap on each season a season pack holds, per season it names. <code translate="no" v-pre>0</code> is none: a pack is held only to <code translate="no" v-pre>max_size_gb</code> per episode, when that is written, so the remux of a long season still counts.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>quality</code></td>
@@ -1060,7 +1060,6 @@ plex_match_every_mins: 1440</code></pre>
 watchlist:
   enabled: true
   check_every_secs: 60
-  max_size_gb: 40
   quality: best
   indexers:
     - name: my-indexer
@@ -1921,7 +1920,7 @@ move. <code translate="no" v-pre>docs/naming.txt</code> is the full set of namin
 | `stremio.indexers` | list | `[]` | Newznab endpoints to search. Each takes `name`, `url`, `api_key` and an optional `api_path`. |
 | `stremio.max_results` | int | `10` | How many releases each resolution keeps after ranking. The cap is per resolution. Each tier keeps a spread from its largest release to its smallest. `0` takes the default. |
 | `stremio.search_limit` | int | `100` | How many releases each indexer is asked for per search. Every other limit chooses among what this asked for, so it is the ceiling on the whole answer. `0` takes the default. |
-| `stremio.max_size_gb` | int | `40` | Drops releases larger than this before ranking. Releases with no stated size are kept. `0` takes the default. |
+| `stremio.max_size_gb` | int | `0` | Drops releases larger than this before ranking, for a player that cannot take a remux. `0`, the default, drops none. Releases with no stated size are kept. |
 | `stremio.cache_hours` | int | `24` | How long a full answer of five or more results is served from `data/stremio-cache` before the indexers are asked again. Thinner answers are kept for less time. An empty answer is never kept. `0` takes the default. |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
@@ -1967,8 +1966,8 @@ move. <code translate="no" v-pre>docs/naming.txt</code> is the full set of namin
 <tr>
 <td><code translate="no" v-pre>stremio.max_size_gb</code></td>
 <td>int</td>
-<td><code translate="no" v-pre>40</code></td>
-<td>Drops releases larger than this before ranking. Releases with no stated size are kept. <code translate="no" v-pre>0</code> takes the default.</td>
+<td><code translate="no" v-pre>0</code></td>
+<td>Drops releases larger than this before ranking, for a player that cannot take a remux. <code translate="no" v-pre>0</code>, the default, drops none. Releases with no stated size are kept.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>stremio.cache_hours</code></td>

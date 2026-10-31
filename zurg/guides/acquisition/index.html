@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846718512227">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846721519044">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../../resources/css/retype.css?v=4.6.0.846718512227" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.846721519044" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846718512227" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846721519044" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846718512227" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846718512227" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846721519044" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846721519044" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -203,7 +203,7 @@ show up in the library with files in it. See
   quality: best
   prefer: usenet          # usenet (default), torrents, or best
   best_first: false       # true makes Radarr and Sonarr take the profile's best quality first
-  max_size_gb: 40         # a film or episode, and each episode of a season pack
+  max_size_gb: 0          # a cap on a film or episode, and each episode of a season pack; 0, the default, is none
   max_season_size_gb: 0   # a cap on each season a pack holds; 0, the default, is none
   exclude_words: [DV, HDR10+]  # never take a release whose name says these
   audio_languages: [original]  # take only releases with this audio (any one), read from the streams
@@ -879,7 +879,7 @@ season is refused before anything moves, whatever its title claims.</p>
 names and then by the season&#x27;s episodes, and held to <code translate="no" v-pre>max_size_gb</code>, as the
 same encode posted episode by episode would be. A 346 GB pack of eight
 ten-episode seasons is 4.3 GB an episode. I Love Lucy&#x27;s 31-episode season 2
-remux is 106 GiB, 3.4 GiB an episode, and fits under the default 40. Where
+remux is 106 GiB, 3.4 GiB an episode, and fits under a written 40. Where
 the source did not list the season&#x27;s episodes, packs are held to no
 per-episode ceiling. A <code translate="no" v-pre>max_season_size_gb</code> you write caps each season the
 pack names on top; by default there is none.</p>
@@ -1048,16 +1048,20 @@ it uses one of the 60 uncached adds allowed per hour.</p>
 follow in the order of your <code translate="no" v-pre>providers:</code> list. An account marked
 <code translate="no" v-pre>add_torrents: false</code> is never offered one.</p>
 <p><code translate="no" v-pre>prefer</code> decides which kind is reached for first when both could satisfy a
-target. <code translate="no" v-pre>usenet</code> is the default, because a Usenet grab costs a download while a
-torrent spends one of the account&#x27;s add slots, and because it is what the
-feature did before it could take a torrent at all. <code translate="no" v-pre>torrents</code> reverses it, and
-<code translate="no" v-pre>best</code> drops the distinction and takes whatever the ranking puts first.</p>
+target at the same resolution. The resolution comes first: a 2160p torrent an
+account already holds is taken before a 1080p NZB, whatever <code translate="no" v-pre>prefer</code> says.
+<code translate="no" v-pre>usenet</code> is the default, because a Usenet grab costs a download while a
+torrent spends one of the account&#x27;s add slots. <code translate="no" v-pre>torrents</code> reverses it, and
+<code translate="no" v-pre>best</code> drops the distinction and takes whatever the ranking puts first, the
+larger release within a resolution.</p>
 <p>A movie tries up to three torrents per attempt. Each one costs an add. Up to
 24 of its NZBs are inspected on their own, as
 <doc-anchor-trigger to="#choosing-a-movies-release">choosing a movie&#x27;s release</doc-anchor-trigger> describes. With
-<code translate="no" v-pre>usenet</code> the NZBs are tried before any torrent. With <code translate="no" v-pre>torrents</code> the torrents
-come first. With <code translate="no" v-pre>best</code> each torrent waits its turn in the ranking. The NZBs
-are tried together at the place of the best one. A season pack tries three
+<code translate="no" v-pre>usenet</code> a resolution&#x27;s NZBs are tried before its torrents. With <code translate="no" v-pre>torrents</code>
+its torrents come first. With <code translate="no" v-pre>best</code> each torrent waits its turn in the
+ranking. A resolution&#x27;s NZBs are tried together at the place of its best one.
+With a Radarr source the NZBs of every resolution are tried together at the
+place of the best one, cheapest first, as that section describes. A season pack tries three
 releases per attempt of either kind. So does each loose episode.</p>
 <p>The verification a grab waits on differs with the source. A Usenet release is
 put to the news servers, which is the only way to know whether the post is
@@ -1145,9 +1149,9 @@ The next release in the profile&#x27;s order is tried. One attempt still reads n
 more than 24 NZBs in all whatever their place.</p>
 </li>
 <li>
-<p><strong>It comes before the Usenet or torrent preference.</strong> A 2160p torrent that an
-account already holds is taken before a 1080p NZB. <code translate="no" v-pre>prefer</code> still decides
-between an NZB and a torrent of the same place.</p>
+<p><strong>It comes before the Usenet or torrent preference.</strong> A torrent that an
+account already holds is taken before an NZB the profile places lower.
+<code translate="no" v-pre>prefer</code> still decides between an NZB and a torrent of the same place.</p>
 </li>
 <li>
 <p><strong>A season pack has to be as good as the loose episodes.</strong> A pack ranked
