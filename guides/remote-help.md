@@ -38,9 +38,9 @@ You need no account and no password and no router changes, and nothing to instal
 
 ### 1. Pick the machine
 
-Run upterm on the machine that runs zurg. If zurg is not installed yet then pick the machine it will run on. That is often not the computer in front of you.
+Run upterm on the machine that runs what you need help with, zurg or rex. If it is not installed yet then pick the machine it will run on. That is often not the computer in front of you.
 
-| Where zurg runs | What to do |
+| Where it runs | What to do |
 |---|---|
 | This computer | Open a terminal here and go to step 2. |
 | A cloud server like Hetzner or Oracle or a VPS | SSH into it first. Then use the Linux line in step 2 in that SSH window. |

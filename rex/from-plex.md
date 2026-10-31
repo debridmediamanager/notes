@@ -12,7 +12,7 @@ You run Plex Media Server today and want to try rex. This page moves you over. T
 
 | | Plex Media Server | rex |
 |---|---|---|
-| Where the library comes from | Plex scans folders on a disk or a mount | A source (zurg, rex-stremio or your own app) tells rex what it has. rex never scans a folder and needs no mount |
+| Where the library comes from | Plex scans folders on a disk or a mount | A source (your own app, rex-stremio or zurg) tells rex what it has. rex never scans a folder and needs no mount |
 | What each file is | Plex matches it from its file name | The source works it out and tells rex. rex never reads a file name |
 | A wrong match | Fix Match on the server | **Fix Match** in a Plex app, signed in as the account that owns rex. rex keeps your pick, and a source can take it back and keep it, as zurg does ([why titles are placed as they are](with-zurg.md#why-dmm-places-the-files)) |
 | The account the server is on | Usually your own | A fresh Plex account made for rex, shared with your own |

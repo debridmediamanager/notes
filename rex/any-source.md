@@ -1,7 +1,7 @@
 ---
 label: rex with your own app
 icon: server
-order: 80
+order: 92
 ---
 
 # rex with your own app
