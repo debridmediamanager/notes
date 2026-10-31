@@ -18,7 +18,7 @@ It is a server of its own, not a plugin for Plex Media Server, and it does not n
 
 ### What does it cost?
 
-rex is free and open source under the MIT license, with no paid tier. Every build is a public nightly on [GitHub Releases](https://github.com/debridmediamanager/rex/releases), and anyone can download it.
+rex is free for personal use, with no paid tier. Its source code is public under the PolyForm Noncommercial license, which does not allow commercial use. Every build is a public nightly on [GitHub Releases](https://github.com/debridmediamanager/rex/releases), and anyone can download it.
 
 What may cost something is around it:
 

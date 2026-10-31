@@ -19,7 +19,7 @@ Four things to know before you start:
 - **zurg tells rex about itself.** You give zurg the address of rex, and zurg does the rest. You never type zurg's details into rex.
 - **zurg and DMM decide what each file is; Plex describes it.** zurg asks DMM which movie or episode each file is, and rex shows that title with the posters and summaries Plex's own metadata gives it once rex is on a Plex account. rex never guesses from a file name.
 
-rex is free and open source (MIT): no sponsor tier and no account needed to download it. zurg's nightly, which this guide uses, stays a sponsor release; [rex with your own app](any-source.md) runs rex without it.
+rex is free for personal use (PolyForm Noncommercial): no sponsor tier and no account needed to download it. zurg's nightly, which this guide uses, stays a sponsor release; [rex with your own app](any-source.md) runs rex without it.
 
 ## Before you start
 
