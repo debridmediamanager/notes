@@ -4,7 +4,7 @@ This guide runs zurg in Docker while making its FUSE mount visible on the Linux 
 
 The container setup flow was verified on 4 September 2026 with Docker Engine 29.1.1. Use the newest dated nightly release so the image contains the provider chooser described below.
 
-> **Sponsor image:** `ghcr.io/debridmediamanager/zurg` is sponsors-only. See [Patreon](https://www.patreon.com/debridmediamanager) for access.
+> **Sponsor image:** `ghcr.io/debridmediamanager/zurg` is for sponsors. Sponsor on [gatekeeper](https://gatekeeper.debridmediamanager.com/). It gives your GitHub account access to the image.
 
 > **Linux host required:** the host-visible mount below depends on Linux mount propagation. Docker Desktop runs containers inside a VM on macOS and Windows and cannot propagate this FUSE mount into Finder or Explorer. Use the [macOS](https://notes.debridmediamanager.com/zurg/setup/macos/) or [Windows](https://notes.debridmediamanager.com/zurg/setup/windows/) binary guide when the media server runs on either host.
 
@@ -372,3 +372,5 @@ If `/ready` fails with error 503 the library is still loading and the mount is f
 ### Mount appears twice in `mount` output
 
 That is normal. The same FUSE mount is visible in the container and host mount namespaces because propagation is working.
+
+Still stuck? Ask in the **zurg-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) says what to include.

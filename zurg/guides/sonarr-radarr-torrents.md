@@ -696,6 +696,8 @@ Does not:
 | Every release rejected, nothing in the log | A stale bind mount. Run `docker exec <client> df -h <mount>`; if it says `Socket not connected`, bind the parent with `rslave` and recreate the container. |
 | Imports succeed, but each one downloads the whole release | The \*arr is copying rather than renaming. zurg logs `A client copied …` and shows a banner on its dashboard. Either **Remove Completed** is off on the download client or the container has the save path and the root folders on two volumes. See [If the import copies instead of moving](#if-the-import-copies-instead-of-moving) and [step 8](#8-if-your-arr-is-in-docker). |
 
+Still stuck? Ask in the **zurg-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) says what to include.
+
 ## Where the state lives
 
 | Path | What it is |

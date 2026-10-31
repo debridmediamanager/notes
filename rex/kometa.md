@@ -99,6 +99,8 @@ In a Plex app, the movie library has a **Collections** tab with the genre collec
 | `Plex URL is probably invalid` or a timeout | `url` does not reach rex from where Kometa runs. Open `http://192.168.1.20:32400/identity` from that machine: it should show rex's `machineIdentifier` |
 | `Plex Error: Plex Library '...' not found. Options: [...]` | A name under `libraries:` does not match. Copy one from the list it prints |
 
+Still stuck? Ask in the **rex-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) says what to include.
+
 ## What Kometa can and cannot see
 
 Kometa matches titles by the TMDb, TVDb and IMDb ids rex shows for them. A title its source did not identify, still showing its file name and no poster, has none, so Kometa leaves it out of anything built from those ids. Fix Match it in a Plex app first.

@@ -148,7 +148,7 @@ The same library filed this way had Kodi and Plex match all 70 films, all 44 sho
 
 ### Turning it on
 
-You need a zurg nightly from 2026-10-26 or later, `__magic__` on, and your DMM API key, the one you get for sponsoring DMM:
+You need a zurg nightly from 2026-10-26 or later, `__magic__` on, and your DMM API key, the one [gatekeeper](https://gatekeeper.debridmediamanager.com/) shows you once you sponsor:
 
 ```yaml
 magic:

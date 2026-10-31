@@ -272,7 +272,7 @@ acquisition:
       enabled: false
 ```
 
-A lapsed sponsorship or a reset key stops the list. zurg logs a warning that DMM refused `dmm_api_key` and asks again an hour later, or at once when you set a new key. What it already fetched stays in your library.
+A lapsed sponsorship or a reset key stops the list. zurg logs a warning that DMM refused `dmm_api_key` and asks again an hour later, or at once when you set a new key. What it already fetched stays in your library. Renew the sponsorship or copy the new key on [gatekeeper](https://gatekeeper.debridmediamanager.com/).
 
 ## Seerr behavior
 

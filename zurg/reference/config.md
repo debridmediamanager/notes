@@ -559,7 +559,7 @@ Put a Windows path in single quotes in YAML so its backslashes stay as written.
 | `jellyfin_token` | string | `""` | Jellyfin API token for authentication. |
 | `emby_server_url` | string | `""` | URL of your Emby server. Enables library refresh notifications when zurg detects changes. Example: `http://localhost:8096` |
 | `emby_token` | string | `""` | Emby API token for authentication. |
-| `dmm_api_key` | string | `""` | API key for DebridMediaManager integration. |
+| `dmm_api_key` | string | `""` | Your DMM API key. [gatekeeper](https://gatekeeper.debridmediamanager.com/) shows it once you sponsor. DMM then places your files and fills your wanted list. |
 | `dmm_metadata_secret` | string | `""` | Secret for DMM's internal metadata API. When set, torrents with no IMDb id (or only OpenSubtitles' miss marker) are identified at startup from their release name through DMM, which answers only when one title matches exactly. Torrents it cannot name keep an empty id, so the Plex matcher can still fill them. |
 
 ```yaml

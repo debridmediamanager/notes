@@ -216,3 +216,5 @@ It asks each addon that serves the title (`/stream/<movie or series>/<id>.json`)
 | Playing fails with 502 in rex's log | Your addon did not answer, or the stream's site refused it | Check your addon's own log first |
 | A title deleted in a Plex app stays | Your addon answered the `DELETE` with something other than `2xx` or `404` | Delete it on your side, then answer `2xx` |
 | A deleted title comes back | Your addon still sends the video | Stop sending what was deleted |
+
+Still stuck? Ask in the **rex-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) says what to include.

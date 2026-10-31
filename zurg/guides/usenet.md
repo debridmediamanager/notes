@@ -676,6 +676,8 @@ a probe cannot silence a file that plays.
 
 ---
 
+Still stuck? Ask in the **zurg-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) says what to include.
+
 ## See also
 
 - [config.md](../reference/config.md) — every option, including the [Usenet account reference](../reference/config.md#usenet-accounts) and the [directory filter reference](../reference/config.md#7-directories--filters)

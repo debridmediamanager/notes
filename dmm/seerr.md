@@ -5,7 +5,7 @@ request approved in Seerr then lands on your [DMM wanted list](../zurg/guides/dm
 zurg fetches it. There is no real Radarr or Sonarr to run, and Seerr only has to reach
 debridmediamanager.com, not your zurg. Overseerr and Jellyseerr work the same way.
 
-It is for sponsors: Seerr signs in to DMM with your DMM API key.
+It is for sponsors: Seerr signs in to DMM with your DMM API key, which [gatekeeper](https://gatekeeper.debridmediamanager.com/) shows you once you sponsor.
 
 ## What you need
 
@@ -80,6 +80,8 @@ them now, open **Settings → Jobs & Cache** and press **Run Now** next to each.
 Open the title in Seerr, press the gear button and then **Remove from Radarr** (or
 **Remove from Sonarr**). That takes it off your wanted list. What zurg already fetched stays
 in your library. **Open in Radarr** next to it opens the title on DMM.
+
+Stuck? Ask in the **dmm-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) says what to include.
 
 ## Seerr through DMM or zurg's own Seerr source
 

@@ -132,6 +132,8 @@ Already have `command: --port 32500`? Make it `command: --port 32500 --part-mode
 | `-> 403: the source answered with the bytes, not a link` | `redirect-only` refusing a file zurg sent itself, for the same two reasons as above |
 | No `PART` lines at all while a movie plays | The app is playing a conversion, not the file itself. Set its quality to Original |
 
+Still stuck? Ask in the **rex-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) says what to include.
+
 ## Going back
 
 Remove `--part-mode ...` from rex's start command (or the `command:` line in Docker) and restart rex. Setting `disable_stream_proxy` back to `false` and restarting zurg makes zurg pass the files itself again too; with the rex setting gone, leaving zurg as it is also works.
