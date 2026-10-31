@@ -14,8 +14,8 @@ Everything below was tested on 2026-10-23 with Kometa 2.5.3 (the `kometateam/kom
 
 | You need | Why |
 |---|---|
-| rex set up and added to a Plex account, as in [rex step 3](with-zurg.md#step-3-add-it-to-a-plex-account) | Kometa edits the library, and only the account rex is registered on may do that. An unclaimed rex serves nobody |
-| rex nightly **2026.10.24 or newer** | Update as in [rex's Updating section](with-zurg.md#updating) |
+| rex set up and added to a Plex account, as in [Add it to a Plex account](any-source.md#step-3-add-it-to-a-plex-account) | Kometa edits the library, and only the account rex is registered on may do that. An unclaimed rex serves nobody |
+| rex nightly **2026.10.24 or newer** | Update as in [rex's Updating section](any-source.md#updating) |
 | Docker on any machine that can reach rex | Kometa runs as a container. Kometa's own docs cover [other ways to install it](https://kometa.wiki/en/latest/kometa/install/overview/) |
 | A free TMDb API key | Kometa needs one for itself, even though rex does not. Make one under **Settings → API** on themoviedb.org, as [TMDb's getting started page](https://developer.themoviedb.org/docs/getting-started) describes |
 
@@ -33,11 +33,11 @@ grep -o '"token": "[^"]*"' ~/rex/claim_state.json
 ```
 +++
 
-With [rex in Docker](with-zurg.md#run-rex-in-docker) the file is root-only: `sudo grep -o '"token": "[^"]*"' ~/rex/config/claim_state.json`.
+With [rex in Docker](any-source.md#run-rex-in-docker) the file is root-only: `sudo grep -o '"token": "[^"]*"' ~/rex/config/claim_state.json`.
 
 **What you should see.** One line, `"token": "..."`. Copy what is between the second pair of quotes. Treat it like a password: it opens the whole server. If you ever register rex again, it changes and Kometa needs the new one.
 
-**Not your own account's token.** In [step 3](with-zurg.md#share-it-with-your-own-account) your own account got rex as a share. A share can watch but not edit, so with its token Kometa stops with `Plex Token is read only`, or, if the share allows downloads, fails at its first change.
+**Not your own account's token.** In [Share it with your own account](any-source.md#share-it-with-your-own-account) your own account got rex as a share. A share can watch but not edit, so with its token Kometa stops with `Plex Token is read only`, or, if the share allows downloads, fails at its first change.
 
 ## 2. Write Kometa's config
 
@@ -66,7 +66,7 @@ tmdb:
   apikey: your TMDb API key
 ```
 
-- `url` is rex's LAN IP and port, the address from [rex step 2](with-zurg.md#step-2-install-rex). Not `127.0.0.1` or `localhost`: inside Kometa's container those point at the container itself.
+- `url` is rex's LAN IP and port, the address from [Install rex](any-source.md#step-1-install-rex). Not `127.0.0.1` or `localhost`: inside Kometa's container those point at the container itself.
 - The names under `libraries:` must match rex's libraries exactly: **Movies** and **TV Shows**, plus any you added or renamed. Leave out a library you do not want Kometa to touch.
 
 This is a small start. Kometa's docs list [every default collection and overlay](https://kometa.wiki/en/latest/defaults/guide/), and your own collection files work too.

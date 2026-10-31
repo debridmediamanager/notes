@@ -6,38 +6,48 @@ order: 55
 
 # Apps download from your provider
 
-Normally every movie you play goes through two machines: zurg reads it from your debrid service and passes it to rex, and rex passes it to the Plex app. This page changes that, so the Plex app downloads the file from your debrid service itself. rex and zurg then only point the app at the file, and the machine they run on carries none of the movie.
+Normally every movie you play goes through rex: rex reads it from your source and passes it to the Plex app. When your source answers with a link to the file instead, such as your debrid service's download link, rex can hand the app that link. The Plex app then downloads the file from there itself, and the rex machine carries none of the movie.
 
 It works when the app plays the file as it is (direct play). Anything rex has to convert for an app still goes through rex, or, if you choose, is refused.
 
-Tested on 2026-10-25 with Real-Debrid, Plezy and Plex for Android on a Pixel 6, and Plex Web in Chrome.
+Tested on 2026-10-25 with zurg on Real-Debrid, Plezy and Plex for Android on a Pixel 6, and Plex Web in Chrome.
 
 ## Before you start
 
 | You need | Why |
 |---|---|
-| rex and zurg set up as in [rex with zurg](with-zurg.md), and a movie that plays | This page changes two settings on that setup |
-| rex nightly **2026.10.26 or newer** | Older builds do not have this setting. Update as in [rex's Updating section](with-zurg.md#updating) |
-| A debrid account | A Usenet file has no download link to hand out, so it is never sent this way (see below) |
+| rex set up as in [rex with zurg](with-zurg.md), [rex with your Stremio addons](stremio.md) or [rex with your own app](any-source.md), and a movie that plays | This page changes rex's start command and, for some sources, one of the source's settings |
+| rex nightly **2026.10.26 or newer** | Older builds do not have this setting. Update as in [rex's Updating section](any-source.md#updating) |
+| A source that can answer with a link | rex can only pass on a link the source gives it. [Step 1](#step-1-let-your-source-hand-out-links) says which sources do |
 
 ## Choose how strict
 
 | | `redirect` | `redirect-only` |
 |---|---|---|
 | An app plays the file as it is | The app downloads from your provider | The app downloads from your provider |
-| An app needs the file converted (a lower quality, audio it cannot play, burned-in subtitles) | rex converts it, reading the file through zurg as before | Refused: the app shows an error |
-| Usenet files | Play through rex as before | Refused |
+| An app needs the file converted (a lower quality, audio it cannot play, burned-in subtitles) | rex converts it, reading the file from your source as before | Refused: the app shows an error |
+| Files your source sends itself, not as a link (zurg's Usenet files, for one) | Play through rex as before | Refused |
 | Plex Web | Plays, through rex | Every Real-Debrid file is refused (below) |
 
 Pick `redirect` if you want everything to keep playing and save what you can. Pick `redirect-only` if the rex machine must never carry a movie, for example a small VPS with a data cap.
 
-Whichever you pick, every app and person you share rex with gets your provider's download link for what they play, and your provider sees each of them download it.
+Whichever you pick, every app and person you share rex with gets the link your source gave rex for what they play, and the service behind that link, your debrid service for example, sees each of them download it.
 
-## Step 1. Let zurg hand out links
+## Step 1. Let your source hand out links
 
-**What it does.** zurg answers each read with your provider's own download link instead of the file.
+**What it does.** Your source answers each read with a link to the file elsewhere (an HTTP redirect) instead of the file itself.
 
-**Why it matters.** rex can only pass on a link zurg gives it. Without this, rex still gets the file itself. The setting is zurg's, so anything else reading zurg (rclone, a Plex or Jellyfin server on zurg's mount) gets the links too; zurg's [config reference](../zurg/reference/config.md) has the details.
+**Why it matters.** rex can only pass on a link its source gives it. A source that sends the file itself keeps sending it through rex.
+
+| Source | What to do |
+|---|---|
+| [rex-stremio](stremio.md) | Nothing: it answers with the link a stream addon gave. A link that needs headers of its own, and a live playlist, it still sends itself |
+| [zurg](with-zurg.md) | Turn on `disable_stream_proxy`, below. zurg has no link for a Usenet file, so it always sends those itself |
+| [Your own app](any-source.md) | Answer the file's `GET` with a `302` or `307` to the link |
+
+### zurg
+
+The setting is zurg's, so anything else reading zurg (rclone, a Plex or Jellyfin server on zurg's mount) gets the links too; zurg's [config reference](../zurg/reference/config.md) has the details.
 
 +++ Linux and macOS
 See whether the setting is already in zurg's config:
@@ -58,15 +68,28 @@ Open zurg's config with `notepad $HOME\zurg\config.yml`. If it has a `disable_st
 ```powershell
 cd $HOME\zurg; .\zurg.exe service restart
 ```
++++ Docker
+In zurg's folder:
+
+```bash
+sudo grep -n '^disable_stream_proxy:' config.yml
+```
+
+If it prints a line, change it with `sudo nano config.yml`. If not:
+
+```bash
+printf '\ndisable_stream_proxy: true\n' | sudo tee -a config.yml >/dev/null
+docker compose restart zurg
+```
 +++
 
-**What you should see.** zurg starts again as usual. Movies still play through rex at this point: rex follows zurg's links itself until step 2.
+**What you should see.** zurg starts again as usual. Movies still play through rex at this point: rex follows the links itself until step 2.
 
 ## Step 2. Let rex pass the links on
 
-**What it does.** rex hands the app the link zurg gave it, instead of downloading the movie for it.
+**What it does.** rex hands the app the link your source gave it, instead of downloading the movie for it.
 
-End rex's start command with `--part-mode redirect` (or `--part-mode redirect-only`), then restart rex and open its log. [rex with zurg, step 2](with-zurg.md#step-2-install-rex) shows where the start command is on your system and how to restart rex and see its log. On Linux the `ExecStart` line in `~/.config/systemd/user/rex.service` then reads, with nothing else on it:
+End rex's start command with `--part-mode redirect` (or `--part-mode redirect-only`), then restart rex and open its log. [Install rex](any-source.md#step-1-install-rex) shows where the start command is on your system and how to restart rex and see its log. On Linux the `ExecStart` line in `~/.config/systemd/user/rex.service` then reads, with nothing else on it:
 
 ```ini
 ExecStart=%h/rex/rust/target/release/rex --part-mode redirect
@@ -92,7 +115,7 @@ Leave rex's log open and play a movie in Plezy or Plex for Android.
 INFO    PART 1000010 range=bytes=0- -> 302 to 129-4.download.real-debrid.com
 ```
 
-That is rex sending the app to Real-Debrid. A line ending in `-> 206 len=...` instead means rex sent the movie itself: see [If it does not work](#if-it-does-not-work).
+That is rex sending the app to the link's server, Real-Debrid's here. A line ending in `-> 206 len=...` instead means rex sent the movie itself: see [If it does not work](#if-it-does-not-work).
 
 ## What each app does
 
@@ -107,20 +130,7 @@ Plex Web cannot use Real-Debrid's links at all: Real-Debrid marks its files as d
 
 ## In Docker
 
-If you followed [rex in Docker](with-zurg.md#run-rex-in-docker), step 1 is, in zurg's folder:
-
-```bash
-sudo grep -n '^disable_stream_proxy:' config.yml
-```
-
-If it prints a line, change it with `sudo nano config.yml`. If not:
-
-```bash
-printf '\ndisable_stream_proxy: true\n' | sudo tee -a config.yml >/dev/null
-docker compose restart zurg
-```
-
-Step 2 is a `command:` line under `rex:` in rex's `compose.yml`, beside `image:`:
+If you followed [rex in Docker](any-source.md#run-rex-in-docker), step 2 is a `command:` line under `rex:` in rex's `compose.yml`, beside `image:`:
 
 ```yaml
     command: --part-mode redirect
@@ -132,14 +142,14 @@ Already have `command: --port 32500`? Make it `command: --port 32500 --part-mode
 
 | You see | What it means |
 |---|---|
-| rex exits with `invalid choice` for `--part-mode` | rex is older than 2026.10.26. Update it as in [rex's Updating section](with-zurg.md#updating) |
-| rex's log says `-> 206 len=...` for every read | zurg still sends the file itself: `disable_stream_proxy: true` is missing from zurg's config, or zurg was not restarted after step 1 |
-| `-> 206 len=...` only for some titles | Those are Usenet files, which zurg always sends itself |
-| `-> 403: the source answered with the bytes, not a link` | `redirect-only` refusing a file zurg sent itself, for the same two reasons as above |
+| rex exits with `invalid choice` for `--part-mode` | rex is older than 2026.10.26. Update it as in [rex's Updating section](any-source.md#updating) |
+| rex's log says `-> 206 len=...` for every read | The source still sends the file itself. With zurg: `disable_stream_proxy: true` is missing from zurg's config, or zurg was not restarted after step 1 |
+| `-> 206 len=...` only for some titles | The source sends those itself: zurg's Usenet files, or rex-stremio links it has to relay |
+| `-> 403: the source answered with the bytes, not a link` | `redirect-only` refusing a file the source sent itself, for the same reasons as above |
 | No `PART` lines at all while a movie plays | The app is playing a conversion, not the file itself. Set its quality to Original |
 
 Still stuck? Ask in the **rex-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) says what to include.
 
 ## Going back
 
-Remove `--part-mode ...` from rex's start command (or the `command:` line in Docker) and restart rex. Setting `disable_stream_proxy` back to `false` and restarting zurg makes zurg pass the files itself again too; with the rex setting gone, leaving zurg as it is also works.
+Remove `--part-mode ...` from rex's start command (or the `command:` line in Docker) and restart rex. Your source can keep handing out links: with the rex setting gone, rex follows them itself. With zurg, setting `disable_stream_proxy` back to `false` and restarting zurg makes it pass the files itself again, for rclone and anything else reading it too.

@@ -8,7 +8,7 @@ order: 78
 
 [rex-stremio](https://github.com/debridmediamanager/rex-stremio) turns the catalogs of your Stremio addons into rex libraries, so the films, shows and live channels they list play in the Plex apps. Nothing is downloaded: when someone presses play, rex-stremio asks your stream addons for a link, as Stremio does, and rex plays it.
 
-This is the way to run rex with no zurg and no DMM sponsorship. rex and rex-stremio are free; you bring stream addons that give links, usually through a debrid account of your own.
+This runs rex with no DMM sponsorship. rex and rex-stremio are free; you bring stream addons that give links, usually through a debrid account of your own.
 
 What you get:
 

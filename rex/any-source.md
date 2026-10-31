@@ -29,7 +29,7 @@ rex is free for personal use (PolyForm Noncommercial): no sponsor tier and no ac
 | An app that does what [What your app must do](#what-your-app-must-do) lists | That is where your library comes from |
 | Your app pushing from this machine, your home network or Tailscale | rex takes the feed only from there ([Keep the port private](#keep-the-port-private)). An app on a seedbox or a cloud server cannot push to rex unless that server is on your tailnet; the files themselves can be served from anywhere rex reaches |
 | Files on this machine's disks? Something that serves them over HTTP and pushes them | rex never reads a disk. [Step 2](#step-2-see-it-work-by-hand) does it by hand for one file; otherwise keep Plex for those |
-| Usenet? zurg | zurg turns Usenet into a library rex plays: see [rex with zurg](with-zurg.md) |
+| Usenet? A source that reads it, such as zurg | rex never talks to a Usenet provider. zurg is a source that does: see [rex with zurg](with-zurg.md) |
 | A fresh Plex account, made just for rex | rex gets every title, poster, summary and episode name from Plex once it is [added to a Plex account](#step-3-add-it-to-a-plex-account). Until then titles keep their file names and have no posters |
 
 ## What your app must do
@@ -169,7 +169,7 @@ rex runs while you are logged in to Windows, in a window of its own: leave it op
 
 ```
 INFO    seeded rex.db: an empty library named yourhost, machine=...
-INFO    no source yet: a source registers itself once pointed at this server (zurg: rex_url; others: PUT /rex/sources/{name}, docs/feed-api.md)
+INFO    no source yet: a source registers itself once pointed at this server (PUT /rex/sources/{name}, docs/feed-api.md)
 INFO    claim state: unclaimed
 INFO    rex on http://192.168.1.20:32400  machine=...  items=0  parts=proxy
 ```

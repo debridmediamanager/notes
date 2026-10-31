@@ -8,7 +8,7 @@ order: 86
 
 rex is shared the way any Plex server is: from the account it is registered on, through Plex's own **Manage Library Access**. Everyone you share with signs in to their Plex apps as themselves and sees rex beside their other servers, with their own watch history.
 
-This page needs rex set up and registered on a fresh Plex account, as in [rex with zurg](with-zurg.md) or [rex with your own app](any-source.md). Below, **the owner** is that fresh account.
+This page needs rex set up and registered on a fresh Plex account, as in [rex with zurg](with-zurg.md), [rex with your Stremio addons](stremio.md) or [rex with your own app](any-source.md). Below, **the owner** is that fresh account.
 
 ## Who is who
 
@@ -28,7 +28,7 @@ Your own account gets no more than anyone else you share with. Why: [Is my Plex 
 
 ![The Grant Library Access dialog with the rex server's Movies and TV Shows ticked](../assets/rex/21-plex-grant-library-access.webp)
 
-**A library you add later** (an **Anime** library from `rex_shows`, or one made with **Add Library**) is not in anyone's share yet. Add it to each share in Manage Library Access.
+**A library you add later** (one a source declares, such as an **Anime** library or a rex-stremio catalog's, or one made with **Add Library**) is not in anyone's share yet. Add it to each share in Manage Library Access.
 
 **What they should see.** Signed in as themselves, their Plex apps list rex beside their own servers. At home that is enough. Away from home, read on.
 
@@ -36,14 +36,14 @@ Your own account gets no more than anyone else you share with. Why: [Is my Plex 
 
 **At home**, Plex apps find rex on your network by themselves when rex uses port 32400. app.plex.tv in a browser is the exception: it needs rex's HTTPS address even at home.
 
-**Away from home**, which is always the case for a friend in another house, their apps need rex's HTTPS address. rex has no relay. The simplest is rex-direct: forward port 32400 on your router to the rex machine. [Use it outside your home](with-zurg.md#use-it-outside-your-home-optional) has it and the other ways.
+**Away from home**, which is always the case for a friend in another house, their apps need rex's HTTPS address. rex has no relay. The simplest is rex-direct: forward port 32400 on your router to the rex machine. [Use it outside your home](any-source.md#use-it-outside-your-home-optional) has it and the other ways.
 
 **Your upload speed is the limit.** Every stream watched away from home leaves through your home connection's upload, at the file's own bitrate unless it is converted, so two people watching at once need the upload for both. Three things help:
 
-- **Lower quality.** A person who picks a quality below Original in the player gets a converted stream, which is smaller. That needs FFmpeg on the rex machine ([Converting video](with-zurg.md#converting-video-optional)). The Plex phone apps on mobile data cap quality at 720p and 4 Mbps, so without FFmpeg a 1080p title there is refused until they set mobile quality to Original.
+- **Lower quality.** A person who picks a quality below Original in the player gets a converted stream, which is smaller. That needs FFmpeg on the rex machine ([Converting video](any-source.md#converting-video-optional)). The Plex phone apps on mobile data cap quality at 720p and 4 Mbps, so without FFmpeg a 1080p title there is refused until they set mobile quality to Original.
   ![The Plex Web player's quality menu with Play Original Quality above the Convert to choices](../assets/rex/50-plex-quality-original.webp)
 
-- **Apps download from your provider.** Plezy and Plex for Android can fetch a file from your debrid service themselves, so your connection carries none of it: [Apps download from your provider](direct-download.md). Your provider then sees each person download from their own address, so check your provider's rules before sharing that way.
+- **Apps download from your provider.** Plezy and Plex for Android can fetch a file from the link your source gives, such as your debrid service's, so your connection carries none of it: [Apps download from your provider](direct-download.md). Your provider then sees each person download from their own address, so check your provider's rules before sharing that way.
 - **A limit per person** (below).
 
 **No Plex Pass needed.** Your friends need no Plex Pass or Remote Watch Pass to watch away from home. That was checked in Plex Web with free accounts on both sides; other apps have not been tested away from home.
