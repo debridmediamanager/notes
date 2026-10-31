@@ -2,7 +2,7 @@
 
 rex is shared the way any Plex server is: from the account it is registered on, through Plex's own **Manage Library Access**. Everyone you share with signs in to their Plex apps as themselves and sees rex beside their other servers, with their own watch history.
 
-This page needs rex set up and registered on a fresh Plex account, as in [rex with zurg](with-zurg.md), [rex with your Stremio addons](stremio.md) or [rex with your own app](any-source.md). Below, **the owner** is that fresh account.
+This page needs rex set up and registered on a fresh Plex account, as in [rex with your own app](any-source.md), [rex with your Stremio addons](stremio.md) or [rex with zurg](with-zurg.md). Below, **the owner** is that fresh account.
 
 ## Who is who
 

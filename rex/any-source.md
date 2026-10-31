@@ -623,7 +623,7 @@ rex takes no password on its feed API. It answers that API only from this machin
 
 ## Updating
 
-rex never updates itself. Run the download block of [step 1](#step-1-install-rex) again (it replaces the program and `data/`, and leaves `rex.db`, your keys, `claim_state.json` and `rex-direct.json` alone), then restart rex as step 1 shows. On Windows, run `Stop-Process -Name rex` before the download block, as Windows does not let a running `rex.exe` be replaced, and `Start-ScheduledTask rex` after it.
+rex never updates itself. Run the download block of [step 1](#step-1-install-rex) again (it replaces the program and `data/`, and leaves `rex.db`, your keys, `claim_state.json` and `rex-direct.json` alone), then restart rex as step 1 shows. On Windows, run `Stop-Process -Name rex` before the download block, as Windows does not let a running `rex.exe` be replaced, and `Start-ScheduledTask rex` after it. If rex then exits with `unrecognized arguments`, delete the flags it names from rex's start command: rex no longer has them.
 
 ## Later: restore, move, remove
 

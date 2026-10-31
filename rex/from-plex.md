@@ -24,7 +24,7 @@ Start beside Plex even if you mean to replace it: copying your watch history nee
 
 ## Step 1. Set up rex beside Plex
 
-Set rex up with the source that will fill it, as in [rex with zurg](with-zurg.md), [rex with your Stremio addons](stremio.md) or [rex with your own app](any-source.md), up to watching something. Already run zurg for Plex? Skip installing it and update it as step 1 of rex with zurg shows: rex needs zurg nightly **2026.10.27 or newer**.
+Set rex up with the source that will fill it, as in [rex with your own app](any-source.md), [rex with your Stremio addons](stremio.md) or [rex with zurg](with-zurg.md), up to watching something. Already run zurg for Plex? Skip installing it and update it as step 1 of rex with zurg shows: zurg feeds rex from nightly **2026.10.27** on.
 
 - **Plex runs on the same machine?** Put rex on port `32500`, as [Install rex](any-source.md#step-1-install-rex) says for that case, and give your source that port too.
 - **Register rex on a fresh Plex account,** not the one your Plex server is on, as [Add it to a Plex account](any-source.md#step-3-add-it-to-a-plex-account) explains.

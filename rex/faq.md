@@ -87,9 +87,9 @@ Yes, through a source that reads Usenet, such as zurg. rex never talks to a Usen
 
 No. zurg is one source among others. rex takes its library from anything that speaks its feed API:
 
-- [rex with zurg](with-zurg.md): your debrid account or Usenet
-- [rex with your Stremio addons](stremio.md): catalogs from Stremio addons
 - [rex with your own app](any-source.md): any app that serves files over HTTP
+- [rex with your Stremio addons](stremio.md): catalogs from Stremio addons
+- [rex with zurg](with-zurg.md): your debrid account or Usenet
 - [Building rex addons](addons.md): home videos, recordings or channels, with a program of your own
 
 Several sources can fill the same Movies and TV libraries.
