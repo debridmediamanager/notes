@@ -24,7 +24,7 @@ Cached links last more than 7 days and if a torrent has working cached links (me
 It is not known but highly likely that the cache status of a torrent can be extended if more users unrestrict a cached link
 
 Take note that the only way to verify if a cached link is working is by unrestricting it and checking the first byte of the unrestricted link using http Range header
-Zurg supports both HEAD (default, fast) and Range-based (GET bytes=0-0, more thorough) verification via the use_range_verification config option
+zurg supports both HEAD (default, fast) and Range-based (GET bytes=0-0, more thorough) verification via the use_range_verification config option
 
 # Cached link sharing across accounts (measured 2026-08-19)
 

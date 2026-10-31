@@ -1786,7 +1786,7 @@ the correct outcome, not an accident to rely on.
 
 ### 11.3 `name` is not the grabbed title, and it can change
 
-Real qBittorrent reports the name from the torrent's metadata, and it does not change. Zurg's name
+Real qBittorrent reports the name from the torrent's metadata, and it does not change. zurg's name
 comes from the library:
 
 - Real-Debrid renames releases whose filename trips its 451 block (`WEB-DL`, the `Rip` tags and a

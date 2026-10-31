@@ -1,6 +1,6 @@
-# Zurg Tags Documentation
+# zurg Tags Documentation
 
-This document describes all possible tags that can be automatically applied to torrents in Zurg.
+This document describes all possible tags that can be automatically applied to torrents in zurg.
 
 ## Resolution Tags
 

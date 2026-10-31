@@ -2,7 +2,7 @@
 
 ## Summary
 
-Zurg used `download_timeout_secs` as a wall-clock deadline for proxied HTTP
+zurg used `download_timeout_secs` as a wall-clock deadline for proxied HTTP
 downloads. Its default is 15 seconds, so any single upstream response whose body
 took longer than 15 seconds to finish was cut off even while bytes were arriving
 normally.
@@ -70,7 +70,7 @@ connection phase, but it now also imposed an absolute deadline on the response
 body. The serving path already fetched media through this client, so the regression
 became live as soon as this change landed.
 
-The failure was quiet. Zurg sent the successful upstream status and headers before
+The failure was quiet. zurg sent the successful upstream status and headers before
 copying the body to the player. When the client's deadline interrupted the body,
 the copy operation returned an error, but the serving path discarded that error:
 

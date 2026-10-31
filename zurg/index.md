@@ -58,7 +58,7 @@ Working with the library.
 - [Renaming](guides/renaming.md) — rename a release or a file anywhere in the library. A move is refused and the page says why
 - [Plex](guides/plex.md) — what zurg does with a Plex token, and what it deliberately does not
 - [Jellyfin](guides/jellyfin.md) — the same, for Jellyfin
-- [rex with zurg](../rex/with-zurg.md) — a Plex server that owns no files, filled by zurg from your debrid account. More in [rex](../rex/index.md)
+- [rex with zurg](../rex/with-zurg.md) — a media server for the Plex apps that owns no files, filled by zurg from your debrid account. More in [rex](../rex/index.md)
 - [The Stremio addon](guides/stremio.md) — Stremio searching your own indexers, playing straight out of the Usenet backend
 - [Watchlist and Seerr](guides/acquisition.md) fetches what you ask for through your own indexers
 - [Plex watchlist](guides/plex-watchlist.md) is the Plex side of that

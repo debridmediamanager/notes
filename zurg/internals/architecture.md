@@ -243,7 +243,7 @@ Reserved directory names: `__all__`, `__unplayable__`, `__dump__`,
 
 ### Torrent vs TorrentCopy
 
-A release can live on more than one account. Zurg shows it once. The split:
+A release can live on more than one account. zurg shows it once. The split:
 
 - **Content facts belong to the entry** (`Torrent`): name, hash, which files
   exist, tags, IMDB id, rename.
