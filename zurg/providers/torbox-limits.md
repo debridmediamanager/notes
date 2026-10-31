@@ -6,7 +6,7 @@ order: 35
 
 # TorBox limits and how zurg adapts to them
 
-Zurg's library behaviour grew around Real-Debrid's constraints. TorBox's are
+zurg's library behaviour grew around Real-Debrid's constraints. TorBox's are
 different in kind, not just in magnitude, and driving it like Real-Debrid gets
 the account rate-limited within seconds of a first library scan. This is what
 the limits are, where the figures come from, and what zurg does about each.
@@ -140,7 +140,7 @@ does, via `TORBOX_CDN_EDGE`), so the ceiling below is what applies here.
   account-wide, so a 429 met on any endpoint holds back all of them.
 - **Concurrency is capped at 16 in-flight requests**, below the ~40 global
   burst ceiling, leaving room for the download client alongside.
-- **The read ahead is declined.** Zurg warms the next file of a release on a
+- **The read ahead is declined.** zurg warms the next file of a release on a
   cold read, which every backend with a genuine per-minute budget absorbs. A
   library scan is the case that breaks it: it opens every file exactly once, so
   every one of those opens is cold, the warm-read refusal never fires, and the
@@ -189,7 +189,7 @@ does, via `TORBOX_CDN_EDGE`), so the ceiling below is what applies here.
   torrents — the documented default for `limit`, and asking for more does not
   raise it — while reporting no total and no "there is more". A single request
   therefore answers a larger account with its newest 1000 and looks exactly
-  like a complete library. Zurg pages by `offset` until a short page comes
+  like a complete library. zurg pages by `offset` until a short page comes
   back, deduplicating ids as it goes: the list is ordered id descending, so a
   torrent added mid-walk shifts the window one place and repeats an entry
   across the seam.
@@ -207,7 +207,7 @@ Source: [Account Restrictions](https://support.torbox.app/en/articles/9836418-ac
 
 `/user/me` reports the plan as a number, and the numbers are not in price
 order: **0 Free, 1 Essential, 2 Pro, 3 Standard**. Standard was added after
-Pro. Zurg read plan 2 as Standard until 2026-10-03, which gave Pro accounts
+Pro. zurg read plan 2 as Standard until 2026-10-03, which gave Pro accounts
 five slots and Standard's usage floor.
 
 **Active slots are TorBox's defining restriction**, where Real-Debrid's is
@@ -247,14 +247,14 @@ Pro content expires after 30 days. Expired torrents come back from the API as
 with `download_present: false`.
 
 Reading `download_finished` alone would mount a whole torrent whose every link
-404s. Zurg maps both wordings to `error` status and `Capabilities.ContentExpires`
+404s. zurg maps both wordings to `error` status and `Capabilities.ContentExpires`
 marks that as normal for the backend rather than a fault.
 
 **The two booleans are not on their own a sign the data is gone.** A healthy
 uncached download reports `download_finished: true` with
 `download_present: false` for the last 9.6 seconds of its life while it moves
 through `processing` and `downloading` and `uploading`. Measured 2026-08-30 at a
-0.5 second poll and written up in `docs/torrent-lifecycle.md`. Zurg used to read
+0.5 second poll and written up in `docs/torrent-lifecycle.md`. zurg used to read
 that pair as death whatever the state string said and any instance running with
 `delete_error_torrents: true` deleted such a torrent mid-download. Five probe
 torrents were reaped that way on the day. The structural rule now decides only a

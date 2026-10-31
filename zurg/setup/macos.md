@@ -33,7 +33,7 @@ After rebooting, open **Terminal** (press `Cmd + Space`, type "Terminal", press 
 
 If `macFUSE is ready` does not appear, macOS has not allowed the extension yet. On Apple silicon enable third-party kernel extensions in Recovery, allow macFUSE in **System Settings > Privacy & Security**, then reboot and check again.
 
-## Step 2: Download Zurg
+## Step 2: Download zurg
 
 Open [GitHub Releases](https://github.com/debridmediamanager/zurg/releases) in a browser where you are signed in to the GitHub account that has zurg access. Take the newest nightly. It is the pre-release at the top of the list. Grab its `darwin-arm64` zip or `darwin-amd64` on an Intel Mac. Do not take the release GitHub marks **Latest**. That is v1.0.0. It is older than `zurg setup` and answers it with `unknown command`.
 
@@ -126,7 +126,7 @@ sed -i '' "s|YOUR_RD_API_TOKEN_HERE|PASTE_YOUR_TOKEN_HERE|g" ~/zurg/config.yml
 
 ## Step 4: Download dependencies manually
 
-Zurg has a built-in command that downloads rclone and ffprobe and updates `config.yml` with their paths:
+zurg has a built-in command that downloads rclone and ffprobe and updates `config.yml` with their paths:
 
 ```bash
 cd ~/zurg
@@ -188,7 +188,7 @@ plex_token: YOUR_PLEX_TOKEN
 
 macOS LaunchAgents start services automatically when you log in. Plex already handles its own auto-start (Step 6), so we only need a LaunchAgent for zurg.
 
-### Zurg LaunchAgent
+### zurg LaunchAgent
 
 ```bash
 cat > ~/Library/LaunchAgents/com.zurg.plist << PLIST
@@ -274,8 +274,8 @@ Now that zurg is running and the mount is active:
 ## Step 9: Verify Everything Works
 
 ```bash
-# 1. Zurg is running
-curl -s http://localhost:9999/http/version.txt && echo " - Zurg is up"
+# 1. zurg is running
+curl -s http://localhost:9999/http/version.txt && echo " - zurg is up"
 
 # 2. Mount is active
 ls /Volumes/Zurg/movies > /dev/null 2>&1 && echo "Mount is active"
@@ -286,7 +286,7 @@ curl -s -o /dev/null -w "%{http_code}" http://localhost:32400/identity && echo "
 # 4. Processes
 ps -eo pid,command | grep -E "[z]urg|[r]clone.*mount|[P]lex Media Server" | head -5
 
-# 5. Zurg service (for the manual LaunchAgent from Step 7: launchctl list | grep com.zurg)
+# 5. zurg service (for the manual LaunchAgent from Step 7: launchctl list | grep com.zurg)
 cd ~/zurg && ./zurg service status
 ```
 
@@ -336,7 +336,7 @@ launchctl stop com.zurg && sleep 2 && launchctl start com.zurg
 ### View Logs
 
 ```bash
-# Zurg logs
+# zurg logs
 tail -50 ~/zurg/logs/zurg.log
 
 # Rclone logs
@@ -359,7 +359,7 @@ cd ~/zurg && ./zurg service restart
 # manual LaunchAgent: launchctl stop com.zurg && sleep 2 && launchctl start com.zurg
 ```
 
-### Update Zurg
+### Update zurg
 
 A sponsor build replaces itself:
 
@@ -412,7 +412,7 @@ cd ~/zurg && ./zurg service restart
 # manual LaunchAgent: launchctl stop com.zurg && sleep 2 && launchctl start com.zurg
 ```
 
-### Zurg keeps restarting (crash loop)
+### zurg keeps restarting (crash loop)
 
 Check the logs for the error:
 

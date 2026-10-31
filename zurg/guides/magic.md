@@ -37,7 +37,7 @@ and restart. The routes are decided at startup, so toggling it from the dashboar
 
 ## What it is for
 
-An \*arr imports by **moving** the file out of the download folder into the library. Zurg had nowhere to receive that move, so the \*arr fell back to copying — and a copy from a debrid mount means pulling the entire release down over the network, which is the one thing the mount exists to avoid.
+An \*arr imports by **moving** the file out of the download folder into the library. zurg had nowhere to receive that move, so the \*arr fell back to copying — and a copy from a debrid mount means pulling the entire release down over the network, which is the one thing the mount exists to avoid.
 
 With `__magic__` the import is a rename inside one namespace: a row is written, the file appears where the \*arr put it, and nothing is downloaded. That is what makes [the SABnzbd endpoint](sonarr-radarr.md) worth having — it is a thin layer on top of this, and without it every import would be a full download.
 
@@ -204,7 +204,7 @@ To have Kodi and Plex match their libraries the same way:
 
 This is the part that matters most, because getting it wrong would quietly empty an organised library.
 
-Zurg repairs a broken release by re-adding it to the account. The torrent id changes, the access key changes, the file ids change — so a table keyed on any of those would lose every placement the first time a link rotted. Rows are instead keyed on the release's **content hash** plus the file's **path inside the release**, neither of which repair changes.
+zurg repairs a broken release by re-adding it to the account. The torrent id changes, the access key changes, the file ids change — so a table keyed on any of those would lose every placement the first time a link rotted. Rows are instead keyed on the release's **content hash** plus the file's **path inside the release**, neither of which repair changes.
 
 The consequences, all deliberate:
 
@@ -254,7 +254,7 @@ An \*arr writes metadata next to the video, and Bazarr writes subtitles. Those a
 
 Setting Bazarr up, and how its subtitles reach rex, is in [Subtitles with Bazarr](subtitles.md).
 
-If you use zurg's built-in mount, this already happens and needs nothing from you: the mount is a union of `data/local` and zurg's WebDAV, and rclone sends every newly created file to the local half. Zurg never even sees the write. This is also why Sonarr's "is this folder writable?" test passes.
+If you use zurg's built-in mount, this already happens and needs nothing from you: the mount is a union of `data/local` and zurg's WebDAV, and rclone sends every newly created file to the local half. zurg never even sees the write. This is also why Sonarr's "is this folder writable?" test passes.
 
 If you mount `/dav` yourself — your own rclone, Infuse, a Windows WebDAV drive — zurg accepts the `PUT` and writes into that same tree, so both views agree. Two caps apply:
 

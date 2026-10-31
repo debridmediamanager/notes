@@ -134,7 +134,7 @@ These are the non-negotiables to get the server up and running.
 |--------|------|---------|-------------|
 | `zurg` | string | *(required)* | Configuration version identifier. Must be set to `v1`; any other value (including an absent key) fails the load. |
 | `providers` | list | *(required)* | Your debrid and Usenet accounts, one entry each. See [Accounts](#accounts) below. The pre-provider top-level `token`, `download_tokens` and `strm_link_token` keys are deprecated: they still load, as a single Real-Debrid account, and startup warns. A `providers` block that already configures Real-Debrid wins and the stray key is ignored. |
-| `mount_path` | string | OS-dependent | The filesystem path where your rclone mount lives. Zurg uses this to tell media servers (Plex, Jellyfin, Emby) where to find files. Also used as the mount point when `rclone_enabled` is true. Defaults to `/mnt/zurg` (Linux), `/Volumes/Zurg` (macOS), or `Z:` (Windows). Docker users should set this to `/zurg_mnt/zurg` with `/zurg_mnt:/zurg_mnt:rshared` volume mount (see [docker.md](../setup/docker.md)). |
+| `mount_path` | string | OS-dependent | The filesystem path where your rclone mount lives. zurg uses this to tell media servers (Plex, Jellyfin, Emby) where to find files. Also used as the mount point when `rclone_enabled` is true. Defaults to `/mnt/zurg` (Linux), `/Volumes/Zurg` (macOS), or `Z:` (Windows). Docker users should set this to `/zurg_mnt/zurg` with `/zurg_mnt:/zurg_mnt:rshared` volume mount (see [docker.md](../setup/docker.md)). |
 | `base_url` | string | `""` | The externally-reachable URL of your zurg instance. Embedded into STRM files so media servers can stream content. If unset, STRM files will contain `localhost` URLs that won't work from other devices. Use your Tailscale IP, LAN IP, or a reverse-proxied domain. Example: `http://100.x.x.x:9999` |
 
 ```yaml
@@ -229,7 +229,7 @@ The `nzb` type is Usenet rather than a debrid service: `.nzb` files dropped into
 | `tls` | bool | `false` | Wraps the connection in TLS. |
 | `username` | string | `""` | The account username. |
 | `password` | string | `""` | The account password. |
-| `connections` | int | `8` | The account's concurrent connection allowance. Zurg reads at this number — one connection carries a fraction of a plan's throughput, so streaming saturates the allowance rather than fetching one article at a time. Going over what the plan permits gets connections refused, so set it to the real figure. |
+| `connections` | int | `8` | The account's concurrent connection allowance. zurg reads at this number — one connection carries a fraction of a plan's throughput, so streaming saturates the allowance rather than fetching one article at a time. Going over what the plan permits gets connections refused, so set it to the real figure. |
 | `pipeline_depth` | int | `4` | How many articles zurg asks for at once on one connection. The cap is 8. Set it to `1` for a server that cannot handle several commands in flight. zurg drops to 1 by itself with a warning when batches keep tearing. |
 | `socket_receive_buffer_kb` | int | unset | Pins each connection's kernel receive buffer at this many KiB. Leave it unset. A pinned buffer is one the kernel stops tuning. On Linux that holds the receive window near 64 KiB and costs most of the account's throughput over a link with any latency. It exists for kernels that never tune or whose ceiling is set too low. |
 | `cache_size_mb` | int | `512` | How much decoded article data is held in memory, across every file being read rather than per file. |
@@ -1072,7 +1072,7 @@ union_writable: "local"
 
 #### Benchmark-Optimized Defaults
 
-Zurg uses benchmark-tested rclone VFS settings optimized for streaming performance:
+zurg uses benchmark-tested rclone VFS settings optimized for streaming performance:
 
 | Setting | Default | Why |
 |---------|---------|-----|
@@ -1093,7 +1093,7 @@ Zurg uses benchmark-tested rclone VFS settings optimized for streaming performan
 | `--poll-interval` | 0 | Change polling is zurg's job, not rclone's |
 | `--timeout` | 5m | IO idle timeout |
 | `--no-modtime` / `--no-checksum` | on | Neither is meaningful for a debrid library, and asking for them costs requests |
-| `--async-read` | rclone default (on), not passed | Zurg does not put this flag on the command line, and rclone defaults it to true — so the mount reads asynchronously, and every figure on this page was measured that way. A tuning field once claimed to disable it; all it gated was appending the bare flag, which sets the default it already had. To actually turn it off: `rclone_extra_args: ["--async-read=false"]`. |
+| `--async-read` | rclone default (on), not passed | zurg does not put this flag on the command line, and rclone defaults it to true — so the mount reads asynchronously, and every figure on this page was measured that way. A tuning field once claimed to disable it; all it gated was appending the bare flag, which sets the default it already had. To actually turn it off: `rclone_extra_args: ["--async-read=false"]`. |
 | `--low-level-retries` | 3 | rclone's VFS downloader already restarts a failed read ten times per open, and each restart is retried by the backend pacer this many times. At rclone's default of 10 that is 100 requests for one open of a file zurg is answering 503 deliberately. |
 | `--retries` | 1 | Whole-command budget; for a mount that never exits it only multiplies a startup failure |
 | `--vfs-handle-caching` | 0, on rclone 1.74+ | rclone 1.74 started keeping a file's downloaders alive for five seconds after the last close, so touching a file costs five seconds of whatever the link can carry rather than what was read: measured against a 50 MB/s server, one 1 MiB read pulled 245-250 MiB instead of 3-6 MiB, and a twenty-file sweep went from 80 MiB to 4.2 GiB. The grace period exists for `serve nfs`, which zurg never runs. Older rclone has no such flag and refuses to start on an unknown one, so zurg asks the binary its version first and passes nothing below 1.74. |
@@ -1177,7 +1177,7 @@ alone on a host where an \*arr imports through the mount — see
 #### Caches stranded by a move
 
 rclone names its cache after the remote it is caching, and that name carries a
-hash of the remote's configuration. Zurg's remote is a union whose upstreams
+hash of the remote's configuration. zurg's remote is a union whose upstreams
 embed the absolute path of `data/local`, so the name moves when the
 configuration does:
 
@@ -1193,7 +1193,7 @@ moving the zurg directory, or an external drive that comes back under a new
 mount point, leaves a whole cache behind. Several such moves is how an install
 with a 256G cap ends up holding multiple terabytes.
 
-Zurg reclaims those trees at mount start: it asks the running rclone which tree
+zurg reclaims those trees at mount start: it asks the running rclone which tree
 is live and deletes the rest, logging what it freed. It does nothing unless the
 live tree is on disk where rclone says it is, and it skips the sweep entirely
 when `rclone_extra_args` sets `--cache-dir`, since a directory you chose may be
@@ -1298,7 +1298,7 @@ tb_cdn_host_preference: "auto"
 number_of_hosts: 3
 ```
 
-> **`force_cloudflare` and `force_location_*` are mutually exclusive.** RD publishes a `.cloud` twin for its numbered hosts only — measured 2026-08-09, all 25 numbered subdomains have one and none of the 22 country-specific ones do. So an account with Cloudflare enabled in its RD account settings is always handed a numbered host, and no location preference can be honoured for it. Zurg detects this from the link it unrestricts at startup, skips the geo probing that cannot succeed, and logs why if a location is configured anyway.
+> **`force_cloudflare` and `force_location_*` are mutually exclusive.** RD publishes a `.cloud` twin for its numbered hosts only — measured 2026-08-09, all 25 numbered subdomains have one and none of the 22 country-specific ones do. So an account with Cloudflare enabled in its RD account settings is always handed a numbered host, and no location preference can be honoured for it. zurg detects this from the link it unrestricts at startup, skips the geo probing that cannot succeed, and logs why if a location is configured anyway.
 
 > **Note on `force_location_*` verification:** When using a geo-location preference like `force_location_nyk`, the RD `/rest/1.0/downloads` API endpoint normalizes download URLs to numbered servers (e.g., `128-4.download.real-debrid.com`) even though the actual unrestrict response returned a geo server (e.g., `nyk7-4.download.real-debrid.com`). The download code itself embeds the numbered server (e.g., code `...4128` maps to server `128-4`). To verify that geo routing is working, check zurg's logs or the raw unrestrict response — do **not** rely on the RD downloads API.
 

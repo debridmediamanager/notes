@@ -112,7 +112,7 @@ AllDebrid takes at most 1000 magnets per account, and Real-Debrid accounts fill
 up too. A finished release does not need its torrent on the account to keep
 playing. A Real-Debrid `/d/` link keeps working after the torrent is deleted,
 and an AllDebrid locked `/f/` link keeps working after the magnet is deleted.
-Offloading relies on that. Zurg writes a finished release into a local library
+Offloading relies on that. zurg writes a finished release into a local library
 on the same service, then deletes the torrent from the online account, which
 frees its slot. The release keeps its folder in the mount and plays from the
 saved links.
@@ -171,13 +171,13 @@ than at a per-account one.
 
 With both entries on one token, local playback can attach a release to the
 same account again (see below), and that torrent then shows up in the online
-listing. Zurg never offloads a release whose online torrent is such an
+listing. zurg never offloads a release whose online torrent is such an
 attachment, or while local playback is adding one, because deleting it would
 break the playback that just obtained it.
 
 Only Real-Debrid and AllDebrid can offload. TorBox, Premiumize, Offcloud and
 Debrid-Link have no link that survives the torrent, so their local playback
-adds the torrent back and an offload would free nothing. Zurg refuses
+adds the torrent back and an offload would free nothing. zurg refuses
 `offload_to` on those accounts.
 
 The dashboard can move a single release as well. On a release's page, the
@@ -222,7 +222,7 @@ preparing torrent is checked only when playback is requested again.
 
 Recipient IDs and resolved native file handles stay privately in
 `data/local-torrents/`. That record survives a restart and is included in normal
-backups. Zurg never deletes those attachments automatically: an idempotent add
+backups. zurg never deletes those attachments automatically: an idempotent add
 may have returned a torrent the recipient already owned. Offloading leaves
 them alone as well. Provider failures
 leave the local entry visible and back off rather than starting background
