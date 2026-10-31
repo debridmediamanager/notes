@@ -14,7 +14,7 @@ show up in the library with files in it. See
 
 ```yaml
 acquisition:
-  quality: best
+  quality: best           # best (default), 4k, 1080p, 720p or smallest; a list such as [1080p, 4k] keeps a copy of a DMM wanted film at each
   prefer: usenet          # usenet (default), torrents, or best
   best_first: false       # true makes Radarr and Sonarr take the profile's best quality first
   max_size_gb: 0          # a cap on a film or episode, and each episode of a season pack; 0, the default, is none
@@ -240,8 +240,10 @@ whenever `dmm_api_key` is set: there is nothing else to write. Nothing is mounte
 no Sonarr or Radarr is involved. The source is named `dmm-wanted` and is polled every
 60 seconds.
 
-- **What is fetched.** A film once. A show's aired episodes in the seasons wanted, or
-  in every season when the whole show is wanted, and its new episodes as they air.
+- **What is fetched.** A film once, then any upgrade of it (below), or a copy at each
+  of several resolutions when `quality` is a list (below). A show's aired episodes in
+  the seasons wanted, or in every season when the whole show is wanted, and its new
+  episodes as they air.
   DMM sends each title's IMDb, TMDB and TVDB ids, its year, and for a show the episodes
   aired so far, numbered as TMDB numbers them. Specials are never listed. A season
   still airing is fetched as loose episodes, since no pack covers it yet.
@@ -256,8 +258,23 @@ no Sonarr or Radarr is involved. The source is named `dmm-wanted` and is polled 
   knows Real-Debrid or AllDebrid hold (`/api/torznab/cached`). Writing any indexer
   replaces both.
 - **Acknowledging.** Once a film's grab is checked zurg tells DMM, and the film leaves
-  the list zurg reads; `/wanted` shows when. A show stays on the list and keeps being
+  the list zurg reads, unless it waits for an upgrade or for another of its copies
+  (below); `/wanted` shows when. A show stays on the list and keeps being
   followed until you remove it there. Removing a title stops work on it.
+- **Upgrades.** A film whose release name states a resolution below the one `quality`
+  heads for (2160p for `best` and `4k`, 1080p for `1080p`, 720p for `720p`) stays on the
+  list. zurg fetches a release stating a higher resolution than the copy it holds when
+  one comes out, until it holds that one. Once the better copy passes its check, the old
+  one is removed if zurg fetched it, from the 2026-10-30 nightly on: a torrent from the
+  account zurg added it to, an NZB from the watch directory. A copy that was already
+  yours is kept, and so is one with anything of it placed under `__magic__`, such as
+  by a Radarr import. A release whose name states no resolution is never upgraded, and
+  `quality: smallest` upgrades nothing. Until a better release turns up the film is
+  searched for about once a week, and it is never [parked](#persistence-and-recovery).
+  On by default; `upgrades: false` in the `acquisition:` block turns it off.
+- **A copy at each of several resolutions.** With `quality` written as a list, such as
+  `[1080p, 4k]`, each film is kept a copy at each resolution in it. See
+  [a copy at each of several resolutions](#a-copy-at-each-of-several-resolutions).
 - **Without a grabbing account.** An instance with neither an `nzb` provider nor a
   debrid account that takes torrents does not read the list.
 
@@ -273,6 +290,61 @@ acquisition:
 ```
 
 A lapsed sponsorship or a reset key stops the list. zurg logs a warning that DMM refused `dmm_api_key` and asks again an hour later, or at once when you set a new key. What it already fetched stays in your library. Renew the sponsorship or copy the new key on [gatekeeper](https://gatekeeper.debridmediamanager.com/).
+
+### A copy at each of several resolutions
+
+Write `quality` as a list to keep a copy of each film on the wanted list at each
+resolution in it, for example so a 1080p TV plays one without the 4K file being
+transcoded:
+
+```yaml
+acquisition:
+  quality: [1080p, 4k]
+```
+
+Each copy takes the best release at or below its own resolution and never one above
+it. The 1080p copy takes no 2160p release, and none whose name states no resolution,
+since that could be anything. The 4K copy takes such a release only when no release
+stating a resolution can be taken, and then keeps it for good, since a release stating
+no resolution is never upgraded. Each copy upgrades on its own, up to its own
+resolution. When the two would take the same release they share one copy, and that
+copy is removed only once neither holds it any more:
+
+| Releases out | 1080p copy | 4K copy | In your library |
+|---|---|---|---|
+| 720p | the 720p | the same 720p | the 720p |
+| + 1080p | upgrades to the 1080p | upgrades to the 1080p | the 1080p |
+| + 2160p | stays | upgrades to the 2160p | the 1080p and the 2160p |
+
+A film that comes out only in 2160p gets its 4K copy at once, and its 1080p copy when
+a release at 1080p or lower appears. Until then it is searched for about once a week
+and never parked. The film leaves the list zurg reads only once every copy holds a
+release it wants no better than.
+
+- **What the list takes.** Two or more of `4k` (or `2160p`), `1080p` and `720p`, each
+  once, in any order and any case. zurg refuses to start on anything else and says
+  `acquisition.quality lists resolutions, each once: 4k, 1080p or 720p`. A list of one
+  is read as that one value, so `[1080p]` is `quality: 1080p` and keeps one copy;
+  write `4k` there, since `[2160p]` is refused.
+- **Only in the `acquisition:` block.** `quality` under `watchlist:` is one value; a
+  list there stops zurg from starting. The quality setting on the config page edits
+  `watchlist.quality` only, and changes nothing while `acquisition.quality` is
+  written.
+- **Only films on the DMM wanted list.** Shows on it, and every other source, still
+  get one copy, chosen as if `quality` named only the highest resolution listed:
+  `[1080p, 4k]` works as `quality: 4k` for them, and `[720p, 1080p]` as
+  `quality: 1080p`, which still takes a 2160p release when no 1080p one is out.
+- **With `upgrades: false`** each copy keeps the first release it takes. While only a
+  720p is out, both copies are that 720p for good.
+- **Films fetched before you write the list** are fetched again, a copy at each
+  resolution. A copy whose best release is already in your library uses it as it is.
+  zurg never removes the copy fetched before: delete it yourself if the new copies
+  replace it.
+- **Going back to one value** leaves the copies where they are.
+- **`/wanted` shows the film as fetched** once its first copy is in, with the first
+  release zurg took. It does not show which resolution is still waiting. A film
+  fetched before you wrote the list can keep showing "waiting for" the resolution it
+  waited for then.
 
 ## Seerr behavior
 

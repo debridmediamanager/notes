@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846773835803">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846774423647">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../../resources/css/retype.css?v=4.6.0.846773835803" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.846774423647" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846773835803" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.846774423647" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846773835803" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846773835803" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.846774423647" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.846774423647" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -208,7 +208,7 @@ show up in the library with files in it. See
 <h2 id="configuration">Configuration</h2>
 <div id="configuration-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">acquisition:
-  quality: best
+  quality: best           # best (default), 4k, 1080p, 720p or smallest; a list such as [1080p, 4k] keeps a copy of a DMM wanted film at each
   prefer: usenet          # usenet (default), torrents, or best
   best_first: false       # true makes Radarr and Sonarr take the profile's best quality first
   max_size_gb: 0          # a cap on a film or episode, and each episode of a season pack; 0, the default, is none
@@ -447,8 +447,10 @@ no Sonarr or Radarr is involved. The source is named <code translate="no" v-pre>
 60 seconds.</p>
 <ul>
 <li>
-<p><strong>What is fetched.</strong> A film once. A show&#x27;s aired episodes in the seasons wanted, or
-in every season when the whole show is wanted, and its new episodes as they air.
+<p><strong>What is fetched.</strong> A film once, then any upgrade of it (below), or a copy at each
+of several resolutions when <code translate="no" v-pre>quality</code> is a list (below). A show&#x27;s aired episodes in
+the seasons wanted, or in every season when the whole show is wanted, and its new
+episodes as they air.
 DMM sends each title&#x27;s IMDb, TMDB and TVDB ids, its year, and for a show the episodes
 aired so far, numbered as TMDB numbers them. Specials are never listed. A season
 still airing is fetched as loose episodes, since no pack covers it yet.</p>
@@ -469,8 +471,27 @@ replaces both.</p>
 </li>
 <li>
 <p><strong>Acknowledging.</strong> Once a film&#x27;s grab is checked zurg tells DMM, and the film leaves
-the list zurg reads; <code translate="no" v-pre>/wanted</code> shows when. A show stays on the list and keeps being
+the list zurg reads, unless it waits for an upgrade or for another of its copies
+(below); <code translate="no" v-pre>/wanted</code> shows when. A show stays on the list and keeps being
 followed until you remove it there. Removing a title stops work on it.</p>
+</li>
+<li>
+<p><strong>Upgrades.</strong> A film whose release name states a resolution below the one <code translate="no" v-pre>quality</code>
+heads for (2160p for <code translate="no" v-pre>best</code> and <code translate="no" v-pre>4k</code>, 1080p for <code translate="no" v-pre>1080p</code>, 720p for <code translate="no" v-pre>720p</code>) stays on the
+list. zurg fetches a release stating a higher resolution than the copy it holds when
+one comes out, until it holds that one. Once the better copy passes its check, the old
+one is removed if zurg fetched it, from the 2026-10-30 nightly on: a torrent from the
+account zurg added it to, an NZB from the watch directory. A copy that was already
+yours is kept, and so is one with anything of it placed under <code translate="no" v-pre>__magic__</code>, such as
+by a Radarr import. A release whose name states no resolution is never upgraded, and
+<code translate="no" v-pre>quality: smallest</code> upgrades nothing. Until a better release turns up the film is
+searched for about once a week, and it is never <doc-anchor-trigger to="#persistence-and-recovery">parked</doc-anchor-trigger>.
+On by default; <code translate="no" v-pre>upgrades: false</code> in the <code translate="no" v-pre>acquisition:</code> block turns it off.</p>
+</li>
+<li>
+<p><strong>A copy at each of several resolutions.</strong> With <code translate="no" v-pre>quality</code> written as a list, such as
+<code translate="no" v-pre>[1080p, 4k]</code>, each film is kept a copy at each resolution in it. See
+<doc-anchor-trigger to="#a-copy-at-each-of-several-resolutions">a copy at each of several resolutions</doc-anchor-trigger>.</p>
 </li>
 <li>
 <p><strong>Without a grabbing account.</strong> An instance with neither an <code translate="no" v-pre>nzb</code> provider nor a
@@ -487,6 +508,103 @@ wanted list on one of them and turn it off on the others by writing it disabled:
       enabled: false</code></pre>
 </doc-codeblock></div>
 <p>A lapsed sponsorship or a reset key stops the list. zurg logs a warning that DMM refused <code translate="no" v-pre>dmm_api_key</code> and asks again an hour later, or at once when you set a new key. What it already fetched stays in your library. Renew the sponsorship or copy the new key on <a href="https://gatekeeper.debridmediamanager.com/">gatekeeper</a>.</p>
+<h3 id="a-copy-at-each-of-several-resolutions">A copy at each of several resolutions</h3>
+<p>Write <code translate="no" v-pre>quality</code> as a list to keep a copy of each film on the wanted list at each
+resolution in it, for example so a 1080p TV plays one without the 4K file being
+transcoded:</p>
+<div id="a-copy-at-each-of-several-resolutions-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">acquisition:
+  quality: [1080p, 4k]</code></pre>
+</doc-codeblock></div>
+<p>Each copy takes the best release at or below its own resolution and never one above
+it. The 1080p copy takes no 2160p release, and none whose name states no resolution,
+since that could be anything. The 4K copy takes such a release only when no release
+stating a resolution can be taken, and then keeps it for good, since a release stating
+no resolution is never upgraded. Each copy upgrades on its own, up to its own
+resolution. When the two would take the same release they share one copy, and that
+copy is removed only once neither holds it any more:</p>
+<retype-table copy-text="| Releases out | 1080p copy | 4K copy | In your library |
+|---|---|---|---|
+| 720p | the 720p | the same 720p | the 720p |
+| + 1080p | upgrades to the 1080p | upgrades to the 1080p | the 1080p |
+| + 2160p | stays | upgrades to the 2160p | the 1080p and the 2160p |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Releases out</th>
+<th>1080p copy</th>
+<th>4K copy</th>
+<th>In your library</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>720p</td>
+<td>the 720p</td>
+<td>the same 720p</td>
+<td>the 720p</td>
+</tr>
+<tr>
+<td>+ 1080p</td>
+<td>upgrades to the 1080p</td>
+<td>upgrades to the 1080p</td>
+<td>the 1080p</td>
+</tr>
+<tr>
+<td>+ 2160p</td>
+<td>stays</td>
+<td>upgrades to the 2160p</td>
+<td>the 1080p and the 2160p</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>A film that comes out only in 2160p gets its 4K copy at once, and its 1080p copy when
+a release at 1080p or lower appears. Until then it is searched for about once a week
+and never parked. The film leaves the list zurg reads only once every copy holds a
+release it wants no better than.</p>
+<ul>
+<li>
+<p><strong>What the list takes.</strong> Two or more of <code translate="no" v-pre>4k</code> (or <code translate="no" v-pre>2160p</code>), <code translate="no" v-pre>1080p</code> and <code translate="no" v-pre>720p</code>, each
+once, in any order and any case. zurg refuses to start on anything else and says
+<code translate="no" v-pre>acquisition.quality lists resolutions, each once: 4k, 1080p or 720p</code>. A list of one
+is read as that one value, so <code translate="no" v-pre>[1080p]</code> is <code translate="no" v-pre>quality: 1080p</code> and keeps one copy;
+write <code translate="no" v-pre>4k</code> there, since <code translate="no" v-pre>[2160p]</code> is refused.</p>
+</li>
+<li>
+<p><strong>Only in the <code translate="no" v-pre>acquisition:</code> block.</strong> <code translate="no" v-pre>quality</code> under <code translate="no" v-pre>watchlist:</code> is one value; a
+list there stops zurg from starting. The quality setting on the config page edits
+<code translate="no" v-pre>watchlist.quality</code> only, and changes nothing while <code translate="no" v-pre>acquisition.quality</code> is
+written.</p>
+</li>
+<li>
+<p><strong>Only films on the DMM wanted list.</strong> Shows on it, and every other source, still
+get one copy, chosen as if <code translate="no" v-pre>quality</code> named only the highest resolution listed:
+<code translate="no" v-pre>[1080p, 4k]</code> works as <code translate="no" v-pre>quality: 4k</code> for them, and <code translate="no" v-pre>[720p, 1080p]</code> as
+<code translate="no" v-pre>quality: 1080p</code>, which still takes a 2160p release when no 1080p one is out.</p>
+</li>
+<li>
+<p><strong>With <code translate="no" v-pre>upgrades: false</code></strong> each copy keeps the first release it takes. While only a
+720p is out, both copies are that 720p for good.</p>
+</li>
+<li>
+<p><strong>Films fetched before you write the list</strong> are fetched again, a copy at each
+resolution. A copy whose best release is already in your library uses it as it is.
+zurg never removes the copy fetched before: delete it yourself if the new copies
+replace it.</p>
+</li>
+<li>
+<p><strong>Going back to one value</strong> leaves the copies where they are.</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>/wanted</code> shows the film as fetched</strong> once its first copy is in, with the first
+release zurg took. It does not show which resolution is still waiting. A film
+fetched before you wrote the list can keep showing &quot;waiting for&quot; the resolution it
+waited for then.</p>
+</li>
+</ul>
 <h2 id="seerr-behavior">Seerr behavior</h2>
 <p>The adapter follows seerr-team/seerr&#x27;s
 <a href="https://github.com/seerr-team/seerr/blob/c604bccc003d4d2f74a66d8cb74d9e14d5ffda89/server/routes/request.ts">request routes</a>,

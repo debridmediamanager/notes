@@ -101,7 +101,25 @@ Two things do not come over:
   `quality` heads for (2160p for `best`) stays on the list instead: zurg fetches a better
   copy when one comes out and removes the one it fetched before. A copy you added yourself
   is kept. `upgrades: false` under `acquisition:` in zurg's config turns this off. `/wanted`
-  shows what zurg took and the resolution it is still waiting for.
+  shows what zurg took and the resolution it is still waiting for, except with the
+  list of resolutions below.
+- **A film at 1080p and at 4K**, if you want both, for example so a 1080p TV plays one
+  without the 4K file being transcoded. Needs the 2026-10-31 nightly or later. List the
+  resolutions in zurg's config:
+
+  ```yaml
+  acquisition:
+    quality: [1080p, 4k]
+  ```
+
+  zurg then keeps a copy of each film at each of them. Each copy takes the best release
+  at or below its own resolution and upgrades on its own, so the 1080p copy never turns
+  into a 2160p one. While no release better than 1080p is out, both usually take the
+  same release and you get one file. `720p` can be listed too. Shows still get one
+  copy, chosen as if you had written only the highest resolution. Films zurg fetched
+  before you add the list are fetched again at each resolution; zurg never removes the
+  copy from before, so delete it yourself if you no longer want it. The full rules are in
+  [a copy at each of several resolutions](acquisition.md#a-copy-at-each-of-several-resolutions).
 - **A show**: every aired episode of the seasons you picked, as a season pack where one
   covers the season and as single episodes where it is still airing. It keeps checking
   for new episodes until you remove the show. Specials are not fetched.
