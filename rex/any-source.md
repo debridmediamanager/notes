@@ -1,6 +1,6 @@
 # rex with your own app
 
-[rex](https://rex.debridmediamanager.com) is a Plex Media Server that owns no files. The official Plex apps see it as a normal Plex server. Another program, which this page calls **your app**, tells rex what is in your library and serves the files. When you press play, rex streams the file straight from your app. Nothing is downloaded first.
+[rex](https://rex.debridmediamanager.com) is a media server for the official Plex apps that owns no files. The official Plex apps see it as a normal Plex server. Another program, which this page calls **your app**, tells rex what is in your library and serves the files. When you press play, rex streams the file straight from your app. Nothing is downloaded first.
 
 This page takes you from nothing to playing a movie, one step at a time. It does not assume any particular app. It says exactly what rex expects from one, so you can check that yours does it, or build one. Every step says what it does, why it matters and what you should see before you move on.
 
@@ -11,7 +11,7 @@ Four things to know before you start:
 - **Your app decides what each file is.** It says whether a file is a movie or an episode, which title it belongs to (by IMDb and TMDB id) and, for an episode, its season and number. rex never guesses from a file name.
 - **Plex describes it.** Once rex is on a Plex account, it shows each title with the name, poster, summary and episode names Plex's own metadata has for those ids. For things no Plex agent knows, your app names them itself: see [Building rex addons](addons.md).
 
-rex goes public with its source code on Halloween, October 31, and is free for everyone: no sponsor tier and no waiting period. Until then its download needs a sponsor's GitHub access. See [rex.debridmediamanager.com](https://rex.debridmediamanager.com).
+rex is free and open source (MIT): no sponsor tier and no account needed to download it. See [rex.debridmediamanager.com](https://rex.debridmediamanager.com).
 
 ## Before you start
 
@@ -19,14 +19,16 @@ rex goes public with its source code on Halloween, October 31, and is free for e
 |---|---|
 | rex's nightly dated 2026.10.25 or newer | Step 1 downloads the newest |
 | A machine that stays on: Linux (Ubuntu 22.04 or newer), macOS, or Windows (64 bit) | rex is a server: your Plex apps reach it whenever you press play. Where the commands differ, a step has a tab for each system. [Docker](#run-rex-in-docker) is further down, for Linux |
-| 1 GB of RAM for a library of 40,000 titles | rex keeps the library in `rex.db` and uses about 450 MB with 40,000 titles, starting included. Converting video takes more, and more cores or a graphics chip |
-| A GitHub account with access to rex's sponsor releases | rex is a private GitHub release |
+| 1 GB of RAM | With 4,062 movies and 656 shows (34,678 episodes), rex used under 500 MB while it started and about 730 MB while the library was browsed. Converting video takes more, and more cores or a graphics chip |
 | An app that does what [What your app must do](#what-your-app-must-do) lists | That is where your library comes from |
+| Your app pushing from this machine, your home network or Tailscale | rex takes the feed only from there ([Keep the port private](#keep-the-port-private)). An app on a seedbox or a cloud server cannot push to rex unless that server is on your tailnet; the files themselves can be served from anywhere rex reaches |
+| Files on this machine's disks? Something that serves them over HTTP and pushes them | rex never reads a disk. [Step 2](#step-2-see-it-work-by-hand) does it by hand for one file; otherwise keep Plex for those |
+| Usenet? zurg | zurg turns Usenet into a library rex plays: see [rex with zurg](with-zurg.md) |
 | A fresh Plex account, made just for rex | rex gets every title, poster, summary and episode name from Plex once it is [added to a Plex account](#step-3-add-it-to-a-plex-account). Until then titles keep their file names and have no posters |
 
 ## What your app must do
 
-Give this list to whoever makes your app. rex's own API reference is `docs/feed-api.md` in every rex download.
+Give this list to whoever makes your app. rex's own API reference is [docs/feed-api.md](https://github.com/debridmediamanager/rex/blob/main/docs/feed-api.md).
 
 | Your app must | How | If it does not |
 |---|---|---|
@@ -46,23 +48,20 @@ Give this list to whoever makes your app. rex's own API reference is `docs/feed-
 
 **Why it matters.** rex is what your Plex apps talk to. The first start creates `rex.db`, which holds your libraries, everything your app sends and your watch history.
 
-rex's download uses the GitHub CLI. Install it (`sudo apt install -y gh` on Linux, `brew install gh` on macOS, `winget install GitHub.cli` on Windows, then a new terminal) and sign in once with `gh auth login`. Then:
-
 +++ Linux and macOS
 ```bash
 mkdir -p ~/rex && cd ~/rex
-TAG=$(gh api 'repos/debridmediamanager/rex/releases?per_page=1' --jq '.[0].tag_name')
+TAG=$(curl -fsSL 'https://api.github.com/repos/debridmediamanager/rex/releases?per_page=1' | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -1)
 P=$(uname -s | tr A-Z a-z)-$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
-gh release download "$TAG" -R debridmediamanager/rex -p "*-$P.tar.gz"
-tar xzf rex-*-$P.tar.gz --strip-components=1 && rm rex-*-$P.tar.gz
+curl -fL "https://github.com/debridmediamanager/rex/releases/download/$TAG/rex-$TAG-$P.tar.gz" | tar xz --strip-components=1
 ```
 +++ Windows
 In PowerShell:
 
 ```powershell
 New-Item -ItemType Directory -Force $HOME\rex | Out-Null; cd $HOME\rex
-$tag = gh api 'repos/debridmediamanager/rex/releases?per_page=1' --jq '.[0].tag_name'
-gh release download $tag -R debridmediamanager/rex -p '*-windows-amd64.zip'
+$tag = (Invoke-RestMethod 'https://api.github.com/repos/debridmediamanager/rex/releases?per_page=1')[0].tag_name
+curl.exe -fLO "https://github.com/debridmediamanager/rex/releases/download/$tag/rex-$tag-windows-amd64.zip"
 tar -xf "rex-$tag-windows-amd64.zip" --strip-components=1; Remove-Item "rex-$tag-windows-amd64.zip"
 ```
 +++
@@ -164,9 +163,9 @@ rex runs while you are logged in to Windows, in a window of its own: leave it op
 
 ```
 INFO    seeded rex.db: an empty library named yourhost, machine=...
-INFO    no source yet: one registers at PUT /rex/sources/{name} (docs/feed-api.md)
+INFO    no source yet: a source registers itself once pointed at this server (zurg: rex_url; others: PUT /rex/sources/{name}, docs/feed-api.md)
 INFO    claim state: unclaimed
-INFO    rex on http://yourhost:32400  machine=...  items=0  parts=proxy
+INFO    rex on http://192.168.1.20:32400  machine=...  items=0  parts=proxy
 ```
 
 rex names itself after the machine; your Plex apps show that name. `no source yet` is right: no app has registered yet. Leave the log open.
@@ -234,7 +233,7 @@ Invoke-RestMethod -Method Post http://192.168.1.20:32400/rex/feed/test/items -Co
 PowerShell shows rex's answers as lists rather than JSON.
 +++
 
-**What you should see.** The answer is `{"created":1,"updated":0,"held":0,"unchanged":0,"rejected":[]}` and rex's log prints:
+**What you should see.** The answer is `{"created":1,"updated":0,"held":0,"unchanged":0}` and rex's log prints:
 
 ```
 INFO    FEED identified "Sintel.2010" -> movie tmdb:45745 (placed)
@@ -262,7 +261,7 @@ Stop-Process -InputObject $server
 **If not.**
 
 - `"held":1`: `media_info` is missing or has no streams. Check that `ffprobe` printed JSON for the file.
-- An answer with `rejected`: the file is not a video by its extension, is a sample, has no `id` or `path`, or has a malformed path. The answer and rex's log give each reason.
+- An answer with `rejected`: the file is not a video by its extension, is a sample, has no `id` or `path`, has a malformed path, or another `id` already has its path. The answer and rex's log give each reason.
 - `404 no such source`: the `PUT /rex/sources/test` did not happen first.
 
 ## Step 3. Add it to a Plex account
@@ -295,6 +294,10 @@ Stop-Process -InputObject $server
 1. Still signed in as the fresh account, open [app.plex.tv](https://app.plex.tv), then **Settings** (the wrench), **Manage Library Access** and **Grant Library Access**.
 2. Enter your own account's username or email, pick the rex server and both libraries, **Movies** and **TV Shows**, and send the invite.
 3. Sign out, sign in as **yourself**, and accept the invite. It arrives by email and in app.plex.tv.
+
+![Manage Library Access in app.plex.tv's settings, with the Grant Library Access button](../assets/rex/20-plex-manage-library-access.webp)
+
+![The Grant Library Access dialog with the rex server's Movies and TV Shows ticked](../assets/rex/21-plex-grant-library-access.webp)
 
 **What you should see.** Signed in as yourself, Plex apps list the rex server beside your own servers, with both libraries. Your watch history on rex is your own: it is kept apart from the fresh account's. Share it the same way with anyone else in your household.
 
@@ -337,7 +340,9 @@ curl -s http://192.168.1.20:32400/rex/feed/myapp/held  | head -c 600   # what wa
 
 Open a Plex app on a phone, TV or computer **on the same home network**. rex shows up under the machine's name, with **Movies** and **TV Shows**. Pick a movie and press play.
 
-At home nothing else is needed: Plex apps find rex with Plex's own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN). Discovery runs on UDP ports 32410 and 32414, so a firewall on the rex machine must let those in (on Windows, step 1's firewall rules do). rex answers discovery when it uses port 32400. If you moved rex to 32500 because Plex runs on the same machine, discovery is left to that Plex, and apps find rex through the Plex account it is [shared with](#share-it-with-your-own-account). app.plex.tv in a web browser is the exception: it needs the HTTPS address from [Use it outside your home](#use-it-outside-your-home-optional), even at home.
+![A Plex app showing the rex server's Movies and TV Shows in the sidebar beside a grid of films](../assets/rex/10-plex-server-libraries.webp)
+
+At home nothing else is needed: Plex apps find rex with Plex's own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN). Discovery runs on UDP ports 32410 and 32414, so a firewall on the rex machine must let those in (on Windows, step 1's firewall rules do). rex answers discovery when it uses port 32400. If you moved rex to 32500 because Plex runs on the same machine, discovery is left to that Plex, and apps find rex through the Plex account it is [shared with](#share-it-with-your-own-account). app.plex.tv in a web browser is the exception: it needs the HTTPS address from [Use it outside your home](#use-it-outside-your-home-optional), even at home. `http://192.168.1.20:32400/web` is not Plex Web: rex has no web app of its own, and that page only says whether rex is claimed and where to watch.
 
 **What you should see.** Posters, titles and years as on any Plex server. Playback starts within a few seconds.
 
@@ -346,16 +351,24 @@ Two things you may meet:
 - **"yourhost server is unclaimed and not secure".** A Plex app says this about any server that is not on a Plex account, and rex plays nothing until it is on one. Do [step 3](#step-3-add-it-to-a-plex-account).
 - **"This server is not powerful enough to convert video".** The app cannot play the file as it is, often a web browser meeting AC3 or DTS sound. Plex apps on TVs and phones play most files as they are. To play everything everywhere, set up [Converting video](#converting-video-optional).
 
+**Deleting deletes at your app.** Signed in as the fresh account, **Delete** on a title in a Plex app has rex ask your app to delete the file, as [What your app must do](#what-your-app-must-do) says. The accounts rex is shared with cannot delete. To turn deleting off: in app.plex.tv as the fresh account, open **Settings**, the rex server's **Library**, **Show Advanced**, untick **Allow media deletion** and save.
+
+![The rex server's Library settings with Show Advanced open and Allow media deletion outlined](../assets/rex/32-plex-allow-media-deletion.webp)
+
+A file your app removes goes to the library's trash as it would in Plex: it stays, unavailable, with its watch history, and comes back as it was if your app sends it again. **Empty Trash** on the library removes it for good, and **Empty trash automatically after every scan** (Settings, Library), which is off, does that by itself.
+
 Each file goes to **Movies** or **TV Shows** by the `kind` your app sent. A file without one goes by its first folder: `shows` to TV Shows, anything else to Movies.
 
-To give a folder libraries of its own, your app adds `directories` to its registration, naming the first folder of the files' paths and the libraries' titles: `{"url": ..., "directories": [{"name": "anime", "shows": "Anime", "movies": "Anime Movies"}]}`, either title alone being fine. rex makes them when your app registers and moves what that folder already has into them as it was: watch history, Fix Match and edits included. A malformed entry is skipped and listed under `ignored` in the answer, with why. Rename them in a Plex app as you like. Delete one and it stays deleted, its files going back to Movies or TV Shows, until you add it again with **Add Library**, whose folder list shows your app's folders. `docs/feed-api.md` has the rules, under "Libraries a source declares".
+To give a folder libraries of its own, your app adds `directories` to its registration, naming the first folder of the files' paths and the libraries' titles: `{"url": ..., "directories": [{"name": "anime", "shows": "Anime", "movies": "Anime Movies"}]}`, either title alone being fine. rex makes them when your app registers and moves what that folder already has into them as it was: watch history, Fix Match and edits included. A malformed entry is skipped and listed under `ignored` in the answer, with why. Rename them in a Plex app as you like. Delete one and it stays deleted, its files going back to Movies or TV Shows, until you add it again with **Add Library**, whose folder list shows your app's folders. [Libraries a source declares](https://github.com/debridmediamanager/rex/blob/main/docs/feed-api.md#libraries-a-source-declares) has the rules.
 
-**Back up** `rex.db` in rex's folder (it holds your library, watch history and your app's login, so keep it private) and `claim_state.json`:
+**Back up** `rex.db` in rex's folder (it holds your library, watch history and your app's login, so keep it private), `claim_state.json` and, once rex-direct has given rex a name, `rex-direct.json` (its certificate key):
 
 +++ Linux and macOS
 ```bash
 sudo apt install -y sqlite3    # once, on Linux; macOS has it
-sqlite3 ~/rex/rex.db ".backup $HOME/rex/rex.db.bak"
+mkdir -p ~/rex-backup
+sqlite3 ~/rex/rex.db ".backup $HOME/rex-backup/rex.db"
+cp ~/rex/*.json ~/rex-backup/
 ```
 +++ Windows
 Windows has no `sqlite3`, so stop rex for a moment and copy `rex.db` with the two files beside it that start the same way:
@@ -363,12 +376,14 @@ Windows has no `sqlite3`, so stop rex for a moment and copy `rex.db` with the tw
 ```powershell
 Stop-Process -Name rex; Start-Sleep 1
 New-Item -ItemType Directory -Force $HOME\rex-backup | Out-Null
-Copy-Item $HOME\rex\rex.db*, $HOME\rex\claim_state.json $HOME\rex-backup
+Copy-Item $HOME\rex\rex.db*, $HOME\rex\*.json $HOME\rex-backup
 Start-ScheduledTask rex
 ```
 +++
 
-In Docker the files sit in `~/rex/config`, readable by root only. Back up from inside the container: `docker exec rex sqlite3 /config/rex.db ".backup /config/rex.db.bak"`.
+In Docker the files sit in `~/rex/config`, readable by root only. Back up from inside the container with `docker exec rex sqlite3 /config/rex.db ".backup /config/rex.db.bak"`, then `mkdir -p ~/rex-backup && sudo cp ~/rex/config/rex.db.bak ~/rex/config/*.json ~/rex-backup/`.
+
+[Restore a backup](#restore-a-backup) puts them back.
 
 You are done. The sections below are optional.
 
@@ -559,23 +574,21 @@ Subtitles in a converted file: an image subtitle is burned into the picture and 
 
 **Why it matters.** Plex's own first result is often out of sync with the file.
 
+![The Subtitles search dialog in a Plex app, listing English results for Sintel](../assets/rex/51-plex-search-subtitles.webp)
+
 There is nothing to set up. rex checks a subtitle against the file's own text subtitle when it has one. A file without one is checked against its sound when you press play, which needs [Converting video](#converting-video-optional) set up and reads six 90-second pieces of the file.
 
 **What you should see.** rex's log has a `SUBTITLE measured` line for each subtitle it checks, and `SUBTITLE applied ... corrected by` when it fixed one.
 
 ## Movie and TV capabilities
 
-Downloads, intro and credits detection, seek thumbnails and the other Plex server features rex has, and their settings, are in `docs/setup.md` in your rex download ("Movie and TV capabilities"). Music, Live TV and DVR are not supported.
+Downloads, intro and credits detection, seek thumbnails and the other Plex server features rex has, and their settings, are in [rex's setup guide](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities). Music, Live TV and DVR are not supported.
 
 ## Run rex in Docker
 
 These steps are for a Linux machine. On macOS and Windows, Docker Desktop runs containers inside a virtual machine, so host networking, LAN discovery and the graphics chip do not work there as they do on Linux: use the steps above instead.
 
-rex's image is private, like the download. Log in once with your GitHub username and a classic personal access token with the `read:packages` and `repo` scopes:
-
-```bash
-docker login ghcr.io -u YOUR_GITHUB_USERNAME
-```
+rex's Docker image is private, so pulling it may be refused. The download in [step 1](#step-1-install-rex) works for everyone: if the pull is refused, use the steps above.
 
 Make a folder, for example `~/rex`, with this `compose.yml`:
 
@@ -610,7 +623,89 @@ rex takes no password on its feed API. It answers that API only from this machin
 
 ## Updating
 
-Run the download block of [step 1](#step-1-install-rex) again (it replaces the program and `data/`, and leaves `rex.db`, your keys and `claim_state.json` alone), then restart rex as step 1 shows. On Windows, run `Stop-Process -Name rex` before the download block, as Windows does not let a running `rex.exe` be replaced, and `Start-ScheduledTask rex` after it.
+rex never updates itself. Run the download block of [step 1](#step-1-install-rex) again (it replaces the program and `data/`, and leaves `rex.db`, your keys, `claim_state.json` and `rex-direct.json` alone), then restart rex as step 1 shows. On Windows, run `Stop-Process -Name rex` before the download block, as Windows does not let a running `rex.exe` be replaced, and `Start-ScheduledTask rex` after it.
+
+## Later: restore, move, remove
+
+### Restore a backup
+
+Stop rex, delete `rex.db` and the `rex.db-wal` and `rex.db-shm` beside it, put your backup's files in rex's folder and start rex. Leaving the old `rex.db-wal` in place undoes the restore.
+
++++ Linux
+```bash
+systemctl --user stop rex
+rm -f ~/rex/rex.db ~/rex/rex.db-wal ~/rex/rex.db-shm
+cp ~/rex-backup/* ~/rex/
+systemctl --user start rex
+```
++++ macOS
+```bash
+launchctl unload ~/Library/LaunchAgents/com.rex.plist
+rm -f ~/rex/rex.db ~/rex/rex.db-wal ~/rex/rex.db-shm
+cp ~/rex-backup/* ~/rex/
+launchctl load ~/Library/LaunchAgents/com.rex.plist
+```
++++ Windows
+```powershell
+Stop-Process -Name rex; Start-Sleep 1
+Remove-Item $HOME\rex\rex.db*
+Copy-Item $HOME\rex-backup\* $HOME\rex
+Start-ScheduledTask rex
+```
++++ Docker
+```bash
+cd ~/rex && docker compose down
+sudo rm -f config/rex.db config/rex.db-wal config/rex.db-shm
+sudo cp ~/rex-backup/rex.db.bak config/rex.db && sudo cp ~/rex-backup/*.json config/
+docker compose up -d
+```
++++
+
+### Move rex to another machine
+
+Back up as in [step 5](#step-5-watch-something), then stop rex on the old machine for good, as the first block of [Remove rex](#remove-rex) does. On the new one, do [step 1](#step-1-install-rex), but copy your backup's files into rex's folder before you make it a service. It is the same server to your Plex apps, still claimed and shared. Then:
+
+- Give your app the new LAN IP, as in [step 4](#step-4-connect-your-app).
+- Move your router's port forward to the new machine. The rex-direct name stays the same and follows a new public IP by itself. Tailscale serve and Caddy are set up again on the new machine.
+
+### The fresh Plex account is gone
+
+If the account rex is claimed with is lost or banned, make another fresh account, stop rex, delete `claim_state.json` in rex's folder, start rex and do [step 3](#step-3-add-it-to-a-plex-account) again: claim, then share with everyone again. The library, Fix Match, edits and the rex-direct name stay, and each person's watch history comes back once rex is shared with their account again.
+
+### Which rex do I run?
+
+rex has no version command. The nightly's date is in the name of the download (`2026.10.30.0040-nightly`), and the program file carries the same date: `ls -l ~/rex/rust/target/release/rex` (on Windows `(Get-Item $HOME\rex\rust\target\release\rex.exe).LastWriteTime`). The Plex version your apps show is not rex's: rex reports the current Plex Media Server version on purpose, so the apps treat it as up to date, and **Check for Updates** always says it is.
+
+### Remove rex
+
+Stop rex for good:
+
++++ Linux
+```bash
+systemctl --user disable --now rex && rm ~/.config/systemd/user/rex.service
+```
++++ macOS
+```bash
+launchctl unload ~/Library/LaunchAgents/com.rex.plist && rm ~/Library/LaunchAgents/com.rex.plist
+```
++++ Windows
+In PowerShell as administrator:
+
+```powershell
+Unregister-ScheduledTask rex -Confirm:$false; Stop-Process -Name rex
+Remove-NetFirewallRule -DisplayName rex, "rex discovery"
+```
++++ Docker
+```bash
+cd ~/rex && docker compose down
+```
++++
+
+Then stop your app pushing to rex. In app.plex.tv as the fresh account, open **Settings**, **Authorized Devices**, filter by **Servers** and remove rex. Remove your router's port forward, and delete rex's folder.
+
+### Getting help
+
+Ask in the DMM [Discord](https://discord.com/invite/7u4YjMThXP)'s **rex-support** forum: [Getting help](../guides/remote-help.md) says what to include, and how sponsors get remote help.
 
 ## When something is wrong
 
@@ -629,4 +724,5 @@ Run the download block of [step 1](#step-1-install-rex) again (it replaces the p
 | A device at home cannot connect, and rex's `heartbeat ... ->` line shows no `http://192.168.1.20:32400` | rex announces the private address of the network it reaches the internet through; behind a VPN or a Tailscale exit node that is not your home network. End rex's start command ([step 1](#step-1-install-rex)) with `--announce-url http://192.168.1.20:32400` and restart rex |
 | Another machine cannot reach rex on Windows, although step 1's firewall rules exist | If you ever clicked **Cancel** when Windows asked whether to allow rex, Windows saved a rule that blocks it, and that wins over the port rules. Remove it in PowerShell as administrator: <code>Get-NetFirewallApplicationFilter -Program "$HOME\rex\rust\target\release\rex.exe" &#124; Get-NetFirewallRule &#124; Where-Object Action -eq Block &#124; Remove-NetFirewallRule</code> |
 | rex is not in the Plex apps away from home | Not claimed, or the device cannot reach the HTTPS address |
+| rex exits with `argument --announce-url: '...' is not an http:// or https:// address` | Give `--announce-url` the address alone, such as `https://myhost.tailnet.ts.net:443`: no brackets, quotes or link around it |
 | rex stops when you log out | On Linux, run `sudo loginctl enable-linger "$USER"` (step 1). On macOS and Windows, rex as step 1 sets it up runs while you are logged in |

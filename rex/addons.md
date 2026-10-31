@@ -21,9 +21,9 @@ To bring your Stremio addons' catalogs into rex, there is nothing to write: rex-
 | rex, set up as in [rex with your own app](any-source.md) (steps 1 to 3) | That is where your addon's library shows up |
 | A rex nightly dated 2026.10.25 or newer | This page is written for it |
 | FFmpeg where rex runs, if your addon serves streams | rex plays a stream by converting it (a copy, cheap). rex finds FFmpeg itself; see [Converting video](any-source.md#converting-video-optional) |
-| Your addon on the same machine as rex, or on your home network | rex's feed answers only private networks: loopback, `192.168.x.x`, `10.x.x.x`, `172.16-31.x.x`, Tailscale |
+| Your addon on the same machine as rex, or on your home network | rex's feed answers only those: see [Keep the port private](any-source.md#keep-the-port-private) |
 
-This page writes rex's address as `192.168.1.20:32400` and the addon's as `127.0.0.1:9981`. Put yours in their place. rex's full API reference is `docs/feed-api.md` in every rex download.
+This page writes rex's address as `192.168.1.20:32400` and the addon's as `127.0.0.1:9981`. Put yours in their place. rex's full API reference is [docs/feed-api.md](https://github.com/debridmediamanager/rex/blob/main/docs/feed-api.md).
 
 ## Step 1. Serve the bytes
 
@@ -71,7 +71,7 @@ Invoke-RestMethod -Method Put http://192.168.1.20:32400/rex/sources/myaddon -Con
 
 A path's first segment picks its library: with the example above, every path that starts `kids/` lands in **Kids**. Use a different first segment for each library.
 
-**What you should see.** rex answers with the source. rex's log says `SOURCES myaddon registered` and, the first time, `SECTION create Kids (show)`. The library appears in Plex apps under More within a second.
+**What you should see.** rex answers with the source. rex's log says `SOURCES myaddon registered at http://127.0.0.1:9981` and, the first time, `SECTION create Kids (show) for myaddon's kids`. The library appears in Plex apps under More within a second.
 
 ## Step 3. Describe each video
 
@@ -143,7 +143,7 @@ How rex treats them:
 | To | Send | rex answers |
 |---|---|---|
 | Add or change videos | `POST /rex/feed/myaddon/items` with `{"items": [...]}` | How many were `created`, `updated`, `held`, `unchanged`, and every `rejected` one with its reason |
-| Remove videos | `DELETE /rex/feed/myaddon/items` with `{"ids": [...]}` | How many went to the trash |
+| Remove videos | `DELETE /rex/feed/myaddon/items` with `{"ids": [...]}` | How many were `trashed`, `deleted`, `released` (held ones forgotten) and `unknown` |
 | Send everything | `PUT /rex/feed/myaddon/snapshot` with `{"items": [...]}`. In parts: `"session"` (any text), `"part"` from 0, `"complete": true` on the last | The same counts, and what it `removed`: every video of yours the snapshot did not name |
 
 Send a few hundred videos per request. A snapshot that names nothing removes nothing, and one that would remove more than half of your videos is refused unless its last part says `"force": true`: an addon that lost track of things cannot empty your library by accident.
@@ -170,7 +170,7 @@ rex's log names every refused video and why: `FEED myaddon rejected <id>: <reaso
 |---|---|
 | **An id is forever.** Change it and the video is a new title | Watch history and edits stay on the old row, which the next snapshot removes |
 | **One video, one path.** Two ids may not share a `path` | The second is rejected: `... is already <id>'s file` |
-| **A video's bytes are fixed per id.** rex keeps the streams it was first probed with | If the bytes change (another format, a fixed upload), give the video a new id and path |
+| **A file's bytes are fixed per id.** rex keeps the streams it was first probed with; a later probe changes only its chapters. Only a stream (`.m3u8`) takes a new probe whose streams differ | If a file's bytes change (another format, a fixed upload), give it a new id and path |
 | **Probe everything.** No `media_info`, no video | A file waits in `held` until a send brings one; a stream is rejected |
 | **Keep the source name.** Rows belong to (source, id) | Another name starts an empty source; the old one's rows stay until you delete it |
 | **Snapshots are complete.** One that misses a channel removes it | Do not send a snapshot after a partial failure: skip that round |
@@ -179,9 +179,9 @@ To **replace** an addon (or a script) that already filled a library, keep its so
 
 ## Example: rex-stremio
 
-[rex-stremio](https://github.com/debridmediamanager/rex-stremio) turns the catalogs of your Stremio addons into rex libraries: films into a movie library, series into a TV library. It does Steps 1 to 5 and is one Python file, standard library only. It does not take deletes: a catalog's titles are not its to delete.
+[rex-stremio](https://github.com/debridmediamanager/rex-stremio) turns the catalogs of your Stremio addons into rex libraries: films into a movie library, series into a TV library, live channels into a Live TV library. It does Steps 1 to 5 and is one Python file, standard library only. It does not take deletes: a catalog's titles are not its to delete.
 
-**Registering.** Every catalog you tick names a library: Stremio Films or Stremio Shows unless you rename it. rex-stremio registers as `stremio` with one directory per library, named after it (`stremio-films`), and declares that library as the directory's `movies` title for film catalogs or its `shows` title for series catalogs.
+**Registering.** Every catalog you tick names a library: Stremio Films, Stremio Shows or Live TV unless you rename it. rex-stremio registers as `stremio` with one directory per library, named after it (`stremio-films`), and declares that library as the directory's `shows` title for series catalogs, or its `movies` title for film and live TV catalogs.
 
 **Serving.** Stream addons' links expire, so rex-stremio stores no links. It serves a URL per title, `/<directory>/<catalog>/<id>.<ext>`, and answers it with a redirect to a link it asks for at that moment:
 
@@ -191,27 +191,27 @@ self.send_response(302)
 self.send_header("Location", url)
 ```
 
-It asks each addon that serves the title (`/stream/<movie or series>/<id>.json`), keeps only plain `http(s)` links (a torrent's `infoHash` is not a file rex can read), drops what is above your resolution or size limits, and tries the rest highest resolution first. The link that opens is cached for an hour, or until shortly before it expires. rex follows the redirect and reads the file, with seeking, straight from the link.
+It asks each addon that serves the title (`/stream/<movie or series>/<id>.json`), keeps only plain `http(s)` links (a torrent's `infoHash` is not a file rex can read), drops what is above your resolution or size limits, and tries the rest highest resolution first. The link that opens is cached until an hour before it expires (for an hour when the link does not say). rex follows the redirect and reads the file, with seeking, straight from the link. A link that needs headers of its own rex-stremio relays itself, and an HLS master playlist it answers with its best variant alone.
 
-**Probing.** Once per title, rex-stremio runs ffprobe on its own URL, so `media_info` describes exactly what rex will read, and caches the result. The stream that probe came from is remembered and tried first at every play, so what plays is what rex was told about. The probe's container picks the path's extension: `.mkv`, `.mp4` or `.m3u8` for HLS.
+**Probing.** Once per title, rex-stremio runs ffprobe on its own URL, so `media_info` describes exactly what rex will read, and caches the result. The stream that probe came from is remembered and tried first at every play, so what plays is what rex was told about. The probe's container picks the path's extension: `.mkv`, `.mp4`, `.ts`, `.avi`, or `.m3u8` for HLS.
 
-**Naming.** Each title goes to rex with `kind` and its IMDb id in `ids`, so Plex names it as in [rex with your own app](any-source.md). The catalog's own title, summary, date and poster go in `display`, which shows only until Plex names it.
+**Naming.** Each film and episode goes to rex with `kind` and its IMDb id in `ids`, so Plex names it as in [rex with your own app](any-source.md). The catalog's own title, summary, date and poster go in `display`, which shows only until Plex names it. A live channel, or a title only its addon knows, has no IMDb id, so `display` alone names it.
 
-**Numbering.** A film is a film. A series' seasons and episodes come from Cinemeta, whose ids are IMDb's, and keep its numbers, so a new episode never shifts the others.
+**Numbering.** A film is a film. A series' seasons and episodes come from Cinemeta, whose ids are IMDb's, and keep its numbers, so a new episode never shifts the others. rex places them on TMDB's numbers, so where Cinemeta's differ, an episode lands in the wrong place.
 
-**Ids.** An id is the catalog plus the IMDb id (and season and episode), such as `st-<catalog>-tt0111161`. It never changes, and one film in two catalogs is two titles, each in its own library.
+**Ids.** An id is the catalog plus the IMDb id (and season and episode), such as `st-<catalog>-tt0111161`. It never changes, so one film in two catalogs is two items. With **Catalogs as collections** on, a film or series several catalogs of one library list is one title there, in each catalog's collection.
 
-**Sending.** Every six hours and after every save: register, then one snapshot of every catalog, in parts of 200. A catalog that answers empty or only in part makes the round a plain `POST .../items` instead: it adds and updates, removes nothing, and a later complete round removes what really left.
+**Sending.** Every six hours and after every save: register, then each catalog's videos as soon as that catalog is checked (`POST .../items`, 200 a request), then one snapshot of every catalog, in parts of 200. The first snapshot after a save carries `"force": true`, since unticking catalogs can remove more than half. If a catalog answers empty or only in part, the round sends no snapshot: it adds and updates, removes nothing, and a later complete round removes what really left.
 
 ## Troubleshooting
 
 | You see | Why | Fix |
 |---|---|---|
 | `rejected`: `not a video file` | The file name has no video extension, or an `.m3u8` whose probe is not `hls` | Name streams `.m3u8` and send their probe |
-| A video never shows up | A file is held, or a stream was rejected: no `media_info`, or one with no streams | Probe it and send it again |
+| A video never shows up | It is held (its `media_info` has no streams, or a file was sent without one), or a stream sent without `media_info` was rejected | Probe it and send it again |
 | `rejected`: `... is already <id>'s file` | Another id has that `path` | Keep one id per path |
 | Episodes titled "Episode 1" and blank tiles | No `display` | Send `display` with each video |
-| A film sent with its IMDb id keeps your `display` title, not Plex's | rex asks Plex for titles only once it is claimed | Claim rex ([rex](with-zurg.md)) |
+| A film sent with its IMDb id keeps your `display` title, not Plex's | rex asks Plex for titles only once it is claimed | Claim rex: [step 3 of rex with your own app](any-source.md#step-3-add-it-to-a-plex-account) |
 | Pictures do not show | The URL is on your home network but not under your addon's registered `url`, or is not http(s) | Serve them from your addon's own address, or host them on the public internet. |
 | Playing fails with 502 in rex's log | Your addon did not answer, or the stream's site refused it | Check your addon's own log first |
 | A title deleted in a Plex app stays | Your addon answered the `DELETE` with something other than `2xx` or `404` | Delete it on your side, then answer `2xx` |

@@ -9,7 +9,7 @@ Everything below was tested on 2026-10-23 with Kometa 2.5.3 (the `kometateam/kom
 | You need | Why |
 |---|---|
 | rex set up and added to a Plex account, as in [rex step 3](with-zurg.md#step-3-add-it-to-a-plex-account) | Kometa edits the library, and only the account rex is registered on may do that. An unclaimed rex serves nobody |
-| rex 2026-10-24 nightly or later | Update as in [rex's Updating section](with-zurg.md#updating) |
+| rex nightly **2026.10.24 or newer** | Update as in [rex's Updating section](with-zurg.md#updating) |
 | Docker on any machine that can reach rex | Kometa runs as a container. Kometa's own docs cover [other ways to install it](https://kometa.wiki/en/latest/kometa/install/overview/) |
 | A free TMDb API key | Kometa needs one for itself, even though rex does not. Make one under **Settings → API** on themoviedb.org, as [TMDb's getting started page](https://developer.themoviedb.org/docs/getting-started) describes |
 
@@ -101,6 +101,6 @@ In a Plex app, the movie library has a **Collections** tab with the genre collec
 
 ## What Kometa can and cannot see
 
-Kometa matches titles by the TMDb, TVDb and IMDb ids rex shows for them. A title rex could not identify, still showing its file name and no poster, has none, so Kometa leaves it out of anything built from those ids. Fix Match it in a Plex app first.
+Kometa matches titles by the TMDb, TVDb and IMDb ids rex shows for them. A title its source did not identify, still showing its file name and no poster, has none, so Kometa leaves it out of anything built from those ids. Fix Match it in a Plex app first.
 
 Tested on rex: collections by title search, by TMDb id and smart collections; the genre default collections with their posters; the resolution and ratings overlays; and critic rating and genre updates from TMDb. Not tested yet: playlists, music libraries and Kometa's other operations. If one fails, Kometa's own log names the request that did, and that is worth reporting on Discord.

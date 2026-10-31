@@ -1,6 +1,6 @@
 # rex with zurg
 
-[rex](https://rex.debridmediamanager.com) is a Plex Media Server that owns no files. The official Plex apps see it as a normal Plex server. Any app can fill it ([rex with your own app](any-source.md)); this page sets it up with zurg, which sends it your debrid library, and when you press play rex streams the file straight from zurg. Nothing is downloaded first.
+[rex](https://rex.debridmediamanager.com) is a media server for the official Plex apps that owns no files. The official Plex apps see it as a normal Plex server. Any app can fill it ([rex with your own app](any-source.md)); this page sets it up with zurg, which sends it your debrid library, and when you press play rex streams the file straight from zurg. Nothing is downloaded first.
 
 This page takes you from nothing to playing a movie, one step at a time. Every step says what it does, why it matters and what you should see before you move on. If what you see does not match, stop there: the next step will not fix it.
 
@@ -13,20 +13,20 @@ Four things to know before you start:
 - **zurg tells rex about itself.** You give zurg the address of rex, and zurg does the rest. You never type zurg's details into rex.
 - **zurg and DMM decide what each file is; Plex describes it.** zurg asks DMM which movie or episode each file is, and rex shows that title with the posters and summaries Plex's own metadata gives it once rex is on a Plex account. rex never guesses from a file name.
 
-rex goes public with its source code on Halloween, October 31, and is free for everyone: no sponsor tier and no waiting period. Until then its download needs a sponsor's GitHub access. zurg's nightly, which this guide uses, stays a sponsor release; [Any source](any-source.md) runs rex without it. See [rex.debridmediamanager.com](https://rex.debridmediamanager.com).
+rex is free and open source (MIT): no sponsor tier and no account needed to download it. zurg's nightly, which this guide uses, stays a sponsor release; [rex with your own app](any-source.md) runs rex without it.
 
 ## Before you start
 
 | You need | Why |
 |---|---|
 | A machine that stays on: Linux (Ubuntu 22.04 or newer), macOS, or Windows (64 bit). A Proxmox LXC works, unprivileged is fine, once FUSE is turned on for it (Options > Features > FUSE): zurg's installer stops without `/dev/fuse` | rex and zurg are servers: your Plex apps reach them whenever you press play. Where the commands differ, a step has a tab for each system. [Docker](#run-rex-in-docker) is further down, for Linux |
-| 1 GB of RAM for a library of 40,000 titles | rex keeps the library in `rex.db` and uses about 450 MB with 40,000 titles, starting included; converting video takes more. zurg needs little |
+| 1 GB of RAM | With 4,062 movies and 656 shows (34,678 episodes), rex used under 500 MB while it started and about 730 MB while the library was browsed; converting video takes more. zurg needs little |
 | A debrid account (Real-Debrid, TorBox, AllDebrid, Premiumize, Debrid-Link, Offcloud) or Usenet | That is where your movies and shows actually live |
-| A GitHub account with access to zurg's and rex's sponsor releases | Both are private GitHub releases. The zurg installer signs you in once and rex's download reuses that sign-in |
+| A GitHub account with access to zurg's sponsor releases | zurg's nightly is a private GitHub release. The zurg installer signs you in once |
 | Your DMM API key, from sponsoring DMM (optional) | zurg asks DMM what each file is. Without it zurg works it out from the release name, through DMM's free title search: fewer titles match, and an anime numbered across the whole series stays in file order |
 | A fresh Plex account, made just for rex | rex gets every title, poster, summary and episode name from Plex once it is [added to a Plex account](#step-3-add-it-to-a-plex-account). Until then titles keep their file names and have no posters |
 
-This page needs rex nightly **2026.10.25 or newer** and zurg nightly **2026.10.22 or newer**.
+This page needs rex nightly **2026.10.25 or newer** and zurg nightly **2026.10.27 or newer**.
 
 ## Step 1. Install zurg
 
@@ -72,20 +72,17 @@ Already run zurg? Update and restart it with `cd ~/zurg && ./zurg update && ./zu
 +++ Linux and macOS
 ```bash
 mkdir -p ~/rex && cd ~/rex
-export PATH="$PATH:$HOME/zurg/bin"
+TAG=$(curl -fsSL 'https://api.github.com/repos/debridmediamanager/rex/releases?per_page=1' | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -1)
 P=$(uname -s | tr A-Z a-z)-$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
-TAG=$(gh api 'repos/debridmediamanager/rex/releases?per_page=1' --jq '.[0].tag_name')
-gh release download "$TAG" -R debridmediamanager/rex -p "*-$P.tar.gz"
-tar xzf rex-*-$P.tar.gz --strip-components=1 && rm rex-*-$P.tar.gz
+curl -fL "https://github.com/debridmediamanager/rex/releases/download/$TAG/rex-$TAG-$P.tar.gz" | tar xz --strip-components=1
 ```
 +++ Windows
 In PowerShell:
 
 ```powershell
 New-Item -ItemType Directory -Force $HOME\rex | Out-Null; cd $HOME\rex
-$env:Path += ";$HOME\zurg\bin"
-$tag = gh api 'repos/debridmediamanager/rex/releases?per_page=1' --jq '.[0].tag_name'
-gh release download $tag -R debridmediamanager/rex -p '*-windows-amd64.zip'
+$tag = (Invoke-RestMethod 'https://api.github.com/repos/debridmediamanager/rex/releases?per_page=1')[0].tag_name
+curl.exe -fLO "https://github.com/debridmediamanager/rex/releases/download/$tag/rex-$tag-windows-amd64.zip"
 tar -xf "rex-$tag-windows-amd64.zip" --strip-components=1; Remove-Item "rex-$tag-windows-amd64.zip"
 ```
 +++
@@ -109,6 +106,7 @@ nano ~/.config/systemd/user/rex.service
 ```ini
 [Unit]
 Description=rex
+After=network-online.target
 
 [Service]
 WorkingDirectory=%h/rex
@@ -185,9 +183,9 @@ rex runs while you are logged in to Windows, in a window of its own: leave it op
 
 ```
 INFO    seeded rex.db: an empty library named yourhost, machine=...
-INFO    no source yet: one registers at PUT /rex/sources/{name} (docs/feed-api.md)
+INFO    no source yet: a source registers itself once pointed at this server (zurg: rex_url; others: PUT /rex/sources/{name}, docs/feed-api.md)
 INFO    claim state: unclaimed
-INFO    rex on http://yourhost:32400  machine=...  items=0  parts=proxy
+INFO    rex on http://192.168.1.20:32400  machine=...  items=0  parts=proxy
 ```
 
 rex names itself after the machine; your Plex apps show that name. `no source yet` is right: zurg has not been told about rex. Leave the log open.
@@ -218,13 +216,17 @@ rex names itself after the machine; your Plex apps show that name. `no source ye
 2. Enter your own account's username or email, pick the rex server and both libraries, **Movies** and **TV Shows**, and send the invite.
 3. Sign out, sign in as **yourself**, and accept the invite. It arrives by email and in app.plex.tv.
 
+![Manage Library Access in app.plex.tv's settings, with the Grant Library Access button](../assets/rex/20-plex-manage-library-access.webp)
+
+![The Grant Library Access dialog with the rex server's Movies and TV Shows ticked](../assets/rex/21-plex-grant-library-access.webp)
+
 **What you should see.** Signed in as yourself, Plex apps list the rex server beside your own servers, with both libraries, empty until the next step. Your watch history on rex is your own: it is kept apart from the fresh account's. Share it the same way with anyone else in your household.
 
 ## Step 4. Connect zurg to rex
 
 **What it does.** Tells zurg where rex is. zurg introduces itself to rex, sends its whole library, reads each file's video and audio details and sends those too, then every change as it happens.
 
-**Why it matters.** This is the only link between the two. rex has no setting for zurg: if `rex_url` is missing, rex stays empty. Your DMM key lets zurg ask DMM which movie or episode each file is; without one zurg works it out from the name, and fewer titles match.
+**Why it matters.** This is the only link between the two. rex has no setting for zurg: if `rex_url` is missing, rex stays empty. `rex_url` is always rex's plain `http://` address on your network, never an HTTPS one from [Use it outside your home](#use-it-outside-your-home-optional): rex takes zurg's pushes only from your own networks ([Keep the port private](#keep-the-port-private)). Your DMM key lets zurg ask DMM which movie or episode each file is; without one zurg works it out from the name, and fewer titles match.
 
 zurg will not start with the same key twice, and zurg's dashboard writes `dmm_api_key` into its config when you enter your key there. Without a DMM key, leave `dmm_api_key` out.
 
@@ -271,9 +273,10 @@ INFO    FEED zurg upsert: 2 created, 0 updated, 0 held, 0 unchanged, 0 rejected
 
 - Nothing at all in rex's log: zurg is still loading its library, zurg is out of date (update it as in [step 1](#step-1-install-zurg)), or `rex_url` has a typo. `grep 'rex feed' ~/zurg/logs/zurg.log | tail -n 5` shows zurg's side (on Windows, `Select-String 'rex feed' $HOME\zurg\logs\zurg.log | Select-Object -Last 5`): with no `rex feed: pushing the library to ...` line zurg did not read `rex_url`, and `rex feed: snapshot failed, retrying in ...` means it cannot reach rex at that address.
 - A title stays `held` and zurg logs `Cannot probe file ...`: the first read from the debrid service failed. zurg tries again by itself; **Analyze & Tag Library** under **Utilities** on zurg's dashboard tries at once.
-- Titles arrive but no `identified` lines: zurg could not match them by name, and with `dmm_api_key` set it logs `DMM refused the API key for placement` when the key is not a sponsor's. zurg then matches by name and tries the key again a day later, or at once when it restarts.
 
-Leave `plex_server_url` in zurg's config pointing at your real Plex, or empty. Pointed at rex, zurg would take rex's own matches and give them to DMM as the answer, wrong ones included.
+  ![zurg's Library Management card on the Utilities page, with Analyze & Tag Library](../assets/rex/72-zurg-analyze-tag.webp)
+
+- Titles arrive but no `identified` lines: zurg could not match them by name, and with `dmm_api_key` set it logs `DMM refused the API key for placement` when the key is not a sponsor's. zurg then matches by name and tries the key again a day later, or at once when it restarts.
 
 Running several zurgs (one per debrid service)? Give each its own name with an extra line, `rex_source: rd`, `rex_source: tb` and so on. They fill the same libraries.
 
@@ -289,6 +292,14 @@ File names often number episodes differently from the episode lists Plex apps sh
 
 A file zurg cannot place stays unmatched: a film titled as its file, or an episode in a show named after its release, numbered in file order. With a DMM key zurg asks DMM about it again a day later, and you can fix it yourself with **Fix Match** in a Plex app, signed in as the fresh account that owns rex (rex refuses it to the accounts it is shared with). A title you corrected with Fix Match stays as you set it.
 
+![A movie's ⋯ menu in a Plex app with Fix Match in it](../assets/rex/30-plex-fix-match-menu.webp)
+
+![The Fix Match dialog with the search result to pick](../assets/rex/31-plex-fix-match-results.webp)
+
+zurg's dashboard shows what it did with each release: open the release in **Torrent Manager** and look at **Placement**. **Place again** asks DMM once more, and an IMDb id typed into **External ID** places it by that id.
+
+![A release page in zurg's Torrent Manager with its External ID and the Placement section](../assets/rex/70-zurg-placement-row.webp)
+
 ## Step 5. Watch something
 
 **What it does.** Opens rex in a Plex app, the same way you would open any Plex server.
@@ -297,9 +308,9 @@ A file zurg cannot place stays unmatched: a film titled as its file, or an episo
 
 Open a Plex app (not a web browser) on a phone, TV or computer **on the same home network**. rex shows up on its own under the machine's name, with **Movies** and **TV Shows**. Pick a movie and press play.
 
-At home nothing else is needed: Plex apps find rex with Plex's own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN). Discovery runs on UDP ports 32410 and 32414, so a firewall on the rex machine must let those in (on Windows, step 2's firewall rules do). rex answers discovery when it uses port 32400. If you moved rex to 32500 because Plex runs on the same machine, discovery is left to that Plex, and apps find rex through the Plex account it is [shared with](#share-it-with-your-own-account). app.plex.tv in a web browser is the exception: it needs the HTTPS address from [Use it outside your home](#use-it-outside-your-home-optional), even at home.
+![A Plex app showing the rex server's Movies and TV Shows in the sidebar beside a grid of films](../assets/rex/10-plex-server-libraries.webp)
 
-![rex's Movies library in Plex](../assets/rex/rex-movies.webp)
+At home nothing else is needed: Plex apps find rex with Plex's own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN). Discovery runs on UDP ports 32410 and 32414, so a firewall on the rex machine must let those in (on Windows, step 2's firewall rules do). rex answers discovery when it uses port 32400. If you moved rex to 32500 because Plex runs on the same machine, discovery is left to that Plex, and apps find rex through the Plex account it is [shared with](#share-it-with-your-own-account). app.plex.tv in a web browser is the exception: it needs the HTTPS address from [Use it outside your home](#use-it-outside-your-home-optional), even at home. `http://192.168.1.20:32400/web` is not Plex Web: rex has no web app of its own, and that page only says whether rex is claimed and where to watch.
 
 **What you should see.** Posters, titles and years as on any Plex server, and the movie plays.
 
@@ -308,11 +319,9 @@ Two things you may meet:
 - **"yourhost server is unclaimed and not secure".** A Plex app says this about any server that is not on a Plex account, and rex plays nothing until it is on one. Do [step 3](#step-3-add-it-to-a-plex-account). Do not press **Claim it now** while signed in as yourself: it registers rex on your own account.
 - **"This server is not powerful enough to convert video".** The app cannot play the file as it is, often a web browser meeting AC3 or DTS sound. Plex apps on TVs and phones play most files as they are. To play everything everywhere, set up [Converting video](#converting-video-optional).
 
-![The unclaimed-server notice in Plex](../assets/rex/rex-unclaimed.webp)
-
 zurg's folders other than `movies` and `shows`, such as `anime`, need nothing: each file goes to **Movies** or **TV Shows** by what zurg says it is. A file zurg cannot tell is an episode waits in **Movies**.
 
-To give one of those folders libraries of its own, add `rex_shows` and/or `rex_movies` under it in zurg's `config.yml`, beside its filters, then restart zurg as in [step 4](#step-4-connect-zurg-to-rex):
+To give one of those folders libraries of its own, add both `rex_shows` and `rex_movies` under it in zurg's `config.yml`, beside its filters, then restart zurg as in [step 4](#step-4-connect-zurg-to-rex). DMM places some of a folder's files as films and some as episodes, and the kind with no title of its own goes to **Movies** or **TV Shows**:
 
 ```yaml
 directories:
@@ -323,12 +332,24 @@ directories:
 
 Once zurg has loaded, rex makes **Anime** and **Anime Movies** and moves what it already showed from `anime` into them as it was: watch history, Fix Match and edits included. An open Plex Web lists them at once under **More** in its sidebar, where you can pin them. Share them with your own account as in [step 3](#share-it-with-your-own-account). Rename them in a Plex app as you like. Delete one and it stays deleted, its files going back to **Movies** or **TV Shows**, until you add it again with **Add Library**, whose folder list shows zurg's folders. If a library does not appear, zurg's log or rex's says why.
 
-**Back up** `rex.db` in rex's folder (it holds your library, watch history and zurg's login, so keep it private) and, once you have one, `claim_state.json`:
+![Add Library's folder picker listing the source's folders anime, kids and movies](../assets/rex/14-plex-add-library-folders.webp)
+
+!!!warning Deleting in a Plex app deletes from your debrid account
+Signed in as the fresh account, **Delete** on a movie or episode deletes its file at zurg too, and zurg removes the torrent from your debrid account once none of its files is left. The accounts rex is shared with, yours included, cannot delete. To turn deleting off: in app.plex.tv as the fresh account, open **Settings**, the rex server's **Library**, **Show Advanced**, untick **Allow media deletion** and save. rex then refuses every delete.
+!!!
+
+![The rex server's Library settings with Show Advanced open and Allow media deletion outlined](../assets/rex/32-plex-allow-media-deletion.webp)
+
+A title that leaves your debrid account the other way, removed there or by zurg, goes to the library's trash in rex as it would in Plex: it stays, unavailable, with its watch history, and comes back as it was if zurg has it again. **Empty Trash** on the library removes it for good, and **Empty trash automatically after every scan** (Settings, Library) does that by itself; it is off.
+
+**Back up** `rex.db` in rex's folder (it holds your library, watch history and zurg's login, so keep it private) and, once you have them, `claim_state.json` and `rex-direct.json` (the claim, and rex-direct's certificate key):
 
 +++ Linux and macOS
 ```bash
 sudo apt install -y sqlite3    # once, on Linux; macOS has it
-sqlite3 ~/rex/rex.db ".backup $HOME/rex/rex.db.bak"
+mkdir -p ~/rex-backup
+sqlite3 ~/rex/rex.db ".backup $HOME/rex-backup/rex.db"
+cp ~/rex/*.json ~/rex-backup/
 ```
 +++ Windows
 Windows has no `sqlite3`, so stop rex for a moment and copy `rex.db` with the two files beside it that start the same way:
@@ -336,12 +357,14 @@ Windows has no `sqlite3`, so stop rex for a moment and copy `rex.db` with the tw
 ```powershell
 Stop-Process -Name rex; Start-Sleep 1
 New-Item -ItemType Directory -Force $HOME\rex-backup | Out-Null
-Copy-Item $HOME\rex\rex.db*, $HOME\rex\claim_state.json $HOME\rex-backup
+Copy-Item $HOME\rex\rex.db*, $HOME\rex\*.json $HOME\rex-backup
 Start-ScheduledTask rex
 ```
 +++
 
-In Docker the files sit in `~/rex/config`, readable by root only. Back up from inside the container: `docker exec rex sqlite3 /config/rex.db ".backup /config/rex.db.bak"`.
+In Docker the files sit in `~/rex/config`, readable by root only. Back up from inside the container with `docker exec rex sqlite3 /config/rex.db ".backup /config/rex.db.bak"`, then `mkdir -p ~/rex-backup && sudo cp ~/rex/config/rex.db.bak ~/rex/config/*.json ~/rex-backup/`.
+
+[Restore a backup](#restore-a-backup) puts them back.
 
 You are done. The sections below are optional.
 
@@ -476,6 +499,10 @@ rex prints this at every start. Trouble shows later as `heartbeat failed` or `an
 
 Watched on another Plex server before? Once your library is in rex, [Bring your watch history](import-watched.md) copies what you watched, where you stopped and your star ratings from it, for each person on their own.
 
+## Sonarr, Radarr and Bazarr (optional)
+
+rex needs no mount, but Sonarr and Radarr do: they import into zurg's mount, under `__magic__`. Set them up with zurg as [Sonarr & Radarr for torrents](../zurg/guides/sonarr-radarr-torrents.md) or [for Usenet](../zurg/guides/sonarr-radarr.md) shows; what they fetch reaches rex through zurg like anything else. Subtitles Bazarr saves beside those imports show up in rex within about a minute: [Subtitles with Bazarr](../zurg/guides/subtitles.md). One zurg can hold your debrid account and Usenet in one library ([Usenet](../zurg/guides/usenet.md)), and two copies of one film are one title in rex, with a version for each.
+
 ## Converting video (optional)
 
 **What it does.** Lets rex convert what a device cannot play, the way Plex does.
@@ -536,13 +563,15 @@ Subtitles in a converted file: an image subtitle is burned into the picture and 
 
 **Why it matters.** Plex's own first result is often out of sync with the file.
 
+![The Subtitles search dialog in a Plex app, listing English results for Sintel](../assets/rex/51-plex-search-subtitles.webp)
+
 There is nothing to set up. rex checks a subtitle against the file's own text subtitle when it has one. A file without one is checked against its sound when you press play, which needs [Converting video](#converting-video-optional) set up and reads six 90-second pieces of the file.
 
 **What you should see.** rex's log has a `SUBTITLE measured` line for each subtitle it checks, and `SUBTITLE applied ... corrected by` when it fixed one.
 
 ## Movie and TV capabilities
 
-Downloads, intro and credits skipping, seek thumbnails and the other server settings are in `docs/setup.md` in your rex download ("Movie and TV capabilities"). Music, Live TV and DVR are not supported.
+Downloads, intro and credits skipping, seek thumbnails and the other server settings are in [rex's setup guide](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities). Music, Live TV and DVR are not supported.
 
 ## Run rex in Docker
 
@@ -572,13 +601,9 @@ Already run zurg in Docker? Update it: `cd ~/zurg && docker compose pull zurg &&
 
 **Why it matters.** It is [step 2](#step-2-install-rex) in one file: the image is the program and Docker keeps it running.
 
-rex's image is private, like zurg's. zurg's Docker installer usually logged Docker in to `ghcr.io` already, and that login works for rex too. If pulling rex is refused, log in once with your GitHub username and a classic personal access token with the `read:packages` and `repo` scopes (the same login zurg's image uses):
+rex's Docker image is private, so pulling it may be refused. The download in [step 2](#step-2-install-rex) works for everyone: if the pull is refused, run rex that way, beside zurg's container.
 
-```bash
-docker login ghcr.io -u YOUR_GITHUB_USERNAME
-```
-
-If `docker ps` says permission denied, put `sudo` before every `docker` command on this page. Docker keeps its login per user, so log in as the same user that runs `docker compose`.
+If `docker ps` says permission denied, put `sudo` before every `docker` command on this page.
 
 Make a folder, for example `~/rex`, with this `compose.yml`:
 
@@ -654,7 +679,93 @@ rex takes no password from zurg. It answers the API zurg pushes to only from thi
 ## Updating
 
 - **zurg:** as in [step 1](#step-1-install-zurg).
-- **rex:** run the download block of [step 2](#step-2-install-rex) again (it replaces the program and `data/`, and leaves `rex.db`, your keys and `claim_state.json` alone), then restart rex as step 2 shows. On Windows, run `Stop-Process -Name rex` before the download block, as Windows does not let a running `rex.exe` be replaced, and `Start-ScheduledTask rex` after it. If rex then exits with `unrecognized arguments`, delete the flags it names from rex's start command: rex no longer has them.
+- **rex:** rex never updates itself. Run the download block of [step 2](#step-2-install-rex) again (it replaces the program and `data/`, and leaves `rex.db`, your keys, `claim_state.json` and `rex-direct.json` alone), then restart rex as step 2 shows. On Windows, run `Stop-Process -Name rex` before the download block, as Windows does not let a running `rex.exe` be replaced, and `Start-ScheduledTask rex` after it. If rex then exits with `unrecognized arguments`, delete the flags it names from rex's start command: rex no longer has them.
+
+## Later: restore, move, remove
+
+### Restore a backup
+
+Stop rex, delete `rex.db` and the `rex.db-wal` and `rex.db-shm` beside it, put your backup's files in rex's folder and start rex. Leaving the old `rex.db-wal` in place undoes the restore.
+
++++ Linux
+```bash
+systemctl --user stop rex
+rm -f ~/rex/rex.db ~/rex/rex.db-wal ~/rex/rex.db-shm
+cp ~/rex-backup/* ~/rex/
+systemctl --user start rex
+```
++++ macOS
+```bash
+launchctl unload ~/Library/LaunchAgents/com.rex.plist
+rm -f ~/rex/rex.db ~/rex/rex.db-wal ~/rex/rex.db-shm
+cp ~/rex-backup/* ~/rex/
+launchctl load ~/Library/LaunchAgents/com.rex.plist
+```
++++ Windows
+```powershell
+Stop-Process -Name rex; Start-Sleep 1
+Remove-Item $HOME\rex\rex.db*
+Copy-Item $HOME\rex-backup\* $HOME\rex
+Start-ScheduledTask rex
+```
++++ Docker
+```bash
+cd ~/rex && docker compose down
+sudo rm -f config/rex.db config/rex.db-wal config/rex.db-shm
+sudo cp ~/rex-backup/rex.db.bak config/rex.db && sudo cp ~/rex-backup/*.json config/
+docker compose up -d
+```
++++
+
+### Move rex to another machine
+
+Back up as in [step 5](#step-5-watch-something), then stop rex on the old machine for good, as the first block of [Remove rex](#remove-rex) does. On the new one, do [step 2](#step-2-install-rex), but copy your backup's files into rex's folder before you make it a service. It is the same server to your Plex apps, still claimed and shared. Then:
+
+- Put the new LAN IP in zurg's `rex_url` and restart zurg ([step 4](#step-4-connect-zurg-to-rex)).
+- Move your router's port forward to the new machine. The rex-direct name stays the same and follows a new public IP by itself. Tailscale serve and Caddy are set up again on the new machine.
+
+### The fresh Plex account is gone
+
+If the account rex is claimed with is lost or banned, make another fresh account, stop rex, delete `claim_state.json` in rex's folder, start rex and do [step 3](#step-3-add-it-to-a-plex-account) again: claim, then share with everyone again. The library, Fix Match, edits and the rex-direct name stay, and each person's watch history comes back once rex is shared with their account again.
+
+### Which rex do I run?
+
+rex has no version command. The nightly's date is in the name of the download (`2026.10.30.0040-nightly`), and the program file carries the same date: `ls -l ~/rex/rust/target/release/rex` (on Windows `(Get-Item $HOME\rex\rust\target\release\rex.exe).LastWriteTime`). The Plex version your apps show is not rex's: rex reports the current Plex Media Server version on purpose, so the apps treat it as up to date, and **Check for Updates** always says it is.
+
+### Start over
+
+To fill the library again from zurg, keeping the claim and shares: remove zurg as a source (`curl -s -X DELETE http://192.168.1.20:32400/rex/sources/zurg`, then a `DELETE` of the `confirm` path it answers, within five minutes) and restart zurg. That drops the watch history of what zurg sent. To start from nothing, stop rex, delete `rex.db`, `rex.db-wal`, `rex.db-shm`, `claim_state.json` and `rex-direct.json`, start rex, remove the old server from the fresh account as below, and do [step 3](#step-3-add-it-to-a-plex-account) and restart zurg.
+
+### Remove rex
+
+Stop rex for good:
+
++++ Linux
+```bash
+systemctl --user disable --now rex && rm ~/.config/systemd/user/rex.service
+```
++++ macOS
+```bash
+launchctl unload ~/Library/LaunchAgents/com.rex.plist && rm ~/Library/LaunchAgents/com.rex.plist
+```
++++ Windows
+In PowerShell as administrator:
+
+```powershell
+Unregister-ScheduledTask rex -Confirm:$false; Stop-Process -Name rex
+Remove-NetFirewallRule -DisplayName rex, "rex discovery"
+```
++++ Docker
+```bash
+cd ~/rex && docker compose down
+```
++++
+
+Then delete the `rex_url` line from zurg's `config.yml` and restart zurg. In app.plex.tv as the fresh account, open **Settings**, **Authorized Devices**, filter by **Servers** and remove rex. Remove your router's port forward, and delete rex's folder.
+
+### Getting help
+
+Ask in the DMM [Discord](https://discord.com/invite/7u4YjMThXP)'s **rex-support** forum: [Getting help](../guides/remote-help.md) says what to include, and how sponsors get remote help.
 
 ## When something is wrong
 
@@ -663,7 +774,7 @@ rex takes no password from zurg. It answers the API zurg pushes to only from thi
 | `/rex/sources` stays `{"size":0}` | zurg is out of date, `rex_url` is wrong, or zurg's library is still loading. Update zurg as in [step 1](#step-1-install-zurg) and look at the end of zurg's log ([step 4](#step-4-connect-zurg-to-rex)) |
 | rex's log says `held ... no media_info yet` and the library stays empty | zurg has not read the files yet. Wait for its library to load; if zurg logs `segmentation fault`, update and restart it as in [step 1](#step-1-install-zurg) |
 | Titles show file names and no posters | rex is not on a Plex account: do [step 3](#step-3-add-it-to-a-plex-account). If you claimed it after zurg sent them, they are named by themselves once the claim lands |
-| A film is titled as its file, or an episode sits in a show named after its release | zurg could not place it. Without `dmm_api_key` that is a name its title search did not find; with it, DMM has not placed it yet and zurg asks again a day later. **Fix Match** fixes it by hand |
+| A film is titled as its file, or an episode sits in a show named after its release | zurg could not place it. Without `dmm_api_key` that is a name its title search did not find; with it, DMM has not placed it yet and zurg asks again a day later. zurg's dashboard shows which: the release's page in **Torrent Manager** has a **Placement** row (**Unplaced**, **Not asked yet**) and **Place again**, and an unplaced release can be given its IMDb id there. **Fix Match** fixes it by hand |
 | A title is in the wrong show or matched to the wrong film | DMM placed it wrong. With `dmm_api_key` set, zurg asks DMM again once a week, which helps once DMM has learned better. Until then, and always without a key, use **Fix Match** in a Plex app, signed in as the fresh account that owns rex; rex refuses it (403) to the accounts it is shared with |
 | Nothing plays and rex's log shows 502 | rex cannot reach the address zurg gave it. Run `curl` on that URL from the rex machine. In Docker, see the Docker section |
 | Nothing plays and rex's log shows `PART ... upstream 401` or `403` | zurg refused its own login. Restart zurg ([step 4](#step-4-connect-zurg-to-rex)) so it sends rex the current one |
@@ -672,5 +783,6 @@ rex takes no password from zurg. It answers the API zurg pushes to only from thi
 | Another machine cannot reach rex on Windows, although step 2's firewall rules exist | If you ever clicked **Cancel** when Windows asked whether to allow rex, Windows saved a rule that blocks it, and that wins over the port rules. Remove it in PowerShell as administrator: <code>Get-NetFirewallApplicationFilter -Program "$HOME\rex\rust\target\release\rex.exe" &#124; Get-NetFirewallRule &#124; Where-Object Action -eq Block &#124; Remove-NetFirewallRule</code> |
 | rex is not in the Plex apps away from home | Not claimed, or the device cannot reach the HTTPS address (a tailnet-only address needs Tailscale on that device) |
 | The log says `waiting for a claim` | Do [step 3](#step-3-add-it-to-a-plex-account) |
+| rex exits with `argument --announce-url: '...' is not an http:// or https:// address` | Give `--announce-url` the address alone, such as `https://myhost.tailnet.ts.net:443`: no brackets, quotes or link around it |
 | zurg stops when you log out | On Linux, run `sudo loginctl enable-linger "$USER"` (step 1) |
 | zurg will not start after you edited `config.yml` | The key was already in the file and zurg reports `mapping key "..." already defined`: delete one of the two |

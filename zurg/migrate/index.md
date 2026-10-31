@@ -279,6 +279,8 @@ worth knowing before they surprise you.
 - [From nzbdav](nzbdav.md). Renames nothing and is the easiest of the five
 - [From streamnzb](streamnzb.md). No library to migrate. zurg has a Stremio addon of its own
 
+Moving off Plex rather than onto zurg? [Move from Plex to rex](../../rex/from-plex.md) keeps zurg and your Plex apps and runs rex beside or instead of your Plex server.
+
 Naming behaviour on each page was measured on 2026-09-01 on a five-release
 corpus. The builds were zurg `bda7e3c3` and AltMount `0614008b` and InfiniDysk
 `cd9b1205` and nzbdav `794948be` and decypharr `0dd1cbbd`. A build older or
