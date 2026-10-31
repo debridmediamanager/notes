@@ -1,7 +1,7 @@
 ---
 label: rex with your Stremio addons
 icon: video
-order: 78
+order: 91
 ---
 
 # rex with your Stremio addons

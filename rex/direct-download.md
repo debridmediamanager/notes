@@ -16,7 +16,7 @@ Tested on 2026-10-25 with zurg on Real-Debrid, Plezy and Plex for Android on a P
 
 | You need | Why |
 |---|---|
-| rex set up as in [rex with zurg](with-zurg.md), [rex with your Stremio addons](stremio.md) or [rex with your own app](any-source.md), and a movie that plays | This page changes rex's start command and, for some sources, one of the source's settings |
+| rex set up as in [rex with your own app](any-source.md), [rex with your Stremio addons](stremio.md) or [rex with zurg](with-zurg.md), and a movie that plays | This page changes rex's start command and, for some sources, one of the source's settings |
 | rex nightly **2026.10.26 or newer** | Older builds do not have this setting. Update as in [rex's Updating section](any-source.md#updating) |
 | A source that can answer with a link | rex can only pass on a link the source gives it. [Step 1](#step-1-let-your-source-hand-out-links) says which sources do |
 

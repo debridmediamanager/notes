@@ -42,9 +42,9 @@ Every guide on this site, by project.
 ## rex
 
 - [rex questions](../rex/faq.md): before you install
-- [rex with zurg](../rex/with-zurg.md)
 - [rex with your own app](../rex/any-source.md)
 - [rex with your Stremio addons](../rex/stremio.md)
+- [rex with zurg](../rex/with-zurg.md)
 - [Move from Plex to rex](../rex/from-plex.md)
 - [Share rex with family and friends](../rex/sharing.md)
 - [Building rex addons](../rex/addons.md)
