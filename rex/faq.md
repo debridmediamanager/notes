@@ -24,7 +24,7 @@ What may cost something is around it:
 
 | | |
 |---|---|
-| zurg nightly, the source for a debrid or Usenet library | A perk for [DMM sponsors](https://gatekeeper.debridmediamanager.com) |
+| zurg nightly, a source for a debrid or Usenet library | A perk for [DMM sponsors](https://gatekeeper.debridmediamanager.com) |
 | A DMM API key, for DMM's exact matches in zurg | Optional, also from sponsoring DMM |
 | rex's Docker image | Private, so a pull may be refused. The download works for everyone |
 | [rex-stremio](stremio.md), your own app or an addon as the source | Free |
@@ -35,29 +35,29 @@ rex is not made by Plex, and Plex could take action against an account that regi
 
 ### Which Plex apps work?
 
-Every app that signs in with a Plex account sees rex like any server shared with that account. How far each one has been tried:
+How far each Plex app has been tried with rex:
 
 | App | Tested |
 |---|---|
 | Plex Web (app.plex.tv) | The most: browsing, playback, converting, subtitles, and playback away from home with free accounts on both sides |
 | Plex for Android (phone) | On a Pixel 6: playback, converting, and [downloading from your provider](direct-download.md) |
-| Plex for iOS | On an iPhone and an iPad: playback and converting. Dolby Vision has an app bug (below) |
-| Plex for Apple TV | In daily use on the developer's own rex, at home |
+| Plex for iOS | On an iPad: playback and converting. Dolby Vision has an app bug (below) |
+| Plex for Apple TV | Playback, live channels included |
 | Plex Desktop | Plex for Mac: playback and converting |
 | Plezy | On a Pixel 6: playback, and downloading from your provider |
 | Plex HTPC | Not tested yet |
 | Plex for Android TV, NVIDIA Shield, Google TV | Not tested yet |
 | Plex for Roku | Not tested yet |
 | Smart TV apps (Samsung, LG and others) | Not tested yet |
-| Infuse | Not tested yet. It signs in through plex.tv, so it reaches rex through the account rex is shared with |
+| Infuse | Not tested yet |
 
-Plezy also signs in through plex.tv and reaches rex through the account it is shared with. Away from home, only Plex Web has been tested.
+Away from home, only Plex Web has been tested.
 
 ### Does it play 4K, HDR and Dolby Vision?
 
-Yes. Files play in their original quality: rex hands the app the file as it is, and the app decides what it can show. When an app cannot play a file as it is, rex converts it, if FFmpeg is set up ([Converting video](with-zurg.md#converting-video-optional)). A conversion turns HDR and Dolby Vision into a standard picture (Settings, Transcoder, **Enable HDR tone mapping**, on by default), on the graphics chip where it can. A small Intel machine (a J4105) converts 4K HDR10 and Dolby Vision profile 5 to 1080p at about real time. Without FFmpeg, a file the app cannot play shows "This server is not powerful enough to convert video".
+Yes. Files play in their original quality: rex hands the app the file as it is, and the app decides what it can show. When an app cannot play a file as it is, rex converts it, if FFmpeg is set up ([Converting video](with-zurg.md#converting-video-optional)). A conversion turns HDR and Dolby Vision into a standard picture (Settings, Transcoder, **Enable HDR tone mapping**, on by default), on the graphics chip where it can. With Intel's OpenCL runtime installed, a small Intel machine (a J4105) converts 4K HDR10 and Dolby Vision profile 5 to 1080p at about real time. Without FFmpeg, a file the app cannot play shows "This server is not powerful enough to convert video".
 
-**Plex for iOS and Dolby Vision.** Plex for iOS 2026.20.0 on an iPhone 15 Pro sits at 0:00 when it plays a Dolby Vision file as it is. A real Plex Media Server serving the same file stalls the same way, so the fault is in the app. HDR10 and SDR 4K files play. Until Plex fixes it, pick a quality below Original in the player so rex converts the file.
+**Plex for iOS and Dolby Vision.** Plex for iOS 2026.20.0 sits at 0:00 when it plays a Dolby Vision file as it is. A real Plex Media Server serving the same file stalls the same way, so the fault is in the app. HDR10 and SDR 4K files play.
 
 ### Do I need Plex Pass?
 
@@ -65,7 +65,7 @@ No. rex tells the Plex apps that the account it is registered on has Plex Pass, 
 
 ### Can I download for offline viewing?
 
-The Plex apps' **Downloads** are there. rex prepares the download on its own machine, as the original file or converted with FFmpeg, and keeps it in a folder beside `rex.db` until the app fetches it. The account rex is registered on can always download; anyone you share with needs downloads allowed on their share ([Share rex](sharing.md#what-each-person-may-see-and-do)). A download leaves text subtitles out. Saving a download on a phone and watching it offline has not been tested yet.
+The Plex apps' **Downloads** are there. rex prepares the download on its own machine, as the original file or converted with FFmpeg, and keeps it in a folder beside `rex.db` until the app fetches it. The account rex is registered on can always download; anyone you share with needs downloads allowed on their share ([Share rex](sharing.md#what-each-person-may-see-and-do)). The app can still apply its own rules. A converted download leaves text subtitles out. Saving a download on a phone and watching it offline has not been tested yet.
 
 ### Can several people use it, each with their own history?
 
@@ -75,7 +75,7 @@ Yes. Everyone you share rex with signs in as themselves and gets their own watch
 
 A machine that stays on, running Linux (amd64 or arm64, glibc 2.35 or newer, so Ubuntu 22.04 and up), macOS (Intel or Apple Silicon) or 64-bit Windows.
 
-**Memory:** give it 1 GB. On a library of 4,062 movies and 656 shows (34,678 episodes), rex used under 500 MB while it started and about 730 MB while the library was browsed. Converting video takes more.
+**Memory:** give it 1 GB. On a library of 4,062 movies and 656 shows, rex used under 500 MB while it started and about 730 MB while the library was browsed. Converting video needs more on top.
 
 **Disk:** none for movies. rex keeps its library in `rex.db`. Downloads and the images analysis makes (seek previews, chapter images) also go beside it, if you use them.
 
@@ -87,7 +87,7 @@ No. rex never scans a folder or a disk and needs no mount. Every file comes from
 
 ### Does it work with Usenet?
 
-Yes, through zurg. rex never talks to a Usenet provider: zurg reads the files from Usenet and serves them to rex like any other file. Set up zurg for it with [Usenet](../zurg/guides/usenet.md) and point it at rex as in [rex with zurg](with-zurg.md).
+Yes, through a source that reads Usenet, such as zurg. rex never talks to a Usenet provider: the source reads the files and serves them to rex like any other file. Set up zurg for it with [Usenet](../zurg/guides/usenet.md) and point it at rex as in [rex with zurg](with-zurg.md).
 
 ### Do I need zurg?
 
@@ -102,7 +102,7 @@ Several sources can fill the same Movies and TV libraries.
 
 ### What does it not do?
 
-Movies and TV shows only. Music and photo libraries stay empty, and there is no Live TV or DVR. rex has no relay: to use it away from home it needs an address of its own ([Use it outside your home](with-zurg.md#use-it-outside-your-home-optional)).
+Movies and TV shows only. Music and photo libraries stay empty, and there is no Live TV guide or DVR: live channels come only as a library from a source, such as [rex-stremio](stremio.md). rex has no relay: to use it away from home it needs an address of its own ([Use it outside your home](with-zurg.md#use-it-outside-your-home-optional)).
 
 ## After you install
 
@@ -118,23 +118,24 @@ rex has no web app of its own. Opening `http://192.168.1.20:32400/web` (with rex
 
 | To | What | When |
 |---|---|---|
-| plex.tv | The claim, the server's name, version and addresses (its LAN address and its HTTPS address), and the list of people it is shared with | Once registered on a Plex account. Unregistered, rex tells plex.tv nothing |
-| plex.tv | Nothing: rex reads Plex's public list of releases, to give the apps the newest version number | Once a day, registered or not |
-| plex.tv | The registered account's watched and rated titles | Only if that account has Plex's own watch-history sync turned on, as a Plex server does |
-| Plex's metadata service | The id of each title, to get its name, poster, summary and episodes. Search Subtitles asks the same service | Once registered |
+| plex.tv | The server's id, name and version, to read Plex's public list of releases for the newest version number | At start and once a day, registered or not |
+| plex.tv | The claim, the server's addresses (its LAN address and its HTTPS address) and its library names | Once registered on a Plex account |
+| Plex's metadata service | The id of each title, to get its name, poster, summary and episodes. A subtitle search, by **Search Subtitles** or a person's automatic subtitle setting, sends the file's name and fingerprint | Once registered |
+| Artwork hosts | Requests for the posters and pictures your sources name | When an app shows them |
 | DMM, for rex-direct | The server's id and its token on the Plex account. DMM checks with plex.tv that the server is yours, sees your public IP and points your rex-direct name at it | Once registered, then every 6 hours. Turn it off with `REX_DIRECT_URL=off` |
 | Your sources | Requests for the files you play, and deletes (below) | When you play or delete |
+| Your old Plex server | Requests for your watch history | Only when you [bring your watch history](import-watched.md) |
 | Webhooks | Events, to the addresses you set | Only if you set any |
 
-rex never needs your own Plex account's token. Asking DMM what each release is happens in zurg, not rex: [Why DMM places the files](with-zurg.md#why-dmm-places-the-files).
+Asking DMM what each release is happens in zurg, not rex: [Why DMM places the files](with-zurg.md#why-dmm-places-the-files).
 
 ### Does deleting in a Plex app delete the file?
 
-Yes. Deleting a movie or episode in a Plex app, signed in as the account rex is registered on, deletes its files at the source, as a Plex server deletes files from its disk. With zurg, that takes the release off your debrid account once nothing else in it is left. The title leaves rex only when the source has deleted every file; if the source refuses, the title stays and the app says it could not be deleted. People you share with cannot delete. To turn deleting off, set **Allow media deletion** off in the server's settings (Library, advanced).
+Yes. Deleting a movie or episode in a Plex app, signed in as the account rex is registered on, deletes its files at the source, as a Plex server deletes files from its disk. With zurg that reaches your debrid account. If the source refuses, the title stays and the app says it could not be deleted. People you share with cannot delete. [Deleting in a Plex app](with-zurg.md#step-5-watch-something) says how to turn it off.
 
 ### A title is matched wrong. How do I fix it?
 
-The source decides what each file is, and rex shows that title. Sign in as the account rex is registered on and use **Fix Match**. zurg reads your pick back and keeps it. [If a title is matched wrong](from-plex.md#if-a-title-is-matched-wrong) has more.
+The source decides what each file is, and rex shows that title. Sign in as the account rex is registered on and use **Fix Match**: rex keeps your pick, and zurg takes it back as that release's match. [Why DMM places the files](with-zurg.md#why-dmm-places-the-files) has more.
 
 ### Where do I get help?
 

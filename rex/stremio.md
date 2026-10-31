@@ -6,16 +6,15 @@ order: 78
 
 # rex with your Stremio addons
 
-[rex-stremio](https://github.com/debridmediamanager/rex-stremio) turns the catalogs of your Stremio addons into rex libraries, so the films, shows and live channels they list play in every Plex app. Nothing is downloaded: when someone presses play, rex-stremio asks your stream addons for a link, as Stremio does, and rex plays it.
+[rex-stremio](https://github.com/debridmediamanager/rex-stremio) turns the catalogs of your Stremio addons into rex libraries, so the films, shows and live channels they list play in the Plex apps. Nothing is downloaded: when someone presses play, rex-stremio asks your stream addons for a link, as Stremio does, and rex plays it.
 
-This is the way to run rex with no zurg and no DMM sponsorship. rex, rex-stremio and the addons are free; you bring a debrid account, or stream addons that give links.
+This is the way to run rex with no zurg and no DMM sponsorship. rex and rex-stremio are free; you bring stream addons that give links, usually through a debrid account of your own.
 
 What you get:
 
-- **A library per kind of catalog.** Films go into **Stremio Films** and series into **Stremio Shows** unless you name the libraries yourself. Each catalog you tick is a library, or several share one.
+- **Libraries.** Films go into **Stremio Films**, series into **Stremio Shows** and a live TV addon's channels into **Live TV**, unless you name a catalog's library yourself.
 - **Collections.** Give several film catalogs the same library and tick **Catalogs as collections**: one library, a collection per catalog, and a film several of them list is there once.
-- **Live TV.** A live TV addon's channels go into a **Live TV** library, named and pictured by the addon, and play live.
-- **Plex names everything.** Each film and episode goes to rex with its IMDb id, so once rex is on a Plex account the apps show the usual titles, posters and summaries.
+- **Plex names what it knows.** Films and episodes go to rex with their IMDb ids, so once rex is on a Plex account the apps show the usual titles, posters and summaries. Titles only an addon knows, and live channels, keep the addon's names and pictures.
 
 ## Before you start
 
@@ -23,7 +22,7 @@ What you get:
 |---|---|
 | A machine that stays on, Linux or macOS, for rex and rex-stremio together | rex-stremio is one Python program and runs beside rex. The service below is for Linux; [Docker](#in-docker) works too |
 | Python 3.9 or newer, `git` and `ffprobe` | rex-stremio checks each title's stream once with ffprobe, because rex needs to know what is in a file before it can play it |
-| A debrid account and a stream addon that uses it | rex plays files, not torrents. Set your debrid service in the addon so it gives links |
+| Stream addons that give links, not torrents | rex plays files. Set your debrid service in the addon so it gives links |
 | A fresh Plex account, made just for rex | As in the rex setup: rex is claimed on it and shared with your own |
 
 ## Step 1. Install rex and add it to a Plex account
@@ -33,7 +32,7 @@ Follow [rex with your own app](any-source.md):
 1. [Step 1. Install rex](any-source.md#step-1-install-rex), including finding rex's LAN IP. This page writes it as `192.168.1.20`: put yours in its place.
 2. [Step 3. Add it to a Plex account](any-source.md#step-3-add-it-to-a-plex-account): register rex on the fresh account and share it with your own.
 
-Skip step 2 there, which tests rex by hand, and come back here for step 4.
+Skip steps 2 and 4 there: rex-stremio is your app.
 
 Live channels, and addons whose streams are `.m3u8` playlists, play only through rex's video conversion. For those, also set up [Converting video](any-source.md#converting-video-optional) on the rex machine. Films and episodes served as files (`.mkv`, `.mp4`) need nothing more.
 
@@ -74,7 +73,7 @@ Open `http://127.0.0.1:9982/` in a browser on the rex machine. rex runs on a mac
 
 1. Under **Addons**, paste an addon's manifest link, as you would in Stremio, and press **Add**. Do it for:
    - **Catalogs**, for example Cinemeta: `https://v3-cinemeta.strem.io/manifest.json`.
-   - **Streams**: an addon that searches for releases on your debrid service. Open its configure page, pick your debrid service, paste its API key and copy the manifest link it makes. For Torrentio, keep cached results only. The link holds your debrid key: keep it to yourself.
+   - **Streams**: an addon that finds releases and plays them through your debrid service. Open its configure page, pick your debrid service, paste its API key and copy the manifest link it makes. If it offers cached results only, pick that. The link holds your debrid key: keep it to yourself.
 2. Under **Catalogs**, tick the catalogs you want. Name the library each goes into and set **How many** films, episodes or channels to take. For one library with a collection per catalog, give the catalogs the same library and tick **Catalogs as collections**.
 3. Under **Streams**, set the **Highest resolution** and **Largest file** you want played, or leave them at any.
 4. Under **rex**, set **rex's address** to `http://192.168.1.20:32400`, and press **Save and sync**.

@@ -18,15 +18,13 @@ This page needs rex set up and registered on a fresh Plex account, as in [rex wi
 | Your own account | Where you watch. rex is shared with it like with anyone else |
 | Family and friends | Their own Plex accounts, or managed users for children (below) |
 
-Your own account gets no more than anyone else you share with. Keeping it that way keeps it away from rex: [Is my Plex account at risk?](faq.md#is-my-plex-account-at-risk)
+Your own account gets no more than anyone else you share with. Why: [Is my Plex account at risk?](faq.md#is-my-plex-account-at-risk)
 
 ## Invite someone
 
 1. Sign in to [app.plex.tv](https://app.plex.tv) **as the owner**, then open **Settings** (the wrench), **Manage Library Access** and **Grant Library Access**.
 2. Enter the person's Plex username or email, pick the rex server and the libraries to share, and send the invite.
 3. They accept it, signed in as themselves. It arrives by email and in app.plex.tv. Each invite is accepted on its own.
-
-Do it for your own account first ([step 3 of rex with zurg](with-zurg.md#share-it-with-your-own-account)), then for everyone else.
 
 **A library you add later** (an **Anime** library from `rex_shows`, or one made with **Add Library**) is not in anyone's share yet. Add it to each share in Manage Library Access.
 
@@ -38,7 +36,7 @@ Do it for your own account first ([step 3 of rex with zurg](with-zurg.md#share-i
 
 **Away from home**, which is always the case for a friend in another house, their apps need rex's HTTPS address. rex has no relay. The simplest is rex-direct: forward port 32400 on your router to the rex machine. [Use it outside your home](with-zurg.md#use-it-outside-your-home-optional) has it and the other ways.
 
-**Your upload speed is the limit.** Every stream watched away from home leaves through your home connection's upload. A 20 Mbit/s upload carries one 1080p WEB-DL comfortably, not a remux, so two friends watching at once need twice that. Three things help:
+**Your upload speed is the limit.** Every stream watched away from home leaves through your home connection's upload, at the file's own bitrate unless it is converted, so two people watching at once need the upload for both. Three things help:
 
 - **Lower quality.** A person who picks a quality below Original in the player gets a converted stream, which is smaller. That needs FFmpeg on the rex machine ([Converting video](with-zurg.md#converting-video-optional)). The Plex phone apps on mobile data cap quality at 720p and 4 Mbps, so without FFmpeg a 1080p title there is refused until they set mobile quality to Original.
 - **Apps download from your provider.** Plezy and Plex for Android can fetch a file from your debrid service themselves, so your connection carries none of it: [Apps download from your provider](direct-download.md). Your provider then sees each person download from their own address, so check your provider's rules before sharing that way.
@@ -48,7 +46,7 @@ Do it for your own account first ([step 3 of rex with zurg](with-zurg.md#share-i
 
 ## Children: managed users
 
-A managed user in the owner's **Plex Home** works on rex as on a Plex server. Share rex with them from Manage Library Access like anyone else, then limit what they see (below). They get their own watch history like everyone else. This was tested with a managed user in the Plex Home of the account the server is registered on, sharing only Movies, only titles rated G and PG, and no downloads.
+If the owner has a **Plex Home** with managed users, a managed user works on rex as on a Plex server. Share rex with them from Manage Library Access like anyone else, then limit what they see (below). They get their own watch history. rex was checked against a managed user's share of only Movies, only titles rated G and PG, and no downloads.
 
 ## What each person may see and do
 

@@ -25,11 +25,11 @@ rex is free and open source (MIT): no sponsor tier and no account needed to down
 |---|---|
 | rex's nightly dated 2026.10.25 or newer | Step 1 downloads the newest |
 | A machine that stays on: Linux (Ubuntu 22.04 or newer), macOS, or Windows (64 bit) | rex is a server: your Plex apps reach it whenever you press play. Where the commands differ, a step has a tab for each system. [Docker](#run-rex-in-docker) is further down, for Linux |
-| 1 GB of RAM for a library of 40,000 titles | rex keeps the library in `rex.db` and uses about 450 MB with 40,000 titles, starting included. Converting video takes more, and more cores or a graphics chip |
+| 1 GB of RAM | With 4,062 movies and 656 shows (34,678 episodes), rex used under 500 MB while it started and about 730 MB while the library was browsed. Converting video takes more, and more cores or a graphics chip |
 | An app that does what [What your app must do](#what-your-app-must-do) lists | That is where your library comes from |
 | Your app pushing from this machine, your home network or Tailscale | rex takes the feed only from there ([Keep the port private](#keep-the-port-private)). An app on a seedbox or a cloud server cannot push to rex unless that server is on your tailnet; the files themselves can be served from anywhere rex reaches |
 | Files on this machine's disks? Something that serves them over HTTP and pushes them | rex never reads a disk. [Step 2](#step-2-see-it-work-by-hand) does it by hand for one file; otherwise keep Plex for those |
-| Usenet? zurg | No app but zurg turns Usenet into a library rex plays today: see [rex with zurg](with-zurg.md) |
+| Usenet? zurg | zurg turns Usenet into a library rex plays: see [rex with zurg](with-zurg.md) |
 | A fresh Plex account, made just for rex | rex gets every title, poster, summary and episode name from Plex once it is [added to a Plex account](#step-3-add-it-to-a-plex-account). Until then titles keep their file names and have no posters |
 
 ## What your app must do
@@ -377,7 +377,7 @@ Start-ScheduledTask rex
 ```
 +++
 
-In Docker the files sit in `~/rex/config`, readable by root only. Back up from inside the container with `docker exec rex sqlite3 /config/rex.db ".backup /config/rex.db.bak"`, and copy `rex.db.bak` and the two `.json` files out of `~/rex/config` with `sudo cp`.
+In Docker the files sit in `~/rex/config`, readable by root only. Back up from inside the container with `docker exec rex sqlite3 /config/rex.db ".backup /config/rex.db.bak"`, then `mkdir -p ~/rex-backup && sudo cp ~/rex/config/rex.db.bak ~/rex/config/*.json ~/rex-backup/`.
 
 [Restore a backup](#restore-a-backup) puts them back.
 
@@ -645,6 +645,13 @@ Stop-Process -Name rex; Start-Sleep 1
 Remove-Item $HOME\rex\rex.db*
 Copy-Item $HOME\rex-backup\* $HOME\rex
 Start-ScheduledTask rex
+```
++++ Docker
+```bash
+cd ~/rex && docker compose down
+sudo rm -f config/rex.db config/rex.db-wal config/rex.db-shm
+sudo cp ~/rex-backup/rex.db.bak config/rex.db && sudo cp ~/rex-backup/*.json config/
+docker compose up -d
 ```
 +++
 

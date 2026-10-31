@@ -13,8 +13,8 @@ You run Plex Media Server today, perhaps on a zurg mount through rclone, and wan
 | | Plex Media Server | rex |
 |---|---|---|
 | Where the library comes from | Plex scans folders on a disk or a mount | zurg (or another app) tells rex what it has. rex never scans a folder and needs no mount |
-| What each file is | Plex matches it from its file name | zurg asks DMM where each file belongs and tells rex. rex never reads a file name |
-| A wrong match | Fix Match on the server | **Fix Match** in a Plex app, signed in as the account that owns rex. zurg takes your pick back and keeps it |
+| What each file is | Plex matches it from its file name | zurg works it out (with a DMM key, DMM tells it) and tells rex. rex never reads a file name |
+| A wrong match | Fix Match on the server | **Fix Match** in a Plex app, signed in as the account that owns rex. zurg takes your pick back and keeps it ([why titles are placed as they are](with-zurg.md#why-dmm-places-the-files)) |
 | The account the server is on | Usually your own | A fresh Plex account made for rex, shared with your own |
 | Music, photos, Live TV and DVR | Yes | No. Movies and TV shows only |
 
@@ -32,15 +32,13 @@ Start beside Plex even if you mean to replace it: copying your watch history nee
 
 Follow [rex with zurg](with-zurg.md), steps 1 to 5. Already run zurg? Skip installing it and update it as step 1 there shows: this page needs zurg nightly **2026.10.27 or newer**.
 
-- **Plex runs on the same machine?** Do what [step 2](with-zurg.md#step-2-install-rex) says for that case: end rex's start command with `--port 32500` (in Docker, `command: --port 32500`), and use `32500` wherever the guide says `32400`, in zurg's `rex_url` too. Your Plex apps then find rex through the Plex account it is shared with, not on your network.
-- **Register rex on a fresh Plex account,** not the one your Plex server is on, as [step 3](with-zurg.md#step-3-add-it-to-a-plex-account) explains, and share it with your own.
+- **Plex runs on the same machine?** Put rex on port `32500`, as [step 2](with-zurg.md#step-2-install-rex) says for that case, zurg's `rex_url` included.
+- **Register rex on a fresh Plex account,** not the one your Plex server is on, as [step 3](with-zurg.md#step-3-add-it-to-a-plex-account) explains.
 - **Away from home with rex-direct?** Your router's port 32400 already goes to Plex. Forward port `32500` to the rex machine as well.
 
 While both run, zurg feeds both. Leave everything zurg has for Plex as it is (`plex_server_url`, `plex_token`, your rclone mount and any scan script): Plex keeps working as before, and `rex_url` adds rex.
 
-Your library fills as zurg reads each file, a few hours for a large one. Titles appear in rex as they arrive.
-
-Not using zurg? [rex with your own app](any-source.md) and [rex with your Stremio addons](stremio.md) set rex up with other sources; the rest of this page works the same.
+Not using zurg? [rex with your own app](any-source.md) and [rex with your Stremio addons](stremio.md) set rex up with other sources; steps 2 to 4 work the same, without the zurg parts.
 
 ## Step 2. Bring your watch history
 
@@ -82,17 +80,13 @@ Restart zurg after editing its config.
 |---|---|
 | Your movies and shows | zurg sends them, from the same debrid account |
 | What you watched, where you stopped, your star ratings on movies and episodes | [Bring your watch history](import-watched.md), each person on their own |
-| Collections | Not copied. [Kometa with rex](kometa.md) builds them again from your Kometa config |
 
 | Does not come along | Why |
 |---|---|
-| Fix Matches you made on Plex | rex does not use Plex's matches. zurg and DMM say what each file is; fix what they get wrong with **Fix Match** in rex |
+| Fix Matches you made on Plex | rex does not use Plex's matches. zurg says what each file is; fix what it gets wrong with **Fix Match** in rex |
+| Collections | Not copied. [Kometa with rex](kometa.md) builds them again from your Kometa config |
 | Posters and artwork you picked | Kept on the old server only |
 | Playlists, and the server's play history list | Kept on the old server only |
 | Your friends' access | They were invited to the old server. Invite them to rex ([step 3](#step-3-invite-your-people-again)) |
 | Music and photo libraries, Live TV and DVR | rex has movies and TV shows only. Keep Plex beside rex for them |
 | Files on a local disk | rex scans no folders. An app has to serve them and tell rex about them: [rex with your own app](any-source.md) |
-
-## If a title is matched wrong
-
-On Plex, a wrong match came from Plex reading the file name. On rex it comes from zurg, which asks DMM where each file belongs. A file zurg could not place shows under its file name, an episode in a show named after its release. Use **Fix Match** in a Plex app, signed in as the fresh account that owns rex; zurg reads your pick back and keeps it. [rex with zurg](with-zurg.md#why-dmm-places-the-files) explains why DMM places the files and what to do when it gets one wrong.

@@ -6,7 +6,7 @@ order: 60
 
 # Plex Features & Capabilities
 
-Running rex beside Plex Media Server, or instead of it? [Move from Plex to rex](../../rex/from-plex.md) says what to keep in zurg, your rclone mount included, and which Plex settings to turn off.
+Running rex beside Plex Media Server, or instead of it? [Move from Plex to rex](../../rex/from-plex.md) says what to keep in zurg, your rclone mount included, and which of zurg's Plex settings to remove.
 
 ## Configuration & Storage
 - Config keys documented in [`config.md`](../reference/config.md)/`config.example.yml`: `plex_server_url`, `plex_token`, `plex_match_every_mins` (default 1440), `plex_watchlist_enabled`, `plex_watchlist_check_every_secs` (the legacy spelling of `watchlist.check_every_secs`, default 60s), `mount_path` (required for matching/scan path building). Dashboard-authored settings are saved directly to `config.yml` via the config writer (`updateConfigFileAtomic`).

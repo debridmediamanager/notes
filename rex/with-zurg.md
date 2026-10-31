@@ -26,7 +26,7 @@ rex is free and open source (MIT): no sponsor tier and no account needed to down
 | You need | Why |
 |---|---|
 | A machine that stays on: Linux (Ubuntu 22.04 or newer), macOS, or Windows (64 bit). A Proxmox LXC works, unprivileged is fine, once FUSE is turned on for it (Options > Features > FUSE): zurg's installer stops without `/dev/fuse` | rex and zurg are servers: your Plex apps reach them whenever you press play. Where the commands differ, a step has a tab for each system. [Docker](#run-rex-in-docker) is further down, for Linux |
-| 1 GB of RAM for a library of 40,000 titles | rex keeps the library in `rex.db` and uses about 450 MB with 40,000 titles, starting included; converting video takes more. zurg needs little |
+| 1 GB of RAM | With 4,062 movies and 656 shows (34,678 episodes), rex used under 500 MB while it started and about 730 MB while the library was browsed; converting video takes more. zurg needs little |
 | A debrid account (Real-Debrid, TorBox, AllDebrid, Premiumize, Debrid-Link, Offcloud) or Usenet | That is where your movies and shows actually live |
 | A GitHub account with access to zurg's sponsor releases | zurg's nightly is a private GitHub release. The zurg installer signs you in once |
 | Your DMM API key, from sponsoring DMM (optional) | zurg asks DMM what each file is. Without it zurg works it out from the release name, through DMM's free title search: fewer titles match, and an anime numbered across the whole series stays in file order |
@@ -347,7 +347,7 @@ Start-ScheduledTask rex
 ```
 +++
 
-In Docker the files sit in `~/rex/config`, readable by root only. Back up from inside the container with `docker exec rex sqlite3 /config/rex.db ".backup /config/rex.db.bak"`, and copy `rex.db.bak` and the two `.json` files out of `~/rex/config` with `sudo cp`.
+In Docker the files sit in `~/rex/config`, readable by root only. Back up from inside the container with `docker exec rex sqlite3 /config/rex.db ".backup /config/rex.db.bak"`, then `mkdir -p ~/rex-backup && sudo cp ~/rex/config/rex.db.bak ~/rex/config/*.json ~/rex-backup/`.
 
 [Restore a backup](#restore-a-backup) puts them back.
 
@@ -690,6 +690,13 @@ Stop-Process -Name rex; Start-Sleep 1
 Remove-Item $HOME\rex\rex.db*
 Copy-Item $HOME\rex-backup\* $HOME\rex
 Start-ScheduledTask rex
+```
++++ Docker
+```bash
+cd ~/rex && docker compose down
+sudo rm -f config/rex.db config/rex.db-wal config/rex.db-shm
+sudo cp ~/rex-backup/rex.db.bak config/rex.db && sudo cp ~/rex-backup/*.json config/
+docker compose up -d
 ```
 +++
 
