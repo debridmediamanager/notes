@@ -11,7 +11,7 @@ Four things to know before you start:
 - **Your app decides what each file is.** It says whether a file is a movie or an episode, which title it belongs to (by IMDb and TMDB id) and, for an episode, its season and number. rex never guesses from a file name.
 - **Plex describes it.** Once rex is on a Plex account, it shows each title with the name, poster, summary and episode names Plex's own metadata has for those ids. For things no Plex agent knows, your app names them itself: see [Building rex addons](addons.md).
 
-rex is free and open source (MIT): no sponsor tier and no account needed to download it. See [rex.debridmediamanager.com](https://rex.debridmediamanager.com).
+rex is free for personal use (PolyForm Noncommercial): no sponsor tier and no account needed to download it. See [rex.debridmediamanager.com](https://rex.debridmediamanager.com).
 
 ## Before you start
 
