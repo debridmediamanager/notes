@@ -6,6 +6,15 @@ order: 60
 
 # Changelog
 
+## Keep a wanted film at 1080p and at 4K
+
+`quality: [1080p, 4k]` in the `acquisition:` block keeps two copies of each
+film on your DMM wanted list, so a 1080p TV can play one without transcoding
+the 4K file. Each copy takes the best release at or below its own resolution
+and upgrades up to it on its own. While nothing better than 1080p is out the
+two share one copy. Shows, and every other source, still get one copy. See
+[a copy at each of several resolutions](../guides/acquisition.md#a-copy-at-each-of-several-resolutions).
+
 ## zurg update works after the one-line install
 
 The one-line installers sign you in to GitHub through the GitHub CLI. They
