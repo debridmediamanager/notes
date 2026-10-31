@@ -624,6 +624,8 @@ Does not:
 | "The release could not be checked against the news servers" | The article check failed to complete thirty times in a row across at least three hours. Nothing was found missing. The news account could not be asked. The message carries the last error. Look at the account first and re-grab the release once it answers. |
 | "The release was in the library and has since been removed from it" | The library listed the release once and has not listed it for fifteen minutes. Something deleted it and the log says `Release <name> is gone from every account`. The client blocklists it and grabs another rather than waiting for a folder that is not coming back. |
 
+Still stuck? Ask in the **zurg-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) says what to include.
+
 ### Where the state lives
 
 | Path | What it is |
