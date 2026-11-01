@@ -16,14 +16,15 @@ You run Plex Media Server today and want to try rex. This page moves you over. T
 | What each file is | Plex matches it from its file name | The source works it out and tells rex. rex never reads a file name |
 | A wrong match | Fix Match on the server | **Fix Match** in a Plex app, signed in as the account that owns rex. rex keeps your pick, and a source can take it back and keep it, as zurg does ([why titles are placed as they are](with-zurg.md#why-dmm-places-the-files)) |
 | The account the server is on | Usually your own | A fresh Plex account made for rex, shared with your own |
-| Music, photos, Live TV and DVR | Yes | No. Movies and TV shows only |
+| Music and Live TV | From folders and a tuner | Only from a source that sends them, such as an addon ([Building rex addons](addons.md#music)) |
+| Photos and recording TV | Yes | No |
 
 ## Pick a way
 
 | | Beside Plex | Instead of Plex |
 |---|---|---|
 | What you get | rex next to your Plex. Your apps list both servers | rex alone, on Plex's usual port |
-| Good for | Trying rex, or keeping Plex for music, photos or Live TV | Moving for good |
+| Good for | Trying rex, or keeping Plex for photos, music on a disk or recording TV | Moving for good |
 | On the same machine as Plex | rex runs on port `32500`, and your apps find it through the Plex account it is shared with | Plex is stopped, rex takes port `32400` and apps at home find it by themselves |
 
 Start beside Plex even if you mean to replace it: copying your watch history needs your old Plex server running. Do steps 1 to 3, use rex for a while, and do step 4 when you are ready.
@@ -86,5 +87,5 @@ Restart zurg after editing its config.
 | Posters and artwork you picked | Kept on the old server only |
 | Playlists, and the server's play history list | Kept on the old server only |
 | Your friends' access | They were invited to the old server. Invite them to rex ([step 3](#step-3-invite-your-people-again)) |
-| Music and photo libraries, Live TV and DVR | rex has movies and TV shows only. Keep Plex beside rex for them |
+| Music and photo libraries, Live TV from a tuner, and recordings | rex scans no folders and has no tuner: music and live channels come only from a source that sends them, and nothing records. Keep Plex beside rex for them |
 | Files on a local disk | rex scans no folders. An app has to serve them and tell rex about them: [rex with your own app](any-source.md) |
