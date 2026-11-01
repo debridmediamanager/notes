@@ -48,6 +48,8 @@ Give this list to whoever makes your app. rex's own API reference is [docs/feed-
 
 **Why it matters.** rex is what your Plex apps talk to. The first start creates `rex.db`, which holds your libraries, everything your app sends and your watch history.
 
+On Linux you can run rex's Docker image instead: see [Run rex in Docker](#run-rex-in-docker).
+
 +++ Linux and macOS
 ```bash
 mkdir -p ~/rex && cd ~/rex
@@ -587,8 +589,6 @@ Downloads, intro and credits detection, seek thumbnails and the other Plex serve
 ## Run rex in Docker
 
 These steps are for a Linux machine. On macOS and Windows, Docker Desktop runs containers inside a virtual machine, so host networking, LAN discovery and the graphics chip do not work there as they do on Linux: use the steps above instead.
-
-rex's Docker image is private, so pulling it may be refused. The download in [step 1](#step-1-install-rex) works for everyone: if the pull is refused, use the steps above.
 
 Make a folder, for example `~/rex`, with this `compose.yml`:
 

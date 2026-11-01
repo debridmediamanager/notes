@@ -1,6 +1,6 @@
 # rex
 
-[rex](https://rex.debridmediamanager.com) is a media server for the official Plex apps that owns no files. The apps see it as a normal server. Another program tells rex what is in your library and serves the files, and when you press play rex streams the file straight from that program. rex is free for personal use, and its [source code](https://github.com/debridmediamanager/rex) is public under the PolyForm Noncommercial license.
+[rex](https://rex.debridmediamanager.com) is a media server for the official Plex apps that owns no files. The apps see it as a normal server. Another program tells rex what is in your library and serves the files, and when you press play rex streams the file straight from that program. rex is free for personal use, and its [source code](https://github.com/debridmediamanager/rex) is public under the PolyForm Noncommercial license. It runs on Linux, macOS and Windows, and on Linux also as the Docker image `ghcr.io/debridmediamanager/rex:nightly` ([with your own app](any-source.md#run-rex-in-docker), [with zurg](with-zurg.md#run-rex-in-docker)).
 
 - [rex questions](faq.md) answers what to know before you install
 - [rex with your own app](any-source.md) sets rex up from scratch, filled by any app that serves files over HTTP and speaks rex's feed API
