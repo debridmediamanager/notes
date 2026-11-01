@@ -75,6 +75,8 @@ Already run zurg? Update and restart it with `cd ~/zurg && ./zurg update && ./zu
 
 **Why it matters.** rex is what your Plex apps talk to. The first start creates `rex.db`, which holds your libraries, everything zurg sends and your watch history.
 
+On Linux you can run zurg and rex in Docker instead: see [Run rex in Docker](#run-rex-in-docker).
+
 +++ Linux and macOS
 ```bash
 mkdir -p ~/rex && cd ~/rex
@@ -606,8 +608,6 @@ Already run zurg in Docker? Update it: `cd ~/zurg && docker compose pull zurg &&
 **What it does.** Runs rex from its image, keeping everything it saves in a folder beside the compose file.
 
 **Why it matters.** It is [step 2](#step-2-install-rex) in one file: the image is the program and Docker keeps it running.
-
-rex's Docker image is private, so pulling it may be refused. The download in [step 2](#step-2-install-rex) works for everyone: if the pull is refused, run rex that way, beside zurg's container.
 
 If `docker ps` says permission denied, put `sudo` before every `docker` command on this page.
 

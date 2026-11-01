@@ -27,7 +27,7 @@ What may cost something is around it:
 | [rex-stremio](stremio.md), your own app or an addon as the source | Free |
 | zurg nightly, a source for a debrid or Usenet library | A perk for [DMM sponsors](https://gatekeeper.debridmediamanager.com) |
 | A DMM API key, for DMM's exact matches in zurg | Optional, also from sponsoring DMM |
-| rex's Docker image | Private, so a pull may be refused. The download works for everyone |
+| rex's Docker image | Free and public, for Linux: [rex in Docker](any-source.md#run-rex-in-docker) |
 
 ### Is my Plex account at risk?
 
