@@ -86,7 +86,7 @@ docker compose restart zurg
 End rex's start command with `--part-mode redirect` (or `--part-mode redirect-only`), then restart rex and open its log. [Install rex](any-source.md#step-1-install-rex) shows where the start command is on your system and how to restart rex and see its log. On Linux the `ExecStart` line in `~/.config/systemd/user/rex.service` then reads, with nothing else on it:
 
 ```ini
-ExecStart=%h/rex/rust/target/release/rex --part-mode redirect
+ExecStart=%h/rex/rex --part-mode redirect
 ```
 
 Keep anything already on the line, such as `--port 32500` or `--announce-url ...`.
