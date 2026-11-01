@@ -94,6 +94,17 @@ No. zurg is one source among others. rex takes its library from anything that sp
 
 Several sources can fill the same Movies and TV libraries.
 
+### Do I need to forward a port?
+
+Not to watch at home. Plex apps on your home network find rex and connect to it over that network, with nothing to open on your router.
+
+rex needs an address of its own only to:
+
+- watch away from home, or share with a friend in another house
+- watch in a web browser at app.plex.tv, which connects only to an HTTPS address, even at home
+
+The simplest way is one port forward ([rex-direct](any-source.md#rex-direct)). [Tailscale serve](any-source.md#tailscale-serve) needs none, on devices that run Tailscale. [Use it outside your home](any-source.md#use-it-outside-your-home-optional) compares the ways.
+
 ### What does it not do?
 
 Movies and TV shows only. Music and photo libraries stay empty, and there is no Live TV guide or DVR: live channels come only as a library from a source, such as [rex-stremio](stremio.md). rex has no relay: to use it away from home it needs an address of its own ([Use it outside your home](any-source.md#use-it-outside-your-home-optional)).
