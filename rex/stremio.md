@@ -12,7 +12,7 @@ This runs rex with no DMM sponsorship. rex and rex-stremio are free; you bring s
 
 What you get:
 
-- **Libraries.** Films go into **Stremio Films**, series into **Stremio Shows** and a live TV addon's channels into a library called **Live TV**, unless you name a catalog's library yourself. That library is a list of channels; they are not in the Plex apps' Live TV guide.
+- **Libraries.** Films go into **Stremio Films**, series into **Stremio Shows** and a live-TV addon's channels into a library called **Live TV**, unless you name a catalog's library yourself. That library is a list of channels; they are not in the Plex apps' Live TV guide.
 - **Collections.** Give several film catalogs the same library and tick **Catalogs as collections**: one library, a collection per catalog, and a film several of them list is there once.
 - **Plex names what it knows.** Films and episodes go to rex with their IMDb ids, so once rex is on a Plex account the apps show the usual titles, posters and summaries. Titles only an addon knows, and live channels, keep the addon's names and pictures.
 
