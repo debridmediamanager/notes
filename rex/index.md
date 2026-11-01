@@ -14,6 +14,8 @@ order: 80
 - [rex with zurg](with-zurg.md) sets rex up with zurg filling it from your debrid account or Usenet
 - [Move from Plex to rex](from-plex.md) runs rex beside or instead of your Plex server, and says what to keep and what to turn off
 - [Share rex with family and friends](sharing.md) invites the people you watch with
+- [Live TV with rex](live-tv.md) puts live channels in the Plex apps' Live TV, with a guide, through rex-live-sports
+- [Music with rex](music.md) gives Plexamp and the Plex apps a music library from a music addon
 - [Building rex addons](addons.md) brings home videos, recordings or Stremio catalogs into rex with a program of your own
 - [Bring your watch history](import-watched.md) copies what you watched, where you stopped and your ratings from your old Plex server
 - [Kometa with rex](kometa.md) builds collections and poster badges on your rex libraries

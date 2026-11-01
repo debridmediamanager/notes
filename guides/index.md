@@ -47,6 +47,8 @@ Every guide on this site, by project.
 - [rex with zurg](../rex/with-zurg.md)
 - [Move from Plex to rex](../rex/from-plex.md)
 - [Share rex with family and friends](../rex/sharing.md)
+- [Live TV with rex](../rex/live-tv.md)
+- [Music with rex](../rex/music.md)
 - [Building rex addons](../rex/addons.md)
 - [Bring your watch history](../rex/import-watched.md)
 - [Kometa with rex](../rex/kometa.md)
