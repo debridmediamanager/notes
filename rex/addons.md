@@ -74,7 +74,7 @@ Invoke-RestMethod -Method Put http://192.168.1.20:32400/rex/sources/myaddon -Con
 | `url` | Where your bytes are. A video's bytes are `GET <url>/<path>` |
 | `user` and `password`, or `bearer` | Your addon's login, if it has one. Never inside `url` |
 | `directories` | The libraries your addon fills. Each entry is a first path segment (`name`) and the library's title: `shows` for a TV library, `movies` for a movie library, `music` for a music library, or several. rex makes each library the first time; renaming it in Plex sticks |
-| `trash` | `false` deletes what your addon removes (a snapshot that leaves it out, or a `DELETE`) instead of keeping it in rex's trash. For things that never come back, such as live channels that end |
+| `trash` | `false` deletes what your addon removes (a snapshot that leaves it out, or a `DELETE`) instead of keeping it in rex's trash |
 
 A path's first segment picks its library: with the example above, every path that starts `kids/` lands in **Kids**. Use a different first segment for each library.
 
@@ -199,7 +199,7 @@ Send each audio file as a track:
 | `release` | Which copy of the album the track belongs to. Default: its folder. Each copy is an album of its own, as Plex lists two copies, so send one `release` for the files of one copy that sit in disc folders (`CD1/`, `CD2/`) |
 | `display` | For music Plex does not know: the track's `title`, its `artist` (`title`, `summary`, `poster`, `art`) and its `album` (`title`, `summary`, `poster`, `date`) |
 | `lyrics` | Lyrics files beside it on your addon: `[{"path": "music/.../01 - 15 Step.lrc", "size": 147}]`. An `.lrc` (lyrics with times) or a `.txt`, shown as the song's lyrics |
-| `loudness` | Only if your addon measures loudness, in Plex's names: `gain`, `albumGain`, `peak`, `albumPeak`, `albumRange`, `loudness` and `lra`, the `startRamp` and `endRamp` fades, and `levels`, the loudness every 100 ms, which Plexamp draws as the song's waveform. rex measures nothing itself |
+| `loudness` | Only if your addon measures loudness, in Plex's names: `gain`, `albumGain`, `peak`, `albumPeak`, `albumRange`, `loudness` and `lra`, the `startRamp` and `endRamp` fades, and `levels`, the loudness every 100 ms. rex measures nothing itself |
 
 - **A music library first.** Declare one in Step 2 (`"directories": [{"name": "music", "music": "Music"}]`), or add a Music library in a Plex app. A track no music library takes is refused: `no music library holds <file>`.
 - **Finding the release id.** Search MusicBrainz by the album's title and artist (`https://musicbrainz.org/ws/2/release?query=release:%22In%20Rainbows%22%20AND%20artist:Radiohead&fmt=json`) and pick an official release with your number of tracks; several often match (one per country), and any of them names the album. MusicBrainz answers one request a second per address and refuses more, and asks for a User-Agent naming your addon; ask once per album and keep the answer.
@@ -240,11 +240,11 @@ Send the live stream as in Step 3 (an `.m3u8` with its probe), plus a `channel`:
 
 - **Send the guide from a few hours back to as far ahead as you know** (about a week, as TV guide files do), and send it again as it changes. rex lists a programme until three hours after it ends. Each send replaces the channel's guide; a send without `channel` keeps it; `"channel": null` ends the channel.
 - **FFmpeg is needed**, as for every stream: rex converts the channel while someone watches.
-- **Nothing records.** The Plex apps offer no Record button.
-- **Channels that end.** Register with `"trash": false` (Step 2) so a channel your snapshot leaves out is deleted, not kept in rex's trash.
+- **Nothing records.** Plex Web and Plex for Android offer no Record button.
+- **Channels that end.** Register with `"trash": false` (Step 2) so a channel you remove is deleted, not kept in rex's trash.
 - **What a category does.** An episode in `Sports` or `News` shows on What's On's Sports and News shelves. A programme with no `type` is shown as a film, as Plex does with any TV guide.
 
-**What you should see.** In Plex Web or Plex for Android, **Live TV** in the sidebar, the channel in the guide at its number, and the stream playing when you open it. rex's log names a refused channel and why, such as `channel.guide[3]: end must be after start`.
+**What you should see.** In Plex Web or Plex for Android, **Live TV** in the app's menu, the channel in the guide at its number, and the stream playing when you open it. rex's log names a refused channel and why, such as `channel.guide[3]: end must be after start`.
 
 [rex-live-sports](https://github.com/debridmediamanager/rex-live-sports) does all of this for a live-sports server's channels: it numbers them by group from `100.1`, keeps each channel's number, and takes their guides from Pluto TV and epgshare01's free XMLTV files.
 
@@ -263,7 +263,7 @@ To **replace** an addon (or a script) that already filled a library, keep its so
 
 ## Example: rex-stremio
 
-[rex-stremio](https://github.com/debridmediamanager/rex-stremio) turns the catalogs of your Stremio addons into rex libraries: films into a movie library, series into a TV library, live channels into a Live TV library. It does Steps 1 to 5 and is one Python file, standard library only. It does not take deletes: a catalog's titles are not its to delete.
+[rex-stremio](https://github.com/debridmediamanager/rex-stremio) turns the catalogs of your Stremio addons into rex libraries: films into a movie library, series into a TV library, live channels into a library called Live TV (not the Live TV guide). It does Steps 1 to 5 and is one Python file, standard library only. It does not take deletes: a catalog's titles are not its to delete.
 
 **Registering.** Every catalog you tick names a library: Stremio Films, Stremio Shows or Live TV unless you rename it. rex-stremio registers as `stremio` with one directory per library, named after it (`stremio-films`), and declares that library as the directory's `shows` title for series catalogs, or its `movies` title for film and live TV catalogs.
 
@@ -296,7 +296,7 @@ It asks each addon that serves the title (`/stream/<movie or series>/<id>.json`)
 | Albums show your file names under `[Unknown Artist]` | No `ids.mbid`, or a release id Plex does not know, and no `display` | Send the album's MusicBrainz release id, or `display` |
 | An album shows the wrong tracks | `ids.mbid` names another edition of it, such as a deluxe one with more tracks | Pick a release with your number of tracks |
 | A channel is not in the Live TV guide | No `channel`; it was refused, and rex's log says why (`channel.guide[...]`); or another channel already has its number, which is not logged | Fix the field the log names, or pick a free number |
-| Live TV is missing in a Plex app | The app has no Live TV, or no channel has a `channel` yet | Tested in Plex Web and Plex for Android |
+| Live TV is missing in a Plex app | No item was sent with a `channel` yet, or the app was not tested | Send a `channel`, and use Plex Web or Plex for Android, the apps tested |
 | A video never shows up | It is held (its `media_info` has no streams, or a file was sent without one), or a stream sent without `media_info` was rejected | Probe it and send it again |
 | `rejected`: `... is already <id>'s file` | Another id has that `path` | Keep one id per path |
 | Episodes titled "Episode 1" and blank tiles | No `display` | Send `display` with each video |

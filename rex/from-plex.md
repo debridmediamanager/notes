@@ -87,5 +87,5 @@ Restart zurg after editing its config.
 | Posters and artwork you picked | Kept on the old server only |
 | Playlists, and the server's play history list | Kept on the old server only |
 | Your friends' access | They were invited to the old server. Invite them to rex ([step 3](#step-3-invite-your-people-again)) |
-| Music and photo libraries, Live TV from a tuner, and recordings | rex scans no folders and has no tuner: music and live channels come only from a source that sends them, and nothing records. Keep Plex beside rex for them |
+| Music on a disk, photo libraries, Live TV from a tuner, and recordings | rex has no tuner and records nothing; music and live channels come only from a source that sends them. Keep Plex beside rex for them |
 | Files on a local disk | rex scans no folders. An app has to serve them and tell rex about them: [rex with your own app](any-source.md) |
