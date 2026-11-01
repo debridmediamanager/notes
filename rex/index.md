@@ -12,10 +12,10 @@ order: 80
 - [rex with your own app](any-source.md) sets rex up from scratch, filled by any app that serves files over HTTP and speaks rex's feed API
 - [rex with your Stremio addons](stremio.md) fills rex from your Stremio addons' catalogs with rex-stremio, free and with no sponsorship
 - [rex with zurg](with-zurg.md) sets rex up with zurg filling it from your debrid account or Usenet
+- [Live TV with rex](live-tv.md) puts live channels in Plex Web's and Plex for Android's Live TV, with a guide, through rex-live-sports
+- [Music with rex](music.md) gives Plexamp, Plex Web and Plex for Android a music library from a music addon
 - [Move from Plex to rex](from-plex.md) runs rex beside or instead of your Plex server, and says what to keep and what to turn off
 - [Share rex with family and friends](sharing.md) invites the people you watch with
-- [Live TV with rex](live-tv.md) puts live channels in the Plex apps' Live TV, with a guide, through rex-live-sports
-- [Music with rex](music.md) gives Plexamp and the Plex apps a music library from a music addon
 - [Building rex addons](addons.md) brings home videos, recordings or Stremio catalogs into rex with a program of your own
 - [Bring your watch history](import-watched.md) copies what you watched, where you stopped and your ratings from your old Plex server
 - [Kometa with rex](kometa.md) builds collections and poster badges on your rex libraries

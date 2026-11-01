@@ -6,14 +6,14 @@ order: 88
 
 # Music with rex
 
-rex can hold a music library that Plexamp, Plex Web and Plex for Android play. rex reads no music folder and no tags. A music addon tells rex about each song and which album it is on, by the album's MusicBrainz release, and Plex fills in the rest: album and song names, covers, the artist's photo and biography, genres and similar artists.
+rex can hold a music library that Plexamp, Plex Web and Plex for Android play. A music addon tells rex about each song and which album it is on, by the album's MusicBrainz release, and Plex fills in the rest: album and song names, covers, the artist's photo and biography, genres and similar artists.
 
 What you get:
 
 - **Albums Plex knows.** An album sent with its MusicBrainz release looks as it would on any Plex server, with Plex's cover and track names. One Plex does not know shows the names and pictures the addon sends.
-- **Original quality.** Songs play as they are, FLAC included. An app set to a lower quality gets the song converted, when FFmpeg is set up.
-- **Lyrics and loudness**, when the addon sends them: lyrics show with the song, and Plexamp gets each song's loudness for its levelling.
-- **Your own plays and playlists.** Plays, ratings and playlists are kept per Plex account, Plexamp's own smart playlists included.
+- **Original quality.** Songs play in their own format, such as FLAC.
+- **Lyrics and loudness**, when the addon sends them: lyrics show with the song, and rex passes each song's loudness to the apps, as Plex does.
+- **Your own plays and playlists.** Plays, ratings and playlists are kept per Plex account. Plexamp makes its smart playlists on rex too.
 
 ## Before you start
 
@@ -21,8 +21,8 @@ What you get:
 |---|---|
 | A rex nightly dated 2026.11.02 or newer | Music came in that build |
 | rex set up as in [rex with your own app](any-source.md) | That is where the music library shows up |
-| A music addon | Any program that sends songs over rex's feed API. [Building rex addons](addons.md#music) says what it sends, if you write your own |
-| [Converting video](any-source.md#converting-video-optional), optional | Only for an app set to a lower music quality than the original |
+| A music addon | Any program that sends songs over rex's feed API. None is published yet: [Building rex addons](addons.md#music) shows how to write one |
+| [Converting video](any-source.md#converting-video-optional), optional | rex converts a song only for an app set to a lower music quality than the original |
 
 ## Step 1. Install rex and add it to a Plex account
 
@@ -33,22 +33,23 @@ Follow [rex with your own app](any-source.md):
 
 ## Step 2. Point your music addon at rex
 
-Give your addon rex's address, `http://192.168.1.20:32400`, the way its own instructions say. It registers itself with rex and sends its albums.
+rex needs a music library for the songs. If your addon declares one, rex makes it when the addon registers. If it does not, add one first in a Plex app signed in as the fresh account: **Add Library**, **Music**, any folder. A song sent before there is a music library is refused.
 
-rex needs a music library for them. A music addon usually declares one, and rex makes it the first time the addon registers. If yours does not, add one in a Plex app signed in as the fresh account: **Add Library**, **Music**, any folder.
+Then give your addon rex's address, `http://192.168.1.20:32400`, the way its own instructions say. It registers itself with rex and sends its albums.
 
 **What you should see.** In rex's log:
 
 ```
 INFO    SOURCES PUT /rex/sources/<addon> -> 200
+INFO    SECTION create Music (artist) for <addon>'s music
 INFO    FEED <addon> upsert: ...
 ```
 
-The music library appears in rex, with each album under its artist. A song rex refuses is in the log with why, such as `no music library holds <file>` when there is no music library yet.
+The `SECTION create` line shows only when the addon declares the library. The music library appears in rex, with each album under its artist. A song rex refuses is in the log with why, such as `no music library holds <file>`.
 
 ## Step 3. Share the music library
 
-The music library is new, so your own account cannot see it yet. Signed in as the fresh account, share it with your own account as in [step 3](any-source.md#share-it-with-your-own-account), and with anyone else you share rex with.
+The music library is new, so it is in nobody's share yet. Signed in as the fresh account, add it to your own account's share and to everyone else's in **Manage Library Access** ([Share rex](sharing.md)).
 
 ## Step 4. Listen
 
