@@ -33,10 +33,11 @@ How far each Plex app has been tried with rex:
 
 | App | Tested |
 |---|---|
-| Plex Web (app.plex.tv) | The most: browsing, playback, converting, subtitles, and playback away from home with free accounts on both sides |
-| Plex for Android (phone) | On a Pixel 6: playback, converting, and [downloading from your provider](direct-download.md) |
+| Plex Web (app.plex.tv) | The most: browsing, playback, converting, subtitles, music, Live TV, and playback away from home with free accounts on both sides |
+| Plex for Android (phone) | On a Pixel 6: playback, converting, and [downloading from your provider](direct-download.md). On an emulator: music and Live TV |
+| Plexamp | On an Android emulator: browsing and playing a music library, with artist pictures and playlists |
 | Plex for iOS | On an iPad: playback and converting. Dolby Vision has an app bug (below) |
-| Plex for Apple TV | Playback, live channels included |
+| Plex for Apple TV | Playback, including live channels in a library |
 | Plex Desktop | Plex for Mac: playback and converting |
 | Plezy | On a Pixel 6: playback, and downloading from your provider |
 | Plex HTPC | Not tested yet |
@@ -107,7 +108,7 @@ The simplest way is one port forward ([rex-direct](any-source.md#rex-direct)). [
 
 ### What does it not do?
 
-Movies and TV shows only. Music and photo libraries stay empty, and there is no Live TV guide or DVR: live channels come only as a library from a source, such as [rex-stremio](stremio.md). rex has no relay: to use it away from home it needs an address of its own ([Use it outside your home](any-source.md#use-it-outside-your-home-optional)).
+Photo libraries stay empty, and there is no tuner and no DVR: nothing records. Music and Live TV come only from a source that sends them: an addon can bring albums, which Plex names and Plexamp plays, and [rex-live-sports](https://github.com/debridmediamanager/rex-live-sports) brings live channels with a TV guide. Building rex addons shows how, for [music](addons.md#music) and [Live TV](addons.md#live-tv). Plexamp's radio, mixes and stations are missing. rex has no relay: to use it away from home it needs an address of its own ([Use it outside your home](any-source.md#use-it-outside-your-home-optional)).
 
 ## After you install
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846877980501">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.846884863590">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.846877980501" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.846884863590" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.846877980501" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.846884863590" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.846877980501" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.846877980501" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.846884863590" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.846884863590" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -196,7 +196,7 @@
 
                 <!-- Page content  -->
 <h1 id="building-rex-addons">Building rex addons</h1>
-<p><a href="https://rex.debridmediamanager.com">rex</a> shows whatever its sources tell it about. A source is any program that tells rex what it has over rex&#x27;s feed API and serves the videos when rex asks; rex treats every source the same. An <strong>addon</strong> is a source you write yourself: it brings something into your Plex apps that no Plex agent knows, such as home videos, recordings or a Stremio catalog, and names it itself.</p>
+<p><a href="https://rex.debridmediamanager.com">rex</a> shows whatever its sources tell it about. A source is any program that tells rex what it has over rex&#x27;s feed API and serves the videos when rex asks; rex treats every source the same. An <strong>addon</strong> is a source you write yourself: it brings something into your Plex apps that no Plex agent knows, such as home videos, recordings or a Stremio catalog, and names it itself. It can also bring <doc-anchor-trigger to="#music">music</doc-anchor-trigger> and <doc-anchor-trigger to="#live-tv">live channels with a TV guide</doc-anchor-trigger>.</p>
 <p>This page is for people who write addons. It covers what rex needs from one, how to name and dress what it brings, and the rules that trip people up. It ends with a worked example: <a href="https://github.com/debridmediamanager/rex-stremio">rex-stremio</a>, the addon that brings your Stremio addons&#x27; catalogs into rex, nothing downloaded. Its source is one Python file you can read alongside this page.</p>
 <p>An addon does three things:</p>
 <ul>
@@ -210,7 +210,7 @@
 <retype-table copy-text="| You need | Why |
 |---|---|
 | rex, set up as in [rex with your own app](any-source.md) (steps 1 to 3) | That is where your addon's library shows up |
-| A rex nightly dated 2026.10.25 or newer | This page is written for it |
+| A rex nightly dated 2026.10.25 or newer, or 2026.11.02 or newer for [Music](#music) and [Live TV](#live-tv) | This page is written for it |
 | FFmpeg where rex runs, if your addon serves streams | rex plays a stream by converting it (a copy, cheap). rex finds FFmpeg itself; see [Converting video](any-source.md#converting-video-optional) |
 | Your addon on the same machine as rex, or on your home network | rex's feed answers only those: see [Keep the port private](any-source.md#keep-the-port-private) |">
 <div class="table-wrapper scrollbar overflow-hidden">
@@ -227,7 +227,7 @@
 <td>That is where your addon&#x27;s library shows up</td>
 </tr>
 <tr>
-<td>A rex nightly dated 2026.10.25 or newer</td>
+<td>A rex nightly dated 2026.10.25 or newer, or 2026.11.02 or newer for <doc-anchor-trigger to="#music">Music</doc-anchor-trigger> and <doc-anchor-trigger to="#live-tv">Live TV</doc-anchor-trigger></td>
 <td>This page is written for it</td>
 </tr>
 <tr>
@@ -305,7 +305,8 @@
 |---|---|
 | `url` | Where your bytes are. A video's bytes are `GET &lt;url&gt;/&lt;path&gt;` |
 | `user` and `password`, or `bearer` | Your addon's login, if it has one. Never inside `url` |
-| `directories` | The libraries your addon fills. Each entry is a first path segment (`name`) and the library's title: `shows` for a TV library, `movies` for a movie library, or both. rex makes each library the first time; renaming it in Plex sticks |">
+| `directories` | The libraries your addon fills. Each entry is a first path segment (`name`) and the library's title: `shows` for a TV library, `movies` for a movie library, `music` for a music library, or several. rex makes each library the first time; renaming it in Plex sticks |
+| `trash` | `false` deletes what your addon removes (a snapshot that leaves it out, or a `DELETE`) instead of keeping it in rex's trash |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -325,7 +326,11 @@
 </tr>
 <tr>
 <td><code translate="no" v-pre>directories</code></td>
-<td>The libraries your addon fills. Each entry is a first path segment (<code translate="no" v-pre>name</code>) and the library&#x27;s title: <code translate="no" v-pre>shows</code> for a TV library, <code translate="no" v-pre>movies</code> for a movie library, or both. rex makes each library the first time; renaming it in Plex sticks</td>
+<td>The libraries your addon fills. Each entry is a first path segment (<code translate="no" v-pre>name</code>) and the library&#x27;s title: <code translate="no" v-pre>shows</code> for a TV library, <code translate="no" v-pre>movies</code> for a movie library, <code translate="no" v-pre>music</code> for a music library, or several. rex makes each library the first time; renaming it in Plex sticks</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>trash</code></td>
+<td><code translate="no" v-pre>false</code> deletes what your addon removes (a snapshot that leaves it out, or a <code translate="no" v-pre>DELETE</code>) instead of keeping it in rex&#x27;s trash</td>
 </tr>
 </tbody>
 </table>
@@ -530,6 +535,144 @@ curl.exe -s http://192.168.1.20:32400/rex/feed/myaddon/held    # what waits for 
 </doc-tab>
 </doc-tabs>
 <p>rex&#x27;s log names every refused video and why: <code translate="no" v-pre>FEED myaddon rejected &lt;id&gt;: &lt;reason&gt;</code>.</p>
+<h2 id="music">Music</h2>
+<p><strong>What it does.</strong> Brings albums into a music library, which Plexamp, Plex Web and Plex for Android play.</p>
+<p><strong>Why it matters.</strong> Plex names music by the album&#x27;s MusicBrainz release. Send that id and Plex fills in every title, cover, artist photo and biography itself.</p>
+<p>Send each audio file as a track:</p>
+<div id="music-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;id&quot;: &quot;albums/in-rainbows/01&quot;,
+  &quot;path&quot;: &quot;music/Radiohead/In Rainbows/01 - 15 Step.flac&quot;,
+  &quot;kind&quot;: &quot;track&quot;,
+  &quot;ids&quot;: {&quot;mbid&quot;: &quot;3b408cb5-7d51-4188-b07c-fabcf308cda3&quot;},
+  &quot;disc&quot;: 1, &quot;track&quot;: 1,
+  &quot;media_info&quot;: { &quot;...&quot;: &quot;ffprobe's output, whole&quot; }
+}</code></pre>
+</doc-codeblock></div>
+<retype-table copy-text="| Field | Meaning |
+|---|---|
+| `kind` | `track` |
+| `path` | An audio file: `.flac`, `.mp3`, `.m4a`, `.aac`, `.ogg`, `.oga`, `.opus`, `.wav`, `.alac`, `.aif`, `.aiff`, `.wma`, `.ape`, `.wv`, `.dsf` or `.mka` |
+| `ids.mbid` | The MusicBrainz **release** id of the track's album: the id in a `musicbrainz.org/release/&lt;id&gt;` link, not a release group's or a recording's. Or `ids.plex`, Plex's own album guid (`plex://album/&lt;id&gt;`) |
+| `disc`, `track` | Where the track is on that release. Plex's track at those numbers is the one shown |
+| `release` | Which copy of the album the track belongs to. Default: its folder. Each copy is an album of its own, as Plex lists two copies, so send one `release` for the files of one copy that sit in disc folders (`CD1/`, `CD2/`) |
+| `display` | For music Plex does not know: the track's `title`, its `artist` (`title`, `summary`, `poster`, `art`) and its `album` (`title`, `summary`, `poster`, `date`) |
+| `lyrics` | Lyrics files beside it on your addon: `[{&quot;path&quot;: &quot;music/.../01 - 15 Step.lrc&quot;, &quot;size&quot;: 147}]`. An `.lrc` (lyrics with times) or a `.txt`, shown as the song's lyrics |
+| `loudness` | Only if your addon measures loudness, in Plex's names: `gain`, `albumGain`, `peak`, `albumPeak`, `albumRange`, `loudness` and `lra`, the `startRamp` and `endRamp` fades, and `levels`, the loudness every 100 ms. rex measures nothing itself |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>kind</code></td>
+<td><code translate="no" v-pre>track</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>path</code></td>
+<td>An audio file: <code translate="no" v-pre>.flac</code>, <code translate="no" v-pre>.mp3</code>, <code translate="no" v-pre>.m4a</code>, <code translate="no" v-pre>.aac</code>, <code translate="no" v-pre>.ogg</code>, <code translate="no" v-pre>.oga</code>, <code translate="no" v-pre>.opus</code>, <code translate="no" v-pre>.wav</code>, <code translate="no" v-pre>.alac</code>, <code translate="no" v-pre>.aif</code>, <code translate="no" v-pre>.aiff</code>, <code translate="no" v-pre>.wma</code>, <code translate="no" v-pre>.ape</code>, <code translate="no" v-pre>.wv</code>, <code translate="no" v-pre>.dsf</code> or <code translate="no" v-pre>.mka</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>ids.mbid</code></td>
+<td>The MusicBrainz <strong>release</strong> id of the track&#x27;s album: the id in a <code translate="no" v-pre>musicbrainz.org/release/&lt;id&gt;</code> link, not a release group&#x27;s or a recording&#x27;s. Or <code translate="no" v-pre>ids.plex</code>, Plex&#x27;s own album guid (<code translate="no" v-pre>plex://album/&lt;id&gt;</code>)</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>disc</code>, <code translate="no" v-pre>track</code></td>
+<td>Where the track is on that release. Plex&#x27;s track at those numbers is the one shown</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>release</code></td>
+<td>Which copy of the album the track belongs to. Default: its folder. Each copy is an album of its own, as Plex lists two copies, so send one <code translate="no" v-pre>release</code> for the files of one copy that sit in disc folders (<code translate="no" v-pre>CD1/</code>, <code translate="no" v-pre>CD2/</code>)</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>display</code></td>
+<td>For music Plex does not know: the track&#x27;s <code translate="no" v-pre>title</code>, its <code translate="no" v-pre>artist</code> (<code translate="no" v-pre>title</code>, <code translate="no" v-pre>summary</code>, <code translate="no" v-pre>poster</code>, <code translate="no" v-pre>art</code>) and its <code translate="no" v-pre>album</code> (<code translate="no" v-pre>title</code>, <code translate="no" v-pre>summary</code>, <code translate="no" v-pre>poster</code>, <code translate="no" v-pre>date</code>)</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>lyrics</code></td>
+<td>Lyrics files beside it on your addon: <code translate="no" v-pre>[{&quot;path&quot;: &quot;music/.../01 - 15 Step.lrc&quot;, &quot;size&quot;: 147}]</code>. An <code translate="no" v-pre>.lrc</code> (lyrics with times) or a <code translate="no" v-pre>.txt</code>, shown as the song&#x27;s lyrics</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>loudness</code></td>
+<td>Only if your addon measures loudness, in Plex&#x27;s names: <code translate="no" v-pre>gain</code>, <code translate="no" v-pre>albumGain</code>, <code translate="no" v-pre>peak</code>, <code translate="no" v-pre>albumPeak</code>, <code translate="no" v-pre>albumRange</code>, <code translate="no" v-pre>loudness</code> and <code translate="no" v-pre>lra</code>, the <code translate="no" v-pre>startRamp</code> and <code translate="no" v-pre>endRamp</code> fades, and <code translate="no" v-pre>levels</code>, the loudness every 100 ms. rex measures nothing itself</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<ul>
+<li><strong>A music library first.</strong> Declare one in Step 2 (<code translate="no" v-pre>&quot;directories&quot;: [{&quot;name&quot;: &quot;music&quot;, &quot;music&quot;: &quot;Music&quot;}]</code>), or add a Music library in a Plex app. A track no music library takes is refused: <code translate="no" v-pre>no music library holds &lt;file&gt;</code>.</li>
+<li><strong>Finding the release id.</strong> Search MusicBrainz by the album&#x27;s title and artist (<code translate="no" v-pre>https://musicbrainz.org/ws/2/release?query=release:%22In%20Rainbows%22%20AND%20artist:Radiohead&amp;fmt=json</code>) and pick an official release with your number of tracks; several often match (one per country), and any of them names the album. MusicBrainz answers one request a second per address and refuses more, and asks for a User-Agent naming your addon; ask once per album and keep the answer.</li>
+<li><strong>rex reads no tags.</strong> Titles, covers, genres and similar artists are Plex&#x27;s. A track whose release Plex does not know shows your <code translate="no" v-pre>display</code>, grouped under the artist and album you name, or its file name under <code translate="no" v-pre>[Unknown Artist]</code> without it.</li>
+<li><strong>It plays as it is.</strong> No FFmpeg is needed, unless an app asks for a lower quality than the original: rex then converts it with FFmpeg, as Plex does.</li>
+<li><strong>Not there.</strong> Plexamp&#x27;s radio, mixes, stations and sonically similar tracks need an analysis rex does not do.</li>
+</ul>
+<p><strong>What you should see.</strong> The album in the music library with Plex&#x27;s cover and track names, its artist with a photo. In Plexamp, pick rex&#x27;s music library as its library.</p>
+<h2 id="live-tv">Live TV</h2>
+<p><strong>What it does.</strong> Makes a live stream a channel of <strong>Live TV</strong> in Plex Web and Plex for Android, with a TV guide, What&#x27;s On and a channel number.</p>
+<p><strong>Why it matters.</strong> A live stream alone is a row in a library. With a <code translate="no" v-pre>channel</code>, people find it the way they find TV: in the guide, by what is on now.</p>
+<p>Send the live stream as in Step 3 (an <code translate="no" v-pre>.m3u8</code> with its probe), plus a <code translate="no" v-pre>channel</code>:</p>
+<div id="live-tv-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">&quot;channel&quot;: {
+  &quot;number&quot;: &quot;100.1&quot;,
+  &quot;title&quot;: &quot;Rex News&quot;,
+  &quot;guide&quot;: [
+    {&quot;start&quot;: &quot;2026-11-01T18:00:00Z&quot;, &quot;end&quot;: &quot;2026-11-01T19:00:00Z&quot;,
+     &quot;title&quot;: &quot;Evening News&quot;, &quot;summary&quot;: &quot;The day's headlines.&quot;, &quot;categories&quot;: [&quot;News&quot;]},
+    {&quot;start&quot;: &quot;2026-11-01T19:00:00Z&quot;, &quot;end&quot;: &quot;2026-11-01T19:45:00Z&quot;,
+     &quot;title&quot;: &quot;The Pilot&quot;, &quot;type&quot;: &quot;episode&quot;, &quot;show&quot;: &quot;Rex Stories&quot;, &quot;season&quot;: 1, &quot;episode&quot;: 1,
+     &quot;categories&quot;: [&quot;Drama&quot;]}
+  ]
+}</code></pre>
+</doc-codeblock></div>
+<retype-table copy-text="| Field | Meaning |
+|---|---|
+| `number` | The channel's number in the guide (`100.1`, `704`): letters, digits, `.`, `-` and `_`. Pick numbers clear of other addons'; the first channel sent with a number keeps it |
+| `title` | Its name in the guide. Default: the stream's `display` title |
+| `call_sign` | Its short name. Default: `title` |
+| `guide` | What is on: `start` and `end` (epoch seconds, or ISO 8601 with `Z` or an offset), `title`, and optionally `summary`, `categories`, `thumb` and `previously_shown` (`true` for a repeat). An episode adds `&quot;type&quot;: &quot;episode&quot;` with `show`, `season` and `episode`, and the guide groups it under its show |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>number</code></td>
+<td>The channel&#x27;s number in the guide (<code translate="no" v-pre>100.1</code>, <code translate="no" v-pre>704</code>): letters, digits, <code translate="no" v-pre>.</code>, <code translate="no" v-pre>-</code> and <code translate="no" v-pre>_</code>. Pick numbers clear of other addons&#x27;; the first channel sent with a number keeps it</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>title</code></td>
+<td>Its name in the guide. Default: the stream&#x27;s <code translate="no" v-pre>display</code> title</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>call_sign</code></td>
+<td>Its short name. Default: <code translate="no" v-pre>title</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>guide</code></td>
+<td>What is on: <code translate="no" v-pre>start</code> and <code translate="no" v-pre>end</code> (epoch seconds, or ISO 8601 with <code translate="no" v-pre>Z</code> or an offset), <code translate="no" v-pre>title</code>, and optionally <code translate="no" v-pre>summary</code>, <code translate="no" v-pre>categories</code>, <code translate="no" v-pre>thumb</code> and <code translate="no" v-pre>previously_shown</code> (<code translate="no" v-pre>true</code> for a repeat). An episode adds <code translate="no" v-pre>&quot;type&quot;: &quot;episode&quot;</code> with <code translate="no" v-pre>show</code>, <code translate="no" v-pre>season</code> and <code translate="no" v-pre>episode</code>, and the guide groups it under its show</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<ul>
+<li><strong>Send the guide from a few hours back to as far ahead as you know</strong> (about a week, as TV guide files do), and send it again as it changes. rex lists a programme until three hours after it ends. Each send replaces the channel&#x27;s guide; a send without <code translate="no" v-pre>channel</code> keeps it; <code translate="no" v-pre>&quot;channel&quot;: null</code> ends the channel.</li>
+<li><strong>FFmpeg is needed</strong>, as for every stream: rex converts the channel while someone watches.</li>
+<li><strong>Nothing records.</strong> Plex Web and Plex for Android offer no Record button.</li>
+<li><strong>Channels that end.</strong> Register with <code translate="no" v-pre>&quot;trash&quot;: false</code> (Step 2) so a channel you remove is deleted, not kept in rex&#x27;s trash.</li>
+<li><strong>What a category does.</strong> An episode in <code translate="no" v-pre>Sports</code> or <code translate="no" v-pre>News</code> shows on What&#x27;s On&#x27;s Sports and News shelves. A programme with no <code translate="no" v-pre>type</code> is shown as a film, as Plex does with any TV guide.</li>
+</ul>
+<p><strong>What you should see.</strong> In Plex Web or Plex for Android, <strong>Live TV</strong> in the app&#x27;s menu, the channel in the guide at its number, and the stream playing when you open it. rex&#x27;s log names a refused channel and why, such as <code translate="no" v-pre>channel.guide[3]: end must be after start</code>.</p>
+<p><a href="https://github.com/debridmediamanager/rex-live-sports">rex-live-sports</a> does all of this for a live-sports server&#x27;s channels: it numbers them by group from <code translate="no" v-pre>100.1</code>, keeps each channel&#x27;s number, and takes their guides from Pluto TV and epgshare01&#x27;s free XMLTV files.</p>
 <h2 id="the-rules-that-trip-people-up">The rules that trip people up</h2>
 <retype-table copy-text="| Rule | What happens if you break it |
 |---|---|
@@ -578,7 +721,7 @@ curl.exe -s http://192.168.1.20:32400/rex/feed/myaddon/held    # what waits for 
 </retype-table>
 <p>To <strong>replace</strong> an addon (or a script) that already filled a library, keep its source name, ids and first path segment. Your first send then updates its rows in place, watch history and all, instead of making new ones.</p>
 <h2 id="example-rex-stremio">Example: rex-stremio</h2>
-<p><a href="https://github.com/debridmediamanager/rex-stremio">rex-stremio</a> turns the catalogs of your Stremio addons into rex libraries: films into a movie library, series into a TV library, live channels into a Live TV library. It does Steps 1 to 5 and is one Python file, standard library only. It does not take deletes: a catalog&#x27;s titles are not its to delete.</p>
+<p><a href="https://github.com/debridmediamanager/rex-stremio">rex-stremio</a> turns the catalogs of your Stremio addons into rex libraries: films into a movie library, series into a TV library, live channels into a library called Live TV (not the Live TV guide). It does Steps 1 to 5 and is one Python file, standard library only. It does not take deletes: a catalog&#x27;s titles are not its to delete.</p>
 <p><strong>Registering.</strong> Every catalog you tick names a library: Stremio Films, Stremio Shows or Live TV unless you rename it. rex-stremio registers as <code translate="no" v-pre>stremio</code> with one directory per library, named after it (<code translate="no" v-pre>stremio-films</code>), and declares that library as the directory&#x27;s <code translate="no" v-pre>shows</code> title for series catalogs, or its <code translate="no" v-pre>movies</code> title for film and live TV catalogs.</p>
 <p><strong>Serving.</strong> Stream addons&#x27; links expire, so rex-stremio stores no links. It serves a URL per title, <code translate="no" v-pre>/&lt;directory&gt;/&lt;catalog&gt;/&lt;id&gt;.&lt;ext&gt;</code>, and answers it with a redirect to a link it asks for at that moment:</p>
 <div id="example-rex-stremio-code-1" class="codeblock-wrapper"><doc-codeblock>
@@ -595,7 +738,12 @@ self.send_header(&quot;Location&quot;, url)</code></pre>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <retype-table copy-text="| You see | Why | Fix |
 |---|---|---|
-| `rejected`: `not a video file` | The file name has no video extension, or an `.m3u8` whose probe is not `hls` | Name streams `.m3u8` and send their probe |
+| `rejected`: `not a video file` | The file name has no video extension, or an `.m3u8` whose probe is not `hls` | Name streams `.m3u8` and send their probe. A song needs `&quot;kind&quot;: &quot;track&quot;` |
+| `rejected`: `no music library holds &lt;file&gt;` | No music library takes the track | Declare one with `music` in Step 2 |
+| Albums show your file names under `[Unknown Artist]` | No `ids.mbid`, or a release id Plex does not know, and no `display` | Send the album's MusicBrainz release id, or `display` |
+| An album shows the wrong tracks | `ids.mbid` names another edition of it, such as a deluxe one with more tracks | Pick a release with your number of tracks |
+| A channel is not in the Live TV guide | No `channel`; it was refused, and rex's log says why (`channel.guide[...]`); or another channel already has its number, which is not logged | Fix the field the log names, or pick a free number |
+| Live TV is missing in a Plex app | No item was sent with a `channel` yet, or the app was not tested | Send a `channel`, and use Plex Web or Plex for Android, the apps tested |
 | A video never shows up | It is held (its `media_info` has no streams, or a file was sent without one), or a stream sent without `media_info` was rejected | Probe it and send it again |
 | `rejected`: `... is already &lt;id&gt;'s file` | Another id has that `path` | Keep one id per path |
 | Episodes titled &quot;Episode 1&quot; and blank tiles | No `display` | Send `display` with each video |
@@ -617,7 +765,32 @@ self.send_header(&quot;Location&quot;, url)</code></pre>
 <tr>
 <td><code translate="no" v-pre>rejected</code>: <code translate="no" v-pre>not a video file</code></td>
 <td>The file name has no video extension, or an <code translate="no" v-pre>.m3u8</code> whose probe is not <code translate="no" v-pre>hls</code></td>
-<td>Name streams <code translate="no" v-pre>.m3u8</code> and send their probe</td>
+<td>Name streams <code translate="no" v-pre>.m3u8</code> and send their probe. A song needs <code translate="no" v-pre>&quot;kind&quot;: &quot;track&quot;</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>rejected</code>: <code translate="no" v-pre>no music library holds &lt;file&gt;</code></td>
+<td>No music library takes the track</td>
+<td>Declare one with <code translate="no" v-pre>music</code> in Step 2</td>
+</tr>
+<tr>
+<td>Albums show your file names under <code translate="no" v-pre>[Unknown Artist]</code></td>
+<td>No <code translate="no" v-pre>ids.mbid</code>, or a release id Plex does not know, and no <code translate="no" v-pre>display</code></td>
+<td>Send the album&#x27;s MusicBrainz release id, or <code translate="no" v-pre>display</code></td>
+</tr>
+<tr>
+<td>An album shows the wrong tracks</td>
+<td><code translate="no" v-pre>ids.mbid</code> names another edition of it, such as a deluxe one with more tracks</td>
+<td>Pick a release with your number of tracks</td>
+</tr>
+<tr>
+<td>A channel is not in the Live TV guide</td>
+<td>No <code translate="no" v-pre>channel</code>; it was refused, and rex&#x27;s log says why (<code translate="no" v-pre>channel.guide[...]</code>); or another channel already has its number, which is not logged</td>
+<td>Fix the field the log names, or pick a free number</td>
+</tr>
+<tr>
+<td>Live TV is missing in a Plex app</td>
+<td>No item was sent with a <code translate="no" v-pre>channel</code> yet, or the app was not tested</td>
+<td>Send a <code translate="no" v-pre>channel</code>, and use Plex Web or Plex for Android, the apps tested</td>
 </tr>
 <tr>
 <td>A video never shows up</td>
