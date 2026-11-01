@@ -119,7 +119,7 @@ After=network-online.target
 [Service]
 WorkingDirectory=%h/rex
 EnvironmentFile=-%h/rex/rex.env
-ExecStart=%h/rex/rust/target/release/rex
+ExecStart=%h/rex/rex
 Restart=always
 RestartSec=5
 
@@ -157,7 +157,7 @@ tail -F ~/rex/rex.log
 
 rex's **start command** is the last line of `~/rex/run.sh`, and keys go in `~/rex/rex.env`, one `NAME=value` a line. After a change, `launchctl kickstart -k gui/$(id -u)/com.rex` restarts rex. `tail -f ~/rex/rex.log` shows its log.
 
-rex runs while you are logged in to the Mac. For a Mac that restarts by itself, turn on automatic login (**System Settings**, **Users & Groups**). If the macOS firewall is on, allow rex when macOS asks, or add `~/rex/rust/target/release/rex` under the firewall's **Options**.
+rex runs while you are logged in to the Mac. For a Mac that restarts by itself, turn on automatic login (**System Settings**, **Users & Groups**). If the macOS firewall is on, allow rex when macOS asks, or add `~/rex/rex` under the firewall's **Options**.
 +++ Windows
 Open PowerShell **as administrator** and go to rex's folder with `cd $HOME\rex`. First make `run.cmd`, which starts rex in its folder and writes its log to `rex.log`. Notepad offers to create the file:
 
@@ -168,7 +168,7 @@ notepad run.cmd
 ```bat
 @echo off
 cd /d "%~dp0"
-rust\target\release\rex.exe 2>> rex.log
+rex.exe 2>> rex.log
 ```
 
 Save it. Then let your network through Windows Firewall to rex's port and the two discovery ports, and start rex now and whenever you log in:
@@ -736,7 +736,7 @@ If the account rex is claimed with is lost or banned, make another fresh account
 
 ### Which rex do I run?
 
-rex has no version command. The nightly's date is in the name of the download (`2026.10.30.0040-nightly`), and the program file carries the same date: `ls -l ~/rex/rust/target/release/rex` (on Windows `(Get-Item $HOME\rex\rust\target\release\rex.exe).LastWriteTime`). The Plex version your apps show is not rex's: rex reports the current Plex Media Server version on purpose, so the apps treat it as up to date, and **Check for Updates** always says it is.
+rex has no version command. The nightly's date is in the name of the download (`2026.10.30.0040-nightly`), and the program file carries the same date: `ls -l ~/rex/rex` (on Windows `(Get-Item $HOME\rex\rex.exe).LastWriteTime`). The Plex version your apps show is not rex's: rex reports the current Plex Media Server version on purpose, so the apps treat it as up to date, and **Check for Updates** always says it is.
 
 ### Start over
 
@@ -786,7 +786,7 @@ Ask in the DMM [Discord](https://discord.com/invite/7u4YjMThXP)'s **rex-support*
 | Nothing plays and rex's log shows `PART ... upstream 401` or `403` | zurg refused its own login. Restart zurg ([step 4](#step-4-connect-zurg-to-rex)) so it sends rex the current one |
 | "This server is not powerful enough to convert video" | The device cannot play the file as it is. Try a Plex app on a TV or phone, or set up [Converting video](#converting-video-optional) |
 | A device at home cannot connect, and rex's `heartbeat ... ->` line shows no `http://192.168.1.20:32400` | rex announces the private address of the network it reaches the internet through; behind a VPN or a Tailscale exit node that is not your home network. End rex's start command ([step 2](#step-2-install-rex)) with `--announce-url http://192.168.1.20:32400` and restart rex |
-| Another machine cannot reach rex on Windows, although step 2's firewall rules exist | If you ever clicked **Cancel** when Windows asked whether to allow rex, Windows saved a rule that blocks it, and that wins over the port rules. Remove it in PowerShell as administrator: <code>Get-NetFirewallApplicationFilter -Program "$HOME\rex\rust\target\release\rex.exe" &#124; Get-NetFirewallRule &#124; Where-Object Action -eq Block &#124; Remove-NetFirewallRule</code> |
+| Another machine cannot reach rex on Windows, although step 2's firewall rules exist | If you ever clicked **Cancel** when Windows asked whether to allow rex, Windows saved a rule that blocks it, and that wins over the port rules. Remove it in PowerShell as administrator: <code>Get-NetFirewallApplicationFilter -Program "$HOME\rex\rex.exe" &#124; Get-NetFirewallRule &#124; Where-Object Action -eq Block &#124; Remove-NetFirewallRule</code> |
 | rex is not in the Plex apps away from home | Not claimed, or the device cannot reach the HTTPS address (a tailnet-only address needs Tailscale on that device) |
 | The log says `waiting for a claim` | Do [step 3](#step-3-add-it-to-a-plex-account) |
 | rex exits with `argument --announce-url: '...' is not an http:// or https:// address` | Give `--announce-url` the address alone, such as `https://myhost.tailnet.ts.net:443`: no brackets, quotes or link around it |
