@@ -590,7 +590,7 @@ There is nothing to set up. rex checks a subtitle against the file's own text su
 
 ## Movie and TV capabilities
 
-Downloads, intro and credits detection, seek thumbnails and the other Plex server features rex has, and their settings, are in [rex's setup guide](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities). Music, Live TV and DVR are not supported.
+Downloads, intro and credits detection, seek thumbnails and the other Plex server features rex has, and their settings, are in [rex's setup guide](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities). Music and Live TV come from sources that send them ([rex's limits](https://github.com/debridmediamanager/rex#limits)), such as [rex-live-sports](https://github.com/debridmediamanager/rex-live-sports) for live channels. There is no DVR, so nothing records.
 
 ## Run rex in Docker
 
