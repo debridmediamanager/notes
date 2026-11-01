@@ -103,10 +103,10 @@ The **Live Sports** library is new, so it is in nobody's share yet. Signed in as
 
 Then open a Plex app as yourself:
 
-- **Plex Web**: **Live TV** is in the sidebar, under the rex server.
-- **Plex for Android**: **Live TV** is in the menu with your libraries.
+- **Plex Web**: **Live TV & DVR** is in the sidebar, with rex's libraries.
+- **Plex for Android**: **Live TV & DVR** is listed with rex's libraries.
 
-**What you should see.** The guide, with each channel at its number and what is on it. Pick a channel and it plays.
+**What you should see.** **Guide** and **What's On** at the top. The guide lists each channel at its number with what is on it. Pick a programme and press **Watch Now**.
 
 ## Channel numbers and guides
 
