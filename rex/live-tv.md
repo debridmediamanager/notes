@@ -14,6 +14,7 @@ What you get:
 - **What's On.** What is on right now, what starts later, and the films coming up.
 - **Search.** A programme's name finds it in Live TV as well as in your libraries.
 - **Watching.** Pick a channel and it plays live. A channel keeps no resume point and is never marked watched.
+- **A lineup, like a TV provider's.** rex-live-sports starts with its US lineup: about 30 sports networks at numbers that never change (ESPN is 2, CBS 7), ESPN's schedule of the games on them, and slot channels (`NFL 1`, `NBA 1` and so on) that list the day's games before they start and play each one live. There is a UK and a German lineup too.
 - **The library too.** The channels stay in their own **Live Sports** library, sorted into a collection per group.
 
 
@@ -89,13 +90,13 @@ It runs while that Terminal window stays open.
 INFO relay on http://127.0.0.1:9983/, live-sports at http://192.168.1.20:8765, rex at http://192.168.1.20:32400
 ```
 
-Until live-sports' first check is done it logs `live-sports lists no channel that plays yet`. Then the first sync checks every channel's stream, which takes several minutes for several hundred channels, and logs:
+Until live-sports' first check is done it logs `live-sports lists no channel that plays yet`. Then the first sync checks the stream of each lineup channel live-sports has, about a minute for 30, and logs:
 
 ```
-INFO pushed 277 of 321 channels, ...
+INFO pushed 38 of 30 channels, 38 with their Live TV channel: ...
 ```
 
-It syncs again every five minutes and checks only the channels it has not seen that day.
+That is the 30 lineup channels live-sports has, plus the slots with a game that day. It syncs again every five minutes and checks only the channels it has not seen that day.
 
 ## Step 4. Share the library and open Live TV
 
@@ -104,17 +105,17 @@ The **Live Sports** library is new, so it is in nobody's share yet. Signed in as
 Then open a Plex app as yourself:
 
 - **Plex Web**: **Live TV & DVR** is in the sidebar, with rex's libraries.
-- **Plex for Android**: **Live TV & DVR** is listed with rex's libraries.
+- **Plex for Android**: the **Live TV** tab at the bottom, with rex picked at the top; **Live TV & DVR** is listed with rex's libraries too.
 
 **What you should see.** **Guide** and **What's On** at the top. The guide lists each channel at its number with what is on it. Pick a programme and press **Watch Now**.
 
-## Channel numbers and guides
+## Channels, numbers and guides
 
-rex-live-sports numbers the channels by group: `100.1`, `100.2` for the first group, `101.1` for the next, clear of the low numbers a tuner or another source uses. A channel keeps its number while live-sports lists it at least once a week.
+`config.json` names the lineup: `lineups/us.json` as copied, `lineups/uk.json` or `lineups/de.json` for the UK's or Germany's networks. A lineup channel is there, at its number, while live-sports has a copy of it that plays. A US network gets its games from ESPN's schedule (`Chicago Bears at Seattle Seahawks`, from kickoff for the sport's usual length; NFL, college football, NBA, NHL, MLB, the big European leagues, MLS and F1); ESPN names only US broadcasters, so the UK and German networks get the guide [epgshare01](https://epgshare01.online/) has for a channel of their name instead, as every channel does around its games. A channel no guide lists shows its own name in blocks of six hours.
 
-Pluto TV channels get Pluto TV's own schedule. Any other channel gets the guide [epgshare01](https://epgshare01.online/) has for a channel of its name in its country. Both are free and need no key. A channel no guide lists, such as a single match, shows its own name in blocks of six hours.
+The slots come after the networks: `NFL 1` to `NFL 10` at `700.1` to `700.10`, `NBA 1` to `NBA 6` at `701.1` on, then NHL, MLB, Soccer and F1. Each of the day's games goes to the first free slot of its sport, so the guide shows it before it starts, and from 15 minutes before kickoff until it is over the slot plays the live-sports stream that has it, found by both teams' names. Between games a slot plays nothing. A slot shows up the first time it plays a game.
 
-Pluto TV's channels are left out unless you ask for them: add `"groups": ["Live:", "Sports", "Pluto:"]` to `config.json`. Every setting is in rex-live-sports' [README](https://github.com/debridmediamanager/rex-live-sports#settings).
+Without a lineup (`"lineup": ""` in `config.json`), every channel of live-sports' `Live:` and `Sports` groups is there instead, numbered by group: `100.1`, `100.2` for the first group, `101.1` for the next, clear of the low numbers a tuner or another source uses. A channel keeps its number while live-sports lists it at least once a week. Pluto TV channels get Pluto TV's own schedule and are left out unless you ask for them: `"groups": ["Live:", "Sports", "Pluto:"]`. Every setting is in rex-live-sports' [README](https://github.com/debridmediamanager/rex-live-sports#settings).
 
 ## Updating
 
@@ -128,6 +129,7 @@ On macOS, stop it with Ctrl+C, run `git pull` in `~/rex-live-sports` and start i
 
 - **Nothing records.** Plex Web and Plex for Android show no Record button.
 - **Guides are matched by name.** A channel can get the guide of another feed of the same brand, and many event channels have none.
+- **A slot finds a game's stream by the teams in its name.** A stream named otherwise (`nfl ravens`) is not found, and a game no stream has is in the guide but does not play.
 - **Plex files a programme with no episode number as a film**, as it does with any TV guide, so matches also show under What's On's films.
 - **Live TV was tested in Plex Web and Plex for Android.** Other Plex apps have not been tried.
 - **Anyone who can reach rex-live-sports' address can play through it.** Keep `listen` on `127.0.0.1`.
