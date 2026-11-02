@@ -39,6 +39,8 @@ Every guide on this site, by project.
 - [rex with your own app](../rex/any-source.md)
 - [rex with your Stremio addons](../rex/stremio.md)
 - [rex with zurg](../rex/with-zurg.md)
+- [Live TV with rex](../rex/live-tv.md)
+- [Music with rex](../rex/music.md)
 - [Move from Plex to rex](../rex/from-plex.md)
 - [Share rex with family and friends](../rex/sharing.md)
 - [Building rex addons](../rex/addons.md)

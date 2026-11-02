@@ -108,7 +108,7 @@ The simplest way is one port forward ([rex-direct](any-source.md#rex-direct)). [
 
 ### What does it not do?
 
-Photo libraries stay empty, and there is no tuner and no DVR: nothing records. Music and Live TV come only from a source that sends them: an addon can bring albums, which Plex names and Plexamp plays, and [rex-live-sports](https://github.com/debridmediamanager/rex-live-sports) brings live channels with a TV guide. Building rex addons shows how, for [music](addons.md#music) and [Live TV](addons.md#live-tv). Plexamp's radio, mixes and stations are missing. rex has no relay: to use it away from home it needs an address of its own ([Use it outside your home](any-source.md#use-it-outside-your-home-optional)).
+Photo libraries stay empty, and there is no tuner and no DVR: nothing records. Music and Live TV come only from a source that sends them: [Music with rex](music.md) and [Live TV with rex](live-tv.md) show how. Plexamp's radio, mixes and stations are missing. rex has no relay: to use it away from home it needs an address of its own ([Use it outside your home](any-source.md#use-it-outside-your-home-optional)).
 
 ## After you install
 
