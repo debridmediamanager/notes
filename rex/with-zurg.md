@@ -342,6 +342,18 @@ Once zurg has loaded, rex makes **Anime** and **Anime Movies** and moves what it
 
 ![Add Library's folder picker listing the source's folders anime, kids and movies](../assets/rex/14-plex-add-library-folders.webp)
 
+Music and comic books go to rex only from a folder that names a library for them. Under a folder whose filters pick them, `rex_music` sends its music and audiobooks (FLAC, MP3, M4A, M4B), each song named by its own tags, and `rex_photos` its comic books (CBZ, CBR), each an album of its pages:
+
+```yaml
+directories:
+  music:
+    rex_music: Music
+  comics:
+    rex_photos: Comics
+```
+
+Restart zurg as in [step 4](#step-4-connect-zurg-to-rex), and rex makes the libraries once zurg has loaded. For an audiobook player to resume where you stopped, turn on **Store track progress** in the music library's **Advanced** settings. Plex Web pages through a comic and plays it as a slideshow. Plex for Android shows no photo library, from a real Plex server either: it points to the separate Plex Photos app.
+
 !!!warning Deleting in a Plex app deletes from your debrid account
 Signed in as the fresh account, **Delete** on a movie or episode deletes its file at zurg too, and zurg removes the torrent from your debrid account once none of its files is left. The accounts rex is shared with, yours included, cannot delete. To turn deleting off: in app.plex.tv as the fresh account, open **Settings**, the rex server's **Library**, **Show Advanced**, untick **Allow media deletion** and save. rex then refuses every delete.
 !!!
@@ -579,7 +591,7 @@ There is nothing to set up. rex checks a subtitle against the file's own text su
 
 ## Movie and TV capabilities
 
-Downloads, intro and credits skipping, seek thumbnails and the other server settings are in [rex's setup guide](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities). Music and Live TV come from sources that send them ([rex's limits](https://github.com/debridmediamanager/rex#limits)), such as [rex-live-sports](https://github.com/debridmediamanager/rex-live-sports) for live channels. There is no DVR, so nothing records, and photo libraries stay empty.
+Downloads, intro and credits skipping, seek thumbnails and the other server settings are in [rex's setup guide](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities). Music, photos and Live TV come from sources that send them: zurg sends music and comic books from a folder that [names a library for them](#step-5-watch-something), and [rex-live-sports](https://github.com/debridmediamanager/rex-live-sports) sends live channels. There is no DVR, so nothing records. [rex's limits](https://github.com/debridmediamanager/rex#limits) lists what else the apps cannot do, such as Plex for Android's player failing on video with WMA sound (`.wmv`), which plays at a lower quality once [Converting video](#converting-video-optional) is set up.
 
 ## Run rex in Docker
 

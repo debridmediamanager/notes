@@ -114,7 +114,7 @@ The simplest way is one port forward ([rex-direct](any-source.md#rex-direct)). [
 
 ### What does it not do?
 
-Photo libraries stay empty, and there is no tuner and no DVR: nothing records. Music and Live TV come only from a source that sends them: [Music with rex](music.md) and [Live TV with rex](live-tv.md) show how. Plexamp's radio, mixes and stations are missing. rex has no relay: to use it away from home it needs an address of its own ([Use it outside your home](any-source.md#use-it-outside-your-home-optional)).
+There is no tuner and no DVR: nothing records. Music, photos and Live TV come only from a source that sends them: [Music with rex](music.md) and [Live TV with rex](live-tv.md) show how, and zurg sends comic books as photo albums ([rex with zurg](with-zurg.md#step-5-watch-something)). Plex Web shows photos; Plex for Android shows no photo library, from a real Plex server either. Plexamp's radio, mixes and stations are missing. rex has no relay: to use it away from home it needs an address of its own ([Use it outside your home](any-source.md#use-it-outside-your-home-optional)).
 
 ## After you install
 
