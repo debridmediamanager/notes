@@ -31,9 +31,17 @@ https://192-168-1-5.0123456789abcdef.plex.direct:32400/library/metadata/1234?che
 
 That code is your **Plex token** for that server. It works like a password for your Plex account: never paste it into Discord, a support post or a screenshot.
 
+**No View XML in step 4?** Plex Web shows it only on a server you own, so a server someone shared with you has none. Use the browser's developer tools on your old server instead, as in [step 2](#2-get-your-token-on-rex), and pick a request to your old server (its address has `plex.direct` in it). Right-click it and copy its address: **Copy**, **Copy URL** in Chrome and Edge, **Copy Value**, **Copy URL** in Firefox. That address is the one you need. It has `X-Plex-Token=` and the code among other `X-Plex-` parts: paste all of it.
+
 ## 2. Get your token on rex
 
-Do the same on rex: in app.plex.tv, still signed in as yourself, open any movie on the **rex** server, then **⋯**, **Get Info** and **View XML**. This time you only need the token, the part after `X-Plex-Token=` up to the end of the address.
+rex is shared with you, so **Get Info** on rex has no **View XML**: Plex Web shows it only to a server's owner. Read the token from your browser instead, as app.plex.tv sends it to rex:
+
+1. In app.plex.tv, still signed in as yourself, open the browser's developer tools: **F12**, or **⌥ ⌘ I** on a Mac. In Safari, first turn on **Show features for web developers** in **Settings**, **Advanced**.
+2. Open the **Network** tab and type `X-Plex-Token` in its filter box.
+3. Open any movie on the **rex** server. The list fills with requests.
+4. Click one whose address is rex's: with rex-direct it has `rex-direct.debridmediamanager.com` in it, or it is the HTTPS address you set up yourself. Not one to `plex.tv`.
+5. Copy the value of `X-Plex-Token`: Chrome and Edge show it under **Payload**, Firefox under **Request**. Or copy the request's address and take the part after `X-Plex-Token=` up to the next `&`.
 
 It is a different code from the one in step 1: each server gives your account its own. rex uses this one to know whose history it is.
 
@@ -80,12 +88,12 @@ Running it again changes nothing you already have, so run it whenever more of yo
 
 | What you see | What to do |
 |---|---|
-| `that address has no X-Plex-Token: copy it whole from the tab View XML opens` | The pasted address stops before the token. Copy it again from the address bar and paste all of it |
+| `that address has no X-Plex-Token: copy it whole from the tab View XML opens` | The pasted address stops before the token. Copy it again, from the address bar or the developer tools, and paste all of it |
 | `send the address View XML opens on your old Plex server, starting http:// or https://` | Something other than the address went into the quotes after `-d` |
-| `... refused the token: copy the address from View XML again` | The old server did not accept the token. Do step 1 again |
+| `... refused the token: copy the address from View XML again` | The old server did not accept the token. Do step 1 again, with the developer tools if the server is shared with you |
 | `could not reach https://...` | rex could not connect to your old server. It has to be running, and **the rex machine** has to reach it: rex reads from it, not your computer |
 | `run the import from your home network` | You sent the command to rex's outside address. Use rex's LAN IP, as in step 3 |
-| An `Unauthorized` page | rex did not accept the token from step 2. Copy it again, from a movie on rex |
+| An `Unauthorized` page | rex did not accept the token from step 2. Copy it again, from a request to rex, not to `plex.tv` |
 | `notInRex` is much higher than you expect | Most of your library is not in rex yet, or your old library uses one of Plex's older agents. Run it again once your library has arrived |
 
 Still stuck? Ask in the **rex-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) says what to include.
