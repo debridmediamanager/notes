@@ -20,6 +20,16 @@ If what you bring are movies and shows Plex already knows (it has their IMDb or 
 
 To bring your Stremio addons' catalogs into rex, there is nothing to write: rex-stremio is ready-made. You paste your addons' links on its settings page and tick the catalogs you want.
 
+**Rather start from working code?** Three tutorials each build a complete addon in one Python file, standard library only, and say what each part does:
+
+| Tutorial | Brings into rex |
+|---|---|
+| [Home videos](addon-home-videos.md) | A folder of your own videos, as a library with titles, dates and posters cut from the videos |
+| [Music](addon-music.md) | A folder of albums, named by Plex through MusicBrainz, with lyrics |
+| [IPTV](addon-iptv.md) | An M3U playlist and its XMLTV guide, as Live TV channels with a guide |
+
+This page explains every step those tutorials take. [More from your addon](addon-more.md) adds subtitles, trailers, chapters, collections, playlists and the rest.
+
 ## Before you start
 
 | You need | Why |
@@ -299,6 +309,7 @@ It asks each addon that serves the title (`/stream/<movie or series>/<id>.json`)
 | Live TV is missing in a Plex app | No item was sent with a `channel` yet, or the app was not tested | Send a `channel`, and use Plex Web or Plex for Android, the apps tested |
 | A video never shows up | It is held (its `media_info` has no streams, or a file was sent without one), or a stream sent without `media_info` was rejected | Probe it and send it again |
 | `rejected`: `... is already <id>'s file` | Another id has that `path` | Keep one id per path |
+| A snapshot answers `409`: `the snapshot would remove more than half of this source's items` | Your snapshot leaves out more than half of what rex has from you: a missing disk, a failed listing, or a real clean-up | Fix what went missing. If you meant it, send the snapshot's last part with `"force": true` |
 | Episodes titled "Episode 1" and blank tiles | No `display` | Send `display` with each video |
 | A film sent with its IMDb id keeps your `display` title, not Plex's | rex asks Plex for titles only once it is claimed | Claim rex: [step 3 of rex with your own app](any-source.md#step-3-add-it-to-a-plex-account) |
 | Pictures do not show | The URL is on your home network but not under your addon's registered `url`, or is not http(s) | Serve them from your addon's own address, or host them on the public internet. |
