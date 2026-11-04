@@ -17,13 +17,13 @@ The first two can run side by side. They share the same `__magic__` folder.
 | Indexers go in | zurg's `config.yml`, and a change needs a restart | Prowlarr or the \*arrs, as usual |
 | The \*arrs need | root folders inside `__magic__`, nothing else | zurg as their download client, with the download folder and the root folders on one volume |
 | The first file is | the quickest one to confirm that your profile allows, upgraded to the cutoff later | the one the \*arr ranks best in your profile |
-| Anime, daily shows and specials | skipped | handled |
+| Anime, daily shows and specials | handled from the 5 November 2026 nightly on | handled |
 | Manual search, queue, history, blocklist | none. The file appears and the \*arr rescans | work as usual |
 | zurg's [`exclude_words`](acquisition.md#excluding-releases-by-name) | applies | does not apply. Block the same words in the \*arr |
 
 Both check a release before the \*arr imports it. A dead Usenet post or a torrent your account does not already hold is never placed.
 
-On a fresh install, start with zurg searching if you keep films and ordinary series. There is less to set up and no volume layout to get right. Use the download-client route for anime and daily shows, or if you want to pick releases by hand. If you would rather wait for your profile's best release than take a quick first file, turn on [`best_first`](acquisition.md#taking-the-profiles-best-first).
+On a fresh install, start with zurg searching. There is less to set up and no volume layout to get right. Use the download-client route if you want to pick releases by hand. If you would rather wait for your profile's best release than take a quick first file, turn on [`best_first`](acquisition.md#taking-the-profiles-best-first).
 
 Radarr and Sonarr keep the list and the library. zurg does the fetching. Add a movie or a series the way you already do and zurg finds a release on your indexers. It checks that an NZB is still on the news servers, or that your debrid account already holds a torrent. Then it puts the file in its folder inside `__magic__` and asks Radarr or Sonarr to rescan. Nothing is downloaded to import and nothing is copied.
 
@@ -200,6 +200,6 @@ An episode file below the cutoff is an upgrade when the profile allows upgrades.
 - **The rescan is the last step and it queues behind the app's own work.** Right after a list adds many movies Radarr refreshes each of them first. The files are already in place while that runs.
 - **Analyse video files reads the head of each file over the mount.** It works. It is also the slowest part of a big list. Leave it on unless you know you do not want media info.
 - **Unmonitored titles are left alone.** That covers movies and series and seasons and episodes. So are titles whose folder is outside `__magic__`.
-- **Specials and daily shows and anime are skipped for now.** A daily show's episodes are dates and anime is released under absolute episode numbers. zurg searches by season and episode so it cannot find either yet. Each skipped series gets one line in the log.
+- **Anime, daily shows and specials need a nightly from 5 November 2026 or later.** A daily show's episodes are found by the day they aired, an anime's by the number the show counts them at (`Jujutsu Kaisen - 30` is the second season's sixth), and specials are searched as season 00. A file placed for an anime or a daily show is named `JUJUTSU KAISEN - S02E06 - <the release's own name>`, because Sonarr's rescan reads a file by its name alone and would file `2nd Season - 06` under season 1. A special named only by its title, without `S00Exx`, cannot be matched, by Sonarr either. On an older build each such series is skipped with one line in the log.
 
 The full description of both sources lives in [Watchlist and Seerr](acquisition.md).
