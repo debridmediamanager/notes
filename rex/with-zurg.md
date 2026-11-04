@@ -348,9 +348,15 @@ Music and comic books go to rex only from a folder that names a library for them
 directories:
   music:
     rex_music: Music
+    filters:
+      - is_music: true
   comics:
     rex_photos: Comics
+    filters:
+      - any_file_inside_regex: /\.(cbz|cbr)$/i
 ```
+
+Keep the filters: a folder without them holds every release, and each film would reach rex from it too.
 
 Restart zurg as in [step 4](#step-4-connect-zurg-to-rex), and rex makes the libraries once zurg has loaded. For an audiobook player to resume where you stopped, turn on **Store track progress** in the music library's **Advanced** settings. Plex Web pages through a comic and plays it as a slideshow. Plex for Android shows no photo library, from a real Plex server either: it points to the separate Plex Photos app.
 
