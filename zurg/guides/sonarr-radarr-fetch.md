@@ -1,6 +1,6 @@
 # Let zurg fetch what Sonarr and Radarr want
 
-There are three ways to use Sonarr and Radarr with zurg. Pick the one that matches the account you have.
+There are three ways to use Sonarr and Radarr with zurg. The real choice is who searches, zurg or the \*arrs: [which one to pick](#which-one-to-pick) compares them.
 
 | Guide | Who searches | zurg acts as | You need |
 |---|---|---|---|
@@ -9,6 +9,21 @@ There are three ways to use Sonarr and Radarr with zurg. Pick the one that match
 | [zurg searches](sonarr-radarr-fetch.md) | zurg | no download client at all | a Usenet or debrid account, and Newznab or Torznab indexers in zurg's own config |
 
 The first two can run side by side. They share the same `__magic__` folder.
+
+### Which one to pick
+
+| | zurg searches | Sonarr and Radarr search |
+|---|---|---|
+| Indexers go in | zurg's `config.yml`, and a change needs a restart | Prowlarr or the \*arrs, as usual |
+| The \*arrs need | root folders inside `__magic__`, nothing else | zurg as their download client, with the download folder and the root folders on one volume |
+| The first file is | the quickest one to confirm that your profile allows, upgraded to the cutoff later | the one the \*arr ranks best in your profile |
+| Anime, daily shows and specials | skipped | handled |
+| Manual search, queue, history, blocklist | none. The file appears and the \*arr rescans | work as usual |
+| zurg's [`exclude_words`](acquisition.md#excluding-releases-by-name) | applies | does not apply. Block the same words in the \*arr |
+
+Both check a release before the \*arr imports it. A dead Usenet post or a torrent your account does not already hold is never placed.
+
+On a fresh install, start with zurg searching if you keep films and ordinary series. There is less to set up and no volume layout to get right. Use the download-client route for anime and daily shows, or if you want to pick releases by hand. If you would rather wait for your profile's best release than take a quick first file, turn on [`best_first`](acquisition.md#taking-the-profiles-best-first).
 
 Radarr and Sonarr keep the list and the library. zurg does the fetching. Add a movie or a series the way you already do and zurg finds a release on your indexers. It checks that an NZB is still on the news servers, or that your debrid account already holds a torrent. Then it puts the file in its folder inside `__magic__` and asks Radarr or Sonarr to rescan. Nothing is downloaded to import and nothing is copied.
 
