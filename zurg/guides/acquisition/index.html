@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847139060182">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847145130746">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../../resources/css/retype.css?v=4.6.0.847139060182" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.847145130746" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847139060182" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847145130746" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847139060182" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847139060182" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847145130746" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847145130746" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -205,15 +205,27 @@ indexers, handing info hashes to a debrid account that already holds them: see
 the grab has been checked. An NZB is put to the news servers. A torrent has to
 show up in the library with files in it. See
 <doc-anchor-trigger to="#verifying-a-grab">Verifying a grab</doc-anchor-trigger>.</p>
+<p>A release zurg grabs keeps the ids of the title it was grabbed for, every one
+Plex matches titles by: IMDb, TMDB and, for a show, TVDB. It is never
+identified again from its name. Those ids replace any id DMM or the release
+name gave it, though never one you set by hand. A release that was already in
+your library when zurg picked it may have been added for something else, so it
+only takes them when it has no id or already has the same one. With
+<a href="../../reference/config/"><code translate="no" v-pre>rex_url</code></a> set, a grabbed movie goes to rex as that movie, by
+those ids, even when DMM could not place it; a show&#x27;s episodes are still
+numbered by DMM&#x27;s placement and carry the show&#x27;s ids. At start, zurg does
+the same for every release its saved jobs grabbed earlier, which repairs
+releases that lost their ids before this change.</p>
 <h2 id="configuration">Configuration</h2>
 <div id="configuration-code-1" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">acquisition:
-  quality: best           # best (default), 4k, 1080p, 720p or smallest; a list such as [1080p, 4k] keeps a copy of a DMM wanted film at each
+  quality: best
   prefer: usenet          # usenet (default), torrents, or best
   best_first: false       # true makes Radarr and Sonarr take the profile's best quality first
   max_size_gb: 0          # a cap on a film or episode, and each episode of a season pack; 0, the default, is none
   max_season_size_gb: 0   # a cap on each season a pack holds; 0, the default, is none
   exclude_words: [DV, HDR10+]  # never take a release whose name says these
+  prefer_words: [FraMeSToR]    # take a release whose name says these first, within its resolution
   audio_languages: [original]  # take only releases with this audio (any one), read from the streams
   subtitle_languages: [en]     # and with these subtitles
   concurrency: 8          # titles worked on at once (default 8, at most 200)
@@ -227,6 +239,9 @@ show up in the library with files in it. See
       url: https://prowlarr.example
       api_key: YOUR_PROWLARR_API_KEY
       type: torznab        # a torrent indexer, handed to a debrid account
+    - name: zilean
+      url: http://zilean:8181/torznab
+      type: torznab        # no api_key: Zilean takes none, and is asked without one
   sources:
     - name: plex-watchlist
       type: plex_watchlist
@@ -292,6 +307,27 @@ Seerr, Radarr and Sonarr. It applies to Usenet and torrent results alike. A
 release it excludes is never fetched, saved, added to a debrid account or put
 to Radarr or Sonarr. Leave it out to exclude nothing. zurg reads it at
 startup like the rest of <code translate="no" v-pre>config.yml</code>.</p>
+<h2 id="preferring-releases-by-name">Preferring releases by name</h2>
+<div id="preferring-releases-by-name-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">acquisition:
+  prefer_words: [FraMeSToR, CiNEPHiLES]</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>prefer_words</code> lists words, such as release groups, that put a release first
+among the releases of its resolution. It is matched the way <code translate="no" v-pre>exclude_words</code> is:
+whole words, any case. The list is an order: a release with the first word
+comes before one with the second, and so on. It is a preference and not a
+filter. When no release
+has one of the words, zurg takes what it would have taken without them.</p>
+<p>A preferred release never goes ahead of a resolution. With <code translate="no" v-pre>quality: best</code> a
+2160p release from any group still comes before a preferred 1080p one, and with
+<code translate="no" v-pre>quality: 1080p</code> a preferred 2160p one does not come before the 1080p releases.
+An upgrade to a higher resolution still happens when the preferred group has no
+release at that resolution.</p>
+<p>It applies to every source and to Usenet and torrent results alike. With a
+<code translate="no" v-pre>radarr</code> or <code translate="no" v-pre>sonarr</code> source the profile still has to accept the preferred
+release. When Radarr or Sonarr use zurg as a download client they pick the
+release themselves, and <code translate="no" v-pre>prefer_words</code> does not apply there. Leave it out to
+prefer nothing.</p>
 <p>A film&#x27;s release is also never taken when its name gives a year more than one
 off the film&#x27;s, whatever the source. Indexers file some posts under another
 film&#x27;s IMDb id: DrunkenSlug files The Aswang Chronicles (2012) under its 2014
@@ -393,14 +429,89 @@ profile&#x27;s <strong>Must Not Contain</strong>.</p>
   audio_languages: [original]   # or [de], [de, en], ...
   subtitle_languages: [en]</code></pre>
 </doc-codeblock></div>
-<p>Needs a zurg nightly from 2026-10-26 or later.</p>
 <p><code translate="no" v-pre>audio_languages</code> takes only releases with an audio track in one of the
 listed languages, and <code translate="no" v-pre>subtitle_languages</code> only releases with a subtitle track
 in one of them. Leave either out to ask nothing. Both apply to every source.</p>
+<p>Each list is also an order: a torrent with an earlier language goes ahead of
+one with only a later one. <code translate="no" v-pre>[de, original]</code> takes a German dub when there is
+one and the original language when there is not.</p>
 <p>zurg reads the language from the release&#x27;s streams, not from its name. Most
 releases do not name their languages: almost none of Parasite&#x27;s say KOREAN.
 Write ISO 639 codes, two or three letters: <code translate="no" v-pre>en</code>, <code translate="no" v-pre>eng</code>, <code translate="no" v-pre>de</code>, <code translate="no" v-pre>deu</code> and <code translate="no" v-pre>ger</code>
-all work, and so does <code translate="no" v-pre>pt-BR</code>. A name such as <code translate="no" v-pre>german</code> is refused at startup.</p>
+all work. A name such as <code translate="no" v-pre>german</code> is refused at startup.</p>
+<p>Some languages have dubs or subtitles that differ, and a code can name one:</p>
+<retype-table copy-text="| Write | For |
+|---|---|
+| `es-419`, `es-ES` | Latin American (Latino) or Castilian Spanish |
+| `pt-BR`, `pt-PT` | Brazilian or European Portuguese |
+| `fr-CA`, `fr-FR` | Québécois (VFQ) or French from France (VFF, VFI) |
+| `nl-BE` | Flemish |
+| `yue`, `cmn` | Cantonese or Mandarin |
+| `zh-Hant`, `zh-Hans` | Traditional or Simplified Chinese subtitles (`zh-TW` and `zh-HK` read as Traditional, `zh-CN` as Simplified; for Cantonese audio write `yue`) |
+| `nb`, `nn` | Norwegian Bokmål or Nynorsk |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Write</th>
+<th>For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>es-419</code>, <code translate="no" v-pre>es-ES</code></td>
+<td>Latin American (Latino) or Castilian Spanish</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>pt-BR</code>, <code translate="no" v-pre>pt-PT</code></td>
+<td>Brazilian or European Portuguese</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>fr-CA</code>, <code translate="no" v-pre>fr-FR</code></td>
+<td>Québécois (VFQ) or French from France (VFF, VFI)</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>nl-BE</code></td>
+<td>Flemish</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>yue</code>, <code translate="no" v-pre>cmn</code></td>
+<td>Cantonese or Mandarin</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>zh-Hant</code>, <code translate="no" v-pre>zh-Hans</code></td>
+<td>Traditional or Simplified Chinese subtitles (<code translate="no" v-pre>zh-TW</code> and <code translate="no" v-pre>zh-HK</code> read as Traditional, <code translate="no" v-pre>zh-CN</code> as Simplified; for Cantonese audio write <code translate="no" v-pre>yue</code>)</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>nb</code>, <code translate="no" v-pre>nn</code></td>
+<td>Norwegian Bokmål or Nynorsk</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>The plain code takes every one of them: <code translate="no" v-pre>es</code> takes Latino and Castilian, <code translate="no" v-pre>zh</code>
+Cantonese and Mandarin, <code translate="no" v-pre>no</code> Bokmål and Nynorsk. A part after the language
+that zurg cannot read, such as <code translate="no" v-pre>es-latam</code>, is refused at startup. zurg reads which one a track
+is from its title, because the streams never carry it in a form zurg can read:
+&quot;Latino&quot;, &quot;Spanish (Latin American)&quot;, &quot;Castellano&quot;, &quot;French (Canada)&quot;, &quot;VFQ&quot;,
+&quot;Portuguese (Brazilian)&quot;, &quot;Chinese (Cantonese)&quot;, &quot;繁体中字&quot;. A track whose
+title says neither is never refused for it. The release name breaks the tie
+when it says one, such as <code translate="no" v-pre>Dual-Lat</code>, <code translate="no" v-pre>[Castellano]</code>, <code translate="no" v-pre>MULTi.VFQ</code>, <code translate="no" v-pre>VF2</code>,
+<code translate="no" v-pre>PT-BR</code> or <code translate="no" v-pre>[ES-LA]</code>. A name never refuses anything, and a track&#x27;s title
+outranks it. For <code translate="no" v-pre>[es-419, es]</code> zurg takes, in order, a track titled Latino,
+an untitled one in a release named Latino, an untitled one, an untitled one
+in a release named Castellano, and a track titled Castellano. For a Latin
+American household:</p>
+<div id="choosing-by-audio-and-subtitle-language-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">acquisition:
+  audio_languages: [es-419, es]  # Latino first, then Castilian
+  subtitle_languages: [es]
+  audio_or_subtitles: true       # or any audio with Spanish subtitles</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>audio_or_subtitles: true</code> takes a release that has the audio or the
+subtitles, rather than both. A release with the audio goes ahead of one with
+only the subtitles.</p>
 <p><code translate="no" v-pre>original</code> means the language the title was made in, as TMDB records it:
 Korean for Parasite, French for Anatomy of a Fall. zurg asks DMM for it, so it
 needs <code translate="no" v-pre>dmm_api_key</code>. Without the key <code translate="no" v-pre>original</code> asks nothing.</p>
@@ -423,15 +534,22 @@ candidate is tried at once. The dashboard says why, for example &quot;it has no
 English audio, only French&quot;.</p>
 </li>
 <li>
+<p><strong>An upgrade keeps its languages.</strong> When the DMM wanted list upgrades a
+film to a better resolution, the new release must hold languages at least as
+early in your lists as the copy it replaces. A Latino 1080p copy is not
+traded for a Castilian 2160p one.</p>
+</li>
+<li>
 <p><strong>Unknown is taken.</strong> A release is never refused for what cannot be read.
 That covers untagged tracks, a track tagged <code translate="no" v-pre>und</code> or <code translate="no" v-pre>mul</code>, a release only
 reached through its archives, or no probe within a minute. zurg logs that it
 took it as it is.</p>
 </li>
 </ul>
-<p>Commentary and audio description tracks do not count as the film&#x27;s audio.
+<p>Commentary and audio description tracks do not count as the film&#x27;s audio,
+and commentary subtitles do not count as its subtitles.
 That includes a commentary named only in its title, such as Parasite&#x27;s
-&quot;Commentary by Bong Joon Ho&quot;. Subtitle tracks titled forced, signs or songs do
+&quot;Commentary by Bong Joon Ho&quot;. Subtitle tracks titled forced (forzados, forcés), signs or songs do
 not count as subtitles. The forced flag alone does not exclude a track: remuxes
 of foreign films flag their full English subtitles forced so players show them.</p>
 <p>Only a release&#x27;s main video files are judged, those at least a fifth as long as
@@ -454,6 +572,15 @@ episodes as they air.
 DMM sends each title&#x27;s IMDb, TMDB and TVDB ids, its year, and for a show the episodes
 aired so far, numbered as TMDB numbers them. Specials are never listed. A season
 still airing is fetched as loose episodes, since no pack covers it yet.</p>
+</li>
+<li>
+<p><strong>When it is searched.</strong> A film is searched for as it comes out at home: DMM sends the
+day of its earliest digital, physical or TV release where TMDB knows one, and zurg
+waits no longer than that day, then searches every two minutes for six hours and
+every ten until two days after, as it does for a <doc-anchor-trigger to="#sonarr-behavior">new episode</doc-anchor-trigger>. Never a
+cinema date: a WEB-DL is posted with the digital release. A show&#x27;s newest episode is
+dated the same way. A title with no date keeps the ordinary retries, at most a week
+apart, and nothing on the list is ever <doc-anchor-trigger to="#persistence-and-recovery">parked</doc-anchor-trigger>.</p>
 </li>
 <li>
 <p><strong>Where it goes.</strong> The same as any source: an NZB from a Newznab indexer to this
@@ -507,7 +634,7 @@ wanted list on one of them and turn it off on the others by writing it disabled:
       type: dmm
       enabled: false</code></pre>
 </doc-codeblock></div>
-<p>A lapsed sponsorship or a reset key stops the list. zurg logs a warning that DMM refused <code translate="no" v-pre>dmm_api_key</code> and asks again an hour later, or at once when you set a new key. What it already fetched stays in your library. Renew the sponsorship or copy the new key on <a href="https://gatekeeper.debridmediamanager.com/">gatekeeper</a>.</p>
+<p>A lapsed sponsorship or a reset key stops the list. zurg logs a warning that DMM refused <code translate="no" v-pre>dmm_api_key</code> and asks again an hour later, or at once when you set a new key. What it already fetched stays in your library.</p>
 <h3 id="a-copy-at-each-of-several-resolutions">A copy at each of several resolutions</h3>
 <p>Write <code translate="no" v-pre>quality</code> as a list to keep a copy of each film on the wanted list at each
 resolution in it, for example so a 1080p TV plays one without the 4K file being
@@ -603,6 +730,86 @@ replace it.</p>
 release zurg took. It does not show which resolution is still waiting. A film
 fetched before you wrote the list can keep showing &quot;waiting for&quot; the resolution it
 waited for then.</p>
+</li>
+</ul>
+<h3 id="streaming-a-film-from-youtube">Streaming a film from YouTube</h3>
+<p>Many wanted films no indexer carries are on YouTube, uploaded whole by the studio that
+made them. With <code translate="no" v-pre>acquisition.youtube</code> set, zurg streams such a film from that upload
+instead of leaving it unfetched. Nothing is downloaded.</p>
+<div id="streaming-a-film-from-youtube-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">acquisition:
+  youtube:
+    cookies: /home/you/zurg/youtube-cookies.txt   # required: a signed-in account's cookies (Netscape format)
+    # ytdlp_binary: yt-dlp                        # default; the standalone build
+    # js_runtime: node                            # default; yt-dlp needs one to read YouTube's player
+    # channels: [UC1D36wr10qyCfisHulZ5G8Q]       # the channel ids uploads are taken from
+    # searches_per_hour: 20                       # default; films looked for on YouTube in an hour</code></pre>
+</doc-codeblock></div>
+<ul>
+<li>
+<p><strong>When.</strong> Only for a film on the DMM wanted list, and only when nothing the indexers
+return can be taken: no release passes <code translate="no" v-pre>quality</code>, <code translate="no" v-pre>max_size_gb</code>, <code translate="no" v-pre>exclude_words</code> and
+the title and year checks, or every one was found gone, with every indexer answering.
+Never for a show or an upgrade, nor with <code translate="no" v-pre>audio_languages</code> or <code translate="no" v-pre>subtitle_languages</code>
+set, since an upload&#x27;s languages cannot be read. Only the wanted list takes a stream:
+a film the Plex watchlist also wants is not settled for it by one, since Plex cannot
+play it, and the watchlist keeps looking for a release.</p>
+</li>
+<li>
+<p><strong>How often.</strong> At most <code translate="no" v-pre>searches_per_hour</code> films are looked for in an hour (20 by
+default: 1,820 films take four days), one at a time. A film YouTube has nothing for is
+asked about again a day later, restarts included.</p>
+</li>
+<li>
+<p><strong>Which upload.</strong> zurg searches YouTube for the title and year, and for the original
+title when DMM sends one, and takes an upload only when all of these hold: it is on
+one of <code translate="no" v-pre>channels</code>; it runs at least 90% of the film&#x27;s runtime, or an hour when DMM does
+not know the runtime; its title begins with the film&#x27;s title (<code translate="no" v-pre>'Separada' FULL MOVIE | ...</code>), states no other year, and is no trailer, teaser, clip or <code translate="no" v-pre>Part N</code>. Of those it
+takes the longest, then the most watched, and checks that YouTube streams it with
+picture and sound together.</p>
+</li>
+<li>
+<p><strong>Channels.</strong> The default list is the Philippine studios&#x27; own channels: ABS-CBN Star
+Cinema, Regal Entertainment, VIVA Films, SOLAR WATCH NOW, OctoArts Films, CineMo and
+Cinema One. Of 100 random unfetched films on one wanted list (2026-10-31), 65 had a
+full-length upload and 33 were on these channels; the rest were re-uploads (every
+Disney one) and, for new releases, scams titled &quot;full movie&quot;. Writing <code translate="no" v-pre>channels</code>
+replaces the list. A channel&#x27;s id is the <code translate="no" v-pre>UC...</code> part of its address, or what
+<code translate="no" v-pre>yt-dlp --print channel_id &lt;a video's page&gt;</code> prints.</p>
+</li>
+<li>
+<p><strong>What you get.</strong> The film is named <code translate="no" v-pre>Title.Year.1080p.YouTube.WEB-DL</code> and DMM is told
+it was fetched (<code translate="no" v-pre>youtube:&lt;video id&gt;</code>). rex gets it as an HLS item in your movies
+library, read through zurg. Jellyfin and Kodi get
+<code translate="no" v-pre>__magic__/__movies__/Title (Year) {tmdb-N}/Title (Year) {tmdb-N}.strm</code>, with <code translate="no" v-pre>__magic__</code>
+on. The address in the <code translate="no" v-pre>.strm</code> is zurg&#x27;s own, from <a href="../../reference/config/"><code translate="no" v-pre>base_url</code></a>, and needs
+no login. Either address is the stream&#x27;s playlist served by zurg, every segment in it
+an address on zurg too, which zurg fetches from YouTube itself. zurg resolves the
+stream with yt-dlp and keeps it until an hour before it expires. A segment&#x27;s address
+is good for a day; a player that comes back later reads the playlist again.</p>
+</li>
+<li>
+<p><strong>Upgrades.</strong> A streamed film stays on the wanted list while <code translate="no" v-pre>upgrades</code> is on, and any
+release of it that comes out replaces the stream, whatever its resolution: the stream,
+its <code translate="no" v-pre>.strm</code> and its rex item go once the release has passed its check.</p>
+</li>
+</ul>
+<p>Limits:</p>
+<ul>
+<li>
+<p><strong>Plex cannot play it.</strong> It is no file on the mount. Use rex, Jellyfin or Kodi.</p>
+</li>
+<li>
+<p><strong>Cookies are required.</strong> Without a signed-in account&#x27;s cookies YouTube offers an
+address that fetches much only video and audio apart, or nothing, so zurg starts with
+the fallback off and says why. Export them from a browser signed in to YouTube, ideally
+on the same network. Signing out in that browser ends them.</p>
+</li>
+<li>
+<p><strong>Every byte passes through zurg.</strong> Nothing is redirected to YouTube: rex sends its
+source&#x27;s login with every request its transcoder makes, redirected ones included, and
+YouTube ties a stream to the address that resolved it. So any player that reaches
+zurg plays it, and zurg carries the film&#x27;s traffic.</p>
 </li>
 </ul>
 <h2 id="seerr-behavior">Seerr behavior</h2>
@@ -721,6 +928,14 @@ the profile&#x27;s minimum, and the size must fit the quality&#x27;s limits in
 <strong>Settings &gt; Quality</strong> for the movie&#x27;s runtime.</p>
 </li>
 <li>
+<p><strong>The release must be in the profile&#x27;s language.</strong> With <strong>Original</strong>, the
+default, Radarr has to read the title as the film&#x27;s own language, so a
+French-only release of an English film is refused. A title that names no
+language counts as the original. A named language wants that language, and
+<strong>Any</strong> takes every language. This holds for a first file and for an
+upgrade alike.</p>
+</li>
+<li>
 <p><strong>Upgrades head toward the cutoff later.</strong> A movie without a file takes any
 release that passes the checks above. Once it has a file below the cutoff,
 only a better release is taken: a higher quality in the profile&#x27;s order
@@ -731,10 +946,8 @@ same quality are not treated as upgrades.</p>
 </li>
 </ul>
 <p>The profile is applied to the release zurg is about to take as an allow-list:
-the right movie, an allowed quality, the profile&#x27;s language, the minimum score
-and the size limits. With the language set to <strong>Original</strong>, the default, a
-release in another language is refused; a title that names no language counts
-as the original.
+the right movie, an allowed quality, the minimum score, the language and the
+size limits.
 By default its order of preference is not used to pick among the releases it
 allows. zurg takes the first allowed release that is cheapest to check, trying
 web releases (WEB-DL, WEBRip) before Blu-ray ones and those before the rest,
@@ -769,15 +982,23 @@ movie&#x27;s folder the way Radarr would have imported it, by moving it inside
 <li>
 <p><strong>The largest video is the one placed.</strong> That is the largest <code translate="no" v-pre>.mkv</code>, <code translate="no" v-pre>.mp4</code>,
 <code translate="no" v-pre>.m4v</code>, <code translate="no" v-pre>.avi</code>, <code translate="no" v-pre>.mov</code> or <code translate="no" v-pre>.ts</code> file in the release, counting what is inside
-its archives. A video named as a sample (<code translate="no" v-pre>sample-…</code>, <code translate="no" v-pre>….sample.mkv</code>, a
-<code translate="no" v-pre>Sample/</code> folder) is left out however large. If the release&#x27;s own name
-says sample too, as with <code translate="no" v-pre>Sample.Size.2019</code>, it is left out only when it is
-under a fifth of the release. A release whose only video is its sample is set aside and
-the next candidate is tried. Samples,
-featurettes, subtitles and <code translate="no" v-pre>.nfo</code> files stay in <code translate="no" v-pre>__magic__/__all__</code>. The
-file keeps the name it has in the release, unless that name says nothing
-about the film (no year and no word of its title); then it takes the
+its archives. A release served out of one archive is its archive&#x27;s
+contents. A RAR set with loose files beside it, such as a scene post with
+its sample and <code translate="no" v-pre>.nfo</code>, is browsed as a folder of the release, and the video
+inside it is placed from there. Samples, featurettes, subtitles and <code translate="no" v-pre>.nfo</code>
+files stay in <code translate="no" v-pre>__magic__/__all__</code>. The file keeps the name it has in the release, unless that name says
+nothing about the film (no year and no word of its title); then it takes the
 release&#x27;s name, so Radarr can read its quality.</p>
+</li>
+<li>
+<p><strong>A sample is never placed.</strong> A video named as a sample (<code translate="no" v-pre>sample-…</code>,
+<code translate="no" v-pre>….sample.mkv</code>, a <code translate="no" v-pre>Sample/</code> folder) is left out, however large, unless the
+release&#x27;s own name says sample too. A film that only has the word in its
+title (<code translate="no" v-pre>Sample.Size.2019</code>, <code translate="no" v-pre>Death.Proof.2007</code>) carries it in the release name
+as well; there the video is left out only when it is under a fifth of its
+release. A release whose only video is its sample, including a post that is
+nothing but its sample, is set aside, and the next candidate is tried, so an
+upgrade never replaces your file with a one minute clip.</p>
 </li>
 <li>
 <p><strong>It is refused before it is moved if it cannot be read.</strong> This is the check
@@ -888,10 +1109,31 @@ it. zurg counts both, as Sonarr&#x27;s own upgrade rule does. A file holding two
 episodes is one upgrade for both.</p>
 </li>
 <li>
-<p><strong>Specials are skipped.</strong> So are daily series and anime series. A daily
-show&#x27;s episodes are dates, and anime is released under absolute episode
-numbers. zurg searches by season and episode, so it cannot find either
-yet. Each skipped series gets one warning in the log.</p>
+<p><strong>A daily show&#x27;s episodes are found by the day they aired.</strong> Its releases
+are named by the day (<code translate="no" v-pre>The.Daily.Show.2026.11.03.Min.Jin.Lee...</code>), and the
+indexers do not find them by episode number, so each missing episode is
+also asked for as a text search of the series title and the day,
+<code translate="no" v-pre>The Daily Show 2026.11.03</code>. Sonarr&#x27;s parser turns the day back into the
+episode (S31E124), as it does for a title numbered by season.</p>
+</li>
+<li>
+<p><strong>An anime&#x27;s episodes are found by the number the show counts them at.</strong>
+Fansub releases are numbered from the show&#x27;s first episode
+(<code translate="no" v-pre>[SubsPlease] Jujutsu Kaisen - 30</code> is the second season&#x27;s sixth), so each
+missing episode is also asked for as a text search of the series title and
+that number, <code translate="no" v-pre>JUJUTSU KAISEN 30</code>, and a batch spanning the season&#x27;s numbers
+(<code translate="no" v-pre>(25-47)</code>) is the season&#x27;s pack. Sonarr&#x27;s parser maps the number to the
+episode, with its scene names for the season (<code translate="no" v-pre>Jujutsu Kaisen 2nd Season</code>,
+<code translate="no" v-pre>Jujutsu Kaisen S2</code>), so a title numbered either way is judged as the
+episode it is. A release Sonarr matches to no series, such as one named
+by a scene name it does not know, is refused like any other.</p>
+</li>
+<li>
+<p><strong>Specials are season 0.</strong> Sonarr&#x27;s monitored specials are listed like any
+season, asked for as season <code translate="no" v-pre>00</code> (an indexer asked for season <code translate="no" v-pre>0</code> answers
+another season), and only a release naming <code translate="no" v-pre>S00Exx</code> can match: a special
+named by its title alone parses to nothing, in Sonarr too. They are placed
+in the folder Sonarr&#x27;s <strong>Specials Folder Format</strong> names.</p>
 </li>
 </ul>
 <p>Each candidate release is put to Sonarr&#x27;s own parser (<code translate="no" v-pre>/api/v3/parse</code>) and
@@ -921,7 +1163,8 @@ episodes is refused for a single episode.</p>
 The custom format score must reach the profile&#x27;s minimum. The size must fit
 the quality&#x27;s limits in <strong>Settings &gt; Quality</strong> for the runtime of the
 episodes the release holds. An upgrade must beat the current file by
-Sonarr&#x27;s rules.</p>
+Sonarr&#x27;s rules. Sonarr&#x27;s profiles have no language setting, so a language
+counts only through a custom format&#x27;s score, as it does in Sonarr.</p>
 </li>
 </ul>
 <p>Which allowed release comes first is decided differently from Radarr. A
@@ -947,8 +1190,9 @@ files in the series folder.</p>
 <ul>
 <li>
 <p><strong>Each episode gets its own video.</strong> The video is found by the episode
-number in its name. A pack places every episode it was taken for. Samples
-and <code translate="no" v-pre>.nfo</code> files stay in <code translate="no" v-pre>__magic__/__all__</code>.</p>
+number in its name, inside the release&#x27;s archives too. A pack places every
+episode it was taken for. Samples and <code translate="no" v-pre>.nfo</code> files stay in
+<code translate="no" v-pre>__magic__/__all__</code>, and a sample is never placed as the episode.</p>
 </li>
 <li>
 <p><strong>A pack missing an episode is refused before anything moves.</strong> It is set
@@ -957,6 +1201,17 @@ aside like a dead post, and the next pack or the loose episodes are tried.</p>
 <li>
 <p><strong>A loose episode whose file names nothing gets the release&#x27;s largest
 video.</strong> Obfuscated posts often look like this.</p>
+</li>
+<li>
+<p><strong>An anime&#x27;s or a daily show&#x27;s video is placed under the series and the
+episode.</strong> A rescan reads a file by its name alone and knows nothing of
+scene numbering: <code translate="no" v-pre>[Erai-raws] Jujutsu Kaisen 2nd Season - 08.mkv</code> in the
+series folder was imported as S01E08, where Sonarr&#x27;s parser reads the same
+title as S02E08. So the video is placed as
+<code translate="no" v-pre>JUJUTSU KAISEN - S02E08 - [Erai-raws] Jujutsu Kaisen 2nd Season - 08.mkv</code>,
+which imports right, with its own name kept after the episode so Sonarr
+still reads its quality and group. A standard series&#x27; and a special&#x27;s
+videos keep their names, which already say the episode.</p>
 </li>
 <li>
 <p><strong>An upgrade replaces only its own episode.</strong> The old video of that episode
@@ -1040,8 +1295,11 @@ title. A row shows the state, what a running title is doing right now (the
 search, how many results have been judged and allowed so far, the candidate
 being inspected, the check against the news servers, the placement), its attempts, the release chosen with the quality and score
 the source gave it, where it was placed, and when a waiting title is tried
-next. The page refreshes itself every five seconds. The same snapshot is at
-<code translate="no" v-pre>/acquisition/status.json</code>. When no source is enabled, or acquisition is
+next. A title none of whose releases is left to try says why, with the
+source&#x27;s refusals counted by rule: <code translate="no" v-pre>14 refused by the source's own rules (title mismatch 7, quality 5, size 2)</code>. Releases refused for their resolution
+without asking the source count under quality. The page refreshes itself every
+five seconds. The same snapshot is at <code translate="no" v-pre>/acquisition/status.json</code>, where that
+reason is the title&#x27;s <code translate="no" v-pre>detail</code>. When no source is enabled, or acquisition is
 configured but paused, the page says so and why.</p>
 <p>Each movie a release is chosen for gets one line in the log, for measuring
 where the time goes:</p>
@@ -1054,6 +1312,59 @@ refused, <code translate="no" v-pre>inspected</code> the NZBs read, <code transl
 source (the NZBs read plus the refusals on the way to them, when the source is
 Radarr), and the time runs from the start of the search. Releases refused
 without asking are logged one by one at debug level only.</p>
+<h2 id="checking-an-arr-that-only-uses-zurg-as-its-download-client">Checking an *arr that only uses zurg as its download client</h2>
+<p>A Sonarr or Radarr pointed at zurg&#x27;s <a href="../sonarr-radarr/">SABnzbd</a> or
+<a href="../sonarr-radarr-torrents/">qBittorrent</a> endpoint does its own searching, and does not
+need a source here. zurg still wants its API key, because three of its settings
+decide whether every import is a free rename or a whole release downloaded
+from the debrid account and written to zurg&#x27;s disk: Remove Completed on a
+qBittorrent client, the download folder and the root folders on one volume,
+and root folders inside <code translate="no" v-pre>__magic__</code>. With the key, zurg turns Remove Completed
+on by itself (see <a href="../sonarr-radarr-torrents/#what-to-put-in-each-field">qbittorrent.md</a>)
+and warns about the other two. See
+<a href="../sonarr-radarr/#one-volume-for-the-download-folder-and-the-root-folders">One volume for the download folder and the root folders</a>.</p>
+<p>The easiest way to give zurg the key is the banner on the main dashboard,
+described below. Or add it as a source that is switched off:</p>
+<div id="checking-an-arr-that-only-uses-zurg-as-its-download-client-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">acquisition:
+  sources:
+    - name: sonarr
+      type: sonarr
+      enabled: false
+      url: http://sonarr:8989
+      api_key: YOUR_SONARR_API_KEY</code></pre>
+</doc-codeblock></div>
+<p>A Radarr or Sonarr source with <code translate="no" v-pre>enabled: false</code> acquires nothing. zurg never
+reads its wanted list and never searches for it. With its <code translate="no" v-pre>url</code> and <code translate="no" v-pre>api_key</code>
+set, and one of the two endpoints on, zurg only reads the *arr&#x27;s root folders,
+remote path mappings and download clients, at start, every ten minutes and as
+soon as the *arr first calls one of the endpoints. It turns Remove Completed
+on for the *arr&#x27;s zurg qBittorrent client when it is off, the one change zurg
+makes, and reports a layout that makes imports copies. Every source with a URL
+and an API key, enabled or not, is checked and corrected the same way. It is
+listed on the acquisition page under <strong>Checked, never searched for</strong>, with
+what zurg changed, the findings go to the log, and <code translate="no" v-pre>zurg doctor</code> shows them as
+<code translate="no" v-pre>imports (&lt;name&gt;)</code>. <code translate="no" v-pre>library_path</code> is not judged for such a source, since
+nothing is placed for it. A source added to config.yml by hand is read at
+start, so restart zurg after adding one that way.</p>
+<p>zurg also notices a Sonarr or Radarr it cannot check. Both send their name in
+every request to the endpoints (<code translate="no" v-pre>Sonarr/4.0.20.3014 (alpine 3.24.1)</code>), so zurg
+records which ones call it and from which address. When one calls and no
+source of its kind has a URL and an API key, zurg logs one warning, <code translate="no" v-pre>zurg doctor</code> reports it on its <code translate="no" v-pre>*arr settings</code> line, and the main dashboard shows a
+banner with a form for its URL and API key. The URL is filled in with a guess:
+the address the *arr calls from, on its default port (8989 for Sonarr, 7878
+for Radarr). That address is often a container&#x27;s own, which zurg may or may
+not reach, so change it to whatever URL reaches the *arr from where zurg
+runs. The API key is in the *arr under Settings, General, Security. zurg
+first asks the *arr for its status with that key, and saves nothing unless it
+answers as the app it was named as. It then adds the source above to
+config.yml with <code translate="no" v-pre>enabled: false</code>, keeping everything else in the file as it
+was, and checks it straight away, with no restart. The form shows what zurg
+found and changed. The key is written to config.yml and sent to the *arr, and
+nowhere else.</p>
+<p>The banner matches by kind, not by address: an *arr calls zurg from inside
+its container, on an address that has nothing to do with the URL zurg reaches
+it on, so one Sonarr source with a key silences the banner for every Sonarr.</p>
 <h2 id="finding-duplicate-releases">Finding duplicate releases</h2>
 <p>An upgrade leaves the release it replaced in your library. With
 <code translate="no" v-pre>magic.allow_delete</code> off, Radarr&#x27;s or Sonarr&#x27;s delete of the old file only hides
@@ -1187,8 +1498,8 @@ larger release within a resolution.</p>
 its torrents come first. With <code translate="no" v-pre>best</code> each torrent waits its turn in the
 ranking. A resolution&#x27;s NZBs are tried together at the place of its best one.
 With a Radarr source the NZBs of every resolution are tried together at the
-place of the best one, cheapest first, as that section describes. A season pack tries three
-releases per attempt of either kind. So does each loose episode.</p>
+place of the best one, cheapest first, as that section describes. A season pack tries three releases per
+attempt of either kind. So does each loose episode.</p>
 <p>The verification a grab waits on differs with the source. A Usenet release is
 put to the news servers, which is the only way to know whether the post is
 still there. A torrent was added only because the account said it already held
@@ -1332,7 +1643,10 @@ engine acknowledges the request. The first sixteen articles and the last of
 every content file are asked about with <code translate="no" v-pre>STAT</code>, and the first article of each
 file, plus a few more of a release of few files, is fetched whole (at most
 sixty-four), because a news server can answer <code translate="no" v-pre>STAT</code> for an article whose
-content it has taken down. It is the same walk <code translate="no" v-pre>/api?mode=addfile</code> makes for
+content it has taken down. An article <code translate="no" v-pre>STAT</code> refuses is fetched whole too
+before it counts as gone, because a news server can also refuse <code translate="no" v-pre>STAT</code> for an
+article it still serves (NewsDemon did on 2026-10-21); at most sixteen such
+articles a release. It is the same walk <code translate="no" v-pre>/api?mode=addfile</code> makes for
 Sonarr and Radarr. Three answers, and keeping them apart is the whole point:</p>
 <ul>
 <li>
@@ -1343,7 +1657,11 @@ already in the library. A release on that list is not a candidate: it is not
 fetched, and it does not spend one of the candidates an attempt tries,
 so a run of dead posts at the top of a ranking is walked through instead of
 putting everything under it out of reach. A dead season pack puts its whole
-season back to being wanted; the loose episodes are taken instead.</p>
+season back to being wanted; the loose episodes are taken instead. An NZB
+acquisition saved itself is then deleted from the watch directory, so a
+restart does not load and check it again before the library opens. One that
+was already in the watch directory or the library, and one Sonarr or Radarr
+imported from, stays where it is.</p>
 </li>
 <li>
 <p><strong>The accounts could not be asked.</strong> A pool that is down, an account
@@ -1352,7 +1670,12 @@ yet. Nothing was established, so nothing is decided: the request is looked at
 again in twenty seconds, then after 40 and 80 seconds, then every two
 minutes, and the wait costs it no retry attempt. A check that simply ran out
 of time is not this case: it is started again at once with its full time, up
-to three times, before it waits. Twenty checks
+to three times, before it waits. That time is five minutes, or longer for a
+release with many files on an account with few connections: zurg works it
+out from the two, from the slowest a check has been measured going, and from
+the six checks it runs at once, then doubles it. A 90-volume release on four
+connections gets about 53 minutes, where five minutes used to run out on
+every attempt until the release was set aside unchecked. Twenty checks
 across two hours that establish nothing set the release aside the way a dead
 one is, and the next attempt tries another release. The request is never
 acknowledged on a release nobody could check.</p>
@@ -1397,7 +1720,13 @@ Matching media targets and editions reuse receipts across sources. Release
 filenames also deduplicate against the library and saved NZBs. A receipt also
 carries the grabs it is still waiting on a news-server answer about, and the
 ledger carries the releases already found dead, so a restart mid-wait neither
-acknowledges an unchecked grab nor hands a dead release back to the ranking.</p>
+acknowledges an unchecked grab nor hands a dead release back to the ranking.
+A receipt is not trusted for good: before a title counts as held, zurg checks
+that what settled it is still there, the placed video in a Radarr or Sonarr
+folder, or for a DMM wanted, Plex watchlist or Seerr title the release itself in
+the library. One deleted since is searched for again, also when the title is
+still listed and the job finished, and a release deleted from the manage page
+is not taken again.</p>
 <p>Each saved release is written to disk at once. Attempt counts and retry times are written within a minute, so a crash can lose up to a minute of them but never a grab.
 Writes flush a temporary file, replace the ledger and flush the parent directory
 where supported. NZBs written before a crash are reused even if the last ledger
@@ -1415,8 +1744,13 @@ so once. <strong>Resume</strong> on that page, for one title or for every parked
 source, starts it again from the first short retry. A source that stops
 listing a title and lists it again has asked for it afresh, so that resumes
 it too. A grab the news servers confirm starts a title&#x27;s two weeks again, so a
-season that is still finding episodes is never parked. Counts and deadlines
-survive reboots, including long shutdowns.</p>
+season that is still finding episodes is never parked. Neither is an upgrade,
+from any source: its better release can come out months later and the title
+stays listed, so it keeps its retries at most a week apart instead. Nor is
+anything on your DMM wanted list, for the same reason: a film that has not
+come out yet, or an old one nobody has posted, stays wanted until it is
+fetched or you remove it. Counts and
+deadlines survive reboots, including long shutdowns.</p>
 <p>A queue that fails forever is expensive in a way the title list does not show.
 On one install, thousands of Radarr and Sonarr titles nothing could be found
 for, retried every six hours for good, took an indexer from a few hundred
