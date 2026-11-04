@@ -329,16 +329,18 @@ Two things you may meet:
 
 zurg's folders other than `movies` and `shows`, such as `anime`, need nothing: each file goes to **Movies** or **TV Shows** by what zurg says it is. A file zurg cannot tell is an episode waits in **Movies**.
 
-To give one of those folders libraries of its own, add both `rex_shows` and `rex_movies` under it in zurg's `config.yml`, beside its filters, then restart zurg as in [step 4](#step-4-connect-zurg-to-rex). DMM places some of a folder's files as films and some as episodes, and the kind with no title of its own goes to **Movies** or **TV Shows**:
+To give one of those folders libraries of its own, add `rex_movies` under it in zurg's `config.yml` for a folder of films, `rex_shows` for a folder of shows, and both only when it holds both, beside its filters, then restart zurg as in [step 4](#step-4-connect-zurg-to-rex). Each one makes a library, an empty one too, so a folder of films with `rex_shows` gets an empty TV library. DMM places some of a folder's files as films and some as episodes, and the kind with no title of its own goes to **Movies** or **TV Shows**:
 
 ```yaml
 directories:
   anime:
     rex_shows: Anime
     rex_movies: Anime Movies
+  films:
+    rex_movies: Films
 ```
 
-Once zurg has loaded, rex makes **Anime** and **Anime Movies** and moves what it already showed from `anime` into them as it was: watch history, Fix Match and edits included. An open Plex Web lists them at once under **More** in its sidebar, where you can pin them. Share them with your own account as in [step 3](#share-it-with-your-own-account). Rename them in a Plex app as you like. Delete one and it stays deleted, its files going back to **Movies** or **TV Shows**, until you add it again with **Add Library**, whose folder list shows zurg's folders. If a library does not appear, zurg's log or rex's says why.
+Once zurg has loaded, rex makes **Anime**, **Anime Movies** and **Films** and moves what it already showed from `anime` into them as it was: watch history, Fix Match and edits included. An open Plex Web lists them at once under **More** in its sidebar, where you can pin them. Share them with your own account as in [step 3](#share-it-with-your-own-account). Rename them in a Plex app as you like. Delete one and it stays deleted, its files going back to **Movies** or **TV Shows**, until you add it again with **Add Library**, whose folder list shows zurg's folders. Taking `rex_shows` or `rex_movies` out of zurg's config later keeps the library rex made for it, empty or not: delete it in a Plex app, signed in as the fresh account. If a library does not appear, zurg's log or rex's says why.
 
 ![Add Library's folder picker listing the source's folders anime, kids and movies](../assets/rex/14-plex-add-library-folders.webp)
 
