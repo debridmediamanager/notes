@@ -6,7 +6,7 @@ order: 80
 
 # Sonarr and Radarr, step by step
 
-There are three ways to use Sonarr and Radarr with zurg. Pick the one that matches the account you have.
+There are three ways to use Sonarr and Radarr with zurg. The real choice is who searches, zurg or the \*arrs: [which one to pick](sonarr-radarr-fetch.md#which-one-to-pick) compares them.
 
 | Guide | Who searches | zurg acts as | You need |
 |---|---|---|---|
