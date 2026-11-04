@@ -1,6 +1,6 @@
 # Live TV with rex
 
-rex shows live channels in Plex Web's and Plex for Android's **Live TV**, the way a Plex server with a TV tuner does: a guide of what is on each channel, What's On, and the channel playing the moment you pick it. The channels and their guide come from an addon. [rex-live-sports](https://github.com/debridmediamanager/rex-live-sports) is the ready-made one. It takes the sports channels of a live-sports server, gives each a number and finds its guide.
+rex shows live channels in Plex Web's and Plex for Android's **Live TV**, the way a Plex server with a TV tuner does: a guide of what is on each channel, What's On, and the channel playing the moment you pick it. The channels and their guide come from an addon. [rex-live-sports](https://github.com/debridmediamanager/rex-live-sports) is the ready-made one. It takes the sports channels of a live-sports server, gives each a number and finds its guide. For an IPTV playlist (M3U) and its XMLTV guide instead, see [Tutorial: an IPTV addon](addon-iptv.md).
 
 What you get:
 

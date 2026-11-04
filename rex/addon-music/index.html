@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847068329762">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Tutorial: a music addon</title>
+    <meta name="title" content="Tutorial: a music addon">
+    <meta name="description" content="This tutorial builds a rex addon that puts a folder of albums (FLAC, MP3, AAC and the rest) into a Music library that Plexamp, Plex Web and Plex for Android play.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/rex/addon-music/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/rex/addon-music/">
+    <meta property="og:title" content="Tutorial: a music addon">
+    <meta property="og:description" content="This tutorial builds a rex addon that puts a folder of albums (FLAC, MP3, AAC and the rest) into a Music library that Plexamp, Plex Web and Plex for Android play.">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/rex/addon-music/">
+    <meta name="twitter:title" content="Tutorial: a music addon">
+    <meta name="twitter:description" content="This tutorial builds a rex addon that puts a folder of albums (FLAC, MP3, AAC and the rest) into a Music library that Plexamp, Plex Web and Plex for Android play.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/rex/addon-music.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../resources/css/retype.css?v=4.6.0.847068329762" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.847068329762" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.847068329762" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.847068329762" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="tutorial-a-music-addon">Tutorial: a music addon</h1>
+<p>This tutorial builds a rex addon that puts a folder of albums (FLAC, MP3, AAC and the rest) into a <strong>Music</strong> library that Plexamp, Plex Web and Plex for Android play. Your files stay where they are. The addon tells rex which album each song belongs to, by its MusicBrainz release, and Plex fills in the album and song names, the cover, the artist&#x27;s photo and biography. An album Plex does not know, such as your own band&#x27;s demos, shows under the names in its tags, with its <code translate="no" v-pre>cover.jpg</code>. A <code translate="no" v-pre>.lrc</code> file beside a song becomes its lyrics, timed to the music.</p>
+<p>It follows <a href="../addons/">Building rex addons</a> and its <a href="../addons/#music">Music</a> section, and has the same shape as the <a href="../addon-home-videos/">home videos tutorial</a>: read that one first if this is your first addon.</p>
+<retype-table copy-text="| You need | Why |
+|---|---|
+| rex 2026.11.02 or newer, set up as in [rex with your own app](any-source.md) (steps 1 to 3) and claimed | rex asks Plex for the albums' names only once it is claimed |
+| Python 3.8 or newer | The addon, standard library only |
+| `ffprobe` | Describes each file for rex and reads its tags. It comes with FFmpeg |
+| Your albums, one folder per album | `Artist/Album/01 Song.flac`, or any depth: every folder with audio files in it is an album |
+| Tags, or MusicBrainz Picard | The addon reads the album and artist from each file's tags (else from the folder names). Files tagged by [MusicBrainz Picard](https://picard.musicbrainz.org) already carry their release id, which is the surest match |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>You need</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rex 2026.11.02 or newer, set up as in <a href="../any-source/">rex with your own app</a> (steps 1 to 3) and claimed</td>
+<td>rex asks Plex for the albums&#x27; names only once it is claimed</td>
+</tr>
+<tr>
+<td>Python 3.8 or newer</td>
+<td>The addon, standard library only</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>ffprobe</code></td>
+<td>Describes each file for rex and reads its tags. It comes with FFmpeg</td>
+</tr>
+<tr>
+<td>Your albums, one folder per album</td>
+<td><code translate="no" v-pre>Artist/Album/01 Song.flac</code>, or any depth: every folder with audio files in it is an album</td>
+</tr>
+<tr>
+<td>Tags, or MusicBrainz Picard</td>
+<td>The addon reads the album and artist from each file&#x27;s tags (else from the folder names). Files tagged by <a href="https://picard.musicbrainz.org">MusicBrainz Picard</a> already carry their release id, which is the surest match</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>This page writes rex&#x27;s address as <code translate="no" v-pre>192.168.1.20:32400</code> and runs the addon on rex&#x27;s machine.</p>
+<h2 id="step-1-save-the-addon">Step 1. Save the addon</h2>
+<p>Save this as <code translate="no" v-pre>music.py</code>:</p>
+<div id="step-1-save-the-addon-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-python"><code v-pre class="language-python">#!/usr/bin/env python3
+&quot;&quot;&quot;music: a rex addon that puts a folder of albums into a Plex music library.
+
+One folder per album (Artist/Album/01 Song.flac, any depth). Standard library only; needs ffprobe
+on PATH. Albums are named by MusicBrainz: a file tagged by MusicBrainz Picard already carries its
+release id, and any other album is looked up once by its artist, title and number of tracks.
+&quot;&quot;&quot;
+import hashlib, json, os, re, subprocess, sys, threading, time, urllib.error, urllib.parse, urllib.request
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+FOLDER = os.path.expanduser(&quot;~/Music&quot;)        # the albums
+REX = &quot;http://192.168.1.20:32400&quot;             # rex's address
+LISTEN = (&quot;127.0.0.1&quot;, 9982)                  # where this addon answers; rex must reach it
+NAME, LIBRARY = &quot;mymusic&quot;, &quot;Music&quot;            # the source's name and its library's title
+
+ME = &quot;http://%s:%d&quot; % LISTEN
+FORCE = os.environ.get(&quot;REX_FORCE&quot;) == &quot;1&quot;  # REX_FORCE=1 lets one run remove more than half
+AUDIO = {&quot;.flac&quot;, &quot;.mp3&quot;, &quot;.m4a&quot;, &quot;.aac&quot;, &quot;.ogg&quot;, &quot;.oga&quot;, &quot;.opus&quot;, &quot;.wav&quot;, &quot;.alac&quot;, &quot;.aif&quot;, &quot;.aiff&quot;, &quot;.wma&quot;, &quot;.ape&quot;, &quot;.wv&quot;, &quot;.dsf&quot;, &quot;.mka&quot;}
+COVERS = (&quot;cover.jpg&quot;, &quot;folder.jpg&quot;, &quot;front.jpg&quot;, &quot;cover.png&quot;, &quot;folder.png&quot;)
+UA = &quot;rex-music-addon/1.0 ( https://notes.debridmediamanager.com/rex/addon-music/ )&quot;  # MusicBrainz asks for one
+CACHE = os.path.join(FOLDER, &quot;.rex&quot;)
+os.makedirs(CACHE, exist_ok=True)
+sys.stdout.reconfigure(line_buffering=True)
+
+
+# ---- Serve the bytes: tracks, lyrics and covers, with Range -------------------------------
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        rel = urllib.parse.unquote(urllib.parse.urlsplit(self.path).path).lstrip(&quot;/&quot;)
+        file = os.path.realpath(os.path.join(FOLDER, rel[len(&quot;music/&quot;):])) if rel.startswith(&quot;music/&quot;) else &quot;&quot;
+        if not file.startswith(os.path.realpath(FOLDER) + os.sep) or not os.path.isfile(file):
+            return self.send_error(404)
+        size = os.path.getsize(file)
+        start, end = 0, size - 1
+        ranged = self.headers.get(&quot;Range&quot;, &quot;&quot;).startswith(&quot;bytes=&quot;)
+        if ranged:
+            a, _, b = self.headers[&quot;Range&quot;][6:].split(&quot;,&quot;)[0].partition(&quot;-&quot;)
+            start, end = (int(a), int(b) if b else size - 1) if a else (size - int(b), size - 1)
+            if start &gt;= size:
+                self.send_response(416); self.send_header(&quot;Content-Range&quot;, &quot;bytes */%d&quot; % size); self.end_headers()
+                return
+            end = min(end, size - 1)
+        self.send_response(206 if ranged else 200)
+        self.send_header(&quot;Accept-Ranges&quot;, &quot;bytes&quot;)
+        self.send_header(&quot;Content-Length&quot;, str(end - start + 1))
+        if ranged:
+            self.send_header(&quot;Content-Range&quot;, &quot;bytes %d-%d/%d&quot; % (start, end, size))
+        self.end_headers()
+        with open(file, &quot;rb&quot;) as f:
+            f.seek(start)
+            left = end - start + 1
+            while left &gt; 0:
+                chunk = f.read(min(1 &lt;&lt; 20, left))
+                if not chunk:
+                    break
+                try:
+                    self.wfile.write(chunk)
+                except (BrokenPipeError, ConnectionResetError):
+                    return
+                left -= len(chunk)
+
+    def log_message(self, *args):
+        pass
+
+
+# ---- Describe each track ------------------------------------------------------------------
+def probe(file):
+    st = os.stat(file)
+    key = hashlib.sha1((&quot;%s|%d|%d&quot; % (file, st.st_size, st.st_mtime)).encode()).hexdigest()[:16]
+    path = os.path.join(CACHE, key + &quot;.json&quot;)
+    if not os.path.exists(path):
+        out = subprocess.run([&quot;ffprobe&quot;, &quot;-v&quot;, &quot;error&quot;, &quot;-print_format&quot;, &quot;json&quot;, &quot;-show_format&quot;, &quot;-show_streams&quot;, file],
+                             capture_output=True, check=True).stdout
+        with open(path, &quot;wb&quot;) as f:
+            f.write(out)
+    with open(path) as f:
+        return json.load(f)
+
+
+def tags(info):
+    &quot;&quot;&quot;Tags of the file and its audio stream, keys lower-cased without spaces or underscores, so
+    FLAC's MUSICBRAINZ_ALBUMID and MP3's &quot;MusicBrainz Album Id&quot; are both musicbrainzalbumid.&quot;&quot;&quot;
+    found = {}
+    for source in [info.get(&quot;format&quot;, {})] + info.get(&quot;streams&quot;, []):
+        for k, v in source.get(&quot;tags&quot;, {}).items():
+            found.setdefault(re.sub(r&quot;[ _]&quot;, &quot;&quot;, k.lower()), v)
+    return found
+
+
+def number(value):
+    m = re.match(r&quot;\s*(\d+)&quot;, value or &quot;&quot;)
+    return int(m.group(1)) if m else None
+
+
+ALBUMS = os.path.join(CACHE, &quot;albums.json&quot;)
+known = json.load(open(ALBUMS)) if os.path.exists(ALBUMS) else {}
+last_ask = [0.0]
+
+
+def release_id(artist, album, count):
+    &quot;&quot;&quot;MusicBrainz's release of this album with this many tracks, asked once and kept.&quot;&quot;&quot;
+    key = &quot;%s|%s|%d&quot; % (artist, album, count)
+    if key not in known:
+        time.sleep(max(0, last_ask[0] + 1.1 - time.time()))  # MusicBrainz takes one request a second
+        last_ask[0] = time.time()
+        q = 'release:&quot;%s&quot; AND artist:&quot;%s&quot;' % (album.replace('&quot;', &quot;&quot;), artist.replace('&quot;', &quot;&quot;))
+        url = &quot;https://musicbrainz.org/ws/2/release?fmt=json&amp;limit=25&amp;query=&quot; + urllib.parse.quote(q)
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers={&quot;User-Agent&quot;: UA}), timeout=30) as r:
+                releases = json.load(r).get(&quot;releases&quot;, [])
+        except Exception as e:
+            print(&quot;MusicBrainz did not answer for %s - %s (%s): asking again next round&quot; % (artist, album, e))
+            return None
+        fits = [x for x in releases if x.get(&quot;track-count&quot;) == count and x.get(&quot;status&quot;, &quot;Official&quot;) == &quot;Official&quot;]
+        known[key] = fits[0][&quot;id&quot;] if fits else None
+        with open(ALBUMS, &quot;w&quot;) as f:
+            json.dump(known, f, indent=1)
+        print(&quot;%s - %s: %s&quot; % (artist, album, known[key] or &quot;not on MusicBrainz with %d tracks&quot; % count))
+    return known[key]
+
+
+def album_items(folder, files):
+    infos = [(name, probe(os.path.join(folder, name))) for name in files]
+    first = tags(infos[0][1])
+    artist = first.get(&quot;albumartist&quot;) or first.get(&quot;artist&quot;) or os.path.basename(os.path.dirname(folder))
+    album = first.get(&quot;album&quot;) or os.path.basename(folder)
+    mbid = first.get(&quot;musicbrainzalbumid&quot;) or release_id(artist, album, len(files))
+    rel_folder = os.path.relpath(folder, FOLDER).replace(os.sep, &quot;/&quot;)
+    cover = next((c for c in COVERS if os.path.exists(os.path.join(folder, c))), None)
+    items = []
+    for n, (name, info) in enumerate(infos, 1):
+        t, rel = tags(info), rel_folder + &quot;/&quot; + name
+        stem = os.path.splitext(name)[0]
+        lyrics = [{&quot;path&quot;: &quot;music/%s/%s%s&quot; % (rel_folder, stem, ext), &quot;size&quot;: os.path.getsize(os.path.join(folder, stem + ext))}
+                  for ext in (&quot;.lrc&quot;, &quot;.txt&quot;) if os.path.exists(os.path.join(folder, stem + ext))]
+        item = {
+            &quot;id&quot;: rel,
+            &quot;path&quot;: &quot;music/&quot; + rel,
+            &quot;kind&quot;: &quot;track&quot;,
+            &quot;disc&quot;: number(t.get(&quot;disc&quot;)) or 1,
+            &quot;track&quot;: number(t.get(&quot;track&quot;)) or n,
+            &quot;media_info&quot;: info,
+            &quot;lyrics&quot;: lyrics,
+            # Shown only if Plex does not know the album: what the tags say.
+            &quot;display&quot;: {&quot;title&quot;: t.get(&quot;title&quot;) or stem, &quot;artist&quot;: {&quot;title&quot;: artist},
+                        &quot;album&quot;: {&quot;title&quot;: album, &quot;date&quot;: (t.get(&quot;date&quot;) or &quot;&quot;)[:4] or None,
+                                  &quot;poster&quot;: ME + &quot;/music/&quot; + urllib.parse.quote(rel_folder + &quot;/&quot; + cover) if cover else None}},
+        }
+        if mbid:
+            item[&quot;ids&quot;] = {&quot;mbid&quot;: mbid}
+        items.append(item)
+    return items
+
+
+def albums():
+    for root, dirs, files in os.walk(FOLDER):
+        dirs[:] = sorted(d for d in dirs if not d.startswith(&quot;.&quot;))
+        tracks = sorted(f for f in files if os.path.splitext(f)[1].lower() in AUDIO)
+        if tracks:
+            yield root, tracks
+
+
+def clean(value):
+    &quot;&quot;&quot;Drops empty fields: rex refuses a field of the wrong type, and null is one.&quot;&quot;&quot;
+    if isinstance(value, dict):
+        return {k: clean(v) for k, v in value.items() if v is not None}
+    return value
+
+
+# ---- Register, then send everything -------------------------------------------------------
+def rex(method, path, body):
+    req = urllib.request.Request(REX + path, json.dumps(body).encode(), method=method,
+                                 headers={&quot;Content-Type&quot;: &quot;application/json&quot;})
+    try:
+        with urllib.request.urlopen(req, timeout=120) as r:
+            return json.load(r)
+    except urllib.error.HTTPError as e:  # rex says why in the body
+        raise RuntimeError(&quot;rex answered %d: %s&quot; % (e.code, e.read().decode(errors=&quot;replace&quot;)[:300])) from None
+
+
+def sync():
+    rex(&quot;PUT&quot;, &quot;/rex/sources/&quot; + NAME, {&quot;url&quot;: ME, &quot;directories&quot;: [{&quot;name&quot;: &quot;music&quot;, &quot;music&quot;: LIBRARY}]})
+    items = []
+    for folder, files in albums():
+        try:
+            items += [clean(i) for i in album_items(folder, files)]
+        except Exception as e:
+            print(&quot;skipped %s: %s&quot; % (folder, e))
+    if not items:
+        print(&quot;no music found in %s: not sending a snapshot&quot; % FOLDER)
+        return
+    session = str(time.time())
+    for n in range(0, len(items), 200):
+        answer = rex(&quot;PUT&quot;, &quot;/rex/feed/%s/snapshot&quot; % NAME,
+                     {&quot;session&quot;: session, &quot;part&quot;: n // 200, &quot;complete&quot;: n + 200 &gt;= len(items), &quot;force&quot;: FORCE, &quot;items&quot;: items[n:n + 200]})
+        for bad in answer.get(&quot;rejected&quot;, []):
+            print(&quot;rejected:&quot;, bad)
+    print(&quot;sent %d tracks: %d created, %d updated, %d unchanged&quot; % (len(items), answer[&quot;created&quot;], answer[&quot;updated&quot;], answer[&quot;unchanged&quot;]))
+
+
+if __name__ == &quot;__main__&quot;:
+    server = ThreadingHTTPServer(LISTEN, Handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    print(&quot;serving %s at %s&quot; % (FOLDER, ME))
+    while True:
+        try:
+            sync()
+        except Exception as e:
+            print(&quot;sync failed, trying again in 10 minutes:&quot;, e)
+        time.sleep(600)</code></pre>
+</doc-codeblock></div>
+<h2 id="step-2-fill-in-the-settings">Step 2. Fill in the settings</h2>
+<retype-table copy-text="| Setting | Put |
+|---|---|
+| `FOLDER` | Your music folder, such as `&quot;/srv/music&quot;` or `os.path.expanduser(&quot;~/Music&quot;)` |
+| `REX` | rex's address |
+| `LISTEN` | Keep `127.0.0.1` with the addon on rex's machine; else that machine's LAN IP |
+| `NAME`, `LIBRARY` | The addon's name in rex and the music library's title. Keep `NAME` once you have run it |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Setting</th>
+<th>Put</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>FOLDER</code></td>
+<td>Your music folder, such as <code translate="no" v-pre>&quot;/srv/music&quot;</code> or <code translate="no" v-pre>os.path.expanduser(&quot;~/Music&quot;)</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>REX</code></td>
+<td>rex&#x27;s address</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>LISTEN</code></td>
+<td>Keep <code translate="no" v-pre>127.0.0.1</code> with the addon on rex&#x27;s machine; else that machine&#x27;s LAN IP</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>NAME</code>, <code translate="no" v-pre>LIBRARY</code></td>
+<td>The addon&#x27;s name in rex and the music library&#x27;s title. Keep <code translate="no" v-pre>NAME</code> once you have run it</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h2 id="step-3-run-it">Step 3. Run it</h2>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos">
+<template #title>Linux and macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">python3 music.py</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">python music.py</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p><strong>What you should see.</strong> For each album without a release id in its tags, one line with what MusicBrainz answered, then the total:</p>
+<div id="step-3-run-it-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">serving /home/you/Music at http://127.0.0.1:9982
+Radiohead - In Rainbows: cd061329-348f-46f7-b6c1-7460a88e5edb
+The Test Pilots - Garage Demos: not on MusicBrainz with 3 tracks
+sent 13 tracks: 13 created, 0 updated, 0 unchanged</code></pre>
+</doc-codeblock></div>
+<p>MusicBrainz takes one request a second, so the first run over a large collection takes a while: about a second per album. Every answer is kept in <code translate="no" v-pre>.rex/albums.json</code> in your music folder, and the next runs ask nothing. Albums tagged by Picard are never looked up.</p>
+<p>rex&#x27;s log shows each track arriving on its album:</p>
+<div id="step-3-run-it-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">FEED mymusic Radiohead/In Rainbows/01 - 15 Step.flac -&gt; track 100005 on album 100004 of artist 100003
+FEED mymusic upsert: 13 created, 0 updated, 0 held, 0 unchanged, 0 rejected</code></pre>
+</doc-codeblock></div>
+<p>Open Plexamp and pick rex&#x27;s <strong>Music</strong> library as its library (Plex Web and Plex for Android list it under More). In Rainbows has Plex&#x27;s cover, its track names and Radiohead&#x27;s photo and biography, whatever your files are called. Garage Demos shows its tags&#x27; names and its folder&#x27;s <code translate="no" v-pre>cover.jpg</code>. A song with a <code translate="no" v-pre>.lrc</code> file of the same name shows its lyrics, line by line as it plays.</p>
+<p>To keep it running, set it up like the home videos addon: <a href="../addon-home-videos/#step-4-keep-it-running">Step 4</a>, with <code translate="no" v-pre>music.py</code> in place of <code translate="no" v-pre>homevideos.py</code>.</p>
+<h2 id="how-it-works">How it works</h2>
+<retype-table copy-text="| Part | What it does |
+|---|---|
+| `Handler` | Serves everything under `/music/`: the songs (with `Range`, so seeking is instant), their `.lrc` lyrics and the album covers |
+| `sync()`, first line | Registers the addon with one directory, `music`, as a music library: `&quot;directories&quot;: [{&quot;name&quot;: &quot;music&quot;, &quot;music&quot;: &quot;Music&quot;}]`. Without a music library rex refuses every track |
+| `album_items()` | One item per song: `&quot;kind&quot;: &quot;track&quot;`, its `disc` and `track` numbers (from its tags, else its place in the folder), its `ffprobe` output, and `ids.mbid`, the album's MusicBrainz release id. Plex shows its own track at those numbers on that release, so the numbers must be right |
+| `release_id()` | Finds the release id for an album without one: a MusicBrainz search by album and artist, keeping the first official release with as many tracks as the folder holds. An album comes out in many releases (one per country, deluxe editions); any one with your tracks names the album |
+| `display` | The album's names from the tags, and its cover, shown only when Plex does not know the album |
+| `lyrics` | A `.lrc` (timed) or `.txt` file with the song's name beside it, sent as `[{&quot;path&quot;: ..., &quot;size&quot;: ...}]`. rex reads it again only when its size changes |
+| `sync()`, the rest | A snapshot of every song, 200 a request: an album you delete leaves the library at the next round (every ten minutes) |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Part</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>Handler</code></td>
+<td>Serves everything under <code translate="no" v-pre>/music/</code>: the songs (with <code translate="no" v-pre>Range</code>, so seeking is instant), their <code translate="no" v-pre>.lrc</code> lyrics and the album covers</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>sync()</code>, first line</td>
+<td>Registers the addon with one directory, <code translate="no" v-pre>music</code>, as a music library: <code translate="no" v-pre>&quot;directories&quot;: [{&quot;name&quot;: &quot;music&quot;, &quot;music&quot;: &quot;Music&quot;}]</code>. Without a music library rex refuses every track</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>album_items()</code></td>
+<td>One item per song: <code translate="no" v-pre>&quot;kind&quot;: &quot;track&quot;</code>, its <code translate="no" v-pre>disc</code> and <code translate="no" v-pre>track</code> numbers (from its tags, else its place in the folder), its <code translate="no" v-pre>ffprobe</code> output, and <code translate="no" v-pre>ids.mbid</code>, the album&#x27;s MusicBrainz release id. Plex shows its own track at those numbers on that release, so the numbers must be right</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>release_id()</code></td>
+<td>Finds the release id for an album without one: a MusicBrainz search by album and artist, keeping the first official release with as many tracks as the folder holds. An album comes out in many releases (one per country, deluxe editions); any one with your tracks names the album</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>display</code></td>
+<td>The album&#x27;s names from the tags, and its cover, shown only when Plex does not know the album</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>lyrics</code></td>
+<td>A <code translate="no" v-pre>.lrc</code> (timed) or <code translate="no" v-pre>.txt</code> file with the song&#x27;s name beside it, sent as <code translate="no" v-pre>[{&quot;path&quot;: ..., &quot;size&quot;: ...}]</code>. rex reads it again only when its size changes</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>sync()</code>, the rest</td>
+<td>A snapshot of every song, 200 a request: an album you delete leaves the library at the next round (every ten minutes)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>rex reads no tags itself. Everything Plex shows comes from the release id, or from your <code translate="no" v-pre>display</code> when Plex has none.</p>
+<h2 id="change-it">Change it</h2>
+<ul>
+<li><strong>Another layout.</strong> An album split into disc folders (<code translate="no" v-pre>CD1/</code>, <code translate="no" v-pre>CD2/</code>) is two albums to this addon, each with too few tracks to match. Group such folders in <code translate="no" v-pre>albums()</code> and send one <code translate="no" v-pre>release</code> for all their files; see <a href="../addons/#music">Music</a>.</li>
+<li><strong>Artists by their own pictures.</strong> Send <code translate="no" v-pre>display.artist.poster</code> and register with <code translate="no" v-pre>&quot;artwork&quot;: &quot;source&quot;</code>: see <a href="../addon-more/#artist-pictures">More from your addon</a>.</li>
+<li><strong>Playlists.</strong> Send each song&#x27;s place in a playlist and rex makes the playlist: see <a href="../addon-more/#collections-and-playlists">More from your addon</a>.</li>
+<li><strong>Loudness.</strong> If you measure each song&#x27;s loudness, send it as <code translate="no" v-pre>loudness</code> in Plex&#x27;s names: see <a href="../addons/#music">Music</a>. rex measures nothing itself.</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<retype-table copy-text="| You see | Why | Fix |
+|---|---|---|
+| `&lt;artist&gt; - &lt;album&gt;: not on MusicBrainz with N tracks` | No official release of that title and artist has your number of tracks: a missing song, a bonus track, a typo in the tags, or an album MusicBrainz does not list | Fix the tags or the folder, then delete that album's line from `.rex/albums.json` (or the whole file) so it is asked again. Or tag the album with Picard |
+| An album shows the wrong song names | The release found has your number of tracks in another order (a different edition) | Tag the album with Picard, which writes the exact release |
+| `MusicBrainz did not answer for ...: asking again next round` | MusicBrainz was busy or unreachable | Nothing: the next round asks again |
+| Albums show their tags' names although Plex knows them | rex is not claimed, or the release id names nothing Plex knows | Claim rex: [step 3 of rex with your own app](any-source.md#step-3-add-it-to-a-plex-account) |
+| `rejected: ... no music library holds ...` | The library was deleted in a Plex app | Add it back in a Plex app: Add Library, Music, and pick the `music` folder its folder list offers |
+| `sync failed, ...: rex answered 409: ...more than half...` | More than half of the songs are gone from the folder | If you meant it, run once with `REX_FORCE=1`; otherwise fix `FOLDER` |
+| No lyrics | The `.lrc` file's name differs from the song's, or the song was sent before the file was there | Name it like the song (`01 - Song.flac`, `01 - Song.lrc`); the next round sends it |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>You see</th>
+<th>Why</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>&lt;artist&gt; - &lt;album&gt;: not on MusicBrainz with N tracks</code></td>
+<td>No official release of that title and artist has your number of tracks: a missing song, a bonus track, a typo in the tags, or an album MusicBrainz does not list</td>
+<td>Fix the tags or the folder, then delete that album&#x27;s line from <code translate="no" v-pre>.rex/albums.json</code> (or the whole file) so it is asked again. Or tag the album with Picard</td>
+</tr>
+<tr>
+<td>An album shows the wrong song names</td>
+<td>The release found has your number of tracks in another order (a different edition)</td>
+<td>Tag the album with Picard, which writes the exact release</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>MusicBrainz did not answer for ...: asking again next round</code></td>
+<td>MusicBrainz was busy or unreachable</td>
+<td>Nothing: the next round asks again</td>
+</tr>
+<tr>
+<td>Albums show their tags&#x27; names although Plex knows them</td>
+<td>rex is not claimed, or the release id names nothing Plex knows</td>
+<td>Claim rex: <a href="../any-source/#step-3-add-it-to-a-plex-account">step 3 of rex with your own app</a></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>rejected: ... no music library holds ...</code></td>
+<td>The library was deleted in a Plex app</td>
+<td>Add it back in a Plex app: Add Library, Music, and pick the <code translate="no" v-pre>music</code> folder its folder list offers</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>sync failed, ...: rex answered 409: ...more than half...</code></td>
+<td>More than half of the songs are gone from the folder</td>
+<td>If you meant it, run once with <code translate="no" v-pre>REX_FORCE=1</code>; otherwise fix <code translate="no" v-pre>FOLDER</code></td>
+</tr>
+<tr>
+<td>No lyrics</td>
+<td>The <code translate="no" v-pre>.lrc</code> file&#x27;s name differs from the song&#x27;s, or the song was sent before the file was there</td>
+<td>Name it like the song (<code translate="no" v-pre>01 - Song.flac</code>, <code translate="no" v-pre>01 - Song.lrc</code>); the next round sends it</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Still stuck? Ask in the <strong>rex-support</strong> forum on <a href="https://discord.com/invite/7u4YjMThXP">Discord</a>.</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../rex/addon-home-videos/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Previous</span>
+                                <span class="block mt-1">Tutorial: home videos addon</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../rex/addon-iptv/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Next</span>
+                                <span class="block mt-1">Tutorial: IPTV addon</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Tutorial: music addon", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/rex/addon-music.md" }</script>
+</body>
+</html>

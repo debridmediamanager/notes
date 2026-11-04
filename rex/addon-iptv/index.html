@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847068329762">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Tutorial: an IPTV addon</title>
+    <meta name="title" content="Tutorial: an IPTV addon">
+    <meta name="description" content="This tutorial builds a rex addon that turns an IPTV playlist (an M3U file) and its TV guide (an XMLTV file) into channels of Live TV in Plex Web and Plex for Android: every channel at its number, a guide of what is on, What's On, and the channel playing the moment you pick it.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/rex/addon-iptv/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/rex/addon-iptv/">
+    <meta property="og:title" content="Tutorial: an IPTV addon">
+    <meta property="og:description" content="This tutorial builds a rex addon that turns an IPTV playlist (an M3U file) and its TV guide (an XMLTV file) into channels of Live TV in Plex Web and Plex for Android: every channel at its number, a guide of what is on, What's On, and the channel playing the moment you pick it.">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/rex/addon-iptv/">
+    <meta name="twitter:title" content="Tutorial: an IPTV addon">
+    <meta name="twitter:description" content="This tutorial builds a rex addon that turns an IPTV playlist (an M3U file) and its TV guide (an XMLTV file) into channels of Live TV in Plex Web and Plex for Android: every channel at its number, a guide of what is on, What's On, and the channel playing the moment you pick it.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/rex/addon-iptv.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../resources/css/retype.css?v=4.6.0.847068329762" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.847068329762" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.847068329762" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.847068329762" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="tutorial-an-iptv-addon">Tutorial: an IPTV addon</h1>
+<p>This tutorial builds a rex addon that turns an IPTV playlist (an M3U file) and its TV guide (an XMLTV file) into channels of <strong>Live TV</strong> in Plex Web and Plex for Android: every channel at its number, a guide of what is on, What&#x27;s On, and the channel playing the moment you pick it. It works with any M3U whose channels are HLS streams (<code translate="no" v-pre>.m3u8</code>), such as your IPTV provider&#x27;s or a list of free-to-air channels, and any XMLTV guide that names them.</p>
+<p>It follows <a href="../addons/">Building rex addons</a> and its <a href="../addons/#live-tv">Live TV</a> section, with the same shape as the <a href="../addon-home-videos/">home videos tutorial</a>: read that one first if this is your first addon. For live sports there is a ready-made addon instead: <a href="../live-tv/">Live TV with rex</a>.</p>
+<retype-table copy-text="| You need | Why |
+|---|---|
+| rex 2026.11.02 or newer, set up as in [rex with your own app](any-source.md) (steps 1 to 3) and claimed | Live TV is in its Plex apps |
+| FFmpeg where rex runs | rex converts a channel while someone watches it. See [Converting video](any-source.md#converting-video-optional) |
+| Python 3.8 or newer and `ffprobe` where the addon runs | The addon, standard library only. `ffprobe` checks each channel once a day |
+| An M3U playlist | A URL or a file, with `#EXTINF` lines. `tvg-id` links a channel to its guide, `tvg-chno` gives its number, `tvg-logo` its logo, `group-title` its group |
+| An XMLTV guide (optional) | A URL or a file, gzipped or not. Without one, channels are listed with nothing in the guide |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>You need</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rex 2026.11.02 or newer, set up as in <a href="../any-source/">rex with your own app</a> (steps 1 to 3) and claimed</td>
+<td>Live TV is in its Plex apps</td>
+</tr>
+<tr>
+<td>FFmpeg where rex runs</td>
+<td>rex converts a channel while someone watches it. See <a href="../any-source/#converting-video-optional">Converting video</a></td>
+</tr>
+<tr>
+<td>Python 3.8 or newer and <code translate="no" v-pre>ffprobe</code> where the addon runs</td>
+<td>The addon, standard library only. <code translate="no" v-pre>ffprobe</code> checks each channel once a day</td>
+</tr>
+<tr>
+<td>An M3U playlist</td>
+<td>A URL or a file, with <code translate="no" v-pre>#EXTINF</code> lines. <code translate="no" v-pre>tvg-id</code> links a channel to its guide, <code translate="no" v-pre>tvg-chno</code> gives its number, <code translate="no" v-pre>tvg-logo</code> its logo, <code translate="no" v-pre>group-title</code> its group</td>
+</tr>
+<tr>
+<td>An XMLTV guide (optional)</td>
+<td>A URL or a file, gzipped or not. Without one, channels are listed with nothing in the guide</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>This page writes rex&#x27;s address as <code translate="no" v-pre>192.168.1.20:32400</code> and runs the addon on rex&#x27;s machine.</p>
+<h2 id="step-1-save-the-addon">Step 1. Save the addon</h2>
+<p>Save this as <code translate="no" v-pre>iptv.py</code>:</p>
+<div id="step-1-save-the-addon-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-python"><code v-pre class="language-python">#!/usr/bin/env python3
+&quot;&quot;&quot;iptv: a rex addon that turns an M3U playlist and its XMLTV guide into Live TV channels.
+
+Standard library only; needs ffprobe on PATH. Plays HLS (.m3u8) channels; others are skipped.
+&quot;&quot;&quot;
+import gzip, io, json, os, re, subprocess, sys, threading, time, urllib.error, urllib.parse, urllib.request
+import xml.etree.ElementTree as ET
+from datetime import datetime, timedelta, timezone
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+PLAYLIST = &quot;https://example.com/playlist.m3u&quot;   # your M3U: a URL or a file path
+GUIDE = &quot;https://example.com/guide.xml.gz&quot;       # its XMLTV guide: a URL or a file path, .gz or not
+GROUPS = []                                      # only these group-title values; [] keeps every channel
+REX = &quot;http://192.168.1.20:32400&quot;                # rex's address
+LISTEN = (&quot;127.0.0.1&quot;, 9983)                     # where this addon answers; rex must reach it
+NAME, LIBRARY = &quot;iptv&quot;, &quot;Live Channels&quot;          # the source's name and its library's title
+FIRST = 1                                        # the first channel number this addon hands out
+
+ME = &quot;http://%s:%d&quot; % LISTEN
+FORCE = os.environ.get(&quot;REX_FORCE&quot;) == &quot;1&quot;  # REX_FORCE=1 lets one run remove more than half
+STATE = os.path.expanduser(&quot;~/.rex-iptv.json&quot;)   # channel numbers and probes, kept across restarts
+state = json.load(open(STATE)) if os.path.exists(STATE) else {&quot;numbers&quot;: {}, &quot;probes&quot;: {}}
+streams = {}                                     # channel key -&gt; the stream URL to send rex to
+sys.stdout.reconfigure(line_buffering=True)
+
+
+def read(source):
+    &quot;&quot;&quot;A URL's or a file's bytes, un-gzipped.&quot;&quot;&quot;
+    if re.match(r&quot;https?://&quot;, source):
+        with urllib.request.urlopen(urllib.request.Request(source, headers={&quot;User-Agent&quot;: &quot;rex-iptv/1.0&quot;}), timeout=60) as r:
+            data = r.read()
+    else:
+        with open(os.path.expanduser(source), &quot;rb&quot;) as f:
+            data = f.read()
+    return gzip.decompress(data) if data[:2] == b&quot;\x1f\x8b&quot; else data
+
+
+# ---- Serve the bytes: a channel's path redirects to its stream ----------------------------
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        key = urllib.parse.unquote(urllib.parse.urlsplit(self.path).path)[len(&quot;/tv/&quot;):-len(&quot;.m3u8&quot;)]
+        if not self.path.startswith(&quot;/tv/&quot;) or key not in streams:
+            return self.send_error(404)
+        self.send_response(302)  # rex follows it and converts the stream while someone watches
+        self.send_header(&quot;Location&quot;, best_variant(streams[key]))  # asked now: stream links can expire
+        self.end_headers()
+
+    def log_message(self, *args):
+        pass
+
+
+# ---- The playlist --------------------------------------------------------------------------
+def channels():
+    &quot;&quot;&quot;(key, name, logo, number, group, url) for each #EXTINF entry of the playlist.&quot;&quot;&quot;
+    found, info = [], None
+    for line in read(PLAYLIST).decode(&quot;utf-8&quot;, &quot;replace&quot;).splitlines():
+        line = line.strip()
+        if line.startswith(&quot;#EXTINF&quot;):
+            attrs = dict(re.findall(r'([\w-]+)=&quot;([^&quot;]*)&quot;', line))
+            info = (attrs, line.rsplit(&quot;,&quot;, 1)[-1].strip())
+        elif line and not line.startswith(&quot;#&quot;) and info:
+            attrs, name = info
+            info = None
+            if GROUPS and attrs.get(&quot;group-title&quot;) not in GROUPS:
+                continue
+            key = re.sub(r&quot;[^A-Za-z0-9_-]+&quot;, &quot;-&quot;, attrs.get(&quot;tvg-id&quot;) or name).strip(&quot;-&quot;) or &quot;channel&quot;
+            found.append((key, name, attrs.get(&quot;tvg-logo&quot;), attrs.get(&quot;tvg-chno&quot;), attrs.get(&quot;tvg-id&quot;), line))
+    return found
+
+
+def best_variant(url):
+    &quot;&quot;&quot;An HLS master playlist's highest-bandwidth variant; any other playlist as it is.&quot;&quot;&quot;
+    with urllib.request.urlopen(urllib.request.Request(url, headers={&quot;User-Agent&quot;: &quot;rex-iptv/1.0&quot;}), timeout=30) as r:
+        text, final = r.read().decode(&quot;utf-8&quot;, &quot;replace&quot;), r.geturl()
+    best, lines = None, text.splitlines()
+    for i, line in enumerate(lines):
+        if line.startswith(&quot;#EXT-X-STREAM-INF&quot;):
+            bw = int((re.search(r&quot;BANDWIDTH=(\d+)&quot;, line) or [0, 0])[1])
+            nxt = next((l.strip() for l in lines[i + 1:] if l.strip() and not l.startswith(&quot;#&quot;)), None)
+            if nxt and (best is None or bw &gt; best[0]):
+                best = (bw, urllib.parse.urljoin(final, nxt))
+    return best[1] if best else url
+
+
+def probe(url):
+    &quot;&quot;&quot;ffprobe of the stream, kept for a day: rex needs it, and an HLS probe of a live channel has no duration.&quot;&quot;&quot;
+    old = state[&quot;probes&quot;].get(url)
+    if old and old[&quot;at&quot;] &gt; time.time() - 86400:
+        return old[&quot;info&quot;]
+    out = subprocess.run([&quot;ffprobe&quot;, &quot;-v&quot;, &quot;error&quot;, &quot;-rw_timeout&quot;, &quot;15000000&quot;, &quot;-print_format&quot;, &quot;json&quot;,
+                          &quot;-show_format&quot;, &quot;-show_streams&quot;, url], capture_output=True, timeout=60)
+    info = json.loads(out.stdout or b&quot;{}&quot;)
+    if info.get(&quot;format&quot;, {}).get(&quot;format_name&quot;) != &quot;hls&quot; or not info.get(&quot;streams&quot;):
+        raise ValueError(&quot;not a live HLS stream (%s)&quot; % (out.stderr.decode().strip()[-200:] or info.get(&quot;format&quot;, {}).get(&quot;format_name&quot;)))
+    state[&quot;probes&quot;][url] = {&quot;at&quot;: time.time(), &quot;info&quot;: info}
+    return info
+
+
+# ---- The guide -----------------------------------------------------------------------------
+def when(xmltv):
+    &quot;&quot;&quot;XMLTV's &quot;20261104180000 +0100&quot; as ISO 8601, which rex takes.&quot;&quot;&quot;
+    t = datetime.strptime(xmltv[:14], &quot;%Y%m%d%H%M%S&quot;)
+    zone = xmltv[14:].strip() or &quot;+0000&quot;
+    return t.strftime(&quot;%Y-%m-%dT%H:%M:%S&quot;) + zone[:3] + &quot;:&quot; + zone[3:5]
+
+
+def guides(wanted):
+    &quot;&quot;&quot;Each wanted channel's programmes from three hours ago to a week ahead.&quot;&quot;&quot;
+    now = datetime.now(timezone.utc)
+    lo, hi = (now - timedelta(hours=3)).strftime(&quot;%Y%m%d%H%M%S&quot;), (now + timedelta(days=7)).strftime(&quot;%Y%m%d%H%M%S&quot;)
+    found = {c: [] for c in wanted}
+    for _, el in ET.iterparse(io.BytesIO(read(GUIDE))):
+        if el.tag != &quot;programme&quot;:
+            continue
+        start, stop, ch = el.get(&quot;start&quot;, &quot;&quot;), el.get(&quot;stop&quot;, &quot;&quot;), el.get(&quot;channel&quot;)
+        if ch in found and start and stop and stop[:14] &gt; lo and start[:14] &lt; hi:
+            p = {&quot;start&quot;: when(start), &quot;end&quot;: when(stop), &quot;title&quot;: el.findtext(&quot;title&quot;) or &quot;?&quot;,
+                 &quot;summary&quot;: el.findtext(&quot;desc&quot;), &quot;categories&quot;: [c.text for c in el.findall(&quot;category&quot;) if c.text]}
+            ns = el.findtext(&quot;episode-num[@system='xmltv_ns']&quot;)
+            m = re.match(r&quot;\s*(\d+)?\s*\.\s*(\d+)&quot;, ns or &quot;&quot;)
+            if m and m.group(2):  # xmltv_ns counts from 0: &quot;0.4.&quot; is season 1, episode 5
+                p.update(type=&quot;episode&quot;, show=p[&quot;title&quot;], title=el.findtext(&quot;sub-title&quot;) or p[&quot;title&quot;],
+                         season=int(m.group(1) or 0) + 1, episode=int(m.group(2)) + 1)
+            if el.find(&quot;previously-shown&quot;) is not None:
+                p[&quot;previously_shown&quot;] = True
+            icon = el.find(&quot;icon&quot;)
+            if icon is not None and (icon.get(&quot;src&quot;) or &quot;&quot;).startswith(&quot;http&quot;):
+                p[&quot;thumb&quot;] = icon.get(&quot;src&quot;)
+            found[ch].append({k: v for k, v in p.items() if v not in (None, [])})
+        el.clear()
+    return found
+
+
+# ---- Register, then send every channel ------------------------------------------------------
+def rex(method, path, body):
+    req = urllib.request.Request(REX + path, json.dumps(body).encode(), method=method,
+                                 headers={&quot;Content-Type&quot;: &quot;application/json&quot;})
+    try:
+        with urllib.request.urlopen(req, timeout=120) as r:
+            return json.load(r)
+    except urllib.error.HTTPError as e:  # rex says why in the body
+        raise RuntimeError(&quot;rex answered %d: %s&quot; % (e.code, e.read().decode(errors=&quot;replace&quot;)[:300])) from None
+
+
+def number_for(key, chno):
+    &quot;&quot;&quot;Handed out once and kept, so a favourite stays on its channel: the playlist's tvg-chno if free.&quot;&quot;&quot;
+    if key not in state[&quot;numbers&quot;]:
+        taken, n = set(state[&quot;numbers&quot;].values()), FIRST
+        while str(n) in taken:
+            n += 1
+        state[&quot;numbers&quot;][key] = chno if chno and chno not in taken else str(n)
+    return state[&quot;numbers&quot;][key]
+
+
+def sync():
+    rex(&quot;PUT&quot;, &quot;/rex/sources/&quot; + NAME, {&quot;url&quot;: ME, &quot;trash&quot;: False,
+                                        &quot;directories&quot;: [{&quot;name&quot;: &quot;tv&quot;, &quot;movies&quot;: LIBRARY}]})
+    listed = channels()
+    guide = guides({c[4] for c in listed if c[4]})
+    items = []
+    for key, name, logo, chno, tvg_id, url in listed:
+        try:
+            stream = best_variant(url)
+            info = probe(stream)
+        except Exception as e:
+            print(&quot;skipped %s: %s&quot; % (name, e))
+            continue
+        streams[key] = url
+        item = {&quot;id&quot;: key, &quot;path&quot;: &quot;tv/%s.m3u8&quot; % key, &quot;media_info&quot;: info,
+                &quot;display&quot;: {&quot;title&quot;: name},
+                &quot;channel&quot;: {&quot;number&quot;: number_for(key, chno), &quot;title&quot;: name, &quot;guide&quot;: guide.get(tvg_id, [])}}
+        if logo and logo.startswith(&quot;http&quot;):
+            item[&quot;display&quot;][&quot;thumb&quot;] = logo
+        items.append(item)
+    with open(STATE, &quot;w&quot;) as f:
+        json.dump(state, f)
+    if not items:
+        print(&quot;no channel could be probed: not sending a snapshot&quot;)
+        return
+    session = str(time.time())
+    for n in range(0, len(items), 100):  # a week of guide per channel: 100 channels a request
+        answer = rex(&quot;PUT&quot;, &quot;/rex/feed/%s/snapshot&quot; % NAME,
+                     {&quot;session&quot;: session, &quot;part&quot;: n // 100, &quot;complete&quot;: n + 100 &gt;= len(items), &quot;force&quot;: FORCE, &quot;items&quot;: items[n:n + 100]})
+        for bad in answer.get(&quot;rejected&quot;, []):
+            print(&quot;rejected:&quot;, bad)
+    print(&quot;sent %d channels: %d created, %d updated, %d unchanged&quot; % (len(items), answer[&quot;created&quot;], answer[&quot;updated&quot;], answer[&quot;unchanged&quot;]))
+
+
+if __name__ == &quot;__main__&quot;:
+    server = ThreadingHTTPServer(LISTEN, Handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    print(&quot;serving %s at %s&quot; % (PLAYLIST, ME))
+    while True:
+        try:
+            sync()
+        except Exception as e:
+            print(&quot;sync failed, trying again in 30 minutes:&quot;, e)
+        time.sleep(1800)</code></pre>
+</doc-codeblock></div>
+<h2 id="step-2-fill-in-the-settings">Step 2. Fill in the settings</h2>
+<retype-table copy-text="| Setting | Put |
+|---|---|
+| `PLAYLIST` | Your M3U's URL, or its path on this machine |
+| `GUIDE` | Your XMLTV guide's URL or path. A provider's guide link usually ends in `xmltv.php`, `.xml` or `.xml.gz` |
+| `GROUPS` | Only the groups you want, as their `group-title` values: `[&quot;News&quot;, &quot;Sports&quot;]`. Keep `[]` for every channel. Each channel is checked with `ffprobe` (a few seconds each), so a list of thousands takes long: pick groups |
+| `REX`, `LISTEN` | rex's address, and where the addon answers (`127.0.0.1` with the addon on rex's machine) |
+| `NAME`, `LIBRARY` | The addon's name in rex and the title of the library that also holds the channels. Keep `NAME` once you have run it |
+| `FIRST` | The number the first channel without a `tvg-chno` gets. Pick numbers clear of other Live TV addons', such as `500` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Setting</th>
+<th>Put</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>PLAYLIST</code></td>
+<td>Your M3U&#x27;s URL, or its path on this machine</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>GUIDE</code></td>
+<td>Your XMLTV guide&#x27;s URL or path. A provider&#x27;s guide link usually ends in <code translate="no" v-pre>xmltv.php</code>, <code translate="no" v-pre>.xml</code> or <code translate="no" v-pre>.xml.gz</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>GROUPS</code></td>
+<td>Only the groups you want, as their <code translate="no" v-pre>group-title</code> values: <code translate="no" v-pre>[&quot;News&quot;, &quot;Sports&quot;]</code>. Keep <code translate="no" v-pre>[]</code> for every channel. Each channel is checked with <code translate="no" v-pre>ffprobe</code> (a few seconds each), so a list of thousands takes long: pick groups</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>REX</code>, <code translate="no" v-pre>LISTEN</code></td>
+<td>rex&#x27;s address, and where the addon answers (<code translate="no" v-pre>127.0.0.1</code> with the addon on rex&#x27;s machine)</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>NAME</code>, <code translate="no" v-pre>LIBRARY</code></td>
+<td>The addon&#x27;s name in rex and the title of the library that also holds the channels. Keep <code translate="no" v-pre>NAME</code> once you have run it</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>FIRST</code></td>
+<td>The number the first channel without a <code translate="no" v-pre>tvg-chno</code> gets. Pick numbers clear of other Live TV addons&#x27;, such as <code translate="no" v-pre>500</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h2 id="step-3-run-it">Step 3. Run it</h2>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos">
+<template #title>Linux and macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">python3 iptv.py</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">python iptv.py</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p><strong>What you should see.</strong> A line for every channel that could not be checked, then the total:</p>
+<div id="step-3-run-it-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">serving https://example.com/playlist.m3u at http://127.0.0.1:9983
+skipped Gone Channel: &lt;urlopen error [Errno 111] Connection refused&gt;
+sent 2 channels: 2 created, 0 updated, 0 unchanged</code></pre>
+</doc-codeblock></div>
+<p>rex&#x27;s log shows the library made for the channels and the channels arriving:</p>
+<div id="step-3-run-it-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">SOURCES iptv registered at http://127.0.0.1:9983
+SECTION create Live Channels (movie) for iptv's tv
+FEED iptv upsert: 2 created, 0 updated, 0 held, 0 unchanged, 0 rejected</code></pre>
+</doc-codeblock></div>
+<p>In Plex Web or Plex for Android, open <strong>Live TV</strong>: a tab with your rex&#x27;s name lists the channels at their numbers, with the guide from three hours ago to a week ahead. Pick what is on and press <strong>Watch Now</strong>: it plays after a few seconds, the time rex takes to start converting it. What&#x27;s On lists what is on now and later; an episode in the guide&#x27;s <code translate="no" v-pre>News</code> or <code translate="no" v-pre>Sports</code> category is on those shelves.</p>
+<p>The addon checks the playlist and sends the guide again every 30 minutes. To keep it running, set it up like the home videos addon: <a href="../addon-home-videos/#step-4-keep-it-running">Step 4</a>, with <code translate="no" v-pre>iptv.py</code> in place of <code translate="no" v-pre>homevideos.py</code>.</p>
+<h2 id="how-it-works">How it works</h2>
+<retype-table copy-text="| Part | What it does |
+|---|---|
+| `channels()` | Reads the playlist: each `#EXTINF` line and the URL after it. A channel's key, which is its `id` in rex for good, is its `tvg-id` (or its name) |
+| `Handler` | Serves `/tv/&lt;key&gt;.m3u8` as a redirect to the channel's stream. rex follows it every time someone tunes in, and the addon looks the stream up at that moment, so links that expire keep working |
+| `best_variant()` | Takes the best quality of a stream that offers several (an HLS master playlist), so what plays is what was checked |
+| `probe()` | `ffprobe` of the stream, kept a day. rex needs it to know the channel's picture and sound, and takes the channel as live because its probe has no length. A stream that is not HLS, or does not answer, is skipped this round |
+| `guides()` | Reads the XMLTV file once per round and keeps each channel's programmes from three hours ago to a week ahead: title, description, categories, picture, and `previously-shown` (a repeat). A programme with an `xmltv_ns` episode number becomes an episode of its show, numbered from 1 (XMLTV counts from 0) |
+| `number_for()` | Gives each channel its number once and keeps it in `~/.rex-iptv.json`: the playlist's `tvg-chno` when no other channel has it, else the next free one from `FIRST`. Favourites in the Plex apps are kept by number, so a channel must keep its |
+| `sync()` | Registers with `&quot;trash&quot;: false`, so a channel that leaves the playlist is deleted, not kept in rex's trash. Each channel is sent with its `channel`: number, name and guide. A snapshot of every channel, 100 a request (a week of guide each) |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Part</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>channels()</code></td>
+<td>Reads the playlist: each <code translate="no" v-pre>#EXTINF</code> line and the URL after it. A channel&#x27;s key, which is its <code translate="no" v-pre>id</code> in rex for good, is its <code translate="no" v-pre>tvg-id</code> (or its name)</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Handler</code></td>
+<td>Serves <code translate="no" v-pre>/tv/&lt;key&gt;.m3u8</code> as a redirect to the channel&#x27;s stream. rex follows it every time someone tunes in, and the addon looks the stream up at that moment, so links that expire keep working</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>best_variant()</code></td>
+<td>Takes the best quality of a stream that offers several (an HLS master playlist), so what plays is what was checked</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>probe()</code></td>
+<td><code translate="no" v-pre>ffprobe</code> of the stream, kept a day. rex needs it to know the channel&#x27;s picture and sound, and takes the channel as live because its probe has no length. A stream that is not HLS, or does not answer, is skipped this round</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>guides()</code></td>
+<td>Reads the XMLTV file once per round and keeps each channel&#x27;s programmes from three hours ago to a week ahead: title, description, categories, picture, and <code translate="no" v-pre>previously-shown</code> (a repeat). A programme with an <code translate="no" v-pre>xmltv_ns</code> episode number becomes an episode of its show, numbered from 1 (XMLTV counts from 0)</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>number_for()</code></td>
+<td>Gives each channel its number once and keeps it in <code translate="no" v-pre>~/.rex-iptv.json</code>: the playlist&#x27;s <code translate="no" v-pre>tvg-chno</code> when no other channel has it, else the next free one from <code translate="no" v-pre>FIRST</code>. Favourites in the Plex apps are kept by number, so a channel must keep its</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>sync()</code></td>
+<td>Registers with <code translate="no" v-pre>&quot;trash&quot;: false</code>, so a channel that leaves the playlist is deleted, not kept in rex&#x27;s trash. Each channel is sent with its <code translate="no" v-pre>channel</code>: number, name and guide. A snapshot of every channel, 100 a request (a week of guide each)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h2 id="change-it">Change it</h2>
+<ul>
+<li><strong>Streams that are not HLS.</strong> Many providers also offer each channel as MPEG-TS (<code translate="no" v-pre>.ts</code>). rex takes a live channel as an HLS stream (<code translate="no" v-pre>.m3u8</code>), so this addon skips the others: ask your provider for HLS links (often <code translate="no" v-pre>output=m3u8</code> in the playlist URL).</li>
+<li><strong>Your own numbers.</strong> Edit the numbers in <code translate="no" v-pre>~/.rex-iptv.json</code> while the addon is stopped; the next round sends them.</li>
+<li><strong>Logos.</strong> <code translate="no" v-pre>tvg-logo</code> becomes the channel&#x27;s picture in its library. The guide grid shows numbers and names.</li>
+<li><strong>A guide from somewhere else.</strong> Anything that knows the schedule can fill <code translate="no" v-pre>guide</code>: a provider&#x27;s JSON API, a sports schedule, a fixed loop. rex-live-sports builds guides from ESPN&#x27;s scoreboard, see <a href="../live-tv/">Live TV with rex</a>.</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<retype-table copy-text="| You see | Why | Fix |
+|---|---|---|
+| `skipped &lt;channel&gt;: not a live HLS stream (...)` | The channel is MPEG-TS or another format, or its stream answered with an error (the reason is at the end) | Use the channel's HLS link; a stream that is down is tried again next round |
+| `skipped &lt;channel&gt;: &lt;urlopen error ...&gt;` (`Connection refused`, `actively refused it` on Windows, or `HTTP Error 403`) | The stream did not answer, or refused this machine | Check the link in a player on the same machine. IPTV links often work only from the address that logged in |
+| `no channel could be probed: not sending a snapshot` | No channel answered: the provider is down, or the playlist is empty | Nothing is removed. Check `PLAYLIST` |
+| `sync failed, ...: &lt;urlopen error [Errno 111] Connection refused&gt;` (`WinError 10061` on Windows) | rex is not running, or `REX` is not its address | Start rex, or fix `REX` |
+| `sync failed, ...: rex answered 409: ...more than half...` | More than half of the channels left the playlist, or failed their check, at once | If you meant it, run once with `REX_FORCE=1`; otherwise wait for the provider to come back |
+| A channel has nothing in the guide | Its `tvg-id` matches no `&lt;channel id&gt;` in the guide, or the guide has nothing for this week | Match the playlist's `tvg-id` to the guide's ids |
+| Live TV is missing in a Plex app | No channel was sent yet, or the app is not Plex Web or Plex for Android, the apps tested | Run the addon, and use Plex Web or Plex for Android |
+| Watch Now fails | rex has no FFmpeg, or the stream stopped | rex's log says why. For FFmpeg, see [Converting video](any-source.md#converting-video-optional) |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>You see</th>
+<th>Why</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>skipped &lt;channel&gt;: not a live HLS stream (...)</code></td>
+<td>The channel is MPEG-TS or another format, or its stream answered with an error (the reason is at the end)</td>
+<td>Use the channel&#x27;s HLS link; a stream that is down is tried again next round</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>skipped &lt;channel&gt;: &lt;urlopen error ...&gt;</code> (<code translate="no" v-pre>Connection refused</code>, <code translate="no" v-pre>actively refused it</code> on Windows, or <code translate="no" v-pre>HTTP Error 403</code>)</td>
+<td>The stream did not answer, or refused this machine</td>
+<td>Check the link in a player on the same machine. IPTV links often work only from the address that logged in</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>no channel could be probed: not sending a snapshot</code></td>
+<td>No channel answered: the provider is down, or the playlist is empty</td>
+<td>Nothing is removed. Check <code translate="no" v-pre>PLAYLIST</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>sync failed, ...: &lt;urlopen error [Errno 111] Connection refused&gt;</code> (<code translate="no" v-pre>WinError 10061</code> on Windows)</td>
+<td>rex is not running, or <code translate="no" v-pre>REX</code> is not its address</td>
+<td>Start rex, or fix <code translate="no" v-pre>REX</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>sync failed, ...: rex answered 409: ...more than half...</code></td>
+<td>More than half of the channels left the playlist, or failed their check, at once</td>
+<td>If you meant it, run once with <code translate="no" v-pre>REX_FORCE=1</code>; otherwise wait for the provider to come back</td>
+</tr>
+<tr>
+<td>A channel has nothing in the guide</td>
+<td>Its <code translate="no" v-pre>tvg-id</code> matches no <code translate="no" v-pre>&lt;channel id&gt;</code> in the guide, or the guide has nothing for this week</td>
+<td>Match the playlist&#x27;s <code translate="no" v-pre>tvg-id</code> to the guide&#x27;s ids</td>
+</tr>
+<tr>
+<td>Live TV is missing in a Plex app</td>
+<td>No channel was sent yet, or the app is not Plex Web or Plex for Android, the apps tested</td>
+<td>Run the addon, and use Plex Web or Plex for Android</td>
+</tr>
+<tr>
+<td>Watch Now fails</td>
+<td>rex has no FFmpeg, or the stream stopped</td>
+<td>rex&#x27;s log says why. For FFmpeg, see <a href="../any-source/#converting-video-optional">Converting video</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Still stuck? Ask in the <strong>rex-support</strong> forum on <a href="https://discord.com/invite/7u4YjMThXP">Discord</a>.</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../rex/addon-music/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Previous</span>
+                                <span class="block mt-1">Tutorial: music addon</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../rex/addon-more/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Next</span>
+                                <span class="block mt-1">More from your addon</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Tutorial: IPTV addon", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/rex/addon-iptv.md" }</script>
+</body>
+</html>

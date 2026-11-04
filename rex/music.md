@@ -15,7 +15,7 @@ What you get:
 |---|---|
 | A rex nightly dated 2026.11.02 or newer | Music came in that build |
 | rex set up as in [rex with your own app](any-source.md) | That is where the music library shows up |
-| A music addon | Any program that sends songs over rex's feed API. None is published yet: [Building rex addons](addons.md#music) shows how to write one |
+| A music addon | Any program that sends songs over rex's feed API. For a folder of albums on your own disks, [Tutorial: a music addon](addon-music.md) is a complete one in one Python file |
 | [Converting video](any-source.md#converting-video-optional), optional | rex converts a song only for an app set to a lower music quality than the original |
 
 ## Step 1. Install rex and add it to a Plex account
@@ -59,4 +59,4 @@ The music library is new, so it is in nobody's share yet. Signed in as the fresh
 - **Two copies of an album are two albums**, as on any Plex server: a FLAC copy and an MP3 copy each show as their own album.
 - **Tested in Plexamp, Plex Web and Plex for Android.** Other Plex apps, and Plexamp's offline downloads, have not been tried.
 
-To write a music addon of your own, see [Building rex addons](addons.md#music).
+To write a music addon of your own, start from [Tutorial: a music addon](addon-music.md); [Building rex addons](addons.md#music) has every field.

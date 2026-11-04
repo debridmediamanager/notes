@@ -91,7 +91,7 @@ No. zurg is one source among others. rex takes its library from anything that sp
 - [rex with your own app](any-source.md): any app that serves files over HTTP
 - [rex with your Stremio addons](stremio.md): catalogs from Stremio addons
 - [rex with zurg](with-zurg.md): your debrid account or Usenet
-- [Building rex addons](addons.md): home videos, recordings or channels, with a program of your own
+- [Building rex addons](addons.md): home videos, recordings or channels, with a program of your own, and three [tutorials](addon-home-videos.md) to start from
 
 Several sources can fill the same Movies and TV libraries.
 
