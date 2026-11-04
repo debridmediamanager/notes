@@ -6,6 +6,10 @@ order: 60
 
 # Changelog
 
+## zurg finds anime, daily shows and specials for Sonarr
+
+A Sonarr source used to skip a daily series, an anime series and a series' specials, with one warning each. Now a daily show's missing episodes are also asked for by the day they aired (`The Daily Show 2026.11.03`), an anime's by the number the show counts them at (`Jujutsu Kaisen 30` is the second season's sixth), and specials as season `00`, beside the usual search by season and episode; Sonarr's own parser says which episode each release is, as it does for any series, and the quality profile judges it as before. A video placed for an anime or a daily show is named `JUJUTSU KAISEN - S02E06 - <the release's own name>`, because Sonarr's rescan reads a file by its name alone and would file `2nd Season - 06` under season 1; a standard series' and a special's videos keep their names. Specials go in the folder Sonarr's **Specials Folder Format** names, and only a release naming `S00Exx` can match one. See [What zurg asks Sonarr for](../guides/acquisition.md#what-zurg-asks-sonarr-for).
+
 ## Keep a wanted film at 1080p and at 4K
 
 `quality: [1080p, 4k]` in the `acquisition:` block keeps two copies of each
