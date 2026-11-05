@@ -734,9 +734,9 @@ Back up as in [step 5](#step-5-watch-something), then stop rex on the old machin
 - Put the new LAN IP in zurg's `rex_url` and restart zurg ([step 4](#step-4-connect-zurg-to-rex)).
 - Move your router's port forward to the new machine. The rex-direct name stays the same and follows a new public IP by itself. Tailscale serve and Caddy are set up again on the new machine.
 
-### The fresh Plex account is gone
+### Move rex to another Plex account
 
-If the account rex is claimed with is lost or banned, make another fresh account, stop rex, delete `claim_state.json` in rex's folder, start rex and do [step 3](#step-3-add-it-to-a-plex-account) again: claim, then share with everyone again. The library, Fix Match, edits and the rex-direct name stay, and each person's watch history comes back once rex is shared with their account again.
+If the account rex is claimed with is lost or banned, or you want rex on another account, make another fresh account, stop rex, delete `claim_state.json` in rex's folder, start rex and do [step 3](#step-3-add-it-to-a-plex-account) again: claim, then share with everyone again. If you can still sign in to the old account, remove rex there too: in app.plex.tv open **Settings**, **Authorized Devices**, filter by **Servers** and remove it. Those two steps are the whole unclaim. rex has no sign-out: Plex's sign-out request (`DELETE /myplex/account`) answers 200 and leaves rex claimed. The library, Fix Match, edits and the rex-direct name stay, and each person's watch history comes back once rex is shared with their account again.
 
 ### Which rex do I run?
 
