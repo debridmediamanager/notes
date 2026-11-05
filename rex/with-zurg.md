@@ -583,6 +583,8 @@ There is nothing to set up. rex checks a subtitle against the file's own text su
 
 Downloads, intro and credits skipping, seek thumbnails and the other server settings are in [rex's setup guide](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities). Music and Live TV come from sources that send them ([rex's limits](https://github.com/debridmediamanager/rex#limits)), such as [rex-live-sports](https://github.com/debridmediamanager/rex-live-sports) for live channels. There is no DVR, so nothing records, and photo libraries stay empty.
 
+Keep the default proxy mode for shared debrid playback. Real-Debrid tracks each downloader's public IP; multi-IP use of one account earns a sharing warning even when downloads succeed. TorBox download URLs contain the full API key, so redirecting gives every client and shared user account access, including deletion. Read the [redirect risks and setup](direct-download.md#before-you-start) before letting apps download from the provider.
+
 ## Run rex in Docker
 
 The same setup with zurg and rex in containers on one Linux machine. The steps match the ones above; only how you start each part differs. On macOS and Windows, Docker Desktop runs containers inside a virtual machine, so host networking, LAN discovery and the graphics chip do not work there as they do on Linux: use the steps above instead.
