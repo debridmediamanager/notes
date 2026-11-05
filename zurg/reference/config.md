@@ -578,7 +578,7 @@ Controls what files your media server sees and how content is streamed.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `disable_stream_proxy` | bool | `false` | When true, a **mount** read is answered with a redirect to the account's own download URL instead of being proxied through zurg. Reduces zurg's CPU and bandwidth but means the client must be able to reach the account's servers directly. Ignored for a backend whose links are served locally — a Usenet file has no URL to hand out, so it is always proxied. |
+| `disable_stream_proxy` | bool | `false` | When true, a **mount** read is answered with a redirect to the account's own download URL instead of being proxied through zurg. Reduces zurg's CPU and bandwidth but means the client must be able to reach the account's servers directly. Ignored for a backend whose links are served locally — a Usenet file has no URL to hand out, so it is always proxied. **Read the provider risks below before enabling.** |
 | `serve_strm_files` | bool | `false` | When true, zurg serves `.strm` files in place of actual video files in the WebDAV mount. Media servers like Plex/Jellyfin read the `.strm` file to get the streaming URL. **Important:** When enabled, the actual video files are hidden and replaced by `.strm` entries. |
 | `save_strm_files` | bool | `false` | When true, zurg writes `.strm` files to a `strm/` directory alongside the zurg binary. Useful for setups where you want persistent STRM files on disk (e.g., for manual import into a media server). Uses `base_url` for the URLs inside the files. Only files a player can open get one — recognised video and audio plus anything `addl_playable_extensions` names — so subtitles, posters, NFOs and PAR2 volumes stay out of the dump, and any an older build wrote there are removed the next time the release is walked. A `.strm` whose URL no longer matches, because `base_url` changed or an older build wrote it, is rewritten in place at the next start, or straight away when `base_url` is changed on the dashboard. Files that already match are not touched, so a media server does not re-read the whole folder on every scan. |
 
@@ -587,6 +587,10 @@ disable_stream_proxy: false
 serve_strm_files: false
 save_strm_files: false
 ```
+
+**Keep mount reads proxied (the default) for shared debrid playback.** Real-Debrid tracks each downloader's public IP; multi-IP use of one account earns a sharing warning even when the download succeeds. Keep every use of that account on one public IP, including server probes and conversions, not just player downloads. TorBox download URLs contain the full API key in `?token=`, so a redirect gives every client and shared user account access, including deletion; player logs and browser history can retain it. Do not hand TorBox links to untrusted clients.
+
+These risks apply both to `disable_stream_proxy: true` mount redirects and to `/strm/` redirects. Keeping `disable_stream_proxy: false` does **not** make `.strm` playback proxied or safe for remote sharing.
 
 #### What `disable_stream_proxy` does and does not reach
 

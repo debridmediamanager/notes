@@ -8,6 +8,13 @@ Tested on 2026-10-25 with zurg on Real-Debrid, Plezy and Plex for Android on a P
 
 ## Before you start
 
+**Keep the default proxy mode for shared debrid playback.** Redirects are not a safe way to share one debrid account:
+
+- **Real-Debrid tracks each downloader's public IP.** Multi-IP use of one account earns a sharing warning even when the CDN serves the file successfully. Keep every use of that account on one public IP. A remote app downloading directly while rex or its source probes or converts from the server's IP violates that rule; a successful play does not prove it safe.
+- **TorBox download URLs contain the full API key in `?token=`.** Redirecting gives every client and shared user account access, including deletion, not just access to that file. Player logs and browser history can retain the key. Do not hand these links to untrusted clients.
+
+Only continue if these risks are acceptable. Keeping rex's default proxy mode means rex follows source redirects itself instead of handing the provider link to the app.
+
 | You need | Why |
 |---|---|
 | rex set up as in [rex with your own app](any-source.md), [rex with your Stremio addons](stremio.md) or [rex with zurg](with-zurg.md), and a movie that plays | This page changes rex's start command and, for some sources, one of the source's settings |

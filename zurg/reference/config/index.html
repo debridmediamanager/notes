@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847145130746">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847196060712">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../../resources/css/retype.css?v=4.6.0.847145130746" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.847196060712" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847145130746" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847196060712" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847145130746" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847145130746" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847196060712" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847196060712" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -1457,7 +1457,7 @@ dmm_api_key: &quot;&quot;</code></pre>
 <h3 id="streaming-mode">Streaming Mode</h3>
 <retype-table copy-text="| Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `disable_stream_proxy` | bool | `false` | When true, a **mount** read is answered with a redirect to the account's own download URL instead of being proxied through zurg. Reduces zurg's CPU and bandwidth but means the client must be able to reach the account's servers directly. Ignored for a backend whose links are served locally — a Usenet file has no URL to hand out, so it is always proxied. |
+| `disable_stream_proxy` | bool | `false` | When true, a **mount** read is answered with a redirect to the account's own download URL instead of being proxied through zurg. Reduces zurg's CPU and bandwidth but means the client must be able to reach the account's servers directly. Ignored for a backend whose links are served locally — a Usenet file has no URL to hand out, so it is always proxied. **Read the provider risks below before enabling.** |
 | `serve_strm_files` | bool | `false` | When true, zurg serves `.strm` files in place of actual video files in the WebDAV mount. Media servers like Plex/Jellyfin read the `.strm` file to get the streaming URL. **Important:** When enabled, the actual video files are hidden and replaced by `.strm` entries. |
 | `save_strm_files` | bool | `false` | When true, zurg writes `.strm` files to a `strm/` directory alongside the zurg binary. Useful for setups where you want persistent STRM files on disk (e.g., for manual import into a media server). Uses `base_url` for the URLs inside the files. Only files a player can open get one — recognised video and audio plus anything `addl_playable_extensions` names — so subtitles, posters, NFOs and PAR2 volumes stay out of the dump, and any an older build wrote there are removed the next time the release is walked. A `.strm` whose URL no longer matches, because `base_url` changed or an older build wrote it, is rewritten in place at the next start, or straight away when `base_url` is changed on the dashboard. Files that already match are not touched, so a media server does not re-read the whole folder on every scan. |">
 <div class="table-wrapper scrollbar overflow-hidden">
@@ -1475,7 +1475,7 @@ dmm_api_key: &quot;&quot;</code></pre>
 <td><code translate="no" v-pre>disable_stream_proxy</code></td>
 <td>bool</td>
 <td><code translate="no" v-pre>false</code></td>
-<td>When true, a <strong>mount</strong> read is answered with a redirect to the account&#x27;s own download URL instead of being proxied through zurg. Reduces zurg&#x27;s CPU and bandwidth but means the client must be able to reach the account&#x27;s servers directly. Ignored for a backend whose links are served locally — a Usenet file has no URL to hand out, so it is always proxied.</td>
+<td>When true, a <strong>mount</strong> read is answered with a redirect to the account&#x27;s own download URL instead of being proxied through zurg. Reduces zurg&#x27;s CPU and bandwidth but means the client must be able to reach the account&#x27;s servers directly. Ignored for a backend whose links are served locally — a Usenet file has no URL to hand out, so it is always proxied. <strong>Read the provider risks below before enabling.</strong></td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>serve_strm_files</code></td>
@@ -1498,6 +1498,8 @@ dmm_api_key: &quot;&quot;</code></pre>
 serve_strm_files: false
 save_strm_files: false</code></pre>
 </doc-codeblock></div>
+<p><strong>Keep mount reads proxied (the default) for shared debrid playback.</strong> Real-Debrid tracks each downloader&#x27;s public IP; multi-IP use of one account earns a sharing warning even when the download succeeds. Keep every use of that account on one public IP, including server probes and conversions, not just player downloads. TorBox download URLs contain the full API key in <code translate="no" v-pre>?token=</code>, so a redirect gives every client and shared user account access, including deletion; player logs and browser history can retain it. Do not hand TorBox links to untrusted clients.</p>
+<p>These risks apply both to <code translate="no" v-pre>disable_stream_proxy: true</code> mount redirects and to <code translate="no" v-pre>/strm/</code> redirects. Keeping <code translate="no" v-pre>disable_stream_proxy: false</code> does <strong>not</strong> make <code translate="no" v-pre>.strm</code> playback proxied or safe for remote sharing.</p>
 <h4 id="what-disable_stream_proxy-does-and-does-not-reach">What <code translate="no" v-pre>disable_stream_proxy</code> does and does not reach</h4>
 <p>It governs the mount. It does not reach the <code translate="no" v-pre>/strm/</code> endpoint, on any backend:</p>
 <retype-table copy-text="| Read arrives via | Real-Debrid / TorBox / AllDebrid | Usenet |
