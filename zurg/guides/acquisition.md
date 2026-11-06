@@ -1140,6 +1140,33 @@ indexers, the same way. Either way, a release of a kind the install has
 nowhere to put is never a candidate, so it uses up none of the releases an
 attempt tries, and a source such as Radarr is never asked about it.
 
+### Indexer limits and refused keys
+
+**zurg keeps to DMM's limit instead of running into it.** DMM allows a
+sponsor's key 20 searches a minute across all of its torrent feeds, so zurg
+sends DMM at most one search every three seconds. A search past that waits its
+turn, and waiting is not a failed search. A search whose turn would come after
+its title's attempt has to end, or more than two minutes away, is not made: the
+title goes on with what the other indexers found.
+
+**An indexer that answers 429 or 503 is left alone for the time it asks.**
+Every search, NZB download and capabilities check waits out its `Retry-After`,
+up to two minutes, including requests already waiting their turn. An indexer
+that asks for longer is not asked until then.
+
+**Several zurgs on one DMM key share its 20 searches.** Each one keeps to the
+whole budget, so two or three on one key still run into DMM's limit, and each
+refusal pauses that zurg's DMM searches for a minute. A title can then wait
+longer for its search and its grab.
+
+**A refused key is left alone for an hour.** An indexer that answers error 100
+(wrong key) or 101 (account suspended, which is what DMM answers a lapsed
+sponsorship) is not asked again for an hour, for searches or NZB downloads. The
+log says so once, for example `DMM torrents refused the API key: check
+dmm_api_key`, and the acquisition page lists it under **Indexers not asked
+now**. A key you change in `config.yml` is asked at once. Any other error
+answers that one search only.
+
 ## Choosing a movie's release
 
 A movie's Usenet candidates are tried in order of what they cost to confirm,
