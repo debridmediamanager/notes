@@ -74,7 +74,7 @@ Open `http://127.0.0.1:9982/` in a browser on the rex machine. rex runs on a mac
 2. Under **Catalogs**, tick the catalogs you want. Name the library each goes into and set **How many** films, episodes or channels to take. For one library with a collection per catalog, give the catalogs the same library and tick **Catalogs as collections**.
 3. Under **Streams**, set the **Highest resolution** and **Largest file** you want played, or leave them at any.
 4. Under **rex**, set **rex's address** to `http://192.168.1.20:32400`.
-5. If you sponsor DMM, paste your DMM API key under **DMM** ([gatekeeper](https://gatekeeper.debridmediamanager.com/) shows it once you sponsor). A title DMM has seen before then skips its check. Press **Save and sync**.
+5. If you sponsor DMM, paste your DMM API key under **DMM** ([gatekeeper](https://gatekeeper.debridmediamanager.com/) shows it once you sponsor). A title DMM has seen before then skips its check, and what rex-stremio checks itself goes back to DMM for the next sponsor (`share_probes: false` in `config.json` stops that). Press **Save and sync**.
 
 ![rex-stremio's Catalogs, Streams, rex and DMM sections, with the Save and sync button](../assets/rex/91-stremio-catalogs-rex.webp)
 
