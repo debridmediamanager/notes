@@ -21,7 +21,7 @@ What you get:
 | You need | Why |
 |---|---|
 | A machine that stays on, Linux or macOS, for rex and rex-stremio together | rex-stremio is one Python program and runs beside rex. The service below is for Linux; [Docker](#in-docker) works too |
-| Python 3.9 or newer, `git` and `ffprobe` | rex-stremio checks each title's stream once with ffprobe, because rex needs to know what is in a file before it can play it |
+| Python 3.9 or newer, `git` and `ffprobe` | rex-stremio checks each title's stream once with ffprobe, because rex needs to know what is in a file before it can play it. With a DMM API key, a title DMM has seen before skips that check |
 | Stream addons that give links, not torrents | rex plays files. Set your debrid service in the addon so it gives links |
 | A fresh Plex account, made just for rex | As in the rex setup: rex is claimed on it and shared with your own |
 
@@ -79,7 +79,8 @@ Open `http://127.0.0.1:9982/` in a browser on the rex machine. rex runs on a mac
 
 2. Under **Catalogs**, tick the catalogs you want. Name the library each goes into and set **How many** films, episodes or channels to take. For one library with a collection per catalog, give the catalogs the same library and tick **Catalogs as collections**.
 3. Under **Streams**, set the **Highest resolution** and **Largest file** you want played, or leave them at any.
-4. Under **rex**, set **rex's address** to `http://192.168.1.20:32400`, and press **Save and sync**.
+4. Under **rex**, set **rex's address** to `http://192.168.1.20:32400`.
+5. If you sponsor DMM, paste your DMM API key under **DMM** ([gatekeeper](https://gatekeeper.debridmediamanager.com/) shows it once you sponsor). A title DMM has seen before then skips its check. Press **Save and sync**.
 
 ![rex-stremio's Catalogs, Streams and rex sections, with the Save and sync button](../assets/rex/91-stremio-catalogs-rex.webp)
 
@@ -90,7 +91,7 @@ INFO    SOURCES PUT /rex/sources/stremio -> 200
 INFO    FEED stremio upsert: ...
 ```
 
-The libraries appear in rex within a few minutes. rex-stremio syncs again every six hours and after every save.
+Titles appear in rex as each one is checked, not when the whole catalog is done, and rex-stremio checks several at once. It syncs again every six hours and after every save.
 
 ## Step 4. Share the new libraries and watch
 
