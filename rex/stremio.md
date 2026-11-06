@@ -82,7 +82,7 @@ Open `http://127.0.0.1:9982/` in a browser on the rex machine. rex runs on a mac
 4. Under **rex**, set **rex's address** to `http://192.168.1.20:32400`.
 5. If you sponsor DMM, paste your DMM API key under **DMM** ([gatekeeper](https://gatekeeper.debridmediamanager.com/) shows it once you sponsor). A title DMM has seen before then skips its check. Press **Save and sync**.
 
-![rex-stremio's Catalogs, Streams and rex sections, with the Save and sync button](../assets/rex/91-stremio-catalogs-rex.webp)
+![rex-stremio's Catalogs, Streams, rex and DMM sections, with the Save and sync button](../assets/rex/91-stremio-catalogs-rex.webp)
 
 **What you should see.** In rex's log, as in [step 4 of rex with your own app](any-source.md#step-4-connect-your-app):
 

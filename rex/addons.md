@@ -287,7 +287,9 @@ self.send_header("Location", url)
 
 It asks each addon that serves the title (`/stream/<movie or series>/<id>.json`), keeps only plain `http(s)` links (a torrent's `infoHash` is not a file rex can read), drops what is above your resolution or size limits, and tries the rest highest resolution first. The link that opens is cached until an hour before it expires (for an hour when the link does not say). rex follows the redirect and reads the file, with seeking, straight from the link. A link that needs headers of its own rex-stremio relays itself, and an HLS master playlist it answers with its best variant alone.
 
-**Probing.** Once per title, rex-stremio runs ffprobe on its own URL, so `media_info` describes exactly what rex will read, and caches the result. The stream that probe came from is remembered and tried first at every play, so what plays is what rex was told about. The probe's container picks the path's extension: `.mkv`, `.mp4`, `.ts`, `.avi`, or `.m3u8` for HLS.
+**Probing.** Once per title, rex-stremio runs ffprobe on its own URL, so `media_info` describes exactly what rex will read, and caches the result. It checks `probe_workers` titles at once (4 unless set), and still asks each addon host at most once per `stream_interval_seconds`. The stream that probe came from is remembered and tried first at every play, so what plays is what rex was told about. The probe's container picks the path's extension: `.mkv`, `.mp4`, `.ts`, `.avi`, or `.m3u8` for HLS.
+
+**Stored probes.** With a DMM API key (`dmm_api_key`, or **DMM** on the settings page), a torrent stream skips ffprobe when DMM already holds a probe of its file. The torrent's hash comes from the stream's `infoHash` or from its link (Torrentio's debrid links carry it in the path). rex-stremio reads the file's size from the link's answer to a one-byte `Range`, and asks DMM's `POST /api/sponsor/mediainfo` for up to 100 hashes at a time. It takes DMM's probe only when exactly one file of that release has that size, and that name when the stream names its file. Anything else is probed as above.
 
 **Naming.** Each film and episode goes to rex with `kind` and its IMDb id in `ids`, so Plex names it as in [rex with your own app](any-source.md). The catalog's own title, summary, date and poster go in `display`, which shows only until Plex names it. A live channel, or a title only its addon knows, has no IMDb id, so `display` alone names it.
 
@@ -295,7 +297,7 @@ It asks each addon that serves the title (`/stream/<movie or series>/<id>.json`)
 
 **Ids.** An id is the catalog plus the IMDb id (and season and episode), such as `st-<catalog>-tt0111161`. It never changes, so one film in two catalogs is two items. With **Catalogs as collections** on, a film or series several catalogs of one library list is one title there, in each catalog's collection.
 
-**Sending.** Every six hours and after every save: register, then each catalog's videos as soon as that catalog is checked (`POST .../items`, 200 a request), then one snapshot of every catalog, in parts of 200. The first snapshot after a save carries `"force": true`, since unticking catalogs can remove more than half. If a catalog answers empty or only in part, the round sends no snapshot: it adds and updates, removes nothing, and a later complete round removes what really left.
+**Sending.** Every six hours and after every save: register, then each title as soon as it is checked (`POST .../items`, up to 20 titles or whatever is ready every 5 seconds), then one snapshot of every catalog, in parts of 200. The first snapshot after a save carries `"force": true`, since unticking catalogs can remove more than half. If a catalog answers empty or only in part, the round sends no snapshot: it adds and updates, removes nothing, and a later complete round removes what really left.
 
 ## Troubleshooting
 
