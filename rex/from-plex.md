@@ -52,7 +52,7 @@ Only to replace Plex. Skip this to keep both.
 1. Take `--port 32500` out of rex's start command (or the `command:` line in Docker) and restart rex, as [Install rex](any-source.md#step-1-install-rex) shows for your system. On Windows, let 32400 and the two discovery ports through the firewall as that step does.
 2. Give your source rex's new address, `http://192.168.1.20:32400` (rex's LAN IP), and restart it: zurg's `rex_url`, or **rex's address** on rex-stremio's settings page.
 3. Change `32500` to `32400` anywhere else you gave rex's address, such as Kometa.
-4. With rex-direct, point your router's port 32400 forward at the rex machine and remove the `32500` one.
+4. With rex-direct, point your router's port 32400 forward at the rex machine and remove the `32500` one. Over IPv6, change the firewall rule from `32500` to `32400` and restart rex, so it offers its IPv6 on the new port.
 
 rex then answers on port 32400 and Plex apps at home find it on your network by themselves.
 

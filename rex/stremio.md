@@ -91,7 +91,7 @@ Titles appear in rex as each one is checked, not when the whole catalog is done,
 
 The libraries rex-stremio makes are new, so your own account cannot see them yet. Share them with your own account as in [step 3](any-source.md#share-it-with-your-own-account), signed in as the fresh account, and with anyone else you share rex with.
 
-Then open a Plex app as yourself and press play on something. rex-stremio asks your stream addons for a link at that moment and rex plays it.
+Then open a Plex app as yourself and press play on something. rex-stremio asks your stream addons for a link at that moment and rex plays it. To watch away from home or in app.plex.tv, give rex an address of its own: [Use it outside your home](any-source.md#use-it-outside-your-home-optional).
 
 ## In Docker
 

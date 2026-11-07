@@ -425,13 +425,13 @@ If your router forwards a different outside port to rex, add the key `REX_DIRECT
 
 For a connection with no public IPv4 (CGNAT or DS-Lite) that has IPv6. Once DMM has connected to rex at its IPv6 address and found the same server there, it points rex's rex-direct name at that address too. You need rex nightly 2026.11.08 or newer, and in Docker, host networking.
 
-IPv6 has no port forward. Instead, in your router's firewall, allow incoming TCP connections on port 32400 to the rex machine over IPv6. Then rex's log shows both addresses within a few minutes of starting:
+IPv6 has no port forward, and no port mapping either: rex must be on the same port inside and out, so leave `REX_DIRECT_PORT` unset. In your router's firewall, allow incoming TCP connections on port 32400 to the rex machine over IPv6. rex offers its IPv6 a minute after it starts (or is claimed) and then every 6 hours, so add the rule before starting rex, or restart rex after adding it. A minute or so later, its log shows both addresses:
 
 ```
 rex-direct: https://<hash>.rex-direct.debridmediamanager.com:32400 -> <IPv4> and <IPv6>
 ```
 
-Without `and <IPv6>`, DMM could not reach rex over IPv6: check the firewall rule. The devices you watch on need IPv6 as well. Most mobile networks have it; a hotel or office network with IPv4 only cannot reach rex this way.
+If no line with `and <IPv6>` appears within a few minutes, DMM could not reach rex over IPv6: check the firewall rule, and that rex in Docker uses host networking. On Windows, rex offers Windows' temporary IPv6 address, which Windows replaces about daily: turn temporary addresses off with `netsh interface ipv6 set privacy state=disabled` in an administrator PowerShell, then restart rex so it offers the stable one. The `<IPv4>` in that line is your provider's shared address and does not reach rex, so the devices you watch on need IPv6 as well. Most mobile networks have it; a hotel or office network with IPv4 only cannot reach rex this way.
 
 ### Tailscale serve
 
@@ -467,7 +467,7 @@ rex.example.com {
 
 ### A small VPS
 
-For a connection with no public IP (CGNAT). rex has no relay and will not get one, so a server you rent stands in for your router: it has the public IP, and a tunnel from the rex machine carries everything to rex. Any VPS with a public IPv4 works, a few euros a month. **Pick one whose monthly traffic covers what you watch away from home:** every byte passes through it, and a plan with a small data cap will run out.
+For a connection with no public IP at all, or when you watch on networks without IPv6: the VPS then carries every stream, in place of [rex-direct over IPv6](#rex-direct-over-ipv6). rex has no relay and will not get one, so a server you rent stands in for your router: it has the public IP, and a tunnel from the rex machine carries everything to rex. Any VPS with a public IPv4 works, a few euros a month. **Pick one whose monthly traffic covers what you watch away from home:** every byte passes through it, and a plan with a small data cap will run out.
 
 You need the VPS's IP (`1.2.3.4` below), ports 443, 80 and 7000 open on it, and a long random string for the tunnel (`openssl rand -hex 32`).
 
@@ -505,7 +505,7 @@ localPort = 32400
 remotePort = 32400
 ```
 
-Run it as a service: on Linux, for example `~/.config/systemd/user/frpc.service` with `ExecStart=%h/frp/frpc -c %h/frp/frpc.toml` and `Restart=always`; on macOS and Windows, start `frpc -c frpc.toml` the way [step 1](#step-1-install-rex) starts rex. Then end rex's start command with `--announce-url https://1-2-3-4.sslip.io:443`, add the key `REX_DIRECT_URL=off` (rex-direct cannot work without a public IP or IPv6 at home, so plex.tv should not list it), and restart rex.
+Run it as a service: on Linux, for example `~/.config/systemd/user/frpc.service` with `ExecStart=%h/frp/frpc -c %h/frp/frpc.toml` and `Restart=always`; on macOS and Windows, start `frpc -c frpc.toml` the way [step 1](#step-1-install-rex) starts rex. Then end rex's start command with `--announce-url https://1-2-3-4.sslip.io:443`, add the key `REX_DIRECT_URL=off` (behind CGNAT the rex-direct name's IPv4 does not reach rex, so plex.tv should not list it), and restart rex.
 
 ### What you should see
 
@@ -515,7 +515,7 @@ curl -s https://myhost.tailnet.ts.net/identity
 
 shows a short XML page with rex's `machineIdentifier` on a computer at home; `curl` shows nothing when the address or its certificate is wrong. Use your own address: with rex-direct it is the one in rex's `rex-direct: https://...` log line, with `/identity` added. Open the same address in a phone's browser with Wi-Fi off: it shows a short XML page with no certificate warning. With Tailscale serve, both the computer and the phone need Tailscale on.
 
-With rex-direct or Caddy, if the phone gets it and the computer at home does not, your router does not send connections back inside. Point the name at rex's LAN IP in your home network's DNS (your router's, or Pi-hole's; a router with DNS rebind protection needs an exception for it) and the rex machine answers it at home with the same certificate. If the phone fails too, the port is not forwarded (or, [over IPv6](#rex-direct-over-ipv6), not let in), your connection is behind CGNAT without IPv6, or rex-direct's certificate is still being issued (rex's log says so while it is).
+With rex-direct or Caddy, if the phone gets it and the computer at home does not, your router does not send connections back inside. Point the name at rex's LAN IP in your home network's DNS (your router's, or Pi-hole's; a router with DNS rebind protection needs an exception for it) and the rex machine answers it at home with the same certificate. If the phone fails too, the port is not forwarded (or, [over IPv6](#rex-direct-over-ipv6), not let in), your connection is behind CGNAT without IPv6, rex is reached over IPv6 only and the phone's network has none, or rex-direct's certificate is still being issued (rex's log says so while it is).
 
 rex's log names the addresses it announces:
 
@@ -634,7 +634,7 @@ Update with `docker compose pull && docker compose up -d`. The image carries jel
 
 ## Keep the port private
 
-rex takes no password on its feed API. It answers that API only from this machine, your home network (10.x, 172.16-31.x, 192.168.x, 169.254.x and private IPv6 addresses) and Tailscale (100.64-127.x), and to everyone else answers as if the API were not there, so forwarding rex's port for [rex-direct](#rex-direct), or letting it in over IPv6, does not open it. A router that gives outside visitors its own address makes them look local, and that opens the feed to the internet. Your app must therefore push from one of those networks. A proxy on the rex machine looks local to rex, so keep `/rex/*` blocked in any proxy that faces the internet, as the [Caddy](#caddy) example does.
+rex takes no password on its feed API. It answers that API only from this machine, your home network (10.x, 172.16-31.x, 192.168.x, 169.254.x and private IPv6 addresses) and Tailscale (100.64-127.x), and to everyone else answers as if the API were not there, so forwarding rex's port for [rex-direct](#rex-direct), or letting it in over IPv6, does not open it. A router that gives outside visitors its own address makes them look local, and that opens the feed to the internet. Your app must therefore push from one of those networks, and name rex by its LAN IP: a host name that resolves to rex's public IPv6 reaches it from an address the feed does not answer. A proxy on the rex machine looks local to rex, so keep `/rex/*` blocked in any proxy that faces the internet, as the [Caddy](#caddy) example does.
 
 ## Updating
 
@@ -681,7 +681,7 @@ docker compose up -d
 Back up as in [step 5](#step-5-watch-something), then stop rex on the old machine for good, as the first block of [Remove rex](#remove-rex) does. On the new one, do [step 1](#step-1-install-rex), but copy your backup's files into rex's folder before you make it a service. It is the same server to your Plex apps, still claimed and shared. Then:
 
 - Give your app the new LAN IP, as in [step 4](#step-4-connect-your-app).
-- Move your router's port forward (or IPv6 firewall rule) to the new machine. The rex-direct name stays the same and follows a new public IP by itself. Tailscale serve and Caddy are set up again on the new machine.
+- Move your router's port forward to the new machine, or its IPv6 firewall rule before rex starts there. The rex-direct name stays the same and follows a new public IP by itself. Tailscale serve and Caddy are set up again on the new machine.
 
 ### Move rex to another Plex account
 
@@ -738,6 +738,6 @@ Ask in the DMM [Discord](https://discord.com/invite/7u4YjMThXP)'s **rex-support*
 | "This server is not powerful enough to convert video" | The device cannot play the file as it is. Try a Plex app on a TV or phone, or set up [Converting video](#converting-video-optional) |
 | A device at home cannot connect, and rex's `heartbeat ... ->` line shows no `http://192.168.1.20:32400` | rex announces the private address of the network it reaches the internet through; behind a VPN or a Tailscale exit node that is not your home network. End rex's start command ([step 1](#step-1-install-rex)) with `--announce-url http://192.168.1.20:32400` and restart rex |
 | Another machine cannot reach rex on Windows, although step 1's firewall rules exist | If you ever clicked **Cancel** when Windows asked whether to allow rex, Windows saved a rule that blocks it, and that wins over the port rules. Remove it in PowerShell as administrator: <code>Get-NetFirewallApplicationFilter -Program "$HOME\rex\rex.exe" &#124; Get-NetFirewallRule &#124; Where-Object Action -eq Block &#124; Remove-NetFirewallRule</code> |
-| rex is not in the Plex apps away from home | Not claimed, or the device cannot reach the HTTPS address |
+| rex is not in the Plex apps away from home | Not claimed, or the device cannot reach the HTTPS address ([rex-direct over IPv6](#rex-direct-over-ipv6) needs IPv6 on that device's network) |
 | rex exits with `argument --announce-url: '...' is not an http:// or https:// address` | Give `--announce-url` the address alone, such as `https://myhost.tailnet.ts.net:443`: no brackets, quotes or link around it |
 | rex stops when you log out | On Linux, run `sudo loginctl enable-linger "$USER"` (step 1). On macOS and Windows, rex as step 1 sets it up runs while you are logged in |
