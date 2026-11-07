@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847291677547">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847333943277">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -43,12 +43,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../resources/css/retype.css?v=4.6.0.847291677547" rel="stylesheet">
+    <link href="../../resources/css/retype.css?v=4.6.0.847333943277" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.847291677547" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.847333943277" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.847291677547" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.847291677547" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.847333943277" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.847333943277" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -629,7 +629,8 @@ Start-ScheduledTask rex</code></pre>
 | Your router has a public IP and you can forward a port | **[rex-direct](#rex-direct)** (simplest) | On by default: one port forward. DMM gives rex a name and a certificate, and keeps the name pointed at your home IP |
 | You can install Tailscale on the devices you watch on | **[Tailscale serve](#tailscale-serve)** (best) | Nothing to open on your router, and it works behind any internet connection. The certificate renews by itself, and nobody outside your tailnet can reach rex |
 | Devices without Tailscale (a friend's TV, a hotel), and your router has a public IP | **[Caddy](#caddy)** with your own domain, or with a free `sslip.io` name | A direct connection with nobody in between, and a free certificate that renews by itself. You forward port 443 |
-| Your connection has no public IP (CGNAT, common on mobile and some fibre providers), and devices without Tailscale | **[A small VPS](#a-small-vps)** | rex has no relay and will not get one. A VPS you rent has the public IP and a tunnel carries everything to rex, at the VPS's full bandwidth |">
+| Your connection has no public IPv4 (CGNAT or DS-Lite, common on cable, mobile and some fibre providers) but has IPv6 | **[rex-direct over IPv6](#rex-direct-over-ipv6)** | No port forward and nothing to rent: you let port 32400 in over IPv6. The devices you watch on need IPv6 too, which most mobile networks have |
+| Your connection has no public IP at all, or you watch on networks without IPv6, and devices without Tailscale | **[A small VPS](#a-small-vps)** | rex has no relay and will not get one. A VPS you rent has the public IP and a tunnel carries everything to rex, at the VPS's full bandwidth |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -656,7 +657,12 @@ Start-ScheduledTask rex</code></pre>
 <td>A direct connection with nobody in between, and a free certificate that renews by itself. You forward port 443</td>
 </tr>
 <tr>
-<td>Your connection has no public IP (CGNAT, common on mobile and some fibre providers), and devices without Tailscale</td>
+<td>Your connection has no public IPv4 (CGNAT or DS-Lite, common on cable, mobile and some fibre providers) but has IPv6</td>
+<td><strong><doc-anchor-trigger to="#rex-direct-over-ipv6">rex-direct over IPv6</doc-anchor-trigger></strong></td>
+<td>No port forward and nothing to rent: you let port 32400 in over IPv6. The devices you watch on need IPv6 too, which most mobile networks have</td>
+</tr>
+<tr>
+<td>Your connection has no public IP at all, or you watch on networks without IPv6, and devices without Tailscale</td>
 <td><strong><doc-anchor-trigger to="#a-small-vps">A small VPS</doc-anchor-trigger></strong></td>
 <td>rex has no relay and will not get one. A VPS you rent has the public IP and a tunnel carries everything to rex, at the VPS&#x27;s full bandwidth</td>
 </tr>
@@ -674,6 +680,13 @@ Start-ScheduledTask rex</code></pre>
 <p>rex-direct is DMM&#x27;s answer to plex.direct, and it is on by default. On your router, forward port 32400 (TCP) to the rex machine. That is all, with nothing to restart.</p>
 <p>Once claimed, rex gets its own name from DMM, <code translate="no" v-pre>&lt;hash&gt;.rex-direct.debridmediamanager.com</code>, pointed at your home&#x27;s public IP, and a certificate for that name alone. The first certificate takes a few minutes; rex&#x27;s log says it is being issued and then shows the name in a <code translate="no" v-pre>rex-direct:</code> line. A new home IP and certificate renewals are picked up by themselves. One Plex account can hold up to ten rex-direct names. At home, Plex apps can pick this name over the LAN IP, and unless you also set up Tailscale serve or Caddy, app.plex.tv in a browser has no other address it can use. So at home your router has to send the connection straight back to rex, or your home DNS has to point the name at rex: <doc-anchor-trigger to="#what-you-should-see">What you should see</doc-anchor-trigger> checks which.</p>
 <p>If your router forwards a different outside port to rex, add the key <code translate="no" v-pre>REX_DIRECT_PORT=&lt;that port&gt;</code> as <doc-anchor-trigger to="#step-2-install-rex">step 2</doc-anchor-trigger> shows for your system and restart rex. The port forward does not open the API zurg pushes to: see <doc-anchor-trigger to="#keep-the-port-private">Keep the port private</doc-anchor-trigger>.</p>
+<h3 id="rex-direct-over-ipv6">rex-direct over IPv6</h3>
+<p>For a connection with no public IPv4 (CGNAT or DS-Lite) that has IPv6. Once DMM has connected to rex at its IPv6 address and found the same server there, it points rex&#x27;s rex-direct name at that address too. You need rex nightly 2026.11.08 or newer, and in Docker, host networking.</p>
+<p>IPv6 has no port forward. Instead, in your router&#x27;s firewall, allow incoming TCP connections on port 32400 to the rex machine over IPv6. Then rex&#x27;s log shows both addresses within a few minutes of starting:</p>
+<div id="rex-direct-over-ipv6-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">rex-direct: https://&lt;hash&gt;.rex-direct.debridmediamanager.com:32400 -&gt; &lt;IPv4&gt; and &lt;IPv6&gt;</code></pre>
+</doc-codeblock></div>
+<p>Without <code translate="no" v-pre>and &lt;IPv6&gt;</code>, DMM could not reach rex over IPv6: check the firewall rule. The devices you watch on need IPv6 as well. Most mobile networks have it; a hotel or office network with IPv4 only cannot reach rex this way.</p>
 <h3 id="tailscale-serve">Tailscale serve</h3>
 <p>Install <a href="https://tailscale.com/download">Tailscale</a> on the rex machine and on the devices you watch on, signed in to the same account. Then on the rex machine:</p>
 <div id="tailscale-serve-code-1" class="codeblock-wrapper"><doc-codeblock>
