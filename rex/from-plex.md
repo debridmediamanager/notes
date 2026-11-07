@@ -29,7 +29,7 @@ Set rex up with the source that will fill it, as in [rex with your own app](any-
 
 - **Plex runs on the same machine?** Put rex on port `32500`, as [Install rex](any-source.md#step-1-install-rex) says for that case, and give your source that port too.
 - **Register rex on a fresh Plex account,** not the one your Plex server is on, as [Add it to a Plex account](any-source.md#step-3-add-it-to-a-plex-account) explains.
-- **Away from home with rex-direct?** Your router's port 32400 already goes to Plex. Forward port `32500` to the rex machine as well.
+- **Away from home with rex-direct?** Your router's port 32400 already goes to Plex. Forward port `32500` to the rex machine as well, or, [over IPv6](any-source.md#rex-direct-over-ipv6), let `32500` in to it.
 
 Using zurg? While both run, zurg feeds both. Leave everything zurg has for Plex as it is (`plex_server_url`, `plex_token`, your rclone mount and any scan script): Plex keeps working as before, and `rex_url` adds rex.
 

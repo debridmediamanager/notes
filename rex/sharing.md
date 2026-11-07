@@ -30,7 +30,7 @@ Your own account gets no more than anyone else you share with. Why: [Is my Plex 
 
 **At home**, Plex apps find rex on your network by themselves when rex uses port 32400. app.plex.tv in a browser is the exception: it needs rex's HTTPS address even at home.
 
-**Away from home**, which is always the case for a friend in another house, their apps need rex's HTTPS address. rex has no relay. The simplest is rex-direct: forward port 32400 on your router to the rex machine. [Use it outside your home](any-source.md#use-it-outside-your-home-optional) has it and the other ways.
+**Away from home**, which is always the case for a friend in another house, their apps need rex's HTTPS address. rex has no relay. The simplest is rex-direct: forward port 32400 on your router to the rex machine. With no public IPv4 but IPv6, [let it in over IPv6](any-source.md#rex-direct-over-ipv6) instead; your friend's network then needs IPv6 too. [Use it outside your home](any-source.md#use-it-outside-your-home-optional) has it and the other ways.
 
 **Your upload speed is the limit.** Every stream watched away from home leaves through your home connection's upload, at the file's own bitrate unless it is converted, so two people watching at once need the upload for both. Three things help:
 

@@ -492,7 +492,7 @@ localPort = 32400
 remotePort = 32400
 ```
 
-Run it as a service: on Linux, for example `~/.config/systemd/user/frpc.service` with `ExecStart=%h/frp/frpc -c %h/frp/frpc.toml` and `Restart=always`; on macOS and Windows, start `frpc -c frpc.toml` the way [step 2](#step-2-install-rex) starts rex. Then end rex's start command with `--announce-url https://1-2-3-4.sslip.io:443`, add the key `REX_DIRECT_URL=off` (rex-direct cannot work without a public IP at home, so plex.tv should not list it), and restart rex.
+Run it as a service: on Linux, for example `~/.config/systemd/user/frpc.service` with `ExecStart=%h/frp/frpc -c %h/frp/frpc.toml` and `Restart=always`; on macOS and Windows, start `frpc -c frpc.toml` the way [step 2](#step-2-install-rex) starts rex. Then end rex's start command with `--announce-url https://1-2-3-4.sslip.io:443`, add the key `REX_DIRECT_URL=off` (rex-direct cannot work without a public IP or IPv6 at home, so plex.tv should not list it), and restart rex.
 
 ### What you should see
 
@@ -502,7 +502,7 @@ curl -s https://myhost.tailnet.ts.net/identity
 
 shows a short XML page with rex's `machineIdentifier` on a computer at home; `curl` shows nothing when the address or its certificate is wrong. Use your own address: with rex-direct it is the one in rex's `rex-direct: https://...` log line, with `/identity` added. Open the same address in a phone's browser with Wi-Fi off: it shows a short XML page with no certificate warning. With Tailscale serve, both the computer and the phone need Tailscale on.
 
-With rex-direct or Caddy, if the phone gets it and the computer at home does not, your router does not send connections back inside. Point the name at rex's LAN IP in your home network's DNS (your router's, or Pi-hole's; a router with DNS rebind protection needs an exception for it) and the rex machine answers it at home with the same certificate. If the phone fails too, the port is not forwarded, your connection is behind CGNAT, or rex-direct's certificate is still being issued (rex's log says so while it is).
+With rex-direct or Caddy, if the phone gets it and the computer at home does not, your router does not send connections back inside. Point the name at rex's LAN IP in your home network's DNS (your router's, or Pi-hole's; a router with DNS rebind protection needs an exception for it) and the rex machine answers it at home with the same certificate. If the phone fails too, the port is not forwarded (or, [over IPv6](#rex-direct-over-ipv6), not let in), your connection is behind CGNAT without IPv6, or rex-direct's certificate is still being issued (rex's log says so while it is).
 
 rex's log names the addresses it announces:
 
@@ -691,7 +691,7 @@ The image carries jellyfin-ffmpeg, so [converting video](#converting-video-optio
 
 ## Keep the port private
 
-rex's feed API, the one zurg pushes to, takes no password. It answers only from this machine, your home network and Tailscale, so forwarding rex's port for [rex-direct](#rex-direct) does not open it. A router that gives outside visitors its own address makes them look local, and that opens the feed to the internet. A proxy on the rex machine looks local to rex, so keep `/rex/*` blocked in any proxy that faces the internet, as the [Caddy](#caddy) example does.
+rex's feed API, the one zurg pushes to, takes no password. It answers only from this machine, your home network and Tailscale, so forwarding rex's port for [rex-direct](#rex-direct), or letting it in over IPv6, does not open it. A router that gives outside visitors its own address makes them look local, and that opens the feed to the internet. A proxy on the rex machine looks local to rex, so keep `/rex/*` blocked in any proxy that faces the internet, as the [Caddy](#caddy) example does.
 
 ## Updating
 
@@ -739,7 +739,7 @@ docker compose up -d
 Back up as in [step 5](#step-5-watch-something), then stop rex on the old machine for good, as the first block of [Remove rex](#remove-rex) does. On the new one, do [step 2](#step-2-install-rex), but copy your backup's files into rex's folder before you make it a service. It is the same server to your Plex apps, still claimed and shared. Then:
 
 - Put the new LAN IP in zurg's `rex_url` and restart zurg ([step 4](#step-4-connect-zurg-to-rex)).
-- Move your router's port forward to the new machine. The rex-direct name stays the same and follows a new public IP by itself. Tailscale serve and Caddy are set up again on the new machine.
+- Move your router's port forward (or IPv6 firewall rule) to the new machine. The rex-direct name stays the same and follows a new public IP by itself. Tailscale serve and Caddy are set up again on the new machine.
 
 ### Move rex to another Plex account
 
@@ -778,7 +778,7 @@ cd ~/rex && docker compose down
 ```
 +++
 
-Then delete the `rex_url` line from zurg's `config.yml` and restart zurg. In app.plex.tv as the fresh account, open **Settings**, **Authorized Devices**, filter by **Servers** and remove rex. Remove your router's port forward, and delete rex's folder.
+Then delete the `rex_url` line from zurg's `config.yml` and restart zurg. In app.plex.tv as the fresh account, open **Settings**, **Authorized Devices**, filter by **Servers** and remove rex. Remove your router's port forward (or IPv6 firewall rule), and delete rex's folder.
 
 ### Getting help
 
