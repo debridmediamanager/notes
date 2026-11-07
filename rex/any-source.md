@@ -410,7 +410,8 @@ Whichever you pick, every byte you watch away from home leaves through your home
 | Your router has a public IP and you can forward a port | **[rex-direct](#rex-direct)** (simplest) | On by default: one port forward. DMM gives rex a name and a certificate, and keeps the name pointed at your home IP |
 | You can install Tailscale on the devices you watch on | **[Tailscale serve](#tailscale-serve)** (best) | Nothing to open on your router, and it works behind any internet connection. The certificate renews by itself, and nobody outside your tailnet can reach rex |
 | Devices without Tailscale (a friend's TV, a hotel), and your router has a public IP | **[Caddy](#caddy)** with your own domain, or with a free `sslip.io` name | A direct connection with nobody in between, and a free certificate that renews by itself. You forward port 443 |
-| Your connection has no public IP (CGNAT, common on mobile and some fibre providers), and devices without Tailscale | **[A small VPS](#a-small-vps)** | rex has no relay and will not get one. A VPS you rent has the public IP and a tunnel carries everything to rex, at the VPS's full bandwidth |
+| Your connection has no public IPv4 (CGNAT or DS-Lite, common on cable, mobile and some fibre providers) but has IPv6 | **[rex-direct over IPv6](#rex-direct-over-ipv6)** | No port forward and nothing to rent: you let port 32400 in over IPv6. The devices you watch on need IPv6 too, which most mobile networks have |
+| Your connection has no public IP at all, or you watch on networks without IPv6, and devices without Tailscale | **[A small VPS](#a-small-vps)** | rex has no relay and will not get one. A VPS you rent has the public IP and a tunnel carries everything to rex, at the VPS's full bandwidth |
 
 Not recommended:
 
@@ -425,6 +426,18 @@ rex-direct is DMM's answer to plex.direct, and it is on by default. On your rout
 Once claimed, rex gets its own name from DMM, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and a certificate for that name alone. The first certificate takes a few minutes; rex's log says it is being issued and then shows the name in a `rex-direct:` line. A new home IP and certificate renewals are picked up by themselves. One Plex account can hold up to ten rex-direct names. At home, Plex apps can pick this name over the LAN IP, and unless you also set up Tailscale serve or Caddy, app.plex.tv in a browser has no other address it can use. So at home your router has to send the connection straight back to rex, or your home DNS has to point the name at rex: [What you should see](#what-you-should-see) checks which.
 
 If your router forwards a different outside port to rex, add the key `REX_DIRECT_PORT=<that port>` as [step 1](#step-1-install-rex) shows for your system and restart rex. The port forward does not open the feed API: see [Keep the port private](#keep-the-port-private).
+
+### rex-direct over IPv6
+
+For a connection with no public IPv4 (CGNAT or DS-Lite) that has IPv6. Once DMM has connected to rex at its IPv6 address and found the same server there, it points rex's rex-direct name at that address too. You need rex nightly 2026.11.08 or newer, and in Docker, host networking.
+
+IPv6 has no port forward. Instead, in your router's firewall, allow incoming TCP connections on port 32400 to the rex machine over IPv6. Then rex's log shows both addresses within a few minutes of starting:
+
+```
+rex-direct: https://<hash>.rex-direct.debridmediamanager.com:32400 -> <IPv4> and <IPv6>
+```
+
+Without `and <IPv6>`, DMM could not reach rex over IPv6: check the firewall rule. The devices you watch on need IPv6 as well. Most mobile networks have it; a hotel or office network with IPv4 only cannot reach rex this way.
 
 ### Tailscale serve
 
