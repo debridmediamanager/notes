@@ -6,7 +6,7 @@ order: 90
 
 # Setup
 
-The binary installer is the shortest path on Linux, macOS and Windows. Docker remains available on a Linux host when a container fits better. Docker Desktop on macOS and Windows runs containers in a VM, so the mount cannot show up in Finder or Explorer: use the binary there.
+The binary installer is the shortest path on Linux, macOS and Windows. Docker remains available on a Linux host when a container fits better. Docker Desktop on macOS and Windows runs containers in a VM, so the mount cannot show up in Finder or Explorer and rex cannot reach zurg: use the binary there.
 
 ## One-line convenience installers
 

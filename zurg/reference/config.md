@@ -393,6 +393,20 @@ plex_token: "your-plex-token"
 plex_match_every_mins: 1440
 ```
 
+### rex
+
+zurg can fill a [rex](../../rex/with-zurg.md), a media server for the official Plex apps that reads every file from zurg.
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `rex_url` | string | `""` | URL of the rex that builds its library from this zurg, for example `http://192.168.1.20:32400`. Picking a rex in the dashboard's Plex sign-in sets it to the address rex takes sources on (its LAN or Tailscale address, plain HTTP), and the feed starts without a restart; set it by hand to feed a rex without signing in to Plex. zurg then pushes its library to rex: every video file in a configured directory, every audio file in one with `rex_music` and the comic books in one with `rex_photos`, with its path, size, IMDb id and the media details ffprobe read, once the library has loaded, every `rex_snapshot_every_hours`, and whenever a release is added, analysed, renamed, moved or deleted. rex cannot play a file before ffprobe has analysed it, so setting `rex_url` turns on `auto_analyze_new_torrents` whatever that key says, and analyses the rest of the library once it has loaded and then daily. Each probe reads from the account that holds the release, so keep the directories narrow, and leave out `tags_*` filters (with any of them every release on the account is analysed), if you do not want a library you never watch on your traffic. A refresh also looks up each new release's IMDb id through `dmm_api_key` before filing it (see `dmm_api_key` for how releases are placed). Subtitles an \*arr or Bazarr writes beside a video in `__magic__` go to rex with it (see [`__magic__`](../guides/magic.md)). zurg tells rex where to read the files: its WebDAV at `http://<address>:<port>/dav`, with `username` and `password` when they are set. The address is `host` when that is one address; otherwise, the default, it is the address zurg's connection to rex leaves from, and rex must reach zurg there. In a container that is the container's own address, which rex reaches only from the same Linux machine: on Windows and macOS install zurg with the installer rather than in Docker Desktop, and on Linux with rex on another machine give zurg's container `network_mode: host` ([rex with zurg](../../rex/with-zurg.md#d4-connect-zurg-to-rex)). A rex that is down is retried and then sent the whole library; nothing waits on it. No Plex scan is sent while `plex_server_url` is this same rex. After each snapshot and every ten minutes zurg reads the Fix Matches made in rex for its releases and keeps each as the release's id set by hand, unless you set one on the manage page since; DMM then places the release by it. To give a directory its own libraries in rex, set [`rex_shows`, `rex_movies`, `rex_music` or `rex_photos`](#directory-options) on it. Leave `rex_url` empty if you do not run rex. |
+| `rex_source` | string | `"zurg"` | The source name rex knows this zurg by. Give each zurg feeding the same rex its own name. |
+| `rex_snapshot_every_hours` | int | `6` | How often the whole library is pushed to rex again, which heals whatever a missed push left behind. The default suits every setup. |
+
+```yaml
+rex_url: "http://192.168.1.20:32400"
+```
+
 ### Watchlist
 
 Add something to your Plex watchlist and zurg fetches it. Every new watchlist item is searched on your indexers. A Newznab indexer gives an NZB. It drops into the Usenet backend exactly as a Sonarr grab or a Stremio play would. The three share the naming rules so they find each other's grabs instead of duplicating them. A Torznab indexer gives a torrent. It is added to a debrid account only when that account already has it cached. `prefer` decides which kind is tried first between releases of the same resolution. A movie becomes one release. A show is acquired season by season and season packs come before loose episodes. A season nobody posted a pack of falls back to the loose episodes the search surfaced, the best release for each. The item leaves the watchlist only once the release behind it has been checked and only when `remove_after_grab` allows it. Failures stay on the list. They are tried again after 5, 10 and 15 minutes, then after an hour, then further and further apart, and a title that has failed for two weeks is parked until you resume it on the acquisition page. See [persistence and recovery](../guides/acquisition.md#persistence-and-recovery).
@@ -1390,6 +1404,10 @@ directories:
 | `only_show_the_biggest_file` | bool | `false` | Show only the largest file of each torrent, hiding samples, extras and companion files. |
 | `only_show_files_with_size_lte` | int | `0` (off) | Hide files larger than this many bytes. |
 | `only_show_files_with_size_gte` | int | `0` (off) | Hide files smaller than this many bytes. |
+| `rex_shows` | string | `""` (none) | With `rex_url`: the title of a TV library in rex that shows this directory's episodes. |
+| `rex_movies` | string | `""` (none) | With `rex_url`: the title of a Movies library in rex that shows this directory's films, and any file rex cannot tell is an episode. |
+| `rex_music` | string | `""` (none) | With `rex_url`: the title of a music library in rex that shows this directory's audio files (`.flac`, `.mp3`, `.m4a`, `.m4b`), audiobooks included. Without it no audio file goes to rex. |
+| `rex_photos` | string | `""` (none) | With `rex_url`: the title of a Photos library in rex that shows this directory's comic books (`.cbz`, `.cbr`), each an album of its pages, which Plex Web pages through and plays as a slideshow. Plex for Android shows no photo library. The comics stay files on the mount. |
 
 A file explicitly forced visible in zurg ignores all three visibility options.
 
