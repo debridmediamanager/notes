@@ -144,4 +144,4 @@ Watch history goes with the rows. Registering and sending again later starts fro
 
 ## Who may send to rex
 
-rex's feed (`/rex/sources` and `/rex/feed`) takes no token. It answers only programs on rex's own machine, your home network (`192.168.x.x`, `10.x.x.x`, `172.16-31.x.x`) and Tailscale (`100.64-127.x.x`); to anyone else it does not exist, even after you forward rex's port for rex-direct or let it in over IPv6. A reverse proxy on rex's machine reaches it as a local program, so block `/rex/` there if you put one in front of rex.
+rex's feed (`/rex/sources` and `/rex/feed`) takes no token. It answers only programs on rex's own machine, your home network (`192.168.x.x`, `10.x.x.x`, `172.16-31.x.x` and private IPv6 addresses) and Tailscale (`100.64-127.x.x`); to anyone else it does not exist, even after you forward rex's port for rex-direct or let it in over IPv6. A reverse proxy on rex's machine reaches it as a local program, so block `/rex/` there if you put one in front of rex.
