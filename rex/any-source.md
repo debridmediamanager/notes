@@ -350,7 +350,7 @@ Open a Plex app on a phone, TV or computer **on the same home network**. rex sho
 
 ![A Plex app showing the rex server's Movies and TV Shows in the sidebar beside a grid of films](../assets/rex/10-plex-server-libraries.webp)
 
-At home nothing else is needed: Plex apps find rex with Plex's own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN). Discovery runs on UDP ports 32410 and 32414, so a firewall on the rex machine must let those in (on Windows, step 1's firewall rules do). rex answers discovery when it uses port 32400. If you moved rex to 32500 because Plex runs on the same machine, discovery is left to that Plex, and apps find rex through the Plex account it is [shared with](#share-it-with-your-own-account). app.plex.tv in a web browser is the exception: it needs the HTTPS address from [Use it outside your home](#use-it-outside-your-home-optional), even at home. `http://192.168.1.20:32400/web` is not Plex Web: rex has no web app of its own, and that page only says whether rex is claimed and where to watch.
+At home nothing else is needed: Plex apps find rex with Plex's own local discovery and connect to it over your network. That needs the device on the same network as rex (not a guest Wi-Fi or a separate VLAN). Discovery runs on UDP ports 32410 and 32414, so a firewall on the rex machine must let those in (on Windows, step 1's firewall rules do). rex answers discovery when it uses port 32400. If you moved rex to 32500 because Plex runs on the same machine, discovery is left to that Plex, and apps find rex through the Plex account it is [shared with](#share-it-with-your-own-account). app.plex.tv in a web browser works at home too, over the HTTPS address [rex-direct](#rex-direct) gives rex once it is claimed (rex nightly 2026.11.02 or newer). The first time, Chrome asks whether app.plex.tv may access devices on your local network: allow it. `http://192.168.1.20:32400/web` is not Plex Web: rex has no web app of its own, and that page only says whether rex is claimed and where to watch.
 
 **What you should see.** Posters, titles and years as on any Plex server. Playback starts within a few seconds.
 
@@ -399,7 +399,7 @@ You are done. The sections below are optional.
 
 **What it does.** Gives rex an HTTPS address that Plex apps away from home can reach, and tells plex.tv about it.
 
-**Why it matters.** app.plex.tv only connects to an HTTPS address, even at home, and the other Plex apps prefer one away from home. A real Plex server can fall back to Plex's relay; rex cannot, so you choose how it is reached. rex must be [claimed](#step-3-add-it-to-a-plex-account) first. A proxy that faces the internet must block `/rex/`: see [Keep the port private](#keep-the-port-private).
+**Why it matters.** Away from home, app.plex.tv only connects to an HTTPS address and the other Plex apps prefer one. A real Plex server can fall back to Plex's relay; rex cannot, so you choose how it is reached. rex must be [claimed](#step-3-add-it-to-a-plex-account) first. A proxy that faces the internet must block `/rex/`: see [Keep the port private](#keep-the-port-private).
 
 **Plex Pass.** Plex Web plays away from home without a Plex Pass or Remote Watch Pass on either account. Other Plex apps have not been tested away from home.
 
@@ -423,7 +423,7 @@ Not recommended:
 
 rex-direct is DMM's answer to plex.direct, and it is on by default. On your router, forward port 32400 (TCP) to the rex machine. That is all, with nothing to restart.
 
-Once claimed, rex gets its own name from DMM, `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and a certificate for that name alone. The first certificate takes a few minutes; rex's log says it is being issued and then shows the name in a `rex-direct:` line. A new home IP and certificate renewals are picked up by themselves. One Plex account can hold up to ten rex-direct names. At home, Plex apps can pick this name over the LAN IP, and unless you also set up Tailscale serve or Caddy, app.plex.tv in a browser has no other address it can use. So at home your router has to send the connection straight back to rex, or your home DNS has to point the name at rex: [What you should see](#what-you-should-see) checks which.
+Once claimed, rex gets two names from DMM: `<hash>.rex-direct.debridmediamanager.com`, pointed at your home's public IP, and `lan.<hash>.rex-direct.debridmediamanager.com`, pointed at rex's LAN IP, with a certificate for both. The first certificate takes a few minutes; rex's log says it is being issued and then shows each name in a `rex-direct:` line. A new home IP and certificate renewals are picked up by themselves. One Plex account can hold up to ten rex-direct names. At home, Plex apps, app.plex.tv included, can use the `lan.` name, which reaches rex straight over your network, so the port forward is only for away from home. In app.plex.tv, allow access to devices on your local network when Chrome asks, or it falls back to the public name, which needs the port forward. [What you should see](#what-you-should-see) checks both names.
 
 If your router forwards a different outside port to rex, add the key `REX_DIRECT_PORT=<that port>` as [step 1](#step-1-install-rex) shows for your system and restart rex. The port forward does not open the feed API: see [Keep the port private](#keep-the-port-private).
 
@@ -516,12 +516,12 @@ Run it as a service: on Linux, for example `~/.config/systemd/user/frpc.service`
 ### What you should see
 
 ```bash
-curl -s https://myhost.tailnet.ts.net/identity
+curl -s https://lan.<hash>.rex-direct.debridmediamanager.com:32400/identity
 ```
 
-shows a short XML page with rex's `machineIdentifier` on a computer at home; `curl` shows nothing when the address or its certificate is wrong. Use your own address: with rex-direct it is the one in rex's `rex-direct: https://...` log line, with `/identity` added. Open the same address in a phone's browser with Wi-Fi off: it shows a short XML page with no certificate warning. With Tailscale serve, both the computer and the phone need Tailscale on.
+shows a short XML page with rex's `machineIdentifier` on a computer at home; `curl` shows nothing when the address or its certificate is wrong. Use your own address: rex logs it at start as `rex-direct: https://lan.<hash>.rex-direct.debridmediamanager.com:32400 -> 192.168.1.20 (LAN)` (with `REX_DIRECT_URL=off` there is none). Open your outside address with `/identity` added in a phone's browser with Wi-Fi off: with rex-direct it is rex's other `rex-direct:` line, and with Tailscale serve `https://myhost.tailnet.ts.net`, which the phone opens only with Tailscale on. It shows a short XML page with no certificate warning.
 
-With rex-direct or Caddy, if the phone gets it and the computer at home does not, your router does not send connections back inside. Point the name at rex's LAN IP in your home network's DNS (your router's, or Pi-hole's; a router with DNS rebind protection needs an exception for it) and the rex machine answers it at home with the same certificate. If the phone fails too, the port is not forwarded (or, [over IPv6](#rex-direct-over-ipv6), not let in), your connection is behind CGNAT without IPv6, rex is reached over IPv6 only and the phone's network has none, or rex-direct's certificate is still being issued (rex's log says so while it is).
+If the phone fails, the port is not forwarded (or, [over IPv6](#rex-direct-over-ipv6), not let in), your connection is behind CGNAT without IPv6, rex is reached over IPv6 only and the phone's network has none, or rex-direct's certificate is still being issued (rex's log says so while it is).
 
 rex's log names the addresses it announces:
 
@@ -743,6 +743,7 @@ Ask in the DMM [Discord](https://discord.com/invite/7u4YjMThXP)'s **rex-support*
 | Deleting in a Plex app fails and rex logs `DELETE refused by the source` | Your app does not accept a `DELETE` of the file. Remove it in your app instead |
 | "This server is not powerful enough to convert video" | The device cannot play the file as it is. Try a Plex app on a TV or phone, or set up [Converting video](#converting-video-optional) |
 | A device at home cannot connect, and rex's `heartbeat ... ->` line shows no `http://192.168.1.20:32400` | rex announces the private address of the network it reaches the internet through; behind a VPN or a Tailscale exit node that is not your home network. End rex's start command ([step 1](#step-1-install-rex)) with `--announce-url http://192.168.1.20:32400` and restart rex |
+| At home, app.plex.tv does not reach rex, and the `lan.` address from [What you should see](#what-you-should-see) does not answer | Some routers and DNS filters block a public name that points at a home address (DNS rebind protection). Allow `rex-direct.debridmediamanager.com` there, as Plex users allow `plex.direct` |
 | Another machine cannot reach rex on Windows, although step 1's firewall rules exist | If you ever clicked **Cancel** when Windows asked whether to allow rex, Windows saved a rule that blocks it, and that wins over the port rules. Remove it in PowerShell as administrator: <code>Get-NetFirewallApplicationFilter -Program "$HOME\rex\rex.exe" &#124; Get-NetFirewallRule &#124; Where-Object Action -eq Block &#124; Remove-NetFirewallRule</code> |
 | rex is not in the Plex apps away from home | Not claimed, or the device cannot reach the HTTPS address ([rex-direct over IPv6](#rex-direct-over-ipv6) needs IPv6 on that device's network) |
 | rex exits with `argument --announce-url: '...' is not an http:// or https:// address` | Give `--announce-url` the address alone, such as `https://myhost.tailnet.ts.net:443`: no brackets, quotes or link around it |
