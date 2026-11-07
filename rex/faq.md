@@ -97,14 +97,9 @@ Several sources can fill the same Movies and TV libraries.
 
 ### Do I need to forward a port?
 
-Not to watch at home. Plex apps on your home network find rex and connect to it over that network, with nothing to open on your router.
+Not to watch at home. Plex apps on your home network find rex and connect to it over that network, with nothing to open on your router. app.plex.tv in a browser does too, over the HTTPS address [rex-direct](any-source.md#rex-direct) gives rex once it is claimed.
 
-rex needs an address of its own only to:
-
-- watch away from home, or share with a friend in another house
-- watch in a web browser at app.plex.tv, which connects only to an HTTPS address, even at home
-
-The simplest way is one port forward ([rex-direct](any-source.md#rex-direct)). With no public IPv4 but IPv6, rex-direct works over IPv6 with a firewall rule instead, for viewers whose network has IPv6 too ([rex-direct over IPv6](any-source.md#rex-direct-over-ipv6)). [Tailscale serve](any-source.md#tailscale-serve) needs none, on devices that run Tailscale. [Use it outside your home](any-source.md#use-it-outside-your-home-optional) compares the ways.
+rex needs an address of its own only to watch away from home, or to share with a friend in another house. The simplest way is one port forward ([rex-direct](any-source.md#rex-direct)). With no public IPv4 but IPv6, rex-direct works over IPv6 with a firewall rule instead, for viewers whose network has IPv6 too ([rex-direct over IPv6](any-source.md#rex-direct-over-ipv6)). [Tailscale serve](any-source.md#tailscale-serve) needs none, on devices that run Tailscale. [Use it outside your home](any-source.md#use-it-outside-your-home-optional) compares the ways.
 
 ### What does it not do?
 
@@ -118,17 +113,17 @@ rex introduces itself to the apps and to plex.tv as a Plex Media Server, so the 
 
 ### Why does my browser at port 32400/web not open a library?
 
-rex has no web app of its own. Opening `http://192.168.1.20:32400/web` (with rex's LAN IP in place of `192.168.1.20`) shows a short page that says what to do next. Watch in a Plex app, or in a browser at [app.plex.tv](https://app.plex.tv), which needs rex's HTTPS address even at home ([Use it outside your home](any-source.md#use-it-outside-your-home-optional)).
+rex has no web app of its own. Opening `http://192.168.1.20:32400/web` (with rex's LAN IP in place of `192.168.1.20`) shows a short page that says what to do next. Watch in a Plex app, or in a browser at [app.plex.tv](https://app.plex.tv).
 
 ![The page rex shows at /web while it is not claimed yet](../assets/rex/80-rex-web-page.webp)
 
 ### What leaves my machine?
 
 - **plex.tv, at start and once a day, registered or not:** the server's id, name and version, to read Plex's public list of releases for the newest version number.
-- **plex.tv, once registered on a Plex account:** the claim, the server's addresses (its LAN address and its HTTPS address) and its library names.
+- **plex.tv, once registered on a Plex account:** the claim, the server's addresses (its LAN address and its HTTPS addresses) and its library names.
 - **Plex's metadata service, once registered:** the id of each title, to get its name, poster, summary and episodes. A subtitle search, by **Search Subtitles** or a person's automatic subtitle setting, sends the file's name and fingerprint.
 - **Artwork hosts, when an app shows them:** requests for the posters and pictures your sources name.
-- **DMM, for rex-direct, once registered and then every 6 hours:** the server's id and its token on the Plex account. DMM checks with plex.tv that the server is yours, sees your public IP and points your rex-direct name at it. If the machine has a global IPv6 address, rex sends it too, a minute after it starts (or is claimed) and then every 6 hours, and each time DMM connects to it to check it reaches the same server. Turn it off with `REX_DIRECT_URL=off`.
+- **DMM, for rex-direct, once registered and then every 6 hours:** the server's id, its token on the Plex account and its LAN IP. DMM checks with plex.tv that the server is yours, sees your public IP and points your rex-direct names at it and at the LAN IP. If the machine has a global IPv6 address, rex sends it too, a minute after it starts (or is claimed) and then every 6 hours, and each time DMM connects to it to check it reaches the same server. Turn it off with `REX_DIRECT_URL=off`.
 - **Your sources, when you play or delete:** requests for the files you play, and deletes (below).
 - **Your old Plex server, only when you [bring your watch history](import-watched.md):** requests for your watch history.
 - **Webhooks, only if you set any:** events, to the addresses you set.
