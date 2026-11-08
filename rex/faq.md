@@ -14,7 +14,7 @@ Short answers to what people ask before they install rex, and soon after. Each a
 
 A media server for the official Plex apps that owns no files. Your apps see it as one more Plex server, with posters, seasons, watch history and Continue Watching. It keeps no movies: a **source** tells rex what is in your library and serves the files, and when you press play rex streams the file straight from that source. Nothing is downloaded first.
 
-It is a server of its own, not a plugin for Plex Media Server, and it does not need one. It replaces your Plex server only if you want it to: it can run beside it, and your apps then list both. On the same machine both carry the machine's name: rex is the one shared with you, with the fresh account's name beside it. [Move from Plex to rex](from-plex.md) covers both ways.
+It is a server of its own, not a plugin for Plex Media Server, and it does not need one. It replaces your Plex server only if you want it to: it can run beside it, and your apps then list both. On the same machine both carry the machine's name: rex is the one shared with you, with the fresh account's name beside it, and you can rename it ([Install rex](any-source.md#step-1-install-rex) says how). [Move from Plex to rex](from-plex.md) covers both ways.
 
 ### What does it cost?
 

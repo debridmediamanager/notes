@@ -101,7 +101,7 @@ This takes rex's newest build, usually a nightly, for your machine.
 
 Find rex's LAN IP, its address on your home network. On Linux `hostname -I` prints several: take the one on your home network, not one starting with `172.17.` (Docker) or `100.` (Tailscale). On macOS `ipconfig getifaddr en0` prints it (`en1` if that prints nothing). On Windows `ipconfig` lists it as **IPv4 Address** under your Wi-Fi or Ethernet adapter. **This page writes it as `192.168.1.20` everywhere: put yours in its place.** Plex apps, zurg and your own commands all reach rex there.
 
-**Plex Media Server runs on the same machine?** End rex's start command below with `--port 32500` and use `32500` wherever a command or setting says `32400`, the Windows firewall rule included: Plex already holds port 32400 and the ports apps use to find servers, and on any other port rex leaves those to Plex. Your apps then list two servers with the machine's name: rex is the one shared with you, with the fresh account's name beside it.
+**Plex Media Server runs on the same machine?** End rex's start command below with `--port 32500` and use `32500` wherever a command or setting says `32400`, the Windows firewall rule included: Plex already holds port 32400 and the ports apps use to find servers, and on any other port rex leaves those to Plex. Your apps then list two servers with the machine's name: rex is the one shared with you, with the fresh account's name beside it. Once rex is on its Plex account ([step 3](#step-3-add-it-to-a-plex-account)), you can rename it: signed in to Plex as that account, open rex's **Settings**, **General**, change **Friendly name** and save, then restart rex as below. The Plex apps list it under the new name after the restart.
 
 Now make it a service:
 

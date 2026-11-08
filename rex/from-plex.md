@@ -33,7 +33,7 @@ Start beside Plex even if you mean to replace it: copying your watch history nee
 
 Set rex up with the source that will fill it, as in [rex with your own app](any-source.md), [rex with your Stremio addons](stremio.md) or [rex with zurg](with-zurg.md), up to watching something. Already run zurg for Plex? Skip installing it and update it as step 1 of rex with zurg shows: zurg feeds rex from nightly **2026.10.27** on.
 
-- **Plex runs on the same machine?** Put rex on port `32500`, as [Install rex](any-source.md#step-1-install-rex) says for that case, and give your source that port too. Your apps then list two servers with the machine's name: rex is the one shared with you, with the fresh account's name beside it.
+- **Plex runs on the same machine?** Put rex on port `32500`, as [Install rex](any-source.md#step-1-install-rex) says for that case, and give your source that port too. Your apps then list two servers with the machine's name: rex is the one shared with you, with the fresh account's name beside it. [Install rex](any-source.md#step-1-install-rex) says how to rename it.
 - **Register rex on a fresh Plex account,** not the one your Plex server is on, as [Add it to a Plex account](any-source.md#step-3-add-it-to-a-plex-account) explains.
 - **Away from home with rex-direct?** Your router's port 32400 already goes to Plex. Forward port `32500` to the rex machine as well, or, [over IPv6](any-source.md#rex-direct-over-ipv6), let `32500` in to it.
 
