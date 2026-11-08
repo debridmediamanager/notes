@@ -4,6 +4,7 @@ Every guide on this site, by project.
 
 ## General
 
+- [Choose your setup](choose-your-setup.md): route maps and when to use DMM, zurg, rex, Kodi, Stremio or the Jellyfin/Emby plugins
 - [Getting help](remote-help.md) with zurg and rex: where to ask, what to include, and remote help for sponsors
 
 ## DMM
