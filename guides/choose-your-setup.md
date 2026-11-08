@@ -6,6 +6,8 @@ order: 100
 
 # Which setup should I use?
 
+**[Find your setup with the interactive questionnaire](https://debridmediamanager.com/choose-your-setup).** Answer a few questions about your player, accounts and hosting to get recommended routes, requirements and setup links. No login needed.
+
 **Start with the app you want to watch in.** You do not need to install everything. DMM helps you find and choose releases; a provider supplies the files; zurg can turn those files into a shared library; rex presents a library to Plex apps. Several routes skip one or more of those pieces.
 
 This is a map of the supported route families, checked against the projects on **8 November 2026**. It includes alternatives outside the stack where they remove a step. It is not a promise that every third-party addon, TV model or combination works. Follow the linked setup guide for your chosen route and its tested limits.
