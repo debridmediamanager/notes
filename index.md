@@ -8,6 +8,8 @@ order: 100
 
 Guides and reference for three projects that work together, and for setting them up.
 
+**Not sure which pieces you need? [Choose your setup](guides/choose-your-setup.md)** compares the routes, with flowcharts and a “when should I use this?” table.
+
 | Project | What it is | Start here |
 |---|---|---|
 | [zurg](zurg/index.md) | Every debrid account and Usenet in one folder that Plex, Jellyfin and Emby read like a normal drive. Nothing is downloaded first | [Setup](zurg/setup/index.md) |
