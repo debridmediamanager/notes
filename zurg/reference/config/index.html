@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847357512966">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847411553618">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -37,12 +37,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../../resources/css/retype.css?v=4.6.0.847357512966" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.847411553618" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847357512966" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847411553618" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847357512966" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847357512966" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847411553618" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847411553618" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -990,6 +990,49 @@ entry and do not rotate through another account&#x27;s file IDs.</p>
 <pre translate="no" class="language-yaml"><code v-pre class="language-yaml">plex_server_url: &quot;http://localhost:32400&quot;
 plex_token: &quot;your-plex-token&quot;
 plex_match_every_mins: 1440</code></pre>
+</doc-codeblock></div>
+<h3 id="rex">rex</h3>
+<p>zurg can fill a <a href="../../../rex/with-zurg/">rex</a>, a media server for the official Plex apps that reads every file from zurg.</p>
+<retype-table copy-text="| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `rex_url` | string | `&quot;&quot;` | URL of the rex that builds its library from this zurg, for example `http://192.168.1.20:32400`. Picking a rex in the dashboard's Plex sign-in sets it to the address rex takes sources on (its LAN or Tailscale address, plain HTTP), and the feed starts without a restart; set it by hand to feed a rex without signing in to Plex. zurg then pushes its library to rex: every video file in a configured directory, every audio file in one with `rex_music` and the comic books in one with `rex_photos`, with its path, size, IMDb id and the media details ffprobe read, once the library has loaded, every `rex_snapshot_every_hours`, and whenever a release is added, analysed, renamed, moved or deleted. rex cannot play a file before ffprobe has analysed it, so setting `rex_url` turns on `auto_analyze_new_torrents` whatever that key says, and analyses the rest of the library once it has loaded and then daily. Each probe reads from the account that holds the release, so keep the directories narrow, and leave out `tags_*` filters (with any of them every release on the account is analysed), if you do not want a library you never watch on your traffic. A refresh also looks up each new release's IMDb id through `dmm_api_key` before filing it (see `dmm_api_key` for how releases are placed). Subtitles an \*arr or Bazarr writes beside a video in `__magic__` go to rex with it (see [`__magic__`](../guides/magic.md)). zurg tells rex where to read the files: its WebDAV at `http://&lt;address&gt;:&lt;port&gt;/dav`, with `username` and `password` when they are set. The address is `host` when that is one address; otherwise, the default, it is the address zurg's connection to rex leaves from, and rex must reach zurg there. In a container that is the container's own address, which rex reaches only from the same Linux machine: on Windows and macOS install zurg with the installer rather than in Docker Desktop, and on Linux with rex on another machine give zurg's container `network_mode: host` ([rex with zurg](../../rex/with-zurg.md#d4-connect-zurg-to-rex)). A rex that is down is retried and then sent the whole library; nothing waits on it. No Plex scan is sent while `plex_server_url` is this same rex. After each snapshot and every ten minutes zurg reads the Fix Matches made in rex for its releases and keeps each as the release's id set by hand, unless you set one on the manage page since; DMM then places the release by it. To give a directory its own libraries in rex, set [`rex_shows`, `rex_movies`, `rex_music` or `rex_photos`](#directory-options) on it. Leave `rex_url` empty if you do not run rex. |
+| `rex_source` | string | `&quot;zurg&quot;` | The source name rex knows this zurg by. Give each zurg feeding the same rex its own name. |
+| `rex_snapshot_every_hours` | int | `6` | How often the whole library is pushed to rex again, which heals whatever a missed push left behind. The default suits every setup. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>rex_url</code></td>
+<td>string</td>
+<td><code translate="no" v-pre>&quot;&quot;</code></td>
+<td>URL of the rex that builds its library from this zurg, for example <code translate="no" v-pre>http://192.168.1.20:32400</code>. Picking a rex in the dashboard&#x27;s Plex sign-in sets it to the address rex takes sources on (its LAN or Tailscale address, plain HTTP), and the feed starts without a restart; set it by hand to feed a rex without signing in to Plex. zurg then pushes its library to rex: every video file in a configured directory, every audio file in one with <code translate="no" v-pre>rex_music</code> and the comic books in one with <code translate="no" v-pre>rex_photos</code>, with its path, size, IMDb id and the media details ffprobe read, once the library has loaded, every <code translate="no" v-pre>rex_snapshot_every_hours</code>, and whenever a release is added, analysed, renamed, moved or deleted. rex cannot play a file before ffprobe has analysed it, so setting <code translate="no" v-pre>rex_url</code> turns on <code translate="no" v-pre>auto_analyze_new_torrents</code> whatever that key says, and analyses the rest of the library once it has loaded and then daily. Each probe reads from the account that holds the release, so keep the directories narrow, and leave out <code translate="no" v-pre>tags_*</code> filters (with any of them every release on the account is analysed), if you do not want a library you never watch on your traffic. A refresh also looks up each new release&#x27;s IMDb id through <code translate="no" v-pre>dmm_api_key</code> before filing it (see <code translate="no" v-pre>dmm_api_key</code> for how releases are placed). Subtitles an *arr or Bazarr writes beside a video in <code translate="no" v-pre>__magic__</code> go to rex with it (see <a href="../../guides/magic/"><code translate="no" v-pre>__magic__</code></a>). zurg tells rex where to read the files: its WebDAV at <code translate="no" v-pre>http://&lt;address&gt;:&lt;port&gt;/dav</code>, with <code translate="no" v-pre>username</code> and <code translate="no" v-pre>password</code> when they are set. The address is <code translate="no" v-pre>host</code> when that is one address; otherwise, the default, it is the address zurg&#x27;s connection to rex leaves from, and rex must reach zurg there. In a container that is the container&#x27;s own address, which rex reaches only from the same Linux machine: on Windows and macOS install zurg with the installer rather than in Docker Desktop, and on Linux with rex on another machine give zurg&#x27;s container <code translate="no" v-pre>network_mode: host</code> (<a href="../../../rex/with-zurg/#d4-connect-zurg-to-rex">rex with zurg</a>). A rex that is down is retried and then sent the whole library; nothing waits on it. No Plex scan is sent while <code translate="no" v-pre>plex_server_url</code> is this same rex. After each snapshot and every ten minutes zurg reads the Fix Matches made in rex for its releases and keeps each as the release&#x27;s id set by hand, unless you set one on the manage page since; DMM then places the release by it. To give a directory its own libraries in rex, set <doc-anchor-trigger to="#directory-options"><code translate="no" v-pre>rex_shows</code>, <code translate="no" v-pre>rex_movies</code>, <code translate="no" v-pre>rex_music</code> or <code translate="no" v-pre>rex_photos</code></doc-anchor-trigger> on it. Leave <code translate="no" v-pre>rex_url</code> empty if you do not run rex.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>rex_source</code></td>
+<td>string</td>
+<td><code translate="no" v-pre>&quot;zurg&quot;</code></td>
+<td>The source name rex knows this zurg by. Give each zurg feeding the same rex its own name.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>rex_snapshot_every_hours</code></td>
+<td>int</td>
+<td><code translate="no" v-pre>6</code></td>
+<td>How often the whole library is pushed to rex again, which heals whatever a missed push left behind. The default suits every setup.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<div id="rex-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">rex_url: &quot;http://192.168.1.20:32400&quot;</code></pre>
 </doc-codeblock></div>
 <h3 id="watchlist">Watchlist</h3>
 <p>Add something to your Plex watchlist and zurg fetches it. Every new watchlist item is searched on your indexers. A Newznab indexer gives an NZB. It drops into the Usenet backend exactly as a Sonarr grab or a Stremio play would. The three share the naming rules so they find each other&#x27;s grabs instead of duplicating them. A Torznab indexer gives a torrent. It is added to a debrid account only when that account already has it cached. <code translate="no" v-pre>prefer</code> decides which kind is tried first between releases of the same resolution. A movie becomes one release. A show is acquired season by season and season packs come before loose episodes. A season nobody posted a pack of falls back to the loose episodes the search surfaced, the best release for each. The item leaves the watchlist only once the release behind it has been checked and only when <code translate="no" v-pre>remove_after_grab</code> allows it. Failures stay on the list. They are tried again after 5, 10 and 15 minutes, then after an hour, then further and further apart, and a title that has failed for two weeks is parked until you resume it on the acquisition page. See <a href="../../guides/acquisition/#persistence-and-recovery">persistence and recovery</a>.</p>
@@ -3304,7 +3347,11 @@ traffic_alert_gb: 500</code></pre>
 | `filters` | list | `[]` | The rules deciding what belongs here. A torrent matches the directory if **any** entry in the list matches. An empty or absent list matches every torrent. |
 | `only_show_the_biggest_file` | bool | `false` | Show only the largest file of each torrent, hiding samples, extras and companion files. |
 | `only_show_files_with_size_lte` | int | `0` (off) | Hide files larger than this many bytes. |
-| `only_show_files_with_size_gte` | int | `0` (off) | Hide files smaller than this many bytes. |">
+| `only_show_files_with_size_gte` | int | `0` (off) | Hide files smaller than this many bytes. |
+| `rex_shows` | string | `&quot;&quot;` (none) | With `rex_url`: the title of a TV library in rex that shows this directory's episodes. |
+| `rex_movies` | string | `&quot;&quot;` (none) | With `rex_url`: the title of a Movies library in rex that shows this directory's films, and any file rex cannot tell is an episode. |
+| `rex_music` | string | `&quot;&quot;` (none) | With `rex_url`: the title of a music library in rex that shows this directory's audio files (`.flac`, `.mp3`, `.m4a`, `.m4b`), audiobooks included. Without it no audio file goes to rex. |
+| `rex_photos` | string | `&quot;&quot;` (none) | With `rex_url`: the title of a Photos library in rex that shows this directory's comic books (`.cbz`, `.cbr`), each an album of its pages, which Plex Web pages through and plays as a slideshow. Plex for Android shows no photo library. The comics stay files on the mount. |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
@@ -3351,6 +3398,30 @@ traffic_alert_gb: 500</code></pre>
 <td>int</td>
 <td><code translate="no" v-pre>0</code> (off)</td>
 <td>Hide files smaller than this many bytes.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>rex_shows</code></td>
+<td>string</td>
+<td><code translate="no" v-pre>&quot;&quot;</code> (none)</td>
+<td>With <code translate="no" v-pre>rex_url</code>: the title of a TV library in rex that shows this directory&#x27;s episodes.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>rex_movies</code></td>
+<td>string</td>
+<td><code translate="no" v-pre>&quot;&quot;</code> (none)</td>
+<td>With <code translate="no" v-pre>rex_url</code>: the title of a Movies library in rex that shows this directory&#x27;s films, and any file rex cannot tell is an episode.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>rex_music</code></td>
+<td>string</td>
+<td><code translate="no" v-pre>&quot;&quot;</code> (none)</td>
+<td>With <code translate="no" v-pre>rex_url</code>: the title of a music library in rex that shows this directory&#x27;s audio files (<code translate="no" v-pre>.flac</code>, <code translate="no" v-pre>.mp3</code>, <code translate="no" v-pre>.m4a</code>, <code translate="no" v-pre>.m4b</code>), audiobooks included. Without it no audio file goes to rex.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>rex_photos</code></td>
+<td>string</td>
+<td><code translate="no" v-pre>&quot;&quot;</code> (none)</td>
+<td>With <code translate="no" v-pre>rex_url</code>: the title of a Photos library in rex that shows this directory&#x27;s comic books (<code translate="no" v-pre>.cbz</code>, <code translate="no" v-pre>.cbr</code>), each an album of its pages, which Plex Web pages through and plays as a slideshow. Plex for Android shows no photo library. The comics stay files on the mount.</td>
 </tr>
 </tbody>
 </table>

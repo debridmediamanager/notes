@@ -6,7 +6,7 @@ The container setup flow was verified on 4 September 2026 with Docker Engine 29.
 
 > **Sponsor image:** `ghcr.io/debridmediamanager/zurg` is for sponsors. Sponsor on [gatekeeper](https://gatekeeper.debridmediamanager.com/). It gives your GitHub account access to the image.
 
-> **Linux host required:** the host-visible mount below depends on Linux mount propagation. Docker Desktop runs containers inside a VM on macOS and Windows and cannot propagate this FUSE mount into Finder or Explorer. Use the [macOS](https://notes.debridmediamanager.com/zurg/setup/macos/) or [Windows](https://notes.debridmediamanager.com/zurg/setup/windows/) binary guide when the media server runs on either host.
+> **Linux host required:** the host-visible mount below depends on Linux mount propagation. Docker Desktop runs containers inside a VM on macOS and Windows: it cannot propagate this FUSE mount into Finder or Explorer, and rex cannot reach a zurg inside it, so nothing would play there. Use the [macOS](https://notes.debridmediamanager.com/zurg/setup/macos/) or [Windows](https://notes.debridmediamanager.com/zurg/setup/windows/) binary guide on either host. On Linux with rex on another machine, give the zurg container `network_mode: host`, as [rex with zurg](../../rex/with-zurg.md#d4-connect-zurg-to-rex) shows.
 
 ## One-line option
 

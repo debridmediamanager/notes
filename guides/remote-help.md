@@ -12,7 +12,7 @@ Post in the [Discord](https://discord.com/invite/7u4YjMThXP) forum for what you 
 | The binary on Windows | `.\zurg.exe doctor` in zurg's folder |
 | Docker | `docker compose exec zurg /app/zurg doctor --working-dir /config` |
 
-**For rex**, paste the end of rex's log. rex masks Plex tokens in it.
+**For rex**, press Play once on what fails, then paste the end of rex's log. rex masks Plex tokens in it.
 
 | rex runs as | Run |
 |---|---|
@@ -21,6 +21,8 @@ Post in the [Discord](https://discord.com/invite/7u4YjMThXP) forum for what you 
 | Task Scheduler on Windows | `Get-Content $HOME\rex\rex.log -Tail 200` |
 | Docker | `docker compose logs --tail=200 rex` |
 | A terminal window | The last 200 lines in that window |
+
+In a long log, the lines that matter most are the errors, the warnings and what rex decided for each play. Add `| grep -E 'ERROR|WARN|upstream|DECISION'` to the Linux, macOS or Docker line to show only those, or on Windows run `Select-String 'ERROR|WARN|upstream|DECISION' $HOME\rex\rex.log | Select-Object -Last 50`.
 
 ## Remote help for sponsors
 

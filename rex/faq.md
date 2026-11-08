@@ -8,7 +8,7 @@ Short answers to what people ask before they install rex, and soon after. Each a
 
 A media server for the official Plex apps that owns no files. Your apps see it as one more Plex server, with posters, seasons, watch history and Continue Watching. It keeps no movies: a **source** tells rex what is in your library and serves the files, and when you press play rex streams the file straight from that source. Nothing is downloaded first.
 
-It is a server of its own, not a plugin for Plex Media Server, and it does not need one. It replaces your Plex server only if you want it to: it can run beside it, and your apps then list both. [Move from Plex to rex](from-plex.md) covers both ways.
+It is a server of its own, not a plugin for Plex Media Server, and it does not need one. It replaces your Plex server only if you want it to: it can run beside it, and your apps then list both. On the same machine both carry the machine's name: rex is the one shared with you, with the fresh account's name beside it. [Move from Plex to rex](from-plex.md) covers both ways.
 
 ### What does it cost?
 
@@ -50,7 +50,7 @@ Away from home, only Plex Web has been tested.
 
 ### Does it play 4K, HDR and Dolby Vision?
 
-Yes. Files play in their original quality: rex hands the app the file as it is, and the app decides what it can show. When an app cannot play a file as it is, rex converts it, if FFmpeg is set up ([Converting video](any-source.md#converting-video-optional)). A conversion turns HDR and Dolby Vision into a standard picture (Settings, Transcoder, **Enable HDR tone mapping**, on by default), on the graphics chip where it can. With Intel's OpenCL runtime installed, a small Intel machine (a J4105) converts 4K HDR10 and Dolby Vision profile 5 to 1080p at about real time. Without FFmpeg, a file the app cannot play shows "This server is not powerful enough to convert video".
+Yes. Files play in their original quality: rex hands the app the file as it is, and the app decides what it can show. When an app cannot play a file as it is, rex converts it, if FFmpeg is set up ([Converting video](any-source.md#converting-video-optional)). A conversion turns HDR and Dolby Vision into a standard picture (Settings, Transcoder, **Enable HDR tone mapping**, on by default), on the graphics chip where it can. With Intel's OpenCL runtime installed, a small Intel machine (a J4105) converts 4K HDR10 and Dolby Vision profile 5 to 1080p at about real time. Without FFmpeg, a file the app cannot play shows "This server is not powerful enough to convert video". When every title says so on every device, FFmpeg is not the fix: see [Nothing plays](#nothing-plays-or-every-app-says-it-is-not-powerful-enough).
 
 **Plex for iOS and Dolby Vision.** Plex for iOS 2026.20.0 sits at 0:00 when it plays a Dolby Vision file as it is. A real Plex Media Server serving the same file stalls the same way, so the fault is in the app. HDR10 and SDR 4K files play.
 
@@ -103,7 +103,7 @@ rex needs an address of its own only to watch away from home, or to share with a
 
 ### What does it not do?
 
-Photo libraries stay empty, and there is no tuner and no DVR: nothing records. Music and Live TV come only from a source that sends them: [Music with rex](music.md) and [Live TV with rex](live-tv.md) show how. Plexamp's radio, mixes and stations are missing. rex has no relay: to use it away from home it needs an address of its own ([Use it outside your home](any-source.md#use-it-outside-your-home-optional)).
+There is no tuner and no DVR: nothing records. Music, Live TV and photos come only from a source that sends them: [Music with rex](music.md) and [Live TV with rex](live-tv.md) show how, and zurg sends comic books as photos, which Plex Web shows (Plex for Android shows no photo library). Plexamp's radio, mixes and stations are missing. rex has no relay: to use it away from home it needs an address of its own ([Use it outside your home](any-source.md#use-it-outside-your-home-optional)).
 
 ## After you install
 
@@ -133,6 +133,10 @@ rex asks no one what a release is: the source decides and tells rex. zurg, for o
 ### Does deleting in a Plex app delete the file?
 
 Yes. Deleting a movie or episode in a Plex app, signed in as the account rex is registered on, deletes its files at the source, as a Plex server deletes files from its disk. A source on a debrid account, such as zurg, deletes them there. If the source refuses, the title stays and the app says it could not be deleted. People you share with cannot delete. [Deleting in a Plex app](any-source.md#step-5-watch-something) says how to turn it off.
+
+### Nothing plays, or every app says it is not powerful enough
+
+Look at rex's log right after you press Play. `upstream failed` or `502` there means rex cannot reach your source at the address the source gave it, and installing FFmpeg does not fix that. The usual cause is zurg in Docker Desktop on Windows or macOS. The `upstream failed` row of [rex with zurg](with-zurg.md#when-something-is-wrong) or [rex with your own app](any-source.md#when-something-is-wrong) checks the address and says what to change. If only some files fail, often only in a web browser, the device cannot play them as they are: set up [Converting video](any-source.md#converting-video-optional).
 
 ### A title is matched wrong. How do I fix it?
 

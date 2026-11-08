@@ -16,7 +16,7 @@ identified again from its name. Those ids replace any id DMM or the release
 name gave it, though never one you set by hand. A release that was already in
 your library when zurg picked it may have been added for something else, so it
 only takes them when it has no id or already has the same one. With
-[`rex_url`](../reference/config.md) set, a grabbed movie goes to rex as that movie, by
+[`rex_url`](../reference/config.md#rex) set, a grabbed movie goes to rex as that movie, by
 those ids, even when DMM could not place it; a show's episodes are still
 numbered by DMM's placement and carry the show's ids. At start, zurg does
 the same for every release its saved jobs grabbed earlier, which repairs

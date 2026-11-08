@@ -72,7 +72,7 @@ This takes rex's newest build, usually a nightly, for your machine.
 
 Find rex's LAN IP, its address on your home network. On Linux `hostname -I` prints several: take the one on your home network, not one starting with `172.17.` (Docker) or `100.` (Tailscale). On macOS `ipconfig getifaddr en0` prints it (`en1` if that prints nothing). On Windows `ipconfig` lists it as **IPv4 Address** under your Wi-Fi or Ethernet adapter. **This page writes it as `192.168.1.20` everywhere: put yours in its place.** Plex apps, your app and your own commands all reach rex there.
 
-**Plex Media Server runs on the same machine?** End rex's start command below with `--port 32500` and use `32500` wherever this page says `32400`, the Windows firewall rule included: Plex already holds port 32400 and the ports apps use to find servers, and on any other port rex leaves those to Plex.
+**Plex Media Server runs on the same machine?** End rex's start command below with `--port 32500` and use `32500` wherever a command or setting says `32400`, the Windows firewall rule included: Plex already holds port 32400 and the ports apps use to find servers, and on any other port rex leaves those to Plex. Your apps then list two servers with the machine's name: rex is the one shared with you, with the fresh account's name beside it.
 
 Now make it a service:
 
@@ -157,6 +157,8 @@ Get-Content rex.log -Wait
 ```
 
 rex's **start command** is the `rex.exe` line of `run.cmd`, and keys go above it, one `set NAME=value` a line. After a change, `Stop-Process -Name rex; Start-Sleep 1; Start-ScheduledTask rex` restarts rex. `Get-Content $HOME\rex\rex.log -Wait` shows its log.
+
+Started rex by hand in PowerShell instead? Then its log is only in that window, with no `rex.log`, and no task starts it after a reboot. rex keeps its database and its claim in the folder it starts in, so a rex started from another folder is a new, unclaimed server. Stop it with Ctrl+C, then start it again from rex's folder with the same flags, or better, set up the task above.
 
 rex runs while you are logged in to Windows, in a window of its own: leave it open. In PowerShell, type `curl.exe` wherever this page says `curl`: Windows PowerShell's own `curl` is a different command.
 +++
@@ -314,13 +316,14 @@ Give your app rex's address, `http://192.168.1.20:32400`. How you enter it depen
 **What you should see.** rex's log prints, under the name your app registered as:
 
 ```
+INFO    SOURCES myapp registered at http://192.168.1.20:8080
 INFO    SOURCES PUT /rex/sources/myapp -> 200
 INFO    FEED myapp upsert: 0 created, 0 updated, 200 held, 0 unchanged, 0 rejected
 INFO    FEED identified "Some.Movie.2019.1080p" -> movie tmdb:12345 (placed)
 INFO    FEED myapp upsert: 180 created, 0 updated, 20 held, 0 unchanged, 0 rejected
 ```
 
-`held` files are waiting for their ffprobe output and appear as soon as your app sends it. Check what rex has from your app at any time (on Windows, `curl.exe` without `| head -c 600`):
+rex reads every file from the address in the `registered at` line, so it must reach your app there; rex logs that line again only when the address changes. `held` files are waiting for their ffprobe output and appear as soon as your app sends it. Check what rex has from your app at any time (on Windows, `curl.exe` without `| head -c 600`):
 
 ```bash
 curl -s http://192.168.1.20:32400/rex/sources                # the apps that registered, and their addresses
@@ -332,7 +335,7 @@ curl -s http://192.168.1.20:32400/rex/feed/myapp/held  | head -c 600   # what wa
 
 - Nothing at all in rex's log: your app never reached rex. Check the address you gave it, and that rex's port is open between the two machines.
 - Files arrive but no `identified` lines: your app sends no `kind` and `ids` (held files and unchanged re-sends print none either). Those titles stay unmatched until it does; you can still fix one by hand with **Fix Match** in a Plex app signed in as the fresh account. Your own account, which rex is shared with, is refused.
-- `/rex/sources` shows an address rex cannot reach, such as a container's own address: your app has to register an address that works from the rex machine. Test it with `curl` from there.
+- Titles appear but nothing plays: rex cannot reach your app at the `registered at` address. The `upstream failed` row of [When something is wrong](#when-something-is-wrong) checks it.
 
 ## Step 5. Watch something
 
@@ -351,7 +354,7 @@ At home nothing else is needed: Plex apps find rex with Plex's own local discove
 Two things you may meet:
 
 - **"yourhost server is unclaimed and not secure".** A Plex app says this about any server that is not on a Plex account, and rex plays nothing until it is on one. Do [step 3](#step-3-add-it-to-a-plex-account).
-- **"This server is not powerful enough to convert video".** The app cannot play the file as it is, often a web browser meeting AC3 or DTS sound. Plex apps on TVs and phones play most files as they are. To play everything everywhere, set up [Converting video](#converting-video-optional).
+- **"This server is not powerful enough to convert video".** If every title fails on every device, look in rex's log right after you press Play: `upstream failed` or `502` there means rex cannot reach your app, and FFmpeg will not fix it. The `upstream failed` row of [When something is wrong](#when-something-is-wrong) says what to do. If only some files fail, often only in a web browser, the device cannot play them as they are, often AC3 or DTS sound. Plex apps on TVs and phones play most files as they are. To play everything everywhere, set up [Converting video](#converting-video-optional).
 
 **Deleting deletes at your app.** Signed in as the fresh account, **Delete** on a title in a Plex app has rex ask your app to delete the file, as [What your app must do](#what-your-app-must-do) says. The accounts rex is shared with cannot delete. To turn deleting off: in app.plex.tv as the fresh account, open **Settings**, the rex server's **Library**, **Show Advanced**, untick **Allow media deletion** and save.
 
@@ -505,7 +508,7 @@ localPort = 32400
 remotePort = 32400
 ```
 
-Run it as a service: on Linux, for example `~/.config/systemd/user/frpc.service` with `ExecStart=%h/frp/frpc -c %h/frp/frpc.toml` and `Restart=always`; on macOS and Windows, start `frpc -c frpc.toml` the way [step 1](#step-1-install-rex) starts rex. Then end rex's start command with `--announce-url https://1-2-3-4.sslip.io:443`, add the key `REX_DIRECT_URL=off` (behind CGNAT the rex-direct name's IPv4 does not reach rex, so plex.tv should not list it), and restart rex.
+Run it as a service: on Linux, for example `~/.config/systemd/user/frpc.service` with `ExecStart=%h/frp/frpc -c %h/frp/frpc.toml` and `Restart=always`; on macOS and Windows, start `frpc -c frpc.toml` the way [step 1](#step-1-install-rex) starts rex. Then end rex's start command with `--announce-url https://1-2-3-4.sslip.io:443`, add the key `REX_DIRECT_URL=off` (behind CGNAT the rex-direct name's IPv4 does not reach rex, so plex.tv should not list it), and restart rex. app.plex.tv at home then goes through the VPS too; other Plex apps at home still connect to rex directly.
 
 ### What you should see
 
@@ -533,7 +536,7 @@ Watched on another Plex server before? Once your library is in rex, [Bring your 
 
 **What it does.** Lets rex convert what a device cannot play, the way Plex does.
 
-**Why it matters.** Without it a device that cannot play a file as it is gets "This server is not powerful enough to convert video". Web browsers hit this most, for example with AC3 or DTS sound.
+**Why it matters.** Without it a device that cannot play a file as it is gets "This server is not powerful enough to convert video". Web browsers hit this most, for example with AC3 or DTS sound. When every title fails on every device, the cause is another one: see [step 5](#step-5-watch-something).
 
 Install **jellyfin-ffmpeg** 8, not the `ffmpeg` your system offers: it is the build rex is measured with and the only one that converts every Dolby Vision file, tonemaps HDR on the graphics chip and draws subtitles there. Another FFmpeg converts ordinary video and rex's log says what it lacks (Ubuntu 22.04's own also seeks a few seconds off). rex finds it on its own.
 
@@ -579,7 +582,7 @@ Stop-Process -Name rex; Start-Sleep 1; Start-ScheduledTask rex
 On Windows rex converts on an NVIDIA card's encoder when there is one, and on the processor otherwise.
 +++
 
-**What you should see.** rex's log has a `transcoder:` line naming the FFmpeg and the hardware it found (`hardware none` means the processor). A file that failed before now plays; the log shows what was converted, for example `video=copy h264 audio=ac3->aac`.
+**What you should see.** rex's log has a `transcoder:` line naming the FFmpeg and the hardware it found (`hardware none` means the processor); `transcoder off` at start means it found none. A file that failed before now plays; the log shows what was converted, for example `video=copy h264 audio=ac3->aac`.
 
 Subtitles in a converted file: an image subtitle is burned into the picture and a subtitle you uploaded comes along. Plex for Android and iOS also keep a text subtitle as a track; other apps get it drawn into the picture. Converted offline downloads still omit text subtitles.
 
@@ -597,7 +600,7 @@ There is nothing to set up. rex checks a subtitle against the file's own text su
 
 ## Movie and TV capabilities
 
-Downloads, intro and credits detection, seek thumbnails and the other Plex server features rex has, and their settings, are in [rex's setup guide](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities). Music and Live TV come from sources that send them ([rex's limits](https://github.com/debridmediamanager/rex#limits)), such as [rex-live-sports](https://github.com/debridmediamanager/rex-live-sports) for live channels. There is no DVR, so nothing records, and photo libraries stay empty.
+Downloads, intro and credits detection, seek thumbnails and the other Plex server features rex has, and their settings, are in [rex's setup guide](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities). Music and Live TV come from sources that send them ([rex's limits](https://github.com/debridmediamanager/rex#limits)), such as [rex-live-sports](https://github.com/debridmediamanager/rex-live-sports) for live channels. There is no DVR, so nothing records. Photos come only from a source that sends pictures ([feed API](https://github.com/debridmediamanager/rex/blob/main/docs/feed-api.md#photos)), such as comic books from zurg. Plex Web shows them; Plex for Android shows no photo library.
 
 Keep the default proxy mode for shared debrid playback. Real-Debrid tracks each downloader's public IP; multi-IP use of one account earns a sharing warning even when downloads succeed. TorBox download URLs contain the full API key, so redirecting gives every client and shared user account access, including deletion. Read the [redirect risks and setup](direct-download.md#before-you-start) before letting apps download from the provider.
 
@@ -621,7 +624,7 @@ services:
 - Intel or AMD graphics chip? Add `devices: ["/dev/dri:/dev/dri"]` so rex converts video on it.
 - `network_mode: host` lets Plex apps on your network find rex by themselves, and lets rex reach your app at the address it registers, as from the machine itself.
 - `./config` gets `rex.db` and, later, `claim_state.json`. They are readable by root only, because `rex.db` holds your app's login.
-- Plex Media Server on the same machine? Add `command: --port 32500` and use `32500` wherever this page says `32400`.
+- Plex Media Server on the same machine? Add `command: --port 32500` and use `32500` wherever a command or setting says `32400`.
 
 ```bash
 docker compose up -d
@@ -731,14 +734,18 @@ Ask in the DMM [Discord](https://discord.com/invite/7u4YjMThXP)'s **rex-support*
 | rex's log says `held ... no media_info yet` | Your app sent the file without ffprobe output. It appears once that arrives |
 | Titles show file names and no posters | rex is not on a Plex account. Do [step 3](#step-3-add-it-to-a-plex-account). If rex was claimed after your app sent its library, they are named by themselves once the claim lands |
 | A title is in the wrong show, or a film is titled as its file | Your app sent no `kind` and `ids` for it, or the wrong ones. Fix it in your app, or use **Fix Match** in a Plex app signed in as the fresh account; a Fix Match stays as you set it |
-| Nothing plays and rex's log shows 502 | rex cannot reach the address your app registered. `curl -s http://192.168.1.20:32400/rex/sources` shows it; test it with `curl` from the rex machine |
+| Every title fails on every device, often with "This server is not powerful enough to convert video", and rex's log shows `upstream failed` or `502` right after you press Play (with FFmpeg set up, `TRANSCODE ... exited` with a refused or timed-out connection) | rex cannot reach your app at the address it registered, and FFmpeg does not fix that. `curl -s http://192.168.1.20:32400/rex/sources` shows that address as your app's `url`. On the rex machine, run `curl -I` on it: any HTTP answer, `401` included, is fine; `Failed to connect` means rex cannot reach your app there. Your app must register an address that works from the rex machine: a `172.` address is a container's own, which rex reaches only from the same Linux machine. Newer builds say so outright: rex logs `SOURCES <name>: cannot reach ... from this machine` |
+| rex's log shows `upstream failed: no source ... configured` | rex has no registration from your app. Have it register again: restart it |
+| rex's log shows `part ... is unavailable upstream` | Your app answered 404 for that file: it does not have it now |
 | Nothing plays, 401 or 403 | Your app refused its own login. Have it register again with the current one |
 | A snapshot answers 409 `would remove more than half` | rex's guard against an app that sends a half-loaded library. If the removal is real, your app must send the whole snapshot again from part 0, with `"force": true` on its last part. Resending only the last part is refused, and sending it as a new snapshot of its own with `force` removes everything the earlier parts named |
 | Deleting in a Plex app fails and rex logs `DELETE refused by the source` | Your app does not accept a `DELETE` of the file. Remove it in your app instead |
-| "This server is not powerful enough to convert video" | The device cannot play the file as it is. Try a Plex app on a TV or phone, or set up [Converting video](#converting-video-optional) |
+| Only some files fail with "This server is not powerful enough to convert video", often only in a web browser | The device cannot play the file as it is. Try a Plex app on a TV or phone, or set up [Converting video](#converting-video-optional) |
+| A Dolby Vision file fails and rex's log says `DoVi (Profile 5) color space is not supported` | rex has no FFmpeg, or one that is not jellyfin-ffmpeg. Install jellyfin-ffmpeg as [Converting video](#converting-video-optional) shows, and keep **Enable HDR tone mapping** on (Settings, Transcoder) |
+| rex exits with `cannot bind ...:32400 (another rex or Plex on this port? ...)` | Another program holds the port. Plex Media Server on this machine: use `--port 32500` as [step 1](#step-1-install-rex) says. Another rex, such as one you started by hand: stop that one |
 | A device at home cannot connect, and rex's `heartbeat ... ->` line shows no `http://192.168.1.20:32400` | rex announces the private address of the network it reaches the internet through; behind a VPN or a Tailscale exit node that is not your home network. End rex's start command ([step 1](#step-1-install-rex)) with `--announce-url http://192.168.1.20:32400` and restart rex |
 | At home, app.plex.tv does not reach rex, and the `lan.` address from [What you should see](#what-you-should-see) does not answer | Some routers and DNS filters block a public name that points at a home address (DNS rebind protection). Allow `rex-direct.debridmediamanager.com` there, as Plex users allow `plex.direct` |
-| Another machine cannot reach rex on Windows, although step 1's firewall rules exist | If you ever clicked **Cancel** when Windows asked whether to allow rex, Windows saved a rule that blocks it, and that wins over the port rules. Remove it in PowerShell as administrator: <code>Get-NetFirewallApplicationFilter -Program "$HOME\rex\rex.exe" &#124; Get-NetFirewallRule &#124; Where-Object Action -eq Block &#124; Remove-NetFirewallRule</code> |
+| Another machine cannot reach rex on Windows, although step 1's firewall rules exist | If you ever clicked **Cancel** when Windows asked whether to allow rex, Windows saved a rule that blocks it, and that wins over the port rules. Remove it in PowerShell as administrator: <code>Get-NetFirewallApplicationFilter -Program "$HOME\rex\rex.exe" &#124; Get-NetFirewallRule &#124; Where-Object Action -eq Block &#124; Remove-NetFirewallRule</code> (with rex elsewhere, its own path) |
 | rex is not in the Plex apps away from home | Not claimed, or the device cannot reach the HTTPS address ([rex-direct over IPv6](#rex-direct-over-ipv6) needs IPv6 on that device's network) |
 | rex exits with `argument --announce-url: '...' is not an http:// or https:// address` | Give `--announce-url` the address alone, such as `https://myhost.tailnet.ts.net:443`: no brackets, quotes or link around it |
 | rex stops when you log out | On Linux, run `sudo loginctl enable-linger "$USER"` (step 1). On macOS and Windows, rex as step 1 sets it up runs while you are logged in |
