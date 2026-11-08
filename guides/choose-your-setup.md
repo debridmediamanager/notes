@@ -122,7 +122,7 @@ Easynews adds another choice: its **Watch**, **Download** and **Cast** actions u
 
 DMM's TorBox **Add** dialog accepts direct HTTP(S) download links as web downloads. zurg can expose TorBox web downloads, and DMM's TorBox Cast catalog includes completed web and Usenet downloads as well as torrents. This does not make an arbitrary website page a video: login pages, expiring URLs, DRM and a site's own player can require a different integration.
 
-For rex, an HTTP URL alone is not a library. A [source or addon](../rex/any-source.md) must describe the item through the feed API and serve playable bytes. [rex-stremio](../rex/stremio.md) does that for compatible Stremio addons. Raw magnets and torrent-only streams do not work through it; HLS streams need rex's FFmpeg setup. rex does not identify releases or search filenames to decide what a file is: its source supplies that identity.
+**rex supports streamable HTTP(S) media through its feed API.** A [source or addon](../rex/any-source.md) submits the media address and the item’s metadata, and rex makes it available in Plex apps. The HTTP server supplying the bytes can be separate from the program submitting the feed; neither zurg nor a debrid account is required. [rex-stremio](../rex/stremio.md) does that for compatible Stremio addons. Raw magnets and torrent-only streams do not work through it; HLS streams need rex's FFmpeg setup. rex does not identify releases or search filenames to decide what a file is: its source supplies that identity.
 
 ## Decide how titles get added
 
