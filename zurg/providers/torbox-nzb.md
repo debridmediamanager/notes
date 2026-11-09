@@ -12,7 +12,7 @@ With a TorBox Pro plan TorBox does the Usenet part for you. zurg posts the
 `.nzb` files in its watch directory to your TorBox account. TorBox fetches each
 release, repairs it and serves it like any other TorBox download. zurg lists
 what TorBox fetched in the mount beside everything else. There is no news
-server account and nothing is decoded on your machine.
+server account and no Usenet articles are decoded on your machine.
 
 This is not [TorBox's news server](torbox-news-server.md). That is a login for
 the `nzb` backend, which reads articles itself and is covered on
