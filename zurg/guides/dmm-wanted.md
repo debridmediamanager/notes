@@ -134,7 +134,7 @@ the same for every source.
 
 With `__magic__` on, zurg files what it fetches by title, into `__magic__/__movies__` and
 `__magic__/__shows__`, named the way Kodi and Plex match it. Point a Movies library and a TV
-library at those two folders: see [`__movies__` and `__shows__`](magic.md#__movies__-and-__shows__-sorted-by-title).
+library at those two folders, or with `magic.anime` an Anime library at `__magic__/__anime__` too: see [`__movies__` and `__shows__`](magic.md#__movies__-and-__shows__-sorted-by-title).
 
 ```yaml
 magic:
