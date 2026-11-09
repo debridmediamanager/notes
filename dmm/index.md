@@ -18,4 +18,6 @@ DMM also serves the other projects:
 - **Seerr, Overseerr and Jellyseerr** can use DMM as their Radarr and Sonarr, so requests land on your wanted list for zurg to fetch. Needs an active sponsorship. See [Seerr through DMM](seerr.md).
 - **rex-direct** gives a claimed rex its own address and certificate from DMM. See [rex-direct](../rex/any-source.md#rex-direct).
 
+Everything a sponsorship opens and where each thing is set up is on [What a sponsorship gives you](../guides/sponsorship.md).
+
 Stuck? Ask in the **dmm-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) says what to include.
