@@ -133,7 +133,7 @@ flowchart TD
     R --> P[Your chosen RD playback route]
 ```
 
-**Choose TorBox hosted NZBs** if you want TorBox to do the downloading and repair. In DMM, the TorBox action on Usenet results sends the NZB to that service. In current zurg nightlies, the provider type is `torbox_nzb`; it also accepts NZBs from the watch directory, acquisition and the SABnzbd-compatible interface. A cache miss must finish downloading on TorBox before it plays. Active downloads share the account's slots with torrents, and retained files can expire. Keep the NZBs for re-fetching; zurg does not promise to re-download expired releases unattended.
+**Choose TorBox hosted NZBs** if you want TorBox to do the downloading and repair. In DMM, the TorBox action on Usenet results sends the NZB to that service. In current zurg nightlies, the provider type is `torbox_nzb`; it also accepts NZBs from the watch directory, acquisition and the SABnzbd-compatible interface. [TorBox hosted Usenet](../zurg/providers/torbox-nzb.md) has its zurg setup. A cache miss must finish downloading on TorBox before it plays. Active downloads share the account's slots with torrents, and retained files can expire. Keep the NZBs for re-fetching; zurg does not promise to re-download expired releases unattended.
 
 **Choose direct Usenet** if you want zurg to read through your own news accounts, including fallback/block accounts. It uses `nzb`, with NNTP credentials. A TorBox news-server login also belongs to this route: [TorBox NNTP](../zurg/providers/torbox-news-server.md) is distinct from its hosted NZB downloader. [TorBox's own tools page](https://torbox.app/tools) describes that NNTP offering; [its plans](https://torbox.app/pricing) describe hosted-service entitlements.
 

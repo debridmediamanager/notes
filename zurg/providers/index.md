@@ -20,6 +20,7 @@ can serve it at the time.
 | Debrid-Link | `debridlink` | [Debrid-Link](debridlink.md) |
 | Offcloud | `offcloud` | [Offcloud](offcloud.md) |
 | Usenet | `nzb` | [Usenet](usenet.md) |
+| TorBox hosted Usenet | `torbox_nzb` | [TorBox hosted Usenet](torbox-nzb.md) |
 
 Three pages go deeper than setup. [TorBox limits](torbox-limits.md) has the
 measured figures behind TorBox throttling. [TorBox news server](torbox-news-server.md)
@@ -146,7 +147,7 @@ account in the Dashboard.
 
 | Key | What it does |
 |---|---|
-| `type` | Required. One of the seven types above. |
+| `type` | Required. One of the eight types above. |
 | `name` | Defaults to `type`. Tells two accounts on one service apart. |
 | `token` | The API key. Not used by `nzb`. |
 | `disabled` | Parks the account without deleting the credential. |
@@ -164,8 +165,8 @@ Full descriptions and everything else are in the
 - The name `e` is reserved for `.strm` link routing. Pick another one.
 - At most one entry may set `watchlist: true`.
 - `watchlist: true` and `add_torrents: false` on the same entry is refused.
-- Only one enabled `nzb` entry is supported. Extra news servers go under that
-  entry's `nntp.servers`.
+- Only one enabled `nzb` or `torbox_nzb` entry is supported. Extra news
+  servers go under an `nzb` entry's `nntp.servers`.
 - If every entry is disabled the load fails.
 - Premiumize and Debrid-Link and Offcloud refuse `download_tokens` and a
   `strm_link_token` that differs from `token`. Their file IDs belong to one
