@@ -6,9 +6,9 @@ order: 91
 
 # rex with your Stremio addons
 
-[rex-stremio](https://github.com/debridmediamanager/rex-stremio) turns the catalogs of your Stremio addons into rex libraries, so the films, shows and live channels they list play in the Plex apps. Nothing is downloaded: when someone presses play, rex-stremio asks your stream addons for a link, as Stremio does, and rex plays it.
+[rex-stremio](https://github.com/debridmediamanager/rex-stremio) turns Stremio addon catalogs into rex libraries. Films shows and live channels then play in Plex apps. Nothing is downloaded. When someone presses play rex-stremio asks the stream addon for a link and rex plays it.
 
-This runs rex with no DMM sponsorship. rex and rex-stremio are free; you bring stream addons that give links, usually through a debrid account of your own.
+This needs no DMM sponsorship. rex and rex-stremio are free. Bring stream addons that return links usually through your own debrid account.
 
 What you get:
 
@@ -29,7 +29,7 @@ What you get:
 
 Follow [rex with your own app](any-source.md):
 
-1. [Step 1. Install rex](any-source.md#step-1-install-rex), including finding rex's LAN IP. This page writes it as `192.168.1.20`: put yours in its place.
+1. [Step 1. Install rex](any-source.md#step-1-install-rex), including finding rex's LAN IP. Use that name in every command.
 2. [Step 3. Add it to a Plex account](any-source.md#step-3-add-it-to-a-plex-account): register rex on the fresh account and share it with your own.
 
 Skip steps 2 and 4 there: rex-stremio is your app.
@@ -69,7 +69,7 @@ rex-stremio's settings page and the address rex reads videos from are both on `1
 
 ## Step 3. Add your addons
 
-Open `http://127.0.0.1:9982/` in a browser on the rex machine. rex runs on a machine without a screen? From your computer, `ssh -L 9982:127.0.0.1:9982 you@192.168.1.20` and then open the same address in your own browser while that `ssh` stays open.
+Open `http://127.0.0.1:9982/` in a browser on the rex machine. No screen? From your computer run `ssh -L 9982:127.0.0.1:9982 you@<rex's LAN IP>` then open the same address while SSH stays open.
 
 1. Under **Addons**, paste an addon's manifest link, as you would in Stremio, and press **Add**. Do it for:
    - **Catalogs**, for example Cinemeta: `https://v3-cinemeta.strem.io/manifest.json`.
@@ -79,7 +79,7 @@ Open `http://127.0.0.1:9982/` in a browser on the rex machine. rex runs on a mac
 
 2. Under **Catalogs**, tick the catalogs you want. Name the library each goes into and set **How many** films, episodes or channels to take. For one library with a collection per catalog, give the catalogs the same library and tick **Catalogs as collections**.
 3. Under **Streams**, set the **Highest resolution** and **Largest file** you want played, or leave them at any.
-4. Under **rex**, set **rex's address** to `http://192.168.1.20:32400`.
+4. Under **rex**, set the address to `http://<rex's LAN IP>:32400`.
 5. If you sponsor DMM, paste your DMM API key under **DMM** ([gatekeeper](https://gatekeeper.debridmediamanager.com/) shows it once you sponsor). A title DMM has seen before then skips its check, and what rex-stremio checks itself goes back to DMM for the next sponsor (`share_probes: false` in `config.json` stops that). Press **Save and sync**.
 
 ![rex-stremio's Catalogs, Streams, rex and DMM sections, with the Save and sync button](../assets/rex/91-stremio-catalogs-rex.webp)

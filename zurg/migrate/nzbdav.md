@@ -6,13 +6,10 @@ order: 60
 
 # Migrating from nzbdav to zurg
 
-Read [the shared page](index.md) first. The trash guard lives there. So does
-the reason your library lands in `__magic__` rather than in a symlink farm.
+Read [the shared page](index.md) first. It explains the trash guard and why your library lands in `__magic__`.
 
-nzbdav-dev's last release is v0.6.4 from April 2026 and the upstream repository
-is no longer maintained. v0.6.4 itself works fine. So this migration is about
-getting off unmaintained software rather than about broken content. Take your
-time. Nothing here needs a rushed cutover.
+nzbdav-dev's last release is v0.6.4 from April 2026 and the upstream repository is no longer maintained.
+That release works. This migration is about moving off unmaintained software. Nothing needs a rushed cutover.
 
 **This is the easiest of the five migrations.** Measured against zurg on the
 same five releases nzbdav's tree differs by exactly two things.
