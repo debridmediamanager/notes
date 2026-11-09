@@ -143,7 +143,7 @@ flowchart TD
 
 **Choose DMM → Real-Debrid** if the desired end result is a release in your RD library. This is a hosted transfer, with queues and allowances; an uncached job takes time. It does not give Real-Debrid native NNTP support, and it does not mean every debrid provider accepts NZBs. The DMM result and [Transfers page](https://debridmediamanager.com/transfers) show the job's progress.
 
-Easynews adds another choice: its **Watch**, **Download** and **Cast** actions use Easynews's HTTP files. **Send to zurg** instead places that release's NZB on your sponsor Wanted list for zurg to fetch. The latter needs a configured NZB backend; an Easynews web login in DMM does not configure zurg's news servers.
+Easynews adds another choice: its **Watch**, **Download** and **Cast** actions use Easynews's HTTP files. **Send to zurg** instead places that release's NZB on your sponsor Wanted list for zurg to fetch. The latter needs a configured NZB backend; an Easynews web login in DMM does not configure zurg's NZB account.
 
 ### What about HTTP links?
 

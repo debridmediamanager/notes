@@ -31,7 +31,8 @@ torrents, and the [TorBox](torbox.md) page covers it.
 
 ## Configure it
 
-The entry takes a `token`; there is no `nntp` block.
+The entry takes a `token`; there is no `nntp` block. `watchlist` cannot be set
+on it, because an NZB account cannot add torrents.
 
 ```yaml
 providers:
@@ -39,8 +40,8 @@ providers:
     token: YOUR_TORBOX_API_KEY
 ```
 
-On a fresh container install let setup write it, with the key saved in
-`~/zurg/secrets/torbox`.
+On a fresh container install save your key in `~/zurg/secrets/torbox` first,
+then let setup read it.
 
 ```bash
 cd ~/zurg
