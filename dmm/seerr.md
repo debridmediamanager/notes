@@ -78,7 +78,7 @@ them now, open **Settings → Jobs & Cache** and press **Run Now** next to each.
 
   ![A fetched film shows as available](../assets/seerr-dmm/06-seerr-movie-available.webp)
 
-- **A show** stays **Processing** until its episodes reach your Plex or Jellyfin library
+- **A show** stays **Processing** until its episodes reach your Plex, Jellyfin or Emby library
   and Seerr's scan of that server finds them. DMM does not know which episodes zurg holds.
 
 ## Removing a title

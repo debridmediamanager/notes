@@ -9,7 +9,8 @@ order: 40
 The Android app runs a zurg engine on the device, installed from inside the app. One app adapts to
 phones, tablets, Android TV and Google TV. Android 8.0 or newer is required.
 Fire TV can sideload the same APK; use a WebDAV player when no system Files app
-is installed. Usenet requires 64-bit Android.
+is installed. Usenet requires 64-bit Android, and TorBox hosted NZBs (`torbox_nzb`)
+are not available on Android.
 
 ## Install and set up
 
