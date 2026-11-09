@@ -82,13 +82,14 @@ The client blocklists the release and searches again.
 - **No news account.** There is no connection allowance to size and no
   providers' retention to weigh. TorBox's own spool decides what a post can be
   fetched from.
-- **Nothing is decoded here.** TorBox fetches the whole release. Article
-  fetching, PAR2 repair, the byte caches and article checks do not apply. A
-  grab is checked by whether TorBox fetched it.
+- **No articles are decoded here.** TorBox fetches the whole release. Article
+  fetching, PAR2 repair, the article cache and article checks do not apply; the
+  decoded-archive disk cache still does. A grab is checked by whether TorBox
+  fetched it.
 - **A 30-day cache.** A release someone else already fetched on TorBox is ready
-  at once. TorBox drops a release 30 days after fetching it. The repair button
-  on the dashboard fetches it again by posting its NZB once more, so keep the
-  files in `nzbs/`. zurg never re-posts on its own, because TorBox counts
+  at once. TorBox drops a release 30 days after TorBox cached it. The repair
+  button on the dashboard fetches it again by posting its NZB once more, so keep
+  the files in `nzbs/`. zurg never re-posts on its own, because TorBox counts
   unattended re-downloads as abuse.
 - **A slot per NZB in flight.** A post TorBox is still fetching holds one of
   your plan's active slots. A `torbox` entry on the same key uses the same
