@@ -192,7 +192,7 @@ There is also a [legacy free zurg release](https://github.com/debridmediamanager
 | I also need… | What to choose or check |
 |---|---|
 | Local files and cloud titles together | Keep your existing Plex/Jellyfin/Emby server and add the mount or matching plugin. rex can combine multiple feed sources, including an HTTP source for local files; it still needs their metadata. |
-| Automatic subtitle files | Player-provided or embedded subtitles may be enough. For an arr workflow, [Bazarr with zurg](../zurg/guides/subtitles.md) writes local sidecars beside virtual videos. rex also has Search Subtitles without Bazarr. |
+| Automatic subtitle files | Player-provided or embedded subtitles may be enough. For an arr workflow, [Bazarr with zurg](../zurg/guides/subtitles.md) writes local sidecars beside virtual videos; those sidecars do not reach DMM Cast, the Kodi addon, DMM Watch or zurg's Stremio addon. rex also has Search Subtitles without Bazarr. |
 | My watched history when changing servers | Read [moving from Plex](../rex/from-plex.md) and [importing watched state](../rex/import-watched.md) before switching; changing the source does not automatically migrate every app's history. |
 | Share a selection with someone who has their own account | DMM hashlists share release choices for others to add to their accounts. They do not transfer your credentials or host playback. Sharing a server is a different route, subject to its sharing and provider rules. |
 | A VPS or remote host with limited bandwidth | Check whether the route proxies or redirects playback. [rex direct-download settings](../rex/direct-download.md) explain its options; redirects change the downloader's public IP and can expose provider URLs. |
