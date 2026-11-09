@@ -12,8 +12,9 @@ owns progress, retries and acknowledgement. The shared executor selects releases
 from Newznab indexers, saving NZBs for zurg's Usenet backend, and from Torznab
 indexers, handing info hashes to a debrid account that already holds them: see
 [Newznab and Torznab](#newznab-and-torznab). Nothing is acknowledged until
-the grab has been checked. An NZB is put to the news servers. A torrent has to
-show up in the library with files in it. See
+the grab has been checked. An NZB is put to the news servers, or on a
+`torbox_nzb` account has to be fetched by TorBox. A torrent has to show up in
+the library with files in it. See
 [Verifying a grab](#verifying-a-grab).
 
 A release zurg grabs keeps the ids of the title it was grabbed for, every one
@@ -86,7 +87,8 @@ acquisition:
 
 Run this on a zurg instance with an `nzb` provider or a `torbox_nzb` account
 (TorBox Pro), a debrid account that takes torrents, or both. NZBs from Newznab
-indexers land in its `nzbs/` directory.
+indexers land in its `nzbs/` directory. A `torbox_nzb` account has no news
+servers to check against; a grab there is checked by whether TorBox fetched it.
 Torrents from Torznab indexers go to a debrid account. They are added only when
 that account already has them cached. With neither kind of account the sources
 do not start. The acquisition page says why. Plex needs the existing
@@ -546,7 +548,8 @@ no webhook is required.
 Radarr keeps the list and owns the library. zurg does the searching and the
 downloading. Radarr never searches and never grabs: zurg reads what Radarr
 wants, picks a release from its own indexers, checks it with the news servers
-or the debrid account that holds it, puts the video in the movie's folder
+(TorBox's fetch on a `torbox_nzb` account) or the debrid account that holds it,
+puts the video in the movie's folder
 inside `__magic__` and asks Radarr to rescan that one movie. Nothing is copied: the video is a file in
 zurg's library that Radarr now sees in its folder.
 
@@ -714,8 +717,8 @@ identifies the saved queue, while the URL and key can change freely.
 Sonarr works the way Radarr does. Sonarr keeps the list and owns the library.
 zurg does the searching and the downloading. Sonarr never searches and never
 grabs. zurg reads the episodes Sonarr is missing and picks a release from its
-own indexers. It checks the release with the news servers or the debrid
-account that holds it, and puts each episode's video in the series' season folder inside `__magic__`. Then it asks
+own indexers. It checks the release with the news servers (TorBox's fetch on a
+`torbox_nzb` account) or the debrid account that holds it, and puts each episode's video in the series' season folder inside `__magic__`. Then it asks
 Sonarr to rescan that one series. Nothing is copied.
 
 ### Setting up Sonarr
@@ -1128,7 +1131,8 @@ attempt of either kind. So does each loose episode.
 
 The verification a grab waits on differs with the source. A Usenet release is
 put to the news servers, which is the only way to know whether the post is
-still there. A torrent was added only because the account said it already held
+still there. A `torbox_nzb` account has no news servers to check against; a
+grab there is checked by whether TorBox fetched it. A torrent was added only because the account said it already held
 the content, so what is left to establish is that the release reached the
 library with files in it; that is what the check asks, and a release the
 account lists empty is set aside like a dead post.
