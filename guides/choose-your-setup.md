@@ -131,7 +131,7 @@ flowchart TD
 
 **Choose direct Usenet** if you want zurg to read through your own news accounts, including fallback/block accounts. It uses `nzb`, with NNTP credentials. A TorBox news-server login also belongs to this route: [TorBox NNTP](../zurg/providers/torbox-news-server.md) is distinct from its hosted NZB downloader. [TorBox's own tools page](https://torbox.app/tools) describes that NNTP offering; [its plans](https://torbox.app/pricing) describe hosted-service entitlements.
 
-**One zurg instance uses either `nzb` or `torbox_nzb`, not both.** Both own the NZB watch directory. To run both, use separate zurg instances and separate working directories. Either can sit beside torrent-provider accounts. zurg's Stremio addon can submit to the selected NZB backend too; an uncached hosted download may take longer than a playback request waits, so it is not a guarantee of instant play.
+**One zurg instance uses either `nzb` or `torbox_nzb`, not both.** Both own the NZB watch directory. To run both, use separate zurg instances and separate working directories. Either can sit beside torrent-provider accounts. zurg's Stremio addon needs the direct `nzb` backend; it does not search or play through `torbox_nzb`.
 
 **Choose DMM → Real-Debrid** if the desired end result is a release in your RD library. This is a hosted transfer, with queues and allowances; an uncached job takes time. It does not give Real-Debrid native NNTP support, and it does not mean every debrid provider accepts NZBs. The DMM result and [Transfers page](https://debridmediamanager.com/transfers) show the job's progress.
 
