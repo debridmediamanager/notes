@@ -21,8 +21,8 @@ It is for sponsors: zurg reads your list with your DMM API key.
   dmm_api_key: YOUR_DMM_API_KEY
   ```
 
-- Something for zurg to fetch onto: a debrid account that takes torrents, an `nzb`
-  provider for Usenet, or both.
+- Something for zurg to fetch onto: a debrid account that takes torrents, an `nzb` or
+  `torbox_nzb` provider for Usenet, or both.
 
 That is the whole setup. zurg reads your list once a minute from the moment it starts.
 
