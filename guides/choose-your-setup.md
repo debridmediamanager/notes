@@ -31,7 +31,7 @@ On a phone, swipe a table sideways to see all its columns.
 | NZB files, my own Usenet account and Jellyfin | **NZB plugin inside Jellyfin → compatible client** | Stream NZBs without a separate zurg service | NNTP access and the supported Jellyfin version; the plugin excludes compressed/encrypted archive members and does not repair with PAR2 |
 | A hardware player that reads SMB shares | **zurg → mount → host's SMB share → player** | Keep the player's native file browser and playback | The host supplies SMB; zurg itself supplies WebDAV, not an SMB server |
 | My own Usenet account and Stremio | **Newznab indexer → zurg's Stremio addon → Stremio** | Search at playback time and stream through your news account | A running zurg, indexer access and NNTP credentials; another device needs a reachable HTTPS addon address |
-| An Android/Google TV device, without another computer | **zurg Android → player on that device** | Run the library engine on the device you watch on | Sponsor access, sideloading and background operation; Usenet needs 64-bit Android |
+| An Android/Google TV device, without another computer | **zurg Android → player on that device** | Run the library engine on the device you watch on | Sponsor access, sideloading and background operation; Usenet needs 64-bit Android; TorBox hosted NZBs are not available on Android |
 | Files already on a disk/NAS | **Existing media server or network player**; **HTTP source → rex** if you want rex | Keep using the files you own; no debrid or Usenet account needed | rex needs metadata submitted through its feed API and HTTP access to the files; the feed producer and file server can be separate. rex does not scan disks |
 | Streamable HTTP media or my own HTTP server | **HTTP source + rex feed → rex → Plex apps**, or a compatible player directly | Use an existing source without debrid or zurg | rex needs a feed producer to submit identity and media details; a bare URL does not provide that metadata |
 
@@ -74,7 +74,7 @@ flowchart TD
     R --> Q[Plex apps]
 ```
 
-The Stremio NZB search branch needs a configured NZB backend and Newznab indexer. The mount-to-SMB branch needs a separate share configured on the host.
+The Stremio NZB search branch needs the direct `nzb` backend and a Newznab indexer; TorBox hosted NZBs play through TorBox Cast or the Kodi addon instead. The mount-to-SMB branch needs a separate share configured on the host.
 
 Two smaller routes are worth keeping separate:
 
