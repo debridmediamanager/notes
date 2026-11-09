@@ -52,13 +52,18 @@ flowchart TD
     B --> C[Stremio]
     A --> K[DMM Kodi addon]
     E --> K
+    K --> KD[Kodi]
     A --> D[Provider WebDAV, when offered]
     D --> W[WebDAV player]
     A --> V[DMM Watch]
     E --> V
     V --> F[External player]
     A --> Z[zurg]
-    N[Own Usenet or TorBox hosted NZBs] --> Z
+    N[Own Usenet account] --> Z
+    T2[TorBox hosted NZBs] --> Z
+    T2 --> TC[TorBox Cast]
+    TC --> C
+    T2 --> K
     Z --> W[WebDAV player]
     Z --> ZA[Stremio NZB search addon]
     ZA --> C
