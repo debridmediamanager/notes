@@ -1133,9 +1133,9 @@ the content, so what is left to establish is that the release reached the
 library with files in it; that is what the check asks, and a release the
 account lists empty is set aside like a dead post.
 
-An install with no `nzb` provider can still run acquisition from Torznab
-indexers alone. Its Newznab indexers are not searched there, because nothing on
-that install can play an NZB. The log says so once for each of them. An
+An install with no NZB account (`nzb` or `torbox_nzb`) can still run
+acquisition from Torznab indexers alone. Its Newznab indexers are not searched
+there, because nothing on that install can play an NZB. The log says so once for each of them. An
 install with no account that takes torrents does not search its Torznab
 indexers, the same way. Either way, a release of a kind the install has
 nowhere to put is never a candidate, so it uses up none of the releases an
@@ -1352,8 +1352,8 @@ no dead articles, so it cannot silence a file that plays. When the sizing pass
 has just fetched a file's first article, the check reads that copy instead of
 fetching it a second time.
 
-An install with no `nzb` provider has no news servers to ask. Acquisition still
-runs there when a debrid account takes torrents. Each torrent is checked by
+An install with no NZB account (`nzb` or `torbox_nzb`) has nothing to check an
+NZB grab with. Acquisition still runs there when a debrid account takes torrents. Each torrent is checked by
 whether it reaches the library with files in it, as
 [Newznab and Torznab](#newznab-and-torznab) describes. It also has to hold
 something to play: a video, audio, or an archive zurg streams from (RAR, 7z,
@@ -1362,9 +1362,9 @@ is a fake, which new episodes attract in the first hours after they air. It is
 set aside like a dead post and the next release is tried at once. If zurg added
 it to the account for this request, it is deleted from the account again. A
 torrent the account already held is left where it is. An NZB grab is never
-acknowledged there, because nothing could check it or play it. One left
-waiting from before the `nzb` provider was removed is set aside like a dead
-post, and the next release is tried.
+acknowledged without an NZB account, because nothing could check it or play it.
+One left waiting from before the last NZB account was removed is set aside like a
+dead post, and the next release is tried.
 
 ## Persistence and recovery
 
