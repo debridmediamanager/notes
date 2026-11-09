@@ -19,9 +19,10 @@ The perks follow the sponsorship. When it ends DMM stops them on the next reques
 | Nightly builds with every provider and Usenet plus the Docker image and the Android app | [zurg setup](../zurg/setup/index.md) after you accept the GitHub invitation |
 | The full zurg source code | The private repository on GitHub |
 | Every release named for rex and Plex | `dmm_api_key` in the [zurg config](../zurg/reference/config.md) |
+| Media details for your files from DMM without zurg reading them first and a release's languages checked before it is added | Nothing beyond `dmm_api_key` |
 | The `__magic__` folders sorted for you once you turn them on | [\_\_magic\_\_](../zurg/guides/magic.md) |
 | Your DMM wanted list fetched by zurg | [DMM wanted list](../zurg/guides/dmm-wanted.md) |
-| DMM's Usenet and torrent indexers searched for you when you have no indexer of your own | Nothing to set up beyond `dmm_api_key` |
+| DMM's Usenet and torrent indexers searched for you when you have no indexer of your own | Nothing beyond `dmm_api_key` once zurg has a Usenet provider or a debrid account to add torrents to |
 | Releases picked by each title's original language | `original` in [audio and subtitle languages](../zurg/guides/acquisition.md#choosing-by-audio-and-subtitle-language) |
 | A wanted film no indexer carries streamed from its official YouTube upload | [Streaming a film from YouTube](../zurg/guides/acquisition.md#streaming-a-film-from-youtube) |
 
@@ -31,7 +32,7 @@ The `dmm_api_key` features need a zurg nightly. The free public build does not h
 
 | What you get | Where |
 |---|---|
-| A wanted list filled from DMM or Kodi or Trakt and MDBList lists or a Radarr or Sonarr backup | [DMM wanted list](../zurg/guides/dmm-wanted.md) |
+| A wanted list that zurg fetches with new episodes and upgrades included. Fill it from DMM or Kodi or Trakt and MDBList lists or a Radarr or Sonarr backup | [DMM wanted list](../zurg/guides/dmm-wanted.md) |
 | Requests from Seerr or Overseerr or Jellyseerr land on your wanted list | [Seerr through DMM](../dmm/seerr.md) |
 | Any Easynews result sent to your zurg in one click | The Easynews results on a film or show page on DMM |
 | DMM as a Newznab indexer for Usenet | DMM's [Newznab page](https://debridmediamanager.com/newznab) |
