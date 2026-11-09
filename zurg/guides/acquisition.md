@@ -12,8 +12,8 @@ owns progress, retries and acknowledgement. The shared executor selects releases
 from Newznab indexers, saving NZBs for zurg's Usenet backend, and from Torznab
 indexers, handing info hashes to a debrid account that already holds them: see
 [Newznab and Torznab](#newznab-and-torznab). Nothing is acknowledged until
-the grab has been checked. An NZB is put to the news servers, or on a
-`torbox_nzb` account has to be fetched by TorBox. A torrent has to show up in
+the grab has been checked. An NZB is checked against the news servers. On a
+`torbox_nzb` account TorBox has to fetch it instead. A torrent has to show up in
 the library with files in it. See
 [Verifying a grab](#verifying-a-grab).
 
@@ -1421,8 +1421,9 @@ queries a day to tens of thousands, and the indexer suspended the account.
 Most were films with no Usenet release and upgrades that every release the
 profile allowed had already been refused for. Open Seerr requests remain monitored. Plex items leave
 the watchlist only after all planned seasons are acquired *and* checked (an NZB
-against the news servers, a torrent by reaching the library with something to
-play), only when `remove_after_grab` allows it, and only when zurg
+against the news servers or, on a `torbox_nzb` account, by whether TorBox
+fetched it; a torrent by reaching the library with something to play), only
+when `remove_after_grab` allows it, and only when zurg
 fetched something for them. Its loose-episode fallback remains limited to episodes found
 in indexer results.
 
