@@ -19,9 +19,9 @@ On a phone, swipe a table sideways to see all its columns.
 | I have / want… | Choose this route | Why choose it? | What you take on |
 |---|---|---|---|
 | Stremio and a debrid or Easynews account; no server to maintain | **DMM Cast → Stremio**, or your existing stream addon | Watch through your account without running zurg, rex or a media server | The addon and provider must supply a playable stream; the device handles playback |
-| Kodi and a debrid or Easynews account | **DMM's Kodi addon → your account** | Browse, search and play inside Kodi; pair from your phone | Kodi does the playback. A sponsor's Wanted list still needs zurg to fulfil requests |
+| Kodi and a debrid, Easynews or TorBox Pro account | **DMM's Kodi addon → your account** | Browse, search and play inside Kodi; pair from your phone. The addon's TorBox library includes hosted NZB downloads | Kodi does the playback. A sponsor's Wanted list still needs zurg to fulfil requests |
 | One movie to watch in my usual player | **DMM Watch → external player** | No library server needed | Install a supported player and choose a file it can play |
-| Infuse, Kodi or another WebDAV player | **Provider WebDAV**, if it meets your needs; otherwise **zurg → WebDAV player** | Browse a cloud library without Plex, Jellyfin, Emby or rex | zurg needs a running host; direct provider WebDAV depends on that provider's offering |
+| Infuse, Kodi or another WebDAV player | **Provider WebDAV** with no host; **zurg → WebDAV player** when a host can stay on | Browse a cloud library without Plex, Jellyfin, Emby or rex | Real-Debrid, AllDebrid, Premiumize, TorBox and Debrid-Link serve their own WebDAV, with their own folder layout. Offcloud has none, so it needs zurg. zurg needs a host that stays on while you watch |
 | Plex Media Server already working | **zurg → mounted folder → Plex Media Server → Plex app** | Keep your server, its libraries and existing workflows | Run zurg and a filesystem mount alongside the server; scans read remote files |
 | Plex apps, but no wish to maintain a mounted library | **zurg → rex → Plex app** | zurg supplies the library to rex without a mount or Plex Media Server | Both services stay running; check rex's app compatibility and account guidance |
 | Stremio addons, but I prefer Plex apps | **Addons → rex-stremio → rex → Plex app** | Turn addon catalogs into Plex libraries; zurg is optional | Run rex and rex-stremio; stream addons must return playable URLs, not raw torrents |
@@ -121,7 +121,7 @@ flowchart TD
     Z --> V[Your chosen zurg playback route]
     O --> T[TorBox Pro hosted Usenet]
     T --> B[TorBox completed files]
-    B --> C[DMM TorBox Cast or zurg hosted NZB library]
+    B --> C[DMM TorBox Cast, the Kodi addon or zurg hosted NZB library]
     O --> D[DMM hosted transfer]
     D --> R[Your Real-Debrid library]
     R --> P[Your chosen RD playback route]
@@ -151,7 +151,7 @@ Acquisition and playback are separate choices. You can change how a title is req
 |---|---|---|
 | Pick the exact release | DMM search/library → provider; or an NZB → your selected NZB backend | Control the edition, size and release yourself |
 | Press Want, or follow a Trakt/MDBList list | [DMM Wanted](../zurg/guides/dmm-wanted.md) → zurg acquisition | Automatic films and new episodes without running Sonarr/Radarr; sponsorship required |
-| Family requests in Seerr/Overseerr/Jellyseerr | [Seerr through DMM](../dmm/seerr.md) → Wanted → zurg | Familiar request UI without an arr server; sponsorship required |
+| Family requests in Seerr/Overseerr/Jellyseerr | [Seerr through DMM](../dmm/seerr.md) → Wanted → zurg | Familiar request UI without an arr server; sponsorship required. Seerr needs a Plex, Jellyfin or Emby server to be set up against |
 | Already have Plex watchlists or a request stack | [zurg acquisition](../zurg/guides/acquisition.md) | Keep the existing request source; configure its search and provider targets |
 | Want detailed monitoring and quality profiles in Sonarr/Radarr | DMM or your indexers → arr → zurg download-client interface → library | Keep arr's decisions and import workflow; more services and path setup |
 | Want to choose only when pressing Play | DMM Cast/Kodi, another stream addon, or zurg's Stremio search | No need to pre-build a managed library of every title |
@@ -164,7 +164,7 @@ If you want **complete local copies**, download/copy the actual files from your 
 
 | Question | What changes your choice |
 |---|---|
-| Must another machine stay on? | Hosted Cast/Kodi routes do not need your own server. zurg, rex, rex-stremio and media-server plugins do need their host while you watch. zurg Android can make the viewing device that host. A rented/managed host changes who runs it, not the underlying route. |
+| Must another machine stay on? | Hosted Cast/Kodi routes, provider WebDAV and DMM Watch do not need your own server. zurg, rex, rex-stremio and media-server plugins do need their host while you watch. zurg Android can make the viewing device that host. A rented/managed host changes who runs it, not the underlying route. |
 | Will my TV play the file? | WebDAV and addon routes depend on the player's codecs, audio and subtitles. zurg serves bytes; it is not a video transcoder. Plex Media Server, Jellyfin, Emby or rex with FFmpeg can convert when needed, with appropriate hardware and server/app capabilities. |
 | How much disk space? | Streaming avoids storing the whole collection. Allow space for databases, artwork, caches and any repair, transcode or offline-download work. “No full download first” does not mean zero disk use. |
 | Who pays for bandwidth? | Provider traffic quotas still apply. A server proxy carries playback traffic and uses its outgoing bandwidth; direct playback shifts the connection to the viewer. Library analysis can read remote files too. |
@@ -203,7 +203,7 @@ There is also a [legacy free zurg release](https://github.com/debridmediamanager
 ## Five common starting points
 
 1. **“I have Stremio and RD.”** Start with DMM Cast. Add zurg only when you want a shared library, automation or another consumer that needs it.
-2. **“I have TorBox Pro and want the NZBs in that post.”** Send the NZB to TorBox through DMM. Use TorBox Cast to watch in Stremio, or zurg's hosted NZB backend to feed your chosen library/player route.
+2. **“I have TorBox Pro and want the NZBs in that post.”** Send the NZB to TorBox through DMM. Use TorBox Cast to watch in Stremio, the Kodi addon to watch in Kodi, or zurg's hosted NZB backend to feed your chosen library/player route.
 3. **“I already have Jellyfin.”** Start with the plugin for your provider. Choose separate zurg when you need its shared filesystem, automation or broader backend capabilities.
 4. **“I want Plex apps, no mounts, and my existing addons.”** Use rex-stremio with rex. Use zurg as a source instead when the thing you want to expose is your managed debrid/Usenet library. Both sources can feed the same rex.
 5. **“I have news accounts and want Sonarr/Radarr.”** Use DMM Newznab or your existing indexers, zurg's NZB/SABnzbd route and a playback route from the first table. For permanent local files, choose a normal downloader or explicitly save complete copies; virtual imports alone are not offline files.
