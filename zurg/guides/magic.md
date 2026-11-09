@@ -17,6 +17,7 @@ It holds three kinds of thing. `__magic__/__all__` holds every release nothing h
 ├── __all__     <- what nothing has placed yet, where a grab lands
 ├── __movies__  <- films zurg filed by title
 ├── __shows__   <- shows zurg filed by title
+├── __anime__   <- anime shows, with magic.anime: true
 ├── anime
 ├── movies
 └── tv          <- your *arr root folders
@@ -174,6 +175,27 @@ Point each library at its folder, never at `__magic__` itself: that would scan `
 - **One copy per title.** When two releases are the same episode or film, the better one is filed, by resolution and then size; the other stays in `__all__`.
 - **Extras and samples are left in `__all__`**, and so is anything DMM has not identified. A release is filed once DMM identifies it.
 
+### Anime in a folder of its own
+
+Anime shows can go to a third folder, `__anime__`, so Kodi and Plex get an Anime library of their own, the way a second Sonarr for anime gave you one. It needs a zurg nightly from 2026-11-10 or later and one more line:
+
+```yaml
+magic:
+  enabled: true
+  placement: true
+  anime: true
+dmm_api_key: YOUR_DMM_API_KEY
+```
+
+Restart zurg, then add a **TV** library pointed at `/mnt/zurg/__magic__/__anime__` and scan it. What counts as anime is DMM's call, from TMDB: a show TMDB lists as animation, in Japanese and from Japan, all three, or one TMDB tags with its *anime* keyword. Detective Conan, Ace of the Diamond and Cyberpunk: Edgerunners go to `__anime__`; Hazbin Hotel (animation from the US), Alice in Borderland (Japanese, live action) and LINK CLICK (Chinese animation) stay in `__shows__`. Films stay in `__movies__`, anime films included: a Movies library is one type, and so is this folder.
+
+Turning it on moves every anime show out of `__shows__` within a few minutes, which your players see as shows leaving one library and appearing in another:
+
+- **Plex** drops them from the TV library (as missing, or removed outright if it empties trash after scans) and picks them up in the Anime library on its next scan. Watched state comes along: Plex ties it to the show, not to the library, so an episode watched in the TV library shows as watched in the Anime library (measured 2026-11-09).
+- **Kodi** ties watched state to the file's path, so export your video library (Settings → Media → Library → Export) before turning this on and import it after the Anime source is scanned.
+
+Turning it off moves them back the same way.
+
 ### With the DMM wanted list
 
 Press **Want** on DMM and zurg fetches the title ([DMM wanted list](dmm-wanted.md)). What it fetches is filed here like everything else, so the film or show shows up in Kodi and Plex under its own name, with no Sonarr or Radarr involved. A torrent it grabbed can take up to an hour to be filed; an NZB is filed as soon as DMM identifies it.
@@ -195,7 +217,7 @@ To have Kodi and Plex match their libraries the same way:
 ### Good to know
 
 - **Deleting in a player hides the file**, as any delete in `__magic__` does. It stays on your debrid account, and zurg does not file it again.
-- **Nothing can be moved into `__movies__` or `__shows__`**: they are zurg's to fill. Moving something out of them, as an \*arr import does, works.
+- **Nothing can be moved into `__movies__`, `__shows__` or `__anime__`**: they are zurg's to fill. Moving something out of them, as an \*arr import does, works.
 - **When DMM's identification of a release changes**, zurg moves its files to the new name.
 - **A file that breaks keeps its place** while zurg repairs it, so your media server does not lose it.
 - **Without a DMM sponsor key nothing is filed.** Removing the key, or turning `__magic__` off, leaves what was filed where it is.
@@ -246,7 +268,7 @@ A release you have moved is still in `movies`, still in `recent`, still in `__al
 
 This surprises people, so it is worth saying plainly: **moving something in `__magic__` changes only `__magic__`.** The filter directories are computed from the release, and the release has not changed.
 
-For a media server, point it at **one** of the two. A Plex library that scans both `shows/` and `__magic__/tv` will find every episode twice. The same goes for `__movies__` and `__shows__`: point a library at one of them, never at `__magic__` itself.
+For a media server, point it at **one** of the two. A Plex library that scans both `shows/` and `__magic__/tv` will find every episode twice. The same goes for `__movies__`, `__shows__` and `__anime__`: point a library at one of them, never at `__magic__` itself.
 
 ## Sidecars: `.nfo`, posters, subtitles
 
@@ -299,7 +321,7 @@ Useful if you drive the namespace over WebDAV directly; the mount handles all of
 | `201` | MOVE, MKCOL or PUT created something |
 | `204` | DELETE, or a PUT that replaced a sidecar |
 | `400` | a path this namespace cannot store, or a `Destination` header that is missing or unreadable |
-| `403` | a destination outside `__magic__` or inside `__movies__` or `__shows__`, a path the library answers for, a path running through a file, `__magic__` itself, or a table that is read-only |
+| `403` | a destination outside `__magic__` or inside `__movies__`, `__shows__` or `__anime__`, a path the library answers for, a path running through a file, `__magic__` itself, or a table that is read-only |
 | `404` | nothing there (a DELETE of nothing still answers `204`), or a MOVE out of an archive that no longer holds the entry |
 | `405` | MKCOL where something already exists, or PUT onto a directory |
 | `409` | missing parent, non-empty directory, an occupied destination with `Overwrite: T`, or a MOVE out of an archive that will not open |
@@ -322,6 +344,6 @@ A `MOVE` **out of an archive** is also checked against the archive itself before
 ## See also
 
 - [sabnzbd.md](sonarr-radarr.md) — pointing Sonarr and Radarr at zurg, which is what `__magic__` was built to make possible
-- [DMM wanted list](dmm-wanted.md) — press Want on DMM and zurg fetches it into `__movies__` and `__shows__`
+- [DMM wanted list](dmm-wanted.md) — press Want on DMM and zurg fetches it into `__movies__`, `__shows__` or `__anime__`
 - [usenet.md](usenet.md) — the NZB backend those grabs land in
 - [config.md](../reference/config.md#__magic__-a-directory-you-can-organise) — every key in the `magic:` block
