@@ -60,7 +60,8 @@ docker compose restart zurg
 
 ## How NZBs get in
 
-Everything that reaches an `nzb` entry reaches this one the same way.
+Everything that reaches an `nzb` entry reaches this one the same way; DMM's
+TorBox action is the one path that bypasses zurg.
 
 - **The watch directory.** Drop a file into `nzbs/` beside the config
   (`~/zurg/nzbs/` on the host, `/config/nzbs/` in the container). zurg posts it
