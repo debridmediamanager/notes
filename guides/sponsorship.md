@@ -48,7 +48,7 @@ The `dmm_api_key` features need a zurg nightly. The free public build does not h
 
 ## rex
 
-rex is free and needs no sponsorship. With a key [rex-stremio](../rex/stremio.md) adds debrid streams of torrents DMM already holds a probe of to rex in seconds instead of probing each one. Paste the key in the **DMM** field on rex-stremio's settings page. It then shares its own probes with DMM unless you turn that off.
+rex is free and needs no sponsorship. With a key [rex-stremio](../rex/stremio.md) adds debrid streams of torrents DMM already holds a probe of to rex in seconds instead of probing each one. Paste the key in the **DMM** field on rex-stremio's settings page. It then shares its probes of torrent files with DMM unless you turn that off.
 
 ## Help
 
