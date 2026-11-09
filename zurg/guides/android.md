@@ -4,12 +4,13 @@ icon: device-mobile
 order: 40
 ---
 
-# zurg for Android and Google TV
+# zurg+rex for Android and Google TV
 
-The Android app runs a zurg engine on the device, installed from inside the app. One app adapts to
+The Android app runs a zurg engine on the device, installed from inside the app,
+and rex beside it for the Plex apps. One app adapts to
 phones, tablets, Android TV and Google TV. Android 8.0 or newer is required.
 Fire TV can sideload the same APK; use a WebDAV player when no system Files app
-is installed. Usenet requires 64-bit Android, and TorBox hosted NZBs (`torbox_nzb`)
+is installed. Usenet and rex require 64-bit Android, and TorBox hosted NZBs (`torbox_nzb`)
 are not available on Android.
 
 ## Install and set up
@@ -59,6 +60,17 @@ Repair, rename, tags, show all files and delete operate on the entire owning
 release. Deletion asks for confirmation and deletes from its provider account.
 MediaInfo uses the bundled ffprobe and opens the resulting video, audio and
 subtitle details in the dashboard. No separate media tool installation is needed.
+
+## Watch in the Plex apps
+
+From the nightly of 10 November 2026, on 64-bit Android the app also runs rex,
+a media server for the Plex apps, and points zurg at it, so your library appears
+in the official Plex apps and in Plezy, on this device and on others in your
+home. Once your library is running, Status shows **rex for the Plex apps**:
+choose **Sign in to Plex** and approve the sign-in (on a TV, enter the code at
+plex.tv/link). The server appears in Plex under this device's name. rex converts
+what a player cannot play with the device's hardware encoder. Turn rex off in
+Settings, Connection; zurg then stops feeding it.
 
 ## Share over the local network
 
