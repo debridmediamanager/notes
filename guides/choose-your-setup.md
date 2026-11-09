@@ -55,6 +55,7 @@ flowchart TD
     K --> KD[Kodi]
     A --> D[Provider WebDAV, when offered]
     D --> W[WebDAV or SMB player]
+    D --> KD
     A --> V[DMM Watch]
     E --> V
     V --> F[External player]
