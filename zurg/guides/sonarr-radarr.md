@@ -12,7 +12,7 @@ There are three ways to use Sonarr and Radarr with zurg. The real choice is who 
 |---|---|---|---|
 | [Usenet](sonarr-radarr.md) | Sonarr and Radarr | a SABnzbd | a Usenet account (or TorBox Pro for the `torbox_nzb` backend) and Usenet indexers in Prowlarr or the \*arrs |
 | [Torrents](sonarr-radarr-torrents.md) | Sonarr and Radarr | a qBittorrent | a debrid account and torrent indexers in Prowlarr or the \*arrs |
-| [zurg searches](sonarr-radarr-fetch.md) | zurg | no download client at all | a Usenet or debrid account, and Newznab or Torznab indexers in zurg's own config |
+| [zurg searches](sonarr-radarr-fetch.md) | zurg | no download client at all | a Usenet, TorBox Pro or debrid account, and Newznab or Torznab indexers in zurg's own config |
 
 The first two can run side by side. They share the same `__magic__` folder.
 
