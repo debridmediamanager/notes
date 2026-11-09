@@ -320,9 +320,10 @@ and `.nzb.gz` is not read.
 
 Point libraries at **subdirectories** of the mount such as `/mnt/zurg/movies`
 and `/mnt/zurg/shows`. Never the root. The same release appears under `__all__`
-and `__nzb__` and every matching directory so the root would be scanned several
-times over. Give zurg `plex_server_url` and `plex_token` so it can request
-partial scans.
+and every matching directory so the root would be scanned several times over;
+`__nzb__` is left off the mount's root listing and does not resolve through the
+mount, since `__all__` holds the same files. Give zurg `plex_server_url` and
+`plex_token` so it can request partial scans.
 
 Two library settings matter from the very first scan whether the library is
 brand-new or not. The failure they guard against is the mount blipping *during*
