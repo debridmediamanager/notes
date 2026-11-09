@@ -824,7 +824,7 @@ The API key is the whole of the authentication. Treat the endpoint the way you t
 
 ### The `stremio` addon
 
-zurg can be a Stremio addon that searches your own Newznab indexers and plays through the Usenet backend. It needs an NZB account, `nzb` or [`torbox_nzb`](../providers/torbox-nzb.md), and at least one indexer. With `torbox_nzb`, a release TorBox already holds starts within the addon's wait; an uncached one must finish on TorBox first, which is longer than a player waits. It is off until asked for. Setup and what a play does are in [stremio.md](../guides/stremio.md).
+zurg can be a Stremio addon that searches your own Newznab indexers and plays through the Usenet backend. It needs an NZB account, `nzb` or [`torbox_nzb`](../providers/torbox-nzb.md), and at least one indexer. With `torbox_nzb`, a release TorBox already holds starts within the addon's wait when no other NZB post is waiting; an uncached one must finish on TorBox first, which is longer than a player waits. It is off until asked for. Setup and what a play does are in [stremio.md](../guides/stremio.md).
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|

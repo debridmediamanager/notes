@@ -107,8 +107,8 @@ accounts.
 
 zurg's Stremio addon posts its pick to whichever NZB account the instance has.
 With `torbox_nzb`, a release TorBox already holds starts within the addon's
-wait; an uncached one must finish on TorBox first, which is longer than a
-player waits.
+wait when no other NZB post is waiting; an uncached one must finish on TorBox
+first, which is longer than a player waits.
 
 ## Check it worked
 

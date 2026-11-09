@@ -18,8 +18,8 @@ release.
 The addon needs an NZB account, `nzb` or
 [`torbox_nzb`](../providers/torbox-nzb.md), which is what serves the bytes, and
 at least one indexer. With `torbox_nzb`, a release TorBox already holds starts
-within the addon's wait; an uncached one must finish on TorBox first, which is
-longer than a player waits.
+within the addon's wait when no other NZB post is waiting; an uncached one must
+finish on TorBox first, which is longer than a player waits.
 
 ```yaml
 stremio:
