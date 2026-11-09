@@ -115,7 +115,10 @@ first, which is longer than a player waits.
 
 ```bash
 curl -fsS -X POST http://localhost:9999/api/providers/torbox_nzb/test
-ls /zurg_mnt/zurg/__torbox_nzb__/
+ls /zurg_mnt/zurg/__all__/
+curl -s http://localhost:9999/http/__torbox_nzb__/ | head
 ```
 
-The directory name follows the entry's name, which defaults to its type.
+With only one account, its own folder is left out of the mount's root listing,
+so the mount shows the same files under `__all__`. The directory name follows
+the entry's name, which defaults to its type.
