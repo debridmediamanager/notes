@@ -11,8 +11,8 @@ order: 38
 With a TorBox Pro plan TorBox does the Usenet part for you. zurg posts the
 `.nzb` files in its watch directory to your TorBox account. TorBox fetches each
 release, repairs it and serves it like any other TorBox download. zurg lists
-what it fetched in the mount beside everything else. There is no news server
-account and nothing is decoded on your machine.
+what TorBox fetched in the mount beside everything else. There is no news
+server account and nothing is decoded on your machine.
 
 This is not [TorBox's news server](torbox-news-server.md). That is a login for
 the `nzb` backend, which reads articles itself and is covered on
@@ -31,12 +31,23 @@ torrents, and the [TorBox](torbox.md) page covers it.
 
 ## Configure it
 
-The entry takes a `token` and nothing else. There is no `nntp` block.
+The entry takes a `token`; there is no `nntp` block.
 
 ```yaml
 providers:
   - type: torbox_nzb
     token: YOUR_TORBOX_API_KEY
+```
+
+On a fresh container install let setup write it, with the key saved in
+`~/zurg/secrets/torbox`.
+
+```bash
+cd ~/zurg
+docker compose run --rm zurg setup \
+  --no-service --skip-downloads --mount-path /zurg_mnt/zurg \
+  --provider torbox_nzb \
+  --torbox-token-file /config/secrets/torbox
 ```
 
 On an install that already has a `config.yml` you can also use **Add provider**
