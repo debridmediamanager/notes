@@ -100,8 +100,10 @@ The client blocklists the release and searches again.
 
 An instance takes one `nzb` entry or one `torbox_nzb` entry, never both. Both
 would list every file in `nzbs/`. To run both, give the other kind an instance
-of its own with its own working directory. Either one can sit beside your
-debrid accounts.
+of its own with its own working directory. With `dmm_api_key` on both,
+[turn the `dmm-wanted` source off on one](../guides/dmm-wanted.md#two-zurgs-on-one-key),
+or every Wanted title is fetched twice. Either one can sit beside your debrid
+accounts.
 
 zurg's Stremio addon posts its pick to whichever NZB account the instance has.
 With `torbox_nzb`, a release TorBox already holds starts within the addon's
