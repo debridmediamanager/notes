@@ -54,7 +54,7 @@ flowchart TD
     E --> K
     K --> KD[Kodi]
     A --> D[Provider WebDAV, when offered]
-    D --> W[WebDAV player]
+    D --> W[WebDAV or SMB player]
     A --> V[DMM Watch]
     E --> V
     V --> F[External player]
@@ -64,12 +64,13 @@ flowchart TD
     T2 --> TC[TorBox Cast]
     TC --> C
     T2 --> K
-    Z --> W[WebDAV player]
+    Z --> W[WebDAV or SMB player]
+    Z --> F
     Z --> ZA[Stremio NZB search addon]
     ZA --> C
     Z --> M[Filesystem mount]
     M --> SMB[Host SMB share]
-    SMB --> F
+    SMB --> W
     M --> S[Plex Media Server, Jellyfin or Emby]
     S --> P[Compatible server clients]
     Z --> R[rex]
