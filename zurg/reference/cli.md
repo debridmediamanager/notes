@@ -33,7 +33,7 @@ Keys and passwords are read from files. That keeps them out of your shell histor
 
 | Flag | What it does |
 |---|---|
-| `--provider` | A provider to configure. Repeat it for more than one. One of realdebrid, torbox, alldebrid, nzb, premiumize, debridlink, offcloud, torbox_nzb. |
+| `--provider` | A provider to configure. Repeat it for more than one. One of realdebrid, torbox, alldebrid, nzb, premiumize, debridlink, offcloud, torbox_nzb. torbox_nzb reads its key from `--torbox-token-file` or `TORBOX_TOKEN`, as torbox does. |
 | `--realdebrid-token-file` | Reads the Real-Debrid token from this file. The same flag exists for `torbox`, `alldebrid`, `premiumize`, `debridlink` and `offcloud`. |
 | `--nntp-host` | The news server for the `nzb` provider. |
 | `--nntp-port` | Its port. Defaults to 563 with TLS and 119 without. |
