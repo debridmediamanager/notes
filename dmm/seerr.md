@@ -17,7 +17,7 @@ It is for sponsors: Seerr signs in to DMM with your DMM API key, which [gatekeep
 
 - zurg reading your wanted list: `dmm_api_key` in `config.yml`, as set up in
   [Fetch what you want from DMM](../zurg/guides/dmm-wanted.md#what-you-need).
-- Seerr set up with your Plex or Jellyfin server. Seerr learns from it which episodes you
+- Seerr set up with your Plex, Jellyfin or Emby server. Seerr learns from it which episodes you
   already have.
 
 ## Add DMM as Radarr
