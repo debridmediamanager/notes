@@ -84,8 +84,9 @@ acquisition:
       check_every_secs: 60
 ```
 
-Run this on a zurg instance with an `nzb` provider, a debrid account that takes
-torrents, or both. NZBs from Newznab indexers land in its `nzbs/` directory.
+Run this on a zurg instance with an `nzb` provider or a `torbox_nzb` account
+(TorBox Pro), a debrid account that takes torrents, or both. NZBs from Newznab
+indexers land in its `nzbs/` directory.
 Torrents from Torznab indexers go to a debrid account. They are added only when
 that account already has them cached. With neither kind of account the sources
 do not start. The acquisition page says why. Plex needs the existing
@@ -374,8 +375,8 @@ no Sonarr or Radarr is involved. The source is named `dmm-wanted` and is polled 
 - **A copy at each of several resolutions.** With `quality` written as a list, such as
   `[1080p, 4k]`, each film is kept a copy at each resolution in it. See
   [a copy at each of several resolutions](#a-copy-at-each-of-several-resolutions).
-- **Without a grabbing account.** An instance with neither an `nzb` provider nor a
-  debrid account that takes torrents does not read the list.
+- **Without a grabbing account.** An instance with no `nzb` provider, no `torbox_nzb`
+  account (TorBox Pro) and no debrid account that takes torrents does not read the list.
 
 **Two zurgs on one key both fetch every title.** Each reads the same list, so run the
 wanted list on one of them and turn it off on the others by writing it disabled:
