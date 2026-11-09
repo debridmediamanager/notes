@@ -109,7 +109,7 @@ An **indexer** finds releases. A **torrent or NZB** describes how to fetch one; 
 | NZB, using your own news accounts | zurg's **direct Usenet** backend, or Jellyfin's NZB plugin, reads articles as needed | NZBs, NNTP access and your chosen integration; indexer access if you want search | Choose your providers/backbones, use fallback accounts, avoid storing whole videos locally |
 | NZB, using TorBox's hosted service | **TorBox fetches and repairs it**, then serves the completed files | TorBox Pro; submit through DMM or zurg's **TorBox hosted NZB** backend | You want NZBs without managing news-server credentials or local decoding |
 | DMM Usenet result sent to Real-Debrid | DMM's hosted transfer service fetches it and passes it to **your Real-Debrid library** | Real-Debrid and an available DMM transfer allowance | You already watch through RD and want that release there; no personal NNTP account required |
-| Easynews search result | Easynews serves a direct HTTP download/stream | Your own Easynews account | Watch/download from DMM, or use its Easynews Cast/Kodi route, without building an NZB library |
+| Easynews search result | Easynews serves a direct HTTP download/stream | Your own Easynews account | Watch or Cast from DMM, or use its Easynews Cast/Kodi route, without building an NZB library |
 | Direct HTTP(S) download link | A compatible player/HTTP source, or a provider supporting that download | Access to the actual media URL; a suitable provider account if importing/unrestricting it there | You already have a file URL rather than a torrent/NZB |
 | Files on your disk or NAS | Your file/media server | Local storage and a player that can reach it | Offline ownership, home videos, or keeping an existing collection |
 
@@ -143,7 +143,7 @@ flowchart TD
 
 **Choose DMM → Real-Debrid** if the desired end result is a release in your RD library. This is a hosted transfer, with queues and allowances; an uncached job takes time. It does not give Real-Debrid native NNTP support, and it does not mean every debrid provider accepts NZBs. The DMM result and [Transfers page](https://debridmediamanager.com/transfers) show the job's progress.
 
-Easynews adds another choice: its **Watch**, **Download** and **Cast** actions use Easynews's HTTP files. **Send to zurg** instead places that release's NZB on your sponsor Wanted list for zurg to fetch. The latter needs a configured NZB backend; an Easynews web login in DMM does not configure zurg's NZB account.
+Easynews adds another choice: its **Watch** and **Cast** actions play Easynews's HTTP files, and **Download NZB** saves the release's NZB for your own downloader. **Send to zurg** instead places that release's NZB on your sponsor Wanted list for zurg to fetch. The latter needs a configured NZB backend; an Easynews web login in DMM does not configure zurg's NZB account.
 
 ### What about HTTP links?
 

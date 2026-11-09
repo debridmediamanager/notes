@@ -38,7 +38,7 @@ The `dmm_api_key` features need a zurg nightly. The free public build does not h
 | DMM as a Newznab indexer for Usenet | DMM's [Newznab page](https://debridmediamanager.com/newznab) |
 | DMM as a Torznab indexer with cached-only feeds for Real-Debrid and AllDebrid and Debrid-Link and TorBox and Premiumize and Offcloud | DMM's [Torznab page](https://debridmediamanager.com/torznab). The TorBox and Premiumize and Offcloud feeds need your key for that service linked there |
 | Seven Jellyfin plugins for your debrid and Usenet libraries and six Emby plugins for your debrid libraries with nothing mounted | DMM's [Jellyfin](https://debridmediamanager.com/jellyfin) and [Emby](https://debridmediamanager.com/emby) pages |
-| Ten other streams per title in Stremio Cast and Kodi instead of five | Your Cast profile in DMM Settings |
+| Ten other streams per title in Stremio Cast and Kodi instead of five | DMM Settings for Real-Debrid, TorBox and AllDebrid; each provider's Cast page for the others |
 | Your NZB uploads go first with 2 TB of Usenet a day instead of 300 GB | DMM's Usenet tab |
 | The same for what Sonarr and Radarr send | Your DMM API key as the Password on DMM's [SABnzbd page](https://debridmediamanager.com/sabnzbd) |
 | Three torrent uploads into Real-Debrid at once instead of one | The upload buttons on DMM's search results and library |
