@@ -131,6 +131,7 @@ docker compose run --rm zurg setup --non-interactive \
 | `debridlink` | `--debridlink-token-file` | `DEBRIDLINK_TOKEN` |
 | `offcloud` | `--offcloud-token-file` | `OFFCLOUD_TOKEN` |
 | `nzb` | `--nntp-password-file` with `--nntp-host` and `--nntp-username` | `NNTP_HOST` and friends |
+| `torbox_nzb` | `--torbox-token-file` | `TORBOX_TOKEN` |
 
 With `--non-interactive` and no `--provider` at all setup takes whichever of
 those variables are set.

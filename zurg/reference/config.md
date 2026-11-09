@@ -152,7 +152,7 @@ Each entry in `providers` is one account. Any number can run side by side — Re
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `type` | string | *(required)* | Which backend the account uses: `realdebrid`, `torbox`, `alldebrid`, `premiumize`, `debridlink`, `offcloud`, or `nzb`. |
+| `type` | string | *(required)* | Which backend the account uses: `realdebrid`, `torbox`, `alldebrid`, `premiumize`, `debridlink`, `offcloud`, `nzb`, or `torbox_nzb` ([TorBox hosted Usenet](../providers/torbox-nzb.md)). |
 | `name` | string | value of `type` | Distinguishes this account from others of the same type. It is the name used by the `provider` filter, the [per-account directory](#per-account-directories), cache paths, and the dashboard. Names must be unique across entries, and `e` is reserved for STRM link routing. |
 | `token` | string | *(required)* | The account's API token or key. Get a Real-Debrid one from http://real-debrid.com/?id=20475782, a TorBox one from https://torbox.app/settings, an AllDebrid one from https://alldebrid.com/apikeys?uid=1kk5i. Not used by `nzb`, which authenticates through `nntp` instead. A Real-Debrid token can also be provided via the `TOKEN` or `RD_TOKEN` environment variable to auto-create a config on first run. |
 | `download_tokens` | list | `[]` | **Real-Debrid and AllDebrid:** backup API tokens for the same service, used when the active token's bandwidth allowance is exhausted. They use this entry's catalog, including a [local catalog](#local-debrid-catalogs), without importing the extra accounts' torrent libraries. **TorBox:** accepted, but rotation does not remap account-specific torrent/file IDs; use separate provider entries for different accounts. Unused by NZB. Premiumize, Debrid-Link and Offcloud require separate account entries because their stored file IDs belong to the listing account. |
@@ -220,7 +220,7 @@ torrents zurg adds and leave everything else on the account alone.
 
 #### Usenet accounts
 
-The `nzb` type is Usenet rather than a debrid service: `.nzb` files dropped into the `nzbs/` directory become torrents in the library, and reads are satisfied by fetching articles from your news server and decoding them on demand. Only one enabled `nzb` entry is supported, since both would scan the same directory — extra news servers go under that entry's `nntp.servers` instead, where they serve the same library rather than a second copy of it.
+The `nzb` type is Usenet rather than a debrid service: `.nzb` files dropped into the `nzbs/` directory become torrents in the library, and reads are satisfied by fetching articles from your news server and decoding them on demand. Only one enabled `nzb` entry is supported, since both would scan the same directory — extra news servers go under that entry's `nntp.servers` instead, where they serve the same library rather than a second copy of it. An `nzb` entry beside a [`torbox_nzb`](../providers/torbox-nzb.md) one is refused for the same reason; run that kind in an instance of its own, with its own working directory.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
@@ -773,7 +773,7 @@ Both the `magic:` and the `sabnzbd:` block are editable in full from the [config
 
 zurg can answer Sonarr and Radarr as though it were a SABnzbd. They hand it an NZB, it writes the file into `nzbs/` for the Usenet backend, and once the release is in the library the job reports **Completed** with a job folder under `__magic__/__all__` to import from. Nothing is downloaded to import: the \*arr renames the file inside the mount, which is a row in the `__magic__` table.
 
-It needs both halves to be useful — an `nzb` provider to read the NZB, and `magic.enabled` to have somewhere to import from — and it is off until asked for. Full setup, including what to put in the \*arr, is in [docs/sabnzbd.md](../guides/sonarr-radarr.md).
+It needs both halves to be useful — an `nzb` provider, or a `torbox_nzb` one, to take the NZB, and `magic.enabled` to have somewhere to import from — and it is off until asked for. Full setup, including what to put in the \*arr, is in [docs/sabnzbd.md](../guides/sonarr-radarr.md).
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
