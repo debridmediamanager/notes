@@ -31,7 +31,7 @@ Both check a release before the \*arr imports it. A dead Usenet post or a torren
 
 On a fresh install, start with zurg searching. There is less to set up and no volume layout to get right. Use the download-client route if you want to pick releases by hand. If you would rather wait for your profile's best release than take a quick first file, turn on [`best_first`](acquisition.md#taking-the-profiles-best-first).
 
-Radarr and Sonarr keep the list and the library. zurg does the fetching. Add a movie or a series the way you already do and zurg finds a release on your indexers. It checks that an NZB is still on the news servers, or that your debrid account already holds a torrent. Then it puts the file in its folder inside `__magic__` and asks Radarr or Sonarr to rescan. Nothing is downloaded to import and nothing is copied.
+Radarr and Sonarr keep the list and the library. zurg does the fetching. Add a movie or a series the way you already do and zurg finds a release on your indexers. It checks that an NZB is still on the news servers (for a `torbox_nzb` account, that TorBox fetched it), or that your debrid account already holds a torrent. Then it puts the file in its folder inside `__magic__` and asks Radarr or Sonarr to rescan. Nothing is downloaded to import and nothing is copied.
 
 Radarr and Sonarr need no indexers and no download client for this. They never search and never grab. Your quality profile still decides what zurg is allowed to take.
 
