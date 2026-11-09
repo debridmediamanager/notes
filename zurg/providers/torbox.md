@@ -163,8 +163,11 @@ Real-Debrid location codes.
 
 ```bash
 curl -fsS -X POST http://localhost:9999/api/providers/torbox/test
-ls /zurg_mnt/zurg/__torbox__/ | head
+ls /zurg_mnt/zurg/__all__/ | head
 ```
+
+With only one account, its own folder is left out of the mount's root listing,
+so the mount shows the same files under `__all__`.
 
 ## When it goes wrong
 

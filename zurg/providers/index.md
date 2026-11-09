@@ -199,15 +199,17 @@ the account's `name`. That defaults to its `type`. Add `-u user:pass` if you hav
 set a `username` in `config.yml`. Without one the Dashboard and its API are open
 on the port you published.
 
-Last of all look for the account's own directory at the mount root.
+Last of all look at the library on the mount.
 
 ```bash
-ls /zurg_mnt/zurg/
+ls /zurg_mnt/zurg/__all__/
 ```
 
 Every configured account gets a `__<name>__` directory. It holds everything that
 account holds and it pins reads to that account. `__torbox__/Some.Release/`
-streams from TorBox and nowhere else. A single-account install gets one too.
+streams from TorBox and nowhere else. A single account's own folder is left off
+the mount's root listing, since `__all__` is the same library. Direct HTTP and
+WebDAV paths such as `/http/__torbox__/` still answer.
 
 A large library takes a while on its first load. Until it finishes `/dav/movies/`
 answers 503 and the mount may list nothing.
