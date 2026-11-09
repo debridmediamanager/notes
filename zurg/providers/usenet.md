@@ -96,7 +96,8 @@ recreate like everything else.
 - **Only one enabled `nzb` entry.** Two would scan the same directory and
   duplicate every release. More news servers belong under that one entry's
   `nntp.servers`. There they serve the same library rather than a second copy
-  of it.
+  of it. An `nzb` entry beside a [`torbox_nzb`](torbox-nzb.md) one is refused
+  for the same reason.
 - **`watchlist: true` is refused.** A news server is never handed a torrent.
 - **`add_torrents` is ignored** and startup warns about it for the same reason.
 - **`download_tokens` and `strm_link_token` do nothing.** There is no credential
