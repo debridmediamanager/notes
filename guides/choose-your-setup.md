@@ -66,6 +66,7 @@ flowchart TD
     T2 --> K
     Z --> W[WebDAV or SMB player]
     Z --> F
+    Z --> KD
     Z --> ZA[Stremio NZB search addon]
     ZA --> C
     Z --> M[Filesystem mount]
