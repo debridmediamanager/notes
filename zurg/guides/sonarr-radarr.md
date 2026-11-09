@@ -93,7 +93,7 @@ Restart zurg, then confirm the provider took:
 
 ![The providers block on the zurg config page](../../assets/sonarr-radarr/43-zurg-config-providers.webp)
 
-One `nzb` row is all the endpoint needs.
+One `nzb` or `torbox_nzb` row is all the endpoint needs.
 
 ## 2. Find the API key
 
@@ -618,7 +618,7 @@ Does not:
 | The root folder browser shows zurg's mount empty, or no `Z:` drive at all | The \*arr cannot see the mount. On Linux it runs as another user without `user_allow_other`; on Windows it runs as a service. See [Before you start](#before-you-start). |
 | Every release rejected, nothing in the log | A stale bind mount. Run `docker exec <client> df -h <mount>`; if it says `Socket not connected`, bind the parent with `rslave` and recreate the container. |
 | A job stays queued for a poll or two after the release appears | Expected, and it settles once per release. An NZB does not state how long a file is; the estimate is being replaced by the exact length from the PAR2 index or one article's own header. Reporting Completed early is what makes the client throw *File move incomplete, data loss may have occurred*. |
-| A job sits queued for ever | The release never appeared in the library. Check that the NZB parsed — `Loaded NZB <name>: N files` in the log — and that the `nzb` provider is configured at all. |
+| A job sits queued for ever | The release never appeared in the library. Check that the NZB parsed — `Loaded NZB <name>: N files` in the log — and that an `nzb` or `torbox_nzb` provider is configured at all. |
 | "The release holds no files that can be imported" | The library holds the release but there is nothing in it a client could import. An NZB of nothing but recovery volumes is exactly this, and so is an obfuscated post whose RAR set is named `.z001`…`.z133`. Widen `addl_playable_extensions` if the release really does carry content zurg has no extension for. |
 | Finished releases stay queued during a large burst | More than sixty jobs are ready at once. Sonarr and Radarr only ask for the newest sixty history entries, so zurg holds the surplus in the queue and advances one into history each time an import clears a slot. Expected, and it drains itself. |
 | "The release could not be checked against the news servers" | The article check failed to complete thirty times in a row across at least three hours. Nothing was found missing. The news account could not be asked. The message carries the last error. Look at the account first and re-grab the release once it answers. |
