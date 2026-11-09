@@ -91,7 +91,10 @@ would list every file in `nzbs/`. To run both, give the other kind an instance
 of its own with its own working directory. Either one can sit beside your
 debrid accounts.
 
-zurg's Stremio addon searches and plays through the `nzb` backend only.
+zurg's Stremio addon posts its pick to whichever NZB account the instance has.
+With `torbox_nzb`, a release TorBox already holds starts within the addon's
+wait; an uncached one must finish on TorBox first, which is longer than a
+player waits.
 
 ## Check it worked
 

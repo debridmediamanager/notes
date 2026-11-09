@@ -81,7 +81,7 @@ flowchart TD
     R --> Q[Plex apps]
 ```
 
-The Stremio NZB search branch needs the direct `nzb` backend and a Newznab indexer; TorBox hosted NZBs play through TorBox Cast or the Kodi addon instead. The mount-to-SMB branch needs a separate share configured on the host.
+The Stremio NZB search branch needs an NZB account (`nzb`, or `torbox_nzb` for releases TorBox already holds) and a Newznab indexer; TorBox hosted NZBs also play through TorBox Cast or the Kodi addon without zurg. The mount-to-SMB branch needs a separate share configured on the host.
 
 Two smaller routes are worth keeping separate:
 
@@ -138,7 +138,7 @@ flowchart TD
 
 **Choose direct Usenet** if you want zurg to read through your own news accounts, including fallback/block accounts. It uses `nzb`, with NNTP credentials. A TorBox news-server login also belongs to this route: [TorBox NNTP](../zurg/providers/torbox-news-server.md) is distinct from its hosted NZB downloader. [TorBox's own tools page](https://torbox.app/tools) describes that NNTP offering; [its plans](https://torbox.app/pricing) describe hosted-service entitlements.
 
-**One zurg instance uses either `nzb` or `torbox_nzb`, not both.** Both own the NZB watch directory. To run both, use separate zurg instances and separate working directories. Either can sit beside torrent-provider accounts. zurg's Stremio addon needs the direct `nzb` backend; it does not search or play through `torbox_nzb`.
+**One zurg instance uses either `nzb` or `torbox_nzb`, not both.** Both own the NZB watch directory. To run both, use separate zurg instances and separate working directories. Either can sit beside torrent-provider accounts. zurg's Stremio addon posts its pick to whichever NZB account the instance has; with `torbox_nzb` only a release TorBox already holds starts within the addon's wait.
 
 **Choose DMM → Real-Debrid** if the desired end result is a release in your RD library. This is a hosted transfer, with queues and allowances; an uncached job takes time. It does not give Real-Debrid native NNTP support, and it does not mean every debrid provider accepts NZBs. The DMM result and [Transfers page](https://debridmediamanager.com/transfers) show the job's progress.
 
