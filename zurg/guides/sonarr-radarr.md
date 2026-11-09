@@ -26,7 +26,7 @@ Everything below was captured against zurg `nightly-993-g99bcf9a4`, Sonarr `4.0.
 
 Three things have to be true. Check all three now — every one of them fails later as something that looks unrelated.
 
-1. **zurg has an `nzb` provider.** Without one there is nothing to read what the endpoint writes, and every job sits queued for ever. zurg says so at startup. See [Usenet](usenet.md).
+1. **zurg has an `nzb` provider, or a `torbox_nzb` one (TorBox Pro).** Without one there is nothing to read what the endpoint writes, and every job sits queued for ever. zurg says so at startup. See [Usenet](usenet.md).
 2. **`magic.enabled` is `true`.** Without it the completed directory does not exist and every import fails. See [`__magic__`](magic.md).
 3. **The mount is visible to the \*arr** at the path zurg reports. If Sonarr runs in a container, read [step 8](#8-if-your-arr-is-in-docker) before you configure anything. Installed as an ordinary app on the same machine, it sees the mount where zurg mounts it, with one catch on each system:
    - **Linux:** an \*arr running as a different user from zurg sees an empty folder until `user_allow_other` is enabled. See [Linux setup](../setup/linux.md#1-install-fuse-3).
