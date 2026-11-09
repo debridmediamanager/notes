@@ -209,7 +209,9 @@ Every configured account gets a `__<name>__` directory. It holds everything that
 account holds and it pins reads to that account. `__torbox__/Some.Release/`
 streams from TorBox and nowhere else. A single account's own folder is left off
 the mount's root listing, since `__all__` is the same library. Direct HTTP and
-WebDAV paths such as `/http/__torbox__/` still answer.
+WebDAV paths such as `/http/__torbox__/` still answer. Through the mount it no
+longer resolves either; point any library or script that used `__<name>__` at
+`__all__`.
 
 A large library takes a while on its first load. Until it finishes `/dav/movies/`
 answers 503 and the mount may list nothing.

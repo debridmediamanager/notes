@@ -307,12 +307,14 @@ Then start it.
 
 ```bash
 ./zurg               # startup verifies the news account and says so, loudly, and makes nzbs/
-ls /mnt/zurg/__nzb__/
+ls /mnt/zurg/__all__/
 ```
 
-`__nzb__` is pinned to the Usenet account so it is the right place to confirm
-playback works. Subdirectories of `nzbs/` are skipped and `.nzb.gz` is not
-read.
+With Usenet as your only account, its `__nzb__` folder is left off the mount's
+root listing and `__all__` holds the same files, so test playback under
+`__all__` on the mount, or open the direct HTTP path
+`http://localhost:9999/http/__nzb__/`. Subdirectories of `nzbs/` are skipped
+and `.nzb.gz` is not read.
 
 ### The first Plex library
 

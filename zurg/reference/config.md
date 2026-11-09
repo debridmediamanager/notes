@@ -90,7 +90,7 @@ This arrives release by release rather than all at once: it applies only to arch
 rclone_extra_args: ["--dir-cache-time", "15s"]
 ```
 
-**Each account gets a `__<account>__` directory.** It is created from the `providers` block rather than from `directories`, holds everything that account holds, ignores your directory filters, and pins reads to that account. It is not something `directories` can suppress. With more than one account it is listed at the mount root. Builds before nightly 2026.10.24.0551 listed a single account's folder there too; from that nightly on it is left off the mount's root listing, since `__all__` is the same library. Direct HTTP and WebDAV paths such as `/http/__realdebrid__/` still answer.
+**Each account gets a `__<account>__` directory.** It is created from the `providers` block rather than from `directories`, holds everything that account holds, ignores your directory filters, and pins reads to that account. It is not something `directories` can suppress. With more than one account it is listed at the mount root. Builds before nightly 2026.10.24.0551 listed a single account's folder there too; from that nightly on it is left off the mount's root listing, since `__all__` is the same library. Direct HTTP and WebDAV paths such as `/http/__realdebrid__/` still answer. Through the mount it no longer resolves either; point any library or script that used `__<name>__` at `__all__`.
 
 **Two releases that shared a name are now two entries.** They used to merge into one, silently folding one release's files into the other's. The one that does not keep the bare name is suffixed with six characters of its info hash — `Movie.2024 {a1b2c3}`. That suffixed string is what `regex`, `not_regex`, `contains` and `not_contains` match against, so an anchored pattern will miss it. Separately, entries disambiguated by a duplicate basename are renamed once on upgrade, from an account-minted file id to a path-derived tag.
 
@@ -1469,7 +1469,7 @@ directories:
 
 ### Per-account directories
 
-Alongside `__all__`, every configured account gets a directory of its own, named after it — `__realdebrid__`, `__torbox__`, `__alldebrid__`, `__nzb__`. They are not configured; they appear because the account exists, and disappear when it is removed. With a single account, its own folder is left off the mount's root listing and `__all__` holds the same files. Direct HTTP and WebDAV paths such as `/http/__realdebrid__/` still answer.
+Alongside `__all__`, every configured account gets a directory of its own, named after it — `__realdebrid__`, `__torbox__`, `__alldebrid__`, `__nzb__`. They are not configured; they appear because the account exists, and disappear when it is removed. With a single account, its own folder is left off the mount's root listing and `__all__` holds the same files. Direct HTTP and WebDAV paths such as `/http/__realdebrid__/` still answer. Through the mount it no longer resolves either; point any library or script that used `__<name>__` at `__all__`.
 
 Each one holds whatever that account holds, and — unlike a filtered directory — it also decides where reads go. A release held by two accounts is one entry in the library, so without this every copy of it would stream from whichever account sorts first in the `providers` block:
 
