@@ -411,7 +411,7 @@ rex_url: "http://192.168.1.20:32400"
 
 Add something to your Plex watchlist and zurg fetches it. Every new watchlist item is searched on your indexers. A Newznab indexer gives an NZB. It drops into the Usenet backend exactly as a Sonarr grab or a Stremio play would. The three share the naming rules so they find each other's grabs instead of duplicating them. A Torznab indexer gives a torrent. It is added to a debrid account only when that account already has it cached. `prefer` decides which kind is tried first between releases of the same resolution. A movie becomes one release. A show is acquired season by season and season packs come before loose episodes. A season nobody posted a pack of falls back to the loose episodes the search surfaced, the best release for each. The item leaves the watchlist only once the release behind it has been checked and only when `remove_after_grab` allows it. Failures stay on the list. They are tried again after 5, 10 and 15 minutes, then after an hour, then further and further apart, and a title that has failed for two weeks is parked until you resume it on the acquisition page. See [persistence and recovery](../guides/acquisition.md#persistence-and-recovery).
 
-It needs a `plex_token` and at least one indexer. With no list of its own it borrows the Stremio addon's. The monitor talks to Plex's cloud service, so `plex_server_url` is not required. NZBs need an `nzb` provider on the same instance. Torrents need a debrid account that takes them. Either one is enough.
+It needs a `plex_token` and at least one indexer. With no list of its own it borrows the Stremio addon's. The monitor talks to Plex's cloud service, so `plex_server_url` is not required. NZBs need an `nzb` or `torbox_nzb` provider on the same instance. Torrents need a debrid account that takes them. Either one is enough.
 
 Every option below is on the config page under **Plex Watchlist**, indexer list included; the dashboard writes this block rather than the legacy flat keys, and switching the monitor off there clears `plex_watchlist_enabled` too, since that one is ORed into the switch.
 
@@ -824,7 +824,7 @@ The API key is the whole of the authentication. Treat the endpoint the way you t
 
 ### The `stremio` addon
 
-zurg can be a Stremio addon that searches your own Newznab indexers and plays through the Usenet backend. It needs an `nzb` provider and at least one indexer. It is off until asked for. Setup and what a play does are in [stremio.md](../guides/stremio.md).
+zurg can be a Stremio addon that searches your own Newznab indexers and plays through the Usenet backend. It needs an NZB account, `nzb` or [`torbox_nzb`](../providers/torbox-nzb.md), and at least one indexer. With `torbox_nzb`, a release TorBox already holds starts within the addon's wait; an uncached one must finish on TorBox first, which is longer than a player waits. It is off until asked for. Setup and what a play does are in [stremio.md](../guides/stremio.md).
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
