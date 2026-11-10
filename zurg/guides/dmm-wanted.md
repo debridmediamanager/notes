@@ -64,7 +64,7 @@ What following does:
 - The page shows each list with how many titles it has, how many it added so far and when
   it was last read. **Read again** reads it now. Titles without an IMDb id are left out, and
   the count says how many.
-- Your list holds 5,000 titles still to fetch: every show, and each film zurg hasn't
+- Your list holds 10,000 titles still to fetch: every show, and each film zurg hasn't
   fetched yet or is waiting to upgrade. Films zurg has fetched don't count. A title that
   doesn't fit is added on a later read, once there is room.
 
