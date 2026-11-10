@@ -18,7 +18,7 @@ It is a server of its own, not a plugin for Plex Media Server, and it does not n
 
 ### What does it cost?
 
-rex is free for personal use, with no paid tier. Its source code is public under the PolyForm Noncommercial license, which does not allow commercial use. Every build is a public nightly on [GitHub Releases](https://github.com/debridmediamanager/rex/releases), and anyone can download it.
+rex is free for personal use, with no paid tier. Its source code is public under the PolyForm Noncommercial license, which does not allow commercial use. Every build is a public nightly on [GitHub Releases](https://github.com/debridmediamanager/rex/releases), and anyone can download it. The Android build is the exception: it ships only inside the sponsor-only [zurg+rex Android app](../zurg/guides/android.md).
 
 What may cost something is around it:
 
@@ -74,7 +74,7 @@ Yes. Everyone you share rex with signs in as themselves and gets their own watch
 
 ### What hardware does it need?
 
-A machine that stays on, running Linux (amd64 or arm64, glibc 2.35 or newer, so Ubuntu 22.04 and up), macOS (Intel or Apple Silicon) or 64-bit Windows.
+A machine that stays on, running Linux (amd64 or arm64, glibc 2.35 or newer, so Ubuntu 22.04 and up), macOS (Intel or Apple Silicon) or 64-bit Windows; or the zurg+rex Android app on a 64-bit Android/Google TV device, which runs zurg and rex together (sponsor-only; see the [Android guide](../zurg/guides/android.md)).
 
 **Memory:** give it 1 GB. On a library of 4,062 movies and 656 shows, rex used under 500 MB while it started and about 730 MB while the library was browsed. Converting video needs more on top.
 

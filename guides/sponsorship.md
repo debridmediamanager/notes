@@ -16,7 +16,8 @@ The perks follow the sponsorship. When it ends DMM stops them on the next reques
 
 | What you get | Where |
 |---|---|
-| Nightly builds with every provider and Usenet plus the Docker image and the Android app | [zurg setup](../zurg/setup/index.md) after you accept the GitHub invitation |
+| Nightly builds with every provider and Usenet plus the Docker image | [zurg setup](../zurg/setup/index.md) after you accept the GitHub invitation |
+| The zurg+rex Android app | [Android guide](../zurg/guides/android.md) after you accept the GitHub invitation |
 | The full zurg source code | The private repository on GitHub |
 | Every release named for rex and Plex | `dmm_api_key` in the [zurg config](../zurg/reference/config.md) |
 | Media details for your files from DMM without zurg reading them first and a release's languages checked before it is added | Nothing beyond `dmm_api_key` |
@@ -48,7 +49,7 @@ The `dmm_api_key` features need a zurg nightly. The free public build does not h
 
 ## rex
 
-rex is free and needs no sponsorship. With a key [rex-stremio](../rex/stremio.md) adds debrid streams of torrents DMM already holds a probe of to rex in seconds instead of probing each one. Paste the key in the **DMM** field on rex-stremio's settings page. It then shares its probes of torrent files with DMM unless you turn that off.
+rex is free and needs no sponsorship; its Android build comes only inside the sponsor-only zurg+rex app. With a key [rex-stremio](../rex/stremio.md) adds debrid streams of torrents DMM already holds a probe of to rex in seconds instead of probing each one. Paste the key in the **DMM** field on rex-stremio's settings page. It then shares its probes of torrent files with DMM unless you turn that off.
 
 ## Help
 
