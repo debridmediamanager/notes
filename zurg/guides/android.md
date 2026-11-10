@@ -10,8 +10,8 @@ The Android app runs a zurg engine on the device, installed from inside the app,
 and rex beside it for the Plex apps. One app adapts to
 phones, tablets, Android TV and Google TV. Android 8.0 or newer is required.
 Fire TV can sideload the same APK; use a WebDAV player when no system Files app
-is installed. Usenet and rex require 64-bit Android, and TorBox hosted NZBs (`torbox_nzb`)
-are not available on Android.
+is installed. Usenet requires 64-bit Android; TorBox hosted NZBs (`torbox_nzb`) are not
+available on Android.
 
 ## Install and set up
 
@@ -63,8 +63,9 @@ subtitle details in the dashboard. No separate media tool installation is needed
 
 ## Watch in the Plex apps
 
-From the nightly of 10 November 2026, on 64-bit Android the app also runs rex,
-a media server for the Plex apps, and points zurg at it, so your library appears
+From the nightly of 10 November 2026 the app also runs rex (64-bit devices in
+that nightly, every supported device from the 11 November nightly), a media
+server for the Plex apps, and points zurg at it, so your library appears
 in the official Plex apps and in Plezy, on this device and on others in your
 home. Once your library is running, Status shows **rex for the Plex apps**:
 choose **Sign in to Plex** and approve the sign-in (on a TV, enter the code at
