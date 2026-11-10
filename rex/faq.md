@@ -74,7 +74,7 @@ Yes. Everyone you share rex with signs in as themselves and gets their own watch
 
 ### What hardware does it need?
 
-A machine that stays on, running Linux (amd64 or arm64, glibc 2.35 or newer, so Ubuntu 22.04 and up), macOS (Intel or Apple Silicon) or 64-bit Windows; or the zurg+rex Android app on an Android/Google TV device (64-bit until the 11 November 2026 nightly), which runs zurg and rex together, your own Plex server on your phone or TV box (sponsor-only; see the [Android guide](../zurg/guides/android.md)).
+A machine that stays on, running Linux (amd64 or arm64, glibc 2.35 or newer, so Ubuntu 22.04 and up), macOS (Intel or Apple Silicon) or 64-bit Windows; or the zurg+rex Android app on an Android/Google TV device (64-bit until the 11 November 2026 nightly), which runs zurg and rex together (sponsor-only; see the [Android guide](../zurg/guides/android.md)).
 
 **Memory:** give it 1 GB. On a library of 4,062 movies and 656 shows, rex used under 500 MB while it started and about 730 MB while the library was browsed. Converting video needs more on top.
 
