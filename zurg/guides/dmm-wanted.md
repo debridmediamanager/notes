@@ -26,7 +26,8 @@ That is the whole setup. zurg reads your list once a minute from the moment it s
 2. Open a film and press **Want**. On a show's season page, **Want S2** adds that season
    and **Want all seasons** adds the whole show, new seasons included.
 3. Your list is at [debridmediamanager.com/wanted](https://debridmediamanager.com/wanted).
-   It says when your zurg last read it, and when it fetched each film.
+   It says when your zurg last read it, and when it fetched each film. Long lists are
+   shown 120 titles a page.
 
 Requests from Seerr, Overseerr or Jellyseerr can land on the same list: see
 [Seerr through DMM](../../dmm/seerr.md).
@@ -57,7 +58,9 @@ What following does:
 - The page shows each list with how many titles it has, how many it added so far and when
   it was last read. **Read again** reads it now. Titles without an IMDb id are left out, and
   the count says how many.
-- Your list holds 5,000 titles. A list that keeps growing, like a trending one, fills it.
+- Your list holds 5,000 titles still to fetch: every show, and each film zurg hasn't
+  fetched yet or is waiting to upgrade. Films zurg has fetched don't count. A title that
+  doesn't fit is added on a later read, once there is room.
 
 ## Moving from Radarr or Sonarr
 
