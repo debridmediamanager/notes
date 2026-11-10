@@ -1404,11 +1404,12 @@ most, give or take a quarter, so titles that failed together do not retry
 together. An attempt that runs out of its five minutes having found nothing counts
 as a failure too. One that found nothing while one of your indexers could not be
 asked, because it asked to be left alone until a time no more than a day away (a
-`Retry-After`), does not count: the title is tried again shortly after that time,
-spread so a queue of titles does not ask the indexer all at once. That happens at
-most three times in a row, and then the try counts as usual. An indexer that names
-no time, such as one answering 410 Gone or refusing its key, is not waited for. A title that has failed for two weeks, over eight attempts at
-least, is **parked**: zurg stops asking the indexers about it. It stays on the
+`Retry-After`), does not count: the title is tried again after that time, at most
+as long again after it, so a queue of titles does not ask the indexer all at once.
+An indexer resting ten minutes means a try within twenty. That happens at most
+three times in a row, and then the try counts as usual. An indexer that names no
+time, such as one answering 410 Gone or refusing its key, is not waited for. A
+title that has failed for two weeks, over eight attempts at least, is **parked**: zurg stops asking the indexers about it. It stays on the
 acquisition page as parked, with how long it failed and why, and the log says
 so once. **Resume** on that page, for one title or for every parked title of a
 source, starts it again from the first short retry. A source that stops
