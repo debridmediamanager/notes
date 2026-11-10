@@ -25,7 +25,7 @@ torrents, and the [TorBox](torbox.md) page covers it.
 - **Your TorBox API key** from [torbox.app/settings](https://torbox.app/settings).
   It is the same key a `torbox` entry uses.
 - **A current zurg nightly.** Nightlies need an active sponsorship.
-- **A normal host.** zurg Android has no `torbox_nzb` backend. On an Android
+- **A normal host.** zurg+rex Android, a Plex server on your phone, has no `torbox_nzb` backend. On an Android
   device, play TorBox hosted NZBs through DMM's TorBox Cast or the Kodi addon
   instead.
 
