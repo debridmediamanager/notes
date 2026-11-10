@@ -1,10 +1,8 @@
 # Migrating from decypharr to zurg
 
-Read [the shared page](index.md) first. The trash guard lives there. So does
-the reason your library lands in `__magic__` rather than in a symlink farm.
+Read [the shared page](index.md) first. It explains the trash guard and why your library lands in `__magic__`.
 
-decypharr and zurg solve the same problem and their root layouts are strikingly
-close. That makes this the migration with the most that carries over for free.
+decypharr and zurg solve the same problem and their root layouts are close. Much of the setup carries over.
 
 | decypharr | zurg |
 |---|---|

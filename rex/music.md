@@ -1,6 +1,7 @@
 # Music with rex
 
-rex can hold a music library that Plexamp, Plex Web and Plex for Android play. A music addon tells rex about each song and which album it is on, by the album's MusicBrainz release, and Plex fills in the rest: album and song names, covers, the artist's photo and biography, genres and similar artists.
+rex can hold a music library for Plexamp Plex Web and Plex for Android. A music addon sends each song and its
+MusicBrainz release. Plex fills in names covers artist details genres and similar artists.
 
 What you get:
 

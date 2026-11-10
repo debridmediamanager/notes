@@ -1,8 +1,12 @@
 # Tutorial: an IPTV addon
 
-This tutorial builds a rex addon that turns an IPTV playlist (an M3U file) and its TV guide (an XMLTV file) into channels of **Live TV** in Plex Web and Plex for Android: every channel at its number, a guide of what is on, What's On, and the channel playing the moment you pick it. It works with any M3U whose channels are HLS streams (`.m3u8`), such as your IPTV provider's or a list of free-to-air channels, and any XMLTV guide that names them.
+This tutorial turns an IPTV playlist (M3U) and TV guide (XMLTV) into **Live TV** channels in Plex Web and
+Plex for Android. Each channel keeps its number and guide. It works with M3U channels that use HLS (`.m3u8`)
+and any XMLTV guide that names them.
 
-It follows [Building rex addons](addons.md) and its [Live TV](addons.md#live-tv) section, with the same shape as the [home videos tutorial](addon-home-videos.md): read that one first if this is your first addon. For live sports there is a ready-made addon instead: [Live TV with rex](live-tv.md).
+It follows [Building rex addons](addons.md) and its [Live TV](addons.md#live-tv) section. Read the
+[home videos tutorial](addon-home-videos.md) first if this is your first addon. For live sports use
+[Live TV with rex](live-tv.md).
 
 | You need | Why |
 |---|---|

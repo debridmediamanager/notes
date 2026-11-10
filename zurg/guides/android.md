@@ -1,21 +1,18 @@
 # zurg for Android and Google TV
 
-The Android app runs a zurg engine on the device, installed from inside the app. One app adapts to
-phones, tablets, Android TV and Google TV. Android 8.0 or newer is required.
-Fire TV can sideload the same APK; use a WebDAV player when no system Files app
-is installed. Usenet requires 64-bit Android.
+The Android app runs a zurg engine on the device. One app works on phones tablets Android TV and
+Google TV. Android 8.0 or newer is required. Fire TV can sideload the same APK. Use a WebDAV
+player when it has no system Files app. Usenet needs 64-bit Android.
 
 ## Install and set up
 
-Download an Android APK from the private sponsor repository's nightly release.
-Choose `arm64-v8a` for most recent phones and TV boxes, `armeabi-v7a` for older
-32-bit devices, or `x86_64` for an emulator or compatible Chromebook. The phone
-and TV interfaces are both included in every architecture's APK.
+Download an APK from the private sponsor repository's nightly release. Choose `arm64-v8a` for
+most phones and TV boxes `armeabi-v7a` for older 32-bit devices or `x86_64` for an emulator or
+compatible Chromebook. Every APK includes the phone and TV interfaces.
 
-The app does not contain zurg itself. The engine that serves your library is a
-second package you install from inside the app after signing in to GitHub, so
-the app is not usable without a sponsor account. Sponsor on [gatekeeper](https://gatekeeper.debridmediamanager.com/)
-to give your GitHub account access. Setup walks you through it.
+The app does not contain zurg itself. After signing in to GitHub you install the engine from
+inside the app. A sponsor account is required. Sponsor on [gatekeeper](https://gatekeeper.debridmediamanager.com/)
+to give your GitHub account access. Setup guides you through it.
 
 Allow installation from the app used to open the APK. Android or Play Protect
 may ask you to confirm sideloading. The application ID is

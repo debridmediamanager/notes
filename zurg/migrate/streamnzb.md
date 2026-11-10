@@ -1,13 +1,10 @@
 # Migrating from streamnzb v5.1.0 to zurg
 
-streamnzb is a Stremio addon. When you press play it searches your Newznab
-indexers. It ranks the results with jhin. It checks them against AvailNZB and
-streams the winner. Nothing is kept. It has no filesystem and no WebDAV and no
-mount and no Plex library.
+streamnzb is a Stremio addon. It searches Newznab indexers when you press play and streams the winner.
+Nothing is kept. It has no filesystem WebDAV mount or Plex library.
 
-So there is **no library on disk to preserve and no Plex watch state at risk**.
-None of the path-preservation machinery the other migration guides revolve
-around applies here.
+There is **no library on disk to preserve and no Plex watch state at risk**. The path-preservation steps in
+the other migration guides do not apply.
 
 zurg can take its place in two ways. Use one or both.
 

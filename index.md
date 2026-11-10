@@ -1,13 +1,13 @@
 # Notes
 
-Guides and reference for three projects that work together, and for setting them up.
+Guides and reference for DMM zurg and rex.
 
-**Not sure which pieces you need? [Choose your setup](guides/choose-your-setup.md)** compares the routes, with flowcharts and a “when should I use this?” table.
+**Not sure which pieces you need? [Choose your setup](guides/choose-your-setup.md)** compares the routes and links to the right guide.
 
 | Project | What it is | Start here |
 |---|---|---|
-| [zurg](zurg/index.md) | Every debrid account and Usenet in one folder that Plex, Jellyfin and Emby read like a normal drive. Nothing is downloaded first | [Setup](zurg/setup/index.md) |
-| [rex](rex/index.md) | A media server that owns no files, for every Plex app. Your Stremio addons, zurg or an app you write fill it | [Pick a setup](rex/index.md) |
-| [DMM](dmm/index.md) | Debrid Media Manager, the website for finding releases and keeping a library on your debrid account | [debridmediamanager.com](https://debridmediamanager.com) |
+| [zurg](zurg/index.md) | One folder for every debrid account and Usenet library. Plex Jellyfin and Emby read it like a normal drive | [Setup](zurg/setup/index.md) |
+| [rex](rex/index.md) | A media server that owns no files. Stremio addons zurg or your own app can fill it | [Pick a setup](rex/index.md) |
+| [DMM](dmm/index.md) | Find releases and keep a library on your debrid account | [debridmediamanager.com](https://debridmediamanager.com) |
 
-[Guides](guides/index.md) lists every guide in one place, including the ones that are not about one project, such as [getting help](guides/remote-help.md) with zurg and rex.
+[Guides](guides/index.md) lists every guide including [getting help](guides/remote-help.md) with zurg and rex.

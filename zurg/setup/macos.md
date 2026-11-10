@@ -2,13 +2,15 @@
 
 ## One-line option
 
-The optional sponsor bootstrap installs macFUSE when needed, downloads the correct Intel or Apple silicon build and runs the provider chooser and diagnostics:
+The optional sponsor bootstrap installs macFUSE when needed downloads the Intel or Apple silicon build and runs
+the provider chooser and diagnostics:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.sh | bash
 ```
 
-It uses GitHub browser sign-in. macOS may still require approval under **System Settings > Privacy & Security** and a reboot. Existing binaries and configs are preserved. Continue below for the manual route.
+It uses GitHub browser sign-in. macOS may still need approval under **System Settings > Privacy & Security** and a
+reboot. Existing binaries and configs stay in place. Continue below for the manual route.
 
 ## Step 1: Install macFUSE
 

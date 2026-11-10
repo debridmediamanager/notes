@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847566371230">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847595035292">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -12,7 +12,7 @@
     <!-- Primary Meta Tags -->
     <title>Usenet with zurg</title>
     <meta name="title" content="Usenet with zurg">
-    <meta name="description" content="zurg's nzb backend turns a directory of .nzb files into a mounted library. There is no downloader and no completed folder, and nothing is downloaded ahead">
+    <meta name="description" content="zurg's nzb backend turns .nzb files into a mounted library. There is no downloader or completed folder. Nothing is downloaded before play. It stores the NZBs and bounded caches in data/bytecache and data/par2 plus index records.">
 
     <!-- Canonical -->
     <link rel="canonical" href="https://notes.debridmediamanager.com/zurg/guides/usenet/">
@@ -22,7 +22,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://notes.debridmediamanager.com/zurg/guides/usenet/">
     <meta property="og:title" content="Usenet with zurg">
-    <meta property="og:description" content="zurg's nzb backend turns a directory of .nzb files into a mounted library. There is no downloader and no completed folder, and nothing is downloaded ahead">
+    <meta property="og:description" content="zurg's nzb backend turns .nzb files into a mounted library. There is no downloader or completed folder. Nothing is downloaded before play. It stores the NZBs and bounded caches in data/bytecache and data/par2 plus index records.">
     <meta property="og:site_name" content="DMM + zurg + rex">
     <meta property="og:locale" content="en_US">
 
@@ -30,19 +30,19 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://notes.debridmediamanager.com/zurg/guides/usenet/">
     <meta name="twitter:title" content="Usenet with zurg">
-    <meta name="twitter:description" content="zurg's nzb backend turns a directory of .nzb files into a mounted library. There is no downloader and no completed folder, and nothing is downloaded ahead">
+    <meta name="twitter:description" content="zurg's nzb backend turns .nzb files into a mounted library. There is no downloader or completed folder. Nothing is downloaded before play. It stores the NZBs and bounded caches in data/bytecache and data/par2 plus index records.">
 
     <!-- Alternate Markdown -->
     <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/zurg/guides/usenet.md">
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../../resources/css/retype.css?v=4.6.0.847566371230" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.847595035292" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847566371230" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847595035292" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847566371230" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847566371230" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847595035292" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847595035292" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -196,10 +196,14 @@
 
                 <!-- Page content  -->
 <h1 id="usenet-with-zurg">Usenet with zurg</h1>
-<p>zurg&#x27;s <code translate="no" v-pre>nzb</code> backend turns a directory of <code translate="no" v-pre>.nzb</code> files into a mounted library. There is no downloader and no completed folder, and nothing is downloaded ahead of play: on disk there are only the NZBs and bounded caches (file heads and tails under <code translate="no" v-pre>data/bytecache/articles</code>, 512 MiB by default as <code translate="no" v-pre>nzb_article_disk_cache_mb</code>; decoded archive blocks under <code translate="no" v-pre>data/bytecache/decoded</code>; PAR2-rebuilt spans under <code translate="no" v-pre>data/par2/</code>; and the index, name and size records under <code translate="no" v-pre>data/</code>). When a player seeks into a file, zurg fetches exactly the articles covering those bytes, yEnc-decodes them in memory, and answers the ranged read. A 60 GB remux costs 60 GB of disk nowhere.</p>
-<p>It is a debrid backend as far as the rest of zurg is concerned — the same library model, the same directory filters, the same mount, the same media-server integration — so a Usenet release sits alongside your Real-Debrid or TorBox content in one tree. It can also be the only account you configure; no debrid service is required.</p>
+<p>zurg&#x27;s <code translate="no" v-pre>nzb</code> backend turns <code translate="no" v-pre>.nzb</code> files into a mounted library. There is no downloader or completed folder.
+Nothing is downloaded before play. It stores the NZBs and bounded caches in <code translate="no" v-pre>data/bytecache</code> and <code translate="no" v-pre>data/par2</code>
+plus index records. <code translate="no" v-pre>nzb_article_disk_cache_mb</code> defaults to 512 MiB. On a seek zurg fetches only the articles
+that cover those bytes. A 60 GB remux does not need 60 GB of disk.</p>
+<p>Usenet uses the same library filters mount and media-server integration as debrid backends. Usenet releases can
+sit beside Real-Debrid or TorBox content. You can use Usenet alone.</p>
 <p><strong>Several Usenet providers are supported.</strong> One <code translate="no" v-pre>nzb</code> entry carries any number of news accounts — unlimited providers, block accounts, whatever you hold — and zurg falls back through them article by article. That matters more here than redundancy usually does: retention is per-provider, so a second account is very often the difference between one extra fetch and rebuilding a whole release from PAR2. See <doc-anchor-trigger to="#more-than-one-usenet-provider">More than one Usenet provider</doc-anchor-trigger>.</p>
-<p>This guide goes end to end: news accounts, NZBs, the mount, Plex.</p>
+<p>This guide covers news accounts NZBs the mount and Plex.</p>
 <retype-table copy-text="| | |
 |---|---|
 | Config reference | [config.md → Usenet accounts](../reference/config.md#usenet-accounts) |

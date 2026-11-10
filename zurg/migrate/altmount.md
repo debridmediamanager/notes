@@ -1,7 +1,6 @@
 # Migrating from AltMount to zurg
 
-Read [the shared page](index.md) first. The trash guard lives there. So does
-the reason your library lands in `__magic__` rather than in a symlink farm.
+Read [the shared page](index.md) first. It explains the trash guard and why your library lands in `__magic__`.
 
 AltMount serves the cleanest tree of the five. Exactly one file per release. No
 thumbnails and no adverts and no sample and no leftovers. The migration is

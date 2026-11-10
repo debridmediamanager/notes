@@ -1,8 +1,8 @@
 # DMM buttons in Safari
 
-The DMM browser extension puts a **DMM🔎** button on IMDb, Trakt, Letterboxd, MDBList, JustWatch, TMDB, MyAnimeList and other movie, TV and anime sites that opens the title on DMM. Next to magnet links it adds a **DMM🧲** button that adds the torrent to your DMM library.
+The DMM browser extension puts a **DMM🔎** button on movie and TV sites. It opens the title on DMM. Next to magnet links it adds a **DMM🧲** button that adds the torrent to your DMM library.
 
-On Chrome and Firefox, install the extension from the [Chrome Web Store](https://chromewebstore.google.com/detail/Debrid%20Media%20Manager/oeojlegjfhgefhnbjdnaebgdfkbipghm) or [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/debrid-media-manager/). Safari has no DMM extension, but the same code is published as a userscript on [Greasy Fork](https://greasyfork.org/en/scripts/463268-debrid-media-manager). A userscript manager runs it in Safari on a Mac, iPhone or iPad.
+On Chrome and Firefox install the [Chrome extension](https://chromewebstore.google.com/detail/Debrid%20Media%20Manager/oeojlegjfhgefhnbjdnaebgdfkbipghm) or [Firefox add-on](https://addons.mozilla.org/en-US/firefox/addon/debrid-media-manager/). Safari uses the same code as a [Greasy Fork userscript](https://greasyfork.org/en/scripts/463268-debrid-media-manager) with a userscript manager.
 
 Pick one manager:
 

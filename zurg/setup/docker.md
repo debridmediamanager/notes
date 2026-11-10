@@ -1,8 +1,10 @@
 # Docker setup
 
-This guide runs zurg in Docker while making its FUSE mount visible on the Linux host. Docker supplies zurg, rclone and ffprobe and keeps the container running. The built-in `setup` command creates the config and the built-in `doctor` command checks the finished install.
+This guide runs zurg in Docker and exposes its FUSE mount on a Linux host. Docker supplies zurg rclone and
+ffprobe. The built-in `setup` command creates the config. `doctor` checks the install.
 
-The container setup flow was verified on 4 September 2026 with Docker Engine 29.1.1. Use the newest dated nightly release so the image contains the provider chooser described below.
+This flow was verified on 4 September 2026 with Docker Engine 29.1.1. Use the newest dated nightly so the image
+has the provider chooser below.
 
 > **Sponsor image:** `ghcr.io/debridmediamanager/zurg` is for sponsors. Sponsor on [gatekeeper](https://gatekeeper.debridmediamanager.com/). It gives your GitHub account access to the image.
 

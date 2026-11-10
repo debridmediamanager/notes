@@ -1,7 +1,6 @@
 # Migrating from InfiniDysk to zurg
 
-Read [the shared page](index.md) first. The trash guard lives there. So does
-the reason your library lands in `__magic__` rather than in a symlink farm.
+Read [the shared page](index.md) first. It explains the trash guard and why your library lands in `__magic__`.
 
 Measured against zurg on the same five releases.
 

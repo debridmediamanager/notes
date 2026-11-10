@@ -2,7 +2,7 @@
 
 ## Ask in Discord
 
-Post in the [Discord](https://discord.com/invite/7u4YjMThXP) forum for what you are using: **zurg-support**, **rex-support** or **dmm-support**. Open one thread per problem. Say what you did, what you expected and what happened instead, and include the following.
+Post in the [Discord](https://discord.com/invite/7u4YjMThXP) forum for what you use: **zurg-support** **rex-support** or **dmm-support**. Open one thread per problem. Say what you did what you expected and what happened. Add the details below.
 
 **For zurg**, click **Export Logs** on zurg's dashboard and paste the links it gives you. It uploads zurg's log and config with your tokens, passwords and API keys removed. If it cannot upload, **Download Logs** gives you the same thing as a file to attach. Also paste what `zurg doctor` prints:
 
@@ -26,15 +26,15 @@ In a long log, the lines that matter most are the errors, the warnings and what 
 
 ## Remote help for sponsors
 
-When a thread does not get it fixed, a helper can type in your terminal while you watch. **Remote help with zurg and rex is offered only to sponsors, and it is free: there is no charge on top of the sponsorship.** [Become a sponsor on gatekeeper](https://gatekeeper.debridmediamanager.com/), connect your Discord account there to get the sponsor role, then ask for remote help in your support thread.
+When a thread does not fix it a helper can type in your terminal while you watch. **Remote help with zurg and rex is for sponsors and is free.** [Become a sponsor on gatekeeper](https://gatekeeper.debridmediamanager.com/). Connect Discord there for the sponsor role then ask in your support thread.
 
-The rest of this page sets it up with [upterm](https://github.com/owenthereal/upterm), through our own server at `upterm.debridmediamanager.com`. It works on Linux and macOS and Windows.
+This page sets it up with [upterm](https://github.com/owenthereal/upterm) through `upterm.debridmediamanager.com`. It works on Linux macOS and Windows.
 
-You need no account and no password and no router changes, and nothing to install first: the lines below download upterm and start it. Your helper types in your terminal while you watch it in the same window. The session ends when you type `exit`.
+You need no account password router change or prior install. The commands download and start upterm. Watch every command in the same terminal. Type `exit` to end the session.
 
 ### 1. Pick the machine
 
-Run upterm on the machine that runs what you need help with, zurg or rex. If it is not installed yet then pick the machine it will run on. That is often not the computer in front of you.
+Run upterm on the machine that runs zurg or rex. That may be a server rather than the computer in front of you.
 
 | Where it runs | What to do |
 |---|---|
@@ -89,13 +89,13 @@ upterm prints a few lines. Copy the one under **SSH**, which looks like this.
 ssh AbCdEfGhIjKlMnOpQrSt:dXB0ZXJt...@upterm.debridmediamanager.com -p 2222
 ```
 
-**Send it in a private message.** Never post it in a public channel. Anyone who has it can type on your machine.
+**Send it in a private message.** Never post it in a public channel. Anyone with it can type on your machine.
 
 Then leave the window open and do not click inside it: on Windows a click in a PowerShell window can pause what runs in it until you press `Esc`. You see everything your helper types in that window as they type it.
 
 ### 4. End it
 
-**Type `exit` in that window when you are done.** That ends the session and the line stops working at once.
+**Type `exit` in that window when you are done.** The session ends and the line stops working at once.
 
 Closing the window is not enough: the session keeps running. If you closed it, open a new terminal, run `~/upterm/upterm session list` (on Windows `& "$env:LOCALAPPDATA\upterm\upterm.exe" session list`) and then the same program with `session stop` and the name it shows.
 

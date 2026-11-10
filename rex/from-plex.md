@@ -1,6 +1,6 @@
 # Move from Plex to rex
 
-You run Plex Media Server today and want to try rex. This page moves you over. The Plex apps stay the same; what changes is where the library comes from and which server your apps talk to.
+You run Plex Media Server and want to try rex. Your Plex apps stay the same. The library source and server address change.
 
 ## What changes
 

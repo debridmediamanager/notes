@@ -1,11 +1,8 @@
 # The Stremio addon
 
-zurg can answer Stremio as an addon: the client asks for streams by IMDb id,
-zurg searches your Newznab indexers, and picking a stream pulls that release's
-NZB into the Usenet backend and plays it — the search-per-play model streamnzb
-had, on top of zurg's library, repair and archive streaming. Everything played
-this way also lands in the library, so it shows up in Plex like any other
-release.
+zurg can answer Stremio as an addon. Stremio asks by IMDb id. zurg searches your Newznab indexers and pulls
+the chosen release's NZB into the Usenet backend. It then plays and repairs it like any other zurg release.
+Everything played this way also lands in the library and appears in Plex.
 
 ## Configuration
 

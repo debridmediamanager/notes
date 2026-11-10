@@ -1,6 +1,7 @@
 # Whisparr
 
-Whisparr is Radarr for adult films and scenes, and it uses zurg the same way Radarr does. zurg answers as its qBittorrent, adds what it grabs to your debrid account, and the import is a rename inside `__magic__`, so nothing is downloaded or copied to import.
+Whisparr is Radarr for adult films and scenes. It uses zurg as its qBittorrent client. Grabs go to your debrid
+account. Importing only renames a path inside `__magic__`; nothing is downloaded or copied.
 
 Everything below was tested on 2026-10-23 with Whisparr `3.6.5.1886` (the `ghcr.io/hotio/whisparr:v3` image), Prowlarr, zurg built from that day's `main` and a Real-Debrid account. A 17 GB film was grabbed, imported and played back from the mount.
 

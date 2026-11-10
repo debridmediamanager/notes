@@ -1,12 +1,16 @@
 # Usenet with zurg
 
-zurg's `nzb` backend turns a directory of `.nzb` files into a mounted library. There is no downloader and no completed folder, and nothing is downloaded ahead of play: on disk there are only the NZBs and bounded caches (file heads and tails under `data/bytecache/articles`, 512 MiB by default as `nzb_article_disk_cache_mb`; decoded archive blocks under `data/bytecache/decoded`; PAR2-rebuilt spans under `data/par2/`; and the index, name and size records under `data/`). When a player seeks into a file, zurg fetches exactly the articles covering those bytes, yEnc-decodes them in memory, and answers the ranged read. A 60 GB remux costs 60 GB of disk nowhere.
+zurg's `nzb` backend turns `.nzb` files into a mounted library. There is no downloader or completed folder.
+Nothing is downloaded before play. It stores the NZBs and bounded caches in `data/bytecache` and `data/par2`
+plus index records. `nzb_article_disk_cache_mb` defaults to 512 MiB. On a seek zurg fetches only the articles
+that cover those bytes. A 60 GB remux does not need 60 GB of disk.
 
-It is a debrid backend as far as the rest of zurg is concerned — the same library model, the same directory filters, the same mount, the same media-server integration — so a Usenet release sits alongside your Real-Debrid or TorBox content in one tree. It can also be the only account you configure; no debrid service is required.
+Usenet uses the same library filters mount and media-server integration as debrid backends. Usenet releases can
+sit beside Real-Debrid or TorBox content. You can use Usenet alone.
 
 **Several Usenet providers are supported.** One `nzb` entry carries any number of news accounts — unlimited providers, block accounts, whatever you hold — and zurg falls back through them article by article. That matters more here than redundancy usually does: retention is per-provider, so a second account is very often the difference between one extra fetch and rebuilding a whole release from PAR2. See [More than one Usenet provider](#more-than-one-usenet-provider).
 
-This guide goes end to end: news accounts, NZBs, the mount, Plex.
+This guide covers news accounts NZBs the mount and Plex.
 
 | | |
 |---|---|

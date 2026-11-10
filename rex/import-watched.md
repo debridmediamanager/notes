@@ -1,8 +1,9 @@
 # Bring your watch history to rex
 
-rex starts with no watch history. If you watched on another Plex server before, rex can copy three things from it: what you watched, where you stopped in what you were part-way through, and your star ratings. Watched titles show as watched, part-watched ones go back into **Continue Watching**, and seasons and shows count their watched episodes again.
+rex starts with no watch history. It can copy watched titles resume points and star ratings from another Plex server.
+Watched titles stay watched. Part-watched titles return to **Continue Watching**. Shows and seasons count their episodes again.
 
-You run it once, from any computer at home. Everyone you share rex with can do the same for their own history.
+Run it once from any computer at home. Everyone who uses rex can import their own history.
 
 ## Before you start
 

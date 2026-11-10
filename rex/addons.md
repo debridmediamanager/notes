@@ -1,8 +1,11 @@
 # Building rex addons
 
-[rex](https://rex.debridmediamanager.com) shows whatever its sources tell it about. A source is any program that tells rex what it has over rex's feed API and serves the videos when rex asks; rex treats every source the same. An **addon** is a source you write yourself: it brings something into your Plex apps that no Plex agent knows, such as home videos, recordings or a Stremio catalog, and names it itself. It can also bring [music](#music) and [live channels with a TV guide](#live-tv).
+[rex](https://rex.debridmediamanager.com) shows what its sources tell it about. A source tells rex what it has
+through the feed API and serves the files when rex asks. rex treats every source the same. An **addon** is a
+source you write yourself for home videos recordings Stremio catalogs [music](#music) or [live channels](#live-tv).
 
-This page is for people who write addons. It covers what rex needs from one, how to name and dress what it brings, and the rules that trip people up. It ends with a worked example: [rex-stremio](https://github.com/debridmediamanager/rex-stremio), the addon that brings your Stremio addons' catalogs into rex, nothing downloaded. Its source is one Python file you can read alongside this page.
+This page covers what rex needs from an addon how to name its items and the rules that matter. It ends with
+[rex-stremio](https://github.com/debridmediamanager/rex-stremio) as a one-file example.
 
 An addon does three things:
 
