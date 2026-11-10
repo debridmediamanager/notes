@@ -62,6 +62,6 @@ rex is free and needs no sponsorship; its Android build comes only inside the sp
 
 Fill requests on DMM's [request board](https://debridmediamanager.com/requests). Every 10 requests you fill earn 7 days of the DMM perks above. Only one fill for the same person each day counts. Link the key from a free gatekeeper account on the board to collect them.
 
-Earned time opens the DMM table above. It does not open the zurg nightly or the source code or the Discord role or remote help. Those need a paid sponsorship. The `dmm_api_key` features in zurg need a nightly too.
+Earned time opens the DMM table above. It does not open the zurg nightly or the source code or the Discord role or remote help or the Android app. Those need a paid sponsorship. The `dmm_api_key` features in zurg need a nightly too.
 
 Stuck? Ask in the **dmm-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP).
