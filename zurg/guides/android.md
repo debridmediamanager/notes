@@ -7,9 +7,10 @@ order: 40
 # zurg+rex for Android and Google TV
 
 The Android app runs a zurg engine on the device and rex beside it: your own Plex server on your
-phone or TV box, for every Plex app. One app works on phones tablets Android TV and Google TV. Android 8.0 or newer is required. Fire TV can sideload the
-same APK. Use a WebDAV player when it has no system Files app. Usenet requires 64-bit Android; TorBox
-hosted NZBs (`torbox_nzb`) are not available on Android.
+phone or TV box, for the Plex apps. One app works on phones tablets Android TV and Google TV.
+Android 8.0 or newer is required. Fire TV can sideload the same APK. Use a WebDAV player when it has
+no system Files app. Usenet requires 64-bit Android; TorBox hosted NZBs (`torbox_nzb`) are not
+available on Android.
 
 ## Install and set up
 
