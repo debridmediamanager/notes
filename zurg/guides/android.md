@@ -81,7 +81,9 @@ Loopback is the default. Player intents never contain your server password.
 
 Settings covers connection, providers, library, repair, resources and logging.
 Advanced accepts raw YAML and asks the installed engine to validate it before
-saving. Saving a running configuration asks before restarting the server.
+saving. Settings has no field for your DMM API key: add
+`dmm_api_key: YOUR_DMM_API_KEY` in Advanced for the [DMM wanted list](dmm-wanted.md)
+and DMM's release naming. Saving a running configuration asks before restarting the server.
 Web dashboard opens the local dashboard for desktop integration settings.
 
 Logs includes the engine's recent output and the supervisor's last 200 lines.
