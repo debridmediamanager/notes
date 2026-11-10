@@ -12,15 +12,15 @@ Short answers to what people ask before they install rex, and soon after. Each a
 
 ### What is rex?
 
-A media server for the official Plex apps that owns no files. Your apps see it as one more Plex server, with posters, seasons, watch history and Continue Watching. It keeps no movies: a **source** tells rex what is in your library and serves the files, and when you press play rex streams the file straight from that source. Nothing is downloaded first.
+A media server for the official Plex apps that owns no files. Your apps see one more Plex server with posters seasons watch history and Continue Watching. A **source** tells rex what is in the library and serves each file. rex streams it when you press play. Nothing is downloaded first.
 
-It is a server of its own, not a plugin for Plex Media Server, and it does not need one. It replaces your Plex server only if you want it to: it can run beside it, and your apps then list both. On the same machine both carry the machine's name: rex is the one shared with you, with the fresh account's name beside it, and you can rename it ([Install rex](any-source.md#step-1-install-rex) says how). [Move from Plex to rex](from-plex.md) covers both ways.
+It is its own server. It is not a Plex Media Server plugin and does not need one. Run it beside Plex if you want both. [Install rex](any-source.md#step-1-install-rex) explains the names and [Move from Plex to rex](from-plex.md) covers both routes.
 
 ### What does it cost?
 
-rex is free for personal use, with no paid tier. Its source code is public under the PolyForm Noncommercial license, which does not allow commercial use. Every build is a public nightly on [GitHub Releases](https://github.com/debridmediamanager/rex/releases), and anyone can download it. The Android build is the exception: it ships only inside the sponsor-only [zurg+rex Android app](../zurg/guides/android.md).
+rex is free for personal use with no paid tier. Its source code is public under the PolyForm Noncommercial license. Commercial use is not allowed. Every build is public on [GitHub Releases](https://github.com/debridmediamanager/rex/releases) except the Android build, which ships only inside the sponsor-only [zurg+rex Android app](../zurg/guides/android.md).
 
-What may cost something is around it:
+Things around it may cost something:
 
 | | |
 |---|---|
@@ -31,7 +31,7 @@ What may cost something is around it:
 
 ### Is my Plex account at risk?
 
-rex is not made by Plex, and Plex could take action against an account that registers it. That is why every guide has you register rex on a **fresh free Plex account** made just for it, and share rex from there with your own account. Your own account then only accepts a share, the way it would from a friend's server, and your watch history, friends and any Plex Pass stay where they are. [Add it to a Plex account](any-source.md#step-3-add-it-to-a-plex-account) walks through it. You use rex at your own risk.
+rex is not made by Plex and Plex could act against an account that registers it. Use a **fresh free Plex account** made for rex then share it with your own account. Your history friends and Plex Pass stay on your own account. [Add it to a Plex account](any-source.md#step-3-add-it-to-a-plex-account) walks through it. Use rex at your own risk.
 
 ### Which Plex apps work?
 
@@ -92,7 +92,7 @@ Yes, through a source that reads Usenet, such as zurg. rex never talks to a Usen
 
 ### Do I need zurg?
 
-No. zurg is one source among others. rex takes its library from anything that speaks its feed API:
+No. zurg is one source among others. rex accepts anything that speaks its feed API:
 
 - [rex with your own app](any-source.md): any app that serves files over HTTP
 - [rex with your Stremio addons](stremio.md): catalogs from Stremio addons
@@ -103,13 +103,13 @@ Several sources can fill the same Movies and TV libraries.
 
 ### Do I need to forward a port?
 
-Not to watch at home. Plex apps on your home network find rex and connect to it over that network, with nothing to open on your router. app.plex.tv in a browser does too, over the HTTPS address [rex-direct](any-source.md#rex-direct) gives rex once it is claimed.
+Not at home. Plex apps on your home network find rex without a router change. app.plex.tv also works over the HTTPS address [rex-direct](any-source.md#rex-direct) gives a claimed rex.
 
-rex needs an address of its own only to watch away from home, or to share with a friend in another house. The simplest way is one port forward ([rex-direct](any-source.md#rex-direct)). With no public IPv4 but IPv6, rex-direct works over IPv6 with a firewall rule instead, for viewers whose network has IPv6 too ([rex-direct over IPv6](any-source.md#rex-direct-over-ipv6)). [Tailscale serve](any-source.md#tailscale-serve) needs none, on devices that run Tailscale. [Use it outside your home](any-source.md#use-it-outside-your-home-optional) compares the ways.
+rex needs its own address for away-from-home viewing or another household. The simplest route is one port forward ([rex-direct](any-source.md#rex-direct)). With IPv6 and no public IPv4 use [rex-direct over IPv6](any-source.md#rex-direct-over-ipv6). [Tailscale serve](any-source.md#tailscale-serve) needs no port forward on devices that run Tailscale. [Use it outside your home](any-source.md#use-it-outside-your-home-optional) compares the options.
 
 ### What does it not do?
 
-There is no tuner and no DVR: nothing records. Music, Live TV and photos come only from a source that sends them: [Music with rex](music.md) and [Live TV with rex](live-tv.md) show how, and zurg sends comic books as photos, which Plex Web shows (Plex for Android shows no photo library). Plexamp's radio, mixes and stations are missing. rex has no relay: to use it away from home it needs an address of its own ([Use it outside your home](any-source.md#use-it-outside-your-home-optional)).
+There is no tuner or DVR. Music Live TV and photos need a source that sends them. See [Music with rex](music.md) and [Live TV with rex](live-tv.md). zurg sends comic books as photos which Plex Web shows. Plexamp radio mixes and stations are missing. rex has no relay so remote use needs its own address ([Use it outside your home](any-source.md#use-it-outside-your-home-optional)).
 
 ## After you install
 
@@ -119,7 +119,7 @@ rex introduces itself to the apps and to plex.tv as a Plex Media Server, so the 
 
 ### Why does my browser at port 32400/web not open a library?
 
-rex has no web app of its own. Opening `http://192.168.1.20:32400/web` (with rex's LAN IP in place of `192.168.1.20`) shows a short page that says what to do next. Watch in a Plex app, or in a browser at [app.plex.tv](https://app.plex.tv).
+rex has no web app of its own. Opening `http://<rex's LAN IP>:32400/web` shows a short status page. Watch in a Plex app or in a browser at [app.plex.tv](https://app.plex.tv).
 
 ![The page rex shows at /web while it is not claimed yet](../assets/rex/80-rex-web-page.webp)
 

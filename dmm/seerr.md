@@ -6,19 +6,17 @@ order: 56
 
 # Seerr through DMM
 
-Add DMM to [Seerr](https://github.com/seerr-team/seerr) as its Radarr and Sonarr. Every
-request approved in Seerr then lands on your [DMM wanted list](../zurg/guides/dmm-wanted.md), and your
-zurg fetches it. There is no real Radarr or Sonarr to run, and Seerr only has to reach
-debridmediamanager.com, not your zurg. Overseerr and Jellyseerr work the same way.
+Add DMM to [Seerr](https://github.com/seerr-team/seerr) as Radarr and Sonarr. Approved requests
+land on your [DMM wanted list](../zurg/guides/dmm-wanted.md) for zurg to fetch. You do not need
+Radarr or Sonarr. Seerr only needs to reach debridmediamanager.com. Overseerr and Jellyseerr work
+the same way.
 
-It is for sponsors: Seerr signs in to DMM with your DMM API key, which [gatekeeper](https://gatekeeper.debridmediamanager.com/) shows you once you sponsor.
+It is for sponsors. Seerr signs in with the DMM API key from [gatekeeper](https://gatekeeper.debridmediamanager.com/).
 
 ## What you need
 
-- zurg reading your wanted list: `dmm_api_key` in `config.yml`, as set up in
-  [Fetch what you want from DMM](../zurg/guides/dmm-wanted.md#what-you-need).
-- Seerr set up with your Plex, Jellyfin or Emby server. Seerr learns from it which episodes you
-  already have.
+- zurg reading your wanted list with `dmm_api_key` in `config.yml`. See [Fetch what you want from DMM](../zurg/guides/dmm-wanted.md#what-you-need).
+- Seerr set up with your Plex, Jellyfin or Emby server so it knows which episodes you have.
 
 ## Add DMM as Radarr
 
@@ -35,9 +33,8 @@ In Seerr, open **Settings → Services** and press **Add Radarr Server**. Fill i
 | API Key | your DMM API key |
 | URL Base | `/api/arr/radarr` |
 
-Press **Test**. When it connects, the two lists below fill in: pick **Any** for Quality
-Profile and **/dmm** for Root Folder. Leave Minimum Availability as it is, tick
-**Enable Scan**, and press **Add Server**.
+Press **Test**. When it connects pick **Any** for Quality Profile and **/dmm** for Root Folder.
+Leave Minimum Availability as it is. Tick **Enable Scan** and press **Add Server**.
 
 ![Seerr's Add Radarr Server dialog filled in for DMM](../assets/seerr-dmm/01-seerr-radarr-dmm.webp)
 
@@ -46,9 +43,8 @@ page. DMM also refuses it once your sponsorship has lapsed.
 
 ## Add DMM as Sonarr
 
-Press **Add Sonarr Server** and fill it in the same way, with URL Base `/api/arr/sonarr`.
-After **Test**, pick **Any** and **/dmm** for both the normal and the anime profile and root
-folder, tick **Enable Scan**, and press **Add Server**.
+Press **Add Sonarr Server** and use URL Base `/api/arr/sonarr`. After **Test** pick **Any** and
+`/dmm` for both profiles and root folders. Tick **Enable Scan** and press **Add Server**.
 
 ![Seerr's Add Sonarr Server dialog filled in for DMM](../assets/seerr-dmm/02-seerr-sonarr-dmm.webp)
 
@@ -60,19 +56,18 @@ Request as usual. An approved film goes on your wanted list:
 
 ![The film shows as requested](../assets/seerr-dmm/04-seerr-movie-requested.webp)
 
-For a show, pick the seasons you want. Those seasons go on your list, and a later request
-for more seasons adds them. To follow the whole show, new seasons included, press
-**Want all seasons** on its DMM page.
+For a show pick the seasons you want. A later request can add more. To follow the whole show
+including new seasons press **Want all seasons** on its DMM page.
 
 ![Picking seasons of a show](../assets/seerr-dmm/05-seerr-request-seasons.webp)
 
-Your [wanted list](https://debridmediamanager.com/wanted) shows each title within a few
-seconds, and zurg picks it up the next time it reads the list, within a minute.
+Your [wanted list](https://debridmediamanager.com/wanted) shows each title within seconds. zurg
+picks it up within a minute.
 
 ## What Seerr shows
 
-Seerr reads DMM's list once a day, at its **Radarr Scan** and **Sonarr Scan** jobs. To run
-them now, open **Settings → Jobs & Cache** and press **Run Now** next to each.
+Seerr reads DMM's list once a day in **Radarr Scan** and **Sonarr Scan**. To run them now open
+**Settings → Jobs & Cache** and press **Run Now** next to each.
 
 - **A film** zurg has fetched shows as **Available**.
 

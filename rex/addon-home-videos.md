@@ -6,9 +6,12 @@ order: 69
 
 # Tutorial: a home videos addon
 
-This tutorial builds a complete rex addon in one Python file. It puts a folder of your own videos (phone clips, camcorder files, screen recordings) into a **Home Videos** library in every Plex app, each with a title, a date and a still from the video as its poster. Nothing is copied or uploaded: when someone presses play, rex reads the file from your addon.
+This tutorial builds a rex addon in one Python file. It puts your phone clips camcorder files or screen
+recordings into a **Home Videos** library in every Plex app. Each video gets a title date and poster still.
+Nothing is copied or uploaded. rex reads the file from your addon when you press play.
 
-It is the shortest working version of [Building rex addons](addons.md), Steps 1 to 5, so read the two side by side: this page says what to type, that one says why. The [music](addon-music.md) and [IPTV](addon-iptv.md) tutorials build on the same skeleton.
+It is the shortest working version of [Building rex addons](addons.md) Steps 1 to 5. This page says what to type.
+That one explains why. The [music](addon-music.md) and [IPTV](addon-iptv.md) tutorials use the same skeleton.
 
 | You need | Why |
 |---|---|

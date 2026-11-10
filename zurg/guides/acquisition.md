@@ -6,15 +6,13 @@ order: 58
 
 # Acquisition sources
 
-Plex watchlist, your [DMM wanted list](#dmm-wanted-list), [Seerr](https://github.com/seerr-team/seerr),
-[Radarr](https://radarr.video) and [Sonarr](https://sonarr.tv) feed the same durable engine. Adapters discover requests and resolve media IDs. The engine
-owns progress, retries and acknowledgement. The shared executor selects releases
-from Newznab indexers, saving NZBs for zurg's Usenet backend, and from Torznab
-indexers, handing info hashes to a debrid account that already holds them: see
-[Newznab and Torznab](#newznab-and-torznab). Nothing is acknowledged until
-the grab has been checked. An NZB is checked against the news servers. On a
-`torbox_nzb` account TorBox has to fetch it instead. A torrent has to show up in
-the library with files in it. See
+Plex watchlist your [DMM wanted list](#dmm-wanted-list) [Seerr](https://github.com/seerr-team/seerr)
+[Radarr](https://radarr.video) and [Sonarr](https://sonarr.tv) use one acquisition engine. It tracks progress
+retries and acknowledgement. Newznab results become NZBs for zurg's Usenet backend. Torznab results become
+info hashes for a debrid account. See [Newznab and Torznab](#newznab-and-torznab).
+
+The engine acknowledges a grab only after checking it. An NZB must reach the news server. On a `torbox_nzb`
+account TorBox must fetch it instead. A torrent must appear in the library with files. See
 [Verifying a grab](#verifying-a-grab).
 
 A release zurg grabs keeps the ids of the title it was grabbed for, every one

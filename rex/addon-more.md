@@ -6,9 +6,12 @@ order: 66
 
 # More from your addon
 
-[Building rex addons](addons.md) covers what every addon needs. This page covers what an addon can add once it works: subtitles, trailers and other extras, chapters, collections, playlists, artist pictures, films Plex already knows, big libraries, reading back what people fixed, and removing an addon. Each section adds fields to the items you already send in [Step 5](addons.md#step-5-send-it); the tutorials ([home videos](addon-home-videos.md), [music](addon-music.md), [IPTV](addon-iptv.md)) are a good place to try them.
+[Building rex addons](addons.md) covers the basics. This page adds subtitles trailers chapters collections
+playlists artist pictures known films large libraries fixes and removal. Each section adds fields to
+[Step 5](addons.md#step-5-send-it). Try them in the [home videos](addon-home-videos.md) [music](addon-music.md)
+or [IPTV](addon-iptv.md) tutorials.
 
-Every example here was sent to a rex nightly 2026.11.02, and the answers shown are what it gave. The full reference is rex's [docs/feed-api.md](https://github.com/debridmediamanager/rex/blob/main/docs/feed-api.md).
+Every example was sent to rex nightly 2026.11.02. The full reference is [docs/feed-api.md](https://github.com/debridmediamanager/rex/blob/main/docs/feed-api.md).
 
 ## Films and shows Plex knows
 

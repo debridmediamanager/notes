@@ -6,9 +6,10 @@ order: 55
 
 # Apps download from your provider
 
-Normally every movie you play goes through rex: rex reads it from your source and passes it to the Plex app. When your source answers with a link to the file instead, such as your debrid service's download link, rex can hand the app that link. The Plex app then downloads the file from there itself, and the rex machine carries none of the movie.
+Normally rex reads every movie from your source and passes it to Plex. If the source returns a file link such as
+a debrid download link rex can hand it to Plex. Plex then downloads the file and the rex machine carries no media.
 
-It works when the app plays the file as it is (direct play). Anything rex has to convert for an app still goes through rex, or, if you choose, is refused.
+It works when Plex can direct play the file. Anything rex must convert still goes through rex or is refused if you choose.
 
 Tested on 2026-10-25 with zurg on Real-Debrid, Plezy and Plex for Android on a Pixel 6, and Plex Web in Chrome.
 

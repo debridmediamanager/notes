@@ -8,13 +8,14 @@ order: 90
 
 ## One-line option
 
-The optional sponsor bootstrap installs the supported system packages, downloads the matching CPU build and runs setup plus diagnostics:
+The optional sponsor bootstrap installs system packages downloads the right CPU build and runs setup and diagnostics:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.sh | bash
 ```
 
-It signs in through GitHub and keeps the install in `~/zurg`. Existing binaries and configs are preserved. Continue below for the manual route or a custom path.
+It signs in through GitHub and installs to `~/zurg`. Existing binaries and configs stay in place. Continue below for
+the manual route or a custom path.
 
 The zurg binary can build the rest of its install itself. It writes the config, downloads the correct rclone (and ffprobe, unless one is already on your PATH) for the machine, creates the mount and registers an enabled systemd service.
 

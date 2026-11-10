@@ -6,11 +6,11 @@ order: 100
 
 # Which setup should I use?
 
-**[Find your setup with the interactive questionnaire](https://debridmediamanager.com/choose-your-setup).** Answer a few questions about your player, accounts and hosting to get recommended routes, requirements and setup links. No login needed.
+**[Find your setup with the interactive questionnaire](https://debridmediamanager.com/choose-your-setup).** Answer a few questions about your player accounts and hosting. It returns routes requirements and setup links. No login needed.
 
-**Start with the app you want to watch in.** You do not need to install everything. DMM helps you find and choose releases; a provider supplies the files; zurg can turn those files into a shared library; rex presents a library to Plex apps. Several routes skip one or more of those pieces.
+**Start with the app you want to watch in.** You do not need every piece. DMM helps you choose releases. A provider supplies the files. zurg can turn them into a shared library. rex presents a library to Plex apps. Some routes skip a piece.
 
-This is a map of the supported route families, checked against the projects on **10 November 2026**. It includes alternatives outside the stack where they remove a step. It is not a promise that every third-party addon, TV model or combination works. Follow the linked setup guide for your chosen route and its tested limits.
+This map covers supported routes checked on **10 November 2026**. It includes outside alternatives that remove a step. Third-party addons and devices can still differ. Follow the linked guide and its tested limits.
 
 ## Pick by what you already use
 
@@ -35,9 +35,9 @@ On a phone, swipe a table sideways to see all its columns.
 | Files already on a disk/NAS | **Existing media server or network player**; **HTTP source → rex** if you want rex | Keep using the files you own; no debrid or Usenet account needed | rex needs metadata submitted through its feed API and HTTP access to the files; the feed producer and file server can be separate. rex does not scan disks |
 | Streamable HTTP media or my own HTTP server | **HTTP source + rex feed → rex → Plex apps**, or a compatible player directly | Use an existing source without debrid or zurg | rex needs a feed producer to submit identity and media details; a bare URL does not provide that metadata |
 
-Start here: [DMM Cast](https://debridmediamanager.com/stremio/) · [Kodi](https://debridmediamanager.com/kodi) · [DMM Settings / player choice](https://debridmediamanager.com/settings) · [zurg setup](../zurg/setup/index.md) · [rex with zurg](../rex/with-zurg.md) · [rex with Stremio addons](../rex/stremio.md) · [Jellyfin plugins](https://debridmediamanager.com/jellyfin) · [Emby plugins](https://debridmediamanager.com/emby) · [zurg's Stremio addon](../zurg/guides/stremio.md) · [Android](../zurg/guides/android.md) · [rex with any source](../rex/any-source.md).
+Start here: [DMM Cast](https://debridmediamanager.com/stremio/) · [Kodi](https://debridmediamanager.com/kodi) · [DMM Settings](https://debridmediamanager.com/settings) · [zurg setup](../zurg/setup/index.md) · [rex with zurg](../rex/with-zurg.md) · [rex with Stremio addons](../rex/stremio.md) · [Jellyfin plugins](https://debridmediamanager.com/jellyfin) · [Emby plugins](https://debridmediamanager.com/emby) · [zurg's Stremio addon](../zurg/guides/stremio.md) · [Android](../zurg/guides/android.md) · [rex with any source](../rex/any-source.md).
 
-The Cast link starts with Real-Debrid. DMM also has Cast setup pages for [TorBox](https://debridmediamanager.com/stremio-torbox/), [AllDebrid](https://debridmediamanager.com/stremio-alldebrid/), [Premiumize](https://debridmediamanager.com/stremio-premiumize/), [Offcloud](https://debridmediamanager.com/stremio-offcloud/), [Debrid-Link](https://debridmediamanager.com/stremio-debridlink/) and [Easynews](https://debridmediamanager.com/stremio-easynews/). Use the one for your account. Cast here means the **DMM addon**, not Chromecast or screen mirroring.
+The Cast link starts with Real-Debrid. Use the setup page for [TorBox](https://debridmediamanager.com/stremio-torbox/) or [AllDebrid](https://debridmediamanager.com/stremio-alldebrid/) or [Premiumize](https://debridmediamanager.com/stremio-premiumize/) or [Offcloud](https://debridmediamanager.com/stremio-offcloud/) or [Debrid-Link](https://debridmediamanager.com/stremio-debridlink/) or [Easynews](https://debridmediamanager.com/stremio-easynews/) when you use that account. Cast here means the **DMM addon**. It does not mean Chromecast or screen mirroring.
 
 ## The playback map
 
@@ -96,11 +96,11 @@ flowchart LR
     N --> F[Compatible Jellyfin clients]
 ```
 
-The plugins are independently implemented integrations. “zurg” in their names does **not** mean you must run the separate zurg application, or that every feature of that application exists in a plugin. The TorBox plugin's torrent-library support, for example, is not a promise of parity with zurg's hosted-NZB backend.
+The plugins are separate integrations. “zurg” in a plugin name does **not** mean you must run the zurg application. It also does not promise the same features. The TorBox plugin's torrent library is separate from zurg's hosted NZB backend.
 
 ## Choose where the files come from
 
-An **indexer** finds releases. A **torrent or NZB** describes how to fetch one; it is not the video. A **provider** supplies the bytes. A **player** decodes them. Buying access to one of these does not automatically buy the others.
+An **indexer** finds releases. A **torrent or NZB** describes how to fetch one. A **provider** supplies the bytes. A **player** decodes them. Access to one does not include the others.
 
 | Input | What obtains/serves the video? | What you need | When it is useful |
 |---|---|---|---|
@@ -113,7 +113,7 @@ An **indexer** finds releases. A **torrent or NZB** describes how to fetch one; 
 | Direct HTTP(S) download link | A compatible player/HTTP source, or a provider supporting that download | Access to the actual media URL; a suitable provider account if importing/unrestricting it there | You already have a file URL rather than a torrent/NZB |
 | Files on your disk or NAS | Your file/media server | Local storage and a player that can reach it | Offline ownership, home videos, or keeping an existing collection |
 
-zurg's debrid integrations cover **Real-Debrid, AllDebrid, TorBox, Premiumize, Offcloud and Debrid-Link**. You can combine accounts in one zurg library. That does not make providers' caches, quotas or file availability identical. A cached badge is useful evidence, not a guarantee that your account can play the file now. See [providers](../zurg/providers/index.md).
+zurg supports **Real-Debrid, AllDebrid, TorBox, Premiumize, Offcloud and Debrid-Link**. You can combine accounts in one library. Caches quotas and file availability still differ. A cached badge is evidence, not a playback guarantee. See [providers](../zurg/providers/index.md).
 
 ### “Usenet without a Usenet account”: which route?
 
@@ -135,21 +135,21 @@ flowchart TD
     R --> P[Your chosen RD playback route]
 ```
 
-**Choose TorBox hosted NZBs** if you want TorBox to do the downloading and repair. In DMM, the TorBox action on Usenet results sends the NZB to that service. In current zurg nightlies, the provider type is `torbox_nzb`; it also accepts NZBs from the watch directory, acquisition and the SABnzbd-compatible interface. [TorBox hosted Usenet](../zurg/providers/torbox-nzb.md) has its zurg setup. A cache miss must finish downloading on TorBox before it plays. Active downloads share the account's slots with torrents, and retained files can expire. Keep the NZBs for re-fetching; zurg does not promise to re-download expired releases unattended.
+**Choose TorBox hosted NZBs** when you want TorBox to download and repair. DMM sends the NZB there. Current zurg nightlies use provider type `torbox_nzb` and accept NZBs from the watch directory acquisition and SABnzbd interface. [TorBox hosted Usenet](../zurg/providers/torbox-nzb.md) has its zurg setup. A cache miss must finish before it plays. Downloads share slots with torrents. Retained files can expire, and zurg does not promise to fetch an expired release again. Keep the NZB for another fetch.
 
-**Choose direct Usenet** if you want zurg to read through your own news accounts, including fallback/block accounts. It uses `nzb`, with NNTP credentials. A TorBox news-server login also belongs to this route: [TorBox NNTP](../zurg/providers/torbox-news-server.md) is distinct from its hosted NZB downloader. [TorBox's own tools page](https://torbox.app/tools) describes that NNTP offering; [its plans](https://torbox.app/pricing) describe hosted-service entitlements.
+**Choose direct Usenet** when zurg should read through your own news accounts including fallback or block accounts. It uses `nzb` with NNTP credentials. A TorBox news-server login belongs here too. It is separate from TorBox hosted NZBs. See [TorBox NNTP](../zurg/providers/torbox-news-server.md) and [its plans](https://torbox.app/pricing).
 
-**One zurg instance uses either `nzb` or `torbox_nzb`, not both.** Both own the NZB watch directory. To run both, use separate zurg instances and separate working directories. With `dmm_api_key` on both, [turn the `dmm-wanted` source off on one](../zurg/guides/dmm-wanted.md#two-zurgs-on-one-key), or every Wanted title is fetched twice. Either can sit beside torrent-provider accounts. zurg's Stremio addon posts its pick to whichever NZB account the instance has; with `torbox_nzb` only a release TorBox already holds starts within the addon's wait, and only when no other NZB post is waiting.
+**One zurg instance uses either `nzb` or `torbox_nzb`.** Both own the NZB watch directory. Run both with separate instances and working directories. With `dmm_api_key` on both, [turn the `dmm-wanted` source off on one](../zurg/guides/dmm-wanted.md#two-zurgs-on-one-key), or every Wanted title is fetched twice. Either can sit beside torrent providers. zurg's Stremio addon posts its pick to whichever NZB account the instance has. With `torbox_nzb` only a release TorBox already holds starts within the addon's wait, and only when no other NZB post is waiting.
 
-**Choose DMM → Real-Debrid** if the desired end result is a release in your RD library. This is a hosted transfer, with queues and allowances; an uncached job takes time. It does not give Real-Debrid native NNTP support, and it does not mean every debrid provider accepts NZBs. The DMM result and [Transfers page](https://debridmediamanager.com/transfers) show the job's progress.
+**Choose DMM → Real-Debrid** when you want the release in your RD library. It is a hosted transfer with queues and allowances. An uncached job takes time. It does not add native NNTP support to Real-Debrid or to other debrid providers. The DMM result and [Transfers page](https://debridmediamanager.com/transfers) show progress.
 
-Easynews adds another choice: its **Watch** and **Cast** actions play Easynews's HTTP files, and **Download NZB** saves the release's NZB for your own downloader. **Send to zurg** instead places that release's NZB on your sponsor Wanted list for zurg to fetch. The latter needs a configured NZB backend; an Easynews web login in DMM does not configure zurg's NZB account.
+Easynews **Watch** and **Cast** play its HTTP files, and **Download NZB** saves the release's NZB. **Send to zurg** puts that NZB on your sponsor Wanted list. That needs a configured NZB backend. An Easynews login in DMM does not configure zurg's NZB account.
 
 ### What about HTTP links?
 
-DMM's TorBox **Add** dialog accepts direct HTTP(S) download links as web downloads. zurg exposes TorBox web downloads in its `__downloads__` directory; do not assume that a file appearing there is also an identified library item sent to rex. Real-Debrid unrestricted/file-hoster downloads can also appear in zurg's `__downloads__` directory. DMM's TorBox Cast catalog includes completed web and Usenet downloads as well as torrents. This does not make an arbitrary website page a video: login pages, expiring URLs, DRM and a site's own player can require a different integration.
+DMM's TorBox **Add** dialog accepts direct HTTP(S) links as web downloads. zurg exposes them in `__downloads__`. An item there is not automatically an identified rex library item. Real-Debrid unrestricted downloads can appear there too. DMM TorBox Cast includes completed web and Usenet downloads and torrents. A web page may still need another integration because of logins expiring URLs DRM or its own player.
 
-**rex supports streamable HTTP(S) media through its feed API.** A [source or addon](../rex/any-source.md) submits the media address and the item’s metadata, and rex makes it available in Plex apps. The HTTP server supplying the bytes can be separate from the program submitting the feed; neither zurg nor a debrid account is required. [rex-stremio](../rex/stremio.md) does that for compatible Stremio addons. Raw magnets and torrent-only streams do not work through it; HLS streams need rex's FFmpeg setup. rex does not identify releases or search filenames to decide what a file is: its source supplies that identity.
+**rex supports streamable HTTP(S) media through its feed API.** A [source or addon](../rex/any-source.md) sends the media address and metadata. rex then makes it available in Plex apps. The file server and feed producer can be separate. No zurg or debrid account is required. [rex-stremio](../rex/stremio.md) does this for compatible Stremio addons. Raw magnets and torrent-only streams do not work. HLS needs rex's FFmpeg setup. rex uses the identity its source supplies.
 
 ## Decide how titles get added
 
@@ -164,9 +164,9 @@ Acquisition and playback are separate choices. You can change how a title is req
 | Want detailed monitoring and quality profiles in Sonarr/Radarr | DMM or your indexers → arr → zurg download-client interface → library | Keep arr's decisions and import workflow; more services and path setup |
 | Want to choose only when pressing Play | DMM Cast/Kodi, another stream addon, or zurg's Stremio search | No need to pre-build a managed library of every title |
 
-For the recommended DMM + zurg arr route, **DMM is the indexer; zurg is the download client**. DMM offers [Torznab for torrents](https://debridmediamanager.com/torznab) and [Newznab for Usenet](https://debridmediamanager.com/newznab), both requiring active sponsorship. Prowlarr is optional. zurg exposes a [qBittorrent-compatible interface for torrents](../zurg/guides/sonarr-radarr-torrents.md) and a [SABnzbd-compatible interface for NZBs](../zurg/guides/sonarr-radarr.md). Those are interfaces built into zurg; they do not require those two downloader applications alongside it. [zurg can also help search for arr](../zurg/guides/sonarr-radarr-fetch.md).
+For the recommended DMM + zurg arr route **DMM is the indexer and zurg is the download client**. DMM offers [Torznab](https://debridmediamanager.com/torznab) and [Newznab](https://debridmediamanager.com/newznab). Both need active sponsorship. Prowlarr is optional. zurg provides [qBittorrent](../zurg/guides/sonarr-radarr-torrents.md) and [SABnzbd](../zurg/guides/sonarr-radarr.md) interfaces. You do not need those downloader apps beside zurg. [zurg can also search for arr](../zurg/guides/sonarr-radarr-fetch.md).
 
-If you want **complete local copies**, download/copy the actual files from your provider or zurg, use a player's supported offline-download feature, or keep a conventional downloader and disk-based library. Check download quotas and verify the saved files play without the network. zurg's virtual files, `.strm` links and [local debrid catalogs](../zurg/guides/local-libraries.md) are not offline copies. A local debrid catalog stores the library's records locally; playback still depends on the provider.
+If you want **complete local copies** download the files from your provider or zurg. You can also use a player's offline-download feature or a normal downloader and disk library. Check quotas and play the saved files without the network. zurg virtual files `.strm` links and [local debrid catalogs](../zurg/guides/local-libraries.md) are not offline copies. Local catalogs store records only. Playback still depends on the provider.
 
 ## The tradeoffs that matter before installing
 
@@ -181,13 +181,13 @@ If you want **complete local copies**, download/copy the actual files from your 
 | What do I pay for? | Keep provider subscriptions, indexer access, DMM sponsorship, hosting and player/server purchases separate. DMM's basic website and rex for personal use are free; rex's Android build comes only inside the sponsor-only zurg+rex app. Current zurg nightlies and DMM's plugin distribution are sponsor benefits; Wanted and DMM's indexer APIs also need sponsorship. rex-stremio does not require it. [What a sponsorship gives you](sponsorship.md) lists every perk and where to set it up. |
 | Does a catalog entry guarantee playback? | No. Addon catalogs describe titles; cloud files can expire; torrents can lack sources; Usenet articles can be missing. Pick the route whose failure and waiting behavior you are comfortable with. |
 
-A compatible server client can also be a third-party app: [Infuse connects to Plex, Emby and Jellyfin](https://support.firecore.com/hc/en-us/articles/360006462093-Streaming-from-Plex-Emby-and-Jellyfin). Needing Infuse does not by itself mean you need a separate zurg mount; verify the selected plugin and client combination.
+A compatible server client can also be a third-party app. [Infuse connects to Plex Emby and Jellyfin](https://support.firecore.com/hc/en-us/articles/360006462093-Streaming-from-Plex-Emby-and-Jellyfin). You may not need a separate zurg mount. Check the plugin and client together.
 
-Infuse supports [WebDAV and other network shares](https://support.firecore.com/hc/en-us/articles/215090977-Streaming-From-a-Mac-PC-or-NAS). A `.strm` file is another way to hand a compatible player such as Kodi a URL. It is not a universal substitute for a mount: check the client, and expect different proxy/failover behavior. Do not choose `.strm` as the normal Plex Media Server setup.
+Infuse supports [WebDAV and other network shares](https://support.firecore.com/hc/en-us/articles/215090977-Streaming-From-a-Mac-PC-or-NAS). A `.strm` file gives a compatible player such as Kodi a URL. It is not a universal mount replacement. Check the client and expect different proxy and failover behavior. Do not use `.strm` as the normal Plex Media Server setup.
 
-There is also a [legacy free zurg release](https://github.com/debridmediamanager/zurg-public/releases). It is Real-Debrid-only, with a different configuration format; the current multi-provider, Usenet and Android routes here refer to sponsor nightlies.
+There is also a [legacy free zurg release](https://github.com/debridmediamanager/zurg-public/releases). It is Real-Debrid only with a different config format. The multi-provider Usenet and Android routes here use sponsor nightlies.
 
-**rex has its own compatibility boundary.** It is an independent server for Plex apps, not Plex Media Server or a Plex plugin. Use its [FAQ](../rex/faq.md) for tested devices, transcoding, remote use and the fresh-account recommendation. Not every Plex app has been tested, and Plex's services and apps can change. A traditional Plex server can remain alongside rex.
+**rex has its own compatibility boundary.** It is an independent Plex app server. It is not Plex Media Server or a Plex plugin. Use its [FAQ](../rex/faq.md) for tested devices transcoding remote use and the fresh-account recommendation. A traditional Plex server can run beside rex.
 
 ## Needs that can change the route
 
@@ -216,4 +216,4 @@ There is also a [legacy free zurg release](https://github.com/debridmediamanager
 4. **“I want Plex apps, no mounts, and my existing addons.”** Use rex-stremio with rex. Use zurg as a source instead when the thing you want to expose is your managed debrid/Usenet library. Both sources can feed the same rex.
 5. **“I have news accounts and want Sonarr/Radarr.”** Use DMM Newznab or your existing indexers, zurg's NZB/SABnzbd route and a playback route from the first table. For permanent local files, choose a normal downloader or explicitly save complete copies; virtual imports alone are not offline files.
 
-Still unsure? Tell us **your device/player, accounts you already have, whether a host can stay on, and whether you want on-demand playback or an automatically managed library**. Those four answers usually decide the route. [Getting help](remote-help.md) says where to ask.
+Still unsure? Tell us **your device or player, existing accounts, whether a host can stay on, and whether you want on-demand playback or an automatic library**. Those answers usually decide the route. [Getting help](remote-help.md) says where to ask.

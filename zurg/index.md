@@ -6,11 +6,9 @@ order: 90
 
 # zurg
 
-zurg is a Go daemon that presents a debrid account or a directory of NZBs as a virtual
-filesystem. Six debrid services are supported and so is Usenet. It stores no media and it
-accepts no uploads. Nothing is fetched before a player asks for it. A read on a debrid
-account becomes a ranged HTTP GET against that service's CDN. A read on the Usenet backend
-becomes the articles that cover those bytes. A 60 GB remux costs 60 GB of disk nowhere.
+zurg puts your debrid accounts and Usenet library in one virtual folder. It stores no local
+video. Nothing is fetched until a player asks for it. A 60 GB remux does not use 60 GB of local
+disk.
 
 Four views onto the same library:
 
@@ -23,19 +21,18 @@ Four views onto the same library:
 
 ## Setup
 
-Getting zurg running on your machine.
+Get zurg running on your machine.
 
-- [Linux](setup/linux.md) — FUSE 3 and a systemd service created by the binary
-- [Docker](setup/docker.md) — containers on a Linux host, FUSE propagation, and what breaks a host-visible mount
-- [macOS](setup/macos.md) — macFUSE and launchd auto-start created by the binary
-- [Windows](setup/windows.md) — WinFsp and an interactive drive-letter task created by the binary
+- [Linux](setup/linux.md) — FUSE 3 and systemd auto-start
+- [Docker](setup/docker.md) — a Linux host with a host-visible mount
+- [macOS](setup/macos.md) — macFUSE and launchd auto-start
+- [Windows](setup/windows.md) — WinFsp and a drive-letter task
 
 ## Providers
 
-Pointing zurg at an account. Each page covers the credential and the
-`config.yml` entry and what that service does differently. All of them assume
-the Docker install. On a binary install the `config.yml` entry is the same; see
-[Setup](setup/index.md) for the commands that replace the Docker ones.
+Point zurg at an account. Each page covers the credential and the `config.yml` entry. The
+examples use Docker. A binary install uses the same config entry. See [Setup](setup/index.md)
+for the commands.
 
 | Page | What is different about it |
 |---|---|
@@ -54,7 +51,7 @@ Docker and the rules the config loader enforces.
 
 ## Guides
 
-Working with the library.
+Work with the library.
 
 - [Usenet](guides/usenet.md) — the `nzb` backend end to end: news accounts, NZBs, the mount, Plex
 - [Sonarr & Radarr for Usenet](guides/sonarr-radarr.md) — the \*arrs search and zurg answers as a SABnzbd, so imports are a rename not a download
@@ -74,7 +71,7 @@ Working with the library.
 
 ## Migrating
 
-Moving an existing library onto zurg without a re-download or a re-scan.
+Move an existing library onto zurg without a re-download or a re-scan.
 
 - [From AltMount](migrate/altmount.md)
 - [From decypharr](migrate/decypharr.md)

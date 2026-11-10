@@ -6,9 +6,11 @@ order: 70
 
 # `__magic__`, a directory you can organise
 
-Every other directory zurg serves is computed. `movies` holds what matches the movies filter, `__all__` holds everything, and a release's folder holds the files its account says it has — so the layout is a view of the library, recomputed on every refresh, and there is nowhere to put anything.
+Every other zurg directory is computed. `movies` applies the movies filter. `__all__` holds everything.
+A release folder holds what the account reports. The layout is rebuilt on each refresh.
 
-`__magic__` is the one directory whose paths are **stored**. A move inside it rewrites a row in a small table; no bytes move, nothing is copied, and the release stays exactly where it was on the debrid account. What you get is a tree you can arrange — by hand, or by pointing Sonarr or Radarr at it.
+`__magic__` is the one directory with **stored** paths. A move rewrites one table row. No bytes move and the
+debrid account stays unchanged. Arrange it by hand or let Sonarr and Radarr use it.
 
 It holds three kinds of thing. `__magic__/__all__` holds every release nothing has placed yet, and it is the folder the download clients import from; it is computed, so nothing can be created at its top level, and no file's bytes can be written over a name a release folder already holds (a release folder takes sidecars at names it does not use). With a DMM sponsor key, zurg files everything DMM has identified into `__movies__` and `__shows__`, by title ([below](#__movies__-and-__shows__-sorted-by-title)). Everything else at the root of `__magic__` is yours:
 

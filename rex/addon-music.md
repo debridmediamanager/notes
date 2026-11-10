@@ -6,9 +6,12 @@ order: 68
 
 # Tutorial: a music addon
 
-This tutorial builds a rex addon that puts a folder of albums (FLAC, MP3, AAC and the rest) into a **Music** library that Plexamp, Plex Web and Plex for Android play. Your files stay where they are. The addon tells rex which album each song belongs to, by its MusicBrainz release, and Plex fills in the album and song names, the cover, the artist's photo and biography. An album Plex does not know, such as your own band's demos, shows under the names in its tags, with its `cover.jpg`. A `.lrc` file beside a song becomes its lyrics, timed to the music.
+This tutorial puts a folder of albums into a **Music** library that Plexamp Plex Web and Plex for Android play.
+It supports FLAC MP3 AAC and other common files. Your files stay where they are. MusicBrainz supplies known
+album details. Unknown albums use their tags and `cover.jpg`. A nearby `.lrc` file becomes timed lyrics.
 
-It follows [Building rex addons](addons.md) and its [Music](addons.md#music) section, and has the same shape as the [home videos tutorial](addon-home-videos.md): read that one first if this is your first addon.
+It follows [Building rex addons](addons.md) and its [Music](addons.md#music) section. Read the
+[home videos tutorial](addon-home-videos.md) first if this is your first addon.
 
 | You need | Why |
 |---|---|
