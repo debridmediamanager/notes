@@ -4,9 +4,9 @@ There are three ways to use Sonarr and Radarr with zurg. The real choice is who 
 
 | Guide | Who searches | zurg acts as | You need |
 |---|---|---|---|
-| [Usenet](sonarr-radarr.md) | Sonarr and Radarr | a SABnzbd | a Usenet account and Usenet indexers in Prowlarr or the \*arrs |
+| [Usenet](sonarr-radarr.md) | Sonarr and Radarr | a SABnzbd | a Usenet account (or TorBox Pro for the `torbox_nzb` backend) and Usenet indexers in Prowlarr or the \*arrs |
 | [Torrents](sonarr-radarr-torrents.md) | Sonarr and Radarr | a qBittorrent | a debrid account and torrent indexers in Prowlarr or the \*arrs |
-| [zurg searches](sonarr-radarr-fetch.md) | zurg | no download client at all | a Usenet or debrid account, and Newznab or Torznab indexers in zurg's own config |
+| [zurg searches](sonarr-radarr-fetch.md) | zurg | no download client at all | a Usenet, TorBox Pro or debrid account, and Newznab or Torznab indexers in zurg's own config |
 
 The first two can run side by side. They share the same `__magic__` folder.
 
@@ -25,7 +25,7 @@ Both check a release before the \*arr imports it. A dead Usenet post or a torren
 
 On a fresh install, start with zurg searching. There is less to set up and no volume layout to get right. Use the download-client route if you want to pick releases by hand. If you would rather wait for your profile's best release than take a quick first file, turn on [`best_first`](acquisition.md#taking-the-profiles-best-first).
 
-Radarr and Sonarr keep the list and the library. zurg does the fetching. Add a movie or a series the way you already do and zurg finds a release on your indexers. It checks that an NZB is still on the news servers, or that your debrid account already holds a torrent. Then it puts the file in its folder inside `__magic__` and asks Radarr or Sonarr to rescan. Nothing is downloaded to import and nothing is copied.
+Radarr and Sonarr keep the list and the library. zurg does the fetching. Add a movie or a series the way you already do and zurg finds a release on your indexers. It checks that an NZB is still on the news servers (for a `torbox_nzb` account, that TorBox fetched it), or that your debrid account already holds a torrent. Then it puts the file in its folder inside `__magic__` and asks Radarr or Sonarr to rescan. Nothing is downloaded to import and nothing is copied.
 
 Radarr and Sonarr need no indexers and no download client for this. They never search and never grab. Your quality profile still decides what zurg is allowed to take.
 

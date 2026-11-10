@@ -155,7 +155,7 @@ curl -s http://localhost:9999/http/version.txt
 
 # Check the mount
 ls /Volumes/Zurg/
-# Expected: __all__  __downloads__  __realdebrid__  __unplayable__  movies  shows  version.txt
+# Expected: __all__  __downloads__  __unplayable__  movies  shows  version.txt
 ```
 
 If everything looks good, stop zurg with `Ctrl+C`.

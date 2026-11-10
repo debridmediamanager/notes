@@ -10,7 +10,8 @@ Perks follow the sponsorship. When it ends DMM stops them on the next request. G
 
 | What you get | Where |
 |---|---|
-| Nightly builds with every provider and Usenet plus the Docker image and Android app | [zurg setup](../zurg/setup/index.md) after you accept the GitHub invitation |
+| Nightly builds with every provider and Usenet plus the Docker image | [zurg setup](../zurg/setup/index.md) after you accept the GitHub invitation |
+| The zurg+rex Android app, a Plex server on your phone | [Android guide](../zurg/guides/android.md) after you accept the GitHub invitation |
 | The full zurg source code | The private repository on GitHub |
 | Every release named for rex and Plex | `dmm_api_key` in the [zurg config](../zurg/reference/config.md) |
 | DMM media details without reading the file first and language checks before a release is added | Nothing beyond `dmm_api_key` |
@@ -32,7 +33,7 @@ The `dmm_api_key` features need a zurg nightly. The free public build does not i
 | DMM as a Newznab indexer for Usenet | DMM's [Newznab page](https://debridmediamanager.com/newznab) |
 | DMM as a Torznab indexer with cached-only feeds for Real-Debrid and AllDebrid and Debrid-Link and TorBox and Premiumize and Offcloud | DMM's [Torznab page](https://debridmediamanager.com/torznab). TorBox and Premiumize and Offcloud also need their linked service key |
 | Seven Jellyfin plugins for debrid and Usenet libraries and six Emby plugins for debrid libraries with nothing mounted | DMM's [Jellyfin](https://debridmediamanager.com/jellyfin) and [Emby](https://debridmediamanager.com/emby) pages |
-| Ten other streams per title in Stremio Cast and Kodi instead of five | Your Cast profile in DMM Settings |
+| Ten other streams per title in Stremio Cast and Kodi instead of five | DMM Settings for Real-Debrid, TorBox and AllDebrid; each provider's Cast page for the others |
 | NZB uploads go first with 2 TB of Usenet a day instead of 300 GB | DMM's Usenet tab |
 | The same priority and allowance for Sonarr and Radarr | Your DMM API key as the Password on DMM's [SABnzbd page](https://debridmediamanager.com/sabnzbd) |
 | Three torrent uploads into Real-Debrid at once instead of one | The upload buttons on DMM search results and the library |
@@ -42,7 +43,7 @@ The `dmm_api_key` features need a zurg nightly. The free public build does not i
 
 ## rex
 
-rex is free and needs no sponsorship. With a key [rex-stremio](../rex/stremio.md) adds titles DMM already knows in seconds instead of probing each one. Paste it in rex-stremio's **DMM** field. It shares its own probes with DMM unless you turn that off.
+rex is free and needs no sponsorship. Its Android build comes only inside the sponsor-only zurg+rex app. With a key [rex-stremio](../rex/stremio.md) adds debrid streams of torrents DMM already holds a probe of in seconds instead of probing each one. Paste it in rex-stremio's **DMM** field. It shares its probes of torrent files with DMM unless you turn that off.
 
 ## Help
 
@@ -55,6 +56,6 @@ rex is free and needs no sponsorship. With a key [rex-stremio](../rex/stremio.md
 
 Fill requests on DMM's [request board](https://debridmediamanager.com/requests). Every 10 requests earn 7 days of the DMM perks above. Only one fill for the same person each day counts. Link the key from a free gatekeeper account on the board to collect them.
 
-Earned time opens the DMM table above. It does not open the zurg nightly or source code or Discord role or remote help. Those need a paid sponsorship. The `dmm_api_key` features also need a nightly.
+Earned time opens the DMM table above. It does not open the zurg nightly or source code or Discord role or remote help or the Android app. Those need a paid sponsorship. The `dmm_api_key` features also need a nightly.
 
 Stuck? Ask in the **dmm-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP).

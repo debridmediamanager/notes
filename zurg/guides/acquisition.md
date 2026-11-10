@@ -5,8 +5,9 @@ Plex watchlist your [DMM wanted list](#dmm-wanted-list) [Seerr](https://github.c
 retries and acknowledgement. Newznab results become NZBs for zurg's Usenet backend. Torznab results become
 info hashes for a debrid account. See [Newznab and Torznab](#newznab-and-torznab).
 
-The engine acknowledges a grab only after checking it. An NZB must reach the news server. A torrent must appear
-in the library with files. See [Verifying a grab](#verifying-a-grab).
+The engine acknowledges a grab only after checking it. An NZB must reach the news server. On a `torbox_nzb`
+account TorBox must fetch it instead. A torrent must appear in the library with files. See
+[Verifying a grab](#verifying-a-grab).
 
 A release zurg grabs keeps the ids of the title it was grabbed for, every one
 Plex matches titles by: IMDb, TMDB and, for a show, TVDB. It is never
@@ -76,8 +77,10 @@ acquisition:
       check_every_secs: 60
 ```
 
-Run this on a zurg instance with an `nzb` provider, a debrid account that takes
-torrents, or both. NZBs from Newznab indexers land in its `nzbs/` directory.
+Run this on a zurg instance with an `nzb` provider or a `torbox_nzb` account
+(TorBox Pro), a debrid account that takes torrents, or both. NZBs from Newznab
+indexers land in its `nzbs/` directory. A `torbox_nzb` account has no news
+servers to check against; a grab there is checked by whether TorBox fetched it.
 Torrents from Torznab indexers go to a debrid account. They are added only when
 that account already has them cached. With neither kind of account the sources
 do not start. The acquisition page says why. Plex needs the existing
@@ -366,8 +369,8 @@ no Sonarr or Radarr is involved. The source is named `dmm-wanted` and is polled 
 - **A copy at each of several resolutions.** With `quality` written as a list, such as
   `[1080p, 4k]`, each film is kept a copy at each resolution in it. See
   [a copy at each of several resolutions](#a-copy-at-each-of-several-resolutions).
-- **Without a grabbing account.** An instance with neither an `nzb` provider nor a
-  debrid account that takes torrents does not read the list.
+- **Without a grabbing account.** An instance with no `nzb` provider, no `torbox_nzb`
+  account (TorBox Pro) and no debrid account that takes torrents does not read the list.
 
 **Two zurgs on one key both fetch every title.** Each reads the same list, so run the
 wanted list on one of them and turn it off on the others by writing it disabled:
@@ -537,7 +540,8 @@ no webhook is required.
 Radarr keeps the list and owns the library. zurg does the searching and the
 downloading. Radarr never searches and never grabs: zurg reads what Radarr
 wants, picks a release from its own indexers, checks it with the news servers
-or the debrid account that holds it, puts the video in the movie's folder
+(TorBox's fetch on a `torbox_nzb` account) or the debrid account that holds it,
+puts the video in the movie's folder
 inside `__magic__` and asks Radarr to rescan that one movie. Nothing is copied: the video is a file in
 zurg's library that Radarr now sees in its folder.
 
@@ -705,8 +709,8 @@ identifies the saved queue, while the URL and key can change freely.
 Sonarr works the way Radarr does. Sonarr keeps the list and owns the library.
 zurg does the searching and the downloading. Sonarr never searches and never
 grabs. zurg reads the episodes Sonarr is missing and picks a release from its
-own indexers. It checks the release with the news servers or the debrid
-account that holds it, and puts each episode's video in the series' season folder inside `__magic__`. Then it asks
+own indexers. It checks the release with the news servers (TorBox's fetch on a
+`torbox_nzb` account) or the debrid account that holds it, and puts each episode's video in the series' season folder inside `__magic__`. Then it asks
 Sonarr to rescan that one series. Nothing is copied.
 
 ### Setting up Sonarr
@@ -1119,14 +1123,15 @@ attempt of either kind. So does each loose episode.
 
 The verification a grab waits on differs with the source. A Usenet release is
 put to the news servers, which is the only way to know whether the post is
-still there. A torrent was added only because the account said it already held
+still there. A `torbox_nzb` account has no news servers to check against; a
+grab there is checked by whether TorBox fetched it. A torrent was added only because the account said it already held
 the content, so what is left to establish is that the release reached the
 library with files in it; that is what the check asks, and a release the
 account lists empty is set aside like a dead post.
 
-An install with no `nzb` provider can still run acquisition from Torznab
-indexers alone. Its Newznab indexers are not searched there, because nothing on
-that install can play an NZB. The log says so once for each of them. An
+An install with no NZB account (`nzb` or `torbox_nzb`) can still run
+acquisition from Torznab indexers alone. Its Newznab indexers are not searched
+there, because nothing on that install can play an NZB. The log says so once for each of them. An
 install with no account that takes torrents does not search its Torznab
 indexers, the same way. Either way, a release of a kind the install has
 nowhere to put is never a candidate, so it uses up none of the releases an
@@ -1343,8 +1348,8 @@ no dead articles, so it cannot silence a file that plays. When the sizing pass
 has just fetched a file's first article, the check reads that copy instead of
 fetching it a second time.
 
-An install with no `nzb` provider has no news servers to ask. Acquisition still
-runs there when a debrid account takes torrents. Each torrent is checked by
+An install with no NZB account (`nzb` or `torbox_nzb`) has nothing to check an
+NZB grab with. Acquisition still runs there when a debrid account takes torrents. Each torrent is checked by
 whether it reaches the library with files in it, as
 [Newznab and Torznab](#newznab-and-torznab) describes. It also has to hold
 something to play: a video, audio, or an archive zurg streams from (RAR, 7z,
@@ -1353,9 +1358,9 @@ is a fake, which new episodes attract in the first hours after they air. It is
 set aside like a dead post and the next release is tried at once. If zurg added
 it to the account for this request, it is deleted from the account again. A
 torrent the account already held is left where it is. An NZB grab is never
-acknowledged there, because nothing could check it or play it. One left
-waiting from before the `nzb` provider was removed is set aside like a dead
-post, and the next release is tried.
+acknowledged without an NZB account, because nothing could check it or play it.
+One left waiting from before the last NZB account was removed is set aside like a
+dead post, and the next release is tried.
 
 ## Persistence and recovery
 
@@ -1408,8 +1413,9 @@ queries a day to tens of thousands, and the indexer suspended the account.
 Most were films with no Usenet release and upgrades that every release the
 profile allowed had already been refused for. Open Seerr requests remain monitored. Plex items leave
 the watchlist only after all planned seasons are acquired *and* checked (an NZB
-against the news servers, a torrent by reaching the library with something to
-play), only when `remove_after_grab` allows it, and only when zurg
+against the news servers or, on a `torbox_nzb` account, by whether TorBox
+fetched it; a torrent by reaching the library with something to play), only
+when `remove_after_grab` allows it, and only when zurg
 fetched something for them. Its loose-episode fallback remains limited to episodes found
 in indexer results.
 

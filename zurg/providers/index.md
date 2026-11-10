@@ -14,6 +14,7 @@ can serve it at the time.
 | Debrid-Link | `debridlink` | [Debrid-Link](debridlink.md) |
 | Offcloud | `offcloud` | [Offcloud](offcloud.md) |
 | Usenet | `nzb` | [Usenet](usenet.md) |
+| TorBox hosted Usenet | `torbox_nzb` | [TorBox hosted Usenet](torbox-nzb.md) |
 
 Three pages go deeper than setup. [TorBox limits](torbox-limits.md) has the
 measured figures behind TorBox throttling. [TorBox news server](torbox-news-server.md)
@@ -124,6 +125,10 @@ docker compose run --rm zurg setup --non-interactive \
 | `debridlink` | `--debridlink-token-file` | `DEBRIDLINK_TOKEN` |
 | `offcloud` | `--offcloud-token-file` | `OFFCLOUD_TOKEN` |
 | `nzb` | `--nntp-password-file` with `--nntp-host` and `--nntp-username` | `NNTP_HOST` and friends |
+| `torbox_nzb` | `--torbox-token-file` | `TORBOX_TOKEN` |
+
+`torbox_nzb` is never inferred from `TORBOX_TOKEN` or `--torbox-token-file`
+alone; pass `--provider torbox_nzb`.
 
 With `--non-interactive` and no `--provider` at all setup takes whichever of
 those variables are set.
@@ -140,7 +145,7 @@ account in the Dashboard.
 
 | Key | What it does |
 |---|---|
-| `type` | Required. One of the seven types above. |
+| `type` | Required. One of the eight types above. |
 | `name` | Defaults to `type`. Tells two accounts on one service apart. |
 | `token` | The API key. Not used by `nzb`. |
 | `disabled` | Parks the account without deleting the credential. |
@@ -158,8 +163,8 @@ Full descriptions and everything else are in the
 - The name `e` is reserved for `.strm` link routing. Pick another one.
 - At most one entry may set `watchlist: true`.
 - `watchlist: true` and `add_torrents: false` on the same entry is refused.
-- Only one enabled `nzb` entry is supported. Extra news servers go under that
-  entry's `nntp.servers`.
+- Only one enabled `nzb` or `torbox_nzb` entry is supported. Extra news
+  servers go under an `nzb` entry's `nntp.servers`.
 - If every entry is disabled the load fails.
 - Premiumize and Debrid-Link and Offcloud refuse `download_tokens` and a
   `strm_link_token` that differs from `token`. Their file IDs belong to one
@@ -188,15 +193,19 @@ the account's `name`. That defaults to its `type`. Add `-u user:pass` if you hav
 set a `username` in `config.yml`. Without one the Dashboard and its API are open
 on the port you published.
 
-Last of all look for the account's own directory at the mount root.
+Last of all look at the library on the mount.
 
 ```bash
-ls /zurg_mnt/zurg/
+ls /zurg_mnt/zurg/__all__/
 ```
 
 Every configured account gets a `__<name>__` directory. It holds everything that
 account holds and it pins reads to that account. `__torbox__/Some.Release/`
-streams from TorBox and nowhere else. A single-account install gets one too.
+streams from TorBox and nowhere else. A single account's own folder is left off
+the mount's root listing, since `__all__` is the same library. Direct HTTP and
+WebDAV paths such as `/http/__torbox__/` still answer. Through the mount it no
+longer resolves either; point any library or script that used `__<name>__` at
+`__all__`.
 
 A large library takes a while on its first load. Until it finishes `/dav/movies/`
 answers 503 and the mount may list nothing.

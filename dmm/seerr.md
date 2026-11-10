@@ -10,7 +10,7 @@ It is for sponsors. Seerr signs in with the DMM API key from [gatekeeper](https:
 ## What you need
 
 - zurg reading your wanted list with `dmm_api_key` in `config.yml`. See [Fetch what you want from DMM](../zurg/guides/dmm-wanted.md#what-you-need).
-- Seerr set up with your Plex or Jellyfin server so it knows which episodes you have.
+- Seerr set up with your Plex, Jellyfin or Emby server so it knows which episodes you have.
 
 ## Add DMM as Radarr
 
@@ -67,7 +67,7 @@ Seerr reads DMM's list once a day in **Radarr Scan** and **Sonarr Scan**. To run
 
   ![A fetched film shows as available](../assets/seerr-dmm/06-seerr-movie-available.webp)
 
-- **A show** stays **Processing** until its episodes reach your Plex or Jellyfin library
+- **A show** stays **Processing** until its episodes reach your Plex, Jellyfin or Emby library
   and Seerr's scan of that server finds them. DMM does not know which episodes zurg holds.
 
 ## Removing a title

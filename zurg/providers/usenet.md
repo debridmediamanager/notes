@@ -78,19 +78,21 @@ files in from the host.
 ```bash
 mkdir -p ~/zurg/nzbs
 cp /path/to/some.nzb ~/zurg/nzbs/
-ls /zurg_mnt/zurg/__nzb__/
+ls /zurg_mnt/zurg/__all__/
 ```
 
-The watch directory is picked up every 15 seconds or so. Because it lives inside
-the `./:/config` bind it survives a `docker compose pull` and a container
-recreate like everything else.
+With only one account, its own `__nzb__` folder is left out of the mount's root
+listing, so look under `__all__`. The watch directory is picked up every 15
+seconds or so. Because it lives inside the `./:/config` bind it survives a
+`docker compose pull` and a container recreate like everything else.
 
 ## Rules specific to this type
 
 - **Only one enabled `nzb` entry.** Two would scan the same directory and
   duplicate every release. More news servers belong under that one entry's
   `nntp.servers`. There they serve the same library rather than a second copy
-  of it.
+  of it. An `nzb` entry beside a [`torbox_nzb`](torbox-nzb.md) one is refused
+  for the same reason.
 - **`watchlist: true` is refused.** A news server is never handed a torrent.
 - **`add_torrents` is ignored** and startup warns about it for the same reason.
 - **`download_tokens` and `strm_link_token` do nothing.** There is no credential
@@ -116,8 +118,11 @@ not marked `backup`. The worked config and what each key buys are in
 ```bash
 curl -fsS -X POST http://localhost:9999/api/providers/nzb/test
 docker compose logs --tail=100 zurg
-ls /zurg_mnt/zurg/__nzb__/
+ls /zurg_mnt/zurg/__all__/
 ```
+
+With only one account, its own folder is left out of the mount's root listing,
+so the mount shows the same files under `__all__`.
 
 The probe here authenticates against the news server using at most one
 connection from the existing pool. There is no account API to ask.

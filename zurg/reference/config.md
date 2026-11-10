@@ -84,7 +84,7 @@ This arrives release by release rather than all at once: it applies only to arch
 rclone_extra_args: ["--dir-cache-time", "15s"]
 ```
 
-**A `__<account>__` directory appears at the mount root.** Every configured account gets one, single-account configs included, created from the `providers` block rather than from `directories`. It holds everything that account holds, ignores your directory filters, and pins reads to that account. It is not something `directories` can suppress.
+**Each account gets a `__<account>__` directory.** It is created from the `providers` block rather than from `directories`, holds everything that account holds, ignores your directory filters, and pins reads to that account. It is not something `directories` can suppress. With more than one account it is listed at the mount root. Builds before nightly 2026.10.24.0551 listed a single account's folder there too; from that nightly on it is left off the mount's root listing, since `__all__` is the same library. Direct HTTP and WebDAV paths such as `/http/__realdebrid__/` still answer. Through the mount it no longer resolves either; point any library or script that used `__<name>__` at `__all__`.
 
 **Two releases that shared a name are now two entries.** They used to merge into one, silently folding one release's files into the other's. The one that does not keep the bare name is suffixed with six characters of its info hash — `Movie.2024 {a1b2c3}`. That suffixed string is what `regex`, `not_regex`, `contains` and `not_contains` match against, so an anchored pattern will miss it. Separately, entries disambiguated by a duplicate basename are renamed once on upgrade, from an account-minted file id to a path-derived tag.
 
@@ -146,13 +146,13 @@ Each entry in `providers` is one account. Any number can run side by side — Re
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `type` | string | *(required)* | Which backend the account uses: `realdebrid`, `torbox`, `alldebrid`, `premiumize`, `debridlink`, `offcloud`, or `nzb`. |
+| `type` | string | *(required)* | Which backend the account uses: `realdebrid`, `torbox`, `alldebrid`, `premiumize`, `debridlink`, `offcloud`, `nzb`, or `torbox_nzb` ([TorBox hosted Usenet](../providers/torbox-nzb.md)). |
 | `name` | string | value of `type` | Distinguishes this account from others of the same type. It is the name used by the `provider` filter, the [per-account directory](#per-account-directories), cache paths, and the dashboard. Names must be unique across entries, and `e` is reserved for STRM link routing. |
 | `token` | string | *(required)* | The account's API token or key. Get a Real-Debrid one from http://real-debrid.com/?id=20475782, a TorBox one from https://torbox.app/settings, an AllDebrid one from https://alldebrid.com/apikeys?uid=1kk5i. Not used by `nzb`, which authenticates through `nntp` instead. A Real-Debrid token can also be provided via the `TOKEN` or `RD_TOKEN` environment variable to auto-create a config on first run. |
 | `download_tokens` | list | `[]` | **Real-Debrid and AllDebrid:** backup API tokens for the same service, used when the active token's bandwidth allowance is exhausted. They use this entry's catalog, including a [local catalog](#local-debrid-catalogs), without importing the extra accounts' torrent libraries. **TorBox:** accepted, but rotation does not remap account-specific torrent/file IDs; use separate provider entries for different accounts. Unused by NZB. Premiumize, Debrid-Link and Offcloud require separate account entries because their stored file IDs belong to the listing account. |
 | `strm_link_token` | string | `""` | A separate API token that resolves the reads arriving at the `/strm/` endpoint, so a player opening a `.strm` does not spend the token the live mount streams on. Falls back to `token` if not set. **Real-Debrid and AllDebrid** — the two backends that rotate credentials, and so the two where pinning `.strm` traffic to a key of its own means something. Accepted and unused on `torbox` and `nzb` entries. Premiumize, Debrid-Link and Offcloud accept only the account’s own `token` here. |
 | `disabled` | bool | `false` | Keeps an account in the config without loading it. If every entry is disabled, the load fails. |
-| `watchlist` | bool | `false` | Marks the account tried first for new torrent adds. That covers the download-client endpoints and acquisition's Torznab indexers. At most one entry may set it, and never an `nzb` one. With none set, the first account that can add torrents is used. Acquisition's NZBs go to the Usenet backend and never to this account. See [Watchlist](#watchlist). |
+| `watchlist` | bool | `false` | Marks the account tried first for new torrent adds. That covers the download-client endpoints and acquisition's Torznab indexers. At most one entry may set it, and never an `nzb` or `torbox_nzb` one. With none set, the first account that can add torrents is used. Acquisition's NZBs go to the Usenet backend and never to this account. See [Watchlist](#watchlist). |
 | `add_torrents` | bool | `true` | Whether this account is offered new torrents at all — the ones the download-client endpoints are handed, and the ones acquisition takes from Torznab indexers. Set it `false` for an archive account, or one whose quota is spoken for: it goes on serving and reading its library while nothing new is ever put on it. **The order of the `providers:` list is the order the accounts that do take adds are tried in**, so this key and that order are read together; an account marked `watchlist: true` is tried first wherever it sits. Cannot be combined with `watchlist: true` on the same entry, and on an `nzb` entry it is ignored with a startup warning, since a news server is never handed a torrent. See [`qbittorrent`](#qbittorrent-the-torrent-download-client-sonarr-and-radarr-see). |
 | `warm_connections` | int | `1` | How many connections this account keeps dialled and handshaken **to each host it has been using**, so a read does not pay to open one. Capped at 4. `-1` keeps none. Ignored on an `nzb` entry, whose floor is per account and lives at [`nntp.warm_connections`](../guides/usenet.md). See [warm connections](#warm-connections). |
 | `nntp` | block | *(required for `nzb`)* | News server credentials. Required for type `nzb` and ignored by every other type. |
@@ -214,7 +214,7 @@ torrents zurg adds and leave everything else on the account alone.
 
 #### Usenet accounts
 
-The `nzb` type is Usenet rather than a debrid service: `.nzb` files dropped into the `nzbs/` directory become torrents in the library, and reads are satisfied by fetching articles from your news server and decoding them on demand. Only one enabled `nzb` entry is supported, since both would scan the same directory — extra news servers go under that entry's `nntp.servers` instead, where they serve the same library rather than a second copy of it.
+The `nzb` type is Usenet rather than a debrid service: `.nzb` files dropped into the `nzbs/` directory become torrents in the library, and reads are satisfied by fetching articles from your news server and decoding them on demand. Only one enabled `nzb` entry is supported, since both would scan the same directory — extra news servers go under that entry's `nntp.servers` instead, where they serve the same library rather than a second copy of it. An `nzb` entry beside a [`torbox_nzb`](../providers/torbox-nzb.md) one is refused for the same reason; run that kind in an instance of its own, with its own working directory.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
@@ -404,7 +404,7 @@ rex_url: "http://192.168.1.20:32400"
 
 Add something to your Plex watchlist and zurg fetches it. Every new watchlist item is searched on your indexers. A Newznab indexer gives an NZB. It drops into the Usenet backend exactly as a Sonarr grab or a Stremio play would. The three share the naming rules so they find each other's grabs instead of duplicating them. A Torznab indexer gives a torrent. It is added to a debrid account only when that account already has it cached. `prefer` decides which kind is tried first between releases of the same resolution. A movie becomes one release. A show is acquired season by season and season packs come before loose episodes. A season nobody posted a pack of falls back to the loose episodes the search surfaced, the best release for each. The item leaves the watchlist only once the release behind it has been checked and only when `remove_after_grab` allows it. Failures stay on the list. They are tried again after 5, 10 and 15 minutes, then after an hour, then further and further apart, and a title that has failed for two weeks is parked until you resume it on the acquisition page. See [persistence and recovery](../guides/acquisition.md#persistence-and-recovery).
 
-It needs a `plex_token` and at least one indexer. With no list of its own it borrows the Stremio addon's. The monitor talks to Plex's cloud service, so `plex_server_url` is not required. NZBs need an `nzb` provider on the same instance. Torrents need a debrid account that takes them. Either one is enough.
+It needs a `plex_token` and at least one indexer. With no list of its own it borrows the Stremio addon's. The monitor talks to Plex's cloud service, so `plex_server_url` is not required. NZBs need an `nzb` or `torbox_nzb` provider on the same instance. Torrents need a debrid account that takes them. Either one is enough.
 
 Every option below is on the config page under **Plex Watchlist**, indexer list included; the dashboard writes this block rather than the legacy flat keys, and switching the monitor off there clears `plex_watchlist_enabled` too, since that one is ORed into the switch.
 
@@ -766,7 +766,7 @@ Both the `magic:` and the `sabnzbd:` block are editable in full from the [config
 
 zurg can answer Sonarr and Radarr as though it were a SABnzbd. They hand it an NZB, it writes the file into `nzbs/` for the Usenet backend, and once the release is in the library the job reports **Completed** with a job folder under `__magic__/__all__` to import from. Nothing is downloaded to import: the \*arr renames the file inside the mount, which is a row in the `__magic__` table.
 
-It needs both halves to be useful — an `nzb` provider to read the NZB, and `magic.enabled` to have somewhere to import from — and it is off until asked for. Full setup, including what to put in the \*arr, is in [docs/sabnzbd.md](../guides/sonarr-radarr.md).
+It needs both halves to be useful — an `nzb` provider, or a `torbox_nzb` one, to take the NZB, and `magic.enabled` to have somewhere to import from — and it is off until asked for. Full setup, including what to put in the \*arr, is in [docs/sabnzbd.md](../guides/sonarr-radarr.md).
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
@@ -817,7 +817,7 @@ The API key is the whole of the authentication. Treat the endpoint the way you t
 
 ### The `stremio` addon
 
-zurg can be a Stremio addon that searches your own Newznab indexers and plays through the Usenet backend. It needs an `nzb` provider and at least one indexer. It is off until asked for. Setup and what a play does are in [stremio.md](../guides/stremio.md).
+zurg can be a Stremio addon that searches your own Newznab indexers and plays through the Usenet backend. It needs an NZB account, `nzb` or [`torbox_nzb`](../providers/torbox-nzb.md), and at least one indexer. With `torbox_nzb`, a release TorBox already holds starts within the addon's wait when no other NZB post is waiting; an uncached one must finish on TorBox first, which is longer than a player waits. It is off until asked for. Setup and what a play does are in [stremio.md](../guides/stremio.md).
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
@@ -1461,7 +1461,7 @@ directories:
 
 ### Per-account directories
 
-Alongside `__all__`, every configured account gets a directory of its own, named after it — `__realdebrid__`, `__torbox__`, `__alldebrid__`, `__nzb__`. They are not configured; they appear because the account exists, and disappear when it is removed.
+Alongside `__all__`, every configured account gets a directory of its own, named after it — `__realdebrid__`, `__torbox__`, `__alldebrid__`, `__nzb__`. They are not configured; they appear because the account exists, and disappear when it is removed. With a single account, its own folder is left off the mount's root listing and `__all__` holds the same files. Direct HTTP and WebDAV paths such as `/http/__realdebrid__/` still answer. Through the mount it no longer resolves either; point any library or script that used `__<name>__` at `__all__`.
 
 Each one holds whatever that account holds, and — unlike a filtered directory — it also decides where reads go. A release held by two accounts is one entry in the library, so without this every copy of it would stream from whichever account sorts first in the `providers` block:
 

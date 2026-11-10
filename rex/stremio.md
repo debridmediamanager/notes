@@ -15,7 +15,7 @@ What you get:
 | You need | Why |
 |---|---|
 | A machine that stays on, Linux or macOS, for rex and rex-stremio together | rex-stremio is one Python program and runs beside rex. The service below is for Linux; [Docker](#in-docker) works too |
-| Python 3.9 or newer, `git` and `ffprobe` | rex-stremio checks each title's stream once with ffprobe, because rex needs to know what is in a file before it can play it. With a DMM API key, a title DMM has seen before skips that check |
+| Python 3.9 or newer, `git` and `ffprobe` | rex-stremio checks each title's stream once with ffprobe, because rex needs to know what is in a file before it can play it. With a DMM API key, a debrid stream of a torrent DMM already holds a probe of skips that check; anything else is probed |
 | Stream addons that give links, not torrents | rex plays files. Set your debrid service in the addon so it gives links |
 | A fresh Plex account, made just for rex | As in the rex setup: rex is claimed on it and shared with your own |
 
@@ -74,7 +74,7 @@ Open `http://127.0.0.1:9982/` in a browser on the rex machine. No screen? From y
 2. Under **Catalogs**, tick the catalogs you want. Name the library each goes into and set **How many** films, episodes or channels to take. For one library with a collection per catalog, give the catalogs the same library and tick **Catalogs as collections**.
 3. Under **Streams**, set the **Highest resolution** and **Largest file** you want played, or leave them at any.
 4. Under **rex**, set the address to `http://<rex's LAN IP>:32400`.
-5. If you sponsor DMM, paste your DMM API key under **DMM** ([gatekeeper](https://gatekeeper.debridmediamanager.com/) shows it once you sponsor). A title DMM has seen before then skips its check, and what rex-stremio checks itself goes back to DMM for the next sponsor (`share_probes: false` in `config.json` stops that). Press **Save and sync**.
+5. If you sponsor DMM, paste your DMM API key under **DMM** ([gatekeeper](https://gatekeeper.debridmediamanager.com/) shows it once you sponsor). A debrid stream of a torrent DMM already holds a probe of then skips its check. Anything else is checked, and what rex-stremio checks of a torrent's files (never a plain HTTP stream or an HLS playlist) goes back to DMM for the next sponsor (`share_probes: false` in `config.json` stops that). Press **Save and sync**.
 
 ![rex-stremio's Catalogs, Streams, rex and DMM sections, with the Save and sync button](../assets/rex/91-stremio-catalogs-rex.webp)
 

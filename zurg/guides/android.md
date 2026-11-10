@@ -1,8 +1,10 @@
-# zurg for Android and Google TV
+# zurg+rex for Android and Google TV
 
-The Android app runs a zurg engine on the device. One app works on phones tablets Android TV and
-Google TV. Android 8.0 or newer is required. Fire TV can sideload the same APK. Use a WebDAV
-player when it has no system Files app. Usenet needs 64-bit Android.
+The Android app runs a zurg engine on the device and rex beside it: your own Plex server on your
+phone or TV box, for the Plex apps. One app works on phones tablets Android TV and Google TV.
+Android 8.0 or newer is required. Fire TV can sideload the same APK. Use a WebDAV player when it has
+no system Files app. Usenet requires 64-bit Android; TorBox hosted NZBs (`torbox_nzb`) are not
+available on Android.
 
 ## Install and set up
 
@@ -50,6 +52,18 @@ release. Deletion asks for confirmation and deletes from its provider account.
 MediaInfo uses the bundled ffprobe and opens the resulting video, audio and
 subtitle details in the dashboard. No separate media tool installation is needed.
 
+## Watch in the Plex apps
+
+From the nightly of 10 November 2026 the app also runs rex (64-bit devices in
+that nightly, every supported device from the 11 November nightly), a media
+server for the Plex apps, and points zurg at it, so your library appears
+in the official Plex apps and in Plezy, on this device and on others in your
+home. Once your library is running, Status shows **rex for the Plex apps**:
+choose **Sign in to Plex** and approve the sign-in (on a TV, enter the code at
+plex.tv/link). The server appears in Plex under this device's name. rex converts
+what a player cannot play with the device's hardware encoder. Turn rex off in
+Settings, Connection; zurg then stops feeding it.
+
 ## Share over the local network
 
 In Settings, enable **Expose on local network**. zurg generates credentials and
@@ -62,7 +76,9 @@ Loopback is the default. Player intents never contain your server password.
 
 Settings covers connection, providers, library, repair, resources and logging.
 Advanced accepts raw YAML and asks the installed engine to validate it before
-saving. Saving a running configuration asks before restarting the server.
+saving. Settings has no field for your DMM API key: add
+`dmm_api_key: YOUR_DMM_API_KEY` in Advanced for the [DMM wanted list](dmm-wanted.md)
+and DMM's release naming. Saving a running configuration asks before restarting the server.
 Web dashboard opens the local dashboard for desktop integration settings.
 
 Logs includes the engine's recent output and the supervisor's last 200 lines.

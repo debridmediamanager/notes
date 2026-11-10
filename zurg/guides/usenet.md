@@ -330,7 +330,7 @@ directories:
       - any_file_inside_not_regex: /\.(mp3|flac|m4b)$/i
 ```
 
-Alongside those, the account gets a directory of its own — `__nzb__` by default, or `__<name>__` if you set `name:` on the provider entry. That directory is not just a view: reads under it are **pinned** to the Usenet account with no failover, which makes it the right place to test whether Usenet playback works without a debrid account quietly answering instead.
+Alongside those, the account gets a directory of its own — `__nzb__` by default, or `__<name>__` if you set `name:` on the provider entry. That directory is not just a view: reads under it are **pinned** to the Usenet account with no failover, which makes it the right place to test whether Usenet playback works without a debrid account quietly answering instead. With Usenet as your only account, that folder is left off the mount's root listing and `__all__` holds the same files, so test playback under `__all__` on the mount, or open the direct HTTP path `http://localhost:9999/http/__nzb__/`.
 
 Four Usenet-specific things to know when writing filters:
 
@@ -372,19 +372,19 @@ Verify:
 +++ Linux
 ```bash
 ls /mnt/zurg/
-ls /mnt/zurg/__nzb__/
+ls /mnt/zurg/__all__/
 ```
 +++ macOS
 ```bash
 ls /Volumes/Zurg/
-ls /Volumes/Zurg/__nzb__/
+ls /Volumes/Zurg/__all__/
 ```
 +++ Windows
 Run it in a PowerShell window on your desktop: the drive is only visible in the logon session that mounted it ([the session rules](../setup/windows.md#keeping-it-running-the-session-rules)).
 
 ```powershell
 Get-ChildItem Z:\
-Get-ChildItem Z:\__nzb__\
+Get-ChildItem Z:\__all__\
 ```
 +++
 
