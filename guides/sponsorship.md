@@ -17,7 +17,7 @@ Perks follow the sponsorship. When it ends DMM stops them on the next request. G
 | What you get | Where |
 |---|---|
 | Nightly builds with every provider and Usenet plus the Docker image | [zurg setup](../zurg/setup/index.md) after you accept the GitHub invitation |
-| The zurg+rex Android app | [Android guide](../zurg/guides/android.md) after you accept the GitHub invitation |
+| The zurg+rex Android app, a Plex server on your phone | [Android guide](../zurg/guides/android.md) after you accept the GitHub invitation |
 | The full zurg source code | The private repository on GitHub |
 | Every release named for rex and Plex | `dmm_api_key` in the [zurg config](../zurg/reference/config.md) |
 | DMM media details without reading the file first and language checks before a release is added | Nothing beyond `dmm_api_key` |
