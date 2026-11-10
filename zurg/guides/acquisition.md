@@ -153,9 +153,12 @@ off the film's, whatever the source. Indexers file some posts under another
 film's IMDb id: DrunkenSlug files The Aswang Chronicles (2012) under its 2014
 sequel. A name without a year is not refused for it. For the DMM wanted list,
 which sends every title a film is known by (original, alternatives and
-translations), a release whose name gives none of them is refused too:
-DrunkenSlug files Przesluchanie (1982) under An Affair (1982). Accents and
-umlauts match either way, so `Les.Miserables` and `Verwuenscht.nochmal` count.
+translations), a release whose name does not give one of them whole is refused
+too: DrunkenSlug files Przesluchanie (1982) under An Affair (1982), and
+`Rocky.2015` is not *Rocky Horror Show Live*. A name may stop where a title's
+subtitle starts, after a colon or a spaced dash, so `Diana.2021` is *Diana: The
+Musical*. Accents and umlauts match either way, so `Les.Miserables` and
+`Verwuenscht.nochmal` count.
 
 How a name is matched:
 
@@ -339,8 +342,10 @@ no Sonarr or Radarr is involved. The source is named `dmm-wanted` and is polled 
   waits no longer than that day, then searches every two minutes for six hours and
   every ten until two days after, as it does for a [new episode](#sonarr-behavior). Never a
   cinema date: a WEB-DL is posted with the digital release. A show's newest episode is
-  dated the same way. A title with no date keeps the ordinary retries, at most a week
-  apart, and nothing on the list is ever [parked](#persistence-and-recovery).
+  dated the same way, from the hour it aired where DMM knows it. A title with no date keeps the ordinary retries, at most a week
+  apart, and nothing on the list is ever [parked](#persistence-and-recovery). A film
+  waiting for its next try is searched at the next poll when DMM sees a new Usenet
+  post naming it.
 - **Where it goes.** The same as any source: an NZB from a Newznab indexer to this
   instance's Usenet backend, or a torrent from a Torznab indexer onto a debrid account
   that already has it cached, whichever `prefer` reaches for first. `quality`,
@@ -1391,7 +1396,12 @@ there a title waits half as long as it has been failing, so the waits grow:
 about half a day after a day of failures, two days after four, about a week at
 most, give or take a quarter, so titles that failed together do not retry
 together. An attempt that runs out of its five minutes having found nothing counts
-as a failure too. A title that has failed for two weeks, over eight attempts at
+as a failure too. One that found nothing while one of your indexers could not be
+asked, because it asked to be left alone until a time no more than a day away (a
+`Retry-After`), does not count: the title is tried again shortly after that time,
+spread so a queue of titles does not ask the indexer all at once. That happens at
+most three times in a row, and then the try counts as usual. An indexer that names
+no time, such as one answering 410 Gone or refusing its key, is not waited for. A title that has failed for two weeks, over eight attempts at
 least, is **parked**: zurg stops asking the indexers about it. It stays on the
 acquisition page as parked, with how long it failed and why, and the log says
 so once. **Resume** on that page, for one title or for every parked title of a
