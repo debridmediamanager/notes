@@ -1,5 +1,6 @@
 ---
 label: Usenet
+description: "Stream Usenet with zurg: NZB files become a mounted library that plays right away, with nothing downloaded first. Setup, news servers, caches and repair."
 icon: broadcast
 order: 90
 ---

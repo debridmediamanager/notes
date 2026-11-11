@@ -1,5 +1,6 @@
 ---
 label: Reference
+description: "zurg reference: every config option, CLI command, filter tag, the MCP server, outbound identity and the changelog, for when you need the exact name."
 icon: list-unordered
 order: 60
 ---
