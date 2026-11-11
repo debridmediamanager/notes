@@ -266,16 +266,16 @@ Basic 認証はすべてに適用されますが、*除外*されるものが 2 
 
 ## レイヤー 7 — サポート {#layer-7--support}
 
-| Package | 目的 |
+| パッケージ | 用途 |
 |---|---|
-| `pkg/fsm` | 小さなステートマシンが2種類あります。`FSMWithExternalMutex` は、すでにロックされている何かに組み込まれているときに使います。`FSMWithTime` は、独自のロックと遷移タイムスタンプが必要なときに使います（そのおかげで `SinceWhen` で「これがどれくらい壊れた状態か」を答えられます）。 |
-| `pkg/logutil` | Zap でデュアル出力します。色付きのコンソールと、ローテーションするファイル（lumberjack 経由で 10 MB × 20）です。ログレベルは config.yml の `log_level` から読み込みます。なければ環境変数 `LOG_LEVEL` を見て、それでもなければ DEBUG になります。レベルは共有の `zap.AtomicLevel` に入っているので、ダッシュボードから再起動なしですべてのロガーのレベルを一度に変えられます。ダッシュボードのビューアー用にログを読み戻す機能と、サポート用に 0x0.st へアップロードする機能も含まれています。 |
-| `pkg/utils` | ブロックされたホストの保存、ファイルの表示ルール、トークンの伏せ字化、動画/音声の検出、`.strm` の命名、そして `GetZurgBaseURL`（リバースプロキシの後ろでも `X-Forwarded-*` を尊重します）です。 |
-| `pkg/script` | ユーザーのライフサイクルイベント用スクリプトを実行します。Windows では PowerShell、それ以外では `/bin/sh` を使います。 |
-| `pkg/dmm` | debridmediamanager.com の検索 API 用クライアントです。サーバー側の制限に合わせて、2秒に1回までに抑えています。ウォッチリストモニターで使われます。 |
-| `internal/version` | ldflags 経由で注入されるビルドメタデータです。`/http/version.txt` の ASCII バナーもここで作られます。 |
-| `internal/requirements` | 初回実行時に、プラットフォームに合った `ffprobe` と `rclone` を GitHub のリリースからダウンロードし、config.yml には *相対* パスを書き込みます。そのため設定ファイルは持ち運びできます。対応していないプラットフォームでは、失敗せず警告を出すだけです。 |
-| `internal/clear` | 認証クッキーを使って Web インターフェースを操作し、RD のダウンロードとトーレントをまとめて削除します。空になるまで繰り返します。 |
+| `pkg/fsm` | 小さなステートマシンが2種類あります。`FSMWithExternalMutex` は、既にロックされた何かに組み込まれている場合に使います。`FSMWithTime` は、独自のロックと遷移のタイムスタンプが必要な場合に使います（そのため `SinceWhen` で「どれくらい壊れた状態が続いているか」を確認できます）。 |
+| `pkg/logutil` | Zap を使い、出力は2つです。色付きのコンソールと、ローテーションするファイル（lumberjack 経由で 10 MB × 20）です。ログの詳細度は config.yml の `log_level` から取得し、なければ環境変数 `LOG_LEVEL`、それもなければ DEBUG になります。レベルは共有の `zap.AtomicLevel` で管理されているので、ダッシュボードから再起動なしですべてのロガーのレベルを一度に変更できます。ダッシュボードのビューワーや Export Logs 用にログを読み戻す機能も含みます。 |
+| `pkg/utils` | ブロックしたホストの保存、ファイルの表示ルール、トークンの伏せ字化、動画/音声の検出、`.strm` の命名、そして `GetZurgBaseURL`（リバースプロキシの背後では `X-Forwarded-*` を尊重します）です。 |
+| `pkg/script` | ユーザーが設定するライフサイクルイベントのスクリプトを実行します。Windows では PowerShell、それ以外では `/bin/sh` を使います。 |
+| `pkg/dmm` | debridmediamanager.com の検索 API 用クライアントです。サーバー側の制限（2秒に1回）に合わせてリクエストを抑えています。ウォッチリストモニターで使われます。 |
+| `internal/version` | ldflags で埋め込まれるビルド情報です。`/http/version.txt` にある ASCII バナーもここにあります。 |
+| `internal/requirements` | 初回起動時に、お使いのプラットフォームに合った `ffprobe` と `rclone` を GitHub のリリースからダウンロードし、config.yml に *相対パス* を書き込みます。そのため設定ファイルは持ち運びできます。非対応のプラットフォームでは、失敗ではなく警告を出します。 |
+| `internal/clear` | 認証 Cookie を使って Web インターフェースを操作し、RD のダウンロードとトレントをまとめて削除します。空になるまで繰り返します。 |
 | `internal/handlers/tmplcache` | ダッシュボード用のテンプレートキャッシュです。 |
 
 ## 横断的な設計判断 {#cross-cutting-decisions}

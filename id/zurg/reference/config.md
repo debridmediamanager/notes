@@ -1262,6 +1262,12 @@ log_level: DEBUG
 traffic_alert_gb: 500
 ```
 
+#### Mengirim log ke support {#sending-logs-to-support}
+
+**Export Logs** di dasbor dan `zurg support` mengirim log dan konfigurasi yang sudah diredaksi ke server dukungan DMM di `logs.debridmediamanager.com`, lalu memberimu kode untuk diposting di thread dukunganmu. Tidak ada pengaturan untuk itu. Jika server tersebut tidak bisa dijangkau atau menolak unggahan, file dikirim ke situs paste publik sebagai gantinya, dicoba dengan urutan ini: `paste.c-net.org`, `temp.sh`, `0x0.st`. Jika firewall kamu hanya mengizinkan zurg mengakses beberapa host, izinkan `logs.debridmediamanager.com`.
+
+Host yang merespons dengan 403 berarti mesin ini sudah ditolak, jadi zurg melewatinya selama 24 jam berikutnya, termasuk `logs.debridmediamanager.com`. **Download Logs** di dasbor memberimu file yang sama, sudah diredaksi, tanpa mengirimnya ke mana pun.
+
 ## 7. Direktori & Filter {#7-directories--filters}
 
 Tentukan direktori virtual yang mengatur torrent Anda berdasarkan aturan filter yang fleksibel. Setiap direktori muncul sebagai folder di mount Anda dan hanya menampilkan torrent yang cocok dengan filternya.

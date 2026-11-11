@@ -107,6 +107,18 @@ Perintah ini masuk ke GitHub lewat GitHub CLI. Yang dipakai adalah GitHub CLI ya
 
 Mencetak build-nya. `zurg --version` mencetak hal yang sama.
 
+## Mendapatkan bantuan {#getting-help}
+
+### Dukungan zurg {#zurg-support}
+
+Mengirim log dan config kamu ke dukungan DMM dan menampilkan kode dukungan, seperti `K7QM-3XPD`. Tempel kode itu di thread dukunganmu di Discord. Kode ini disimpan selama 7 hari dan hanya tim dukungan DMM yang bisa membukanya.
+
+Ini mengirim hal yang sama dengan **Export Logs** di dashboard, jadi gunakan saat zurg tidak mau mulai atau kamu tidak bisa membuka dashboard. Jalankan dari working directory zurg. Perintah ini membaca `config.yml` (atau `--config`) dan `logs/zurg.log` di sana. Di Docker, jalankan `docker exec <container> /app/docker-entrypoint.sh support`, yang otomatis memilih direktori yang tepat untuk kamu. Jika container tidak bisa tetap berjalan, jalankan `docker run --rm -v <your config folder>:/config ghcr.io/debridmediamanager/zurg:<tag> support` dengan folder yang sama seperti yang kamu mount untuk zurg.
+
+Token, password, link unduhan, dan hostname milikmu dihapus lebih dulu, dengan cara yang sama seperti yang dilakukan dashboard. Config yang tidak bisa dimuat tidak dikirim. Error yang muncul yang dikirim sebagai gantinya. Log yang panjang dipotong dari bagian paling lama agar muat, dan bundle akan memberi tahu bahwa log itu dipotong.
+
+Jika server dukungan DMM tidak bisa dijangkau atau menolak unggahan, zurg akan memberi tahu alasannya dan mengirim kedua file ke situs paste publik sebagai gantinya, lalu menampilkan tautannya. Jika tidak ada yang bisa dikirim sama sekali, zurg menulis file yang sudah diredaksi yang sama ke `zurg-debug.tar.gz` agar kamu lampirkan ke thread dukunganmu.
+
 ## Cadangan {#backups}
 
 ### zurg backup

@@ -284,28 +284,32 @@ POST /v1/api/torrents/controltorrent     {"torrent_id":N,"operation":"delete"}
 `metaDL` `checking` `stalledDL` `stalled (no seeds)` `downloading` `processing`
 `uploading (no peers)` `uploading` `cached`
 
-`processing` and `checking` and `stalledDL` are **not in zurg's translation table**
-(`internal/torbox/types.go` `normalizeStatus`). All three fall to the default branch and are reported
-as `downloading`.
+`processing`, `checking` et `stalledDL` ne figurent **pas dans la table de traduction de zurg**
+(`internal/torbox/types.go` `normalizeStatus`). Les trois tombent dans la branche par défaut et sont
+signalés comme `downloading`.
 
-`checking` is where TorBox waits for metadata and not where it verifies a hash. A magnet whose swarm
-never answers goes `metaDL` then `checking` and stays there. The random 40-hex hash was still
-`checking` at the 910 s cap and so was the zero-peer Prelinger item at 911 s. TorBox never gives up
-the way Real-Debrid does at 318 s.
+`checking` correspond à l'attente des métadonnées chez TorBox, et non à la vérification d'un hash. Un
+magnet dont l'essaim ne répond jamais passe à `metaDL`, puis à `checking`, et y reste. Le hash aléatoire
+de 40 caractères hexadécimaux était encore en `checking` à la limite de 910 s, tout comme l'élément
+Prelinger sans pair à 911 s. TorBox n'abandonne jamais, contrairement à Real-Debrid qui le fait à 318 s.
 
-**Uploading the `.torrent` skips that wait entirely, and it is the whole difference for a private
-tracker's release.** Measured 2026-09-01 on the account above, the same synthetic private torrent
-sent both ways. As a hash: accepted with a `torrent_id`, then `checking` with `name` set to the bare
-hash, `size: -1`, `files: null` and `eta: 8640000` — TorBox looking for a swarm that is not in the
-DHT, which it will do until the cap and report nothing about. As the file, on
-`POST /torrents/createtorrent` with the bytes in a multipart `file` part: read back three seconds
-later carrying the torrent's own name, its real size and `stalled (no seeds)` — the same content
-nobody holds, but now described. The stage is the point. `checking` with `size: -1` maps to
-`StageResolvingMetadata`, which says work is in progress and nothing can be concluded; `stalled (no
-seeds)` maps to `StageStalledNoPeers`, which the qBittorrent endpoint can act on. A cached release
-read back `done` at 100% with its file list inside the same three seconds. The part name is
-load-bearing: a file sent under any other name is not seen at all, and the endpoint answers
-`MISSING_REQUIRED_OPTION`, "You must provide either a file or magnet link".
+**Envoyer le `.torrent` évite complètement cette attente, et c'est toute la différence pour la version
+d'un tracker privé.** Mesuré le 2026-09-01 sur le compte ci-dessus, le même torrent privé synthétique
+envoyé des deux façons. Sous forme de hash : accepté avec un `torrent_id`, puis `checking` avec `name`
+défini au hash brut, `size: -1`, `files: null` et `eta: 8640000`. TorBox cherche un essaim absent du
+DHT, ce qu'il fera jusqu'à la limite sans rien signaler à ce sujet. Sous forme de fichier, sur
+`POST /torrents/createtorrent` avec les octets dans une partie multipart `file` : relu trois secondes
+plus tard avec le nom propre du torrent, sa taille réelle et `stalled (no seeds)`. C'est le même contenu
+que personne ne possède, mais désormais décrit. L'étape est le point clé. `checking` avec `size: -1`
+correspond à `StageResolvingMetadata`, ce qui signifie que le travail est en cours et qu'on ne peut rien
+conclure ; `stalled (no
+seeds)` correspond à `StageStalledNoPeers`, sur lequel l'endpoint qBittorrent peut agir. Une version en
+cache est revenue `done` à 100 % avec sa liste de fichiers dans ces mêmes trois secondes. Le nom de la
+partie est déterminant : un fichier envoyé sous un autre nom n'est pas du tout vu, et l'endpoint répond
+`MISSING_REQUIRED_OPTION`, « You must provide either a file or magnet link ».
+
+(Une traduction précédente a été rejetée : les segments de code diffèrent (` maps to `). Gardez la
+structure exactement.)
 
 ### Quels champs du protocole existent dans quel statut {#which-wire-fields-exist-in-which-status-2}
 

@@ -1257,6 +1257,12 @@ log_level: DEBUG
 traffic_alert_gb: 500
 ```
 
+#### Envoyer les logs au support {#sending-logs-to-support}
+
+**Export Logs** sur le tableau de bord et `zurg support` envoient votre journal et votre configuration, tous deux anonymisés, au serveur de support de DMM, `logs.debridmediamanager.com`, et vous donnent un code à coller dans votre fil de support. Il n'existe aucun réglage pour cela. Si ce serveur est injoignable ou refuse l'envoi, les fichiers partent sur des hébergeurs de paste publics, essayés dans cet ordre : `paste.c-net.org`, `temp.sh`, `0x0.st`. Si votre pare-feu ne laisse zurg atteindre que certains hôtes, autorisez `logs.debridmediamanager.com`.
+
+Un hôte qui répond 403 a refusé cette machine. zurg l'ignore donc pendant 24 heures, y compris `logs.debridmediamanager.com`. **Download Logs** sur le tableau de bord vous donne les mêmes fichiers anonymisés sans les envoyer ailleurs.
+
 ## 7. Dossiers et filtres {#7-directories--filters}
 
 Définissez des dossiers virtuels qui organisent vos torrents selon des règles de filtre flexibles. Chaque dossier apparaît comme un dossier dans votre montage et n'affiche que les torrents correspondant à ses filtres.

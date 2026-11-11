@@ -107,6 +107,18 @@ Es meldet sich über die GitHub CLI bei GitHub an. Das ist entweder die, die in 
 
 Gibt den Build aus. `zurg --version` gibt dasselbe aus.
 
+## Hilfe bekommen {#getting-help}
+
+### zurg-Unterstützung {#zurg-support}
+
+Sendet Ihr Log und Ihre Konfiguration an den DMM-Support und gibt einen Support-Code aus, etwa `K7QM-3XPD`. Fügen Sie den Code in Ihrem Support-Thread auf Discord ein. Er wird 7 Tage aufbewahrt, und nur der DMM-Support kann ihn öffnen.
+
+Es wird dasselbe gesendet wie **Export Logs** im Dashboard. Verwenden Sie es also, wenn zurg nicht startet oder Sie das Dashboard nicht erreichen. Führen Sie es im Arbeitsverzeichnis von zurg aus: Es liest dort `config.yml` (oder `--config`) und `logs/zurg.log`. In Docker führen Sie `docker exec <container> /app/docker-entrypoint.sh support` aus, das wählt das richtige Verzeichnis selbst. Lässt sich der Container nicht dauerhaft starten, verwenden Sie `docker run --rm -v <your config folder>:/config ghcr.io/debridmediamanager/zurg:<tag> support` mit demselben Ordner, den Sie auch für zurg einbinden.
+
+Token, Passwörter, Download-Links und Ihre eigenen Hostnamen werden vorher entfernt, genauso wie es das Dashboard macht. Eine Konfiguration, die nicht geladen werden kann, wird nicht gesendet. Stattdessen wird der Fehler gesendet, den sie ausgibt. Ein langes Log wird von seinem ältesten Ende her gekürzt, damit es passt, und das Bundle vermerkt das.
+
+Kann der Support-Server von DMM nicht erreicht werden oder lehnt er den Upload ab, nennt zurg den Grund und sendet die beiden Dateien stattdessen an öffentliche Paste-Dienste. Dabei werden die Links ausgegeben. Wenn überhaupt nichts gesendet werden kann, schreibt zurg dieselben geschwärzten Dateien nach `zurg-debug.tar.gz`, damit Sie diese an Ihren Thread anhängen können.
+
 ## Backups
 
 ### zurg backup

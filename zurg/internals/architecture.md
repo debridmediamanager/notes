@@ -494,7 +494,7 @@ Two distinct things share the word "Plex":
 | Package | Purpose |
 |---|---|
 | `pkg/fsm` | Two flavours of tiny state machine: `FSMWithExternalMutex` for when the FSM is embedded in something already locked, `FSMWithTime` for when it needs its own lock and a transition timestamp (so `SinceWhen` can answer "how long has this been broken"). |
-| `pkg/logutil` | Zap with dual output — coloured console and a rotating file (10 MB × 20 via lumberjack). Verbosity comes from `log_level` in config.yml, falling back to the `LOG_LEVEL` environment variable and then to DEBUG; the level lives in a shared `zap.AtomicLevel`, so the dashboard can re-level every logger at once without a restart. Includes reading the log back for the dashboard viewer and uploading it to 0x0.st for support. |
+| `pkg/logutil` | Zap with dual output — coloured console and a rotating file (10 MB × 20 via lumberjack). Verbosity comes from `log_level` in config.yml, falling back to the `LOG_LEVEL` environment variable and then to DEBUG; the level lives in a shared `zap.AtomicLevel`, so the dashboard can re-level every logger at once without a restart. Includes reading the log back for the dashboard viewer and for Export Logs. |
 | `pkg/utils` | Blocked-host persistence, file visibility rules, token redaction, video/audio detection, `.strm` naming, and `GetZurgBaseURL` (which respects `X-Forwarded-*` behind a reverse proxy). |
 | `pkg/script` | Runs user lifecycle-event scripts; PowerShell on Windows, `/bin/sh` elsewhere. |
 | `pkg/dmm` | Client for debridmediamanager.com's search API, throttled to the server-side 1-per-2-seconds. Used by the watchlist monitor. |

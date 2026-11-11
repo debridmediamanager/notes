@@ -1371,6 +1371,12 @@ log_level: DEBUG
 traffic_alert_gb: 500
 ```
 
+#### Sending logs to support
+
+**Export Logs** on the dashboard and `zurg support` send your redacted log and config to DMM's support server at `logs.debridmediamanager.com` and give you a code to post in your support thread. There is no setting for it. If that server cannot be reached or turns the upload down, the files go to public paste hosts instead, tried in this order: `paste.c-net.org`, `temp.sh`, `0x0.st`. If your firewall only lets zurg reach some hosts, allow `logs.debridmediamanager.com`.
+
+A host that answers 403 has turned this machine away, so zurg skips it for the next 24 hours, `logs.debridmediamanager.com` included. **Download Logs** on the dashboard gives you the same redacted files without sending them anywhere.
+
 ## 7. Directories & Filters
 
 Define virtual directories that organize your torrents based on flexible filter rules. Each directory appears as a folder in your mount and shows only the torrents matching its filters.

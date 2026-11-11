@@ -280,17 +280,17 @@ Zwei verschiedene Dinge tragen das Wort „Plex“:
 
 ## Ebene 7 — Support {#layer-7--support}
 
-| Paket | Zweck |
+| Package | Purpose |
 |---|---|
-| `pkg/fsm` | Zwei Varianten einer kleinen Zustandsmaschine: `FSMWithExternalMutex` für den Fall, dass die FSM in etwas eingebettet ist, das bereits gesperrt ist, und `FSMWithTime` für den Fall, dass sie eine eigene Sperre und einen Zeitstempel für den Zustandswechsel braucht (damit `SinceWhen` beantworten kann, "wie lange ist das schon kaputt"). |
-| `pkg/logutil` | Zap mit doppelter Ausgabe: farbige Konsole und eine rotierende Datei (10 MB × 20 über lumberjack). Die Ausführlichkeit kommt aus `log_level` in config.yml, fällt zurück auf die Umgebungsvariable `LOG_LEVEL` und dann auf DEBUG. Die Stufe liegt in einem gemeinsamen `zap.AtomicLevel`, daher kann das Dashboard alle Logger auf einmal neu einstellen, ohne Neustart. Enthält das Auslesen des Logs für den Dashboard-Viewer und das Hochladen auf 0x0.st für den Support. |
-| `pkg/utils` | Speicherung gesperrter Hosts, Regeln für die Sichtbarkeit von Dateien, Schwärzen von Tokens, Erkennung von Video/Audio, Benennung von `.strm`-Dateien und `GetZurgBaseURL` (berücksichtigt `X-Forwarded-*` hinter einem Reverse Proxy). |
-| `pkg/script` | Führt die Lifecycle-Event-Skripte des Nutzers aus; PowerShell unter Windows, sonst `/bin/sh`. |
+| `pkg/fsm` | Zwei Varianten einer kleinen State Machine: `FSMWithExternalMutex` für den Fall, dass die FSM in etwas eingebettet ist, das schon gesperrt ist, und `FSMWithTime` für den Fall, dass sie ein eigenes Lock und einen Zeitstempel für den Übergang braucht (damit `SinceWhen` beantworten kann, "wie lange ist das schon kaputt"). |
+| `pkg/logutil` | Zap mit doppelter Ausgabe: farbige Konsole und eine rotierende Datei (10 MB × 20 über lumberjack). Die Verbosität kommt aus `log_level` in config.yml. Fehlt das, wird die Umgebungsvariable `LOG_LEVEL` verwendet und danach DEBUG. Das Level liegt in einem gemeinsamen `zap.AtomicLevel`, damit das Dashboard alle Logger auf einmal neu setzen kann, ohne Neustart. Enthält außerdem das Auslesen der Logs für den Dashboard-Viewer und für Export Logs. |
+| `pkg/utils` | Speichern der blockierten Hosts, Regeln für die Sichtbarkeit von Dateien, Schwärzen von Tokens, Erkennung von Video/Audio, `.strm`-Benennung und `GetZurgBaseURL` (berücksichtigt `X-Forwarded-*` hinter einem Reverse Proxy). |
+| `pkg/script` | Führt die benutzerdefinierten Lifecycle-Event-Skripte aus. Unter Windows PowerShell, sonst `/bin/sh`. |
 | `pkg/dmm` | Client für die Such-API von debridmediamanager.com, gedrosselt auf die serverseitige Grenze von 1 Anfrage pro 2 Sekunden. Wird vom Watchlist-Monitor genutzt. |
-| `internal/version` | Build-Metadaten, die über ldflags eingebaut werden; außerdem das ASCII-Banner unter `/http/version.txt`. |
-| `internal/requirements` | Lädt beim ersten Start die passenden `ffprobe` und `rclone` für die Plattform aus den GitHub-Releases herunter und schreibt *relative* Pfade in config.yml, damit die Konfiguration portabel bleibt. Nicht unterstützte Plattformen geben eine Warnung aus, statt abzubrechen. |
-| `internal/clear` | Löscht RD-Downloads und Torrents in großer Menge, indem es die Weboberfläche mit einem Auth-Cookie steuert, und wiederholt das, bis alles leer ist. |
-| `internal/handlers/tmplcache` | Caching von Templates für das Dashboard. |
+| `internal/version` | Build-Metadaten, die über ldflags eingebunden werden. Außerdem das ASCII-Banner unter `/http/version.txt`. |
+| `internal/requirements` | Lädt beim ersten Start die passenden `ffprobe`- und `rclone`-Versionen für die Plattform von GitHub-Releases herunter und schreibt *relative* Pfade in config.yml, damit die Config portabel bleibt. Nicht unterstützte Plattformen geben eine Warnung aus, statt abzubrechen. |
+| `internal/clear` | Löscht in großen Mengen RD-Downloads und Torrents, indem es die Weboberfläche mit einem Auth-Cookie steuert. Wiederholt das, bis alles leer ist. |
+| `internal/handlers/tmplcache` | Template-Caching für das Dashboard. |
 
 ## Querschnittsentscheidungen {#cross-cutting-decisions}
 

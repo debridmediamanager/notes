@@ -290,15 +290,15 @@ Deux choses distinctes partagent le mot « Plex » :
 
 | Paquet | Rôle |
 |---|---|
-| `pkg/fsm` | Deux variantes de petite machine à états : `FSMWithExternalMutex` pour quand la FSM est intégrée dans quelque chose qui est déjà verrouillé, `FSMWithTime` pour quand elle a besoin de son propre verrou et d'un horodatage de transition (pour que `SinceWhen` puisse répondre à « depuis combien de temps c'est cassé »). |
-| `pkg/logutil` | Zap avec double sortie : console colorée et fichier rotatif (10 MB × 20 via lumberjack). Le niveau de verbosité vient de `log_level` dans config.yml, puis de la variable d'environnement `LOG_LEVEL`, et sinon passe en DEBUG. Le niveau est stocké dans un `zap.AtomicLevel` partagé, donc le tableau de bord peut changer le niveau de tous les loggers d'un coup, sans redémarrage. Inclut la lecture du log pour la visionneuse du tableau de bord et son envoi sur 0x0.st pour le support. |
-| `pkg/utils` | Sauvegarde des hôtes bloqués, règles de visibilité des fichiers, masquage des tokens, détection vidéo/audio, nommage `.strm`, et `GetZurgBaseURL` (qui tient compte de `X-Forwarded-*` derrière un reverse proxy). |
-| `pkg/script` | Lance les scripts d'événements du cycle de vie définis par l'utilisateur : PowerShell sous Windows, `/bin/sh` ailleurs. |
+| `pkg/fsm` | Deux variantes de petite machine à états : `FSMWithExternalMutex` pour quand la FSM est intégrée dans quelque chose qui est déjà verrouillé, `FSMWithTime` pour quand elle a besoin de son propre verrou et d'un horodatage de transition (pour que `SinceWhen` puisse répondre à « depuis combien de temps ça ne marche plus »). |
+| `pkg/logutil` | Zap avec double sortie : console colorée et fichier qui tourne (10 MB × 20 via lumberjack). Le niveau de détail vient de `log_level` dans config.yml, sinon de la variable d'environnement `LOG_LEVEL`, et sinon de DEBUG. Le niveau est stocké dans un `zap.AtomicLevel` partagé, donc le tableau de bord peut changer le niveau de tous les loggers d'un coup, sans redémarrer. Inclut la lecture du journal pour la visionneuse du tableau de bord et pour Export Logs. |
+| `pkg/utils` | Sauvegarde des hôtes bloqués, règles de visibilité des fichiers, masquage des tokens, détection vidéo/audio, nommage `.strm`, et `GetZurgBaseURL` (qui respecte `X-Forwarded-*` derrière un reverse proxy). |
+| `pkg/script` | Exécute les scripts utilisateur liés aux événements du cycle de vie ; PowerShell sous Windows, `/bin/sh` ailleurs. |
 | `pkg/dmm` | Client pour l'API de recherche de debridmediamanager.com, limité à 1 requête toutes les 2 secondes côté serveur. Utilisé par le moniteur de watchlist. |
-| `internal/version` | Métadonnées de build injectées via ldflags ; sert aussi à la bannière ASCII située à `/http/version.txt`. |
-| `internal/requirements` | Télécharge `ffprobe` et `rclone` adaptés à la plateforme depuis les releases GitHub au premier lancement, et écrit des chemins *relatifs* dans config.yml pour que la config reste portable. Les plateformes non prises en charge affichent un avertissement au lieu d'échouer. |
-| `internal/clear` | Supprime en masse les téléchargements et torrents RD en pilotant l'interface web avec un cookie d'authentification, en boucle jusqu'à ce que tout soit vide. |
-| `internal/handlers/tmplcache` | Cache des templates pour le tableau de bord. |
+| `internal/version` | Métadonnées de build injectées via ldflags ; c'est aussi la bannière ASCII dans `/http/version.txt`. |
+| `internal/requirements` | Télécharge `ffprobe` et `rclone` adaptés à ta plateforme depuis les releases GitHub au premier lancement, et écrit des chemins *relatifs* dans config.yml, pour que la config reste portable. Les plateformes non prises en charge affichent un avertissement au lieu de planter. |
+| `internal/clear` | Supprime en masse les téléchargements et torrents RD en pilotant l'interface web avec un cookie d'authentification, en boucle jusqu'à ce que ce soit vide. |
+| `internal/handlers/tmplcache` | Mise en cache des templates pour le tableau de bord. |
 
 ## Décisions transversales {#cross-cutting-decisions}
 

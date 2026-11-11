@@ -1268,6 +1268,12 @@ log_level: DEBUG
 traffic_alert_gb: 500
 ```
 
+#### Logs an den Support senden {#sending-logs-to-support}
+
+**Export Logs** auf dem Dashboard und `zurg support` schicken deine geschwärzten Logs und Konfigurationsdateien an den Support-Server von DMM unter `logs.debridmediamanager.com` und geben dir einen Code, den du in deinen Support-Thread einfügst. Dafür gibt es keine Einstellung. Wenn dieser Server nicht erreichbar ist oder den Upload ablehnt, landen die Dateien stattdessen auf öffentlichen Paste-Diensten, und zwar in dieser Reihenfolge: `paste.c-net.org`, `temp.sh`, `0x0.st`. Wenn deine Firewall zurg nur zu bestimmten Hosts durchlässt, erlaube `logs.debridmediamanager.com`.
+
+Ein Host, der mit 403 antwortet, hat diesem Rechner den Zugriff verweigert. Deshalb überspringt zurg ihn für die nächsten 24 Stunden, auch `logs.debridmediamanager.com`. **Download Logs** auf dem Dashboard liefert dir dieselben geschwärzten Dateien, ohne dass sie irgendwohin gesendet werden.
+
 ## 7. Verzeichnisse & Filter {#7-directories--filters}
 
 Definiere virtuelle Verzeichnisse, die deine Torrents anhand flexibler Filterregeln sortieren. Jedes Verzeichnis erscheint als Ordner in deinem Mount und zeigt nur die Torrents an, die zu seinen Filtern passen.

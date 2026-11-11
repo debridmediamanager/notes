@@ -266,16 +266,16 @@ Dos cosas distintas comparten la palabra "Plex":
 
 ## Capa 7 — Soporte {#layer-7--support}
 
-| Paquete | Propósito |
+| Paquete | Para qué sirve |
 |---|---|
-| `pkg/fsm` | Dos variantes de máquina de estados sencilla: `FSMWithExternalMutex` para cuando la FSM va incrustada en algo que ya está bloqueado, y `FSMWithTime` para cuando necesita su propio bloqueo y una marca de tiempo de la transición (así `SinceWhen` puede responder "cuánto tiempo lleva roto esto"). |
-| `pkg/logutil` | Zap con doble salida: consola con colores y un archivo rotatorio (10 MB × 20 mediante lumberjack). El nivel de detalle viene de `log_level` en config.yml, con respaldo en la variable de entorno `LOG_LEVEL` y, si no existe, en DEBUG. El nivel se guarda en un `zap.AtomicLevel` compartido, así que el panel puede cambiar el nivel de todos los loggers a la vez sin reiniciar. Incluye la lectura del log para el visor del panel y su subida a 0x0.st para soporte. |
-| `pkg/utils` | Persistencia de hosts bloqueados, reglas de visibilidad de archivos, ocultación de tokens, detección de vídeo/audio, nombres `.strm` y `GetZurgBaseURL` (que respeta `X-Forwarded-*` detrás de un proxy inverso). |
-| `pkg/script` | Ejecuta los scripts de eventos del ciclo de vida definidos por el usuario; PowerShell en Windows, `/bin/sh` en el resto de sistemas. |
-| `pkg/dmm` | Cliente para la API de búsqueda de debridmediamanager.com, limitado a 1 petición cada 2 segundos, que es el límite del lado del servidor. Lo usa el monitor de watchlist. |
-| `internal/version` | Metadatos de compilación inyectados mediante ldflags; también el banner ASCII en `/http/version.txt`. |
-| `internal/requirements` | Descarga `ffprobe` y `rclone` compatibles con tu plataforma desde las releases de GitHub en el primer arranque y escribe rutas *relativas* en config.yml, para que la configuración sea portable. Las plataformas no soportadas muestran un aviso en lugar de fallar. |
-| `internal/clear` | Borra en masa las descargas y los torrents de RD manejando la interfaz web con una cookie de autenticación, repitiendo el proceso hasta que esté vacío. |
+| `pkg/fsm` | Dos variantes de máquina de estados pequeña: `FSMWithExternalMutex` para cuando la FSM va dentro de algo que ya tiene su propio bloqueo, y `FSMWithTime` para cuando necesita su propio bloqueo y una marca de tiempo de cada transición (así `SinceWhen` puede responder "cuánto tiempo lleva roto esto"). |
+| `pkg/logutil` | Zap con doble salida: consola en color y un archivo rotativo (10 MB × 20 mediante lumberjack). La verbosidad sale de `log_level` en config.yml; si no está, usa la variable de entorno `LOG_LEVEL` y, si tampoco, DEBUG. El nivel vive en un `zap.AtomicLevel` compartido, así que el panel puede cambiar el nivel de todos los loggers a la vez sin reiniciar. Incluye la lectura del log para el visor del panel y para Export Logs. |
+| `pkg/utils` | Persistencia de hosts bloqueados, reglas de visibilidad de archivos, ocultación de tokens, detección de video/audio, nombres `.strm` y `GetZurgBaseURL` (que respeta `X-Forwarded-*` detrás de un proxy inverso). |
+| `pkg/script` | Ejecuta los scripts de eventos del ciclo de vida que define el usuario; PowerShell en Windows, `/bin/sh` en el resto. |
+| `pkg/dmm` | Cliente para la API de búsqueda de debridmediamanager.com, limitado a 1 petición cada 2 segundos, que es lo que impone el servidor. Lo usa el monitor de la lista de seguimiento. |
+| `internal/version` | Metadatos de compilación inyectados con ldflags; también el banner ASCII en `/http/version.txt`. |
+| `internal/requirements` | Descarga `ffprobe` y `rclone` compatibles con tu plataforma desde las releases de GitHub la primera vez que se ejecuta, y escribe rutas *relativas* en config.yml para que la configuración sea portable. Las plataformas no compatibles muestran un aviso en lugar de fallar. |
+| `internal/clear` | Borra en bloque las descargas y torrents de RD usando la interfaz web con una cookie de autenticación, repitiendo hasta que no quede nada. |
 | `internal/handlers/tmplcache` | Caché de plantillas para el panel. |
 
 ## Decisiones transversales {#cross-cutting-decisions}

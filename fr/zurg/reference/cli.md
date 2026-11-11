@@ -107,6 +107,18 @@ Elle se connecte à GitHub via la GitHub CLI. Il s'agit de celle présente dans 
 
 Affiche la version du build. `zurg --version` affiche la même chose.
 
+## Obtenir de l'aide {#getting-help}
+
+### Support de zurg {#zurg-support}
+
+Envoie ton journal et ta configuration au support de DMM et affiche un code de support, comme `K7QM-3XPD`. Poste ce code dans ton fil de support sur Discord. Il est conservé 7 jours et seul le support de DMM peut l'ouvrir.
+
+La commande envoie la même chose que **Export Logs** sur le tableau de bord, donc utilise-la quand zurg ne démarre pas ou que tu ne peux pas accéder au tableau de bord. Lance-la depuis le répertoire de travail de zurg : elle lit `config.yml` (ou `--config`) et `logs/zurg.log` à cet endroit. Avec Docker, lance `docker exec <container> /app/docker-entrypoint.sh support`, qui choisit automatiquement le bon répertoire. Si le conteneur ne reste pas démarré, lance `docker run --rm -v <your config folder>:/config ghcr.io/debridmediamanager/zurg:<tag> support` avec le même dossier que celui que tu montes pour zurg.
+
+Les jetons, mots de passe, liens de téléchargement et tes propres noms d'hôte sont supprimés au préalable, de la même façon que le fait le tableau de bord. Une configuration qui ne se charge pas n'est pas envoyée ; c'est l'erreur qu'elle produit qui est envoyée à la place. Un journal long est tronqué à partir de son extrémité la plus ancienne pour tenir, et le paquet le signale.
+
+Si le serveur de support de DMM est injoignable ou refuse l'envoi, zurg indique la raison et envoie les deux fichiers sur des sites de partage de texte public à la place, en affichant leurs liens. Si rien ne peut être envoyé du tout, il écrit les mêmes fichiers expurgés dans `zurg-debug.tar.gz` pour que tu puisses le joindre à ton fil.
+
 ## Sauvegardes {#backups}
 
 ### zurg backup

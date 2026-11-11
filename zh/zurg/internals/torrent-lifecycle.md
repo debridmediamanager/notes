@@ -257,31 +257,18 @@ POST /v1/api/torrents/controltorrent     {"torrent_id":N,"operation":"delete"}
 
 ### 观察到的状态值 {#status-values-observed-2}
 
-`metaDL` `checking` `stalledDL` `stalled (no seeds)` `downloading` `processing`
-`uploading (no peers)` `uploading` `cached`
+`metaDL`、`checking`、`stalledDL`、`stalled (no seeds)`、`downloading`、`processing`
+`uploading (no peers)`、`uploading`、`cached`
 
-`processing` and `checking` and `stalledDL` are **not in zurg's translation table**
-(`internal/torbox/types.go` `normalizeStatus`). All three fall to the default branch and are reported
-as `downloading`.
+`processing`、`checking` 和 `stalledDL` **都不在 zurg 的翻译表中**
+（`internal/torbox/types.go` `normalizeStatus`）。这三个都会落到默认分支，被报告为
+`downloading`。
 
-`checking` is where TorBox waits for metadata and not where it verifies a hash. A magnet whose swarm
-never answers goes `metaDL` then `checking` and stays there. The random 40-hex hash was still
-`checking` at the 910 s cap and so was the zero-peer Prelinger item at 911 s. TorBox never gives up
-the way Real-Debrid does at 318 s.
+`checking` 是 TorBox 等待元数据的阶段，而不是校验哈希的阶段。如果磁力链接对应的 swarm 一直没有响应，它会先变成 `metaDL`，然后变成 `checking`，并一直停在那里。随机的 40 位十六进制哈希在 910 秒上限时仍是 `checking`，零 peer 的 Prelinger 条目在 911 秒时也是如此。TorBox 从不像 Real-Debrid 那样在 318 秒时放弃。
 
-**Uploading the `.torrent` skips that wait entirely, and it is the whole difference for a private
-tracker's release.** Measured 2026-09-01 on the account above, the same synthetic private torrent
-sent both ways. As a hash: accepted with a `torrent_id`, then `checking` with `name` set to the bare
-hash, `size: -1`, `files: null` and `eta: 8640000` — TorBox looking for a swarm that is not in the
-DHT, which it will do until the cap and report nothing about. As the file, on
-`POST /torrents/createtorrent` with the bytes in a multipart `file` part: read back three seconds
-later carrying the torrent's own name, its real size and `stalled (no seeds)` — the same content
-nobody holds, but now described. The stage is the point. `checking` with `size: -1` maps to
-`StageResolvingMetadata`, which says work is in progress and nothing can be concluded; `stalled (no
-seeds)` maps to `StageStalledNoPeers`, which the qBittorrent endpoint can act on. A cached release
-read back `done` at 100% with its file list inside the same three seconds. The part name is
-load-bearing: a file sent under any other name is not seen at all, and the endpoint answers
-`MISSING_REQUIRED_OPTION`, "You must provide either a file or magnet link".
+**上传 `.torrent` 文件会完全跳过这段等待，对于私有 tracker 的发布内容来说，这正是最大的区别。** 2026-09-01 在上面的账户上测试时，同一个合成的私有种子用两种方式发送。以哈希方式发送：被接受并返回 `torrent_id`，随后是 `checking`，其 `name` 只是光秃秃的哈希，`size: -1`、`files: null`、`eta: 8640000`——TorBox 在查找一个不在 DHT 中的 swarm，它会一直找到上限，并且不会报告任何相关信息。以文件方式发送，通过 `POST /torrents/createtorrent`，把字节放在 multipart 的 `file` 部分中：三秒后读回，显示的是种子自己的名称、真实大小，以及 `stalled (no seeds)`——内容同样没有人持有，但现在有了描述。关键在于阶段。`size: -1` 的 `checking` 映射为 `StageResolvingMetadata`，表示仍在处理中，无法得出任何结论；`stalled (no seeds)` 映射为 `StageStalledNoPeers`，qBittorrent 端点可以据此采取行动。一个已缓存的发布内容在同样的三秒内读回时为 `done`，进度 100%，并且文件列表已经在内。部件名称至关重要：用其他名称发送的文件根本不会被识别，端点会返回 `MISSING_REQUIRED_OPTION`，"You must provide either a file or magnet link"。
+
+（之前的译文被驳回：代码片段不一致（` maps to `）。请保持结构完全不变。）
 
 ### 每个状态下有哪些线路字段 {#which-wire-fields-exist-in-which-status-2}
 

@@ -107,6 +107,18 @@ zurg [command]
 
 打印构建信息。`zurg --version` 会输出同样的内容。
 
+## 获取帮助 {#getting-help}
+
+### zurg 支持 {#zurg-support}
+
+发送给 DMM 支持团队的内容包括你的日志和配置，并会打印一个支持代码，例如 `K7QM-3XPD`。请把这个代码贴到你在 Discord 上的支持帖子里。该内容会保留 7 天，只有 DMM 支持团队能打开。
+
+它发送的内容与仪表板上的 **Export Logs** 相同，所以当 zurg 无法启动，或者你无法访问仪表板时使用它。请在 zurg 的工作目录中运行：它会读取那里的 `config.yml`（或 `--config` 指定的文件）和 `logs/zurg.log`。在 Docker 中，运行 `docker exec <container> /app/docker-entrypoint.sh support`，它会自动选择正确的目录。如果容器无法保持运行，请使用与挂载 zurg 时相同的文件夹，运行 `docker run --rm -v <your config folder>:/config ghcr.io/debridmediamanager/zurg:<tag> support`。
+
+发送前，令牌、密码、下载链接和你自己的主机名会先被移除，处理方式与仪表板相同。如果配置无法加载，则不会发送配置文件，而是发送它给出的错误信息。过长的日志会从最旧的一端截断以便符合大小限制，压缩包中会注明这一点。
+
+如果 DMM 的支持服务器无法访问或拒绝了上传，zurg 会说明原因，并改为把这两个文件发送到公共粘贴网站，同时打印它们的链接。如果什么都无法发送，它会把同样经过脱敏的文件写入 `zurg-debug.tar.gz`，你可以将其附加到你的支持帖子中。
+
 ## 备份 {#backups}
 
 ### zurg backup

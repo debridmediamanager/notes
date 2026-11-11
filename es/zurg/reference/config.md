@@ -1248,6 +1248,12 @@ log_level: DEBUG
 traffic_alert_gb: 500
 ```
 
+#### Enviar registros al soporte {#sending-logs-to-support}
+
+**Export Logs** en el panel y `zurg support` envían tu registro y tu configuración, ya censurados, al servidor de soporte de DMM en `logs.debridmediamanager.com`, y te dan un código para pegar en tu hilo de soporte. No hay ninguna opción para desactivarlo. Si ese servidor no responde o rechaza la subida, los archivos se envían a servicios de pegado públicos, en este orden: `paste.c-net.org`, `temp.sh`, `0x0.st`. Si tu firewall solo deja salir a zurg hacia algunos servidores, permite `logs.debridmediamanager.com`.
+
+Un servidor que responde 403 ha rechazado esta máquina, así que zurg lo omite durante las siguientes 24 horas, incluido `logs.debridmediamanager.com`. **Download Logs** en el panel te da los mismos archivos censurados sin enviarlos a ningún sitio.
+
 ## 7. Directorios y filtros {#7-directories--filters}
 
 Define directorios virtuales que organizan tus torrents según reglas de filtro flexibles. Cada directorio aparece como una carpeta en tu montaje y solo muestra los torrents que cumplen sus filtros.

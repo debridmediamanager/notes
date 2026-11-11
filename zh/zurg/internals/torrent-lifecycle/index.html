@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
     <meta name="turbo-root" content="/zh">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847674679459">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847675713927">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -38,12 +38,12 @@
 
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
-    <link href="../../../resources/css/retype.css?v=4.6.0.847674679459" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.847675713927" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847674679459" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847675713927" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847674679459" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847674679459" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847675713927" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847675713927" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -1211,27 +1211,14 @@ GET  /v1/api/torrents/mylist?id=&lt;id&gt;&amp;bypass_cache=true
 POST /v1/api/torrents/controltorrent     {&quot;torrent_id&quot;:N,&quot;operation&quot;:&quot;delete&quot;}</code></pre>
 </doc-codeblock></div>
 <h3 id="status-values-observed-2">观察到的状态值</h3>
-<p><code translate="no" v-pre>metaDL</code> <code translate="no" v-pre>checking</code> <code translate="no" v-pre>stalledDL</code> <code translate="no" v-pre>stalled (no seeds)</code> <code translate="no" v-pre>downloading</code> <code translate="no" v-pre>processing</code>
-<code translate="no" v-pre>uploading (no peers)</code> <code translate="no" v-pre>uploading</code> <code translate="no" v-pre>cached</code></p>
-<p><code translate="no" v-pre>processing</code> and <code translate="no" v-pre>checking</code> and <code translate="no" v-pre>stalledDL</code> are <strong>not in zurg&#x27;s translation table</strong>
-(<code translate="no" v-pre>internal/torbox/types.go</code> <code translate="no" v-pre>normalizeStatus</code>). All three fall to the default branch and are reported
-as <code translate="no" v-pre>downloading</code>.</p>
-<p><code translate="no" v-pre>checking</code> is where TorBox waits for metadata and not where it verifies a hash. A magnet whose swarm
-never answers goes <code translate="no" v-pre>metaDL</code> then <code translate="no" v-pre>checking</code> and stays there. The random 40-hex hash was still
-<code translate="no" v-pre>checking</code> at the 910 s cap and so was the zero-peer Prelinger item at 911 s. TorBox never gives up
-the way Real-Debrid does at 318 s.</p>
-<p><strong>Uploading the <code translate="no" v-pre>.torrent</code> skips that wait entirely, and it is the whole difference for a private
-tracker&#x27;s release.</strong> Measured 2026-09-01 on the account above, the same synthetic private torrent
-sent both ways. As a hash: accepted with a <code translate="no" v-pre>torrent_id</code>, then <code translate="no" v-pre>checking</code> with <code translate="no" v-pre>name</code> set to the bare
-hash, <code translate="no" v-pre>size: -1</code>, <code translate="no" v-pre>files: null</code> and <code translate="no" v-pre>eta: 8640000</code> — TorBox looking for a swarm that is not in the
-DHT, which it will do until the cap and report nothing about. As the file, on
-<code translate="no" v-pre>POST /torrents/createtorrent</code> with the bytes in a multipart <code translate="no" v-pre>file</code> part: read back three seconds
-later carrying the torrent&#x27;s own name, its real size and <code translate="no" v-pre>stalled (no seeds)</code> — the same content
-nobody holds, but now described. The stage is the point. <code translate="no" v-pre>checking</code> with <code translate="no" v-pre>size: -1</code> maps to
-<code translate="no" v-pre>StageResolvingMetadata</code>, which says work is in progress and nothing can be concluded; <code translate="no" v-pre>stalled (no seeds)</code> maps to <code translate="no" v-pre>StageStalledNoPeers</code>, which the qBittorrent endpoint can act on. A cached release
-read back <code translate="no" v-pre>done</code> at 100% with its file list inside the same three seconds. The part name is
-load-bearing: a file sent under any other name is not seen at all, and the endpoint answers
-<code translate="no" v-pre>MISSING_REQUIRED_OPTION</code>, &quot;You must provide either a file or magnet link&quot;.</p>
+<p><code translate="no" v-pre>metaDL</code>、<code translate="no" v-pre>checking</code>、<code translate="no" v-pre>stalledDL</code>、<code translate="no" v-pre>stalled (no seeds)</code>、<code translate="no" v-pre>downloading</code>、<code translate="no" v-pre>processing</code>
+<code translate="no" v-pre>uploading (no peers)</code>、<code translate="no" v-pre>uploading</code>、<code translate="no" v-pre>cached</code></p>
+<p><code translate="no" v-pre>processing</code>、<code translate="no" v-pre>checking</code> 和 <code translate="no" v-pre>stalledDL</code> <strong>都不在 zurg 的翻译表中</strong>
+（<code translate="no" v-pre>internal/torbox/types.go</code> <code translate="no" v-pre>normalizeStatus</code>）。这三个都会落到默认分支，被报告为
+<code translate="no" v-pre>downloading</code>。</p>
+<p><code translate="no" v-pre>checking</code> 是 TorBox 等待元数据的阶段，而不是校验哈希的阶段。如果磁力链接对应的 swarm 一直没有响应，它会先变成 <code translate="no" v-pre>metaDL</code>，然后变成 <code translate="no" v-pre>checking</code>，并一直停在那里。随机的 40 位十六进制哈希在 910 秒上限时仍是 <code translate="no" v-pre>checking</code>，零 peer 的 Prelinger 条目在 911 秒时也是如此。TorBox 从不像 Real-Debrid 那样在 318 秒时放弃。</p>
+<p><strong>上传 <code translate="no" v-pre>.torrent</code> 文件会完全跳过这段等待，对于私有 tracker 的发布内容来说，这正是最大的区别。</strong> 2026-09-01 在上面的账户上测试时，同一个合成的私有种子用两种方式发送。以哈希方式发送：被接受并返回 <code translate="no" v-pre>torrent_id</code>，随后是 <code translate="no" v-pre>checking</code>，其 <code translate="no" v-pre>name</code> 只是光秃秃的哈希，<code translate="no" v-pre>size: -1</code>、<code translate="no" v-pre>files: null</code>、<code translate="no" v-pre>eta: 8640000</code>——TorBox 在查找一个不在 DHT 中的 swarm，它会一直找到上限，并且不会报告任何相关信息。以文件方式发送，通过 <code translate="no" v-pre>POST /torrents/createtorrent</code>，把字节放在 multipart 的 <code translate="no" v-pre>file</code> 部分中：三秒后读回，显示的是种子自己的名称、真实大小，以及 <code translate="no" v-pre>stalled (no seeds)</code>——内容同样没有人持有，但现在有了描述。关键在于阶段。<code translate="no" v-pre>size: -1</code> 的 <code translate="no" v-pre>checking</code> 映射为 <code translate="no" v-pre>StageResolvingMetadata</code>，表示仍在处理中，无法得出任何结论；<code translate="no" v-pre>stalled (no seeds)</code> 映射为 <code translate="no" v-pre>StageStalledNoPeers</code>，qBittorrent 端点可以据此采取行动。一个已缓存的发布内容在同样的三秒内读回时为 <code translate="no" v-pre>done</code>，进度 100%，并且文件列表已经在内。部件名称至关重要：用其他名称发送的文件根本不会被识别，端点会返回 <code translate="no" v-pre>MISSING_REQUIRED_OPTION</code>，&quot;You must provide either a file or magnet link&quot;。</p>
+<p>（之前的译文被驳回：代码片段不一致（<code translate="no" v-pre>maps to</code>）。请保持结构完全不变。）</p>
 <h3 id="which-wire-fields-exist-in-which-status-2">每个状态下有哪些线路字段</h3>
 <p>TorBox 在每个状态下都发送同一组键，只是改变其中的值。因此在这三者中，它最容易读。真正承载含义的是这些值。</p>
 <retype-table copy-text="| 状态 | `download_finished` | `download_present` | `cached` | `active` | `progress` | `eta` | `size` |

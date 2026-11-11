@@ -107,6 +107,18 @@ Ele faz login no GitHub pelo GitHub CLI. É aquele que está no seu PATH ou o qu
 
 Mostra a build. `zurg --version` mostra a mesma coisa.
 
+## Obtendo ajuda {#getting-help}
+
+### suporte ao zurg {#zurg-support}
+
+Envia seu log e sua config para o suporte do DMM e imprime um código de suporte, tipo `K7QM-3XPD`. Poste o código na sua thread de suporte no Discord. Ele fica guardado por 7 dias e só o suporte do DMM consegue abrir.
+
+Ele envia a mesma coisa que **Export Logs** no painel, então use quando o zurg não iniciar ou você não conseguir acessar o painel. Rode a partir do diretório de trabalho do zurg: ele lê `config.yml` (ou `--config`) e `logs/zurg.log` ali. No Docker, rode `docker exec <container> /app/docker-entrypoint.sh support`, que escolhe o diretório certo para você. Se o container não ficar de pé, rode `docker run --rm -v <your config folder>:/config ghcr.io/debridmediamanager/zurg:<tag> support` com a mesma pasta que você monta para o zurg.
+
+Tokens, senhas, links de download e seus próprios hostnames são removidos antes, do mesmo jeito que o painel faz. Uma config que não carrega não é enviada; no lugar dela é enviado o erro que ela gera. Um log longo é cortado pelo fim mais antigo para caber, e o pacote avisa isso.
+
+Se o servidor de suporte do DMM não puder ser acessado ou recusar o envio, o zurg diz o motivo e envia os dois arquivos para sites de paste públicos, imprimindo os links. Se nada puder ser enviado, ele grava os mesmos arquivos já redigidos em `zurg-debug.tar.gz` para você anexar na sua thread.
+
 ## Backups
 
 ### zurg backup

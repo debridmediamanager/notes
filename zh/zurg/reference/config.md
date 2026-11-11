@@ -1252,6 +1252,12 @@ log_level: DEBUG
 traffic_alert_gb: 500
 ```
 
+#### 向支持团队发送日志 {#sending-logs-to-support}
+
+**Export Logs**（仪表盘上的）和 `zurg support` 会把脱敏后的日志和配置发送到 DMM 的支持服务器 `logs.debridmediamanager.com`，并给你一个代码，用来粘贴到支持帖子里。没有对应的设置项。如果无法连接该服务器，或者服务器拒绝上传，文件就会改传到公共粘贴站点，按以下顺序依次尝试：`paste.c-net.org`、`temp.sh`、`0x0.st`。如果你的防火墙只允许 zurg 访问部分主机，请放行 `logs.debridmediamanager.com`。
+
+如果某个主机返回 403，说明它把这台机器拒之门外了，zurg 会在接下来的 24 小时内跳过它，`logs.debridmediamanager.com` 也包括在内。仪表盘上的 **Download Logs** 会给你同样经过脱敏的文件，但不会把它们发送到任何地方。
+
 ## 7. 目录与过滤器 {#7-directories--filters}
 
 定义虚拟目录，根据灵活的过滤规则整理你的种子。每个目录都会在挂载中显示为一个文件夹，并且只显示符合其过滤条件的种子。

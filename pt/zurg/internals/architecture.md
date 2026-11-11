@@ -262,14 +262,14 @@ Duas coisas distintas compartilham a palavra "Plex":
 
 | Pacote | Finalidade |
 |---|---|
-| `pkg/fsm` | Dois tipos de pequena máquina de estados: `FSMWithExternalMutex` para quando a FSM está embutida em algo que já está travado (locked), e `FSMWithTime` para quando ela precisa do próprio lock e de um timestamp da transição (assim `SinceWhen` consegue responder "há quanto tempo isso está quebrado"). |
-| `pkg/logutil` | Zap com saída dupla: console colorido e arquivo com rotação (10 MB × 20 via lumberjack). O nível de verbosidade vem de `log_level` no config.yml, com fallback para a variável de ambiente `LOG_LEVEL` e, depois, para DEBUG. O nível fica em um `zap.AtomicLevel` compartilhado, então o dashboard pode mudar o nível de todos os loggers de uma vez, sem reiniciar. Também inclui a leitura do log para o visualizador do dashboard e o envio dele para 0x0.st, para suporte. |
-| `pkg/utils` | Persistência de hosts bloqueados, regras de visibilidade de arquivos, ocultação de tokens, detecção de vídeo/áudio, nomeação de `.strm` e `GetZurgBaseURL` (que respeita os `X-Forwarded-*` atrás de um proxy reverso). |
+| `pkg/fsm` | Duas variações de uma máquina de estados simples: `FSMWithExternalMutex` para quando a FSM fica embutida em algo que já está travado, `FSMWithTime` para quando ela precisa do próprio lock e de um timestamp de transição (assim `SinceWhen` consegue responder "há quanto tempo isso está quebrado"). |
+| `pkg/logutil` | Zap com saída dupla: console colorido e um arquivo com rotação (10 MB × 20 via lumberjack). A verbosidade vem de `log_level` no config.yml, com fallback para a variável de ambiente `LOG_LEVEL` e depois para DEBUG; o nível fica em um `zap.AtomicLevel` compartilhado, então o dashboard pode mudar o nível de todos os loggers de uma vez, sem reiniciar. Inclui a leitura do log de volta para o visualizador do dashboard e para Export Logs. |
+| `pkg/utils` | Persistência de hosts bloqueados, regras de visibilidade de arquivos, redação de tokens, detecção de vídeo/áudio, nomenclatura de `.strm` e `GetZurgBaseURL` (que respeita `X-Forwarded-*` atrás de um reverse proxy). |
 | `pkg/script` | Executa os scripts de eventos do ciclo de vida definidos pelo usuário; PowerShell no Windows, `/bin/sh` nos demais sistemas. |
-| `pkg/dmm` | Cliente para a API de busca do debridmediamanager.com, com limite de 1 requisição a cada 2 segundos imposto pelo servidor. Usado pelo monitor de watchlist. |
+| `pkg/dmm` | Cliente para a API de busca do debridmediamanager.com, com limite de 1 requisição a cada 2 segundos, imposto pelo servidor. Usado pelo monitor de watchlist. |
 | `internal/version` | Metadados de build injetados via ldflags; também o banner ASCII em `/http/version.txt`. |
-| `internal/requirements` | Baixa o `ffprobe` e o `rclone` compatíveis com a plataforma a partir dos releases do GitHub na primeira execução e grava caminhos *relativos* no config.yml, para que a configuração continue portátil. Plataformas não suportadas geram um aviso em vez de falhar. |
-| `internal/clear` | Apaga em massa os downloads e torrents do RD controlando a interface web com um cookie de autenticação, repetindo até ficar vazio. |
+| `internal/requirements` | Baixa o `ffprobe` e o `rclone` compatíveis com a plataforma a partir das releases do GitHub na primeira execução e grava caminhos *relativos* no config.yml, para que a configuração continue portátil. Plataformas não suportadas emitem um aviso em vez de falhar. |
+| `internal/clear` | Apaga em massa os downloads e torrents do RD usando a interface web com um cookie de autenticação, repetindo até ficar vazio. |
 | `internal/handlers/tmplcache` | Cache de templates para o dashboard. |
 
 ## Decisões transversais {#cross-cutting-decisions}

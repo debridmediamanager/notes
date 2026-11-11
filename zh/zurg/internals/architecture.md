@@ -277,16 +277,16 @@ Plex 匹配、重命名、按文件删除/恢复/强制显示、
 
 ## 第 7 层 — 支持 {#layer-7--support}
 
-| 包 | 用途 |
+| Package | Purpose |
 |---|---|
-| `pkg/fsm` | 两种小型状态机：`FSMWithExternalMutex` 用于嵌入到已经加锁的结构里的情况；`FSMWithTime` 用于需要自己加锁并记录状态切换时间戳的情况（这样 `SinceWhen` 就能回答“这个状态已经持续了多久”）。 |
-| `pkg/logutil` | 基于 Zap 的双输出：彩色控制台加一个滚动日志文件（通过 lumberjack，10 MB × 20）。日志级别来自 config.yml 中的 `log_level`，没有的话回退到环境变量 `LOG_LEVEL`，再没有就用 DEBUG。级别保存在共享的 `zap.AtomicLevel` 里，所以仪表盘可以一次性修改所有日志记录器的级别，无需重启。还包括为仪表盘查看器读取日志，以及把日志上传到 0x0.st 方便获取支持。 |
-| `pkg/utils` | 被屏蔽主机的持久化、文件可见性规则、token 脱敏、视频/音频检测、`.strm` 命名，以及 `GetZurgBaseURL`（在反向代理后面会识别 `X-Forwarded-*`）。 |
-| `pkg/script` | 运行用户自定义的生命周期事件脚本：Windows 上使用 PowerShell，其他系统使用 `/bin/sh`。 |
-| `pkg/dmm` | debridmediamanager.com 搜索 API 的客户端，按服务端限制做节流，每 2 秒最多 1 次。由观看列表监控使用。 |
-| `internal/version` | 通过 ldflags 注入的构建元数据；同时负责 `/http/version.txt` 处的 ASCII 横幅。 |
-| `internal/requirements` | 首次运行时，从 GitHub 发布页下载与平台匹配的 `ffprobe` 和 `rclone`，并把*相对*路径写入 config.yml，让配置文件可以随意搬动。遇到不支持的平台时只给出警告，不会直接失败。 |
-| `internal/clear` | 通过带认证 Cookie 的网页界面批量删除 RD 下载和种子，循环执行直到清空。 |
+| `pkg/fsm` | 两种小型状态机：`FSMWithExternalMutex` 用于嵌入到已经加锁的东西里的情况，`FSMWithTime` 用于需要自己的锁和状态切换时间戳的情况（这样 `SinceWhen` 就能告诉你这个状态已经持续多久了）。 |
+| `pkg/logutil` | 基于 Zap 的双路输出：彩色控制台和滚动日志文件（通过 lumberjack，10 MB × 20 个）。日志级别来自 config.yml 中的 `log_level`，没有的话回退到环境变量 `LOG_LEVEL`，再没有就用 DEBUG。级别保存在共享的 `zap.AtomicLevel` 里，所以仪表盘可以一次性修改所有日志记录器的级别，无需重启。还包括为仪表盘日志查看器和 Export Logs 读取日志的功能。 |
+| `pkg/utils` | 被屏蔽主机的持久化、文件可见性规则、令牌脱敏、视频/音频检测、`.strm` 命名，以及 `GetZurgBaseURL`（在反向代理后面会遵循 `X-Forwarded-*`）。 |
+| `pkg/script` | 运行用户定义的生命周期事件脚本；Windows 上使用 PowerShell，其他系统使用 `/bin/sh`。 |
+| `pkg/dmm` | debridmediamanager.com 搜索 API 的客户端，按服务器端的每 2 秒 1 次进行限速。观察列表监控会用到它。 |
+| `internal/version` | 通过 ldflags 注入的构建元数据；同时也是 `/http/version.txt` 处的 ASCII 横幅。 |
+| `internal/requirements` | 首次运行时，从 GitHub 发布页下载与平台匹配的 `ffprobe` 和 `rclone`，并把*相对*路径写入 config.yml，这样配置文件就能随处移植。不支持的平台只会发出警告，不会直接失败。 |
+| `internal/clear` | 通过带认证 Cookie 的网页界面批量删除 Real-Debrid 的下载和种子，循环直到清空。 |
 | `internal/handlers/tmplcache` | 仪表盘的模板缓存。 |
 
 ## 横切设计决策 {#cross-cutting-decisions}

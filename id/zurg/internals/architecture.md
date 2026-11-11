@@ -273,17 +273,17 @@ Ada dua hal berbeda yang sama-sama memakai kata "Plex":
 
 ## Lapisan 7 — Pendukung {#layer-7--support}
 
-| Paket | Fungsi |
+| Package | Fungsi |
 |---|---|
-| `pkg/fsm` | Dua jenis state machine kecil: `FSMWithExternalMutex` untuk saat FSM ditanam di dalam sesuatu yang sudah dikunci, `FSMWithTime` untuk saat FSM butuh kunci sendiri dan timestamp transisi (jadi `SinceWhen` bisa menjawab "sudah berapa lama ini rusak"). |
-| `pkg/logutil` | Zap dengan output ganda: konsol berwarna dan file rotasi (10 MB × 20 lewat lumberjack). Tingkat verbositas diambil dari `log_level` di config.yml, lalu dari environment variable `LOG_LEVEL`, dan kalau keduanya tidak ada, pakai DEBUG. Levelnya disimpan di satu `zap.AtomicLevel` bersama, jadi dasbor bisa mengubah level semua logger sekaligus tanpa restart. Termasuk membaca log kembali untuk penampil log di dasbor dan mengunggahnya ke 0x0.st untuk dukungan. |
-| `pkg/utils` | Penyimpanan host yang diblokir, aturan visibilitas file, penyamaran token, deteksi video/audio, penamaan `.strm`, dan `GetZurgBaseURL` (yang memakai `X-Forwarded-*` saat berada di belakang reverse proxy). |
-| `pkg/script` | Menjalankan skrip event lifecycle buatan pengguna; PowerShell di Windows, `/bin/sh` di platform lain. |
-| `pkg/dmm` | Client untuk API pencarian debridmediamanager.com, dibatasi 1 permintaan per 2 detik sesuai batas sisi server. Dipakai oleh pemantau watchlist. |
-| `internal/version` | Metadata build yang disuntikkan lewat ldflags; juga banner ASCII di `/http/version.txt`. |
-| `internal/requirements` | Mengunduh `ffprobe` dan `rclone` yang cocok dengan platform dari GitHub releases saat pertama kali dijalankan, lalu menulis path *relatif* ke config.yml supaya config tetap portabel. Platform yang tidak didukung hanya memberi peringatan, tidak langsung gagal. |
-| `internal/clear` | Menghapus massal unduhan dan torrent RD dengan mengendalikan antarmuka web memakai cookie autentikasi, diulang sampai kosong. |
-| `internal/handlers/tmplcache` | Caching template untuk dasbor. |
+| `pkg/fsm` | Dua varian state machine kecil: `FSMWithExternalMutex` untuk saat FSM ada di dalam sesuatu yang sudah di-lock, dan `FSMWithTime` untuk saat FSM butuh lock sendiri dan timestamp transisi (jadi `SinceWhen` bisa menjawab "sudah berapa lama ini rusak"). |
+| `pkg/logutil` | Zap dengan output ganda: konsol berwarna dan file yang berputar (10 MB × 20 lewat lumberjack). Tingkat verbosity diambil dari `log_level` di config.yml, lalu ke environment variable `LOG_LEVEL`, dan kalau tidak ada juga ke DEBUG. Levelnya disimpan di `zap.AtomicLevel` yang dipakai bersama, jadi dashboard bisa mengubah level semua logger sekaligus tanpa restart. Termasuk membaca log kembali untuk viewer di dashboard dan untuk Export Logs. |
+| `pkg/utils` | Penyimpanan blocked-host, aturan visibilitas file, penyamaran token, deteksi video/audio, penamaan `.strm`, dan `GetZurgBaseURL` (yang menghormati `X-Forwarded-*` saat berada di belakang reverse proxy). |
+| `pkg/script` | Menjalankan script lifecycle-event buatan pengguna; PowerShell di Windows, `/bin/sh` di tempat lain. |
+| `pkg/dmm` | Client untuk API pencarian debridmediamanager.com, dibatasi 1 request per 2 detik sesuai batas di server. Dipakai oleh pemantau watchlist. |
+| `internal/version` | Metadata build yang disisipkan lewat ldflags; juga banner ASCII di `/http/version.txt`. |
+| `internal/requirements` | Mengunduh `ffprobe` dan `rclone` yang sesuai platform dari GitHub releases saat pertama kali dijalankan, lalu menulis path *relatif* ke config.yml supaya config tetap portabel. Platform yang tidak didukung cuma memberi peringatan, tidak sampai gagal. |
+| `internal/clear` | Menghapus download dan torrent RD secara massal dengan menjalankan web interface memakai auth cookie, diulang terus sampai kosong. |
+| `internal/handlers/tmplcache` | Caching template untuk dashboard. |
 
 ## Keputusan lintas bagian {#cross-cutting-decisions}
 
