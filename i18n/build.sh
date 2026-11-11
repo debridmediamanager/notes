@@ -14,7 +14,10 @@ rm -rf .retype
 $retype build --output .retype || exit 1
 for dir in build/i18n/*/; do
   lang=$(basename "$dir")
-  (cd "$dir" && $retype build --output "$OLDPWD/.retype/$lang") || exit 1
+  # Built on its own and moved in: Retype failed to write files when building into the English output.
+  rm -rf "build/site-$lang"
+  (cd "$dir" && $retype build --output "$OLDPWD/build/site-$lang") || exit 1
+  mv "build/site-$lang" ".retype/$lang"
   # Old URLs keep redirecting in every language.
   awk -v l="/$lang" '!/^#/ && NF >= 2 { to = ($2 ~ /^\//) ? l $2 : $2; print l $1, to, $3 }' _redirects >> .retype/_redirects
 done
