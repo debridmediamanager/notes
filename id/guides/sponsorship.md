@@ -1,10 +1,10 @@
 # Apa yang didapat dari sponsor {#what-a-sponsorship-gives-you}
 
-DMM itu gratis. Sponsorship membantu membayar hosting-nya dan menjaga zurg serta rex tetap berjalan. Halaman ini mencantumkan setiap perk dan cara mengaturnya.
+DMM itu gratis. Sponsor yang membayar hosting-nya dan menjaga zurg serta rex tetap jalan. Halaman ini mencantumkan semua perk dan tempat mengaturnya.
 
-Jadi sponsor lewat [gatekeeper](https://gatekeeper.debridmediamanager.com/). Login di sana untuk melihat API key DMM kamu. **Open DMM with this key** menghubungkannya di browser itu. Tambahkan key yang sama di layanan lain yang memintanya. Jaga kerahasiaannya karena cara kerjanya sama seperti password.
+Jadi sponsor di [gatekeeper](https://gatekeeper.debridmediamanager.com/). Login di sana untuk melihat API key DMM kamu. **Open DMM with this key** akan menghubungkannya di browser itu. Masukkan key yang sama di layanan lain yang memintanya. Jaga kerahasiaannya karena fungsinya seperti password.
 
-Perk mengikuti sponsorship. Saat sponsorship berakhir, DMM akan menghentikan perk tersebut pada request berikutnya. Gatekeeper mencabut akses zurg dan role Discord pada pengecekan berikutnya. **Reset key** langsung menonaktifkan key lama di semua tempat sekaligus.
+Perk mengikuti sponsorship. Saat sponsorship berakhir, DMM menghentikan perk-nya pada request berikutnya. Plugin Jellyfin dan Emby yang sudah kamu pasang tetap berfungsi, tetapi download baru dan update akan berhenti. Gatekeeper mencabut akses zurg dan role Discord pada pengecekan berikutnya. **Reset key** langsung menghentikan key lama di semua tempat sekaligus.
 
 ## zurg
 
@@ -27,19 +27,18 @@ Fitur `dmm_api_key` membutuhkan build nightly zurg. Build publik gratis tidak me
 
 | Yang kamu dapat | Di mana |
 |---|---|
-| Daftar wanted yang diambil zurg beserta episode baru dan upgrade. Isi dari DMM, Kodi, atau daftar Trakt dan MDBList, atau dari backup Radarr atau Sonarr | [daftar wanted DMM](../zurg/guides/dmm-wanted.md) |
+| Daftar wanted yang diambil zurg beserta episode baru dan upgrade. Isi dari DMM atau Kodi, atau dari daftar Trakt dan MDBList, atau dari backup Radarr atau Sonarr | [Daftar wanted DMM](../zurg/guides/dmm-wanted.md) |
 | Permintaan dari Seerr, Overseerr, atau Jellyseerr masuk ke daftar wanted kamu | [Seerr lewat DMM](../dmm/seerr.md) |
 | Hasil Easynews apa pun dikirim ke zurg kamu dengan satu klik | Hasil Easynews di halaman film atau acara di DMM |
-| DMM sebagai indexer Newznab untuk Usenet | [halaman Newznab](https://debridmediamanager.com/newznab) DMM |
-| DMM sebagai indexer Torznab dengan feed khusus cached untuk Real-Debrid, AllDebrid, Debrid-Link, TorBox, Premiumize, dan Offcloud | [halaman Torznab](https://debridmediamanager.com/torznab) DMM. TorBox, Premiumize, dan Offcloud juga butuh service key yang sudah tertaut |
-| Tujuh plugin Jellyfin untuk library debrid dan Usenet, dan enam plugin Emby untuk library debrid tanpa mount apa pun | Halaman [Jellyfin](https://debridmediamanager.com/jellyfin) dan [Emby](https://debridmediamanager.com/emby) DMM |
-| Sepuluh stream lain per judul di Stremio Cast dan Kodi, bukan lima | DMM Settings untuk Real-Debrid, TorBox, dan AllDebrid; halaman Cast masing-masing provider untuk yang lain |
-| Upload NZB didahulukan dengan kuota 2 TB Usenet per hari, bukan 300 GB | Tab Usenet di DMM |
+| DMM sebagai indexer Newznab untuk Usenet | [Halaman Newznab](https://debridmediamanager.com/newznab) DMM |
+| DMM sebagai indexer Torznab dengan feed khusus cache untuk Real-Debrid, AllDebrid, Debrid-Link, TorBox, Premiumize, dan Offcloud | [Halaman Torznab](https://debridmediamanager.com/torznab) DMM. TorBox, Premiumize, dan Offcloud juga butuh service key yang sudah ditautkan |
+| Tujuh plugin Jellyfin untuk library debrid dan Usenet, dan enam plugin Emby untuk library debrid, tanpa mount apa pun | Halaman [Jellyfin](https://debridmediamanager.com/jellyfin) dan [Emby](https://debridmediamanager.com/emby) DMM |
+| Sepuluh stream lain per judul di Stremio Cast dan Kodi, bukan lima | Settings DMM untuk Real-Debrid, TorBox, dan AllDebrid; halaman Cast masing-masing provider untuk yang lain |
+| Upload NZB didahulukan dengan 2 TB Usenet per hari, bukan 300 GB | Tab Usenet DMM |
 | Prioritas dan kuota yang sama untuk Sonarr dan Radarr | API key DMM kamu sebagai Password di [halaman SABnzbd](https://debridmediamanager.com/sabnzbd) DMM |
-| Tiga upload torrent ke Real-Debrid sekaligus, bukan satu | Tombol upload di hasil pencarian DMM dan di library |
-| Add to DMM Wanted dan folder Wanted di dalam Kodi | Pasangkan Kodi di [halaman Kodi](https://debridmediamanager.com/kodi) DMM |
-| Pengaturan kamu dipulihkan di perangkat lain setelah masuk dengan sponsor key | DMM Settings |
-| API DMM untuk nama rilis, cek cache, detail media, dan metadata | [dokumentasi API](https://debridmediamanager.com/api-docs) |
+| Tiga upload torrent ke Real-Debrid sekaligus, bukan satu | Tombol upload di hasil pencarian dan library DMM |
+| Tambah ke DMM Wanted dan folder Wanted di dalam Kodi | Pasangkan Kodi di [halaman Kodi](https://debridmediamanager.com/kodi) DMM |
+| API DMM untuk nama rilis, cek cache, detail media, dan metadata | [Dokumentasi API](https://debridmediamanager.com/api-docs) |
 
 ## rex
 

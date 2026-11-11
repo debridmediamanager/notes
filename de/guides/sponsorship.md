@@ -1,10 +1,10 @@
 # Was dir eine Sponsoring gibt {#what-a-sponsorship-gives-you}
 
-DMM ist kostenlos. Sponsoring zahlt das Hosting und hält zurg und rex am Laufen. Diese Seite listet jeden Vorteil auf und zeigt, wo du ihn einrichtest.
+DMM ist kostenlos. Sponsoring bezahlt das Hosting und hält zurg und rex am Laufen. Diese Seite listet jeden Vorteil auf und zeigt, wo du ihn einrichtest.
 
-Werde Sponsor auf [gatekeeper](https://gatekeeper.debridmediamanager.com/). Melde dich dort an, um deinen DMM-API-Key zu sehen. **Open DMM with this key** verknüpft ihn im aktuellen Browser. Trag denselben Key in den anderen Diensten ein, die danach fragen. Behalte ihn für dich, denn er funktioniert wie ein Passwort.
+Werde Sponsor auf [gatekeeper](https://gatekeeper.debridmediamanager.com/). Melde dich dort an, um deinen DMM-API-Key zu sehen. **Open DMM with this key** verknüpft ihn im Browser. Trag denselben Key in den anderen Diensten ein, die danach fragen. Behalte ihn für dich, denn er funktioniert wie ein Passwort.
 
-Die Vorteile hängen an deinem Sponsoring. Endet es, stoppt DMM sie bei der nächsten Anfrage. Gatekeeper entzieht den zurg-Zugriff und die Discord-Rolle bei der nächsten Prüfung. **Reset key** deaktiviert den alten Key überall auf einmal.
+Vorteile hängen am Sponsoring. Endet es, stoppt DMM sie bei der nächsten Anfrage. Jellyfin- und Emby-Plugins, die du schon installiert hast, funktionieren weiter, aber neue Downloads und Updates hören auf. Gatekeeper entzieht beim nächsten Check den zurg-Zugang und die Discord-Rolle. **Reset key** macht den alten Key auf einen Schlag überall ungültig.
 
 ## zurg
 
@@ -25,21 +25,24 @@ Die `dmm_api_key`-Funktionen brauchen einen zurg-Nightly-Build. Die kostenlose �
 
 ## DMM
 
+_ignore
+
+Wait, I need to check the input: it's a Markdown table. Translate into German, keeping structure, names in English, URLs unchanged.
+
 | Was du bekommst | Wo |
 |---|---|
-| Eine Wanted-Liste, die zurg mit neuen Episoden und Upgrades abruft. Fülle sie aus DMM oder Kodi oder Trakt- und MDBList-Listen oder einem Radarr- oder Sonarr-Backup | [DMM-Wanted-Liste](../zurg/guides/dmm-wanted.md) |
-| Anfragen von Seerr oder Overseerr oder Jellyseerr landen auf deiner Wanted-Liste | [Seerr über DMM](../dmm/seerr.md) |
-| Jedes Easynews-Ergebnis mit einem Klick an deinen zurg schicken | Die Easynews-Ergebnisse auf einer Film- oder Serienseite in DMM |
+| Eine Wunschliste, die zurg mit neuen Folgen und Upgrades abruft. Befülle sie aus DMM oder Kodi oder Trakt- und MDBList-Listen oder einem Radarr- oder Sonarr-Backup | [DMM-Wunschliste](../zurg/guides/dmm-wanted.md) |
+| Anfragen von Seerr oder Overseerr oder Jellyseerr landen auf deiner Wunschliste | [Seerr über DMM](../dmm/seerr.md) |
+| Jedes Easynews-Ergebnis mit einem Klick an deinen zurg schicken | Die Easynews-Ergebnisse auf einer Film- oder Serienseite auf DMM |
 | DMM als Newznab-Indexer für Usenet | DMMs [Newznab-Seite](https://debridmediamanager.com/newznab) |
-| DMM als Torznab-Indexer mit nur gecachten Feeds für Real-Debrid, AllDebrid, Debrid-Link, TorBox, Premiumize und Offcloud | DMMs [Torznab-Seite](https://debridmediamanager.com/torznab). TorBox, Premiumize und Offcloud brauchen zusätzlich ihren verknüpften Service-Key |
-| Sieben Jellyfin-Plugins für Debrid- und Usenet-Bibliotheken und sechs Emby-Plugins für Debrid-Bibliotheken, ohne dass etwas eingehängt ist | DMMs [Jellyfin-](https://debridmediamanager.com/jellyfin)  und [Emby-Seite](https://debridmediamanager.com/emby) |
-| Zehn andere Streams pro Titel in Stremio Cast und Kodi statt fünf | DMM Settings für Real-Debrid, TorBox und AllDebrid; die Cast-Seite des jeweiligen Anbieters für die anderen |
+| DMM als Torznab-Indexer mit nur gecachten Feeds für Real-Debrid und AllDebrid und Debrid-Link und TorBox und Premiumize und Offcloud | DMMs [Torznab-Seite](https://debridmediamanager.com/torznab). TorBox, Premiumize und Offcloud brauchen zusätzlich ihren verknüpften Dienstschlüssel |
+| Sieben Jellyfin-Plugins für Debrid- und Usenet-Bibliotheken und sechs Emby-Plugins für Debrid-Bibliotheken, ohne dass etwas eingebunden ist | DMMs [Jellyfin](https://debridmediamanager.com/jellyfin)- und [Emby](https://debridmediamanager.com/emby)-Seiten |
+| Zehn weitere Streams pro Titel in Stremio Cast und Kodi statt fünf | DMM-Einstellungen für Real-Debrid, TorBox und AllDebrid; die Cast-Seite des jeweiligen Anbieters für die anderen |
 | NZB-Uploads kommen zuerst, mit 2 TB Usenet pro Tag statt 300 GB | DMMs Usenet-Tab |
-| Dieselbe Priorität und dasselbe Kontingent für Sonarr und Radarr | Dein DMM-API-Key als Password auf DMMs [SABnzbd-Seite](https://debridmediamanager.com/sabnzbd) |
-| Drei Torrent-Uploads gleichzeitig zu Real-Debrid statt einem | Die Upload-Buttons bei den DMM-Suchergebnissen und in der Bibliothek |
-| Zu DMM Wanted hinzufügen und ein Wanted-Ordner in Kodi | Kodi auf DMMs [Kodi-Seite](https://debridmediamanager.com/kodi) koppeln |
-| Deine Einstellungen auf einem anderen Gerät wiederhergestellt, nachdem du dich mit dem Sponsor-Key angemeldet hast | DMM Settings |
-| Die DMM-API für Release-Namen, Cache-Prüfungen, Mediendetails und Metadaten | [API-Doku](https://debridmediamanager.com/api-docs) |
+| Dieselbe Priorität und dasselbe Kontingent für Sonarr und Radarr | Dein DMM-API-Schlüssel als Password auf DMMs [SABnzbd-Seite](https://debridmediamanager.com/sabnzbd) |
+| Drei Torrent-Uploads gleichzeitig zu Real-Debrid statt einem | Die Upload-Buttons in den DMM-Suchergebnissen und in der Bibliothek |
+| Add to DMM Wanted und ein Wanted-Ordner in Kodi | Kodi auf DMMs [Kodi-Seite](https://debridmediamanager.com/kodi) koppeln |
+| Die DMM-API für Release-Namen, Cache-Prüfungen, Medieninfos und Metadaten | [API-Dokumentation](https://debridmediamanager.com/api-docs) |
 
 ## rex
 

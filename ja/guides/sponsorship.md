@@ -1,10 +1,10 @@
 # スポンサーシップで得られるもの {#what-a-sponsorship-gives-you}
 
-DMM は無料です。スポンサーの支援で DMM のホスティング費用を賄い、zurg と rex の開発を続けられています。このページでは、すべての特典と、その設定場所をまとめています。
+DMMは無料です。スポンサーからの支援で、ホスティング費用を賄い、zurgとrexの開発を続けられています。このページでは、すべての特典と、その設定場所を紹介します。
 
-[gatekeeper](https://gatekeeper.debridmediamanager.com/) でスポンサーになってください。そこにサインインすると、DMM の API キーが表示されます。そのブラウザで **Open DMM with this key** をクリックすると、キーが紐づきます。キーを求めてくる他のサービスにも、同じキーを入力してください。パスワードと同じ扱いになるので、他人に見せないようにしてください。
+[gatekeeper](https://gatekeeper.debridmediamanager.com/)でスポンサーになります。そこにサインインすると、DMMのAPIキーが表示されます。**Open DMM with this key**を押すと、そのブラウザでキーが連携されます。キーを求めてくる他のサービスにも、同じキーを追加してください。キーはパスワードと同じ働きをするので、外部に漏らさないようにしてください。
 
-特典はスポンサーシップに連動しています。スポンサーシップが終了すると、次のリクエストから DMM は特典を止めます。Gatekeeper は次回のチェックで zurg へのアクセスと Discord のロールを取り消します。**Reset key** を押すと、古いキーがすべての場所で一度に無効になります。
+特典はスポンサーシップに連動しています。スポンサーシップが終了すると、次のリクエストからDMMは特典を止めます。すでにインストールしたJellyfinやEmbyのプラグインは動き続けますが、新しいダウンロードやアップデートは止まります。gatekeeperは次回のチェック時に、zurgへのアクセスとDiscordのロールを取り消します。**Reset key**を押すと、古いキーがすべての場所で一度に無効になります。
 
 ## zurg
 
@@ -27,19 +27,18 @@ DMM は無料です。スポンサーの支援で DMM のホスティング費�
 
 | 得られるもの | 場所 |
 |---|---|
-| zurg が新しいエピソードやアップグレードを取ってくる Wanted リスト。DMM、Kodi、Trakt と MDBList のリスト、または Radarr や Sonarr のバックアップから入れられます | [DMM wanted list](../zurg/guides/dmm-wanted.md) |
-| Seerr、Overseerr、Jellyseerr からのリクエストが Wanted リストに入ります | [Seerr through DMM](../dmm/seerr.md) |
-| 映画やシリーズのページにある Easynews の結果を、ワンクリックで zurg に送れます | DMM の映画やシリーズのページにある Easynews の結果 |
-| DMM を Usenet 用の Newznab インデクサーとして使えます | DMM の [Newznab ページ](https://debridmediamanager.com/newznab) |
-| DMM を Torznab インデクサーとして使えます。Real-Debrid、AllDebrid、Debrid-Link、TorBox、Premiumize、Offcloud のキャッシュ済みのみのフィードに対応しています。TorBox、Premiumize、Offcloud では、連携したサービスのキーも必要です | DMM の [Torznab ページ](https://debridmediamanager.com/torznab) |
-| マウントしていない debrid や Usenet のライブラリ向けの Jellyfin プラグインが 7 個、debrid ライブラリ向けの Emby プラグインが 6 個あります | DMM の [Jellyfin](https://debridmediamanager.com/jellyfin) ページと [Emby](https://debridmediamanager.com/emby) ページ |
-| Stremio の Cast と Kodi で、1 タイトルあたりの他のストリームが 5 件ではなく 10 件になります | Real-Debrid、TorBox、AllDebrid は DMM の Settings。それ以外は各プロバイダーの Cast ページ |
-| NZB のアップロードが優先され、Usenet の上限は 1 日 300 GB ではなく 2 TB になります | DMM の Usenet タブ |
-| Sonarr と Radarr にも同じ優先度と上限が適用されます | DMM の [SABnzbd ページ](https://debridmediamanager.com/sabnzbd) で、Password に DMM の API キーを入力します |
-| Real-Debrid へのトレントのアップロードを、1 回に 1 件ではなく 3 件同時に行えます | DMM の検索結果とライブラリにあるアップロードボタン |
-| DMM の Wanted への追加と、Kodi 内の Wanted フォルダーを使えます | DMM の [Kodi ページ](https://debridmediamanager.com/kodi) で Kodi をペアリングします |
-| スポンサーキーでサインインすると、別のデバイスでも設定が復元されます | DMM の Settings |
-| リリース名の確認、キャッシュのチェック、メディア詳細、メタデータ用の DMM API を使えます | [API docs](https://debridmediamanager.com/api-docs) |
+| 新しいエピソードやアップグレードを zurg が取得する Wanted リスト。DMM、Kodi、Trakt と MDBList のリスト、または Radarr か Sonarr のバックアップから入れられます | [DMM のWanted リスト](../zurg/guides/dmm-wanted.md) |
+| Seerr、Overseerr、Jellyseerr からのリクエストが Wanted リストに入ります | [DMM 経由の Seerr](../dmm/seerr.md) |
+| 映画や番組のページにある Easynews の結果を、ワンクリックで zurg に送れます | DMM の映画・番組ページにある Easynews の結果 |
+| Usenet 用の Newznab インデクサーとしての DMM | DMM の [Newznab ページ](https://debridmediamanager.com/newznab) |
+| Real-Debrid、AllDebrid、Debrid-Link、TorBox、Premiumize、Offcloud 向けに、キャッシュ済みのみのフィードを出す Torznab インデクサーとしての DMM | DMM の [Torznab ページ](https://debridmediamanager.com/torznab)。TorBox、Premiumize、Offcloud では、リンクしたサービスキーも必要です |
+| マウントなしのデバッドとUsenet ライブラリ向けの Jellyfin プラグイン七つと、デバッドライブラリ向けの Emby プラグイン六つ | DMM の [Jellyfin](https://debridmediamanager.com/jellyfin) と [Emby](https://debridmediamanager.com/emby) のページ |
+| Stremio Cast と Kodi で、タイトルごとの他のストリームが五件ではなく十件 | Real-Debrid、TorBox、AllDebrid は DMM の設定。その他は各プロバイダーの Cast ページ |
+| NZB のアップロードを優先し、Usenet の割り当てを 300 GB ではなく 1日 2 TB | DMM の Usenet タブ |
+| Sonarr と Radarr でも同じ優先度と割り当て | [DMM の SABnzbd ページ](https://debridmediamanager.com/sabnzbd) で、Password に DMM の API キーを入力 |
+| Real-Debrid へのトレントのアップロードを一件ではなく同時に三件 | DMM の検索結果とライブラリにあるアップロードボタン |
+| DMM Wanted への追加と、Kodi 内の Wanted フォルダ | DMM の [Kodi ページ](https://debridmediamanager.com/kodi) で Kodi をペアリング |
+| リリース名、キャッシュ確認、メディア詳細、メタデータ用の DMM API | [API docs](https://debridmediamanager.com/api-docs) |
 
 ## rex
 

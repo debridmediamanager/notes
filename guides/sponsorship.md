@@ -4,7 +4,7 @@ DMM is free. Sponsorships pay for its hosting and keep zurg and rex moving. This
 
 Sponsor on [gatekeeper](https://gatekeeper.debridmediamanager.com/). Sign in there to see your DMM API key. **Open DMM with this key** links it in that browser. Add the same key in the other services that ask for it. Keep it private because it works like a password.
 
-Perks follow the sponsorship. When it ends DMM stops them on the next request. Gatekeeper revokes zurg access and the Discord role on its next check. **Reset key** stops the old key everywhere at once.
+Perks follow the sponsorship. When it ends DMM stops them on the next request. Jellyfin and Emby plugins you already installed keep working, but new downloads and updates stop. Gatekeeper revokes zurg access and the Discord role on its next check. **Reset key** stops the old key everywhere at once.
 
 ## zurg
 
@@ -38,7 +38,6 @@ The `dmm_api_key` features need a zurg nightly. The free public build does not i
 | The same priority and allowance for Sonarr and Radarr | Your DMM API key as the Password on DMM's [SABnzbd page](https://debridmediamanager.com/sabnzbd) |
 | Three torrent uploads into Real-Debrid at once instead of one | The upload buttons on DMM search results and the library |
 | Add to DMM Wanted and a Wanted folder inside Kodi | Pair Kodi on DMM's [Kodi page](https://debridmediamanager.com/kodi) |
-| Your settings restored on another device after signing in with the sponsor key | DMM Settings |
 | The DMM API for release names and cache checks and media details and metadata | [API docs](https://debridmediamanager.com/api-docs) |
 
 ## rex

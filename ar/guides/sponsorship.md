@@ -1,10 +1,10 @@
 # ما الذي تحصل عليه من الرعاية {#what-a-sponsorship-gives-you}
 
-DMM مجاني. الرعاة يدفعون تكلفة استضافته ويبقون zurg وrex يعملان. هذه الصفحة تشرح كل ميزة وأين تفعّلها.
+DMM مجاني. رعاية الداعمين تغطي تكلفة استضافته وتُبقي zurg و rex يعملان. تعرض هذه الصفحة كل الميزات وأين تُفعّلها.
 
-تقدر ترعى عبر [gatekeeper](https://gatekeeper.debridmediamanager.com/). سجّل الدخول هناك لتشوف مفتاح DMM API الخاص بك. **Open DMM with this key** يربطه في هذا المتصفح. أضف نفس المفتاح في الخدمات الأخرى اللي تطلبه. خليه سرًا لأنه يشتغل مثل كلمة المرور.
+ارعَ DMM عبر [gatekeeper](https://gatekeeper.debridmediamanager.com/). سجّل الدخول هناك لترى مفتاح DMM API الخاص بك. **Open DMM with this key** يربطه بالمتصفح الذي تستخدمه. أضف المفتاح نفسه في الخدمات الأخرى التي تطلبه. احتفظ به سرياً لأنه يعمل مثل كلمة المرور.
 
-الميزات تتبع الرعاية. لما تنتهي، DMM يوقفها عند الطلب التالي. Gatekeeper يلغي وصول zurg ودور Discord في فحصه التالي. **Reset key** يوقف المفتاح القديم في كل مكان مرة واحدة.
+الميزات تتبع الرعاية. عندما تنتهي الرعاية يوقفها DMM عند الطلب التالي. إضافات Jellyfin وEmby التي ثبّتها من قبل تستمر في العمل، لكن التنزيلات الجديدة والتحديثات تتوقف. يسحب gatekeeper صلاحية الوصول إلى zurg ودور Discord في فحصه التالي. **Reset key** يوقف المفتاح القديم في كل مكان دفعة واحدة.
 
 ## zurg
 
@@ -27,19 +27,18 @@ DMM مجاني. الرعاة يدفعون تكلفة استضافته ويبقو
 
 | ما ستحصل عليه | أين |
 |---|---|
-| قائمة مطلوبات يجلبها zurg مع الحلقات الجديدة والترقيات. تعبئها من DMM أو Kodi أو قوائم Trakt وMDBList أو نسخة احتياطية من Radarr أو Sonarr | [قائمة DMM المطلوبة](../zurg/guides/dmm-wanted.md) |
+| قائمة مطلوبات يجلبها zurg مع الحلقات الجديدة والترقيات. املأها من DMM أو Kodi أو قوائم Trakt وMDBList أو نسخة احتياطية من Radarr أو Sonarr | [قائمة DMM المطلوبة](../zurg/guides/dmm-wanted.md) |
 | الطلبات من Seerr أو Overseerr أو Jellyseerr تصل إلى قائمة المطلوبات لديك | [Seerr عبر DMM](../dmm/seerr.md) |
-| أي نتيجة من Easynews ترسلها إلى zurg بنقرة واحدة | نتائج Easynews في صفحة الفيلم أو المسلسل على DMM |
-| DMM كفهرس Newznab لشبكة Usenet | [صفحة Newznab](https://debridmediamanager.com/newznab) في DMM |
-| DMM كفهرس Torznab مع خلاصات مخزنة فقط لـ Real-Debrid وAllDebrid وDebrid-Link وTorBox وPremiumize وOffcloud | [صفحة Torznab](https://debridmediamanager.com/torznab) في DMM. تحتاج TorBox وPremiumize وOffcloud أيضاً إلى مفتاح الخدمة المرتبط بها |
-| سبعة إضافات لـ Jellyfin لمكتبات debrid وUsenet، وست إضافات لـ Emby لمكتبات debrid دون أي شيء مركب | صفحتا [Jellyfin](https://debridmediamanager.com/jellyfin) و[Emby](https://debridmediamanager.com/emby) في DMM |
-| عشرة مصادر بث إضافية لكل عنوان في Stremio Cast وKodi بدلاً من خمسة | إعدادات DMM لـ Real-Debrid وTorBox وAllDebrid؛ وصفحة Cast الخاصة بكل مزود للباقين |
-| رفع ملفات NZB يأتي أولاً مع 2 TB من Usenet يومياً بدلاً من 300 GB | تبويب Usenet في DMM |
-| الأولوية والحصة نفسها لـ Sonarr وRadarr | مفتاح API الخاص بك في DMM كـ Password في [صفحة SABnzbd](https://debridmediamanager.com/sabnzbd) في DMM |
-| ثلاثة رفعات لملفات torrent إلى Real-Debrid في الوقت نفسه بدلاً من واحد | أزرار الرفع في نتائج البحث والمكتبة في DMM |
-| Add to DMM Wanted ومجلد Wanted داخل Kodi | اقرن Kodi من [صفحة Kodi](https://debridmediamanager.com/kodi) في DMM |
-| استعادة إعداداتك على جهاز آخر بعد تسجيل الدخول بمفتاح الراعي | Settings في DMM |
-| واجهة DMM API لأسماء الإصدارات وفحوصات التخزين المؤقت وتفاصيل الوسائط والبيانات الوصفية | [توثيق API](https://debridmediamanager.com/api-docs) |
+| أي نتيجة من Easynews ترسلها إلى zurg الخاص بك بنقرة واحدة | نتائج Easynews في صفحة الفيلم أو المسلسل على DMM |
+| DMM كفهرس Newznab لـ Usenet | صفحة [Newznab](https://debridmediamanager.com/newznab) على DMM |
+| DMM كفهرس Torznab بخلاصات المحتوى المخزّن مؤقتاً فقط لـ Real-Debrid وAllDebrid وDebrid-Link وTorBox وPremiumize وOffcloud | صفحة [Torznab](https://debridmediamanager.com/torznab) على DMM. تحتاج TorBox وPremiumize وOffcloud أيضاً إلى مفتاح الخدمة المرتبطة بها |
+| سبعة إضافات Jellyfin لمكتبات debrid وUsenet، وستة إضافات Emby لمكتبات debrid فقط دون تركيب أي شيء | صفحتا [Jellyfin](https://debridmediamanager.com/jellyfin) و[Emby](https://debridmediamanager.com/emby) على DMM |
+| عشرة مصادر بث إضافية لكل عنوان في Stremio Cast وKodi بدلاً من خمسة | إعدادات DMM لـ Real-Debrid وTorBox وAllDebrid؛ وصفحة Cast الخاصة بكل مزود للبقية |
+| رفعات NZB تُعالج أولاً مع 2 TB من Usenet يومياً بدلاً من 300 GB | تبويب Usenet على DMM |
+| الأولوية والحصة نفسهما لـ Sonarr وRadarr | مفتاح DMM API الخاص بك في حقل Password في صفحة [SABnzbd](https://debridmediamanager.com/sabnzbd) على DMM |
+| ثلاث رفعات torrent إلى Real-Debrid في وقت واحد بدلاً من واحدة | أزرار الرفع في نتائج البحث وفي المكتبة على DMM |
+| Add to DMM Wanted ومجلد Wanted داخل Kodi | اقرن Kodi من صفحة [Kodi](https://debridmediamanager.com/kodi) على DMM |
+| واجهة DMM API لأسماء الإصدارات وفحوصات التخزين المؤقت وتفاصيل الوسائط والبيانات الوصفية | [وثائق API](https://debridmediamanager.com/api-docs) |
 
 ## rex
 
