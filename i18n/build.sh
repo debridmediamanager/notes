@@ -21,6 +21,7 @@ for dir in build/i18n/*/; do
   # Old URLs keep redirecting in every language.
   awk -v l="/$lang" '!/^#/ && NF >= 2 { to = ($2 ~ /^\//) ? l $2 : $2; print l $1, to, $3 }' _redirects >> .retype/_redirects
 done
+cp assets/favicon.ico .retype/favicon.ico  # search engines and browsers also ask for /favicon.ico directly
 # Retype publishes a Markdown copy of every page (linked as rel=alternate, used by llms.txt). Keep them for
 # tools but out of search results, where they showed up as duplicates of the pages.
 printf '/*.md\n  X-Robots-Tag: noindex\n' > .retype/_headers
