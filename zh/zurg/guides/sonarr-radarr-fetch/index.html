@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="zh" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/zh">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672741088">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>让 zurg 获取 Sonarr 和 Radarr 想要的内容</title>
+    <meta name="title" content="让 zurg 获取 Sonarr 和 Radarr 想要的内容">
+    <meta name="description" content="zurg 支持三种使用 Sonarr 和 Radarr 的方式。真正需要做的选择是由谁来搜索：zurg 还是 *arrs。选哪一种一节对它们做了比较。">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/zh/zurg/guides/sonarr-radarr-fetch/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/zh/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/zh/zurg/guides/sonarr-radarr-fetch/">
+    <meta property="og:title" content="让 zurg 获取 Sonarr 和 Radarr 想要的内容">
+    <meta property="og:description" content="zurg 支持三种使用 Sonarr 和 Radarr 的方式。真正需要做的选择是由谁来搜索：zurg 还是 *arrs。选哪一种一节对它们做了比较。">
+    <meta property="og:image" content="https://notes.debridmediamanager.com/zh/assets/sonarr-radarr-fetch/02-radarr-root-folder.webp">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="让 zurg 获取 Sonarr 和 Radarr 想要的内容">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="zh_CN">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/zh/zurg/guides/sonarr-radarr-fetch/">
+    <meta name="twitter:title" content="让 zurg 获取 Sonarr 和 Radarr 想要的内容">
+    <meta name="twitter:description" content="zurg 支持三种使用 Sonarr 和 Radarr 的方式。真正需要做的选择是由谁来搜索：zurg 还是 *arrs。选哪一种一节对它们做了比较。">
+    <meta name="twitter:image" content="https://notes.debridmediamanager.com/zh/assets/sonarr-radarr-fetch/02-radarr-root-folder.webp">
+    <meta name="twitter:image:alt" content="让 zurg 获取 Sonarr 和 Radarr 想要的内容">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/zh/zurg/guides/sonarr-radarr-fetch.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672741088" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672741088" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672741088" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672741088" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/zh/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>中文</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/download.html" target="_blank">下载 zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/zh/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">赞助</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>中文</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/download.html" target="_blank">下载 zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/zh/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">赞助</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="let-zurg-fetch-what-sonarr-and-radarr-want">让 zurg 获取 Sonarr 和 Radarr 想要的内容</h1>
+<p>zurg 支持三种使用 Sonarr 和 Radarr 的方式。真正需要做的选择是由谁来搜索：zurg 还是 *arrs。<doc-anchor-trigger to="#which-one-to-pick">选哪一种</doc-anchor-trigger>一节对它们做了比较。</p>
+<retype-table copy-text="| 指南 | 谁来搜索 | zurg 扮演 | 你需要 |
+|---|---|---|---|
+| [Usenet](sonarr-radarr.md) | Sonarr 和 Radarr | 一个 SABnzbd | 一个 Usenet 账户（如果用 `torbox_nzb` 后端，则需要 TorBox Pro），以及 Prowlarr 或 \*arrs 里的 Usenet 索引器 |
+| [种子](sonarr-radarr-torrents.md) | Sonarr 和 Radarr | 一个 qBittorrent | 一个 debrid 账户，以及 Prowlarr 或 \*arrs 里的种子索引器 |
+| [zurg 搜索](sonarr-radarr-fetch.md) | zurg | 完全不需要下载客户端 | 一个 Usenet、TorBox Pro 或 debrid 账户，以及 zurg 自己配置里的 Newznab 或 Torznab 索引器 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>指南</th>
+<th>谁来搜索</th>
+<th>zurg 扮演</th>
+<th>你需要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../sonarr-radarr/">Usenet</a></td>
+<td>Sonarr 和 Radarr</td>
+<td>一个 SABnzbd</td>
+<td>一个 Usenet 账户（如果用 <code translate="no" v-pre>torbox_nzb</code> 后端，则需要 TorBox Pro），以及 Prowlarr 或 *arrs 里的 Usenet 索引器</td>
+</tr>
+<tr>
+<td><a href="../sonarr-radarr-torrents/">种子</a></td>
+<td>Sonarr 和 Radarr</td>
+<td>一个 qBittorrent</td>
+<td>一个 debrid 账户，以及 Prowlarr 或 *arrs 里的种子索引器</td>
+</tr>
+<tr>
+<td><a href="">zurg 搜索</a></td>
+<td>zurg</td>
+<td>完全不需要下载客户端</td>
+<td>一个 Usenet、TorBox Pro 或 debrid 账户，以及 zurg 自己配置里的 Newznab 或 Torznab 索引器</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>前两种可以同时运行，它们共用同一个 <code translate="no" v-pre>__magic__</code> 文件夹。</p>
+<h3 id="which-one-to-pick">如何选择</h3>
+<retype-table copy-text="| | zurg 搜索 | Sonarr 和 Radarr 搜索 |
+|---|---|---|
+| 索引器设置在 | zurg 的 `config.yml` 里，改动后需要重启 | Prowlarr 或 \*arr 里，和平常一样 |
+| \*arr 需要 | `__magic__` 里面的根文件夹，别的都不需要 | zurg 作为下载客户端，下载文件夹和根文件夹要在同一个卷上 |
+| 第一个文件是 | 你的配置文件允许的最快那个，之后再升级到 cutoff | \*arr 按你的配置文件排名最靠前的那个 |
+| 动画、每日节目和特别篇 | 从 2026 年 11 月 5 日的 nightly 开始支持 | 支持 |
+| 手动搜索、队列、历史记录、黑名单 | 没有。文件出现后 \*arr 重新扫描即可 | 和平常一样工作 |
+| zurg 的 [`exclude_words`](acquisition.md#excluding-releases-by-name) | 生效 | 不生效。请在 \*arr 里屏蔽同样的词 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>zurg 搜索</th>
+<th>Sonarr 和 Radarr 搜索</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>索引器设置在</td>
+<td>zurg 的 <code translate="no" v-pre>config.yml</code> 里，改动后需要重启</td>
+<td>Prowlarr 或 *arr 里，和平常一样</td>
+</tr>
+<tr>
+<td>*arr 需要</td>
+<td><code translate="no" v-pre>__magic__</code> 里面的根文件夹，别的都不需要</td>
+<td>zurg 作为下载客户端，下载文件夹和根文件夹要在同一个卷上</td>
+</tr>
+<tr>
+<td>第一个文件是</td>
+<td>你的配置文件允许的最快那个，之后再升级到 cutoff</td>
+<td>*arr 按你的配置文件排名最靠前的那个</td>
+</tr>
+<tr>
+<td>动画、每日节目和特别篇</td>
+<td>从 2026 年 11 月 5 日的 nightly 开始支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>手动搜索、队列、历史记录、黑名单</td>
+<td>没有。文件出现后 *arr 重新扫描即可</td>
+<td>和平常一样工作</td>
+</tr>
+<tr>
+<td>zurg 的 <a href="../acquisition/#excluding-releases-by-name"><code translate="no" v-pre>exclude_words</code></a></td>
+<td>生效</td>
+<td>不生效。请在 *arr 里屏蔽同样的词</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>两种方式在 *arr 导入之前都会检查资源。失效的 Usenet 帖子，或者你的账户还没有持有的种子，都不会被放入。</p>
+<p>全新安装的话，建议先用 zurg 搜索。需要设置的东西更少，也不用去折腾卷的布局。如果你想手动挑选资源，就用下载客户端的方式。如果你宁可等配置文件里最好的资源，也不想先拿一个快速的文件，请打开 <a href="../acquisition/#taking-the-profiles-best-first"><code translate="no" v-pre>best_first</code></a>。</p>
+<p>Radarr 和 Sonarr 负责管理列表和资料库，zurg 负责获取文件。像平常一样添加电影或剧集，zurg 会在你的索引器上找到资源。它会检查 NZB 是否还在新闻服务器上（如果是 <code translate="no" v-pre>torbox_nzb</code> 账户，则检查 TorBox 是否已经抓取了它），或者你的 debrid 账户是否已经持有该种子。然后它会把文件放进 <code translate="no" v-pre>__magic__</code> 里对应的文件夹，并通知 Radarr 或 Sonarr 重新扫描。导入时无需下载，也不会复制任何东西。</p>
+<p>这种方式下，Radarr 和 Sonarr 不需要索引器，也不需要下载客户端。它们从不搜索，也从不抓取。你的质量配置文件仍然决定 zurg 被允许获取哪些资源。</p>
+<p>这些截图来自 zurg 的构建版本，该版本随 2026 年 9 月 26 日的 nightly 发布，运行在 Docker 中的 Radarr 6.3.0.10514 和 Sonarr 4.0.20.3014 上。两者在各自容器内看到的 zurg 挂载点都是 <code translate="no" v-pre>/mnt/zurg</code>。截图内容未作任何修改。</p>
+<h2 id="before-you-start">开始之前</h2>
+<ol>
+<li><strong>zurg 需要有一个 Usenet 或 debrid 账号，以及至少一个 Newznab 或 Torznab 索引器。</strong> 索引器写在 zurg 配置的 <code translate="no" v-pre>acquisition.indexers</code> 下。<a href="../acquisition/">Watchlist 和 Seerr</a> 页面介绍了这个配置块。</li>
+<li><strong><code translate="no" v-pre>magic.enabled</code> 设为 <code translate="no" v-pre>true</code>。</strong> 如果没有它，Radarr 和 Sonarr 来源无法启动，日志里也会说明这一点。参见 <a href="../magic/"><code translate="no" v-pre>__magic__</code></a>。</li>
+<li><strong>Radarr 和 Sonarr 能访问 zurg 的挂载点。</strong> 把它们作为普通应用安装时，每个系统都有一个需要注意的地方，列在 <a href="../sonarr-radarr/#before-you-start">Usenet 指南</a> 中。如果你在 Linux 主机上用 Docker，就需要把挂载点绑定到它们的容器里。只绑定挂载点的上一级目录即可，然后通过它访问所有内容。如果它们还把 zurg 当作下载客户端来接收抓取任务，那么下载文件夹和根文件夹各用两个卷，会导致每次导入都复制一份。参见 <a href="../sonarr-radarr/#one-volume-for-the-download-folder-and-the-root-folders">下载文件夹和根文件夹共用一个卷</a>。</li>
+<li><strong>你运行的 nightly 版本需要是 2026 年 9 月 26 日或之后发布的。</strong> 更早的版本不认识 <code translate="no" v-pre>radarr</code> 和 <code translate="no" v-pre>sonarr</code> 来源。</li>
+</ol>
+<h2 id="1-tell-zurg-about-radarr-and-sonarr">1. 告诉 zurg Radarr 和 Sonarr 的信息</h2>
+<p>在 <code translate="no" v-pre>config.yml</code> 的 <code translate="no" v-pre>acquisition</code> 下添加 <code translate="no" v-pre>radarr</code> 源和 <code translate="no" v-pre>sonarr</code> 源，然后重启 zurg。这个配置块目前还没有对应的仪表盘表单。用不到的那个就不用写。</p>
+<div id="1-tell-zurg-about-radarr-and-sonarr-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">acquisition:
+  quality: best
+  indexers:
+    - name: my-indexer
+      url: https://indexer.example
+      api_key: YOUR_INDEXER_API_KEY
+  sources:
+    - name: radarr
+      type: radarr
+      enabled: true
+      url: http://radarr:7878         # http://localhost:7878 when Radarr is an ordinary app beside zurg
+      api_key: YOUR_RADARR_API_KEY
+      library_path: /mnt/zurg/__magic__
+      check_every_secs: 30
+    - name: sonarr
+      type: sonarr
+      enabled: true
+      url: http://sonarr:8989         # http://localhost:8989 likewise
+      api_key: YOUR_SONARR_API_KEY
+      library_path: /mnt/zurg/__magic__
+      check_every_secs: 30</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>url</code> 和 <code translate="no" v-pre>api_key</code> 是应用自己的。两边的 API 密钥都在 <strong>Settings &gt; General</strong> 里。<code translate="no" v-pre>check_every_secs</code> 表示 zurg 多久问一次它们想要什么。每次轮询只发一个请求来获取列表。两个源共用同一批索引器。</p>
+<p><code translate="no" v-pre>library_path</code> 是应用看到 zurg 的 <code translate="no" v-pre>__magic__</code> 目录的位置。zurg 需要它把 Radarr 的文件夹转换成 <code translate="no" v-pre>__magic__</code> 里的一个位置。按上面的配置，Radarr 保存在 <code translate="no" v-pre>/mnt/zurg/__magic__/movies/Heat (1995)</code> 的电影，会被放到 zurg 的 <code translate="no" v-pre>__magic__</code> 里的 <code translate="no" v-pre>movies/Heat (1995)</code>。<code translate="no" v-pre>Z:\__magic__</code> 这样的 Windows 路径也是同样的道理。只有当应用和 zurg 运行在同一台主机上，并且能看到 zurg 挂载的位置时，才可以不写 <code translate="no" v-pre>library_path</code>。</p>
+<p><code translate="no" v-pre>concurrency</code> 表示 zurg 同时处理多少个标题，默认是 8。列表很大也没关系，用默认值就行，只是会慢一些。</p>
+<h2 id="2-put-the-root-folders-inside-__magic__">2. 把根文件夹放进 <code translate="no" v-pre>__magic__</code></h2>
+<p>根文件夹必须位于 <code translate="no" v-pre>__magic__</code> 之内，并且只能再深一层。为 Radarr 使用的路径是 <code translate="no" v-pre>/mnt/zurg/__magic__/movies</code>，为 Sonarr 使用的路径是 <code translate="no" v-pre>/mnt/zurg/__magic__/tv</code>，照着这个格式设置即可（macOS 上是 <code translate="no" v-pre>/Volumes/Zurg/__magic__/movies</code>，Windows 上是 <code translate="no" v-pre>Z:\__magic__\movies</code>）。不要直接指向 <code translate="no" v-pre>__magic__</code>，也不要指向 <code translate="no" v-pre>__magic__/__all__</code>。文件夹位于其他位置的标题会被跳过，zurg 会在日志中提示一次。</p>
+<p>在 Radarr 中打开 <strong>Settings &gt; Media Management</strong>，然后添加根文件夹。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-fetch/02-radarr-root-folder.webp" alt="Radarr 的根文件夹位于 magic 之内" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr 的根文件夹位于 magic 之内</figcaption>
+</figure>
+<p>Sonarr 的页面结构相同。在 <strong>Root Folders</strong> 下添加它的根文件夹。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-fetch/12-sonarr-root-folder.webp" alt="Sonarr 的根文件夹位于 magic 之内" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr 的根文件夹位于 magic 之内</figcaption>
+</figure>
+<p>Sonarr 页面上的 <strong>Season Folder Format</strong> 是 zurg 为新季度文件夹命名时使用的名称。已经有文件的季度会保留它们所在的文件夹。两个应用报告的可用空间，都是挂载点所报告的空间。两个应用都不会写入该位置。</p>
+<h2 id="3-add-titles-with-search-off">3. 关闭搜索后添加影片</h2>
+<p>像你平时一样添加电影和剧集：手动添加、从列表添加，或从请求应用添加。唯一需要改的是搜索。搜索由 zurg 负责，所以 *arr 工具不能再自己搜索。</p>
+<h3 id="radarr">Radarr</h3>
+<p>This walkthrough uses an import list. Open <strong>Settings &gt; Import Lists</strong> and add or edit yours.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-fetch/03-radarr-import-lists.webp" alt="The import lists page with one list" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The import lists page with one list</figcaption>
+</figure>
+<p>In the list&#x27;s settings keep <strong>Enable Automatic Add</strong> on and turn <strong>Search on Add</strong> off. Pick the quality profile and the root folder from step 2. Set <strong>Minimum Availability</strong> to what you want. zurg waits for Radarr to call a movie available before it looks for it.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-fetch/04-radarr-import-list-edit.webp" alt="Search on Add unchecked in the list's settings" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Search on Add unchecked in the list's settings</figcaption>
+</figure>
+<p>When you add a single movie by hand the same switch is called <strong>Start search for missing movie</strong>. Leave it off too.</p>
+<h3 id="sonarr">Sonarr</h3>
+<p>当你手动添加剧集时，请保持 <strong>Start search for missing episodes</strong> 和 <strong>Start search for cutoff unmet episodes</strong> 未勾选。<strong>Monitor</strong> 决定 zurg 会去抓取哪些内容。这部剧集被设置为第一季。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-fetch/13-sonarr-add-series.webp" alt="Adding a series with both searches unchecked" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Adding a series with both searches unchecked</figcaption>
+</figure>
+<p>Sonarr 中的导入列表（import list）设置里也有同样的开关。把它的搜索也关掉。</p>
+<h2 id="4-leave-indexers-and-download-clients-empty">4. 索引器和下载客户端留空</h2>
+<p>这就是 arr 这一侧的全部设置了。Indexers 页面可以保持为空。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-fetch/05-radarr-indexers-empty.webp" alt="Radarr's indexers page with nothing in it" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr's indexers page with nothing in it</figcaption>
+</figure>
+<p>Download clients 页面也可以保持为空。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-fetch/06-radarr-download-clients-empty.webp" alt="Radarr's download clients page with nothing in it" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr's download clients page with nothing in it</figcaption>
+</figure>
+<p>Sonarr 也是一样。如果这两个应用之前就已经有了 indexers 和 download client，它们会继续工作。不过这样应用就会和 zurg 同时为同一批剧集抓取资源。请关闭这些 indexers 的自动搜索，或者把它们从 zurg 负责的剧集里移除。</p>
+<h2 id="5-watch-it-work">5. 看它如何运作</h2>
+<p>打开 zurg 的仪表盘。快速链接里多了一个 <strong>Acquisition</strong>。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-fetch/01-zurg-quick-links.webp" alt="zurg 仪表盘的快速链接，其中有 Acquisition" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">zurg 仪表盘的快速链接，其中有 Acquisition</figcaption>
+</figure>
+<p>这个页面会列出 zurg 正在处理的每个标题，以及它此刻在做什么。如果你想用脚本读取，同样的数据也在 <code translate="no" v-pre>/acquisition/status.json</code> 里。</p>
+<h3 id="movies">电影</h3>
+<p>这是 Radarr 添加这十部电影大约半分钟后的列表。其中五部已经拿到文件,Radarr 正在被通知。其余的都已完成。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-fetch/07-zurg-acquisition-working.webp" alt="The acquisition page while zurg is working" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The acquisition page while zurg is working</figcaption>
+</figure>
+<p>每一行是一部电影。<strong>State</strong> 表示当前进度。<strong>Stage</strong> 表示 zurg 此刻正在为它做什么。它先读取索引站。然后判断候选项。接着读取发布的 NZB,并用新闻服务器检查帖子。最后放置文件。<strong>Release</strong> 是 zurg 选中的帖子,以及 Radarr 解析器对它的解读。<strong>Placed at</strong> 是视频现在所在的 <code translate="no" v-pre>__magic__</code> 内路径。新闻服务器已不再保存的标题,会立即转到下一个候选项。没有可用内容的标题会被搁置,并显示原因。</p>
+<p>再过一分钟,全部完成。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-fetch/08-zurg-acquisition-done.webp" alt="The acquisition page with every title done" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The acquisition page with every title done</figcaption>
+</figure>
+<h3 id="series">剧集</h3>
+<p>Sonarr 的季也会显示在同一个页面上。每一行是一个季，或者是 zurg 正在升级的一个剧集文件。这里有两部剧，它们的第一季在添加后半分钟被设为监控。两季都已播完且没有任何文件，所以 zurg 为每季尝试了一个季包。Severance 的季包已经放进了它的季文件夹，Sonarr 也已收到通知。Only Murders 的季包正在与新闻服务器核对。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-fetch/14-zurg-acquisition-sonarr-working.webp" alt="正在处理两个季的获取页面" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">正在处理两个季的获取页面</figcaption>
+</figure>
+<p>添加后大约两分钟，两季都处理完了。Only Murders 的季包在新闻服务器上缺了几个分片。zurg 把它放到一边，改为逐集获取这十集。它那一行显示的是最后放置好的一集。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-fetch/15-zurg-acquisition-sonarr-done.webp" alt="两个季都已完成的获取页面" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">两个季都已完成的获取页面</figcaption>
+</figure>
+<h2 id="6-what-radarr-and-sonarr-show">6. Radarr 和 Sonarr 显示的内容</h2>
+<p>electron</p>
+<p>Use the rest of this message to rewrite the translation below.</p>
+<p>The libraries fill in as the rescans land. Every movie in this list has its file.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-fetch/09-radarr-movies.webp" alt="Radarr's movie grid with every movie downloaded" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr's movie grid with every movie downloaded</figcaption>
+</figure>
+<p>A movie&#x27;s page shows the file in its folder inside <code translate="no" v-pre>__magic__</code> with the quality Radarr read from the name.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-fetch/10-radarr-movie-detail.webp" alt="One movie's page showing its file" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">One movie's page showing its file</figcaption>
+</figure>
+<p>In Sonarr all ten episodes have their file in the season folder with the quality Sonarr read from each name.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-fetch/16-sonarr-season.webp" alt="A season in Sonarr with every episode's file" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">A season in Sonarr with every episode's file</figcaption>
+</figure>
+<p><strong>Activity</strong> stays empty in both. There is no queue entry and no grab or import event because nothing was grabbed. The file simply appeared in the folder and the rescan zurg asked for picked it up.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-fetch/11-radarr-queue-empty.webp" alt="Radarr's queue is empty" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr's queue is empty</figcaption>
+</figure>
+<p>Two things follow from that. The arrs&#x27; blocklist is never written. zurg keeps its own record of posts the news servers no longer hold and does not pick them again. And a title you delete in Radarr or Sonarr is not deleted from your account. The file goes back to being listed under <code translate="no" v-pre>__all__</code> like any other release.</p>
+<h2 id="how-zurg-picks-a-release">zurg 如何挑选资源</h2>
+<p>你的质量配置文件是守门人。zurg 即将接收的每个版本，都会先经过应用自带的解析器。它必须是正确的标题，画质必须被配置文件允许，自定义格式分数必须达到配置文件的最低要求，大小必须符合 <strong>Settings &gt; Quality</strong> 下的限制。任何一项不符合的版本都不会被接收。</p>
+<h3 id="movies-1">电影</h3>
+<p>以下是 zurg 的选择规则。在配置文件允许的版本中，zurg 会先选择最快能确认的那一个。只包含单个视频文件的帖子优先，因为它们在新闻服务器上通常仍然完整。同一内容下，Web 版本优先于 Blu-ray 版本，原因相同。多卷压缩包集作为备选。</p>
+<p>配置文件的优先顺序则通过升级来实现。当配置文件允许升级，并且已放置的文件低于 cutoff 时，zurg 会在影片有更好的版本后再去查找。只有严格更好的版本才会替换现有文件。质量更低的版本永远不会被采用。</p>
+<p>上映日期在未来的电影会等到 Radarr 将其标记为可用后才处理。如果搜索结果对应的是错误的影片，则会被拒绝，因为 Radarr 无法将该标题与你的任何电影匹配。</p>
+<h3 id="series-1">剧集</h3>
+<p>一个季是一项完整的工作。当某季的每一集都缺失，并且该季已经播完时，zurg 会先尝试整季合集。否则，它会逐集查找缺失的剧集。已经有部分文件的季永远不会取整季合集，因为那样会在文件夹里再放一份相同剧集的副本。</p>
+<p>资源必须是对应的剧集和对应的季。合集必须是整季。单集资源必须只包含那一集。大小限制针对的是资源所含剧集的播放时长。</p>
+<p>如果某季中有一集暂时没有 zurg 能获取的资源，而其他剧集已经成功入库，那么这些已入库的剧集会立即通知 Sonarr。缺失的那一集会在之后按照常规的重试计划再次查找。</p>
+<p>当配置文件允许升级时，低于截止线的剧集文件就会被升级。&quot;低于截止线&quot;指的是低于截止画质，或低于截止自定义格式分数。zurg 对这两种情况的判断方式与 Sonarr 的升级规则一致。Sonarr 自己的 <strong>Cutoff Unmet</strong> 列表只显示前一种情况。升级只会替换对应的那一集，该季文件夹的其他内容保持不变。</p>
+<h2 id="things-to-know">注意事项</h2>
+<ul>
+<li><strong>对 <code translate="no" v-pre>config.yml</code> 中 <code translate="no" v-pre>acquisition</code> 块的任何修改都需要重启。</strong> zurg 只在启动时读取该文件。</li>
+<li><strong>重新扫描是最后一步，并且会排在应用自身任务之后。</strong> 一个列表刚添加大量电影后，Radarr 会先逐个刷新它们。这段时间里，文件其实已经放到位了。</li>
+<li><strong>Analyse video files 会读取每个文件在挂载上的开头部分。</strong> 它能正常工作，但在大型列表中这是最慢的环节。除非你确定不需要媒体信息，否则请保持开启。</li>
+<li><strong>未监控的剧集会被忽略。</strong> 这包括电影、剧集、季和单集。位于 <code translate="no" v-pre>__magic__</code> 之外文件夹中的剧集同样会被忽略。</li>
+<li><strong>从 2026 年 11 月 5 日起，动画、日播剧和特别篇需要 nightly 版本。</strong> 日播剧的单集按播出日期查找，动画按剧集自己计数的编号查找（<code translate="no" v-pre>Jujutsu Kaisen - 30</code> 是第二季的第 6 集），特别篇则按第 00 季搜索。为动画或日播剧放置的文件会命名为 <code translate="no" v-pre>JUJUTSU KAISEN - S02E06 - &lt;the release's own name&gt;</code>，因为 Sonarr 的重新扫描只根据文件名读取文件，否则会把 <code translate="no" v-pre>2nd Season - 06</code> 归到第 1 季。只用标题命名、没有 <code translate="no" v-pre>S00Exx</code> 的特别篇无法匹配，Sonarr 也一样。在旧版本上，每个这样的剧集都会被跳过，并在日志中留下一行记录。</li>
+</ul>
+<p>关于这两个来源的完整说明，请参阅 <a href="../acquisition/">Watchlist and Seerr</a>。</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/guides/sonarr-radarr-torrents/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">上一个</span>
+                                <span class="block mt-1">Sonarr 和 Radarr 用于 torrents</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/guides/import-lists/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">下一个</span>
+                                <span class="block mt-1">Sonarr 和 Radarr 中的列表</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "zurg 为 Sonarr 和 Radarr 搜索", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/guides/sonarr-radarr-fetch.md" }</script>
+</body>
+</html>

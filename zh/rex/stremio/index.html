@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/zh">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672741088">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>在 Stremio 中使用 rex 插件</title>
+    <meta name="title" content="在 Stremio 中使用 rex 插件">
+    <meta name="description" content="rex-stremio 可以把 Stremio 插件的目录变成 rex 库。电影、剧集和直播频道随后就能在 Plex 应用里播放。不会下载任何内容。有人点击播放时，rex-stremio 会向流插件要一个链接，然后由 rex 播放。">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/zh/rex/stremio/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/zh/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/zh/rex/stremio/">
+    <meta property="og:title" content="在 Stremio 中使用 rex 插件">
+    <meta property="og:description" content="rex-stremio 可以把 Stremio 插件的目录变成 rex 库。电影、剧集和直播频道随后就能在 Plex 应用里播放。不会下载任何内容。有人点击播放时，rex-stremio 会向流插件要一个链接，然后由 rex 播放。">
+    <meta property="og:image" content="https://notes.debridmediamanager.com/zh/assets/rex/90-stremio-addons.webp">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="在 Stremio 中使用 rex 插件">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="zh_CN">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/zh/rex/stremio/">
+    <meta name="twitter:title" content="在 Stremio 中使用 rex 插件">
+    <meta name="twitter:description" content="rex-stremio 可以把 Stremio 插件的目录变成 rex 库。电影、剧集和直播频道随后就能在 Plex 应用里播放。不会下载任何内容。有人点击播放时，rex-stremio 会向流插件要一个链接，然后由 rex 播放。">
+    <meta name="twitter:image" content="https://notes.debridmediamanager.com/zh/assets/rex/90-stremio-addons.webp">
+    <meta name="twitter:image:alt" content="在 Stremio 中使用 rex 插件">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/zh/rex/stremio.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../resources/css/retype.css?v=4.6.0.847672741088" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.847672741088" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.847672741088" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.847672741088" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/zh/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>中文</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/download.html" target="_blank">下载 zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/zh/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">赞助</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>中文</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/download.html" target="_blank">下载 zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/zh/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">赞助</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="rex-with-your-stremio-addons">在 Stremio 中使用 rex 插件</h1>
+<p><a href="https://github.com/debridmediamanager/rex-stremio">rex-stremio</a> 可以把 Stremio 插件的目录变成 rex 库。电影、剧集和直播频道随后就能在 Plex 应用里播放。不会下载任何内容。有人点击播放时，rex-stremio 会向流插件要一个链接，然后由 rex 播放。</p>
+<p>使用它不需要 DMM 赞助。rex 和 rex-stremio 都是免费的。你需要自备能返回链接的流插件，通常是通过你自己的 debrid 账户。</p>
+<p>你能得到的功能：</p>
+<ul>
+<li><strong>库。</strong> 电影会进入 <strong>Stremio Films</strong>，剧集进入 <strong>Stremio Shows</strong>，直播电视插件的频道进入名为 <strong>Live TV</strong> 的库，除非你为某个目录自己指定了库名。该库是一份频道列表，并不会出现在 Plex 应用的 Live TV 指南里。</li>
+<li><strong>合集。</strong> 给多个电影目录设置同一个库，并勾选 <strong>Catalogs as collections</strong>：一个库，每个目录对应一个合集，同时被多个目录收录的电影只会出现一次。</li>
+<li><strong>Plex 显示它已知的信息。</strong> 电影和剧集会带着 IMDb id 交给 rex，因此 rex 接入 Plex 账户后，应用会显示常规的片名、海报和简介。只有插件才知道的片名，以及直播频道，会保留插件提供的名称和图片。</li>
+</ul>
+<h2 id="before-you-start">开始之前</h2>
+<retype-table copy-text="| 所需条件 | 原因 |
+|---|---|
+| 一台常开的机器，运行 Linux 或 macOS，同时用于 rex 和 rex-stremio | rex-stremio 是一个 Python 程序，和 rex 一起运行。下面的服务配置适用于 Linux；[Docker](#in-docker) 也可以用 |
+| Python 3.9 或更新版本、`git` 和 `ffprobe` | rex-stremio 会用 ffprobe 检查每个影片的流，每个只检查一次，因为 rex 需要先知道文件里有什么，才能播放。如果设置了 DMM API key，那么 DMM 已经对某个种子做过探测的 debrid 流会跳过这项检查；其他的都要探测。 |
+| 给出链接而不是种子的流插件 | rex 播放的是文件。请在插件中设置你的 debrid 服务，让它返回链接 |
+| 一个全新的 Plex 账号，专门给 rex 用 | 与 rex 设置中的做法相同：rex 绑定到这个账号上，再与你自己的账号共享 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>所需条件</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>一台常开的机器，运行 Linux 或 macOS，同时用于 rex 和 rex-stremio</td>
+<td>rex-stremio 是一个 Python 程序，和 rex 一起运行。下面的服务配置适用于 Linux；<doc-anchor-trigger to="#in-docker">Docker</doc-anchor-trigger> 也可以用</td>
+</tr>
+<tr>
+<td>Python 3.9 或更新版本、<code translate="no" v-pre>git</code> 和 <code translate="no" v-pre>ffprobe</code></td>
+<td>rex-stremio 会用 ffprobe 检查每个影片的流，每个只检查一次，因为 rex 需要先知道文件里有什么，才能播放。如果设置了 DMM API key，那么 DMM 已经对某个种子做过探测的 debrid 流会跳过这项检查；其他的都要探测。</td>
+</tr>
+<tr>
+<td>给出链接而不是种子的流插件</td>
+<td>rex 播放的是文件。请在插件中设置你的 debrid 服务，让它返回链接</td>
+</tr>
+<tr>
+<td>一个全新的 Plex 账号，专门给 rex 用</td>
+<td>与 rex 设置中的做法相同：rex 绑定到这个账号上，再与你自己的账号共享</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h2 id="step-1-install-rex-and-add-it-to-a-plex-account">第 1 步：安装 rex 并将其添加到 Plex 账户</h2>
+<p>遵循<a href="../any-source/">使用你自己的应用配置 rex</a>：</p>
+<ol>
+<li><a href="../any-source/#step-1-install-rex">第 1 步：安装 rex</a>，包括找到 rex 的局域网 IP。之后每条命令都使用这个名称。</li>
+<li><a href="../any-source/#step-3-add-it-to-a-plex-account">第 3 步：添加到 Plex 账户</a>：在新账户上注册 rex，并将其分享给你自己的账户。</li>
+</ol>
+<p>跳过这里的第 2 步和第 4 步：rex-stremio 就是你的应用。</p>
+<p>直播频道，以及流媒体为 <code translate="no" v-pre>.m3u8</code> 播放列表的插件，只能通过 rex 的视频转换来播放。对于这些内容，还需要在 rex 所在的机器上设置<a href="../any-source/#converting-video-optional">转换视频</a>。以文件形式提供的电影和剧集（<code translate="no" v-pre>.mkv</code>、<code translate="no" v-pre>.mp4</code>）则不需要其他设置。</p>
+<h2 id="step-2-install-rex-stremio">第 2 步：安装 rex-stremio</h2>
+<p><strong>作用。</strong> 在 rex 所在的机器上把 rex-stremio 下载到 <code translate="no" v-pre>~/rex-stremio</code>，并将其作为服务启动。</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux">
+<template #title>Linux</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo apt install -y git python3 ffmpeg
+cd ~ &amp;&amp; git clone https://github.com/debridmediamanager/rex-stremio
+mkdir -p ~/.config/systemd/user
+cp ~/rex-stremio/rex-stremio.service ~/.config/systemd/user/
+systemctl --user daemon-reload &amp;&amp; systemctl --user enable --now rex-stremio
+journalctl --user -u rex-stremio -f</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="macos">
+<template #title>macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">brew install ffmpeg
+cd ~ &amp;&amp; git clone https://github.com/debridmediamanager/rex-stremio
+cd ~/rex-stremio &amp;&amp; python3 rex_stremio.py</code></pre>
+</doc-codeblock></div>
+<p>只要该终端窗口保持打开，它就会一直运行。</p>
+</doc-tab>
+</doc-tabs>
+<p><strong>你应该看到什么。</strong> 类似这样的一行输出：</p>
+<div id="step-2-install-rex-stremio-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">... INFO relay and settings on http://127.0.0.1:9982/, 0 catalog(s), rex at http://127.0.0.1:32400</code></pre>
+</doc-codeblock></div>
+<p>rex-stremio 的设置页面，以及 rex 读取视频所用的地址，都位于 <code translate="no" v-pre>127.0.0.1:9982</code>，因此只有本机能访问它们。</p>
+<h2 id="step-3-add-your-addons">第 3 步：添加你的插件</h2>
+<p>打开 rex 所在机器上的浏览器，访问 <code translate="no" v-pre>http://127.0.0.1:9982/</code>。没有屏幕？在你的电脑上运行 <code translate="no" v-pre>ssh -L 9982:127.0.0.1:9982 you@&lt;rex's LAN IP&gt;</code>，然后在 SSH 保持连接的同时打开同一个地址。</p>
+<ol>
+<li>
+<p>在 <strong>Addons</strong> 下，粘贴 addon 的 manifest 链接（和在 Stremio 里一样），然后点击 <strong>Add</strong>。以下两类都要添加：</p>
+<ul>
+<li><strong>Catalogs</strong>，例如 Cinemeta：<code translate="no" v-pre>https://v3-cinemeta.strem.io/manifest.json</code>。</li>
+<li><strong>Streams</strong>：用来查找资源并通过你的 debrid 服务播放的 addon。打开它的配置页面，选择你的 debrid 服务，粘贴 API key，然后复制它生成的 manifest 链接。如果它提供仅缓存结果的选项，就选这个。该链接包含你的 debrid 密钥，请妥善保管，不要分享给别人。</li>
+</ul>
+<p><img src="../../assets/rex/90-stremio-addons.webp" alt="rex-stremio 的 Addons 区域，已添加 Cinemeta 和 Public Domain Movies" class="max-w-full h-auto" /></p>
+</li>
+<li>在 <strong>Catalogs</strong> 下，勾选你想要的 catalog。为每个 catalog 指定它要放入的库，并设置 <strong>How many</strong>（要获取的电影、剧集或频道数量）。如果想要一个库，每个 catalog 对应一个合集，就让这些 catalog 使用同一个库，并勾选 <strong>Catalogs as collections</strong>。</li>
+<li>在 <strong>Streams</strong> 下，设置你希望播放的 <strong>Highest resolution</strong> 和 <strong>Largest file</strong>，或者保持 any 不变。</li>
+<li>在 <strong>rex</strong> 下，将地址设置为 <code translate="no" v-pre>http://&lt;rex's LAN IP&gt;:32400</code>。</li>
+<li>如果你赞助了 DMM，请在 <strong>DMM</strong> 下粘贴你的 DMM API key（赞助后 <a href="https://gatekeeper.debridmediamanager.com/">gatekeeper</a> 会显示一次它）。对于 DMM 已有探测结果的种子，通过 debrid 播放时会跳过检查。其他情况都会检查。rex-stremio 对种子文件的检查结果（不包括普通 HTTP 流或 HLS 播放列表）会回传给 DMM，供下一位赞助者使用（在 <code translate="no" v-pre>config.json</code> 中设置 <code translate="no" v-pre>share_probes: false</code> 可以停止回传）。然后点击 <strong>Save and sync</strong>。</li>
+</ol>
+<figure class="content-center">
+    <img src="../../assets/rex/91-stremio-catalogs-rex.webp" alt="rex-stremio 的 Catalogs、Streams、rex 和 DMM 区域，以及 Save and sync 按钮" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">rex-stremio 的 Catalogs、Streams、rex 和 DMM 区域，以及 Save and sync 按钮</figcaption>
+</figure>
+<p>**你应该看到的：**在 rex 的日志中，和 <a href="../any-source/#step-4-connect-your-app">使用你自己的应用连接 rex 的第 4 步</a> 一样：</p>
+<div id="step-3-add-your-addons-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO    SOURCES PUT /rex/sources/stremio -&gt; 200
+INFO    FEED stremio upsert: ...</code></pre>
+</doc-codeblock></div>
+<p>每个标题在检查完成后就会立即出现在 rex 中，而不是等整个 catalog 都检查完才显示。rex-stremio 会同时检查多个标题。它每六小时同步一次，并且每次保存后也会同步。</p>
+<h2 id="step-4-share-the-new-libraries-and-watch">第 4 步：共享新的媒体库并开始观看</h2>
+<p>我们在页面结构中，链接目标保持不变。</p>
+<p>刚由 rex-stremio 创建的库，你自己的账号暂时还看不到。请按照 <a href="../any-source/#share-it-with-your-own-account">第 3 步</a> 把它们分享给你自己的账号，登录时使用这个新账号，同时也分享给其他需要使用 rex 的人。</p>
+<p>然后用自己的 Plex 应用打开，播放任意一个内容。这时 rex-stremio 会向你的流媒体插件索取链接，rex 再进行播放。如果想在外出时观看，或者在 app.plex.tv 上观看，请为 rex 设置一个专属地址：<a href="../any-source/#use-it-outside-your-home-optional">在家以外使用</a>。</p>
+<h2 id="in-docker">在 Docker 中</h2>
+<p>rex-stremio 的 <a href="https://github.com/debridmediamanager/rex-stremio#set-up">README</a> 里有 Docker 命令。在容器里运行时，rex 会从容器在你网络中的地址读取视频，而不是 <code translate="no" v-pre>127.0.0.1</code>，README 里有设置方法。</p>
+<h2 id="updating">更新</h2>
+<div id="updating-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/rex-stremio &amp;&amp; git pull &amp;&amp; systemctl --user restart rex-stremio</code></pre>
+</doc-codeblock></div>
+<p>在 macOS 上，用 Ctrl+C 停止它，在 <code translate="no" v-pre>~/rex-stremio</code> 里运行 <code translate="no" v-pre>git pull</code>，然后再启动它。</p>
+<h2 id="what-it-cannot-do">它做不到的事</h2>
+<ul>
+<li><strong>剧集按 Cinemeta 的编号方式编号。</strong> 对于少数剧集，这与 rex 遵循的 TMDB 编号不同，因此某一集可能会被放到错误的位置。</li>
+<li><strong>对于剧集目录，计数的是集数，而不是剧集条目数。</strong></li>
+<li><strong>开启或关闭 Catalogs as collections 会把标题作为新内容重新发送给 rex</strong>，因此这些标题上的观看记录可能无法保留。开始观看前请先决定。</li>
+<li><strong>只列出电影、剧集和频道目录</strong>，不包括需要先搜索或先选择类型才能使用的目录。</li>
+<li><strong>直播频道不能回退到较早的位置、不能稍后继续播放，也不能标记为已观看</strong>，并且只能在会请求 rex 进行转换的应用中播放（Plex 系列应用和 Plezy；Plex Web 未经测试）。没有可用流或带有 DRM 的频道会被排除在外。</li>
+<li><strong>任何能访问 rex-stremio 地址的人都可以通过它播放。</strong> 除非 rex 运行在其他位置，否则请保持为 <code translate="no" v-pre>127.0.0.1</code>。</li>
+</ul>
+<p>README 列出了<a href="https://github.com/debridmediamanager/rex-stremio#limits">其余限制</a>，以及 <code translate="no" v-pre>config.json</code> 中的每个设置。若要构建你自己的插件，请参阅 <a href="../addons/">构建 rex 插件</a>，其中也解释了 rex-stremio 的内部工作原理。</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../rex/any-source/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">上一个</span>
+                                <span class="block mt-1">使用你自己的应用搭配 rex</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../rex/with-zurg/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">下一个</span>
+                                <span class="block mt-1">rex 与 zurg</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "在 Stremio 插件中使用 rex", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/rex/stremio.md" }</script>
+</body>
+</html>

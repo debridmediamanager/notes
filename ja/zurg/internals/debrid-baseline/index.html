@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="ja" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/ja">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672716444">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>デブリッドの基準値</title>
+    <meta name="title" content="デブリッドの基準値">
+    <meta name="description" content="zurg のコストと、debrid 経路（Real-Debrid、AllDebrid、TorBox）での速さについて。競合はいません。挑戦者は後のバージョンの zurg で、このファイルが、それが超えるべき基準です。">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/ja/zurg/internals/debrid-baseline/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/ja/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/ja/zurg/internals/debrid-baseline/">
+    <meta property="og:title" content="デブリッドの基準値">
+    <meta property="og:description" content="zurg のコストと、debrid 経路（Real-Debrid、AllDebrid、TorBox）での速さについて。競合はいません。挑戦者は後のバージョンの zurg で、このファイルが、それが超えるべき基準です。">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="ja_JP">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/ja/zurg/internals/debrid-baseline/">
+    <meta name="twitter:title" content="デブリッドの基準値">
+    <meta name="twitter:description" content="zurg のコストと、debrid 経路（Real-Debrid、AllDebrid、TorBox）での速さについて。競合はいません。挑戦者は後のバージョンの zurg で、このファイルが、それが超えるべき基準です。">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/ja/zurg/internals/debrid-baseline.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672716444" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672716444" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672716444" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672716444" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/ja/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>日本語</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/download.html" target="_blank">zurgをダウンロード</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/ja/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">スポンサー</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>日本語</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/download.html" target="_blank">zurgをダウンロード</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/ja/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">スポンサー</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="the-debrid-baseline">デブリッドの基準値</h1>
+<p>zurg のコストと、<strong>debrid</strong> 経路（Real-Debrid、AllDebrid、TorBox）での速さについて。競合はいません。挑戦者は後のバージョンの zurg で、このファイルが、それが超えるべき基準です。</p>
+<ul>
+<li><strong>テスト対象のビルド:</strong> <code translate="no" v-pre>23869fa4</code>（<code translate="no" v-pre>2026.08.18.0140-nightly-48-g23869fa4</code>）</li>
+<li><strong>計測日:</strong> 2026-08-19、<code translate="no" v-pre>zen</code> 上（2コア、7.6 GB、Ubuntu 22.04）</li>
+<li><strong>検証環境:</strong> <code translate="no" v-pre>scripts/dbench/</code>、zen 上の <code translate="no" v-pre>~/dbench</code> にデプロイ</li>
+</ul>
+<h2 id="how-to-read-it">読み方</h2>
+<p>3つのプロバイダーも、互いに競合する関係ではありません。
+ライブラリの規模は2桁も違います。Real-Debrid には 3416 本、TorBox には 479 本、AllDebrid には 14 本です。そのため、絶対的なコールドビルド時間を見ても、zurg の性能より、アカウントの状態について分かることの方が多いんです。
+だから、サイズに依存する数値は、トレント1本あたりの値も必ず併記します。そして意味のある比較は、常に <strong>同じアカウントで、今回のビルドと次のビルドを比べること</strong> です。</p>
+<p>プロバイダー間で本当に比較できるのは、コストの <em>形</em> です。バックエンドがトレント1本あたりに何回 API を呼ぶ必要があるか、リンク検証を行うかどうか、変更ポーリングがページ単位かトークン単位か、といった点ですね。</p>
+<h2 id="configuration">設定</h2>
+<p>各インスタンスは、プロバイダーを1つだけ、独自のポートと独自のデータディレクトリで動かします。出荷時のデフォルトから変えているのは、分離のために必要な次の設定だけです。</p>
+<retype-table copy-text="| 設定 | ベンチ | 理由 |
+|---|---|---|
+| `host` / `port` | `127.0.0.1`, 9991-9994 | 1つのホストで4つのインスタンスを動かすため |
+| `providers` | インスタンスごとに1つ | コストをバックエンドごとに分けて把握するため |
+| `rclone_enabled` | `false` | 計測はHTTP経由で行い、FUSEは使わないため |
+| `directories` | `all` を1つだけ、フィルターなし | 一覧取得のコストがライブラリのサイズに比例するようにするため |
+| `enable_repair` | `false` | 同じTorBoxアカウントに別の zurg が読み込まれていて、1つのアカウントを修復できるのは1インスタンスだけだから |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>設定</th>
+<th>ベンチ</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>host</code> / <code translate="no" v-pre>port</code></td>
+<td><code translate="no" v-pre>127.0.0.1</code>, 9991-9994</td>
+<td>1つのホストで4つのインスタンスを動かすため</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>providers</code></td>
+<td>インスタンスごとに1つ</td>
+<td>コストをバックエンドごとに分けて把握するため</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>rclone_enabled</code></td>
+<td><code translate="no" v-pre>false</code></td>
+<td>計測はHTTP経由で行い、FUSEは使わないため</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>directories</code></td>
+<td><code translate="no" v-pre>all</code> を1つだけ、フィルターなし</td>
+<td>一覧取得のコストがライブラリのサイズに比例するようにするため</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>enable_repair</code></td>
+<td><code translate="no" v-pre>false</code></td>
+<td>同じTorBoxアカウントに別の zurg が読み込まれていて、1つのアカウントを修復できるのは1インスタンスだけだから</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>それ以外の設定は、あえて出荷時のデフォルトのままにしています。そのうち2つは結果に大きく影響するので、それ自体が検証結果のひとつです。</p>
+<ul>
+<li><code translate="no" v-pre>log_level: DEBUG</code> — 出荷時のデフォルト (<code translate="no" v-pre>pkg/logutil/factory.go</code>)。</li>
+<li><code translate="no" v-pre>torrents_rate_limit_per_minute: 75</code> — 出荷時のデフォルトで、コールドな Real-Debrid ビルドでボトルネックになる制約です。</li>
+</ul>
+<h2 id="corpus">コーパス</h2>
+<p>12本のリリースは、<strong>3つのアカウントすべてで同じinfohash</strong>なので、プロバイダーごとの差はファイルではなくプロバイダー側の違いです。サイズは1.5 GBのエピソードから334 GBのremuxパックまであり、形式は単一ファイルの映画、シーズンパック、349ファイルのシリーズパックです。エントリ0の<code translate="no" v-pre>The Shawshank Redemption (1994) DS4K</code>（7.31 GB、1ファイル）は、レイテンシとスループットのフェーズで使うストリーミング対象です。</p>
+<p>コーパスを組み立てるのが一番厄介だったので、記録しておきます。TorBoxのキャッシュはReal-Debridのライブラリと約2%しか重なりませんでした（136回のprobeで3ヒット）。そのため、Real-Debrid側ではなくTorBox側からコーパスを作る必要がありました。AllDebridはキャッシュが何もなく、16件中14件のmagnetを即座に受け付けてくれました。Real-Debridは、451のthrottleに引っかからないよう追加のたびに20〜45秒の間隔が必要で、2件は拒否されました。1件は文書化されている決定的な名前ブロックによるもので（<code translate="no" v-pre>Supergirl…WEB-DL…</code>）、3分間放置した後の最初の試行できれいに拒否されました。もう1件はthrottleされたままでした。</p>
+<h2 id="measuring-api-cost">API コストの測定</h2>
+<p>zurg は送信リクエストのカウンターを持っていません。さらに <code translate="no" v-pre>log_requests</code> は意図的に Real-Debrid の 2 つのエンドポイント <code translate="no" v-pre>torrents/activeCount</code> と <code translate="no" v-pre>torrents?limit=1&amp;…</code> を除外しています。この 2 つが変更検出のポーリングの全体です。そのため、ログから数えると Real-Debrid のアイドル時のコストがゼロと報告されてしまいます。</p>
+<p>そこでカウントはプロセスの外で行います。mitmproxy が TLS を終端し、アドオンがリクエストごとに JSONL を 1 行ずつ書き出します。インスタンスは、<code translate="no" v-pre>HTTPS_PROXY</code> と <code translate="no" v-pre>SSL_CERT_FILE</code> を傍受用の CA に向けた状態で起動します。Go の x509 ローダーは <code translate="no" v-pre>SSL_CERT_FILE</code> を参照するので、信頼設定はそのプロセスだけに限定され、ホスト上のものは何も変更されません。リクエストは <code translate="no" v-pre>api</code>、<code translate="no" v-pre>nettest</code>、<code translate="no" v-pre>content</code>、<code translate="no" v-pre>other</code> のいずれかに分類されます。</p>
+<p>プロキシはリクエストの経路上に入るため、API コストを測るフェーズでだけ使い、タイミングのフェーズは直接接続で実行します。TorBox はビルド全体の呼び出しが 4 回だけです。プロキシ経由の実行と直接の実行では、それぞれ 3.0 秒と 4.0 秒でした。この規模ではプロキシの影響は誤差の範囲内です。</p>
+<h2 id="results">結果</h2>
+<p>すべての数値は、2026-08-19 に zen 上でビルド <code translate="no" v-pre>23869fa4</code> を使って取得したものです。レイテンシーとスループットは、同じ 7.31 GB のファイルに対する 1 回の交互（interleaved）実行から得ています。3 つのアカウントすべてで同じインフォハッシュを使っており、<code translate="no" v-pre>ffprobe</code> では各アカウントから同じ 8552.574 s という再生時間が報告されています。つまり、コンテンツは実際にバイト単位で同一です。</p>
+<h3 id="cold-library-build">コールドライブラリの構築</h3>
+<p>キャッシュを空にしてからコンパイル済みライブラリになるまで。これは、プロバイダー間で比較できない唯一の数値です。アカウントの規模が2桁違うためです。そのため、トレントごとの列を見てください。</p>
+<retype-table copy-text="| | Real-Debrid | AllDebrid | TorBox |
+|---|---|---|---|
+| トレント数 | 3,316 | 14 | 479 |
+| コンパイル完了までの時間 | **1,774 s** | 1.0 s | 3.0 s |
+| トレントあたりの秒数 | 0.535 | 0.071 | 0.006 |
+| API リクエスト数 | **7,442** | 7 | 4 |
+| トレントあたりの API リクエスト数 | **2.24** | 0.50 | 0.008 |
+| 2xx 以外の応答 | **756 (10.2%)** | 0 | 0 |
+| API 受信バイト数 | 2.87 MB | 27.9 KB | 298 KB |
+| 起動時のネットワークテストのリクエスト数 | 88 | 88 | 88 |
+| ピーク RSS | 77 MB | 26 MB | 52 MB |
+| CPU 秒 | 17.5 | 0.04 | 0.5 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>Real-Debrid</th>
+<th>AllDebrid</th>
+<th>TorBox</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>トレント数</td>
+<td>3,316</td>
+<td>14</td>
+<td>479</td>
+</tr>
+<tr>
+<td>コンパイル完了までの時間</td>
+<td><strong>1,774 s</strong></td>
+<td>1.0 s</td>
+<td>3.0 s</td>
+</tr>
+<tr>
+<td>トレントあたりの秒数</td>
+<td>0.535</td>
+<td>0.071</td>
+<td>0.006</td>
+</tr>
+<tr>
+<td>API リクエスト数</td>
+<td><strong>7,442</strong></td>
+<td>7</td>
+<td>4</td>
+</tr>
+<tr>
+<td>トレントあたりの API リクエスト数</td>
+<td><strong>2.24</strong></td>
+<td>0.50</td>
+<td>0.008</td>
+</tr>
+<tr>
+<td>2xx 以外の応答</td>
+<td><strong>756 (10.2%)</strong></td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>API 受信バイト数</td>
+<td>2.87 MB</td>
+<td>27.9 KB</td>
+<td>298 KB</td>
+</tr>
+<tr>
+<td>起動時のネットワークテストのリクエスト数</td>
+<td>88</td>
+<td>88</td>
+<td>88</td>
+</tr>
+<tr>
+<td>ピーク RSS</td>
+<td>77 MB</td>
+<td>26 MB</td>
+<td>52 MB</td>
+</tr>
+<tr>
+<td>CPU 秒</td>
+<td>17.5</td>
+<td>0.04</td>
+<td>0.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Real-Debrid の 7,442 回の呼び出しの内訳は、<code translate="no" v-pre>torrents/info</code> が 3,414 回（トレントごとに 1 回で、<code translate="no" v-pre>ListIncludesFiles</code> なしでは避けられません）と、<strong><code translate="no" v-pre>unrestrict/link</code> が 3,992 回</strong>です。後者は、リンクを先回りして検証するためのものです。<code translate="no" v-pre>StoredLinksCanRot: true</code> を設定しているバックエンドはこれだけなので、このコストを払うのもこれだけです。TorBox は、スキャン全体を 1 回の <code translate="no" v-pre>mylist</code> で済ませます。これが <code translate="no" v-pre>ListIncludesFiles</code> の効果です。</p>
+<p>Real-Debrid のビルドは 2 回実行しました。2 回の結果は十分に近いので、今後のビルドでの改善がノイズではないと判断できます。</p>
+<retype-table copy-text="| | 実行 1 | 実行 2 |
+|---|---|---|
+| コンパイル完了までの時間 | 1,774.5 s | 1,759.5 s |
+| API リクエスト数 | 7,442 | 7,391 |
+| `unrestrict/link` | 3,992 | 3,933 |
+| 2xx 以外の応答 | 756 | 699 |
+| CPU 秒 | 17.5 | 16.1 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>実行 1</th>
+<th>実行 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>コンパイル完了までの時間</td>
+<td>1,774.5 s</td>
+<td>1,759.5 s</td>
+</tr>
+<tr>
+<td>API リクエスト数</td>
+<td>7,442</td>
+<td>7,391</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>unrestrict/link</code></td>
+<td>3,992</td>
+<td>3,933</td>
+</tr>
+<tr>
+<td>2xx 以外の応答</td>
+<td>756</td>
+<td>699</td>
+</tr>
+<tr>
+<td>CPU 秒</td>
+<td>17.5</td>
+<td>16.1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h4 id="what-the-failures-are">失敗の内容</h4>
+<p>2回目の実行でフローログが残っていたので、699件の内訳が分かりました。</p>
+<retype-table copy-text="| Status | Count | Endpoint |
+|---|---|---|
+| 429 | 589 | `unrestrict/link` |
+| 503 | 85 | `unrestrict/link` |
+| 404 | **22** | `downloads/delete/{id}` |
+| 451 | 3 | `unrestrict/link` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Status</th>
+<th>Count</th>
+<th>Endpoint</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>429</td>
+<td>589</td>
+<td><code translate="no" v-pre>unrestrict/link</code></td>
+</tr>
+<tr>
+<td>503</td>
+<td>85</td>
+<td><code translate="no" v-pre>unrestrict/link</code></td>
+</tr>
+<tr>
+<td>404</td>
+<td><strong>22</strong></td>
+<td><code translate="no" v-pre>downloads/delete/{id}</code></td>
+</tr>
+<tr>
+<td>451</td>
+<td>3</td>
+<td><code translate="no" v-pre>unrestrict/link</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>問題は2つあって、どちらも「プロバイダーが不安定だった」が原因ではありません。</p>
+<ul>
+<li><strong>589件のレート制限による拒否</strong>。すべて <code translate="no" v-pre>unrestrict/link</code> で起きています。<code translate="no" v-pre>api_rate_limit_per_minute</code> のデフォルトは 250 ですが、これでは unrestrict を Real-Debrid が実際に許す上限の内側に収められません。そのため、キャッシュなしの初回ビルドの約 8% が拒否とリトライになっています。</li>
+<li><strong>23件の <code translate="no" v-pre>downloads/delete</code> 呼び出しのうち22件が 404 を返しました</strong>。3,992件の unrestrict とバランスを取るはずのクリーンアップが、稀に失敗するのではなく、実行されるたびに失敗しています。存在しない ID を削除しようとしているのです。unrestrict のたびにアカウントの downloads リストに永続的なエントリが作られ、今回のスキャン後にテスト用アカウントには <strong>12,469</strong> 件ありました。</li>
+</ul>
+<p>1回目と2回目で動いた数値が1つあり、まだ説明がついていません。<code translate="no" v-pre>*.download.real-debrid.com</code> への HEAD プローブ数は、1回目のビルドが 88 件、2回目が <strong>3,426</strong> 件でした（ほぼトレントごとに1件）。downloads リストが増えたことと相関していて、2回目は <code translate="no" v-pre>/downloads</code> の取得回数も1回目の1回に対して8回でした。ただ、これは相関であって原因ではありません。最適化する前に、ここをはっきりさせておく価値があります。</p>
+<h3 id="warm-restart">ウォームリスタート</h3>
+<p>コールドコストは本当に一度だけです。</p>
+<retype-table copy-text="| | Real-Debrid | AllDebrid | TorBox |
+|---|---|---|---|
+| コンパイル完了までの時間 | 4.0 s | 1.0 s | 2.0 s |
+| APIリクエスト数 | 17 | 6 | 4 |
+| ネットワークテストのリクエスト数 | 8 | 0 | 0 |
+| ピーク時のRSS | 77 MB | 27 MB | 39 MB |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>Real-Debrid</th>
+<th>AllDebrid</th>
+<th>TorBox</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>コンパイル完了までの時間</td>
+<td>4.0 s</td>
+<td>1.0 s</td>
+<td>2.0 s</td>
+</tr>
+<tr>
+<td>APIリクエスト数</td>
+<td>17</td>
+<td>6</td>
+<td>4</td>
+</tr>
+<tr>
+<td>ネットワークテストのリクエスト数</td>
+<td>8</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>ピーク時のRSS</td>
+<td>77 MB</td>
+<td>27 MB</td>
+<td>39 MB</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>1,774 s が 4.0 s になり、7,442 回の呼び出しが 17 回になります。</p>
+<h3 id="idle-steady-state">アイドル時の定常状態</h3>
+<p>10分間、読み込み済みのライブラリが何もしていない状態です。
+順位は、各バックエンドにどれだけ安く問い合わせられるかで決まっています。これは <code translate="no" v-pre>LibraryFingerprinter</code> が存在する理由を最もよく示す例です。</p>
+<retype-table copy-text="| | API呼び出し/分 | APIバイト/分 | CPU秒 / 10分 | ピークRSS | 送信内容 |
+|---|---|---|---|---|---|
+| AllDebrid | **4.0** | **867** | 0.20 | 28 MB | ポーリングごとに Live Mode の差分を1回。変化がなければ空 |
+| TorBox | 7.9 | 43.6 KB | 0.33 | 53 MB | `mylist` をページ単位で取得。差分フィードもキャッシュ検証子もなし |
+| Real-Debrid | 11.4 | 59.8 KB | 0.43 | 85 MB | `torrents?limit=1` と `activeCount`、さらに `/downloads` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>API呼び出し/分</th>
+<th>APIバイト/分</th>
+<th>CPU秒 / 10分</th>
+<th>ピークRSS</th>
+<th>送信内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AllDebrid</td>
+<td><strong>4.0</strong></td>
+<td><strong>867</strong></td>
+<td>0.20</td>
+<td>28 MB</td>
+<td>ポーリングごとに Live Mode の差分を1回。変化がなければ空</td>
+</tr>
+<tr>
+<td>TorBox</td>
+<td>7.9</td>
+<td>43.6 KB</td>
+<td>0.33</td>
+<td>53 MB</td>
+<td><code translate="no" v-pre>mylist</code> をページ単位で取得。差分フィードもキャッシュ検証子もなし</td>
+</tr>
+<tr>
+<td>Real-Debrid</td>
+<td>11.4</td>
+<td>59.8 KB</td>
+<td>0.43</td>
+<td>85 MB</td>
+<td><code translate="no" v-pre>torrents?limit=1</code> と <code translate="no" v-pre>activeCount</code>、さらに <code translate="no" v-pre>/downloads</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Real-Debridは114回の呼び出しのうち32回を、<code translate="no" v-pre>/downloads</code> の一覧を再取得するために使っています。これは初回ビルドで12,469件まで増えたのと同じ一覧です。</p>
+<p>この表は、件数を <code translate="no" v-pre>log_requests</code> からではなくプロキシ経由で数えている理由でもあります。Real-Debridのアイドル時の114回の呼び出しのうち80回は、<code translate="no" v-pre>ShouldSkipLogging</code> が抑制する2つのエンドポイントへのものです。そのため、ログではアイドル時のコストがほぼゼロと報告されてしまうはずでした。</p>
+<h3 id="listing">一覧表示</h3>
+<p>Nirgendwo ein Engpass, egal bei welcher Bibliotheksgröße.</p>
+<p>Wait, that&#x27;s German; the target language is Japanese. Here is the translation:</p>
+<p>スケールしても、どこもボトルネックにはなりません。ライブラリのサイズは問いません。</p>
+<retype-table copy-text="| | Real-Debrid (3,312) | AllDebrid (14) | TorBox (479) |
+|---|---|---|---|
+| PROPFIND whole library, Depth 1 | 26 ms / 1.17 MB | 1 ms / 5.1 KB | 7 ms / 172 KB |
+| HTML index | 14 ms / 645 KB | 1 ms / 2.4 KB | 3 ms / 90 KB |
+| PROPFIND one release, Depth 1 | 1 ms | 11 ms | 3 ms |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>Real-Debrid (3,312)</th>
+<th>AllDebrid (14)</th>
+<th>TorBox (479)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PROPFIND whole library, Depth 1</td>
+<td>26 ms / 1.17 MB</td>
+<td>1 ms / 5.1 KB</td>
+<td>7 ms / 172 KB</td>
+</tr>
+<tr>
+<td>HTML index</td>
+<td>14 ms / 645 KB</td>
+<td>1 ms / 2.4 KB</td>
+<td>3 ms / 90 KB</td>
+</tr>
+<tr>
+<td>PROPFIND one release, Depth 1</td>
+<td>1 ms</td>
+<td>11 ms</td>
+<td>3 ms</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="press-play">再生を押す</h3>
+<retype-table copy-text="| | Real-Debrid | AllDebrid | TorBox |
+|---|---|---|---|
+| コールド・オープン、1 MB | 1.294 s | **0.476 s** | 0.565 s |
+| 最初のバイトまでの時間、64 MB | **0.158 s** | 0.203 s | 0.208 s |
+| スクラブ、8回の中央値 | 0.343 s | **0.259 s** | 0.356 s |
+| ウォーム再読み込み、64 MB | 2.065 s | 2.163 s | **1.960 s** |
+| ffprobe | 1.98 s | 1.34 s | **0.99 s** |
+| RSS | 75 MB | **30 MB** | 50 MB |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>Real-Debrid</th>
+<th>AllDebrid</th>
+<th>TorBox</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>コールド・オープン、1 MB</td>
+<td>1.294 s</td>
+<td><strong>0.476 s</strong></td>
+<td>0.565 s</td>
+</tr>
+<tr>
+<td>最初のバイトまでの時間、64 MB</td>
+<td><strong>0.158 s</strong></td>
+<td>0.203 s</td>
+<td>0.208 s</td>
+</tr>
+<tr>
+<td>スクラブ、8回の中央値</td>
+<td>0.343 s</td>
+<td><strong>0.259 s</strong></td>
+<td>0.356 s</td>
+</tr>
+<tr>
+<td>ウォーム再読み込み、64 MB</td>
+<td>2.065 s</td>
+<td>2.163 s</td>
+<td><strong>1.960 s</strong></td>
+</tr>
+<tr>
+<td>ffprobe</td>
+<td>1.98 s</td>
+<td>1.34 s</td>
+<td><strong>0.99 s</strong></td>
+</tr>
+<tr>
+<td>RSS</td>
+<td>75 MB</td>
+<td><strong>30 MB</strong></td>
+<td>50 MB</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>ウォーム再読み込みは、コールド読み込みと変わりません。</strong> Usenet のパスでは、2回目の読み込みは 512 MB の LRU から 0.05〜0.17 秒で返ってきます。
+ここでは毎回フルで取得し直しになります。debrid のパスは CDN をプロキシするだけで、何もキャッシュしないからです。
+<code translate="no" v-pre>rclone_enabled: false</code> の場合、これは zurg だけの動作です。通常のインストールでは rclone の VFS キャッシュがこれを吸収してくれますが、zurg 自体の性質として見ると、ウォームな経路はまったくありません。</p>
+<h3 id="throughput">スループット</h3>
+<p>256 MB の連続読み取りを3回。繰り返しごとに実行順を入れ替えています。</p>
+<retype-table copy-text="| | Real-Debrid | AllDebrid | TorBox |
+|---|---|---|---|
+| 平均 MB/s | 25.75 | 27.21 | **35.96** |
+| 最小-最大 MB/s | 20.09-29.57 | 17.52-32.21 | **34.31-37.57** |
+| CPU 秒/GB | 7.8 | **5.3** | 7.9 |
+| TTFB 中央値 | 1.023 s | **0.267 s** | 0.489 s |
+| ピーク RSS | 88 MB | **29 MB** | 55 MB |
+| 完了した読み取り | 3/3 | 3/3 | 3/3 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>Real-Debrid</th>
+<th>AllDebrid</th>
+<th>TorBox</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>平均 MB/s</td>
+<td>25.75</td>
+<td>27.21</td>
+<td><strong>35.96</strong></td>
+</tr>
+<tr>
+<td>最小-最大 MB/s</td>
+<td>20.09-29.57</td>
+<td>17.52-32.21</td>
+<td><strong>34.31-37.57</strong></td>
+</tr>
+<tr>
+<td>CPU 秒/GB</td>
+<td>7.8</td>
+<td><strong>5.3</strong></td>
+<td>7.9</td>
+</tr>
+<tr>
+<td>TTFB 中央値</td>
+<td>1.023 s</td>
+<td><strong>0.267 s</strong></td>
+<td>0.489 s</td>
+</tr>
+<tr>
+<td>ピーク RSS</td>
+<td>88 MB</td>
+<td><strong>29 MB</strong></td>
+<td>55 MB</td>
+</tr>
+<tr>
+<td>完了した読み取り</td>
+<td>3/3</td>
+<td>3/3</td>
+<td>3/3</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>TorBox は最も速く、しかも安定性も群を抜いています。残りの2つは、繰り返しごとに速度が40%も振れています。負荷時の Real-Debrid の TTFB 中央値は、AllDebrid の4倍です。</p>
+<h3 id="where-cold-open-actually-goes">コールドオープンの実際の内訳</h3>
+<p><code translate="no" v-pre>apiref.py</code> は、プロバイダー側の処理時間を測定します。具体的には、保存済みのファイルを取得可能な URL に変換する呼び出しと、その URL から最初のバイトが届くまでの時間です。zurg は計測から外しています。テストは 2 回実行しました。1 回目は AllDebrid の修正より前に行ったため、その行は 1 サンプルしかありません。</p>
+<retype-table copy-text="| | resolve | CDN TTFB | provider total | zurg cold open | zurg's share |
+|---|---|---|---|---|---|
+| Real-Debrid, run 1 | 0.133 s | 0.267 s | 0.400 s | 1.294 s | **0.89 s** |
+| Real-Debrid, run 2 | 0.157 s | 0.383 s | 0.540 s | 1.294 s | **0.75 s** |
+| AllDebrid | 0.139 s | 0.333 s | 0.472 s | 0.476 s | 0.00 s |
+| TorBox, run 1 | 0.260 s | 0.277 s | 0.537 s | 0.565 s | 0.03 s |
+| TorBox, run 2 | 0.270 s | 0.381 s | 0.651 s | 0.565 s | ~0 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>resolve</th>
+<th>CDN TTFB</th>
+<th>provider total</th>
+<th>zurg cold open</th>
+<th>zurg&#x27;s share</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Real-Debrid, run 1</td>
+<td>0.133 s</td>
+<td>0.267 s</td>
+<td>0.400 s</td>
+<td>1.294 s</td>
+<td><strong>0.89 s</strong></td>
+</tr>
+<tr>
+<td>Real-Debrid, run 2</td>
+<td>0.157 s</td>
+<td>0.383 s</td>
+<td>0.540 s</td>
+<td>1.294 s</td>
+<td><strong>0.75 s</strong></td>
+</tr>
+<tr>
+<td>AllDebrid</td>
+<td>0.139 s</td>
+<td>0.333 s</td>
+<td>0.472 s</td>
+<td>0.476 s</td>
+<td>0.00 s</td>
+</tr>
+<tr>
+<td>TorBox, run 1</td>
+<td>0.260 s</td>
+<td>0.277 s</td>
+<td>0.537 s</td>
+<td>0.565 s</td>
+<td>0.03 s</td>
+</tr>
+<tr>
+<td>TorBox, run 2</td>
+<td>0.270 s</td>
+<td>0.381 s</td>
+<td>0.651 s</td>
+<td>0.565 s</td>
+<td>~0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>プロバイダーの数値と zurg の数値は計測したタイミングが違うため、差し引いた値はあくまで目安です。正確な値ではありません。ただ、2 回のテストで同じ傾向が出ています。AllDebrid と TorBox は、プロバイダー自体のコストに対してほぼ上乗せがありません。一方 Real-Debrid は 0.75～0.89 秒上乗せされています。まず狙うべきは、この差がいちばんはっきりした点です。</p>
+<h3 id="all-three-providers-in-one-instance">1 つのインスタンスで 3 プロバイダーすべて</h3>
+<p>統合されたインスタンスには、すべてのアカウントが一度に含まれています。コーパスは意図的に3つすべてに配置してあるので、1つのリリースが複数のアカウントに保持されているケースもテストできます。</p>
+<retype-table copy-text="| | Real-Debrid 単独 | 3 アカウント統合 |
+|---|---|---|
+| 確認された torrent 数 | 3,316 | 3,781 |
+| ユニークなリリース数 | 3,318 | 3,778 |
+| compiled までの時間 | 1,774 s | 1,775 s |
+| API リクエスト数 | 7,442 | 7,491 |
+| ピーク RSS | 77 MB | 82 MB |
+| ライブラリ全体の PROPFIND | 26 ms / 1.17 MB | 23 ms / 1.34 MB |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>Real-Debrid 単独</th>
+<th>3 アカウント統合</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>確認された torrent 数</td>
+<td>3,316</td>
+<td>3,781</td>
+</tr>
+<tr>
+<td>ユニークなリリース数</td>
+<td>3,318</td>
+<td>3,778</td>
+</tr>
+<tr>
+<td>compiled までの時間</td>
+<td>1,774 s</td>
+<td>1,775 s</td>
+</tr>
+<tr>
+<td>API リクエスト数</td>
+<td>7,442</td>
+<td>7,491</td>
+</tr>
+<tr>
+<td>ピーク RSS</td>
+<td>77 MB</td>
+<td>82 MB</td>
+</tr>
+<tr>
+<td>ライブラリ全体の PROPFIND</td>
+<td>26 ms / 1.17 MB</td>
+<td>23 ms / 1.34 MB</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Real-Debrid のインスタンスに TorBox と AllDebrid を追加しても、ほぼコストはかかりません。torrent が 465 件増えるのに、API 呼び出しは 49 回、RSS は 5 MB 増えるだけで、計測できるほどの時間は増えません。統合は本物です。3 つのアカウントをそれぞれ数えると合計 3,809 件の torrent がありますが、ここでは 3,781 件になります。つまりコーパスが 3 つのコピーから 1 つにまとまっているということです。</p>
+<h3 id="add-and-delete-detection">追加と削除の検出</h3>
+<p>プロバイダー側で変更してから、マウント側の内容が一致するまでどれくらいかかるか。</p>
+<retype-table copy-text="| | Delete detected | Add detected |
+|---|---|---|
+| Real-Debrid | 18.7 s | 12.7 s |
+| AllDebrid | 16.5 s | 14.4 s |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>Delete detected</th>
+<th>Add detected</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Real-Debrid</td>
+<td>18.7 s</td>
+<td>12.7 s</td>
+</tr>
+<tr>
+<td>AllDebrid</td>
+<td>16.5 s</td>
+<td>14.4 s</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>どちらも <code translate="no" v-pre>check_for_changes_every_secs</code> の 1 回分と refresh の時間に収まっています。そのため <code translate="no" v-pre>library_resync_every_mins</code> の待ち時間はかかっていません。TorBox はテストしていません。テスト用のリリースがそのアカウントに常に残っていて、削除すると、再追加してもキャッシュされていないかもしれず、元に戻せないからです。</p>
+<h3 id="provider-outage-cdn-up">プロバイダー障害、CDN は稼働中</h3>
+<p><code translate="no" v-pre>ca/outage.py</code> は、コンテンツへのリクエストはそのまま通しつつ、すべてのプロバイダー API 呼び出しに 503 を返すようにします。そのうえで zurg をこの状態に向けて起動します。</p>
+<retype-table copy-text="| | 障害前に読み込み | 障害中のライブラリ構築 | 障害中の読み込み |
+|---|---|---|---|
+| Real-Debrid | 206, 1.60 s | never (180 s) | 120 s でタイムアウト |
+| AllDebrid | 206, 0.44 s | never (180 s) | 120 s でタイムアウト |
+| TorBox | 206, 1.53 s | never (180 s) | 400, 0.035 s |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>障害前に読み込み</th>
+<th>障害中のライブラリ構築</th>
+<th>障害中の読み込み</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Real-Debrid</td>
+<td>206, 1.60 s</td>
+<td>never (180 s)</td>
+<td>120 s でタイムアウト</td>
+</tr>
+<tr>
+<td>AllDebrid</td>
+<td>206, 0.44 s</td>
+<td>never (180 s)</td>
+<td>120 s でタイムアウト</td>
+</tr>
+<tr>
+<td>TorBox</td>
+<td>206, 1.53 s</td>
+<td>never (180 s)</td>
+<td>400, 0.035 s</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>プロバイダーがダウンしている間に zurg を起動すると、空のマウントができてしまいます。</strong> 運用上いちばん重要なのがこのシナリオです。Real-Debrid の 503 が続いている最中にホストが再起動する、というケースがこれにあたります。8 月に <code translate="no" v-pre>fun</code> で数万件もの Plex アイテムを消してしまったのも、まさにこの状態でした。スキャン中に一時的にマウントが空になると、「ファイルがすべて削除された」と見えてしまったのです。これを防ぐ仕組みは zurg ではなく Plex 側にあります（<code translate="no" v-pre>autoEmptyTrash 0</code>）。</p>
+<p>Real-Debrid と AllDebrid は、失敗を即座に返すのではなく、リーダー自身のタイムアウトが切れるまで待たされます。TorBox は 35 ms で応答を返します。</p>
+<h3 id="a-transient-503-leaves-releases-as-empty-folders">一時的な 503 でリリースが空のフォルダーとして残る</h3>
+<p>これは、実行結果で最も明確な欠陥です。しかも偶然見つかりました。</p>
+<p>Real-Debrid のコールドビルドで扱った 3,316 件の torrent のうち、<strong>85 件のレスポンスが 503</strong> になり、<strong>84 件が <code translate="no" v-pre>broken_torrent</code></strong> で終わりました。この状態のリリースはマウントには表示されたままですが、ディレクトリは<strong>空</strong>です。2 件を PROPFIND で確認したところ、保存されたレコードには 10 件と 3 件の選択済みファイルがあるのに、どちらも何も返しませんでした。</p>
+<p>これは自然には解消しません。ベンチマークは <code translate="no" v-pre>enable_repair: false</code> で動かしていて、そのリリースは 1 時間以上、再起動を何回か挟んでも壊れたままでした。</p>
+<p>修復（repair）をオンにすると、shipped のデフォルトでもあり、壊れたものを処理はしてくれます。ただし遅いです。手動で修復パスを起動したときの推移は次のとおりです。</p>
+<retype-table copy-text="| Elapsed | Broken | Under repair |
+|---|---|---|
+| 0 min | 85 | 0 |
+| ~2 min | 77 | 2 |
+| ~15 min | 73 | 4 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Elapsed</th>
+<th>Broken</th>
+<th>Under repair</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 min</td>
+<td>85</td>
+<td>0</td>
+</tr>
+<tr>
+<td>~2 min</td>
+<td>77</td>
+<td>2</td>
+</tr>
+<tr>
+<td>~15 min</td>
+<td>73</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>15 分で 12 件のリリースしか直らず、しかも最初の数分を過ぎると処理速度が落ちます。この調子だと、コールドビルド 1 回分の壊れたリリースを片付けるのに 1 時間以上かかります。そして修復が回ってこないリリースは、その間ずっと空のフォルダのままです。</p>
+<p>つまり影響の大きさは設定によって変わります。</p>
+<ul>
+<li>修復がオン（デフォルト）の場合、スキャン中の 503 は、修復パスがそのリリースに届くまでファイルを失わせます。ライブラリ全体で 1 時間ほどです。</li>
+<li>修復がオフの場合、リリースは無期限に空のフォルダのままになります。</li>
+</ul>
+<p>TorBox ではさらに厄介です。<code translate="no" v-pre>StoredLinksCanRot: false</code> を報告するため、refresh がリンクを再検証することはありません。修復を使う以外に、壊れた状態を解消する経路がないのです。障害テストで壊れ扱いになった TorBox のリリースは 1 件でしたが、68 分と何度かの再起動を経ても壊れたままでした。その間、プロバイダ側では <code translate="no" v-pre>cached</code>、<code translate="no" v-pre>download_present</code>、ファイル 1 個、7.31 GB と報告されていました。</p>
+<h3 id="read-integrity">読み取りの整合性</h3>
+<p>ファーストスループットの実行で、AllDebrid の読み取りが1回、268,435,456 バイトの範囲に対して 263,798,425 バイトしか返しませんでした。ステータスは 206 で、エラーはありませんでした。<strong>再現はしませんでした</strong>。Real-Debrid と AllDebrid のそれぞれで8回ずつ繰り返しましたが、毎回、範囲全体が返ってきました。これは一度きりの現象として記録し、不具合とは見なしていません。ただ、今後も注意して見ておく価値はあります。</p>
+<h2 id="under-plexs-load">Plex の負荷時</h2>
+<p>ここまでの測定は、一度に1つだけ読み込む前提でした。でも実際のメディアサーバーは、そういう動き方をしません。
+Plex はスキャンを行い、数千ものファイルをそれぞれ少しずつ読みます。同時に Plex はストリーミングも行い、この2つは重なります。これらのフェーズでは、両方が同時に動いている状態でマウントを測定しています。</p>
+<p><strong>全体の数値は zurg ではなく zen の特性として読んでください。</strong> どのターゲットも、プロバイダーやモードに関係なく 73〜78 MB/s で頭打ちになります。これはホストの回線速度です。一般化できるのは <em>完了率</em> と、プロバイダーごとの失敗パターンのほうです。速度の上限はローカル環境によるものです。</p>
+<h3 id="multiple-readers-different-files-one-provider">複数の読み取り、異なるファイル、1 つのプロバイダー</h3>
+<p>ストリームあたり 96 MB、すべて別ファイルです。</p>
+<retype-table copy-text="| ストリーム数 | Real-Debrid | AllDebrid | TorBox | 統合 |
+|---|---|---|---|---|
+| 1 | 44.8 | 52.1 | 45.6 | 51.8 |
+| 2 | 72.3 | 63.5 | 71.4 | 69.8 |
+| 4 | 73.7 | 64.2 | 74.6 | 70.2 |
+| 8 | 73.6 | 73.4 | 65.5 | 75.1 |
+| 12 | 77.1 | 73.8 | 76.3 | 77.1 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>ストリーム数</th>
+<th>Real-Debrid</th>
+<th>AllDebrid</th>
+<th>TorBox</th>
+<th>統合</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>44.8</td>
+<td>52.1</td>
+<td>45.6</td>
+<td>51.8</td>
+</tr>
+<tr>
+<td>2</td>
+<td>72.3</td>
+<td>63.5</td>
+<td>71.4</td>
+<td>69.8</td>
+</tr>
+<tr>
+<td>4</td>
+<td>73.7</td>
+<td>64.2</td>
+<td>74.6</td>
+<td>70.2</td>
+</tr>
+<tr>
+<td>8</td>
+<td>73.6</td>
+<td>73.4</td>
+<td>65.5</td>
+<td>75.1</td>
+</tr>
+<tr>
+<td>12</td>
+<td>77.1</td>
+<td>73.8</td>
+<td>76.3</td>
+<td>77.1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>合計 MB/s です。2 ストリームで帯域はいっぱいになります。それ以上は、読み手が増えるほど同じ帯域を分け合うことになります。ストリームごとの中央値は、1 本で約 45 MB/s、12 本で約 8 MB/s まで下がります。</p>
+<p>注目すべきは完了数の列です：</p>
+<retype-table copy-text="| ストリーム数 | Real-Debrid | AllDebrid | TorBox | 統合 |
+|---|---|---|---|---|
+| 4 | 4/4 | **2/4** | 4/4 | 4/4 |
+| 8 | 8/8 | **3/8** | 8/8 | 8/8 |
+| 12 | 10/12 | **4/12** | 9/12 | 10/12 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>ストリーム数</th>
+<th>Real-Debrid</th>
+<th>AllDebrid</th>
+<th>TorBox</th>
+<th>統合</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4</td>
+<td>4/4</td>
+<td><strong>2/4</strong></td>
+<td>4/4</td>
+<td>4/4</td>
+</tr>
+<tr>
+<td>8</td>
+<td>8/8</td>
+<td><strong>3/8</strong></td>
+<td>8/8</td>
+<td>8/8</td>
+</tr>
+<tr>
+<td>12</td>
+<td>10/12</td>
+<td><strong>4/12</strong></td>
+<td>9/12</td>
+<td>10/12</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>AllDebrid は、4 つの別ファイルを同時に読むと読み込みを完了できなくなります。</strong> データ自体は流れていて、合計速度は提供元の上限のままです。ただし個々のストリームは終わらず、8 と 12 では中央値が 0 になり、TTFB の中央値は 3 秒を超えます。他のプロバイダーは 12 まで問題ありませんが、12 では 4 つすべてで 1〜2 本ずつ失敗します。</p>
+<blockquote>
+<p><strong>2026-08-23 に撤回。これはプロバイダーの同時接続数の上限ではありません。</strong>
+zurg 経由で全速力で試すのではなく、再生ビットレートを制限して API に直接テストし直したところ、AllDebrid は <strong>4/8/12/16/24 の同時別リンクを 100%</strong> 解決でき、<strong>24/24</strong> のライブストリームを維持できました。上記の失敗は、<strong>経路が null に向けられていた AllDebrid CDN ホスト 3 つ</strong>が原因でした。
+<code translate="no" v-pre>l4m5n6.debrid.it</code>、<code translate="no" v-pre>o7p8q9.debrid.it</code>、<code translate="no" v-pre>c1uw74.debrid.it</code> はいずれも <code translate="no" v-pre>0.0.0.0</code> に解決され、<strong>解決されたリンクの 15.6%</strong> を占めていました。最初のホストは、この文書の後ろで一度きりのデッドリンクとして記録されているものと同じです。一度きりではありません。</p>
+<p>死んだホストは、そのファイルがバッチに含まれているときだけ失敗します。そのため失敗数は N とともに増え、同時接続数の上限とまったく同じ形になります。<strong>段階を上げるごとに別ファイルを増やすテストは、どれもこの誤った結果を再現してしまいます。</strong></p>
+<p>同じ理由で、この完了数の列全体もテスト方法の制約を受けています。これらの試行は、飽和した 73〜78 MB/s の回線で全速力で引っ張ったものなので、測っているのは <strong>帯域の取り合いであり、プロバイダーの上限ではありません</strong>。
+実際のホストごとの上限は、いずれも公式には記載されていません。Real-Debrid は <strong>32</strong>（TCP 層で切断）、AllDebrid は <strong>32</strong>（HTTP 429）、TorBox は <code translate="no" v-pre>nexus-NNN</code> ホストごとに <strong>20</strong>（HTTP 429、IP ごとではなくホストごと）です。Premiumize は 64 でも上限は見つかりませんでした。</p>
+<p>撤回の内容を読みすぎないための注意点が 1 つあります。null に向けられたホストは約 0.1 秒で失敗しますが、上記の TTFB 中央値は 3 秒を超えています。これは別の特徴を持つ、遅い失敗です。そのため、帯域の不足も起きていた可能性が高いです。どちらの要因も、プロバイダー側の上限ではないことを示しています。</p>
+<p><strong>そこから導ける対策:</strong> AllDebrid の CDN ホストで接続レベルの失敗が起きたら、同時接続数を減らすのではなく、<strong>リンクを再度 unlock して</strong> 再試行できるものとして扱います。新しい <code translate="no" v-pre>/link/unlock</code> は別のホストを返します。<code translate="no" v-pre>0.0.0.0</code> を拒否する DNS 照会は、ここで確認されたケースをすべて捕まえ、コストもかかりません。</p>
+</blockquote>
+<h3 id="multiple-readers-one-file">複数の読み取り、同じファイル</h3>
+<p>同じ負荷レベル、同じファイル、異なるオフセット。先読みとシークの組み合わせです。</p>
+<retype-table copy-text="| streams | Real-Debrid | AllDebrid | TorBox |
+|---|---|---|---|
+| 4 | 4/4 | 4/4 | 4/4 |
+| 8 | 8/8 | 8/8 | 8/8 |
+| 12 | 10/12 | 9/12 | 10/12 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>streams</th>
+<th>Real-Debrid</th>
+<th>AllDebrid</th>
+<th>TorBox</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4</td>
+<td>4/4</td>
+<td>4/4</td>
+<td>4/4</td>
+</tr>
+<tr>
+<td>8</td>
+<td>8/8</td>
+<td>8/8</td>
+<td>8/8</td>
+</tr>
+<tr>
+<td>12</td>
+<td>10/12</td>
+<td>9/12</td>
+<td>10/12</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>AllDebrid は、ここでは <strong>問題ありません</strong>。4/4 と 8/8 です。一方、別々のファイルでは 2/4 と 3/8 でした。
+この逆転が原因の手がかりです。上限は帯域幅でもtorrentごとの上限でもなく、同時の<strong>リンク解決</strong>にあります。別々のファイルなら、それぞれ個別にアンロックが必要になります。同じファイルなら一度解決すれば、あとはストリーミングするだけです。</p>
+<blockquote>
+<p><strong>2026-08-23 に撤回</strong> — この逆転には、もっと単純な説明がありました。別々のファイルは別々の CDN ホストに割り当てられ、そのうち3つが AllDebrid 側で null ルーティングされていました。同じファイルは1つのホストに解決されるので、動くか動かないかのどちらかです。リンク解決そのものは、同時24件でも問題ないことを測定で確認しています。上の注記を参照してください。</p>
+</blockquote>
+<h3 id="multiple-readers-across-different-providers">複数の読み取り、異なるプロバイダーをまたぐ</h3>
+<p>これはマルチプロバイダー構成のケースで、マッチ版のコーパスでは試せないデータが必要です。統合インスタンスは複数アカウントのリリースを<code translate="no" v-pre>Sources[0]</code>から配信するので、マッチ版コーパスの読み取りはすべて Real-Debrid に当たります。そこで、ここではプロバイダーごとに排他的なプールを使います。Real-Debrid だけが持つファイルが 8 件、AllDebrid だけが持つファイルが 7 件、TorBox だけが持つファイルが 8 件です。</p>
+<retype-table copy-text="| ストリーム数（プロバイダーごと） | 合計 MB/s | 完了 | RD | AD | TB |
+|---|---|---|---|---|---|
+| 3（各 1） | 55.3 | 2/3 | 28.8 | — | 27.9 |
+| 6（各 2） | 66.9 | 5/6 | 16.1 | 13.3 | 21.5 |
+| 12（各 4） | 75.9 | 11/12 | 7.4 | 8.4 | 9.0 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>ストリーム数（プロバイダーごと）</th>
+<th>合計 MB/s</th>
+<th>完了</th>
+<th>RD</th>
+<th>AD</th>
+<th>TB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3（各 1）</td>
+<td>55.3</td>
+<td>2/3</td>
+<td>28.8</td>
+<td>—</td>
+<td>27.9</td>
+</tr>
+<tr>
+<td>6（各 2）</td>
+<td>66.9</td>
+<td>5/6</td>
+<td>16.1</td>
+<td>13.3</td>
+<td>21.5</td>
+</tr>
+<tr>
+<td>12（各 4）</td>
+<td>75.9</td>
+<td>11/12</td>
+<td>7.4</td>
+<td>8.4</td>
+<td>9.0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>プロバイダーごとの列は、ストリームごとの中央値（MB/s）です。</p>
+<p>異なるアカウントへの読み取りは、確かに並列で動きます。ただ、それぞれが同じ 76 MB/s のホスト上限に達します。これは、1 つのプロバイダーだけでも到達できる上限です。<strong>このホストでは、バックエンドを混ぜても帯域幅は増えません。</strong> 他の環境で増えるかどうかは、1 つのプロバイダーが埋めきれないほど太い回線があるかどうかにかかっています。zen にはそこまでの回線はありません。混ぜることで得られるのは可用性です。ただし、その効果も一部だけです。詳しくは下のフェイルオーバーの節を見てください。</p>
+<p>繰り返し起きている失敗は 1 つだけです。AllDebrid の 1 ファイルで、CDN のホスト名 <code translate="no" v-pre>l4m5n6.debrid.it</code> が <strong>0.0.0.0</strong> に解決されます。これは zurg の問題ではなく、AllDebrid が無効なリンクを返しているためです。ただ、zurg は 3 回リトライするのに約 4 秒かけてから 500 を返します。しかもこのファイルは他のアカウントにはないので、切り替え先がありません。</p>
+<h3 id="failover-only-from-one-direction">フェイルオーバー: 一方向のみ</h3>
+<p>統合インスタンスは負荷を分散できないので、そこで期待できるのは、1つのアカウントが不調になったときの生存性だけです。<code translate="no" v-pre>ca/cdnfail.py</code> は、あるアカウントの CDN だけを止めて、他のすべての API と他のアカウントはそのまま残します。そのためライブラリの読み込みは成功し、影響を受けるのはファイルの中身だけです。読み取りに使ったリリースは対象のコーパスで、3つのアカウントすべてがそれを持っています。</p>
+<retype-table copy-text="| CDNダウン | 配信できた読み取り | 読み取りの動き |
+|---|---|---|
+| Real-Debrid | 2/2 | AllDebridにフォールバック、0.6秒 |
+| AllDebrid | **0/3** | AllDebridに1回試行、503、その後0.1秒で**クライアントへ500** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>CDNダウン</th>
+<th>配信できた読み取り</th>
+<th>読み取りの動き</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Real-Debrid</td>
+<td>2/2</td>
+<td>AllDebridにフォールバック、0.6秒</td>
+</tr>
+<tr>
+<td>AllDebrid</td>
+<td><strong>0/3</strong></td>
+<td>AllDebridに1回試行、503、その後0.1秒で<strong>クライアントへ500</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>フォールバックが起きるのは、失敗したアカウントが Real-Debrid のときだけです。</strong> その理由は、他のバックエンドが設定していない機能にあります。Refresh がリンクを先回りで検証するのは <code translate="no" v-pre>StoredLinksCanRot</code> が true のときだけで、これは Real-Debrid だけに当てはまります。</p>
+<div id="failover-only-from-one-direction-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Link verification failed during refresh for /A.Business.Proposal…: (code: 503)</code></pre>
+</doc-codeblock></div>
+<p>この処理によってソースが降格され、その後は読み取りが別のアカウントにきれいに移ります。AllDebrid と TorBox は一度も確認されないため、どちらかの CDN が落ちていても気づかれず、ソースも降格されません。その結果、状態が続く限り、そのリリースの読み取りはずっと500を返します。</p>
+<p>これにはさらに2つの問題があります。</p>
+<ul>
+<li><strong>読み取りパスには、その場でのフォールバックがまったくありません。</strong> 選ばれたアカウントの CDN から503が返ると、0.1秒でクライアント向けの500に変換されてしまい、同じファイルを持つ他のアカウントは試されません。回復はすべてバックグラウンドの Refresh が担っているため、Real-Debrid の場合でも読み取りが失敗する時間帯が生じます。</li>
+<li>同じ仕組みの欠落が、68分間 <code translate="no" v-pre>broken_torrent</code> のままだった TorBox のリリースの原因にもなっています。TorBox や AllDebrid のリンクを再検証する仕組みがないため、不良状態を解除することも、回復したことに気づくこともできません。</li>
+</ul>
+<h3 id="a-dead-link-from-the-provider">プロバイダーからの無効なリンク</h3>
+<p>AllDebrid の exclusive プールにある 1 つのファイルは、触るたびに、スキャンの実行でも mixed-reader の実行でも毎回失敗しました。その CDN ホスト名は、ヌルルートに解決されています。</p>
+<div id="a-dead-link-from-the-provider-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">$ getent hosts l4m5n6.debrid.it
+::              l4m5n6.debrid.it
+0.0.0.0</code></pre>
+</doc-codeblock></div>
+<p>AllDebrid は <code translate="no" v-pre>0.0.0.0</code> を指すリンクを返していました。ここはプロバイダー側の問題で、zurg のせいではありません。zurg がその後どう振る舞ったかが問題です。約 4 秒の間に 3 回試行し、そのあと 500 を返しました。このファイルは他のアカウントにはないので、代わりにできることはありませんでした。ただ、上のフェイルオーバーの結果を見ると、そもそもフォールバックしなかっただろうということもわかります。</p>
+<blockquote>
+<p><strong>2026-08-23: 1 つのホストだけの話ではなく、1 つのファイルだけの話でもありません。</strong> AllDebrid の CDN ホスト名 3 つが同時にヌルルートされていました。<code translate="no" v-pre>l4m5n6.debrid.it</code>、<code translate="no" v-pre>o7p8q9.debrid.it</code>、<code translate="no" v-pre>c1uw74.debrid.it</code> です。1 回目のサンプルでは 32 リンク中 5 件、別のサンプルでは 32 リンク中 4 件で、内容はまったく関係のないコンテンツでした。AllDebrid は同じ死んだホストを別のファイルにも払い出しており、この実行から数日たっても続いていました。これは同社のサーバー群にある継続的な穴であり、上で撤回された並行性に関する調査結果の原因にもなっていました。</p>
+<p>3 回の試行と 500 は適切な応答ではありません。代わりに<strong>リンクを再度 unlock してください</strong>。<code translate="no" v-pre>/link/unlock</code> は別のホストを返します。そして、<code translate="no" v-pre>0.0.0.0</code> を拒否する DNS ルックアップで事前チェックを行ってください。これなら、観測されたケースはすべて、追加コストなしで捕まえられます。</p>
+</blockquote>
+<h3 id="scanning">スキャン</h3>
+<p><code translate="no" v-pre>ffprobe</code> を23ファイルの混在プール全体に対して実行したものです。これは Plex の解析パスと同じ形です。</p>
+<retype-table copy-text="| 同時実行数 | files/min | ファイルごとの中央値 | ファイルごとの最大値 | CPU 秒 |
+|---|---|---|---|---|
+| 1 | 43.7 | 1.16 s | 3.11 s | 2.22 |
+| 4 | 112.0 | 1.67 s | 4.19 s | 1.29 |
+| 8 | 142.3 | 1.87 s | 6.67 s | 1.16 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>同時実行数</th>
+<th>files/min</th>
+<th>ファイルごとの中央値</th>
+<th>ファイルごとの最大値</th>
+<th>CPU 秒</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>43.7</td>
+<td>1.16 s</td>
+<td>3.11 s</td>
+<td>2.22</td>
+</tr>
+<tr>
+<td>4</td>
+<td>112.0</td>
+<td>1.67 s</td>
+<td>4.19 s</td>
+<td>1.29</td>
+</tr>
+<tr>
+<td>8</td>
+<td>142.3</td>
+<td>1.87 s</td>
+<td>6.67 s</td>
+<td>1.16</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>スキャンは並列化がよく効きます。スレッドを1本から8本にすると3.3x速くなり、ファイルごとの遅延は60%しか増えません。3,316リリースの Real-Debrid ライブラリだと、Plex 自身の処理を除いて、
+スレッド1本で約<strong>76分</strong>、8本で約<strong>23分</strong>かかる計算です。</p>
+<h3 id="streaming-while-scanning">スキャン中のストリーミング</h3>
+<p>天罰のように恐れるべきケースは、一時的に不調なマウントに対してスキャンを走らせたときです。実際、それで <code translate="no" v-pre>fun</code> の Plex アイテムが数万件も失われました。</p>
+<retype-table copy-text="| スキャンの同時実行数 | ストリームのみ | スキャン中のストリーム | 維持率 | スキャン所要時間 |
+|---|---|---|---|---|
+| 4 | 57.7 MB/s | 66.5 MB/s | 115% | 11.8 s |
+| 8 | 67.8 MB/s | 66.8 MB/s | 98.5% | 9.7 s |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>スキャンの同時実行数</th>
+<th>ストリームのみ</th>
+<th>スキャン中のストリーム</th>
+<th>維持率</th>
+<th>スキャン所要時間</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4</td>
+<td>57.7 MB/s</td>
+<td>66.5 MB/s</td>
+<td>115%</td>
+<td>11.8 s</td>
+</tr>
+<tr>
+<td>8</td>
+<td>67.8 MB/s</td>
+<td>66.8 MB/s</td>
+<td>98.5%</td>
+<td>9.7 s</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>スキャンがストリームの帯域を奪うことはありません。</strong> 視聴側はほぼすべてのスループットを維持し、最初のバイトまでの時間もむしろ改善します（1.18 s から 0.15 s へ）。その時点ではすでに接続が温まっているためです。デブリッド経由の経路が、心配していたよりも良く動く数少ない箇所です。</p>
+<h2 id="defects-this-run-surfaced">今回の実行で見つかった不具合</h2>
+<ol>
+<li>
+<p><strong>一時的な 503 が、リリースを空のフォルダとして残してしまう。</strong> 1 回のコールドビルド中の 85 x 503 により、84 件のリリースが <code translate="no" v-pre>broken_torrent</code> に入りました。壊れたリリースは、中身のファイルが何も無い状態で一覧に出ます。repair がオフの場合は解消されることがなく、オンの場合も、パスがそのリリースに到達したときにしか解消されません。TorBox には再検証の仕組みが一切なく (<code translate="no" v-pre>StoredLinksCanRot: false</code>)、そこで壊れていた 1 件のリリースは、プロバイダーがキャッシュ済みで存在すると報告しているにもかかわらず、68 分後もまだ壊れたままでした。</p>
+</li>
+<li>
+<p><strong>ダウンロードエントリのクリーンアップが壊れており、そのコストは積み重なっていく。</strong> <code translate="no" v-pre>unrestrict/link</code> が 3,992 回なのに対し <code translate="no" v-pre>downloads/delete</code> は 23 回で、そのうち <strong>23 件中 22 件が 404 を返しました</strong>。クリーンアップは存在しない id を削除しようとしています。アカウントのエントリ数は、さらに 2 回のコールドビルドの間に 12,469 件から <strong>18,768 件</strong> に増えました。zurg は起動時に全リストを 5,000 件ずつページ分割して読むため、このリークは起動コストとして表れ、エントリが増えるほどそのコストも増えていきます。</p>
+</li>
+<li>
+<p><strong>1 回のコールドビルドで 589 件のレート制限拒否。</strong> すべて <code translate="no" v-pre>unrestrict/link</code> で発生し、パス全体の約 8% にあたります。デフォルトの <code translate="no" v-pre>api_rate_limit_per_minute: 250</code> では、unrestrict を Real-Debrid の実際の上限内に収められません。これらと 503 は、欠陥 1 を引き起こすのと同じ出来事です。</p>
+</li>
+<li>
+<p><strong>プロバイダーの障害中に起動すると、空のマウントになる。</strong> その状態で Real-Debrid や AllDebrid への読み取りを行うと、すぐに失敗せず、クライアント自身のタイムアウトまでハングします。TorBox は 35 ms で 400 を返します。</p>
+</li>
+<li>
+<p><del><strong>AllDebrid は、異なるファイルへの同時読み取りを完了しなくなる。</strong></del> <strong>2026-08-23 に撤回 — 上の「Multiple readers, different files」の注記を参照してください。</strong> 原因は同時実行数の上限ではなく、リンクの 15.6% を運ぶ 3 つの null-routed AllDebrid CDN ホストでした。直接再テストすると、AD は同時に 24 個の異なるリンクを 100% 解決し、24/24 のストリームを維持しました。元の文章は記録のため以下に残しています。</p>
+<p>2 of 4, 3 of 8, 4 of 12. 同じ水準を <em>単一</em> のファイルに対して行うと問題ありません (4/4, 8/8)。つまり制限は帯域や torrent ごとの上限ではなく、同時リンク解決にあります。4 つのファイルを同時に再生するのは、家庭では普通の夜の過ごし方です。</p>
+</li>
+<li>
+<p><strong>複数アカウントのリリースは、常に同じアカウントから配信される。</strong> <code translate="no" v-pre>File.PrimarySource</code> は <code translate="no" v-pre>Sources[0]</code> を返すため、最初に見つかったアカウントが選ばれます。コーパスの 7 件すべてのリリースが Real-Debrid から配信されていたことを確認しました。一方、AllDebrid と TorBox には同一のコピーがありました。より速い、あるいは負荷の低いアカウントを選ぶことはありません。</p>
+</li>
+<li>
+<p><strong>フェイルオーバーは一方向にしか動かず、その場では決して起きない。</strong> Real-Debrid の CDN が拒否している間、読み取りは AllDebrid へ移りました。AllDebrid の CDN が拒否している場合、3 件中 0 件の読み取りしか配信されず、それぞれ 0.1 秒で 500 を返し、同じファイルを持つ 2 つのアカウントを試すことはありませんでした。<code translate="no" v-pre>StoredLinksCanRot</code> を設定しているのは Real-Debrid だけなので、リフレッシュ時に再検証されるのもそのリンクだけで、ソースを降格させるのも Real-Debrid の失敗だけです。読み取りパスでは、エラーが起きても 2 つ目のアカウントを試す処理がありません。</p>
+</li>
+<li>
+<p><strong>起動時のネットワークテストが、すべてのバックエンドで実行される。</strong> TorBox のみ、および AllDebrid のみのインスタンスで、Real-Debrid のダウンロードホストに対して 88 回の HEAD リクエストが送られていましたが、どちらもその結果を必要としていません。</p>
+</li>
+<li>
+<p><strong>コレクション自身の PROPFIND href が 404 になる。</strong> zurg は <code translate="no" v-pre>&lt;d:href&gt;/all/…&lt;/d:href&gt;</code> を出力し、<code translate="no" v-pre>/dav</code> プレフィックスが抜けています。そのパスを取得すると 404 が返ります。子要素は相対 href で出力されるため、誤っているのは自分自身のエントリだけです。RFC 4918 は、クライアントが解決できる href を求めています。rclone と Plex は、この href を使っていないおかげで動いているだけです。</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>user</code>/<code translate="no" v-pre>user/me</code> が、起動のたびに 3 回呼ばれる。</strong> コールドでもウォームでも、TorBox と AllDebrid の両方で発生します。</p>
+</li>
+</ol>
+<h2 id="not-defects-but-worth-knowing">不具合ではないが知っておくとよいこと</h2>
+<ul>
+<li><strong>Real-Debrid は infohash で重複を排除しません。</strong> アカウントに既にあるマグネットを追加すると、<em>2つ目</em>のエントリが作られます。そのため 3,416 件のトレントが 3,318 件のユニークなリリースにまとまります。これにより最初の削除検出プローブが無効になりました。プローブは直前に作成した重複を削除してしまい、何も検出されなかったという結論になっていました。</li>
+<li><strong><code translate="no" v-pre>torrents_rate_limit_per_minute</code> のデフォルトは 75</strong> で、これが初回の Real-Debrid ビルドの速度を制限しています。意図したデフォルトであり、バグではありません。ただし、29分という数字を決めているのはこの値です。</li>
+</ul>
+<h2 id="rerunning">再実行</h2>
+<div id="rerunning-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/dbench &amp;&amp; ./runall.sh          # p1..p6
+./p7.py adddel rd,ad &amp;&amp; ./p7.py outage rd,ad,tb
+./apiref.py rd,ad,tb                # provider-side reference latency
+./report.py                         # tables</code></pre>
+</doc-codeblock></div>
+<p>インスタンスを同時に2つ以上動かすのは避けてください。数値を比べるときは、1回の連続した実行で得た結果だけを使ってください。プロバイダーのスループットは夜の間に大きく変わるので、別々の時間に取った数値は比べても意味がありません。</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/persistent-caches/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">前へ</span>
+                                <span class="block mt-1">永続キャッシュ</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/torrent-lifecycle/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">次へ</span>
+                                <span class="block mt-1">トレントのライフサイクル</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "デブリッドのベースライン", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/internals/debrid-baseline.md" }</script>
+</body>
+</html>

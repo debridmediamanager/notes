@@ -1,0 +1,2386 @@
+<!DOCTYPE html>
+<html lang="de" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/de">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672682913">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>SABnzbd-API-Vertrag, wie Sonarr und Radarr ihn verwenden (develop)</title>
+    <meta name="title" content="SABnzbd-API-Vertrag, wie Sonarr und Radarr ihn verwenden (develop)">
+    <meta name="description" content="Quelle der Wahrheit: Dateien, abgerufen von raw.githubusercontent.com/{Sonarr/Sonarr,Radarr/Radarr}/develop/... am 2026-08-22. Jede Zeilennummer unten wurde aus diesen Dateien abgelesen.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/de/zurg/internals/sabnzbd-client-contract/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/de/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/de/zurg/internals/sabnzbd-client-contract/">
+    <meta property="og:title" content="SABnzbd-API-Vertrag, wie Sonarr und Radarr ihn verwenden (develop)">
+    <meta property="og:description" content="Quelle der Wahrheit: Dateien, abgerufen von raw.githubusercontent.com/{Sonarr/Sonarr,Radarr/Radarr}/develop/... am 2026-08-22. Jede Zeilennummer unten wurde aus diesen Dateien abgelesen.">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="de_DE">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/de/zurg/internals/sabnzbd-client-contract/">
+    <meta name="twitter:title" content="SABnzbd-API-Vertrag, wie Sonarr und Radarr ihn verwenden (develop)">
+    <meta name="twitter:description" content="Quelle der Wahrheit: Dateien, abgerufen von raw.githubusercontent.com/{Sonarr/Sonarr,Radarr/Radarr}/develop/... am 2026-08-22. Jede Zeilennummer unten wurde aus diesen Dateien abgelesen.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/de/zurg/internals/sabnzbd-client-contract.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672682913" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672682913" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672682913" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672682913" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/de/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>Deutsch</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/de/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/de/download.html" target="_blank">zurg herunterladen</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/de/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>Deutsch</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/de/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/de/download.html" target="_blank">zurg herunterladen</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/de/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="sabnzbd-api-contract-as-consumed-by-sonarr-and-radarr-develop">SABnzbd-API-Vertrag, wie Sonarr und Radarr ihn verwenden (develop)</h1>
+<p>Quelle der Wahrheit: Dateien, abgerufen von <code translate="no" v-pre>raw.githubusercontent.com/{Sonarr/Sonarr,Radarr/Radarr}/develop/...</code> am <strong>2026-08-22</strong>. Jede Zeilennummer unten wurde aus diesen Dateien abgelesen.</p>
+<p>Ich halte das hier fest, damit nachvollziehbar bleibt, warum <code translate="no" v-pre>internal/sabnzbd</code> in genau diesen Formen antwortet. In diesem Paket sollte nichts geändert werden, ohne dass der Absatz hier erklärt, was der Client mit dem Feld macht. Ein falsches Struct-Tag schlägt nicht fehl, sondern lässt den Client einfach eine Null lesen. Ein falscher Enum-Wert wirft dagegen im Deserializer eine Exception und reißt die ganze Abfrage mit. Wie du Sonarr oder Radarr auf zurg zeigen lässt, steht in <a href="../../guides/sonarr-radarr/">sabnzbd.md</a>.</p>
+<p>Sofern ein Abschnitt nichts anderes sagt, <strong>sind die SAB-Dateien der beiden Repos byte-identisch, bis auf ein UTF-8-BOM und die Umbenennung <code translate="no" v-pre>TvCategory</code> → <code translate="no" v-pre>MovieCategory</code> / <code translate="no" v-pre>RemoteEpisode</code> → <code translate="no" v-pre>RemoteMovie</code>. Die Zeilennummern stimmen eins zu eins überein.</strong> Jede <code translate="no" v-pre>Sabnzbd*</code>-Angabe gilt deshalb für beide Repos in derselben Zeile. Die Pfade lauten in beiden <code translate="no" v-pre>src/NzbDrone.Core/Download/Clients/Sabnzbd/...</code>. Geprüfte Unterschiede stehen in §6.</p>
+<p>Hier geht es nicht um Spekulation über SAB selbst. Jede Aussage beschreibt, was der <em>Client</em> tut. Wo ich Newtonsoft.Json- oder .NET-Runtime-Verhalten beschreibe (nicht Sonarr-Code), sage ich das ausdrücklich.</p>
+<hr>
+<h2 id="0-transport-level-rules-these-bite-first">0. Regeln auf Transportebene (diese fallen zuerst auf)</h2>
+<h3 id="01-url-shape">0.1 Form der URL</h3>
+<p><code translate="no" v-pre>SabnzbdProxy.BuildRequest</code> (<code translate="no" v-pre>SabnzbdProxy.cs:162-185</code>):</p>
+<div id="01-url-shape-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">private HttpRequestBuilder BuildRequest(string mode, SabnzbdSettings settings)
+{
+    var baseUrl = GetBaseUrl(settings, &quot;api&quot;);                      // :164
+    var requestBuilder = new HttpRequestBuilder(baseUrl)
+        .Accept(HttpAccept.Json)                                    // :167  -&gt; Accept: application/json
+        .AddQueryParam(&quot;mode&quot;, mode);                               // :168
+    requestBuilder.LogResponseContent = true;                       // :170
+    if (settings.ApiKey.IsNotNullOrWhiteSpace())
+        requestBuilder.AddSuffixQueryParam(&quot;apikey&quot;, settings.ApiKey);        // :174
+    else
+    {
+        requestBuilder.AddSuffixQueryParam(&quot;ma_username&quot;, settings.Username); // :178
+        requestBuilder.AddSuffixQueryParam(&quot;ma_password&quot;, settings.Password); // :179
+    }
+    requestBuilder.AddSuffixQueryParam(&quot;output&quot;, &quot;json&quot;);           // :182
+    return requestBuilder;
+}</code></pre>
+</doc-codeblock></div>
+<ul>
+<li>
+<p>Basis-URL: <code translate="no" v-pre>HttpRequestBuilder.BuildBaseUrl</code> (<code translate="no" v-pre>src/NzbDrone.Common/Http/HttpRequestBuilder.cs:56-66</code>)
+= <code translate="no" v-pre>{http|https}://{Host}:{Port}{UrlBase}</code>; <code translate="no" v-pre>UrlBase</code> bekommt ein führendes <code translate="no" v-pre>/</code>, falls es fehlt.
+Der Endpunkt ist das plus <code translate="no" v-pre>/api</code> (<code translate="no" v-pre>SabnzbdProxy.cs:38-44</code>).</p>
+</li>
+<li>
+<p>Suffix-Parameter landen immer am Ende, also sind <strong><code translate="no" v-pre>apikey</code> (oder <code translate="no" v-pre>ma_username</code>+<code translate="no" v-pre>ma_password</code>) und <code translate="no" v-pre>output=json</code>
+die letzten Query-Parameter</strong> (<code translate="no" v-pre>HttpRequestBuilder.cs:82</code> — <code translate="no" v-pre>QueryParams.Concat(SuffixQueryParams)</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>Accept: application/json</code> bei jedem Aufruf. <code translate="no" v-pre>output=json</code> bei jedem Aufruf. Es gibt nirgendwo einen
+<code translate="no" v-pre>output=xml</code>-Pfad.</p>
+</li>
+<li>
+<p>API-Key und Benutzername/Passwort <strong>schließen sich gegenseitig aus</strong>: Ein API-Key unterdrückt <code translate="no" v-pre>ma_username</code>/<code translate="no" v-pre>ma_password</code>.</p>
+</li>
+</ul>
+<h3 id="02-always-answer-http-200--even-for-errors">0.2 Immer HTTP 200 antworten, auch bei Fehlern</h3>
+<p><code translate="no" v-pre>HttpClient.Execute</code> wirft bei jedem Status &gt;= 400 eine Exception (<code translate="no" v-pre>src/NzbDrone.Common/Http/HttpClient.cs:106-121</code>;
+<code translate="no" v-pre>HttpResponse.cs:54</code> — <code translate="no" v-pre>HasHttpError =&gt; (int)StatusCode &gt;= 400</code>; 429 wird zu <code translate="no" v-pre>TooManyRequestsException</code>).
+<code translate="no" v-pre>SabnzbdProxy.ProcessRequest</code> (<code translate="no" v-pre>SabnzbdProxy.cs:199-215</code>) wandelt das in
+<code translate="no" v-pre>DownloadClientException(&quot;Unable to connect to SABnzbd, {0}&quot;)</code> um.</p>
+<p>Die Message von <code translate="no" v-pre>HttpException</code> ist <code translate="no" v-pre>&quot;HTTP request failed: [401:Unauthorized] [GET] at [url]&quot;</code>
+(<code translate="no" v-pre>src/NzbDrone.Common/Http/HttpException.cs:18</code>) — <strong>der Body steht nicht in der Message</strong>. Ein 401 mit
+<code translate="no" v-pre>{&quot;error&quot;:&quot;API Key Incorrect&quot;}</code> wird also von <code translate="no" v-pre>TestAuthentication</code> nicht erkannt
+(<code translate="no" v-pre>Sabnzbd.cs:424,429</code> vergleicht mit <code translate="no" v-pre>ex.Message</code>), und der Verbindungstest meldet stattdessen den allgemeinen
+&quot;Test was aborted due to an error&quot;. <strong>SAB nachbilden: HTTP 200 + <code translate="no" v-pre>{&quot;status&quot;: false, &quot;error&quot;: &quot;...&quot;}</code>.</strong></p>
+<h3 id="03-deserializer-settings-drives-every-field-name-and-type-question">0.3 Deserializer-Einstellungen (bestimmen alle Fragen zu Feldnamen und Typen)</h3>
+<p>Alle SAB-Payloads laufen über <code translate="no" v-pre>NzbDrone.Common.Serializer.Json</code>
+(<code translate="no" v-pre>src/NzbDrone.Common/Serializer/Newtonsoft.Json/Json.cs:21-37</code>), <strong>Newtonsoft</strong>, nicht System.Text.Json:</p>
+<div id="03-deserializer-settings-drives-every-field-name-and-type-question-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">DateTimeZoneHandling  = DateTimeZoneHandling.Utc,
+NullValueHandling     = NullValueHandling.Ignore,
+Formatting            = Formatting.Indented,
+DefaultValueHandling  = DefaultValueHandling.Include,
+ContractResolver      = new CamelCasePropertyNamesContractResolver()
+Converters: StringEnumConverter { NamingStrategy = CamelCaseNamingStrategy }, VersionConverter, HttpUriConverter</code></pre>
+</doc-codeblock></div>
+<p>Konsequenzen (Newtonsoft-Semantik, nicht Sonarr-Code):</p>
+<retype-table copy-text="| Einstellung | Auswirkung auf einen Emulator |
+|---|---|
+| `CamelCasePropertyNamesContractResolver` | C#-`Storage` bindet `storage`, `PP` bindet `pp`, `Misc` bindet `misc`. Newtonsoft fällt außerdem auf einen Abgleich der Property-Namen ohne Beachtung der Groß-/Kleinschreibung zurück, daher binden SABs echte snake_case-/Kleinbuchstaben-Schlüssel so oder so. |
+| `StringEnumConverter` (global) | Gilt für `SabnzbdDownloadStatus`, das **keinen** eigenen Converter pro Property hat. Unbekannte Enum-Namen werfen eine `JsonSerializationException`. Ganzzahlen werden ebenfalls akzeptiert (`AllowIntegerValues` ist standardmäßig true). |
+| `NullValueHandling.Ignore` | Gilt auch **beim Lesen**: Ein JSON-`null` lässt das C#-Member auf seinem Konstruktorwert. Also bleibt bei `&quot;categories&quot;: null` die leere Liste aus dem Konstruktor erhalten, aber bei `&quot;misc&quot;: null` bleibt `Misc` null (kein Standardwert im Konstruktor) → NRE, siehe §3.4. |
+| `MissingMemberHandling` (Standard `Ignore`) | Zusätzliche Felder in deinem Payload sind harmlos. Schick den vollständigen echten SAB-Body. |
+| `Culture` (Standard `InvariantCulture`) | Numerische Strings wie `&quot;1024.00&quot;` müssen `.` als Dezimaltrennzeichen verwenden und keine Tausendertrennzeichen enthalten. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Einstellung</th>
+<th>Auswirkung auf einen Emulator</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>CamelCasePropertyNamesContractResolver</code></td>
+<td>C#-<code translate="no" v-pre>Storage</code> bindet <code translate="no" v-pre>storage</code>, <code translate="no" v-pre>PP</code> bindet <code translate="no" v-pre>pp</code>, <code translate="no" v-pre>Misc</code> bindet <code translate="no" v-pre>misc</code>. Newtonsoft fällt außerdem auf einen Abgleich der Property-Namen ohne Beachtung der Groß-/Kleinschreibung zurück, daher binden SABs echte snake_case-/Kleinbuchstaben-Schlüssel so oder so.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>StringEnumConverter</code> (global)</td>
+<td>Gilt für <code translate="no" v-pre>SabnzbdDownloadStatus</code>, das <strong>keinen</strong> eigenen Converter pro Property hat. Unbekannte Enum-Namen werfen eine <code translate="no" v-pre>JsonSerializationException</code>. Ganzzahlen werden ebenfalls akzeptiert (<code translate="no" v-pre>AllowIntegerValues</code> ist standardmäßig true).</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>NullValueHandling.Ignore</code></td>
+<td>Gilt auch <strong>beim Lesen</strong>: Ein JSON-<code translate="no" v-pre>null</code> lässt das C#-Member auf seinem Konstruktorwert. Also bleibt bei <code translate="no" v-pre>&quot;categories&quot;: null</code> die leere Liste aus dem Konstruktor erhalten, aber bei <code translate="no" v-pre>&quot;misc&quot;: null</code> bleibt <code translate="no" v-pre>Misc</code> null (kein Standardwert im Konstruktor) → NRE, siehe §3.4.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>MissingMemberHandling</code> (Standard <code translate="no" v-pre>Ignore</code>)</td>
+<td>Zusätzliche Felder in deinem Payload sind harmlos. Schick den vollständigen echten SAB-Body.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Culture</code> (Standard <code translate="no" v-pre>InvariantCulture</code>)</td>
+<td>Numerische Strings wie <code translate="no" v-pre>&quot;1024.00&quot;</code> müssen <code translate="no" v-pre>.</code> als Dezimaltrennzeichen verwenden und keine Tausendertrennzeichen enthalten.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>Json.Deserialize&lt;T&gt;</code> wirft nur <code translate="no" v-pre>JsonReaderException</code> mit einer freundlicheren Meldung erneut (<code translate="no" v-pre>Json.cs:39-50</code>);
+<code translate="no" v-pre>Json.TryDeserialize&lt;T&gt;</code> schluckt <strong>nur</strong> <code translate="no" v-pre>JsonReaderException</code> und <code translate="no" v-pre>JsonSerializationException</code>
+(<code translate="no" v-pre>Json.cs:99-117</code>). Alles andere (z. B. eine <code translate="no" v-pre>ArgumentException</code> aus dem Timeleft-Converter oder eine NRE
+aus dem Priority-Converter) wird weitergereicht.</p>
+<hr>
+<h2 id="1-every-mode-every-parameter-every-field-consumed">1. Jeder Modus, jeder Parameter, jedes verwendete Feld</h2>
+<h3 id="11-modeversion--sabnzbdproxygetversion-sabnzbdproxycs85-95">1.1 <code translate="no" v-pre>mode=version</code> — <code translate="no" v-pre>SabnzbdProxy.GetVersion</code> (<code translate="no" v-pre>SabnzbdProxy.cs:85-95</code>)</h3>
+<p><strong>Anfrage:</strong> <code translate="no" v-pre>GET /api?mode=version&amp;apikey=KEY&amp;output=json</code></p>
+<p>Antwortmodell <code translate="no" v-pre>SabnzbdVersionResponse</code> (<code translate="no" v-pre>Responses/SabnzbdVersionResponse.cs:5</code>):</p>
+<retype-table copy-text="| JSON-Schlüssel | C#-Typ | Hinweise |
+|---|---|---|
+| `version` | `string` | Das einzige Feld, das gelesen wird. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>JSON-Schlüssel</th>
+<th>C#-Typ</th>
+<th>Hinweise</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>version</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td>Das einzige Feld, das gelesen wird.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Wird über <code translate="no" v-pre>Json.TryDeserialize</code> gelesen. Schlägt das Parsen fehl, ist <code translate="no" v-pre>Version == null</code> (<code translate="no" v-pre>SabnzbdProxy.cs:89-92</code>).</p>
+<p>Parsing (<code translate="no" v-pre>Sabnzbd.cs:334-366</code>), Regex in <code translate="no" v-pre>Sabnzbd.cs:38</code>:</p>
+<div id="11-modeversion--sabnzbdproxygetversion-sabnzbdproxycs85-95-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">// patch can be a number (releases) or 'x' (git)
+private static readonly Regex VersionRegex = new Regex(@&quot;(?&lt;major&gt;\d+)\.(?&lt;minor&gt;\d+)\.(?&lt;patch&gt;\d+|x)&quot;, RegexOptions.Compiled);</code></pre>
+</doc-codeblock></div>
+<ul>
+<li>Nicht verankert, daher werden <code translate="no" v-pre>4.5.0RC1</code> und <code translate="no" v-pre>2.0.0beta1</code> erkannt (Fixture <code translate="no" v-pre>SabnzbdFixture.cs:523,553</code>).</li>
+<li><code translate="no" v-pre>patch</code> darf das Literal <code translate="no" v-pre>x</code> sein (Git-Builds). Es wird durch <code translate="no" v-pre>0</code> ersetzt (<code translate="no" v-pre>Sabnzbd.cs:351</code>).</li>
+<li>Eine Version mit <strong>zwei Komponenten</strong> (<code translate="no" v-pre>&quot;4.5&quot;</code>) passt nicht. Das ergibt <code translate="no" v-pre>null</code> und damit einen Validierungsfehler.</li>
+<li>Der exakte String <code translate="no" v-pre>&quot;develop&quot;</code> (ohne Beachtung der Groß-/Kleinschreibung) wird speziell behandelt und zu <code translate="no" v-pre>3.0.0</code> gemacht (<code translate="no" v-pre>Sabnzbd.cs:355-362</code>). Dabei gibt es eine <em>Warnung</em>, aber keinen Fehler (<code translate="no" v-pre>Sabnzbd.cs:380-387</code>).</li>
+</ul>
+<p>Die Version wird von <code translate="no" v-pre>HasVersion</code> (<code translate="no" v-pre>Sabnzbd.cs:294-332</code>) erneut abgefragt, also ein zweiter <code translate="no" v-pre>mode=version</code>-Aufruf. Sie wird <strong>nicht zwischengespeichert</strong>.</p>
+<h3 id="12-modeget_config--sabnzbdproxygetconfig-sabnzbdproxycs97-104">1.2 <code translate="no" v-pre>mode=get_config</code> — <code translate="no" v-pre>SabnzbdProxy.GetConfig</code> (<code translate="no" v-pre>SabnzbdProxy.cs:97-104</code>)</h3>
+<p>Anfrage: <code translate="no" v-pre>GET /api?mode=get_config&amp;apikey=KEY&amp;output=json</code></p>
+<p>Verwendet <code translate="no" v-pre>Json.Deserialize</code> (<strong>nicht</strong> Try). Ein fehlerhafter Body löst in <code translate="no" v-pre>GetConfig</code> eine Exception aus.
+Die oberste Ebene muss <code translate="no" v-pre>{&quot;config&quot;: {...}}</code> sein (<code translate="no" v-pre>Responses/SabnzbdConfigResponse.cs:5</code>). Die Felder stehen in §3.</p>
+<h3 id="13-modefullstatus--sabnzbdproxygetfullstatus-sabnzbdproxycs106-114">1.3 <code translate="no" v-pre>mode=fullstatus</code> — <code translate="no" v-pre>SabnzbdProxy.GetFullStatus</code> (<code translate="no" v-pre>SabnzbdProxy.cs:106-114</code>)</h3>
+<p><strong>Anfrage:</strong> <code translate="no" v-pre>GET /api?mode=fullstatus&amp;skip_dashboard=1&amp;apikey=KEY&amp;output=json</code></p>
+<p>Oberste Ebene <code translate="no" v-pre>{&quot;status&quot;: {...}}</code> (<code translate="no" v-pre>Responses/SabnzbdFullStatusResponse.cs:5</code>). Nur ein Feld wird gelesen:</p>
+<retype-table copy-text="| JSON-Schlüssel | C# | Quelle |
+|---|---|---|
+| `completedir` | `string CompleteDir` | `SabnzbdFullStatus.cs:9-10`. Achtung: **`completedir`, ohne Unterstrich** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>JSON-Schlüssel</th>
+<th>C#</th>
+<th>Quelle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>completedir</code></td>
+<td><code translate="no" v-pre>string CompleteDir</code></td>
+<td><code translate="no" v-pre>SabnzbdFullStatus.cs:9-10</code>. Achtung: <strong><code translate="no" v-pre>completedir</code>, ohne Unterstrich</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Dieser Aufruf erfolgt <strong>nur</strong>, wenn <code translate="no" v-pre>config.misc.complete_dir</code> <strong>nicht</strong> absolut ist <strong>und</strong> die SAB-Version &gt;= 2.0
+ist (<code translate="no" v-pre>Sabnzbd.cs:220-226</code>). Mit einem absoluten <code translate="no" v-pre>complete_dir</code> wird dieser Endpunkt nie aufgerufen. Implementiere ihn trotzdem.</p>
+<p>Eine Eigenheit, die man kennen sollte: Da der eigentliche Body <code translate="no" v-pre>{&quot;status&quot;: {...}}</code> ist und <code translate="no" v-pre>SabnzbdJsonError.Status</code> ein
+<code translate="no" v-pre>string</code> ist, schlägt <code translate="no" v-pre>TryDeserialize&lt;SabnzbdJsonError&gt;</code> in <code translate="no" v-pre>CheckForError</code> mit einer <code translate="no" v-pre>JsonSerializationException</code> fehl. Dann greift der
+Klartext-Zweig, der <code translate="no" v-pre>Status = &quot;true&quot;</code> setzt (<code translate="no" v-pre>SabnzbdProxy.cs:224-240</code>). Das ist harmlos, bedeutet aber, dass fullstatus über den JSON-Pfad nie einen Fehler melden kann.</p>
+<h3 id="14-modequeue-read--sabnzbdproxygetqueue-sabnzbdproxycs116-130">1.4 <code translate="no" v-pre>mode=queue</code> (lesend) — <code translate="no" v-pre>SabnzbdProxy.GetQueue</code> (<code translate="no" v-pre>SabnzbdProxy.cs:116-130</code>)</h3>
+<p>Anfrage: <code translate="no" v-pre>GET /api?mode=queue&amp;start={start}&amp;limit={limit}[&amp;category={cat}]&amp;apikey=KEY&amp;output=json</code></p>
+<ul>
+<li>
+<p><code translate="no" v-pre>category</code> wird <strong>nur dann</strong> hinzugefügt, wenn die konfigurierte Kategorie nicht leer ist (<code translate="no" v-pre>SabnzbdProxy.cs:122-125</code>).</p>
+</li>
+<li>
+<p>Aufrufer: <code translate="no" v-pre>Sabnzbd.GetQueue()</code> verwendet <code translate="no" v-pre>start=0, limit=0</code> (<code translate="no" v-pre>Sabnzbd.cs:57</code>). SAB liest <code translate="no" v-pre>limit=0</code> als &quot;alle&quot;.
+<code translate="no" v-pre>Sabnzbd.GetCategories()</code> verwendet <code translate="no" v-pre>start=0, limit=1</code> im Pfad für Versionen vor 2.0 (<code translate="no" v-pre>Sabnzbd.cs:229</code>).
+<code translate="no" v-pre>Sabnzbd.RemoveItem()</code> ruft es noch einmal auf, um zu entscheiden, ob es sich um Queue oder History handelt (<code translate="no" v-pre>Sabnzbd.cs:199</code>).</p>
+</li>
+<li>
+<p>Extraktion: <code translate="no" v-pre>Json.Deserialize&lt;SabnzbdQueue&gt;(JObject.Parse(response).SelectToken(&quot;queue&quot;).ToString())</code> (<code translate="no" v-pre>SabnzbdProxy.cs:129</code>). <strong>Ein fehlender oberster <code translate="no" v-pre>queue</code>-Schlüssel führt zu einer NRE.</strong></p>
+</li>
+</ul>
+<p><code translate="no" v-pre>SabnzbdQueue</code> (<code translate="no" v-pre>SabnzbdQueue.cs</code>):</p>
+<retype-table copy-text="| JSON-Schlüssel | C#-Name | Typ | Verwendet für |
+|---|---|---|---|
+| `my_home` | `DefaultRootFolder` | `string` | Nur bei SAB &lt; 2.0, um ein relatives `complete_dir` aufzulösen (`Sabnzbd.cs:230`). Kommentar bei `SabnzbdQueue.cs:8`: &quot;Removed in Sabnzbd 2.0.0, see mode=fullstatus instead.&quot; |
+| `paused` | `Paused` | `bool` | Globale Pause. Wird mit der Priorität des Slots kombiniert (`Sabnzbd.cs:78`). |
+| `slots` | `Items` | `List&lt;SabnzbdQueueItem&gt;` | |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>JSON-Schlüssel</th>
+<th>C#-Name</th>
+<th>Typ</th>
+<th>Verwendet für</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>my_home</code></td>
+<td><code translate="no" v-pre>DefaultRootFolder</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td>Nur bei SAB &lt; 2.0, um ein relatives <code translate="no" v-pre>complete_dir</code> aufzulösen (<code translate="no" v-pre>Sabnzbd.cs:230</code>). Kommentar bei <code translate="no" v-pre>SabnzbdQueue.cs:8</code>: &quot;Removed in Sabnzbd 2.0.0, see mode=fullstatus instead.&quot;</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>paused</code></td>
+<td><code translate="no" v-pre>Paused</code></td>
+<td><code translate="no" v-pre>bool</code></td>
+<td>Globale Pause. Wird mit der Priorität des Slots kombiniert (<code translate="no" v-pre>Sabnzbd.cs:78</code>).</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>slots</code></td>
+<td><code translate="no" v-pre>Items</code></td>
+<td><code translate="no" v-pre>List&lt;SabnzbdQueueItem&gt;</code></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>SabnzbdQueueItem</code> (<code translate="no" v-pre>SabnzbdQueueItem.cs</code>):</p>
+<retype-table copy-text="| JSON-Schlüssel | C#-Member | C#-Typ | Echter JSON-Typ bei SAB | Hinweise |
+|---|---|---|---|---|
+| `status` | `Status` | `SabnzbdDownloadStatus` | string | Globaler `StringEnumConverter`. Unbekannter Wert ⇒ `JsonSerializationException` ⇒ der gesamte `GetQueue` wirft eine Exception. |
+| `index` | `Index` | `int` | number | Wird gelesen, aber nie verwendet. |
+| `timeleft` | `Timeleft` | `TimeSpan` über `SabnzbdQueueTimeConverter` | string | Siehe §1.4.1. |
+| `mb` | `Size` | `decimal` | **string** (`&quot;1024.00&quot;`) | **Megabyte.** `TotalSize = (long)(Size * 1024 * 1024)` (`Sabnzbd.cs:72`). |
+| `mbleft` | `Sizeleft` | `decimal` | **string** | **Megabyte.** `RemainingSize = (long)(Sizeleft * 1024 * 1024)` (`Sabnzbd.cs:73`). |
+| `filename` | `Title` | `string` | string | Wird zu `DownloadClientItem.Title` (`Sabnzbd.cs:71`). |
+| `priority` | `Priority` | `SabnzbdPriority` über `SabnzbdPriorityTypeConverter` | string (`&quot;Normal&quot;`) | Siehe §2. |
+| `cat` | `Category` | `string` | string | **`cat` in der Queue, `category` in der History.** |
+| `mbleft`/`percentage` | `Percentage` | `int` | **string** (`&quot;50&quot;`) | Wird gelesen, aber nie verwendet. |
+| `nzo_id` | `Id` | `string` | string | Die Download-ID, über die Sonarr/Radarr alles zuordnen. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>JSON-Schlüssel</th>
+<th>C#-Member</th>
+<th>C#-Typ</th>
+<th>Echter JSON-Typ bei SAB</th>
+<th>Hinweise</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>status</code></td>
+<td><code translate="no" v-pre>Status</code></td>
+<td><code translate="no" v-pre>SabnzbdDownloadStatus</code></td>
+<td>string</td>
+<td>Globaler <code translate="no" v-pre>StringEnumConverter</code>. Unbekannter Wert ⇒ <code translate="no" v-pre>JsonSerializationException</code> ⇒ der gesamte <code translate="no" v-pre>GetQueue</code> wirft eine Exception.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>index</code></td>
+<td><code translate="no" v-pre>Index</code></td>
+<td><code translate="no" v-pre>int</code></td>
+<td>number</td>
+<td>Wird gelesen, aber nie verwendet.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>timeleft</code></td>
+<td><code translate="no" v-pre>Timeleft</code></td>
+<td><code translate="no" v-pre>TimeSpan</code> über <code translate="no" v-pre>SabnzbdQueueTimeConverter</code></td>
+<td>string</td>
+<td>Siehe §1.4.1.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>mb</code></td>
+<td><code translate="no" v-pre>Size</code></td>
+<td><code translate="no" v-pre>decimal</code></td>
+<td><strong>string</strong> (<code translate="no" v-pre>&quot;1024.00&quot;</code>)</td>
+<td><strong>Megabyte.</strong> <code translate="no" v-pre>TotalSize = (long)(Size * 1024 * 1024)</code> (<code translate="no" v-pre>Sabnzbd.cs:72</code>).</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>mbleft</code></td>
+<td><code translate="no" v-pre>Sizeleft</code></td>
+<td><code translate="no" v-pre>decimal</code></td>
+<td><strong>string</strong></td>
+<td><strong>Megabyte.</strong> <code translate="no" v-pre>RemainingSize = (long)(Sizeleft * 1024 * 1024)</code> (<code translate="no" v-pre>Sabnzbd.cs:73</code>).</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>filename</code></td>
+<td><code translate="no" v-pre>Title</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td>string</td>
+<td>Wird zu <code translate="no" v-pre>DownloadClientItem.Title</code> (<code translate="no" v-pre>Sabnzbd.cs:71</code>).</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>priority</code></td>
+<td><code translate="no" v-pre>Priority</code></td>
+<td><code translate="no" v-pre>SabnzbdPriority</code> über <code translate="no" v-pre>SabnzbdPriorityTypeConverter</code></td>
+<td>string (<code translate="no" v-pre>&quot;Normal&quot;</code>)</td>
+<td>Siehe §2.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>cat</code></td>
+<td><code translate="no" v-pre>Category</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td>string</td>
+<td><strong><code translate="no" v-pre>cat</code> in der Queue, <code translate="no" v-pre>category</code> in der History.</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>mbleft</code>/<code translate="no" v-pre>percentage</code></td>
+<td><code translate="no" v-pre>Percentage</code></td>
+<td><code translate="no" v-pre>int</code></td>
+<td><strong>string</strong> (<code translate="no" v-pre>&quot;50&quot;</code>)</td>
+<td>Wird gelesen, aber nie verwendet.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>nzo_id</code></td>
+<td><code translate="no" v-pre>Id</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td>string</td>
+<td>Die Download-ID, über die Sonarr/Radarr alles zuordnen.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h4 id="141-timeleft-format--sabnzbdqueuetimeconverter-jsonconverterssabnzbdqueuetimeconvertercs15-28">1.4.1 Format von <code translate="no" v-pre>timeleft</code> — <code translate="no" v-pre>SabnzbdQueueTimeConverter</code> (<code translate="no" v-pre>JsonConverters/SabnzbdQueueTimeConverter.cs:15-28</code>)</h4>
+<div id="141-timeleft-format--sabnzbdqueuetimeconverter-jsonconverterssabnzbdqueuetimeconvertercs15-28-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">var split = reader.Value.ToString().Split(':').Select(int.Parse).ToArray();
+switch (split.Length)
+{
+    case 4: return new TimeSpan((split[0] * 24) + split[1], split[2], split[3]);   // d:h:m:s
+    case 3: return new TimeSpan(split[0], split[1], split[2]);                     // h:m:s
+    default: throw new ArgumentException(&quot;Expected either 0:0:0:0 or 0:0:0 format, but received: &quot; + reader.Value);
+}</code></pre>
+</doc-codeblock></div>
+<ul>
+<li>
+<p><strong>Genau 3 oder 4 durch Doppelpunkte getrennte Ganzzahlen.</strong> <code translate="no" v-pre>&quot;0:08:32&quot;</code>, <code translate="no" v-pre>&quot;40:12:14&quot;</code>, <code translate="no" v-pre>&quot;1:16:12:14&quot;</code> sind alle in Ordnung
+(Fixture <code translate="no" v-pre>SabnzbdQueueTimeConverterFixture.cs:14-20</code>); <code translate="no" v-pre>&quot;1&quot;</code>, <code translate="no" v-pre>&quot;0:1&quot;</code>, <code translate="no" v-pre>&quot;0:0:0:0:1&quot;</code> lösen eine Exception aus
+(<code translate="no" v-pre>:28-35</code>). Führende Nullen sind kein Problem (<code translate="no" v-pre>int.Parse</code>).</p>
+</li>
+<li>
+<p>Die ausgelöste <code translate="no" v-pre>ArgumentException</code> wird <strong>weder</strong> von <code translate="no" v-pre>Json.TryDeserialize</code> <strong>noch</strong> von <code translate="no" v-pre>Json.Deserialize</code> abgefangen.</p>
+</li>
+<li>
+<p>Ein <strong>leerer String</strong> <code translate="no" v-pre>&quot;&quot;</code> wird zu <code translate="no" v-pre>[&quot;&quot;]</code> gesplittet → <code translate="no" v-pre>int.Parse</code> wirft <code translate="no" v-pre>FormatException</code>. Gib niemals <code translate="no" v-pre>&quot;&quot;</code> aus.</p>
+</li>
+<li>
+<p>Wenn du <code translate="no" v-pre>timeleft</code> ganz weglässt, ist das sicher: Der Converter wird nicht aufgerufen und <code translate="no" v-pre>Timeleft</code> bleibt <code translate="no" v-pre>TimeSpan.Zero</code>.</p>
+</li>
+</ul>
+<h3 id="15-modequeuenamedelete--sabnzbdproxyremovefromqueue-sabnzbdproxycs64-72">1.5 <code translate="no" v-pre>mode=queue&amp;name=delete</code> — <code translate="no" v-pre>SabnzbdProxy.RemoveFromQueue</code> (<code translate="no" v-pre>SabnzbdProxy.cs:64-72</code>)</h3>
+<div id="15-modequeuenamedelete--sabnzbdproxyremovefromqueue-sabnzbdproxycs64-72-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">GET /api?mode=queue&amp;name=delete&amp;del_files={0|1}&amp;value={nzo_id}&amp;apikey=KEY&amp;output=json</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>del_files = deleteData ? 1 : 0</code> (<code translate="no" v-pre>SabnzbdProxy.cs:68</code>). <strong>Kein <code translate="no" v-pre>archive</code>-Parameter im Queue-Pfad.</strong>
+Der Response-Body wird nur durch <code translate="no" v-pre>CheckForError</code> geleitet; es wird nichts deserialisiert.</p>
+<h3 id="16-modehistory-read--sabnzbdproxygethistory-sabnzbdproxycs132-146">1.6 <code translate="no" v-pre>mode=history</code> (lesend) — <code translate="no" v-pre>SabnzbdProxy.GetHistory</code> (<code translate="no" v-pre>SabnzbdProxy.cs:132-146</code>)</h3>
+<p>Anfrage: <code translate="no" v-pre>GET /api?mode=history&amp;start={start}&amp;limit={limit}[&amp;category={cat}]&amp;apikey=KEY&amp;output=json</code></p>
+<ul>
+<li>
+<p>Aufrufer: <code translate="no" v-pre>Sabnzbd.GetHistory()</code> mit <code translate="no" v-pre>start=0, limit=_configService.DownloadClientHistoryLimit</code>
+(<code translate="no" v-pre>Sabnzbd.cs:110</code>). Standard <strong>60</strong> in beiden Repos
+(Sonarr <code translate="no" v-pre>src/NzbDrone.Core/Configuration/ConfigService.cs:184</code>, Radarr <code translate="no" v-pre>:236</code>).</p>
+</li>
+<li>
+<p>Extraktion: <code translate="no" v-pre>SelectToken(&quot;history&quot;)</code> (<code translate="no" v-pre>SabnzbdProxy.cs:145</code>). Die oberste Ebene muss <code translate="no" v-pre>{&quot;history&quot;: {...}}</code> sein.</p>
+</li>
+</ul>
+<p><code translate="no" v-pre>SabnzbdHistory</code> (<code translate="no" v-pre>SabnzbdHistory.cs</code>): <code translate="no" v-pre>paused</code> (<code translate="no" v-pre>bool</code>, ungenutzt), <code translate="no" v-pre>slots</code> → <code translate="no" v-pre>Items</code>.</p>
+<p><code translate="no" v-pre>SabnzbdHistoryItem</code> (<code translate="no" v-pre>SabnzbdHistoryItem.cs</code>):</p>
+<retype-table copy-text="| JSON-Schlüssel | C#-Member | C#-Typ | Hinweise |
+|---|---|---|---|
+| `fail_message` | `FailMessage` | `string` | Wird zu `DownloadClientItem.Message` (`Sabnzbd.cs:132`) und steuert den Warning-Sonderfall (§1.6.1). |
+| `bytes` | `Size` | `long` | **BYTES, nicht MB**. `TotalSize = sabHistoryItem.Size` wird unverändert übernommen (`Sabnzbd.cs:128`). Das ist die größte Abweichung zu `mode=queue`. |
+| `category` | `Category` | `string` | Hinweis: `category`, während die Queue `cat` verwendet. |
+| `nzb_name` | `NzbName` | `string` | Wird gelesen, aber nie verwendet. |
+| `download_time` | `DownloadTime` | `int` (Sekunden) | Wird gelesen, aber nie verwendet. |
+| `storage` | `Storage` | `string` | Der Ausgabepfad. Siehe §1.6.2. Genau dieser Pfad wird mit `rm -rf` gelöscht. |
+| `status` | `Status` | `SabnzbdDownloadStatus` | Globaler `StringEnumConverter`. |
+| `nzo_id` | `Id` | `string` | |
+| `name` | `Title` | `string` | |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>JSON-Schlüssel</th>
+<th>C#-Member</th>
+<th>C#-Typ</th>
+<th>Hinweise</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>fail_message</code></td>
+<td><code translate="no" v-pre>FailMessage</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td>Wird zu <code translate="no" v-pre>DownloadClientItem.Message</code> (<code translate="no" v-pre>Sabnzbd.cs:132</code>) und steuert den Warning-Sonderfall (§1.6.1).</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>bytes</code></td>
+<td><code translate="no" v-pre>Size</code></td>
+<td><code translate="no" v-pre>long</code></td>
+<td><strong>BYTES, nicht MB</strong>. <code translate="no" v-pre>TotalSize = sabHistoryItem.Size</code> wird unverändert übernommen (<code translate="no" v-pre>Sabnzbd.cs:128</code>). Das ist die größte Abweichung zu <code translate="no" v-pre>mode=queue</code>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>category</code></td>
+<td><code translate="no" v-pre>Category</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td>Hinweis: <code translate="no" v-pre>category</code>, während die Queue <code translate="no" v-pre>cat</code> verwendet.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>nzb_name</code></td>
+<td><code translate="no" v-pre>NzbName</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td>Wird gelesen, aber nie verwendet.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>download_time</code></td>
+<td><code translate="no" v-pre>DownloadTime</code></td>
+<td><code translate="no" v-pre>int</code> (Sekunden)</td>
+<td>Wird gelesen, aber nie verwendet.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>storage</code></td>
+<td><code translate="no" v-pre>Storage</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td>Der Ausgabepfad. Siehe §1.6.2. Genau dieser Pfad wird mit <code translate="no" v-pre>rm -rf</code> gelöscht.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>status</code></td>
+<td><code translate="no" v-pre>Status</code></td>
+<td><code translate="no" v-pre>SabnzbdDownloadStatus</code></td>
+<td>Globaler <code translate="no" v-pre>StringEnumConverter</code>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>nzo_id</code></td>
+<td><code translate="no" v-pre>Id</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>name</code></td>
+<td><code translate="no" v-pre>Title</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>In den SAB-Modellen gibt es nirgends einen <code translate="no" v-pre>DateTime</code>-typisierten Member, daher ist kein Datumsformat festgelegt.</strong>
+<code translate="no" v-pre>completed</code> / <code translate="no" v-pre>last_history_update</code> (Unix-Epoche in echtem SAB) werden nie gelesen. Die einzigen zeitartigen Werte, die wirklich zählen, sind <code translate="no" v-pre>timeleft</code> (§1.4.1) und <code translate="no" v-pre>download_time</code> (eine ungelesene Ganzzahl in Sekunden).</p>
+<h4 id="161-history-status--downloaditemstatus-sabnzbdcs116-158">1.6.1 History-Status → <code translate="no" v-pre>DownloadItemStatus</code> (<code translate="no" v-pre>Sabnzbd.cs:116-158</code>)</h4>
+<div id="161-history-status--downloaditemstatus-sabnzbdcs116-158-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Deleted                                   -&gt; skipped entirely (Sabnzbd.cs:116-119)
+Failed  + fail_message == &quot;Unpacking failed, write error or disk is full?&quot;
+        (InvariantCultureIgnoreCase)      -&gt; DownloadItemStatus.Warning     (:140-144)
+Failed  (any other message)               -&gt; DownloadItemStatus.Failed      (:147)
+Completed                                 -&gt; DownloadItemStatus.Completed   (:152)
+anything else (Verifying/Moving/...)      -&gt; DownloadItemStatus.Downloading (:157)</code></pre>
+</doc-codeblock></div>
+<p>Jeder Verlaufseintrag bekommt <code translate="no" v-pre>RemainingSize = 0</code>, <code translate="no" v-pre>RemainingTime = TimeSpan.Zero</code>, <code translate="no" v-pre>CanBeRemoved = true</code>, <code translate="no" v-pre>CanMoveFiles = true</code> (<code translate="no" v-pre>Sabnzbd.cs:129-135</code>).</p>
+<p>Die <code translate="no" v-pre>DownloadItemStatus</code> selbst (<code translate="no" v-pre>src/NzbDrone.Core/Download/DownloadItemStatus.cs:3-11</code>): <code translate="no" v-pre>Queued=0, Paused=1, Downloading=2, Completed=3, Failed=4, Warning=5</code>.</p>
+<h4 id="162-storage--outputpath-sabnzbdcs160-176">1.6.2 <code translate="no" v-pre>storage</code> → <code translate="no" v-pre>OutputPath</code> (<code translate="no" v-pre>Sabnzbd.cs:160-176</code>)</h4>
+<div id="162-storage--outputpath-sabnzbdcs160-176-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">var outputPath = _remotePathMappingService.RemapRemoteToLocal(Settings.Host, new OsPath(sabHistoryItem.Storage));
+
+if (!outputPath.IsEmpty)
+{
+    historyItem.OutputPath = outputPath;
+
+    var parent = outputPath.Directory;
+    while (!parent.IsEmpty)
+    {
+        if (parent.FileName == sabHistoryItem.Title)
+        {
+            historyItem.OutputPath = parent;
+        }
+
+        parent = parent.Directory;
+    }
+}</code></pre>
+</doc-codeblock></div>
+<p>Die Schleife läuft <strong>bis ganz nach oben zur Wurzel</strong> und behält den <em>höchsten</em> Vorfahren, dessen letztes Segment gleich <code translate="no" v-pre>name</code> ist. Zweck: Wenn <code translate="no" v-pre>storage</code> auf eine Datei im Job-Ordner zeigt, geht es zurück zum Job-Ordner (Fixture <code translate="no" v-pre>SabnzbdFixture.cs:376-391</code>). Wenn <code translate="no" v-pre>storage</code> schon der Job-Ordner ist, gibt es keinen passenden Vorfahren und <code translate="no" v-pre>OutputPath == storage</code>. Genau das willst du.</p>
+<p><strong>Empfehlung für den Emulator: Setze <code translate="no" v-pre>storage</code> direkt auf den Pfad des Job-Ordners.</strong></p>
+<p>Leeres <code translate="no" v-pre>storage</code> ⇒ <code translate="no" v-pre>OutputPath</code> bleibt leer ⇒ <code translate="no" v-pre>CompletedDownloadService.ValidatePath</code> gibt die Warnung &quot;Download doesn&#x27;t contain intermediate path, Skipping.&quot; aus (Sonarr <code translate="no" v-pre>CompletedDownloadService.cs:299-303</code>).</p>
+<h3 id="17-modehistorynamedelete--sabnzbdproxyremovefromhistory-sabnzbdproxycs74-83">1.7 <code translate="no" v-pre>mode=history&amp;name=delete</code> — <code translate="no" v-pre>SabnzbdProxy.RemoveFromHistory</code> (<code translate="no" v-pre>SabnzbdProxy.cs:74-83</code>)</h3>
+<div id="17-modehistorynamedelete--sabnzbdproxyremovefromhistory-sabnzbdproxycs74-83-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">GET /api?mode=history&amp;name=delete&amp;del_files={0|1}&amp;value={nzo_id}&amp;archive={0|1}&amp;apikey=KEY&amp;output=json</code></pre>
+</doc-codeblock></div>
+<div id="17-modehistorynamedelete--sabnzbdproxyremovefromhistory-sabnzbdproxycs74-83-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">request.AddQueryParam(&quot;del_files&quot;, deleteData ? 1 : 0);          // :78
+request.AddQueryParam(&quot;value&quot;, id);                              // :79
+request.AddQueryParam(&quot;archive&quot;, deletePermanently ? 0 : 1);     // :80   &lt;-- inverted</code></pre>
+</doc-codeblock></div>
+<p>und der Aufrufer (<code translate="no" v-pre>Sabnzbd.cs:208</code>):</p>
+<div id="17-modehistorynamedelete--sabnzbdproxyremovefromhistory-sabnzbdproxycs74-83-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">_proxy.RemoveFromHistory(item.DownloadId, deleteData, item.Status == DownloadItemStatus.Failed, Settings);</code></pre>
+</doc-codeblock></div>
+<p>Also gilt <code translate="no" v-pre>deletePermanently == (status is Failed)</code>, und daher:</p>
+<retype-table copy-text="| Item-Status | `del_files` | `archive` |
+|---|---|---|
+| Completed | 1 | **1** (archivieren) |
+| Failed | 1 | **0** (endgültig löschen) |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Item-Status</th>
+<th><code translate="no" v-pre>del_files</code></th>
+<th><code translate="no" v-pre>archive</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Completed</td>
+<td>1</td>
+<td><strong>1</strong> (archivieren)</td>
+</tr>
+<tr>
+<td>Failed</td>
+<td>1</td>
+<td><strong>0</strong> (endgültig löschen)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Auf den ersten Blick wirkt das verkehrt herum, aber so macht es der Code nun mal.</p>
+<h3 id="18-modeaddfile--sabnzbdproxydownloadnzb-sabnzbdproxycs46-62">1.8 <code translate="no" v-pre>mode=addfile</code> — <code translate="no" v-pre>SabnzbdProxy.DownloadNzb</code> (<code translate="no" v-pre>SabnzbdProxy.cs:46-62</code>)</h3>
+<div id="18-modeaddfile--sabnzbdproxydownloadnzb-sabnzbdproxycs46-62-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">POST /api?mode=addfile&amp;cat={category}&amp;priority={int}&amp;apikey=KEY&amp;output=json
+Content-Type: multipart/form-data; boundary=...
+  part: Content-Disposition: form-data; name=&quot;name&quot;; filename=&quot;&lt;CleanFileName(Release.Title)&gt;.nzb&quot;
+        Content-Type: application/x-nzb</code></pre>
+</doc-codeblock></div>
+<ul>
+<li>
+<p>Das multipart-Feld heißt wörtlich <code translate="no" v-pre>name</code>, und der Part trägt ein <code translate="no" v-pre>filename</code> (<code translate="no" v-pre>SabnzbdProxy.cs:53</code>, <code translate="no" v-pre>HttpRequestBuilder.cs:379-395</code>, ausgegeben bei <code translate="no" v-pre>:180-195</code>).</p>
+</li>
+<li>
+<p>Der Dateiname kommt von <code translate="no" v-pre>FileNameBuilder.CleanFileName(release.Title) + &quot;.nzb&quot;</code> (Sonarr <code translate="no" v-pre>src/NzbDrone.Core/Download/UsenetClientBase.cs:43</code>, Radarr <code translate="no" v-pre>:43</code>).</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>cat</code> ignoriert das Argument <code translate="no" v-pre>category</code> der Methode</strong> und liest die Einstellungen direkt (<code translate="no" v-pre>SabnzbdProxy.cs:50</code>: <code translate="no" v-pre>request.AddQueryParam(&quot;cat&quot;, settings.TvCategory);</code> — Radarr: <code translate="no" v-pre>settings.MovieCategory</code>). Unproblematisch, weil der Aufrufer denselben Wert übergibt.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>priority</code> ist der rohe <code translate="no" v-pre>int</code> aus <code translate="no" v-pre>SabnzbdPriority</code> (siehe §2), je nachdem wie aktuell die Veröffentlichung ist:
+Sonarr <code translate="no" v-pre>Sabnzbd.cs:43</code> <code translate="no" v-pre>remoteEpisode.IsRecentEpisode() ? Settings.RecentTvPriority : Settings.OlderTvPriority</code>;
+Radarr <code translate="no" v-pre>Sabnzbd.cs:43</code> <code translate="no" v-pre>remoteMovie.Movie.MovieMetadata.Value.IsRecentMovie ? RecentMoviePriority : OlderMoviePriority</code>.</p>
+</li>
+<li>
+<p>Antwort <code translate="no" v-pre>SabnzbdAddResponse</code> (<code translate="no" v-pre>Responses/SabnzbdAddResponse.cs</code>):</p>
+</li>
+</ul>
+<retype-table copy-text="| JSON-Schlüssel | C# | Typ |
+|---|---|---|
+| `status` | `Status` | `bool` — geparst, danach aber **nie gelesen** |
+| `nzo_ids` | `Ids` | `List&lt;string&gt;`, im Konstruktor mit leerer Liste initialisiert |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>JSON-Schlüssel</th>
+<th>C#</th>
+<th>Typ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>status</code></td>
+<td><code translate="no" v-pre>Status</code></td>
+<td><code translate="no" v-pre>bool</code> — geparst, danach aber <strong>nie gelesen</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>nzo_ids</code></td>
+<td><code translate="no" v-pre>Ids</code></td>
+<td><code translate="no" v-pre>List&lt;string&gt;</code>, im Konstruktor mit leerer Liste initialisiert</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Gelesen wird mit <code translate="no" v-pre>TryDeserialize</code>. Schlägt das fehl, wird ein künstliches <code translate="no" v-pre>{Status=true, Ids=[]}</code> verwendet (<code translate="no" v-pre>SabnzbdProxy.cs:55-59</code>). Danach <code translate="no" v-pre>Sabnzbd.cs:47-52</code>:</p>
+<div id="18-modeaddfile--sabnzbdproxydownloadnzb-sabnzbdproxycs46-62-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">if (response == null || response.Ids.Empty())
+{
+    throw new DownloadClientRejectedReleaseException(remoteEpisode.Release, &quot;SABnzbd rejected the NZB for an unknown reason&quot;);
+}
+
+return response.Ids.First();</code></pre>
+</doc-codeblock></div>
+<p><strong><code translate="no" v-pre>nzo_ids</code> muss ein nicht leeres Array aus Strings sein.</strong> <code translate="no" v-pre>&quot;nzo_ids&quot;: null</code> ist dasselbe wie fehlend (<code translate="no" v-pre>NullValueHandling.Ignore</code> behält die leere Liste aus dem Konstruktor) und schlägt genauso fehl.</p>
+<h3 id="19-queue-status--downloaditemstatus-sabnzbdcs60-103">1.9 Queue-Status → <code translate="no" v-pre>DownloadItemStatus</code> (<code translate="no" v-pre>Sabnzbd.cs:60-103</code>)</h3>
+<div id="19-queue-status--downloaditemstatus-sabnzbdcs60-103-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Deleted                                       -&gt; skipped (Sabnzbd.cs:62-65)
+(queue.paused &amp;&amp; slot.priority != Force) || slot.status == Paused
+                                              -&gt; Paused, and RemainingTime forced to null (:78-84)
+Queued | Grabbing | Propagating               -&gt; Queued        (:85-90)
+everything else                               -&gt; Downloading   (:93)</code></pre>
+</doc-codeblock></div>
+<p>Außerdem <code translate="no" v-pre>Sabnzbd.cs:96-100</code>: Ein Titel, der mit dem wörtlichen <code translate="no" v-pre>&quot;ENCRYPTED /&quot;</code> beginnt, wird um diese
+11 Zeichen gekürzt, und der Eintrag wird mit <code translate="no" v-pre>IsEncrypted = true</code> markiert.</p>
+<p>Jeder Queue-Eintrag bekommt <code translate="no" v-pre>CanBeRemoved = true</code> und <code translate="no" v-pre>CanMoveFiles = true</code> (<code translate="no" v-pre>Sabnzbd.cs:75-76</code>).</p>
+<h3 id="110-client-side-category-filter-sabnzbdcs186-195">1.10 Clientseitiger Kategorie-Filter (<code translate="no" v-pre>Sabnzbd.cs:186-195</code>)</h3>
+<div id="110-client-side-category-filter-sabnzbdcs186-195-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">foreach (var downloadClientItem in GetQueue().Concat(GetHistory()))
+{
+    if (downloadClientItem.Category == Settings.TvCategory ||
+        (downloadClientItem.Category == &quot;*&quot; &amp;&amp; Settings.TvCategory.IsNullOrWhiteSpace()))
+    {
+        yield return downloadClientItem;
+    }
+}</code></pre>
+</doc-codeblock></div>
+<p>Ordinale Zeichenketten-Gleichheit. Ein Element in der Kategorie <code translate="no" v-pre>*</code> wird nur akzeptiert, wenn die konfigurierte Kategorie leer ist.</p>
+<h3 id="111-modes-that-exist-in-the-proxy-but-are-never-called">1.11 Modi, die im Proxy existieren, aber nie aufgerufen werden</h3>
+<ul>
+<li>
+<p><code translate="no" v-pre>mode=retry&amp;value={id}</code> (<code translate="no" v-pre>SabnzbdProxy.cs:148-160</code>, Antwort <code translate="no" v-pre>{status, nzo_id}</code> →
+<code translate="no" v-pre>Responses/SabnzbdRetryResponse.cs</code>). <code translate="no" v-pre>ISabnzbdProxy.RetryDownload</code> hat <strong>keinen Aufrufer</strong> in beiden Repos.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>Responses/SabnzbdCategoryResponse.cs</code> (<code translate="no" v-pre>{&quot;categories&quot;: [...]}</code>, also <code translate="no" v-pre>mode=get_cats</code>) ist <strong>komplett unreferenziert</strong> in beiden Repos.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>Sabnzbd.ValidatePath</code> (<code translate="no" v-pre>Sabnzbd.cs:576-592</code>) ist privat und wird nie aufgerufen (toter Code).</p>
+</li>
+</ul>
+<h2 id="2-sabnzbddownloadstatus-and-sabnzbdpriority--exact-members-unknownnull-handling">2. <code translate="no" v-pre>SabnzbdDownloadStatus</code> und <code translate="no" v-pre>SabnzbdPriority</code> — genaue Mitglieder, Behandlung von unbekannten Werten und null</h2>
+<h3 id="21-sabnzbdprioritycs-complete-file">2.1 <code translate="no" v-pre>SabnzbdPriority.cs</code> (komplette Datei)</h3>
+<div id="21-sabnzbdprioritycs-complete-file-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">namespace NzbDrone.Core.Download.Clients.Sabnzbd
+{
+    public enum SabnzbdPriority
+    {
+        Default = -100,
+        Paused  = -2,
+        Low     = -1,
+        Normal  = 0,
+        High    = 1,
+        Force   = 2
+    }
+}</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>JsonConverters/SabnzbdPriorityTypeConverter.cs:14-21</code>:</p>
+<div id="21-sabnzbdprioritycs-complete-file-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+{
+    var queuePriority = reader.Value.ToString();
+
+    Enum.TryParse(queuePriority, out SabnzbdPriority output);
+
+    return output;
+}</code></pre>
+</doc-codeblock></div>
+<ul>
+<li>
+<p><code translate="no" v-pre>Enum.TryParse&lt;T&gt;(string, out T)</code> ist die <strong>groß-/kleinschreibungsabhängige</strong> Überladung (.NET-Semantik).
+<code translate="no" v-pre>&quot;Normal&quot;</code> wird geparst, <code translate="no" v-pre>&quot;normal&quot;</code> <strong>nicht</strong>. Bei einem Fehler ist <code translate="no" v-pre>output</code>
+<code translate="no" v-pre>default(SabnzbdPriority) == 0 == Normal</code>, d. h. eine falsche Schreibweise wird stillschweigend zu Normal.
+<code translate="no" v-pre>&quot;Force&quot;</code> ist wichtig (§1.9), <code translate="no" v-pre>&quot;force&quot;</code> funktioniert nicht.</p>
+</li>
+<li>
+<p>Numerische Strings werden ebenfalls geparst: <code translate="no" v-pre>&quot;2&quot;</code> → <code translate="no" v-pre>Force</code>, <code translate="no" v-pre>&quot;-100&quot;</code> → <code translate="no" v-pre>Default</code>. Eine JSON-Zahl <code translate="no" v-pre>2</code> funktioniert auch (<code translate="no" v-pre>reader.Value.ToString()</code> == <code translate="no" v-pre>&quot;2&quot;</code>).</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>&quot;priority&quot;: null</code> wirft eine <code translate="no" v-pre>NullReferenceException</code></strong> (<code translate="no" v-pre>reader.Value.ToString()</code> auf null). Das wird <em>nicht</em> von <code translate="no" v-pre>Json.TryDeserialize</code> abgefangen. Lass den Schlüssel weg oder sende einen echten Wert.</p>
+</li>
+<li>
+<p>Ein weggelassenes <code translate="no" v-pre>priority</code> ist unproblematisch: Der Converter wird nicht aufgerufen, das Mitglied bleibt <code translate="no" v-pre>Normal</code> (0).</p>
+</li>
+<li>
+<p>Der Converter ist nur auf <code translate="no" v-pre>SabnzbdQueueItem.Priority</code> registriert (<code translate="no" v-pre>SabnzbdQueueItem.cs:21</code>). Verlaufseinträge haben keine Priorität.</p>
+</li>
+<li>
+<p>Dieselben Ganzzahlen schicken Sonarr/Radarr als <code translate="no" v-pre>&amp;priority=</code> bei <code translate="no" v-pre>mode=addfile</code> zurück (die Standardwerte für <code translate="no" v-pre>Recent*Priority</code> und <code translate="no" v-pre>Older*Priority</code> in <code translate="no" v-pre>SabnzbdSettings.cs</code> sind beide <code translate="no" v-pre>(int)SabnzbdPriority.Default</code> = <code translate="no" v-pre>-100</code>).</p>
+</li>
+</ul>
+<h3 id="22-sabnzbddownloadstatuscs-complete-file-declaration-order--implicit-values-015">2.2 <code translate="no" v-pre>SabnzbdDownloadStatus.cs</code> (komplette Datei), Deklarationsreihenfolge = implizite Werte 0..15</h3>
+<div id="22-sabnzbddownloadstatuscs-complete-file-declaration-order--implicit-values-015-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">namespace NzbDrone.Core.Download.Clients.Sabnzbd
+{
+    public enum SabnzbdDownloadStatus
+    {
+        Grabbing,       // 0
+        Queued,         // 1
+        Paused,         // 2
+        Checking,       // 3
+        Downloading,    // 4
+        QuickCheck,     // 5
+        Verifying,      // 6
+        Repairing,      // 7
+        Fetching,       // 8  -- comment in file: &quot;Fetching additional blocks&quot;
+        Extracting,     // 9
+        Moving,         // 10
+        Running,        // 11 -- comment in file: &quot;Running PP Script&quot;
+        Completed,      // 12
+        Failed,         // 13
+        Deleted,        // 14
+        Propagating     // 15
+    }
+}</code></pre>
+</doc-codeblock></div>
+<ul>
+<li>
+<p><strong>Kein Konverter pro Eigenschaft.</strong> Der global registrierte
+<code translate="no" v-pre>StringEnumConverter { NamingStrategy = CamelCaseNamingStrategy }</code> (<code translate="no" v-pre>Json.cs:32</code>) übernimmt das.</p>
+</li>
+<li>
+<p>Ein <strong>unbekannter Name wirft eine Exception</strong> (Newtonsoft <code translate="no" v-pre>EnumUtils.ParseEnum</code> → <code translate="no" v-pre>JsonSerializationException</code>).
+Und weil <code translate="no" v-pre>GetQueue</code>/<code translate="no" v-pre>GetHistory</code> <code translate="no" v-pre>Json.Deserialize</code> verwenden (nicht Try), schlägt der <em>gesamte</em> Queue- oder History-Aufruf fehl. <strong>Sende niemals einen Status, der nicht in dieser Liste steht.</strong></p>
+</li>
+<li>
+<p>Schreib SABs kanonische Schreibweisen genau so wie oben (<code translate="no" v-pre>&quot;Downloading&quot;</code>, <code translate="no" v-pre>&quot;QuickCheck&quot;</code>, <code translate="no" v-pre>&quot;Completed&quot;</code>,
+<code translate="no" v-pre>&quot;Failed&quot;</code>, <code translate="no" v-pre>&quot;Propagating&quot;</code>, ...). Newtonsofts Enum-Zuordnung fällt zwar auf Groß-/Kleinschreibung-egal zurück,
+aber nur die exakte Schreibweise solltest du dir wirklich zunutze machen.</p>
+</li>
+<li>
+<p>Ganzzahlen werden auch akzeptiert (<code translate="no" v-pre>AllowIntegerValues</code> ist standardmäßig true), aber verwende sie nicht.</p>
+</li>
+<li>
+<p>Ein JSON-<code translate="no" v-pre>null</code> für <code translate="no" v-pre>status</code> wird von <code translate="no" v-pre>NullValueHandling.Ignore</code> ignoriert und das Mitglied bleibt <code translate="no" v-pre>Grabbing</code> (0). Ein Queue-Slot wird dann stillschweigend zu <code translate="no" v-pre>Queued</code>, ein History-Slot stillschweigend zu <code translate="no" v-pre>Downloading</code>. Sende immer einen expliziten Status.</p>
+</li>
+</ul>
+<h2 id="3-get_config-exactly-what-is-read-and-the-validation-rules">3. <code translate="no" v-pre>get_config</code>: genau was gelesen wird und die Validierungsregeln</h2>
+<h3 id="31-the-model--sabnzbdcategorycs">3.1 Das Modell — <code translate="no" v-pre>SabnzbdCategory.cs</code></h3>
+<p>Diese Datei enthält <code translate="no" v-pre>SabnzbdConfig</code>, <code translate="no" v-pre>SabnzbdConfigMisc</code>, <code translate="no" v-pre>SabnzbdCategory</code> <strong>und</strong> <code translate="no" v-pre>SabnzbdSorter</code>.
+Es gibt <strong>kein <code translate="no" v-pre>SabnzbdConfig.cs</code></strong> in beiden Repos (bestätigt über die Auflistung der GitHub-Contents-API für <code translate="no" v-pre>src/NzbDrone.Core/Download/Clients/Sabnzbd</code>).</p>
+<div id="31-the-model--sabnzbdcategorycs-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">public class SabnzbdConfig                                   // SabnzbdCategory.cs:8
+{
+    public SabnzbdConfig()                                   // :10-15
+    {
+        Categories = new List&lt;SabnzbdCategory&gt;();
+        Servers    = new List&lt;object&gt;();
+        Sorters    = new List&lt;SabnzbdSorter&gt;();
+    }
+
+    public SabnzbdConfigMisc      Misc       { get; set; }   // :17   &lt;-- NOT initialised
+    public List&lt;SabnzbdCategory&gt;  Categories { get; set; }   // :18
+    public List&lt;object&gt;           Servers    { get; set; }   // :19
+    public List&lt;SabnzbdSorter&gt;    Sorters    { get; set; }   // :20
+}</code></pre>
+</doc-codeblock></div>
+<h3 id="32-configmisc--the-complete-set-of-keys-read-sabnzbdcategorycs23-37">3.2 <code translate="no" v-pre>config.misc.*</code> — die vollständige Liste der gelesenen Schlüssel (<code translate="no" v-pre>SabnzbdCategory.cs:23-37</code>)</h3>
+<retype-table copy-text="| Schlüssel (JSON) | C#-Typ | Gelesen bei | Zweck |
+|---|---|---|---|
+| `complete_dir` | `string` | `Sabnzbd.cs:218` | Basis für jeden Kategoriepfad. |
+| `tv_categories` | `string[]` | `Sabnzbd.cs:265, 493` | |
+| `enable_tv_sorting` | `bool` | `Sabnzbd.cs:265, 493` | |
+| `movie_categories` | `string[]` | `Sabnzbd.cs:269, 502` | |
+| `enable_movie_sorting` | `bool` | `Sabnzbd.cs:269, 502` | |
+| `date_categories` | `string[]` **über `SabnzbdStringArrayConverter`** | `Sabnzbd.cs:273, 511` | |
+| `enable_date_sorting` | `bool` | `Sabnzbd.cs:273, 511` | |
+| `pre_check` | `bool` | `Sabnzbd.cs:443` | |
+| `history_retention` | `string` | `Sabnzbd.cs:540, 561-573` | Veraltet, SAB &lt; 4.3. |
+| `history_retention_option` | `string` | `Sabnzbd.cs:541, 544` | SAB &gt;= 4.3. |
+| `history_retention_number` | `int` | `Sabnzbd.cs:542, 553` | SAB &gt;= 4.3. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Schlüssel (JSON)</th>
+<th>C#-Typ</th>
+<th>Gelesen bei</th>
+<th>Zweck</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>complete_dir</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:218</code></td>
+<td>Basis für jeden Kategoriepfad.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>tv_categories</code></td>
+<td><code translate="no" v-pre>string[]</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:265, 493</code></td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>enable_tv_sorting</code></td>
+<td><code translate="no" v-pre>bool</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:265, 493</code></td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>movie_categories</code></td>
+<td><code translate="no" v-pre>string[]</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:269, 502</code></td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>enable_movie_sorting</code></td>
+<td><code translate="no" v-pre>bool</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:269, 502</code></td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>date_categories</code></td>
+<td><code translate="no" v-pre>string[]</code> <strong>über <code translate="no" v-pre>SabnzbdStringArrayConverter</code></strong></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:273, 511</code></td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>enable_date_sorting</code></td>
+<td><code translate="no" v-pre>bool</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:273, 511</code></td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>pre_check</code></td>
+<td><code translate="no" v-pre>bool</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:443</code></td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>history_retention</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:540, 561-573</code></td>
+<td>Veraltet, SAB &lt; 4.3.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>history_retention_option</code></td>
+<td><code translate="no" v-pre>string</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:541, 544</code></td>
+<td>SAB &gt;= 4.3.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>history_retention_number</code></td>
+<td><code translate="no" v-pre>int</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:542, 553</code></td>
+<td>SAB &gt;= 4.3.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>SabnzbdStringArrayConverter</code> (<code translate="no" v-pre>JsonConverters/SabnzbdStringArrayConverter.cs:25-39</code>) — wird nur
+auf <code translate="no" v-pre>date_categories</code> angewendet (<code translate="no" v-pre>SabnzbdCategory.cs:30</code>):</p>
+<div id="32-configmisc--the-complete-set-of-keys-read-sabnzbdcategorycs23-37-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">if (reader.TokenType == JsonToken.String || reader.TokenType == JsonToken.Null)
+{
+    return new string[] { JValue.Load(reader).ToObject&lt;string&gt;() };
+}
+else if (reader.TokenType == JsonToken.StartArray)
+{
+    return JArray.Load(reader).ToObject&lt;string[]&gt;();
+}
+else
+{
+    throw new JsonReaderException(&quot;Expected array&quot;);
+}</code></pre>
+</doc-codeblock></div>
+<p>Ein JSON-<strong>String</strong> wird zu einem Array mit einem Element; ein <strong>null</strong> wird zu <code translate="no" v-pre>[null]</code> (ein Array mit einem Element, das null ist); ein <strong>Array</strong> wird normal deserialisiert; alles andere (eine Zahl, ein Objekt) wirft eine Exception. Doc-Kommentar bei <code translate="no" v-pre>:7-9</code>: &quot;On some properties sab serializes array of single item as plain string.&quot;</p>
+<h3 id="33-configcategories--sabnzbdcategory-sabnzbdcategorycs39-48">3.3 <code translate="no" v-pre>config.categories[]</code> — <code translate="no" v-pre>SabnzbdCategory</code> (<code translate="no" v-pre>SabnzbdCategory.cs:39-48</code>)</h3>
+<retype-table copy-text="| JSON-Schlüssel | C# | Gelesen bei |
+|---|---|---|
+| `priority` | `int Priority` | wird nie gelesen |
+| `pp` | `string PP` | wird nie gelesen (camelCase von `PP` ist `pp`) |
+| `name` | `string Name` | `Sabnzbd.cs:251, 255, 458` |
+| `script` | `string Script` | wird nie gelesen |
+| `dir` | `string Dir` | `Sabnzbd.cs:238` (`Dir.TrimEnd('*')`), `Sabnzbd.cs:462` (`Dir.EndsWith(&quot;*&quot;)`) |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>JSON-Schlüssel</th>
+<th>C#</th>
+<th>Gelesen bei</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>priority</code></td>
+<td><code translate="no" v-pre>int Priority</code></td>
+<td>wird nie gelesen</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>pp</code></td>
+<td><code translate="no" v-pre>string PP</code></td>
+<td>wird nie gelesen (camelCase von <code translate="no" v-pre>PP</code> ist <code translate="no" v-pre>pp</code>)</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>name</code></td>
+<td><code translate="no" v-pre>string Name</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:251, 255, 458</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>script</code></td>
+<td><code translate="no" v-pre>string Script</code></td>
+<td>wird nie gelesen</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>dir</code></td>
+<td><code translate="no" v-pre>string Dir</code></td>
+<td><code translate="no" v-pre>Sabnzbd.cs:238</code> (<code translate="no" v-pre>Dir.TrimEnd('*')</code>), <code translate="no" v-pre>Sabnzbd.cs:462</code> (<code translate="no" v-pre>Dir.EndsWith(&quot;*&quot;)</code>)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>FullPath</code> (<code translate="no" v-pre>OsPath</code>) wird berechnet, nicht deserialisiert.</p>
+<p>Pfadzusammenbau — <code translate="no" v-pre>Sabnzbd.GetCategories</code> (<code translate="no" v-pre>Sabnzbd.cs:216-244</code>):</p>
+<div id="33-configcategories--sabnzbdcategory-sabnzbdcategorycs39-48-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">var completeDir = new OsPath(config.Misc.complete_dir);
+
+if (!completeDir.IsRooted)
+{
+    if (HasVersion(2, 0))
+    {
+        var status = _proxy.GetFullStatus(Settings);
+        completeDir = new OsPath(status.CompleteDir);
+    }
+    else
+    {
+        var queue = _proxy.GetQueue(0, 1, Settings);
+        var defaultRootFolder = new OsPath(queue.DefaultRootFolder);
+        completeDir = defaultRootFolder + completeDir;
+    }
+}
+
+foreach (var category in config.Categories)
+{
+    var relativeDir = new OsPath(category.Dir.TrimEnd('*'));
+    category.FullPath = completeDir + relativeDir;
+    yield return category;
+}</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>OsPath.operator+</code> (<code translate="no" v-pre>src/NzbDrone.Common/Disk/OsPath.cs:420-448</code>) gibt <code translate="no" v-pre>left</code> zurück, wenn <code translate="no" v-pre>right.IsEmpty</code> ist,
+also ergibt <code translate="no" v-pre>dir: &quot;&quot;</code> genau <code translate="no" v-pre>FullPath == complete_dir</code>. <code translate="no" v-pre>IsRooted</code> für einen Pfad vom Typ Unix ist
+<code translate="no" v-pre>_path.StartsWith(&quot;/&quot;)</code> (<code translate="no" v-pre>OsPath.cs:142-145</code>). Der Pfadtyp wird aus dem String abgeleitet
+(<code translate="no" v-pre>OsPath.cs:43-60</code>): ein führendes <code translate="no" v-pre>/</code> ergibt Unix, ein <code translate="no" v-pre>\</code> oder ein Laufwerksbuchstabe ergibt Windows. Ein Pfad vom Typ Unix, der an eine auf Windows laufende Sonarr-Instanz übergeben wird, schlägt bei <code translate="no" v-pre>CompletedDownloadService.ValidatePath</code> (<code translate="no" v-pre>:305-310</code>) fehl.</p>
+<h3 id="34-the-two-nre-landmines-and-what-is-actually-safe">3.4 Die zwei NRE-Fallen (und was tatsächlich sicher ist)</h3>
+<retype-table copy-text="| Payload-Aufbau | Ergebnis |
+|---|---|
+| **`&quot;misc&quot;` fehlt oder ist `null`** | `Misc` bleibt null (kein Standardwert im Konstruktor; `NullValueHandling.Ignore` beim Lesen) → **NullReferenceException bei `Sabnzbd.cs:218`**. Das zeigt sich als &quot;Test was aborted due to an error: …&quot; und als geloggter Fehler in den Health-Checks. |
+| **eine Kategorie, bei der `&quot;dir&quot;` fehlt oder `null` ist** | `Dir` ist null → **NullReferenceException bei `Sabnzbd.cs:238`** (`category.Dir.TrimEnd('*')`) und nochmal bei `:462` (`category.Dir.EndsWith(&quot;*&quot;)`). |
+| `&quot;categories&quot;: null` oder fehlt | Sicher. Die leere Liste aus dem Konstruktor bleibt erhalten. `GetStatus` findet dann keine Kategorie, und `OutputRootFolders` bleibt leer. |
+| `&quot;sorters&quot;: null` oder fehlt | Sicher. Leere Liste aus dem Konstruktor; `config.Sorters.Any(...)` bei `Sabnzbd.cs:484` funktioniert. |
+| `&quot;servers&quot;: null` oder fehlt | Sicher und wird nie gelesen (`List&lt;object&gt;`, `SabnzbdCategory.cs:19`). |
+| `&quot;tv_categories&quot;/&quot;movie_categories&quot;/&quot;date_categories&quot;: null` | Sicher: `ContainsCategory` gibt für null/leer `true` zurück (§3.5). Das ist aber nur relevant, wenn das passende `enable_*_sorting` auf true steht. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Payload-Aufbau</th>
+<th>Ergebnis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code translate="no" v-pre>&quot;misc&quot;</code> fehlt oder ist <code translate="no" v-pre>null</code></strong></td>
+<td><code translate="no" v-pre>Misc</code> bleibt null (kein Standardwert im Konstruktor; <code translate="no" v-pre>NullValueHandling.Ignore</code> beim Lesen) → <strong>NullReferenceException bei <code translate="no" v-pre>Sabnzbd.cs:218</code></strong>. Das zeigt sich als &quot;Test was aborted due to an error: …&quot; und als geloggter Fehler in den Health-Checks.</td>
+</tr>
+<tr>
+<td><strong>eine Kategorie, bei der <code translate="no" v-pre>&quot;dir&quot;</code> fehlt oder <code translate="no" v-pre>null</code> ist</strong></td>
+<td><code translate="no" v-pre>Dir</code> ist null → <strong>NullReferenceException bei <code translate="no" v-pre>Sabnzbd.cs:238</code></strong> (<code translate="no" v-pre>category.Dir.TrimEnd('*')</code>) und nochmal bei <code translate="no" v-pre>:462</code> (<code translate="no" v-pre>category.Dir.EndsWith(&quot;*&quot;)</code>).</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>&quot;categories&quot;: null</code> oder fehlt</td>
+<td>Sicher. Die leere Liste aus dem Konstruktor bleibt erhalten. <code translate="no" v-pre>GetStatus</code> findet dann keine Kategorie, und <code translate="no" v-pre>OutputRootFolders</code> bleibt leer.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>&quot;sorters&quot;: null</code> oder fehlt</td>
+<td>Sicher. Leere Liste aus dem Konstruktor; <code translate="no" v-pre>config.Sorters.Any(...)</code> bei <code translate="no" v-pre>Sabnzbd.cs:484</code> funktioniert.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>&quot;servers&quot;: null</code> oder fehlt</td>
+<td>Sicher und wird nie gelesen (<code translate="no" v-pre>List&lt;object&gt;</code>, <code translate="no" v-pre>SabnzbdCategory.cs:19</code>).</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>&quot;tv_categories&quot;/&quot;movie_categories&quot;/&quot;date_categories&quot;: null</code></td>
+<td>Sicher: <code translate="no" v-pre>ContainsCategory</code> gibt für null/leer <code translate="no" v-pre>true</code> zurück (§3.5). Das ist aber nur relevant, wenn das passende <code translate="no" v-pre>enable_*_sorting</code> auf true steht.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>Regel: Gib <code translate="no" v-pre>misc</code> immer als Objekt aus und jede Kategorie mit einem String-<code translate="no" v-pre>dir</code> (verwende <code translate="no" v-pre>&quot;&quot;</code>).</strong></p>
+<h3 id="35-containscategory-sabnzbdcs523-536">3.5 <code translate="no" v-pre>ContainsCategory</code> (<code translate="no" v-pre>Sabnzbd.cs:523-536</code>)</h3>
+<div id="35-containscategory-sabnzbdcs523-536-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">private bool ContainsCategory(IEnumerable&lt;string&gt; categories, string category)
+{
+    if (categories == null || categories.Empty())
+    {
+        return true;          // &lt;-- null/empty means &quot;all categories&quot;
+    }
+
+    if (category.IsNullOrWhiteSpace())
+    {
+        category = &quot;Default&quot;;
+    }
+
+    return categories.Contains(category);
+}</code></pre>
+</doc-codeblock></div>
+<p>Durch die Fixtures bestätigt: <code translate="no" v-pre>enable_tv_sorting=true</code> + <code translate="no" v-pre>tv_categories=null</code> <strong>schlägt fehl</strong>
+(<code translate="no" v-pre>SabnzbdFixture.cs:636-645</code>), und + <code translate="no" v-pre>tv_categories=[]</code> schlägt auch fehl (<code translate="no" v-pre>:647-656</code>).
+<code translate="no" v-pre>TvCategory=null</code> + <code translate="no" v-pre>tv_categories=[&quot;Default&quot;]</code> schlägt fehl (<code translate="no" v-pre>:680-691</code>).</p>
+<h3 id="36-test--the-exact-order-and-rules-sabnzbdcs286-292">3.6 <code translate="no" v-pre>Test()</code> — die genaue Reihenfolge und Regeln (<code translate="no" v-pre>Sabnzbd.cs:286-292</code>)</h3>
+<div id="36-test--the-exact-order-and-rules-sabnzbdcs286-292-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">protected override void Test(List&lt;ValidationFailure&gt; failures)
+{
+    failures.AddIfNotNull(TestConnectionAndVersion());
+    failures.AddIfNotNull(TestAuthentication());
+    failures.AddIfNotNull(TestGlobalConfig());
+    failures.AddIfNotNull(TestCategory());
+}</code></pre>
+</doc-codeblock></div>
+<p>Umschlossen von <code translate="no" v-pre>DownloadClientBase.Test()</code> (<code translate="no" v-pre>src/NzbDrone.Core/Download/DownloadClientBase.cs:148-163</code>),
+das jede durchkommende Exception abfängt und <code translate="no" v-pre>&quot;Test was aborted due to an error: &quot; + ex.Message</code> anhängt.</p>
+<p><strong><code translate="no" v-pre>TestConnectionAndVersion()</code> (<code translate="no" v-pre>Sabnzbd.cs:368-414</code>)</strong> — 1 × <code translate="no" v-pre>mode=version</code>:</p>
+<ol>
+<li>
+<p>Version nicht lesbar → Fehler im Feld <code translate="no" v-pre>Version</code> (<code translate="no" v-pre>DownloadClientSabnzbdValidationUnknownVersion</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>rawVersion == &quot;develop&quot;</code> (Groß-/Kleinschreibung egal) → <strong>Warnung</strong> im Feld <code translate="no" v-pre>Version</code>, <code translate="no" v-pre>IsValid</code> bleibt true
+(Fixture <code translate="no" v-pre>SabnzbdFixture.cs:566-577</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>version.Major &gt;= 1</code> → bestanden (<code translate="no" v-pre>:389-392</code>).</p>
+</li>
+<li>
+<p>sonst <code translate="no" v-pre>version.Minor &gt;= 7</code> → bestanden (<code translate="no" v-pre>:394-397</code>).</p>
+</li>
+<li>
+<p>sonst Fehler: benötigte Version <code translate="no" v-pre>&quot;0.7.0&quot;</code> (<code translate="no" v-pre>:399-404</code>).
+Fixture-Tabelle (<code translate="no" v-pre>SabnzbdFixture.cs:549-564</code>): <code translate="no" v-pre>0.6.9</code>→false, <code translate="no" v-pre>0.7.0</code>/<code translate="no" v-pre>0.8.0</code>/<code translate="no" v-pre>1.0.0</code>/<code translate="no" v-pre>1.0.0RC1</code>/<code translate="no" v-pre>1.1.x</code>→true.</p>
+</li>
+<li>
+<p>Jede Exception → Fehler im Feld <code translate="no" v-pre>Host</code> (&quot;unable to connect&quot;), Detail = <code translate="no" v-pre>ex.Message</code> (<code translate="no" v-pre>:406-413</code>).</p>
+</li>
+</ol>
+<p><strong><code translate="no" v-pre>TestAuthentication()</code> (<code translate="no" v-pre>Sabnzbd.cs:416-438</code>)</strong> — 1 × <code translate="no" v-pre>mode=get_config</code>. Fängt die Exception ab und vergleicht
+<code translate="no" v-pre>ex.Message</code> mit <code translate="no" v-pre>ContainsIgnoreCase</code>:</p>
+<retype-table copy-text="| Gefundener Teilstring | Fehlerfeld |
+|---|---|
+| `API Key Incorrect` | `APIKey` — `DownloadClientValidationApiKeyIncorrect` |
+| `API Key Required` | `APIKey` — `DownloadClientValidationApiKeyRequired` |
+| alles andere | **erneut ausgelöst** → generisches &quot;Test was aborted due to an error: …&quot; |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Gefundener Teilstring</th>
+<th>Fehlerfeld</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>API Key Incorrect</code></td>
+<td><code translate="no" v-pre>APIKey</code> — <code translate="no" v-pre>DownloadClientValidationApiKeyIncorrect</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>API Key Required</code></td>
+<td><code translate="no" v-pre>APIKey</code> — <code translate="no" v-pre>DownloadClientValidationApiKeyRequired</code></td>
+</tr>
+<tr>
+<td>alles andere</td>
+<td><strong>erneut ausgelöst</strong> → generisches &quot;Test was aborted due to an error: …&quot;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Weil <code translate="no" v-pre>CheckForError</code> den Body als <code translate="no" v-pre>&quot;Error response received from SABnzbd: {error}&quot;</code> verpackt
+(<code translate="no" v-pre>SabnzbdProxy.cs:244</code>), klappt der Vergleich nur, wenn dein <code translate="no" v-pre>error</code>-String <code translate="no" v-pre>API Key Incorrect</code> bzw.
+<code translate="no" v-pre>API Key Required</code> <strong>enthält</strong> — also SABs eigene Formulierung.</p>
+<p><strong><code translate="no" v-pre>TestGlobalConfig()</code> (<code translate="no" v-pre>Sabnzbd.cs:440-453</code>)</strong> — 1 × <code translate="no" v-pre>mode=get_config</code>, plus 1 × <code translate="no" v-pre>mode=version</code>
+nur dann, wenn <code translate="no" v-pre>pre_check</code> true ist:</p>
+<div id="36-test--the-exact-order-and-rules-sabnzbdcs286-292-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">var config = _proxy.GetConfig(Settings);
+if (config.Misc.pre_check &amp;&amp; !HasVersion(1, 1))
+{
+    return new NzbDroneValidationFailure(&quot;&quot;, &quot;…CheckBeforeDownload&quot;)
+    {
+        InfoLink = _proxy.GetBaseUrl(Settings, &quot;config/switches/&quot;),
+        …
+    };
+}</code></pre>
+</doc-codeblock></div>
+<p>Schwelle: <strong>SAB &gt;= 1.1.0</strong> (<code translate="no" v-pre>HasVersion(major:1, minor:1, patch:0)</code>, <code translate="no" v-pre>Sabnzbd.cs:294-332</code>).
+<code translate="no" v-pre>pre_check: false</code> umgeht den ganzen Zweig, inklusive des zusätzlichen <code translate="no" v-pre>mode=version</code>-Aufrufs.</p>
+<p><strong><code translate="no" v-pre>TestCategory()</code> (<code translate="no" v-pre>Sabnzbd.cs:455-521</code>)</strong> — 1 × <code translate="no" v-pre>mode=get_config</code> (ein <em>dritter</em>), plus alles, was
+<code translate="no" v-pre>GetCategories</code> braucht. Die Prüfungen laufen in dieser Reihenfolge, der erste Treffer gewinnt:</p>
+<ol>
+<li>
+<p>Passende Kategorie (<code translate="no" v-pre>Name == Settings.TvCategory</code> / <code translate="no" v-pre>MovieCategory</code>), deren <code translate="no" v-pre>dir</code> <strong>auf <code translate="no" v-pre>*</code> endet</strong>
+→ Warnung bei <code translate="no" v-pre>TvCategory</code>/<code translate="no" v-pre>MovieCategory</code> &quot;enable job folders&quot;, InfoLink <code translate="no" v-pre>config/categories/</code> (<code translate="no" v-pre>:460-469</code>).</p>
+</li>
+<li>
+<p>Keine passende Kategorie <strong>und</strong> die konfigurierte Kategorie ist nicht leer → Warnung
+<code translate="no" v-pre>DownloadClientValidationCategoryMissing</code>, InfoLink <code translate="no" v-pre>config/categories/</code> (<code translate="no" v-pre>:471-481</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>config.Sorters.Any(s =&gt; s.is_active &amp;&amp; ContainsCategory(s.sort_cats, cat))</code> → Warnung, InfoLink
+<code translate="no" v-pre>config/sorting/</code> (<code translate="no" v-pre>:483-491</code>). Code-Kommentar in <code translate="no" v-pre>:483</code>: <em>&quot;New in SABnzbd 4.1, but on older versions
+this will be empty and not apply&quot;</em> (Neu in SABnzbd 4.1; auf älteren Versionen ist das leer und greift nicht).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>misc.enable_tv_sorting &amp;&amp; ContainsCategory(misc.tv_categories, cat)</code> → Warnung (<code translate="no" v-pre>:493-500</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>misc.enable_movie_sorting &amp;&amp; ContainsCategory(misc.movie_categories, cat)</code> → Warnung (<code translate="no" v-pre>:502-509</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>misc.enable_date_sorting &amp;&amp; ContainsCategory(misc.date_categories, cat)</code> → Warnung (<code translate="no" v-pre>:511-518</code>).</p>
+</li>
+</ol>
+<p><code translate="no" v-pre>SabnzbdSorter</code> (<code translate="no" v-pre>SabnzbdCategory.cs:50-66</code>) — gelesen werden: <code translate="no" v-pre>sort_cats</code> (<code translate="no" v-pre>List&lt;string&gt;</code>, im Konstruktor leer),
+<code translate="no" v-pre>is_active</code> (<code translate="no" v-pre>bool</code>). Im Modell vorhanden, wird aber nie gelesen: <code translate="no" v-pre>name</code>, <code translate="no" v-pre>order</code>, <code translate="no" v-pre>min_size</code>,
+<code translate="no" v-pre>multipart_label</code>, <code translate="no" v-pre>sort_string</code>, <code translate="no" v-pre>sort_type</code> (<code translate="no" v-pre>List&lt;int&gt;</code>).</p>
+<p><strong>Traffic-Hinweis:</strong> Alle vier <code translate="no" v-pre>Test*</code>-Methoden machen ihre eigenen Aufrufe, nichts wird zwischengespeichert. Ein
+einzelner Verbindungstest sendet also etwa <strong>2 × <code translate="no" v-pre>mode=version</code> und 3 × <code translate="no" v-pre>mode=get_config</code></strong> (ein 4. Version-Aufruf,
+wenn <code translate="no" v-pre>pre_check</code> true ist).</p>
+<h3 id="37-configmisc-history-retention--removescompleteddownloads-sabnzbdcs538-574">3.7 <code translate="no" v-pre>config.misc</code> Verlaufsaufbewahrung → <code translate="no" v-pre>RemovesCompletedDownloads</code> (<code translate="no" v-pre>Sabnzbd.cs:538-574</code>)</h3>
+<div id="37-configmisc-history-retention--removescompleteddownloads-sabnzbdcs538-574-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">var retention = config.Misc.history_retention;
+var option    = config.Misc.history_retention_option;
+var number    = config.Misc.history_retention_number;
+
+switch (option)
+{
+    case &quot;all&quot;:                                     return false;
+    case &quot;number-archive&quot;: case &quot;number-delete&quot;:    return true;
+    case &quot;days-archive&quot;:   case &quot;days-delete&quot;:      return number &lt; 14;
+    case &quot;all-archive&quot;:    case &quot;all-delete&quot;:       return true;
+}
+
+// TODO: Remove these checks once support for SABnzbd &lt; 4.3 is removed
+if (retention.IsNullOrWhiteSpace()) { return false; }
+if (retention.EndsWith(&quot;d&quot;)) { int.TryParse(retention[..^1], out var daysRetention); return daysRetention &lt; 14; }
+return retention != &quot;0&quot;;</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>true</code> löst eine Health-Check-<strong>Warnung</strong> aus
+(<code translate="no" v-pre>HealthCheck/Checks/DownloadClientRemovesCompletedDownloadsCheck.cs:44-53</code>).
+Fixture-Abdeckung <code translate="no" v-pre>SabnzbdFixture.cs:455-510</code>: alte Werte <code translate="no" v-pre>&quot;0&quot;</code>/<code translate="no" v-pre>&quot;&quot;</code>/<code translate="no" v-pre>null</code>/<code translate="no" v-pre>&quot;15d&quot;</code> → false;
+<code translate="no" v-pre>&quot;-1&quot;</code>/<code translate="no" v-pre>&quot;15&quot;</code>/<code translate="no" v-pre>&quot;3&quot;</code>/<code translate="no" v-pre>&quot;3d&quot;</code> → true.</p>
+<p><strong>Die sauberste Lösung für den Emulator: <code translate="no" v-pre>history_retention_option: &quot;all&quot;</code>, <code translate="no" v-pre>history_retention_number: 0</code>,
+<code translate="no" v-pre>history_retention: &quot;0&quot;</code>.</strong></p>
+<h3 id="38-sortingmode-and-its-health-check-sabnzbdcs263-279">3.8 <code translate="no" v-pre>SortingMode</code> und sein Health-Check (<code translate="no" v-pre>Sabnzbd.cs:263-279</code>)</h3>
+<p><code translate="no" v-pre>GetStatus</code> setzt <code translate="no" v-pre>SortingMode</code> auf <code translate="no" v-pre>&quot;TV&quot;</code>, <code translate="no" v-pre>&quot;Movie&quot;</code> oder <code translate="no" v-pre>&quot;Date&quot;</code> und verwendet dabei dieselben <code translate="no" v-pre>enable_*_sorting &amp;&amp; ContainsCategory(...)</code>-Prüfungen. Jeder nicht leere Wert löst eine Warnung in <code translate="no" v-pre>HealthCheck/Checks/DownloadClientSortingCheck.cs:45-55</code> aus. Lass alle drei <code translate="no" v-pre>enable_*_sorting</code> auf false.</p>
+<h3 id="39-islocalhost-sabnzbdcs260">3.9 <code translate="no" v-pre>IsLocalhost</code> (<code translate="no" v-pre>Sabnzbd.cs:260</code>)</h3>
+<div id="39-islocalhost-sabnzbdcs260-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">IsLocalhost = Settings.Host == &quot;127.0.0.1&quot; || Settings.Host == &quot;localhost&quot;</code></pre>
+</doc-codeblock></div>
+<p>Ordinal, groß-/kleinschreibungssensitiv; <code translate="no" v-pre>::1</code>, <code translate="no" v-pre>Localhost</code> und jeder Hostname zählen <strong>nicht</strong>. Dadurch ändert sich, welche <code translate="no" v-pre>RemotePathMappingCheck</code>-Meldung du bekommst (siehe §6.2).</p>
+<hr>
+<h2 id="4-error-handling--checkforerror-sabnzbdproxycs222-246">4. Fehlerbehandlung — <code translate="no" v-pre>CheckForError</code> (<code translate="no" v-pre>SabnzbdProxy.cs:222-246</code>)</h2>
+<div id="4-error-handling--checkforerror-sabnzbdproxycs222-246-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">private void CheckForError(HttpResponse response)
+{
+    if (!Json.TryDeserialize&lt;SabnzbdJsonError&gt;(response.Content, out var result))
+    {
+        // Handle plain text responses from SAB
+        result = new SabnzbdJsonError();
+
+        if (response.Content.StartsWith(&quot;error&quot;, StringComparison.InvariantCultureIgnoreCase))
+        {
+            result.Status = &quot;false&quot;;
+            result.Error = response.Content.Replace(&quot;error: &quot;, &quot;&quot;);
+        }
+        else
+        {
+            result.Status = &quot;true&quot;;
+        }
+
+        result.Error = response.Content.Replace(&quot;error: &quot;, &quot;&quot;);   // :239 — assigned in BOTH branches
+    }
+
+    if (result.Failed)
+    {
+        throw new DownloadClientException(&quot;Error response received from SABnzbd: {0}&quot;, result.Error);
+    }
+}</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>SabnzbdJsonError</code> (<code translate="no" v-pre>SabnzbdJsonError.cs</code>, vollständig):</p>
+<div id="4-error-handling--checkforerror-sabnzbdproxycs222-246-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">public string Status { get; set; }
+public string Error  { get; set; }
+
+public bool Failed =&gt; !string.IsNullOrWhiteSpace(Status) &amp;&amp;
+                      Status.Equals(&quot;false&quot;, StringComparison.InvariantCultureIgnoreCase);</code></pre>
+</doc-codeblock></div>
+<p>Die Regeln, genau:</p>
+<ul>
+<li>
+<p><code translate="no" v-pre>CheckForError</code> läuft bei <strong>jeder</strong> Antwort, noch vor jeder modusspezifischen Deserialisierung
+(<code translate="no" v-pre>SabnzbdProxy.cs:217</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>Status</code> ist als <code translate="no" v-pre>string</code> typisiert, SAB sendet aber einen JSON-<strong>Boolean</strong>. Newtonsoft macht aus <code translate="no" v-pre>false</code> → <code translate="no" v-pre>&quot;False&quot;</code>,
+und <code translate="no" v-pre>Failed</code> vergleicht ohne Groß-/Kleinschreibung. Sowohl <code translate="no" v-pre>false</code> (Boolean) als auch <code translate="no" v-pre>&quot;false&quot;</code> (String) funktionieren.</p>
+</li>
+<li>
+<p>Eine Antwort <strong>ohne</strong> oberstes <code translate="no" v-pre>status</code>-Feld (z. B. <code translate="no" v-pre>{&quot;version&quot;: …}</code>, <code translate="no" v-pre>{&quot;queue&quot;: {...}}</code>,
+<code translate="no" v-pre>{&quot;history&quot;: {...}}</code>, <code translate="no" v-pre>{&quot;config&quot;: {...}}</code>) lässt <code translate="no" v-pre>Status</code> null → <code translate="no" v-pre>Failed</code> ist false → kein Fehler.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>status: true</code> → <code translate="no" v-pre>&quot;True&quot;</code> → nicht fehlgeschlagen.</p>
+</li>
+<li>
+<p><strong>Kein JSON im Body</strong>: <code translate="no" v-pre>TryDeserialize</code> gibt false zurück (es fängt <code translate="no" v-pre>JsonReaderException</code> und
+<code translate="no" v-pre>JsonSerializationException</code> ab, <code translate="no" v-pre>Json.cs:107-116</code>), und der Textzweig läuft. Beginnt der Body mit
+<code translate="no" v-pre>error</code> (ohne Berücksichtigung der Groß-/Kleinschreibung), wird <code translate="no" v-pre>Status = &quot;false&quot;</code> gesetzt und es wird
+<code translate="no" v-pre>DownloadClientException(&quot;Error response received from SABnzbd: {body with 'error: ' stripped}&quot;)</code> geworfen.
+Jeder andere Nicht-JSON-Body setzt <code translate="no" v-pre>Status = &quot;true&quot;</code> → wird <strong>als Erfolg behandelt</strong>, und die
+modusspezifische Deserialisierung schlägt dann auf eigene Faust fehl.</p>
+</li>
+<li>
+<p>Ein <strong>JSON-Body, dessen <code translate="no" v-pre>status</code> ein Objekt ist</strong> (<code translate="no" v-pre>mode=fullstatus</code>), landet ebenfalls im Textzweig,
+weil ein <code translate="no" v-pre>StartObject</code>-Token keine <code translate="no" v-pre>string</code>-Property füllen kann. <code translate="no" v-pre>Status</code> wird dann <code translate="no" v-pre>&quot;true&quot;</code>.</p>
+</li>
+<li>
+<p>Beachte die überflüssige Zuweisung <code translate="no" v-pre>result.Error = …</code> bei <code translate="no" v-pre>:239</code>: <code translate="no" v-pre>Error</code> wird auch im Erfolgszweig gesetzt. Sie hat
+keine Wirkung (nichts liest <code translate="no" v-pre>Error</code>, außer wenn <code translate="no" v-pre>Failed</code> true ist).</p>
+</li>
+</ul>
+<p>Exception-Zuordnung in <code translate="no" v-pre>ProcessRequest</code> (<code translate="no" v-pre>SabnzbdProxy.cs:187-220</code>):</p>
+<retype-table copy-text="| Gefangen | Geworfen |
+|---|---|
+| `HttpException` (jeder Non-2xx-Status, inkl. 401/403/404/500) | `DownloadClientException(&quot;Unable to connect to SABnzbd, {0}&quot;)` |
+| `HttpRequestException` | `DownloadClientUnavailableException(&quot;Unable to connect to SABnzbd, {0}&quot;)` |
+| `WebException` mit `WebExceptionStatus.TrustFailure` | `DownloadClientUnavailableException(&quot;Unable to connect to SABnzbd, certificate validation failed.&quot;)` |
+| andere `WebException` | `DownloadClientUnavailableException(&quot;Unable to connect to SABnzbd, {0}&quot;)` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Gefangen</th>
+<th>Geworfen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>HttpException</code> (jeder Non-2xx-Status, inkl. 401/403/404/500)</td>
+<td><code translate="no" v-pre>DownloadClientException(&quot;Unable to connect to SABnzbd, {0}&quot;)</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>HttpRequestException</code></td>
+<td><code translate="no" v-pre>DownloadClientUnavailableException(&quot;Unable to connect to SABnzbd, {0}&quot;)</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>WebException</code> mit <code translate="no" v-pre>WebExceptionStatus.TrustFailure</code></td>
+<td><code translate="no" v-pre>DownloadClientUnavailableException(&quot;Unable to connect to SABnzbd, certificate validation failed.&quot;)</code></td>
+</tr>
+<tr>
+<td>andere <code translate="no" v-pre>WebException</code></td>
+<td><code translate="no" v-pre>DownloadClientUnavailableException(&quot;Unable to connect to SABnzbd, {0}&quot;)</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>Die genau abgeglichenen Auth-Fehlertexte</strong> (<code translate="no" v-pre>Sabnzbd.cs:424, 429</code>, exakte Literale, abgeglichen mit
+<code translate="no" v-pre>ContainsIgnoreCase</code> gegen die Exception-Meldung):</p>
+<ul>
+<li><code translate="no" v-pre>&quot;API Key Incorrect&quot;</code></li>
+<li><code translate="no" v-pre>&quot;API Key Required&quot;</code></li>
+</ul>
+<p>Alles andere wird nicht klassifiziert. Gib sie unverändert als <code translate="no" v-pre>error</code>-Wert einer <strong>HTTP 200</strong>-Antwort aus.</p>
+<p><strong>Warum niemals ein Non-200 zurückgegeben werden darf:</strong> <code translate="no" v-pre>HttpClient.Execute</code> wirft, bevor <code translate="no" v-pre>CheckForError</code> überhaupt läuft
+(<code translate="no" v-pre>HttpClient.cs:106-121</code>). Die daraus resultierende <code translate="no" v-pre>HttpException</code>-Meldung enthält nur Status/Methode/URL und
+nicht den Body (<code translate="no" v-pre>HttpException.cs:18</code>). Deshalb kann das Abgleichen auf <code translate="no" v-pre>&quot;API Key Incorrect&quot;</code> / <code translate="no" v-pre>&quot;API Key Required&quot;</code>
+nie greifen. Der Nutzer sieht dann „Unable to connect to SABnzbd&quot; oder „Test was aborted due to an error“
+statt einer verwertbaren Meldung, und jede Health-Prüfung behandelt den Client als nicht erreichbar.</p>
+<hr>
+<h2 id="5-the-post-import-sequence">5. Die Abfolge nach dem Import</h2>
+<h3 id="51-who-calls-removeitem-and-with-what">5.1 Wer ruft <code translate="no" v-pre>RemoveItem</code> auf, und mit welchen Werten</h3>
+<p><code translate="no" v-pre>DownloadEventHub</code> (<code translate="no" v-pre>src/NzbDrone.Core/Download/DownloadEventHub.cs</code>, identisch in beiden Repos außer
+dem BOM):</p>
+<ul>
+<li>
+<p><code translate="no" v-pre>Handle(DownloadCompletedEvent)</code> (<code translate="no" v-pre>:48-69</code>): ruft <code translate="no" v-pre>MarkItemAsImported</code> auf (SAB wirft
+<code translate="no" v-pre>NotSupportedException</code> — <code translate="no" v-pre>DownloadClientBase.cs:189-192</code> — wird auf debug geloggt und ignoriert), kehrt dann früh zurück, wenn das Item schon <code translate="no" v-pre>Removed</code>, <code translate="no" v-pre>!CanBeRemoved</code> oder noch <code translate="no" v-pre>Downloading</code> ist, und kehrt danach früh zurück, außer <code translate="no" v-pre>definition.RemoveCompletedDownloads</code> ist gesetzt.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>Handle(DownloadFailedEvent)</code> (<code translate="no" v-pre>:26-46</code>): hängt von <code translate="no" v-pre>definition.RemoveFailedDownloads</code> ab.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>Handle(DownloadCanBeRemovedEvent)</code> (<code translate="no" v-pre>:71-85</code>): hängt von <code translate="no" v-pre>definition.RemoveCompletedDownloads</code> ab.</p>
+</li>
+<li>
+<p>Alle drei laufen in <code translate="no" v-pre>RemoveFromDownloadClient</code> (<code translate="no" v-pre>:87-103</code>) zusammen:</p>
+</li>
+</ul>
+<div id="51-who-calls-removeitem-and-with-what-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">_logger.Debug(&quot;[{0}] Removing download from {1} history&quot;, …);
+downloadClient.RemoveItem(trackedDownload.DownloadItem, true);   // :92 -- deleteData is ALWAYS true
+trackedDownload.DownloadItem.Removed = true;</code></pre>
+</doc-codeblock></div>
+<p>Die Standardwerte in <code translate="no" v-pre>DownloadClientDefinition</code> (<code translate="no" v-pre>src/NzbDrone.Core/Download/DownloadClientDefinition.cs:17-18</code>):</p>
+<div id="51-who-calls-removeitem-and-with-what-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">public bool RemoveCompletedDownloads { get; set; } = true;
+public bool RemoveFailedDownloads    { get; set; } = true;</code></pre>
+</doc-codeblock></div>
+<p>Der manuelle API-Pfad <code translate="no" v-pre>DELETE /api/v3/queue/{id}?removeFromClient=true</code> übergibt ebenfalls <code translate="no" v-pre>true</code> (Sonarr <code translate="no" v-pre>src/Sonarr.Api.V3/Queue/QueueController.cs:342</code>). <strong>Es gibt keine Stelle im Code, die <code translate="no" v-pre>deleteData: false</code> übergibt.</strong></p>
+<h3 id="52-sabnzbdremoveitem-sabnzbdcs197-214--the-exact-sequence">5.2 <code translate="no" v-pre>Sabnzbd.RemoveItem</code> (<code translate="no" v-pre>Sabnzbd.cs:197-214</code>) — die genaue Abfolge</h3>
+<div id="52-sabnzbdremoveitem-sabnzbdcs197-214--the-exact-sequence-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">public override void RemoveItem(DownloadClientItem item, bool deleteData)
+{
+    var queueClientItem = GetQueue().SingleOrDefault(v =&gt; v.DownloadId == item.DownloadId);   // extra mode=queue
+
+    if (queueClientItem == null)
+    {
+        if (deleteData &amp;&amp; item.Status == DownloadItemStatus.Completed)
+        {
+            DeleteItemData(item);                                                             // rm -rf, see 5.3
+        }
+
+        _proxy.RemoveFromHistory(item.DownloadId, deleteData, item.Status == DownloadItemStatus.Failed, Settings);
+    }
+    else
+    {
+        _proxy.RemoveFromQueue(item.DownloadId, deleteData, Settings);
+    }
+}</code></pre>
+</doc-codeblock></div>
+<p>Der Ablauf der HTTP-Aufrufe nach dem Import gegen den Emulator sieht so aus:</p>
+<ol>
+<li><code translate="no" v-pre>GET /api?mode=queue&amp;start=0&amp;limit=0&amp;category=tv&amp;apikey=…&amp;output=json</code> (um zu entscheiden, ob Queue oder History)</li>
+<li><strong>lokales Löschen des Ausgabeordners im Dateisystem</strong> (§5.3) — vor jedem weiteren HTTP-Aufruf</li>
+<li><code translate="no" v-pre>GET /api?mode=history&amp;name=delete&amp;del_files=1&amp;value={nzo_id}&amp;archive=1&amp;apikey=…&amp;output=json</code></li>
+</ol>
+<p>Bei einem <strong>fehlgeschlagenen</strong> Eintrag gibt es kein lokales Löschen (Status ist <code translate="no" v-pre>Failed</code>, nicht <code translate="no" v-pre>Completed</code>), und <strong><code translate="no" v-pre>archive=0</code></strong> wird gesetzt —
+die Umkehrung in <code translate="no" v-pre>SabnzbdProxy.cs:80</code> (<code translate="no" v-pre>archive = deletePermanently ? 0 : 1</code>, wobei <code translate="no" v-pre>deletePermanently == (status is Failed)</code>).</p>
+<h3 id="53-deleteitemdata-srcnzbdronecoredownloaddownloadclientbasecs110-146">5.3 <code translate="no" v-pre>DeleteItemData</code> (<code translate="no" v-pre>src/NzbDrone.Core/Download/DownloadClientBase.cs:110-146</code>)</h3>
+<div id="53-deleteitemdata-srcnzbdronecoredownloaddownloadclientbasecs110-146-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">protected virtual void DeleteItemData(DownloadClientItem item)
+{
+    if (item == null) { return; }
+
+    if (item.OutputPath.IsEmpty)
+    {
+        _logger.Trace(&quot;[{0}] Doesn't have an outputPath, skipping delete data.&quot;, item.Title);
+        return;
+    }
+
+    try
+    {
+        if (_diskProvider.FolderExists(item.OutputPath.FullPath))
+        {
+            _logger.Debug(&quot;[{0}] Deleting folder '{1}'.&quot;, item.Title, item.OutputPath);
+            _diskProvider.DeleteFolder(item.OutputPath.FullPath, true);        // :129  recursive == true
+        }
+        else if (_diskProvider.FileExists(item.OutputPath.FullPath))
+        {
+            _logger.Debug(&quot;[{0}] Deleting file '{1}'.&quot;, item.Title, item.OutputPath);
+            _diskProvider.DeleteFile(item.OutputPath.FullPath);                 // :135
+        }
+        else
+        {
+            _logger.Trace(&quot;[{0}] File or folder '{1}' doesn't exist, skipping cleanup.&quot;, item.Title, item.OutputPath);
+        }
+    }
+    catch (Exception ex)
+    {
+        _logger.Warn(ex, string.Format(&quot;[{0}] Error occurred while trying to delete data from '{1}'.&quot;, item.Title, item.OutputPath));
+    }
+}</code></pre>
+</doc-codeblock></div>
+<ul>
+<li><strong>Ja, es löscht den Ausgabeordner rekursiv.</strong> <code translate="no" v-pre>DeleteFolder(path, recursive: true)</code> bei <code translate="no" v-pre>:129</code>.</li>
+<li><code translate="no" v-pre>OutputPath</code> ist hier der <code translate="no" v-pre>storage</code> des Verlaufseintrags nach dem Umschreiben des Remote-Pfads und dem Aufstieg zum Job-Ordner (§1.6.2). Bei einem flachen Magic-Verzeichnis heißt das <code translate="no" v-pre>rm -rf /mnt/zurg/__magic__/__all__/&lt;Title&gt;</code>.</li>
+<li>Maßgeblich ist der Schalter <strong>Remove Completed Downloads</strong> des Download-Clients (<code translate="no" v-pre>DownloadClientDefinition.RemoveCompletedDownloads</code>, Standard <strong>true</strong>), <em>nicht</em> eine Einstellung in SABnzbd und <em>nicht</em> <code translate="no" v-pre>del_files</code>. Es gibt keinen separaten Schalter „delete data“ in der Oberfläche.</li>
+<li>Fehler werden mit einer Warnung verschluckt. Ein schreibgeschützter Mount erzeugt zwar Lärm im Log, bricht den Import aber nicht ab.</li>
+<li>Fixture-Abdeckung <code translate="no" v-pre>SabnzbdFixture.cs:693-803</code>: Ordner wird rekursiv gelöscht, Datei wird gelöscht, nichts, wenn der Pfad nicht existiert, und überhaupt nichts (nicht einmal eine <code translate="no" v-pre>FolderExists</code>-Prüfung), wenn <code translate="no" v-pre>deleteData</code> false ist.</li>
+</ul>
+<h3 id="54-transfer-mode-is-the-file-moved-or-copied">5.4 Übertragungsmodus: wird die Datei verschoben oder kopiert?</h3>
+<p><code translate="no" v-pre>Sabnzbd</code> setzt <code translate="no" v-pre>CanMoveFiles = true</code> bei <strong>jedem</strong> Eintrag, in der Warteschlange (<code translate="no" v-pre>Sabnzbd.cs:76</code>) und im Verlauf (<code translate="no" v-pre>Sabnzbd.cs:135</code>). Der automatische Importpfad ist <code translate="no" v-pre>CompletedDownloadService.Import</code> → <code translate="no" v-pre>ProcessPath(outputPath, ImportMode.Auto, …)</code> (Sonarr <code translate="no" v-pre>CompletedDownloadService.cs:148-151</code>), und dann:</p>
+<p>Sonarr <code translate="no" v-pre>src/NzbDrone.Core/MediaFiles/EpisodeImport/ImportApprovedEpisodes.cs:139-152</code> (Radarr <code translate="no" v-pre>src/NzbDrone.Core/MediaFiles/MovieImport/ImportApprovedMovie.cs:116-129</code>, identische Logik):</p>
+<div id="54-transfer-mode-is-the-file-moved-or-copied-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">bool copyOnly;
+switch (importMode)
+{
+    default:
+    case ImportMode.Auto: copyOnly = downloadClientItem is { CanMoveFiles: false }; break;
+    case ImportMode.Move: copyOnly = false; break;
+    case ImportMode.Copy: copyOnly = true;  break;
+}</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>CanMoveFiles: true</code> ⇒ <code translate="no" v-pre>copyOnly == false</code> ⇒ <strong><code translate="no" v-pre>TransferMode.Move</code></strong> (<code translate="no" v-pre>src/NzbDrone.Core/MediaFiles/EpisodeFileMovingService.cs:91</code>). Ein <code translate="no" v-pre>copyOnly</code>-Import würde stattdessen <code translate="no" v-pre>TransferMode.HardLinkOrCopy</code> verwenden, wenn &quot;Use Hardlinks instead of Copy&quot; aktiv ist, sonst <code translate="no" v-pre>TransferMode.Copy</code> (<code translate="no" v-pre>:94-108</code>).</p>
+<p><code translate="no" v-pre>TransferMode</code> (<code translate="no" v-pre>src/NzbDrone.Common/Disk/TransferMode.cs:5-15</code>) ist <code translate="no" v-pre>[Flags]</code>: <code translate="no" v-pre>None=0, Move=1, Copy=2, HardLink=4, HardLinkOrCopy = Copy|HardLink</code>.</p>
+<h3 id="55-does-a-failed-move-fall-back-to-a-copy--no-a-failed-move-is-a-failed-import">5.5 Greift bei einem fehlgeschlagenen Move ein Kopieren als Fallback? — <strong>Nein. Ein fehlgeschlagener Move ist ein fehlgeschlagener Import.</strong></h3>
+<p><code translate="no" v-pre>src/NzbDrone.Common/Disk/DiskTransferService.cs</code> (byte-identisch zwischen den beiden Repos, geprüft).
+<code translate="no" v-pre>TransferFile</code>, <code translate="no" v-pre>:256-392</code>; der <code translate="no" v-pre>TransferMode.Move</code>-Zweig bei <code translate="no" v-pre>:360-389</code>:</p>
+<div id="55-does-a-failed-move-fall-back-to-a-copy--no-a-failed-move-is-a-failed-import-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">if (mode.HasFlag(TransferMode.Move))
+{
+    if (isBtrfs || isZfs)
+    {
+        if (isSameMount &amp;&amp; _diskProvider.TryRenameFile(sourcePath, targetPath)) { return TransferMode.Move; }
+        if (_diskProvider.TryCreateRefLink(sourcePath, targetPath)) { _diskProvider.DeleteFile(sourcePath); return TransferMode.Move; }
+    }
+
+    if (isCifs &amp;&amp; !isSameMount)                                        // :378
+    {
+        _logger.Trace(&quot;On cifs mount. Starting verified copy [{0}] to [{1}].&quot;, sourcePath, targetPath);
+        TryCopyFileVerified(sourcePath, targetPath, originalSize);
+        _logger.Trace(&quot;Copy successful, deleting source [{0}].&quot;, sourcePath);
+        _diskProvider.DeleteFile(sourcePath);
+        return TransferMode.Move;
+    }
+
+    TryMoveFileVerified(sourcePath, targetPath, originalSize);         // :387
+    return TransferMode.Move;
+}</code></pre>
+</doc-codeblock></div>
+<ul>
+<li>Der <strong>einzige</strong> Kopier-Fallback ist der <code translate="no" v-pre>isCifs &amp;&amp; !isSameMount</code>-Sonderfall bei <code translate="no" v-pre>:378-385</code>, ausgelöst über <code translate="no" v-pre>targetMount.DriveFormat == &quot;cifs&quot;</code> (<code translate="no" v-pre>:342</code>). Er wird <em>vorab</em> anhand des Drive-Formats gewählt, nie als Reaktion auf einen Fehler.</li>
+<li><code translate="no" v-pre>TryMoveFileVerified</code> (<code translate="no" v-pre>:487-503</code>) fängt Fehler ab, ruft <code translate="no" v-pre>RollbackPartialMove</code> auf (außer die Exception ist <code translate="no" v-pre>FileAlreadyExistsException</code>) und <strong>wirft sie erneut</strong>:</li>
+</ul>
+<div id="55-does-a-failed-move-fall-back-to-a-copy--no-a-failed-move-is-a-failed-import-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">private void TryMoveFileVerified(string sourcePath, string targetPath, long originalSize)
+{
+    try
+    {
+        _diskProvider.MoveFile(sourcePath, targetPath);
+        VerifyFile(sourcePath, targetPath, originalSize, &quot;move&quot;);
+    }
+    catch (Exception ex)
+    {
+        if (ex is not FileAlreadyExistsException) { RollbackPartialMove(sourcePath, targetPath); }
+        throw;
+    }
+}</code></pre>
+</doc-codeblock></div>
+<ul>
+<li><code translate="no" v-pre>VerifyFile</code> (<code translate="no" v-pre>:505-524</code>) vergleicht die Zielgröße mit der Quellgröße, wartet 3 s (<code translate="no" v-pre>WaitForIO</code>, <code translate="no" v-pre>:467-471</code>), prüft noch einmal und wirft dann <code translate="no" v-pre>IOException(&quot;File move incomplete, data loss may have occurred. [{target}] was {n} bytes long instead of the expected {m}.&quot;)</code>.</li>
+<li>Diese <code translate="no" v-pre>IOException</code> wandert weiter nach oben, durch <code translate="no" v-pre>EpisodeFileMovingService.TransferFile</code> (<code translate="no" v-pre>:151</code>), bis in das allgemeine <code translate="no" v-pre>catch (Exception e)</code> in <code translate="no" v-pre>ImportApprovedEpisodes.cs:218-222</code> (Radarr <code translate="no" v-pre>:197-201</code>). Dort erzeugt sie <code translate="no" v-pre>ImportResult(importDecision, &quot;Failed to import episode&quot;)</code> bzw. <code translate="no" v-pre>&quot;Failed to import movie&quot;</code>. <strong>Es wird kein Kopiervorgang versucht.</strong></li>
+<li>Weitere <code translate="no" v-pre>IOException</code>s vorab in derselben Methode: Quelle == Ziel (<code translate="no" v-pre>:270</code>, <code translate="no" v-pre>:277</code>) und &quot;Destination cannot be a child of the source&quot; (<code translate="no" v-pre>:312-315</code>).</li>
+</ul>
+<p>Hinweis, und der betrifft die .NET-Laufzeit und nicht den Sonarr-Code: <code translate="no" v-pre>DiskProviderBase.MoveFileInternal</code> (<code translate="no" v-pre>src/NzbDrone.Common/Disk/DiskProviderBase.cs:293-301</code>) ist ein einfaches <code translate="no" v-pre>File.Move</code>, und .NET fällt unter Unix auf Kopieren und Löschen zurück, wenn <code translate="no" v-pre>rename()</code> <code translate="no" v-pre>EXDEV</code> zurückgibt. Ein Verschieben über Dateisystemgrenzen klappt also meist trotzdem, als <em>Laufzeit</em>-Fallback und nicht als Sonarr-Fallback. Nicht toleriert wird dagegen ein Ziel, dessen Größe von der Quelle abweicht, oder jede Exception, die <code translate="no" v-pre>File.Move</code> selbst meldet (EACCES, EPERM, EROFS auf der Quelle, …).</p>
+<p><code translate="no" v-pre>TransferFolder</code> (<code translate="no" v-pre>:44-137</code>) wird von anderen Codepfaden verwendet. Beachte <code translate="no" v-pre>:124-131</code>: Nach einem Ordner-Move löscht es die Quelle nicht, wenn noch mehr als 100 MB Dateien übrig sind (<code translate="no" v-pre>IOException(&quot;Large files still exist in {sourcePath} after folder move, not deleting source folder&quot;)</code>).</p>
+<hr>
+<h2 id="6-the-two-health-checks">6. Die zwei Health-Checks</h2>
+<h3 id="61-downloadclientrootfoldercheck--the-one-place-sonarr-and-radarr-genuinely-differ">6.1 <code translate="no" v-pre>DownloadClientRootFolderCheck</code> — <strong>die einzige Stelle, an der sich Sonarr und Radarr wirklich unterscheiden</strong></h3>
+<p>Sonarr <code translate="no" v-pre>src/NzbDrone.Core/HealthCheck/Checks/DownloadClientRootFolderCheck.cs:51</code>:</p>
+<div id="61-downloadclientrootfoldercheck--the-one-place-sonarr-and-radarr-genuinely-differ-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">var folders = status.OutputRootFolders.Where(folder =&gt; rootFolders.Any(r =&gt; r.Path.PathEquals(folder.FullPath)));</code></pre>
+</doc-codeblock></div>
+<p>Radarr <code translate="no" v-pre>src/NzbDrone.Core/HealthCheck/Checks/DownloadClientRootFolderCheck.cs:51</code>:</p>
+<div id="61-downloadclientrootfoldercheck--the-one-place-sonarr-and-radarr-genuinely-differ-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">var folders = rootFolders.Where(r =&gt; status.OutputRootFolders.Any(folder =&gt; r.Path.PathEquals(folder.FullPath) || r.Path.IsParentPath(folder.FullPath)));</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>IsParentPath</code> (<code translate="no" v-pre>src/NzbDrone.Common/Extensions/PathExtensions.cs:123-140</code>) läuft vom Kind aus <strong>nach oben</strong>:</p>
+<div id="61-downloadclientrootfoldercheck--the-one-place-sonarr-and-radarr-genuinely-differ-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-csharp"><code v-pre class="language-csharp">public static bool IsParentPath(this string parentPath, string childPath)
+{
+    var parent = new OsPath(parentPath);
+    var child  = new OsPath(childPath);
+
+    while (child.Directory != OsPath.Null)
+    {
+        if (child.Directory.Equals(parent, true)) { return true; }
+        child = child.Directory;
+    }
+
+    return false;
+}</code></pre>
+</doc-codeblock></div>
+<p>Also ist <code translate="no" v-pre>r.Path.IsParentPath(folder.FullPath)</code> wahr, wenn <strong>der Stammordner ein Vorfahre des Download-Ausgabeordners ist</strong>, also wenn der Ausgabeordner <em>innerhalb</em> eines Stammordners liegt. Es ist ein strenger Vorfahren-Test (er beginnt bei <code translate="no" v-pre>child.Directory</code>). Gleichheit wird separat über <code translate="no" v-pre>PathEquals</code> geprüft.</p>
+<p><strong>Die Frage nach dem Prädikat direkt beantwortet:</strong></p>
+<retype-table copy-text="| Beziehung (Ausgabeordner O zu Stammordner R) | Sonarr | Radarr |
+|---|---|---|
+| O == R | **warnt** | **warnt** |
+| O innerhalb von R (R ist Vorfahre von O) | keine Warnung | **warnt** |
+| O ist der Überordner von R (O ist Vorfahre von R) | keine Warnung | **keine Warnung** |
+| nicht verwandt | keine Warnung | keine Warnung |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Beziehung (Ausgabeordner O zu Stammordner R)</th>
+<th>Sonarr</th>
+<th>Radarr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O == R</td>
+<td><strong>warnt</strong></td>
+<td><strong>warnt</strong></td>
+</tr>
+<tr>
+<td>O innerhalb von R (R ist Vorfahre von O)</td>
+<td>keine Warnung</td>
+<td><strong>warnt</strong></td>
+</tr>
+<tr>
+<td>O ist der Überordner von R (O ist Vorfahre von R)</td>
+<td>keine Warnung</td>
+<td><strong>keine Warnung</strong></td>
+</tr>
+<tr>
+<td>nicht verwandt</td>
+<td>keine Warnung</td>
+<td>keine Warnung</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Mit <code translate="no" v-pre>complete_dir = /mnt/zurg/__magic__/__all__</code> und <code translate="no" v-pre>dir: &quot;&quot;</code> (also <code translate="no" v-pre>OutputRootFolders == [&quot;/mnt/zurg/__magic__/__all__&quot;]</code>):</p>
+<ul>
+<li>Sonarr warnt nur, wenn ein Stammordner genau <code translate="no" v-pre>/mnt/zurg/__magic__/__all__</code> ist.</li>
+<li>Radarr warnt, wenn ein Stammordner <code translate="no" v-pre>/mnt/zurg/__magic__/__all__</code>, <code translate="no" v-pre>/mnt/zurg/__magic__</code>, <code translate="no" v-pre>/mnt/zurg</code> oder <code translate="no" v-pre>/mnt</code> ist.</li>
+<li>Keine der beiden warnt, wenn ein Stammordner <code translate="no" v-pre>/mnt/zurg/__magic__/tv</code> ist. Der Spiegel und die Stammordner sind Geschwister, das Paar ist also nicht verwandt, und keine Regel greift. Ein Stammordner <em>innerhalb</em> des Ausgabeordners (<code translate="no" v-pre>/mnt/zurg/__magic__/__all__/anything</code>) würde hier ebenfalls still bleiben. Der Namespace lässt aber auf dieser Tiefe nichts speichern, also kann diese Anordnung gar nicht entstehen.</li>
+</ul>
+<p><code translate="no" v-pre>PathEquals</code> (<code translate="no" v-pre>PathExtensions.cs:55-73</code>) normalisiert Unicode, verwendet <code translate="no" v-pre>DiskProviderBase.PathStringComparison</code> (<code translate="no" v-pre>OrdinalIgnoreCase</code> unter Windows, <code translate="no" v-pre>Ordinal</code> sonst – <code translate="no" v-pre>src/NzbDrone.Common/Disk/DiskProviderBase.cs:17-23</code>) und prüft erneut mit <code translate="no" v-pre>CleanFilePath()</code> (unempfindlich gegenüber einem abschließenden Schrägstrich).</p>
+<p>Beide Versionen werden bei <code translate="no" v-pre>ProviderUpdatedEvent</code> / <code translate="no" v-pre>ProviderDeletedEvent</code> / <code translate="no" v-pre>ModelEvent&lt;RootFolder&gt;</code> / <code translate="no" v-pre>ModelEvent&lt;RemotePathMapping&gt;</code> erneut ausgeführt. Radarr fügt bei <code translate="no" v-pre>:17</code> zusätzlich <code translate="no" v-pre>[CheckOn(typeof(ProviderAddedEvent&lt;IDownloadClient&gt;))]</code> hinzu. Das Ergebnis ist <code translate="no" v-pre>HealthCheckResult.Warning</code> mit dem Anker <code translate="no" v-pre>#downloads-in-root-folder</code>. Die Meldung setzt in Sonarr <code translate="no" v-pre>folder.FullPath</code> und in Radarr <code translate="no" v-pre>folder.Path</code> ein (jeweils <code translate="no" v-pre>:60</code>). Beide schlucken <code translate="no" v-pre>DownloadClientException</code> und <code translate="no" v-pre>HttpRequestException</code> stillschweigend (Debug-Log) und protokollieren jede andere Exception als Fehler.</p>
+<h3 id="62-remotepathmappingcheck--the-local-client-path-srcnzbdronecorehealthcheckchecksremotepathmappingcheckcs">6.2 <code translate="no" v-pre>RemotePathMappingCheck</code> — der lokale Client-Pfad (<code translate="no" v-pre>src/NzbDrone.Core/HealthCheck/Checks/RemotePathMappingCheck.cs</code>)</h3>
+<p>Kurzschluss bei <code translate="no" v-pre>:51-54</code>: Wenn <code translate="no" v-pre>EnableCompletedDownloadHandling</code> ausgeschaltet ist, macht die Prüfung nichts.</p>
+<p>Für jeden <code translate="no" v-pre>folder</code> in <code translate="no" v-pre>client.GetStatus().OutputRootFolders</code>:</p>
+<ol>
+<li><strong><code translate="no" v-pre>!folder.IsValid</code></strong> (<code translate="no" v-pre>:68</code>): <code translate="no" v-pre>OsPath.IsValid</code> = <code translate="no" v-pre>_path.IsPathValid(PathValidationType.CurrentOs)</code> (<code translate="no" v-pre>OsPath.cs:228</code>). Auf Nicht-Windows-Systemen läuft das auf <code translate="no" v-pre>path.StartsWith(&quot;/&quot;)</code> plus eine Prüfung mit <code translate="no" v-pre>Path.GetInvalidPathChars()</code> hinaus (<code translate="no" v-pre>PathExtensions.cs:143-182</code>, <code translate="no" v-pre>:403-411</code>). Fehler, in dieser Reihenfolge:
+<ul>
+<li><code translate="no" v-pre>!status.IsLocalhost</code> → <code translate="no" v-pre>RemotePathMappingWrongOSPathHealthCheckMessage</code> (Radarr-Schlüssel: <code translate="no" v-pre>RemotePathMappingCheckWrongOSPath</code>), Anker <code translate="no" v-pre>#bad-remote-path-mapping</code></li>
+<li><code translate="no" v-pre>_osInfo.IsDocker</code> → …<code translate="no" v-pre>BadDockerPath</code>, Anker <code translate="no" v-pre>#docker-bad-remote-path-mapping</code></li>
+<li>sonst → …<code translate="no" v-pre>LocalWrongOSPath</code>, Anker <code translate="no" v-pre>#bad-download-client-settings</code></li>
+</ul>
+</li>
+<li><strong><code translate="no" v-pre>!_diskProvider.FolderExists(folder.FullPath)</code></strong> (<code translate="no" v-pre>:115</code>):
+<ul>
+<li><code translate="no" v-pre>_osInfo.IsDocker</code> → …<code translate="no" v-pre>DockerFolderMissing</code>, <code translate="no" v-pre>#docker-bad-remote-path-mapping</code></li>
+<li><code translate="no" v-pre>!status.IsLocalhost</code> → …<code translate="no" v-pre>LocalFolderMissing</code>, <code translate="no" v-pre>#bad-remote-path-mapping</code></li>
+<li>sonst → …<code translate="no" v-pre>GenericPermissions</code>, <code translate="no" v-pre>#permissions-error</code></li>
+</ul>
+</li>
+</ol>
+<p><strong>Für einen lokalen Client (<code translate="no" v-pre>IsLocalhost</code> true, nicht Docker) bleiben damit genau zwei Anforderungen übrig:</strong> Der gemeldete Output-Root-Ordner muss ein absoluter Pfad <em>für das Betriebssystem sein, auf dem Sonarr/Radarr läuft</em>, und er muss <strong>auf dem Sonarr/Radarr-Host als Verzeichnis existieren</strong>. <code translate="no" v-pre>/mnt/zurg/__magic__/__all__</code> muss für den *arr-Prozess sichtbar sein, nicht nur für den Emulator. <strong>Eine Schreibbarkeitsprüfung gibt es hier nicht.</strong></p>
+<p>Der ereignisgesteuerte Overload (<code translate="no" v-pre>:178-368</code>) wird bei <code translate="no" v-pre>EpisodeImportFailedEvent</code> ausgelöst (Radarr: <code translate="no" v-pre>MovieImportFailedEvent</code>). Er ruft außerdem, das ist wichtig, <code translate="no" v-pre>client.GetItems()</code> erneut auf, um den <code translate="no" v-pre>OutputPath</code> des fehlgeschlagenen Downloads nachzuschlagen (<code translate="no" v-pre>:232</code>).</p>
+<p>Kein Health Check verlangt, dass der Output-Ordner <em>beschreibbar</em> ist. <code translate="no" v-pre>FolderWritable</code> (<code translate="no" v-pre>DiskProviderBase.cs:126-143</code> bei Sonarr / <code translate="no" v-pre>:127-144</code> bei Radarr), das <code translate="no" v-pre>sonarr_write_test.txt</code> bzw. <code translate="no" v-pre>radarr_write_test.txt</code> schreibt und wieder löscht, wird von <code translate="no" v-pre>RootFolderService.Add</code> (Sonarr <code translate="no" v-pre>src/NzbDrone.Core/RootFolders/RootFolderService.cs:117-120</code>) und von <code translate="no" v-pre>DownloadClientBase.TestFolder</code> (<code translate="no" v-pre>:167-187</code>) verwendet. <strong><code translate="no" v-pre>TestFolder</code> wird vom SAB-Client aber nie aufgerufen.</strong></p>
+<h2 id="7-sonarr-vs-radarr--the-complete-diff">7. Sonarr vs. Radarr — der vollständige Unterschied</h2>
+<p>Jede abgerufene Datei wurde mit diff verglichen. Ergebnisse:</p>
+<p><strong>Byte-identisch, bis auf eine UTF-8-BOM bei den Sonarr-Kopien (Zeilennummern stimmen daher exakt überein):</strong></p>
+<p><code translate="no" v-pre>SabnzbdCategory.cs</code> (auf beiden Seiten kein BOM, wirklich identisch), <code translate="no" v-pre>SabnzbdDownloadStatus.cs</code>,
+<code translate="no" v-pre>SabnzbdPriority.cs</code>, <code translate="no" v-pre>SabnzbdFullStatus.cs</code>, <code translate="no" v-pre>SabnzbdJsonError.cs</code>, <code translate="no" v-pre>SabnzbdQueue.cs</code>,
+<code translate="no" v-pre>SabnzbdQueueItem.cs</code>, <code translate="no" v-pre>SabnzbdHistory.cs</code>, <code translate="no" v-pre>SabnzbdHistoryItem.cs</code>,
+<code translate="no" v-pre>JsonConverters/*.cs</code> (alle drei), <code translate="no" v-pre>Responses/*.cs</code> (alle sechs),
+<code translate="no" v-pre>src/NzbDrone.Common/Disk/DiskTransferService.cs</code>, <code translate="no" v-pre>src/NzbDrone.Core/Download/DownloadEventHub.cs</code>.</p>
+<p><strong>Unterscheiden sich nur durch die Umbenennung <code translate="no" v-pre>TvCategory</code> → <code translate="no" v-pre>MovieCategory</code> / <code translate="no" v-pre>RemoteEpisode</code> → <code translate="no" v-pre>RemoteMovie</code> (keine Änderung der Zeilenanzahl, gleiche Zeilennummern):</strong></p>
+<ul>
+<li>
+<p><code translate="no" v-pre>Sabnzbd.cs</code> — <code translate="no" v-pre>:40-52</code> (<code translate="no" v-pre>AddFromNzbFile</code>; Radarrs Aktualitätstest ist
+<code translate="no" v-pre>remoteMovie.Movie.MovieMetadata.Value.IsRecentMovie</code> statt Sonarrs <code translate="no" v-pre>remoteEpisode.IsRecentEpisode()</code>), <code translate="no" v-pre>:190</code>, <code translate="no" v-pre>:251</code>, <code translate="no" v-pre>:265/269/273</code>, <code translate="no" v-pre>:458</code>, sowie alle <code translate="no" v-pre>NzbDroneValidationFailure</code>-Feldnamen in
+<code translate="no" v-pre>TestCategory</code> (<code translate="no" v-pre>&quot;TvCategory&quot;</code> → <code translate="no" v-pre>&quot;MovieCategory&quot;</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>SabnzbdProxy.cs</code> — <code translate="no" v-pre>:50</code>, <code translate="no" v-pre>:122-124</code>, <code translate="no" v-pre>:138-140</code>.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>SabnzbdSettings.cs</code> — Standardwerte <code translate="no" v-pre>TvCategory = &quot;tv&quot;</code> vs. <code translate="no" v-pre>MovieCategory = &quot;movies&quot;</code>;
+<code translate="no" v-pre>RecentTvPriority</code>/<code translate="no" v-pre>OlderTvPriority</code> vs. <code translate="no" v-pre>RecentMoviePriority</code>/<code translate="no" v-pre>OlderMoviePriority</code>
+(beide Standard <code translate="no" v-pre>(int)SabnzbdPriority.Default</code>). Der Validator ist sonst identisch: <code translate="no" v-pre>Host</code> gültig,
+<code translate="no" v-pre>Port</code> 1–65535, <code translate="no" v-pre>ApiKey</code> erforderlich, wenn Username leer ist, <code translate="no" v-pre>Username</code>/<code translate="no" v-pre>Password</code> erforderlich, wenn ApiKey
+leer ist, Kategorie <code translate="no" v-pre>NotEmpty</code> <strong>als Warnung</strong>.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>UsenetClientBase.cs</code> — Radarr setzt zusätzlich <code translate="no" v-pre>request.AllowAutoRedirect = true</code> (<code translate="no" v-pre>:51</code>) und
+behandelt HTTP <code translate="no" v-pre>410 Gone</code> wie <code translate="no" v-pre>404</code> (<code translate="no" v-pre>:63</code>), wenn die NZB vom Indexer geholt wird. <strong>Das betrifft den Indexer, nicht SAB.</strong></p>
+</li>
+<li>
+<p><code translate="no" v-pre>DownloadClientBase.cs</code> — nur das wörtliche &quot;Sonarr&quot;/&quot;Radarr&quot; im Detailtext von <code translate="no" v-pre>TestFolder</code>.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>RemotePathMappingCheck.cs</code> — Namen der Lokalisierungsschlüssel (<code translate="no" v-pre>RemotePathMapping*HealthCheckMessage</code> vs. <code translate="no" v-pre>RemotePathMappingCheck*</code>), <code translate="no" v-pre>EpisodeImportFailedEvent</code> vs. <code translate="no" v-pre>MovieImportFailedEvent</code>, plus Radarrs zusätzliches <code translate="no" v-pre>[CheckOn(ProviderAddedEvent&lt;IDownloadClient&gt;)]</code>.
+<strong>Die Prädikate sind identisch.</strong></p>
+</li>
+<li>
+<p><code translate="no" v-pre>DiskProviderBase.cs</code> — Probedatei von <code translate="no" v-pre>FolderWritable</code>: <code translate="no" v-pre>sonarr_write_test.txt</code> vs. <code translate="no" v-pre>radarr_write_test.txt</code>
+(Sonarr <code translate="no" v-pre>:132</code>, Radarr <code translate="no" v-pre>:133</code>).</p>
+</li>
+</ul>
+<p><strong>Echter Verhaltensunterschied — genau einer:</strong></p>
+<ul>
+<li><strong><code translate="no" v-pre>DownloadClientRootFolderCheck.cs:51</code>.</strong> Sonarr warnt nur bei <code translate="no" v-pre>PathEquals</code>; Radarr warnt zusätzlich, wenn ein Root-Ordner ein übergeordneter Ordner des Ausgabeordners ist. Vollständige Tabelle in §6.1.</li>
+</ul>
+<p>Alles andere — Modi, Parameter, JSON-Formate, Enums, Converter, <code translate="no" v-pre>CheckForError</code>, <code translate="no" v-pre>RemoveItem</code>,
+<code translate="no" v-pre>DeleteItemData</code>, Transfermodus, <code translate="no" v-pre>DiskTransferService</code> — ist identisch. <strong>Ein Emulator bedient beide.</strong></p>
+<p>Konfigurationsstandards in beiden identisch: <code translate="no" v-pre>DownloadClientHistoryLimit = 60</code>,
+<code translate="no" v-pre>RemoveCompletedDownloads = true</code>, <code translate="no" v-pre>RemoveFailedDownloads = true</code>.</p>
+<h2 id="8-minimal-but-complete-example-payloads">8. Minimale, aber vollständige Beispiel-Payloads</h2>
+<p>Gegeben: <code translate="no" v-pre>complete_dir = /mnt/zurg/__magic__/__all__</code>; Kategorien <code translate="no" v-pre>*</code>, <code translate="no" v-pre>tv</code>, <code translate="no" v-pre>movies</code>, alle mit <code translate="no" v-pre>dir: &quot;&quot;</code>.
+Jede Antwort ist <strong>HTTP 200</strong> mit <code translate="no" v-pre>Content-Type: application/json</code>.</p>
+<p>Daraus ergeben sich die <code translate="no" v-pre>OutputRootFolders</code>: <code translate="no" v-pre>dir: &quot;&quot;</code> ⇒ <code translate="no" v-pre>FullPath == complete_dir</code> ⇒ <code translate="no" v-pre>/mnt/zurg/__magic__/__all__</code>
+für Sonarr (Kategorie <code translate="no" v-pre>tv</code>) und für Radarr (Kategorie <code translate="no" v-pre>movies</code>).</p>
+<h3 id="81-modeversion">8.1 <code translate="no" v-pre>mode=version</code></h3>
+<div id="81-modeversion-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;version&quot;: &quot;4.3.3&quot;
+}</code></pre>
+</doc-codeblock></div>
+<p>Muss <code translate="no" v-pre>major.minor.(patch|x)</code> sein. <code translate="no" v-pre>4</code> ≥ 1 erfüllt <code translate="no" v-pre>TestConnectionAndVersion</code> (<code translate="no" v-pre>Sabnzbd.cs:389-392</code>);
+≥ 2.0 würde außerdem bedeuten, dass <code translate="no" v-pre>GetCategories</code> <code translate="no" v-pre>fullstatus</code> statt <code translate="no" v-pre>queue.my_home</code> nutzt, falls <code translate="no" v-pre>complete_dir</code> relativ wäre (ist es aber nicht).</p>
+<h3 id="82-modeget_config">8.2 <code translate="no" v-pre>mode=get_config</code></h3>
+<div id="82-modeget_config-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;config&quot;: {
+    &quot;misc&quot;: {
+      &quot;complete_dir&quot;: &quot;/mnt/zurg/__magic__/__all__&quot;,
+      &quot;pre_check&quot;: false,
+      &quot;enable_tv_sorting&quot;: false,
+      &quot;tv_categories&quot;: [],
+      &quot;enable_movie_sorting&quot;: false,
+      &quot;movie_categories&quot;: [],
+      &quot;enable_date_sorting&quot;: false,
+      &quot;date_categories&quot;: [],
+      &quot;history_retention&quot;: &quot;0&quot;,
+      &quot;history_retention_option&quot;: &quot;all&quot;,
+      &quot;history_retention_number&quot;: 0
+    },
+    &quot;servers&quot;: [],
+    &quot;categories&quot;: [
+      { &quot;name&quot;: &quot;*&quot;,      &quot;order&quot;: 0, &quot;pp&quot;: &quot;3&quot;, &quot;script&quot;: &quot;None&quot;, &quot;dir&quot;: &quot;&quot;, &quot;newzbin&quot;: &quot;&quot;, &quot;priority&quot;: 0 },
+      { &quot;name&quot;: &quot;tv&quot;,     &quot;order&quot;: 1, &quot;pp&quot;: &quot;3&quot;, &quot;script&quot;: &quot;None&quot;, &quot;dir&quot;: &quot;&quot;, &quot;newzbin&quot;: &quot;&quot;, &quot;priority&quot;: 0 },
+      { &quot;name&quot;: &quot;movies&quot;, &quot;order&quot;: 2, &quot;pp&quot;: &quot;3&quot;, &quot;script&quot;: &quot;None&quot;, &quot;dir&quot;: &quot;&quot;, &quot;newzbin&quot;: &quot;&quot;, &quot;priority&quot;: 0 }
+    ],
+    &quot;sorters&quot;: []
+  }
+}</code></pre>
+</doc-codeblock></div>
+<p>Warum jeder Wert:</p>
+<ul>
+<li><code translate="no" v-pre>misc</code> als Objekt vorhanden: <strong>erforderlich</strong>, sonst NRE (§3.4).</li>
+<li>jede Kategorie hat ein <strong>string</strong> <code translate="no" v-pre>dir</code>: <strong>erforderlich</strong>, sonst NRE bei <code translate="no" v-pre>Sabnzbd.cs:238</code> und <code translate="no" v-pre>:462</code>.</li>
+<li><code translate="no" v-pre>dir</code> endet <strong>nicht</strong> mit <code translate="no" v-pre>*</code>, sonst kommt die Warnung &quot;enable job folders&quot; (<code translate="no" v-pre>Sabnzbd.cs:462-469</code>).</li>
+<li>alle drei <code translate="no" v-pre>enable_*_sorting: false</code>: das beseitigt sowohl die <code translate="no" v-pre>TestCategory</code>-Warnungen (<code translate="no" v-pre>Sabnzbd.cs:493-518</code>) als auch <code translate="no" v-pre>DownloadClientSortingCheck</code>. Beachte: <code translate="no" v-pre>tv_categories: []</code> zusammen mit <code translate="no" v-pre>enable_tv_sorting: true</code> würde <strong>fehlschlagen</strong>, weil <code translate="no" v-pre>ContainsCategory</code> bei einer leeren Liste true zurückgibt (<code translate="no" v-pre>Sabnzbd.cs:525-528</code>, Fixture <code translate="no" v-pre>SabnzbdFixture.cs:647-656</code>).</li>
+<li><code translate="no" v-pre>sorters: []</code>: <code translate="no" v-pre>config.Sorters.Any(s =&gt; s.is_active &amp;&amp; …)</code> ist false (<code translate="no" v-pre>Sabnzbd.cs:484</code>).</li>
+<li><code translate="no" v-pre>pre_check: false</code>: überspringt den <code translate="no" v-pre>HasVersion(1,1)</code>-Round-Trip in <code translate="no" v-pre>TestGlobalConfig</code> (<code translate="no" v-pre>Sabnzbd.cs:443</code>).</li>
+<li><code translate="no" v-pre>history_retention_option: &quot;all&quot;</code> → <code translate="no" v-pre>RemovesCompletedDownloads == false</code> (<code translate="no" v-pre>Sabnzbd.cs:546-547</code>) → keine Health-Check-Warnung.</li>
+<li><code translate="no" v-pre>complete_dir</code> absolut → <code translate="no" v-pre>IsRooted</code> ist true → <code translate="no" v-pre>mode=fullstatus</code> / <code translate="no" v-pre>queue.my_home</code> wird nie abgefragt (<code translate="no" v-pre>Sabnzbd.cs:220</code>).</li>
+</ul>
+<h3 id="83-modefullstatusskip_dashboard1">8.3 <code translate="no" v-pre>mode=fullstatus&amp;skip_dashboard=1</code></h3>
+<div id="83-modefullstatusskip_dashboard1-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;status&quot;: {
+    &quot;completedir&quot;: &quot;/mnt/zurg/__magic__/__all__&quot;,
+    &quot;version&quot;: &quot;4.3.3&quot;,
+    &quot;uptime&quot;: &quot;1d&quot;,
+    &quot;color_scheme&quot;: &quot;Auto&quot;,
+    &quot;darwin&quot;: false,
+    &quot;nt&quot;: false,
+    &quot;pid&quot;: 1,
+    &quot;new_release&quot;: &quot;&quot;,
+    &quot;new_rel_url&quot;: &quot;&quot;,
+    &quot;active_lang&quot;: &quot;en&quot;,
+    &quot;my_home&quot;: &quot;/mnt/zurg&quot;,
+    &quot;my_lcldata&quot;: &quot;/config&quot;,
+    &quot;webdir&quot;: &quot;&quot;,
+    &quot;loglevel&quot;: &quot;1&quot;,
+    &quot;folders&quot;: [],
+    &quot;configfn&quot;: &quot;/config/sabnzbd.ini&quot;,
+    &quot;warnings&quot;: [],
+    &quot;servers&quot;: [],
+    &quot;localipv4&quot;: &quot;127.0.0.1&quot;,
+    &quot;publicipv4&quot;: &quot;&quot;,
+    &quot;ipv6&quot;: null,
+    &quot;dnslookup&quot;: &quot;ok&quot;
+  }
+}</code></pre>
+</doc-codeblock></div>
+<p>Nur <code translate="no" v-pre>completedir</code> wird gelesen (<code translate="no" v-pre>SabnzbdFullStatus.cs:9-10</code>). Der Wrapper-Schlüssel <strong>muss</strong> <code translate="no" v-pre>status</code> sein
+(<code translate="no" v-pre>Responses/SabnzbdFullStatusResponse.cs:5</code>).</p>
+<h3 id="84-modeaddfile-response">8.4 <code translate="no" v-pre>mode=addfile</code>-Antwort</h3>
+<div id="84-modeaddfile-response-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;status&quot;: true,
+  &quot;nzo_ids&quot;: [&quot;SABnzbd_nzo_abc12345&quot;]
+}</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>nzo_ids</code> muss ein <strong>nicht leeres Array aus Strings</strong> sein (<code translate="no" v-pre>Sabnzbd.cs:47-52</code>). <code translate="no" v-pre>status</code> wird geparst (<code translate="no" v-pre>Responses/SabnzbdAddResponse.cs:13</code>), aber nie gelesen; lass es auf <code translate="no" v-pre>true</code>, damit <code translate="no" v-pre>CheckForError</code> <code translate="no" v-pre>&quot;True&quot;</code> sieht.</p>
+<h3 id="85-modequeuestart0limit0categorytv--one-downloading-slot">8.5 <code translate="no" v-pre>mode=queue&amp;start=0&amp;limit=0&amp;category=tv</code> — ein Downloading-Slot</h3>
+<div id="85-modequeuestart0limit0categorytv--one-downloading-slot-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;queue&quot;: {
+    &quot;status&quot;: &quot;Downloading&quot;,
+    &quot;speedlimit&quot;: &quot;0&quot;,
+    &quot;speedlimit_abs&quot;: &quot;&quot;,
+    &quot;paused&quot;: false,
+    &quot;noofslots_total&quot;: 1,
+    &quot;noofslots&quot;: 1,
+    &quot;limit&quot;: 0,
+    &quot;start&quot;: 0,
+    &quot;finish&quot;: 0,
+    &quot;have_warnings&quot;: &quot;0&quot;,
+    &quot;cache_art&quot;: &quot;0&quot;,
+    &quot;cache_size&quot;: &quot;0 B&quot;,
+    &quot;finishaction&quot;: null,
+    &quot;queue_details&quot;: &quot;0&quot;,
+    &quot;my_home&quot;: &quot;/mnt/zurg&quot;,
+    &quot;my_lcldata&quot;: &quot;/config&quot;,
+    &quot;mb&quot;: &quot;1024.00&quot;,
+    &quot;mbleft&quot;: &quot;512.00&quot;,
+    &quot;size&quot;: &quot;1.0 GB&quot;,
+    &quot;sizeleft&quot;: &quot;512.0 MB&quot;,
+    &quot;kbpersec&quot;: &quot;1024.00&quot;,
+    &quot;speed&quot;: &quot;1.0 M&quot;,
+    &quot;timeleft&quot;: &quot;0:08:32&quot;,
+    &quot;eta&quot;: &quot;12:34 Fri 22 Aug&quot;,
+    &quot;diskspace1&quot;: &quot;1000.00&quot;,
+    &quot;diskspace2&quot;: &quot;1000.00&quot;,
+    &quot;diskspacetotal1&quot;: &quot;2000.00&quot;,
+    &quot;diskspacetotal2&quot;: &quot;2000.00&quot;,
+    &quot;diskspace1_norm&quot;: &quot;1000.0 G&quot;,
+    &quot;diskspace2_norm&quot;: &quot;1000.0 G&quot;,
+    &quot;slots&quot;: [
+      {
+        &quot;status&quot;: &quot;Downloading&quot;,
+        &quot;index&quot;: 0,
+        &quot;password&quot;: &quot;&quot;,
+        &quot;avg_age&quot;: &quot;2d&quot;,
+        &quot;script&quot;: &quot;None&quot;,
+        &quot;direct_unpack&quot;: null,
+        &quot;mb&quot;: &quot;1024.00&quot;,
+        &quot;mbleft&quot;: &quot;512.00&quot;,
+        &quot;mbmissing&quot;: &quot;0.00&quot;,
+        &quot;size&quot;: &quot;1.0 GB&quot;,
+        &quot;sizeleft&quot;: &quot;512.0 MB&quot;,
+        &quot;filename&quot;: &quot;Some.Show.S01E01.1080p.WEB-DL.H264-GRP&quot;,
+        &quot;labels&quot;: [],
+        &quot;priority&quot;: &quot;Normal&quot;,
+        &quot;cat&quot;: &quot;tv&quot;,
+        &quot;timeleft&quot;: &quot;0:08:32&quot;,
+        &quot;percentage&quot;: &quot;50&quot;,
+        &quot;nzo_id&quot;: &quot;SABnzbd_nzo_abc12345&quot;,
+        &quot;unpackopts&quot;: &quot;3&quot;
+      }
+    ]
+  }
+}</code></pre>
+</doc-codeblock></div>
+<p>Harte Anforderungen:</p>
+<ul>
+<li>Oberster Schlüssel <code translate="no" v-pre>queue</code> (<code translate="no" v-pre>SabnzbdProxy.cs:129</code>, <code translate="no" v-pre>SelectToken(&quot;queue&quot;)</code>).</li>
+<li><code translate="no" v-pre>slots[].status</code> ∈ die 16 <code translate="no" v-pre>SabnzbdDownloadStatus</code>-Namen, exakt in dieser Schreibweise.</li>
+<li><code translate="no" v-pre>slots[].mb</code> / <code translate="no" v-pre>mbleft</code> sind <strong>Megabyte</strong>, Dezimalzahlen im invariant culture. Strings und Zahlen funktionieren beide (Newtonsoft wandelt um); echtes SAB schickt Strings.</li>
+<li><code translate="no" v-pre>slots[].timeleft</code> ist genau <code translate="no" v-pre>h:m:s</code> oder <code translate="no" v-pre>d:h:m:s</code> — niemals <code translate="no" v-pre>&quot;&quot;</code>.</li>
+<li><code translate="no" v-pre>slots[].priority</code> — <code translate="no" v-pre>&quot;Normal&quot;</code>, <code translate="no" v-pre>&quot;High&quot;</code>, <code translate="no" v-pre>&quot;Low&quot;</code>, <code translate="no" v-pre>&quot;Force&quot;</code>, <code translate="no" v-pre>&quot;Paused&quot;</code>, <code translate="no" v-pre>&quot;Default&quot;</code> (groß- und kleinschreibungsabhängig) oder das numerische Äquivalent. <strong>Niemals <code translate="no" v-pre>null</code></strong> (NRE).</li>
+<li><code translate="no" v-pre>slots[].cat</code> (nicht <code translate="no" v-pre>category</code>) muss der konfigurierten Kategorie des Clients entsprechen, sonst wird der Eintrag bei <code translate="no" v-pre>Sabnzbd.cs:190</code> herausgefiltert.</li>
+<li><code translate="no" v-pre>queue.paused</code> muss <code translate="no" v-pre>false</code> sein, außer du meinst wirklich pausiert. <code translate="no" v-pre>true</code> markiert jeden Slot außer <code translate="no" v-pre>Force</code> als Paused und setzt die ETA auf null (<code translate="no" v-pre>Sabnzbd.cs:78-84</code>).</li>
+</ul>
+<p>Resultierendes <code translate="no" v-pre>DownloadClientItem</code>: <code translate="no" v-pre>TotalSize = 1024 * 1024 * 1024</code>, <code translate="no" v-pre>RemainingSize = 512 * 1024 * 1024</code>, <code translate="no" v-pre>RemainingTime = 00:08:32</code>, <code translate="no" v-pre>Status = Downloading</code>, <code translate="no" v-pre>CanBeRemoved = CanMoveFiles = true</code>.</p>
+<h3 id="86-modehistorystart0limit60categorytv--one-completed-and-one-failed-slot">8.6 <code translate="no" v-pre>mode=history&amp;start=0&amp;limit=60&amp;category=tv</code> — ein Completed- und ein Failed-Slot</h3>
+<div id="86-modehistorystart0limit60categorytv--one-completed-and-one-failed-slot-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;history&quot;: {
+    &quot;noofslots&quot;: 2,
+    &quot;ppslots&quot;: 0,
+    &quot;day_size&quot;: &quot;1.0 G&quot;,
+    &quot;week_size&quot;: &quot;7.0 G&quot;,
+    &quot;month_size&quot;: &quot;30.0 G&quot;,
+    &quot;total_size&quot;: &quot;1.0 T&quot;,
+    &quot;last_history_update&quot;: 1755835200,
+    &quot;version&quot;: &quot;4.3.3&quot;,
+    &quot;slots&quot;: [
+      {
+        &quot;id&quot;: 1,
+        &quot;completed&quot;: 1755834000,
+        &quot;name&quot;: &quot;Some.Show.S01E02.1080p.WEB-DL.H264-GRP&quot;,
+        &quot;nzb_name&quot;: &quot;Some.Show.S01E02.1080p.WEB-DL.H264-GRP.nzb&quot;,
+        &quot;category&quot;: &quot;tv&quot;,
+        &quot;pp&quot;: &quot;3&quot;,
+        &quot;script&quot;: &quot;None&quot;,
+        &quot;report&quot;: &quot;&quot;,
+        &quot;url&quot;: &quot;&quot;,
+        &quot;status&quot;: &quot;Completed&quot;,
+        &quot;nzo_id&quot;: &quot;SABnzbd_nzo_def67890&quot;,
+        &quot;storage&quot;: &quot;/mnt/zurg/__magic__/__all__/Some.Show.S01E02.1080p.WEB-DL.H264-GRP&quot;,
+        &quot;path&quot;: &quot;/mnt/zurg/__magic__/__all__/Some.Show.S01E02.1080p.WEB-DL.H264-GRP&quot;,
+        &quot;script_log&quot;: &quot;&quot;,
+        &quot;script_line&quot;: &quot;&quot;,
+        &quot;download_time&quot;: 120,
+        &quot;postproc_time&quot;: 3,
+        &quot;stage_log&quot;: [],
+        &quot;downloaded&quot;: 1073741824,
+        &quot;completeness&quot;: 100,
+        &quot;fail_message&quot;: &quot;&quot;,
+        &quot;url_info&quot;: &quot;&quot;,
+        &quot;bytes&quot;: 1073741824,
+        &quot;meta&quot;: null,
+        &quot;series&quot;: &quot;&quot;,
+        &quot;md5sum&quot;: &quot;&quot;,
+        &quot;password&quot;: &quot;&quot;,
+        &quot;action_line&quot;: &quot;&quot;,
+        &quot;size&quot;: &quot;1.0 GB&quot;,
+        &quot;loaded&quot;: false,
+        &quot;retry&quot;: 0,
+        &quot;has_rating&quot;: false
+      },
+      {
+        &quot;id&quot;: 2,
+        &quot;completed&quot;: 1755833000,
+        &quot;name&quot;: &quot;Some.Show.S01E03.1080p.WEB-DL.H264-GRP&quot;,
+        &quot;nzb_name&quot;: &quot;Some.Show.S01E03.1080p.WEB-DL.H264-GRP.nzb&quot;,
+        &quot;category&quot;: &quot;tv&quot;,
+        &quot;pp&quot;: &quot;3&quot;,
+        &quot;script&quot;: &quot;None&quot;,
+        &quot;report&quot;: &quot;&quot;,
+        &quot;url&quot;: &quot;&quot;,
+        &quot;status&quot;: &quot;Failed&quot;,
+        &quot;nzo_id&quot;: &quot;SABnzbd_nzo_ghi13579&quot;,
+        &quot;storage&quot;: &quot;&quot;,
+        &quot;path&quot;: &quot;&quot;,
+        &quot;script_log&quot;: &quot;&quot;,
+        &quot;script_line&quot;: &quot;&quot;,
+        &quot;download_time&quot;: 0,
+        &quot;postproc_time&quot;: 0,
+        &quot;stage_log&quot;: [],
+        &quot;downloaded&quot;: 0,
+        &quot;completeness&quot;: 0,
+        &quot;fail_message&quot;: &quot;Article download failed, out of retention&quot;,
+        &quot;url_info&quot;: &quot;&quot;,
+        &quot;bytes&quot;: 0,
+        &quot;meta&quot;: null,
+        &quot;series&quot;: &quot;&quot;,
+        &quot;md5sum&quot;: &quot;&quot;,
+        &quot;password&quot;: &quot;&quot;,
+        &quot;action_line&quot;: &quot;&quot;,
+        &quot;size&quot;: &quot;0 B&quot;,
+        &quot;loaded&quot;: false,
+        &quot;retry&quot;: 0,
+        &quot;has_rating&quot;: false
+      }
+    ]
+  }
+}</code></pre>
+</doc-codeblock></div>
+<p>Harte Anforderungen:</p>
+<ul>
+<li>
+<p>Oberster Schlüssel <code translate="no" v-pre>history</code> (<code translate="no" v-pre>SabnzbdProxy.cs:145</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>slots[].bytes</code> ist <strong>BYTES</strong> (eine JSON-Zahl → <code translate="no" v-pre>long</code>). Hier kein MB senden. Die Queue nutzt MB, die
+History nutzt Bytes (<code translate="no" v-pre>Sabnzbd.cs:72-73</code> vs <code translate="no" v-pre>:128</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>slots[].category</code> (nicht <code translate="no" v-pre>cat</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>slots[].storage</code> ist der Job-Ordner selbst. Er wird zu <code translate="no" v-pre>OutputPath</code>, und bei einem Completed-Element ist er
+genau das, was <code translate="no" v-pre>DeleteItemData</code> rekursiv löscht (§5.3). Er muss ein absoluter Pfad sein, der auf dem Betriebssystem gültig ist, auf dem Sonarr/Radarr läuft, und dort existieren (<code translate="no" v-pre>RemotePathMappingCheck</code>, §6.2).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>slots[].status</code> in exakter Schreibweise. <code translate="no" v-pre>Deleted</code>-Elemente werden komplett verworfen (<code translate="no" v-pre>Sabnzbd.cs:116-119</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>fail_message</code> exakt <code translate="no" v-pre>&quot;Unpacking failed, write error or disk is full?&quot;</code> stuft ein Failed-Element auf <code translate="no" v-pre>Warning</code> statt <code translate="no" v-pre>Failed</code> herab (<code translate="no" v-pre>Sabnzbd.cs:140-144</code>). Für einen echten Fehler nimm etwas anderes.</p>
+</li>
+<li>
+<p>Radarr: <code translate="no" v-pre>category</code> muss <code translate="no" v-pre>movies</code> sein (oder was auch immer konfiguriert ist), und <code translate="no" v-pre>name</code> sollte sich als Film parsen lassen.</p>
+</li>
+</ul>
+<h3 id="87-error-response-any-mode">8.7 Fehlerantwort (jeder Modus)</h3>
+<div id="87-error-response-any-mode-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;status&quot;: false,
+  &quot;error&quot;: &quot;API Key Incorrect&quot;
+}</code></pre>
+</doc-codeblock></div>
+<p><strong>HTTP 200.</strong> <code translate="no" v-pre>status</code> kann der boolesche Wert <code translate="no" v-pre>false</code> oder der String <code translate="no" v-pre>&quot;false&quot;</code> sein; beide erfüllen
+<code translate="no" v-pre>SabnzbdJsonError.Failed</code> (<code translate="no" v-pre>SabnzbdJsonError.cs:10-11</code>). Der Client löst
+<code translate="no" v-pre>DownloadClientException(&quot;Error response received from SABnzbd: API Key Incorrect&quot;)</code> aus
+(<code translate="no" v-pre>SabnzbdProxy.cs:244</code>), den <code translate="no" v-pre>TestAuthentication</code> erkennt (<code translate="no" v-pre>Sabnzbd.cs:424</code>).
+Verwende <code translate="no" v-pre>&quot;API Key Required&quot;</code>, wenn kein Schlüssel angegeben wurde (<code translate="no" v-pre>Sabnzbd.cs:429</code>). Jeder andere <code translate="no" v-pre>error</code>-String wird
+wörtlich gemeldet, aber nicht eingeordnet.</p>
+<hr>
+<h2 id="9-implementation-checklist-12-points">9. Umsetzungs-Checkliste (12 Punkte)</h2>
+<ol>
+<li>
+<p>Eine Route: <code translate="no" v-pre>GET|POST {UrlBase}/api</code>, Verteilung anhand von <code translate="no" v-pre>mode</code>. <strong>Immer HTTP 200, immer JSON.</strong></p>
+</li>
+<li>
+<p>Implementiere <code translate="no" v-pre>version</code>, <code translate="no" v-pre>get_config</code>, <code translate="no" v-pre>queue</code> (lesen + <code translate="no" v-pre>name=delete</code>), <code translate="no" v-pre>history</code> (lesen + <code translate="no" v-pre>name=delete</code>), <code translate="no" v-pre>addfile</code>, <code translate="no" v-pre>fullstatus</code>. Optional <code translate="no" v-pre>retry</code> (heute toter Code). <code translate="no" v-pre>get_cats</code> wird nie aufgerufen.</p>
+</li>
+<li>
+<p>Akzeptiere Authentifizierung entweder als <code translate="no" v-pre>apikey=</code> <strong>oder</strong> <code translate="no" v-pre>ma_username=</code>+<code translate="no" v-pre>ma_password=</code>. Lehne mit 200 + <code translate="no" v-pre>{&quot;status&quot;:false,&quot;error&quot;:&quot;API Key Incorrect&quot;}</code> / <code translate="no" v-pre>&quot;API Key Required&quot;</code> ab, niemals mit 401/403.</p>
+</li>
+<li>
+<p>Berücksichtige <code translate="no" v-pre>category=</code> bei <code translate="no" v-pre>queue</code>/<code translate="no" v-pre>history</code> (die Clients filtern außerdem clientseitig per exaktem Stringvergleich, <code translate="no" v-pre>Sabnzbd.cs:190</code>).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>queue</code>-Größen in <strong>MB</strong> (<code translate="no" v-pre>mb</code>, <code translate="no" v-pre>mbleft</code>); <code translate="no" v-pre>history</code>-Größen in <strong>BYTES</strong> (<code translate="no" v-pre>bytes</code>). Verwechsle sie nie. Queue nutzt <code translate="no" v-pre>cat</code>, history nutzt <code translate="no" v-pre>category</code>.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>timeleft</code> ist immer <code translate="no" v-pre>h:m:s</code> oder <code translate="no" v-pre>d:h:m:s</code>, nie leer und nie als leerer String fehlend.
+Kein Datumsfeld wird irgendwo geparst, daher sind Epoch-Felder frei gestaltbar.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>status</code>-Werte müssen aus der 16-teiligen Liste <code translate="no" v-pre>SabnzbdDownloadStatus</code> stammen, exakt in der Schreibweise (ein unbekannter Name wirft eine Exception und bringt den gesamten queue-/history-Aufruf zum Absturz). <code translate="no" v-pre>priority</code> muss ein Name aus <code translate="no" v-pre>SabnzbdPriority</code> (exakte Schreibweise) oder dessen Ganzzahl sein; <strong>niemals <code translate="no" v-pre>null</code></strong> (NRE im Converter).</p>
+</li>
+<li>
+<p><code translate="no" v-pre>config.misc</code> muss ein Objekt sein; jede Kategorie muss ein <strong>nicht-null String-<code translate="no" v-pre>dir</code></strong> haben, der nicht mit <code translate="no" v-pre>*</code> endet. <code translate="no" v-pre>categories</code>/<code translate="no" v-pre>sorters</code>/<code translate="no" v-pre>servers</code> dürfen null sein oder fehlen, <code translate="no" v-pre>misc</code> und <code translate="no" v-pre>dir</code> dagegen nicht.</p>
+</li>
+<li>
+<p>Lass <code translate="no" v-pre>enable_tv_sorting</code>, <code translate="no" v-pre>enable_movie_sorting</code>, <code translate="no" v-pre>enable_date_sorting</code> und <code translate="no" v-pre>pre_check</code> alle auf <code translate="no" v-pre>false</code>, und <code translate="no" v-pre>history_retention_option: &quot;all&quot;</code>, damit der Verbindungstest und alle Health-Checks sauber durchlaufen.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>storage</code> eines Completed-history-Slots ist der Job-Ordner. Rechne damit, dass der *arr ihn nach einem erfolgreichen Import mit <code translate="no" v-pre>rm -rf</code> löscht (Standardeinstellungen), und dass die Mediendatei vorher <strong>verschoben</strong> wird. Ist das Magic-Verzeichnis schreibgeschützt, schlägt das Löschen stillschweigend fehl (nur eine Warnung im Log). Das <em>Verschieben</em> der importierten Datei muss trotzdem klappen, sonst schlägt der Import komplett fehl (§5.5).</p>
+</li>
+<li>
+<p>Lege keinen *arr-Root-Ordner auf oder unterhalb von <code translate="no" v-pre>/mnt/zurg/__magic__/__all__</code> ab, wenn Radarrs <code translate="no" v-pre>DownloadClientRootFolderCheck</code> ruhig bleiben soll (Sonarr prüft nur auf exakte Gleichheit). Lege sie stattdessen neben dem Mirror ab, z. B. <code translate="no" v-pre>/mnt/zurg/__magic__/tv</code> und <code translate="no" v-pre>/mnt/zurg/__magic__/movies</code>. Sie liegen dann weder darüber noch darunter, sondern sind vom Ausgabeordner unabhängig.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>/mnt/zurg/__magic__/__all__</code> muss als Verzeichnis <strong>auf dem Sonarr/Radarr-Host</strong> existieren, nicht nur dort, wo der Emulator läuft, sonst wirft <code translate="no" v-pre>RemotePathMappingCheck</code> einen Fehler. Es muss nicht beschreibbar sein.</p>
+</li>
+</ol>
+<h2 id="configuring-a-larger-completion-window">Ein größeres Abschlussfenster konfigurieren</h2>
+<p>Beide Clients setzen <code translate="no" v-pre>DownloadClientHistoryLimit</code> standardmäßig auf 60. zurg spiegelt dieses Fenster, wenn es abgeschlossene Überläufer in <code translate="no" v-pre>queue</code> behält. Würdest du nur das Client-Limit erhöhen, würden manche Jobs sowohl in queue als auch in history gemeldet, und dann gewinnt queue.</p>
+<p>Bei einem großen Rückstau setzt du <code translate="no" v-pre>sabnzbd.history_limit</code> in zurg und <code translate="no" v-pre>DownloadClientHistoryLimit</code> in den Clients auf denselben Wert, zum Beispiel 500. So werden pro Poll mehr abgeschlossene und fehlgeschlagene Jobs angezeigt. Wenn mehrere Clients unterschiedliche Werte nutzen, lass zurg auf dem kleinsten Client-Limit. Diese erweiterte Client-Einstellung ist in der Download-Client-Konfigurations-API von Sonarr v4 nicht verfügbar. Bevor du die gespeicherte Konfiguration des Clients bearbeitest, sichere sie und stoppe den Client.</p>
+<div id="configuring-a-larger-completion-window-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">sabnzbd:
+  enabled: true
+  history_limit: 500</code></pre>
+</doc-codeblock></div>
+<p>Der Standardwert bleibt 60; Null und negative Werte verwenden diesen Standardwert. Eine Diagnose-Abfrage der History mit einem anderen Limit ändert das eingestellte Fenster nie. Warnungen, die der Client nicht auflösen kann, musst du weiterhin prüfen. Ein größeres Fenster lässt andere Jobs zum Import durch, auch wenn diese Warnungen Plätze in der History belegen.</p>
+<p>Die Verfügbarkeitsprüfung vor dem Abschluss prüft die ersten sechzehn Artikel und den letzten Artikel jeder Mediendatei. So wird ein fehlender Artikel im Medien-Header erkannt, den der frühere Canary mit dem ersten Artikel übersehen hat. Dabei wird der erste Artikel jeder Mediendatei übertragen. Das prüft die Artikel-Identität und ob der Body noch ausgeliefert wird; ein Provider kann auf STAT mit Ja antworten, obwohl er den Body entfernt hat. Hinzu kommen zufällig gezogene Artikel, bis zu sechzehn Bodys für ein Release mit weniger Dateien, und höchstens vierundsechzig Bodys insgesamt. Ein Body, den der Artikel-Cache schon hat, wird nicht erneut geholt. STAT deckt den Rest der Stichprobe ab. Es werden nicht alle Artikel geprüft, und es ist nicht bewiesen, dass sich die Mediendatei abspielen lässt. STAT-Anfragen werden pro Datei gebündelt, sodass die Stichprobe eine Pool-Reservierung statt siebzehn braucht, ohne das Verbindungslimit des Accounts zu erhöhen. Ist ein Bündel unbrauchbar, fallen die Anfragen auf einzelne STATs zurück. Server-Fehler lassen den Job zum erneuten Versuch in der Warteschlange. Bestätigt fehlende Artikel führen zu einem fehlgeschlagenen Download, bevor die erste Abschlussbenachrichtigung kommt.</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/naming/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Vorheriger</span>
+                                <span class="block mt-1">Benennung</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/plex-trash-sweep/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Nächster</span>
+                                <span class="block mt-1">Plex-​Papierkorb-​Aufr&#228;umen</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "SABnzbd-Client-Vertrag", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/internals/sabnzbd-client-contract.md" }</script>
+</body>
+</html>

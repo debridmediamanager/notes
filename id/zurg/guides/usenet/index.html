@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/id">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672707986">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Usenet dengan zurg</title>
+    <meta name="title" content="Usenet dengan zurg">
+    <meta name="description" content="backend nzb zurg mengubah file .nzb menjadi library yang di-mount. Tidak ada downloader atau folder completed. Tidak ada yang diunduh sebelum diputar. zurg menyimpan NZB dan cache terbatas di data/bytecache dan data/par2 beserta record indeks.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/id/zurg/guides/usenet/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/id/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/id/zurg/guides/usenet/">
+    <meta property="og:title" content="Usenet dengan zurg">
+    <meta property="og:description" content="backend nzb zurg mengubah file .nzb menjadi library yang di-mount. Tidak ada downloader atau folder completed. Tidak ada yang diunduh sebelum diputar. zurg menyimpan NZB dan cache terbatas di data/bytecache dan data/par2 beserta record indeks.">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/id/zurg/guides/usenet/">
+    <meta name="twitter:title" content="Usenet dengan zurg">
+    <meta name="twitter:description" content="backend nzb zurg mengubah file .nzb menjadi library yang di-mount. Tidak ada downloader atau folder completed. Tidak ada yang diunduh sebelum diputar. zurg menyimpan NZB dan cache terbatas di data/bytecache dan data/par2 beserta record indeks.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/id/zurg/guides/usenet.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672707986" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672707986" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672707986" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672707986" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/id/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>Bahasa Indonesia</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/id/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/id/download.html" target="_blank">Unduh zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/id/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>Bahasa Indonesia</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/id/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/id/download.html" target="_blank">Unduh zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/id/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="usenet-with-zurg">Usenet dengan zurg</h1>
+<p><code translate="no" v-pre>backend</code> <code translate="no" v-pre>nzb</code> zurg mengubah file <code translate="no" v-pre>.nzb</code> menjadi library yang di-mount. Tidak ada downloader atau folder completed.
+Tidak ada yang diunduh sebelum diputar. zurg menyimpan NZB dan cache terbatas di <code translate="no" v-pre>data/bytecache</code> dan <code translate="no" v-pre>data/par2</code>
+beserta record indeks. <code translate="no" v-pre>nzb_article_disk_cache_mb</code> default-nya 512 MiB. Saat seek, zurg hanya mengambil artikel yang mencakup byte tersebut. File remux 60 GB tidak butuh disk 60 GB.</p>
+<p>Usenet memakai filter library, mount, dan integrasi media-server yang sama dengan backend debrid. Rilis Usenet bisa berdampingan dengan konten Real-Debrid atau TorBox. Kamu juga bisa memakai Usenet saja.</p>
+<p><strong>Beberapa provider Usenet didukung.</strong> Satu entri <code translate="no" v-pre>nzb</code> bisa memuat berapa pun akun berita: provider tanpa batas, akun block, apa pun yang kamu punya. zurg akan berpindah ke akun berikutnya artikel demi artikel. Ini lebih penting di sini dibanding redundansi biasanya, karena retensi berlaku per provider. Jadi akun kedua sering kali menjadi pembeda antara cukup satu pengambilan tambahan dan harus membangun ulang seluruh rilis dari PAR2. Lihat <doc-anchor-trigger to="#more-than-one-usenet-provider">Lebih dari satu provider Usenet</doc-anchor-trigger>.</p>
+<p>Panduan ini mencakup akun berita, NZB, mount, dan Plex.</p>
+<retype-table copy-text="| | |
+|---|---|
+| Referensi konfigurasi | [config.md → Usenet accounts](../reference/config.md#usenet-accounts) |
+| Dashboard | `http://localhost:9999/config/` → Essentials → Providers |
+| Lokasi kode | `internal/nzb` (backend), `internal/nntp` (klien news), `internal/par2` (matematika perbaikan) |
+| Folder pantau | `nzbs/`, di working directory zurg (`/config` di Docker) |
+| Cache perbaikan | `data/par2/` |
+| Nama file yang sudah di-resolve | `data/nzb-names/`, supaya release yang terobfuscate hanya dibaca namanya sekali, bukan sekali per restart |
+| Indeks artikel | `data/nzb-index/`, di bawah `nzb_segments: mmap`, yaitu default di Linux, macOS, dan BSD |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Referensi konfigurasi</td>
+<td><a href="../../reference/config/#usenet-accounts">config.md → Usenet accounts</a></td>
+</tr>
+<tr>
+<td>Dashboard</td>
+<td><code translate="no" v-pre>http://localhost:9999/config/</code> → Essentials → Providers</td>
+</tr>
+<tr>
+<td>Lokasi kode</td>
+<td><code translate="no" v-pre>internal/nzb</code> (backend), <code translate="no" v-pre>internal/nntp</code> (klien news), <code translate="no" v-pre>internal/par2</code> (matematika perbaikan)</td>
+</tr>
+<tr>
+<td>Folder pantau</td>
+<td><code translate="no" v-pre>nzbs/</code>, di working directory zurg (<code translate="no" v-pre>/config</code> di Docker)</td>
+</tr>
+<tr>
+<td>Cache perbaikan</td>
+<td><code translate="no" v-pre>data/par2/</code></td>
+</tr>
+<tr>
+<td>Nama file yang sudah di-resolve</td>
+<td><code translate="no" v-pre>data/nzb-names/</code>, supaya release yang terobfuscate hanya dibaca namanya sekali, bukan sekali per restart</td>
+</tr>
+<tr>
+<td>Indeks artikel</td>
+<td><code translate="no" v-pre>data/nzb-index/</code>, di bawah <code translate="no" v-pre>nzb_segments: mmap</code>, yaitu default di Linux, macOS, dan BSD</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<hr>
+<h2 id="what-you-need">Yang kamu butuhkan</h2>
+<ul>
+<li><strong>Setidaknya satu akun penyedia Usenet.</strong> Retensi adalah yang paling penting. Penyedia dengan retensi 4000+ hari masih menyimpan postingan yang sudah hilang dari penyedia 1000 hari. <strong>Batas koneksi</strong> paketmu adalah angka kedua yang perlu kamu tahu. Angka inilah yang dibaca zurg.</li>
+<li><strong>Akun tambahan, jika kamu punya.</strong> Penyedia unlimited kedua di <em>backbone</em> yang berbeda, atau akun blok murah untuk menutup celah, adalah hal dengan nilai tertinggi yang bisa kamu tambahkan ke pengaturan Usenet. Lihat <doc-anchor-trigger to="#more-than-one-usenet-provider">More than one Usenet provider</doc-anchor-trigger>.</li>
+<li><strong>File NZB atau sesuatu yang mengambilnya.</strong> Unduh dari indexer kamu lalu taruh di <code translate="no" v-pre>nzbs/</code>. Atau aktifkan <a href="../sonarr-radarr/">SABnzbd-compatible endpoint</a> dan biarkan Sonarr dan Radarr yang menyerahkannya. Endpoint ini menulis ke direktori yang sama. zurg juga bisa mencari sendiri di indexer Newznab kamu. Ini terjadi saat kamu menekan play di <a href="../stremio/">Stremio</a>. Ini juga terjadi untuk permintaan dari daftar tonton kamu dan dari Seerr serta *arrs melalui <a href="../acquisition/">acquisition</a>. Torrent untuk akun debrid punya endpoint sendiri yang kompatibel dengan <a href="../sonarr-radarr-torrents/">qBittorrent</a>.</li>
+<li><strong>zurg</strong>, ditambah <code translate="no" v-pre>rclone</code> jika kamu ingin mount filesystem alih-alih WebDAV langsung. zurg akan mengunduh rclone untukmu saat pertama kali dijalankan.</li>
+</ul>
+<hr>
+<h2 id="1-configure-your-news-accounts">1. Konfigurasikan akun news Anda</h2>
+<p>Setiap akun di zurg adalah satu entri di bawah <code translate="no" v-pre>providers:</code>. Akun Usenet diautentikasi dengan kredensial server, bukan token API, jadi isinya memakai blok <code translate="no" v-pre>nntp</code>, bukan <code translate="no" v-pre>token</code>:</p>
+<div id="1-configure-your-news-accounts-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">zurg: v1
+providers:
+  - type: nzb
+    nntp:
+      host: news.example.com
+      port: 563
+      tls: true
+      username: YOUR_USENET_USERNAME
+      password: YOUR_USENET_PASSWORD
+      connections: 30        # your plan's allowance — see below
+      cache_size_mb: 512     # decoded articles held in memory, across all files</code></pre>
+</doc-codeblock></div>
+<p>Hanya itu saja. Tambahkan akun debrid di sebelahnya jika kamu punya:</p>
+<div id="1-configure-your-news-accounts-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">providers:
+  - type: realdebrid
+    token: YOUR_RD_API_TOKEN
+  - type: nzb
+    nntp:
+      host: news.example.com
+      ...</code></pre>
+</doc-codeblock></div>
+<retype-table copy-text="| Kunci | Default | Catatan |
+|---|---|---|
+| `host` | *(wajib)* | Server berita. Host yang kosong atau tidak ada akan menyebabkan error saat startup. |
+| `port` | `563` dengan TLS, `119` tanpa TLS | |
+| `tls` | `false` | Aktifkan. NNTP tanpa enkripsi mengirim password kamu dalam teks biasa, dan bacaanmu bisa dilihat siapa pun di jalurnya. |
+| `username` / `password` | `&quot;&quot;` | |
+| `connections` | `8` | **Atur ini sesuai kuota paket kamu.** Ini bukan batas laju yang bisa dinegosiasikan: satu koneksi hanya membawa sebagian kecil throughput penyedia, dan zurg membaca sesuai angka ini. Terlalu rendah membuat streaming lambat; melebihi batas paket, dan server mulai menolak koneksi. |
+| `warm_connections` | `4` | Koneksi terautentikasi yang menganggur tetap terbuka supaya pembacaan tidak perlu menunggu dial. Satu dial memakan sekitar 0.8s untuk TCP, TLS, greeting, dan `AUTHINFO`. Tanpa batas bawah, biaya ini dibayar saat permintaan setelah setiap start dan setiap jeda sepi. Koneksi ini diambil dari `connections`, bukan tambahan. Paket menghitungnya sebagai koneksi terbuka, dan zurg menjaganya tetap hidup dengan `DATE` berkala, jadi batas bawahnya dibatasi oleh kuota. `-1` tidak menyimpan koneksi sama sekali, yang diinginkan paket yang ditagih berdasarkan waktu koneksi. `warm_connections` di level atas menetapkan default untuk akun yang tidak menyatakan nilainya sendiri. Lihat [koneksi hangat](../reference/config.md#warm-connections). |
+| `cache_size_mb` | `512` | Data artikel yang sudah didekode dan disimpan di memori, dipakai bersama oleh semua file yang sedang dibaca, bukan per file. |
+| `servers` | `[]` | Akun berita tambahan. Lihat [Lebih dari satu penyedia Usenet](#more-than-one-usenet-provider). |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Kunci</th>
+<th>Default</th>
+<th>Catatan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>host</code></td>
+<td><em>(wajib)</em></td>
+<td>Server berita. Host yang kosong atau tidak ada akan menyebabkan error saat startup.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>port</code></td>
+<td><code translate="no" v-pre>563</code> dengan TLS, <code translate="no" v-pre>119</code> tanpa TLS</td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>tls</code></td>
+<td><code translate="no" v-pre>false</code></td>
+<td>Aktifkan. NNTP tanpa enkripsi mengirim password kamu dalam teks biasa, dan bacaanmu bisa dilihat siapa pun di jalurnya.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>username</code> / <code translate="no" v-pre>password</code></td>
+<td><code translate="no" v-pre>&quot;&quot;</code></td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>connections</code></td>
+<td><code translate="no" v-pre>8</code></td>
+<td><strong>Atur ini sesuai kuota paket kamu.</strong> Ini bukan batas laju yang bisa dinegosiasikan: satu koneksi hanya membawa sebagian kecil throughput penyedia, dan zurg membaca sesuai angka ini. Terlalu rendah membuat streaming lambat; melebihi batas paket, dan server mulai menolak koneksi.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>warm_connections</code></td>
+<td><code translate="no" v-pre>4</code></td>
+<td>Koneksi terautentikasi yang menganggur tetap terbuka supaya pembacaan tidak perlu menunggu dial. Satu dial memakan sekitar 0.8s untuk TCP, TLS, greeting, dan <code translate="no" v-pre>AUTHINFO</code>. Tanpa batas bawah, biaya ini dibayar saat permintaan setelah setiap start dan setiap jeda sepi. Koneksi ini diambil dari <code translate="no" v-pre>connections</code>, bukan tambahan. Paket menghitungnya sebagai koneksi terbuka, dan zurg menjaganya tetap hidup dengan <code translate="no" v-pre>DATE</code> berkala, jadi batas bawahnya dibatasi oleh kuota. <code translate="no" v-pre>-1</code> tidak menyimpan koneksi sama sekali, yang diinginkan paket yang ditagih berdasarkan waktu koneksi. <code translate="no" v-pre>warm_connections</code> di level atas menetapkan default untuk akun yang tidak menyatakan nilainya sendiri. Lihat <a href="../../reference/config/#warm-connections">koneksi hangat</a>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>cache_size_mb</code></td>
+<td><code translate="no" v-pre>512</code></td>
+<td>Data artikel yang sudah didekode dan disimpan di memori, dipakai bersama oleh semua file yang sedang dibaca, bukan per file.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>servers</code></td>
+<td><code translate="no" v-pre>[]</code></td>
+<td>Akun berita tambahan. Lihat <doc-anchor-trigger to="#more-than-one-usenet-provider">Lebih dari satu penyedia Usenet</doc-anchor-trigger>.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Dua aturan yang dicek oleh validator konfigurasi:</p>
+<ul>
+<li><strong>Hanya satu entri provider <code translate="no" v-pre>nzb</code> yang aktif.</strong> Dua entri akan sama-sama memindai direktori <code translate="no" v-pre>nzbs/</code> yang sama dan menggandakan setiap rilis. Ini bukan batas jumlah <em>penyedia Usenet</em> yang bisa kamu pakai. Akun berita tambahan ditaruh di bawah <code translate="no" v-pre>nntp.servers</code> milik satu entri itu, tempat mereka melayani pustaka yang sama, bukan membuat salinan kedua.</li>
+<li><strong><code translate="no" v-pre>watchlist: true</code> tidak bisa menargetkannya.</strong> Backend Usenet tidak bisa menambahkan konten, jadi ia tidak pernah bisa menjadi akun tempat penambahan watchlist Plex masuk.</li>
+</ul>
+<h3 id="more-than-one-usenet-provider">Lebih dari satu penyedia Usenet</h3>
+<p>Retensi berlaku per penyedia. Selisihnya antara satu kali fetch tambahan dan rebuild PAR2 untuk seluruh rilis adalah apakah akun lain masih menyimpan artikelnya. Itulah sebabnya akun kedua lebih berharga di sini dibanding redundansi biasa.</p>
+<p>Kunci yang sudah ada di blok <code translate="no" v-pre>nntp</code> menjelaskan akun pertama. Apa pun di bawah <code translate="no" v-pre>servers</code> adalah akun lain. Akun dengan <code translate="no" v-pre>priority</code> yang sama berbagi beban. Angka yang lebih tinggi baru ditanya setelah yang lebih rendah. Akun <code translate="no" v-pre>backup</code> baru ditanya setelah semua akun primer gagal mengirim artikel tersebut. Konfigurasi akun tunggal yang sudah ada tetap berjalan tanpa perlu diubah:</p>
+<div id="more-than-one-usenet-provider-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">providers:
+  - type: nzb
+    nntp:
+      host: unlimited.example.com          # first account: the workhorse
+      tls: true
+      username: USERNAME
+      password: PASSWORD
+      connections: 30
+      servers:
+        - host: second-unlimited.example.com   # different backbone = different retention
+          tls: true
+          username: USERNAME
+          password: PASSWORD
+          connections: 20
+          backbone: usenetexpress
+        - host: block.example.com              # metered — only for what the others lack
+          tls: true
+          username: USERNAME
+          password: PASSWORD
+          connections: 10
+          backup: true
+          backbone: omicron</code></pre>
+</doc-codeblock></div>
+<p>Setiap akun punya jatah koneksinya sendiri. Pembacaan dijalankan sesuai <strong>gabungan jatah koneksi dari akun non-backup yang berbagi <code translate="no" v-pre>priority</code> terendah yang aktif</strong>. Dalam contoh di atas, 30 + 20 = 50, karena keduanya memakai priority default. Jadi penyedia tanpa batas kedua di priority yang sama memberi throughput tambahan sekaligus asuransi retensi. Akun <code translate="no" v-pre>backup</code> tidak memberi keduanya, dan itu disengaja. Akun ini hanya membawa apa yang tidak bisa dipenuhi primer. Jika dihitung, jendela read-ahead akan melebar setiap saat, padahal kapasitas itu tidak pernah dipakai saat playback normal.</p>
+<p>Ada tiga kunci yang menentukan akun mana yang ditanya:</p>
+<retype-table copy-text="| Key | Default | Efek |
+|---|---|---|
+| `name` | nilai dari `host` | Memberi label pada akun di log. |
+| `priority` | `0` | Akun mana yang ditanya lebih dulu, dari yang terendah. Akun dengan priority yang sama ditanya sesuai urutan penulisan, kecuali akun yang masih punya koneksi bebas didahulukan daripada akun yang jatahnya sudah habis. Jadi dua akun yang setara berbagi beban dan tidak antre di satu akun. |
+| `backup` | `false` | Menandai akun block berbayar yang hanya ditanya setelah semua primer menyatakan artikelnya tidak ada, mengirim salinan yang rusak, gagal di tengah jalan, atau tidak bisa dihubungi. Primer yang hanya **sibuk** tidak cukup. zurg akan menunggu daripada menghabiskan byte berbayar untuk sesuatu yang bisa dilayani akun unlimited. |
+| `backbone` | `&quot;&quot;` | Menyebutkan spool artikel tempat akun tersebut terhubung. Dua akun di backbone yang sama menyimpan artikel yang sama. Jadi begitu salah satunya menyatakan artikel tidak ada, akun lain di spool yang sama dilewati, tidak perlu membayar round trip untuk jawaban yang sama. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Efek</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>name</code></td>
+<td>nilai dari <code translate="no" v-pre>host</code></td>
+<td>Memberi label pada akun di log.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>priority</code></td>
+<td><code translate="no" v-pre>0</code></td>
+<td>Akun mana yang ditanya lebih dulu, dari yang terendah. Akun dengan priority yang sama ditanya sesuai urutan penulisan, kecuali akun yang masih punya koneksi bebas didahulukan daripada akun yang jatahnya sudah habis. Jadi dua akun yang setara berbagi beban dan tidak antre di satu akun.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>backup</code></td>
+<td><code translate="no" v-pre>false</code></td>
+<td>Menandai akun block berbayar yang hanya ditanya setelah semua primer menyatakan artikelnya tidak ada, mengirim salinan yang rusak, gagal di tengah jalan, atau tidak bisa dihubungi. Primer yang hanya <strong>sibuk</strong> tidak cukup. zurg akan menunggu daripada menghabiskan byte berbayar untuk sesuatu yang bisa dilayani akun unlimited.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>backbone</code></td>
+<td><code translate="no" v-pre>&quot;&quot;</code></td>
+<td>Menyebutkan spool artikel tempat akun tersebut terhubung. Dua akun di backbone yang sama menyimpan artikel yang sama. Jadi begitu salah satunya menyatakan artikel tidak ada, akun lain di spool yang sama dilewati, tidak perlu membayar round trip untuk jawaban yang sama.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Setiap akun juga punya batas hangat sendiri, diambil dari jatah koneksinya sendiri. Celah retensi membuat pembacaan langsung melewati primer, jadi akun yang pertama kali dipakai adalah akun yang koneksinya belum pernah dipanaskan. Akun block dengan dua koneksi bisa diatur agar tidak memakai batas hangat sama sekali dengan <code translate="no" v-pre>warm_connections: -1</code>.</p>
+<p>Banyak yang menjual ulang akses Usenet, jadi isi <code translate="no" v-pre>backbone</code> dengan benar. Dua akun yang kamu beli dari perusahaan berbeda bisa saja berada di spool yang sama. Kalau tidak diisi, setiap miss akan ditanyakan dua kali. Kamu bebas memberi nama grup apa pun. String itu hanya dibandingkan dengan entri lain.</p>
+<p>Saat startup, zurg menyebutkan semua akun yang akan dipakainya:</p>
+<div id="more-than-one-usenet-provider-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Usenet account nzb connected: nntps://unlimited.example.com:563 (30 connections) + nntps://second-unlimited.example.com:563 (20 connections) [usenetexpress] + nntps://block.example.com:563 (10 connections) [backup] [omicron]</code></pre>
+</doc-codeblock></div>
+<p>Sensus yang memutuskan apakah sebuah rilis perlu diperbaiki akan menanyakan setiap akun sebelum menyatakan artikel hilang. Setiap akun hanya ditanya tentang artikel yang tidak ada di akun sebelumnya. Kegagalan transport tidak pernah disalahartikan sebagai artikel yang sudah kedaluwarsa. Jika sebuah akun timeout atau menjatuhkan artikel di tengah jalan, kegagalan itulah yang dilaporkan. Dengan begitu, timeout tidak pernah membuat keheningan disajikan atau repair dijadwalkan untuk sesuatu yang sebenarnya belum hilang. Akun yang sama sekali tidak bisa dihubungi tidak dihitung. Jika akun lain menyatakan artikel itu sudah hilang, artikel tersebut dianggap hilang.</p>
+<h3 id="configuring-providers-in-the-dashboard">Mengonfigurasi penyedia di Dashboard</h3>
+<p><code translate="no" v-pre>http://localhost:9999/config/</code> → <strong>Essentials</strong> → <strong>Providers</strong> melakukan hal yang sama tanpa perlu mengedit YAML. Tabel ini menampilkan semua akun sesuai urutan di config:</p>
+<div id="configuring-providers-in-the-dashboard-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">#  Name        Type        Token                Flags
+1  realdebrid  realdebrid  …DFFND4OA            —          [Edit] [Delete]
+2  nzb         nzb         news.example.com     —          [Edit] [Delete]</code></pre>
+</doc-codeblock></div>
+<p>Untuk baris <code translate="no" v-pre>nzb</code>, kolom Token menampilkan <strong>host news server</strong> alih-alih petunjuk token, karena memang tidak ada token yang perlu disembunyikan. Setelah itu ada angka yang menunjukkan berapa news server tambahan yang dimiliki.</p>
+<p><strong>Untuk menambahkan akun Usenet:</strong></p>
+<ol>
+<li>Klik <strong>Add provider</strong>.</li>
+<li>Atur <strong>Type</strong> ke <code translate="no" v-pre>nzb</code>. Kolom token akan hilang dan kolom NNTP muncul di tempatnya.</li>
+<li>Biarkan <strong>Name</strong> kosong kalau kamu tidak ingin nama lain selain <code translate="no" v-pre>nzb</code>. Nama ini dipakai sebagai nama direktori per akun, jadi kalau kamu isi <code translate="no" v-pre>usenet</code>, di mount kamu akan muncul <code translate="no" v-pre>__usenet__</code>.</li>
+<li>Isi <strong>NNTP host</strong>, <strong>Port</strong>, <strong>TLS</strong> (sudah dicentang secara default, biarkan saja menyala), <strong>Username</strong>, <strong>Password</strong>, <strong>Connections</strong> (teks petunjuk <code translate="no" v-pre>8</code>; isi dengan jatah koneksi sesuai paket kamu) dan <strong>Cache size MB</strong> (teks petunjuk <code translate="no" v-pre>512</code>).</li>
+<li>Biarkan <strong>Watchlist target</strong> tidak dicentang. Backend tidak bisa menambahkan konten, jadi kalau dicentang saat menyimpan, akan ditolak. <strong>Disabled</strong> membuat entri tetap ada di <code translate="no" v-pre>config.yml</code> tanpa dimuat.</li>
+<li>Klik <strong>Save</strong>.</li>
+</ol>
+<p>Formulir divalidasi seolah-olah perubahan sudah diterapkan, jadi kalau ada kesalahan, kamu akan mendapat peringatan (alert) dan config tidak akan rusak. Menambahkan provider <code translate="no" v-pre>nzb</code> <strong>kedua</strong> akan ditolak. Pesan errornya akan mengarahkan kamu ke <strong>Further news servers</strong> (atau <code translate="no" v-pre>nntp.servers</code>), tempat akun news tambahan seharusnya dimasukkan.</p>
+<p><strong>Untuk menambahkan news server lain</strong>, misalnya akun kedua atau akun block di backbone lain, klik <strong>Edit</strong> pada baris <code translate="no" v-pre>nzb</code>, lalu klik <strong>Add news server</strong> di bagian <strong>Further news servers</strong>. Setiap server punya <strong>Name</strong>, <strong>NNTP host</strong>, <strong>Port</strong>, <strong>TLS</strong>, <strong>Username</strong>, <strong>Password</strong>, <strong>Connections</strong>, <strong>Priority</strong>, <strong>Backbone</strong> dan <strong>Backup only</strong> sendiri-sendiri. <strong>Remove server</strong> menghapus satu server. <strong>Save</strong> akan menulis semuanya ke <code translate="no" v-pre>nntp.servers</code>.</p>
+<p><strong>Untuk mengedit salah satu</strong>, klik <strong>Edit</strong> pada barisnya. Formulir akan memuat semua pengaturan kecuali password, baik untuk akun pertama maupun untuk setiap news server tambahan. Kolom password akan dibiarkan kosong, dan artinya <em>pakai yang sudah ada</em>. Ketik password baru hanya kalau kamu memang ingin menggantinya. Pengaturan yang tidak punya kolom di formulir akan tetap dibiarkan seperti yang ada di <code translate="no" v-pre>config.yml</code>.</p>
+<p><strong>Delete</strong> akan meminta konfirmasi, lalu menghapus entri provider dari <code translate="no" v-pre>config.yml</code>. Direktori <code translate="no" v-pre>nzbs/</code> kamu tidak akan tersentuh. File NZB tetap berada di tempatnya dan akan muncul kembali bersama provider. Provider aktif terakhir tidak bisa dihapus maupun dinonaktifkan.</p>
+<p>Setiap perubahan di sini langsung ditulis ke <code translate="no" v-pre>config.yml</code> dan akan menampilkan pesan:</p>
+<blockquote>
+<p>Provider changes saved to config.yml — restart zurg to apply</p>
+</blockquote>
+<p>Perubahan provider <strong>tidak</strong> dimuat ulang secara otomatis (hot-reload). Restart zurg dulu sebelum berharap ada perubahan.</p>
+<hr>
+<h2 id="2-start-zurg-and-confirm-the-accounts">2. Jalankan zurg dan konfirmasi akun</h2>
+<doc-tabs>
+<doc-tab v-cloak id="linux-dan-macos">
+<template #title>Linux dan macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./zurg</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">.\zurg.exe</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p>Jika <code translate="no" v-pre>zurg setup</code> memasang zurg agar berjalan otomatis, mulai ulang dengan <code translate="no" v-pre>zurg service restart</code> sebagai gantinya (<code translate="no" v-pre>./zurg service restart</code>, atau <code translate="no" v-pre>.\zurg.exe service restart</code> di Windows).</p>
+<p>zurg memeriksa akun news sekali saat startup, karena kata sandi yang salah jika tidak akan muncul jauh lebih lambat sebagai semua file gagal diputar:</p>
+<div id="2-start-zurg-and-confirm-the-accounts-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Usenet account nzb connected: nntps://news.example.com:563 (30 connections)</code></pre>
+</doc-codeblock></div>
+<p>Kegagalan total juga sama mencoloknya:</p>
+<div id="2-start-zurg-and-confirm-the-accounts-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Cannot reach the news server for nzb: &lt;reason&gt;</code></pre>
+</doc-codeblock></div>
+<p>Periksa dulu pasangan port dan TLS (<code translate="no" v-pre>563</code>+<code translate="no" v-pre>tls: true</code>, atau <code translate="no" v-pre>119</code>+<code translate="no" v-pre>tls: false</code>), lalu kredensialnya, lalu apakah paket langganannya benar-benar aktif.</p>
+<p><strong>Jika punya beberapa akun, baca peringatannya, jangan hanya baris connected.</strong> Setiap akun yang tidak bisa dijangkau mendapat peringatannya sendiri, dan startup tetap berjalan selama <em>satu</em> akun masih merespons. Error di atas hanya muncul jika semua akun tidak bisa dijangkau. Jadi penyedia kedua yang mati akan terlihat seperti startup yang sehat, kecuali Anda memperhatikannya:</p>
+<div id="2-start-zurg-and-confirm-the-accounts-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Usenet account block.example.com is not reachable: &lt;reason&gt;</code></pre>
+</doc-codeblock></div>
+<hr>
+<h2 id="3-add-nzb-files">3. Tambahkan file NZB</h2>
+<p>zurg membuat folder pantau <code translate="no" v-pre>nzbs/</code> saat mulai berjalan. Folder ini ada di folder tempat zurg dijalankan. Salin file NZB ke dalamnya.</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos">
+<template #title>Linux and macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cp ~/Downloads/Some.Release.2024.2160p.nzb nzbs/</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-1">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">Copy-Item &quot;$HOME\Downloads\Some.Release.2024.2160p.nzb&quot; nzbs\</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p>Dalam satu-dua detik zurg menyadari file itu dan membacanya, lalu library langsung menampilkannya begitu proses baca selesai. Log akan menunjukkan apa yang dibacanya:</p>
+<div id="3-add-nzb-files-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Loaded NZB Some.Release.2024.2160p.nzb: 94 files</code></pre>
+</doc-codeblock></div>
+<h3 id="how-quickly-it-appears">Seberapa cepat muncul</h3>
+<p>zurg memantau <code translate="no" v-pre>nzbs/</code> sendiri, dengan pengecekan sekitar sekali per detik yang hanya memakai satu syscall, berapa pun jumlah NZB di dalam direktori itu. Jadi file yang masuk ke sana dibaca hampir seketika, bukan menunggu pengecekan perubahan library berikutnya. Sebuah <doc-anchor-trigger to="#obfuscated-releases">obfuscated release</doc-anchor-trigger> butuh waktu sedikit lebih lama, karena nama file aslinya harus dibaca dulu dari artikel-artikelnya sendiri, biasanya jauh di bawah satu detik, dan release itu langsung muncul begitu proses ini selesai. Kedua jeda ini tidak lagi bergantung pada <code translate="no" v-pre>check_for_changes_every_secs</code>. Dulu iya: sebuah obfuscated release bisa baru muncul hingga dua interval penuh setelah dijatuhkan, satu untuk pembacaan direktori dan satu lagi karena namanya baru selesai di-resolve sesaat setelah pengecekan yang seharusnya mendeteksinya. Diukur pada interval 10 detik, jaraknya 17,7 detik dari saat file dijatuhkan sampai release muncul, dan 0,67 detik di antaranya adalah waktu pemrosesannya.</p>
+<p>Pengecekan berkala tetap ada dan tetap menjadi cadangan. Pengecekan inilah yang menangkap dua hal yang tidak bisa dilaporkan sendiri oleh direktori yang dipantau: NZB yang <strong>diganti di tempat</strong> dengan nama yang sudah ada, dan filesystem yang timestamp direktorinya terlalu kasar untuk membedakan dua perubahan yang terjadi dalam detik yang sama.</p>
+<h3 id="what-gets-picked-up">Apa yang diambil</h3>
+<ul>
+<li>File <strong>langsung di dalam <code translate="no" v-pre>nzbs/</code></strong> yang namanya berakhiran <code translate="no" v-pre>.nzb</code>, tidak peduli huruf besar atau kecil.</li>
+<li><strong>Subdirektori dilewati.</strong> <code translate="no" v-pre>nzbs/movies/foo.nzb</code> tidak akan terbaca. Taruh semua di satu folder saja, jangan dikelompokkan. Pengelompokan library diatur lewat directory filters, bukan lewat folder ini.</li>
+<li><strong>Hanya XML biasa.</strong> <code translate="no" v-pre>.nzb.gz</code> tidak akan di-unpack maupun dibaca, jadi decompress dulu.</li>
+<li>File yang gagal di-parse akan dilewati dengan warning dan tidak menghentikan proses scan.</li>
+</ul>
+<h3 id="what-the-release-is-called">Nama rilisnya apa</h3>
+<p>Nama yang ditampilkan zurg, dan karenanya nama folder yang dilihat Plex, adalah:</p>
+<ol>
+<li>Nilai <code translate="no" v-pre>&lt;meta type=&quot;name&quot;&gt;</code> milik NZB itu sendiri, kalau ada dan masih lolos sanitasi, jika tidak,</li>
+<li><strong>nama file tanpa <code translate="no" v-pre>.nzb</code></strong>.</li>
+</ol>
+<p>Jadi, sebagian besar waktu, <em>nama file NZB adalah nama rilisnya</em>. Beri nama file seperti kamu memberi nama rilisnya, karena itulah yang akan dicoba dicocokkan oleh media server kamu:</p>
+<div id="what-the-release-is-called-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash"># good
+nzbs/Some.Movie.2024.2160p.UHD.BluRay.x265-GROUP.nzb
+
+# bad — Plex has nothing to work with
+nzbs/indexer_download_48213.nzb</code></pre>
+</doc-codeblock></div>
+<p>Dua rilis berbeda yang berakhir dengan nama yang sama dibedakan dengan tag hash pendek (<code translate="no" v-pre>Some.Release {a1b2c3}</code>), sama seperti di tempat lain di zurg.</p>
+<h3 id="password-protected-releases">Rilis yang dilindungi kata sandi</h3>
+<p>Jika indexer mencatat sandi arsip di blok metadata NZB, zurg akan menggunakannya saat streaming dari set RAR:</p>
+<div id="password-protected-releases-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-markup"><code v-pre class="language-markup">&lt;head&gt;
+  &lt;meta type=&quot;password&quot;&gt;thepassword&lt;/meta&gt;
+&lt;/head&gt;</code></pre>
+</doc-codeblock></div>
+<p>Tidak perlu yang lain. Rilis yang dilindungi sandi yang NZB-nya tidak memuat metadata sandi tidak bisa dibuka.</p>
+<h3 id="obfuscated-releases">Rilis yang diobfuskasi</h3>
+<p>Posting yang nama filenya acak tetap bisa ditangani, dengan biaya yang dibayar sekali saat scan. zurg mencoba sumber yang murah dulu, yaitu nama file yang masih dideklarasikan artikel di yEnc header-nya sendiri, satu artikel per file. Kalau gagal, ia jatuh ke indeks PAR2 rilisan, yang mencatat nama asli tiap file terhadap MD5 dari 16 KiB pertamanya. Nama dan ukuran pastinya ada di header artikel, jadi scan bisa memberi jawaban begitu header itu datang, sementara body-nya lanjut masuk ke cache untuk dibaca nanti. Jadi rilisan yang di-obfuscate tetap dapat nama dan ukuran dari artikel yang sama. Ia mencatat apa yang berhasil dipulihkan:</p>
+<div id="obfuscated-releases-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Recovered 27 filename(s) in Some.Release</code></pre>
+</doc-codeblock></div>
+<p>Seluruh proses penamaan dibatasi 90 detik per NZB, jadi server yang tidak bisa dihubungi hanya memperlambat scan, tidak membuatnya macet. Nama dipastikan <em>sebelum</em> library dibangun darinya, karena library menyimpan file berdasarkan nama, dan kalau diganti nanti, file itu akan hilang.</p>
+<p><strong>Posting yang sepenuhnya di-obfuscate tidak punya nama asli untuk dipulihkan.</strong> Beberapa poster melakukan obfuscate sebelum membuat recovery set, jadi indeks PAR2 mengembalikan nama yang memang acak (<code translate="no" v-pre>aJPSgA7eYizyzjJXT.part01.rar</code>), dan file di dalam arsipnya juga berupa hash. Tidak ada yang ada di posting itu yang tahu isi rilisannya, hanya nama NZB itu sendiri. Jadi zurg menampilkan payload dengan nama rilisan, sama seperti yang dilakukan SABnzbd di akhir unpacking:</p>
+<div id="obfuscated-releases-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Ugliest.House.in.America.S08E02.720p.AMZN.WEB-DL-RAWR/
+└── Ugliest.House.in.America.S08E02.720p.AMZN.WEB-DL-RAWR.mkv</code></pre>
+</doc-codeblock></div>
+<p>Hanya file yang jelas merupakan rilisan yang diganti namanya: entri terbesar di dalam arsip, dan hanya jika ukurannya minimal tiga kali lipat dari entri berikutnya, ekstensinya bukan bagian dari struktur disc (<code translate="no" v-pre>.vob</code>, <code translate="no" v-pre>.m2ts</code>, <code translate="no" v-pre>.mpls</code>), dan namanya tidak bermakna apa-apa. Subtitle dan sampel yang namanya sama ikut mengikutinya. Arsip yang berisi beberapa file dengan ukuran mirip, misalnya season pack, dibiarkan apa adanya, karena tidak ada satu pun dari file itu yang merupakan rilisannya. Nama-nama asli di dalam arsip tetap berfungsi sebagai alamat, jadi pemutar yang sudah jalan sebelum rescan tidak kehilangan file-nya.</p>
+<h3 id="replacing-and-removing">Mengganti dan menghapus</h3>
+<ul>
+<li><strong>Menghapus</strong> NZB dari <code translate="no" v-pre>nzbs/</code> akan menghapus rilis itu dari library, membuang reader dan article cache-nya, serta melupakan byte hasil perbaikan yang dulu disimpannya.</li>
+<li><strong>Menghapus rilis Usenet dari Dashboard akan menghapus file <code translate="no" v-pre>.nzb</code> dari disk.</strong> Tidak ada tempat lain untuk file itu. Ini berbeda dengan menghapus torrent dari akun debrid, yang file-nya tetap ada di layanan.</li>
+<li><strong>Mengganti NZB di tempat adalah cara yang lambat.</strong> Menimpa file tidak mengubah direktori, jadi watch di atas tidak akan mendeteksinya. Yang mendeteksi adalah pengecekan perubahan berkala, yang membaca waktu modifikasi file dan mem-parse ulang file tersebut, yaitu pada pengecekan <code translate="no" v-pre>check_for_changes_every_secs</code> pertama yang terjadi lebih dari 15 detik setelah pembacaan direktori terakhir (sekitar 30 detik pada pengaturan default). Menghapus file lama lalu menambahkan file baru terdeteksi dalam satu atau dua detik, dan itu juga yang dilakukan indexer atau endpoint SABnzbd.</li>
+</ul>
+<h2 id="4-where-releases-land-in-the-mount">4. Tempat rilis muncul di mount</h2>
+<p>Rilis Usenet adalah entri pustaka biasa, jadi filter <code translate="no" v-pre>directories:</code> yang sudah kamu punya berlaku tanpa perubahan:</p>
+<div id="4-where-releases-land-in-the-mount-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">directories:
+  shows:
+    group: media
+    group_order: 20
+    filters:
+      - has_episodes: true
+  movies:
+    group: media
+    group_order: 30
+    only_show_the_biggest_file: true
+    filters:
+      - any_file_inside_not_regex: /\.(mp3|flac|m4b)$/i</code></pre>
+</doc-codeblock></div>
+<p>Selain itu, akun mendapat direktori sendiri: <code translate="no" v-pre>__nzb__</code> secara default, atau <code translate="no" v-pre>__&lt;name&gt;__</code> jika kamu mengatur <code translate="no" v-pre>name:</code> pada entri provider. Direktori itu bukan sekadar tampilan. Pembacaan di dalamnya <strong>dipatok</strong> ke akun Usenet tanpa failover, jadi itu tempat yang tepat untuk menguji apakah pemutaran Usenet berjalan tanpa akun debrid yang diam-diam menjawab. Jika Usenet adalah satu-satunya akun, folder itu tidak ditampilkan di daftar root mount dan <code translate="no" v-pre>__all__</code> berisi file yang sama, jadi uji pemutaran lewat <code translate="no" v-pre>__all__</code> di mount, atau buka jalur HTTP langsung <code translate="no" v-pre>http://localhost:9999/http/__nzb__/</code>.</p>
+<p>Ada empat hal khusus Usenet yang perlu diketahui saat menulis filter:</p>
+<ul>
+<li><strong>Filter tag cocok dengan konten Usenet setelah dianalisis.</strong> Setiap tag <code translate="no" v-pre>zurg_*</code> (resolusi, HDR, bitrate, durasi, bahasa) berasal dari ffprobe. zurg menjalankan ffprobe pada file Usenet sendiri, lewat server sendiri dan dengan kecepatan yang bisa ditangani news server, jadi rilis Usenet mendapat tag seperti yang lain setelah dianalisis. Sampai saat itu, direktori yang memakai <code translate="no" v-pre>tags_match_any</code> tidak akan menampungnya.</li>
+<li><strong>File <code translate="no" v-pre>.par2</code> dan <code translate="no" v-pre>.sfv</code> disembunyikan.</strong> Itu adalah perancah perbaikan. zurg membacanya sendiri, dan tidak ada media server yang membutuhkannya, apalagi delapan file per season pack. <code translate="no" v-pre>.nfo</code> tetap ditampilkan, karena Kodi, Emby, dan Jellyfin membacanya.</li>
+<li><strong>Set RAR adalah konten, bukan arsip yang perlu di-unpack.</strong> <code translate="no" v-pre>.rar</code> dan <code translate="no" v-pre>.rNN</code> tetap terlihat, dan sebuah set volume muncul di mount sebagai <em>folder</em> yang isinya adalah file di dalamnya. zurg men-stream video langsung dari arsip tanpa mengekstraknya. Rilis yang <em>hanya</em> berisi satu set volume justru menggantikan isinya sendiri, tanpa folder arsip di antaranya: payload berada langsung di folder rilis, tempat media server mencarinya. File yang diposting bersama set, seperti <code translate="no" v-pre>.nfo</code>, <code translate="no" v-pre>.txt</code> dari poster, artwork, dan subtitle, tetap ditampilkan di sana juga.</li>
+<li><strong><code translate="no" v-pre>force_select_playable_files</code> tidak berlaku.</strong> Posting Usenet itu utuh, jadi tidak ada yang perlu dipilih. Setiap file konten sudah ditawarkan.</li>
+</ul>
+<p>Cek hasilnya dulu sebelum melibatkan media server. <code translate="no" v-pre>http://localhost:9999/http/</code> adalah indeks HTML biasa dari apa yang akan ditampilkan mount:</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-dan-macos-1">
+<template #title>Linux dan macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s http://localhost:9999/http/__nzb__/ | head</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-2">
+<template #title>Windows</template>
+<p>Ketik <code translate="no" v-pre>curl.exe</code>, bukan <code translate="no" v-pre>curl</code>: di Windows PowerShell 5.1, <code translate="no" v-pre>curl</code> adalah nama lain dari <code translate="no" v-pre>Invoke-WebRequest</code>.</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">curl.exe -s http://localhost:9999/http/__nzb__/ | Select-Object -First 10</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<hr>
+<h2 id="5-mount-it-with-rclone">5. Pasang dengan rclone</h2>
+<h3 id="the-easy-path-let-zurg-run-rclone">Jalur mudah: biarkan zurg menjalankan rclone</h3>
+<div id="the-easy-path-let-zurg-run-rclone-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">rclone_enabled: true
+rclone_binary: bin/rclone      # downloaded automatically on first run
+mount_path: &quot;/mnt/zurg&quot;        # /Volumes/Zurg on macOS, Z: on Windows</code></pre>
+</doc-codeblock></div>
+<p>zurg menjalankan rclone dengan profil VFS yang sudah disetel untuk pola bacanya sendiri (ukuran buffer, ukuran chunk, mode cache, waktu dir-cache, timeout). zurg juga menjaga mount tetap hidup dan menghapus entri dircache yang tepat ketika library berubah. <code translate="no" v-pre>mount_path</code> juga menjadi awalan yang dipakai zurg untuk memberi tahu Plex path mana yang harus di-scan, jadi harus diisi walaupun kamu mount di tempat lain.</p>
+<p>Cek dulu:</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux">
+<template #title>Linux</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">ls /mnt/zurg/
+ls /mnt/zurg/__all__/</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="macos">
+<template #title>macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">ls /Volumes/Zurg/
+ls /Volumes/Zurg/__all__/</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-3">
+<template #title>Windows</template>
+<p>Jalankan di jendela PowerShell di desktop kamu: drive-nya hanya terlihat di sesi logon yang me-mount-nya (<a href="../../setup/windows/#keeping-it-running-the-session-rules">aturan sesi</a>).</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">Get-ChildItem Z:\
+Get-ChildItem Z:\__all__\</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<h3 id="the-manual-path-your-own-rclone">Jalur manual: rclone milik Anda sendiri</h3>
+<p>Jika Anda sudah mengelola rclone, arahkan remote WebDAV ke zurg:</p>
+<div id="the-manual-path-your-own-rclone-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-ini"><code v-pre class="language-ini">[zurg]
+type = webdav
+url = http://localhost:9999/dav/
+vendor = other
+pacer_min_sleep = 0</code></pre>
+</doc-codeblock></div>
+<doc-tabs>
+<doc-tab v-cloak id="linux-1">
+<template #title>Linux</template>
+<p>rclone tidak membuat mount point, dan <code translate="no" v-pre>/mnt</code> dimiliki oleh root:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo mkdir -p /mnt/zurg &amp;&amp; sudo chown &quot;$USER&quot; /mnt/zurg
+rclone mount zurg: /mnt/zurg --config rclone.conf --dir-cache-time 10s --vfs-handle-caching 0</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="macos-1">
+<template #title>macOS</template>
+<p>Memerlukan <a href="../../setup/macos/#step-1-install-macfuse">macFUSE</a> dan rclone dari <a href="https://rclone.org/downloads/">rclone.org</a>: rclone dari Homebrew tidak bisa di-mount. rclone tidak membuat mount point, dan <code translate="no" v-pre>/Volumes</code> dimiliki oleh root:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo mkdir -p /Volumes/Zurg &amp;&amp; sudo chown &quot;$USER&quot; /Volumes/Zurg
+rclone mount zurg: /Volumes/Zurg --config rclone.conf --dir-cache-time 10s --vfs-handle-caching 0</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-4">
+<template #title>Windows</template>
+<p>Memerlukan <a href="https://winfsp.dev">WinFsp</a>. Huruf drive tidak boleh sedang dipakai, dan hanya program di sesi logon tempat rclone berjalan yang bisa melihatnya (<a href="../../setup/windows/#keeping-it-running-the-session-rules">aturan sesi</a>).</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">rclone mount zurg: Z: --config rclone.conf --dir-cache-time 10s --vfs-handle-caching 0</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p><code translate="no" v-pre>--vfs-handle-caching 0</code> memerlukan rclone 1.74 atau yang lebih baru, dan mencegah rclone terus mengunduh selama lima detik lagi setelah pembaca menutup file. README menjelaskan apa akibatnya jika opsi ini dihilangkan.</p>
+<p>Tetap atur <code translate="no" v-pre>mount_path</code> di <code translate="no" v-pre>config.yml</code> ke lokasi tempat Anda me-mount, atau notifikasi pemindaian media server akan dibuat dengan prefix yang salah.</p>
+<h3 id="docker">Docker</h3>
+<p>Direktori kerja zurg di image adalah <code translate="no" v-pre>/config</code>, dan direktori watch serta cache repair berada di dalamnya. Satu bind mount membawa semuanya, termasuk file lain:</p>
+<div id="docker-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">services:
+  zurg:
+    image: ghcr.io/debridmediamanager/zurg:latest
+    volumes:
+      - ./:/config
+    ports:
+      - 9999:9999</code></pre>
+</doc-codeblock></div>
+<p>Setelah itu, NZB yang kamu taruh di <code translate="no" v-pre>./nzbs</code> pada host akan langsung terbaca di dalam container tanpa perlu restart.</p>
+<p>Untuk mount ini kamu butuh host Linux. Docker Desktop di macOS dan Windows menjalankan container di dalam VM, dan mount tersebut tidak sampai ke Finder, Explorer, atau Plex yang terpasang di host. Di sana, gunakan binary <a href="../../setup/macos/">macOS</a> atau <a href="../../setup/windows/">Windows</a> (<a href="../../setup/docker/">alasannya</a>).</p>
+<blockquote>
+<p>Instalasi yang dibuat sebelum <code translate="no" v-pre>/config</code> di-bind-mount, yaitu <code translate="no" v-pre>/app/config.yml</code>, <code translate="no" v-pre>/app/nzbs</code>, dan <code translate="no" v-pre>/app/data</code> dimount terpisah, tetap berjalan seperti biasa. Lihat <a href="../../setup/docker/#upgrading-an-install-that-mounted-app">docker.md</a>.</p>
+</blockquote>
+<hr>
+<h2 id="6-point-plex-at-it">6. Arahkan Plex ke sana</h2>
+<ol>
+<li>
+<p><strong>Berikan kredensial Plex ke zurg</strong>, supaya zurg bisa meminta Plex memindai hanya path yang berubah, alih-alih membuatmu menunggu pemindaian penuh berkala. Cara termudah adalah lewat alur autentikasi Plex di Dashboard, yang akan menulis nilainya kembali ke <code translate="no" v-pre>config.yml</code>:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">plex_server_url: &quot;http://localhost:32400&quot;
+plex_token: YOUR_PLEX_TOKEN</code></pre>
+</doc-codeblock></div>
+</li>
+<li>
+<p><strong>Tambahkan library yang mengarah ke subdirektori mount</strong>, jangan pernah ke root mount:</p>
+<ul>
+<li>Movies → <code translate="no" v-pre>/mnt/zurg/movies</code> (<code translate="no" v-pre>/Volumes/Zurg/movies</code> di macOS, <code translate="no" v-pre>Z:\movies</code> di Windows)</li>
+<li>TV Shows → <code translate="no" v-pre>/mnt/zurg/shows</code> (<code translate="no" v-pre>/Volumes/Zurg/shows</code> di macOS, <code translate="no" v-pre>Z:\shows</code> di Windows)</li>
+</ul>
+<p>Di Windows, Plex hanya bisa melihat <code translate="no" v-pre>Z:</code> jika berjalan di sesi logon yang sama dengan zurg. Task logon dari <code translate="no" v-pre>zurg setup</code> memastikan hal itu. Lihat <a href="../../setup/windows/#keeping-it-running-the-session-rules">aturan sesi</a>.</p>
+<p>Rilis yang sama muncul di setiap direktori yang filternya cocok <em>dan</em> di bawah <code translate="no" v-pre>__all__</code> dan <code translate="no" v-pre>__nzb__</code>. Jika Plex diarahkan ke root, file yang sama akan dipindai berulang kali.</p>
+</li>
+<li>
+<p><strong>Atur dua opsi library</strong> di Edit → Advanced untuk setiap library:</p>
+<ul>
+<li><strong>Hilangkan centang &quot;Empty trash automatically after every scan&quot;.</strong> Ini yang paling penting. Jika mount bermasalah sebentar saat Plex sedang memindai (misalnya zurg restart atau rclone di-remount), Plex akan menganggap semua file sudah dihapus. Dengan auto-empty aktif, file langsung dihapus permanen. Dengan opsi ini mati, file tetap ada di trash dan kembali saat mount pulih. Ini pernah membuat library berisi 30,000 item hilang.</li>
+<li><strong>Hilangkan centang &quot;Generate video preview thumbnails&quot;.</strong> Setiap thumbnail butuh seek ke seluruh file. Di Usenet, itu berarti membaca penuh rilis lewat jatah koneksimu.</li>
+</ul>
+</li>
+<li>
+<p><strong>Jangan pernah restart zurg saat Plex sedang memindai.</strong> Cek dulu sebelum melakukannya:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">TOKEN=$(grep ^plex_token: config.yml | awk '{print $2}' | tr -d &quot;\&quot;'&quot;)
+curl -s &quot;http://localhost:32400/status/sessions?X-Plex-Token=$TOKEN&quot; | grep -o 'size=&quot;[0-9]*&quot;'
+curl -s &quot;http://localhost:32400/library/sections?X-Plex-Token=$TOKEN&quot; | grep -o 'refreshing=&quot;1&quot;' | wc -l</code></pre>
+</doc-codeblock></div>
+<p>Di Windows, jalankan ini di PowerShell dari folder zurg:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$TOKEN = ((Select-String -Path config.yml -Pattern '^plex_token:').Line -split '\s+')[1].Trim('&quot;', &quot;'&quot;)
+(Invoke-RestMethod &quot;http://localhost:32400/status/sessions?X-Plex-Token=$TOKEN&quot;).MediaContainer.size
+@((Invoke-RestMethod &quot;http://localhost:32400/library/sections?X-Plex-Token=$TOKEN&quot;).MediaContainer.Directory | Where-Object refreshing -eq 1).Count</code></pre>
+</doc-codeblock></div>
+<p>Jika sesi menampilkan <code translate="no" v-pre>size=&quot;0&quot;</code> (<code translate="no" v-pre>0</code> di Windows) dan hitungan yang di-refresh menunjukkan <code translate="no" v-pre>0</code>, berarti aman. Jika baris sesi tidak menampilkan apa pun, Plex menolak token atau tidak merespons, dan <code translate="no" v-pre>0</code> di bawahnya tidak berarti apa-apa. Periksa <code translate="no" v-pre>plex_token</code> sebelum restart. (PowerShell menampilkannya sebagai error <code translate="no" v-pre>401</code>.) (Gunakan <code translate="no" v-pre>grep -o … | wc -l</code>, bukan <code translate="no" v-pre>grep -c</code>. grep keluar dengan kode non-zero saat tidak menemukan apa-apa, dan itu justru kondisi <em>baik</em>. Jika tidak, rantai <code translate="no" v-pre>&amp;&amp;</code> akan terhenti tepat sebelum restart yang seharusnya dijaga.)</p>
+</li>
+<li>
+<p><strong>Pemindaian parsial.</strong> <code translate="no" v-pre>on_library_update</code> menerima setiap path yang berubah. <code translate="no" v-pre>plex_update.sh</code> di root repo adalah skrip referensinya:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">on_library_update: sh plex_update.sh &quot;$@&quot;</code></pre>
+</doc-codeblock></div>
+<p>Skrip ini membutuhkan <code translate="no" v-pre>curl</code>, <code translate="no" v-pre>xmllint</code>, dan <code translate="no" v-pre>python3</code>, yang sudah ada di Docker image. Baris <code translate="no" v-pre>zurg_mount</code> juga harus diatur ke path mount-mu. Di Windows, hook dijalankan di PowerShell, bukan <code translate="no" v-pre>sh</code>, jadi skrip ini tidak berjalan di sana. Setiap path yang berubah masuk sebagai satu elemen <code translate="no" v-pre>$args</code>, relatif terhadap mount, dengan garis miring maju (<code translate="no" v-pre>movies/Big Buck Bunny</code>). Berikan path-path itu ke skrip PowerShell dengan <code translate="no" v-pre>@args</code>:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">on_library_update: '&amp; C:\zurg\my_update.ps1 @args'</code></pre>
+</doc-codeblock></div>
+<p>zurg sudah meminta Plex memindai path yang berubah setelah langkah 1 selesai dan <code translate="no" v-pre>mount_path</code> diatur. Jadi hook hanya perlu untuk keperluan lain.</p>
+</li>
+</ol>
+<p><strong>Yang tidak akan didapat Plex dari konten Usenet:</strong> Tidak ada apa pun sampai zurg menganalisisnya (lihat bagian 4). Jadi Plex mungkin melakukan analisis sendiri saat pertama kali diputar, seperti yang dilakukannya untuk file lokal lainnya. Ukuran file akan stabil tak lama setelah rilis dipindai. Daftar pertama mungkin menampilkan perkiraan murah berdasarkan jumlah artikel, lalu panjang yang tepat menyusul. Panjang itu diambil dari recovery index jika ada, dan jika tidak, dari satu artikel per file. Untuk arsip multi-volume besar yang recovery index-nya sudah mencantumkan panjang tepat setiap file, satu volume yang sudah diverifikasi bisa menentukan jarak artikel (stride) yang sama. Setiap volume lain akan memeriksa inferensi itu terhadap header-nya sendiri sebelum menyajikan byte pertamanya. Begitu sebuah panjang tercatat, library diberi tahu bahwa rilis berubah, sehingga mount dan Plex sama-sama melihat panjang yang sebenarnya. zurg memproses hingga delapan rilis sekaligus, dan tidak pernah lebih dari jumlah koneksi akun. Ini berlaku untuk akun dengan dua belas koneksi atau kurang. Akun yang lebih besar memproses lebih banyak: dua belas rilis untuk 16 koneksi, enam belas mulai dari 20 koneksi. Saat akuisisi memeriksa rilis dengan news server, pemeriksaan itu antre bersama sizing dan read-ahead ini. Pemeriksaan tidak pernah mengambil koneksi yang disimpan untuk read yang sedang ditunggu pemutar.</p>
+<h3 id="jellyfin--emby--infuse">Jellyfin / Emby / Infuse</h3>
+<p>Jellyfin dan Emby memakai <code translate="no" v-pre>jellyfin_server_url</code> / <code translate="no" v-pre>jellyfin_token</code> dan <code translate="no" v-pre>emby_server_url</code> / <code translate="no" v-pre>emby_token</code>, lalu menerima notifikasi scan yang sama; lihat <a href="../jellyfin/">jellyfin.md</a>. Infuse bisa langsung diarahkan ke <code translate="no" v-pre>http://&lt;host&gt;:9999/dav/</code> tanpa perlu rclone sama sekali.</p>
+<h2 id="7-when-an-article-is-missing">7. Ketika sebuah artikel hilang</h2>
+<p>Ini adalah kegagalan yang dimiliki Usenet, tetapi debrid tidak. Artikel bisa habis masa retensinya di penyedia tertentu atau dihapus, dan sebuah rilis bisa tetap tercantum dengan sempurna padahal beberapa artikelnya sudah hilang.</p>
+<p>Jawaban zurg, berdasarkan urutan prioritas:</p>
+<ol>
+<li><strong>Tanya server berita lain.</strong> Artikel yang sudah habis masa retensinya di satu penyedia sering kali masih ada di penyedia lain. Ini cukup satu kali pengambilan. Lihat <doc-anchor-trigger to="#more-than-one-usenet-provider">Lebih dari satu penyedia Usenet</doc-anchor-trigger>.</li>
+<li><strong>Bangun ulang dari file PAR2 milik rilis itu sendiri.</strong> Memang untuk keperluan inilah file PAR2 diposting. Caranya perlu membaca <em>seluruh rilis</em>. Reed-Solomon harus menggabungkan setiap slice yang masih ada untuk menghitung satu slice yang hilang. Jadi untuk posting 200 GB, kamu harus membaca 200 GB hanya untuk memulihkan beberapa megabyte.</li>
+<li><strong>Sajikan kekosongan.</strong> Ini hanya dilakukan jika kedua cara di atas tidak bisa memberi jawaban.</li>
+</ol>
+<p>Perbaikan PAR2 berjalan sebagai tugas latar belakang, paling banyak dua rilis sekaligus, dan membutuhkan:</p>
+<div id="7-when-an-article-is-missing-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">enable_repair: true            # the default; set false to turn PAR2 repair off
+par2_patch_cache_mb: 512       # budget for data/par2/; -1 keeps repairs in memory only</code></pre>
+</doc-codeblock></div>
+<p>Byte hasil rekonstruksi ditulis di <code translate="no" v-pre>data/par2/&lt;nzb-id&gt;/</code> dan akan dipakai lagi saat file dibuka berikutnya, jadi restart tidak membuat seluruh rilis harus dibaca ulang. Hanya bagian yang benar-benar hilang yang disimpan. Rilis yang rusak biasanya hanya memakan beberapa megabyte. Jika batas anggaran terlampaui, rilis yang paling lama tidak diakses akan dihapus lebih dulu. Setiap bagian rilis diberi stempel waktu modifikasi dari NZB tempat bagian itu direkonstruksi. Jadi jika NZB disimpan ulang, bagian tersebut dibuang dan tidak disajikan, karena offset-nya mungkin sudah berubah.</p>
+<p>Saat perbaikan dimulai, zurg akan memberi tahu, lalu menyebutkan biayanya:</p>
+<div id="7-when-an-article-is-missing-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">PAR2 repair of Some.Release: 5 slice(s) missing; reading the release to rebuild them
+PAR2 repair of Some.Release rebuilt 5 slice(s) in 55s on the avx2 kernel, keeping 3.4 MiB of them (library holds 3.4 MiB in memory, 3.4 MiB on disk)</code></pre>
+</doc-codeblock></div>
+<p>Ada dua hal yang perlu kamu ketahui:</p>
+<ul>
+<li><strong>Pemutaran selalu didahulukan dibanding perbaikan.</strong> Koneksi dibagikan berdasarkan siapa yang sedang menunggu. Pembacaan langsung didahulukan, lalu read-ahead, dan perbaikan di urutan terakhir. Namun perbaikan dijamin mendapat seperempat dari jatah terhadap read-ahead, sehingga file yang sedang diputar tetap bisa memperbaiki celah yang membuatnya macet.</li>
+<li><strong>Perbaikan tingkat library dari zurg tidak bisa membantu di sini.</strong> Mekanisme itu menambahkan ulang torrent ke akun asalnya. Backend yang tidak bisa menambahkan konten hanya bisa melaporkan rilis itu rusak, tanpa bisa memperbaikinya. Untuk Usenet, PAR2 <em>adalah</em> perbaikannya.</li>
+</ul>
+<p>Rilis yang NZB-nya tidak punya file PAR2 dan kamu tidak punya akun server berita kedua tidak punya jalur pemulihan sama sekali. Itu sifat dari posting-nya sendiri, bukan karena zurg.</p>
+<hr>
+<h2 id="performance">Performa</h2>
+<retype-table copy-text="| | |
+|---|---|
+| Satu stream, file langsung | ~100 Mbit/s |
+| Satu stream, dari set RAR | 90–106 Mbit/s |
+| Dua stream bersamaan, total | ~124 Mbit/s |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Satu stream, file langsung</td>
+<td>~100 Mbit/s</td>
+</tr>
+<tr>
+<td>Satu stream, dari set RAR</td>
+<td>90–106 Mbit/s</td>
+</tr>
+<tr>
+<td>Dua stream bersamaan, total</td>
+<td>~124 Mbit/s</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Jatah koneksi menentukan batas pertama untuk kecepatan single-stream. zurg menjaga jatah itu tetap terisi dengan mengatur read-ahead dalam artikel dan byte: posting artikel kecil untuk arsip mendapat jangkauan minimal 64 MiB, sementara posting berukuran beberapa megabyte tetap memakai jendela koneksi-dan-pipeline yang sudah ada. Jadi:</p>
+<ul>
+<li><strong>Atur <code translate="no" v-pre>connections</code> sesuai jumlah koneksi paket kamu.</strong> Ini adalah pengaturan utama untuk tuning. Delapan koneksi tidak akan cukup untuk men-stream remux.</li>
+<li><strong>Dua akun primary itu saling menambah.</strong> Pembacaan diatur sesuai gabungan jatah koneksi dari akun non-<code translate="no" v-pre>backup</code> yang memakai <code translate="no" v-pre>priority</code> terendah yang aktif. Jadi penyedia unlimited kedua dengan priority yang sama juga menaikkan batas atas, sekaligus menutupi celah retensi dari yang pertama. Akun <code translate="no" v-pre>backup</code> tidak dihitung.</li>
+<li><strong><code translate="no" v-pre>warm_connections</code> (4 secara default) membeli latency, bukan throughput.</strong> Ia menahan sejumlah koneksi tetap terbuka, idle, dan sudah terautentikasi, sehingga read pertama setelah start atau setelah jeda lama tidak menghabiskan ~0.8 detik untuk dial sebelum byte pertama: 1.5 detik sampai byte pertama saat dingin, dibanding 0.15 detik saat hangat. Setelah stream berjalan, ia tidak mengubah apa pun.</li>
+<li><strong>Dial yang memang terjadi dipaku ke satu backend, sehingga TLS session-nya bisa di-resume.</strong> Satu dial memakan sekitar 0.8 detik, diukur dengan server news live pada 2026-08-29: 106ms TCP, 213ms TLS handshake, 256ms greeting, 218ms untuk dua pertukaran <code translate="no" v-pre>AUTHINFO</code>. Hostname provider adalah rotasi (yang satu ini resolve ke 11 alamat), dan TLS session ticket hanya berlaku di mesin yang mengeluarkannya. Jadi dial ulang ke alamat mana pun yang pertama kali diberikan resolver hanya me-resume <strong>0 dari 3</strong> sesi, sementara dial ulang ke alamat yang sama me-resume <strong>3 dari 3</strong>. Setiap akun sekarang dial ulang ke alamat tempat koneksi terakhirnya berasal, dan itu menghemat <strong>110–140ms di setiap dial ulang</strong>. Handshake yang di-resume memakan 109–141ms, dibanding 225–261ms untuk handshake penuh. Server dengan round trip ~18ms akan menghemat lebih sedikit. Pin dilepas dan nama di-resolve ulang begitu alamat itu berhenti merespons, jadi tidak ada yang terkunci ke mesin yang sudah dipensiunkan provider. Penolakan yang sampai ke NNTP, seperti akun yang sudah mencapai batas koneksinya atau password yang ditolak, tetap mempertahankan pin, karena itu jawaban dari akun, bukan dari backend. Setiap dial mencatat fasenya di level debug, termasuk <code translate="no" v-pre>resumed=</code>.</li>
+<li><code translate="no" v-pre>cache_size_mb</code> (default 512) dipakai bersama oleh semua file yang sedang dibaca. Naikkan jika kamu menjalankan beberapa stream bersamaan. Ini tidak membuat satu stream lebih cepat. Speculative read boleh memakai paling banyak setengahnya untuk paling banyak dua reader, sisanya disisakan untuk artikel yang sudah dikonsumsi atau akan segera dikonsumsi.</li>
+<li>Apakah sebuah rilis dikemas RAR atau diposting sebagai file biasa sekarang tidak terlalu berpengaruh pada throughput.</li>
+</ul>
+<p><strong>Satu artikel lambat tidak lagi menghentikan stream.</strong> Sebuah sequential read dengan rata-rata ~90 MB/s tetap bisa turun ke 1–5 MB/s selama sekitar satu detik setiap kali, dan setiap penurunan itu penyebabnya sama: sebuah artikel berhenti datang sementara koneksi lain menyelesaikan artikel mereka lalu idle. Ketika sebuah read sudah menunggu satu artikel lebih lama dari yang biasanya diperkirakan reader itu, zurg meminta artikel yang sama ke <strong>koneksi kedua</strong> dan melayani jawaban mana pun yang datang lebih dulu. Batch pipelined yang macet bisa menahan beberapa artikel playhead berturut-turut di socket mati yang sama, jadi hingga lima artikel berbeda dari satu reader boleh di-hedge bersamaan, atau satu sampai dua pada post yang artikelnya di bawah 1 MiB. Satu artikel tidak pernah diminta dua kali. Akun tetap hanya membayar untuk paling banyak 20 permintaan kedua per menit. Deadline tetap dua kali lipat dari waktu tunggu terakhir reader itu sendiri, tidak pernah kurang dari 250 ms (125 ms untuk post yang artikelnya di bawah 1 MiB) dan tidak pernah lebih dari 2 s. Hanya read yang benar-benar ditunggu client yang di-hedge. Read-ahead, prefetch volume berikutnya, dan repair tidak. Artikel yang baru saja <em>ditolak</em> server juga tidak di-hedge: artikel itu sudah menunggu konfirmasinya sendiri satu detik kemudian, dan meminta di dalam jendela itu tidak membuktikan apa-apa. Setiap hedge menulis satu baris di level debug yang menyatakan berapa lama read tadi terblokir, dan baris berikutnya menyatakan apakah permintaan kedua yang menang.</p>
+<p>Untuk rentang yang dideklarasikan, artikel playhead masuk ke priority scheduler sebelum byte-byte berikutnya ditawarkan. Koneksi pipelined kemudian dibagi per putaran artikel berurutan, bukan per potongan berdampingan, sehingga artikel berguna pertama tersebar di seluruh jatah koneksi. Request minimal 64 MiB diperlakukan sebagai playback dan mendapat full range frontier. Seek kecil tetap dianggap probe dan hanya membuka ramp yang sempit.</p>
+<h3 id="crossing-a-volume-boundary">Melintasi batas volume</h3>
+<p>Sebuah file di dalam set RAR disajikan satu volume per waktu, dan setiap volume adalah pembacaan terpisah ke akun Usenet. zurg membuka volume berikutnya selagi volume yang sedang berjalan masih diputar, dan membaca empat megabyte pertamanya, jadi perpindahan ke volume baru tidak dimulai dari nol. Pada rilis yang diposting dengan volume kecil, bagian awal itu saja tidak cukup: empat megabyte kira-kira sepuluh artikel dari rilis yang diposting dalam bagian ~395 KB, dan volume ~26 MB menempatkan batas setiap 1,7 detik pemutaran. Jadi stream menghabiskan bagian awal yang sudah hangat dari memori dalam seperempat detik, lalu menunggu satu round trip untuk semua yang ada di belakangnya. Diukur di Hetzner CCX23 dengan sepuluh koneksi pada 8 September 2026, rilis itu di-stream dengan <strong>14–16 MB/s</strong>, sementara file biasa di akun yang sama mencapai <strong>86–99 MB/s</strong>. Laju satu detiknya berayun antara 1 dan 29 MB/s, dan 46 sampai 55 dari 60 slot read-ahead akun itu tidak terpakai.</p>
+<p>zurg sekarang menghangatkan volume berikutnya sepanjang satu jendela read-ahead penuh begitu stream mendekati batas dalam 32 MiB. Volume yang baru saja dimasuki stream juga mempertahankan jendela yang sudah didapat, alih-alih mulai lagi dari dua artikel. Volume yang belum akan dicapai posisi putar dalam beberapa detik masih hanya dihangatkan sampai bagian awalnya. Ini mencegah pemindaian library (satu reader per entri, beberapa megabyte dari masing-masing) menarik satu jendela dari setiap volume berikutnya yang tidak akan pernah dibaca. Tidak ada yang perlu dikonfigurasi, dan batas memori tidak berubah: sebuah akun tetap membawa dua jendela read-ahead sekaligus, yaitu volume yang sedang diputar dan volume yang sedang dihangatkan, di dalam <code translate="no" v-pre>cache_size_mb</code>.</p>
+<p>Perbaikan memang lambat secara alami karena harus membaca seluruh rilis. Namun perbaikan berjalan dengan prioritas latar belakang dan dibatasi oleh server Usenet, bukan oleh perhitungan zurg sendiri.</p>
+<h3 id="memory-what-a-watch-directory-costs">Memori: berapa biaya watch directory</h3>
+<p>Sebuah NZB adalah daftar artikel, dan library besar berarti sangat banyak artikel. Saat di-parse, setiap message id beserta offset-nya disimpan di memori supaya sebuah read bisa menemukannya. Build sebelum ini menyimpan semuanya selama proses berjalan. Diukur pada direktori pantau berisi 2,636 NZB (27.6 juta elemen <code translate="no" v-pre>&lt;segment&gt;</code>), ini memakan <strong>1.52 GB heap aktif</strong>, sekitar 58 byte per artikel, di luar cache artikel. Hampir semuanya tidak terpakai. Sebuah listing hanya butuh nama, ukuran, dan jumlah. Hanya file yang sedang dibaca atau diperbaiki yang perlu tahu nama artikelnya.</p>
+<p><code translate="no" v-pre>nzb_segments</code> menentukan apakah zurg menyimpannya:</p>
+<div id="memory-what-a-watch-directory-costs-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">nzb_segments: mmap             # mmap (default) | reparse | resident
+nzb_segments_idle_secs: 120    # how long a release's articles are kept after the last read</code></pre>
+</doc-codeblock></div>
+<ul>
+<li><strong><code translate="no" v-pre>mmap</code></strong>: daftarnya ditulis ke <code translate="no" v-pre>data/nzb-index/&lt;id&gt;.bin</code>, lalu file itu di-map saat dibutuhkan. Byte-nya ada di page cache, bukan di heap zurg, jadi kernel bisa membebaskannya saat memori menipis. <strong>Default di Linux, macOS, dan BSD.</strong> Memakan disk kira-kira sebanyak daftarnya sendiri.</li>
+<li><strong><code translate="no" v-pre>reparse</code></strong>: daftar dilepas dari memori setelah sebuah rilis stabil, dan NZB dibaca ulang dari disk saat read atau repair membutuhkannya. Tidak memakan disk sama sekali, dan itu alasan utama memilihnya. Cocok untuk host yang <code translate="no" v-pre>data/</code>-nya tidak boleh membesar.</li>
+<li><strong><code translate="no" v-pre>resident</code></strong>: semua daftar artikel selalu ada di memori. <strong>Perilaku sebelumnya</strong>, dan yang dilakukan setiap build lama. Masih didukung, hanya saja sekarang bukan lagi default.</li>
+</ul>
+<p>Apa pun pengaturannya, listing tidak pernah memuat apa-apa. Nama file, ukuran, dan jumlah artikelnya dijawab tanpa daftar artikel mendekati memori. Jadi refresh library, pengecekan fingerprint, dan *arr yang menanyakan apakah sebuah job sudah stabil tetap gratis. Biaya mode lazy adalah read pertama pada rilis yang sudah tidak disentuh selama <code translate="no" v-pre>nzb_segments_idle_secs</code> (sapuan berjalan tiap 30 detik). Seluruh file dalam sebuah rilis dimuat bersamaan, jadi saat menelusuri volume rar sebuah season pack secara berurutan, biayanya cukup dibayar sekali.</p>
+<p>Diukur pada rilis 60 file dengan 30,000 segmen:</p>
+<retype-table copy-text="| | heap per rilis | read pertama rilis yang idle | per artikel di jalur read |
+|---|---|---|---|
+| `resident` | 1.74 MB | — | 6 ns |
+| `reparse` | 21.3 kB | 39 ms | 52 ns |
+| `mmap` | 16.6 kB | 0.27 ms | 63 ns |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>heap per rilis</th>
+<th>read pertama rilis yang idle</th>
+<th>per artikel di jalur read</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>resident</code></td>
+<td>1.74 MB</td>
+<td>—</td>
+<td>6 ns</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>reparse</code></td>
+<td>21.3 kB</td>
+<td>39 ms</td>
+<td>52 ns</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>mmap</code></td>
+<td>16.6 kB</td>
+<td>0.27 ms</td>
+<td>63 ns</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Lima puluh nanodetik per artikel itu tidak berarti dibanding milidetik untuk mengambil satu artikel, jadi angka jalur read kurang penting daripada kelihatannya. Yang perlu ditimbang adalah reload. <code translate="no" v-pre>reparse</code> membaca ulang dan mem-parse seluruh dokumen XML. Pada season pack, ini memakan puluhan milidetik sebelum byte pertama bergerak. <code translate="no" v-pre>mmap</code> cukup satu pemanggilan <code translate="no" v-pre>mmap</code>, satu slice header per file, dan checksum dari indeks yang baru di-map. Dari ketiganya, itu hanya 0.08 ms. Sisa 0.19 ms adalah harga untuk menangkap byte yang rusak, alih-alih menyajikannya sebagai message id.</p>
+<p>Untuk seluruh library, bukan satu rilis (2,636 NZB, 27.6 juta artikel, binary yang sama dijalankan tiga kali pada corpus yang sama, idle setelah scan):</p>
+<retype-table copy-text="| | resident set | heap aktif | CPU idle | cold open, p50 | index di disk |
+|---|---|---|---|---|---|
+| `resident` | 2,921 MB | 2,677 MB | 23 % | 806 ms | — |
+| `reparse` | 1,188 MB | 987 MB | 31 % | 1,018 ms | — |
+| `mmap` | **1,135 MB** | **921 MB** | 23 % | **694 ms** | 1,456 MB |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>resident set</th>
+<th>heap aktif</th>
+<th>CPU idle</th>
+<th>cold open, p50</th>
+<th>index di disk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>resident</code></td>
+<td>2,921 MB</td>
+<td>2,677 MB</td>
+<td>23 %</td>
+<td>806 ms</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>reparse</code></td>
+<td>1,188 MB</td>
+<td>987 MB</td>
+<td>31 %</td>
+<td>1,018 ms</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>mmap</code></td>
+<td><strong>1,135 MB</strong></td>
+<td><strong>921 MB</strong></td>
+<td>23 %</td>
+<td><strong>694 ms</strong></td>
+<td>1,456 MB</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Warm open (1 ms), throughput streaming (38–39 MB/s), dan waktu startup tidak terlihat berbeda di antara ketiganya. <code translate="no" v-pre>mmap</code> membuka rilis cold <em>lebih cepat</em> daripada menyimpan semuanya di memori. Sebab, di bawah <code translate="no" v-pre>resident</code>, rilis yang belum pernah dibuka di run ini tetap harus di-parse. Sedangkan me-map arena yang sudah ditulis hanyalah satu syscall, bukan mem-parse megabyte XML.</p>
+<p>Indeks ditulis ulang setiap kali NZB berubah. Kalau suatu saat tidak bisa dibaca, indeks memperbaiki dirinya sendiri dengan kembali ke NZB dan menulisnya lagi. Indeks juga dihapus saat NZB keluar dari direktori pantau. Header dan isinya sama-sama di-checksum, jadi byte yang rusak akan tertangkap, bukan disajikan sebagai message id yang tidak pernah diposting siapa pun. Ukurannya saat ini bisa dilihat di halaman depan Dashboard, di bawah <strong>Article Index</strong>, dan di baris yang dicatat backend saat startup. Di <strong>Windows</strong> tidak ada mapping. Indeks akan dibaca ke heap, yang berarti memori resident <em>ditambah</em> reload. Karena itu, default di sana tetap <code translate="no" v-pre>resident</code>, dan <code translate="no" v-pre>reparse</code> adalah mode lazy yang layak dipilih.</p>
+<hr>
+<h2 id="troubleshooting">Pemecahan masalah</h2>
+<retype-table copy-text="| Gejala | Penyebab | Solusi |
+|---|---|---|
+| `Cannot reach the news server for nzb` saat startup | Pasangan host/port/TLS salah, kredensial salah, atau paket tidak aktif | `563` dipasangkan dengan `tls: true`, `119` dengan `tls: false`; lalu cek ulang kredensialnya |
+| Library kosong, tidak ada baris `Loaded NZB` | Folder `nzbs/` tidak ada, atau ada di tempat yang salah | Folder ini relatif terhadap **working directory** zurg. Cek `WorkingDirectory=` di unit systemd kamu, atau direktori yang di-bind ke `/config` di Docker, yaitu `nzbs/` di sebelah file compose. Hanya instalasi yang lebih lama dari `/config` yang memantau `/app/nzbs` |
+| Satu NZB tidak pernah muncul | Ada di subfolder, bernama `.nzb.gz`, atau tidak bisa di-parse | Pindahkan langsung ke `nzbs/`, lalu dekompres. Cek log untuk peringatan `Skipping` |
+| Rilis muncul dengan nama yang tidak berguna | Nama file NZB dipakai sebagai nama, karena tidak ada `&lt;meta type=&quot;name&quot;&gt;` | Ganti nama `.nzb` menjadi nama rilisnya |
+| File di dalam rilis punya nama acak | Post yang di-obfuscate dan pemulihannya gagal | Cek `Recovered N filename(s)`. Tanpa file PAR2 di dalam NZB, tidak ada sumber untuk nama aslinya |
+| Video masih punya nama acak, meski folder sudah benar | Post yang sepenuhnya di-obfuscate, dan arsipnya berisi beberapa file dengan ukuran mirip | Hanya payload tunggal yang jelas yang diganti namanya sesuai rilis. Season pack dalam satu arsip tetap memakai nama dari arsipnya |
+| Streaming lambat | `connections` masih default 8 | Atur sesuai jatah paket |
+| Pemutaran pertama setelah lama tidak dipakai butuh beberapa detik untuk mulai, lalu berjalan normal | Warm floor mati, atau dibatasi jadi nol oleh akun satu koneksi | Biarkan `warm_connections` tidak diatur (defaultnya 4), dan pastikan baik itu maupun `warm_connections` tingkat atas tidak diset negatif |
+| Koneksi ditolak oleh provider | `connections` melebihi yang diizinkan paket | Turunkan ke angka yang sebenarnya |
+| Pemutaran tersendat atau ada bagian yang diam | Artikel hilang | Cari `PAR2 repair of …` di log; pastikan `enable_repair: true`; tambahkan [penyedia Usenet lain](#more-than-one-usenet-provider) |
+| Ada bagian yang diam dan tidak pernah muncul baris repair | `enable_repair` mati, atau NZB tidak memuat file `.par2` | Atur `enable_repair: true`. Jika post tidak punya file pemulihan, hanya akun berita lain yang bisa membantu |
+| Provider kedua tampaknya tidak pernah ditanya | Kedua akun memakai `backbone` yang sama, jadi yang kedua dilewati setelah yang pertama bilang artikelnya tidak ada | Perbaiki nilai `backbone`. Hanya akun yang memang berada di spool yang sama boleh berbagi nama |
+| Salah satu dari beberapa akun mati, tapi startup terlihat normal | Startup hanya gagal jika *semua* akun tidak bisa dijangkau | Grep log untuk `is not reachable`. Setiap akun bermasalah memberi peringatan dengan namanya |
+| Akun block ditagih untuk artikel yang juga ada di akun unlimited | `backup: true` belum dipasang | Pasang. Jika primary hanya sibuk, pembacaan tidak akan lagi dialihkan ke akun berbayar |
+| Rilis hilang dari direktori yang difilter tag | Belum dianalisis, jadi belum punya tag `zurg_*` | Tunggu analisisnya, atau jalankan Analyze &amp; Tag Library dari dashboard |
+| File `.par2` tidak terlihat di mount | Disengaja, karena disembunyikan sebagai perancah perbaikan | Tidak perlu diperbaiki. zurg tetap membacanya |
+| Mengubah provider di Dashboard tapi tidak terjadi apa-apa | Perubahan provider ditulis ke `config.yml` tapi tidak di-hot-reload | Restart zurg. Banner di bawah tabel provider menyebutkannya |
+| Plex mengosongkan library setelah zurg direstart | Scan sedang berjalan saat mount tidak ada, dan auto-empty-trash aktif | Matikan auto-empty, dan hentikan sesi *dan* refresh state sebelum melakukan restart apa pun |
+| Ukuran file berubah sedikit sesaat setelah rilis muncul | Daftar pertama hanya bisa memperkirakan dari jumlah artikel. Panjang pastinya datang belakangan, dari indeks PAR2 atau header yEnc milik file itu | Ini wajar dan akan stabil sekali. Panjangnya ditulis ke `data/nzb-sizes/` dan disimpan sampai NZB berubah |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Gejala</th>
+<th>Penyebab</th>
+<th>Solusi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>Cannot reach the news server for nzb</code> saat startup</td>
+<td>Pasangan host/port/TLS salah, kredensial salah, atau paket tidak aktif</td>
+<td><code translate="no" v-pre>563</code> dipasangkan dengan <code translate="no" v-pre>tls: true</code>, <code translate="no" v-pre>119</code> dengan <code translate="no" v-pre>tls: false</code>; lalu cek ulang kredensialnya</td>
+</tr>
+<tr>
+<td>Library kosong, tidak ada baris <code translate="no" v-pre>Loaded NZB</code></td>
+<td>Folder <code translate="no" v-pre>nzbs/</code> tidak ada, atau ada di tempat yang salah</td>
+<td>Folder ini relatif terhadap <strong>working directory</strong> zurg. Cek <code translate="no" v-pre>WorkingDirectory=</code> di unit systemd kamu, atau direktori yang di-bind ke <code translate="no" v-pre>/config</code> di Docker, yaitu <code translate="no" v-pre>nzbs/</code> di sebelah file compose. Hanya instalasi yang lebih lama dari <code translate="no" v-pre>/config</code> yang memantau <code translate="no" v-pre>/app/nzbs</code></td>
+</tr>
+<tr>
+<td>Satu NZB tidak pernah muncul</td>
+<td>Ada di subfolder, bernama <code translate="no" v-pre>.nzb.gz</code>, atau tidak bisa di-parse</td>
+<td>Pindahkan langsung ke <code translate="no" v-pre>nzbs/</code>, lalu dekompres. Cek log untuk peringatan <code translate="no" v-pre>Skipping</code></td>
+</tr>
+<tr>
+<td>Rilis muncul dengan nama yang tidak berguna</td>
+<td>Nama file NZB dipakai sebagai nama, karena tidak ada <code translate="no" v-pre>&lt;meta type=&quot;name&quot;&gt;</code></td>
+<td>Ganti nama <code translate="no" v-pre>.nzb</code> menjadi nama rilisnya</td>
+</tr>
+<tr>
+<td>File di dalam rilis punya nama acak</td>
+<td>Post yang di-obfuscate dan pemulihannya gagal</td>
+<td>Cek <code translate="no" v-pre>Recovered N filename(s)</code>. Tanpa file PAR2 di dalam NZB, tidak ada sumber untuk nama aslinya</td>
+</tr>
+<tr>
+<td>Video masih punya nama acak, meski folder sudah benar</td>
+<td>Post yang sepenuhnya di-obfuscate, dan arsipnya berisi beberapa file dengan ukuran mirip</td>
+<td>Hanya payload tunggal yang jelas yang diganti namanya sesuai rilis. Season pack dalam satu arsip tetap memakai nama dari arsipnya</td>
+</tr>
+<tr>
+<td>Streaming lambat</td>
+<td><code translate="no" v-pre>connections</code> masih default 8</td>
+<td>Atur sesuai jatah paket</td>
+</tr>
+<tr>
+<td>Pemutaran pertama setelah lama tidak dipakai butuh beberapa detik untuk mulai, lalu berjalan normal</td>
+<td>Warm floor mati, atau dibatasi jadi nol oleh akun satu koneksi</td>
+<td>Biarkan <code translate="no" v-pre>warm_connections</code> tidak diatur (defaultnya 4), dan pastikan baik itu maupun <code translate="no" v-pre>warm_connections</code> tingkat atas tidak diset negatif</td>
+</tr>
+<tr>
+<td>Koneksi ditolak oleh provider</td>
+<td><code translate="no" v-pre>connections</code> melebihi yang diizinkan paket</td>
+<td>Turunkan ke angka yang sebenarnya</td>
+</tr>
+<tr>
+<td>Pemutaran tersendat atau ada bagian yang diam</td>
+<td>Artikel hilang</td>
+<td>Cari <code translate="no" v-pre>PAR2 repair of …</code> di log; pastikan <code translate="no" v-pre>enable_repair: true</code>; tambahkan <doc-anchor-trigger to="#more-than-one-usenet-provider">penyedia Usenet lain</doc-anchor-trigger></td>
+</tr>
+<tr>
+<td>Ada bagian yang diam dan tidak pernah muncul baris repair</td>
+<td><code translate="no" v-pre>enable_repair</code> mati, atau NZB tidak memuat file <code translate="no" v-pre>.par2</code></td>
+<td>Atur <code translate="no" v-pre>enable_repair: true</code>. Jika post tidak punya file pemulihan, hanya akun berita lain yang bisa membantu</td>
+</tr>
+<tr>
+<td>Provider kedua tampaknya tidak pernah ditanya</td>
+<td>Kedua akun memakai <code translate="no" v-pre>backbone</code> yang sama, jadi yang kedua dilewati setelah yang pertama bilang artikelnya tidak ada</td>
+<td>Perbaiki nilai <code translate="no" v-pre>backbone</code>. Hanya akun yang memang berada di spool yang sama boleh berbagi nama</td>
+</tr>
+<tr>
+<td>Salah satu dari beberapa akun mati, tapi startup terlihat normal</td>
+<td>Startup hanya gagal jika <em>semua</em> akun tidak bisa dijangkau</td>
+<td>Grep log untuk <code translate="no" v-pre>is not reachable</code>. Setiap akun bermasalah memberi peringatan dengan namanya</td>
+</tr>
+<tr>
+<td>Akun block ditagih untuk artikel yang juga ada di akun unlimited</td>
+<td><code translate="no" v-pre>backup: true</code> belum dipasang</td>
+<td>Pasang. Jika primary hanya sibuk, pembacaan tidak akan lagi dialihkan ke akun berbayar</td>
+</tr>
+<tr>
+<td>Rilis hilang dari direktori yang difilter tag</td>
+<td>Belum dianalisis, jadi belum punya tag <code translate="no" v-pre>zurg_*</code></td>
+<td>Tunggu analisisnya, atau jalankan Analyze &amp; Tag Library dari dashboard</td>
+</tr>
+<tr>
+<td>File <code translate="no" v-pre>.par2</code> tidak terlihat di mount</td>
+<td>Disengaja, karena disembunyikan sebagai perancah perbaikan</td>
+<td>Tidak perlu diperbaiki. zurg tetap membacanya</td>
+</tr>
+<tr>
+<td>Mengubah provider di Dashboard tapi tidak terjadi apa-apa</td>
+<td>Perubahan provider ditulis ke <code translate="no" v-pre>config.yml</code> tapi tidak di-hot-reload</td>
+<td>Restart zurg. Banner di bawah tabel provider menyebutkannya</td>
+</tr>
+<tr>
+<td>Plex mengosongkan library setelah zurg direstart</td>
+<td>Scan sedang berjalan saat mount tidak ada, dan auto-empty-trash aktif</td>
+<td>Matikan auto-empty, dan hentikan sesi <em>dan</em> refresh state sebelum melakukan restart apa pun</td>
+</tr>
+<tr>
+<td>Ukuran file berubah sedikit sesaat setelah rilis muncul</td>
+<td>Daftar pertama hanya bisa memperkirakan dari jumlah artikel. Panjang pastinya datang belakangan, dari indeks PAR2 atau header yEnc milik file itu</td>
+<td>Ini wajar dan akan stabil sekali. Panjangnya ditulis ke <code translate="no" v-pre>data/nzb-sizes/</code> dan disimpan sampai NZB berubah</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="asking-about-one-article">Menanyakan tentang satu artikel</h3>
+<p><code translate="no" v-pre>GET /debug/nzb/probe</code> mengajukan satu pertanyaan ke akun berita lewat pool yang sudah dipakai zurg, dengan prioritas yang sama seperti pembacaan permintaan. Endpoint ini ada karena cara lainnya tidak berhasil. Sebuah akun hanya memberi delapan koneksi, dan zurg memakai semuanya. Jadi untuk mengecek sebuah post secara manual, kamu harus punya akun kedua atau menghentikan server. Padahal menghentikan server akan menghapus state yang sedang kamu diagnosis.
+Di Windows, gunakan <code translate="no" v-pre>curl.exe</code> dan bukan <code translate="no" v-pre>curl</code> pada perintah-perintah ini.</p>
+<div id="asking-about-one-article-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash"># Is this article still there? A STAT, so nothing is transferred.
+curl -u user:pass 'http://localhost:9999/debug/nzb/probe?message_id=abc@news.example'
+
+# The same question addressed the way you have it: a release id from the
+# library, a file index counting from zero, an article number counting from one.
+curl -u user:pass 'http://localhost:9999/debug/nzb/probe?release=&lt;nzb id&gt;&amp;file=0&amp;article=3'
+
+# &amp;body=1 fetches the one article and reports what actually arrived against what
+# the article says should have. This is how a provider that strips trailing
+# bytes is identified: `short: true` with `decoded_bytes` below `span_bytes`.
+curl -u user:pass 'http://localhost:9999/debug/nzb/probe?release=&lt;nzb id&gt;&amp;article=3&amp;body=1'</code></pre>
+</doc-codeblock></div>
+<p>Endpoint ini membalas <code translate="no" v-pre>{&quot;probes&quot;: [...]}</code> dengan satu objek untuk provider <code translate="no" v-pre>nzb</code>, berisi <code translate="no" v-pre>found</code>, <code translate="no" v-pre>missing</code>, dan berapa lama prosesnya. Ia bertanya ke akun berita sesuai urutan prioritas sampai ada yang punya artikelnya (akun cadangan baru dicek kalau akun utama tidak punya). Endpoint ini tidak memberi tahu akun berita mana yang punya artikelnya. Sifatnya hanya membaca: apa pun yang diambil tidak masuk ke cache artikel, dan artikel yang tidak ditemukan tidak dicatat sebagai artikel mati. Jadi probe tidak akan membuat file yang masih bisa diputar jadi diam-diam dianggap rusak.</p>
+<hr>
+<p>Masih mentok? Tanya di forum <strong>zurg-support</strong> di <a href="https://discord.com/invite/7u4YjMThXP">Discord</a>. <a href="../../../guides/remote-help/">Getting help</a> menjelaskan apa saja yang perlu disertakan.</p>
+<h2 id="see-also">Lihat juga</h2>
+<ul>
+<li><a href="../../reference/config/">config.md</a> — setiap opsi, termasuk <a href="../../reference/config/#usenet-accounts">referensi akun Usenet</a> dan <a href="../../reference/config/#7-directories--filters">referensi filter direktori</a></li>
+<li><a href="../plex/">plex.md</a> — cara zurg mengatur pemindaian Plex, pencocokan, dan pembersihan sampah</li>
+<li><a href="../jellyfin/">jellyfin.md</a> — integrasi Jellyfin</li>
+<li><a href="../../setup/docker/">docker.md</a> — pengaturan Docker, propagasi FUSE, dan pemecahan masalah</li>
+<li><a href="../../reference/tags/">tags.md</a> — sistem tag</li>
+<li><a href="../../internals/architecture/">architecture.md</a> — <code translate="no" v-pre>internal/nzb</code> dan <code translate="no" v-pre>internal/nntp</code> dalam konteks</li>
+</ul>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/guides/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Previous</span>
+                                <span class="block mt-1">Panduan</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/guides/sonarr-radarr/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Next</span>
+                                <span class="block mt-1">Sonarr &amp; Radarr untuk Usenet</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Usenet", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/guides/usenet.md" }</script>
+</body>
+</html>

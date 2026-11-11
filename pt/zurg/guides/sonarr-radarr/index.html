@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="pt" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/pt">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672724506">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Sonarr e Radarr, passo a passo</title>
+    <meta name="title" content="Sonarr e Radarr, passo a passo">
+    <meta name="description" content="Há três formas de usar o Sonarr e o Radarr com o zurg. Escolha quem pesquisa no zurg ou nos *arrs. Veja qual escolher.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/pt/zurg/guides/sonarr-radarr/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/pt/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/pt/zurg/guides/sonarr-radarr/">
+    <meta property="og:title" content="Sonarr e Radarr, passo a passo">
+    <meta property="og:description" content="Há três formas de usar o Sonarr e o Radarr com o zurg. Escolha quem pesquisa no zurg ou nos *arrs. Veja qual escolher.">
+    <meta property="og:image" content="https://notes.debridmediamanager.com/pt/assets/sonarr-radarr/44-zurg-dashboard-home.webp">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Sonarr e Radarr, passo a passo">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="pt_BR">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/pt/zurg/guides/sonarr-radarr/">
+    <meta name="twitter:title" content="Sonarr e Radarr, passo a passo">
+    <meta name="twitter:description" content="Há três formas de usar o Sonarr e o Radarr com o zurg. Escolha quem pesquisa no zurg ou nos *arrs. Veja qual escolher.">
+    <meta name="twitter:image" content="https://notes.debridmediamanager.com/pt/assets/sonarr-radarr/44-zurg-dashboard-home.webp">
+    <meta name="twitter:image:alt" content="Sonarr e Radarr, passo a passo">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/pt/zurg/guides/sonarr-radarr.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672724506" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672724506" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672724506" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672724506" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/pt/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>Português</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/pt/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/pt/download.html" target="_blank">Baixar zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/pt/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Patrocinar</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>Português</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/pt/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/pt/download.html" target="_blank">Baixar zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/pt/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Patrocinar</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="sonarr-and-radarr-step-by-step">Sonarr e Radarr, passo a passo</h1>
+<p>Há três formas de usar o Sonarr e o Radarr com o zurg. Escolha quem pesquisa no zurg ou nos *arrs. Veja <a href="../sonarr-radarr-fetch/#which-one-to-pick">qual escolher</a>.</p>
+<retype-table copy-text="| Guia | Quem pesquisa | O zurg funciona como | Você precisa de |
+|---|---|---|---|
+| [Usenet](sonarr-radarr.md) | Sonarr e Radarr | um SABnzbd | uma conta Usenet (ou TorBox Pro para o backend `torbox_nzb`) e indexadores Usenet no Prowlarr ou nos \*arrs |
+| [Torrents](sonarr-radarr-torrents.md) | Sonarr e Radarr | um qBittorrent | uma conta debrid e indexadores de torrent no Prowlarr ou nos \*arrs |
+| [Buscas pelo zurg](sonarr-radarr-fetch.md) | zurg | nenhum cliente de download | uma conta Usenet, TorBox Pro ou debrid, e indexadores Newznab ou Torznab na própria configuração do zurg |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Guia</th>
+<th>Quem pesquisa</th>
+<th>O zurg funciona como</th>
+<th>Você precisa de</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="">Usenet</a></td>
+<td>Sonarr e Radarr</td>
+<td>um SABnzbd</td>
+<td>uma conta Usenet (ou TorBox Pro para o backend <code translate="no" v-pre>torbox_nzb</code>) e indexadores Usenet no Prowlarr ou nos *arrs</td>
+</tr>
+<tr>
+<td><a href="../sonarr-radarr-torrents/">Torrents</a></td>
+<td>Sonarr e Radarr</td>
+<td>um qBittorrent</td>
+<td>uma conta debrid e indexadores de torrent no Prowlarr ou nos *arrs</td>
+</tr>
+<tr>
+<td><a href="../sonarr-radarr-fetch/">Buscas pelo zurg</a></td>
+<td>zurg</td>
+<td>nenhum cliente de download</td>
+<td>uma conta Usenet, TorBox Pro ou debrid, e indexadores Newznab ou Torznab na própria configuração do zurg</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>As duas primeiras podem rodar lado a lado. Elas compartilham a mesma pasta <code translate="no" v-pre>__magic__</code>.</p>
+<p>Aponte o Sonarr e o Radarr para o zurg para pegar conteúdo do Usenet sem um cliente. Nenhum vídeo completo é baixado ou descompactado durante a captura. NZBs e caches ainda usam espaço em disco. Esta página cobre o Usenet. O endpoint de torrent usa os mesmos clientes e compartilha a pasta. Veja <a href="../sonarr-radarr-torrents/">Sonarr e Radarr para torrents</a>.</p>
+<p>Tudo abaixo foi capturado com o zurg <code translate="no" v-pre>nightly-993-g99bcf9a4</code>, o Sonarr <code translate="no" v-pre>4.0.19.2979</code> e o Radarr <code translate="no" v-pre>6.3.0.10514</code>, em uma instalação real com uma conta Usenet de verdade. Nomes de host e de usuário foram trocados por <code translate="no" v-pre>you@zurg-server</code>. Os nomes dos indexadores são <code translate="no" v-pre>my-indexer</code>. As chaves de API e as contagens da biblioteca são ilustrativas. Nada mais na saída capturada foi alterado. As linhas de log do <code translate="no" v-pre>torbox_nzb</code> foram lidas do código-fonte do zurg em 2026-11-09, não capturadas ao vivo.</p>
+<h2 id="before-you-start">Antes de começar</h2>
+<p>Três coisas precisam ser verdade. Verifique as três agora, porque cada uma delas falha depois com um sintoma que parece não ter nada a ver.</p>
+<ol>
+<li><strong>O zurg tem um provider <code translate="no" v-pre>nzb</code> ou um <code translate="no" v-pre>torbox_nzb</code> (TorBox Pro).</strong> Sem um deles, não há nada para ler o que o endpoint grava, e todo job é marcado como Failed depois de 30 minutos, quando o zurg desiste de esperar que ele apareça na biblioteca. Veja <a href="../usenet/">Usenet</a>, ou <a href="../../providers/torbox-nzb/">Usenet hospedado na TorBox</a> para o <code translate="no" v-pre>torbox_nzb</code>.</li>
+<li><strong><code translate="no" v-pre>magic.enabled</code> está <code translate="no" v-pre>true</code>.</strong> Sem isso, o diretório de concluídos não existe e toda importação falha. Veja <a href="../magic/"><code translate="no" v-pre>__magic__</code></a>.</li>
+<li><strong>O mount está visível para o *arr no caminho que o zurg informa.</strong> Se o Sonarr roda em um container, leia o <doc-anchor-trigger to="#8-if-your-arr-is-in-docker">passo 8</doc-anchor-trigger> antes de configurar qualquer coisa. Instalado como um app comum na mesma máquina, ele enxerga o mount onde o zurg o monta, com uma ressalva em cada sistema:
+<ul>
+<li><strong>Linux:</strong> um *arr rodando com um usuário diferente do zurg vê uma pasta vazia até que <code translate="no" v-pre>user_allow_other</code> esteja habilitado. Veja <a href="../../setup/linux/#1-install-fuse-3">Configuração no Linux</a>.</li>
+<li><strong>macOS:</strong> rode-o com o mesmo usuário do zurg. O mount fica em <code translate="no" v-pre>/Volumes/Zurg</code>, a menos que você tenha alterado <code translate="no" v-pre>mount_path</code>.</li>
+<li><strong>Windows:</strong> rode o Sonarr e o Radarr como app na bandeja, que o instalador oferece, e não como serviço do Windows. A unidade <code translate="no" v-pre>Z:</code> do zurg pertence à sessão em que você está logado, e um serviço roda fora dela, então ele não enxerga a unidade. Veja <a href="../../setup/windows/#keeping-it-running-the-session-rules">as regras de sessão</a>.</li>
+</ul>
+</li>
+</ol>
+<p>Confira as duas primeiras direto no arquivo de configuração, no diretório de trabalho do zurg. No Windows, abra o <code translate="no" v-pre>config.yml</code> no Bloco de Notas.</p>
+<div id="before-you-start-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ grep -A6 '^providers:' config.yml
+providers:
+- type: nzb
+  nntp:
+    host: news.example.com
+    port: 563
+    tls: true
+    username: &lt;redacted&gt;
+    password: &lt;redacted&gt;
+
+$ grep -A4 '^magic:' config.yml
+magic:
+  enabled: true
+  allow_delete: false
+  sidecar_max_mb: 32
+  sidecar_budget_mb: 2048</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>allow_delete: false</code> é o padrão seguro e não afeta as importações. Uma exclusão dentro de <code translate="no" v-pre>__magic__</code> apenas oculta a entrada, sem remover conteúdo da conta.</p>
+<h2 id="1-turn-the-endpoint-on">1. Ligue o endpoint</h2>
+<p>Duas formas, mesmo resultado. As duas gravam em <code translate="no" v-pre>config.yml</code> e as duas exigem um reinício: as rotas que servem <code translate="no" v-pre>__magic__</code> e o endpoint do SABnzbd são registradas uma única vez, quando o zurg inicia.</p>
+<h3 id="option-a--the-dashboard">Opção A — o painel</h3>
+<p>Abra o painel do zurg, clique em <strong>Config</strong> e role até <strong>__magic__ &amp; Download Clients</strong>. Ative <strong>Serve __magic__</strong> e <strong>SABnzbd Endpoint</strong>, depois defina <strong>SABnzbd Categories</strong> como <code translate="no" v-pre>tv, movies</code>.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/44-zurg-dashboard-home.webp" alt="Os Quick Links do painel do zurg" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Os Quick Links do painel do zurg</figcaption>
+</figure>
+<p><strong>Config</strong> é onde a configuração fica; <strong>Magic</strong> é onde você vai acompanhar os grabs quando eles chegarem.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/40-zurg-config-magic-sabnzbd.webp" alt="O bloco magic e Download Clients na página de config" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">O bloco magic e Download Clients na página de config</figcaption>
+</figure>
+<p>Deixe <strong>SABnzbd Completed Directory</strong> vazio, a menos que o seu *arr monte o zurg em um lugar diferente de onde o zurg está montado. Veja o <doc-anchor-trigger to="#8-if-your-arr-is-in-docker">passo 8</doc-anchor-trigger>. O chip laranja <strong>Restart Required</strong> está dizendo a verdade: nada aqui faz efeito até o zurg reiniciar.</p>
+<h3 id="option-b--configyml">Opção B — <code translate="no" v-pre>config.yml</code></h3>
+<p>Adicione o bloco manualmente e reinicie o zurg.</p>
+<div id="option-b--configyml-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">magic:
+  enabled: true
+
+sabnzbd:
+  enabled: true
+  api_key: &quot;&quot;          # empty = zurg generates one and keeps it
+  categories: [tv, movies]
+  complete_dir: &quot;&quot;     # empty = &lt;mount_path&gt;/__magic__/__all__</code></pre>
+</doc-codeblock></div>
+<p><strong>As categorias não são pastas.</strong> Todas levam ao mesmo lugar: a pasta de um job é a própria pasta do release em <code translate="no" v-pre>__magic__/__all__</code>. A lista existe só para que o Sonarr e o Radarr parem de avisar sobre uma categoria que não conseguem encontrar. Se a categoria do Sonarr for <code translate="no" v-pre>tv</code>, então <code translate="no" v-pre>tv</code> precisa estar nessa lista.</p>
+<p>Reinicie o zurg e depois confirme que o provider foi aplicado:</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/43-zurg-config-providers.webp" alt="The providers block on the zurg config page" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The providers block on the zurg config page</figcaption>
+</figure>
+<p>Uma linha <code translate="no" v-pre>nzb</code> ou <code translate="no" v-pre>torbox_nzb</code> é suficiente para o endpoint.</p>
+<h2 id="2-find-the-api-key">2. Encontre a chave de API</h2>
+<p>A chave de API é toda a autenticação deste endpoint, então acerte ela uma vez e não a cole em nenhum lugar público.</p>
+<p><strong>Se você deixou <code translate="no" v-pre>api_key</code> vazio</strong>, o zurg gerou uma na primeira inicialização e salvou em <code translate="no" v-pre>data/sabnzbd-apikey</code>:</p>
+<div id="2-find-the-api-key-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ cat data/sabnzbd-apikey
+0123456789abcdef0123456789abcdef
+</code></pre>
+</doc-codeblock></div>
+<p>Chave ilustrativa, a sua será diferente. O arquivo continua existindo depois de reiniciar, então a chave é estável depois de gerada.</p>
+<p><strong>Se você definiu <code translate="no" v-pre>api_key</code> manualmente</strong>, ela fica no <code translate="no" v-pre>config.yml</code> e nenhum arquivo é criado. O dashboard mostra em qual dos dois casos você está, no final do bloco do passo 1. Ele exibe uma destas frases: <em>pinned in config.yml under <code translate="no" v-pre>sabnzbd.api_key</code></em> ou <em>generated and kept in <code translate="no" v-pre>data/sabnzbd-apikey</code></em>.</p>
+<p><strong>Este endpoint fica fora da autenticação básica do zurg.</strong> Nem o Sonarr nem o Radarr enviam autenticação básica para um cliente de download, e a camada HTTP deles transforma um 401 em &quot;unable to connect&quot;, sem nenhuma informação útil. Por isso o zurg deixa <code translate="no" v-pre>/api</code> de fora de propósito. A chave de API é o único portão. Trate essa porta como o resto do zurg: use em uma rede confiável ou atrás de algo que faça essa proteção.</p>
+<h2 id="3-prove-it-answers">3. Confirme que ela responde</h2>
+<p>Faça isso antes de mexer no Sonarr. Leva dez segundos e separa &quot;o zurg está errado&quot; de &quot;o *arr está errado&quot; durante todo o resto da configuração.</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-e-macos">
+<template #title>Linux e macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ SAB=0123456789abcdef0123456789abcdef
+$ ZURG=192.168.88.245:9996
+
+$ curl -s &quot;http://$ZURG/api?mode=version&amp;apikey=$SAB&amp;output=json&quot;
+{&quot;version&quot;:&quot;4.5.1&quot;}
+
+$ curl -s &quot;http://$ZURG/api?mode=get_config&amp;apikey=$SAB&amp;output=json&quot; \
+    | jq '.config.misc.complete_dir, [.config.categories[].name]'
+&quot;/mnt/zurg_usenet/__magic__/__all__&quot;
+[ &quot;*&quot;, &quot;tv&quot;, &quot;movies&quot; ]</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<p>No PowerShell. Digite <code translate="no" v-pre>curl.exe</code>, não <code translate="no" v-pre>curl</code>: o <code translate="no" v-pre>curl</code> do Windows PowerShell é outro comando.</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; $SAB = &quot;0123456789abcdef0123456789abcdef&quot;
+PS&gt; $ZURG = &quot;192.168.88.245:9996&quot;
+
+PS&gt; curl.exe -s &quot;http://$ZURG/api?mode=version&amp;apikey=$SAB&amp;output=json&quot;
+{&quot;version&quot;:&quot;4.5.1&quot;}
+
+PS&gt; (Invoke-RestMethod &quot;http://$ZURG/api?mode=get_config&amp;apikey=$SAB&amp;output=json&quot;).config.misc.complete_dir
+Z:/__magic__/__all__</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p><code translate="no" v-pre>complete_dir</code> é o caminho que o zurg vai entregar aos clientes. Confira agora se é um caminho que <em>eles</em> conseguem abrir.</p>
+<p>Depois, confira se uma chave errada é mesmo recusada (no Windows, use <code translate="no" v-pre>curl.exe</code> com as mesmas URLs):</p>
+<div id="3-prove-it-answers-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ curl -s &quot;http://$ZURG/api?mode=queue&amp;apikey=wrongkey&amp;output=json&quot;
+{&quot;status&quot;:false,&quot;error&quot;:&quot;API Key Incorrect&quot;}
+
+$ curl -s &quot;http://$ZURG/api?mode=queue&amp;output=json&quot;
+{&quot;status&quot;:false,&quot;error&quot;:&quot;API Key Required&quot;}</code></pre>
+</doc-codeblock></div>
+<p><strong><code translate="no" v-pre>mode=version</code> não é um teste de autenticação.</strong> Ele responde <code translate="no" v-pre>{&quot;version&quot;:&quot;4.5.1&quot;}</code> mesmo com uma chave errada. É assim que o SABnzbd de verdade se comporta, e o zurg copia esse comportamento. Use <code translate="no" v-pre>mode=queue</code> ou <code translate="no" v-pre>mode=get_config</code> quando o que você quer testar é a chave.</p>
+<p>As duas formas de URL funcionam, então qualquer uma serve no campo <strong>URL Base</strong> do cliente:</p>
+<retype-table copy-text="| Caminho | URL Base no Sonarr / Radarr | Responde |
+|---|---|---|
+| `/api` | *(deixe vazio)* | sim |
+| `/sabnzbd/api` | `/sabnzbd` | sim |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Caminho</th>
+<th>URL Base no Sonarr / Radarr</th>
+<th>Responde</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>/api</code></td>
+<td><em>(deixe vazio)</em></td>
+<td>sim</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>/sabnzbd/api</code></td>
+<td><code translate="no" v-pre>/sabnzbd</code></td>
+<td>sim</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Se <code translate="no" v-pre>/api</code> retornar um <strong>404</strong> simples, <code translate="no" v-pre>sabnzbd.enabled</code> ainda está como false ou o zurg não foi reiniciado depois que você mudou essa configuração.</p>
+<h2 id="4-make-the-root-folders">4. Crie as pastas raiz</h2>
+<doc-tabs>
+<doc-tab v-cloak id="linux-e-macos-1">
+<template #title>Linux e macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ mkdir -p /mnt/zurg_usenet/__magic__/tv /mnt/zurg_usenet/__magic__/movies
+
+$ ls -d /mnt/zurg_usenet/__magic__/tv /mnt/zurg_usenet/__magic__/movies
+/mnt/zurg_usenet/__magic__/movies
+/mnt/zurg_usenet/__magic__/tv</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-1">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; New-Item -ItemType Directory -Force Z:\__magic__\tv, Z:\__magic__\movies</code></pre>
+</doc-codeblock></div>
+<p>Ou crie as duas pastas no Explorer.</p>
+</doc-tab>
+</doc-tabs>
+<p>Substitua <code translate="no" v-pre>/mnt/zurg_usenet</code> pelo seu próprio <code translate="no" v-pre>mount_path</code>. Se não definir, o padrão é <code translate="no" v-pre>/mnt/zurg</code> no Linux, <code translate="no" v-pre>/Volumes/Zurg</code> no macOS e <code translate="no" v-pre>Z:</code> no Windows. Os nomes das pastas são você quem escolhe; <code translate="no" v-pre>tv</code> e <code translate="no" v-pre>movies</code> só combinam com as categorias.</p>
+<p><strong>A pasta raiz fica ao lado do diretório de conclusão, nem nele nem acima dele.</strong> O zurg entrega aos clientes <code translate="no" v-pre>__magic__/__all__</code>, que é a sua biblioteca como <code translate="no" v-pre>__all__</code> a lista. Suas pastas raiz ficam ao lado dela, em <code translate="no" v-pre>__magic__/tv</code> e <code translate="no" v-pre>__magic__/movies</code>. <strong>Não</strong> <code translate="no" v-pre>__magic__/__all__</code>, <strong>não</strong> <code translate="no" v-pre>__magic__</code> em si e <strong>não</strong> <code translate="no" v-pre>/mnt/zurg_usenet</code>. Os dois clientes disparam um health check quando uma pasta raiz <em>é</em> a pasta de saída do cliente de download, e o Radarr também dispara quando uma pasta raiz <em>contém</em> ela. Pastas irmãs não causam nenhum dos dois, e uma importação manual apontada para o diretório de conclusão aí tem um único release para analisar, e não sua biblioteca inteira.</p>
+<p>Isto é o que acontece quando você erra. Os dois exemplos são reais, dos dois clientes. Foram capturados antes de o diretório de conclusão ser movido para <code translate="no" v-pre>__magic__/__all__</code>, então os caminhos neles estão um nível acima dos seus. As duas regras que mostram são as mesmas:</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/30-sonarr-health-rootfolder-warning.webp" alt="Aviso de health check do Sonarr sobre uma pasta raiz no diretório de conclusão" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Aviso de health check do Sonarr sobre uma pasta raiz no diretório de conclusão</figcaption>
+</figure>
+<p>Sonarr com o próprio diretório de conclusão adicionado como pasta raiz — ele avisa porque a pasta raiz <em>é</em> a pasta de saída.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/31-radarr-health-rootfolder-warning.webp" alt="Aviso de health check do Radarr sobre uma pasta raiz acima do diretório de conclusão" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Aviso de health check do Radarr sobre uma pasta raiz acima do diretório de conclusão</figcaption>
+</figure>
+<p>Radarr com <code translate="no" v-pre>/mnt/zurg_usenet</code> adicionado — ele avisa também pelo pai, o que o Sonarr não faz. Mova a pasta raiz para ao lado do diretório de conclusão e os dois avisos somem.</p>
+<h2 id="5-add-the-client-in-sonarr">5. Adicione o cliente no Sonarr</h2>
+<p>Uma instalação nova do Sonarr bloqueia tudo atrás de uma tela de primeira execução. Escolha <strong>Forms (Login Page)</strong>, defina um nome de usuário e uma senha e clique em <strong>Save</strong>.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/01-sonarr-firstrun-auth.webp" alt="Tela de autenticação de primeira execução do Sonarr" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Tela de autenticação de primeira execução do Sonarr</figcaption>
+</figure>
+<p>Ele não deixa você passar até que <strong>Authentication Method</strong> seja algo diferente de None.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/02-sonarr-firstrun-auth-filled.webp" alt="A mesma tela já preenchida" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">A mesma tela já preenchida</figcaption>
+</figure>
+<p>Depois de salvar, você é desconectado uma vez e cai na página de login.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/04-sonarr-login.webp" alt="Página de login do Sonarr" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Página de login do Sonarr</figcaption>
+</figure>
+<h3 id="settings--download-clients">Settings → Download Clients</h3>
+<p>Vá em <strong>Settings → Download Clients</strong>. Em uma instalação nova, só aparece o card <strong>+</strong>.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/05-sonarr-downloadclients-empty.webp" alt="Página de download clients vazia do Sonarr" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Página de download clients vazia do Sonarr</figcaption>
+</figure>
+<p>Clique no <strong>+</strong> em &quot;Download Clients&quot;, e não no que fica mais embaixo, em &quot;Remote Path Mappings&quot;.</p>
+<p>Escolha <strong>SABnzbd</strong> na coluna <strong>Usenet</strong>.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/06-sonarr-add-client-picker.webp" alt="O seletor de download client mostrando SABnzbd" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">O seletor de download client mostrando SABnzbd</figcaption>
+</figure>
+<p>O zurg imita especificamente o SABnzbd, então nada mais nessa lista vai funcionar.</p>
+<p>A janela abre com os padrões do próprio SABnzbd: <code translate="no" v-pre>localhost</code>, porta <code translate="no" v-pre>8080</code>, sem chave.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/07-sonarr-sab-dialog-empty.webp" alt="A janela do cliente SABnzbd sem alterações" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">A janela do cliente SABnzbd sem alterações</figcaption>
+</figure>
+<h3 id="what-to-put-in-each-field">O que colocar em cada campo</h3>
+<retype-table copy-text="| Field | Value | Why |
+|---|---|---|
+| Name | `zurg (Usenet)` | Qualquer nome. É só um rótulo. |
+| Enable | on | Deixe marcado. |
+| Host | `192.168.88.245` | O host onde o zurg roda, como o *the \*arr* consegue acessá-lo. `localhost` quando o \*arr é um app comum na mesma máquina. No Docker, veja o aviso abaixo. |
+| Port | `9996` | A porta normal do zurg — `9999` em uma instalação padrão. |
+| Use SSL | off | Só se você colocou o zurg atrás de TLS por conta própria. |
+| API Key | do passo 2 | É a chave que libera o acesso. |
+| Username | vazio | Não pode ser usado junto com a chave. Só a chave é aceita. |
+| Password | vazio | Igual ao anterior. |
+| Category | `tv` | Precisa aparecer em `sabnzbd.categories`. |
+| Recent / Older Priority | Default | O zurg não tem nada onde aplicar uma prioridade. |
+| Remove Completed | on | Deixa o cliente limpar os próprios registros de jobs. Deixe ativado. |
+| Remove Failed | on | Igual ao anterior. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td><code translate="no" v-pre>zurg (Usenet)</code></td>
+<td>Qualquer nome. É só um rótulo.</td>
+</tr>
+<tr>
+<td>Enable</td>
+<td>on</td>
+<td>Deixe marcado.</td>
+</tr>
+<tr>
+<td>Host</td>
+<td><code translate="no" v-pre>192.168.88.245</code></td>
+<td>O host onde o zurg roda, como o <em>the *arr</em> consegue acessá-lo. <code translate="no" v-pre>localhost</code> quando o *arr é um app comum na mesma máquina. No Docker, veja o aviso abaixo.</td>
+</tr>
+<tr>
+<td>Port</td>
+<td><code translate="no" v-pre>9996</code></td>
+<td>A porta normal do zurg — <code translate="no" v-pre>9999</code> em uma instalação padrão.</td>
+</tr>
+<tr>
+<td>Use SSL</td>
+<td>off</td>
+<td>Só se você colocou o zurg atrás de TLS por conta própria.</td>
+</tr>
+<tr>
+<td>API Key</td>
+<td>do passo 2</td>
+<td>É a chave que libera o acesso.</td>
+</tr>
+<tr>
+<td>Username</td>
+<td>vazio</td>
+<td>Não pode ser usado junto com a chave. Só a chave é aceita.</td>
+</tr>
+<tr>
+<td>Password</td>
+<td>vazio</td>
+<td>Igual ao anterior.</td>
+</tr>
+<tr>
+<td>Category</td>
+<td><code translate="no" v-pre>tv</code></td>
+<td>Precisa aparecer em <code translate="no" v-pre>sabnzbd.categories</code>.</td>
+</tr>
+<tr>
+<td>Recent / Older Priority</td>
+<td>Default</td>
+<td>O zurg não tem nada onde aplicar uma prioridade.</td>
+</tr>
+<tr>
+<td>Remove Completed</td>
+<td>on</td>
+<td>Deixa o cliente limpar os próprios registros de jobs. Deixe ativado.</td>
+</tr>
+<tr>
+<td>Remove Failed</td>
+<td>on</td>
+<td>Igual ao anterior.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/08-sonarr-sab-dialog-filled.webp" alt="The SABnzbd dialog filled in" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The SABnzbd dialog filled in</figcaption>
+</figure>
+<p>A API key mostrada é apenas um exemplo — cole a sua.</p>
+<p><strong>No Docker, tanto &quot;localhost&quot; quanto o hostname mentem.</strong> Dentro de um container, <code translate="no" v-pre>localhost</code> é o próprio container, e o hostname da máquina normalmente resolve para <code translate="no" v-pre>127.0.1.1</code> — que também é o container. Use o <strong>IP da LAN ou do Tailscale</strong> do host, nunca <code translate="no" v-pre>localhost</code> e nunca o hostname puro, mesmo que os dois funcionem bem no seu shell.</p>
+<p>Clique em <strong>Test</strong>. Um tique verde significa que as quatro verificações do cliente passaram: versão, API key, configuração global e a categoria.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/09-sonarr-sab-test-ok.webp" alt="The dialog footer showing a successful test" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The dialog footer showing a successful test</figcaption>
+</figure>
+<p>Agora clique em <strong>Save</strong>.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/10-sonarr-downloadclient-saved.webp" alt="The saved download client card in Sonarr" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The saved download client card in Sonarr</figcaption>
+</figure>
+<h2 id="6-add-the-root-folder-in-sonarr">6. Adicione a pasta raiz no Sonarr</h2>
+<p>Vá em <strong>Settings → Media Management</strong> e role até o final da página.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/11-sonarr-rootfolders-empty.webp" alt="The empty root folders section in Sonarr" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The empty root folders section in Sonarr</figcaption>
+</figure>
+<p>Clique em <strong>Add Root Folder</strong>. Abre um navegador de arquivos com o sistema de arquivos do Sonarr, que no Docker é o do container.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/12-sonarr-rootfolder-dialog.webp" alt="Sonarr's file browser at the filesystem root" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr's file browser at the filesystem root</figcaption>
+</figure>
+<p>Digite o caminho na caixa do topo. Se o mount estiver realmente visível para o Sonarr, o conteúdo de <code translate="no" v-pre>__magic__</code> aparece enquanto você digita: <code translate="no" v-pre>__all__</code> com todos os releases, e o que você tiver criado ao lado dele. Essa é a forma mais rápida de confirmar que o bind mount está correto.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/13-sonarr-rootfolder-browse.webp" alt="The file browser listing what is inside magic" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The file browser listing what is inside magic</figcaption>
+</figure>
+<p>Se isso aparecer vazio ou der erro, pare e corrija o mount antes de seguir em frente.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/14-sonarr-rootfolder-typed.webp" alt="The path finished at magic/tv" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The path finished at magic/tv</figcaption>
+</figure>
+<p>Termine o caminho em <code translate="no" v-pre>__magic__/tv</code> (<code translate="no" v-pre>Z:\__magic__\tv</code> no Windows) e clique em <strong>Ok</strong>.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/15-sonarr-rootfolder-added.webp" alt="The root folder added, showing free space and unmapped folders" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The root folder added, showing free space and unmapped folders</figcaption>
+</figure>
+<p>Se <strong>Free Space</strong> mostrar um número plausível, o Sonarr consegue ler o mount. <strong>Unmapped Folders</strong> conta os releases que já estão ali.</p>
+<h2 id="7-do-the-same-in-radarr">7. Faça o mesmo no Radarr</h2>
+<p>Igual, com dois valores alterados: a categoria é <code translate="no" v-pre>movies</code> e a pasta raiz é <code translate="no" v-pre>__magic__/movies</code>.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/20-radarr-login.webp" alt="Radarr's login page" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr's login page</figcaption>
+</figure>
+<p>A primeira execução do Radarr funciona do mesmo jeito: configure o Forms auth e depois faça login.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/21-radarr-add-client-picker.webp" alt="Radarr's add download client picker" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr's add download client picker</figcaption>
+</figure>
+<p><strong>Settings → Download Clients → +</strong>, e depois <strong>SABnzbd</strong> em Usenet.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/22-radarr-sab-dialog-filled.webp" alt="Radarr's SABnzbd dialog filled in with the movies category" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr's SABnzbd dialog filled in with the movies category</figcaption>
+</figure>
+<p>Mesmo host, mesma porta, mesma chave. Só o <strong>Category</strong> muda: <code translate="no" v-pre>movies</code>, e não <code translate="no" v-pre>tv</code>.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/23-radarr-sab-test-ok.webp" alt="Radarr's dialog footer showing a successful test" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr's dialog footer showing a successful test</figcaption>
+</figure>
+<p>Clique em <strong>Test</strong>, espere o tique verde e depois em <strong>Save</strong>.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/24-radarr-downloadclient-saved.webp" alt="The saved download client card in Radarr" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The saved download client card in Radarr</figcaption>
+</figure>
+<p>Depois vá em <strong>Settings → Media Management → Root Folders → Add Root Folder</strong> e adicione <code translate="no" v-pre>/mnt/zurg_usenet/__magic__/movies</code>.</p>
+<p><strong>Um zurg, dois clientes, uma fila.</strong> A fila e o histórico do zurg são filtrados só pela categoria, e mais nada. Dois Sonarrs usando <code translate="no" v-pre>tv</code> vão ver os jobs um do outro; o Sonarr em <code translate="no" v-pre>tv</code> e o Radarr em <code translate="no" v-pre>movies</code> não vão. Mantenha um cliente por categoria e esse problema nunca aparece.</p>
+<h2 id="8-if-your-arr-is-in-docker">8. Se o seu *arr estiver no Docker</h2>
+<p>Esta etapa é para Docker em um host Linux. O Docker Desktop no macOS e no Windows roda os contêineres dentro de uma máquina virtual. O bind <code translate="no" v-pre>rslave</code> abaixo depende da propagação de montagem do Linux (veja <a href="../../setup/docker/">Configuração do Docker</a>), e passar o mount do zurg para um contêiner nesses sistemas não foi testado. No macOS e no Windows, instale o Sonarr e o Radarr como aplicativos comuns, como descrito em <doc-anchor-trigger to="#before-you-start">Antes de começar</doc-anchor-trigger>.</p>
+<p>Três problemas separados. O segundo custa um download a cada importação. O terceiro só aparece na primeira vez que o zurg reiniciar.</p>
+<h3 id="the-path-zurg-reports-must-be-a-path-the-client-can-open">O caminho que o zurg informa precisa ser um caminho que o cliente consegue abrir</h3>
+<p>Se o container monta a biblioteca em um lugar diferente do que o zurg usa, toda importação falha com <em>download doesn&#x27;t contain intermediate path</em> ou com uma verificação de health check de remote path. Você pode corrigir de qualquer um dos dois jeitos, ambos funcionam:</p>
+<ul>
+<li><strong>Defina <code translate="no" v-pre>sabnzbd.complete_dir</code></strong> com o caminho que <em>o cliente</em> enxerga. É mais simples quando há um só cliente, ou vários que concordam em montar a biblioteca no mesmo lugar.</li>
+<li><strong>Adicione um remote path mapping</strong> no *arr. Use isso quando clientes diferentes montam a biblioteca de formas diferentes.</li>
+</ul>
+<div id="the-path-zurg-reports-must-be-a-path-the-client-can-open-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">sabnzbd:
+  complete_dir: &quot;/data/zurg/__magic__/__all__&quot;   # what the *arr sees, not what zurg sees</code></pre>
+</doc-codeblock></div>
+<p>Para o segundo, vá em <strong>Settings → Download Clients</strong> e use o <strong>+</strong> em <strong>Remote Path Mappings</strong>, o de baixo da página, e não o que você usou no passo 5.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/16-sonarr-remote-path-mapping.webp" alt="The add remote path mapping dialog" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The add remote path mapping dialog</figcaption>
+</figure>
+<p>O <strong>Host</strong> precisa ser exatamente a string de host que você digitou no download client. O <strong>Remote Path</strong> é o que o zurg informa; o <strong>Local Path</strong> é onde o cliente enxerga esse caminho.</p>
+<h3 id="one-volume-for-the-download-folder-and-the-root-folders">Um único volume para a pasta de downloads e as pastas raiz</h3>
+<p>Um import de <code translate="no" v-pre>__magic__/__all__</code> para <code translate="no" v-pre>__magic__/tv</code> é de graça porque é um rename. Um rename só funciona dentro de um mesmo mount. Se você der ao container as duas pastas como dois volumes, ele enxerga dois sistemas de arquivos. Os dois são o mount do zurg por baixo, e mesmo assim não importa.</p>
+<div id="one-volume-for-the-download-folder-and-the-root-folders-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">    volumes:                                        # do not do this
+      - /mnt/zurg_usenet/__magic__/__all__:/downloads
+      - /mnt/zurg_usenet/__magic__/tv:/tv</code></pre>
+</doc-codeblock></div>
+<p>O kernel recusa o rename dentro do container. Aí o Sonarr e o Radarr copiam o arquivo e apagam o original sem avisar. Cada import baixa o release inteiro da sua conta e grava no disco do zurg. O import ainda dá certo, só que fica lento. Um episódio de 1,46 GB levou 50 segundos e gerou 2,9 GB de tráfego desse jeito. Com um volume só, levou um segundo e não leu nada.</p>
+<p>Dê ao container um volume só, que tenha o mount inteiro do zurg. Acesse a pasta de download e as pastas raiz por ele. O bind da próxima seção faz exatamente isso. Um remote path mapping ou o <code translate="no" v-pre>complete_dir</code> então aponta o cliente para o <code translate="no" v-pre>__all__</code> dentro desse mesmo volume.</p>
+<p>Um import manual com <strong>Hardlink/Copy Files</strong> também copia. Escolha <strong>Move Files</strong>.</p>
+<h3 id="bind-the-mounts-parent-not-the-mountpoint">Monte o pai do ponto de montagem, não o próprio ponto de montagem</h3>
+<p>Reiniciar o zurg desmonta <code translate="no" v-pre>/mnt/zurg_usenet</code> e monta de novo. Um container que montou <strong>o próprio ponto de montagem</strong> continua com a conexão fuse com que foi iniciado, e essa conexão agora está morta. Toda leitura então responde <code translate="no" v-pre>Socket not connected</code>. Como os dois clientes verificam o espaço livre na pasta raiz antes de pegar um release, <strong>todo release é rejeitado em silêncio</strong>:</p>
+<div id="bind-the-mounts-parent-not-the-mountpoint-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">FreeSpaceSpecification: Socket not connected</code></pre>
+</doc-codeblock></div>
+<p>Nada nos dois clientes diz que a montagem está obsoleta, a pasta ainda aparece dentro do container, e um grab interativo enviado direto ao cliente ainda funciona. O que você vê é um *arr que simplesmente parou de buscar.</p>
+<p>Monte o <strong>diretório pai</strong> com <code translate="no" v-pre>rslave</code>, e a remontagem chega como um evento de sub-montagem que o container acompanha:</p>
+<div id="bind-the-mounts-parent-not-the-mountpoint-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">    volumes:
+      - type: bind
+        source: /mnt          # the parent, not /mnt/zurg_usenet
+        target: /mnt
+        bind:
+          propagation: rslave</code></pre>
+</doc-codeblock></div>
+<p>Confira um container depois de qualquer reinício do zurg. Você quer ver um tamanho, não um erro:</p>
+<div id="bind-the-mounts-parent-not-the-mountpoint-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ docker exec radarr df -h /mnt/zurg_usenet
+Filesystem      Size  Used Avail Use% Mounted on
+zurg{PGSq4}:    1.0P     0  1.0P   0% /mnt/zurg_usenet</code></pre>
+</doc-codeblock></div>
+<p>O petabyte é o zurg reportando um sistema de arquivos virtual, não um disco. Isso é esperado, e é justamente o que satisfaz a verificação de espaço livre do *arr.</p>
+<h2 id="9-watch-one-grab-go-through">9. Acompanhe um grab passando pelo sistema</h2>
+<p>Não recebi nenhum texto para traduzir. Envie o trecho em inglês que você quer que eu traduza.</p>
+<h3 id="grab-it">Grab it</h3>
+<p>Abra um filme (ou um episódio), clique em <strong>Interactive Search</strong> e escolha um lançamento.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/60-radarr-interactive-search.webp" alt="Radarr's interactive search results" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr's interactive search results</figcaption>
+</figure>
+<p>A coluna <strong>Source</strong> mostra <code translate="no" v-pre>nzb</code>, que é o protocolo que o zurg consegue usar.</p>
+<p>Clique no botão com a seta circular no fim da linha para pegar o lançamento. Se ele não corresponder direitinho, o cliente pede para você confirmar o mapeamento antes:</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/60b-radarr-override-and-grab.webp" alt="Radarr's Override and Grab dialog" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr's Override and Grab dialog</figcaption>
+</figure>
+<p><strong>Override and Grab</strong> aparece quando o cliente quer que você confirme o que é o lançamento. Confira o mapeamento e clique em <strong>Grab Release</strong>. Um grab automático normal nunca mostra essa janela.</p>
+<h3 id="it-lands-in-the-queue">Ele aparece na fila</h3>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/61-radarr-queue-01.webp" alt="Fila do Radarr logo após o envio" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Fila do Radarr logo após o envio</figcaption>
+</figure>
+<p><strong>Activity → Queue</strong> logo após o envio. Repare na barra de progresso: ela está cheia, e <strong>Time Left</strong> aparece como um traço. Não há download para medir, então um item está na fila ou já concluído, sem nada no meio. <em>As outras linhas aqui pertencem a um segundo Radarr apontado para o mesmo zurg e na mesma categoria</em> — veja a nota no passo 7.</p>
+<h3 id="zurg-writes-the-nzb-and-reads-it">O zurg grava o NZB e o lê</h3>
+<div id="zurg-writes-the-nzb-and-reads-it-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Aug 25 14:44:03 zurg-server zurg[3034965]: INFO  nzb  Loaded NZB
+  Last.Week.Tonight.with.John.Oliver.S13E22.480p.WEB.x264-RMTeam.nzb: 4 files
+Aug 25 14:50:28 zurg-server zurg[3034965]: INFO  nzb  Loaded NZB
+  Untold.The.Testimony.of.Vince.Young.2026.1080p.NF.WEB-DL.DD+5.1.Atmos.H.264-playWEB.nzb: 9 files</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>Loaded NZB … : N files</code> é a linha que diz que o NZB foi analisado com sucesso. Se uma tarefa aparecer como Failed depois de 30 minutos, quando o zurg desiste de esperar que ela apareça na biblioteca, é justamente essa linha que está faltando.</p>
+<h3 id="the-import-happens">A importação acontece</h3>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/62-radarr-history.webp" alt="Histórico do Radarr mostrando Grabbed e depois Movie Imported" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Histórico do Radarr mostrando Grabbed e depois Movie Imported</figcaption>
+</figure>
+<p><strong>Activity → History</strong>. Dois eventos, com segundos de diferença: <strong>Grabbed</strong>, depois <strong>Movie Imported</strong>.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/63-radarr-movie-imported.webp" alt="Página do filme no Radarr mostrando o status Downloaded" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Página do filme no Radarr mostrando o status Downloaded</figcaption>
+</figure>
+<p><strong>Status: Downloaded</strong>, <strong>Size 4.7 GiB</strong> — e nada foi baixado.</p>
+<h3 id="prove-the-file-is-real">Confirme que o arquivo é real</h3>
+<p>A importação moveu o arquivo para a pasta raiz. Leia as duas pontas dele e pergunte ao ffprobe o que ele é:</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-e-macos-2">
+<template #title>Linux e macOS</template>
+<p>Se o seu shell não encontrar <code translate="no" v-pre>ffprobe</code>, use <code translate="no" v-pre>~/zurg/bin/ffprobe</code>: o setup coloca uma cópia dele ali quando nenhuma foi instalada.</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ ls -la &quot;/mnt/zurg_usenet/__magic__/movies/Untold - The Testimony of Vince Young (2026)/&quot;
+-rw-r--r-- 1 you you 4920958828 Aug 25 14:53 Untold.The.Testimony…playWEB.mkv
+
+$ dd if=&quot;$F&quot; bs=1M count=1 &gt;/dev/null
+1048576 bytes (1.0 MB, 1.0 MiB) copied, 0.0429446 s, 24.4 MB/s
+
+$ ffprobe -v error -show_entries format=duration,size,format_name \
+    -of default=noprint_wrappers=1 &quot;$F&quot;
+format_name=matroska,webm
+duration=4709.440000
+size=4920958828</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-2">
+<template #title>Windows</template>
+<p>No PowerShell, a partir da pasta do zurg. O setup colocou <code translate="no" v-pre>bin\ffprobe.exe</code> ali, a menos que um <code translate="no" v-pre>ffprobe</code> já estivesse no seu PATH; nesse caso, digite <code translate="no" v-pre>ffprobe</code> no lugar:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; $F = Get-Item &quot;Z:\__magic__\movies\Untold - The Testimony of Vince Young (2026)\*.mkv&quot;
+PS&gt; $F.Length
+4920958828
+
+PS&gt; bin\ffprobe.exe -v error -show_entries format=duration,size,format_name -of default=noprint_wrappers=1 $F.FullName
+format_name=matroska,webm
+duration=4709.440000
+size=4920958828</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p>Um Matroska de 78 minutos, transmitido a partir de artigos Usenet sob demanda. Os bytes chegam quando algo os lê, não quando o *arr importa.</p>
+<h2 id="10-adding-a-release-by-hand">10. Adicionando um lançamento manualmente</h2>
+<p>Às vezes o Sonarr ou o Radarr nunca pega o lançamento que você quer. Os indexadores que ele pesquisa podem não ter, ou um perfil de qualidade ou formato personalizado pode rejeitá-lo. Você pode entregar o NZB para o zurg por conta própria, na categoria do app que deve importar. Esse app então importa como se ele mesmo tivesse baixado.</p>
+<p>Se o lançamento estiver em um indexador que o app pesquisa, tente o app primeiro. <strong>Interactive Search</strong> também lista os lançamentos rejeitados. Baixar um deles envia para o zurg como qualquer outro download. O Radarr baixou uma versão IMAX que o perfil dele tinha recusado, com pontuação 0 em um formato personalizado obrigatório, e importou.</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-e-macos-3">
+<template #title>Linux e macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ SAB=0123456789abcdef0123456789abcdef
+$ ZURG=192.168.88.245:9996
+
+# an NZB file you already have (the upload field is called name, as in SABnzbd)
+$ curl -s &quot;http://$ZURG/api?mode=addfile&amp;apikey=$SAB&amp;cat=movies&quot; \
+    -F 'name=@Movie.Title.2024.1080p.WEB-DL.nzb'
+{&quot;status&quot;:true,&quot;nzo_ids&quot;:[&quot;SABnzbd_nzo_…&quot;]}
+
+# or a link to one, which zurg downloads itself
+$ curl -s -G &quot;http://$ZURG/api&quot; \
+    --data-urlencode mode=addurl --data-urlencode &quot;apikey=$SAB&quot; --data-urlencode cat=movies \
+    --data-urlencode 'name=https://indexer.example/getnzb/&lt;id&gt;?r=&lt;indexer-key&gt;' \
+    --data-urlencode nzbname=Movie.Title.2024.1080p.WEB-DL
+{&quot;status&quot;:true,&quot;nzo_ids&quot;:[&quot;SABnzbd_nzo_…&quot;]}</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-3">
+<template #title>Windows</template>
+<p>No PowerShell, com <code translate="no" v-pre>curl.exe</code> em vez de <code translate="no" v-pre>curl</code>. Cada um responde <code translate="no" v-pre>{&quot;status&quot;:true,&quot;nzo_ids&quot;:[…]}</code> como acima.</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$SAB = &quot;0123456789abcdef0123456789abcdef&quot;
+$ZURG = &quot;192.168.88.245:9996&quot;
+
+# an NZB file you already have (the upload field is called name, as in SABnzbd)
+curl.exe -s &quot;http://$ZURG/api?mode=addfile&amp;apikey=$SAB&amp;cat=movies&quot; -F &quot;name=@Movie.Title.2024.1080p.WEB-DL.nzb&quot;
+
+# or a link to one, which zurg downloads itself
+curl.exe -s -G &quot;http://$ZURG/api&quot; `
+  --data-urlencode mode=addurl --data-urlencode &quot;apikey=$SAB&quot; --data-urlencode cat=movies `
+  --data-urlencode &quot;name=https://indexer.example/getnzb/&lt;id&gt;?r=&lt;indexer-key&gt;&quot; `
+  --data-urlencode nzbname=Movie.Title.2024.1080p.WEB-DL</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p><code translate="no" v-pre>--data-urlencode</code> mantém o <code translate="no" v-pre>?</code> e o <code translate="no" v-pre>&amp;</code> do próprio link dentro de <code translate="no" v-pre>name</code>. O job aparece na fila do app na próxima verificação, em até um minuto.</p>
+<p>Cinco coisas decidem o que acontece depois.</p>
+<ol>
+<li><strong>O filme ou a série precisa já estar no app.</strong> Ele só importa o que consegue associar a algo que ele gerencia.</li>
+<li><strong>O nome precisa dizer do que se trata.</strong> O job usa o nome do arquivo do NZB, ou <code translate="no" v-pre>nzbname</code> se você passar. Sem <code translate="no" v-pre>nzbname</code>, o <code translate="no" v-pre>addurl</code> usa o nome de arquivo que o indexador entrega. Coloque o ano no nome.</li>
+<li><strong>A categoria escolhe o app.</strong> <code translate="no" v-pre>cat=movies</code> chega ao Radarr cujo cliente de download usa <code translate="no" v-pre>movies</code>. Cada app só olha para a própria categoria.</li>
+<li><strong>O perfil de qualidade não bloqueia. O arquivo que você já tem pode bloquear.</strong> O Radarr não verifica nem as qualidades permitidas nem a pontuação mínima de formato personalizado na importação. Ele importou um BluRay 720p com pontuação 0 para um perfil que só permite 2160p e exige pontuação 100. Também importou um WEBRip 1080p para um filme cujo perfil só permite 720p. Depois, pegou um BluRay 1080p por cima como upgrade e apagou o WEBRip. Um WEB-DL adicionado depois parou na Activity com o status <em>Not an upgrade for existing movie file</em>. <strong>Activity → Queue → Manual Import</strong> traz o arquivo mesmo assim e substitui o atual.</li>
+<li><strong>Falha é coisa sua para resolver.</strong> O app nunca coloca na blocklist nem remove um download que não foi ele quem baixou. Um lançamento cujos artigos já tinham saído dos servidores de notícias voltou como Failed do zurg e ficou na fila do Radarr com a mensagem <em>Download has failed wasn&#x27;t grabbed by Radarr, skipping automatic download handling</em>. Remova da fila e escolha outro lançamento.</li>
+</ol>
+<p>Medido em 2026-10-10 com o Radarr 6.3, usando <code translate="no" v-pre>addfile</code> e <code translate="no" v-pre>addurl</code>, inclusive com um perfil que exige um formato personalizado criado a partir de um nome de lançamento. Toda importação foi um rename para <code translate="no" v-pre>__magic__/movies</code> e nada foi copiado. O Sonarr não foi testado.</p>
+<p>Obrigado ao <strong>.telmen</strong> no Discord por perguntar como fazer isso com Usenet.</p>
+<h2 id="watching-from-zurgs-side">Assistindo pelo lado do zurg</h2>
+<p>A página <code translate="no" v-pre>/magic/</code> do zurg lista todos os NZB que o endpoint já recebeu. O Sonarr e o Radarr removem os jobs que pegaram, e o registro fica guardado por uma semana depois disso, para que uma consulta que coincida com uma exclusão responda sempre da mesma forma duas vezes.</p>
+<p>Um job <strong>Failed</strong> ou <strong>Stuck</strong> (na fila há mais de uma hora) que nenhum cliente vai remover nunca, por exemplo depois que você para de usar o zurg como cliente de download, pode ser limpo aqui segurando o botão <strong>Clear</strong>. Ao limpar um job, o NZB dele é apagado, a menos que uma importação ainda o esteja usando.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/41-zurg-magic-header.webp" alt="O cabeçalho da página magic mostrando placements e tombstones" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">O cabeçalho da página magic mostrando placements e tombstones</figcaption>
+</figure>
+<p><strong>Placements</strong> são os arquivos que os clientes moveram; <strong>tombstones</strong> são as pastas de job que eles apagaram depois.</p>
+<p>Se um cliente copia em vez de mover, a página mostra uma tabela vermelha <strong>Imports that were copies</strong>. O zurg transforma essas cópias de volta em placements e as apaga, mas cada uma ainda foi um download completo, então corrija os volumes.</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr/42-zurg-magic-sabnzbd-jobs.webp" alt="A tabela de jobs do SABnzbd na página magic" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">A tabela de jobs do SABnzbd na página magic</figcaption>
+</figure>
+<p><strong>State</strong> é o que conta a história toda. <strong>Queued</strong> significa que o zurg ainda não terminou com o release, seja porque a biblioteca ainda não o listou, seja porque os tamanhos dos arquivos ainda não estabilizaram, seja porque os artigos ainda não foram verificados. <strong>Completed</strong> significa que está pronto para importar. <strong>Release</strong> mostra o nome da pasta de onde o cliente importa.</p>
+<p>A coluna <strong>Release</strong> é lida da biblioteca a cada consulta, não fica armazenada. Renomeie o release no painel do zurg, deixe um repair reconstruí-lo, ou deixe o zurg adicionar um sufixo porque dois releases têm o mesmo nome: o job acompanha a mudança.</p>
+<h2 id="what-works-and-what-does-not">O que funciona e o que não funciona</h2>
+<p>Funciona:</p>
+<ul>
+<li>O teste de conexão, todas as quatro verificações, nos dois clientes.</li>
+<li>Captura, fila, histórico, importação por renomeação e a limpeza pós-importação.</li>
+<li>Nova captura do mesmo release. Cada captura posterior recebe um job id próprio, para que o cliente aja sobre ele e não reutilize o resultado do job antigo. O release por baixo continua sendo o mesmo. Uma nova captura de um release que uma importação anterior já esvaziou é informada como <strong>Failed</strong>. A pasta dele em <code translate="no" v-pre>__magic__/__all__</code> não tem mais nada para importar, e Failed faz o cliente colocar esse release na lista de bloqueio e pegar outro. A captura que fez o esvaziamento continua informando Completed até o cliente excluí-la.</li>
+<li>Remover um job da fila, com ou sem exclusão do NZB.</li>
+<li><code translate="no" v-pre>mode=addurl</code>, para uma pessoa ou uma automação que passa uma URL em vez de enviar o arquivo. Nenhum dos *arr usa.</li>
+</ul>
+<p>Não faz:</p>
+<ul>
+<li><strong>Sem progresso.</strong> Um job está na fila ou concluído; não há porcentagem entre os dois, porque não há download para medir. A fila mostra o tamanho declarado do NZB para que a linha não fique em branco.</li>
+<li><strong>Sem pausar, retomar, limite de velocidade, prioridade ou script de pós-processamento.</strong> O SABnzbd tem todos esses recursos; o zurg não tem nada para aplicá-los.</li>
+<li><strong><code translate="no" v-pre>del_files</code> em uma exclusão do histórico de um job concluído é ignorado.</strong> (Para um job Failed, ele apaga o NZB quando nada foi importado dele.) O cliente quer dizer &quot;a pasta do job é sua de novo&quot;, mas o arquivo que acabou de ser importado continua sendo servido a partir desse NZB. A pasta que ele queria remover já foi removida — ele mesmo a apagou, pelo mount.</li>
+<li><strong>Autenticação básica não consegue proteger este endpoint.</strong> A chave de API é a única barreira.</li>
+</ul>
+<p><strong>O sinal de falha.</strong> Um release sem nada importável é informado como <strong>Failed</strong>, e os dois clientes o colocam na lista de bloqueio e capturam uma alternativa. Isso inclui um release cujos arquivos estão todos quebrados, apagados ou filtrados; um que contém só <code translate="no" v-pre>.par2</code>, <code translate="no" v-pre>.sfv</code> e arquivos auxiliares; um em que todo arquivo tem um formato que nada reproduz, que é o caso de um post ofuscado que nomeia o conjunto RAR como <code translate="no" v-pre>.z001</code>…<code translate="no" v-pre>.z133</code>; e um arquivo já aberto e que não tem mídia. Um conjunto RAR é conteúdo, não estrutura: o zurg transmite o vídeo diretamente dele. Se um release realmente traz algo para o qual o zurg não tem extensão, amplie <code translate="no" v-pre>addl_playable_extensions</code> em vez de colocá-lo na lista de bloqueio.</p>
+<p><strong>Os artigos são verificados antes de um job ser informado como concluído.</strong> O zurg espera até a biblioteca listar o release e os tamanhos dos arquivos se estabilizarem. Depois pergunta aos servidores de notícias sobre o início e o fim de cada arquivo de conteúdo. São os primeiros dezesseis artigos e o último. Ele também baixa o primeiro artigo de cada arquivo. Isso dá até sessenta e quatro deles, mais alguns a mais em um release com poucos arquivos. Alguns servidores de notícias ainda dizem que um artigo existe depois que o conteúdo foi removido, e só um download mostra isso. Um artigo baixado também mostra se ele pertence a este post e não a outro upload. O job continua <strong>Queued</strong> até isso ser respondido. Danos que a amostra não alcança não são detectados aqui; eles aparecem na leitura que os alcança. Um release cujos artigos sumiram passa primeiro por um reparo PAR2 e é verificado de novo depois que o reparo roda. Um que volta a ficar completo segue em frente. Um que ainda tenha artigos faltando, ou que nada consiga reparar, é informado como <strong>Failed</strong> com a contagem do que falta. Isso é uma falha de <em>download</em>, que é a que os clientes tratam: eles colocam o release na lista de bloqueio e capturam uma alternativa sem intervenção, em vez de importar algo que não vai reproduzir. Com <code translate="no" v-pre>torbox_nzb</code> não há servidores de notícias nem verificação de artigos: uma captura é verificada pelo fato de a TorBox ter baixado.</p>
+<p><strong>Uma verificação que não consegue terminar não espera para sempre.</strong> Às vezes a verificação simplesmente não consegue completar. O pool de conexões pode estar fora do ar, a conta pode estar limitada, ou a verificação pode estourar o tempo. Isso não é uma resposta. O job continua <strong>Queued</strong> e é consultado de novo um minuto depois. O zurg conta as tentativas no job para que um reinício não as esqueça. Depois de trinta tentativas falhas seguidas que abranjam pelo menos três horas, o job vai para o histórico como <strong>Failed</strong>. A mensagem traz a contagem, o período e o último erro. Uma queda com recusas diretas chega a trinta em menos de uma hora e não trava a fila por causa disso.</p>
+<p><strong>Um release que sai da biblioteca faz o job falhar.</strong> Um release pode ser apagado pelo painel, ter seu NZB removido da pasta de monitoramento ou ser descartado por todas as contas. O job continua <strong>Queued</strong> por quinze minutos e depois vai para o histórico como <strong>Failed</strong>. O cliente coloca o release na lista de bloqueio e captura outro. A espera existe por causa dos reinícios. A biblioteca desmarca todos os releases enquanto carrega, e isso não pode ser lido como exclusão. Nada falha por esse motivo nos primeiros quinze minutos depois que o zurg inicia. Um job cujo release a biblioteca nunca listou não é afetado, porque ele ainda está chegando.</p>
+<h2 id="troubleshooting">Solução de problemas</h2>
+<retype-table copy-text="| O que o \*arr diz | O que significa |
+|---|---|
+| &quot;Unable to connect to SABnzbd&quot; | O zurg não está acessível nesse host e porta, ou algo na frente dele respondeu com um código diferente de 200. Verifique `sabnzbd.enabled`: enquanto estiver desligado, `/api` retorna um 404 simples. No Docker, confira se você não usou `localhost` nem só o nome do host. |
+| &quot;API Key Incorrect&quot; / &quot;API Key Required&quot; | A chave não confere. Ela está em `config.yml`, se você definiu uma, ou em `data/sabnzbd-apikey`, se o zurg a gerou. |
+| &quot;Test was aborted due to an error&quot; | É algo diferente de falha de autenticação. O zurg registra cada requisição que recusou. Procure no log por `SABnzbd:`. |
+| &quot;Category … does not exist&quot; | A categoria no \*arr não está em `sabnzbd.categories`. Adicione-a e reinicie o zurg. |
+| &quot;Downloads in root folder&quot; | Uma pasta raiz está no mesmo nível do diretório de concluídos ou acima dele. Mova-a para o lado dele: `__magic__/tv`, não `__magic__/__all__`, não `__magic__` e não `/mnt/zurg_usenet`. |
+| &quot;Remote path mapping&quot; / &quot;download doesn't contain intermediate path&quot; | O caminho que o zurg informa não é um caminho que o cliente consegue abrir. Veja o [passo 8](#8-if-your-arr-is-in-docker). |
+| As importações dão certo, mas demoram tanto quanto um download, e a página `/magic/` do zurg as lista em **Imports that were copies** | O cliente está copiando de `__magic__/__all__` em vez de renomear. O contêiner dele tem a pasta de download e as pastas raiz em dois volumes. Ou então uma importação manual foi configurada para copiar. Veja [um volume para a pasta de download e as pastas raiz](#one-volume-for-the-download-folder-and-the-root-folders). |
+| O navegador de pastas raiz mostra o mount do zurg vazio, ou nenhuma unidade `Z:` | O \*arr não consegue ver o mount. No Linux, ele roda com outro usuário sem `user_allow_other`; no Windows, roda como serviço. Veja [Antes de começar](#before-you-start). |
+| Todas as releases rejeitadas, e nada no log | Um bind mount desatualizado. Rode `docker exec &lt;client&gt; df -h &lt;mount&gt;`; se aparecer `Socket not connected`, faça o bind do pai com `rslave` e recrie o contêiner. |
+| Um job fica na fila por uma ou duas consultas depois que a release aparece | Esperado, e se resolve uma vez por release. Um NZB não informa quanto dura cada arquivo; a estimativa está sendo substituída pelo tamanho exato do índice PAR2 ou pelo cabeçalho de um artigo. Marcar como Completed cedo demais é o que faz o cliente lançar *File move incomplete, data loss may have occurred*. Um job `torbox_nzb` não lê artigos nem consulta servidores de notícias; ele fica na fila até o TorBox terminar de buscar a release, por no máximo 30 minutos (veja a próxima linha). |
+| &quot;zurg accepted the NZB but it never appeared in the library&quot; | A release não apareceu na biblioteca 30 minutos depois do grab ou depois que o zurg iniciou, o que for mais tarde. Então o zurg desistiu de esperar e marcou o job como **Failed**. Verifique se um provedor `nzb` ou `torbox_nzb` está configurado e depois procure o NZB no log. Uma conta `nzb` escreve `Loaded NZB &lt;name&gt;: N files` quando faz o parse. Uma release `torbox_nzb` só aparece quando o TorBox termina de processá-la, então o job falha desse jeito sempre que o TorBox levar mais de 30 minutos: um download lento, uma espera por vaga livre ou um acúmulo atrás do único post por minuto do zurg. Uma conta `torbox_nzb` escreve `TorBox Usenet: posting &lt;name&gt;` e depois a resposta do TorBox. `TorBox answered &lt;name&gt; with download &lt;id&gt;` significa que o TorBox está buscando a release ou já a tem. `TorBox queued &lt;name&gt; as &lt;id&gt; for want of a free slot` significa que a conta não tem vaga livre; o post espera até uma vaga liberar. |
+| &quot;The Usenet account could not fetch the NZB&quot; aparece e o job falha de imediato | A conta para a qual o NZB foi postado desistiu dele, então o zurg não espera os 30 minutos. Com `torbox_nzb`, `TorBox refused &lt;name&gt;, …` no log termina com o motivo dado pelo TorBox, e esse NZB não é postado de novo até o zurg reiniciar ou o arquivo mudar. |
+| &quot;The release holds no files that can be imported&quot; | A biblioteca tem a release, mas não há nada nela que um cliente consiga importar. Um NZB só com volumes de recuperação é exatamente isso, e também um post ofuscado cujo conjunto RAR se chama `.z001`…`.z133`. Amplie `addl_playable_extensions` se a release realmente trouxer conteúdo com uma extensão que o zurg não conhece. |
+| Releases concluídas ficam na fila durante uma rajada grande | Mais de sessenta jobs prontos ao mesmo tempo. Sonarr e Radarr só pedem as sessenta entradas mais recentes do histórico, então o zurg segura o excedente na fila e avança um item para o histórico toda vez que uma importação libera uma vaga. Esperado, e se resolve sozinho. |
+| &quot;The release could not be checked against the news servers&quot; | A verificação de artigos falhou em terminar trinta vezes seguidas, durante pelo menos três horas. Nada foi encontrado faltando; não foi possível consultar a conta de notícias. A mensagem traz o último erro. Verifique a conta primeiro e faça o grab da release de novo quando ela responder. Uma conta `torbox_nzb` não tem servidores de notícias nem verificação de artigos, então o grab é checado pelo fato de o TorBox ter buscado a release. |
+| &quot;The release was in the library and has since been removed from it&quot; | A biblioteca listou a release uma vez e não a lista há quinze minutos. Algo a apagou, e o log diz `Release &lt;name&gt; is gone from every account`. O cliente coloca a release na blocklist e faz o grab de outra, em vez de esperar por uma pasta que não vai voltar. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>O que o *arr diz</th>
+<th>O que significa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&quot;Unable to connect to SABnzbd&quot;</td>
+<td>O zurg não está acessível nesse host e porta, ou algo na frente dele respondeu com um código diferente de 200. Verifique <code translate="no" v-pre>sabnzbd.enabled</code>: enquanto estiver desligado, <code translate="no" v-pre>/api</code> retorna um 404 simples. No Docker, confira se você não usou <code translate="no" v-pre>localhost</code> nem só o nome do host.</td>
+</tr>
+<tr>
+<td>&quot;API Key Incorrect&quot; / &quot;API Key Required&quot;</td>
+<td>A chave não confere. Ela está em <code translate="no" v-pre>config.yml</code>, se você definiu uma, ou em <code translate="no" v-pre>data/sabnzbd-apikey</code>, se o zurg a gerou.</td>
+</tr>
+<tr>
+<td>&quot;Test was aborted due to an error&quot;</td>
+<td>É algo diferente de falha de autenticação. O zurg registra cada requisição que recusou. Procure no log por <code translate="no" v-pre>SABnzbd:</code>.</td>
+</tr>
+<tr>
+<td>&quot;Category … does not exist&quot;</td>
+<td>A categoria no *arr não está em <code translate="no" v-pre>sabnzbd.categories</code>. Adicione-a e reinicie o zurg.</td>
+</tr>
+<tr>
+<td>&quot;Downloads in root folder&quot;</td>
+<td>Uma pasta raiz está no mesmo nível do diretório de concluídos ou acima dele. Mova-a para o lado dele: <code translate="no" v-pre>__magic__/tv</code>, não <code translate="no" v-pre>__magic__/__all__</code>, não <code translate="no" v-pre>__magic__</code> e não <code translate="no" v-pre>/mnt/zurg_usenet</code>.</td>
+</tr>
+<tr>
+<td>&quot;Remote path mapping&quot; / &quot;download doesn&#x27;t contain intermediate path&quot;</td>
+<td>O caminho que o zurg informa não é um caminho que o cliente consegue abrir. Veja o <doc-anchor-trigger to="#8-if-your-arr-is-in-docker">passo 8</doc-anchor-trigger>.</td>
+</tr>
+<tr>
+<td>As importações dão certo, mas demoram tanto quanto um download, e a página <code translate="no" v-pre>/magic/</code> do zurg as lista em <strong>Imports that were copies</strong></td>
+<td>O cliente está copiando de <code translate="no" v-pre>__magic__/__all__</code> em vez de renomear. O contêiner dele tem a pasta de download e as pastas raiz em dois volumes. Ou então uma importação manual foi configurada para copiar. Veja <doc-anchor-trigger to="#one-volume-for-the-download-folder-and-the-root-folders">um volume para a pasta de download e as pastas raiz</doc-anchor-trigger>.</td>
+</tr>
+<tr>
+<td>O navegador de pastas raiz mostra o mount do zurg vazio, ou nenhuma unidade <code translate="no" v-pre>Z:</code></td>
+<td>O *arr não consegue ver o mount. No Linux, ele roda com outro usuário sem <code translate="no" v-pre>user_allow_other</code>; no Windows, roda como serviço. Veja <doc-anchor-trigger to="#before-you-start">Antes de começar</doc-anchor-trigger>.</td>
+</tr>
+<tr>
+<td>Todas as releases rejeitadas, e nada no log</td>
+<td>Um bind mount desatualizado. Rode <code translate="no" v-pre>docker exec &lt;client&gt; df -h &lt;mount&gt;</code>; se aparecer <code translate="no" v-pre>Socket not connected</code>, faça o bind do pai com <code translate="no" v-pre>rslave</code> e recrie o contêiner.</td>
+</tr>
+<tr>
+<td>Um job fica na fila por uma ou duas consultas depois que a release aparece</td>
+<td>Esperado, e se resolve uma vez por release. Um NZB não informa quanto dura cada arquivo; a estimativa está sendo substituída pelo tamanho exato do índice PAR2 ou pelo cabeçalho de um artigo. Marcar como Completed cedo demais é o que faz o cliente lançar <em>File move incomplete, data loss may have occurred</em>. Um job <code translate="no" v-pre>torbox_nzb</code> não lê artigos nem consulta servidores de notícias; ele fica na fila até o TorBox terminar de buscar a release, por no máximo 30 minutos (veja a próxima linha).</td>
+</tr>
+<tr>
+<td>&quot;zurg accepted the NZB but it never appeared in the library&quot;</td>
+<td>A release não apareceu na biblioteca 30 minutos depois do grab ou depois que o zurg iniciou, o que for mais tarde. Então o zurg desistiu de esperar e marcou o job como <strong>Failed</strong>. Verifique se um provedor <code translate="no" v-pre>nzb</code> ou <code translate="no" v-pre>torbox_nzb</code> está configurado e depois procure o NZB no log. Uma conta <code translate="no" v-pre>nzb</code> escreve <code translate="no" v-pre>Loaded NZB &lt;name&gt;: N files</code> quando faz o parse. Uma release <code translate="no" v-pre>torbox_nzb</code> só aparece quando o TorBox termina de processá-la, então o job falha desse jeito sempre que o TorBox levar mais de 30 minutos: um download lento, uma espera por vaga livre ou um acúmulo atrás do único post por minuto do zurg. Uma conta <code translate="no" v-pre>torbox_nzb</code> escreve <code translate="no" v-pre>TorBox Usenet: posting &lt;name&gt;</code> e depois a resposta do TorBox. <code translate="no" v-pre>TorBox answered &lt;name&gt; with download &lt;id&gt;</code> significa que o TorBox está buscando a release ou já a tem. <code translate="no" v-pre>TorBox queued &lt;name&gt; as &lt;id&gt; for want of a free slot</code> significa que a conta não tem vaga livre; o post espera até uma vaga liberar.</td>
+</tr>
+<tr>
+<td>&quot;The Usenet account could not fetch the NZB&quot; aparece e o job falha de imediato</td>
+<td>A conta para a qual o NZB foi postado desistiu dele, então o zurg não espera os 30 minutos. Com <code translate="no" v-pre>torbox_nzb</code>, <code translate="no" v-pre>TorBox refused &lt;name&gt;, …</code> no log termina com o motivo dado pelo TorBox, e esse NZB não é postado de novo até o zurg reiniciar ou o arquivo mudar.</td>
+</tr>
+<tr>
+<td>&quot;The release holds no files that can be imported&quot;</td>
+<td>A biblioteca tem a release, mas não há nada nela que um cliente consiga importar. Um NZB só com volumes de recuperação é exatamente isso, e também um post ofuscado cujo conjunto RAR se chama <code translate="no" v-pre>.z001</code>…<code translate="no" v-pre>.z133</code>. Amplie <code translate="no" v-pre>addl_playable_extensions</code> se a release realmente trouxer conteúdo com uma extensão que o zurg não conhece.</td>
+</tr>
+<tr>
+<td>Releases concluídas ficam na fila durante uma rajada grande</td>
+<td>Mais de sessenta jobs prontos ao mesmo tempo. Sonarr e Radarr só pedem as sessenta entradas mais recentes do histórico, então o zurg segura o excedente na fila e avança um item para o histórico toda vez que uma importação libera uma vaga. Esperado, e se resolve sozinho.</td>
+</tr>
+<tr>
+<td>&quot;The release could not be checked against the news servers&quot;</td>
+<td>A verificação de artigos falhou em terminar trinta vezes seguidas, durante pelo menos três horas. Nada foi encontrado faltando; não foi possível consultar a conta de notícias. A mensagem traz o último erro. Verifique a conta primeiro e faça o grab da release de novo quando ela responder. Uma conta <code translate="no" v-pre>torbox_nzb</code> não tem servidores de notícias nem verificação de artigos, então o grab é checado pelo fato de o TorBox ter buscado a release.</td>
+</tr>
+<tr>
+<td>&quot;The release was in the library and has since been removed from it&quot;</td>
+<td>A biblioteca listou a release uma vez e não a lista há quinze minutos. Algo a apagou, e o log diz <code translate="no" v-pre>Release &lt;name&gt; is gone from every account</code>. O cliente coloca a release na blocklist e faz o grab de outra, em vez de esperar por uma pasta que não vai voltar.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Ainda travado? Pergunte no fórum <strong>zurg-support</strong> no <a href="https://discord.com/invite/7u4YjMThXP">Discord</a>. <a href="../../../guides/remote-help/">Pedindo ajuda</a> explica o que incluir.</p>
+<h3 id="where-the-state-lives">Onde o estado fica guardado</h3>
+<retype-table copy-text="| Caminho | O que é |
+|---|---|
+| `nzbs/&lt;name&gt;.nzb` | O próprio NZB, nomeado uma vez e nunca renomeado — o backend Usenet tira a identidade do release desse nome de arquivo, então renomear deixa o release órfão e todas as colocações feitas a partir dele. |
+| `data/sabnzbd-jobs.json` | Quais NZBs foram baixados, em qual categoria e quando. |
+| `data/sabnzbd-apikey` | Uma chave de API gerada. Não é gravada quando `sabnzbd.api_key` está definida. |
+| `data/magic.json` | A tabela `__magic__` — todas as colocações e lápides que as importações criaram. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Caminho</th>
+<th>O que é</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>nzbs/&lt;name&gt;.nzb</code></td>
+<td>O próprio NZB, nomeado uma vez e nunca renomeado — o backend Usenet tira a identidade do release desse nome de arquivo, então renomear deixa o release órfão e todas as colocações feitas a partir dele.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>data/sabnzbd-jobs.json</code></td>
+<td>Quais NZBs foram baixados, em qual categoria e quando.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>data/sabnzbd-apikey</code></td>
+<td>Uma chave de API gerada. Não é gravada quando <code translate="no" v-pre>sabnzbd.api_key</code> está definida.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>data/magic.json</code></td>
+<td>A tabela <code translate="no" v-pre>__magic__</code> — todas as colocações e lápides que as importações criaram.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/guides/usenet/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Anterior</span>
+                                <span class="block mt-1">Usenet</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/guides/sonarr-radarr-torrents/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Próximo</span>
+                                <span class="block mt-1">Sonarr e Radarr para torrents</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Sonarr e Radarr para Usenet", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/guides/sonarr-radarr.md" }</script>
+</body>
+</html>

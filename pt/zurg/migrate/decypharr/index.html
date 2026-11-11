@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="pt" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/pt">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672724506">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Migrando do decypharr para o zurg</title>
+    <meta name="title" content="Migrando do decypharr para o zurg">
+    <meta name="description" content="Leia a página compartilhada primeiro. Ela explica o trash guard e por que sua biblioteca cai em __magic__.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/pt/zurg/migrate/decypharr/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/pt/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/pt/zurg/migrate/decypharr/">
+    <meta property="og:title" content="Migrando do decypharr para o zurg">
+    <meta property="og:description" content="Leia a página compartilhada primeiro. Ela explica o trash guard e por que sua biblioteca cai em __magic__.">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="pt_BR">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/pt/zurg/migrate/decypharr/">
+    <meta name="twitter:title" content="Migrando do decypharr para o zurg">
+    <meta name="twitter:description" content="Leia a página compartilhada primeiro. Ela explica o trash guard e por que sua biblioteca cai em __magic__.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/pt/zurg/migrate/decypharr.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672724506" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672724506" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672724506" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672724506" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/pt/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>Português</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/pt/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/pt/download.html" target="_blank">Baixar zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/pt/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Patrocinar</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>Português</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/pt/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/pt/download.html" target="_blank">Baixar zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/pt/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Patrocinar</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="migrating-from-decypharr-to-zurg">Migrando do decypharr para o zurg</h1>
+<p>Leia <a href="../">a página compartilhada</a> primeiro. Ela explica o trash guard e por que sua biblioteca cai em <code translate="no" v-pre>__magic__</code>.</p>
+<p>decypharr e zurg resolvem o mesmo problema, e os layouts de raiz deles são parecidos. Boa parte da configuração se aproveita.</p>
+<retype-table copy-text="| decypharr | zurg |
+|---|---|
+| `__all__/&lt;job&gt;/&lt;file&gt;` | `__all__/&lt;name&gt;/&lt;file&gt;` |
+| `version.txt` | `version.txt` |
+| `__bad__/` | `__unplayable__/` |
+| `torrents/` | uma entrada `directories:` com `not_provider: nzb` |
+| `nzbs/&lt;job&gt;/` | uma entrada `directories:` com `provider: nzb` ou a `__nzb__` embutida |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>decypharr</th>
+<th>zurg</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>__all__/&lt;job&gt;/&lt;file&gt;</code></td>
+<td><code translate="no" v-pre>__all__/&lt;name&gt;/&lt;file&gt;</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>version.txt</code></td>
+<td><code translate="no" v-pre>version.txt</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>__bad__/</code></td>
+<td><code translate="no" v-pre>__unplayable__/</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>torrents/</code></td>
+<td>uma entrada <code translate="no" v-pre>directories:</code> com <code translate="no" v-pre>not_provider: nzb</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>nzbs/&lt;job&gt;/</code></td>
+<td>uma entrada <code translate="no" v-pre>directories:</code> com <code translate="no" v-pre>provider: nzb</code> ou a <code translate="no" v-pre>__nzb__</code> embutida</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>O <strong>lado do debrid não precisa de nada</strong>. Os dois servidores listam as mesmas contas e apresentam os nomes de arquivo originais do torrent. Esses caminhos são idênticos quando o zurg fica no ponto de montagem do decypharr. Tudo abaixo é sobre o lado Usenet.</p>
+<p>Duas coisas para resolver antes de começar.</p>
+<ul>
+<li>
+<p><strong>Provedores.</strong> Eles não limitam a migração. O zurg tem um backend para
+todo serviço que o decypharr suporta. Contas Premiumize e Debrid-Link migram
+como as demais. Cada uma tem uma página em <a href="../../providers/">Provedores</a>.</p>
+</li>
+<li>
+<p><strong>Não mude o <code translate="no" v-pre>folder_naming</code> do decypharr antes de migrar.</strong> Ele renomeia
+todas as pastas da biblioteca de uma vez. Isso quebra todos os alvos de symlink
+e todos os caminhos do Plex em mount-direct de uma só vez.</p>
+</li>
+</ul>
+<h2 id="what-differs-on-the-usenet-side">O que muda no lado do Usenet</h2>
+<p>Medido contra o zurg nos mesmos cinco lançamentos.</p>
+<retype-table copy-text="| | |
+|---|---|
+| o zurg ganha | `thumbnail.jpg`, o clipe de amostra, o `.nfo`, os anúncios `.url`, o diretório interno do arquivo, **e o lançamento ofuscado que o decypharr descartou** |
+| o zurg perde | nada |
+| renomeados | lançamentos de arquivo único e lançamentos em arquivo compactado |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>o zurg ganha</td>
+<td><code translate="no" v-pre>thumbnail.jpg</code>, o clipe de amostra, o <code translate="no" v-pre>.nfo</code>, os anúncios <code translate="no" v-pre>.url</code>, o diretório interno do arquivo, <strong>e o lançamento ofuscado que o decypharr descartou</strong></td>
+</tr>
+<tr>
+<td>o zurg perde</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>renomeados</td>
+<td>lançamentos de arquivo único e lançamentos em arquivo compactado</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>Lançamentos de arquivo único</strong> saem do decypharr com o nome da tarefa. Você recebe
+<code translate="no" v-pre>ToyStory5/ToyStory5.mkv</code>, enquanto o zurg mantém o nome que o postador deu e serve
+<code translate="no" v-pre>ToyStory5/Toy.Story.5.2026.1080p.AMZN.WEB-DL.DDP5.1.H.264-KyoGo.mkv</code>.</p>
+<p><strong>Lançamentos em arquivo compactado</strong> são o caso mais interessante e vale entender, porque
+explica dois sintomas de uma vez. O decypharr gera isto.</p>
+<div id="what-differs-on-the-usenet-side-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">FatherBrown/Father.Brown.2013.S02E05.HDTV.x264-TLAfather.brown.2013.s02e05.hdtv.x264-tla.mp4</code></pre>
+</doc-codeblock></div>
+<p>Isso é o nome do diretório interno do arquivo concatenado com o nome do próprio arquivo, <strong>sem separador nenhum</strong>. É uma junção de caminhos que perdeu o <code translate="no" v-pre>/</code>. Ou seja, o nível de diretório que falta e o nome de arquivo malformado são o mesmo defeito, e não dois. O zurg reproduz a estrutura real em
+<code translate="no" v-pre>FatherBrown/Father.Brown.2013.S02E05.HDTV.x264-TLA/father.brown.….mp4</code>.</p>
+<p><strong>Lançamentos de múltiplos arquivos e temporadas completas mantêm os nomes reais de arquivo nos dois lados.</strong> Eles batem automaticamente assim que o nome da pasta bate.</p>
+<h2 id="what-your-library-looks-like-afterwards">Como fica sua biblioteca depois</h2>
+<p><strong>Tudo é adicionado de novo</strong> porque a raiz da biblioteca muda para <code translate="no" v-pre>__magic__</code>. Veja <a href="../">a página compartilhada</a> para entender por que não existe um caminho mais barato.</p>
+<p>O ganho está nos nomes. Todo release de arquivo único volta com o nome de arquivo de quem postou, e não com o nome do job. Assim, <code translate="no" v-pre>ToyStory5/ToyStory5.mkv</code> vira <code translate="no" v-pre>Toy.Story.5.2026.1080p.AMZN.WEB-DL.DDP5.1.H.264-KyoGo.mkv</code>. É essa string que o Sonarr, o Radarr e o Plex leem para identificar qualidade, fonte, grupo e edição. Releases de arquivo deixam de carregar um nome colado e passam a ficar no diretório próprio do arquivo. Releases com vários arquivos e season packs já são lidos corretamente e não mudam.</p>
+<p>Liste os releases cujos nomes vão mudar.</p>
+<div id="what-your-library-looks-like-afterwards-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">MOUNT=/mnt/decypharr
+for d in &quot;$MOUNT&quot;/__all__/*/; do
+  job=$(basename &quot;$d&quot;)
+  n=$(find &quot;$d&quot; -type f | wc -l)
+  [ &quot;$n&quot; -eq 1 ] &amp;&amp; echo &quot;RENAMED BY DECYPHARR: $job&quot;
+done</code></pre>
+</doc-codeblock></div>
+<div class="flex mb-6">
+    <div class="shrink-0 w-1.5 rounded-tl-lg rounded-bl-lg bg-callout-info"></div>
+    <div class="flex w-full py-4 border border-l-0 rounded-tr-lg rounded-br-lg doc-callout bg-callout-base-bg border-callout-base-border" role="alert">
+        <div class="flex items-center ml-4 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" class="block text-callout-info" width="22" height="22" viewBox="0 0 24 24" role="presentation">
+                <g fill="currentColor"><g>
+                    <path d="M12 1C5.93 1 1 5.93 1 12s4.93 11 11 11 11-4.93 11-11S18.07 1 12 1zm0 20c-4.96 0-9-4.04-9-9s4.04-9 9-9 9 4.04 9 9-4.04 9-9 9z"></path>
+                    <path d="M12 11c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1s1-.45 1-1v-4c0-.55-.45-1-1-1zM12.01 7c-.56 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"></path>
+                    <path fill="none" d="M0 0h24v24H0z"></path>
+                </g></g>
+            </svg>
+        </div>
+        <div class="pr-5 ml-3 w-full">
+            <h5>Se você vai ver isso depende da sua configuração</h5>
+<p>Se o Plex lê o mount diretamente, então os nomes acima são o que muda na sua biblioteca. Isso vale para qualquer configuração no Windows e para qualquer uma no Linux ou macOS que não use uma fazenda de symlinks do *arr.</p>
+<p>Se o Sonarr e o Radarr organizam uma biblioteca de symlinks com renomeação ativada, então <strong>os seus nomes de arquivo já são os deles</strong> e nenhum dos nomes acima aparece no Plex. O que os nomes mostram, nesse caso, é a qualidade do parse que o *arr estava usando. Isso importa na hora de reimportar. Veja <a href="../">a página compartilhada</a>.</p>
+        </div>
+    </div>
+</div>
+<h2 id="what-new-content-shows-up">O que aparece de conteúdo novo</h2>
+<ul>
+<li>
+<p><strong>Clipes de amostra</strong> dentro de <code translate="no" v-pre>Sample/</code>. Este é o que vale a pena configurar. Defina
+<a href="../../reference/config/"><code translate="no" v-pre>only_show_the_biggest_file: true</code></a> se você não quiser que uma amostra de 9 MB apareça como uma segunda versão.</p>
+</li>
+<li>
+<p><code translate="no" v-pre>thumbnail.jpg</code>, o <code translate="no" v-pre>.nfo</code> e os arquivos <code translate="no" v-pre>.url</code> de propaganda do pôster. Todos inofensivos.</p>
+</li>
+<li>
+<p><strong>Releases ofuscadas que o decypharr deixou passar</strong> chegando como novos itens da biblioteca. O decypharr não publicou nada para um post com nome totalmente em hash. O zurg resolve para o nome real do release e o serve.</p>
+</li>
+<li>
+<p>Pastas vazias onde uma cadeia de arquivos está quebrada.</p>
+</li>
+</ul>
+<h2 id="get-your-nzbs-back">Recupere seus NZBs</h2>
+<p><strong>decypharr não consegue entregar eles para você.</strong> Ele guarda um binário comprimido por job
+em <code translate="no" v-pre>usenet/meta/&lt;uuid&gt;.meta</code> e um diretório <code translate="no" v-pre>usenet/nzbs/</code> que estava vazio na bancada. Não existe exportação documentada. Se os blobs <code translate="no" v-pre>.meta</code> podem ser decodificados de volta em NZBs não foi verificado. Trate os originais como irrecuperáveis.</p>
+<p>O que você tem são os nomes dos jobs. Nos dois servidores, o nome da pasta do job <em>é</em> o nome do arquivo NZB. Então a lista de pastas é a sua lista de compras.</p>
+<div id="get-your-nzbs-back-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">MOUNT=/mnt/decypharr
+ls &quot;$MOUNT/nzbs&quot; &gt; nzb-jobs.txt      # the usenet jobs
+wc -l nzb-jobs.txt</code></pre>
+</doc-codeblock></div>
+<p>Para cada job, baixe o NZB de novo do seu indexador pesquisando pelo nome da pasta. Depois <strong>renomeie o arquivo para exatamente esse nome mais <code translate="no" v-pre>.nzb</code></strong> antes de colocá-lo no diretório <code translate="no" v-pre>nzbs/</code> do zurg. O nome do arquivo é o nome da pasta, e o nome da pasta é o que mantém o caminho estável.</p>
+<p>Duas regras enquanto você faz isso.</p>
+<ul>
+<li><strong>Pule qualquer release que uma conta debrid já tenha.</strong> O symlink resolve pela cópia do torrent. Se você adicionar também o NZB, o zurg passa a ver duas releases diferentes com o mesmo nome e adiciona um sufixo de hash em uma delas, ficando <code translate="no" v-pre>Some.Release {a1b2c3}</code>. Isso quebra tudo que apontava para o nome original.</li>
+<li>Uma release que o seu indexador não tem mais simplesmente se perdeu. Com <code translate="no" v-pre>autoEmptyTrash</code> em <code translate="no" v-pre>0</code>, o item do Plex fica na lixeira até você decidir apagá-lo.</li>
+</ul>
+<h2 id="build-zurg-alongside">Monte o zurg ao lado</h2>
+<p>Rode o zurg ao lado do decypharr no próprio mountpoint. Os dois podem listar as mesmas contas de debrid ao mesmo tempo, porque a listagem é somente leitura.</p>
+<div id="build-zurg-alongside-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">zurg: v1
+providers:
+  - type: realdebrid
+    token: YOUR_RD_TOKEN
+  # - type: alldebrid / torbox as you have them
+  - type: nzb
+    nntp:
+      host: news.example.com
+      port: 563
+      tls: true
+      username: USER
+      password: PASS
+      connections: 30                # your plan's real allowance
+retain_rd_torrent_name: false        # align with decypharr's folder_naming
+retain_folder_name_extension: false  # true if your folders carry .mkv/.mp4
+mount_path: &quot;/mnt/zurg-staging&quot;
+rclone_enabled: true
+rclone_binary: bin/rclone
+directories:                         # optional: mirror decypharr's top level
+  torrents:
+    filters:
+      - not_provider: nzb
+  nzbs:
+    filters:
+      - provider: nzb</code></pre>
+</doc-codeblock></div>
+<p>Depois, confira se o lado do debrid está alinhado antes de seguir em frente.</p>
+<div id="build-zurg-alongside-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">ls /mnt/decypharr/__all__      | sort &gt; decypharr-jobs.txt
+ls /mnt/zurg-staging/__all__   | sort &gt; zurg-jobs.txt
+diff decypharr-jobs.txt zurg-jobs.txt</code></pre>
+</doc-codeblock></div>
+<p>Às vezes, os nomes das pastas de torrent são diferentes <em>de forma sistemática</em>. Uma extensão aparece ou some. O nome renomeado do RD aparece no lugar do original. Nesse caso, mude <code translate="no" v-pre>retain_rd_torrent_name</code> ou <code translate="no" v-pre>retain_folder_name_extension</code> e faça um rescan, em vez de corrigir nada na mão. Pastas que existem só no lado do decypharr são os jobs de Usenet. Os nomes de pastas do Premiumize e do Debrid-Link não foram comparados com os do decypharr. Confira também as pastas dessas contas aqui.</p>
+<h2 id="cut-over">Faça a troca</h2>
+<p>Uma única opção, com o que você tem hoje. Nada aqui move bytes.</p>
+<p><strong>1. Ative o <code translate="no" v-pre>__magic__</code></strong> e reinicie. As rotas são registradas na inicialização, então
+um toggle no dashboard precisa de reinício antes que o namespace responda.</p>
+<div id="cut-over-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">magic:
+  enabled: true</code></pre>
+</doc-codeblock></div>
+<p><strong>2. Crie as pastas raiz.</strong> Elas ficam na raiz do <code translate="no" v-pre>__magic__</code>, ao lado do
+<code translate="no" v-pre>__all__</code> que o zurg mantém ali. Não em <code translate="no" v-pre>__magic__/__all__</code>, nem em <code translate="no" v-pre>__magic__</code>
+em si, nem na raiz do mount. Os dois *arrs disparam um health check para esses
+casos; pastas irmãs não disparam nenhum.</p>
+<p>No Docker, os *arrs precisam acessar o <code translate="no" v-pre>__all__</code> e essas pastas raiz por meio de
+um único volume. Configurações com decypharr costumam montar uma pasta de downloads
+e uma pasta de mídia separadamente. Dois volumes transformam cada importação em uma
+cópia completa. Monte o diretório pai do mount do zurg uma vez só. O
+<a href="../../guides/sonarr-radarr/#one-volume-for-the-download-folder-and-the-root-folders">passo a passo</a>
+mostra como fazer.</p>
+<div id="cut-over-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p /mnt/zurg/__magic__/tv /mnt/zurg/__magic__/movies
+ls /mnt/zurg/__magic__/__all__/   # your releases are already listed here</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>__magic__/__all__</code> espelha a biblioteca, então todo release já está presente antes
+de você organizar qualquer coisa.</p>
+<p><strong>3. Organize.</strong> Um <code translate="no" v-pre>mv</code> dentro do <code translate="no" v-pre>__magic__</code> grava uma linha e não move nenhum byte.</p>
+<div id="cut-over-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">mv &quot;/mnt/zurg/__magic__/__all__/Some.Release.S01E01.1080p/ep1.mkv&quot; \
+   &quot;/mnt/zurg/__magic__/tv/The Show/Season 01/S01E01.mkv&quot;</code></pre>
+</doc-codeblock></div>
+<p><strong>Se o Sonarr e o Radarr organizaram sua biblioteca antiga, mova ela com um único script.</strong>
+Ele renomeia cada arquivo que a biblioteca antiga linka para uma nova pasta raiz
+dentro do <code translate="no" v-pre>__magic__</code>. Cada um cai no caminho que o *arr já espera.
+Nada é copiado. Depois você troca o root folder do *arr sem deixar que ele mova nada.
+Os passos e o script estão na
+<a href="../#coming-off-a-symlink-library">página compartilhada</a>. Nunca deixe um *arr
+mover os arquivos sozinho. Isso atravessa a fronteira do mount. Vira cópia e baixa
+toda a sua biblioteca.</p>
+<p>O script precisa de uma função <code translate="no" v-pre>zurg_path</code> para os links do decypharr. Salve isto como
+<code translate="no" v-pre>zurg_path.sh</code> ao lado dele e defina <code translate="no" v-pre>OLDMOUNT</code> com o local onde o decypharr está montado.</p>
+<div id="cut-over-code-4" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">OLDMOUNT=/mnt/decypharr         # decypharr's mount, where the old links point
+zurg_path() {
+  local rel=${1#&quot;$OLDMOUNT&quot;/__all__/}
+  [ &quot;$rel&quot; = &quot;$1&quot; ] &amp;&amp; return   # not a link into decypharr
+  local job=${rel%%/*} name=${1##*/} f videos
+  [ -f &quot;$ZURG/__all__/$rel&quot; ] &amp;&amp; { echo &quot;$ZURG/__all__/$rel&quot;; return; }
+  # decypharr welded an archive's inner folder and file into one name.
+  for f in &quot;$ZURG/__all__/$job&quot;/*/*; do
+    [ &quot;$(basename &quot;$(dirname &quot;$f&quot;)&quot;)$(basename &quot;$f&quot;)&quot; = &quot;$name&quot; ] &amp;&amp; { echo &quot;$f&quot;; return; }
+  done
+  # decypharr named a lone video after the job. Take the job's one video.
+  case &quot;$name&quot; in &quot;$job&quot;.*) ;; *) return ;; esac
+  videos=$(find &quot;$ZURG/__all__/$job&quot; -type f \( -iname '*.mkv' -o -iname '*.mp4' -o -iname '*.avi' \) ! -ipath '*sample*')
+  [ &quot;$(printf '%s\n' &quot;$videos&quot; | grep -c .)&quot; -eq 1 ] &amp;&amp; echo &quot;$videos&quot;
+}</code></pre>
+</doc-codeblock></div>
+<p>Um link para um release de debrid ou para um release NZB com vários arquivos aponta
+para o mesmo arquivo nos dois servidores. O decypharr renomeou dois tipos de release NZB.
+Ele deu a um vídeo solto o nome do job e fundiu a pasta e o arquivo de um arquivo
+compactado num único nome. A função encontra a cópia do zurg nos dois casos. Um job
+com mais de um vídeo nunca é adivinhado. Nesse caso ela imprime <code translate="no" v-pre>NOT IN ZURG</code>.</p>
+<p><strong>4. Aponte o Plex para as pastas raiz que você criou</strong> — <code translate="no" v-pre>__magic__/tv</code> e
+<code translate="no" v-pre>__magic__/movies</code> — e só para elas. Nunca para a raiz do <code translate="no" v-pre>__magic__</code>, que também
+guarda a biblioteca inteira em <code translate="no" v-pre>__magic__/__all__</code>, e nunca para <code translate="no" v-pre>__magic__</code>
+<em>e</em> para uma pasta de filtro, senão cada episódio é encontrado duas vezes. Confirme
+que <code translate="no" v-pre>autoEmptyTrash</code> está em <code translate="no" v-pre>0</code>. Adicione o novo local e faça a varredura. Depois
+remova o antigo. Esse é o caminho da biblioteca no seu *arr ou o mount do decypharr,
+caso o Plex leia direto dele.</p>
+<p><strong>5. Esvazie a lixeira</strong> depois de conferir alguns itens por amostragem. O estado de
+exibição volta pelo match de GUID. Coleções e escolhas de arte não voltam.</p>
+<p>Deixe o decypharr rodando até lá. Ele não custa nada e é o seu plano de volta.
+Também não apague a configuração, nem o estado em <code translate="no" v-pre>db/</code> ou <code translate="no" v-pre>usenet/</code>. Quando terminar,
+pare o serviço.</p>
+<div id="cut-over-code-5" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo systemctl stop decypharr</code></pre>
+</doc-codeblock></div>
+<h2 id="afterwards">Depois</h2>
+<p><strong>A automação continua funcionando, nas duas partes.</strong> O zurg tem um endpoint compatível com SABnzbd, opcional, <a href="../../guides/sonarr-radarr/">aqui</a>, para que o Sonarr e o Radarr possam enviar um NZB para ele. Ele também tem um endpoint compatível com qBittorrent, opcional, <a href="../../guides/sonarr-radarr-torrents/">aqui</a>, para que eles enviem um magnet ou um <code translate="no" v-pre>.torrent</code> para uma conta debrid. Os dois importam de <code translate="no" v-pre>__magic__/__all__</code> renomeando. Veja suas opções.</p>
+<ul>
+<li><strong>NZBs.</strong> Ative <code translate="no" v-pre>sabnzbd.enabled</code> e aponte os *arrs para o zurg. O zurg verifica cada envio antes de informar que ele terminou. Ele pergunta aos servidores de notícias sobre o início e o fim de cada arquivo. Também baixa o primeiro artigo de cada arquivo. São até sessenta e quatro deles, mais alguns a mais em um release com poucos arquivos. Alguns servidores de notícias ainda dizem que um artigo existe depois que o conteúdo foi removido, e só um download mostra isso. Quando possível, o zurg reconstrói um release que perdeu artigos nos seus arquivos PAR2. Um release que ele não consegue reconstruir é informado como <strong>Failed</strong>. Aí o *arr o coloca na blocklist e pega outro. A verificação é uma amostra, não o post inteiro. Um post que perdeu um trecho que a amostra não alcançou ainda aparece como Completed e falha na leitura que chega até a falha.</li>
+<li><strong>Torrents.</strong> Ative <code translate="no" v-pre>qbittorrent.enabled</code> e adicione-o como um segundo cliente de download. O release de um tracker privado funciona quando o indexador entrega um arquivo <code translate="no" v-pre>.torrent</code> em vez de um magnet simples, porque o arquivo informa o hash diretamente para a busca no cache da conta.</li>
+<li><strong>Adições avulsas.</strong> O painel do zurg não tem botão de adicionar. Adicione um magnet ou um <code translate="no" v-pre>.torrent</code> pelo endpoint qBittorrent com a categoria de um dos *arrs e ele vai para aquele *arr. <a href="../../guides/sonarr-radarr-torrents/#11-adding-a-release-by-hand">Adicionando um release manualmente</a> mostra como fazer. Um magnet adicionado pelo DMM e um NZB colocado em <code translate="no" v-pre>nzbs/</code> aparecem na lista do zurg. Nenhum dos dois chega ao Sonarr ou ao Radarr sozinho. A <a href="../../guides/acquisition/">aquisição</a> do próprio zurg também busca pedidos sozinha. Eles vêm da sua watchlist do Plex e do Seerr e dos *arrs. Ela pega NZBs de indexadores Newznab e torrents de indexadores Torznab quando a sua conta já os tem em cache.</li>
+<li><strong>Híbrido.</strong> Mantenha o decypharr apenas como cliente de download dos *arrs, enviando para as mesmas contas debrid, com o zurg servindo o mount. Os dois listam a mesma conta, então o zurg pega o que o decypharr adiciona. A etapa de importação do *arr então precisa de mapeamento de caminho remoto para a árvore do zurg. Essa árvore e as pastas raiz precisam estar no mesmo volume. Teste um envio primeiro.</li>
+</ul>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/migrate/altmount/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Anterior</span>
+                                <span class="block mt-1">Do Alt​Mount</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/migrate/infinidysk/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Próximo</span>
+                                <span class="block mt-1">Do Infini​Dysk</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Do decypharr", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/migrate/decypharr.md" }</script>
+</body>
+</html>

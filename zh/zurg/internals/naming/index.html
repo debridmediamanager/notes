@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/zh">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672741088">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>zurg 命名</title>
+    <meta name="title" content="zurg 命名">
+    <meta name="description" content="几乎 zurg 显示的所有名称都是实时计算的，从不存储。一个发布版本的文件夹名、其中文件的名称，以及其缓存记录在磁盘上的文件名，都会在每次查找时根据种子重新推导。没有任何东西会把这些名称写下来再读回去，因为存储的名称就成了需要和库保持同步的第二份数据。而修复或 NZB 重新解析，恰恰会破坏这种同步。">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/zh/zurg/internals/naming/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/zh/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/zh/zurg/internals/naming/">
+    <meta property="og:title" content="zurg 命名">
+    <meta property="og:description" content="几乎 zurg 显示的所有名称都是实时计算的，从不存储。一个发布版本的文件夹名、其中文件的名称，以及其缓存记录在磁盘上的文件名，都会在每次查找时根据种子重新推导。没有任何东西会把这些名称写下来再读回去，因为存储的名称就成了需要和库保持同步的第二份数据。而修复或 NZB 重新解析，恰恰会破坏这种同步。">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="zh_CN">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/zh/zurg/internals/naming/">
+    <meta name="twitter:title" content="zurg 命名">
+    <meta name="twitter:description" content="几乎 zurg 显示的所有名称都是实时计算的，从不存储。一个发布版本的文件夹名、其中文件的名称，以及其缓存记录在磁盘上的文件名，都会在每次查找时根据种子重新推导。没有任何东西会把这些名称写下来再读回去，因为存储的名称就成了需要和库保持同步的第二份数据。而修复或 NZB 重新解析，恰恰会破坏这种同步。">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/zh/zurg/internals/naming.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672741088" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672741088" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672741088" data-turbo-eval="false" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/zh/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>中文</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/download.html" target="_blank">下载 zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/zh/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">赞助</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>中文</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/download.html" target="_blank">下载 zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/zh/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">赞助</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="zurg-naming">zurg 命名</h1>
+<p>几乎 zurg 显示的所有名称都是实时计算的，从不存储。一个发布版本的文件夹名、其中文件的名称，以及其缓存记录在磁盘上的文件名，都会在每次查找时根据种子重新推导。没有任何东西会把这些名称写下来再读回去，因为存储的名称就成了需要和库保持同步的第二份数据。而修复或 NZB 重新解析，恰恰会破坏这种同步。</p>
+<p>唯一的例外是操作者主动要求的重命名。这种重命名会被存储在发布版本本身上，并且优先于下面的所有推导规则。规则在第 9 节，面向用户的说明见重命名指南。本页其余部分描述的是未设置重命名时，发布版本所使用的名称。</p>
+<p>这里先说明一个结果，因为它是与 zurg 集成时大多数意外的来源：文件夹可能在没有任何东西“重命名”它的情况下改变名称。原因是输入变了，输出自然也就变了。</p>
+<p>本文件只列出规则，不列出阈值。如果某条规则是由启发式算法决定的，我们只会写出决定它的函数名，然后就此打住。这些阈值是根据真实发布版本调校的，而且会变化，把它们抄到这里只会多出一份需要保持同步的内容。代码引用均相对于包路径。</p>
+<h2 id="1-the-release-folder-name">1. 版本文件夹名称</h2>
+<p><code translate="no" v-pre>internal/torrent/key.go</code>, GetKey / GetKey_Original</p>
+<p><code translate="no" v-pre>__all__/</code> 下的文件夹名、<code translate="no" v-pre>.zurgtorrent</code> 文件名、每次查找都会用到的键，以及 zurg 所说的 &quot;access key&quot;，都是同一个字符串。它按下面的顺序决定，第一个匹配的规则生效：</p>
+<retype-table copy-text="| 条件                                        | 文件夹名                  |
+  |---------------------------------------------|---------------------------|
+  | `ignore_renames: false`，且设置了 Torrent.Rename | Torrent.Rename            |
+  | `retain_rd_torrent_name: true`              | Name，不做修改            |
+  | `retain_folder_name_extension: true` 且     | Name，不做修改            |
+  |   Name 包含 OriginalName                    |                           |
+  | 其他情况，即两个标志都是默认值              | OriginalName，先去掉 `.mp4`，再 |
+  |                                             |   去掉 `.mkv`             |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>条件</th>
+<th>文件夹名</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>ignore_renames: false</code>，且设置了 Torrent.Rename</td>
+<td>Torrent.Rename</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>retain_rd_torrent_name: true</code></td>
+<td>Name，不做修改</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>retain_folder_name_extension: true</code> 且</td>
+<td>Name，不做修改</td>
+</tr>
+<tr>
+<td>Name 包含 OriginalName</td>
+<td> </td>
+</tr>
+<tr>
+<td>其他情况，即两个标志都是默认值</td>
+<td>OriginalName，先去掉 <code translate="no" v-pre>.mp4</code>，再</td>
+</tr>
+<tr>
+<td> </td>
+<td>去掉 <code translate="no" v-pre>.mkv</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>retain_rd_torrent_name</code> 会先被检查，它会完全屏蔽 <code translate="no" v-pre>retain_folder_name_extension</code>。第二条规则只适用于 Name 中包含 OriginalName 子串的情况；如果不包含，去除后缀的操作照样会执行。</p>
+<p>去除操作是运行两次的 <code translate="no" v-pre>strings.TrimSuffix</code>，实际上包含三条规则。只去掉 <code translate="no" v-pre>.mp4</code> 和 <code translate="no" v-pre>.mkv</code>，所以 <code translate="no" v-pre>.avi</code>、<code translate="no" v-pre>.ts</code>、<code translate="no" v-pre>.iso</code> 等后缀会保留在文件夹名中；它区分大小写，所以 <code translate="no" v-pre>Movie.2019.MKV</code> 会保留 <code translate="no" v-pre>.MKV</code>；两次去除是依次执行，而不是二选一，所以 <code translate="no" v-pre>Movie.2019.mkv.mp4</code> 会变成 <code translate="no" v-pre>Movie.2019</code>。之后可能还会追加一个后缀，见第4节。结果始终是单个路径组件，永远不会按 <code translate="no" v-pre>/</code> 拆分。</p>
+<p>已弃用。<code translate="no" v-pre>retain_folder_name_extension</code> 和 <code translate="no" v-pre>retain_rd_torrent_name</code> 已被弃用，将来会被移除。目前行为保持不变，但设置其中任何一个都会在启动时记录一条警告。这两个选项都以 Name 作为库的键，而 Name 会被账户在 zurg 下方改写（见第2节）；默认设置则以种子自身声明的名称作为键，账户不会改动它。在前面接着 Sonarr 或 Radarr 的实例上（即包含 <code translate="no" v-pre>sabnzbd:</code> 或 <code translate="no" v-pre>qbittorrent:</code> 块的实例），只有默认值才是正确的，因为导入之后如果访问密钥变了，就会丢失这个发布。<code translate="no" v-pre>ignore_renames</code> 没有被弃用。</p>
+<h2 id="2-where-name-and-originalname-come-from">2. Name 和 OriginalName 的来源</h2>
+<p>Real-Debrid   <code translate="no" v-pre>internal/realdebrid/types.go</code>
+Name = <code translate="no" v-pre>filename</code>, OriginalName = <code translate="no" v-pre>original_filename</code></p>
+<p>TorBox        <code translate="no" v-pre>internal/torbox/types.go</code>, wireTorrent.originalName
+Name = <code translate="no" v-pre>name</code>。OriginalName 是所有文件都位于其下的那个唯一目录（前提是只有一个）；位于目录树根部的文件回退到 <code translate="no" v-pre>name</code>，但唯一一个裸文件例外，它使用自己的名称。</p>
+<p>AllDebrid     <code translate="no" v-pre>internal/alldebrid/types.go</code>, originalName
+规则与 TorBox 相同，只是作用于展平后的文件列表，无法确定时回退到磁力链接的 <code translate="no" v-pre>filename</code>。</p>
+<p>NZB           <code translate="no" v-pre>internal/nzb/provider.go</code>
+Name 和 OriginalName 都是 releaseName，种子的 Hash 则是 release id。见第 3 节。</p>
+<p>由于 debrid 后端从种子自身的根文件夹推导 OriginalName，持有相同内容的两个账户会得到相同的文件夹名。</p>
+<p>Real-Debrid 这两个字段的含义，是在 2026-08-27 用一个约 84k 个种子的测试账户测得的，通过只读方式调用 <code translate="no" v-pre>GET /torrents/info</code> 抽样了 252 个种子。<code translate="no" v-pre>original_filename</code> 在所有情况下都是种子声明的名称（即合集或文件夹名），从来不是单个文件的名称。<code translate="no" v-pre>filename</code> 则不是这样。它会坍缩为某一个文件自身的基本名称，而且恰好在多文件种子中只选中一个文件时发生：在这种形态的 112 个抽样种子中有 90 个如此，而选中多个但非全部的 34 个种子和全部选中的 24 个种子中，一个都没有。在一个 221 个文件的合集里只选中一集时，<code translate="no" v-pre>original_filename</code> 的值是 <code translate="no" v-pre>Marvel Cinematic Universe MCU Collection 2008-2023 1080p jZQ</code>，而 <code translate="no" v-pre>filename</code> 的值是 <code translate="no" v-pre>Spider-Man.No.Way.Home.2021.1080p.BluRay.x264...-NOGRP.mkv</code>。所以默认设置给出的是合集名称，而 <code translate="no" v-pre>retain_rd_torrent_name: true</code> 给出的是单个文件的名称。这也是该选项被弃用的原因：<code translate="no" v-pre>filename</code> 会随账户状态变化，而访问密钥则不能随之变化。</p>
+<h2 id="3-nzb-release-naming">3. NZB 版本命名</h2>
+<p><code translate="no" v-pre>internal/nzb/provider.go</code>, releaseName; <code translate="no" v-pre>internal/nzb/parse.go</code></p>
+<p>release id（也就是它的 Hash）是 <code translate="no" v-pre>hex(sha1(lowercase(nzb filename)))</code> 的结果。它基于文件名而不是内容计算，所以重新保存 NZB 不会让由它生成的 torrent 失去关联。
+文件夹名就是该 FILENAME 去掉扩展名之后的部分。但如果这个主干看起来像哈希，或者经过清理（sanitize）后变成空字符串，就改用 NZB 自身 <code translate="no" v-pre>&lt;head&gt;</code> 元数据里的名字。
+之所以以文件名为准，是因为它是索引站写下的名字、下载器保存的名字，也是自动化工具用来查找该发布的名字。而索引站经常重新发布，元数据块里的 subject 行可能会不一样。
+<code translate="no" v-pre>stemLooksJunk</code>、<code translate="no" v-pre>looksLikeHash</code> 和 <code translate="no" v-pre>sanitizeReleaseName</code>（位于 <code translate="no" v-pre>internal/nzb/parse.go</code>）负责解决这三个问题。把它们当作黑盒看待即可。</p>
+<h2 id="4-the-three-name-suffixes">4. 三种名称后缀</h2>
+<p><code translate="no" v-pre> {xxxxxx}</code>   用在发布文件夹上，当两个不同的发布名称相同时：
+该发布自身信息哈希（infohash）的六位十六进制字符。在同名组内，最近添加的发布保留原始名称，其他的都加上该标签。这个决定在每次刷新时由一次能看到整个库的遍历来完成，并以 KeySuffixed 持久化，因此 GetKey 始终是仅依赖于种子本身的纯函数（<code translate="no" v-pre>internal/torrent/key.go</code>，disambiguateNames）。Real-Debrid 种子和同一发布的 NZB 在这里被视为两个不同的发布，因为 NZB 的哈希是其文件名的 sha1。</p>
+<p><code translate="no" v-pre> (tag).ext</code>  用在文件上，当同一发布内文件的基本名重复时，因为 zurg 会把种子的目录树压平成单个目录。标签取自已能区分这些冲突文件的目录，即在整个组中互不相同的最浅路径组件；如果没有，则取文件路径 sha1 的六位十六进制字符。哪一层深度符合条件，以及组件在文件名中可以保留什么，由 <code translate="no" v-pre>internal/torrent/dupenames.go</code> 中的 <code translate="no" v-pre>dupeTags</code> 和 <code translate="no" v-pre>sanitizeTag</code> 决定；请把两者都当作黑盒处理。该组包含列表中的每个文件，无论是否被选中，因此一个不再被选中的文件仍会解析到它当初归档时使用的键。<code translate="no" v-pre>__magic__</code> 是唯一的例外：它显示发布的真实目录树且不带任何标签，因为目录本身已经能区分这些文件，见第 8 节。</p>
+<p><code translate="no" v-pre>_xxxxxxxx</code>   用在磁盘上的文件名上，当其输入包含任何非 ASCII 字符时：该输入 sha256 的八位十六进制字符。见第 6 节。挂载点上永远不会出现。</p>
+<h2 id="5-file-names-inside-a-release">5. 版本内的文件名</h2>
+<p><code translate="no" v-pre>internal/torrent/manager.go</code>。VisibleName(key, file) 是唯一的依据，决定挂载点显示什么名称，以及查找时必须匹配哪个名称。如果有 File.Rename，并且 <code translate="no" v-pre>ignore_renames</code> 为 false，就用 File.Rename；否则用 SelectedFiles 的 key，这个 key 已经带上了第 4 节中提到的标签。GetFilename 改为返回 <code translate="no" v-pre>filepath.Base(file.Path)</code>，所以会把标签丢掉。显示和查找都必须经过 VisibleName，否则对带标签名称的请求会找不到任何结果，而 N 个文件会共用同一个不带标签的名字。</p>
+<h2 id="6-on-disk-filenames">6. 磁盘上的文件名</h2>
+<p><code translate="no" v-pre>internal/torrent/utils.go</code> 里的 sanitizeFilename 比较晦涩，而且它<strong>只</strong>作用于 zurg 在宿主机上写入的文件（<code translate="no" v-pre>data/&lt;name&gt;.zurgtorrent</code> 和 STRM 目录树），从不影响挂载提供的内容。它比上面提到的任何规则都激进得多：一个挂载文件夹名为 <code translate="no" v-pre>Три богатыря</code> 的版本，其缓存文件名是一串下划线加上 <code translate="no" v-pre>_xxxxxxxx</code> 后缀，这个后缀用来把它和下一个西里尔字母标题区分开。这是另一个命名空间，本来就不打算和挂载的名字对应。</p>
+<h2 id="7-archive-interiors">7. 压缩包内部</h2>
+<p>通过 RAR、ZIP 或 7z 提供的版本会列出压缩包内的内容，而不是分卷。下面两条规则会改变这些内容的显示名称。</p>
+<p><code translate="no" v-pre>stripRedundantRoot</code>（<code translate="no" v-pre>internal/universal/rar_streamer.go</code>）会移除包裹整个压缩包的前导目录。<code translate="no" v-pre>payloadRenames</code>（<code translate="no" v-pre>internal/universal/deobfuscate.go</code>）会把单个混淆的主文件用发布名称显示，并同时移动所有与它主干名相同的条目。</p>
+<p>判断是否混淆的是同一文件中的 <code translate="no" v-pre>looksObfuscated</code>，它是 zurg 对 SABnzbd 测试的移植版。它要判断的是 opaque（不透明名称），周围的守卫条件也一并在此处理。</p>
+<p>磁盘上的文件不会被改写。<code translate="no" v-pre>archiveName</code> 也会解析压缩包自身的原始拼写。</p>
+<h2 id="8-directory-names">8. 目录名称</h2>
+<p><code translate="no" v-pre>internal/torrent/manager.go</code>, <code translate="no" v-pre>internal/torrent/provider_directories.go</code></p>
+<p>内置且保留的名称：</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">__all__          所有资源
+__unplayable__   没有可播放内容的资源
+__dump__         已转储的种子
+__downloads__    下载视图
+__magic__        可写的覆盖层，是唯一一个目录结构是存储而非计算得出的目录。它自己的 `__all__` 镜像了库，也就是 `__all__` 包含的每个资源，各自以其文件 `File.Path` 值描述的目录树呈现，而不是扁平化（`internal/magic/tree.go`）。镜像旁边的所有内容都是用户存储的。镜像是计算出来的，所以不能往里面写任何东西；`internal/magic/resolve.go` 中的 `MirrorDirectory` 就是指它的名字
+int__all__       内部哈希索引</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>__downloads__</code> 和 <code translate="no" v-pre>__magic__</code> 不是过滤器，所以它们是手动追加到根目录列表中的；<code translate="no" v-pre>__magic__</code> 只在启用 magic 时才会出现。任何以 <code translate="no" v-pre>int__</code> 开头的名称都会被完全跳过，不会出现在根目录列表中。</p>
+<p>每个账户还会多一个名称，即 <code translate="no" v-pre>&quot;__&quot; + account name + &quot;__&quot;</code>，例如 <code translate="no" v-pre>__realdebrid__</code>、<code translate="no" v-pre>__torbox__</code>、<code translate="no" v-pre>__nzb__</code>，它是根据 providers 配置块生成的。它还决定读取请求发往哪里：即使另一个账户也有同一个资源，并且按配置顺序会优先命中，通过 <code translate="no" v-pre>__torbox__</code> 打开的文件仍由 TorBox 提供。如果某个账户的名称与保留名称冲突，它就不会生成这个目录，zurg 会发出警告。根目录下的其他所有内容，都是 <code translate="no" v-pre>directories:</code> 配置块中的键，原样使用。</p>
+<h2 id="9-user-renames">9. 用户重命名</h2>
+<p><code translate="no" v-pre>internal/torrent/rename.go</code>, <code translate="no" v-pre>internal/torrent/rename_bulk.go</code></p>
+<p>重命名只是一个显示层，不会改动 debrid 账户上的任何内容。它存储为 Torrent.Rename 或 File.Rename，优先级高于上面的所有推导规则。只有设置 <code translate="no" v-pre>ignore_renames: true</code> 后，zurg 才会完全忽略它。</p>
+<p>只有当名称去掉首尾空白后不为空、不包含 <code translate="no" v-pre>/</code> 或 <code translate="no" v-pre>\</code>、并且与自身的 <code translate="no" v-pre>filepath.Clean</code> 结果相同（这也会排除 <code translate="no" v-pre>.</code> 和 <code translate="no" v-pre>..</code>），而且不与其他哈希已有的访问键冲突时，种子重命名才会被接受。应用重命名时会重新设置目录映射的键，在新名称下写入 <code translate="no" v-pre>.zurgtorrent</code>，并且会删除旧名称下的那个文件。如果旧文件留着不删，重启时会两个都加载，重命名就会悄悄恢复原样。</p>
+<p>季修复（<code translate="no" v-pre>/torrents/season-fix/plan</code> 和 <code translate="no" v-pre>/apply</code>）是一个批量文件重命名，依据的是 Plex 自己的剧集匹配结果。plan 只读，会给出每个文件的跳过原因。apply 需要一个明确的哈希列表，而不是一个“全部应用”的开关。仪表盘通过 <code translate="no" v-pre>/season-fix/</code> 调用这两个接口，操作员也可以在那里看到映射规则和跳过原因的说明。</p>
+<h2 id="10-consequences-for-anything-integrating-with-zurg">10. 对集成 zurg 的应用的影响</h2>
+<p>如果你要根据种子的名称来构建路径（比如符号链接集合、远程路径映射或脚本），以下是常见的出错方式：</p>
+<ol type="a" start="1">
+<li>
+<p>扩展名。只有 <code translate="no" v-pre>.mkv</code> 和 <code translate="no" v-pre>.mp4</code> 会被去掉，并且区分大小写。其他容器格式的扩展名会保留在文件夹名中。</p>
+</li>
+<li>
+<p>重命名。<code translate="no" v-pre>Torrent.Rename</code> 的优先级高于推导出的名称，而 RD 自己对种子的重命名会在你不知情的情况下改变 <code translate="no" v-pre>Name</code>。</p>
+</li>
+<li>
+<p>哈希后缀。两个不同的发布版本如果名称相同，其中一个会变成 <code translate="no" v-pre> {a1b2c3}</code>，而哪一个会带后缀，会随着新内容的加入而变化。</p>
+</li>
+<li>
+<p>重复文件标签。发布版本中基础文件名重复的文件，会以 <code translate="no" v-pre>name (tag).ext</code> 的形式提供，其中的 tag 是一个目录组件或路径哈希。<code translate="no" v-pre>filepath.Base(file.Path)</code> 无法还原这个标签。</p>
+</li>
+<li>
+<p>压缩包重命名。压缩包内经过混淆的载荷文件，会以发布版本的名称呈现，而不是它自己的名称。</p>
+</li>
+<li>
+<p>NZB 的名称来自 <code translate="no" v-pre>.nzb</code> 的文件名，而不是它内部的任何内容，除非文件名本身是哈希。文件名决定文件夹名。</p>
+</li>
+<li>
+<p>清理后的磁盘文件名与挂载名称属于不同的命名空间，对于非 ASCII 的发布版本，两者有意不一致。</p>
+</li>
+</ol>
+<p>最可靠的做法是先通过哈希定位发布版本，然后向 zurg 询问它的名称。自己去重构名称就是在猜，而上面的每条规则都是猜错的一种方式。</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/qbittorrent-client-contract/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">上一个</span>
+                                <span class="block mt-1">q​Bittorrent 客户端契约</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/sabnzbd-client-contract/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">下一个</span>
+                                <span class="block mt-1">SA​Bnzbd 客户端契约</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "命名", level: 3, icon: "file", hasPrism: false, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/internals/naming.md" }</script>
+</body>
+</html>

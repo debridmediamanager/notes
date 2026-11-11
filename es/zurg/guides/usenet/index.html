@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/es">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672691398">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Usenet con zurg</title>
+    <meta name="title" content="Usenet con zurg">
+    <meta name="description" content="El backend nzb de zurg convierte archivos .nzb en una biblioteca montada. No hay descargador ni carpeta de descargas completadas.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/es/zurg/guides/usenet/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/es/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/es/zurg/guides/usenet/">
+    <meta property="og:title" content="Usenet con zurg">
+    <meta property="og:description" content="El backend nzb de zurg convierte archivos .nzb en una biblioteca montada. No hay descargador ni carpeta de descargas completadas.">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="es_ES">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/es/zurg/guides/usenet/">
+    <meta name="twitter:title" content="Usenet con zurg">
+    <meta name="twitter:description" content="El backend nzb de zurg convierte archivos .nzb en una biblioteca montada. No hay descargador ni carpeta de descargas completadas.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/es/zurg/guides/usenet.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672691398" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672691398" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672691398" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672691398" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/es/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>Español</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/es/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/es/download.html" target="_blank">Descargar zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/es/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Patrocinador</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>Español</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/es/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/es/download.html" target="_blank">Descargar zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/es/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Patrocinador</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="usenet-with-zurg">Usenet con zurg</h1>
+<p>El backend <code translate="no" v-pre>nzb</code> de zurg convierte archivos <code translate="no" v-pre>.nzb</code> en una biblioteca montada. No hay descargador ni carpeta de descargas completadas.</p>
+<p>No se descarga nada antes de reproducir. Guarda los NZB, las cachés con límite de tamaño en <code translate="no" v-pre>data/bytecache</code> y <code translate="no" v-pre>data/par2</code>, además de los registros del índice. <code translate="no" v-pre>nzb_article_disk_cache_mb</code> tiene 512 MiB por defecto. Al hacer un salto (seek), zurg solo descarga los artículos que cubren esos bytes. Un remux de 60 GB no necesita 60 GB de disco.</p>
+<p>Usenet usa los mismos filtros de biblioteca, montaje e integración con servidores multimedia que los backends de debrid. Las publicaciones de Usenet pueden convivir con contenido de Real-Debrid o TorBox. También puedes usar solo Usenet.</p>
+<p><strong>Se admiten varios proveedores de Usenet.</strong> Una entrada <code translate="no" v-pre>nzb</code> puede incluir cualquier número de cuentas de noticias: proveedores ilimitados, cuentas de bloque, las que tengas. zurg va probándolas una por una, artículo por artículo. Aquí esto importa más que la redundancia habitual: la retención es por proveedor, así que una segunda cuenta suele marcar la diferencia entre una descarga extra y reconstruir toda una publicación con PAR2. Consulta <doc-anchor-trigger to="#more-than-one-usenet-provider">Más de un proveedor de Usenet</doc-anchor-trigger>.</p>
+<p>Esta guía cubre las cuentas de noticias, los NZB, el montaje y Plex.</p>
+<retype-table copy-text="| | |
+|---|---|
+| Referencia de configuración | [config.md → Usenet accounts](../reference/config.md#usenet-accounts) |
+| Panel | `http://localhost:9999/config/` → Essentials → Providers |
+| Dónde está el código | `internal/nzb` (backend), `internal/nntp` (cliente de noticias), `internal/par2` (cálculos de reparación) |
+| Directorio de vigilancia | `nzbs/`, en el directorio de trabajo de zurg (`/config` en Docker) |
+| Caché de reparación | `data/par2/` |
+| Nombres de archivo resueltos | `data/nzb-names/`, así una publicación ofuscada se lee para obtener sus nombres una sola vez y no una vez por reinicio |
+| Índice de artículos | `data/nzb-index/`, con `nzb_segments: mmap`, el valor por defecto en Linux, macOS y BSD |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Referencia de configuración</td>
+<td><a href="../../reference/config/#usenet-accounts">config.md → Usenet accounts</a></td>
+</tr>
+<tr>
+<td>Panel</td>
+<td><code translate="no" v-pre>http://localhost:9999/config/</code> → Essentials → Providers</td>
+</tr>
+<tr>
+<td>Dónde está el código</td>
+<td><code translate="no" v-pre>internal/nzb</code> (backend), <code translate="no" v-pre>internal/nntp</code> (cliente de noticias), <code translate="no" v-pre>internal/par2</code> (cálculos de reparación)</td>
+</tr>
+<tr>
+<td>Directorio de vigilancia</td>
+<td><code translate="no" v-pre>nzbs/</code>, en el directorio de trabajo de zurg (<code translate="no" v-pre>/config</code> en Docker)</td>
+</tr>
+<tr>
+<td>Caché de reparación</td>
+<td><code translate="no" v-pre>data/par2/</code></td>
+</tr>
+<tr>
+<td>Nombres de archivo resueltos</td>
+<td><code translate="no" v-pre>data/nzb-names/</code>, así una publicación ofuscada se lee para obtener sus nombres una sola vez y no una vez por reinicio</td>
+</tr>
+<tr>
+<td>Índice de artículos</td>
+<td><code translate="no" v-pre>data/nzb-index/</code>, con <code translate="no" v-pre>nzb_segments: mmap</code>, el valor por defecto en Linux, macOS y BSD</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<hr>
+<h2 id="what-you-need">Lo que necesitas</h2>
+<ul>
+<li><strong>Al menos una cuenta de proveedor de Usenet.</strong> La retención es lo más importante: un proveedor de 4000+ días seguirá teniendo publicaciones que uno de 1000 días ya ha eliminado. Tu <em>límite de conexiones</em> del plan es el segundo dato que conviene conocer; es el que lee zurg.</li>
+<li><strong>Más cuentas, si tienes.</strong> Un segundo proveedor ilimitado en un backbone distinto, o una cuenta barata de bloques para los huecos, es lo que más valor aporta a una configuración de Usenet; consulta <doc-anchor-trigger to="#more-than-one-usenet-provider">Más de un proveedor de Usenet</doc-anchor-trigger>.</li>
+<li><strong>Archivos NZB o algo que los descargue.</strong> Descárgalos desde tu indexador y colócalos en <code translate="no" v-pre>nzbs/</code>. O activa el <a href="../sonarr-radarr/">endpoint compatible con SABnzbd</a> y deja que Sonarr y Radarr te los entreguen. Escribe en el mismo directorio. zurg también puede buscar por sí mismo en tus indexadores Newznab. Lo hace cuando pulsas reproducir en <a href="../stremio/">Stremio</a>. También lo hace con las peticiones de tu lista de seguimiento y de Seerr y los *arrs a través de <a href="../acquisition/">adquisición</a>. Los torrents de una cuenta de debrid tienen un endpoint propio que habla <a href="../sonarr-radarr-torrents/">qBittorrent</a>.</li>
+<li><strong>zurg</strong>, más <code translate="no" v-pre>rclone</code> si quieres un montaje de sistema de archivos en lugar de WebDAV directamente. zurg descarga rclone por ti en la primera ejecución.</li>
+</ul>
+<hr>
+<h2 id="1-configure-your-news-accounts">1. Configura tus cuentas de noticias</h2>
+<p>Cada cuenta en zurg es una entrada bajo <code translate="no" v-pre>providers:</code>. Una cuenta de Usenet se autentica con credenciales del servidor en lugar de un token de API, así que lleva un bloque <code translate="no" v-pre>nntp</code> en vez de <code translate="no" v-pre>token</code>:</p>
+<div id="1-configure-your-news-accounts-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">zurg: v1
+providers:
+  - type: nzb
+    nntp:
+      host: news.example.com
+      port: 563
+      tls: true
+      username: YOUR_USENET_USERNAME
+      password: YOUR_USENET_PASSWORD
+      connections: 30        # your plan's allowance — see below
+      cache_size_mb: 512     # decoded articles held in memory, across all files</code></pre>
+</doc-codeblock></div>
+<p>Eso es todo. Añade cuentas de debrid junto a ella si las tienes:</p>
+<div id="1-configure-your-news-accounts-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">providers:
+  - type: realdebrid
+    token: YOUR_RD_API_TOKEN
+  - type: nzb
+    nntp:
+      host: news.example.com
+      ...</code></pre>
+</doc-codeblock></div>
+<retype-table copy-text="| Clave | Por defecto | Notas |
+|---|---|---|
+| `host` | *(obligatorio)* | El servidor de noticias. Si falta o está vacío, zurg da error al arrancar. |
+| `port` | `563` con TLS, `119` sin TLS | |
+| `tls` | `false` | Actívalo. Un NNTP sin cifrar envía tu contraseña en texto plano y tus lecturas a cualquiera que esté en el camino. |
+| `username` / `password` | `&quot;&quot;` | |
+| `connections` | `8` | **Ponlo al límite real de tu plan.** No es un límite de velocidad con el que haya que ser cortés: una sola conexión aporta una fracción del rendimiento del proveedor, así que zurg lee según este número. Si es muy bajo, el streaming va lento; si supera el límite del plan, el servidor empieza a rechazar conexiones. |
+| `warm_connections` | `4` | Conexiones autenticadas e inactivas que se mantienen abiertas para que una lectura nunca espere a establecer una conexión nueva. Establecer una cuesta unos 0,8 s entre TCP, TLS, el saludo y `AUTHINFO`, y sin un mínimo se pagaba en la ruta de demanda después de cada arranque y cada periodo de inactividad. Salen de `connections` en vez de ser adicionales: el plan las cuenta como conexiones abiertas, y zurg las mantiene vivas con un `DATE` periódico, así que el mínimo está limitado por el límite permitido. `-1` no mantiene ninguna, que es lo que quiere un plan que se cobra por tiempo de conexión. El `warm_connections` de nivel superior define el valor por defecto para una cuenta que no indica ninguno; consulta [conexiones en espera](../reference/config.md#warm-connections). |
+| `cache_size_mb` | `512` | Datos de artículos decodificados que se guardan en memoria, compartidos entre todos los archivos que se leen y no por archivo. |
+| `servers` | `[]` | Cuentas de noticias adicionales; consulta [Más de un proveedor de Usenet](#more-than-one-usenet-provider). |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Clave</th>
+<th>Por defecto</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>host</code></td>
+<td><em>(obligatorio)</em></td>
+<td>El servidor de noticias. Si falta o está vacío, zurg da error al arrancar.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>port</code></td>
+<td><code translate="no" v-pre>563</code> con TLS, <code translate="no" v-pre>119</code> sin TLS</td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>tls</code></td>
+<td><code translate="no" v-pre>false</code></td>
+<td>Actívalo. Un NNTP sin cifrar envía tu contraseña en texto plano y tus lecturas a cualquiera que esté en el camino.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>username</code> / <code translate="no" v-pre>password</code></td>
+<td><code translate="no" v-pre>&quot;&quot;</code></td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>connections</code></td>
+<td><code translate="no" v-pre>8</code></td>
+<td><strong>Ponlo al límite real de tu plan.</strong> No es un límite de velocidad con el que haya que ser cortés: una sola conexión aporta una fracción del rendimiento del proveedor, así que zurg lee según este número. Si es muy bajo, el streaming va lento; si supera el límite del plan, el servidor empieza a rechazar conexiones.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>warm_connections</code></td>
+<td><code translate="no" v-pre>4</code></td>
+<td>Conexiones autenticadas e inactivas que se mantienen abiertas para que una lectura nunca espere a establecer una conexión nueva. Establecer una cuesta unos 0,8 s entre TCP, TLS, el saludo y <code translate="no" v-pre>AUTHINFO</code>, y sin un mínimo se pagaba en la ruta de demanda después de cada arranque y cada periodo de inactividad. Salen de <code translate="no" v-pre>connections</code> en vez de ser adicionales: el plan las cuenta como conexiones abiertas, y zurg las mantiene vivas con un <code translate="no" v-pre>DATE</code> periódico, así que el mínimo está limitado por el límite permitido. <code translate="no" v-pre>-1</code> no mantiene ninguna, que es lo que quiere un plan que se cobra por tiempo de conexión. El <code translate="no" v-pre>warm_connections</code> de nivel superior define el valor por defecto para una cuenta que no indica ninguno; consulta <a href="../../reference/config/#warm-connections">conexiones en espera</a>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>cache_size_mb</code></td>
+<td><code translate="no" v-pre>512</code></td>
+<td>Datos de artículos decodificados que se guardan en memoria, compartidos entre todos los archivos que se leen y no por archivo.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>servers</code></td>
+<td><code translate="no" v-pre>[]</code></td>
+<td>Cuentas de noticias adicionales; consulta <doc-anchor-trigger to="#more-than-one-usenet-provider">Más de un proveedor de Usenet</doc-anchor-trigger>.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Dos reglas que el validador de configuración aplica:</p>
+<ul>
+<li><strong>Solo una entrada de proveedor <code translate="no" v-pre>nzb</code> habilitada.</strong> Dos escanearían el mismo directorio <code translate="no" v-pre>nzbs/</code> y duplicarían cada versión. Esto no limita cuántos <em>proveedores de Usenet</em> puedes usar: las cuentas de noticias extra van bajo <code translate="no" v-pre>nntp.servers</code> de esa única entrada, donde sirven la misma biblioteca en lugar de una segunda copia.</li>
+<li><strong><code translate="no" v-pre>watchlist: true</code> no puede apuntar a ella.</strong> El backend de Usenet no puede añadir contenido, así que nunca puede ser la cuenta donde aterriza una adición a la lista de seguimiento de Plex.</li>
+</ul>
+<h3 id="more-than-one-usenet-provider">Más de un proveedor de Usenet</h3>
+<p>La retención es por proveedor, y la diferencia entre una descarga extra y una reconstrucción PAR2 de toda la release es que otra cuenta todavía tenga el artículo. Por eso aquí una segunda cuenta vale más de lo que normalmente vale la redundancia.</p>
+<p>Las claves que ya están en el bloque <code translate="no" v-pre>nntp</code> describen la primera cuenta. Todo lo que esté bajo <code translate="no" v-pre>servers</code> es otra cuenta. Las cuentas con el mismo <code translate="no" v-pre>priority</code> se reparten la carga; un número más alto solo se consulta después de los más bajos, y una cuenta <code translate="no" v-pre>backup</code> solo cuando todas las primarias hayan fallado en entregarlo. Una configuración existente con una sola cuenta sigue funcionando sin cambios:</p>
+<div id="more-than-one-usenet-provider-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">providers:
+  - type: nzb
+    nntp:
+      host: unlimited.example.com          # first account: the workhorse
+      tls: true
+      username: USERNAME
+      password: PASSWORD
+      connections: 30
+      servers:
+        - host: second-unlimited.example.com   # different backbone = different retention
+          tls: true
+          username: USERNAME
+          password: PASSWORD
+          connections: 20
+          backbone: usenetexpress
+        - host: block.example.com              # metered — only for what the others lack
+          tls: true
+          username: USERNAME
+          password: PASSWORD
+          connections: 10
+          backup: true
+          backbone: omicron</code></pre>
+</doc-codeblock></div>
+<p>Cada cuenta mantiene su propio límite de conexiones, y las lecturas se dimensionan según el <strong>límite combinado de las cuentas que no son backup y que comparten la <code translate="no" v-pre>priority</code> activa más baja</strong> — 30 + 20 = 50 en el ejemplo anterior, donde ambas tienen la prioridad por defecto. Un segundo proveedor sin límite con la misma prioridad te da velocidad además de seguro de retención; una cuenta <code translate="no" v-pre>backup</code> no aporta ninguna de las dos cosas, por diseño, ya que solo transporta lo que las primarias no pudieron suministrar, y contarla ampliaría cada ventana de lectura anticipada para una capacidad que la reproducción en régimen nunca usa.</p>
+<p>Tres claves determinan a quién se consulta:</p>
+<retype-table copy-text="| Clave | Por defecto | Efecto |
+|---|---|---|
+| `name` | valor de `host` | Etiqueta la cuenta en los logs. |
+| `priority` | `0` | Quién se consulta primero, de menor a mayor. Las cuentas con la misma prioridad se consultan en el orden en que están escritas, salvo que una con una conexión libre se prefiere a otra cuyo límite está agotado, así dos cuentas iguales reparten la carga en lugar de hacer cola en una. |
+| `backup` | `false` | Marca una cuenta de bloques con cobro por volumen, que solo se consulta cuando todas las primarias han dicho que les falta el artículo, han enviado una copia dañada, han fallado a mitad de camino o no se pueden alcanzar. Que una primaria esté simplemente **ocupada** no basta: zurg espera a que se libere en lugar de gastar bytes medidos en algo que una cuenta sin límite podría haber servido. |
+| `backbone` | `&quot;&quot;` | Indica el spool de artículos al que resuelve una cuenta. Dos cuentas en el mismo backbone tienen los mismos artículos, así que, cuando una ya ha dicho que no tiene un artículo, las otras del mismo spool se omiten en lugar de pagar un viaje de ida y vuelta por la misma respuesta. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Clave</th>
+<th>Por defecto</th>
+<th>Efecto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>name</code></td>
+<td>valor de <code translate="no" v-pre>host</code></td>
+<td>Etiqueta la cuenta en los logs.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>priority</code></td>
+<td><code translate="no" v-pre>0</code></td>
+<td>Quién se consulta primero, de menor a mayor. Las cuentas con la misma prioridad se consultan en el orden en que están escritas, salvo que una con una conexión libre se prefiere a otra cuyo límite está agotado, así dos cuentas iguales reparten la carga en lugar de hacer cola en una.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>backup</code></td>
+<td><code translate="no" v-pre>false</code></td>
+<td>Marca una cuenta de bloques con cobro por volumen, que solo se consulta cuando todas las primarias han dicho que les falta el artículo, han enviado una copia dañada, han fallado a mitad de camino o no se pueden alcanzar. Que una primaria esté simplemente <strong>ocupada</strong> no basta: zurg espera a que se libere en lugar de gastar bytes medidos en algo que una cuenta sin límite podría haber servido.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>backbone</code></td>
+<td><code translate="no" v-pre>&quot;&quot;</code></td>
+<td>Indica el spool de artículos al que resuelve una cuenta. Dos cuentas en el mismo backbone tienen los mismos artículos, así que, cuando una ya ha dicho que no tiene un artículo, las otras del mismo spool se omiten en lugar de pagar un viaje de ida y vuelta por la misma respuesta.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Cada cuenta también mantiene su propio mínimo de conexiones calientes, sacado de su propio límite: un hueco de retención lleva una lectura directamente más allá de la primaria, así que la cuenta a la que se llega por primera vez es justo aquella cuya conexión nadie ha abierto todavía, y por tanto nadie ha pagado. Una cuenta de bloques de dos conexiones puede configurarse para no mantener ninguna con <code translate="no" v-pre>warm_connections: -1</code>.</p>
+<p>La reventa está muy extendida, así que merece la pena rellenar <code translate="no" v-pre>backbone</code>: dos cuentas que compraste a empresas distintas pueden estar en el mismo spool, y sin esto cada fallo se pregunta dos veces. Agrúpalas con el nombre que quieras; la cadena solo se compara con otras entradas.</p>
+<p>Al arrancar, zurg nombra cada cuenta que va a usar:</p>
+<div id="more-than-one-usenet-provider-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Usenet account nzb connected: nntps://unlimited.example.com:563 (30 connections) + nntps://second-unlimited.example.com:563 (20 connections) [usenetexpress] + nntps://block.example.com:563 (10 connections) [backup] [omicron]</code></pre>
+</doc-codeblock></div>
+<p>El censo que decide si una release necesita reparación pregunta a cada cuenta antes de dar un artículo por desaparecido, y a cada una solo le pregunta por lo que sus predecesoras no tenían. Un fallo de transporte nunca se confunde con un artículo caducado: si una cuenta agotó el tiempo o soltó el artículo a mitad de descarga, ese fallo es lo que se reporta, así que un timeout nunca hace que se sirva silencio ni que se programe una reparación de algo que nunca se perdió. Una cuenta a la que no se pudo llegar en absoluto no cuenta: si otra cuenta dice que el artículo ya no está, se trata como desaparecido.</p>
+<h3 id="configuring-providers-in-the-dashboard">Configurar proveedores en el Dashboard</h3>
+<p><code translate="no" v-pre>http://localhost:9999/config/</code> → <strong>Essentials</strong> → <strong>Providers</strong> hace lo mismo sin editar el YAML. La tabla muestra todas las cuentas en el orden del config:</p>
+<div id="configuring-providers-in-the-dashboard-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">#  Name        Type        Token                Flags
+1  realdebrid  realdebrid  …DFFND4OA            —          [Edit] [Delete]
+2  nzb         nzb         news.example.com     —          [Edit] [Delete]</code></pre>
+</doc-codeblock></div>
+<p>En una fila <code translate="no" v-pre>nzb</code>, la columna Token muestra el <strong>host del news server</strong> en lugar de una pista del token, porque no hay token que ocultar. Después aparece cuántos news servers adicionales tiene.</p>
+<p><strong>Para añadir una cuenta de Usenet:</strong></p>
+<ol>
+<li>Haz clic en <strong>Add provider</strong>.</li>
+<li>Pon <strong>Type</strong> en <code translate="no" v-pre>nzb</code>. Los campos de token desaparecen y en su lugar aparecen los campos NNTP.</li>
+<li>Deja <strong>Name</strong> vacío a menos que quieras otro nombre distinto de <code translate="no" v-pre>nzb</code>. Es el nombre del directorio de la cuenta, así que <code translate="no" v-pre>usenet</code> daría <code translate="no" v-pre>__usenet__</code> en el mount.</li>
+<li>Rellena <strong>NNTP host</strong>, <strong>Port</strong>, <strong>TLS</strong> (marcado por defecto, déjalo activado), <strong>Username</strong>, <strong>Password</strong>, <strong>Connections</strong> (el placeholder es <code translate="no" v-pre>8</code>; pon aquí el número real que permite tu plan) y <strong>Cache size MB</strong> (el placeholder es <code translate="no" v-pre>512</code>).</li>
+<li>Deja <strong>Watchlist target</strong> desmarcado. El backend no puede añadir contenido y, si lo marcas, el guardado se rechaza. <strong>Disabled</strong> mantiene la entrada en <code translate="no" v-pre>config.yml</code> sin cargarla.</li>
+<li>Haz clic en <strong>Save</strong>.</li>
+</ol>
+<p>El formulario se valida como si el cambio ya estuviera aplicado, así que los errores aparecen como una alerta y no te dejan un config roto. Si intentas añadir un <strong>segundo</strong> proveedor <code translate="no" v-pre>nzb</code>, se rechaza. El error te apunta a <strong>Further news servers</strong> (o a <code translate="no" v-pre>nntp.servers</code>), que es donde van las cuentas de news adicionales.</p>
+<p><strong>Para añadir otro news server</strong>, ya sea una segunda cuenta o una cuenta de bloques en otro backbone, haz clic en <strong>Edit</strong> en la fila <code translate="no" v-pre>nzb</code> y luego en <strong>Add news server</strong> dentro de <strong>Further news servers</strong>. Cada servidor tiene su propio <strong>Name</strong>, <strong>NNTP host</strong>, <strong>Port</strong>, <strong>TLS</strong>, <strong>Username</strong>, <strong>Password</strong>, <strong>Connections</strong>, <strong>Priority</strong>, <strong>Backbone</strong> y <strong>Backup only</strong>. <strong>Remove server</strong> elimina uno. <strong>Save</strong> escribe todos en <code translate="no" v-pre>nntp.servers</code>.</p>
+<p><strong>Para editar uno</strong>, haz clic en <strong>Edit</strong> en su fila. El formulario carga todo menos las contraseñas, tanto la de la primera cuenta como las de cada news server adicional. Estas quedan en blanco y significan <em>mantener la existente</em>. Escribe una contraseña nueva solo si quieres cambiarla. Los ajustes para los que el formulario no tiene campo se mantienen tal como están en <code translate="no" v-pre>config.yml</code>.</p>
+<p><strong>Delete</strong> pide confirmación y después elimina la entrada del proveedor de <code translate="no" v-pre>config.yml</code>. No toca tu directorio <code translate="no" v-pre>nzbs/</code>: los archivos NZB se quedan donde están y vuelven con el proveedor. El último proveedor activo no se puede eliminar ni desactivar.</p>
+<p>Cada cambio aquí se escribe directamente en <code translate="no" v-pre>config.yml</code> y muestra:</p>
+<blockquote>
+<p>Provider changes saved to config.yml — restart zurg to apply</p>
+</blockquote>
+<p>Los cambios de proveedores <strong>no</strong> se recargan en caliente. Reinicia zurg antes de esperar que algo cambie.</p>
+<h2 id="2-start-zurg-and-confirm-the-accounts">2. Inicia zurg y confirma las cuentas</h2>
+<doc-tabs>
+<doc-tab v-cloak id="linux-y-macos">
+<template #title>Linux y macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./zurg</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">.\zurg.exe</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p>Si <code translate="no" v-pre>zurg setup</code> instaló zurg para que arranque solo, reinícialo con <code translate="no" v-pre>zurg service restart</code> en su lugar (<code translate="no" v-pre>./zurg service restart</code>, o <code translate="no" v-pre>.\zurg.exe service restart</code> en Windows).</p>
+<p>zurg verifica las cuentas de Usenet una vez al arrancar, porque si la contraseña está mal, de otra forma aparece mucho después como que todos los archivos fallan al reproducirse:</p>
+<div id="2-start-zurg-and-confirm-the-accounts-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Usenet account nzb connected: nntps://news.example.com:563 (30 connections)</code></pre>
+</doc-codeblock></div>
+<p>Un fallo total es igual de evidente:</p>
+<div id="2-start-zurg-and-confirm-the-accounts-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Cannot reach the news server for nzb: &lt;reason&gt;</code></pre>
+</doc-codeblock></div>
+<p>Revisa primero el puerto y la combinación de TLS (<code translate="no" v-pre>563</code>+<code translate="no" v-pre>tls: true</code>, o <code translate="no" v-pre>119</code>+<code translate="no" v-pre>tls: false</code>), luego las credenciales y por último si el plan está realmente activo.</p>
+<p><strong>Si tienes varias cuentas, lee las advertencias, no solo la línea de conectado.</strong> Cada cuenta inalcanzable genera su propia advertencia, y el arranque sigue mientras <em>una</em> cuenta responda. El error de arriba aparece solo cuando todas las cuentas son inalcanzables. Así que un segundo proveedor caído parece un arranque correcto a menos que te fijes:</p>
+<div id="2-start-zurg-and-confirm-the-accounts-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Usenet account block.example.com is not reachable: &lt;reason&gt;</code></pre>
+</doc-codeblock></div>
+<hr>
+<h2 id="3-add-nzb-files">3. Añade archivos NZB</h2>
+<p>zurg crea la carpeta de vigilancia <code translate="no" v-pre>nzbs/</code> al iniciarse. Está en la carpeta desde la que se ejecuta zurg. Copia los archivos NZB dentro de ella.</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-y-macos-1">
+<template #title>Linux y macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cp ~/Downloads/Some.Release.2024.2160p.nzb nzbs/</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-1">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">Copy-Item &quot;$HOME\Downloads\Some.Release.2024.2160p.nzb&quot; nzbs\</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p>En un segundo o dos, zurg detecta el archivo y lo lee, y la biblioteca lo muestra en cuanto termina la lectura. El log indica lo que leyó:</p>
+<div id="3-add-nzb-files-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Loaded NZB Some.Release.2024.2160p.nzb: 94 files</code></pre>
+</doc-codeblock></div>
+<h3 id="how-quickly-it-appears">Qué tan rápido aparece</h3>
+<p>zurg vigila <code translate="no" v-pre>nzbs/</code> por sí mismo, con una comprobación cada segundo aproximadamente que cuesta una sola llamada al sistema sin importar cuántos NZB tenga el directorio. Por eso, un archivo que llega ahí se lee casi de inmediato, en lugar de esperar a la siguiente comprobación de cambios de la biblioteca. Una <doc-anchor-trigger to="#obfuscated-releases">release ofuscada</doc-anchor-trigger> tarda un poco más, porque antes sus nombres de archivo reales hay que leerlos de sus propios artículos, normalmente en menos de un segundo, y aparece en cuanto termina ese proceso. Ninguna de las dos esperas depende ya de <code translate="no" v-pre>check_for_changes_every_secs</code>. Antes sí dependía: una release ofuscada tardaba hasta dos intervalos completos en aparecer tras soltarla, uno para que se leyera el directorio y otro porque los nombres se resolvían justo después de la comprobación que la habría detectado. Con un intervalo de 10 segundos, eso suponía 17,7 segundos desde que se soltaba el archivo hasta que la release aparecía, de los cuales 0,67 segundos eran el trabajo real.</p>
+<p>La comprobación periódica sigue ahí y sigue siendo la red de seguridad. Es la que detecta las dos cosas que un directorio vigilado no puede notificar por sí solo: un NZB <strong>reemplazado en su sitio</strong> con un nombre que ya tenía, y un sistema de archivos cuyas marcas de tiempo de directorio son demasiado gruesas para distinguir dos cambios hechos en el mismo segundo.</p>
+<h3 id="what-gets-picked-up">Qué se detecta</h3>
+<ul>
+<li>Archivos <strong>directamente dentro de <code translate="no" v-pre>nzbs/</code></strong> cuyo nombre termina en <code translate="no" v-pre>.nzb</code>, sin distinguir mayúsculas de minúsculas.</li>
+<li><strong>Los subdirectorios se omiten.</strong> <code translate="no" v-pre>nzbs/movies/foo.nzb</code> es invisible. Usa una carpeta plana en lugar de organizar: la organización de la biblioteca viene de los filtros de directorio, no de esta carpeta.</li>
+<li><strong>Solo XML plano.</strong> <code translate="no" v-pre>.nzb.gz</code> no se descomprime ni se lee; descomprímelo antes.</li>
+<li>Un archivo que no se puede analizar se omite con una advertencia y no detiene el escaneo.</li>
+</ul>
+<h3 id="what-the-release-is-called">Cómo se llama la release</h3>
+<p>El nombre que muestra zurg, y por tanto la carpeta que ve Plex, es:</p>
+<ol>
+<li>el valor de <code translate="no" v-pre>&lt;meta type=&quot;name&quot;&gt;</code> del propio NZB, si tiene uno y sobrevive a la sanitización, o si no,</li>
+<li><strong>el nombre del archivo sin <code translate="no" v-pre>.nzb</code></strong>.</li>
+</ol>
+<p>Así que, la mayoría de las veces, <em>el nombre del archivo NZB es el nombre del lanzamiento</em>. Ponle al archivo el nombre que le pondrías al lanzamiento, porque es lo que tu servidor multimedia va a intentar encontrar:</p>
+<div id="what-the-release-is-called-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash"># good
+nzbs/Some.Movie.2024.2160p.UHD.BluRay.x265-GROUP.nzb
+
+# bad — Plex has nothing to work with
+nzbs/indexer_download_48213.nzb</code></pre>
+</doc-codeblock></div>
+<p>Dos lanzamientos distintos que acaben con el mismo nombre se diferencian por una etiqueta hash corta (<code translate="no" v-pre>Some.Release {a1b2c3}</code>), igual que en cualquier otro punto de zurg.</p>
+<h3 id="password-protected-releases">Releases protegidas con contraseña</h3>
+<p>Si el indexador guardó la contraseña del archivo en el bloque de metadatos del NZB, zurg la usa al transmitir desde el conjunto RAR:</p>
+<div id="password-protected-releases-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-markup"><code v-pre class="language-markup">&lt;head&gt;
+  &lt;meta type=&quot;password&quot;&gt;thepassword&lt;/meta&gt;
+&lt;/head&gt;</code></pre>
+</doc-codeblock></div>
+<p>No hace falta nada más. Una versión protegida cuyo NZB no lleva metadatos de contraseña no se puede abrir.</p>
+<h3 id="obfuscated-releases">Releases ofuscadas</h3>
+<p>Las publicaciones con nombres de archivo aleatorios se gestionan, con un coste que se paga una sola vez al escanear. zurg prueba primero la fuente más barata: el nombre de archivo que un artículo todavía declara en su propia cabecera yEnc, con un artículo por archivo. Si eso no basta, recurre al índice PAR2 de la release, que registra el nombre real de cada archivo frente al MD5 de sus primeros 16 KiB. El nombre y la longitud exacta están en la cabecera del artículo, así que el escaneo puede responder en cuanto llega esa cabecera, mientras el cuerpo sigue llenando la caché para una lectura posterior. Por tanto, una release ofuscada recibe nombre y tamaño de los mismos artículos. zurg registra lo que ha recuperado:</p>
+<div id="obfuscated-releases-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Recovered 27 filename(s) in Some.Release</code></pre>
+</doc-codeblock></div>
+<p>Todo el proceso de renombrado tiene un límite de 90 segundos por NZB, así que un servidor inalcanzable retrasa un escaneo en lugar de bloquearlo. Los nombres se fijan <em>antes</em> de construir la biblioteca a partir de ellos, porque la biblioteca indexa los archivos por nombre y un renombrado posterior los haría perderse.</p>
+<p><strong>Una publicación totalmente ofuscada no tiene un nombre real que recuperar.</strong> Algunos publicadores ofuscan antes de crear el conjunto de recuperación, así que el índice PAR2 restaura nombres que también son aleatorios (<code translate="no" v-pre>aJPSgA7eYizyzjJXT.part01.rar</code>), y el archivo dentro del archivo comprimido también es un hash. Nada en la publicación indica cuál es la release; solo lo sabe el propio nombre del NZB. Así que zurg presenta el contenido con el nombre de la release, igual que hace SABnzbd al terminar de descomprimir:</p>
+<div id="obfuscated-releases-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Ugliest.House.in.America.S08E02.720p.AMZN.WEB-DL-RAWR/
+└── Ugliest.House.in.America.S08E02.720p.AMZN.WEB-DL-RAWR.mkv</code></pre>
+</doc-codeblock></div>
+<p>Solo se renombra el archivo que claramente es la release: la entrada más grande del archivo comprimido, y solo cuando pesa al menos tres veces más que la siguiente. Además, su extensión no puede ser parte de una estructura de disco (<code translate="no" v-pre>.vob</code>, <code translate="no" v-pre>.m2ts</code>, <code translate="no" v-pre>.mpls</code>) y su nombre no debe decir nada. Los subtítulos y las muestras que compartan su nombre lo siguen. Un archivo comprimido que contiene varios archivos de tamaño parecido, como un pack de temporada, se deja como está, porque ninguno de ellos es la release. Los nombres originales dentro del archivo comprimido siguen funcionando como direcciones, así que un reproductor que se inició antes de un nuevo escaneo no pierde el archivo.</p>
+<h3 id="replacing-and-removing">Reemplazar y eliminar</h3>
+<ul>
+<li><strong>Quitar</strong> un NZB de <code translate="no" v-pre>nzbs/</code> elimina el release de la biblioteca, borra su lector en caché y su caché de artículos, y olvida los bytes reparados que tenía guardados.</li>
+<li><strong>Borrar un release de Usenet desde el Dashboard borra el archivo <code translate="no" v-pre>.nzb</code> del disco.</strong> No hay otro lugar donde pueda estar. Esto no es lo mismo que borrar un torrent de una cuenta de debrid, donde el archivo se queda en el servicio.</li>
+<li><strong>Reemplazar un NZB sobrescribiéndolo es la forma lenta.</strong> Escribir encima de un archivo no cambia el directorio, así que el watch de arriba no lo detecta. Lo que sí lo detecta es la comprobación periódica de cambios, que lee la fecha de modificación del archivo y lo vuelve a parsear: se ejecuta en la primera comprobación de <code translate="no" v-pre>check_for_changes_every_secs</code> que llegue más de 15 segundos después de la última lectura del directorio (unos 30 segundos con el valor por defecto). Borrar el archivo viejo y añadir el nuevo se detecta en un segundo o dos, y es lo que hace de todos modos un indexador o el endpoint de SABnzbd.</li>
+</ul>
+<h2 id="4-where-releases-land-in-the-mount">4. Dónde aterrizan las releases en el montaje</h2>
+<p>Una release de Usenet es una entrada normal de la biblioteca, así que tus filtros <code translate="no" v-pre>directories:</code> existentes se aplican a ella sin cambios:</p>
+<div id="4-where-releases-land-in-the-mount-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">directories:
+  shows:
+    group: media
+    group_order: 20
+    filters:
+      - has_episodes: true
+  movies:
+    group: media
+    group_order: 30
+    only_show_the_biggest_file: true
+    filters:
+      - any_file_inside_not_regex: /\.(mp3|flac|m4b)$/i</code></pre>
+</doc-codeblock></div>
+<p>Además de esos, la cuenta obtiene un directorio propio: <code translate="no" v-pre>__nzb__</code> por defecto, o <code translate="no" v-pre>__&lt;name&gt;__</code> si configuras <code translate="no" v-pre>name:</code> en la entrada del proveedor. Ese directorio no es solo una vista: las lecturas dentro de él están <strong>fijadas</strong> a la cuenta de Usenet sin ningún failover, lo que lo convierte en el lugar adecuado para comprobar si la reproducción de Usenet funciona sin que una cuenta de debrid responda en silencio. Si Usenet es tu única cuenta, esa carpeta no aparece en el listado raíz del mount y <code translate="no" v-pre>__all__</code> contiene los mismos archivos, así que prueba la reproducción dentro de <code translate="no" v-pre>__all__</code> en el mount, o abre la ruta HTTP directa <code translate="no" v-pre>http://localhost:9999/http/__nzb__/</code>.</p>
+<p>Cuatro cosas específicas de Usenet que conviene saber al escribir filtros:</p>
+<ul>
+<li><strong>Los filtros de tags solo coinciden con contenido de Usenet una vez analizado.</strong> Todos los tags <code translate="no" v-pre>zurg_*</code> (resolución, HDR, bitrate, duración, idioma) provienen de ffprobe. zurg ejecuta ffprobe sobre los archivos de Usenet por sí mismo, a través de su propio servidor y a un ritmo que el servidor de noticias puede soportar, así que una release de Usenet recibe sus tags como cualquier otra una vez analizada. Hasta entonces, un directorio basado en <code translate="no" v-pre>tags_match_any</code> no la incluye.</li>
+<li><strong>Los archivos <code translate="no" v-pre>.par2</code> y <code translate="no" v-pre>.sfv</code> están ocultos.</strong> Son andamiaje de reparación; zurg los lee por su cuenta y ningún servidor multimedia los necesita, sobre todo ocho por cada pack de temporada. <code translate="no" v-pre>.nfo</code> se mantiene, porque Kodi, Emby y Jellyfin lo leen.</li>
+<li><strong>Los conjuntos RAR son contenido, no archivos que descomprimir.</strong> <code translate="no" v-pre>.rar</code> y <code translate="no" v-pre>.rNN</code> siguen visibles y un conjunto de volúmenes aparece en el mount como una <em>carpeta</em> cuyo contenido son los archivos que contiene: zurg transmite el vídeo directamente desde el archivo sin extraer nada. Una release que es <em>solo</em> un conjunto de volúmenes sustituye a su propio contenido, sin carpeta de archivo intermedia: el archivo de contenido queda directamente en la carpeta de la release, que es donde lo busca un servidor multimedia. Los archivos publicados junto al conjunto —el <code translate="no" v-pre>.nfo</code>, el <code translate="no" v-pre>.txt</code> del publicador, las imágenes y los subtítulos— también siguen listados ahí.</li>
+<li><strong><code translate="no" v-pre>force_select_playable_files</code> no se aplica.</strong> Un post de Usenet es completo; no hay nada que seleccionar. Todos los archivos de contenido ya se ofrecen.</li>
+</ul>
+<p>Revisa el resultado antes de involucrar a un servidor multimedia. <code translate="no" v-pre>http://localhost:9999/http/</code> es un índice HTML sencillo de exactamente lo que mostrará el mount:</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos">
+<template #title>Linux and macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s http://localhost:9999/http/__nzb__/ | head</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-2">
+<template #title>Windows</template>
+<p>Escribe <code translate="no" v-pre>curl.exe</code>, no <code translate="no" v-pre>curl</code>: en Windows PowerShell 5.1 <code translate="no" v-pre>curl</code> es otro nombre de <code translate="no" v-pre>Invoke-WebRequest</code>.</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">curl.exe -s http://localhost:9999/http/__nzb__/ | Select-Object -First 10</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<hr>
+<h2 id="5-mount-it-with-rclone">5. Monta con rclone</h2>
+<h3 id="the-easy-path-let-zurg-run-rclone">El camino fácil: deja que zurg ejecute rclone</h3>
+<div id="the-easy-path-let-zurg-run-rclone-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">rclone_enabled: true
+rclone_binary: bin/rclone      # downloaded automatically on first run
+mount_path: &quot;/mnt/zurg&quot;        # /Volumes/Zurg on macOS, Z: on Windows</code></pre>
+</doc-codeblock></div>
+<p>zurg inicia rclone con un perfil de VFS ya ajustado para su propio patrón de lectura (tamaño de buffer, tamaño de fragmentos, modo de caché, tiempo de caché de directorios, tiempos de espera), mantiene el montaje activo e invalida las entradas correctas de dircache cuando cambia la biblioteca. <code translate="no" v-pre>mount_path</code> también es el prefijo que zurg usa para indicarle a Plex qué rutas escanear, así que debe configurarse aunque montes en otro lugar.</p>
+<p>Verifica:</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux">
+<template #title>Linux</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">ls /mnt/zurg/
+ls /mnt/zurg/__all__/</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="macos">
+<template #title>macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">ls /Volumes/Zurg/
+ls /Volumes/Zurg/__all__/</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-3">
+<template #title>Windows</template>
+<p>Ejecútalo en una ventana de PowerShell en tu escritorio: la unidad solo es visible en la sesión de inicio de sesión que la montó (<a href="../../setup/windows/#keeping-it-running-the-session-rules">las reglas de sesión</a>).</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">Get-ChildItem Z:\
+Get-ChildItem Z:\__all__\</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<h3 id="the-manual-path-your-own-rclone">El camino manual: tu propio rclone</h3>
+<p>Si ya usas rclone, apunta un remote WebDAV a zurg:</p>
+<div id="the-manual-path-your-own-rclone-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-ini"><code v-pre class="language-ini">[zurg]
+type = webdav
+url = http://localhost:9999/dav/
+vendor = other
+pacer_min_sleep = 0</code></pre>
+</doc-codeblock></div>
+<doc-tabs>
+<doc-tab v-cloak id="linux-1">
+<template #title>Linux</template>
+<p>rclone no crea el punto de montaje, y <code translate="no" v-pre>/mnt</code> pertenece a root:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo mkdir -p /mnt/zurg &amp;&amp; sudo chown &quot;$USER&quot; /mnt/zurg
+rclone mount zurg: /mnt/zurg --config rclone.conf --dir-cache-time 10s --vfs-handle-caching 0</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="macos-1">
+<template #title>macOS</template>
+<p>Necesitas <a href="../../setup/macos/#step-1-install-macfuse">macFUSE</a> y rclone desde <a href="https://rclone.org/downloads/">rclone.org</a>: el rclone de Homebrew no puede montar. rclone no crea el punto de montaje, y <code translate="no" v-pre>/Volumes</code> pertenece a root:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo mkdir -p /Volumes/Zurg &amp;&amp; sudo chown &quot;$USER&quot; /Volumes/Zurg
+rclone mount zurg: /Volumes/Zurg --config rclone.conf --dir-cache-time 10s --vfs-handle-caching 0</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-4">
+<template #title>Windows</template>
+<p>Necesitas <a href="https://winfsp.dev">WinFsp</a>. La letra de unidad no debe estar en uso, y solo los programas de la sesión de inicio de sesión que ejecuta rclone la ven (<a href="../../setup/windows/#keeping-it-running-the-session-rules">las reglas de sesión</a>).</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">rclone mount zurg: Z: --config rclone.conf --dir-cache-time 10s --vfs-handle-caching 0</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p><code translate="no" v-pre>--vfs-handle-caching 0</code> requiere rclone 1.74 o más reciente, y evita que rclone siga descargando durante cinco segundos más después de que un lector cierre un archivo. El README explica lo que cuesta omitirlo.</p>
+<p>Aun así, configura <code translate="no" v-pre>mount_path</code> en <code translate="no" v-pre>config.yml</code> con la ruta donde lo montaste, o las notificaciones de escaneo del servidor de medios se construirán con el prefijo incorrecto.</p>
+<h3 id="docker">Docker</h3>
+<p>El directorio de trabajo de zurg en la imagen es <code translate="no" v-pre>/config</code>, y tanto el directorio de vigilancia como la caché de reparación están dentro de él. Un solo bind mount se encarga de todo, junto con lo demás:</p>
+<div id="docker-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">services:
+  zurg:
+    image: ghcr.io/debridmediamanager/zurg:latest
+    volumes:
+      - ./:/config
+    ports:
+      - 9999:9999</code></pre>
+</doc-codeblock></div>
+<p>Si dejas un NZB en <code translate="no" v-pre>./nzbs</code> en el host, zurg lo detecta dentro del contenedor sin necesidad de reiniciarlo.</p>
+<p>Esto requiere un host Linux para el montaje. Docker Desktop en macOS y Windows ejecuta el contenedor dentro de una VM, y el montaje no llega a Finder, Explorer ni a un Plex instalado en el host. En esos sistemas usa el binario para <a href="../../setup/macos/">macOS</a> o <a href="../../setup/windows/">Windows</a> (<a href="../../setup/docker/">por qué</a>).</p>
+<blockquote>
+<p>Las instalaciones hechas antes de que <code translate="no" v-pre>/config</code> hiciera bind mount de <code translate="no" v-pre>/app/config.yml</code>, <code translate="no" v-pre>/app/nzbs</code> y <code translate="no" v-pre>/app/data</code> por separado siguen funcionando exactamente igual. Consulta <a href="../../setup/docker/#upgrading-an-install-that-mounted-app">docker.md</a>.</p>
+</blockquote>
+<hr>
+<h2 id="6-point-plex-at-it">6. Apunta Plex hacia él</h2>
+<ol>
+<li>
+<p><strong>Dale a zurg tus credenciales de Plex</strong> para que pueda pedirle a Plex que escanee solo las rutas que cambiaron, en lugar de que tengas que esperar a un escaneo completo periódico. Lo más fácil es usar el flujo de autenticación de Plex en el Dashboard, que escribe los valores de vuelta en <code translate="no" v-pre>config.yml</code>:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">plex_server_url: &quot;http://localhost:32400&quot;
+plex_token: YOUR_PLEX_TOKEN</code></pre>
+</doc-codeblock></div>
+</li>
+<li>
+<p><strong>Añade bibliotecas que apunten a subdirectorios del montaje</strong>, nunca a la raíz del montaje:</p>
+<ul>
+<li>Películas → <code translate="no" v-pre>/mnt/zurg/movies</code> (<code translate="no" v-pre>/Volumes/Zurg/movies</code> en macOS, <code translate="no" v-pre>Z:\movies</code> en Windows)</li>
+<li>Series → <code translate="no" v-pre>/mnt/zurg/shows</code> (<code translate="no" v-pre>/Volumes/Zurg/shows</code> en macOS, <code translate="no" v-pre>Z:\shows</code> en Windows)</li>
+</ul>
+<p>En Windows, Plex solo ve <code translate="no" v-pre>Z:</code> cuando se ejecuta en la misma sesión de inicio de sesión que zurg, que es lo que te da la tarea de inicio de sesión de <code translate="no" v-pre>zurg setup</code>: mira <a href="../../setup/windows/#keeping-it-running-the-session-rules">las reglas de sesión</a>.</p>
+<p>La misma versión aparece en cada directorio cuyo filtro coincida con ella, y también en <code translate="no" v-pre>__all__</code> y <code translate="no" v-pre>__nzb__</code>. Si apuntas Plex a la raíz, escaneará el mismo archivo varias veces.</p>
+</li>
+<li>
+<p><strong>Configura dos opciones de la biblioteca</strong> en Edit → Advanced de cada biblioteca:</p>
+<ul>
+<li><strong>Desmarca &quot;Empty trash automatically after every scan&quot;.</strong> Esta es la que importa. Si el montaje falla un momento mientras Plex está escaneando (un reinicio de zurg, un remontaje de rclone), Plex cree que todos los archivos se han borrado. Con el vaciado automático activado, se eliminan de forma permanente y de inmediato; con él desactivado, se quedan en la papelera y vuelven cuando el montaje se recupera. Esto ya le ha costado antes a una biblioteca de 30,000 elementos.</li>
+<li><strong>Desmarca &quot;Generate video preview thumbnails&quot;.</strong> Cada miniatura es un salto a lo largo de todo el archivo; en Usenet eso equivale a leer la versión completa a través de tu cupo de conexión.</li>
+</ul>
+</li>
+<li>
+<p><strong>Nunca reinicies zurg durante un escaneo de Plex.</strong> Compruébalo antes:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">TOKEN=$(grep ^plex_token: config.yml | awk '{print $2}' | tr -d &quot;\&quot;'&quot;)
+curl -s &quot;http://localhost:32400/status/sessions?X-Plex-Token=$TOKEN&quot; | grep -o 'size=&quot;[0-9]*&quot;'
+curl -s &quot;http://localhost:32400/library/sections?X-Plex-Token=$TOKEN&quot; | grep -o 'refreshing=&quot;1&quot;' | wc -l</code></pre>
+</doc-codeblock></div>
+<p>En Windows, en PowerShell desde la carpeta de zurg:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$TOKEN = ((Select-String -Path config.yml -Pattern '^plex_token:').Line -split '\s+')[1].Trim('&quot;', &quot;'&quot;)
+(Invoke-RestMethod &quot;http://localhost:32400/status/sessions?X-Plex-Token=$TOKEN&quot;).MediaContainer.size
+@((Invoke-RestMethod &quot;http://localhost:32400/library/sections?X-Plex-Token=$TOKEN&quot;).MediaContainer.Directory | Where-Object refreshing -eq 1).Count</code></pre>
+</doc-codeblock></div>
+<p>Las sesiones con <code translate="no" v-pre>size=&quot;0&quot;</code> (<code translate="no" v-pre>0</code> en Windows) y un contador que se actualiza y marca <code translate="no" v-pre>0</code> significan que es seguro. Si la línea de sesiones no imprime nada, Plex rechazó el token o no respondió, y el <code translate="no" v-pre>0</code> de debajo no significa nada: revisa <code translate="no" v-pre>plex_token</code> antes de reiniciar. (PowerShell muestra el rechazo como un error <code translate="no" v-pre>401</code>.) (Usa <code translate="no" v-pre>grep -o … | wc -l</code>, no <code translate="no" v-pre>grep -c</code>: grep devuelve un código de error distinto de cero cuando no encuentra nada, que es el caso <em>bueno</em>, y eso romperá una cadena <code translate="no" v-pre>&amp;&amp;</code> justo antes del reinicio que estaba protegiendo.)</p>
+</li>
+<li>
+<p><strong>Escaneos parciales.</strong> <code translate="no" v-pre>on_library_update</code> recibe cada ruta cambiada; <code translate="no" v-pre>plex_update.sh</code> en la raíz del repositorio es el script de referencia:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">on_library_update: sh plex_update.sh &quot;$@&quot;</code></pre>
+</doc-codeblock></div>
+<p>El script necesita <code translate="no" v-pre>curl</code>, <code translate="no" v-pre>xmllint</code> y <code translate="no" v-pre>python3</code>, que tiene la imagen de Docker, y su línea <code translate="no" v-pre>zurg_mount</code> debe apuntar a tu ruta de montaje. En Windows, el hook se ejecuta en PowerShell en lugar de <code translate="no" v-pre>sh</code>, así que este script no funciona allí. Cada ruta cambiada llega como un elemento de <code translate="no" v-pre>$args</code>, relativa al montaje y con barras normales (<code translate="no" v-pre>movies/Big Buck Bunny</code>); pásalas a un script de PowerShell con <code translate="no" v-pre>@args</code>:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">on_library_update: '&amp; C:\zurg\my_update.ps1 @args'</code></pre>
+</doc-codeblock></div>
+<p>zurg ya le pide a Plex que escanee las rutas cambiadas una vez completado el paso 1 y configurado <code translate="no" v-pre>mount_path</code>, así que un hook solo hace falta para cualquier otra cosa.</p>
+</li>
+</ol>
+<p><strong>Lo que Plex no obtendrá del contenido de Usenet:</strong> nada hasta que zurg lo haya analizado (mira la sección 4), así que Plex puede hacer su propio análisis en la primera reproducción, como haría con cualquier archivo local. Los tamaños de archivo se estabilizan poco después de que se escanee una versión: el primer listado puede mostrar una estimación barata basada en el número de artículos, y la longitud exacta llega después, desde el índice de recuperación cuando existe, y si no, desde un artículo por archivo. En un archivo grande de varios volúmenes cuyo índice de recuperación ya indica la longitud exacta de todos los archivos, un volumen verificado puede establecer el paso de artículos compartido; cada hermano comprueba esa inferencia con su propio encabezado antes de servir su primer byte. Cuando llega una longitud, la biblioteca recibe el aviso de que la versión cambió, de modo que tanto el montaje como Plex ven la longitud real. zurg calcula el tamaño de hasta ocho versiones a la vez (nunca más que las conexiones de la cuenta) en una cuenta de doce conexiones o menos, y más en una cuenta mayor (doce con 16 conexiones, dieciséis a partir de 20). Cuando la adquisición comprueba una versión con los servidores de noticias, esa comprobación se pone en cola junto a este cálculo de tamaños y a la lectura anticipada, y nunca usa la conexión reservada para una lectura que un reproductor está esperando.</p>
+<h3 id="jellyfin--emby--infuse">Jellyfin / Emby / Infuse</h3>
+<p>Jellyfin y Emby usan <code translate="no" v-pre>jellyfin_server_url</code> / <code translate="no" v-pre>jellyfin_token</code> y <code translate="no" v-pre>emby_server_url</code> / <code translate="no" v-pre>emby_token</code>, y reciben las mismas notificaciones de escaneo; mira <a href="../jellyfin/">jellyfin.md</a>. Infuse puede apuntar directamente a <code translate="no" v-pre>http://&lt;host&gt;:9999/dav/</code> y así te saltas rclone por completo.</p>
+<hr>
+<h2 id="7-when-an-article-is-missing">7. Cuando falta un artículo</h2>
+<p>Esto es el modo de fallo que tiene Usenet y que el debrid no tiene. Los artículos caducan de la retención de un proveedor o se retiran, y una release puede aparecer listada sin problemas mientras algunos de sus artículos ya no están.</p>
+<p>La respuesta de zurg, por orden de preferencia:</p>
+<ol>
+<li><strong>Pedir a otro servidor de noticias.</strong> Un artículo que un proveedor ya ha dejado caducar suele seguir estando en otro. Esto es una sola descarga: mira <doc-anchor-trigger to="#more-than-one-usenet-provider">Más de un proveedor de Usenet</doc-anchor-trigger>.</li>
+<li><strong>Reconstruirlo con los archivos PAR2 de la propia release.</strong> Para eso se publican. Cuesta leer <em>toda la release</em>: Reed-Solomon tiene que combinar todos los fragmentos que sobreviven para calcular el que falta. Así que en un post de 200 GB son 200 GB de lectura para recuperar unos pocos megabytes.</li>
+<li><strong>Servir silencio.</strong> Solo cuando ninguna de las dos opciones anteriores puede responder.</li>
+</ol>
+<p>La reparación PAR2 es un trabajo en segundo plano, con un máximo de dos releases a la vez, y necesita:</p>
+<div id="7-when-an-article-is-missing-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">enable_repair: true            # the default; set false to turn PAR2 repair off
+par2_patch_cache_mb: 512       # budget for data/par2/; -1 keeps repairs in memory only</code></pre>
+</doc-codeblock></div>
+<p>Los bytes reconstruidos se escriben en <code translate="no" v-pre>data/par2/&lt;nzb-id&gt;/</code> y se recuperan la próxima vez que se abre el archivo, así que reiniciar no obliga a releer toda la release. Solo se guardan los tramos que de verdad faltan (una release dañada suele costar unos pocos megabytes), y cuando se supera el presupuesto se eliminan primero las releases usadas menos recientemente. Cada tramo lleva la fecha de modificación del NZB con el que se reconstruyó, así que si vuelves a guardar el NZB, zurg descarta esos tramos en lugar de servir bytes en desplazamientos que quizá hayan cambiado.</p>
+<p>Una reparación avisa de que empieza y luego indica lo que costó:</p>
+<div id="7-when-an-article-is-missing-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">PAR2 repair of Some.Release: 5 slice(s) missing; reading the release to rebuild them
+PAR2 repair of Some.Release rebuilt 5 slice(s) in 55s on the avx2 kernel, keeping 3.4 MiB of them (library holds 3.4 MiB in memory, 3.4 MiB on disk)</code></pre>
+</doc-codeblock></div>
+<p>Hay dos cosas que conviene saber:</p>
+<ul>
+<li><strong>La reproducción siempre tiene prioridad sobre una reparación.</strong> Las conexiones se reparten según quién está esperando: primero una lectura solicitada por ti, después la lectura anticipada y por último la reparación. Eso sí, una reparación tiene garantizado un cuarto del cupo frente a la lectura anticipada, así que el archivo que estás viendo puede seguir reparando el hueco en el que se ha atascado.</li>
+<li><strong>La reparación a nivel de biblioteca de zurg no puede ayudar aquí.</strong> Ese mecanismo vuelve a añadir un torrent a la cuenta de la que procedía; un backend que no puede añadir contenido puede informar de que una release está rota, pero no arreglarla. En Usenet, PAR2 <em>es</em> la reparación.</li>
+</ul>
+<p>Una release sin archivos PAR2 en su NZB y sin una segunda cuenta de noticias no tiene ninguna vía de recuperación. Eso depende del post, no de zurg.</p>
+<h2 id="performance">Rendimiento</h2>
+<p>Medido contra una cuenta de noticias en vivo con un cupo de conexiones grande:</p>
+<retype-table copy-text="| | |
+|---|---|
+| Un solo stream, archivo directo | ~100 Mbit/s |
+| Un solo stream, desde un conjunto RAR | 90–106 Mbit/s |
+| Dos streams concurrentes, total agregado | ~124 Mbit/s |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Un solo stream, archivo directo</td>
+<td>~100 Mbit/s</td>
+</tr>
+<tr>
+<td>Un solo stream, desde un conjunto RAR</td>
+<td>90–106 Mbit/s</td>
+</tr>
+<tr>
+<td>Dos streams concurrentes, total agregado</td>
+<td>~124 Mbit/s</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>El cupo de conexiones fija el primer techo de velocidad para un solo stream. zurg mantiene ese cupo lleno dimensionando la lectura anticipada tanto en artículos como en bytes: los posts de archivo con artículos pequeños reciben al menos 64 MiB de alcance, mientras que los posts de varios megabytes conservan la ventana de conexiones y pipeline que ya tenían. Así que:</p>
+<ul>
+<li><strong>Pon <code translate="no" v-pre>connections</code> con el número real de tu plan.</strong> Es la perilla que importa. Con ocho conexiones no vas a poder reproducir un remux.</li>
+<li><strong>Dos cuentas principales suman.</strong> Las lecturas se reparten según el cupo combinado de las cuentas que no son <code translate="no" v-pre>backup</code> y que comparten la <code translate="no" v-pre>priority</code> activa más baja. Así que un segundo proveedor ilimitado con la misma prioridad sube el techo y, además, cubre los huecos de retención del primero. Una cuenta <code translate="no" v-pre>backup</code> no cuenta para ese total.</li>
+<li><strong><code translate="no" v-pre>warm_connections</code> (4 por defecto) compra latencia, no velocidad.</strong> Mantiene abiertas esa cantidad de conexiones, inactivas y ya autenticadas, para que la primera lectura tras arrancar o tras un rato de calma no pierda ~0.8 s marcando antes de recibir su primer byte: 1.5 s hasta el primer byte en frío frente a 0.15 s en caliente. Una vez que un stream está en marcha, no cambia nada.</li>
+<li><strong>Las conexiones nuevas que sí se hacen se quedan con un solo backend, así que sus sesiones TLS se reanudan.</strong> Abrir una conexión nueva cuesta unos 0.8 s, medido contra un servidor de noticias en vivo el 2026-08-29: 106 ms de TCP, 213 ms de handshake TLS, 256 ms de saludo y 218 ms para los dos intercambios <code translate="no" v-pre>AUTHINFO</code>. El nombre de host de un proveedor es una rotación (ese resuelve a 11 direcciones), y un ticket de sesión TLS solo sirve en la máquina que lo emitió. Por eso, volver a conectar con la dirección que el resolvedor nombró primero reanudó <strong>0 de 3</strong> sesiones, mientras que volver a conectar con la misma dirección reanudó <strong>3 de 3</strong>. Ahora cada cuenta vuelve a conectar con la dirección de su última conexión, lo que ahorra <strong>110–140 ms en cada reconexión</strong>. Una sesión reanudada tarda 109–141 ms, frente a 225–261 ms de una completa. Un servidor con un ida y vuelta de ~18 ms ahorra menos. El fijado se descarta y el nombre se vuelve a resolver en cuanto esa dirección deja de responder, así que nada queda atado a una máquina que el proveedor ya dio de baja. Un rechazo que llega hasta NNTP (la cuenta en su límite de conexiones, una contraseña rechazada) mantiene el fijado, porque es la respuesta de la cuenta y no del backend. Cada conexión registra sus fases a nivel debug, incluido <code translate="no" v-pre>resumed=</code>.</li>
+<li><code translate="no" v-pre>cache_size_mb</code> (512 por defecto) se comparte entre todos los archivos que se leen. Súbelo si tienes varios streams concurrentes; no hace más rápido a un solo stream. Las lecturas especulativas pueden reservar como máximo la mitad de ese valor, repartida entre dos lectores como mucho, para dejar la otra mitad a los artículos ya consumidos o a punto de consumirse.</li>
+<li>Que un release venga empaquetado en RAR o publicado como archivos sueltos ya no importa mucho para la velocidad.</li>
+</ul>
+<p><strong>Un artículo lento ya no frena el stream.</strong> Una lectura secuencial que promedia ~90 MB/s todavía cae a 1–5 MB/s durante casi un segundo cada vez, y cada una de esas caídas tiene la misma causa: un artículo deja de llegar mientras las otras conexiones terminan los suyos y se quedan inactivas. Cuando una lectura lleva en un mismo artículo más tiempo del que ese lector ya aprendió a esperar, zurg pide el mismo artículo a una <strong>segunda conexión</strong> y sirve la respuesta que llegue primero. Un lote encadenado (pipeline) bloqueado puede retener varios artículos seguidos del cabezal de reproducción en el mismo socket muerto, así que de un mismo lector se pueden cubrir en paralelo hasta cinco artículos distintos, o uno o dos en un post cuyos artículos pesan menos de 1 MiB. Nunca se pide dos veces el mismo. La cuenta paga como máximo 20 peticiones de segunda conexión por minuto. El plazo sigue siendo el doble de la espera reciente del propio lector, nunca menos de 250 ms (125 ms en posts con artículos menores de 1 MiB) y nunca más de 2 s. Y solo se cubre una lectura que un cliente está esperando de verdad: la lectura anticipada, la precarga del siguiente volumen y la reparación no. Un artículo que los servidores acaban de <em>rechazar</em> tampoco se cubre, porque ese ya está esperando su propia confirmación un segundo después, y pedirlo dentro de esa ventana no demuestra nada. Cada cobertura escribe una línea a nivel debug indicando cuánto tiempo estuvo bloqueada la lectura, y la línea siguiente dice si la segunda petición ganó.</p>
+<p>Para los rangos declarados, el artículo del cabezal de reproducción entra en el planificador de prioridades antes de que se ofrezcan los bytes posteriores. Las conexiones en pipeline reciben entonces rondas consecutivas de artículos, no bloques contiguos, así que los primeros artículos útiles se reparten por todo el cupo. Una petición de al menos 64 MiB se trata como reproducción y recibe el frente completo de rangos; una búsqueda pequeña sigue siendo una prueba y solo abre una rampa estrecha.</p>
+<h3 id="crossing-a-volume-boundary">Cruzar un límite de volumen</h3>
+<p>Un archivo dentro de un conjunto RAR se sirve un volumen cada vez, y cada volumen es una lectura separada en la cuenta de noticias. zurg abre el siguiente volumen mientras el actual todavía se está reproduciendo y lee sus primeros cuatro megabytes, así que el cruce no empieza en frío. En un release publicado con volúmenes pequeños, esa cabecera no basta por sí sola: cuatro megabytes son unos diez artículos de un release con partes de ~395 KB, y los volúmenes de ~26 MB ponen un límite cada 1,7 segundos de reproducción. Así que el stream vaciaba la cabecera precalentada de la memoria en un cuarto de segundo y luego esperaba un viaje de ida y vuelta por todo lo que venía detrás. Medido en un Hetzner CCX23 con 10 conexiones el 8 de septiembre de 2026, ese release se reproducía a <strong>14–16 MB/s</strong>, mientras que un archivo normal en la misma cuenta alcanzaba <strong>86–99 MB/s</strong>. Su velocidad por segundo oscilaba entre 1 y 29 MB/s, y entre 46 y 55 de los 60 slots de lectura anticipada de la cuenta se quedaban sin usar.</p>
+<p>Ahora zurg precalienta el siguiente volumen con una ventana de lectura anticipada completa en cuanto la reproducción se acerca a menos de 32 MiB del límite. Y un volumen en el que la reproducción acaba de entrar conserva la ventana que ya se había ganado, en lugar de volver a empezar en dos artículos. Un volumen que el cabezal de reproducción no va a alcanzar en varios segundos sigue precalentándose solo en su cabecera. Eso evita que un escaneo de biblioteca (un lector por cada entrada, con unos pocos megabytes de cada una) arrastre una ventana de cada siguiente volumen que nunca va a leer. No hace falta configurar nada, y no cambia el límite de memoria: una cuenta sigue usando dos ventanas de lectura anticipada a la vez, el volumen que se reproduce y el que se está precalentando, dentro de <code translate="no" v-pre>cache_size_mb</code>.</p>
+<p>Las reparaciones son lentas por naturaleza, porque leen el release entero, pero se ejecutan con prioridad de segundo plano y las limita el propio servidor de noticias, no la aritmética de zurg.</p>
+<h3 id="memory-what-a-watch-directory-costs">Memoria: lo que cuesta un directorio de vigilancia</h3>
+<p>Un NZB es una lista de artículos, y una biblioteca grande tiene muchísimos artículos. Al analizar uno, se guardan en memoria sus message ids y sus desplazamientos para que una lectura pueda encontrarlos. Las versiones anteriores a esta mantenían todos ellos mientras el proceso estuviera activo. Medido en un directorio vigilado de 2.636 NZB, con 27,6 millones de elementos <code translate="no" v-pre>&lt;segment&gt;</code>, eso son <strong>1,52 GB de heap en uso</strong>, unos 58 bytes por artículo, además de la caché de artículos. Casi nada de eso se usa de verdad: un listado solo necesita nombres, tamaños y recuentos, y solo un archivo que se está leyendo o reparando necesita saber cómo se llaman sus artículos.</p>
+<p><code translate="no" v-pre>nzb_segments</code> decide si zurg los mantiene:</p>
+<div id="memory-what-a-watch-directory-costs-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">nzb_segments: mmap             # mmap (default) | reparse | resident
+nzb_segments_idle_secs: 120    # how long a release's articles are kept after the last read</code></pre>
+</doc-codeblock></div>
+<ul>
+<li><strong><code translate="no" v-pre>mmap</code></strong>: las listas se escriben en <code translate="no" v-pre>data/nzb-index/&lt;id&gt;.bin</code> y ese archivo se mapea cuando hace falta, así que los bytes están en la caché de páginas y no en el heap de zurg, y el kernel los libera cuando hay presión de memoria. <strong>Es el valor por defecto en Linux, macOS y BSD.</strong> Ocupa más o menos el mismo espacio en disco que las listas.</li>
+<li><strong><code translate="no" v-pre>reparse</code></strong>: las listas se liberan cuando una release se ha asentado, y el NZB se vuelve a leer del disco cuando una lectura o una reparación las necesita. No ocupa nada de disco, y por eso se elige: en un host donde <code translate="no" v-pre>data/</code> no puede crecer.</li>
+<li><strong><code translate="no" v-pre>resident</code></strong>: todas las listas de artículos en memoria, siempre. <strong>El comportamiento anterior</strong>, el que tenían todas las versiones previas. Sigue soportado, pero ya no es lo que obtienes por defecto.</li>
+</ul>
+<p>Con cualquiera de los valores, un listado nunca carga nada: el nombre, el tamaño y el número de artículos de un archivo se responden sin que la lista de artículos esté cerca de la memoria, así que una actualización de la biblioteca, una comprobación de huellas y un *arr preguntando si un trabajo ya se ha asentado no cuestan nada. Lo que cuestan los modos perezosos es la primera lectura de una release que nadie ha tocado durante <code translate="no" v-pre>nzb_segments_idle_secs</code> (un barrido se ejecuta cada 30 segundos). Además, el conjunto completo de archivos de una release se carga de una vez, así que recorrer en orden los volúmenes rar de un pack de temporada lo paga una sola vez.</p>
+<p>Medido en una release de 60 archivos y 30.000 segmentos:</p>
+<retype-table copy-text="| | heap por release | primera lectura de una release inactiva | por artículo en la ruta de lectura |
+|---|---|---|---|
+| `resident` | 1,74 MB | — | 6 ns |
+| `reparse` | 21,3 kB | 39 ms | 52 ns |
+| `mmap` | 16,6 kB | 0,27 ms | 63 ns |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>heap por release</th>
+<th>primera lectura de una release inactiva</th>
+<th>por artículo en la ruta de lectura</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>resident</code></td>
+<td>1,74 MB</td>
+<td>—</td>
+<td>6 ns</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>reparse</code></td>
+<td>21,3 kB</td>
+<td>39 ms</td>
+<td>52 ns</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>mmap</code></td>
+<td>16,6 kB</td>
+<td>0,27 ms</td>
+<td>63 ns</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Cincuenta nanosegundos por artículo no son nada comparado con los milisegundos que cuesta obtener uno, así que las cifras de la ruta de lectura importan menos de lo que parecen. La que hay que sopesar es la recarga: <code translate="no" v-pre>reparse</code> vuelve a leer y a analizar todo el documento XML, lo que en un pack de temporada son decenas de milisegundos antes de que se mueva el primer byte. <code translate="no" v-pre>mmap</code> es una llamada a <code translate="no" v-pre>mmap</code>, una cabecera de slice por archivo y un checksum del índice que acaba de mapear: 0,08 ms de los tres. Los otros 0,19 ms son el precio de detectar un byte defectuoso en lugar de servirlo como message id.</p>
+<p>Y en una biblioteca completa en lugar de una sola release (2.636 NZB, 27,6 millones de artículos, el mismo binario ejecutado tres veces sobre el mismo corpus, en reposo después de un escaneo):</p>
+<retype-table copy-text="| | conjunto residente | heap en uso | CPU en reposo | apertura en frío, p50 | índice en disco |
+|---|---|---|---|---|---|
+| `resident` | 2.921 MB | 2.677 MB | 23 % | 806 ms | — |
+| `reparse` | 1.188 MB | 987 MB | 31 % | 1.018 ms | — |
+| `mmap` | **1.135 MB** | **921 MB** | 23 % | **694 ms** | 1.456 MB |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>conjunto residente</th>
+<th>heap en uso</th>
+<th>CPU en reposo</th>
+<th>apertura en frío, p50</th>
+<th>índice en disco</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>resident</code></td>
+<td>2.921 MB</td>
+<td>2.677 MB</td>
+<td>23 %</td>
+<td>806 ms</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>reparse</code></td>
+<td>1.188 MB</td>
+<td>987 MB</td>
+<td>31 %</td>
+<td>1.018 ms</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>mmap</code></td>
+<td><strong>1.135 MB</strong></td>
+<td><strong>921 MB</strong></td>
+<td>23 %</td>
+<td><strong>694 ms</strong></td>
+<td>1.456 MB</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Las aperturas en caliente (1 ms), el rendimiento de streaming (38–39 MB/s) y el tiempo de arranque fueron indistinguibles entre los tres. <code translate="no" v-pre>mmap</code> abre una release en frío <em>más rápido</em> que mantenerlo todo en memoria, porque con <code translate="no" v-pre>resident</code> una release que nadie ha abierto en esta ejecución también hay que analizarla. Y mapear un arena ya escrito es una llamada al sistema, mientras que analizar es megabytes de XML.</p>
+<p>El índice se reescribe cada vez que cambia el NZB, se repara solo si alguna vez no se puede leer (vuelve al NZB y lo escribe de nuevo) y se elimina cuando el NZB sale del directorio vigilado. Tanto su cabecera como su contenido llevan checksum, así que un byte defectuoso se detecta en lugar de servirse como un message id que nadie publicó. Su tamaño actual aparece en la portada del Dashboard, bajo <strong>Article Index</strong>, y en la línea que el backend registra al arrancar. En <strong>Windows</strong> no hay mapeo: el índice se leería al heap, lo que equivale a memoria residente <em>más</em> una recarga. Por eso el valor por defecto allí sigue siendo <code translate="no" v-pre>resident</code>, y <code translate="no" v-pre>reparse</code> es el modo perezoso que vale la pena elegir.</p>
+<h2 id="troubleshooting">Solución de problemas</h2>
+<retype-table copy-text="| Síntoma | Causa | Solución |
+|---|---|---|
+| `Cannot reach the news server for nzb` al arrancar | Combinación incorrecta de host/puerto/TLS, credenciales malas o un plan inactivo | `563` va con `tls: true`, `119` con `tls: false`; después revisa las credenciales |
+| La biblioteca está vacía, no aparecen líneas `Loaded NZB` | `nzbs/` no existe o está en otro sitio | Es relativa al **directorio de trabajo** de zurg. Revisa `WorkingDirectory=` en tu unidad de systemd, o el directorio montado en `/config` en Docker, que es `nzbs/` junto al archivo compose. Solo una instalación anterior a `/config` vigila `/app/nzbs` |
+| Un NZB nunca aparece | Está en un subdirectorio, se llama `.nzb.gz` o no se puede analizar | Muévelo directamente a `nzbs/` y descomprímelo; mira en el log si hay una advertencia `Skipping` |
+| La release aparece con un nombre inútil | El nombre del archivo NZB es el nombre, si no hay un `&lt;meta type=&quot;name&quot;&gt;` | Renombra el `.nzb` con el nombre de la release |
+| Los archivos tienen nombres aleatorios dentro de la release | Publicación ofuscada cuya recuperación falló | Busca `Recovered N filename(s)`; si el NZB no tiene archivos PAR2, no hay de dónde sacar los nombres reales |
+| El vídeo sigue con un nombre aleatorio, aunque la carpeta sea la correcta | Publicación totalmente ofuscada, donde el archivo contiene varios ficheros de tamaño parecido | Solo se renombra un único contenido claro con el nombre de la release; un pack de temporada en un solo archivo conserva los nombres que le dio el archivo |
+| La reproducción en streaming va lenta | `connections` se ha dejado en el valor por defecto, 8 | Ponlo al número que permite tu plan |
+| La primera reproducción tras un rato sin uso tarda un segundo en empezar, y luego va bien | El mínimo de conexiones en caliente está desactivado, o lo ha dejado en cero una cuenta de una sola conexión | Deja `warm_connections` sin definir (por defecto es 4) y comprueba que ni él ni el `warm_connections` de nivel superior estén en negativo |
+| El proveedor rechaza las conexiones | `connections` está por encima de lo que permite el plan | Bájalo a la cifra real |
+| La reproducción se entrecorta o un hueco suena en silencio | Faltan artículos | Busca `PAR2 repair of …` en el log; confirma que `enable_repair: true`; añade [another Usenet provider](#more-than-one-usenet-provider) |
+| Un hueco se queda en silencio y nunca aparece ninguna línea de reparación | `enable_repair` está desactivado, o el NZB no lleva archivos `.par2` | Pon `enable_repair: true`; si la publicación no tiene archivos de recuperación, solo otra cuenta de noticias puede ayudar |
+| Un segundo proveedor nunca parece consultarse | Ambas cuentas tienen el mismo `backbone`, así que la segunda se omite en cuanto la primera dice que el artículo no existe | Corrige los valores de `backbone`; solo las cuentas que de verdad están en el mismo spool deben compartir nombre |
+| Una de varias cuentas está caída, pero el arranque parecía correcto | El arranque solo falla cuando *todas* las cuentas son inaccesibles | Busca `is not reachable` en el log; cada cuenta mala avisa por su nombre |
+| Una cuenta de bloque cobra por artículos que la cuenta ilimitada también tiene | Falta `backup: true` en ella | Actívalo; así, un primario simplemente ocupado ya no enviará las lecturas a la cuenta de pago por uso |
+| Una release no aparece en una carpeta filtrada por etiquetas | Todavía no se ha analizado, así que no tiene etiquetas `zurg_*` | Espera al análisis, o ejecuta Analyze &amp; Tag Library desde el Dashboard |
+| Los archivos `.par2` no se ven en el montaje | Es intencionado: están ocultos como andamiaje de reparación | Nada que arreglar; zurg sigue leyéndolos |
+| Cambiaste un proveedor en el Dashboard y no pasó nada | Los cambios de proveedor se escriben en `config.yml` pero no se recargan en caliente | Reinicia zurg; el aviso bajo la tabla de proveedores lo dice |
+| Plex vació la biblioteca tras reiniciar zurg | Había un escaneo en curso mientras el montaje no estaba, con auto-empty-trash activado | Desactiva auto-empty y cierra las sesiones *y* actualiza el estado antes de cualquier reinicio |
+| El tamaño de un archivo cambió un poco justo después de aparecer la release | El primer listado solo puede estimarlo a partir del número de artículos; la longitud exacta llega después, desde el índice PAR2 o desde la cabecera yEnc del propio archivo | Es lo esperado, y se estabiliza una sola vez: la longitud se guarda en `data/nzb-sizes/` y se mantiene hasta que cambie el NZB |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Síntoma</th>
+<th>Causa</th>
+<th>Solución</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>Cannot reach the news server for nzb</code> al arrancar</td>
+<td>Combinación incorrecta de host/puerto/TLS, credenciales malas o un plan inactivo</td>
+<td><code translate="no" v-pre>563</code> va con <code translate="no" v-pre>tls: true</code>, <code translate="no" v-pre>119</code> con <code translate="no" v-pre>tls: false</code>; después revisa las credenciales</td>
+</tr>
+<tr>
+<td>La biblioteca está vacía, no aparecen líneas <code translate="no" v-pre>Loaded NZB</code></td>
+<td><code translate="no" v-pre>nzbs/</code> no existe o está en otro sitio</td>
+<td>Es relativa al <strong>directorio de trabajo</strong> de zurg. Revisa <code translate="no" v-pre>WorkingDirectory=</code> en tu unidad de systemd, o el directorio montado en <code translate="no" v-pre>/config</code> en Docker, que es <code translate="no" v-pre>nzbs/</code> junto al archivo compose. Solo una instalación anterior a <code translate="no" v-pre>/config</code> vigila <code translate="no" v-pre>/app/nzbs</code></td>
+</tr>
+<tr>
+<td>Un NZB nunca aparece</td>
+<td>Está en un subdirectorio, se llama <code translate="no" v-pre>.nzb.gz</code> o no se puede analizar</td>
+<td>Muévelo directamente a <code translate="no" v-pre>nzbs/</code> y descomprímelo; mira en el log si hay una advertencia <code translate="no" v-pre>Skipping</code></td>
+</tr>
+<tr>
+<td>La release aparece con un nombre inútil</td>
+<td>El nombre del archivo NZB es el nombre, si no hay un <code translate="no" v-pre>&lt;meta type=&quot;name&quot;&gt;</code></td>
+<td>Renombra el <code translate="no" v-pre>.nzb</code> con el nombre de la release</td>
+</tr>
+<tr>
+<td>Los archivos tienen nombres aleatorios dentro de la release</td>
+<td>Publicación ofuscada cuya recuperación falló</td>
+<td>Busca <code translate="no" v-pre>Recovered N filename(s)</code>; si el NZB no tiene archivos PAR2, no hay de dónde sacar los nombres reales</td>
+</tr>
+<tr>
+<td>El vídeo sigue con un nombre aleatorio, aunque la carpeta sea la correcta</td>
+<td>Publicación totalmente ofuscada, donde el archivo contiene varios ficheros de tamaño parecido</td>
+<td>Solo se renombra un único contenido claro con el nombre de la release; un pack de temporada en un solo archivo conserva los nombres que le dio el archivo</td>
+</tr>
+<tr>
+<td>La reproducción en streaming va lenta</td>
+<td><code translate="no" v-pre>connections</code> se ha dejado en el valor por defecto, 8</td>
+<td>Ponlo al número que permite tu plan</td>
+</tr>
+<tr>
+<td>La primera reproducción tras un rato sin uso tarda un segundo en empezar, y luego va bien</td>
+<td>El mínimo de conexiones en caliente está desactivado, o lo ha dejado en cero una cuenta de una sola conexión</td>
+<td>Deja <code translate="no" v-pre>warm_connections</code> sin definir (por defecto es 4) y comprueba que ni él ni el <code translate="no" v-pre>warm_connections</code> de nivel superior estén en negativo</td>
+</tr>
+<tr>
+<td>El proveedor rechaza las conexiones</td>
+<td><code translate="no" v-pre>connections</code> está por encima de lo que permite el plan</td>
+<td>Bájalo a la cifra real</td>
+</tr>
+<tr>
+<td>La reproducción se entrecorta o un hueco suena en silencio</td>
+<td>Faltan artículos</td>
+<td>Busca <code translate="no" v-pre>PAR2 repair of …</code> en el log; confirma que <code translate="no" v-pre>enable_repair: true</code>; añade <doc-anchor-trigger to="#more-than-one-usenet-provider">another Usenet provider</doc-anchor-trigger></td>
+</tr>
+<tr>
+<td>Un hueco se queda en silencio y nunca aparece ninguna línea de reparación</td>
+<td><code translate="no" v-pre>enable_repair</code> está desactivado, o el NZB no lleva archivos <code translate="no" v-pre>.par2</code></td>
+<td>Pon <code translate="no" v-pre>enable_repair: true</code>; si la publicación no tiene archivos de recuperación, solo otra cuenta de noticias puede ayudar</td>
+</tr>
+<tr>
+<td>Un segundo proveedor nunca parece consultarse</td>
+<td>Ambas cuentas tienen el mismo <code translate="no" v-pre>backbone</code>, así que la segunda se omite en cuanto la primera dice que el artículo no existe</td>
+<td>Corrige los valores de <code translate="no" v-pre>backbone</code>; solo las cuentas que de verdad están en el mismo spool deben compartir nombre</td>
+</tr>
+<tr>
+<td>Una de varias cuentas está caída, pero el arranque parecía correcto</td>
+<td>El arranque solo falla cuando <em>todas</em> las cuentas son inaccesibles</td>
+<td>Busca <code translate="no" v-pre>is not reachable</code> en el log; cada cuenta mala avisa por su nombre</td>
+</tr>
+<tr>
+<td>Una cuenta de bloque cobra por artículos que la cuenta ilimitada también tiene</td>
+<td>Falta <code translate="no" v-pre>backup: true</code> en ella</td>
+<td>Actívalo; así, un primario simplemente ocupado ya no enviará las lecturas a la cuenta de pago por uso</td>
+</tr>
+<tr>
+<td>Una release no aparece en una carpeta filtrada por etiquetas</td>
+<td>Todavía no se ha analizado, así que no tiene etiquetas <code translate="no" v-pre>zurg_*</code></td>
+<td>Espera al análisis, o ejecuta Analyze &amp; Tag Library desde el Dashboard</td>
+</tr>
+<tr>
+<td>Los archivos <code translate="no" v-pre>.par2</code> no se ven en el montaje</td>
+<td>Es intencionado: están ocultos como andamiaje de reparación</td>
+<td>Nada que arreglar; zurg sigue leyéndolos</td>
+</tr>
+<tr>
+<td>Cambiaste un proveedor en el Dashboard y no pasó nada</td>
+<td>Los cambios de proveedor se escriben en <code translate="no" v-pre>config.yml</code> pero no se recargan en caliente</td>
+<td>Reinicia zurg; el aviso bajo la tabla de proveedores lo dice</td>
+</tr>
+<tr>
+<td>Plex vació la biblioteca tras reiniciar zurg</td>
+<td>Había un escaneo en curso mientras el montaje no estaba, con auto-empty-trash activado</td>
+<td>Desactiva auto-empty y cierra las sesiones <em>y</em> actualiza el estado antes de cualquier reinicio</td>
+</tr>
+<tr>
+<td>El tamaño de un archivo cambió un poco justo después de aparecer la release</td>
+<td>El primer listado solo puede estimarlo a partir del número de artículos; la longitud exacta llega después, desde el índice PAR2 o desde la cabecera yEnc del propio archivo</td>
+<td>Es lo esperado, y se estabiliza una sola vez: la longitud se guarda en <code translate="no" v-pre>data/nzb-sizes/</code> y se mantiene hasta que cambie el NZB</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="asking-about-one-article">Preguntar por un artículo concreto</h3>
+<p><code translate="no" v-pre>GET /debug/nzb/probe</code> hace una sola consulta a las cuentas de noticias a través del pool que zurg ya está usando, con la prioridad que recibe una lectura de demanda. Existe porque la alternativa no funcionaba: una cuenta da ocho conexiones y zurg las tiene todas ocupadas, así que probar un post a mano significaba usar una segunda cuenta o parar el servidor, y parar el servidor destruye el estado que se quiere diagnosticar. En Windows, escribe <code translate="no" v-pre>curl.exe</code> en lugar de <code translate="no" v-pre>curl</code> en estos comandos.</p>
+<div id="asking-about-one-article-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash"># Is this article still there? A STAT, so nothing is transferred.
+curl -u user:pass 'http://localhost:9999/debug/nzb/probe?message_id=abc@news.example'
+
+# The same question addressed the way you have it: a release id from the
+# library, a file index counting from zero, an article number counting from one.
+curl -u user:pass 'http://localhost:9999/debug/nzb/probe?release=&lt;nzb id&gt;&amp;file=0&amp;article=3'
+
+# &amp;body=1 fetches the one article and reports what actually arrived against what
+# the article says should have. This is how a provider that strips trailing
+# bytes is identified: `short: true` with `decoded_bytes` below `span_bytes`.
+curl -u user:pass 'http://localhost:9999/debug/nzb/probe?release=&lt;nzb id&gt;&amp;article=3&amp;body=1'</code></pre>
+</doc-codeblock></div>
+<p>Responde con <code translate="no" v-pre>{&quot;probes&quot;: [...]}</code>, con un objeto por el proveedor <code translate="no" v-pre>nzb</code>: <code translate="no" v-pre>found</code>, <code translate="no" v-pre>missing</code> y cuánto tardó. Pregunta a las cuentas de noticias en orden de prioridad hasta que una lo tiene (una cuenta de respaldo solo se consulta cuando fallan las principales). No dice qué cuenta de noticias tenía el artículo. Es de solo lectura: lo que descarga no entra en la caché de artículos, y un artículo que no encuentra no se registra como muerto, así que una prueba no puede silenciar un archivo que sí reproduce.</p>
+<hr>
+<p>¿Sigues atascado? Pregunta en el foro <strong>zurg-support</strong> de <a href="https://discord.com/invite/7u4YjMThXP">Discord</a>. <a href="../../../guides/remote-help/">Getting help</a> explica qué incluir.</p>
+<h2 id="see-also">Ver también</h2>
+<ul>
+<li><a href="../../reference/config/">config.md</a> — every option, including the <a href="../../reference/config/#usenet-accounts">Usenet account reference</a> and the <a href="../../reference/config/#7-directories--filters">directory filter reference</a></li>
+<li><a href="../plex/">plex.md</a> — cómo zurg maneja el escaneo, la coincidencia y la limpieza de Plex</li>
+<li><a href="../jellyfin/">jellyfin.md</a> — integración con Jellyfin</li>
+<li><a href="../../setup/docker/">docker.md</a> — configuración de Docker, propagación de FUSE y solución de problemas</li>
+<li><a href="../../reference/tags/">tags.md</a> — el sistema de etiquetas</li>
+<li><a href="../../internals/architecture/">architecture.md</a> — <code translate="no" v-pre>internal/nzb</code> y <code translate="no" v-pre>internal/nntp</code> en contexto</li>
+</ul>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/guides/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Anterior</span>
+                                <span class="block mt-1">Gu&#237;as</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/guides/sonarr-radarr/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Siguiente</span>
+                                <span class="block mt-1">Sonarr y Radarr para Usenet</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Usenet", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/guides/usenet.md" }</script>
+</body>
+</html>

@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="zh" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/zh">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672741088">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Sonarr 和 Radarr 配合种子使用，手把手教程</title>
+    <meta name="title" content="Sonarr 和 Radarr 配合种子使用，手把手教程">
+    <meta name="description" content="三种方式可以把 Sonarr 和 Radarr 接到 zurg 上。真正的选择在于由谁来搜索：zurg 还是 *arr。选哪一种一节对比了两者。">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/zh/zurg/guides/sonarr-radarr-torrents/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/zh/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/zh/zurg/guides/sonarr-radarr-torrents/">
+    <meta property="og:title" content="Sonarr 和 Radarr 配合种子使用，手把手教程">
+    <meta property="og:description" content="三种方式可以把 Sonarr 和 Radarr 接到 zurg 上。真正的选择在于由谁来搜索：zurg 还是 *arr。选哪一种一节对比了两者。">
+    <meta property="og:image" content="https://notes.debridmediamanager.com/zh/assets/sonarr-radarr-torrents/44-zurg-dashboard-home.webp">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Sonarr 和 Radarr 配合种子使用，手把手教程">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="zh_CN">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/zh/zurg/guides/sonarr-radarr-torrents/">
+    <meta name="twitter:title" content="Sonarr 和 Radarr 配合种子使用，手把手教程">
+    <meta name="twitter:description" content="三种方式可以把 Sonarr 和 Radarr 接到 zurg 上。真正的选择在于由谁来搜索：zurg 还是 *arr。选哪一种一节对比了两者。">
+    <meta name="twitter:image" content="https://notes.debridmediamanager.com/zh/assets/sonarr-radarr-torrents/44-zurg-dashboard-home.webp">
+    <meta name="twitter:image:alt" content="Sonarr 和 Radarr 配合种子使用，手把手教程">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/zh/zurg/guides/sonarr-radarr-torrents.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672741088" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672741088" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672741088" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672741088" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/zh/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>中文</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/download.html" target="_blank">下载 zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/zh/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">赞助</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>中文</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/download.html" target="_blank">下载 zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/zh/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">赞助</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="sonarr-and-radarr-with-torrents-step-by-step">Sonarr 和 Radarr 配合种子使用，手把手教程</h1>
+<p>三种方式可以把 Sonarr 和 Radarr 接到 zurg 上。真正的选择在于由谁来搜索：zurg 还是 *arr。<a href="../sonarr-radarr-fetch/#which-one-to-pick">选哪一种</a>一节对比了两者。</p>
+<retype-table copy-text="| 指南 | 谁来搜索 | zurg 扮演 | 你需要 |
+|---|---|---|---|
+| [Usenet](sonarr-radarr.md) | Sonarr 和 Radarr | 一个 SABnzbd | 一个 Usenet 账号（或用于 `torbox_nzb` 后端的 TorBox Pro），以及 Prowlarr 或 \*arr 里的 Usenet 索引器 |
+| [种子](sonarr-radarr-torrents.md) | Sonarr 和 Radarr | 一个 qBittorrent | 一个网盘账号，以及 Prowlarr 或 \*arr 里的种子索引器 |
+| [zurg 搜索](sonarr-radarr-fetch.md) | zurg | 完全不需要下载客户端 | 一个 Usenet、TorBox Pro 或网盘账号，以及 zurg 自身配置里的 Newznab 或 Torznab 索引器 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>指南</th>
+<th>谁来搜索</th>
+<th>zurg 扮演</th>
+<th>你需要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../sonarr-radarr/">Usenet</a></td>
+<td>Sonarr 和 Radarr</td>
+<td>一个 SABnzbd</td>
+<td>一个 Usenet 账号（或用于 <code translate="no" v-pre>torbox_nzb</code> 后端的 TorBox Pro），以及 Prowlarr 或 *arr 里的 Usenet 索引器</td>
+</tr>
+<tr>
+<td><a href="">种子</a></td>
+<td>Sonarr 和 Radarr</td>
+<td>一个 qBittorrent</td>
+<td>一个网盘账号，以及 Prowlarr 或 *arr 里的种子索引器</td>
+</tr>
+<tr>
+<td><a href="../sonarr-radarr-fetch/">zurg 搜索</a></td>
+<td>zurg</td>
+<td>完全不需要下载客户端</td>
+<td>一个 Usenet、TorBox Pro 或网盘账号，以及 zurg 自身配置里的 Newznab 或 Torznab 索引器</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>前两种可以同时使用，它们共用同一个 <code translate="no" v-pre>__magic__</code> 文件夹。</p>
+<p><a href="../sonarr-radarr/">上一篇教程</a>讲的是让 *arr 通过 Usenet 连接 zurg，此时 zurg 扮演 SABnzbd。这篇讲的是另一半：zurg 扮演 <strong>qBittorrent</strong>，*arr 交给它的是磁力链接或 <code translate="no" v-pre>.torrent</code> 文件，而不是 NZB，资源会被放到网盘账号里，而不是新闻服务器上。导入的方式是一样的，都是在 <code translate="no" v-pre>__magic__</code> 里改个名字，不需要下载任何东西来导入，也不需要复制。</p>
+<p><strong>*arr 发送的是哪一种，并不只是外观上的差别。</strong> <code translate="no" v-pre>.torrent</code> 通常会把文件本身上传到账号；只有磁力链接才是仅凭信息哈希添加的。在仅缓存模式（默认设置）下，TorBox 和 Debrid-Link 拿到的是信息哈希，因为这是它们在不添加未缓存资源的情况下拒绝该资源的方式。磁力链接会让账号根据哈希去推算种子里有什么内容，而私有种子的哈希在公共 swarm 里找不到可用于推算的信息。Real-Debrid 会因 <code translate="no" v-pre>magnet_error</code> 报错，且没有任何文件；TorBox 则会接受它，然后卡在 <code translate="no" v-pre>checking</code> 状态，没有文件列表、没有大小，还给出一个百天的预估时间，所以这次抓取既不会失败，也不会完成。<code translate="no" v-pre>.torrent</code> 文件会直接用哈希去查询账号的缓存，因此账号里已经有的内容会立即添加，完全不需要解析磁力链接。这也正是私有索引器在这里能用的原因：只要账号里已经有相应内容，它们的资源就能添加，而对于社区共享的内容来说，这通常就是常见情况。请把 *arr 指向那些提供 <code translate="no" v-pre>.torrent</code> 文件而不是磁力链接的索引器，私有索引器一般都是这样。</p>
+<p>下面的所有内容，都是在一台实际运行的服务器上、使用真实的 AllDebrid 账号捕获的，对应的版本为 zurg <code translate="no" v-pre>2026.08.30.0459-nightly-73-g5b4c9790</code>、Sonarr <code translate="no" v-pre>4.0.19.2979</code>、Radarr <code translate="no" v-pre>6.3.0.10514</code> 和 Prowlarr <code translate="no" v-pre>2.5.2.5491</code>。主机名和用户名已改为 <code translate="no" v-pre>you@zurg-server</code>。索引器名称写作 <code translate="no" v-pre>my-indexer</code>。API 密钥和库数量均为示例。捕获的输出中，除此之外没有改动任何内容。</p>
+<h2 id="before-you-start">开始之前</h2>
+<ol>
+<li><strong>zurg 需要一个能添加种子的账号</strong>：Real-Debrid、AllDebrid、TorBox、Premiumize、Debrid-Link 或 Offcloud。这六家都直接接收上传的 <code translate="no" v-pre>.torrent</code> 文件，这正是私有 tracker 上的资源能够添加的原因。Usenet 账号两种形式都不接受：如果安装时唯一的提供方是 <code translate="no" v-pre>nzb</code>，它会接受每一次抓取，然后拒绝它们。zurg 启动时会明确提示这一点。</li>
+<li><strong><code translate="no" v-pre>magic.enabled</code> 必须为 <code translate="no" v-pre>true</code>。</strong> 没有它，保存路径就不存在，每次导入都会失败。参见 <a href="../magic/"><code translate="no" v-pre>__magic__</code></a>。</li>
+<li><strong>挂载点必须能被 *arr 看到，路径为 zurg 报告的路径。</strong> 如果 *arr 运行在容器里，请先阅读<doc-anchor-trigger to="#8-if-your-arr-is-in-docker">第 8 步</doc-anchor-trigger>，再进行任何配置。如果它作为普通应用安装在同一台机器上，它能看到 zurg 挂载的位置，但每个系统都有一个需要注意的地方：
+<ul>
+<li><strong>Linux：</strong> 如果 *arr 与 zurg 以不同用户运行，在启用 <code translate="no" v-pre>user_allow_other</code> 之前它会看到一个空文件夹。参见 <a href="../../setup/linux/#1-install-fuse-3">Linux 安装</a>。</li>
+<li><strong>macOS：</strong> 请以与 zurg 相同的用户运行它。除非你修改了 <code translate="no" v-pre>mount_path</code>，否则挂载点为 <code translate="no" v-pre>/Volumes/Zurg</code>。</li>
+<li><strong>Windows：</strong> 请将 Sonarr 和 Radarr 以托盘应用的方式运行（其安装程序会提供此选项），而不是作为 Windows 服务。zurg 的 <code translate="no" v-pre>Z:</code> 盘属于你登录的会话，而服务运行在该会话之外，因此看不到这个盘。参见<a href="../../setup/windows/#keeping-it-running-the-session-rules">会话规则</a>。</li>
+</ul>
+</li>
+</ol>
+<p>前两项直接在 zurg 的工作目录中的配置文件里检查。在 Windows 上，请改用记事本打开 <code translate="no" v-pre>config.yml</code>。</p>
+<div id="before-you-start-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ grep -A3 '^providers:' config.yml
+providers:
+- type: alldebrid
+  token: &lt;redacted&gt;
+
+$ grep -A3 '^magic:' config.yml
+magic:
+  enabled: true
+  allow_delete: false</code></pre>
+</doc-codeblock></div>
+<p><strong><code translate="no" v-pre>providers:</code> 列表的顺序在这里很重要。</strong> 一次抓取会按此顺序提供给每个能接收种子的账号；如果某个账号拒绝或卡住，就放弃它，并尝试下一个。如果你有两个账号，请把你更想优先使用的那个放在前面。</p>
+<p>有两个配置项可以让账号脱离这一顺序。<code translate="no" v-pre>watchlist: true</code> 会把某个账号排到最前面，无论它在文件中的位置如何；<code translate="no" v-pre>add_torrents: false</code> 则会把它完全移出轮换，使其继续提供服务并读取其资料库，但不会再添加任何新内容，适用于归档账号，或配额已被占用的账号。无论哪种设置，Usenet 账号都不会被提供种子。两者的说明都见<a href="../../reference/config/#accounts">配置参考</a>。</p>
+<h2 id="1-turn-the-endpoint-on">1. 打开端点</h2>
+<p>两种方式效果相同。两者都会写入 <code translate="no" v-pre>config.yml</code>，而且都需要重启：提供 <code translate="no" v-pre>__magic__</code> 的路由和 qBittorrent 端点只会在 zurg 启动时注册一次。</p>
+<h3 id="option-a--the-dashboard">方案 A — 仪表盘</h3>
+<p>打开 zurg 的控制面板，点击 <strong>Config</strong>，然后滚动到 <strong>__magic__ &amp; Download Clients</strong>。打开 <strong>Serve __magic__</strong> 和 <strong>qBittorrent Endpoint</strong>。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/44-zurg-dashboard-home.webp" alt="zurg 控制面板的快速链接" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">zurg 控制面板的快速链接</figcaption>
+</figure>
+<p>设置在 <strong>Config</strong> 里；以后抓取的内容到达时，你在 <strong>Magic</strong> 里看。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/40-zurg-config-magic-qbittorrent.webp" alt="Config 页面上的 magic 和下载客户端区块" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Config 页面上的 magic 和下载客户端区块</figcaption>
+</figure>
+<p>除非你的 *arr 把 zurg 挂载到了和 zurg 自己不同的位置，否则 <strong>qBittorrent Save Path</strong> 保持为空，具体见<doc-anchor-trigger to="#8-if-your-arr-is-in-docker">第 8 步</doc-anchor-trigger>。橙色的 <strong>Restart Required</strong> 标签说的是实话：这里的任何设置都要等 zurg 重启后才会生效。</p>
+<h3 id="option-b--configyml">方案 B — <code translate="no" v-pre>config.yml</code></h3>
+<p>手动添加这段配置，然后重启 zurg。</p>
+<div id="option-b--configyml-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">magic:
+  enabled: true
+
+qbittorrent:
+  enabled: true
+  api_key: &quot;&quot;                   # empty = zurg generates one and keeps it
+  categories: [tv-sonarr, radarr]
+  save_path: &quot;&quot;                 # empty = &lt;mount_path&gt;/__magic__/__all__
+  cached_only: true             # the default: only take what an account already holds</code></pre>
+</doc-codeblock></div>
+<p><strong>分类不是文件夹。</strong> 它们都指向同一个地方，也就是 <code translate="no" v-pre>__magic__/__all__</code> 下该发布资源自己的文件夹。列表只是提前创建分类：客户端点击 <strong>Test</strong> 时会创建缺少的任何分类，zurg 会把它保存在 <code translate="no" v-pre>data/qbittorrent-categories.json</code> 中。如果你使用 Prowlarr，它需要 <code translate="no" v-pre>prowlarr</code> 这个分类，参见 <doc-anchor-trigger to="#10-prowlarr-manual-grabs">第 10 步</doc-anchor-trigger>。</p>
+<p>重启 zurg，然后确认端点已注册，并且提供方已生效：</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/43-zurg-config-providers.webp" alt="zurg 配置页上的 providers 配置块" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">zurg 配置页上的 providers 配置块</figcaption>
+</figure>
+<p>端点只需要一行 <code translate="no" v-pre>alldebrid</code>，六种支持种子的类型中任意一种都可以。</p>
+<p>启动日志也说明了同样的内容，值得花点时间读一读：</p>
+<div id="option-b--configyml-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO  router.qbittorrent  qBittorrent API on /api/v2 and /qbittorrent/api/v2, save path /mnt/zurg_qbt/__magic__/__all__, categories tv-sonarr, radarr
+INFO  router.qbittorrent  qBittorrent: cached-only, so a grab is only accepted onto an account that already holds the content; anything else is refused and the *arr takes its next release. Set qbittorrent.cached_only: false to let accounts download
+INFO  router.qbittorrent  qBittorrent: torrents are offered to alldebrid, in that order</code></pre>
+</doc-codeblock></div>
+<h2 id="2-find-the-api-key">2. 找到 API key</h2>
+<p>API 密钥是这个端点唯一的认证手段，所以请一次就设置正确，并且不要把它贴到任何公开的地方。</p>
+<p><strong>如果你把 <code translate="no" v-pre>api_key</code> 留空</strong>，zurg 会在第一次启动时自动生成一个密钥，并写入 <code translate="no" v-pre>data/qbittorrent-apikey</code>：</p>
+<div id="2-find-the-api-key-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ cat data/qbittorrent-apikey
+fedcba9876543210fedcba9876543210
+</code></pre>
+</doc-codeblock></div>
+<p>这只是示例，你的密钥会不一样。这个文件在重启后仍然保留，所以密钥生成后就不会变。</p>
+<p><strong>如果你自己设置了 <code translate="no" v-pre>api_key</code></strong>，密钥就在 <code translate="no" v-pre>config.yml</code> 里，不会再写入其他文件。</p>
+<p><strong>这个端点不在 zurg 的基本认证范围内。</strong> *arrs 会用下载客户端自己的方式进行认证。它们的 HTTP 层会把基本认证返回的 401 变成“unable to connect”，而这个提示没有任何可操作的信息。所以 zurg 特意把 <code translate="no" v-pre>/api/v2</code> 排除在外。API 密钥就是唯一的门槛。请像对待 zurg 的其他部分一样对待这个端口：只在可信网络上使用，或者放在某种防护之后。</p>
+<p>有三种方式提供密钥，都可以使用：</p>
+<ul>
+<li><strong><code translate="no" v-pre>Authorization: Bearer &lt;key&gt;</code></strong>：客户端在 <strong>API Key</strong> 字段里填了值时发送的就是这个。这是推荐的方式，可以跳过登录步骤。</li>
+<li><strong>在 <code translate="no" v-pre>auth/login</code> 中把密钥作为密码</strong>，用户名随意填。如果你更想填写 Username 和 Password，就用这种方式。</li>
+<li><strong>zurg 自己的仪表盘用户名和密码</strong>，前提是 <code translate="no" v-pre>config.yml</code> 里设置了 <code translate="no" v-pre>username:</code> 和 <code translate="no" v-pre>password:</code>。</li>
+</ul>
+<h2 id="3-prove-it-answers">3. 验证它能正常响应</h2>
+<p>在碰 Sonarr 之前先做这一步。只需十秒钟，就能在接下来的整个设置过程中分清问题出在 zurg 还是 *arr 上。</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-和-macos">
+<template #title>Linux 和 macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ KEY=fedcba9876543210fedcba9876543210
+$ ZURG=192.168.88.244:9995
+
+$ curl -s &quot;http://$ZURG/api/v2/app/webapiVersion&quot;
+Forbidden
+
+$ curl -s -H &quot;Authorization: Bearer $KEY&quot; &quot;http://$ZURG/api/v2/app/webapiVersion&quot;
+2.11.2
+
+$ curl -s -H &quot;Authorization: Bearer $KEY&quot; &quot;http://$ZURG/api/v2/app/version&quot;
+v5.0.4
+
+$ curl -s -H &quot;Authorization: Bearer $KEY&quot; &quot;http://$ZURG/api/v2/app/preferences&quot; | jq .save_path
+&quot;/mnt/zurg_qbt/__magic__/__all__&quot;</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<p>在 PowerShell 中执行。请输入 <code translate="no" v-pre>curl.exe</code>，而不是 <code translate="no" v-pre>curl</code>：Windows PowerShell 里的 <code translate="no" v-pre>curl</code> 是另一个命令。</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; $KEY = &quot;fedcba9876543210fedcba9876543210&quot;
+PS&gt; $ZURG = &quot;192.168.88.244:9995&quot;
+
+PS&gt; curl.exe -s &quot;http://$ZURG/api/v2/app/webapiVersion&quot;
+Forbidden
+
+PS&gt; curl.exe -s -H &quot;Authorization: Bearer $KEY&quot; &quot;http://$ZURG/api/v2/app/webapiVersion&quot;
+2.11.2
+
+PS&gt; curl.exe -s -H &quot;Authorization: Bearer $KEY&quot; &quot;http://$ZURG/api/v2/app/version&quot;
+v5.0.4
+
+PS&gt; (Invoke-RestMethod &quot;http://$ZURG/api/v2/app/preferences&quot; -Headers @{ Authorization = &quot;Bearer $KEY&quot; }).save_path
+Z:/__magic__/__all__</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p><strong>只返回 <code translate="no" v-pre>Forbidden</code> 才是正常的结果。</strong> 客户端的第一次探测是一个<em>未认证</em>的 <code translate="no" v-pre>GET /api/v2/app/webapiVersion</code> 请求。真正的 qBittorrent 在 API 存在但没有人登录时，就会返回 <code translate="no" v-pre>403</code>。所以 zurg 也会返回同样的结果，客户端据此判断为&quot;支持 v2，请进行认证&quot;。如果返回的是普通的 <strong>404</strong>，则说明 <code translate="no" v-pre>qbittorrent.enabled</code> 仍为 false，或者你修改后还没有重启 zurg。</p>
+<p>接着检查错误的密钥是否确实会被拒绝：</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-和-macos-1">
+<template #title>Linux 和 macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ curl -s -o /dev/null -w &quot;%{http_code}\n&quot; -H &quot;Authorization: Bearer wrongkey&quot; \
+    &quot;http://$ZURG/api/v2/torrents/info&quot;
+403</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-1">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; curl.exe -s -o NUL -w &quot;%{http_code}\n&quot; -H &quot;Authorization: Bearer wrongkey&quot; &quot;http://$ZURG/api/v2/torrents/info&quot;
+403</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p><code translate="no" v-pre>save_path</code> 是 zurg 交给客户端的路径，现在就检查一下<em>客户端</em>是否能打开这个路径。</p>
+<p>两种 URL 形式都可以用，所以在客户端的 <strong>URL Base</strong> 字段中填哪种都行：</p>
+<retype-table copy-text="| 路径 | Sonarr / Radarr 中的 URL Base | 是否响应 |
+|---|---|---|
+| `/api/v2/…` | *(留空)* | 是 |
+| `/qbittorrent/api/v2/…` | `/qbittorrent` | 是 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>路径</th>
+<th>Sonarr / Radarr 中的 URL Base</th>
+<th>是否响应</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>/api/v2/…</code></td>
+<td><em>(留空)</em></td>
+<td>是</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>/qbittorrent/api/v2/…</code></td>
+<td><code translate="no" v-pre>/qbittorrent</code></td>
+<td>是</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h2 id="4-make-the-root-folders">4. 创建根文件夹</h2>
+<p>在添加之前先把文件夹建好。*arr 的 Add Root Folder 对话框会浏览实时文件系统，不存在的文件夹不会出现在选项里。</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-和-macos-2">
+<template #title>Linux 和 macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ mkdir -p /mnt/zurg_qbt/__magic__/tv /mnt/zurg_qbt/__magic__/movies
+
+$ ls -d /mnt/zurg_qbt/__magic__/tv /mnt/zurg_qbt/__magic__/movies
+/mnt/zurg_qbt/__magic__/movies
+/mnt/zurg_qbt/__magic__/tv</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-2">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; New-Item -ItemType Directory -Force Z:\__magic__\tv, Z:\__magic__\movies</code></pre>
+</doc-codeblock></div>
+<p>或者在资源管理器里手动创建这两个文件夹。</p>
+</doc-tab>
+</doc-tabs>
+<p>把 <code translate="no" v-pre>/mnt/zurg_qbt</code> 换成你自己的 <code translate="no" v-pre>mount_path</code>。如果没有设置，Linux 上默认是 <code translate="no" v-pre>/mnt/zurg</code>，macOS 上是 <code translate="no" v-pre>/Volumes/Zurg</code>，Windows 上是 <code translate="no" v-pre>Z:</code>。</p>
+<p><strong>根文件夹应该放在保存路径旁边，既不能是保存路径本身，也不能在它上层。</strong> 这和 Usenet 教程的规则一样，原因也相同：zurg 把 <code translate="no" v-pre>__magic__/__all__</code> 报告为保存路径。如果根文件夹就是下载客户端的输出文件夹，两个客户端都会触发健康检查；如果根文件夹包含了输出文件夹，Radarr 也会触发。而并列放置则不会触发任何一个。<a href="../sonarr-radarr/#4-make-the-root-folders">那份指南</a>里有做错时的截图。</p>
+<p>种子还有另一个专门的原因：如果移动的目标位置在 <code translate="no" v-pre>__magic__</code> 之外，这就是两个文件系统之间的移动，实际上是复制。而从网盘挂载点复制，会通过网络把整个发布内容重新读取一遍。保持 <code translate="no" v-pre>Remove Completed</code> 开启（<doc-anchor-trigger to="#if-the-import-copies-instead-of-moving">见下文</doc-anchor-trigger>），导入就只是重命名。根文件夹放在命名空间之外，会让这个优势失效。</p>
+<p>两个卷之间的移动同样是复制。这在 Docker 中尤其要注意，第 8 步会讲到。</p>
+<h2 id="5-add-the-client-in-sonarr">5. 在 Sonarr 中添加客户端</h2>
+<p>全新的 Sonarr 会在首次启动时用一个界面挡住所有操作。选择 <strong>Forms (Login Page)</strong>，设置用户名和密码，然后点击 <strong>Save</strong>。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/01-sonarr-firstrun-auth.webp" alt="Sonarr's first-run authentication screen" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr's first-run authentication screen</figcaption>
+</figure>
+<p>在 <strong>Authentication Method</strong> 不是 None 之前，它不会让你继续。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/02-sonarr-firstrun-auth-filled.webp" alt="The same screen filled in" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The same screen filled in</figcaption>
+</figure>
+<p>点击 Save 后，你会被退出一次，并进入登录页面。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/04-sonarr-login.webp" alt="Sonarr's login page" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr's login page</figcaption>
+</figure>
+<h3 id="settings--download-clients">Settings → Download Clients</h3>
+<p>前往 <strong>Settings → Download Clients</strong>。全新安装后，这里只有一个 <strong>+</strong> 卡片。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/05-sonarr-downloadclients-empty.webp" alt="Sonarr 的空下载客户端页面" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr 的空下载客户端页面</figcaption>
+</figure>
+<p>点击 &quot;Download Clients&quot; 下面的 <strong>+</strong>，不要点further 下面 &quot;Remote Path Mappings&quot; 里的那个。</p>
+<p>在 <strong>Torrents</strong> 列中选择 <strong>qBittorrent</strong>。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/06-sonarr-add-client-picker.webp" alt="显示 qBittorrent 的添加下载客户端选择器" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">显示 qBittorrent 的添加下载客户端选择器</figcaption>
+</figure>
+<p>zurg 专门模仿 qBittorrent，所以列表里其他选项都不管用。这两列能告诉你正在看哪份指南：SABnzbd 在 Usenet 下，qBittorrent 在 Torrents 下。</p>
+<p>对话框会打开 qBittorrent 的默认值：<code translate="no" v-pre>localhost</code>、端口 <code translate="no" v-pre>8080</code>、没有密钥。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/07-sonarr-qbittorrent-dialog-empty.webp" alt="未修改的 qBittorrent 下载客户端对话框" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">未修改的 qBittorrent 下载客户端对话框</figcaption>
+</figure>
+<h3 id="what-to-put-in-each-field">每个字段该填什么</h3>
+<retype-table copy-text="| 字段 | 值 | 原因 |
+|---|---|---|
+| Name | `zurg (torrents)` | 随便取。它只是一个标签。 |
+| Enable | on | 保持勾选。 |
+| Host | `192.168.88.244` | zurg 所在的主机，*the \*arr* 需要能访问到它。如果 \*arr 和 zurg 在同一台机器上运行的是普通应用，就填 `localhost`。在 Docker 中的情况见下方的警告。 |
+| Port | `9995` | zurg 的常用端口，默认安装时是 `9999`。 |
+| Use SSL | off | 只有当你自己在 zurg 前面配置了 TLS 时才开启。 |
+| URL Base | 留空 | `/qbittorrent` 也可以用，见第 3 步。 |
+| API Key | 来自第 2 步 | 整个认证的关键。它会以 bearer token 的形式发送。 |
+| Username / Password | 留空 | 两项都留空，API 密钥会替代它们。 |
+| Category | `tv-sonarr` | \*arr 的默认值。zurg 已经列出了它，如果没有这个分类，**Test** 会自动创建。 |
+| Initial State / Sequential / First-Last | 保持默认 | 这里没有 swarm，这些选项都不会起作用。 |
+| **Remove Completed** | **on** | **最重要的一项**，见 [如果导入是复制而不是移动](#if-the-import-copies-instead-of-moving)。 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>字段</th>
+<th>值</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td><code translate="no" v-pre>zurg (torrents)</code></td>
+<td>随便取。它只是一个标签。</td>
+</tr>
+<tr>
+<td>Enable</td>
+<td>on</td>
+<td>保持勾选。</td>
+</tr>
+<tr>
+<td>Host</td>
+<td><code translate="no" v-pre>192.168.88.244</code></td>
+<td>zurg 所在的主机，<em>the *arr</em> 需要能访问到它。如果 *arr 和 zurg 在同一台机器上运行的是普通应用，就填 <code translate="no" v-pre>localhost</code>。在 Docker 中的情况见下方的警告。</td>
+</tr>
+<tr>
+<td>Port</td>
+<td><code translate="no" v-pre>9995</code></td>
+<td>zurg 的常用端口，默认安装时是 <code translate="no" v-pre>9999</code>。</td>
+</tr>
+<tr>
+<td>Use SSL</td>
+<td>off</td>
+<td>只有当你自己在 zurg 前面配置了 TLS 时才开启。</td>
+</tr>
+<tr>
+<td>URL Base</td>
+<td>留空</td>
+<td><code translate="no" v-pre>/qbittorrent</code> 也可以用，见第 3 步。</td>
+</tr>
+<tr>
+<td>API Key</td>
+<td>来自第 2 步</td>
+<td>整个认证的关键。它会以 bearer token 的形式发送。</td>
+</tr>
+<tr>
+<td>Username / Password</td>
+<td>留空</td>
+<td>两项都留空，API 密钥会替代它们。</td>
+</tr>
+<tr>
+<td>Category</td>
+<td><code translate="no" v-pre>tv-sonarr</code></td>
+<td>*arr 的默认值。zurg 已经列出了它，如果没有这个分类，<strong>Test</strong> 会自动创建。</td>
+</tr>
+<tr>
+<td>Initial State / Sequential / First-Last</td>
+<td>保持默认</td>
+<td>这里没有 swarm，这些选项都不会起作用。</td>
+</tr>
+<tr>
+<td><strong>Remove Completed</strong></td>
+<td><strong>on</strong></td>
+<td><strong>最重要的一项</strong>，见 <doc-anchor-trigger to="#if-the-import-copies-instead-of-moving">如果导入是复制而不是移动</doc-anchor-trigger>。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/08-sonarr-qbittorrent-dialog-filled.webp" alt="填写完成的 qBittorrent 对话框" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">填写完成的 qBittorrent 对话框</figcaption>
+</figure>
+<p>图中的 API 密钥只是示例，请粘贴你自己的密钥。</p>
+<p><strong>在 Docker 中，&quot;localhost&quot; 和主机名都会出错。</strong> 在容器内部，<code translate="no" v-pre>localhost</code> 指的是容器本身，而机器自己的主机名通常会解析为 <code translate="no" v-pre>127.0.1.1</code>，这同样是容器自己。这台机器的主机名是 <code translate="no" v-pre>zurg-server</code>，在 Sonarr 容器里 <code translate="no" v-pre>zurg-server</code> 解析成了 <code translate="no" v-pre>127.0.1.1</code>，但同样的名字在宿主机的 shell 里却能正常使用。请使用宿主机的 <strong>局域网或 Tailscale IP</strong>，不要用 <code translate="no" v-pre>localhost</code>，也不要只用裸主机名。</p>
+<p>点击 <strong>Test</strong>。绿色的对勾表示客户端的检查通过了，包括 API 版本、认证、分类和种子列表。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/09-sonarr-qbittorrent-test-ok.webp" alt="显示测试成功的对话框底部" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">显示测试成功的对话框底部</figcaption>
+</figure>
+<p>现在点击 <strong>Save</strong>。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/10-sonarr-downloadclient-saved.webp" alt="Sonarr 中已保存的下载客户端卡片" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr 中已保存的下载客户端卡片</figcaption>
+</figure>
+<h2 id="6-add-the-root-folder-in-sonarr">6. 在 Sonarr 中添加根文件夹</h2>
+<p>前往 <strong>Settings → Media Management</strong>，然后滚动到底部。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/11-sonarr-rootfolders-empty.webp" alt="Sonarr 中空的根文件夹部分" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr 中空的根文件夹部分</figcaption>
+</figure>
+<p>点击 <strong>Add Root Folder</strong>。会打开一个文件浏览器，显示 Sonarr 的文件系统。如果你用的是 Docker，这里显示的是容器内的文件系统。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/12-sonarr-rootfolder-dialog.webp" alt="位于文件系统根目录的 Sonarr 文件浏览器" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">位于文件系统根目录的 Sonarr 文件浏览器</figcaption>
+</figure>
+<p>直接输入路径，或者一层层点进去找。如果 Sonarr 真的能看到这个挂载，就能打开 <code translate="no" v-pre>__magic__</code>，里面会显示你在第 4 步创建的内容，以及 zurg 自己放在那里的 <code translate="no" v-pre>__all__</code>。这是确认绑定挂载是否正确的最快办法。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/13-sonarr-rootfolder-browse.webp" alt="magic 内的文件浏览器，列出 tv 和 movies" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">magic 内的文件浏览器，列出 tv 和 movies</figcaption>
+</figure>
+<p>如果这里是空的或者报错，先停下来，把挂载修好再继续。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/14-sonarr-rootfolder-typed.webp" alt="路径已输入到 magic/tv" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">路径已输入到 magic/tv</figcaption>
+</figure>
+<p>把路径补全为 <code translate="no" v-pre>__magic__/tv</code>（Windows 上是 <code translate="no" v-pre>Z:\__magic__\tv</code>），然后点击 <strong>Ok</strong>。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/15-sonarr-rootfolder-added.webp" alt="已添加根文件夹，显示可用空间" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">已添加根文件夹，显示可用空间</figcaption>
+</figure>
+<p><strong>Free Space</strong> 显示 <code translate="no" v-pre>1 PiB</code>，这是 zurg 报告的虚拟文件系统容量，并不是真实的磁盘。这是正常的。它也正是为了通过 *arr 在抓取前的可用空间检查。</p>
+<h2 id="7-do-the-same-in-radarr">7. 在 Radarr 中做同样的操作</h2>
+<p>除了两个值改了，其他都一样：分类是 <code translate="no" v-pre>radarr</code>，根文件夹是 <code translate="no" v-pre>__magic__/movies</code>。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/20-radarr-login.webp" alt="Radarr 的登录页面" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr 的登录页面</figcaption>
+</figure>
+<p>Radarr 的首次运行也一样：先设置 Forms auth，然后登录。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/21-radarr-add-client-picker.webp" alt="Radarr 的添加下载客户端选择器" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr 的添加下载客户端选择器</figcaption>
+</figure>
+<p><strong>Settings → Download Clients → +</strong>，然后在 Torrents 下选 <strong>qBittorrent</strong>。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/22-radarr-qbittorrent-dialog-filled.webp" alt="Radarr 中填好 radarr 分类的 qBittorrent 对话框" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr 中填好 radarr 分类的 qBittorrent 对话框</figcaption>
+</figure>
+<p>主机和端口不变，密钥也不变。只有 <strong>Category</strong> 不一样，填 <code translate="no" v-pre>radarr</code>，不是 <code translate="no" v-pre>tv-sonarr</code>。</p>
+<p>点 <strong>Test</strong>，看到绿色对勾后，点 <strong>Save</strong>。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/24-radarr-downloadclient-saved.webp" alt="Radarr 中已保存的下载客户端卡片" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr 中已保存的下载客户端卡片</figcaption>
+</figure>
+<p>然后进入 <strong>Settings → Media Management → Root Folders → Add Root Folder</strong>，添加 <code translate="no" v-pre>/mnt/zurg_qbt/__magic__/movies</code>。</p>
+<p><strong>一个 zurg，两个客户端，一个队列。</strong> 每个客户端看到的种子列表只按分类过滤，没有别的条件。两个 Sonarr 都用 <code translate="no" v-pre>tv-sonarr</code> 的话，会互相看到对方的抓取记录；Sonarr 用 <code translate="no" v-pre>tv-sonarr</code>、Radarr 用 <code translate="no" v-pre>radarr</code> 则不会。每个分类只配一个客户端，就不会遇到这个问题。</p>
+<h2 id="8-if-your-arr-is-in-docker">8. 如果你的 *arr 运行在 Docker 中</h2>
+<p>这一步适用于 Linux 主机上的 Docker。在 macOS 和 Windows 上，请把 *arrs 当作普通应用来安装，具体见<doc-anchor-trigger to="#before-you-start">开始之前</doc-anchor-trigger>。Usenet 教程的第 8 步说明了原因。</p>
+<p>这里遇到的三个问题和 Usenet 教程一样，修复方法也一样：挂载点就是挂载点。所以这里只给简短版本。详细内容见<a href="../sonarr-radarr/#8-if-your-arr-is-in-docker">该指南的第 8 步</a>。</p>
+<p><strong>zurg 报告的路径，必须是客户端能打开的路径。</strong> 如果容器挂载库的位置和 zurg 不同，每次导入都会失败，并出现 <em>download doesn&#x27;t contain intermediate path</em>，或者远程路径健康检查报错。请把 <code translate="no" v-pre>qbittorrent.save_path</code> 设为<em>客户端</em>看到的路径，或者添加远程路径映射：</p>
+<div id="8-if-your-arr-is-in-docker-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">qbittorrent:
+  save_path: &quot;/data/zurg/__magic__/__all__&quot;   # what the *arr sees, not what zurg sees</code></pre>
+</doc-codeblock></div>
+<p><strong>保存路径和根文件夹共用一个卷。</strong> 不要给容器挂载 <code translate="no" v-pre>__magic__/__all__</code> 和 <code translate="no" v-pre>__magic__/tv</code> 两个卷。两者之间的重命名会在容器内失败。这时客户端会把每次导入的内容从你的账户复制一份，写到 zurg 所在的磁盘上，而且不会给出任何提示。请只挂载一个卷，让它包含 zurg 的整个挂载内容，然后通过这个卷访问两个文件夹。下面的 bind 挂载就是这个卷。</p>
+<p><strong>绑定挂载的父目录，而不是挂载点本身。</strong> 重启 zurg 时会先卸载再重新挂载。如果容器绑定的是挂载点本身，它会保留已失效的 fuse 连接，之后的每次读取都会返回 <code translate="no" v-pre>Socket not connected</code>。而且两个客户端在抓取前都会检查可用空间，所以<em>每个版本都会被静默拒绝</em>。请用 <code translate="no" v-pre>rslave</code> 绑定父目录，这样重新挂载时会作为子挂载事件到达，容器能够跟随。本环境中的容器是在 zurg 挂载之前启动的，但挂载点仍然出现在了容器内：</p>
+<div id="8-if-your-arr-is-in-docker-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ docker exec sonarr df -h /mnt/zurg_qbt
+Filesystem      Size  Used Avail Use% Mounted on
+zurg{8amax}:    1.0P     0  1.0P   0% /mnt/zurg_qbt</code></pre>
+</doc-codeblock></div>
+<h2 id="9-watch-one-grab-go-through">9. 跟踪一次抓取的完整过程</h2>
+<p>添加一个内容，手动抓取，然后完整跟踪它的整个过程。下面的所有内容，都是按照上面的设置进行的一次真实抓取：<em>Ghost in the Shell (1995)</em>，从索引站手动抓取的。</p>
+<h3 id="grab-it">抓取</h3>
+<p>打开电影,点击 <strong>Interactive Search</strong>,然后选一个版本。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/60-radarr-interactive-search.webp" alt="Radarr 的交互式搜索结果" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr 的交互式搜索结果</figcaption>
+</figure>
+<p><strong>Source</strong> 列显示 <code translate="no" v-pre>torrent</code>,这就是这个接口使用的协议。点击该行末尾带圆圈箭头的按钮即可抓取它。如果客户端要求你先确认映射关系:</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/60b-radarr-override-and-grab.webp" alt="Radarr 的 Override and Grab 对话框" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr 的 Override and Grab 对话框</figcaption>
+</figure>
+<p>当版本与库不能完全匹配时,会出现 <strong>Override and Grab</strong>。检查映射关系,然后点击 <strong>Grab Release</strong>。正常抓取时永远不会出现这个对话框。</p>
+<h3 id="the-account-takes-it">账户接管下载</h3>
+<p>zurg 日志里，一次添加操作由三行组成：接收它的账户、被提交的任务，以及 <code translate="no" v-pre>finished</code>。下面这段截图来自旧版本，只记录了后两行：</p>
+<div id="the-account-takes-it-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO  router.qbittorrent  qBittorrent: [Polarwindz] Ghost in the Shell (1995) (BD 1080p HEVC FLAC) (0c5e4077…) added to alldebrid as 720824192
+INFO  router.qbittorrent  qBittorrent: [Polarwindz] Ghost in the Shell (1995) (BD 1080p HEVC FLAC) (0c5e4077…) finished on alldebrid</code></pre>
+</doc-codeblock></div>
+<p>hash 是客户端发来的 info hash。<code translate="no" v-pre>added … as 720824192</code> 是账户给它分配的自身 ID。这个版本已经在账户上缓存过，所以 <code translate="no" v-pre>finished</code> 大约一秒后就出现。没有缓存的版本会在这两行之间停留一段时间，因为账户正在下载它。这段时间里账户在做什么，客户端的队列会显示出来：</p>
+<retype-table copy-text="| 账户正在做什么 | 队列显示 |
+|---|---|
+| 解析 magnet 指向的内容 | *Loading metadata*，还没有任何测量数据 |
+| 在账户自己的队列中等待 | *Queued* |
+| 下载中。速率、swarm 和剩余时间都是账户自己给出的数据 | *Downloading*，并显示真实的进度条 |
+| 所有账户都拒绝或超时 | **警告**，并附上原因，详见 [故障排除](#troubleshooting) |
+| 已入库，文件夹可以导入 | *Completed* |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>账户正在做什么</th>
+<th>队列显示</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>解析 magnet 指向的内容</td>
+<td><em>Loading metadata</em>，还没有任何测量数据</td>
+</tr>
+<tr>
+<td>在账户自己的队列中等待</td>
+<td><em>Queued</em></td>
+</tr>
+<tr>
+<td>下载中。速率、swarm 和剩余时间都是账户自己给出的数据</td>
+<td><em>Downloading</em>，并显示真实的进度条</td>
+</tr>
+<tr>
+<td>所有账户都拒绝或超时</td>
+<td><strong>警告</strong>，并附上原因，详见 <doc-anchor-trigger to="#troubleshooting">故障排除</doc-anchor-trigger></td>
+</tr>
+<tr>
+<td>已入库，文件夹可以导入</td>
+<td><em>Completed</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>如果 swarm 卡住了，会显示 <strong>Downloading</strong>，速率和做种数都是零，而不是卡住的警告。<code translate="no" v-pre>stalledDL</code> 是 *arrs 用来处理下载失败的状态，而一个没有做种者的 swarm 并不能说明这个资源有问题。</p>
+<p>完整的 magnet 都会传给账户。zurg 会转发客户端抓取时使用的显示名称，以及它指定的所有 tracker。对于只发布 magnet 的索引器来说，显示名称是唯一能找到发布名称的地方。如果没有它，只要元数据一直没有解析，TorBox 就会把未解析的抓取项显示成四十字符的哈希。<code translate="no" v-pre>.torrent</code> 自带名称和 tracker，所以不会额外添加任何内容。例外是 TorBox 和 Debrid-Link 上的仅缓存模式（默认设置）。这两个服务只按哈希查询，因为缓存命中时会返回真实名称。</p>
+<h3 id="the-import-happens">导入过程</h3>
+<p><strong>Activity → Queue</strong>，然后是 <strong>Activity → History</strong>。两条事件只相隔几秒，依次是 <strong>Grabbed</strong>，然后是 <strong>Movie Imported</strong>：</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/62-radarr-history.webp" alt="Radarr 的历史记录：导入的文件，其来源和目标路径都在 magic 下" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr 的历史记录：导入的文件，其来源和目标路径都在 magic 下</figcaption>
+</figure>
+<p>展开已导入的那一行，看看路径。<strong>Source</strong> 是 <code translate="no" v-pre>/mnt/zurg_qbt/__magic__/__all__/[Polarwindz] …/[Polarwindz] ….mkv</code>，<strong>Imported To</strong> 是 <code translate="no" v-pre>/mnt/zurg_qbt/__magic__/movies/Ghost in the Shell (1995)/…</code>。文件其实从没离开 <code translate="no" v-pre>__magic__</code>，所以这次导入本质上就是一次重命名。这张截图是在资源库移到 <code translate="no" v-pre>__all__</code> 下面之前拍的，所以它的来源路径比你那边看到的少一层。</p>
+<p>客户端决定不导入的抓取结果，会以警告的形式留在队列里。这张截图队列中的那一行，是质量配置文件拒绝的一次升级。它可见，点一下 <em>Remove</em> 就能删掉，但它本身不会清除任何东西：</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/61-radarr-queue.webp" alt="Radarr 队列中一个已完成但客户端不会导入的发布" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr 队列中一个已完成但客户端不会导入的发布</figcaption>
+</figure>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/63-radarr-movie-imported.webp" alt="显示 Downloaded 状态的 Radarr 电影页面" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">显示 Downloaded 状态的 Radarr 电影页面</figcaption>
+</figure>
+<p><strong>Status: Downloaded，Size 17.2 GiB</strong>。但为了让它显示成这样，并没有下载任何东西。文件的字节是在有东西播放该文件时，从账户里实时读取的。</p>
+<h3 id="prove-the-file-is-real">确认文件是真实的</h3>
+<p>刚才导入把文件移到了根文件夹。读取其中一个文件的首尾两端，然后让 ffprobe 告诉你它是什么：</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-和-macos-3">
+<template #title>Linux 和 macOS</template>
+<p>如果你的 shell 找不到 <code translate="no" v-pre>ffprobe</code>，就用 <code translate="no" v-pre>~/zurg/bin/ffprobe</code>：安装程序在没有安装过的情况下会在那里放一份自己的副本。</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ F=&quot;/mnt/zurg_qbt/__magic__/tv/One Piece/Season 23/[AnoZu] One Piece S23E21 1080p CR WEB-DL AAC 2.0 H.264.mkv&quot;
+
+$ ls -la &quot;$F&quot;
+-rw-rw-r-- 1 you users 1446325722 Aug 31 00:44 …mkv
+
+$ dd if=&quot;$F&quot; bs=1M count=1 &gt;/dev/null
+1048576 bytes (1.0 MB, 1.0 MiB) copied, 0.00592934 s, 177 MB/s
+
+$ ffprobe -v error -show_entries format=duration,size,format_name \
+    -of default=noprint_wrappers=1 &quot;$F&quot;
+format_name=matroska,webm
+duration=1415.808000
+size=1446325722</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-3">
+<template #title>Windows</template>
+<p>在 PowerShell 里，从 zurg 的文件夹运行。除非你的 PATH 里已经有 <code translate="no" v-pre>ffprobe</code>，否则安装程序会把 <code translate="no" v-pre>bin\ffprobe.exe</code> 放在那里；如果已经有，就直接输入 <code translate="no" v-pre>ffprobe</code>：</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; $F = Get-Item -LiteralPath &quot;Z:\__magic__\tv\One Piece\Season 23\[AnoZu] One Piece S23E21 1080p CR WEB-DL AAC 2.0 H.264.mkv&quot;
+PS&gt; $F.Length
+1446325722
+
+PS&gt; bin\ffprobe.exe -v error -show_entries format=duration,size,format_name -of default=noprint_wrappers=1 $F.FullName
+format_name=matroska,webm
+duration=1415.808000
+size=1446325722</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p>这个是 Sonarr 抓取的文件——一集以同样方式拉取，导入到 <code translate="no" v-pre>tv/One Piece/Season 23/</code>。这是一个 23 分钟的 Matroska，直接从 debrid 账户读取。字节是在有东西读取它们时才传过来的，而不是在 *arr 导入时。</p>
+<h3 id="from-sonarr-it-looks-the-same">在 Sonarr 中看起来也一样</h3>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/50-sonarr-interactive-search.webp" alt="Sonarr 对单集的交互式搜索" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr 对单集的交互式搜索</figcaption>
+</figure>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/52-sonarr-history.webp" alt="Sonarr 历史记录，已展开导入的单集详情" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr 历史记录，已展开导入的单集详情</figcaption>
+</figure>
+<p>还是那两条历史事件，还是通过重命名完成导入，队列在导入完成的那一刻就清空了。缓存的资源从抓取到导入只需要几秒钟，所以这里没有下载中的截图。</p>
+<h2 id="10-prowlarr-manual-grabs">10. Prowlarr，手动抓取</h2>
+<p>Prowlarr 与其他两个工具连接的是同一个端点，它和它们共用 qBittorrent 客户端代码，但它不是导入工具。它没有媒体库，也从不导入任何内容。它能做的是<strong>手动把一个资源推送到账户里</strong>，这正是它的下载客户端的用途。</p>
+<p>Prowlarr 首次运行时，显示的也是和另外两个工具相同的 Forms-auth 界面。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/70-prowlarr-login.webp" alt="Prowlarr's login page" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Prowlarr's login page</figcaption>
+</figure>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/71-prowlarr-downloadclients-empty.webp" alt="Prowlarr's empty download clients page" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Prowlarr's empty download clients page</figcaption>
+</figure>
+<p>进入 <strong>Settings → Download Clients → +</strong>，然后选择 <strong>qBittorrent</strong>。在 Prowlarr 的选择器里，所有客户端都排在同一个按字母排序的列表中，而不是 *arr 那样的两列。主机、端口和 API 密钥都和其他工具一样填写。有两个字段和 *arr 不同：</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/72-prowlarr-add-client-picker.webp" alt="Prowlarr's add download client picker" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Prowlarr's add download client picker</figcaption>
+</figure>
+<retype-table copy-text="| Field | Value | Why |
+|---|---|---|
+| Default Category | `prowlarr` | 这是 Prowlarr 的默认值，它的帮助文字值得一读：*adding a category specific to Prowlarr avoids conflicts with unrelated non-Prowlarr downloads*（为 Prowlarr 添加专用分类，可以避免与其他非 Prowlarr 下载冲突）。点击 **Test** 时会在 zurg 中自动创建该分类，所以不需要把它添加到 `qbittorrent.categories` 里。 |
+| Priority | `Last` | 没有需要它处理的内容。 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default Category</td>
+<td><code translate="no" v-pre>prowlarr</code></td>
+<td>这是 Prowlarr 的默认值，它的帮助文字值得一读：<em>adding a category specific to Prowlarr avoids conflicts with unrelated non-Prowlarr downloads</em>（为 Prowlarr 添加专用分类，可以避免与其他非 Prowlarr 下载冲突）。点击 <strong>Test</strong> 时会在 zurg 中自动创建该分类，所以不需要把它添加到 <code translate="no" v-pre>qbittorrent.categories</code> 里。</td>
+</tr>
+<tr>
+<td>Priority</td>
+<td><code translate="no" v-pre>Last</code></td>
+<td>没有需要它处理的内容。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/73-prowlarr-qbittorrent-dialog-filled.webp" alt="Prowlarr's qBittorrent dialog filled in" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Prowlarr's qBittorrent dialog filled in</figcaption>
+</figure>
+<p>点击 <strong>Test</strong>，出现绿色对勾后，再点 <strong>Save</strong>。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/74-prowlarr-qbittorrent-test-ok.webp" alt="Prowlarr's dialog footer showing a successful test" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Prowlarr's dialog footer showing a successful test</figcaption>
+</figure>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/75-prowlarr-downloadclient-saved.webp" alt="The saved download client card in Prowlarr" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The saved download client card in Prowlarr</figcaption>
+</figure>
+<p>然后点 <strong>Search</strong>，输入你想要的内容，再把某一行推送给客户端：</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/76-prowlarr-manual-search.webp" alt="Prowlarr's manual search with the push button" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Prowlarr's manual search with the push button</figcaption>
+</figure>
+<p>这个资源会和 *arr 的抓取一样被添加到账户里，使用同样的添加路径、同样的分类和同样的 <code translate="no" v-pre>__magic__</code> 文件夹。我测试的这一个是已缓存的，不到一秒就变成了 <code translate="no" v-pre>finished</code>。但没有任何东西会导入它。它就留在账户里，通过挂载点提供播放，这正是重点所在：Prowlarr 的推送功能是<em>现在就把这个放到我的 debrid 账户上</em>，而不是用于自动化的抓取、导入、清理流程。如果要用那套流程，请继续让 Sonarr 和 Radarr 指向该端点，并由 Prowlarr 来管理索引器。</p>
+<h2 id="11-adding-a-release-by-hand">11. 手动添加一个资源</h2>
+<p>zurg 的仪表盘没有添加按钮。你仍然可以自己把一个发布版本交给 zurg，并发送到正确的 Sonarr 或 Radarr。通过这个端点添加它，并带上该应用的分类。每个应用只查看自己的分类。四个应用各用一个分类，每个只能看到自己添加的内容。</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-和-macos-4">
+<template #title>Linux 和 macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">KEY=your-qbittorrent-api-key
+curl -H &quot;Authorization: Bearer $KEY&quot; http://localhost:9999/api/v2/torrents/add \
+  -F 'urls=magnet:?xt=urn:btih:&lt;hash&gt;&amp;dn=Movie.Title.2012.1080p.WEB-DL' \
+  -F category=radarr4k</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-4">
+<template #title>Windows</template>
+<p>在 PowerShell 中使用 <code translate="no" v-pre>curl.exe</code> 而不是 <code translate="no" v-pre>curl</code>：</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$KEY = &quot;your-qbittorrent-api-key&quot;
+curl.exe -H &quot;Authorization: Bearer $KEY&quot; http://localhost:9999/api/v2/torrents/add `
+  -F 'urls=magnet:?xt=urn:btih:&lt;hash&gt;&amp;dn=Movie.Title.2012.1080p.WEB-DL' `
+  -F category=radarr4k</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p><code translate="no" v-pre>.torrent</code> 文件也可以。用 <code translate="no" v-pre>-F 'torrents=@Movie.Title.2012.1080p.WEB.torrent'</code> 发送，代替 <code translate="no" v-pre>urls</code>。</p>
+<p>有四件事决定应用是否会导入它。</p>
+<ol>
+<li><strong>影视作品必须已经在该应用中。</strong> 它只会导入能与其管理的内容匹配的条目。</li>
+<li><strong>名称必须能说明内容是什么。</strong> 磁力链接的名称是它的 <code translate="no" v-pre>dn</code>，<code translate="no" v-pre>.torrent</code> 文件的名称是它的文件名。zurg 会忽略 qBittorrent 的 <code translate="no" v-pre>rename</code> 字段。Radarr 无法解析 <code translate="no" v-pre>Sintel</code>，并将其保留为 <em>Unable to parse download</em>。<code translate="no" v-pre>Sintel.2010.1080p.WEB-DL</code> 则成功导入。名称里要带上年份。</li>
+<li><strong>在应用第一次看到之前就把名称改对。</strong> 一旦 Radarr 判定某个下载无法解析，它会一直保留这个结论，直到 Radarr 重启。用更好的名称再次添加也不会改变结果。重启后它就导入成功了。</li>
+<li><strong>分类只是一个标签。</strong> 不在 <code translate="no" v-pre>qbittorrent.categories</code> 中的分类也会被接受，只是不会出现在分类列表中。之后你可以把发布版本转到另一个应用。拥有新分类的应用会在下次检查时导入它。</li>
+</ol>
+<div id="11-adding-a-release-by-hand-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -H &quot;Authorization: Bearer $KEY&quot; http://localhost:9999/api/v2/torrents/setCategory \
+  -F hashes=&lt;hash&gt; -F category=radarr</code></pre>
+</doc-codeblock></div>
+<p>在 Windows 上，就是把 <code translate="no" v-pre>curl.exe</code> 写在一行里，并像上面一样设置 <code translate="no" v-pre>$KEY</code>。</p>
+<p>你账户里已经有的发布版本也是同样的方式。这包括你从 DMM 发送过去的版本。zurg 会发现它已经在库中，于是把它记录到该分类下，而不会重复添加。你从未通过这个端点添加的发布版本，对 Sonarr 和 Radarr 来说是不可见的。zurg 只会向它们展示经由此端点进入的内容。</p>
+<p>测试时间为 2026-10-04，使用 AllDebrid 账户和 Radarr 6.3。每部影片都通过重命名的方式导入到 <code translate="no" v-pre>__magic__/movies</code>，没有复制任何文件。设置了其他分类的 Radarr 从未看到它。Sonarr 未经测试。</p>
+<h2 id="12-plex-reads-one-set-of-folders">12. Plex 只读取一组文件夹</h2>
+<p>An import does not take a release out of zurg&#x27;s own folders. A film Radarr placed in <code translate="no" v-pre>__magic__/movies</code> is still in <code translate="no" v-pre>movies</code> and in <code translate="no" v-pre>__all__</code>. So Plex has to read one set of folders and never both.</p>
+<retype-table copy-text="| Plex reads | You get |
+|---|---|
+| `movies` and `shows` | Everything on your debrid accounts. Grabs by the \*arrs show up there too. Names are whatever the release is called. |
+| `__magic__/movies` and `__magic__/tv` | Only what Sonarr and Radarr imported. Names and folders are the ones the \*arrs chose. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Plex reads</th>
+<th>You get</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>movies</code> and <code translate="no" v-pre>shows</code></td>
+<td>Everything on your debrid accounts. Grabs by the *arrs show up there too. Names are whatever the release is called.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>__magic__/movies</code> and <code translate="no" v-pre>__magic__/tv</code></td>
+<td>Only what Sonarr and Radarr imported. Names and folders are the ones the *arrs chose.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>If your Plex libraries already point at <code translate="no" v-pre>movies</code> and <code translate="no" v-pre>shows</code> then leave them. The *arr grabs appear there without any change. Add the <code translate="no" v-pre>__magic__</code> folders to Plex only if you want a library made of nothing but *arr imports and then take the other folders out. Plex with both finds every title twice.</p>
+<p>Never add the root of <code translate="no" v-pre>__magic__</code> either. It holds <code translate="no" v-pre>__magic__/__all__</code> which is the whole library again.</p>
+<h2 id="13-indexers-and-dmm-for-sponsors">13. 索引器，以及面向赞助者的 DMM</h2>
+<p>Sonarr 和 Radarr 通过 Prowlarr 搜索。这里任何公开的 torrent 索引站都能用，因为 zurg 会把磁力链接添加到你的 debrid 账户里。有些公开站点挂在 Cloudflare 后面，Prowlarr 没有 FlareSolverr 就不肯添加它们，这些就跳过吧。</p>
+<p>如果你赞助了 zurg，那 DMM 也能当索引站用。它会搜索 DMM 的整个资源库，并把你的 debrid 账户里已经有的内容排在最前面。这种抓取是即时完成的。</p>
+<ol>
+<li>从 <a href="https://gatekeeper.debridmediamanager.com">gatekeeper</a> 拿到你的 DMM API key：点 <strong>Connect GitHub</strong>，如果你在 Patreon 上赞助，之后再关联 Patreon。然后复制页面上显示的 <strong>DMM API key</strong>。这不是 <doc-anchor-trigger to="#2-find-the-api-key">第 2 步</doc-anchor-trigger> 里的 zurg key。同一个 key 也能用于 DMM 的 Usenet 索引站，设置地址在 <a href="https://debridmediamanager.com/newznab">debridmediamanager.com/newznab</a>。</li>
+<li>在 Prowlarr 里打开 <strong>Indexers → Add Indexer</strong>，选择 <strong>Generic Torznab</strong>。</li>
+<li>填入你账户对应的 URL 和 key。<strong>API Path</strong> 保持为 <code translate="no" v-pre>/api</code>。</li>
+</ol>
+<retype-table copy-text="| 你的账户 | URL |
+|---|---|
+| Real-Debrid | `https://debridmediamanager.com/api/torznab/rd` |
+| AllDebrid | `https://debridmediamanager.com/api/torznab/ad` |
+| TorBox | `https://debridmediamanager.com/api/torznab/tb` |
+| Premiumize | `https://debridmediamanager.com/api/torznab/pm` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>你的账户</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Real-Debrid</td>
+<td><code translate="no" v-pre>https://debridmediamanager.com/api/torznab/rd</code></td>
+</tr>
+<tr>
+<td>AllDebrid</td>
+<td><code translate="no" v-pre>https://debridmediamanager.com/api/torznab/ad</code></td>
+</tr>
+<tr>
+<td>TorBox</td>
+<td><code translate="no" v-pre>https://debridmediamanager.com/api/torznab/tb</code></td>
+</tr>
+<tr>
+<td>Premiumize</td>
+<td><code translate="no" v-pre>https://debridmediamanager.com/api/torznab/pm</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>TorBox 和 Premiumize 需要先在 DMM 里关联该服务的 key，DMM 页面上有对应位置。如果想排除你账户里还没有的内容，就在 URL 末尾加上 <code translate="no" v-pre>/cached</code>。</p>
+<p>保存索引站时，Prowlarr 会自动测试它。如果 key 被拒绝，说明赞助已经过期或者 key 填错了，报错信息会告诉你是哪一种。测试通过后，Prowlarr 会自己把 DMM 提供给 Sonarr 和 Radarr。所有应用共用一个 key，每分钟最多 20 次搜索。</p>
+<h2 id="14-your-plex-watchlist">14. 你的 Plex 观看列表</h2>
+<p>Sonarr 和 Radarr 可以跟随你的 Plex 观看列表。你在 Plex 上添加的任何内容都会被加入、搜索，并像其他任何获取内容一样通过 zurg 到达。</p>
+<p>在每个应用中打开 <strong>Settings → Import Lists → + → Plex Watchlist</strong>，然后按下 <strong>Authenticate with Plex.tv</strong>。把根文件夹设置为你的 <code translate="no" v-pre>__magic__</code> 文件夹，并开启添加时搜索。Radarr 会获取列表中的电影，Sonarr 会获取其中的剧集。</p>
+<p>zurg 有自己的 <a href="../plex-watchlist/">观看列表</a>，它会从你直接提供给 zurg 的索引器中获取内容。二者选其一即可。两者同时使用的话，同一个标题会被获取两次。</p>
+<p>如果要跟随其他列表，例如类型列表，请参阅 <a href="../import-lists/">Sonarr 和 Radarr 中的列表</a>。</p>
+<h2 id="if-the-import-copies-instead-of-moving">如果导入是复制而不是移动</h2>
+<p>上面所有内容都依赖导入是一次<strong>重命名</strong>（rename）。有两件事决定这一点。一是容器如何访问挂载点，这只有你能改。把保存路径和根文件夹放在两个卷上，那么无论其他设置如何，每次导入都会变成复制。<doc-anchor-trigger to="#8-if-your-arr-is-in-docker">第 8 步</doc-anchor-trigger>讲了这个。另一件是 *arr 里的一个设置。</p>
+<p>只有当客户端认为下载完成后可以安全删除它时，才会移动已导入的文件。这需要三个条件同时满足：<strong>Remove Completed</strong> 已开启，种子已完成且处于暂停状态，并且客户端能看到做种限制已达到。zurg 会如实报告后两项：每个已完成的种子都会以暂停状态返回，分享率为 0，而分享率限制也是 0。<strong>Remove Completed</strong> 则需要你自己来设置。</p>
+<p>如果它是关闭的，客户端就会改为复制。而在 debrid 挂载上，复制意味着要通过网络把整个发行版的每个字节读回来，再写入本地磁盘。第 9 步中的那个发行版原本是一次几乎没有移动任何数据的重命名，现在却会变成一次 17 GiB 的下载，只为导入一个本来就已经存在的文件。</p>
+<p><strong>当 zurg 拿到 *arr 的 API 密钥时，它会自动重新开启 Remove Completed。</strong> 拿到密钥的途径有两种：通过 <a href="../acquisition/">Radarr 或 Sonarr 源</a>（设置 <code translate="no" v-pre>enabled: false</code> 即可），或者通过仪表盘上要求填写密钥的横幅。zurg 会在启动时检查一次，之后每十分钟检查一次，并且在 *arr 第一次调用 zurg 时也会检查。它会通过 *arr 自身的 API 把 <strong>Remove Completed</strong> 打开。如果客户端没有通过自己的 <strong>Test</strong>，就无法被修改，此时 zurg 会保留一条警告并注明原因。</p>
+<p><strong>*arr 不会告诉你它进行了复制。</strong> 无论哪种方式，导入都会显示为成功。移动操作在 zurg 的日志中只会留下一行 <code translate="no" v-pre>MOVE __magic__</code>。通过 zurg 自带挂载进行的复制会落在 <code translate="no" v-pre>data/local</code> 中。zurg 大约两分钟内就会发现它，把它转换回一次放置（placement），删除这个副本，并记录 <code translate="no" v-pre>A client copied …</code>，同时在仪表盘上显示一条横幅。通过你自己挂载进行的复制则是一次 <code translate="no" v-pre>PUT</code>，并且携带该发行版的完整字节数，zurg 会拒绝它。那次复制所耗费的下载流量无法找回。</p>
+<p><strong>使用 Use Hardlinks instead of Copy 并不能替代它。</strong> 客户端只有在已经决定复制之后才会查看这个选项，因此它无法把复制改回移动。</p>
+<h2 id="timeouts-and-cached-only-mode">超时与仅缓存模式</h2>
+<div id="timeouts-and-cached-only-mode-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">qbittorrent:
+  cached_only: true
+  download_timeout_mins: 15</code></pre>
+</doc-codeblock></div>
+<retype-table copy-text="| Setting | What it does |
+|---|---|
+| `cached_only: true` | 默认值。只有账号上已经有这份内容时才接受抓取，否则直接拒绝。`download_timeout_mins` 不会生效。 |
+| `cached_only: false` | 未缓存的抓取会在账号上下载。如果超过 `download_timeout_mins`（默认十五分钟）都没有进展，就放弃它，改试下一个账号。负数的超时时间表示永不放弃。 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Setting</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>cached_only: true</code></td>
+<td>默认值。只有账号上已经有这份内容时才接受抓取，否则直接拒绝。<code translate="no" v-pre>download_timeout_mins</code> 不会生效。</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>cached_only: false</code></td>
+<td>未缓存的抓取会在账号上下载。如果超过 <code translate="no" v-pre>download_timeout_mins</code>（默认十五分钟）都没有进展，就放弃它，改试下一个账号。负数的超时时间表示永不放弃。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>旧版配置。</strong> <code translate="no" v-pre>cached_only</code> 出现之前，&quot;只接受缓存&quot;是用 <code translate="no" v-pre>download_timeout_mins: 0</code> 来写的。如果配置里只写了 <code translate="no" v-pre>download_timeout_mins</code>、没有 <code translate="no" v-pre>cached_only</code>，它的含义保持不变：<code translate="no" v-pre>0</code> 表示只接受缓存，其他任何值都表示允许下载。两者都写了但互相矛盾时，以 <code translate="no" v-pre>cached_only</code> 为准，zurg 启动时会记录一条警告。</p>
+<p><strong>什么算&quot;有进展&quot;。</strong> 阶段变化，或进度上升，才算有进展。判断依据是账号返回的原始小数比例，而不是取整后的百分比。比如 100 GB 的资源，1% 就是 1 GB。账号正在解压的资源不计时：这个阶段的数字会一直停在那里，直到解压完成。</p>
+<p><strong>十五分钟是实测出来的，不是随便定的。</strong> AllDebrid 会把一个正常的任务放进它自己的队列里，所有计数都是零。我们测了两次，它分别停了 580 秒和 622 秒，之后才开始下载，几秒钟就下完了。如果默认值是十分钟，这两次都会被放弃。抓取数据，以及把各个账号自己的说法映射到 *arrs 能理解的五种状态上的对照表，都在 <a href="../../internals/torrent-lifecycle/">Torrent lifecycle</a> 里。</p>
+<p><strong>超时会删除什么。</strong> 只删除那个账号上的实例，而且仅限于 zurg 为这次抓取自己添加、且一直没有完成的那个实例。其他东西都不动。如果所有账号都试过了，抓取会被报告为出错，并附上原因，列出每个账号以及它做了什么。</p>
+<p><strong>如果你在账号上手动删除了某个 torrent</strong>，抓取会立刻转到下一个账号。六个服务都会明确说明 torrent 已经不存在了。</p>
+<p><strong>整个添加过程的时限是 75 秒。</strong> *arrs 会在 100 秒时取消 <code translate="no" v-pre>torrents/add</code>，并把超时报告为连接失败，而且没有办法调高这个时限。所有账号共用同一个截止时间，所以三个账号完全够用，第四个账号只能用前三个没花完的时间。</p>
+<p><strong>仅缓存模式</strong>会在添加阶段就拒绝，而这个拒绝是 *arrs 唯一会处理的信号：它们会判定这次抓取失败，然后转到列表中的下一个资源。添加之后的所有情况，在 *arrs 看来都只是&quot;下载进行中&quot;的警告，它们会一直等下去。各账号的请求方式如下：</p>
+<retype-table copy-text="| 账号 | zurg 的请求方式 |
+|---|---|
+| TorBox | 带 `add_only_if_cached=true` 的磁力链接，没有缓存时什么都不会添加。不过它仍会占用 TorBox 每小时 60 次未缓存添加中的一次。 |
+| Debrid-Link | 只传 info hash。如果 Debrid-Link 没有这份内容，它会直接拒绝，不会添加任何东西。 |
+| AllDebrid, Offcloud | 添加请求本身就能给出答案：服务会在响应中说明它之前是否已经有这份内容。没有的话，会立刻删除刚添加的记录。 |
+| Real-Debrid, Premiumize | 先添加 torrent、选择文件，然后最多观察 5 秒。缓存内容几乎立刻就能完成（在 Real-Debrid 上，文件选择后 0.4 到 1.5 秒内完成）。5 秒后仍在进行的，说明是真正的下载，会被删除。 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>账号</th>
+<th>zurg 的请求方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TorBox</td>
+<td>带 <code translate="no" v-pre>add_only_if_cached=true</code> 的磁力链接，没有缓存时什么都不会添加。不过它仍会占用 TorBox 每小时 60 次未缓存添加中的一次。</td>
+</tr>
+<tr>
+<td>Debrid-Link</td>
+<td>只传 info hash。如果 Debrid-Link 没有这份内容，它会直接拒绝，不会添加任何东西。</td>
+</tr>
+<tr>
+<td>AllDebrid, Offcloud</td>
+<td>添加请求本身就能给出答案：服务会在响应中说明它之前是否已经有这份内容。没有的话，会立刻删除刚添加的记录。</td>
+</tr>
+<tr>
+<td>Real-Debrid, Premiumize</td>
+<td>先添加 torrent、选择文件，然后最多观察 5 秒。缓存内容几乎立刻就能完成（在 Real-Debrid 上，文件选择后 0.4 到 1.5 秒内完成）。5 秒后仍在进行的，说明是真正的下载，会被删除。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>zurg 不会去调用 TorBox 的 <code translate="no" v-pre>checkcached</code> 或其他缓存查询接口。这些接口只能说明服务端有没有这份内容，并不能说明你的账号最终能不能拿到可用的副本。</p>
+<h2 id="what-works-and-what-does-not">哪些可用，哪些不行</h2>
+<p><strong>可用：</strong></p>
+<ul>
+<li>三个客户端的连接测试，包括 API 版本、身份验证、分类和种子列表。</li>
+<li>在 Sonarr 和 Radarr 中抓取、队列、历史记录、通过重命名导入，以及导入后的清理。</li>
+<li>重新抓取账户已经持有的资源。*arr 会取回已完成的种子并导入，账户只保留一份副本。</li>
+<li>多个账户：抓取请求会按 <code translate="no" v-pre>providers:</code> 中的顺序依次发给每个账户，遇到拒绝或卡住时转给下一个。</li>
+<li>在 Prowlarr 中手动推送资源。</li>
+</ul>
+<p><strong>不支持：</strong></p>
+<ul>
+<li><strong>qBittorrent Web UI。</strong> 这里只提供 API，没有可以打开的页面。</li>
+<li><strong>做种、排队和优先级。</strong> 这里没有 swarm。暂停、强制开始、调整优先级、重新校验、移动位置和分享率限制都会被接受，但不会产生任何效果。</li>
+<li><strong>把失败作为一种正式状态。</strong> qBittorrent 的 API 无法表示下载失败，所以没有任何账户能接收的资源会以<em>警告</em>的形式返回给 *arr，而不会加入黑名单。它会在队列中显示，并附上原因，只需点一下 <em>Remove → Blocklist and Search</em> 即可处理，但它不会自动清除，也不会在无人值守时重新抓取。这正是它与 SABnzbd 端点的真正区别：后者可以报告任务失败，并让客户端做出响应。</li>
+<li><strong>通过普通 HTTP URL 添加。</strong> <code translate="no" v-pre>torrents/add</code> 只接受磁力链接和上传的 <code translate="no" v-pre>.torrent</code> 文件。两个 *arr 发送的都是其中之一，直接的 <code translate="no" v-pre>http://…/x.torrent</code> 会被拒绝。</li>
+<li><strong>在端点上启用 zurg 仪表盘的登录验证。</strong> 此功能没有生效。端点接受 API 密钥（作为 bearer token、登录密码或 Basic 请求头），或者 zurg 仪表盘的用户名和密码。</li>
+</ul>
+<p><strong>有一种抓取会直接从队列中消失，而不是显示为警告。</strong> 如果从来没有任何账户接收过该资源，即没有账户持有该哈希，也没有账户在获取它，那么十分钟后它会被标记为错误，并在一天后从种子列表中移除。因为没有可以报告状态的下载任务，而队列中出现一个不存在的任务，比完全没有更糟。其他所有失败仍然会保持可见。</p>
+<p><strong>被屏蔽的资源名称，仅限 Real-Debrid。</strong> RD 会仅凭名称拒绝某些资源。自 2026 年 10 月 14 日起，共有十一个这样的字符串。<code translate="no" v-pre>WEB-DL</code>、<code translate="no" v-pre>WEB.x264</code> 和 <code translate="no" v-pre>WEB.H264</code> 只在大小写完全一致时才会生效，因此 <code translate="no" v-pre>web-dl</code>、<code translate="no" v-pre>Web-Dl</code> 和场景命名中的 <code translate="no" v-pre>WEB.h264</code> 都没有问题。<code translate="no" v-pre>WEBRip</code>、<code translate="no" v-pre>BDRip</code>、<code translate="no" v-pre>HDRip</code>、<code translate="no" v-pre>DVDRip</code>、<code translate="no" v-pre>HDTV.x264</code>、<code translate="no" v-pre>HDTV.XviD</code>、<code translate="no" v-pre>BluRay.x264</code> 和 <code translate="no" v-pre>p.BluRay.DTS</code> 则无论大小写如何都会生效。最后这一个要求前面紧跟一个 p，例如 <code translate="no" v-pre>1080p.BluRay.DTS</code>。<code translate="no" v-pre>2002.BluRay.DTS</code> 这样的资源没有问题。zurg 知道这些模式，遇到此类名称时会跳过 Real-Debrid，不再询问它，而是把抓取请求转给下一个账户。如果只使用 Real-Debrid，抓取会立即被拒绝，客户端则会转向它的下一个资源。在 TorBox 和 AllDebrid 上，同一个资源会正常添加。</p>
+<h2 id="troubleshooting">故障排除</h2>
+<retype-table copy-text="| \*arr 显示的内容 | 含义 |
+|---|---|
+| &quot;Unable to connect to qBittorrent&quot; | zurg 在该主机和端口上无法访问，或者前面的某个东西返回了非 200 的结果。检查 `qbittorrent.enabled`，它关闭时，`/api/v2` 只会返回普通的 404。在 Docker 里，确认你没有用 `localhost` 或者只写主机名。 |
+| 测试通过，但抓取时报 *Download client failed to add torrent* | 客户端已经连上 zurg，但 zurg 拒绝了添加。zurg 会记录每一次拒绝，在日志里搜索 `qBittorrent: refusing`。这一行会写明原因，以及尝试过的每个账号。 |
+| zurg 日志中的 `every account that takes torrents refused or timed out` | 没有任何账号愿意接收这个版本。如果它提示速率限制，而你期望的是一个正常的账号，那就数一下同一个 token 上的*其他* zurg 实例。这台机器的第一次抓取就是这样失败的：当时同一个 Real-Debrid 账号上的第二个 zurg 正在遍历一个大型库，两者共用同一个 API 配额。 |
+| &quot;Category … does not exist&quot; | 客户端还没有创建它。点击下载客户端上的 **Test**，它会在 zurg 里创建该分类。 |
+| 抓取后长时间停在 *Downloading* | 账号确实在下载。队列会在有数据时显示账号自己的速率和剩余时间；没有做种源的版本两者都显示为零，这不是错误。 |
+| 已完成的版本在队列里显示为警告 | 要么客户端决定不导入（配置文件不允许的升级），要么所有账号都拒绝了它。队列行会给出原因。它不会自己清除，需要手动移除；如果版本有问题，就用 *Blocklist and Search*。 |
+| &quot;Download client zurg places downloads in …/__magic__/__all__ but Radarr cannot see this directory&quot; | zurg 还没加载完库。挂载点顶层能列出内容，但 `__all__` 和 `__magic__/__all__` 列不出来，Plex 也什么都看不到。在日志里搜索 `rejected the API key`。通常是某个账号的密钥或套餐失效了。免费套餐参见 [TorBox](../providers/torbox.md#when-it-goes-wrong)。库加载完成后警告就会消失。 |
+| &quot;Downloads in root folder&quot; / &quot;Remote path mapping&quot; | 与 Usenet 端点相同的根文件夹和路径规则，参见[步骤 4](#4-make-the-root-folders)和[步骤 8](#8-if-your-arr-is-in-docker)。 |
+| 根文件夹浏览器里 zurg 挂载是空的，或者根本没有 `Z:` 盘 | \*arr 看不到这个挂载。在 Linux 上它以其他用户运行，且没有开启 `user_allow_other`；在 Windows 上它以服务方式运行。参见[开始之前](#before-you-start)。 |
+| 所有版本都被拒绝，日志里什么都没有 | 失效的 bind mount。运行 `docker exec &lt;client&gt; df -h &lt;mount&gt;`；如果输出是 `Socket not connected`，就用 `rslave` 绑定父目录，然后重建容器。 |
+| 导入成功，但每次都会下载整个版本 | \*arr 在复制而不是重命名。zurg 会记录 `A client copied …`，并在仪表盘上显示横幅。要么下载客户端上的 **Remove Completed** 没有开启，要么容器的保存路径和根文件夹挂在两个不同的卷上。参见[如果导入是复制而不是移动](#if-the-import-copies-instead-of-moving)和[步骤 8](#8-if-your-arr-is-in-docker)。 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>*arr 显示的内容</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&quot;Unable to connect to qBittorrent&quot;</td>
+<td>zurg 在该主机和端口上无法访问，或者前面的某个东西返回了非 200 的结果。检查 <code translate="no" v-pre>qbittorrent.enabled</code>，它关闭时，<code translate="no" v-pre>/api/v2</code> 只会返回普通的 404。在 Docker 里，确认你没有用 <code translate="no" v-pre>localhost</code> 或者只写主机名。</td>
+</tr>
+<tr>
+<td>测试通过，但抓取时报 <em>Download client failed to add torrent</em></td>
+<td>客户端已经连上 zurg，但 zurg 拒绝了添加。zurg 会记录每一次拒绝，在日志里搜索 <code translate="no" v-pre>qBittorrent: refusing</code>。这一行会写明原因，以及尝试过的每个账号。</td>
+</tr>
+<tr>
+<td>zurg 日志中的 <code translate="no" v-pre>every account that takes torrents refused or timed out</code></td>
+<td>没有任何账号愿意接收这个版本。如果它提示速率限制，而你期望的是一个正常的账号，那就数一下同一个 token 上的<em>其他</em> zurg 实例。这台机器的第一次抓取就是这样失败的：当时同一个 Real-Debrid 账号上的第二个 zurg 正在遍历一个大型库，两者共用同一个 API 配额。</td>
+</tr>
+<tr>
+<td>&quot;Category … does not exist&quot;</td>
+<td>客户端还没有创建它。点击下载客户端上的 <strong>Test</strong>，它会在 zurg 里创建该分类。</td>
+</tr>
+<tr>
+<td>抓取后长时间停在 <em>Downloading</em></td>
+<td>账号确实在下载。队列会在有数据时显示账号自己的速率和剩余时间；没有做种源的版本两者都显示为零，这不是错误。</td>
+</tr>
+<tr>
+<td>已完成的版本在队列里显示为警告</td>
+<td>要么客户端决定不导入（配置文件不允许的升级），要么所有账号都拒绝了它。队列行会给出原因。它不会自己清除，需要手动移除；如果版本有问题，就用 <em>Blocklist and Search</em>。</td>
+</tr>
+<tr>
+<td>&quot;Download client zurg places downloads in …/<strong>magic</strong>/<strong>all</strong> but Radarr cannot see this directory&quot;</td>
+<td>zurg 还没加载完库。挂载点顶层能列出内容，但 <code translate="no" v-pre>__all__</code> 和 <code translate="no" v-pre>__magic__/__all__</code> 列不出来，Plex 也什么都看不到。在日志里搜索 <code translate="no" v-pre>rejected the API key</code>。通常是某个账号的密钥或套餐失效了。免费套餐参见 <a href="../../providers/torbox/#when-it-goes-wrong">TorBox</a>。库加载完成后警告就会消失。</td>
+</tr>
+<tr>
+<td>&quot;Downloads in root folder&quot; / &quot;Remote path mapping&quot;</td>
+<td>与 Usenet 端点相同的根文件夹和路径规则，参见<doc-anchor-trigger to="#4-make-the-root-folders">步骤 4</doc-anchor-trigger>和<doc-anchor-trigger to="#8-if-your-arr-is-in-docker">步骤 8</doc-anchor-trigger>。</td>
+</tr>
+<tr>
+<td>根文件夹浏览器里 zurg 挂载是空的，或者根本没有 <code translate="no" v-pre>Z:</code> 盘</td>
+<td>*arr 看不到这个挂载。在 Linux 上它以其他用户运行，且没有开启 <code translate="no" v-pre>user_allow_other</code>；在 Windows 上它以服务方式运行。参见<doc-anchor-trigger to="#before-you-start">开始之前</doc-anchor-trigger>。</td>
+</tr>
+<tr>
+<td>所有版本都被拒绝，日志里什么都没有</td>
+<td>失效的 bind mount。运行 <code translate="no" v-pre>docker exec &lt;client&gt; df -h &lt;mount&gt;</code>；如果输出是 <code translate="no" v-pre>Socket not connected</code>，就用 <code translate="no" v-pre>rslave</code> 绑定父目录，然后重建容器。</td>
+</tr>
+<tr>
+<td>导入成功，但每次都会下载整个版本</td>
+<td>*arr 在复制而不是重命名。zurg 会记录 <code translate="no" v-pre>A client copied …</code>，并在仪表盘上显示横幅。要么下载客户端上的 <strong>Remove Completed</strong> 没有开启，要么容器的保存路径和根文件夹挂在两个不同的卷上。参见<doc-anchor-trigger to="#if-the-import-copies-instead-of-moving">如果导入是复制而不是移动</doc-anchor-trigger>和<doc-anchor-trigger to="#8-if-your-arr-is-in-docker">步骤 8</doc-anchor-trigger>。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>还是搞不定？去 <a href="https://discord.com/invite/7u4YjMThXP">Discord</a> 上的 <strong>zurg-support</strong> 论坛问。<a href="../../../guides/remote-help/">获取帮助</a>里写了要提供哪些信息。</p>
+<h2 id="where-the-state-lives">状态数据存放在哪里</h2>
+<retype-table copy-text="| 路径 | 作用 |
+|---|---|
+| `data/qbittorrent-apikey` | 自动生成的 API 密钥。设置了 `qbittorrent.api_key` 时不会写入。 |
+| `data/qbittorrent-jobs.json` | 客户端交给端点的任务，记录每个任务由哪个账户持有、使用哪个分类，以及已经尝试过的所有账户。 |
+| `data/magic.json` | `__magic__` 表，记录导入过程创建的每一条 placement 和 tombstone。 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>路径</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>data/qbittorrent-apikey</code></td>
+<td>自动生成的 API 密钥。设置了 <code translate="no" v-pre>qbittorrent.api_key</code> 时不会写入。</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>data/qbittorrent-jobs.json</code></td>
+<td>客户端交给端点的任务，记录每个任务由哪个账户持有、使用哪个分类，以及已经尝试过的所有账户。</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>data/magic.json</code></td>
+<td><code translate="no" v-pre>__magic__</code> 表，记录导入过程创建的每一条 placement 和 tombstone。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>zurg 仪表盘上的 <code translate="no" v-pre>__magic__</code> 页面显示导入的结果。placements 是客户端移动过的文件，tombstones 是它们之后删除的任务文件夹。端点接收的发布会以行的形式列在它们所导入的文件夹下面。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/41-zurg-magic-header.webp" alt="magic 页面标题，显示 placements 和 tombstones 的计数" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">magic 页面标题，显示 placements 和 tombstones 的计数</figcaption>
+</figure>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/42-zurg-magic-overlay.webp" alt="magic 浮层，列出两个已抓取的发布" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">magic 浮层，列出两个已抓取的发布</figcaption>
+</figure>
+<p><a href="../../reference/config/#qbittorrent-the-torrent-download-client-sonarr-and-radarr-see">参考文档</a>列出了每个 <code translate="no" v-pre>qbittorrent:</code> 键。<a href="../../internals/qbittorrent-client-contract/">客户端约定</a>基于 Sonarr 和 Radarr 的源码编写，是端点需要遵守的规范，其中每一条说明都附有对应的文件和行号。</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/guides/sonarr-radarr/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">上一个</span>
+                                <span class="block mt-1">Usenet 版 Sonarr 和 Radarr</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/guides/sonarr-radarr-fetch/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">下一个</span>
+                                <span class="block mt-1">zurg 为 Sonarr 和 Radarr 搜索</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Sonarr 和 Radarr 用于 torrents", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/guides/sonarr-radarr-torrents.md" }</script>
+</body>
+</html>

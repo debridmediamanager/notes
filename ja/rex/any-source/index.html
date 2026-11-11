@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="ja" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/ja">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672716444">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>rex で自作アプリを使う</title>
+    <meta name="title" content="rex で自作アプリを使う">
+    <meta name="description" content="rex は、公式の Plex アプリ向けのメディアサーバーですが、ファイルは一切持ちません。公式の Plex アプリからは、ふつうの Plex サーバーに見えます。このページで your app と呼んでいる別のプログラムが、ライブラリに何があるかを rex に伝え、ファイルも配信します。再生を押すと、rex">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/ja/rex/any-source/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/ja/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/ja/rex/any-source/">
+    <meta property="og:title" content="rex で自作アプリを使う">
+    <meta property="og:description" content="rex は、公式の Plex アプリ向けのメディアサーバーですが、ファイルは一切持ちません。公式の Plex アプリからは、ふつうの Plex サーバーに見えます。このページで your app と呼んでいる別のプログラムが、ライブラリに何があるかを rex に伝え、ファイルも配信します。再生を押すと、rex">
+    <meta property="og:image" content="https://notes.debridmediamanager.com/ja/assets/rex/20-plex-manage-library-access.webp">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="rex で自作アプリを使う">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="ja_JP">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/ja/rex/any-source/">
+    <meta name="twitter:title" content="rex で自作アプリを使う">
+    <meta name="twitter:description" content="rex は、公式の Plex アプリ向けのメディアサーバーですが、ファイルは一切持ちません。公式の Plex アプリからは、ふつうの Plex サーバーに見えます。このページで your app と呼んでいる別のプログラムが、ライブラリに何があるかを rex に伝え、ファイルも配信します。再生を押すと、rex">
+    <meta name="twitter:image" content="https://notes.debridmediamanager.com/ja/assets/rex/20-plex-manage-library-access.webp">
+    <meta name="twitter:image:alt" content="rex で自作アプリを使う">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/ja/rex/any-source.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../resources/css/retype.css?v=4.6.0.847672716444" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.847672716444" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.847672716444" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.847672716444" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/ja/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>日本語</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/download.html" target="_blank">zurgをダウンロード</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/ja/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">スポンサー</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>日本語</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/download.html" target="_blank">zurgをダウンロード</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/ja/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">スポンサー</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="rex-with-your-own-app">rex で自作アプリを使う</h1>
+<p><a href="https://rex.debridmediamanager.com/ja/">rex</a> は、公式の Plex アプリ向けのメディアサーバーですが、ファイルは一切持ちません。公式の Plex アプリからは、ふつうの Plex サーバーに見えます。このページで <strong>your app</strong> と呼んでいる別のプログラムが、ライブラリに何があるかを rex に伝え、ファイルも配信します。再生を押すと、rex はファイルをあなたのアプリから直接ストリーミングします。先にダウンロードすることはありません。</p>
+<p>このページでは、何もない状態から映画を再生するまでを、一歩ずつ説明します。特定のアプリを前提にはしていません。rex がアプリに何を求めるかを正確に書いているので、お使いのアプリがそれに対応しているか確認したり、自分で作ったりできます。各ステップでは、何をするのか、なぜ大事なのか、次に進む前に何が見えるはずかを書いています。</p>
+<p>始める前に知っておいてほしいことが 4 つあります。</p>
+<ul>
+<li><strong>ファイルを配信するのはあなたのアプリです。</strong> rex は、ブラウザがファイルをダウンロードするのと同じように、すべてのバイトをあなたのアプリから HTTP または HTTPS で取得します。rex はファイルを保存せず、メディア用のディスクやマウントも必要としません。</li>
+<li><strong>あなたのアプリが、何を持っているかを rex に伝えます。</strong> rex のフィード API を使って、ファイルの一覧を rex に送ります。その後の変更も同じように送ります。rex がフォルダを一覧表示したり、スキャンしたりすることはありません。</li>
+<li><strong>ファイルが何かを決めるのはあなたのアプリです。</strong> 映画かエピソードか、どのタイトルに属するか（IMDb と TMDB の ID）、そしてエピソードの場合はシーズンと話数を、アプリが指定します。rex がファイル名から推測することは一切ありません。</li>
+<li><strong>説明は Plex が行います。</strong> rex を Plex アカウントに追加すると、その ID に対して Plex 自身のメタデータが持つ名前、ポスター、あらすじ、エピソード名を使って各タイトルを表示します。どの Plex エージェントも知らないものについては、あなたのアプリが自分で名前を付けます。詳しくは <a href="../addons/">Building rex addons</a> を参照してください。</li>
+</ul>
+<p>rex は個人利用であれば無料です（PolyForm Noncommercial）。スポンサー向けの有料プランはなく、ダウンロードにアカウントも必要ありません。詳しくは <a href="https://rex.debridmediamanager.com/ja/">rex.debridmediamanager.com</a> をご覧ください。</p>
+<h2 id="before-you-start">始める前に</h2>
+<retype-table copy-text="| 必要なもの | 理由 |
+|---|---|
+| rex の nightly 2026.10.25 以降のビルド | ステップ 1 で最新版をダウンロードします |
+| 常時起動しているマシン: Linux (Ubuntu 22.04 以降)、macOS、または Windows (64 bit) | rex はサーバーです。Plex のアプリは再生ボタンを押すたびに rex に接続します。コマンドが OS によって違う場合、ステップごとに OS 別のタブがあります。[Docker](#run-rex-in-docker) は Linux 向けに後ろで説明しています |
+| メモリ 1 GB | 4,062 本の映画と 656 本のシリーズ (34,678 エピソード) の場合、rex は起動中に 500 MB 未満、ライブラリを閲覧中に約 730 MB を使いました。動画の変換にはさらに多くのメモリと、より多くのコア、またはグラフィックチップが必要です |
+| [What your app must do](#what-your-app-must-do) に記載の動作をするアプリ | ライブラリはここから取得されます |
+| このマシン、自宅のネットワーク、または Tailscale からアプリがフィードを送信すること | rex はそこからのフィードだけを受け付けます ([Keep the port private](#keep-the-port-private))。シードボックスやクラウドサーバー上のアプリは、そのサーバーが tailnet に参加していない限り rex にプッシュできません。ファイル自体は rex が到達できる場所であればどこからでも配信できます |
+| このマシンのディスク上のファイル? それらを HTTP で配信してプッシュするもの | rex はディスクを直接読み込みません。[ステップ 2](#step-2-see-it-work-by-hand) では 1 つのファイルを手動で試せます。それ以外は、それらのファイルには Plex を使い続けてください |
+| Usenet? それを読み取るソース (zurg など) | rex は Usenet プロバイダーとは直接通信しません。Usenet を扱うソースとして zurg があります。詳しくは [rex with zurg](with-zurg.md) を参照してください |
+| rex 専用に作った新しい Plex アカウント | [Plex アカウントに追加](#step-3-add-it-to-a-plex-account) された後、rex はすべてのタイトル、ポスター、概要、エピソード名を Plex から取得します。それまでは、タイトルはファイル名のままで、ポスターはありません |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>必要なもの</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rex の nightly 2026.10.25 以降のビルド</td>
+<td>ステップ 1 で最新版をダウンロードします</td>
+</tr>
+<tr>
+<td>常時起動しているマシン: Linux (Ubuntu 22.04 以降)、macOS、または Windows (64 bit)</td>
+<td>rex はサーバーです。Plex のアプリは再生ボタンを押すたびに rex に接続します。コマンドが OS によって違う場合、ステップごとに OS 別のタブがあります。<doc-anchor-trigger to="#run-rex-in-docker">Docker</doc-anchor-trigger> は Linux 向けに後ろで説明しています</td>
+</tr>
+<tr>
+<td>メモリ 1 GB</td>
+<td>4,062 本の映画と 656 本のシリーズ (34,678 エピソード) の場合、rex は起動中に 500 MB 未満、ライブラリを閲覧中に約 730 MB を使いました。動画の変換にはさらに多くのメモリと、より多くのコア、またはグラフィックチップが必要です</td>
+</tr>
+<tr>
+<td><doc-anchor-trigger to="#what-your-app-must-do">What your app must do</doc-anchor-trigger> に記載の動作をするアプリ</td>
+<td>ライブラリはここから取得されます</td>
+</tr>
+<tr>
+<td>このマシン、自宅のネットワーク、または Tailscale からアプリがフィードを送信すること</td>
+<td>rex はそこからのフィードだけを受け付けます (<doc-anchor-trigger to="#keep-the-port-private">Keep the port private</doc-anchor-trigger>)。シードボックスやクラウドサーバー上のアプリは、そのサーバーが tailnet に参加していない限り rex にプッシュできません。ファイル自体は rex が到達できる場所であればどこからでも配信できます</td>
+</tr>
+<tr>
+<td>このマシンのディスク上のファイル? それらを HTTP で配信してプッシュするもの</td>
+<td>rex はディスクを直接読み込みません。<doc-anchor-trigger to="#step-2-see-it-work-by-hand">ステップ 2</doc-anchor-trigger> では 1 つのファイルを手動で試せます。それ以外は、それらのファイルには Plex を使い続けてください</td>
+</tr>
+<tr>
+<td>Usenet? それを読み取るソース (zurg など)</td>
+<td>rex は Usenet プロバイダーとは直接通信しません。Usenet を扱うソースとして zurg があります。詳しくは <a href="../with-zurg/">rex with zurg</a> を参照してください</td>
+</tr>
+<tr>
+<td>rex 専用に作った新しい Plex アカウント</td>
+<td><doc-anchor-trigger to="#step-3-add-it-to-a-plex-account">Plex アカウントに追加</doc-anchor-trigger> された後、rex はすべてのタイトル、ポスター、概要、エピソード名を Plex から取得します。それまでは、タイトルはファイル名のままで、ポスターはありません</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h2 id="what-your-app-must-do">アプリに必要なこと</h2>
+<p>このリストをアプリの開発者に渡してください。rex 自身の API リファレンスは <a href="https://github.com/debridmediamanager/rex/blob/main/docs/feed-api.md">docs/feed-api.md</a> にあります。</p>
+<retype-table copy-text="| アプリがやるべきこと | 方法 | できない場合 |
+|---|---|---|
+| 各ファイルを HTTP で配信する | `GET &lt;address&gt;/&lt;path&gt;` でファイルを返します。`Range` リクエストならシークが速くなります。リダイレクトも追従されます。Basic 認証または bearer トークンも使えます | 何も再生されません: rex のログに 502 が出ます |
+| rex に登録する | `PUT /rex/sources/&lt;name&gt;` を (英字、数字、`-`、`_` 使用可) `{&quot;url&quot;: ...}` 付きで送ります。ログインが必要なら `&quot;user&quot;` と `&quot;password&quot;` または `&quot;bearer&quot;` を入れます。ただし url の中には絶対に入れないでください。起動するたびに毎回送り直してください | rex が読み込み先を見つけられません |
+| 持っているファイルをすべて送る | `POST /rex/feed/&lt;name&gt;/items` で、1 リクエストあたり数百ファイルずつ送ります | rex が空のままになります |
+| 各ファイルの ffprobe の出力を送る | ffprobe の `-show_format -show_streams` の JSON を丸ごと、`media_info` として送ります | ファイルは**保留**になります: 保存はされますが表示されません。Plex アプリはこれがないファイルの再生を拒否するためです |
+| 各ファイルの種類を伝える | `kind`（`movie`、`episode`、`extra` のいずれか）と `ids` を入れます。`ids` には映画の `imdb` または `tmdb`、もしくは**番組**の `imdb` または `tmdb` を入れます（どちらか一方で十分です）。エピソードのものは入れないでください。エピソードの場合は、アイテム自体に `season` と `episode` を入れます（`kind` と同じ階層で、`ids` の中には入れません）。番号は TMDB の付け方に合わせてください。1 つのファイルに複数話が入っている場合は `episode_end` を使います | ファイルが一致しなくなります: 映画はファイル名のままのタイトルになり、エピソードはリリース名の番組に入り、ファイルの並び順で番号が振られます |
+| ファイルの `id` を永遠に同じに保つ | ファイル名を変えたときも同じです | 名前を変えたファイルは新しいタイトルとして扱われ、視聴履歴が失われます |
+| 変更があったらすぐ送る | 新規または変更されたファイルには同じ `POST` を使い、削除されたファイルには `DELETE /rex/feed/&lt;name&gt;/items` を使います | ライブラリが古い状態のままになります |
+| ときどきライブラリ全体を送る | `PUT /rex/feed/&lt;name&gt;/snapshot` を使います。スナップショットに含まれていないものは rex が削除します | アプリが見失ったファイルが rex に残ったままになります |
+| ファイルへの WebDAV `DELETE` を受け付ける | Plex アプリでタイトルが削除されると、rex はまずアプリにファイルの削除を依頼します | タイトルが残り、Plex アプリには削除できなかったと表示されます |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>アプリがやるべきこと</th>
+<th>方法</th>
+<th>できない場合</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>各ファイルを HTTP で配信する</td>
+<td><code translate="no" v-pre>GET &lt;address&gt;/&lt;path&gt;</code> でファイルを返します。<code translate="no" v-pre>Range</code> リクエストならシークが速くなります。リダイレクトも追従されます。Basic 認証または bearer トークンも使えます</td>
+<td>何も再生されません: rex のログに 502 が出ます</td>
+</tr>
+<tr>
+<td>rex に登録する</td>
+<td><code translate="no" v-pre>PUT /rex/sources/&lt;name&gt;</code> を (英字、数字、<code translate="no" v-pre>-</code>、<code translate="no" v-pre>_</code> 使用可) <code translate="no" v-pre>{&quot;url&quot;: ...}</code> 付きで送ります。ログインが必要なら <code translate="no" v-pre>&quot;user&quot;</code> と <code translate="no" v-pre>&quot;password&quot;</code> または <code translate="no" v-pre>&quot;bearer&quot;</code> を入れます。ただし url の中には絶対に入れないでください。起動するたびに毎回送り直してください</td>
+<td>rex が読み込み先を見つけられません</td>
+</tr>
+<tr>
+<td>持っているファイルをすべて送る</td>
+<td><code translate="no" v-pre>POST /rex/feed/&lt;name&gt;/items</code> で、1 リクエストあたり数百ファイルずつ送ります</td>
+<td>rex が空のままになります</td>
+</tr>
+<tr>
+<td>各ファイルの ffprobe の出力を送る</td>
+<td>ffprobe の <code translate="no" v-pre>-show_format -show_streams</code> の JSON を丸ごと、<code translate="no" v-pre>media_info</code> として送ります</td>
+<td>ファイルは<strong>保留</strong>になります: 保存はされますが表示されません。Plex アプリはこれがないファイルの再生を拒否するためです</td>
+</tr>
+<tr>
+<td>各ファイルの種類を伝える</td>
+<td><code translate="no" v-pre>kind</code>（<code translate="no" v-pre>movie</code>、<code translate="no" v-pre>episode</code>、<code translate="no" v-pre>extra</code> のいずれか）と <code translate="no" v-pre>ids</code> を入れます。<code translate="no" v-pre>ids</code> には映画の <code translate="no" v-pre>imdb</code> または <code translate="no" v-pre>tmdb</code>、もしくは<strong>番組</strong>の <code translate="no" v-pre>imdb</code> または <code translate="no" v-pre>tmdb</code> を入れます（どちらか一方で十分です）。エピソードのものは入れないでください。エピソードの場合は、アイテム自体に <code translate="no" v-pre>season</code> と <code translate="no" v-pre>episode</code> を入れます（<code translate="no" v-pre>kind</code> と同じ階層で、<code translate="no" v-pre>ids</code> の中には入れません）。番号は TMDB の付け方に合わせてください。1 つのファイルに複数話が入っている場合は <code translate="no" v-pre>episode_end</code> を使います</td>
+<td>ファイルが一致しなくなります: 映画はファイル名のままのタイトルになり、エピソードはリリース名の番組に入り、ファイルの並び順で番号が振られます</td>
+</tr>
+<tr>
+<td>ファイルの <code translate="no" v-pre>id</code> を永遠に同じに保つ</td>
+<td>ファイル名を変えたときも同じです</td>
+<td>名前を変えたファイルは新しいタイトルとして扱われ、視聴履歴が失われます</td>
+</tr>
+<tr>
+<td>変更があったらすぐ送る</td>
+<td>新規または変更されたファイルには同じ <code translate="no" v-pre>POST</code> を使い、削除されたファイルには <code translate="no" v-pre>DELETE /rex/feed/&lt;name&gt;/items</code> を使います</td>
+<td>ライブラリが古い状態のままになります</td>
+</tr>
+<tr>
+<td>ときどきライブラリ全体を送る</td>
+<td><code translate="no" v-pre>PUT /rex/feed/&lt;name&gt;/snapshot</code> を使います。スナップショットに含まれていないものは rex が削除します</td>
+<td>アプリが見失ったファイルが rex に残ったままになります</td>
+</tr>
+<tr>
+<td>ファイルへの WebDAV <code translate="no" v-pre>DELETE</code> を受け付ける</td>
+<td>Plex アプリでタイトルが削除されると、rex はまずアプリにファイルの削除を依頼します</td>
+<td>タイトルが残り、Plex アプリには削除できなかったと表示されます</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h2 id="step-1-install-rex">ステップ 1. rex をインストール</h2>
+<p><strong>何をするか。</strong> rex を <code translate="no" v-pre>~/rex</code>（Windows では <code translate="no" v-pre>$HOME\rex</code>）にダウンロードして、サービスとして起動します。後の手順に必要なものはすべて揃います。この後の手順では再起動は不要です。再起動が必要なのは、下のオプションのセクションだけです。</p>
+<p><strong>なぜ大切か。</strong> rex は Plex アプリが通信する相手です。最初に起動すると <code translate="no" v-pre>rex.db</code> が作られます。このファイルには、ライブラリ、アプリから送られてくるすべてのデータ、視聴履歴が入ります。</p>
+<p>Linux では、代わりに rex の Docker イメージを使うこともできます。<doc-anchor-trigger to="#run-rex-in-docker">Docker で rex を動かす</doc-anchor-trigger> を見てください。</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-と-macos">
+<template #title>Linux と macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p ~/rex &amp;&amp; cd ~/rex
+TAG=$(curl -fsSL 'https://api.github.com/repos/debridmediamanager/rex/releases?per_page=1' | sed -n 's/.*&quot;tag_name&quot;: *&quot;\([^&quot;]*\)&quot;.*/\1/p' | head -1)
+P=$(uname -s | tr A-Z a-z)-$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
+curl -fL &quot;https://github.com/debridmediamanager/rex/releases/download/$TAG/rex-$TAG-$P.tar.gz&quot; | tar xz --strip-components=1</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<p>PowerShell で次を実行します:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">New-Item -ItemType Directory -Force $HOME\rex | Out-Null; cd $HOME\rex
+$tag = (Invoke-RestMethod 'https://api.github.com/repos/debridmediamanager/rex/releases?per_page=1')[0].tag_name
+curl.exe -fLO &quot;https://github.com/debridmediamanager/rex/releases/download/$tag/rex-$tag-windows-amd64.zip&quot;
+tar -xf &quot;rex-$tag-windows-amd64.zip&quot; --strip-components=1; Remove-Item &quot;rex-$tag-windows-amd64.zip&quot;</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p>これで、お使いのマシン向けの rex の最新ビルド（通常はナイトリービルド）が取得されます。</p>
+<p>rex の LAN IP、つまりご自宅ネットワーク上のアドレスを調べます。Linux では <code translate="no" v-pre>hostname -I</code> がいくつか表示します。ご自宅ネットワーク用のものを選んでください。<code translate="no" v-pre>172.17.</code>（Docker）や <code translate="no" v-pre>100.</code>（Tailscale）で始まるものは選ばないでください。macOS では <code translate="no" v-pre>ipconfig getifaddr en0</code> で表示されます（何も表示されなければ <code translate="no" v-pre>en1</code>）。Windows では <code translate="no" v-pre>ipconfig</code> の出力に、Wi-Fi または Ethernet のアダプターの下で <strong>IPv4 Address</strong> として表示されます。<strong>このページでは、すべての箇所で <code translate="no" v-pre>192.168.1.20</code> と書いています。ご自身のアドレスに置き換えてください。</strong> Plex アプリ、お使いのアプリ、そして手元のコマンドは、すべてそのアドレスで rex に接続します。</p>
+<p><strong>同じマシンで Plex Media Server も動かしていますか？</strong> 下の rex の起動コマンドの末尾に <code translate="no" v-pre>--port 32500</code> を付け、コマンドや設定で <code translate="no" v-pre>32400</code> と書いてある箇所はすべて <code translate="no" v-pre>32500</code> にしてください。Windows のファイアウォールルールも同様です。Plex はすでにポート 32400 と、アプリがサーバーを探すのに使うポートを確保しています。別のポートなら、rex はそれらを Plex に任せます。その後、アプリにはマシン名の付いたサーバーが2つ表示されます。共有されているのが rex で、その横に新しいアカウントの名前が表示されます。rex が Plex アカウントに登録されたら（<doc-anchor-trigger to="#step-3-add-it-to-a-plex-account">手順 3</doc-anchor-trigger>）、名前を変更できます。そのアカウントで Plex にサインインした状態で、rex の <strong>Settings</strong> → <strong>General</strong> を開き、<strong>Friendly name</strong> を変更して保存してください。その後、下の方法で rex を再起動します。再起動後、Plex アプリには新しい名前で表示されます。</p>
+<p>では、サービスとして登録します:</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux">
+<template #title>Linux</template>
+<p><code translate="no" v-pre>~/.config/systemd/user/rex.service</code> を作成します:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p ~/.config/systemd/user
+nano ~/.config/systemd/user/rex.service</code></pre>
+</doc-codeblock></div>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-ini"><code v-pre class="language-ini">[Unit]
+Description=rex
+After=network-online.target
+
+[Service]
+WorkingDirectory=%h/rex
+EnvironmentFile=-%h/rex/rex.env
+ExecStart=%h/rex/rex
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target</code></pre>
+</doc-codeblock></div>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">systemctl --user daemon-reload
+systemctl --user enable --now rex
+sudo loginctl enable-linger &quot;$USER&quot;
+journalctl --user -u rex -f</code></pre>
+</doc-codeblock></div>
+<p>rex の<strong>起動コマンド</strong>は <code translate="no" v-pre>ExecStart</code> の行です。キーは <code translate="no" v-pre>~/rex/rex.env</code> に、1行に1つ <code translate="no" v-pre>NAME=value</code> の形式で書きます。変更後は <code translate="no" v-pre>systemctl --user daemon-reload &amp;&amp; systemctl --user restart rex</code> で rex を再起動します。<code translate="no" v-pre>journalctl --user -u rex -f</code> でログを表示できます。<code translate="no" v-pre>loginctl enable-linger</code> を実行すると、ログアウトしても rex が動き続けます。</p>
+</doc-tab>
+<doc-tab v-cloak id="macos">
+<template #title>macOS</template>
+<p><code translate="no" v-pre>run.sh</code> は rex をそのフォルダー内で起動します。LaunchAgent がログイン時に <code translate="no" v-pre>run.sh</code> を起動します:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cp ~/rex/examples/run.sh.example ~/rex/run.sh
+mkdir -p ~/Library/LaunchAgents
+cat &gt; ~/Library/LaunchAgents/com.rex.plist &lt;&lt;PLIST
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot; &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;
+&lt;plist version=&quot;1.0&quot;&gt;&lt;dict&gt;
+  &lt;key&gt;Label&lt;/key&gt;&lt;string&gt;com.rex&lt;/string&gt;
+  &lt;key&gt;ProgramArguments&lt;/key&gt;&lt;array&gt;&lt;string&gt;/bin/bash&lt;/string&gt;&lt;string&gt;$HOME/rex/run.sh&lt;/string&gt;&lt;/array&gt;
+  &lt;key&gt;RunAtLoad&lt;/key&gt;&lt;true/&gt;&lt;key&gt;KeepAlive&lt;/key&gt;&lt;true/&gt;
+  &lt;key&gt;StandardOutPath&lt;/key&gt;&lt;string&gt;$HOME/rex/rex.log&lt;/string&gt;
+  &lt;key&gt;StandardErrorPath&lt;/key&gt;&lt;string&gt;$HOME/rex/rex.log&lt;/string&gt;
+&lt;/dict&gt;&lt;/plist&gt;
+PLIST
+launchctl load ~/Library/LaunchAgents/com.rex.plist
+tail -F ~/rex/rex.log</code></pre>
+</doc-codeblock></div>
+<p>rex の<strong>起動コマンド</strong>は <code translate="no" v-pre>~/rex/run.sh</code> の最終行です。キーは <code translate="no" v-pre>~/rex/rex.env</code> に、1行に1つ <code translate="no" v-pre>NAME=value</code> の形式で書きます。変更後は <code translate="no" v-pre>launchctl kickstart -k gui/$(id -u)/com.rex</code> で rex を再起動します。<code translate="no" v-pre>tail -f ~/rex/rex.log</code> でログを表示できます。</p>
+<p>rex は Mac にログインしている間は動作します。自動的に再起動する Mac の場合は、自動ログインをオンにしてください（<strong>System Settings</strong>、<strong>Users &amp; Groups</strong>）。macOS のファイアウォールが有効なら、macOS から確認されたときに rex を許可するか、ファイアウォールの <strong>Options</strong> に <code translate="no" v-pre>~/rex/rex</code> を追加してください。</p>
+</doc-tab>
+<doc-tab v-cloak id="windows-1">
+<template #title>Windows</template>
+<p>PowerShell を<strong>管理者として</strong>開き、<code translate="no" v-pre>cd $HOME\rex</code> で rex のフォルダーに移動します。まず <code translate="no" v-pre>run.cmd</code> を作ります。これは rex をそのフォルダー内で起動し、ログを <code translate="no" v-pre>rex.log</code> に書き出します。メモ帳がファイルの作成を提案してきます:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">notepad run.cmd</code></pre>
+</doc-codeblock></div>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-batch"><code v-pre class="language-batch">@echo off
+cd /d &quot;%~dp0&quot;
+rex.exe 2&gt;&gt; rex.log</code></pre>
+</doc-codeblock></div>
+<p>保存してください。次に、rex のポートと 2 つの検出用ポートへの通信を Windows Firewall で許可し、今すぐ、そして今後ログインするたびに rex を起動するようにします:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">New-NetFirewallRule -DisplayName rex -Protocol TCP -LocalPort 32400
+New-NetFirewallRule -DisplayName &quot;rex discovery&quot; -Protocol UDP -LocalPort 32410,32414
+$settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit 0 -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+Register-ScheduledTask rex -Action (New-ScheduledTaskAction -Execute &quot;$HOME\rex\run.cmd&quot;) -Trigger (New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME) -Settings $settings
+Start-ScheduledTask rex; Start-Sleep 3
+Get-Content rex.log -Wait</code></pre>
+</doc-codeblock></div>
+<p>rex の<strong>起動コマンド</strong>は <code translate="no" v-pre>run.cmd</code> の <code translate="no" v-pre>rex.exe</code> の行です。キーはその上に、1行に1つ <code translate="no" v-pre>set NAME=value</code> の形式で書きます。変更後は <code translate="no" v-pre>Stop-Process -Name rex; Start-Sleep 1; Start-ScheduledTask rex</code> で rex を再起動します。<code translate="no" v-pre>Get-Content $HOME\rex\rex.log -Wait</code> でログを表示できます。</p>
+<p>PowerShell で手動で rex を起動しましたか？ その場合、ログはそのウィンドウにだけ表示され、<code translate="no" v-pre>rex.log</code> は作られません。また、再起動後に自動で起動するタスクもありません。rex はデータベースと登録情報を、起動したフォルダーに保存します。そのため、別のフォルダーから起動した rex は、新しい未登録のサーバーになってしまいます。Ctrl+C で停止し、同じフラグを付けて rex のフォルダーから再度起動してください。できれば、上のタスクを設定するのがおすすめです。</p>
+<p>rex は Windows にログインしている間、専用のウィンドウで動作します。ウィンドウは開いたままにしてください。PowerShell では、このページで <code translate="no" v-pre>curl</code> と書かれている箇所にはすべて <code translate="no" v-pre>curl.exe</code> と入力してください。Windows PowerShell 標準の <code translate="no" v-pre>curl</code> は別のコマンドです。</p>
+</doc-tab>
+</doc-tabs>
+<p><strong>表示されるはずの内容。</strong> 最初の行の中に次が出ます:</p>
+<div id="step-1-install-rex-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO    seeded rex.db: an empty library named yourhost, machine=...
+INFO    no source yet: a source registers itself once pointed at this server (PUT /rex/sources/{name}, docs/feed-api.md)
+INFO    claim state: unclaimed
+INFO    rex on http://192.168.1.20:32400  machine=...  items=0  parts=proxy</code></pre>
+</doc-codeblock></div>
+<p>rex は自分の名前をマシン名から取ります。Plex アプリにはその名前が表示されます。<code translate="no" v-pre>no source yet</code> で正常です。まだアプリが登録されていないためです。ログは開いたままにしてください。</p>
+<h2 id="step-2-see-it-work-by-hand">ステップ 2. 手動で動作を確認</h2>
+<p><strong>何をするか。</strong> 使い捨てのファイルサーバーと2つの <code translate="no" v-pre>curl</code> コマンドを使い、1本の映画に対してあなたのアプリの役割を果たします。</p>
+<p><strong>なぜ重要か。</strong> アプリを関わらせる前に、このマシンでrexが動いているかを確かめられます。この手順がうまくいってアプリがうまくいかない場合、問題はアプリ側にあります。アプリがすでに設定済みなら、この手順は飛ばして構いません。</p>
+<p><code translate="no" v-pre>ffprobe</code>、小さなWebサーバー、そして動画ファイル1つが必要です。ファイルのあるフォルダを <code translate="no" v-pre>test</code> という名前でrexに登録し、そのファイルがSintel（IMDb <code translate="no" v-pre>tt1727587</code>、TMDB <code translate="no" v-pre>45745</code>）の映画であることを、ffprobeの出力とあわせてrexに送ります。</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-と-macos-1">
+<template #title>Linux と macOS</template>
+<p><code translate="no" v-pre>ffprobe</code> と <code translate="no" v-pre>jq</code> をインストールします（Linuxでは <code translate="no" v-pre>sudo apt install -y ffmpeg jq</code>、macOSでは <code translate="no" v-pre>brew install ffmpeg jq</code>）。小さなWebサーバーで配信できる場所にファイルを置きます。</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p ~/rex-test/movies/Sintel.2010
+cp /path/to/any-video.mkv ~/rex-test/movies/Sintel.2010/Sintel.2010.mkv
+cd ~/rex-test
+python3 -m http.server 8099 --bind 127.0.0.1 &amp;</code></pre>
+</doc-codeblock></div>
+<p>rexに登録します。</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s -X PUT http://192.168.1.20:32400/rex/sources/test \
+  -H 'Content-Type: application/json' -d '{&quot;url&quot;: &quot;http://127.0.0.1:8099&quot;}'</code></pre>
+</doc-codeblock></div>
+<p>rexにファイルを送ります。</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">P=movies/Sintel.2010/Sintel.2010.mkv
+jq -n --arg p &quot;$P&quot; \
+  --argjson probe &quot;$(ffprobe -v quiet -print_format json -show_format -show_streams &quot;$P&quot;)&quot; \
+  '{items: [{id: $p, path: $p, kind: &quot;movie&quot;, ids: {imdb: &quot;tt1727587&quot;, tmdb: 45745}, media_info: $probe}]}' \
+| curl -s -X POST http://192.168.1.20:32400/rex/feed/test/items \
+    -H 'Content-Type: application/json' --data-binary @-</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-2">
+<template #title>Windows</template>
+<p><code translate="no" v-pre>winget install Gyan.FFmpeg</code> と <code translate="no" v-pre>winget install Python.Python.3.13</code> で <code translate="no" v-pre>ffprobe</code> とPythonをインストールしてから、新しいPowerShellウィンドウを開きます。小さなWebサーバーで配信できる場所にファイルを置きます。</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">New-Item -ItemType Directory -Force $HOME\rex-test\movies\Sintel.2010 | Out-Null
+Copy-Item C:\path\to\any-video.mkv $HOME\rex-test\movies\Sintel.2010\Sintel.2010.mkv
+cd $HOME\rex-test
+$server = Start-Process py '-m http.server 8099 --bind 127.0.0.1' -WindowStyle Hidden -PassThru</code></pre>
+</doc-codeblock></div>
+<p>rexに登録します。</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">Invoke-RestMethod -Method Put http://192.168.1.20:32400/rex/sources/test -ContentType application/json -Body '{&quot;url&quot;: &quot;http://127.0.0.1:8099&quot;}'</code></pre>
+</doc-codeblock></div>
+<p>rexにファイルを送ります。</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$p = 'movies/Sintel.2010/Sintel.2010.mkv'
+$probe = ffprobe -v quiet -print_format json -show_format -show_streams $p | Out-String | ConvertFrom-Json
+$item = @{ id = $p; path = $p; kind = 'movie'; ids = @{ imdb = 'tt1727587'; tmdb = 45745 }; media_info = $probe }
+Invoke-RestMethod -Method Post http://192.168.1.20:32400/rex/feed/test/items -ContentType application/json -Body (ConvertTo-Json @{ items = @($item) } -Depth 20)</code></pre>
+</doc-codeblock></div>
+<p>PowerShellでは、rexの応答がJSONではなくリストとして表示されます。</p>
+</doc-tab>
+</doc-tabs>
+<p><strong>表示されるはずの結果。</strong> 応答は <code translate="no" v-pre>{&quot;created&quot;:1,&quot;updated&quot;:0,&quot;held&quot;:0,&quot;unchanged&quot;:0}</code> になり、rexのログには次が表示されます。</p>
+<div id="step-2-see-it-work-by-hand-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO    FEED identified &quot;Sintel.2010&quot; -&gt; movie tmdb:45745 (placed)
+INFO    FEED test upsert: 1 created, 0 updated, 0 held, 0 unchanged, 0 rejected</code></pre>
+</doc-codeblock></div>
+<p>Sintelが<strong>Movies</strong>に追加され、小さなWebサーバーから再生できるようになります。<doc-anchor-trigger to="#step-3-add-it-to-a-plex-account">ステップ3</doc-anchor-trigger>より前にPlexアプリからrexを開くことはできないので、この手順ではフィードの確認だけを行います。</p>
+<p><strong>後片付け。</strong> 先へ進む前に、テスト用のソースを削除してください。ソースを削除すると、そこから送ったものはすべて消えます。最初のリクエストは <code translate="no" v-pre>confirm</code> パスで応答するので、5分以内にそのパスへ <code translate="no" v-pre>DELETE</code> を送ってください。</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-と-macos-2">
+<template #title>Linux と macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s -X DELETE http://192.168.1.20:32400/rex/sources/test
+curl -s -X DELETE &quot;http://192.168.1.20:32400/rex/sources/test/confirm/&lt;code from the answer&gt;&quot;
+kill %1</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-3">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">Invoke-RestMethod -Method Delete http://192.168.1.20:32400/rex/sources/test
+Invoke-RestMethod -Method Delete &quot;http://192.168.1.20:32400/rex/sources/test/confirm/&lt;code from the answer&gt;&quot;
+Stop-Process -InputObject $server</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p><strong>うまくいかない場合。</strong></p>
+<ul>
+<li><code translate="no" v-pre>&quot;held&quot;:1</code>：<code translate="no" v-pre>media_info</code> がないか、ストリームがありません。<code translate="no" v-pre>ffprobe</code> がそのファイルのJSONを出力しているか確認してください。</li>
+<li><code translate="no" v-pre>rejected</code> を含む応答：ファイルの拡張子から見て動画ではない、サンプルである、<code translate="no" v-pre>id</code> または <code translate="no" v-pre>path</code> がない、パスの形式が不正である、または別の <code translate="no" v-pre>id</code> がすでにそのパスを持っている、のいずれかです。応答とrexのログに、それぞれの理由が書かれています。</li>
+<li><code translate="no" v-pre>404 no such source</code>：先に <code translate="no" v-pre>PUT /rex/sources/test</code> が実行されていません。</li>
+</ul>
+<h2 id="step-3-add-it-to-a-plex-account">ステップ 3. Plex アカウントに追加</h2>
+<p><strong>何をするか。</strong> 本物の Plex Media Server を登録するのと同じ手順で、rex を Plex アカウントに登録し、自分のアカウントと共有します。</p>
+<p><strong>なぜ重要か。</strong> rex は、すべてのタイトルの名前、ポスター、あらすじ、エピソード名を Plex 自身のメタデータから取得します。Plex にはアカウントに登録されてからしか問い合わせできないことがあります。登録前にアプリが送ったものは、届いた時点で名前が付けられるので、それまで Fix Match には何も表示されません。また、この登録で &quot;unclaimed&quot; の通知も消え、<doc-anchor-trigger to="#use-it-outside-your-home-optional">自宅の外で rex を使う</doc-anchor-trigger>ためにも必要です。</p>
+<p><strong>このためには、自分のアカウントではなく新しい Plex アカウントを使ってください。</strong> rex は Plex が作ったものではなく、rex を登録したアカウントに対して Plex が措置を取る可能性があります。そこで、視聴履歴、友達、Plex Pass を含む本来のアカウントは守ってください。<a href="https://www.plex.tv">plex.tv</a> で、ほかで使っていないメールアドレスを使って無料の新しいアカウントを作成し、そのアカウントに rex を登録して、rex を自分のアカウントと共有します。こうすると、友達のサーバーを見るのと同じように、自分のアカウントでサインインして視聴できます。この手順を終えるまで、rex は何も再生しません。</p>
+<h3 id="register-rex-on-the-fresh-account">新しいアカウントに rex を登録</h3>
+<ol>
+<li>Melde dich bei <a href="https://www.plex.tv">plex.tv</a> <strong>mit dem frischen Konto</strong> an, öffne <a href="https://www.plex.tv/claim">plex.tv/claim</a> und kopiere den Code. Er läuft nach etwa fünf Minuten ab.</li>
+<li>
+<p>Auf dem rex-Rechner (<code translate="no" v-pre>curl.exe</code> unter Windows):</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -X POST &quot;http://192.168.1.20:32400/myplex/claim?token=claim-xxxxxxxxxxxx&quot;
+curl -s http://192.168.1.20:32400/identity</code></pre>
+</doc-codeblock></div>
+</li>
+</ol>
+<p><strong>Was du sehen solltest.</strong> Der zweite Befehl zeigt <code translate="no" v-pre>claimed=&quot;1&quot;</code>, und in rex&#x27;s Ordner existiert <code translate="no" v-pre>claim_state.json</code>. Sichere diese Datei: Ohne sie muss rex neu beansprucht werden, und rex verweigert einen zweiten Claim, solange die Datei vorhanden ist. Ab jetzt kommen Titel mit Namen und Postern an, ohne Neustart.</p>
+<p><strong>Falls nicht.</strong></p>
+<ul>
+<li>Der erste Befehl antwortet mit <code translate="no" v-pre>409</code> und <code translate="no" v-pre>rex: already claimed</code>: rex hängt bereits an einem Plex-Konto.</li>
+<li>Er antwortet mit <code translate="no" v-pre>500 Internal Server Error</code>, und rex protokolliert <code translate="no" v-pre>claim exchange failed</code>: Der Code ist abgelaufen oder wurde schon benutzt. Hol dir einen neuen unter <a href="https://www.plex.tv/claim">plex.tv/claim</a>.</li>
+</ul>
+<h3 id="share-it-with-your-own-account">自分のアカウントと共有</h3>
+<ol>
+<li>Du bist noch mit dem frischen Account angemeldet. Öffne <a href="https://app.plex.tv">app.plex.tv</a>, dann <strong>Settings</strong> (der Schraubenschlüssel), <strong>Manage Library Access</strong> und <strong>Grant Library Access</strong>.</li>
+<li>Gib den Benutzernamen oder die E-Mail-Adresse deines eigenen Accounts ein, wähle den rex-Server und beide Bibliotheken, <strong>Movies</strong> und <strong>TV Shows</strong>, und schick die Einladung ab.</li>
+<li>Melde dich ab, dann mit <strong>deinem eigenen</strong> Account an und nimm die Einladung an. Sie kommt per E-Mail und in app.plex.tv an.</li>
+</ol>
+<figure class="content-center">
+    <img src="../../assets/rex/20-plex-manage-library-access.webp" alt="Manage Library Access in den Einstellungen von app.plex.tv, mit dem Button Grant Library Access" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Manage Library Access in den Einstellungen von app.plex.tv, mit dem Button Grant Library Access</figcaption>
+</figure>
+<figure class="content-center">
+    <img src="../../assets/rex/21-plex-grant-library-access.webp" alt="Der Dialog Grant Library Access mit angehakten Movies- und TV Shows-Bibliotheken des rex-Servers" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Der Dialog Grant Library Access mit angehakten Movies- und TV Shows-Bibliotheken des rex-Servers</figcaption>
+</figure>
+<p><strong>Das solltest du sehen.</strong> Wenn du mit deinem eigenen Account angemeldet bist, zeigen die Plex-Apps den rex-Server neben deinen eigenen Servern an, mit beiden Bibliotheken. Dein Wiedergabeverlauf auf rex gehört dir: Er wird getrennt vom frischen Account gespeichert. Teile ihn genauso mit allen anderen in deinem Haushalt.</p>
+<h2 id="step-4-connect-your-app">ステップ 4. アプリを接続</h2>
+<p><strong>何をするか。</strong> アプリを rex に接続します。アプリは登録したあと、ライブラリ全体を送り、その後は変更が起きるたびに送信します。</p>
+<p><strong>なぜ大切か。</strong> これが両者をつなぐ唯一の経路です。rex にはアプリ用の設定がありません。アプリが rex を見つけるのであって、その逆ではありません。</p>
+<p>アプリに rex のアドレス <code translate="no" v-pre>http://192.168.1.20:32400</code> を入力してください。入力方法はアプリによって異なります。</p>
+<p><strong>正しく動いているときの表示。</strong> rex のログには、アプリが登録した名前の下に次の行が出力されます:</p>
+<div id="step-4-connect-your-app-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO    SOURCES myapp registered at http://192.168.1.20:8080
+INFO    SOURCES PUT /rex/sources/myapp -&gt; 200
+INFO    FEED myapp upsert: 0 created, 0 updated, 200 held, 0 unchanged, 0 rejected
+INFO    FEED identified &quot;Some.Movie.2019.1080p&quot; -&gt; movie tmdb:12345 (placed)
+INFO    FEED myapp upsert: 180 created, 0 updated, 20 held, 0 unchanged, 0 rejected</code></pre>
+</doc-codeblock></div>
+<p>rex は <code translate="no" v-pre>registered at</code> の行に書かれたアドレスからすべてのファイルを読み取るため、rex がそのアドレスに到達できる必要があります。rex がこの行を再度出力するのは、アドレスが変わったときだけです。<code translate="no" v-pre>held</code> のファイルは ffprobe の出力を待っている状態で、アプリがその出力を送ると表示されます。いつでも rex がアプリから受け取った内容を確認できます (Windows では <code translate="no" v-pre>| head -c 600</code> を付けずに <code translate="no" v-pre>curl.exe</code> を使います):</p>
+<div id="step-4-connect-your-app-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s http://192.168.1.20:32400/rex/sources                # the apps that registered, and their addresses
+curl -s http://192.168.1.20:32400/rex/feed/myapp/items | head -c 600   # what is shown
+curl -s http://192.168.1.20:32400/rex/feed/myapp/held  | head -c 600   # what waits for ffprobe output</code></pre>
+</doc-codeblock></div>
+<p><strong>うまくいかないとき。</strong></p>
+<ul>
+<li>rex のログに何も出ない: アプリが rex に到達できていません。アプリに入力したアドレスと、両マシン間で rex のポートが開いているかを確認してください。</li>
+<li>ファイルは届くが <code translate="no" v-pre>identified</code> の行が出ない: アプリが <code translate="no" v-pre>kind</code> と <code translate="no" v-pre>ids</code> を送っていません (<code translate="no" v-pre>held</code> のファイルや、変更のない再送信でも行は出力されません)。送られるまで、そのタイトルは一致しないままです。新しいアカウントでサインインした Plex アプリで <strong>Fix Match</strong> を使えば、手動で修正できます。rex を共有している自分のアカウントは拒否されます。</li>
+<li>タイトルは表示されるが再生できない: rex が <code translate="no" v-pre>registered at</code> のアドレスにあるアプリへ到達できていません。<doc-anchor-trigger to="#when-something-is-wrong">問題が起きたとき</doc-anchor-trigger> の <code translate="no" v-pre>upstream failed</code> の項目で確認できます。</li>
+</ul>
+<h2 id="step-5-watch-something">ステップ 5. 何か視聴してみる</h2>
+<p><strong>何をするか。</strong> Plex アプリで rex を開きます。ほかの Plex サーバーを開くのとまったく同じ方法です。</p>
+<p><strong>なぜ大事か。</strong> これがこの設定全体の目的です。また、最後のつながりも確認できます。つまり、見ている最中に rex がアプリからファイルを読み込めているかどうかです。</p>
+<p>Plex アプリを、スマホ、テレビ、パソコンのどれかで開いてください。ただし <strong>同じホームネットワーク</strong> につながっている必要があります。マシン名の下に rex が表示され、<strong>Movies</strong> と <strong>TV Shows</strong> が並んでいます。映画を選んで再生を押しましょう。</p>
+<figure class="content-center">
+    <img src="../../assets/rex/10-plex-server-libraries.webp" alt="サイドバーに rex サーバーの Movies と TV Shows があり、その横に映画のグリッドが並んでいる Plex アプリ" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">サイドバーに rex サーバーの Movies と TV Shows があり、その横に映画のグリッドが並んでいる Plex アプリ</figcaption>
+</figure>
+<p>自宅ならほかに必要なものはありません。Plex アプリは Plex 独自のローカル検出機能で rex を見つけ、ネットワーク経由で接続します。そのためには、デバイスが rex と同じネットワーク上にある必要があります（ゲスト Wi-Fi や別の VLAN では不可です）。検出には UDP ポート 32410 と 32414 を使うので、rex のマシンのファイアウォールでこれらを通す必要があります（Windows では、手順 1 のファイアウォールルールで設定されます）。rex がポート 32400 を使っている場合、rex は検出に応答します。Plex と同じマシンで動いているため rex を 32500 に変えた場合は、検出は Plex 側が担当します。その場合、アプリは <doc-anchor-trigger to="#share-it-with-your-own-account">共有先のアカウント</doc-anchor-trigger> を通じて rex を見つけます。Web ブラウザで app.plex.tv を開いても、自宅では使えます。rex に名前を付けた後は、<doc-anchor-trigger to="#rex-direct">rex-direct</doc-anchor-trigger> が rex に与える HTTPS アドレスで使えます（rex nightly 2026.11.02 以降）。初回は、Chrome から app.plex.tv がローカルネットワーク上のデバイスにアクセスすることを許可するか聞かれるので、許可してください。<code translate="no" v-pre>http://192.168.1.20:32400/web</code> は Plex Web ではありません。rex には独自の Web アプリがなく、そのページは rex が要求済みかどうかと、どこで見ればよいかを示すだけです。</p>
+<p><strong>見えるはずのもの。</strong> どの Plex サーバーとも同じように、ポスター、タイトル、公開年が表示されます。再生は数秒以内に始まります。</p>
+<p>見かけることがある表示は次の 2 つです。</p>
+<ul>
+<li><strong>&quot;yourhost server is unclaimed and not secure&quot;</strong>。Plex アプリは、Plex アカウントに紐付いていないサーバーに対してこの表示を出します。紐付けるまで、rex は何も再生しません。<doc-anchor-trigger to="#step-3-add-it-to-a-plex-account">手順 3</doc-anchor-trigger> を実行してください。</li>
+<li><strong>&quot;This server is not powerful enough to convert video&quot;</strong>。すべてのデバイスですべてのタイトルが失敗する場合は、再生を押した直後の rex のログを確認してください。そこに <code translate="no" v-pre>upstream failed</code> や <code translate="no" v-pre>502</code> があれば、rex がアプリに到達できていません。この場合、FFmpeg では直りません。<doc-anchor-trigger to="#when-something-is-wrong">When something is wrong</doc-anchor-trigger> の <code translate="no" v-pre>upstream failed</code> の行に対処法が書かれています。一部のファイルだけが失敗する場合（特に Web ブラウザで多い場合）は、デバイスがそのままでは再生できないファイルです。AC3 や DTS の音声であることが多いです。テレビやスマホの Plex アプリは、ほとんどのファイルをそのまま再生できます。どの環境でもすべて再生したい場合は、<doc-anchor-trigger to="#converting-video-optional">Converting video</doc-anchor-trigger> を設定してください。</li>
+</ul>
+<p><strong>削除はアプリ側で行われます。</strong> 新しく作ったアカウントでサインインした状態で、Plex アプリのタイトルで <strong>Delete</strong> を押すと、rex は <doc-anchor-trigger to="#what-your-app-must-do">What your app must do</doc-anchor-trigger> に書かれているとおり、アプリにそのファイルの削除を依頼します。rex を共有しているほかのアカウントでは削除できません。削除を無効にするには、新しいアカウントで app.plex.tv を開き、<strong>Settings</strong>、rex サーバーの <strong>Library</strong>、<strong>Show Advanced</strong> の順に進みます。<strong>Allow media deletion</strong> のチェックを外して保存してください。</p>
+<figure class="content-center">
+    <img src="../../assets/rex/32-plex-allow-media-deletion.webp" alt="Show Advanced を開いた rex サーバーの Library 設定。Allow media deletion が枠で囲まれている" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Show Advanced を開いた rex サーバーの Library 設定。Allow media deletion が枠で囲まれている</figcaption>
+</figure>
+<p>アプリがファイルを削除すると、Plex と同じようにライブラリのゴミ箱に移動します。ファイルは利用不可の状態で残り、視聴履歴も保持されます。アプリが再度送ってくると、元どおりに戻ります。ライブラリの <strong>Empty Trash</strong> を押すと完全に消えます。<strong>Empty trash automatically after every scan</strong>（Settings、Library にあり、初期値はオフ）をオンにすると、これも自動で行われます。</p>
+<p>各ファイルは、アプリが送ってきた <code translate="no" v-pre>kind</code> によって <strong>Movies</strong> か <strong>TV Shows</strong> に振り分けられます。<code translate="no" v-pre>kind</code> がないファイルは、最初のフォルダで判断します。<code translate="no" v-pre>shows</code> なら TV Shows、それ以外は Movies になります。</p>
+<p>フォルダごとに独自のライブラリを作るには、アプリが登録時に <code translate="no" v-pre>directories</code> を追加します。これはファイルパスの最初のフォルダ名と、ライブラリのタイトルを指定するものです。例は <code translate="no" v-pre>{&quot;url&quot;: ..., &quot;directories&quot;: [{&quot;name&quot;: &quot;anime&quot;, &quot;shows&quot;: &quot;Anime&quot;, &quot;movies&quot;: &quot;Anime Movies&quot;}]}</code> です。タイトルはどちらか一方だけでも構いません。rex は、アプリが登録したときにそのライブラリを作成し、そのフォルダにすでにあるものをそのまま移動します。視聴履歴、Fix Match、編集内容も含まれます。不正な項目はスキップされ、その理由とともに回答の <code translate="no" v-pre>ignored</code> に表示されます。ライブラリ名は Plex アプリで自由に変更できます。ライブラリを削除しても、そのまま削除された状態が続き、ファイルは Movies や TV Shows に戻ります。<strong>Add Library</strong> で追加し直すと、フォルダの一覧にアプリのフォルダが表示されます。ルールについては <a href="https://github.com/debridmediamanager/rex/blob/main/docs/feed-api.md#libraries-a-source-declares">Libraries a source declares</a> を参照してください。</p>
+<p><strong>バックアップ</strong>を取るには、rex のフォルダにある <code translate="no" v-pre>rex.db</code>（ライブラリ、視聴履歴、アプリのログイン情報が入っているため、取り扱いに注意してください）、<code translate="no" v-pre>claim_state.json</code>、そして rex-direct が rex に名前を付けた後は <code translate="no" v-pre>rex-direct.json</code>（証明書の秘密鍵）をコピーします。</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos">
+<template #title>Linux and macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo apt install -y sqlite3    # once, on Linux; macOS has it
+mkdir -p ~/rex-backup
+sqlite3 ~/rex/rex.db &quot;.backup $HOME/rex-backup/rex.db&quot;
+cp ~/rex/*.json ~/rex-backup/</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-4">
+<template #title>Windows</template>
+<p>Windows には <code translate="no" v-pre>sqlite3</code> がないため、いったん rex を停止し、<code translate="no" v-pre>rex.db</code> と、同じ名前で始まる 2 つのファイルをコピーしてください。</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">Stop-Process -Name rex; Start-Sleep 1
+New-Item -ItemType Directory -Force $HOME\rex-backup | Out-Null
+Copy-Item $HOME\rex\rex.db*, $HOME\rex\*.json $HOME\rex-backup
+Start-ScheduledTask rex</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p>Docker では、ファイルは <code translate="no" v-pre>~/rex/config</code> にあり、root だけが読めます。コンテナ内から <code translate="no" v-pre>docker exec rex sqlite3 /config/rex.db &quot;.backup /config/rex.db.bak&quot;</code> でバックアップを取り、その後 <code translate="no" v-pre>mkdir -p ~/rex-backup &amp;&amp; sudo cp ~/rex/config/rex.db.bak ~/rex/config/*.json ~/rex-backup/</code> を実行します。</p>
+<p>元に戻すには <doc-anchor-trigger to="#restore-a-backup">Restore a backup</doc-anchor-trigger> を見てください。</p>
+<p>これで完了です。以下のセクションは任意です。</p>
+<h2 id="use-it-outside-your-home-optional">家の外から使う (任意)</h2>
+<p><strong>これは何をするか。</strong> rex に、家の外にいる Plex アプリから届く HTTPS アドレスを与え、その情報を plex.tv に伝えます。</p>
+<p><strong>なぜ重要か。</strong> 家の外では、app.plex.tv は HTTPS アドレスにしか接続できず、他の Plex アプリも HTTPS を優先します。本物の Plex サーバーなら Plex のリレーに切り替えられますが、rex はそれができません。そのため、接続方法は自分で選ぶ必要があります。rex は先に <doc-anchor-trigger to="#step-3-add-it-to-a-plex-account">claimed</doc-anchor-trigger> しておいてください。インターネットに面したプロキシを使う場合は、<code translate="no" v-pre>/rex/</code> をブロックしてください。詳しくは <doc-anchor-trigger to="#keep-the-port-private">Keep the port private</doc-anchor-trigger> を見てください。</p>
+<p><strong>Plex Pass。</strong> Plex Web は、どちらのアカウントにも Plex Pass や Remote Watch Pass がなくても、家の外で再生できます。他の Plex アプリは、家の外での動作をまだテストしていません。</p>
+<p>どの方法を選んでも、家の外で見るデータはすべて、自宅回線の<strong>アップロード</strong>速度を通ります。目安として、20 Mbit/s のアップロードで 1080p WEB-DL 1本は流せますが、リミックスは無理です。</p>
+<retype-table copy-text="| 自分の環境 | 使う方法 | 理由 |
+|---|---|---|
+| ルーターがパブリック IP を持っていて、ポート転送ができる | **[rex-direct](#rex-direct)**（一番簡単） | デフォルトで有効です。ポート転送は1つだけです。DMM が rex に名前と証明書を用意し、その名前を自宅の IP に向け続けます |
+| 視聴する端末に Tailscale を入れられる | **[Tailscale serve](#tailscale-serve)**（一番おすすめ） | ルーターで開けるポートはありません。どんなインターネット回線の後ろでも動きます。証明書は自動で更新され、tailnet の外からは rex に届きません |
+| Tailscale を入れられない端末（友人のテレビ、ホテルなど）で見る必要があり、ルーターがパブリック IP を持っている | **[Caddy](#caddy)**（自分のドメイン、または無料の `sslip.io` 名で） | 間に誰も入らない直接接続で、無料の証明書は自動で更新されます。ポート 443 を転送します |
+| 回線にパブリック IPv4 がない（CGNAT や DS-Lite。ケーブル、モバイル、一部の光回線でよくある）が、IPv6 はある | **[rex-direct over IPv6](#rex-direct-over-ipv6)** | ポート転送も、何かを借りる必要もありません。IPv6 でポート 32400 を通すだけです。視聴する端末も IPv6 が必要ですが、ほとんどのモバイル回線では使えます |
+| 回線にパブリック IP がまったくない、または視聴するネットワークが IPv6 に対応していない。そして Tailscale を入れられない端末で見る | **[小さな VPS](#a-small-vps)** | rex にはリレーがなく、今後も提供されません。レンタルした VPS がパブリック IP を持ち、トンネルが全データを rex まで運びます。速度は VPS の帯域そのままです |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>自分の環境</th>
+<th>使う方法</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ルーターがパブリック IP を持っていて、ポート転送ができる</td>
+<td><strong><doc-anchor-trigger to="#rex-direct">rex-direct</doc-anchor-trigger></strong>（一番簡単）</td>
+<td>デフォルトで有効です。ポート転送は1つだけです。DMM が rex に名前と証明書を用意し、その名前を自宅の IP に向け続けます</td>
+</tr>
+<tr>
+<td>視聴する端末に Tailscale を入れられる</td>
+<td><strong><doc-anchor-trigger to="#tailscale-serve">Tailscale serve</doc-anchor-trigger></strong>（一番おすすめ）</td>
+<td>ルーターで開けるポートはありません。どんなインターネット回線の後ろでも動きます。証明書は自動で更新され、tailnet の外からは rex に届きません</td>
+</tr>
+<tr>
+<td>Tailscale を入れられない端末（友人のテレビ、ホテルなど）で見る必要があり、ルーターがパブリック IP を持っている</td>
+<td><strong><doc-anchor-trigger to="#caddy">Caddy</doc-anchor-trigger></strong>（自分のドメイン、または無料の <code translate="no" v-pre>sslip.io</code> 名で）</td>
+<td>間に誰も入らない直接接続で、無料の証明書は自動で更新されます。ポート 443 を転送します</td>
+</tr>
+<tr>
+<td>回線にパブリック IPv4 がない（CGNAT や DS-Lite。ケーブル、モバイル、一部の光回線でよくある）が、IPv6 はある</td>
+<td><strong><doc-anchor-trigger to="#rex-direct-over-ipv6">rex-direct over IPv6</doc-anchor-trigger></strong></td>
+<td>ポート転送も、何かを借りる必要もありません。IPv6 でポート 32400 を通すだけです。視聴する端末も IPv6 が必要ですが、ほとんどのモバイル回線では使えます</td>
+</tr>
+<tr>
+<td>回線にパブリック IP がまったくない、または視聴するネットワークが IPv6 に対応していない。そして Tailscale を入れられない端末で見る</td>
+<td><strong><doc-anchor-trigger to="#a-small-vps">小さな VPS</doc-anchor-trigger></strong></td>
+<td>rex にはリレーがなく、今後も提供されません。レンタルした VPS がパブリック IP を持ち、トンネルが全データを rex まで運びます。速度は VPS の帯域そのままです</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>おすすめしないもの:</p>
+<ul>
+<li><strong>Cloudflare tunnel。</strong> すべてのデータが Cloudflare を通ります。さらに、ファイルの最初の読み込みで使われる <code translate="no" v-pre>Range</code> が落とされるため、再生を始めるたびにアプリがファイル全体を取り直します。</li>
+<li><strong>Tailscale Funnel、ngrok などのホスト型トンネル。</strong> 帯域や月間データ量に上限があり、映画1本でもすぐに使い切ってしまいます。また Tailscale Funnel は、フィード API を含む rex 全体を公開します。インターネット上の誰もがライブラリに追加したり削除したりできてしまいます。</li>
+<li><strong>rex-direct や自分の証明書なしでポート 32400 を転送する。</strong> Plex アプリは平文の HTTP アドレスを受け取ることになり、app.plex.tv はそれを拒否します。</li>
+</ul>
+<h3 id="rex-direct">rex-direct</h3>
+<p>rex-direct は DMM 版の plex.direct で、デフォルトで有効になっています。ルーターで、ポート 32400 (TCP) を rex のマシンに転送してください。それだけで完了です。再起動は不要です。</p>
+<p>rex が DMM でクレームされると、2 つの名前が割り当てられます。1 つ目は <code translate="no" v-pre>&lt;hash&gt;.rex-direct.debridmediamanager.com</code> で、自宅の公開 IP を指します。2 つ目は <code translate="no" v-pre>lan.&lt;hash&gt;.rex-direct.debridmediamanager.com</code> で、rex の LAN IP を指します。両方の名前に証明書が発行されます。最初の証明書は発行まで数分かかります。rex のログには発行中であることが表示され、その後 <code translate="no" v-pre>rex-direct:</code> の行で各名前が表示されます。新しい自宅の IP や証明書の更新は自動で反映されます。1 つの Plex アカウントには最大 10 個の rex-direct 名を登録できます。</p>
+<p>自宅では、app.plex.tv を含む Plex アプリが <code translate="no" v-pre>lan.</code> の名前を使えます。この名前はネットワーク経由で直接 rex に接続するので、ポート転送が必要なのは外出先からのアクセスだけです。app.plex.tv では、Chrome が確認を求めてきたらローカルネットワーク上のデバイスへのアクセスを許可してください。許可しないと公開名に切り替わり、その場合はポート転送が必要になります。<doc-anchor-trigger to="#what-you-should-see">期待どおりに動いているか確認する</doc-anchor-trigger> で両方の名前を確認できます。</p>
+<p>ルーターが rex に別の外部ポートを転送している場合は、<doc-anchor-trigger to="#step-1-install-rex">手順 1</doc-anchor-trigger> に示すシステムごとの方法で <code translate="no" v-pre>REX_DIRECT_PORT=&lt;that port&gt;</code> キーを追加し、rex を再起動してください。ポート転送でフィード API が開くわけではありません。<doc-anchor-trigger to="#keep-the-port-private">ポートを非公開に保つ</doc-anchor-trigger> を参照してください。</p>
+<h3 id="rex-direct-over-ipv6">rex-direct over IPv6</h3>
+<p>ご自宅の回線にパブリックIPv4がなく(CGNATやDS-Lite)、IPv6は使える場合向けの設定です。DMMがIPv6アドレスでrexに接続して同じサーバーだと確認できたら、rexのrex-directの名前もそのアドレスに向けます。rex nightly 2026.11.08以降が必要で、Dockerを使う場合はホストネットワークにしてください。</p>
+<p>IPv6にはポート転送もポートマッピングもありません。rexは内側と外側で同じポートを使う必要があるので、<code translate="no" v-pre>REX_DIRECT_PORT</code>は未設定のままにしてください。ルーターのファイアウォールで、ポート32400へのTCP接続を、IPv6経由でrexのマシンに許可します。rexは起動(またはclaim)から1分後にIPv6を通知し、その後は6時間ごとに通知します。ですので、ルールを追加してからrexを起動するか、追加後にrexを再起動してください。1分ほどすると、ログに両方のアドレスが表示されます:</p>
+<div id="rex-direct-over-ipv6-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">rex-direct: https://&lt;hash&gt;.rex-direct.debridmediamanager.com:32400 -&gt; &lt;IPv4&gt; and &lt;IPv6&gt;</code></pre>
+</doc-codeblock></div>
+<p>数分たっても<code translate="no" v-pre>and &lt;IPv6&gt;</code>を含む行が出ない場合、DMMはIPv6経由でrexに到達できていません。ファイアウォールのルールと、Dockerのrexがホストネットワークを使っているかを確認してください。Windowsでは、rexはWindowsの一時的なIPv6アドレスを通知します。このアドレスはおおむね毎日置き換えられます。一時アドレスを無効にするには、管理者権限のPowerShellで<code translate="no" v-pre>netsh interface ipv6 set privacy state=disabled</code>を実行し、その後rexを再起動して固定のアドレスを通知させてください。</p>
+<p>この行の<code translate="no" v-pre>&lt;IPv4&gt;</code>はプロバイダーの共有アドレスで、rexには届きません。視聴に使うデバイスもIPv6に対応している必要があります。ほとんどのモバイル回線はIPv6に対応しています。IPv4だけのホテルやオフィスのネットワークでは、この方法でrexには接続できません。</p>
+<h3 id="tailscale-serve">Tailscale serve</h3>
+<p><a href="https://tailscale.com/download">Tailscale</a> を rex を動かすマシンと、視聴に使うデバイスの両方にインストールして、同じアカウントでサインインしてください。その後、rex のマシンで次を実行します:</p>
+<div id="tailscale-serve-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo tailscale serve --bg 32400</code></pre>
+</doc-codeblock></div>
+<p>Windows では、<code translate="no" v-pre>sudo</code> を付けずに PowerShell を管理者として実行してください。macOS では、<code translate="no" v-pre>sudo</code> を付けずに Tailscale アプリの<a href="https://tailscale.com/kb/1080/cli">コマンドラインツール</a>を使います。</p>
+<p>アドレスが表示されます。例は <code translate="no" v-pre>https://myhost.tailnet.ts.net</code> です。このアドレスに <code translate="no" v-pre>:443</code> を付けて rex に渡します。<doc-anchor-trigger to="#step-1-install-rex">手順1</doc-anchor-trigger> で使った rex の起動コマンドの末尾に <code translate="no" v-pre>--announce-url https://myhost.tailnet.ts.net:443</code> を追加して、rex を再起動してください。</p>
+<p>tailnet 上の全員が、このマシンの rex のフィード API を使えます。マシンを共有する相手も含まれます。信頼できる人とだけ共有してください。</p>
+<h3 id="caddy">Caddy</h3>
+<p>ルーターでポート 443 を rex のマシンに転送し、自宅の IP アドレスに名前を付ける必要があります。</p>
+<ul>
+<li><strong>自分のドメインがある場合:</strong> <code translate="no" v-pre>rex.example.com</code> などの <code translate="no" v-pre>A</code> レコードを作成し、自宅の IP を指すようにします。</li>
+<li><strong>ドメインがない場合:</strong> 公開 IP の数字を使って <code translate="no" v-pre>1-2-3-4.sslip.io</code> を使います (<code translate="no" v-pre>curl -s ifconfig.me</code> で確認できます)。IP が変わったら、この名前も更新してください。</li>
+</ul>
+<p><a href="https://caddyserver.com/docs/install">Caddy</a> をインストールし、次の Caddyfile を設定します (Linux パッケージの場合は <code translate="no" v-pre>/etc/caddy/Caddyfile</code>。macOS と Windows では、専用フォルダに <code translate="no" v-pre>Caddyfile</code> という名前のファイルを置き、そのフォルダで <code translate="no" v-pre>caddy run</code> を実行すると読み込まれます)。</p>
+<div id="caddy-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">rex.example.com {
+	respond /rex/* 403
+	reverse_proxy 192.168.1.20:32400
+}</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>respond /rex/* 403</code> は、フィード API をインターネットから見えないようにします。アプリは引き続き rex に直接接続できます。その後、Caddy を再読み込みします (Linux パッケージの場合は <code translate="no" v-pre>sudo systemctl reload caddy</code>)。macOS と Windows では、代わりにフォルダで <code translate="no" v-pre>caddy run</code> を起動し、<doc-anchor-trigger to="#step-1-install-rex">手順 1</doc-anchor-trigger> で rex を動かし続けたのと同じ方法で実行し続けてください。Windows では、手順 1 で 32400 番に行ったのと同様に、TCP ポート 443 もファイアウォールで許可してください。最後に、rex の起動コマンドの末尾に <code translate="no" v-pre>--announce-url https://rex.example.com:443</code> を追加し、rex を再起動します。</p>
+<h3 id="a-small-vps">小さな VPS</h3>
+<p>接続に公開IPがまったくない場合や、IPv6が使えないネットワークで視聴する場合は、すべてのストリームをVPSが中継します。これは<doc-anchor-trigger to="#rex-direct-over-ipv6">IPv6経由のrex-direct</doc-anchor-trigger>の代わりになります。rexには中継機能がなく、今後も追加される予定はありません。そのため、レンタルしたサーバーがルーターの役割を果たします。公開IPを持ち、rexマシンからのトンネルがすべての通信をrexへ届けます。公開IPv4があるVPSなら何でも使えて、月数ユーロで済みます。<strong>自宅の外で視聴する分の月間トラフィックをカバーできるプランを選んでください。</strong> すべてのデータがこのVPSを通るため、データ量の上限が少ないプランだとすぐに使い切ってしまいます。</p>
+<p>必要なものは、VPSのIP(以下では<code translate="no" v-pre>1.2.3.4</code>)、VPSで開放するポート443、80、7000、そしてトンネル用の長いランダム文字列(<code translate="no" v-pre>openssl rand -hex 32</code>で生成)です。</p>
+<p><strong>VPSでの作業</strong>では、<a href="https://github.com/fatedier/frp/releases">frp</a>(<code translate="no" v-pre>frps</code>プログラム)と<a href="https://caddyserver.com/docs/install">Caddy</a>をインストールします。次に<code translate="no" v-pre>frps.toml</code>を作成します。</p>
+<div id="a-small-vps-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-toml"><code v-pre class="language-toml">bindPort = 7000
+auth.token = &quot;your-long-random-string&quot;
+proxyBindAddr = &quot;127.0.0.1&quot;</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>proxyBindAddr</code>により、トンネルの終端はVPSのループバックに留まります。そのため、インターネットからrexへはCaddy経由でしかアクセスできません。<code translate="no" v-pre>/etc/caddy/Caddyfile</code>を作成してください。ここでは、VPSのIPを指す<code translate="no" v-pre>1-2-3-4.sslip.io</code>(常にそのIPを指す無料の名前)か、そのIPに向けた自分のドメインを使います。</p>
+<div id="a-small-vps-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">1-2-3-4.sslip.io {
+	respond /rex/* 403
+	reverse_proxy 127.0.0.1:32400
+}</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>respond /rex/* 403</code>により、フィードAPIがインターネットから見えないようになります。<code translate="no" v-pre>frps -c frps.toml</code>をサービスとして起動し、<code translate="no" v-pre>sudo systemctl reload caddy</code>を実行してください。</p>
+<p><strong>rexマシンでの作業</strong>では、frpもインストールします(<code translate="no" v-pre>frpc</code>プログラム)。そして<code translate="no" v-pre>frpc.toml</code>を作成します。</p>
+<div id="a-small-vps-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-toml"><code v-pre class="language-toml">serverAddr = &quot;1.2.3.4&quot;
+serverPort = 7000
+auth.token = &quot;your-long-random-string&quot;
+
+[[proxies]]
+name = &quot;rex&quot;
+type = &quot;tcp&quot;
+localIP = &quot;192.168.1.20&quot;
+localPort = 32400
+remotePort = 32400</code></pre>
+</doc-codeblock></div>
+<p>サービスとして実行します。Linuxなら、たとえば<code translate="no" v-pre>~/.config/systemd/user/frpc.service</code>を作り、<code translate="no" v-pre>ExecStart=%h/frp/frpc -c %h/frp/frpc.toml</code>と<code translate="no" v-pre>Restart=always</code>を設定します。macOSとWindowsでは、<doc-anchor-trigger to="#step-1-install-rex">ステップ1</doc-anchor-trigger>でrexを起動するのと同じ方法で<code translate="no" v-pre>frpc -c frpc.toml</code>を起動してください。次に、rexの起動コマンドの末尾に<code translate="no" v-pre>--announce-url https://1-2-3-4.sslip.io:443</code>を追加し、キー<code translate="no" v-pre>REX_DIRECT_URL=off</code>を追加して、rexを再起動します。CGNATの背後ではrex-directの名前のIPv4がrexに届かないため、plex.tvにそのアドレスを載せないようにするための設定です。これで、自宅のapp.plex.tvもVPS経由で接続します。自宅の他のPlexアプリは、引き続きrexに直接接続します。</p>
+<h3 id="what-you-should-see">期待される結果</h3>
+<div id="what-you-should-see-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s https://lan.&lt;hash&gt;.rex-direct.debridmediamanager.com:32400/identity</code></pre>
+</doc-codeblock></div>
+<p>は、家のコンピュータ上で rex の <code translate="no" v-pre>machineIdentifier</code> を示す短い XML ページを表示します。<code translate="no" v-pre>curl</code> は、アドレスまたはその証明書が間違っていると何も表示しません。自分のアドレスを使ってください。rex は起動時に <code translate="no" v-pre>rex-direct: https://lan.&lt;hash&gt;.rex-direct.debridmediamanager.com:32400 -&gt; 192.168.1.20 (LAN)</code> のように記録します（<code translate="no" v-pre>REX_DIRECT_URL=off</code> の場合は表示されません）。外のアドレスに <code translate="no" v-pre>/identity</code> を付けて、Wi-Fi をオフにしたスマホのブラウザで開いてください。rex-direct の場合は、rex のもう一方の <code translate="no" v-pre>rex-direct:</code> 行のアドレスを使います。Tailscale serve の場合は <code translate="no" v-pre>https://myhost.tailnet.ts.net</code> で、スマホで Tailscale をオンにしたときだけ開けます。証明書の警告なしに、短い XML ページが表示されれば成功です。</p>
+<p>スマホで開けない場合は、ポートが転送されていないか（または <doc-anchor-trigger to="#rex-direct-over-ipv6">IPv6 経由</doc-anchor-trigger> で受け付けられていない）、接続が IPv6 なしの CGNAT の背後にあるか、rex が IPv6 経由でしか届かず、スマホのネットワークに IPv6 がないか、rex-direct の証明書がまだ発行中か（発行中は rex のログにその旨が出ます）を確認してください。</p>
+<p>rex のログには、通知しているアドレスが書かれています。</p>
+<div id="what-you-should-see-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO    heartbeat every 600s for machine ... -&gt; https://myhost.tailnet.ts.net:443,http://192.168.1.20:32400</code></pre>
+</doc-codeblock></div>
+<p>rex は起動するたびこれを表示します。問題は後から <code translate="no" v-pre>heartbeat failed</code> や <code translate="no" v-pre>announced but NOT visible</code> として現れます。そうでなければ、サーバーはこれらのアドレスを plex.tv に登録し、外出先の Plex アプリが到達できるものを選びます。rex が <code translate="no" v-pre>waiting for a claim</code> と記録している場合は、先に <doc-anchor-trigger to="#step-3-add-it-to-a-plex-account">ステップ3</doc-anchor-trigger> を行ってください。</p>
+<h2 id="your-watch-history-from-another-plex-server-optional">別の Plex サーバーの視聴履歴 (任意)</h2>
+<p>ほかの Plex サーバーで視聴したことがありますか？ ライブラリを rex に入れたら、<a href="../import-watched/">視聴履歴を持ってくる</a>で、視聴したもの、どこまで見たか、星の評価を、ユーザーごとに別々にコピーできます。</p>
+<h2 id="converting-video-optional">動画の変換 (任意)</h2>
+<p><strong>何をするか。</strong> Plex と同じように、デバイスが再生できないものを rex が変換できるようにします。</p>
+<p><strong>なぜ重要か。</strong> このツールがないと、そのままでは再生できないファイルに対して「This server is not powerful enough to convert video」と表示されます。特にウェブブラウザでよく起きます。たとえば AC3 や DTS の音声がその例です。すべてのタイトルがすべてのデバイスで失敗する場合は、原因が別にあります。<doc-anchor-trigger to="#step-5-watch-something">ステップ5</doc-anchor-trigger>を見てください。</p>
+<p><strong>jellyfin-ffmpeg</strong> 8 をインストールしてください。システムの <code translate="no" v-pre>ffmpeg</code> ではありません。rex の性能測定に使われているのがこのビルドで、すべての Dolby Vision ファイルを変換できる唯一のものです。さらに、HDR をグラフィックスチップでトーンマッピングし、字幕もそこで描画します。ほかの FFmpeg でも普通の動画は変換できますが、足りない機能は rex のログに表示されます。Ubuntu 22.04 標準の FFmpeg は、数秒ずれてシークする問題もあります。rex は自動でこれを見つけます。</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-1">
+<template #title>Linux</template>
+<p>パッケージは <code translate="no" v-pre>/usr/lib/jellyfin-ffmpeg</code> に、既存のほかの FFmpeg と並べて置かれます。最初の行で、お使いのシステムに合ったビルドが選ばれます。Ubuntu 22.04、24.04、26.04、Debian 12、13 向けのビルドがあり、amd64 と arm64 に対応しています。それ以外の環境では <code translate="no" v-pre>curl</code> がエラーで止まります。</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">DEB=jellyfin-ffmpeg8_8.1.3-1-$(. /etc/os-release; echo &quot;$VERSION_CODENAME&quot;)_$(dpkg --print-architecture).deb
+curl -fLO &quot;https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/$DEB&quot;
+sudo apt install -y &quot;./$DEB&quot; &amp;&amp; rm &quot;$DEB&quot;
+systemctl --user restart rex</code></pre>
+</doc-codeblock></div>
+<p>ほかの Linux を使っている場合は、jellyfin-ffmpeg のポータブル版を <code translate="no" v-pre>~/rex/ffmpeg</code> に展開してください。rex はこの場所を探します。展開後、rex を再起動します。このビルドはシステムにあるグラフィックスドライバーを使うため、古いシステムではプロセッサーだけで変換されます。パッケージが用意されている環境では、そちらを使ってください。</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">B=$( [ &quot;$(uname -m)&quot; = aarch64 ] &amp;&amp; echo linuxarm64 || echo linux64 )
+mkdir -p ~/rex/ffmpeg &amp;&amp; curl -fL &quot;https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg_8.1.3-1_portable_${B}-gpl.tar.xz&quot; | tar xJ -C ~/rex/ffmpeg</code></pre>
+</doc-codeblock></div>
+<p>Intel または AMD のグラフィックスチップを使っている場合は、<code translate="no" v-pre>sudo usermod -aG render &quot;$USER&quot;</code> も実行し、サービスがそのグループを持てるように再起動してください。LXC の場合は、GPU をパススルーしてください。チップがあると変換は速くなります。チップがなければ、rex はプロセッサーを使います。Intel でも AMD でもない場合、rex は NVIDIA カードのエンコーダーも試します。Intel の場合、<code translate="no" v-pre>sudo apt install intel-opencl-icd</code> を実行すると、HDR と Dolby Vision もチップ上で変換できます。小型の Intel なら、4K でおおよそリアルタイムで変換できます。入れなければ、それらはプロセッサーで変換されます。低消費電力の Intel では、4K をリアルタイムで変換するのは難しいです。</p>
+</doc-tab>
+<doc-tab v-cloak id="macos-1">
+<template #title>macOS</template>
+<p>ポータブル版は <code translate="no" v-pre>~/rex/ffmpeg</code> に置いてください。rex はこの場所を探します。</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">B=$( [ &quot;$(uname -m)&quot; = arm64 ] &amp;&amp; echo macarm64 || echo mac64 )
+mkdir -p ~/rex/ffmpeg &amp;&amp; curl -fL &quot;https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg_8.1.3-1_portable_${B}-gpl.tar.xz&quot; | tar xJ -C ~/rex/ffmpeg
+launchctl kickstart -k gui/$(id -u)/com.rex</code></pre>
+</doc-codeblock></div>
+<p>Mac では、rex は常にプロセッサーで変換します。Mac のグラフィックスチップを使う方法がないためです。</p>
+</doc-tab>
+<doc-tab v-cloak id="windows-5">
+<template #title>Windows</template>
+<p>ポータブル版は、rex のフォルダー内の <code translate="no" v-pre>ffmpeg</code> フォルダーに置いてください。rex はこの場所を探します。</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">cd $HOME\rex
+curl.exe -fLO https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg_8.1.3-1_portable_win64-clang-gpl.zip
+Expand-Archive jellyfin-ffmpeg_8.1.3-1_portable_win64-clang-gpl.zip ffmpeg
+Remove-Item jellyfin-ffmpeg_8.1.3-1_portable_win64-clang-gpl.zip
+Stop-Process -Name rex; Start-Sleep 1; Start-ScheduledTask rex</code></pre>
+</doc-codeblock></div>
+<p>Windows では、NVIDIA カードがあればそのエンコーダーで変換します。なければプロセッサーで変換します。</p>
+</doc-tab>
+</doc-tabs>
+<p><strong>表示される内容。</strong> rex のログには、見つかった FFmpeg とハードウェアを示す <code translate="no" v-pre>transcoder:</code> の行があります。<code translate="no" v-pre>hardware none</code> はプロセッサーを使うという意味です。起動時に <code translate="no" v-pre>transcoder off</code> と表示された場合は、FFmpeg が見つからなかったという意味です。前に失敗していたファイルが再生できるようになります。ログには、何が変換されたかが表示されます。たとえば <code translate="no" v-pre>video=copy h264 audio=ac3-&gt;aac</code> のように出ます。</p>
+<p>変換されたファイルの字幕について: 画像字幕は映像に焼き込まれます。アップロードした字幕は、そのまま一緒に付いてきます。Plex の Android 版と iOS 版では、テキスト字幕もトラックとして残ります。ほかのアプリでは、映像に描画されます。変換済みのオフラインダウンロードには、テキスト字幕が引き続き含まれません。</p>
+<h2 id="subtitles">字幕</h2>
+<p><strong>何ができるか。</strong> rex を Plex で認証すると、Plex アプリの Search Subtitles が Plex 独自の提供元から字幕を探してくれます。rex は選んだ字幕をファイルに照らして確認し、字幕が遅れていたり別のフレームレート向けに作られていたりすると、タイミングを直します。Plex アカウントで字幕を表示する設定にしていて、ある作品に自分の言語の字幕がない場合、再生を始める前の最大 3 秒間、rex が字幕を探します。</p>
+<p><strong>なぜ大事か。</strong> Plex 独自の最初の検索結果は、ファイルとずれていることがよくあります。</p>
+<figure class="content-center">
+    <img src="../../assets/rex/51-plex-search-subtitles.webp" alt="Plex アプリの Subtitles 検索ダイアログ。Sintel の英語の検索結果が並んでいる" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Plex アプリの Subtitles 検索ダイアログ。Sintel の英語の検索結果が並んでいる</figcaption>
+</figure>
+<p>設定は特に必要ありません。rex は、ファイル内にテキスト字幕があれば、その字幕を使って字幕を確認します。テキスト字幕がないファイルは、再生ボタンを押したときに音声を使って確認します。これには <doc-anchor-trigger to="#converting-video-optional">Converting video</doc-anchor-trigger> の設定が必要で、ファイルの 90 秒の区間を 6 か所読み込みます。</p>
+<p><strong>見えるはずのもの。</strong> rex のログには、確認した字幕ごとに <code translate="no" v-pre>SUBTITLE measured</code> の行が出ます。修正したときは <code translate="no" v-pre>SUBTITLE applied ... corrected by</code> の行が出ます。</p>
+<h2 id="movie-and-tv-capabilities">映画と TV の機能</h2>
+<p>Downloads、イントロとクレジットの検出、シークサムネイル、その他の Plex サーバー機能と、その設定は、<a href="https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities">rexのセットアップガイド</a>に載っています。音楽とライブ TV は、それを送ってくれるソースから届きます（<a href="https://github.com/debridmediamanager/rex#limits">rexの制限事項</a>）。たとえばライブチャンネルなら<a href="https://github.com/debridmediamanager/rex-live-sports">rex-live-sports</a>を使います。DVR はないので、録画はできません。写真は、写真を送ってくるソースからのみ届きます（<a href="https://github.com/debridmediamanager/rex/blob/main/docs/feed-api.md#photos">フィード API</a>）。たとえば zurg 経由のコミックブックです。Plex Web では表示されますが、Plex for Android には写真ライブラリが表示されません。</p>
+<p>共有 debrid 再生では、デフォルトのプロキシモードのままにしてください。Real-Debrid は、ダウンロードを行う各ダウンローダーのパブリック IP を追跡します。1 つのアカウントを複数の IP から使うと、ダウンロードが成功していても共有に関する警告が出ることがあります。TorBox のダウンロード URL には API キー全体が含まれています。そのためリダイレクトすると、すべてのクライアントと共有ユーザーアカウントがアクセスでき、削除もできてしまいます。アプリにプロバイダーからダウンロードさせる前に、<a href="../direct-download/#before-you-start">リダイレクトのリスクとセットアップ</a>を必ず読んでください。</p>
+<h2 id="run-rex-in-docker">Docker で rex を実行</h2>
+<p>この手順は Linux マシン向けです。
+macOS と Windows では、Docker Desktop がコンテナを仮想マシンの中で動かします。そのため、ホストネットワーキング、LAN 検出、グラフィックチップは Linux と同じようには動きません。その場合は上の手順を使ってください。</p>
+<p>フォルダーを作ります（例: <code translate="no" v-pre>~/rex</code>）。その中に、この <code translate="no" v-pre>compose.yml</code> を置いてください:</p>
+<div id="run-rex-in-docker-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">services:
+  rex:
+    image: ghcr.io/debridmediamanager/rex:nightly
+    container_name: rex
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./config:/config</code></pre>
+</doc-codeblock></div>
+<ul>
+<li>Intel か AMD のグラフィックチップを使っていますか? そうなら <code translate="no" v-pre>devices: [&quot;/dev/dri:/dev/dri&quot;]</code> を追加してください。これで rex がそのチップで動画を変換できるようになります。</li>
+<li><code translate="no" v-pre>network_mode: host</code> を設定すると、ネットワーク上の Plex アプリが rex を自動で見つけられます。また、rex は登録されたアドレスで、マシン自身からアクセスするのと同じようにアプリへ接続できます。</li>
+<li><code translate="no" v-pre>./config</code> には <code translate="no" v-pre>rex.db</code> と、あとで <code translate="no" v-pre>claim_state.json</code> が作られます。どちらも root だけが読めます。<code translate="no" v-pre>rex.db</code> にはアプリのログイン情報が入っているためです。</li>
+<li>同じマシンで Plex Media Server を動かしていますか? そうなら <code translate="no" v-pre>command: --port 32500</code> を追加し、コマンドや設定で <code translate="no" v-pre>32400</code> と書かれている箇所はすべて <code translate="no" v-pre>32500</code> にしてください。</li>
+</ul>
+<div id="run-rex-in-docker-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose up -d
+docker compose logs -f rex</code></pre>
+</doc-codeblock></div>
+<p><doc-anchor-trigger to="#step-1-install-rex">手順 1</doc-anchor-trigger> と同じログが表示されるはずです。そのあとは、上と同じように手順 2 から 5 を進めてください。アプリもコンテナで動かしている場合は、rex がマシンから到達できるアドレスを登録する必要があります。他のコンテナからしか見えないアドレスではだめです。</p>
+<p>更新するには <code translate="no" v-pre>docker compose pull &amp;&amp; docker compose up -d</code> を実行します。イメージには jellyfin-ffmpeg が含まれているので、<doc-anchor-trigger to="#converting-video-optional">動画の変換</doc-anchor-trigger> にはグラフィックチップを渡すだけで済みます。HTTPS も上と同じように使えます。Tailscale、Caddy、frp はマシン上で動かし、<code translate="no" v-pre>--announce-url ...</code> は compose ファイルの <code translate="no" v-pre>command:</code> に書きます。</p>
+<h2 id="keep-the-port-private">ポートを非公開にする</h2>
+<p>rex はフィード API にパスワードを求めません。この API には、このマシン、ホームネットワーク（10.x、172.16-31.x、192.168.x、169.254.x およびプライベート IPv6 アドレス）、Tailscale（100.64-127.x）からの接続にだけ応答します。それ以外からのアクセスには、API が存在しないかのように応答します。そのため、<doc-anchor-trigger to="#rex-direct">rex-direct</doc-anchor-trigger> のために rex のポートを転送しても、IPv6 経由で通しても、API は外部に公開されません。外部からの訪問者にルーター自身のアドレスを割り当てるルーターでは、その訪問者がローカルからのアクセスに見えてしまい、フィードがインターネットに公開されてしまいます。そのため、アプリは上記のいずれかのネットワークからプッシュする必要があります。家庭用ルーターの背後では、ホームネットワークの範囲内の IPv6 アドレスを持つデバイスも対象になります。そのため、rex の IPv6 に名前解決されるホスト名は家庭内で使えます。VPS の場合は、プライベートネットワーク上のアドレスで rex を指定してください。rex のマシン上にあるプロキシは、rex からはローカルに見えます。そのため、インターネットに面したプロキシでは、<doc-anchor-trigger to="#caddy">Caddy</doc-anchor-trigger> の例のように <code translate="no" v-pre>/rex/*</code> を必ずブロックしたままにしてください。</p>
+<h2 id="updating">アップデート</h2>
+<p><doc-anchor-trigger to="#step-1-install-rex">ステップ1</doc-anchor-trigger>のダウンロードブロックをもう一度実行してください。プログラムと<code translate="no" v-pre>data/</code>は置き換えられますが、<code translate="no" v-pre>rex.db</code>、キー、<code translate="no" v-pre>claim_state.json</code>、<code translate="no" v-pre>rex-direct.json</code>はそのまま残ります。その後、ステップ1に書いてあるとおりにrexを再起動してください。rexは自分で更新されません。</p>
+<p>Windowsの場合は、ダウンロードブロックの前に<code translate="no" v-pre>Stop-Process -Name rex</code>を実行してください。Windowsでは実行中の<code translate="no" v-pre>rex.exe</code>を置き換えられないためです。ダウンロードのあとには<code translate="no" v-pre>Start-ScheduledTask rex</code>を実行します。</p>
+<p>その後rexが<code translate="no" v-pre>unrecognized arguments</code>で終了した場合は、rexの起動コマンドからエラーに出てくるフラグを削除してください。rexにはもうそのフラグがありません。</p>
+<h2 id="later-restore-move-remove">あとで: 復元、移動、削除</h2>
+<h3 id="restore-a-backup">バックアップを復元</h3>
+<p>rex を停止し、その横にある <code translate="no" v-pre>rex.db</code>、<code translate="no" v-pre>rex.db-wal</code>、<code translate="no" v-pre>rex.db-shm</code> を削除してください。バックアップのファイルを rex のフォルダに入れてから、rex を起動します。古い <code translate="no" v-pre>rex.db-wal</code> を残したままにすると、復元が元に戻ってしまいます。</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-2">
+<template #title>Linux</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">systemctl --user stop rex
+rm -f ~/rex/rex.db ~/rex/rex.db-wal ~/rex/rex.db-shm
+cp ~/rex-backup/* ~/rex/
+systemctl --user start rex</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="macos-2">
+<template #title>macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">launchctl unload ~/Library/LaunchAgents/com.rex.plist
+rm -f ~/rex/rex.db ~/rex/rex.db-wal ~/rex/rex.db-shm
+cp ~/rex-backup/* ~/rex/
+launchctl load ~/Library/LaunchAgents/com.rex.plist</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-6">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">Stop-Process -Name rex; Start-Sleep 1
+Remove-Item $HOME\rex\rex.db*
+Copy-Item $HOME\rex-backup\* $HOME\rex
+Start-ScheduledTask rex</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="docker">
+<template #title>Docker</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/rex &amp;&amp; docker compose down
+sudo rm -f config/rex.db config/rex.db-wal config/rex.db-shm
+sudo cp ~/rex-backup/rex.db.bak config/rex.db &amp;&amp; sudo cp ~/rex-backup/*.json config/
+docker compose up -d</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<h3 id="move-rex-to-another-machine">rex を別のマシンに移動</h3>
+<p><doc-anchor-trigger to="#step-5-watch-something">ステップ5</doc-anchor-trigger>のとおりにバックアップを取ります。次に、<doc-anchor-trigger to="#remove-rex">Remove rex</doc-anchor-trigger>の最初のブロックにあるとおりに、古いマシンの rex を完全に停止します。新しいマシンでは<doc-anchor-trigger to="#step-1-install-rex">ステップ1</doc-anchor-trigger>を実行しますが、rex のサービスとして登録する前に、バックアップしたファイルを rex のフォルダーにコピーしてください。Plex アプリから見ると、同じサーバーのままです。引き続きクレーム済みで、共有もされています。そのうえで:</p>
+<ul>
+<li>アプリには、<doc-anchor-trigger to="#step-4-connect-your-app">ステップ4</doc-anchor-trigger>のとおりに新しい LAN IP を設定します。</li>
+<li>ルーターのポート転送を新しいマシンに向け直します。または、rex が新しいマシンで起動する前に、その IPv6 のファイアウォールルールを設定します。rex-direct の名前はそのままで、パブリック IP が変わっても自動的に追従します。Tailscale serve と Caddy は、新しいマシンで設定し直します。</li>
+</ul>
+<h3 id="move-rex-to-another-plex-account">rex を別の Plex アカウントに移動</h3>
+<p>元のアカウントが使えなくなったり、banされたり、rexを別のアカウントで使いたくなったりしたら、新しいアカウントを作ってください。rexを停止し、rexのフォルダ内の<code translate="no" v-pre>claim_state.json</code>を削除してから、rexを起動し直します。そのあと<doc-anchor-trigger to="#step-3-add-it-to-a-plex-account">ステップ3</doc-anchor-trigger>をもう一度行ってください。つまり、claimしてから、改めて全員に共有します。古いアカウントにまだサインインできるなら、そこでもrexを削除しておきましょう。app.plex.tvを開き、<strong>Settings</strong>、<strong>Authorized Devices</strong>の順に進んで、<strong>Servers</strong>でフィルターをかけてからrexを削除します。この2つの手順がunclaimのすべてです。rexにはサインアウト機能がありません。Plexのサインアウトのリクエスト（<code translate="no" v-pre>DELETE /myplex/account</code>）は200を返しますが、rexはclaimされたままになります。ライブラリ、Fix Match、編集内容、rex-directの名前はそのまま残ります。また、各ユーザーの視聴履歴は、rexをそのユーザーのアカウントに再び共有すると戻ってきます。</p>
+<h3 id="which-rex-do-i-run">どの rex を実行すればいい?</h3>
+<p>rex にはバージョンを表示するコマンドがありません。nightly のバージョンは、ダウンロードの名前に含まれる日付で確認できます（<code translate="no" v-pre>2026.10.30.0040-nightly</code>）。プログラムファイルにも同じ日付が入っています。確認するには <code translate="no" v-pre>ls -l ~/rex/rex</code> を実行してください（Windows では <code translate="no" v-pre>(Get-Item $HOME\rex\rex.exe).LastWriteTime</code>）。アプリに表示される Plex のバージョンは rex のものではありません。rex はあえて現在の Plex Media Server のバージョンを報告するため、アプリはそれを最新版として扱います。そのため <strong>Check for Updates</strong> は、いつも最新だと表示します。</p>
+<h3 id="remove-rex">rex を削除</h3>
+<p>rexを完全に停止する:</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-3">
+<template #title>Linux</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">systemctl --user disable --now rex &amp;&amp; rm ~/.config/systemd/user/rex.service</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="macos-3">
+<template #title>macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">launchctl unload ~/Library/LaunchAgents/com.rex.plist &amp;&amp; rm ~/Library/LaunchAgents/com.rex.plist</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-7">
+<template #title>Windows</template>
+<p>管理者としてPowerShellで:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">Unregister-ScheduledTask rex -Confirm:$false; Stop-Process -Name rex
+Remove-NetFirewallRule -DisplayName rex, &quot;rex discovery&quot;</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="docker-1">
+<template #title>Docker</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/rex &amp;&amp; docker compose down</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p>次に、お使いのアプリがrexにpushしないようにします。新しく作ったアカウントでapp.plex.tvを開き、<strong>Settings</strong>、<strong>Authorized Devices</strong>の順に進みます。<strong>Servers</strong>でフィルターをかけて、rexを削除してください。ルーターのポート転送（またはIPv6のファイアウォールルール）も削除して、最後にrexのフォルダーも消しましょう。</p>
+<h3 id="getting-help">ヘルプを求める</h3>
+<p>DMM <a href="https://discord.com/invite/7u4YjMThXP">Discord</a> の <strong>rex-support</strong> フォーラムで質問してください。何を含めればよいかは <a href="../../guides/remote-help/">Getting help</a> に書いてあり、スポンサーがリモートサポートを受ける方法も載っています。</p>
+<h2 id="when-something-is-wrong">問題が起きたとき</h2>
+<retype-table copy-text="| 表示される内容 | 対処法 |
+|---|---|
+| `/rex/sources` が `{&quot;size&quot;:0}` のまま | アプリが登録されていません。アプリに渡されたアドレスと、rexのポートに届くかを確認してください |
+| プッシュが `404 no such source` を返す | アプリが登録より先にプッシュしています。先に `PUT /rex/sources/&lt;name&gt;` で登録する必要があります |
+| rexのログに `held ... no media_info yet` と出る | アプリがffprobeの出力なしでファイルを送っています。その情報が届くと表示されます |
+| タイトルがファイル名で表示され、ポスターがない | rexがPlexアカウントに追加されていません。[手順3](#step-3-add-it-to-a-plex-account)を行ってください。アプリがライブラリを送った後にrexをclaimした場合、claimが完了すると自動的に名前が付きます |
+| タイトルが別の番組に入っている、または映画がファイル名のままになっている | アプリがそのタイトルに `kind` と `ids` を送っていないか、誤った値を送っています。アプリ側で修正するか、新しいアカウントでサインインしたPlexアプリで **Fix Match** を使ってください。Fix Matchで設定した内容はそのまま残ります |
+| どのデバイスでもすべてのタイトルが失敗し、多くの場合 &quot;This server is not powerful enough to convert video&quot; と表示される。Playを押した直後にrexのログに `upstream failed` または `502` が出る（FFmpegを設定している場合は、接続拒否またはタイムアウトによる `TRANSCODE ... exited`） | rexはアプリが登録したアドレスに到達できません。FFmpegではこれは解決しません。`curl -s http://192.168.1.20:32400/rex/sources` を実行すると、アプリの `url` としてそのアドレスが表示されます。rexのマシン上で、そのアドレスに対して `curl -I` を実行してください。`401` を含め、HTTPの応答が返ればOKです。`Failed to connect` と出る場合、rexはそこにあるアプリへ到達できません。アプリは、rexのマシンから到達できるアドレスを登録する必要があります。`172.` のアドレスはコンテナ自身のアドレスで、同じLinuxマシン上からしか届きません。新しいビルドでは、rexのログに `SOURCES &lt;name&gt;: cannot reach ... from this machine` と明示されます |
+| rexのログに `upstream failed: no source ... configured` と出る | rexにはアプリからの登録がありません。アプリに再登録させてください。rexを再起動してください |
+| rexのログに `part ... is unavailable upstream` と出る | アプリがそのファイルに対して404を返しています。アプリは現在そのファイルを持っていません |
+| 何も再生されず、401 または 403 が出る | アプリが自身のログインを拒否しています。現在のログイン情報で再登録させてください |
+| スナップショットが 409 `would remove more than half` を返す | rexは、読み込みが途中のライブラリを送ってくるアプリに対するガードです。削除が本当に必要なら、アプリはパート0から全スナップショットを送り直し、最後のパートに `&quot;force&quot;: true` を付けてください。最後のパートだけを再送すると拒否されます。また、それを単独の新しいスナップショットとして `force` 付きで送ると、以前のパートで指定されたものがすべて削除されてしまいます |
+| Plexアプリでの削除が失敗し、rexのログに `DELETE refused by the source` と出る | アプリはファイルの `DELETE` を受け付けません。代わりにアプリ側で削除してください |
+| 一部のファイルだけが &quot;This server is not powerful enough to convert video&quot; で失敗する。多くはWebブラウザでだけ起こる | デバイスがそのファイルをそのままでは再生できません。テレビやスマートフォンのPlexアプリを試すか、[動画の変換](#converting-video-optional)を設定してください |
+| Dolby Visionのファイルが失敗し、rexのログに `DoVi (Profile 5) color space is not supported` と出る | rexにFFmpegがないか、jellyfin-ffmpeg以外のFFmpegが入っています。[動画の変換](#converting-video-optional)に示されているとおりjellyfin-ffmpegをインストールし、(Settings、Transcoder) の **Enable HDR tone mapping** をオンのままにしてください |
+| rexが `cannot bind ...:32400 (another rex or Plex on this port? ...)` で終了する | 別のプログラムがポートを使用しています。このマシンでPlex Media Serverが動いている場合は、[手順1](#step-1-install-rex)にあるとおり `--port 32500` を使ってください。別のrex（手動で起動したものなど）の場合は、そちらを停止してください |
+| 家庭内のデバイスが接続できず、rexの `heartbeat ... -&gt;` の行に `http://192.168.1.20:32400` が表示されない | rexは、インターネットに接続しているネットワークのプライベートアドレスを通知します。VPNやTailscaleの出口ノード経由では、それが自宅のネットワークではありません。rexの起動コマンド（[手順1](#step-1-install-rex)）の末尾に `--announce-url http://192.168.1.20:32400` を付けて、rexを再起動してください |
+| 自宅で app.plex.tv からrexに届かず、[表示される内容](#what-you-should-see)の `lan.` アドレスも応答しない | 一部のルーターやDNSフィルターは、家庭内のアドレスを指す公開名をブロックします（DNSリバインド保護）。そこで `rex-direct.debridmediamanager.com` を許可してください。Plexユーザーが `plex.direct` を許可するのと同じです |
+| Windowsで、手順1のファイアウォールルールがあるのに別のマシンからrexに接続できない | Windowsがrexの許可を尋ねた時に **Cancel** を押したことがあると、Windowsはrexをブロックするルールを保存します。このルールはポートのルールより優先されます。管理者としてPowerShellで次を実行して削除してください: &lt;code&gt;Get-NetFirewallApplicationFilter -Program &quot;$HOME\rex\rex.exe&quot; &amp;#124; Get-NetFirewallRule &amp;#124; Where-Object Action -eq Block &amp;#124; Remove-NetFirewallRule&lt;/code&gt;（rexが別の場所にある場合は、そのパスを指定してください） |
+| 外出先のPlexアプリでrexが表示されない | 未claimであるか、デバイスがHTTPSアドレスに到達できません（[IPv6経由のrex-direct](#rex-direct-over-ipv6)には、そのデバイスのネットワークでIPv6が必要です） |
+| rexが `argument --announce-url: '...' is not an http:// or https:// address` で終了する | `--announce-url` にはアドレスだけを渡してください（例: `https://myhost.tailnet.ts.net:443`）。角かっこ、引用符、リンクで囲まないでください |
+| ログアウトするとrexが止まる | Linuxでは、`sudo loginctl enable-linger &quot;$USER&quot;` を実行してください（手順1）。macOSとWindowsでは、手順1で設定したrexは、ログインしている間だけ動作します |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>表示される内容</th>
+<th>対処法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>/rex/sources</code> が <code translate="no" v-pre>{&quot;size&quot;:0}</code> のまま</td>
+<td>アプリが登録されていません。アプリに渡されたアドレスと、rexのポートに届くかを確認してください</td>
+</tr>
+<tr>
+<td>プッシュが <code translate="no" v-pre>404 no such source</code> を返す</td>
+<td>アプリが登録より先にプッシュしています。先に <code translate="no" v-pre>PUT /rex/sources/&lt;name&gt;</code> で登録する必要があります</td>
+</tr>
+<tr>
+<td>rexのログに <code translate="no" v-pre>held ... no media_info yet</code> と出る</td>
+<td>アプリがffprobeの出力なしでファイルを送っています。その情報が届くと表示されます</td>
+</tr>
+<tr>
+<td>タイトルがファイル名で表示され、ポスターがない</td>
+<td>rexがPlexアカウントに追加されていません。<doc-anchor-trigger to="#step-3-add-it-to-a-plex-account">手順3</doc-anchor-trigger>を行ってください。アプリがライブラリを送った後にrexをclaimした場合、claimが完了すると自動的に名前が付きます</td>
+</tr>
+<tr>
+<td>タイトルが別の番組に入っている、または映画がファイル名のままになっている</td>
+<td>アプリがそのタイトルに <code translate="no" v-pre>kind</code> と <code translate="no" v-pre>ids</code> を送っていないか、誤った値を送っています。アプリ側で修正するか、新しいアカウントでサインインしたPlexアプリで <strong>Fix Match</strong> を使ってください。Fix Matchで設定した内容はそのまま残ります</td>
+</tr>
+<tr>
+<td>どのデバイスでもすべてのタイトルが失敗し、多くの場合 &quot;This server is not powerful enough to convert video&quot; と表示される。Playを押した直後にrexのログに <code translate="no" v-pre>upstream failed</code> または <code translate="no" v-pre>502</code> が出る（FFmpegを設定している場合は、接続拒否またはタイムアウトによる <code translate="no" v-pre>TRANSCODE ... exited</code>）</td>
+<td>rexはアプリが登録したアドレスに到達できません。FFmpegではこれは解決しません。<code translate="no" v-pre>curl -s http://192.168.1.20:32400/rex/sources</code> を実行すると、アプリの <code translate="no" v-pre>url</code> としてそのアドレスが表示されます。rexのマシン上で、そのアドレスに対して <code translate="no" v-pre>curl -I</code> を実行してください。<code translate="no" v-pre>401</code> を含め、HTTPの応答が返ればOKです。<code translate="no" v-pre>Failed to connect</code> と出る場合、rexはそこにあるアプリへ到達できません。アプリは、rexのマシンから到達できるアドレスを登録する必要があります。<code translate="no" v-pre>172.</code> のアドレスはコンテナ自身のアドレスで、同じLinuxマシン上からしか届きません。新しいビルドでは、rexのログに <code translate="no" v-pre>SOURCES &lt;name&gt;: cannot reach ... from this machine</code> と明示されます</td>
+</tr>
+<tr>
+<td>rexのログに <code translate="no" v-pre>upstream failed: no source ... configured</code> と出る</td>
+<td>rexにはアプリからの登録がありません。アプリに再登録させてください。rexを再起動してください</td>
+</tr>
+<tr>
+<td>rexのログに <code translate="no" v-pre>part ... is unavailable upstream</code> と出る</td>
+<td>アプリがそのファイルに対して404を返しています。アプリは現在そのファイルを持っていません</td>
+</tr>
+<tr>
+<td>何も再生されず、401 または 403 が出る</td>
+<td>アプリが自身のログインを拒否しています。現在のログイン情報で再登録させてください</td>
+</tr>
+<tr>
+<td>スナップショットが 409 <code translate="no" v-pre>would remove more than half</code> を返す</td>
+<td>rexは、読み込みが途中のライブラリを送ってくるアプリに対するガードです。削除が本当に必要なら、アプリはパート0から全スナップショットを送り直し、最後のパートに <code translate="no" v-pre>&quot;force&quot;: true</code> を付けてください。最後のパートだけを再送すると拒否されます。また、それを単独の新しいスナップショットとして <code translate="no" v-pre>force</code> 付きで送ると、以前のパートで指定されたものがすべて削除されてしまいます</td>
+</tr>
+<tr>
+<td>Plexアプリでの削除が失敗し、rexのログに <code translate="no" v-pre>DELETE refused by the source</code> と出る</td>
+<td>アプリはファイルの <code translate="no" v-pre>DELETE</code> を受け付けません。代わりにアプリ側で削除してください</td>
+</tr>
+<tr>
+<td>一部のファイルだけが &quot;This server is not powerful enough to convert video&quot; で失敗する。多くはWebブラウザでだけ起こる</td>
+<td>デバイスがそのファイルをそのままでは再生できません。テレビやスマートフォンのPlexアプリを試すか、<doc-anchor-trigger to="#converting-video-optional">動画の変換</doc-anchor-trigger>を設定してください</td>
+</tr>
+<tr>
+<td>Dolby Visionのファイルが失敗し、rexのログに <code translate="no" v-pre>DoVi (Profile 5) color space is not supported</code> と出る</td>
+<td>rexにFFmpegがないか、jellyfin-ffmpeg以外のFFmpegが入っています。<doc-anchor-trigger to="#converting-video-optional">動画の変換</doc-anchor-trigger>に示されているとおりjellyfin-ffmpegをインストールし、(Settings、Transcoder) の <strong>Enable HDR tone mapping</strong> をオンのままにしてください</td>
+</tr>
+<tr>
+<td>rexが <code translate="no" v-pre>cannot bind ...:32400 (another rex or Plex on this port? ...)</code> で終了する</td>
+<td>別のプログラムがポートを使用しています。このマシンでPlex Media Serverが動いている場合は、<doc-anchor-trigger to="#step-1-install-rex">手順1</doc-anchor-trigger>にあるとおり <code translate="no" v-pre>--port 32500</code> を使ってください。別のrex（手動で起動したものなど）の場合は、そちらを停止してください</td>
+</tr>
+<tr>
+<td>家庭内のデバイスが接続できず、rexの <code translate="no" v-pre>heartbeat ... -&gt;</code> の行に <code translate="no" v-pre>http://192.168.1.20:32400</code> が表示されない</td>
+<td>rexは、インターネットに接続しているネットワークのプライベートアドレスを通知します。VPNやTailscaleの出口ノード経由では、それが自宅のネットワークではありません。rexの起動コマンド（<doc-anchor-trigger to="#step-1-install-rex">手順1</doc-anchor-trigger>）の末尾に <code translate="no" v-pre>--announce-url http://192.168.1.20:32400</code> を付けて、rexを再起動してください</td>
+</tr>
+<tr>
+<td>自宅で app.plex.tv からrexに届かず、<doc-anchor-trigger to="#what-you-should-see">表示される内容</doc-anchor-trigger>の <code translate="no" v-pre>lan.</code> アドレスも応答しない</td>
+<td>一部のルーターやDNSフィルターは、家庭内のアドレスを指す公開名をブロックします（DNSリバインド保護）。そこで <code translate="no" v-pre>rex-direct.debridmediamanager.com</code> を許可してください。Plexユーザーが <code translate="no" v-pre>plex.direct</code> を許可するのと同じです</td>
+</tr>
+<tr>
+<td>Windowsで、手順1のファイアウォールルールがあるのに別のマシンからrexに接続できない</td>
+<td>Windowsがrexの許可を尋ねた時に <strong>Cancel</strong> を押したことがあると、Windowsはrexをブロックするルールを保存します。このルールはポートのルールより優先されます。管理者としてPowerShellで次を実行して削除してください: <code>Get-NetFirewallApplicationFilter -Program &quot;$HOME\rex\rex.exe&quot; | Get-NetFirewallRule | Where-Object Action -eq Block | Remove-NetFirewallRule</code>（rexが別の場所にある場合は、そのパスを指定してください）</td>
+</tr>
+<tr>
+<td>外出先のPlexアプリでrexが表示されない</td>
+<td>未claimであるか、デバイスがHTTPSアドレスに到達できません（<doc-anchor-trigger to="#rex-direct-over-ipv6">IPv6経由のrex-direct</doc-anchor-trigger>には、そのデバイスのネットワークでIPv6が必要です）</td>
+</tr>
+<tr>
+<td>rexが <code translate="no" v-pre>argument --announce-url: '...' is not an http:// or https:// address</code> で終了する</td>
+<td><code translate="no" v-pre>--announce-url</code> にはアドレスだけを渡してください（例: <code translate="no" v-pre>https://myhost.tailnet.ts.net:443</code>）。角かっこ、引用符、リンクで囲まないでください</td>
+</tr>
+<tr>
+<td>ログアウトするとrexが止まる</td>
+<td>Linuxでは、<code translate="no" v-pre>sudo loginctl enable-linger &quot;$USER&quot;</code> を実行してください（手順1）。macOSとWindowsでは、手順1で設定したrexは、ログインしている間だけ動作します</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../rex/faq/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">前へ</span>
+                                <span class="block mt-1">rex よくある質問</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../rex/stremio/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">次へ</span>
+                                <span class="block mt-1">rex を Stremio のアドオンと一緒に使う</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "rex をご自身のアプリで使う", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/rex/any-source.md" }</script>
+</body>
+</html>

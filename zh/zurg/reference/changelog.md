@@ -1,0 +1,1210 @@
+# 更新日志 {#changelog}
+
+## zurg 可为 Sonarr 找到动画、每日节目和特别篇 {#zurg-finds-anime-daily-shows-and-specials-for-sonarr}
+
+以前，Sonarr 的一个源会跳过每日播出的剧集、动画剧集和剧集的特别篇，每种各给一条警告。现在，每日节目缺失的集数也会按播出日期去请求（`The Daily Show 2026.11.03`），动画的缺失集数按该番自己的集数编号去请求（`Jujutsu Kaisen 30` 是第二季的第六集），特别篇则以季 `00` 去请求，与常规的按季和集搜索并存。Sonarr 自己的解析器会判断每个发布版本对应哪一集，和其他剧集一样，质量配置文件的判断方式也和以前一样。为动画或每日节目放置的视频会命名为 `JUJUTSU KAISEN - S02E06 - <the release's own name>`，因为 Sonarr 的重新扫描只靠文件名来读取文件，否则会把 `2nd Season - 06` 归到第 1 季下。普通剧集和特别篇的视频则保持原名。特别篇会放入 Sonarr 的 **Specials Folder Format** 所命名的文件夹中，并且只有命名为 `S00Exx` 的发布版本才能与之匹配。详见 [zurg 向 Sonarr 请求什么](../guides/acquisition.md#what-zurg-asks-sonarr-for)。
+
+## 为想要的电影保留 1080p 和 4K 两个版本 {#keep-a-wanted-film-at-1080p-and-at-4k}
+
+`quality: [1080p, 4k]` in the `acquisition:` block keeps two copies of each film on your DMM wanted list, so a 1080p TV can play one without transcoding the 4K file. Each copy takes the best release at or below its own resolution and upgrades up to it on its own. While nothing better than 1080p is out, the two share one copy. Shows, and every other source, still get one copy. See [a copy at each of several resolutions](../guides/acquisition.md#a-copy-at-each-of-several-resolutions).
+
+## 一行命令安装后也能正常执行 zurg update {#zurg-update-works-after-the-one-line-install}
+
+一键安装脚本会通过 GitHub CLI 帮你登录 GitHub。它们为此下载 GitHub CLI，完成后又会删除。于是 `zurg update` 找不到 GitHub CLI，就报错停止，提示"no GitHub credential found"，即使你的登录信息其实还保存着。Ubuntu 自带的 GitHub CLI 版本太旧，无法交出登录信息，所以在那里运行更新也会同样停止。
+
+现在 `zurg update` 也会使用安装脚本放在 zurg 旁边 `bin` 目录里的 GitHub CLI。即使 GitHub CLI 本身已经不在了，不依赖密钥环（keyring）保存的登录信息也能正常使用。如果仍然找不到登录信息，它会打印出能解决问题的那一条命令。运行一次安装脚本的更新，之后每次 `zurg update` 都会自动登录。
+
+## 许多旧的 Real-Debrid 链接同时失败不再被称为服务中断 {#many-old-real-debrid-links-failing-at-once-is-no-longer-called-an-outage}
+
+Real-Debrid 的链接在生成几个月后就会失效，所以在差不多同一时间添加的版本，也会在差不多同一时间无法播放。在一次修复中，如果失败的链接超过五个，zurg 就会记录 "suspected provider-wide outage"，并暂停除五个之外所有链接的修复。这样一大批链接会坏很久，看起来像是 Real-Debrid 挂了。现在 zurg 会先向 Real-Debrid 请求同一账号下仍可播放的版本。如果能播放，说明失败的只是旧链接，所有版本都会照常修复。只有当 Real-Debrid 连可用的链接也拒绝时，zurg 才会判断为服务故障并等待。
+
+## 仪表板中的 Emby 会话链接现在会打开 Emby 的仪表板 {#the-dashboards-emby-session-links-open-embys-dashboard}
+
+"活动会话"和"转码"链接在仪表盘的 Emby 面板上打开的是 `/web/#/dashboard`，这是 Jellyfin 对该页面的地址。Emby 在这个地址上会一直停在启动画面。现在这两个链接都改为打开 `/web/index.html#!/dashboard`，也就是 Emby 自己使用的地址。Jellyfin 面板上的链接没有改动。
+
+## 缺少 .nfo 文件不再把 Usenet 资源发送去修复 {#a-missing-nfo-no-longer-sends-a-usenet-release-to-repair}
+
+老旧的 Usenet 帖子常常会丢失 .nfo 文件，但所有视频和压缩包分卷都还在。zurg 却把这种情况当成整个资源都坏了。每遇到这样的 .nfo，它就会启动一次修复，重启后又会再来一遍。真正需要的修复因此要排在几百个无用的修复后面等待。有些原本能正常播放的资源被标记为无法修复，唯一的办法就是删掉 .nfo。
+
+现在，视频旁边缺失的 .nfo 或其他小文件会被当作空白处理，不会再要求修复，也不会再把资源标记为无法修复。视频旁边的 .nfo 不见了，损坏的视频就能重新修复。之前因此被标记为无法修复的资源，会在大约一天内被重新检查，并自动恢复正常。
+
+## Usenet 文件不再在服务器返回其他上传内容的文章处播放静音 {#usenet-files-no-longer-play-silence-where-a-server-sent-another-uploads-article}
+
+有些新闻服务器在响应你文件中某一篇文章的请求时，会返回另一个上传、但编号相同的文章。zurg 只有在另一个上传的文章数少于你的文件时才会发现这个问题。对于 RAR 分卷和短剧集这类较短的文件，它会取到错误的文章，并在那一段播放静音。日志把这种情况称为 `an internal mapping failure in zurg`，并写道偏移量 `falls between two articles that are both present and neither covers`。
+
+现在 zurg 还会检查每篇文章声明的文件大小。它会拒绝来自其他文件的文章，并向你的其他新闻账号索要正确的那一篇。旧版本已经保存到文章缓存中的文章也会被拒绝。如果只有一个账号，那一段仍会播放为静音。现在日志会说明是服务器发送了另一个文件的文章，而不是把问题归咎于 zurg。
+
+## 另一个应用停止使用账号后，Usenet 连接会恢复全速 {#usenet-connections-come-back-at-full-speed-after-another-app-stops-using-the-account}
+
+如果你的新闻服务商曾因为连接数过多而拒绝 zurg（例如其他程序或之前的 zurg 仍占用着部分连接），zurg 会在运行期间每秒增加一个连接，即使连接数已经恢复正常，它仍会继续增加。每次安静一段时间后，下载请求又会从两个预热连接重新开始爆发式增长，因此连接数较多的账户需要一分多钟才能恢复全速，导入任务也会排在后面等待。调试日志中会出现 "waited 5s for a connection (queued for the account's allowance)"。现在，服务商再次接受连接，并且一分钟内没有再次拒绝之后，zurg 会立即打开所需的全部连接。
+
+## 配置了多个新闻服务器时，调试日志会说明某次获取何时在等待连接 {#the-debug-log-says-when-a-fetch-waits-for-a-connection-with-several-news-servers-configured}
+
+当只有一个新闻服务器时，如果某次获取等待连接超过五秒，调试日志里会留下一行说明。而有两个或更多服务器时，这行日志从来不会出现，所以只要添加第二个服务器，无论等待是否已经停止，这行日志都会消失。现在多服务器的配置也会显示这行日志，并且会列出该次获取正在等待的服务器名称。
+
+## 没有修复文件且第一篇文章已失效的 Usenet 抓取会立即失败 {#a-usenet-grab-with-no-repair-files-and-a-dead-first-article-fails-at-once}
+
+一个没有附带 PAR2 文件、并且第一个分段在所有新闻服务器上都已失效的发布，以前会被挂起五分钟，Radarr 或 Sonarr 才会知道它失败了，期间一直在等待一个根本无从修复的修复过程。现在 zurg 会先检查是否存在恢复数据。如果没有，它会立即报告下载失败，客户端随即将其加入黑名单并继续处理下一个。
+
+## 被修复成功的 Usenet 抓取不会在五分钟后被误报为失败 {#a-usenet-grab-that-repair-fixed-is-no-longer-reported-failed-five-minutes-later}
+
+当抓取缺了几个分段、而 PAR2 文件可以把它们重建出来时，zurg 会进行修复。但修复过程中运行的预读可能会再次请求这些缺失的分段，并在修复刚结束后被拒绝。这次拒绝会把该版本重新标记为损坏，于是抓取会被挂起五分钟，然后报告失败，Radarr 或 Sonarr 就会把一个实际能正常播放的版本加入黑名单。现在，对于修复已经重建好的分段，这类拒绝不再计为损坏。
+
+## 升级下载时，随之而来的 .nfo 或字幕也会被删除 {#upgraded-downloads-that-came-with-an-nfo-or-subtitles-are-deleted-too}
+
+With `magic.allow_delete` on, a deleted video that was not inside a RAR archive used to be deleted on its own. The `.nfo`, subtitles and poster posted beside it kept the download in your library. Its NZB stayed in `nzbs/` and its torrent stayed on your debrid account. Every upgrade of such a download left one behind. Now the whole download is deleted once nothing in `__magic__` uses it any more. A download stays while another episode of it is still in your library or still waiting in its own folder to be imported. Subtitles Sonarr or Radarr imported beside the video keep it until they are deleted too.
+
+## 被替换和失败的 Usenet 下载不再堆积 {#replaced-and-failed-usenet-downloads-no-longer-pile-up}
+
+在 `magic.allow_delete` 开启时,从 RAR 压缩包里解出来的剧集或电影被删除后,之前只是被隐藏起来。它的下载内容仍留在库里,对应的 NZB 也会一直保留在 `nzbs/` 里。把单集升级成整季合集后,每一集都会留下这样一份残留。现在,只要 `__magic__` 里已经没有任何内容使用这份下载,整个下载就会被删除。如果同一个压缩包里的其他剧集还在你的库中,下载就会保留。如果它自己的文件夹里还有待导入的内容,下载同样会保留。
+
+Sonarr 和 Radarr 在移除失败的下载时,会要求删除其文件。之前 zurg 仍会保留 NZB。现在,如果没有从该发布版本导入任何内容,zurg 就会删除这个 NZB。已完成下载并已导入的,NZB 仍和以前一样保留,因为导入的文件还要从它那里播放。
+
+## zurg 现在会在媒体库加载完成时给出提示 {#zurg-now-says-when-the-library-has-finished-loading}
+
+Docker 在 zurg 一启动就会将其视为健康。大型库在此之后仍可能加载一个多小时。在此期间,挂载中的文件夹会一直返回 `Input/output error`,看起来就像安装坏了。新的 `/ready` 地址可以区分这两种情况。在库加载完成前它返回 503,加载完成后返回 200。它不需要密码。在容器内运行 `/app/healthcheck.sh --ready` 会检查同样的内容。容器自己的健康检查仍然只询问 zurg 是否在运行。这样一来,首次加载很长也不会导致容器被重启,也不会拖累依赖它的挂载。健康检查现在还会读取 `PORT` 环境变量。以前设置了 `PORT` 的容器会被检查到错误的端口上。
+
+## 抓取时可以按资源名称中的关键词跳过资源 {#acquisition-can-skip-releases-by-words-in-their-names}
+
+在 `acquisition:` 块里设置 `exclude_words`，zurg 就永远不会选中名字里含有这些词的资源。`exclude_words: [DV, HDR10+]` 可以让电视无法播放的杜比视界（Dolby Vision）和 HDR10+ 资源不被选中，同时仍然会选择普通 HDR 的 4K 资源。它对 Plex 观看列表、Seerr、Radarr 和 Sonarr 都有效，对 Usenet 和种子资源也都有效。只匹配完整单词。`DV` 不会匹配 `DVDRip`，也不会匹配一部叫 Adventures 的电影。`DV`、`DoVi` 和 `Dolby Vision` 表示的是同一个意思，`HDR10+` 和 `HDR10Plus` 也是如此。Radarr 和 Sonarr 永远不会被询问被排除的资源。
+
+## Radarr 和 Sonarr 可以优先选择配置文件中的最佳画质 {#radarr-and-sonarr-can-take-the-profiles-best-quality-first}
+
+zurg 通常会先抓允许的版本里检查起来最快的那个。电影一般是 1080p WEB-DL。之后的升级流程再逐步朝你的配置文件中的 cutoff 靠近。剧集会优先抓整季包，然后才是零散的单集。所以即使有 2160p 的单集，一个 1080p 整季包也可能先把整季填上。
+
+在 `acquisition:` 下设置 `best_first: true`，首次抓取就会改为按你的 Radarr 或 Sonarr 质量配置文件来走。它会先选允许的最高分辨率。达到或超过 cutoff 的版本就算够好了。如果某个版本发现已经不可用，zurg 会沿着配置文件往下找。第一个文件可能要等更久才能到，因为最好的版本通常是体积很大的多分卷发布。这个选项默认是关闭的。
+
+## 在没有任何账号接受种子的情况下，种子结果不再挤掉 NZB {#torrent-results-no-longer-crowd-out-nzbs-where-no-account-takes-torrents}
+
+在一个只有 NZB 提供方、没有支持种子的 debrid 账号的实例上，获取流程仍然会搜索你的 Torznab 索引器。它找到的每个种子都会消耗掉每次尝试中，单集或整季合集可用的三个发布版本之一。使用 `prefer: torrents`，或者 4K 种子排在 1080p NZB 之前时，NZB 从未被尝试，结果这一集就失败了。现在在这种情况下会跳过 Torznab 索引器，并在日志中写一行说明。实例无处安放的发布版本也不再计入一次尝试。电影也不再向 Radarr 询问此类种子。
+
+## 在无法播放的情况下，抓取不再将 NZB 计为完成 {#acquisition-no-longer-counts-an-nzb-as-done-where-nothing-can-play-it}
+
+在只配置了 debrid 账号、没有 nzb provider 的实例上，acquisition 仍然会搜索你的 Newznab indexer，而且它抓到的 NZB 会在没有任何检查的情况下被标记为已完成。这样一来，Plex watchlist 里的某个标题可能会因为一个该实例根本无法播放的文件而被移出列表。现在，在这类实例上会跳过 Newznab indexer，并在日志里写一行说明。没有 nzb provider 的实例也不会再把 NZB 标记为已完成。
+
+## 没有可播放内容的资源现在只报告一次，而不是每天都报告 {#a-release-with-nothing-left-to-play-is-reported-once-instead-of-every-day}
+
+当某个版本的所有可播放文件都被删除后，zurg 每天都会重复警告它“has no playable file that still reads”。一个有一百个这类版本的库，每天就会为那些没人动过的版本记录一百条警告。现在这条警告只出现一次，只有当该版本的内容发生变化后，才会重新检查它。恢复某个文件仍然会立即让它重新可用。
+
+## 文件仍可播放时，AllDebrid 和 TorBox 上失效的资源会恢复可用 {#broken-releases-on-alldebrid-and-torbox-come-back-when-the-files-still-play}
+
+只由 AllDebrid、TorBox、Premiumize、Offcloud 或 Debrid-Link 持有的资源，可能在账户仍然提供的情况下，被标记为损坏并隐藏好几周。Repair 不会自动把这些服务上的资源重新添加回来，因为它们是主动删除内容的。以前也没有任何机制检查这些文件是否已经恢复正常。现在，Repair 每天会向账户询问一次，已损坏资源的文件能不能播放。能播放的会被恢复回来，但不会添加任何新内容。账户真正删除的资源，仍然需要点击 Repair 按钮。MCP repair outlook 也会说明同样的情况，不再告诉你没有任何扫描会处理它。
+
+## TorBox 排队等待空闲下载位的抓取会显示为已排队并最终完成 {#grabs-torbox-queues-for-a-free-slot-show-as-queued-and-finish}
+
+当 TorBox 账户上的所有下载槽都被占满时，TorBox 会把来自 Sonarr 和 Radarr 的新抓取任务放进它的队列，而 zurg 就跟丢了这些任务。抓取任务会显示为 fetching metadata 大约十分钟，然后变成错误，于是 Sonarr 和 Radarr 把它丢弃了。之后 TorBox 下载完成时，没有任何东西去导入它。现在 zurg 会一直跟踪排队中的抓取任务，直到 TorBox 开始处理它，并持续跟踪到下载完成。等待期间，它会显示为 queued，并且在 TorBox 开始处理之前，无进度超时不会计时。
+
+## 你可以在 `__magic__` 页面搜索单个资源 {#you-can-search-for-one-release-on-the-__magic__-page}
+
+在 Sonarr 或 Radarr 整理的库里，每次导入都会留下一个隐藏的任务文件夹。`__magic__` 页面只列出前一千条已存储的记录。你要找的那个版本通常不在这一千条里，所以它的 Unhide 和 Reset 按钮够不着。列表下面的提示又指向 data/magic.json。在 zurg 运行时编辑这个文件没有用：zurg 停止时会根据内存里的数据重新写出这个文件，重启后那些记录又会回来。
+
+现在，已存储的记录和悬空页面都有了搜索框。输入版本名称、挂载路径或哈希值，就能列出所有与该版本相关的记录，并显示对应的按钮。不管表格有多大，都能找到。
+
+这也是把 `__all__` 里有、却从不出现在 `__magic__/__all__.` 中的版本找回来的办法。删除一个版本后再重新添加，或者从 DMM 重新插入，它的哈希值不会变，所以它会带回 `__magic__` 里为它存储的所有信息，包括导入后被删除的任务文件夹。搜索该版本，然后在它的 release-tombstone 记录上按 Unhide 即可。
+
+## Windows 上的 `__magic__` 日志不会无限增长 {#__magic__-on-windows-stops-growing-its-journal-forever}
+
+On Windows, zurg logged `cannot truncate data\magic.journal ... Access is
+denied.` every time it tried to tidy the file where `__magic__` records your
+moves and folders. The file was never emptied, so it grew with every change
+and every start read all of it again. After a few thousand changes in one run,
+each further change also rewrote the whole saved layout. zurg now empties it
+on Windows as it always did elsewhere, and the first start after updating
+clears what has piled up. If tidying ever fails, zurg tries again after more
+changes instead of on every one.
+
+## 通过 MCP 还原文件后，其资源会立即恢复 {#restoring-a-file-over-mcp-puts-its-release-back-right-away}
+
+Using the `zurg_release_file_restore` MCP tool to restore a file used to bring the file back but left its release marked broken and in `__unplayable__` until the next library refresh. Now it does what the Restore button in the torrent manager does: the release leaves `__unplayable__`, goes back into its folders with its .strm files, and is saved that way. As before, it does not ask Plex, Jellyfin or your on_library_update script to rescan.
+
+## 找回修复失败时被隐藏的文件 {#bring-back-files-a-failed-repair-hid}
+
+旧版本中，当修复在某一个账户上放弃时，文件会被标记为已删除，即使另一个账户仍然可以播放它，于是该发布会从所有文件夹中消失。种子管理器现在有一个新的“Deleted, still served”筛选器，它会列出那些已经没有可播放内容、但已删除的文件仍有账户在提供的发布。按住它的 Restore 按钮，zurg 会检查每个文件的链接，并把能够播放的文件放回各自的文件夹，效果与逐个点击 Restore 相同。
+
+zurg 不会自动这样做。你主动删除的文件存储方式完全相同，所以请浏览列表，只恢复你没有删除的内容。仍然有可播放内容的发布不会列出，因为删除额外内容或某一集通常是你的主动操作。
+
+## 抓取会翻看搜索结果的第一页之后的内容 {#acquisition-looks-past-the-first-page-of-search-results}
+
+采集以前只读取索引器返回的第一页。DMM 每页返回十条结果，且最大的排在最前，因此大小限制可能把它们全部过滤掉，电影每隔几个小时就会以 "no eligible releases" 失败，哪怕后面几页其实有更小的版本。现在它会持续请求更多页，直到拿到足够多符合你限制的版本，最多十页。对于剧集，如果季度搜索没有找到某一集（通常是最新一集占满结果时挤掉的旧集），现在会单独搜索这一集。
+
+## `__magic__` 电影和剧集文件夹中失效的文件现在会被移除，以便 Radarr 和 Sonarr 察觉 {#dead-files-in-__magic__-movie-and-show-folders-now-drop-out-so-radarr-and-sonarr-notice}
+
+一个由 Radarr 或 Sonarr 导入到 `__magic__` 下某个文件夹中的文件，在其版本失效后，仍然以完整大小显示，因此重新扫描时还能看到它，电影或剧集也就never 回到“待获取”状态。现在，它会在离开其他所有列表的同一时刻离开该文件夹：即修复无法再将其恢复时，或者在关闭修复功能的情况下，文件损坏后一天。下一次重新扫描会将其标记为缺失，获取流程随即寻找替代版本。如果该文件重新可用，它会重新出现在原来的位置。
+
+## Season Fix 可以对多季合集和编号的额外内容进行排序 {#season-fix-sorts-multi-season-packs-and-numbered-extras}
+
+Season Fix 现在会读取每个文件名里标明的季号，因此像 `Full Metal Panic S2 - 01`、`Bakuman II - 01`、`KonoSuba 2 - 01` 或 `Demon Slayer Mugen Train Arc - 01` 这样的合集，每一集都会被放进自己的季里，而不是让 Plex 把它们全都堆在第 1 季。文件名为罗马音或带后缀的合集，例如 `Sergeant Keroro 001-358` 或 `Dragon Ball Z COMPLETE`，只要文件共用同一个标题，也能被识别。文件名里带下划线的、`Ep01`、`1.01.`，或集标题里含数字的情况，也会按照原本的意图来读取。
+
+带编号的额外内容，例如 `Special 01`、`OVA 01`、`- 11 (OVA)` 和 `24.5` 这类回顾集，以前会作为真实集的第二个版本出现，Play 有可能选中这些额外内容。现在它们会加上 Plex 的 `-other` 后缀重命名，这样就会作为额外内容显示出来。
+
+## 失效的 Real-Debrid 链接不再让媒体库扫描卡住几分钟 {#a-dead-real-debrid-link-no-longer-holds-a-library-scan-for-minutes}
+
+当 Real-Debrid 一直用同一个已失效的链接回应某个文件时，zurg 会等上几分钟，因为刚删除下载后出现这种情况是正常的。如果文件经过五分钟仍被这样拒绝，现在会被视为失效链接并交给修复流程，而不是让读者稍后再来。以前，一个失效文件可能让 Plex 扫描卡住大约十分钟。
+
+## 可以在 `__magic__` 页面清除失败和卡住的 Usenet 任务 {#failed-and-stuck-usenet-jobs-can-be-cleared-from-the-__magic__-page}
+
+在 Sonarr 或 Radarr 不再把 zurg 当作下载客户端之后，SABnzbd 列表里的失败或卡住的任务会一直留着。重启也清不掉。以前只能手动删除 `data/sabnzbd-jobs.json`。现在 `__magic__` 页面的任务列表里，每个失败或卡住的任务都有一个 **Clear** 按钮，列表上方还有一个按钮可以一次清空它们。按住它直到进度条填满。排队中和已完成的任务永远不会被动到。除非 `__magic__` 下的某个导入还在使用该版本，否则任务对应的 NZB 也会一并删除。
+
+## Stremio 插件会提示它需要 https {#the-stremio-addon-says-when-it-needs-https}
+
+Stremio 只会在运行它的那台电脑上通过纯 http 加载插件。在电视、手机或其他电脑上，即使设备能访问 zurg，http 地址也会报 "failed to load manifest"。如果你是通过 http 打开这类地址的配置页，页面现在会在插件 URL 旁边给出提示。Stremio 指南介绍了三种为 zurg 配置 https 的方法，分别是 Tailscale Serve、你自己的反向代理，以及 Cloudflare tunnel。
+
+## Radarr 或 Sonarr 一把电影或剧集导入 `__magic__` 后，Plex 立即识别 {#plex-picks-up-a-movie-or-episode-as-soon-as-radarr-or-sonarr-imports-it-into-__magic__}
+
+Radarr 或 Sonarr 把文件移动到 `__magic__` 下的某个文件夹后，zurg 会让 Plex 扫描这个文件。Plex 只扫描文件夹，所以它回复"一切正常"，什么也没添加，电影就一直缺失，直到 Plex 下一次计划扫描。现在 zurg 会让 Plex 扫描文件落入的那个文件夹。升级替换文件时也一样，旧版本会被移出，手动扫描接口、MCP `zurg_plex_scan_releases` 工具、重命名或删除文件后的扫描，以及交给 `on_library_update` 的路径，也都改成了这样。
+
+## 管理页面会列出重复的资源，以及 Radarr 或 Sonarr 正在使用哪一个 {#the-manage-page-lists-duplicate-releases-and-which-one-radarr-or-sonarr-uses}
+
+升级后，被替换的版本会留在你的库里。而且从不同索引器抓取时，同一部电影或同一季可能会有多个副本。管理页面上新增的 Duplicates 视图会把保存同一部电影或同一批剧集的版本归为一组，并显示 Radarr 或 Sonarr 正在使用哪一个。zurg 是根据文件在 `__magic__` 中的位置来判断的，而不是看版本名称。
+
+对于整季，它会列出每一集被多个版本保存的情况，以及 Sonarr 的文件位于哪个版本中。因此，Sonarr 只从中取了几集的整包，仍会显示为正在使用。其他所有版本都会标记为 "No reference found" 或 "Unknown"，并附上原因。选中你想删除的版本后，zurg 会在删除前重新读取 Radarr 和 Sonarr，并排除此后已投入使用的任何内容。系统从不会自动删除任何东西。
+
+## TorBox 繁忙的下载位按 TorBox 自己的计数方式统计 {#torboxs-busy-download-slots-are-counted-the-way-torbox-counts-them}
+
+在为 TorBox 添加种子进行修复或首次播放之前，zurg 会先检查账户是否还有空闲的下载名额。以前它统计的是所有未完全下载的种子。这样会漏掉正在做种的种子（TorBox 会把它们计入你的套餐，最长可达 30 天），同时又会把内容已过期的种子也算进去，而这些种子其实不占用任何名额。资料库里只要有几个过期种子，修复就可能像所有名额都被占满一样一直等待。
+现在 zurg 只统计 TorBox 标记为活动状态的种子，不多不少。
+
+## TorBox 现在可以为私有 tracker 做种 {#torbox-can-seed-for-private-trackers}
+
+新设置 `tb_seed_torrents` 决定 zurg 添加到 TorBox 的种子是否做种。除非你手动修改，否则它保持为 `never`，所以不改它的人不会有任何变化。如果私有种子站需要你的分享率，就把它设为 `always`；如果想让 TorBox 账户上的做种设置来决定，就设为 `auto`。你可以在仪表盘的 Health & Repairs 部分修改它，修改后在下一次添加时生效。
+
+一个正在做种的种子会占用你 TorBox 套餐的一个活动名额，只要它还在做种，Pro 套餐最长可达 30 天。如果做种的种子把所有名额都占满了，该账户上新的抓取和修复就得等有名额空出来才能进行。
+
+## 分卷命名顺序错乱的 RAR 集合现在可以播放 {#rar-sets-whose-volumes-are-named-out-of-order-now-play}
+
+一个发布的 RAR 分卷，如果每个分卷都用了不同的名字（比如随机名字，或者 `Movie 2026 part1.rar` 这样的名字），以前会被显示成一个分卷一个压缩包。第一个分卷能列出电影，但播放到第一个分卷就停了，其他分卷什么都不显示。现在 zurg 会从分卷内部读取它属于哪一部分，然后把整套分卷重新拼好。以前需要手动把分卷重命名为 `part001.rar` 及之后的格式才能解决的问题，现在不用再这么做了。
+
+只有当这些分卷的编号能组成一套完整的分卷时，zurg 才会这样处理。如果缺了某一个分卷，或者有两个分卷占用了同一个位置，zurg 就保持该发布原样不动，并在日志里说明原因。压缩包的分卷如果是乱序发布的，现在也能正常播放了。
+
+## 仍在分析中的 Plex 扫描不再被误报为卡住 {#a-plex-scan-that-is-still-analysing-is-no-longer-reported-as-stuck}
+
+Plex 在分析扫描发现的文件时，扫描进度和当前文件夹会保持不变，在大型或远程库上这可能要花很长时间。以前，控制面板会把这种情况当成扫描卡住，并建议你在扫描途中重启 Plex。现在 zurg 会监听 Plex 自己的更新信息流，并统计 Plex 报告仍在处理的项目数，因此只有真正停止的扫描才会被标记出来。
+
+## 仅限缓存的种子上传在有速率限制的提供商上保留拒绝添加的行为 {#cached-only-torrent-uploads-preserve-the-refusing-add-on-rate-paced-providers}
+
+A `.torrent` 以仅缓存模式提交后，即使其每小时添加次数限制使后端触发了限流，现在也会被 TorBox 的添加接口拒绝。未缓存的未命中不会创建任何传输，也不占用活动槽位；但它仍会消耗 TorBox 每小时 60 次未缓存添加中的一次。普通添加会继续上传原始文件。qBittorrent 指南现已列出全部六个种子上传提供商，并说明了 Debrid-Link 和 TorBox 各自独立的仅缓存路径。
+
+## 在还原过程中被删除的文件会保持删除状态 {#a-file-you-delete-while-it-is-being-restored-stays-deleted}
+
+删除文件或发布版本时，如果还原操作仍在检查其链接，现在会等待该检查完成，然后以删除为准。之前正在进行的库刷新，不会再把你刚删除的发布版本重新加回来。
+
+## 压缩归档中深处的跳转不再卡住读取器 {#a-seek-far-into-a-compressed-archive-no-longer-hangs-the-reader}
+
+A压缩的 RAR 或 zip 里的文件只能从开头开始解码，所以以前读取大文件靠近末尾的部分时，要等整个压缩包处理完，期间一点回应都没有。Plex 可能会卡在这样的读取上一个多小时，足以把它的数据库锁死。现在 zurg 会在 20 秒内给出回应，保留它已经完成的进度，并在后台提前准备文件末尾的部分，这样下次再读取时就能立即返回。
+
+## Real-Debrid 的拒绝结果遵循已公布的文件名规则 {#real-debrid-refusals-follow-the-published-filename-rules}
+
+当 Real-Debrid 在修复时拒绝重新添加某个资源，zurg 现在会根据公开的文件名规则检查该资源的名称和其中的文件名。被规则拦截的资源会被永久标记为侵权。其他任何拒绝都视为 Real-Debrid 在限制添加速度，该资源会留在队列中，等待下一轮修复，而不会被移除。
+
+## 恢复文件会立即放回它原本的位置 {#restoring-a-file-puts-it-back-where-it-belongs-straight-away}
+
+在发布项的管理页面上，“Restore”操作现在会在文件校验通过后立即把该发布项重新归入其目录、保存恢复后的状态，并写入它的 STRM 文件。恢复后的文件不会再留在不可播放目录中，直到下一次提供方刷新才变化；而且，如果某个发布项最后一个损坏的文件被恢复，重启后它也不会再被报告为损坏。已删除的文件在你恢复之前仍然保持删除状态。
+
+## 在输出字节之前拒绝外来的 Usenet 文章 {#reject-foreign-usenet-articles-before-serving-bytes}
+
+在持久化缓存和渐进式路径中，如果同一编号的 Usenet 文章其正的 yEnc 总数低于 NZB 中列出的最高编号，就拒绝该文章，让有效的账户回退来提供数据。
+
+## 保留有证据支撑的 RD 拒绝分类 {#preserve-evidence-backed-rd-refusal-classification}
+
+对 addMagnet 返回的 451 响应,除非有账户级别的限流证据贯穿整个操作,否则都当作资源被拒绝处理。临时错误在修复过程中要保留下来。
+
+## 澄清已过期的损坏文件读取窗口 {#clarify-expired-broken-file-read-windows}
+
+报告一个已过期的损坏文件读取重试窗口，但不要说修复已经放弃。
+
+## 在 MCP 中展示已记录的文件健康状况 {#expose-recorded-file-health-in-mcp}
+
+在 MCP 发布视图中展示每个文件的健康计数记录,并让惰性文件表可以安全查看,同时不要把生命周期状态说成实时服务探测。
+
+## 处理重复的 sidecar 操作 {#handle-duplicate-sidecar-operations}
+
+识别重复 WebDAV 别名返回的带类型缺失源响应，同时保留真正的全部失败和权限错误。
+
+## 以相同名称重新抓取的内容会修复而不是标记为失败 {#a-re-grab-under-the-same-name-is-repaired-instead-of-failed}
+
+重新抓取一个 zurg 已经存在的名称对应的 NZB 时，不再先检查和修复旧副本，而是在读入新文件的同时进行。抓取会等待新文件完成，因此遇到缺失某个分段但 PAR2 能够修复的发布时，会先修复并完成，而不是直接报告失败。
+
+## 修复失败不再被误认为是用户删除 {#repair-failures-no-longer-masquerade-as-user-deletions}
+
+自动修复失败时，现在只会把出问题的那个 provider 源标记为损坏，其他健康的备用副本会被保留下来。之后 provider 刷新时，文件就能重新变得可见。
+
+## 没有 IMDb ID 的种子会通过 DMM 按发布名称识别 {#torrents-without-an-imdb-id-are-identified-by-release-name-through-dmm}
+
+设置了 `dmm_metadata_secret` 后，IMDb 任务就不再需要 OpenSubtitles 密钥了。没有 id 或只有 OpenSubtitles 缺失标记的种子，会在启动时识别：先看名称里有没有 `imdb-tt…` 标签，没有的话，就交给 DMM 的解析器处理。解析器只有在恰好匹配到一个标题时才会给出结果。像 "Kaijuu 8-gou" 这样的字幕组罗马音，会通过 DMM 的别名解析为 Kaiju No. 8。多个剧集共用的名称则不做处理。DMM 无法识别名称的种子，id 会保持为空，之后 Plex 匹配时仍可以填入。
+
+## 没有任何索引器能通过 ID 识别的 Radarr 电影会按名称搜索 {#a-radarr-movie-that-no-indexer-knows-by-id-is-searched-for-by-name}
+
+许多 Usenet 帖子的索引里没有 IMDb 或 TMDB ID。zurg 以前只用 ID 为 Radarr 搜索电影，所以一部纪录片如果所有索引器都查不到对应 ID，就会报 "no eligible releases" 失败，而 Radarr 自己按片名搜索却能找到一个干净的资源。现在，如果 ID 搜索没有找到可用的结果，zurg 还会同时用片名和年份搜索。每个结果是不是这部电影，仍然由 Radarr 自己的解析器来判断。只有当 ID 搜索完全没有找到任何结果时，才会接着按片名搜索。如果 ID 搜索已经找到了电影，就直接按 ID 索引。否则再按片名查一遍，只会拿到同样的帖子。
+
+## 通过 Prowlarr 找到的 NZB 可以下载 {#nzbs-found-through-prowlarr-can-be-downloaded}
+
+Prowlarr 会把每个 Usenet NZB 通过重定向交给索引器，而且无法关闭这个行为。以前 zurg 只跟随同一主机上的重定向，所以只要索引器是通过 Prowlarr 配置的，每次获取 NZB 都会失败，报错 "answered 301 Moved Permanently"，结果一个文件都没有拿到。现在已经会跟随这个重定向了。链接自带的 API key 仍然不会发送到另一台主机，而从 HTTPS 重定向到明文 HTTP 的请求仍然会被拒绝。
+
+## 拒绝请求持续数小时的索引器不再拖慢获取进程 {#an-indexer-that-refuses-for-hours-no-longer-stalls-acquisition}
+
+Prowlarr 对一个已被禁用的索引器的搜索请求返回 `429`，并带有好几个小时的 `Retry-After`。zurg 等了两分钟后再次询问，一共问了三次，所以每次搜索在这一个索引器上就花了六分钟。Acquisition 在五次之后放弃了每个标题，还把其他所有索引器已经返回的结果全部丢掉，因此在那个索引器恢复之前，什么都没有被获取到。现在，如果某个索引器要求等待的时间超过两分钟，zurg 就会在它指定的时间之前跳过它，搜索继续在其他索引器上进行。
+
+## 获取后被删除的影片会重新搜索 {#a-title-deleted-after-acquisition-is-searched-for-again}
+
+当 zurg 为 Sonarr 或 Radarr 获取的文件被删除（无论是因为不是想要的版本，还是其他原因），而该条目又重新出现在缺失列表中时，zurg 会回复 "completed without a search, the release was already held"，然后就不再去找它了。现在 zurg 会先检查 `__magic__` 中对应的季或电影文件夹。如果某一集或某部电影的视频已经不在了，zurg 会重新搜索。如果视频还在（这种情况通常发生在 Sonarr 还没重新扫描的时候），zurg 就不会去动它。
+
+## 未检测列表上的"在 Plex 中扫描"会等待结果 {#scan-in-plex-on-the-undetected-list-waits-for-the-result}
+
+该“长按扫描”按钮位于未识别列表上。按下后两秒，页面就会重新加载，但此时与 Plex 的匹配还没有开始。大型媒体库的匹配需要好几分钟，所以列表总是原样返回，按钮看起来像没有任何作用。现在按钮会显示匹配正在进行，等它完成后告诉你匹配了多少个发布，然后再重新加载。
+
+## 名称以空格结尾的发布项现在可以匹配到 Plex {#a-release-whose-name-ends-in-a-space-is-matched-to-plex}
+
+A file name with a space before the extension, such as
+`... [Hurtom] v2 .mkv`, got a directory whose name ended in a space. Plex found
+it, but zurg could never match it, so it stayed on the undetected list after
+every scan. It is matched now.
+
+## 在管理页面删除文件后会保留你的位置 {#deleting-a-file-on-the-manage-page-keeps-your-place}
+
+以前，在某个发布的 manage 页面上删除、恢复、重命名或强制显示一个文件后，页面会重新加载并回到顶部，所以清理一个大合集时，每点一次都得重新往下滚。现在页面会回到该文件所在的行，并高亮显示这一行。
+
+## 仪表盘可以接受带引号输入的挂载路径 {#the-dashboard-takes-a-mount-path-typed-with-quotes}
+
+把 config.yml 里的写法（比如 `"/Users/me/Plex Media Server/ZurgMount"` 或 `'Z:\'`）粘贴到仪表盘的 mount path 里时，会提示 "mount path should be absolute" 并被拒绝，因为引号被当成了路径的一部分。现在仪表盘会自动去掉成对的引号，只保存引号里面的路径。
+
+## Plex 观看清单获取失败时会说明原因 {#a-failed-plex-watchlist-fetch-says-why}
+
+当 Plex 拒绝 watchlist 请求时，日志现在会带上 Plex 自己给出的原因，例如 `unexpected status: 401: Invalid token`，而不只是状态码。如果你仍然看到 `Failed to fetch watchlist: ... unexpected status: 400`，那说明这是 8 月之前的版本产生的提示。请更新 zurg：新版本会分页请求 watchlist，Plex 能接受这种方式。
+
+## 损坏程度超过 repair 内存上限的发布会立即失败 {#a-release-too-damaged-for-repairs-memory-fails-at-once}
+
+When a Usenet release is missing more than PAR2 repair can hold in memory at once, zurg now says so and stops, and Sonarr or Radarr pick another release. It used to keep the grab waiting, then try again every few minutes, re-checking the whole release each time for the same answer. Damage that is not yet confirmed as gone, such as articles a server failed to answer, is still retried.
+
+## 设置向导可以跳过空配置，并会说明令牌提示何时被隐藏 {#setup-gets-past-an-empty-config-and-says-when-the-token-prompt-is-hidden}
+
+`zurg setup` 以及运行它的安装程序，之前在目录里存在一个空的 `config.yml` 时会拒绝继续，报错信息末尾还是一个空白。现在空的配置会被直接替换。如果文件里有内容，则依然不会被覆盖，而报错信息会说明是哪个文件，以及该如何重新开始。令牌提示现在会说明你输入或粘贴的内容会被隐藏，之前这一点让人误以为终端拒绝了输入。`config.yml` 中的拼写错误现在会指向 `config.yml`，而不再显示内部的 "outbound identity config"。
+
+## 备用新闻服务器现在会用正确的文章替换主服务器返回错误结果的文章 {#a-backup-news-server-now-fills-in-articles-the-main-server-answers-wrongly}
+
+有些新闻服务器在收到某篇文章的请求时，会返回另一个上传内容的片段。zurg 能识别出这个错误的片段，但从来不会去向备用服务器请求正确的内容，因此这段内容会变成静音，或者文件打不开，即使备用服务器上是有这份内容的。现在 zurg 会像 SABnzbd 那样，去问下一个服务器。
+
+## 带 RAR 的 Usenet 发布无需重启即可进入其目录 {#a-rard-usenet-release-reaches-its-directory-without-a-restart}
+
+一个以 RAR 分卷形式发布的资源，在其压缩包被打开之前，会根据分卷文件名被归类到各个目录中；打开之后，则根据压缩包内的文件进行归类。之前压缩包打开后没有重新归类，因此，对于刚抓取的 RAR 资源，如果某个目录要求包含 `.mkv` 文件或集数编号，就会漏掉它，直到 zurg 重启，Plex 和 Jellyfin 才会在那里看到它。现在，资源的压缩包一被首次列出，它就会移动到正确的目录中。
+
+## 用随机名称发布的电影会以其发布名称命名 {#a-movie-posted-under-a-random-name-is-named-after-its-release}
+
+有些 Usenet 帖子会给电影起一个随机名字，比如 `eq5KVi5Y3iTwFEn1Nub8yPY9yd6oUzTu.mkv`，并且在帖子里所有可能包含真实名字的地方都重复使用这个名字。zurg 以前保留了这个名字，所以 Radarr 和 Sonarr 在文件名里找不到任何可用的信息。现在，zurg 会像 SABnzbd 一样，用发布名称为文件命名。只有在该发布明显是唯一的大文件时才会这样做，并且只针对视频文件，光盘目录结构或压缩包永远不会这样处理。这一改动只对今后抓取的发布生效；已经在库里的文件保持原名。
+
+## 大小规则现在适用于归档内的文件 {#size-rules-now-apply-to-files-inside-archives}
+
+一个以 RAR 分卷形式发布的 Usenet 电影，现在会显示压缩包内的文件。
+这些文件之前没有受到目录中 `only_show_the_biggest_file` 以及 `only_show_files_with_size_gte`/`_lte` 设置的限制，因此帖子里附带的其他内容也会和电影一起显示出来。很多帖子会附带一张以电影命名的小图片，以及一张带时间戳的截图拼图，Jellyfin 就把它当成了海报。现在，这些大小设置对压缩包内的文件和其他文件一样生效。
+
+## 最大 PAR2 文件超过 512 MB 的 Usenet 发布现在可以修复 {#usenet-releases-whose-largest-par2-file-is-over-512-mb-can-be-repaired}
+
+当某个发布缺失部分内容时，zurg 会用该发布自带的 PAR2 文件把缺失部分重建出来。之前它会拒绝读取大于 512 MB 的 PAR2 文件。而在大型发布中，这种文件保存的修复数据往往比其他任何文件都多，有时还是唯一的一个。这样的发布即使只缺了一点点，也无法修复。zurg 还会不断重试，每次都先把所有较小的 PAR2 文件下载一遍，然后才放弃。现在 zurg 可以读取任意大小的 PAR2 文件。
+如果某个发布的损坏程度超出单次修复在内存中能处理的范围，那么一旦统计出损坏量，zurg 就会直接拒绝，无需下载其中任何 PAR2 文件。
+
+## Sonarr 可以把缺失的剧集交给 zurg {#sonarr-can-hand-its-missing-episodes-to-zurg}
+
+zurg 现在也能把 Sonarr 当作片单来源了。在 `acquisition.sources` 下添加一个 `sonarr` 来源，填上 Sonarr 的 URL 和 API key 即可。zurg 会依次处理 Sonarr 缺失的剧集，以及它想升级的剧集文件。它会搜索你的索引器，并检查新闻服务器是否仍然保有该发布。每一集都会放进 `__magic__` 中对应的季文件夹，然后让 Sonarr 重新扫描该剧集。这个功能不需要 Sonarr 配置索引器或下载客户端。
+
+整季缺失且已经播完的季，可以作为一个季包获取。其他情况则逐集获取。每个发布都会先经过 Sonarr 自己的解析器。它必须对应正确的剧集和正确的集数，并且符合该剧集的质量配置。升级只会替换被升级的那一集。如果某季中有一集还没有发布，其他集仍会照常放置，并让 Sonarr 为它们重新扫描。每日剧和动画剧暂时会被跳过，日志中会留下一条说明。`docs/acquisition.md` 介绍了 Sonarr 这一侧的设置。
+
+## 获取过程可同时处理多个标题 {#acquisition-works-on-many-titles-at-once}
+
+从观看列表或请求服务获取的标题以前是一个接一个地下载的，所以一个很长的列表所花的时间等于所有标题加起来的时间。现在 zurg 最多可以同时处理八个标题，具体数量由 `acquisition.concurrency` 设置。列表后面才出现的标题不再需要等前面的全部完成。
+
+新版本发布后，zurg 不再要等两分钟才去检查。zurg 会每秒检查一次，直到该版本出现在库中，最长等待一分半钟。如果新闻服务器已经不再保存某个版本，zurg 会直接尝试下一个候选版本，而不是五分钟后再重试。检查某个版本时也不再受搜索剩下的时间限制，因此长列表上的慢速搜索不会再让标题延迟好几分钟。对于你已经拥有的标题的升级，会等到同一列表中缺失的标题全部处理完成后再进行，这样它们就不会与缺失的标题争抢索引器请求或新闻服务器连接。
+
+## 使用 PAR2 修复的 Usenet 发布在读取期间保持修复状态 {#a-usenet-release-repaired-with-par2-stays-repaired-while-it-is-read}
+
+当某些文章从新闻服务器上消失时，zurg 会用该资源的 PAR2 文件重建它们，并提供重建后的数据。zurg 中负责在播放器前面预先读取数据的部分并不知道这些重建好的分片，于是它又向服务器请求那些缺失的文章。服务器上仍然没有，zurg 就再次把资源报告为损坏，尽管它提供的每个字节都是正确的。在导入过程中修复好的资源，可能过了一会儿就被判定为失败，下载客户端也会丢弃一份好的副本，转而去抓取另一份。现在 zurg 不会再向服务器请求任何它已经重建过的内容。
+
+## Radarr 可以把想要的电影交给 zurg {#radarr-can-hand-its-wanted-movies-to-zurg}
+
+zurg 现在可以从 Radarr 获取列表了。在 `acquisition.sources` 下添加一个 `radarr` 源，填入 Radarr 的 URL 和 API key，zurg 就会处理 Radarr 缺失的或需要升级的电影。它会搜索你的索引器，检查新闻服务器上是否还有这个版本，然后把视频放进 `__magic__` 里对应电影的文件夹，并请 Radarr 重新扫描这部电影。使用这个功能不需要 Radarr 配置索引器或下载客户端。
+
+zurg 取用的每个版本，都先经过 Radarr 自己的解析器检查，所以一定是正确的电影，并且符合该电影的质量配置：质量要在允许范围内，自定义格式分数要达到最低要求，文件大小要在限制之内，升级也只会朝着 cutoff 进行。zurg 会挑出第一个符合要求、且检查起来最快的版本，WEB 版本优先。配置里更偏好的质量则留给后面的升级流程处理。
+
+只有在准备检查某个版本时，zurg 才会去问 Radarr 这个版本的信息，而且一次只问一个。如果版本标题里带有配置中没有对应质量的分辨率，它就根本不会去问。这样即使 Radarr 比较繁忙，大多数电影也只需要问一到三次，而不是为每个搜索结果都问一次。
+
+如果 Radarr 看到的 zurg 挂载路径和 zurg 不同，请把 `library_path` 设为 Radarr 看到 `__magic__` 的位置。
+
+仪表盘上新增了一个 Acquisition 页面，会显示 zurg 正在处理的每一部电影、它当前正在做什么，以及每个版本被放到了哪里。
+
+Radarr 这一侧的设置步骤，请参阅 `docs/acquisition.md`。
+
+## 获取过程会选择最快确认的 Usenet 发布 {#acquisition-picks-the-usenet-release-that-is-quickest-to-confirm}
+
+当 zurg 获取电影时，它会先查看只包含一个视频文件的发布，这类发布在新闻服务器上通常更完整，确认只需读取两次文章。它会在保存任何内容之前先读取每个候选发布的 NZB，保存找到的第一个单视频发布。只有在没有单视频发布可选时，才会退而使用多卷压缩包集，并且按从小到大的顺序处理，同时最多只处理六个。标题是分卷发布中某一部分的结果会被跳过。在 IMDb Top 100 的测试中，这种选择方式让 zurg 需要获取的 NZB 数量从 517 个降到了 156 个。现在，搜索和 NZB 下载共用每个索引器的同时进行请求数上限，遇到表示忙碌的索引器时会等待。没有质量配置文件的电影请求，仍会优先获取它所要求的分辨率。剧集获取的逻辑没有变化。
+
+## zurg 知道文件大小后，获取过程会检查该发布 {#acquisition-checks-a-release-once-zurg-knows-its-sizes}
+
+zurg 以前会在新版本出现在库里的那一刻就去新闻服务器检查它，同时还在读取同一个版本以获取文件大小。两者都向同一批连接请求相同的文章，因此列表较长时两边都会非常慢。在一个包含 99 部电影的列表里，最后一部要过将近九分钟才会到达 Radarr。现在 zurg 会在某个版本的文件大小已知之后再检查它，与它通过 SABnzbd 端点为 Sonarr 和 Radarr 所做的方式一致；每次最多检查六个版本；并且当大小检查已经下载过的第一篇文章仍然可用时，会直接复用它。一批保存的版本现在只会触发一次库刷新，而不是每个版本各触发一次。
+
+检查某个版本现在会排在其他版本的大小检查之前，但永远不会排在播放之前。拥有超过十二个连接的账户，现在一次可以同时获取最多十六个版本的大小，而不是八个。
+
+## 已抓取但缺少少量分段的 Usenet 发布会先修复再标记为失败 {#a-grabbed-usenet-release-with-a-few-missing-pieces-is-repaired-before-it-is-failed}
+
+在 Radarr 或 Sonarr 被告知下载已完成之前，zurg 会先检查该版本的分卷是否仍然保存在新闻服务器上。以前只要这项检查发现有缺失，zurg 会立刻把下载标记为失败，哪怕该版本自带的 PAR2 文件本来可以修复缺失的部分。随后 Radarr 会放弃这个版本，转而去找另一个，而那个往往质量更差。现在 zurg 会先尝试重建缺失的分卷，只有在重建无效时才会报告下载失败。在一周的实际抓取中，因此失败的大多数版本其实都带有能够挽救它们的 PAR2 文件。
+
+## 损坏的 Usenet 发布会排队等待修复，而不是直接标记为失败 {#damaged-usenet-releases-wait-their-turn-for-a-repair-instead-of-being-failed}
+
+zurg 一次最多只修复两个损坏的资源，而每次修复可能需要几分钟到一个多小时不等。以前第三个损坏的下载只有五分钟的时间开始，超时后 zurg 就会告诉 Radarr 或 Sonarr 下载失败。所以当好几个同时到达时，除了前两个，其余的都会被直接丢弃，没人去尝试修复，日志里也没有任何提示。现在 zurg 会让排队中的下载继续等待修复轮到它，最长可以等三个小时，并且日志会在修复正在等待轮次时给出提示。
+
+## Usenet 下载不再无限期等待永远无法获知的文件大小 {#a-usenet-download-no-longer-waits-for-ever-on-file-sizes-nothing-is-going-to-learn}
+
+zurg 会在 Radarr 和 Sonarr 取走已完成的下载之前先扣住它，直到知道每个文件的确切大小，因为客户端在导入时会检查大小。某些重新抓取之后，zurg 可能会停止尝试获取大小，却仍在等待这些大小，于是下载一直卡在队列里，直到客户端放弃，通常要等两个小时。现在 zurg 会对这类版本重新计算大小；如果已无法再获取大小，并且该版本的所有分片都已在新闻服务器上，它就会告诉客户端下载已经就绪。
+
+## 仅第一个归档卷被发布者重命名的 Usenet 发布可以再次播放 {#usenet-releases-whose-poster-renamed-only-the-first-archive-volume-play-again}
+
+有些发布者会把压缩包的第一卷改名成发布名，其余分卷保留原名，所以一个发布包会变成 `Show.S02E03.part03.rar` 加上 `show.203.r00` 到 `show.203.r19`。zurg 按文件名给分卷分组，结果看到两个不完整的压缩包，两个都打不开。现在 zurg 会读取第一卷的文件头，识别它应该和哪些分卷归为一组，并把它改成匹配的名字，所以这一集可以正常播放和导入。如果某个文件夹里的压缩包确实缺少分卷，现在会用清晰的提示直接说明，而不是只显示通用的服务器错误。
+
+## 卷仅用数字编号的混淆 Usenet 发布现在可以播放 {#obfuscated-usenet-releases-whose-volumes-are-just-numbered-now-play}
+
+有些发布版本会把所有文件名都藏在一串随机字符和一个数字后面，所以一部电影会以 `f342c135….01`、`….02` 这样的形式出现，文本文件和封面图也夹杂在其中并按数字编号。以前 zurg 无法把这些文件识别为同一个压缩包的分卷，只会把它们当作散落的单个文件列出来，因此 Radarr 和 Sonarr 什么也找不到，无法导入。现在 zurg 会读取每个编号文件的开头，把压缩包的各个分卷按正确顺序拼合起来（即使第一个分卷是最后发布的也没问题），并把文本文件和图片排除在外。
+
+## 超过 32 MB 的整季 NZB 现在会被接受 {#season-pack-nzbs-over-32-mb-are-accepted}
+
+zurg 之前会拒绝通过其 SABnzbd 端点发送的、超过 32 MB 的 NZB，并返回 "request body too large"。大型整季合集的 NZB 往往超过这个大小：一个 526 GB 的整季合集，NZB 只有 49 MB。现在 zurg 最大可接受 256 MB 的 NZB。一个 49 MB、包含将近五十万个分段的 NZB，加载时间不到半分钟。
+
+## 包装在外层 Usenet 帖子中的文件保留其真实名称 {#files-from-wrapped-usenet-posts-keep-their-real-names}
+
+有些发帖工具会把每个文件名包在主题行里，例如 `[PRiVATE]-[EnCrYpTnZb]-[Show - 48.mkv]-[3/4]`，并且通常的引号文件名留空。zurg 之前会把这层包装保留在名称里，于是剧集被列为 `[PRiVATE]-[EnCrYpTnZb]-[Show - 48.mkv`，Sonarr 和媒体服务器都无法匹配。现在 zurg 会把文件名从包装中取出来。资源库中已有的发布内容会重新读取一次，以获取更正后的名称。
+
+## 已报告失败的下载不再占用新下载的修复名额 {#downloads-already-reported-failed-no-longer-take-repair-slots-from-new-ones}
+
+Zurg 一旦告诉 Radarr 或 Sonarr 某个下载失败了，客户端就会丢弃它并去找其他来源。以前 zurg 每次重启都还是会去修复这类下载，这些没用的修复可能会占满它的两个修复名额，导致还能挽救的新下载一直排队等待。现在 zurg 在报告某个下载失败之后，就不会再修复它了。
+
+## 损坏报告会列出每个文件的名称 {#damage-reports-name-every-file}
+
+当 Usenet 发布缺少部分分段时,zurg 的失败消息会按文件名列出受损的文件。但如果帖子本身没有提到某个文件的名字,它就会显示成空白:"across 4 file(s): , , , "。现在这类文件会按它在发布中的位置列出,例如 "file 12 of 73",这样消息就能说明哪些文件受到了影响。
+
+## Stremio 会跳过开头没有画面的版本 {#stremio-skips-a-release-whose-video-starts-with-nothing}
+
+在 Usenet 发布的视频开头从新闻服务器上消失时，zurg 会用静音把它填上，然后当作正常内容交给 Stremio，结果播放器什么都不显示，电影看起来像是坏了。现在 zurg 会在开始播放前先检查最前面的几个字节。如果那里没有真实数据，它就会像处理列表中没有可播放内容的发布那样，跳到下一个发布。中间某处有缺口的电影仍然可以正常播放。
+
+## 损坏的文件会保留在库中，zurg 仍会重试它们 {#broken-files-stay-in-the-library-while-zurg-will-still-retry-them}
+
+当 zurg 第一次修复损坏的文件失败时，即使它计划第二天再试一次，也会把这个文件从挂载中移除。Plex 会把消失的文件当作已删除的文件处理，因此一次媒体库扫描就可能把剧集、季，甚至整部剧都移到回收站。现在，只要 zurg 还计划再次尝试修复，损坏的文件就会一直留在挂载中。只有当 zurg 确定内容已经不存在时，文件才会被移除，例如服务商直接拒绝该资源，或者其中已经没有任何可播放的内容。
+
+## 当 Radarr 和 Sonarr 两次抓取到同一个资源且已失效时，会重新搜索 {#radarr-and-sonarr-search-again-when-a-release-they-grab-twice-is-dead}
+
+当 Radarr 抓到的第一个版本已经失效时，它下一次搜索往往会从另一个索引器里找到同名的同一个版本。zurg 会把第二次抓取记在第一次的任务 ID 下。Radarr 和 Sonarr 会记住每一个以该 ID 失败过的下载，所以它们把新的抓取当成旧的失败，从不再去看它。结果是：没有失败记录，没有加入黑名单，也没有新的搜索，电影就这样卡住了。在一次通过 Radarr 跑 IMDb Top 100 的测试中，有 25 部电影以这种方式停住。
+
+现在，对于 zurg 已经给出过答复的版本，每次抓取都会获得它自己的任务 ID，就像 SABnzbd 本身为每个下载命名一样。如果这个新版本也失效了，Radarr 就会收到第二次失败的通知，把它加入黑名单，然后重新搜索。
+
+## 失效的 Usenet 资源会在几分钟内报告失败，而不再需要长达半小时 {#dead-usenet-releases-are-reported-failed-in-minutes-instead-of-up-to-half-an-hour}
+
+zurg 会先检查抓取到的发布资源的文章，然后才告诉 Radarr 或 Sonarr 下载完成。它会等发布资源的文件大小稳定下来再去检查。失效的帖子恰恰就是文件大小永远等不到的那种，所以检查得在半小时的等待后面排队，而客户端就一直干等着。现在，zurg 尝试获取某个发布资源的文件大小失败后，会马上检查文章。如果文章已经不存在，这个发布资源就会被标记为失败，客户端随即去尝试下一个。
+
+有一个问题是，读取时发现损坏的发布资源，即使设置了 `enable_repair: false`，也还是要等五分钟来进行 PAR2 修复，而实际上根本不会开始修复。现在只要无法进行修复，就会跳过这段等待。
+
+在 IMDb Top 100 的一次测试中，通过 Radarr 抓取，超过一半的抓取结果都是失效的。电影在 zurg 里花的大部分时间，就是这两段等待造成的。
+
+## 导入时发现已损坏的资源会被标记为失败，因此 Radarr 会抓取另一个 {#a-release-that-turns-out-damaged-during-import-is-failed-so-radarr-grabs-another}
+
+zurg 在告诉 Radarr 某个发布版本已就绪前，只会检查每个文件的一篇文章，所以文件中间有缺口的发布版本也可能通过检查。之后 Radarr 导入时遇到这个缺口，zurg 拒绝移动文件，这本身没错。但下载任务看起来仍是未完成，而不是失败。Radarr 把电影标记为 "import blocked"，并且从不去找其他副本。在通过 Radarr 运行 IMDb Top 100 的一次测试中，有五部电影因此卡住了。
+
+现在，导入被拒绝时会把下载标记为失败。Radarr 会将该发布版本加入黑名单，并搜索其他版本。
+
+## 完全混淆的资源不再生成无名称的视频文件 {#a-fully-obfuscated-release-no-longer-comes-out-with-a-nameless-video-file}
+
+当 Usenet 帖子隐藏了所有文件名时,zurg 会从文件的前几个字节判断主文件是什么,并以发布名称为其命名,这与 SABnzbd 的做法相同。这项检查原本是在一次限时九十秒的处理中最后进行的,当抓取请求成批到达时,时间限制可能会先耗尽。结果视频文件会以发布名称发布、且没有任何扩展名,而 Radarr 和 Sonarr 会跳过这类文件,于是下载任务一直停留在它们的队列里,等待一个无法导入的文件。
+
+现在,在 zurg 能够检查该文件之前,发布名称最多会重新命名三次,之后才会展示给你的媒体库和 *arr 应用。在通过 Radarr 运行 IMDb Top 100 的一次测试中,这个文件是《七武士》,一个 42 GB 的 .mkv。
+
+## 文件名中带有重音符号或 CJK 字符的资源会保留完整名称 {#releases-with-accents-or-cjk-in-their-filenames-keep-their-whole-names}
+
+A release whose files are named with anything outside plain English letters came
+out of zurg with the front of every name missing. `Détective Conan S11E01 - 286
+[MULTI] [AVC].mkv` was served as `tective Conan S11E01 - 286 [MULTI] [AVC].mkv`,
+and a Chinese or Japanese title lost even more, because everything up to the last
+such character was dropped.
+
+Sonarr and Radarr could not do anything with what was left. A name like `tective
+Conan S11E01` matches no series, so they fell back to the download's grab history,
+refused to import on that alone, and parked the item with "release was matched to
+series by ID. Automatic import is not possible." The release sat in the queue and
+nothing moved it.
+
+It could also cost you files. When the only thing telling two files apart sits
+after the last accented character, both come out with the same name, and a name
+is a path. One French release with ten repair volumes had all ten reduced to the
+same name and published four files where the post holds thirteen, leaving the
+repair data with no way to reach it.
+
+zurg now reads every character above plain ASCII as part of the filename, which
+is what it always is: the part counters, the `yEnc` marker, the brackets and the
+file extensions posters write are all plain ASCII, so anything else belongs to
+the title. Releases named in plain ASCII are unaffected and come out exactly as
+before.
+
+Releases already in your library keep the names they were filed under, since
+zurg does not revisit a file list it has already recorded. Re-adding an affected
+release picks up the corrected names.
+
+## 日文、韩文、中文、泰文或阿拉伯文的名称保持不变 {#a-name-written-in-japanese-korean-chinese-thai-or-arabic-is-left-alone}
+
+zurg 会在压缩包内重命名文件，前提是文件名看不出它装的是什么内容。这样一来，以哈希值命名的发布内容，就会改用发布者本来的名字。以前判断时要比较大小写字母，但很多文字系统根本没有大小写之分。像 `오징어 게임 S01E01` 这样的文件，大小写字母数都是零，于是被当作普通名字判断失败，最后连 S01E01 一起被当成哈希重命名了。汉字、假名、谚文、泰文、希伯来文和阿拉伯文都受到了影响。
+
+现在，没有大小写的字母会直接结束这个判断，而不再算作判断失败。这些文字写成的名字会保持发布时的样子，哈希值仍然像以前一样重命名。
+
+同一个发布里如果有两个文件最终名字相同，zurg 现在会在日志里提示。名字就是路径，两个文件同名时，发布内容提供的文件会悄悄变少，多出来的那些根本无法打开。以前没有任何提示，所以上一条里提到的重音字符文件名问题一直没被发现，唯一的线索只是文件夹列表里的行数比预期少。
+
+## 文件名修复现在会应用到你已有的资源上 {#the-filename-fixes-now-reach-releases-you-already-have}
+
+这两条更新改变了 zurg 从 Usenet 帖子里读取文件名的方式，但 zurg 会保存每个 NZB 的读取结果，每次启动时直接复用，而不是重新处理整个监视目录。这些保存下来的旧结果仍是旧的，所以升级后，你之前已有的某个资源依然显示之前那个错误的名字。只有新添加的 NZB 才会得到修正后的名字。
+
+zurg 现在会注意到，它读取帖子的方式与保存结果时所用的方式不同，于是会重新读取。升级后的第一次启动会把监视目录里的每个 NZB 重新读取一遍，这会比平时稍慢一点，之后就恢复正常。不会重新下载任何内容，也不会获取任何文章；它只是重新读取你磁盘上已有的文件。
+
+如果某个资源受到了影响，它的文件会恢复为帖子中给出的名字。你的下载客户端可能仍保留着之前失败的导入记录，所以如果某个资源一直卡在 Sonarr 或 Radarr 中无法导入，需要先把该队列项删除，它才会重新尝试。
+
+## 标题中带有标点符号的，也会保留完整名称 {#titles-with-punctuation-in-them-keep-their-whole-names-too}
+
+列表前面的文件名修复，让 zurg 不再在重音字符和中文字符处截断名称，但修复得还不够彻底。zurg 原本是通过列出“允许出现在文件名中的字符”来判断什么是文件名，而这个列表漏掉了二十个常见符号，所以带有这些符号的标题也会被同样地截断：
+
+    Tom & Jerry - The Movie.1992.1080p.mkv   ->   Jerry - The Movie.1992.1080p.mkv
+    Mairimashita! Iruma-kun (2026) [22].mp4  ->   Iruma-kun (2026) [22].mp4
+
+`!`、`&`、`#`、`$`、`%`、`@`、`~`、`;`、`=` 和 `^` 都会导致这种截断。
+
+列出标题可以包含的字符是一场注定失败的游戏，所以 zurg 不再这样做。文件名就是文件名，而真正确定不能出现在文件名中的字符，只有那些任何文件系统都不接受的：`/ \ : * ? " < > |`。其他所有字符现在都属于标题的一部分。
+
+我们用一个很大的监视目录中的所有 NZB 做了检查：在那些本身就是普通文件名的主题（subject）中，之前被截短的，现在几乎都保留了完整名称。仍然被截短的，只有索引站为每次下载添加的时间戳被去掉了，这正是应该发生的。
+
+## 文件被重命名的资源会自动获取新名称 {#a-release-whose-files-were-renamed-picks-the-new-names-up-on-its-own}
+
+这些文件名修复改变了 zurg 对 Usenet 发布内文件的命名方式，而库里已有的发布并不总能察觉这一变化。zurg 会把它已知的发布与新的列表进行比对，依据是它为每个文件保存的链接；而 Usenet 链接里带有该文件在发布中的位置。当修正后的名字排序与旧名字不同时，这个位置就会移动，保存的链接不再指向同一个文件，也就没有可用的依据来匹配，于是旧名字就保留了下来。
+
+现在 zurg 会改用文件大小作为备选依据，因为文件大小不会改变。如果发布里恰好只有一个文件是这个大小，就认定它是该文件，并采用新名字。如果有两个文件大小相同，则不进行重命名，而不是去猜测，以免把一集的文件错当成另一集的名字。
+
+位置没有移动的发布本来就已经能获取新名字，不受影响。所有非 Usenet 的后端也不受影响，因为它们的链接在文件重命名时不会改变。
+
+## 挂载点无法读取的文件不再阻塞其他内容 {#a-file-the-mount-cannot-read-stops-holding-everything-else-up}
+
+当 zurg 无法说明原因导致读取失败时，它会告诉客户端重试，并且只要文件一直失败，就一直这样告诉它。rclone 对此非常较真：读取这样一个文件耗时 55 秒、发出三十多次请求后才放弃。而且由于 rclone 会在服务器持续返回错误时放慢整个连接的速度，下一个正常的文件打开耗时 3.66 秒，而不是 0.04 秒。
+
+现在，同样的失败持续一分钟后，重试就会停止。该读取的响应方式与之前读取损坏文件时相同，文件仍保留在你的媒体库列表中，同样的读取只需半秒。
+
+zurg 仍然每次都会尝试下载，因此文件恢复后，下一次读取就能取到它。
+
+## 停止读取后，挂载点会停止下载 {#the-mount-stops-downloading-once-you-stop-reading}
+
+库扫描、字幕检查或其他短时间内会碰到大量文件的操作，会从你的 debrid 账户里拉取远多于实际读取的数据。
+
+rclone 1.74 开始会在最后一个程序关闭文件后，继续下载该文件五秒钟。没有任何程序在等这些数据，而在快速的账户上，五秒就是每个文件几百兆。从二十个文件各读取 1 MiB，以前只拉取 80 MiB，现在却拉取了 4.2 GiB。
+
+zurg 现在已经关掉了这个行为。使用 rclone 1.73 及更早版本的挂载不受影响，也不会有任何变化，因为那里根本没有这个选项。
+
+如果你用的是自己的 rclone，而不是 zurg 的挂载，请在 rclone 1.74 或更新版本的挂载命令中加上 `--vfs-handle-caching 0`。README 里有相关说明。
+
+## 资源丢失一个压缩卷后，不再连带丢失其余部分 {#a-release-that-loses-one-archive-volume-no-longer-loses-the-rest}
+
+多卷 rar 或 7z 分卷压缩包发布的 Usenet 资源可能会完全导入失败。Sonarr 和 Radarr 一直卡在 "Waiting for import"，始终不动。资源的文件夹里只剩下 rar 分卷，有时整个文件夹都不见了。
+
+zurg 读不了某个分卷时，会先把它搁到一边，然后让下一次列表刷新在没有它的情况下继续。那次刷新发现这一套分卷少了一卷，就会在缺失分卷前面的那一卷处停下，把那一卷也搁到一边。资源大约每十分钟丢一卷，直到一卷都不剩，它就从库里消失了，也从下载客户端导入的文件夹里消失了。对 Sonarr 来说，路径不存在不是一个空文件夹，而是一个永远失败的导入。
+
+现在，已知无法读取的分卷会留在原来的分卷集里。每次刷新都会停在同一个分卷上，并给出相同的说明。这样，资源缺了部分内容时只会报告一次，你的客户端就可以把它加入黑名单，再去找另一个副本。所有分卷都能读取的资源不受影响。
+
+## 扫描会跟随库迁移到 `__magic__` 下的新位置 {#scans-follow-the-library-into-its-new-home-under-__magic__}
+
+你库的镜像在 2026.09.17.2240-nightly 版本中从 `__magic__` 移到了 `__magic__/__all__`。zurg 的一部分代码仍然指向旧位置。
+
+每次有新版本到达时，zurg 向 Plex 或 Jellyfin 请求扫描的路径，指向的是自那个版本起就不存在的文件夹。因此从来没有任何内容被加入队列，新内容只能等媒体服务器自己的定时扫描。运行 `on_library_update` 脚本的用户拿到的也是同一个错误路径。
+
+现在两者都指向你的下载客户端被告知要导入的文件夹。当新版本到达或离开时，zurg 从挂载缓存中清除的列表也指向这个文件夹。
+
+## 监视列表现在可以从 Torznab 索引器获取种子 {#the-watchlist-can-take-torrents-now-from-torznab-indexers}
+
+到目前为止，想看列表或 Seerr 请求只能从 Usenet 满足。在索引器上添加
+`type: torznab`，zurg 也会搜索它，而种子结果会交给 debrid 账户处理，而不是写入 `nzbs/`。
+
+**它只会交给已经缓存了该内容的账户。**
+每个接受添加的账户都会收到该哈希，因为各家的缓存彼此独立；第一个已经持有该版本的账户会接手。
+如果所有账户都没有，那只是这个候选没成功，zurg 会转到下一个版本，可能是另一个种子，也可能是 NZB。
+不会有任何内容下载到你的账户，也不会消耗未缓存添加的额度，也不会留下无人等待的任务在后台运行。
+
+当两种索引器都能返回结果时，`prefer` 决定先尝试哪一种。默认是 `usenet`，除非你另行设置，所以只有 Newznab 索引器的安装行为与之前完全一样。`torrents` 则相反，`best` 会直接取排名第一的结果，不论是不是种子。
+
+种子抓取和其他内容一样也要等待检查，但检查的问题不同。账户已经表示持有该内容，所以这里检查的是：该版本是否已进入你的媒体库并且包含文件；如果列表显示为空，就会被搁置，让下一个版本轮到检查。
+
+你也可以只用 Torznab 索引器运行获取流程，无需 `nzb` 提供方。
+
+## 读取库的智能体不再把每个资源都识别为空 {#an-agent-reading-the-library-no-longer-calls-every-release-empty}
+
+zurg 的 MCP 列表只在被要求时才统计某个发布的大小,因为遍历整个库的文件表会花费真实的时间。对于没有统计的发布,它们之前会把大小和文件数都报告为零,而回答里没有任何信息告诉读者,零代表的是"未统计",而不是"那里什么都没有"。于是,当代理被要求列出某个目录时,它会说一部 6.6 GB 的电影里没有任何文件,而单个发布的工具其实一直给出了正确的答案。
+
+现在,没有统计的列表会省略这两个数字,而不是报告零。想要它们的话,可以使用 `with_size`、按大小排序,或者加上大小过滤。`zurg_library_search` 现在也支持 `with_size`(之前不支持),因此获取大小不再需要缩小或重新排序结果。
+
+## zurg doctor 会告诉你 MCP 端点是否正常响应 {#zurg-doctor-says-whether-the-mcp-endpoint-is-answering}
+
+`zurg doctor` 只检查了仪表板的端口是否有响应，然后就停下了，这对 `/mcp` 的状态一无所知。配置里开启了某个端点，但服务器随后拒绝提供服务（比如 `username` 为空时就会这样），从外面看一切正常，而原因只在启动日志里的一行中说明，别处都没有。
+
+设置了 `mcp.enabled` 后，`doctor` 现在会按协议与 `/mcp` 通信，并报告返回的结果：正在响应、拒绝已配置的凭据，或者已启用但未提供服务。端点没有开启的实例不会被检查，也不会输出相关的行。
+
+## 在浏览器中打开 MCP 端点时，现在会告诉你它是什么 {#opening-the-mcp-endpoint-in-a-browser-now-tells-you-what-it-is}
+
+在浏览器中打开 `/mcp` 时，页面会显示 "Bad Request: GET requires an Mcp-Session-Id header"。这个回复本身没错，只是回答了一个没人问的问题。
+
+现在，端点在浏览器中打开时会自我介绍：它使用的协议、客户端应该连接的地址、stdio 桥接的配置片段、当前的构建版本，以及目前提供的每个工具。工具按 toolset 分组，并标注哪些工具只会描述它将执行的操作，并等待你确认后才执行。
+
+这份列表来自工具注册的实际结果，而不是另外手动维护的一份副本。因此，被 `read_only`、你的 toolsets 或生命周期开关排除的工具，不会被列为可以调用的工具。如果端点是在没有身份验证的情况下提供服务，页面也会明确说明。
+
+任何客户端都不受影响。页面只会在收到不带 session、并且明确要求 HTML 的 GET 请求时返回，这种请求来自浏览器，而不会来自 MCP 客户端。客户端自己发出的 GET 仍然会像以前一样打开事件流。
+
+## Usenet 播放会更快地用满连接配额 {#usenet-playback-fills-the-connection-allowance-sooner}
+
+Usenet 读取现在会先把播放头所在的文章放进账户调度器，然后再安排所请求范围的其余部分。当一个大范围被分到多个流水线连接上时，连续的文章会轮流分配到各个连接，而不是第一个连接拿前四篇、第二个连接拿接下来的四篇，依此类推。这样，最先需要的文章就能在第一轮连接中返回，而不用排在后面的字节后面等待。
+
+小文章的压缩包帖子会获得一个至少覆盖 64 MiB 的预读窗口；带有数 MB 大文章的新式帖子则保持原有的窗口。文章数量增加并不会增加内存占用：推测性加载的正文限制为两个读取器和 `cache_size_mb` 的一半（默认为 256 MiB），而文章缓存仍保持原有的硬性上限。播放所需大小的请求从 64 MiB 而不是 128 MiB 开始，因此 90 MiB 的播放器缓冲不再落入寻址/探测路径；小幅跳转仍然会走这条路径。
+
+卡住的流水线批次最多可以同时对五篇不同的文章发起对冲请求。每个账户每分钟二十次 second asks 的限制保持不变，预读、修复以及其他没有客户端在等待的工作仍然永远不会被对冲。
+
+打开多卷压缩包的速度也更快了。当 PAR2 已经提供了每个分卷的精确长度时，某个分卷经过校验的 yEnc 头部可以为一大组同级分卷提供通用的文章步长。每个同级分卷在提供第一个字节之前，都会根据自己的头部校验这一推断，因此解析时不再为每个分卷串行地读取一篇文章，同时也不会在数据上信任推断出的几何结构。文件名恢复同样改为从 yEnc 头部获取答案，而不必等待该文章的其余部分下载完成。
+
+## 保存的 .strm 文件会跟随 Base URL 的更改 {#saved-strm-files-follow-a-base-url-change}
+
+Changing Base URL left every `.strm` already in `strm/` pointing at the old address, and restarting did not help, because zurg only ever wrote the files that were missing. Now a `.strm` whose URL differs from the one zurg would write is rewritten in place. That happens at every start, and straight away when Base URL is changed on the dashboard or `save_strm_files` is switched on there. Files that are already right are left alone, so a media server does not re-read the whole folder on every scan.
+
+Jellyfin keeps the URL it read from a `.strm` and picks up the new one at its next library scan. A `.strm` still holding an account link from an older build is rewritten too, to the form that fails over between accounts and survives repairs. A `.strm` edited by hand inside `strm/` is overwritten, so point Base URL at the address you want instead.
+
+## 开启 Plex 监视列表不再将其清空 {#turning-the-plex-watchlist-on-no-longer-empties-it}
+
+启用观看列表之前，它会把你的整个列表当作待处理积压来读取，然后逐个处理，每处理一个就从列表里删除一个。第一次运行时，一个 163 项的列表在大约四分钟内就被删掉了 121 个标题。Plex 不会保留被移除的观看列表条目的记录，所以唯一的恢复办法是事先拍下的快照。而且配置和日志里都没有提示这件事即将发生。
+
+现在有两个设置决定获取操作会对列表做什么。这些设置由你来控制，而不是 zurg。
+
+**`watchlist.only_new_items`** 默认开启。现在一打开观看列表，zurg 就开始监视它。列表里已有的内容会被视为已处理，之后你新添加的内容才会被获取。这个设置只在第一次运行时生效一次，并且永远不会覆盖已经存在的队列。所以一直在处理观看列表的安装会照常继续，不受影响。
+
+**`watchlist.remove_after_grab`** 默认开启，这也是该功能一直以来的行为，所以除非你主动更改，否则你这边不会有任何变化。如果你想让观看列表保持为观看列表，就把它关掉。这样它仍然是你用来浏览、决定看什么的列表，zurg 会在后台满足它，而不会去编辑它。留在列表里的标题重新检查也不花费什么，因为记录已经覆盖了它，不会再去询问任何索引器。
+
+这两个设置都在配置页面里，并且都会在下一次重启时生效。你在 `acquisition.sources` 下明确列出的获取源，可以为每个源单独设置它们。对 Seerr 源来说它们没有意义，因为 Seerr 源不拥有 zurg 写入的任何列表。
+
+## 监视列表和 Seerr 请求会等待新闻服务器后再清除 {#watchlist-and-seerr-requests-wait-for-the-news-servers-before-they-are-cleared}
+
+以前，只要 NZB 到达监视目录，一次抓取就算完成了。索引器有了回应，回应被解析成 NZB，文件也写了出来。这三件事说明的都是索引器的情况，跟帖子本身一点关系都没有。随后，请求就凭这三件事被清掉了。对于 Plex 观看列表来说，这意味着条目被删除，而 Plex 不会保留被删条目的任何记录。于是，一个已经失效的帖子，在还没读到任何内容之前，就把你想要这部剧集的唯一记录抹掉了。在一次 163 项的观看列表运行中，有 121 个标题被移除，而它们背后的资源里，有 12 个无法读取。
+
+现在，每个获取到的资源都会先交给新闻服务器检查，然后才会确认。这和 08.28 nightly 版本以来 SABnzbd 端点已经在做的检查一样。结果有三种，它们各自分开处理。
+
+- **文章已经不存在。** 这次抓取不算数。标题保留在你的观看列表里，请求保持打开，并且该资源会被记为失效，这样下一次尝试会排到下一个候选，而不是一直卡在你库里已有的那个上。已知失效的资源不花任何代价，不会被下载，也不占用一次尝试所试的三个候选名额，因此排在最前面的一连串失效帖子会被直接跳过，而不是一直重试。如果发现整季包失效，它整季都会重新变回“待获取”状态，这样就会去抓单集。
+- **无法向服务器查询。** 比如连接池宕机、账号被限速，或者仅仅是库里还没列出新的 NZB。什么都没确定，所以也就什么都不做决定。请求会等待并再次检查，而且等待不消耗任何重试次数。如果某个资源大约两小时后仍无法检查，它会像失效资源一样被搁置，轮到下一个资源。绝不会在无人能检查的资源上清除标题。
+- **资源确实存在。** 与之前完全一样。
+
+没有 Usenet 账户的安装什么都查不了，因此不受影响。
+
+## 在速度较慢的新闻服务器上检查大型资源不再超时 {#checking-a-big-release-no-longer-runs-out-of-time-on-a-slow-news-server}
+
+在 zurg 把抓取标记为完成之前，它会向新闻服务器询问其中每个文件的情况。以前它是一次只问一个文件。有些账号的服务器回应很慢，而且严格按顺序一个个来，所以把问题全部丢到同一条连接上也快不了多少。有个服务商的服务器每个文件要花五秒多，这样一个 133 个分卷的 4K 发布光是问问题就要大约十二分钟，而每次检查只给五分钟。检查根本没法完成，于是 Sonarr 和 Radarr 等了三个小时，然后才看到抓取失败，观看列表也就一直干等下去。
+
+现在会同时询问好几个文件，用上账号允许的所有连接，只留一条给播放用。所以账号允许的连接越多，大型发布的检查就越快。拿同一个 133 个分卷、以前根本查不完的发布来测：用 12 条连接，不到两分钟就能查完。用 4 条连接的话，还是会超时，因为拖慢速度的是这些询问本身。小型发布的速度则和以前一样。
+
+如果某个发布的检查没能在时限内完成，现在不会再卡住整个标题。观看列表会像处理失效的发布那样把它搁置，然后去试下一个发布。SABnzbd 接口则和以前一样，把它报告为失败，于是 Sonarr 和 Radarr 会去找别的资源。
+
+## TorBox 上仅缓存的抓取不再下载本应跳过的资源 {#cached-only-grabs-on-torbox-no-longer-download-the-releases-they-were-meant-to-skip}
+
+TorBox 有一个标志，能让添加操作拒绝任何它本身没有的内容。这个标志在他们的
+API 里有，但文档里完全没写，而 zurg 之前也没用它：仅限缓存的抓取会先把种子添加进去，
+等着看它能否完成，结果发现是真正的下载，又把它删掉。这样一来，账户每小时 60 次的添加额度
+就被占掉一次，还占用了一个传输槽位，并且拉取了 *arr 早已通知跳过的那个版本的数据。
+
+仅限缓存的抓取现在会直接请求内容，如果 TorBox 没有，会在一秒内被拒绝，账户上不会留下任何东西。
+未命中仍然会消耗一次每小时 60 次的添加额度，所以 zurg 还是像以前一样控制添加的节奏。
+命中的情况依然会做检查，而不是直接相信：TorBox 的缓存可能会说有这个内容，但之后却无法提供，
+所以 zurg 必须等这个版本下载完成，才会报告成功。
+
+## Debrid-Link 上仅缓存的抓取不再消耗每日添加配额 {#cached-only-grabs-on-debrid-link-no-longer-spend-the-daily-add-allowance}
+
+Debrid-Link 接受纯 info hash 和 magnet 链接，而且只有在服务端已经有该内容时才会添加这个 hash。zurg 之前发送的是 magnet，这相当于让服务端去抓取：每次仅缓存模式下的未命中都会被接受，并占用账户每天 50 次未缓存添加额度中的一次和 20 个转存任务槽中的一个，然后再被删除以收回额度。一旦累计 50 次未命中，账户当天就无法再添加任何内容，直到每日重置。
+
+现在，仅缓存模式下的抓取会发送 hash。未命中会在大约十分之一秒内直接被拒绝，且不会影响账户，因此 *arr 可以逐个尝试一长串 release 列表，而不会在那些没人缓存的条目上消耗任何额度。对于以 .torrent 文件形式到达的抓取同样适用：.torrent 文件的作用是让服务免去纯 hash 必然需要的元数据查询，而缓存查询根本用不到这些，所以这里也直接发送 hash。
+
+## Debrid-Link 速率限制锁定后会重新退避 {#debrid-link-rate-limit-lockouts-are-backed-off-from-again}
+
+Debrid-Link 会在每个端点上触发为期一小时的锁定，此时返回 HTTP 503，并在响应体中说明原因。zurg 以前把所有 503 都当作服务暂时宕机，所以从来不去读取原因，还会一直重试一个已经告诉它要等一个小时的端点。现在 zurg 能识别这种锁定，会在锁定解除之前一直避开该端点。
+
+## `__magic__` 现在会在 `__magic__/__all__` 下镜像你的库，其根目录由你自行管理 {#__magic__-now-mirrors-your-library-at-__magic____all__-leaving-its-root-to-you}
+
+这个命名空间以前会在自己的根目录下镜像 `__all__`，结果下载客户端导入的文件夹，和每个版本本来所在的文件夹是同一个。Sonarr 或 Radarr 的根文件夹必须嵌套放在下载文件夹*里面*，才能避开这种结构触发的两项健康检查。而把手动导入指向下载文件夹时，会遍历整个库去找某一个版本。
+
+镜像现在往下移了一级。`__magic__/__all__` 就是 `__all__` 列出的那个库，也是 `sabnzbd.complete_dir` 和 `qbittorrent.save_path` 现在计算出的路径。`__magic__` 的根目录归你自己用，放你为 \*arrs 指定的 `tv`、`movies` 和 `anime` 文件夹。两者是同级关系，互不包含，所以两个客户端都不会报警。
+
+**这会改变路径。** 如果你手动设置了 `sabnzbd.complete_dir` 或 `qbittorrent.save_path`（也就是容器挂载的情况），请在末尾加上 `/__all__`。如果你之前把 Plex 或 Jellyfin 的媒体库指向的是 `__magic__` 本身，而不是其中的某个文件夹，那么它的路径会下移一级。请改为指向 `__magic__/__all__`，或者你导入内容时用的那个文件夹。你的根文件夹不会变，表中存的内容也不会变：放置记录是你自己建的文件夹下的路径，墓碑按版本本身索引，所以现有的布局保持不变。升级时正在进行中的抓取仍然带着旧路径，需要重新抓取。
+
+无法向 `__magic__/__all__` 写入任何内容。那里如果出现一行记录，就等于一个已经有地址的版本多了第二个地址，所以以它为目标的 MOVE、MKCOL 或 DELETE 都会被拒绝。在版本文件夹*内部*写入不受影响，这也是 \*arr 把导入文件旁边的 .nfo 放的地方。
+
+## 导出日志现在会告诉你链接去了哪里以及有效期多久 {#export-logs-now-tells-you-where-your-links-went-and-how-long-they-last}
+
+“Export Logs”会依次尝试几个粘贴站点，然后把第一个接收文件的站点的链接交给你。它从来没说明是哪一个，而且这些站点并不能互换。首选站点会保留粘贴内容 180 天，每次有人读取都会续期；备用站点只保留 3 天。两个链接看起来一模一样，结果一份在周五提交的报告，到周一两个链接都失效了，却没有任何解释。现在链接会附上保存它的站点，以及随之而来的截止时间。
+
+你之所以总是落到备用站点上，是原因的另一半。首选站点会屏蔽短时间内连续上传几次的地址，而每点一次导出会发布两个文件，于是一批错误报告就让这个地址被拒之门外。此后，这台机器发出的每个请求都会被拒绝，连读取它之前已存好的粘贴内容也不例外。zurg 之后的每次导出都会把两半文件都塞进这个被拒的地址，并把每一次都记录成上传失败，这让人去怀疑文件，而不是地址。现在，被某个站点拒绝的机器会在该站点上被暂停一天，日志也会写明发生了这件事。
+
+## 上传调试信息不再公开你的索引器和下载客户端密钥 {#uploading-debug-info-no-longer-publishes-your-indexer-and-download-client-keys}
+
+导出日志（Export Logs）在把配置发送到粘贴站点之前，会先脱敏它找到的所有凭据。但之前它只检查了最外层。嵌套配置块里的密钥是明文发出去的，包括：你的 Newznab 索引器 API 密钥（Stremio 和 watchlist 两个列表里的都有）、Stremio 插件令牌、SABnzbd 和 qBittorrent 的 API 密钥、zrok 账户令牌，以及 Plex 扫描令牌。索引器密钥最要紧，因为它们关系到你的 Usenet 账户，而不只是 zurg 的。
+
+现在这些都已脱敏。网盘服务商令牌和新闻服务器密码之前就没有受到影响。
+
+## zurg 可以由 AI 智能体驱动 {#zurg-can-be-driven-by-an-ai-agent}
+
+这是一个新的端点 `/mcp`，支持 Model Context Protocol（MCP）。Claude 之类的客户端可以通过它搜索资料库、找出某个资源为什么无法播放，并进行修复。它使用类型化的工具，而不是去读取仪表盘的 HTML。
+
+默认情况下它是关闭的。把 `mcp: {enabled: true}` 设置上，然后让客户端指向 `http://your-zurg:9999/mcp`，用户名和密码与仪表盘相同即可。只支持 stdio 的客户端使用 `zurg mcp`，它会连接到已经在运行的实例，而不会再启动一个新的。
+
+除了工具，它还把 zurg 自己的文档和实时状态作为客户端可以直接读取的资源提供，并提供六个提示词，用于那些值得严格照做的流程，比如诊断无法播放的资源、安全地准备 Plex 扫描，以及整理修复已经放弃的内容。
+
+它清楚哪些事情不能悄悄去做。任何会删除或移除东西的操作，都会先说明它打算做什么，只有在你确认这份具体计划之后才会执行。`read_only: true` 会隐藏所有会做出更改的工具。能让 zurg 或挂载点停止运行的工具，则放在各自独立的开关后面。任何结果都不会包含令牌、密码或解析后的链接。
+
+参见 [MCP 服务器](mcp.md)。
+
+## zurg 会提示你的构建版本已过期 {#zurg-says-when-your-build-is-out-of-date}
+
+直到现在,zurg 从来不会告诉你当前构建有多旧。这就是为什么 8 月修好的一个缺陷,在 9 月的 bug 报告里出现时,修复其实已经过去三周了,而讨论串里也没人有理由去怀疑这一点。现在 zurg 每天会向公共仓库询问最新发布版本。如果你的构建早于它,就会输出一行信息,写明该版本名称、发布日期以及你的构建日期。
+
+其余时间它都很安静:你已是最新版本时不输出任何内容,GitHub 无法访问时也不输出任何内容。至于不知道自己构建于何时的构建(也就是 Docker 镜像),它不会去猜。
+
+使用 nightly 版本的赞助者,版本始终领先于最近的公开发布版,因此完全不会看到这条提示。
+
+结果会缓存一天,因此重启不会额外发出请求;如果请求被拒绝,要到第二天才会重试。整个功能可以通过 `disable_update_check: true` 关闭。
+
+## 已归档资源中的失效链接不会再在每次扫描中被判定为健康 {#a-dead-link-inside-an-archived-release-stops-being-declared-healthy-every-sweep}
+
+当一个发布资源只以单个压缩包的形式提供，而修复无法再缩小重新添加的范围时，zurg 会检查这个压缩包本身是否还能正常读取。如果能读，它就会解除该资源上的损坏标记，而不是判定它失效。结果所有标记都被解除了，包括那些账户通过各自独立链接直接提供的文件上的标记。一个已验证的压缩包链接只能证明压缩包能读，对这些文件什么也证明不了。于是，账户已经停止提供链接的文件，因为一次无关的读取成功，又被改回健康状态。下一次扫描对它执行 unrestrict，发现它又失效了，资源再次被判定为失效。而那次判定之后的这一轮处理，最后又把它恢复了。
+
+在一个有 64 个文件、其中 9 个链接已被账户停止提供的发布资源上，这个循环一周内跑了 111 次，其中有两次发生在同一个 40 秒内，每轮处理会添加两个 magnet。
+
+现在，豁免只针对压缩包实际提供的文件，也就是那些没有自己链接的文件。账户直接提供链接的文件，保留它自己链接所得出的判定，并进入修复流程。只有修复流程能为它重新生成一个可用的链接。
+
+## 只部分到达的下载不再永久停留在队列中 {#downloads-that-only-partly-arrive-no-longer-sit-in-the-queue-for-ever}
+
+当一个资源的部分文件无法读取时，zurg 会把它的下载保留在队列里，等待它永远不会获得的精确文件大小。而检查这个问题的步骤，只有在这些大小到达后才会运行。Sonarr 和 Radarr 会把这样的下载显示为 0%，剩余时间为空，只要 zurg 一直在运行，就一直这样显示。它们也从不会把该资源加入黑名单，或去搜索其他资源。
+
+zurg 现在会在某个资源等待满三十分钟后，向新闻服务器查询它。如果其文章已经不存在，或者根本无法向服务器查询，zurg 就会报告该下载失败。大小仍在路上的资源不受影响，依然会被暂时搁置，直到大小到达。
+
+## 某个账户放弃的资源可以用另一个账户修复 {#a-release-one-account-gave-up-on-can-be-repaired-from-another}
+
+debrid 服务各自维护独立的缓存。Real-Debrid 清除了的资源，或者因为文件名而拒绝的资源，在 AllDebrid 上可能正以相同的 hash 缓存着。在此之前，zurg 无法利用这一点。修复时总是把资源重新添加到它来自的那个账户里，所以一旦该账户放弃了，就没有其他可尝试的了，资源会在你的媒体库里一直处于失效状态，而另一个你已经付费的账户其实正持有它。
+
+现在，所有持有该资源的账户都放弃了的资源，会被提供给你的其他账户。第一个已经拥有它的账户会接收它，资源会同时挂在两个账户下，像任何由两个账户持有的资源一样，在两者之间自动切换。无需开启任何设置：只要你配置了第二个账户并启用了修复，当修复用尽其他选择时，就会执行这一步。
+
+账户只会收到它已经持有的内容。如果它需要去获取这个资源，添加操作就会被撤回并再次删除，因此不会下载任何东西，也不会消耗传输配额。对于回答“否”的账户，会在一天后再次询问，然后是两天后、四天后，最长约两周。这样，一个已经彻底失效的资源，持续询问也不会造成任何开销。
+
+## 仅缓存的抓取由你的账户判断，而不是通过缓存查询 {#cached-only-grabs-are-judged-by-your-account-not-by-a-cache-lookup}
+
+在仅缓存模式下，zurg 以前会去问 TorBox、Premiumize 和 Offcloud 某个版本是否在它们的缓存里，然后把这个答案原样交给 Sonarr。但这些接口回答的是另一个问题。它们说的是内容在服务的缓存中，而不是你的账户最终会拿到它，而且之后也没有人去检查种子。一个"有"变成了真正的下载，结果 Sonarr 收到的就是刚刚承诺过的即时抓取，而这正是仅缓存模式要防止的事。
+
+现在每个账户都用同样的方式判断。先添加种子，再监控实例，只有在时间窗口内完成的才算缓存。其他情况都会被删除，抓取被拒绝，这样 Sonarr 就会继续尝试列表里的下一个版本。代价是，在这三个服务上未命中时现在会占用一个添加名额，而以前的缓存查询是不占用的。
+
+## AllDebrid 的备用密钥不再能访问你的库 {#an-alldebrid-backup-key-no-longer-answers-for-your-library}
+
+`download_tokens` 是 AllDebrid 账户上的独立 AllDebrid 账户，它们只为提供下载额度而存在。当账户自己的密钥达到上限并退出轮换后，其他所有调用都会转到备用密钥上：磁力列表、某个资源的文件列表、添加、删除、重启、`__downloads__` 背后保存的链接，以及变更检测探测。这样一来，库刷新可能会列出备用账户的磁力，并把它们当成你自己的收录；删除请求也可能发到从未持有该磁力的账户上，返回结果却像是它已经被删除了一样。更糟的是，所有密钥都达到上限后，整个目录会完全失效，而这只是对流量的一个限制。现在只有解锁链接时才会轮换密钥。所有与你账户相关的操作，都只会询问你自己的账户。
+
+## 健康的资源不再在损坏列表中反复出现和消失 {#a-healthy-release-stops-flapping-in-and-out-of-the-broken-list}
+
+一个发布项的账户一直提供同一个失效链接，它可能每小时有一半时间停留在仪表盘的 Broken 列表里，而其中每个文件其实都能正常播放。修复程序会在某个链接连续三个周期都返回 `hoster_unavailable` 后将其丢弃，以便为该发布项重新分配链接。它还会记住这次丢弃，这样下一次列表刷新就不会再把这个失效链接拿回来。
+
+但这份记录随后被错误的操作清除了：任何修复成功结束的过程都会清除它，包括那些什么新链接都没生成、只是确认条目现有寻址仍然可用的过程。"提供该内容的压缩包仍可读取"是最极端的情况。它只能证明为该发布项提供服务的那个链接可用，对账户曾经拒绝过的链接却毫无说明。
+
+结果，放弃记录被忘掉了，下一次刷新又采用了同一个失效链接，修复程序无法再次为其分配链接，于是再次判定该条目失效。这个循环每三十分钟一轮，而且永远无法结束。
+
+在一个正式使用的库上连续三天的统计显示：某个发布项被重复判定失效 129 次，整个库一周内共 556 次判定失效，每个周期都要花费两到四次磁力添加。
+
+现在只有真正为发布项重新分配了链接的修复，才会清除放弃记录。手动修复仍会清除所有放弃记录，因此管理员可以手动把链接重新交还给该发布项。
+
+## 单个压缩包形式发布的资源不再在每次扫描时被标记为损坏 {#a-release-served-as-one-archive-is-no-longer-marked-broken-every-sweep}
+
+有些资源是以单个压缩包的形式提供的。这个 `.rar` 带着账户唯一的一个链接，压缩包里的每一集都作为独立文件列出，但没有任何链接。修复扫描仍然会就这些内部文件去询问账户。其实没有可用于查询的东西，因此没有咨询任何账户，也没有做任何检测，但结果依然是"file is broken"。扫描把这个结果写到每个文件上，并以此判定整个资源损坏。接下来的过程浪费了两次磁力添加：账户只被询问了损坏的文件，却返回了它一直持有的同一个单一压缩包链接，然后归档回退机制验证了这个链接，并把刚刚被判定损坏的每个文件都恢复了。在一个真实运行的库中测量到：一个 4.9 GB 压缩包的 44 集，每半小时就经历一次这样的循环。现在，没有任何账户持有链接的文件会被保留不动。压缩包本身的文件判定方式和以前完全一样：当真正提供该资源的链接无法解析时，该文件会被标记为损坏，资源也随之损坏。
+
+## 流量会在账户的额度重置后回到你自己账户的 token 上 {#traffic-goes-back-to-your-own-accounts-token-once-its-allowance-resets}
+
+使用完每日额度的 Real-Debrid 账户，会把流量切换到 `download_tokens` 中第一个还有额度的令牌上。监控进程一旦发现账户自己的令牌恢复可用，就会把它重新放回轮换中。
+令牌恢复了，流量却没有切回来。轮换会从上次停下的位置继续，并且只检查那一个令牌是否达到上限，所以备用账户会一直承担剩下的全部流量，而主账户的计数器其实已经归零了。
+现在，`download_tokens` 的顺序只是一种优先级，而不再是需要逐个遍历的位置。谁排在最前面并且能够提供服务，谁就来提供服务。因此，主账户的计数器一重置，流量会在一分钟内切回主账户。
+
+## 指向错误地址的 rclone 远程现在会明确提示 {#an-rclone-remote-pointed-at-the-wrong-address-now-says-so}
+
+如果 rclone WebDAV remote 的 url 结尾缺少 `/dav/`，每次列目录都会失败，报错 "couldn't list files: 405 Method Not Allowed"，而且没有任何地方说明原因。浏览器访问 dashboard 一切正常，所以 zurg 看起来是健康的；而 zurg 自己的日志对那个每隔几秒就失败一次的客户端毫无提示。现在，zurg 对于不在 `/dav/` 下的 WebDAV 请求，会返回应当使用的正确地址，rclone 会把它作为自身报错的一部分打印出来；同时还会写入一条警告，指出是哪个客户端发出的请求。
+
+## Windows 安装版现在又能发送媒体服务器扫描通知了 {#windows-installs-now-send-media-server-scans-again}
+
+当 `mount_path` 为 `Z:`（也就是 `zurg setup` 在 Windows 上写入的值）时，扫描路径是相对于该盘符的当前目录计算的，而不是相对于根目录。结果每个路径都对不上它所属的媒体库分区，所以一次扫描请求都没有发出去。随后出现的警告让你去检查一个本来就是正确的 `mount_path`。现有配置不需要改动。
+
+## 批量扫描每个库只读取一次 Plex 库，而不是每个种子读取一次 {#bulk-scan-reads-the-plex-library-once-instead-of-once-per-torrent}
+
+在仪表盘批量扫描之后进行匹配时，每个种子都会重新读取整个 Plex 媒体库。因此，扫描一个大型媒体库时，会对通常正忙于扫描的 Plex 服务器发出数百次完全相同的整库请求。
+
+## Windows 下的库路径不区分大小写也能匹配 {#windows-library-paths-match-regardless-of-case}
+
+记录为 `Z:\Movies` 的 Plex、Jellyfin 或 Emby 媒体库，不会再漏掉 zurg 根据自身目录名构建的 `Z:\movies`。
+NTFS 不区分大小写，因此这两个路径指向同一个目录；此前如果精确匹配，扫描会被丢弃，并报告 mount_path 有误。
+
+## 停止提供服务的文件不再卡住 Plex 扫描 {#a-file-that-stops-serving-no-longer-stalls-a-plex-scan}
+
+破损的文件仍然保留在目录列表中，在有东西解除这个判定之前，读取请求一直返回 `503 File temporarily unavailable (being repaired)`，如果正在修复，就一直等到修复结束。Plex 遇到 503 会阻塞，所以一个这样的文件就能卡住整个库的扫描；如果库里有很多这样的文件，扫描就永远完不成。Jellyfin 则会直接跳过它们，看起来一切正常。
+
+这是两个独立的决定，现在也有了各自的答案。这个条目仍然会保留在列表中，只要它有可能恢复，因为对媒体扫描器来说，条目从文件夹里消失就等于被删除，相关内容会被移入回收站。这一点没有任何变化。改变的是读取的响应：文件停止提供服务后的一分钟内返回 503，之后返回 404。选择一分钟是因为客户端能用得上：rclone 会重试 503，并大约在这个时间点放弃读取。所以短暂的故障仍然会被吸收，读取依然能成功；超过这个时间，503 本来就已经导致读取失败，还会拖慢后面的每一次扫描。
+
+我们在一个真实的 Plex 上做了测试，库里有 15 部电影，其中 10 个文件被拒绝访问，但所有文件仍然列在目录中。返回 404 的读取在 5 秒内完成了扫描；而一直不解除的 503 在运行被中断时（10 分钟后）只找到了 15 个中的 3 个。
+
+## 新的 SABnzbd 任务不再等待整个库的大小检查完成 {#new-sabnzbd-jobs-no-longer-wait-behind-a-full-librarys-size-checks}
+
+当 zurg 在拥有大量 Usenet 库的情况下重启时，它会为每个版本排队一次大小检查，还会忘记哪些失败的检查仍处于一小时的重试延迟之中。这样一来，刚抓取的版本可能要排在数千个后台检查之后，而 Sonarr 或 Radarr 只能干等着它的精确文件大小。现在，大小检查使用固定的工作队列；带有等待中 SABnzbd 任务的版本会被移到最前面；已完成的检查和重试延迟在重启后也会保留在 `data/nzb-sizes/` 中。只要有工作在排队，zurg 每分钟会报告一次等待、客户端优先和运行中的数量。
+
+## 客户端一直不清除的下载不再阻止新下载被导入 {#downloads-a-client-never-clears-no-longer-stop-new-ones-from-being-imported}
+
+zurg 会向 Sonarr、Radarr 和其他下载客户端展示一个已完成下载的页面，并且会一直把每个下载保留在页面上，直到客户端将其移除。客户端只会移除已导入或已失败的内容，因此如果某个导入被阻止（例如无法匹配的标题），它就会永久留在页面上。页面被这些条目占满后，每个新完成的下载都只能在队列中等待，永远无法导入。现在，如果某个下载在页面上停留超过十分钟仍未被移除，它就会让出位置给正在等待的下载，这与 SABnzbd 在新记录到来时把较旧的记录从历史页面挤掉的方式相同。页面有空位时不会有任何变化，而重新抓取某个版本会为它分配一个独立的位置。
+
+## 按 id 查找的下载在完成后立即就能找到 {#a-download-looked-up-by-its-id-is-found-as-soon-as-it-finishes}
+
+像 LazyLibrarian 这样按 id 逐个向 zurg 查询单个下载的工具，现在一旦下载完成就会立刻被告知已完成，即使 Sonarr 和 Radarr 读取的已完成下载页面已经满了也一样。以前，这类下载要等页面腾出位置，对它们来说才可能不再显示为未完成。
+
+## Season fix 现在在仪表盘中有专门页面 {#season-fix-has-a-page-in-the-dashboard}
+
+`/season-fix/` 页面说明了这个批量重命名功能的作用。它会把字幕组编号的剧集文件改成 Plex 能识别的名称。这个功能从发布以来，只能通过两个 HTTP 接口调用：`/torrents/season-fix/plan` 和 `/torrents/season-fix/apply`。仪表盘里没有任何入口，命名参考文档里也只有一段话提到它。找不到的功能等于不存在。前不久还有人在愿望清单频道里提出这个需求，他们完全不知道这个功能其实已经做好了。
+
+这个页面会展示修正后的规范格式，并与它所替换的字幕组名称做对比。它也会说明季的结构从哪里来：来自 Plex 自己的元数据提供方，而不是本地资料库。毕竟，被修复的正是那个季已经被合并的资料库。页面还会列出映射器不会处理的内容以及原因。如果扫描结果几乎是空的，那是保守策略在起作用，不是故障。
+
+扫描需要手动点击按钮开始。规划时会遍历每个种子，并针对每个匹配到的剧集向 Plex 查询，所以打开页面不会自动启动扫描。结果按剧集分组，每个重命名都会显示从旧名到新名的对照。被跳过的文件收在可展开的区域里。被标记为可能匹配错剧集的条目默认不勾选，并且在确认时会再次提示。这样即使一次性全部应用，也不会悄悄重命名那些可能匹配到错误剧集的版本。
+
+## 播放被拆分成多个分卷的压缩资源 {#play-a-compressed-release-that-is-split-across-several-volumes}
+
+在这个版本里，一个以压缩方式打包（而不是整体存储）的发布，会在第一个分卷结束时停止。里面的每个文件都能正确列出名称和大小，但就是无法播放，日志里还会出现 bad header CRC。现在 zurg 会在每个分卷的衔接处继续解包，所以这类发布可以从头到尾正常播放。
+
+## 账户中有失败种子时也能快速启动 {#start-up-quickly-when-your-account-holds-failed-torrents}
+
+每次刷新媒体库时，zurg 都会逐个重新检查调试服务标记为失败的每个种子，而该服务每秒只允许少量此类请求。如果账户里有几百个这样的种子，仅这一步每次刷新就要花一分多钟，而且每次启动后，媒体库在这段时间内都无法读取。这段时间足够让 Plex 扫描一个尚未就绪的文件夹，并把其中的所有内容标记为不可用。现在，zurg 会从磁盘读取它已经掌握的失败种子信息，只有当服务表明该种子不再失败时，才会再次向服务查询。
+
+## 不再重复询问 AllDebrid 已经拒绝重试的磁力链接 {#stop-re-asking-alldebrid-about-magnets-it-has-already-refused-to-retry}
+
+当磁力链接失败时，zurg 会让 AllDebrid 重新获取它。AllDebrid 会拒绝其中一些请求，而这类拒绝并没有计入每个种子两次的尝试次数，因此只要 zurg 在运行，同一个磁力链接就会在每次库刷新时被反复询问。现在，这个回答会被记住一小时，并且会记住账户给出的状态，因此磁力链接发生变化时会重新询问。尝试次数也会写入磁盘，而不是每次重启都被遗忘、重新消耗。
+
+## 账户中同时持有两份的资源，链接保持稳定 {#keep-the-link-steady-for-a-release-your-account-holds-twice}
+
+A 同一个版本被添加到同一个账户两次时，账户里每一项都会有两份，包括每个文件的两个下载链接。zurg 每个账户只保留一个链接，所以每次刷新时，每份副本都会把另一份的链接替换掉，这个条目永远无法稳定下来。虽然没有任何内容无法播放，但日志里充斥着重新指向的记录，库每隔几秒就会被重新写入磁盘。现在，当 zurg 只能看到账户所持内容的一部分时，它会保留原有链接，不再去修改。
+
+## 账户中有失败种子时，TorBox 的变更检查更快 {#faster-change-checks-on-torbox-when-the-account-holds-failed-torrents}
+
+TorBox 没有提供查询账户是否有变化的接口,所以 zurg 会读取最新种子的一小页,并盯着那些尚未完成的种子。TorBox 标记为失败的种子永远不会完成,因此只要有一个旧的失败种子,之后每次检查都会读取一页大得多的数据,而且这种情况会一直持续到账户生命周期结束。现在,失败的种子不再被监控,因为它们不可能再有进展。
+
+## 你的 *arr 无法导入的资源不再因为这次尝试而被删除 {#a-release-your-arr-could-not-import-is-no-longer-deleted-by-the-attempt}
+
+当 zurg 因为无法从新闻服务器读取而拒绝把某个版本移出 Usenet 暂存文件夹时，Sonarr 和 Radarr 并不会直接放弃。.NET 在移动失败时会先复制文件，然后删除原文件，而 zurg 之前会照常执行这个删除，结果版本不见了，导入的位置还留下一个空文件。现在，拒绝移动之后紧接着的删除也会因为同样的原因被拒绝，版本会保留在原处。
+
+## Usenet 读取能区分慢速批次和停滞批次 {#usenet-reads-tell-a-slow-batch-from-a-stalled-one}
+
+zurg 会在某篇文章等待太久时，向第二个 Usenet 连接请求该文章，并采用先到达的那个结果。过去判断等待是否太久靠的是计时器，结果在一个快速账号上，一批普通的大文章在第一篇还没传完时就被重复请求了两次。
+
+现在这个判断改为根据线路上实际收到的数据来做。Usenet 连接本来每次收到数据时就会刷新自己的超时计时，读取端也能看到这个证据。一批文章只要正在传输某篇大文章的中途，无论这篇文章要花多久，都不会被打扰。只有数据停止传输的批次，才会转向其他连接去请求。
+
+如果某个连接领取了一批文章，却一篇都没有回应，zurg 会一次性向另一个连接请求该批剩余的全部文章，而不是逐篇单独查找缺失的文章。沉默的连接永远不会被断开，所以它之后到达的文章依然有效。只有始终没有到达的文章才会被重新请求，每个批次最多重新请求一次。离播放头最近的文章优先请求，并且始终保留一次备用的第二次请求，这样下一个停滞的读取也能为自己的文章发起请求。
+
+读取操作也不再把为第二次请求所等待的时间，当作自己的正常速度。它只记录 zurg 愿意等待的时间，不会多记。在每篇文章本来就需要一秒或更久的账号上，阈值现在会稳定在该账号实际能达到的速度附近，而不会降到最短设置，从而对大多数文章都重复请求两次。
+
+## Usenet 预读会跨文章和分卷保持窗口填满 {#usenet-read-ahead-keeps-its-window-full-across-articles-and-volumes}
+
+预读以前会在某篇较早的文章进度落后时停止请求新的字节，因此一篇慢文章会耗尽它已经建立好的窗口。现在 zurg 会始终保持一个有上限的已请求字节窗口在途，并且一批文章可以跨越两个已存储 RAR 分卷之间的衔接处，而不是在那里结束。
+
+该窗口最多占用你所配置 RAM 缓存的四分之一，并且绝不超过 128 MiB，因此缓存越小，窗口也越小。请求仍然保留各自的取消机制，以及各自账户的连接数和缓存限制。
+
+## 较旧的处理器上播放 Usenet 时 CPU 占用更低 {#usenet-playback-costs-less-cpu-on-older-processors}
+
+在读取缓存存储每条记录时，都会计算校验和。在支持 SSE4.1 但不支持 AVX 的 Intel 和 AMD 处理器上，SHA-256 完全没有硬件加速，播放时就能感觉到这部分开销。zurg 现在在这些处理器上改用更快的 256 位校验和。记录中带有版本号，因此数据损坏仍然能被检测到，已有的缓存依然可以读取，其他处理器则继续使用 SHA-256。
+
+## NZB 分享不再指回抓取它的账户 {#nzb-shares-no-longer-point-back-to-the-account-that-grabbed-them}
+
+一些索引站会在每个下载上打上能追溯到你账户的标记,其中一部分信息就留在了分享者保存的字段里。有的索引站会在发布标题里嵌入一个新的 token,常常还会放在密码里,并且每个文件的 poster、日期和 newsgroup 都会变。另一个会把你的账号编号放在某个文件 subject 的最前面。还有一个会在每个 poster 里加上账户标记。`zurg nzb-share` 现在会去掉 poster 和日期,让每个文件使用同一个固定的 newsgroup,删掉 subject 里的标记,并且不管 token 出现在哪里都会忽略它。当名称和标题不一致时,以名称为准。两个抓取了同一个发布的人,现在发布的会是同一个文件。分享也不再漏掉以 Latin-1 编码保存的 NZB,也不再把某些 subject 中带的反斜杠重复一倍。
+
+清理掉的内容见 [`zurg nzb-share`](cli.md#zurg-nzb-share)。
+
+## 本地库现在会在 AllDebrid、Premiumize 和 Offcloud 上添加哈希值 {#local-libraries-add-the-hash-on-alldebrid-premiumize-and-offcloud}
+
+本地库的清单如果没有可移植的链接,首次播放时会把哈希添加到你的账户中。从 TorBox 导出的清单始终是这种情况。AllDebrid 链接已过期的清单也是如此。在 AllDebrid、Premiumize 和 Offcloud 上,每次这样的播放都会失败,并提示 "provider did not report an active torrent allowance"。zurg 之前要求账户在添加前报告其种子槽位上限,但这三家都不会报告。现在 zurg 会像修复时那样,回退到声明的槽位数量。两者都没有时,它会直接添加哈希,由服务商在账户已满时拒绝。
+
+## Offcloud 文件会显示时长 {#offcloud-files-report-their-length}
+
+解析 Offcloud 文件时,文件长度没有被设置。本地资源库会把这个长度和它的清单(manifest)做比对,于是每次 Offcloud 播放都被拒绝,并显示 "resolved file size does not match the portable manifest"。普通播放也丢失了依赖长度的范围(range)处理。现在 zurg 会像 Offcloud 列表那样,向分发服务器询问文件长度。
+
+## zurg 可以在 Android 手机和 Google TV 上运行 {#zurg-runs-on-android-phones-and-google-tv}
+
+一款新的 Android 应用，把你的库直接托管在设备本机上。它能适配手机、平板，以及 Android TV 和 Google TV。应用需要 Android 8.0 或更高版本，使用 Usenet 则需要 64 位 Android。应用会引导你完成服务商账号和设备配置，然后启动库。你可以在应用里或 Android 的 Files 中浏览，并在你选择的外部播放器中播放，支持完整的拖动进度。所有界面都可以用电视遥控器操作。MediaInfo 在设备上直接运行，无需额外工具。库还可以通过密码保护，与本地网络中的其他设备共享。这个密码不会发送给任何播放器。
+
+APK 文件在赞助者的每日构建（nightly）版本页面上。应用本身不包含 zurg。登录 GitHub 后，应用会把 zurg 引擎作为第二个软件包安装。应用和引擎分别更新。Updates 会列出所有仍在发布的引擎版本，这样如果某个每日构建在你的设备上出现问题，你可以回退到之前能正常工作的版本。安装过第一个 Android 版本的用户，需要从 Updates 中安装一次引擎。服务商和库的设置会原样保留，不会受影响。
+
+针对 64 位 ARM 设备的引擎，现在通过 Android 自带的解析器查找服务商地址。第一个版本的引擎可能完全无法连接到任何服务商。
+
+设置和播放器说明请见 [Android](../guides/android.md)。
+
+## 新的 NZB 几秒内就会出现在库中 {#a-new-nzb-shows-up-in-the-library-within-seconds}
+
+一个 NZB 放进监视目录后，要等下一次定期检查才会被处理。混淆过的发布版本还要再等一个间隔，才能读到真实的文件名。默认间隔下，总共要多等 20 到 30 秒，这段时间里 Sonarr 或 Radarr 的抓取任务一直停留在 Queued。
+
+现在 zurg 会每秒自己检查一次监视目录。它不依赖文件系统事件，所以在 NAS 或容器里的表现和普通机器上一样。文件名一读完，发布版本就会立即列出。一个包含二十个发布版本的整季合集，仍然只需要列出一次。定期检查保留下来作为兜底，用来处理那些替换了已有名字的 NZB。
+
+## Usenet 流媒体保持速度稳定 {#usenet-streams-hold-their-speed}
+
+一个位于 RAR 分卷集里的文件，是一个分卷一个分卷地从新闻账户传过来的。zurg 会提前打开下一个分卷，这样切换时就不会从头冷启动。以前它只预热前 4 MB。遇到切得很碎的资源时，播放大约每一两秒就会碰到一个分卷边界，每到一处就卡一下。有一个这样的资源，流式播放速度只有 14 到 16 MB/s，而同一账户里的普通文件能跑到 86 到 99 MB/s。现在，一旦播放进度距离下一个分卷还剩 32 MiB 以内，就会把它预热一整个预读窗口的深度。刚刚进入的分卷会保留它已经获得的预读。没有任何播放进度靠近的分卷，仍然只预热开头。这样可以避免库扫描去拉取它永远不会读到的数据。
+
+稳定读取时，大约每 20 秒里有 1 秒会卡在某一篇慢速文章上，其他所有连接都得排在它后面等。现在，当等待时间变长时，zurg 会再向第二个连接请求这一篇文章，哪个先返回就用哪个。这只针对播放器正在等待的读取。预读和修复永远不会重复请求。每个账户每分钟最多额外发起 20 次这样的请求。
+
+现在在更多地方，播放器正在等待的读取会优先处理。预读不再占用账户最后一个空闲连接。启动时的大小估算也会留出一个空闲连接。读取会复用账户已经持有的连接，而不是另开新的。它会等待一个已经在建立中的连接，而不是再额外开一个。播放器卡住的那篇文章，可以插到排队中为后面字节准备的抓取任务前面。在一次测量中，读取的第一个字节从 354 ms 缩短到了 177 ms。预热、保活和读取现在也共用同一个连接上限。zurg 打开的连接数永远不会超过账户允许的数量。
+
+把解码后的文章写入磁盘缓存，不再卡住抓取它的那次读取。以前写入操作位于一把锁内，而其他所有读取都需要这把锁。现在，写入发生在字节送达播放器之后。如果一次突发的数据量超过缓存能跟上的上限，多出来的记录会被跳过，而不是拖慢播放。已有的缓存会原样保留。
+
+## Sonarr 和 Radarr 不再等待永远无法完成的抓取 {#sonarr-and-radarr-stop-waiting-on-grabs-that-can-never-finish}
+
+SABnzbd 接口之前会让部分任务一直停在排队状态。客户端既不会把它们加入黑名单，也不会去抓取其他版本。现在，下面每种情况都会被报告为 Failed，并附上原因。Failed 会让 Sonarr 和 Radarr 把该版本加入黑名单，然后重新搜索。
+
+抓取之后，版本可能会从库中消失。比如从仪表盘里被删除、从监视目录中被移走，或者所有账户都不再提供它。以前，这种任务会停在 0%，而且没有任何机制能让它继续往前走。现在，如果版本消失超过十五分钟，任务就会失败。服务重启后的前十五分钟内不会有任何任务失败，因为这段时间库还在加载。
+
+抓取有可能落在一个之前导入时已经被清空的版本上。比如升级时删除了已导入的文件，然后搜索又选中了同一个版本。以前 zurg 会回复 Completed，并把客户端指向一个已经空了的文件夹。现在，抓取一个已被清空的版本会立即失败。文件夹如果空置十五分钟，对应任务也会失败。这包括手动移动导致文件夹被清空，或者导入被归到其他任务下导致的情况。正在执行导入的那次抓取，在完成前仍会显示 Completed。
+
+有些版本永远无法通过文章检查。在 zurg 报告抓取完成之前，它会先向新闻服务器确认该版本的文章是否还在。以前，无法完成的检查会每分钟重试一次，而且没有上限。现在，如果连续三十次尝试跨度至少三小时，检查就会失败。如果某个新闻账户宕机一小时，也不会导致所有等待中的任务都被加入黑名单。一旦某次检查终于得到回应，失败计数就会重置。
+
+有些版本并不包含完整的压缩包。一组文件可能没有包含文件开头的分卷，可能缺少中间的某个分卷，也可能不是从第一个分卷开始的。以前，Sonarr 会被指向一个它永远无法导入的文件夹，并且会无限重试。现在，这次抓取会失败。这个结论只针对得出它时所用的那些具体分卷。之后如果进行 PAR2 修复、重新抓取，或者有第二个账户提供了缺失的分卷，该版本就会被重新检查。
+
+## 每日额度用完后，备用下载 token 接管 {#backup-download-tokens-take-over-when-the-daily-allowance-runs-out}
+
+当某个 token 用完当天的配额后，Real-Debrid 就会拒绝下载。zurg 本应把这个 token 停用，然后切换到 `download_tokens` 里的下一个条目。但在代理流媒体改用新的 HTTP 客户端之后，播放时这一步就失效了。拒绝响应被当成普通响应返回，没有任何东西把 token 标记为已用完。结果是所有备用 token 都闲置着，而每次读取都在反复消耗那个已达上限的 token。
+
+现在，zurg 在任何遇到拒绝的地方都能识别它。这包括播放，也包括刷新循环和修复功能。这两者都会检查链接，无论当时有没有在播放。即使拒绝响应没有带上 Real-Debrid 通常的响应头，token 同样会被停用。
+
+被停用的 token 每分钟测试一次，这样一旦配额恢复，它就能马上重新启用。以前这个测试用的是被停用 token 自己缓存的链接。token 停止服务后，这个缓存就再也不会更新，所以测试总是找不到可用的链接，token 只能一直停用，直到每晚的重置或重启。现在，测试会借用仍在服务的那个 token 的链接。
+
+每晚的重置晚了一天。Real-Debrid 在 CET 午夜过后几分钟重置配额。zurg 每次启动后会跳过第一个午夜，只在第二个午夜才重置。于是配额已用完的账户会多出一整天继续使用备用 token。此外，zurg 还根据主机自身的日期来计算午夜时刻。在欧洲以西的时区，这会导致重置时间变成 zurg 碰巧启动的那个时刻。现在，所有重置都按 CET 的日期来安排。
+
+## 磁力抓取会在网盘账户中保留其发布名称 {#a-magnet-grab-keeps-its-release-name-on-the-debrid-account}
+
+Sonarr 和 Radarr 会把索引器给出的完整 magnet 链接交给 qBittorrent 接口。以前 zurg 在添加前会把它截短，只保留 info hash，所以显示名和 tracker 都没能传到账户里。对于只提供 magnet 的索引器来说，显示名是发布名唯一存在的地方。结果，未缓存的种子会以 40 个字符的 hash 显示在账户列表里。对于没人做种的种子，这就是它唯一的名字。
+
+现在 magnet 会按客户端发送的原样传到账户。Repair、Plex 观看列表和便携库仍然只添加裸 hash，因为它们没有名字可以传递。
+
+## .strm 导出只包含播放器能打开的文件 {#the-strm-dump-holds-only-files-a-player-can-open}
+
+`save_strm_files` 以前会为发布资源中每个被选中的文件都写一个 .strm。字幕、海报、NFO 和 PAR2 分卷也都会变成一个点开什么都没有的媒体库条目。TorBox 和 AllDebrid 会把所有文件都标记为选中。带着修复文件放在视频旁边的 Usenet 帖子也是这样。现在只为识别出的视频和音频文件，以及 `addl_playable_extensions` 中列出的任何扩展名，生成 .strm。RAR 分卷集里的视频仍会写入，而它周围的分卷则不会。早期版本写入的条目会在下次遍历该发布资源时被删除。
+
+好几条写入路径还在 .strm 文件生成之前就通知媒体服务器扫描。Plex、Jellyfin 或 Emby 可能看到的是一个空文件夹，什么也索引不到。在发布资源发生变化之前，没有任何东西会让它再次查看。现在所有路径都会先写入文件，再通知媒体服务器。
+
+## 移动 zurg 文件夹后，挂载缓存不再丢失 {#moving-the-zurg-folder-no-longer-strands-the-mount-cache}
+
+rclone mount 会把读取过的内容保存在 `data/rclone-cache` 里。rclone 会根据自身的配置给这个缓存目录命名。配置里包含 zurg 的 `data/local` 文件夹的完整路径。移动 zurg 文件夹或修改 `union_writable`，都会让缓存得到一个新名字。旧的缓存目录会留在磁盘上，没有任何大小上限会计算它，也没有任何东西去清理它。只要几次移动，就可能留下好几 TB 的垃圾。
+
+现在，zurg 会在挂载启动时询问 rclone 当前正在使用哪个缓存目录，然后删除其他的目录。它会记录释放了多少空间。如果 `rclone_extra_args` 里设置了自己的 `--cache-dir`，zurg 就会跳过这次清理。如果你想保留旧的缓存目录，可以设置 `rclone_cache_reclaim: false`。
+
+另外，当前使用的缓存比大多数人想象的要大。它默认会增长到 256G，并且一直保持在这个大小。媒体服务器的夜间扫描会访问每个文件，所以 72 小时的过期限制几乎不会清除任何内容。规划时请以大小上限为准。关于如何调低它，请参阅[配置参考](config.md#disk-the-mount-uses)。
+
+## 海报和 .nfo 文件不再落入 `__magic__` {#posters-and-nfo-files-keep-landing-in-__magic__}
+
+通过 zurg 挂载点写入文件的客户端会把新文件放进 `data/local`。这正是 `__magic__` 存放 sidecar 的文件夹。zurg 会把这里的每个文件都计入 `sidecar_budget_mb`。几部由 \*arr 通过挂载点写入的视频就可能耗尽整个预算。之后的每个 .nfo 和海报都会被拒绝，就像目录已经满了一样。提高预算也从来没有用。
+
+大于 `sidecar_max_mb` 的文件不可能是通过 zurg 的 sidecar 路径进来的。这些文件不再计入预算。zurg 会在启动时把它们列出一次，因为它们仍然占用磁盘空间。
+
+删除一个已经不存在的 `__magic__` 路径现在会成功。挂载点可以从两侧删除共享的 sidecar，而不会破坏导入的清理流程。
+
+## 第一个资源过期后，Stremio 播放会尝试下一个资源 {#a-stremio-play-tries-the-next-release-when-the-first-has-aged-off}
+
+以前在 Stremio 里点一次播放，只会尝试一个版本。如果这个版本里没有可播放的内容，播放就会失败并返回 404。通常原因是这个帖子已经从新闻服务器上过期了。而流列表里其实可能还有十几个其他版本。
+
+现在，播放被拒绝时，会从同一个排序列表里再尝试最多两个版本。尝试从你所选行的下一行开始。所以备选版本的分辨率相同且体积更小，或者是低一档的版本。绝不会去选你跳过的更大的版本。如果某个版本仍在获取中，会像以前一样返回 503，再次点击播放就能拿到它。每次尝试都会消耗一次索引器抓取，并且会把该版本保留在库中。这次改动之前生成的播放链接，行为和以前一样。
+
+## Stremio 列表会显示所有分辨率，并列出不同的文件大小 {#stremio-lists-show-every-resolution-and-a-spread-of-sizes}
+
+流列表的数量上限以前是按整个列表计算的。4K 结果排在最前面，而热门影片的 4K 结果往往比上限还多。于是列表可能全被 20 到 40 GB 的 remux 占满，把搜索找到的所有 1080p 和 720p 版本都藏了起来。`stremio.max_results` 现在按每个分辨率分别计算，默认值为 5。你手动设置的值保持不变，但现在会分别应用到每个分辨率上。
+
+在同一分辨率内，列表以前只保留最大的几个版本，结果手机或笔记本能流畅播放的 4 GB 压制版反而被裁掉了。现在每个分辨率会从最大的版本到最小的版本之间均匀地挑选结果。两端的版本始终会包含在内。
+
+每个流的描述末尾现在会显示该版本发布了多久。格式类似 `3d`、`126d` 或 `2y`。发布时间是判断某个帖子是否可能已从新闻服务器上过期的最好线索。在这次改动之前缓存的结果不会显示发布时间，要等该影片的缓存刷新后才会出现。
+
+插件的 manifest 现在会显示真实的构建版本，不再是 `0.1.0`。`zurg --version` 会输出和 `zurg version` 相同的构建信息，而且不需要配置文件。
+
+## 健康的资源不再从库中消失 {#healthy-releases-stop-disappearing-from-the-library}
+
+在 Real-Debrid API 上连接失败或 DNS 查询失败时，现在会把账户标记为暂时不可用。以前这种情况会把正常的文件标记为损坏，之后网络恢复了，这些文件还得一直等着修复。
+
+库刷新后的清理以前要排在后台媒体分析之后执行。等轮到清理时，较新的一次刷新可能已经把某个版本重新加了回来，结果迟到的清理又把它删掉了。现在清理会在刷新返回之前完成。媒体分析仍然在后台运行。
+
+## Kodi 可以浏览 WebDAV 共享 {#kodi-can-browse-the-webdav-share}
+
+WebDAV 列表现在会给出每个文件夹和文件的完整路径，并且包含 `/dav/` 前缀。以前 Kodi 和其他要求严格的播放器会丢掉这个前缀，导致无法打开文件夹或播放媒体。带转义字符的文件名和压缩包内的路径仍然保持原来的地址。
+
+## 繁忙的新闻服务器不再在流中留下空洞 {#a-busy-news-server-no-longer-puts-holes-in-a-stream}
+
+新闻服务器在忙的时候，可能会对它确实拥有的文章回复 "no such article"。以前 zurg 会在几百毫秒后，仍用同一个连接再次确认这个回答。然后它会把这段数据当作零字节返回，并把这篇文章视为一天内不可用。有一次读取 32 MiB 的数据，其中 384,000 个字节是零，而这篇文章其实在一分钟后就被服务器正常返回了。
+
+现在，被拒绝的文章会在一秒后再询问一次。第二次询问会走一个空闲的、不同的连接。读取操作会等待这个回答，而不是直接用空白填补。真正不存在的文章，仍会以静音形式返回，并像以前一样进行修复。因此，有问题的发布版本要多花大约一秒才能进入这种静音处理。
+
+如果某篇文章的连接长时间没有数据返回，现在也会在另一个连接上再询问一次。以前这会导致整个响应失败。有一次 RAR 流对一篇只是提供方发送较慢的文章返回了 500。
+
+## 选择 zurg 向其调用的服务表明自己身份的方式 {#choose-how-zurg-identifies-itself-to-the-services-it-calls}
+
+对debrid服务和索引器的请求现在默认使用通用浏览器 User-Agent。字幕查询也使用它，不再发送 `zurg v0`。这些请求还会和 zurg 自己的请求头一起去掉 origin 和 referrer 头。重定向后同样如此。重定向不会泄露之前 URL 的私有路径或 API 密钥。
+
+`user_agent` 可以设置其他 agent，`omit_user_agent` 则完全不发送。`outbound_*` 配置项用于设置 Plex、Jellyfin 和 Emby 看到的客户端和设备名称。这些选项都在仪表盘的 Network & Connectivity 下，重启后生效。Usenet 连接不发送任何软件标识。这样做只是去掉了 zurg 自己的标识，并不能让你变得匿名。
+
+详细说明见[出站身份](outbound-identity.md)。
+
+## zurg 默认会清空 Plex 回收站 {#zurg-empties-the-plex-trash-by-default}
+
+zurg 会关闭 Plex 的 "Empty trash automatically after every scan"。否则，一次扫描如果碰到短暂无法读取的挂载点，就会直接删掉整个库，而不是先把它搁置起来。这样留下的残留项没人发现。Plex 不再清理失效条目，而 zurg 自己的删除功能需要手动开启。所以默认情况下，什么都不会清理。文件早已不存在的条目越积越多。最明显的例子是，文件被移到另一个库文件夹后，旧条目一直留着。
+
+如果没有设置 `plex_trash_sweep_every_mins`，回收站清理现在默认每 60 分钟运行一次。当 Plex 仍在清空自己的回收站时，它会暂停。它每次只删除一个条目，并且从不删除仍有文件的条目。它只会对能正常读取的挂载点运行。无法判断的内容会先以损坏状态显示 14 天。如果想关闭删除、自己清空回收站，请写入 `plex_trash_sweep_every_mins: 0`。
+
+这个设置并不会把清空回收站的工作交还给 Plex。配置页面现在有一个 Let Plex Empty Its Own Trash 开关用于这个用途。开关旁边写明了它带来的风险。
+
+恢复功能现在也能正常工作了。Plex 会跳过对已扫描过的文件夹的普通扫描。一个已被移入回收站的剧集，如果所有文件都已恢复，可能会在一次又一次的扫描中一直保持在回收站里。现在清理程序会请求 Plex 对该文件夹执行强制扫描。从仪表板手动启动的扫描，也会涵盖 Usenet 库所索引的 `__magic__` 路径。以前这种扫描找不到 Plex 库，什么也不做。
+
+两个清理程序如何分工，见 [Plex](../guides/plex.md#who-empties-the-trash)。
+
+## 损坏的压缩包只列出正确的字节，或者什么都不列出 {#damaged-archives-list-the-right-bytes-or-nothing-at-all}
+
+一些损坏的 RAR 分卷集以前会列出一个视频，但播放的字节是错的。缺了中间某个分卷的分卷集，后面的内容会错位，末尾还补了一串零。现在这样的分卷集会被拒绝。第一个头部无法读取的分卷集，后面的字节也会错位。zurg 现在会先读取后续分卷的头部，这样每个偏移量都是正确的。最后一个分卷中电影之后的文件也会保留。以前 RAR4 的结束标记会被误认为是加密。带有填充结束块的分卷集会丢失第一个分卷。现在它们会列出完整的视频。
+
+如果 NZB 中有 10% 或以上的文章缺失，会在提供任何内容之前被拒绝。已经由 PAR2 修复好的内容仍然可以播放。
+
+现有的归档列表会被重新生成，这样这些修复也能应用到库中已有的资源上。
+
+## 大型媒体库可以释放闲置内存 {#large-libraries-can-give-idle-memory-back}
+
+`library_detail` 决定每个发布的文件列表是否常驻内存。`resident` 会全部保留，也是默认值。`lazy` 会释放那些在 `library_detail_idle_secs` 时间内无人读取的发布的文件列表。列表仍然可用，有人读取时，文件列表会从磁盘重新加载。`auto` 的行为与之相同，但只在主机或容器持续处于内存压力下才会生效。无论哪种模式，大型季度合集占用的内存都会少得多。压缩的恢复副本可以在文件列表的磁盘缓存损坏时起到保护作用。未保存的更改永远不会被释放。仪表盘提供全部三种模式。修改后需要重启才能生效。
+
+在 Real-Debrid 下载历史很大时，启动也会占用更少内存。保存和加载该历史以及库缓存时，不再产生额外的副本。
+
+这些取舍的说明见 [配置参考](config.md#library-detail)。
+
+## Plex 观看列表和 Seerr 请求共用一个队列 {#plex-watchlist-and-seerr-requests-share-one-queue}
+
+`acquisition:` 配置块会把 Plex 观看列表条目和 Seerr 请求合并到同一个队列中。两者都会在你的 Newznab 索引器上搜索,并存入 Usenet 后端。Seerr 请求只有在获得批准后才会被跟进。只下载被请求的季。4K 请求与 1080p 请求分开处理。未完成的 Seerr 请求会定期重新检查,以发现新播出的剧集。
+
+进度现在可以在重启后保留,包括重试截止时间、尝试次数以及已完成的剧集。被中断的获取任务会从上次停止的地方继续。已经完成的任务只会重试从观看列表中移除该条目的操作,不会再次搜索。保存的状态属于常规备份的一部分。现有的 `watchlist:` 设置保持不变,可以继续使用。
+
+设置方法请参阅 [获取](../guides/acquisition.md)。
+
+## Debrid 媒体库可以存放在便携的本地文件中 {#debrid-libraries-can-live-in-portable-local-files}
+
+该调试账户现在可以从一个 `.zurgtorrent` 文件夹获取其媒体库，而不再只依赖账户自身的列表。`zurg export-torrents` 会把现有媒体库导出为这些文件。这些文件只描述内容，不包含任何凭据或下载链接，因此媒体库可以分享。接收者通过自己的账户播放，其服务商的限制依然适用。导入、列出和刷新这些文件不会为账户增加任何内容。
+
+现有配置仍然可用。新备份使用格式 2，需要此版本或更新版本才能还原。
+
+导出和设置方法请参阅[本地媒体库](../guides/local-libraries.md)。
+
+## 读取缓存在重启后保留 {#read-caches-survive-a-restart}
+
+zurg 现在会把读取缓存保存在磁盘上，重启后也不会丢。缓存内容包括解析过的 NZB、解码过的 Usenet 文章，还有归档布局、解码后的归档数据块和下载链接。重启之后，zurg 不必重新解析每个 NZB，也不必重新读取每个归档的头部。每类字节缓存默认上限为 512 MiB。`zurg backup --include-caches` 会把这些缓存一起备份，方便热恢复。
+
+同一个 AllDebrid 或 TorBox 文件如果在同一时刻被多次请求，现在只会查询一次链接。
+
+相关设置和限制见 [持久化缓存](../internals/persistent-caches.md)。
+
+## Usenet 抓取在标记为 Completed 之前会经过更严格的检查 {#usenet-grabs-are-checked-more-closely-before-they-read-completed}
+
+在抓取状态显示 Completed 之前,zurg 会向新闻服务器检查每个内容文件的前 16 篇文章和最后一篇文章。以前只检查第一篇,这样会漏掉媒体头部的缺失。现在每个文件的检查会合并成一批发出,大型压缩包不会再超时。
+
+现在,如果缺失的文章已被 PAR2 完全修复,该资源就能导入。以前会因为服务器上原始文章仍然缺失而导入失败。部分修复仍然不算数。
+
+`sabnzbd.history_limit` 现在可以与 Sonarr 或 Radarr 中更大的历史记录上限保持一致。这样,大量已完成的任务积压就会以更大的批次被清理。两端必须使用相同的数值。默认值仍为 60。
+
+## `enforce` 不会影响你能看到的 Plex 功能 {#enforce-leaves-the-plex-features-you-can-see-alone}
+
+`plex_settings_policy: enforce` 不再关闭拖动预览和章节图片。也不再关闭音量均衡和声音分析。这几项都要解码整个文件,在 debrid 挂载上会占用带宽。但它们也都能直接看到效果。现在它们和跳过片头、跳过片尾一样,由你自己按喜好决定。zurg 依然会报告每一项的开销,只是不再替你做选择。带宽这一组现在只剩下输出没人会去看的分析。
+
+## 过期的 debrid 链接可以恢复，播放不会失败 {#expired-debrid-links-recover-without-failing-playback}
+
+TorBox 链接的签名令牌过期后，现在会自动换一个新的。同一个文件的多个读取请求会共用这一次查询。连续失败时会暂停播放，但不会把文件标记为损坏。
+
+当 TorBox、Real-Debrid 或 AllDebrid 的下载服务器要求 zurg 等待时，它现在会等到服务器指定的时长。如果某个服务器持续拒绝请求，zurg 也会停止重试它。这对播放、链接检查和压缩包读取都适用。通过 `__downloads__` 打开已被撤销的链接时，也会自动获取一个新的。
+
+## zurg 会自动更新 {#zurg-updates-itself}
+
+`zurg update` 会用最新的赞助者 nightly 版本替换正在运行的二进制文件。它会先使用 GitHub CLI 的登录信息读取发布信息；如果没有登录，则使用 `GITHUB_TOKEN` 或 `GH_TOKEN`。在替换之前，它会检查下载的文件能否正常运行，并确认报告的版本与预期一致。替换时通过重命名（rename）换入新文件，因此即使 zurg 正在运行，更新也不会失败。
+
+如果当前构建已经是最新 nightly 版本，或者比它更新，就不会做任何改动。
+
+在容器内运行时，该命令会拒绝执行，并提示你改为拉取新镜像来更新。原因是容器里被替换的二进制文件会在下一次重建（recreate）时丢失。如需强制执行，可以加上 `--force`。
+
+安装脚本新增了对应的 `update` 模式，供那些太旧、不支持该命令的构建版本使用。
+
+各平台说明：[Linux](../setup/linux.md#updating-zurg)、[macOS](../setup/macos.md#update-zurg)、[Windows](../setup/windows.md#updating-zurg)、[Docker](../setup/docker.md)。
+
+## Plex 的某个设置可以选择不受该策略约束 {#one-plex-setting-can-be-opted-out-of-the-policy}
+
+`plex_settings_ignore` 会让 zurg 不去管某些 Plex 设置，不论 `plex_settings_policy` 怎么设。它是给确实需要改动其中某一项的场景准备的。比如，媒体库的文件会在文件夹之间移动，这种情况下要靠 Plex 清空自己的回收站，才能清掉留下的旧条目。而默认策略会关掉这个设置。如果为了把它开回来而把策略降到 `warn`，那旁边的文件系统事件防护也会一起失效。被忽略的设置仍然会被读取、仍然会在仪表盘上显示，在 `zurg plex-settings` 里也会显示为 `skip`。它只是不会被写入、不会触发警告，也不会出现在回收站横幅里。忽略安全相关的设置风险自负，zurg 会在启动时提醒你一次。如果某个 id 对应不到任何设置，zurg 会报告出来，并且该设置仍保持受保护。这样一个拼错的 id 就不会被误当成了退出保护。
+
+这些设置本身，以及每个策略级别对它们的处理方式，可以在 [Plex](../guides/plex.md#recommended-plex-settings) 里查到。
+
+## 适用于所有受支持主机的一行安装脚本 {#one-line-installers-for-every-supported-host}
+
+全新安装现在提供可选的一行式引导脚本，适用于 Linux、macOS、Windows 以及 Linux 上的 Docker。它们会检查或安装平台所需的前置条件，使用 GitHub 浏览器登录来验证赞助者权限，下载正确架构的文件，然后交给 `zurg setup` 和 `zurg doctor` 继续。已有的二进制文件和配置都会保留，所有手动安装指南也依然可用。
+
+## 安装时会询问要配置哪些服务提供商 {#setup-asks-which-providers-to-configure}
+
+全新安装 `zurg setup` 时不再默认使用 Real-Debrid。交互式安装程序会让你按优先级顺序选择一个或多个提供商，并且只收集所选提供商的凭据。非交互式安装可以重复使用 `--provider`，并通过特定提供商的 token 文件参数或环境变量来提供凭据。现有配置仍会保留；当你明确提供时，旧的 Real-Debrid `--token-file`、`TOKEN` 和 `RD_TOKEN` 输入也仍然兼容。
+
+## 突发数量超过 Sonarr 历史记录窗口时，导入不再丢失 {#a-burst-larger-than-sonarrs-history-window-no-longer-loses-imports}
+
+Sonarr 和 Radarr 会向 SABnzbd 索要所有排队中的任务，但历史记录只要最新的六十条。对于真正的下载客户端来说，这种做法通常没问题：任务是陆续完成的，客户端在导入每个任务后就会把它移除。缓存的 NZB 库则不同。一次整季批量搜索可能在客户端下一次轮询前就完成数百个单集任务。以前 zurg 会把这些任务全部从队列中移除，历史记录却只返回六十条。超出这一页的任务在两边的返回结果里都找不到，所以客户端既不会导入它们，也不会把它们标记为失败，它们的发布版本就会一直留在 `__magic__` 的根目录里。
+
+现在 zurg 会把超出可见页的已完成任务保留在队列中。客户端导入并移除前六十条后，后面的已完成任务会顺次进入历史记录。因此，作为单集抓取的整季会分批有序地处理，不会和一个固定大小的窗口赛跑。季包仍然算作一个任务。
+
+## 通过挂载点执行删除操作始终有效，`dav_allow_delete` 已被移除 {#a-delete-through-the-mount-always-works-and-dav_allow_delete-is-gone}
+
+以前，媒体服务器指向挂载点后删除文件，界面上看不到任何反应：zurg 会用 403 拒绝 WebDAV DELETE，rclone 把它转成 I/O 错误，客户端只报告失败，却不说明原因。Plex 只会返回一个普通的 `400 Bad Request`，也不写日志，所以那个按钮就是没用，而且没人告诉你为什么。
+
+允许这么做的开关 `dav_allow_delete` 已经删除了。现在通过挂载点发起的 DELETE 在任何地方都会被执行，不需要任何配置。配置文件里如果还保留这个键，也不会报错，未知的键会被忽略，只是它不再起任何作用。
+
+这个开关原本防住的风险依然存在，所以需要说清楚：rclone 没办法表达“覆盖”，它会把重写的文件刷新成先 DELETE 再 PUT。这意味着，只要程序是原地重写文件（比如 `.nfo` 写入器、trickplay 处理、一次 \*arr 重命名，或者一个误触的 `touch`），它就会把这个版本从 debrid 账号里删掉，而不是替换文件。而且挂载点用的是 rclone 自己的凭据，上游无法把这种情况和真正的删除区分开。
+
+PUT 那一半仍然会被拒绝，这正是防止整个操作悄悄完成的关键。
+
+如果有任何程序会写入你的挂载点，请设置 `mount_read_only: true`。这样写入会在内核层面就失败，根本不会到达 zurg。
+
+## Plex 观看列表通过你的 Newznab 索引器获取内容 {#the-plex-watchlist-acquires-through-your-newznab-indexers}
+
+监控器现在可以用了，而且使用你自己的索引器。旧版本通过 DMM API key 搜索，而 Plex 把 watchlist 迁移到 discover 主机后，它轮询的端点开始返回 404，于是旧版本悄无声息地停止工作了。现在它会轮询正确的主机。每个新的 watchlist 条目都会在你已经配置好的 Newznab 索引器上搜索：电影会选出最匹配的最佳版本；剧集则按季获取，**优先选择整季合集**而不是零散的单集。如果某一季没有人发布整季合集，就退而获取零散单集，每集选最佳版本。如果选中的版本其 NZB 链接获取失败（比如索引器的突发限流 429），就会改用排名第二的候选版本，而不会让这个条目白白失败。选中的 NZB 会通过与 SABnzbd 端点和 Stremio 插件相同的命名规则放入 Usenet 后端，因此这三个入口能识别彼此的下载任务，而不会重复下载。只有真正获取到内容之后，条目才会从 watchlist 中移除。旧的顺序是先删除、之后再考虑问题，所以任何失败都会悄悄把条目从你的列表里吃掉。
+
+使用新的 `watchlist:` 配置块进行设置：`enabled`、`check_every_secs`（默认 60）、`indexers`（留空则借用 `stremio.indexers`）、`max_size_gb`（默认 40，适用于电影和单集）、`max_season_size_gb`（默认 100，适用于整季合集），以及 `quality`（`best`、`4k`、`1080p`、`720p`、`smallest`）。旧的 `plex_watchlist_*` 配置键保持原有含义。只需要一个 `plex_token` 就够了。监控器与 Plex 的云服务通信，所以即使实例没有 `plex_server_url` 也能正常运行。电视剧搜索优先使用 TVDB id，如果找不到结果，会再用 IMDb id 重试一次。索引器是按 TVDB 为剧集建立索引的，而它们的剧集级 IMDb 映射并不完整，所以索引较多的剧集用 imdbid 搜索时，可能会返回零结果。
+
+每个配置项都可以在配置页面的 **Plex Watchlist** 下找到，也可以查看[配置参考](config.md#watchlist)。
+
+## 基于你的 Newznab 索引器的 Stremio 插件 {#a-stremio-addon-over-your-newznab-indexers}
+
+zurg 现在可以直接响应 Stremio 的请求了。打开 `stremio:` 配置块，列出你的 Newznab 索引器，然后把日志里打印的 `/stremio/<token>/manifest.json` 地址粘贴到 Stremio 中。客户端会按 IMDb id 请求流，zurg 会搜索索引器（电影用 `t=movie`，剧集用 `t=tvsearch` 加上季和集），然后把结果按分辨率优先排序，作为可播放的流返回。选中某一项后，zurg 会把对应的 NZB 拉进 Usenet 后端。它使用与 SABnzbd 接口相同的命名规则，所以同一个资源即使被抓取两次，也会被找到而不是重复添加。之后它通过带签名的 `/strm/e/` 接口播放，包括范围请求、故障转移以及压缩包内部的内容。所有播放过的内容都会进入媒体库，所以它会像其他资源一样出现在 Plex 里。
+
+路径中的 token 就是全部的授权凭证。如果配置里没有指定，它会自动生成并保存在 `data/stremio-token` 中。搜索结果缓存在 `data/stremio-cache` 里，所以重新打开同一部影片不会再调用索引器。缓存时长取决于搜索到的结果数量：结果不超过 4 个时，每个结果缓存 1 小时；从 5 个开始，使用 `stremio.cache_hours`（默认 24）；如果结果为空，则完全不缓存。缓存的流列表里还带有一个刷新项，点击它会清除该影片的缓存。超过 `stremio.max_size_gb`（默认 40）的资源会从列表中去掉，这样一张全盘 remux 就不会排在所有可播放选项的前面。
+
+关于整个功能，包括第一次播放需要付出的代价，请看：[Stremio 插件](../guides/stremio.md)。
+
+## 一个文件夹就是完整的 Docker 安装，首次运行时自动挂载 {#one-folder-is-the-whole-docker-install-and-it-mounts-on-the-first-run}
+
+原来 Docker 里启动 zurg 的文档做法是跑一条带 `TOKEN` 的 `docker run`，结果得到的容器什么都挂不上。生成的配置里 `rclone_enabled` 没开，`mount_path` 也没设，所以 `/zurg_mnt/zurg` 一直是空的，直到有人在 Dashboard 里找到那两个开关才行。而且这份配置是写在容器内部的，下次 `docker pull` 更新时，连同库缓存一起被清掉。快速开始文档还得加一条脚注把这两点列出来，这等于快速开始在承认它其实跑不通。
+
+现在，`MOUNT_PATH` 会在创建配置的那次运行中，把 `rclone_enabled: true` 和 `mount_path` 写进配置，和 `TOKEN` 原本写入的内容放在一起。镜像的工作目录是 `/config`，zurg 保存的所有东西都以它为基准：`config.yml`、`data/`、`logs/`、`dump/`、`strm/`、`nzbs/`，还有 rclone 缓存。所以只要一条 `-v ~/zurg:/config`，整个安装都在这个目录里，镜像更新也不会动到其中任何东西。第一次运行只需一条命令，结束时就已经挂好了库，不用再去 Dashboard 里折腾。
+
+这两个变量**只在还没有配置文件的时候**才会读取，之后一律忽略。这和 `log_level` 对 `LOG_LEVEL` 的规则一样，原因也一样：compose 文件里残留的 `MOUNT_PATH` 绝不能悄悄覆盖你之后在 Dashboard 里改过的挂载路径。现在如果设置了这个变量而它和配置不一致，启动时会给出警告，这样重新部署却没有效果的人就能知道原因了。
+
+老版本的安装完全不受影响。Docker 会为每个 bind mount 创建目标路径，所以只要 `/app/config.yml`、`/app/data` 或 `/app/logs` 存在，就说明是老的布局，容器看到其中任何一个就会继续使用 `/app`。完整的设置方法，以及哪些操作会破坏宿主机可见的挂载，请看 [Docker](../setup/docker.md)。
+
+## TorBox 和 AllDebrid 也会收到 `.torrent` 文件，因此私有抓取不会卡住 {#torbox-and-alldebrid-are-handed-the-torrent-too-so-a-private-grab-is-not-left-hanging}
+
+`.torrent` 文件是 \*arr 发送的，从上个版本开始随添加请求一起发送，但只有 Real-Debrid 能接收。另外两个账户仍然只会收到信息哈希（info hash）。对于私有 tracker 的资源来说，这是它们唯一无法使用的形式。没有任何报错，这正是问题难以察觉的原因：对照实际的 TorBox 账户测试，一个没有公共 swarm 的哈希被接受并返回了 torrent id，然后一直停在 `checking`，报告 `size: -1`、没有文件列表，还给出一百天的预估时间。这与 TorrentLeech 抓取的反馈完全一致："只是卡住，什么都没下载"。同一个资源的文件则被立即响应，返回了真实的名称、真实的大小和文件列表，qBittorrent 端点也能继续处理任务。
+
+现在两个账户都能接收文件了。TorBox 的 `createtorrent` 和 AllDebrid 的 `magnet/upload/file` 都可以代替 magnet 接收文件，并且返回格式与 magnet 添加时相同，因此添加之后的流程都不需要改动。AllDebrid 仍然会在上传操作本身上报告内容是否已经存在于其服务器中，这也是该账户唯一的缓存结果反馈。我们通过 zurg 自己的添加路径在两个账户上进行了实时验证：一个已缓存的资源上传后，几秒内就读取到状态为 `done`、进度 100%，并返回了文件列表；而一个没有人持有的资源，读取到的是已命名、已确定大小、但因缺少对等节点而停滞的状态。这是端点可以处理的状态。相比之下，哈希添加的结果是一个永远无法解析、也永远不会完成的 torrent。
+
+现在有一种拒绝情况也变得可读了。TorBox 返回 4xx 时，调用方收到的是共享 HTTP 客户端的通用错误 "unexpected status code: 400"，因为 TorBox 放置自身错误代码和详情的响应正文被丢弃了，只保留了那个错误。因此 TorBox 不会处理的 `.torrent`，只会以一个状态码数字报告给 \*arr，别无其他信息。现在会先读取响应正文，账户自身给出的拒绝原因也会随拒绝一起返回。
+
+关于设置索引器的说明，请参阅：[Sonarr 和 Radarr，torrents](../guides/sonarr-radarr-torrents.md)。
+
+（之前的译文被拒绝：代码片段不一致。请保持结构完全一致。）
+
+## 压缩归档条目可以流式播放，按需解码 {#compressed-archive-entries-stream-decoded-on-demand}
+
+压缩的 RAR 或 deflate zip 条目无法像存储条目那样响应范围读取。它的字节只能通过解码器获得，而解码器必须从条目开头开始运行。因此 zurg 拒绝了它们：只含压缩条目的发布返回 415，与存储条目同属一组的压缩条目则被跳过。这对流媒体来说是诚实的结果，但它掩盖了 Usenet 上大部分较早的资源：那些用压缩方式打包的发布者，他们的内容全都被挡在外面。
+
+现在，这些条目通过按需向前解码来提供，解码结果放在一个有上限的内存窗口里。不写入磁盘，也不解码任何未被读取请求的部分。顺序播放（播放器生成的访问模式）会一直停在窗口边缘，并随每次读取小幅推进。如果向后拖动进度，超出窗口保留范围，解码就会从条目开头重新开始。整个条目的字节与 unrar 解压出的结果一致：一个真实的压缩 RAR4 卷中的三个 jpg 条目，与同一测试样本经独立解码器完整读取的结果逐一比对，md5 完全相同。
+
+要遍历分卷压缩包的各个卷，需要 rardecode 的卷链功能，但它会从文件系统中打开 `.part02.rar`。而 zurg 的卷位于基于范围请求的网络读取器之后，无法这样工作。现在解码器已被 vendor 到 `internal/rardecode` 下（MIT 许可，上游版本 v1.1.3），只做了一处改动：`OpenReaderOver` 接收一个打开器（opener），这样每个后续卷都可以按压缩包本身推导出的文件名，从该组中获取。
+
+列表的结构也相应变化。只含压缩条目的发布现在会展示其有效载荷（设置 `stream_compressed_archives: false` 可恢复原来的拒绝行为）。混合压缩包则会把其中的压缩同级条目与存储条目一同列出。列表版本升至 15。
+
+## Sonarr 和 Radarr 可以抓取种子，Prowlarr 也可以推送种子 {#sonarr-and-radarr-can-grab-torrents-and-prowlarr-can-push-them}
+
+zurg 可以像 qBittorrent 一样回应 \*arrs。它们会把磁力链接或 `.torrent` 交给 zurg，zurg 会把信息哈希添加到一个 debrid 账户中（Real-Debrid、TorBox 或 AllDebrid，取决于你配置的是哪个）。一旦该版本进入库中，这个种子就会显示为已完成，并附带一个位于 `__magic__` 下的文件夹供导入。这次导入与 SABnzbd 端点对 Usenet 抓取一直以来使用的重命名方式相同：只是 `__magic__` 表中的一行，不移动任何字节。
+
+该端点注册在 `/api/v2` 和 `/qbittorrent/api/v2` 上，默认关闭，需要主动开启，并由 API 密钥保护，客户端通过 bearer token 发送该密钥。抓取请求会按 `providers:` 中的顺序提供给每个接受种子的账户。如果一次抓取停止推进，即在 `qbittorrent.download_timeout_mins` 分钟内（默认 15 分钟）既没有状态变化，也没有进度增长，它会被从该账户移除，并转交下一个账户重试。`0` 表示只接受账户中已缓存的内容，其余内容在添加时直接拒绝，这是唯一会被 \*arrs 采取行动的拒绝情形。账户对下载任务的状态会被映射为客户端能够理解的状态，速率、节点数和剩余时间也会在账户提供时一并显示。
+
+有一个坦白的限制：qBittorrent 的 API 没有办法表示下载失败，因此没有任何账户接受的版本会以警告的形式呈现给客户端，而不是加入黑名单。它会出现在队列中并附带原因，但不会在无人值守的情况下被重新抓取。SABnzbd 端点没有这个问题。
+
+Prowlarr 与同一个端点通信的方式，就是把它当作下载客户端：手动把版本推送到账户。Prowlarr 推送之后不会进行导入，那是 \*arrs 的工作。
+
+完整的操作演示（基于实际运行的安装截取）：[Sonarr & Radarr，种子](../guides/sonarr-radarr-torrents.md)。
+
+## `__magic__`，一个可以自行整理的目录 {#__magic__-a-directory-you-can-organise}
+
+每个 zurg 提供的目录都是一个保存的过滤器。一个版本之所以出现在 `movies` 里，是因为它符合 movies 过滤器；同时它又出现在 `__all__`、`recent` 和 `movies` 中。所以库里一直没有地方可以让你把东西*放进去*。这在程序需要移动文件之前都还好。Radarr 和 Sonarr 通过移动来导入，而如果挂载点不能接收移动操作，它们就会改为复制：每次导入都要把整个版本从 debrid 主机或 Usenet 拉下来，而这正是挂载点要避免的事。
+
+`__magic__` 是一个新的顶层目录，初始内容与 `__all__` 完全一致。每个版本都是一个文件夹，内容与 `__all__/<release>/` 中的完全相同，包括虚拟化压缩包的内容。你可以在 `__magic__` 里把任何东西移动到任何地方。执行 `mkdir -p /mnt/zurg/__magic__/tv/Show/Season 01`，再用 `mv` 把一集放进去，这一集就出现在那里：没有移动任何字节，没有重命名任何种子，也没有重新下载，`__all__` 保持不变。移动只会改写一个小表中的一行，该表以版本的内容哈希和文件在其中的自身路径作为键。因此，即使修复操作重新添加了版本，并围绕它重建了所有 ID，你的放置位置也不会丢失。从仪表盘重命名版本同样不会丢失。
+
+移动是双向的。文件既可以移入版本文件夹，也可以移出。文件夹会把它与版本自身的条目一起列出，这正是需要把东西放回导入来源文件夹的程序所需要看到的。当同一个名称同时来自两个地方时，你有意的那个胜出：你移动的内容胜过版本自己为该名称指定的内容，而后者又胜过位于 `data/local` 中的文件。失败的那个不会被列出，也不会列两次。
+
+删除是另一面，默认情况下它只是隐藏，而不是销毁。在 `__magic__` 中执行 `rm` 会把条目从 `__magic__` 中移除，但它仍保留在 `__all__` 和每个过滤器目录中。因此，客户端整理库时不会丢失任何东西。版本文件夹也能以同样方式消失，这正是让 Sonarr 在导入后删除任务文件夹、又不影响它刚导入来源版本的原因。`magic.allow_delete: true` 会为文件启用更强的含义，此时内容也会被删除。版本文件夹和目录则无论该设置为何，都只会隐藏。
+
+这个功能默认关闭，因为它是一个可写的树。如果 \*arr 的根文件夹设置错了，它可能会重新组织整个库：
+
+```yaml
+magic:
+  enabled: true
+  allow_delete: false
+  sidecar_max_mb: 32
+  sidecar_budget_mb: 2048
+```
+
+两个 `sidecar_` 键供直接挂载 `/dav` 而非通过 zurg 自带挂载点的客户端使用。这些客户端会向 zurg 发送新 `.nfo`、海报或字幕轨的 `PUT` 请求。zurg 现在会把请求体写入 `data/local/__magic__/…`，也就是 zurg 自己的挂载点写入此类文件的同一棵树。因此两种视图显示的是同一个目录，而不是两个。该文件读取时支持范围请求、长度和修改时间，与其他文件一样。这些上限防止它悄悄演变成通用文件存储：超过 `sidecar_max_mb` 的文件会被以 413 拒绝，而写入后会使该树超出 `sidecar_budget_mb` 的文件会被以 507 拒绝。库对外提供的任何内容都不能被覆盖写入。版本文件夹、其中的条目，或被移动到的路径，都会返回 403。移动操作也绝不会为了给一行腾位置而销毁真实文件。
+
+在开始使用之前，有两点值得了解。过滤器目录按设计保持不变，因此在 `__magic__` 中移动的版本仍会以其原名出现在 `recent` 和 `movies` 中。请只让媒体服务器指向 `__magic__`，**或者**指向过滤器，不要两者都指。另外，挂载点一直只在一个方向上可写：任何真正新写入其中的内容，比如一个 `.nfo`、字幕或海报，都会落到 zurg 自己的 `data/local` 中，并合并到列表里。这就是版本旁边的 sidecar 文件能直接工作的原因，也是 \*arr 的根文件夹写入测试能够通过的原因。
+
+`dav_allow_rename` 和 `dav_allow_delete` 与上述内容无关。它们保护的是重命名和删除 debrid 账户所持内容的路径，而 `__magic__` 下的写入不会触及任何账户。`mount_read_only: true` 仍然会覆盖一切。
+
+仪表盘在 `/magic/` 有一个专门页面。它会显示表中保存的每一行。这些行按版本分组，说明每一行是什么、来自哪个版本的哪个文件，以及该文件现在从哪里提供。页面还会显示共有多少行，日志和快照在磁盘上占用多少空间，以及库旁边的真实文件占用了 `sidecar_budget_mb` 的多少。它还会报告整个 `data/local` 的大小。这个数字能告诉你某个导入是否在通过复制进行：一个复制而非移动的客户端会把字节写到那里，而仪表盘上没有任何其他地方会显示这一点。
+
+页面上有三种状态，客户端根本无法触发。一个放置可以被 **reset**，文件会回到库原本放置它的位置。一个墓碑可以被 **unhidden**，该条目会重新被列出。一个 **dangling** 行，即其所属版本或版本内的文件已不在库中的行，可以被删除，既可以逐个删除，也可以一次全部删除。最后这一项是新增的功能。这样的行解析不到任何东西，因此没有任何客户端能列出、移动或删除它。我们刻意保留它而不删除，因为一旦修复操作让版本回来，放置位置也会随之回来。在此之前，没有地方可以清理这类行。
+
+Sidecar 也会被列出，并应用相同的分类。如果一个真实文件位于一个库中已无任何东西对应的文件夹里，比如某个已离开库的版本旁边的 `.nfo`，或已被遗忘的放置位置内的文件，它会被显示为 **orphaned**，并与其他文件分开计数。与 dangling 行一样，这些内容不会被自动清理。文件仍然属于你，而修复操作使版本回归后，会重新关联该文件夹。在那里删除一个文件会真正删除该文件，与通过挂载点执行 `DELETE` 完全一样。上述每个按钮都会通知挂载点，让它忘记被改动的列表，因为挂载点会缓存目录十二小时，且轮询已关闭。
+
+`magic:` 和 `sabnzbd:` 现在都可以在配置页面中编辑，并且两者都标记为 **Restart Required**，因为它们确实需要重启。`__magic__` 的路由和 SABnzbd 端点只在启动时根据这些值决定一次。开启其中任何一项会把它写入 `config.yml`，但不会改变当前正在运行、并已经作出回应的进程。`__magic__` 页面会明确说明这一点，而不是把空的命名空间渲染成一切正常的样子。
+
+### Sonarr 和 Radarr 现在可以把 NZB 交给 zurg {#sonarr-and-radarr-can-now-hand-zurg-an-nzb}
+
+`__magic__` 存在的原因是让 \*arr 有个地方可以导入内容，而 zurg 现在补上了另一半：`/api` 端点会像 SABnzbd 一样回应 Sonarr 和 Radarr。把它们指向 zurg 的主机和端口，填入 API 密钥，抓取的内容就会落到 `nzbs/` 中，供 Usenet 后端使用。发布内容进入库之后，任务会报告 Completed，并给出 `__magic__` 下的一个文件夹。导入过程只是挂载点内部的一次重命名：表中一行，不读取任何字节，也不会从 Usenet 下载任何东西来放进剧集文件夹。
+
+```yaml
+sabnzbd:
+  enabled: true
+  api_key: ""          # left empty, zurg generates one and logs it once
+  categories: [tv, movies]
+  complete_dir: ""     # defaults to <mount_path>/__magic__; set it to what a containerised *arr sees
+```
+
+默认关闭，而且需要两部分同时配置才有用：一个用于读取 NZB 的 `nzb` provider，以及 `magic.enabled`，让它有地方可以导入。该端点不受 zurg 的 basic auth 保护，因为两个 \*arr 从来不会向下载客户端发送任何认证信息，而且它们的 HTTP 层会把 401 当成"无法连接"。API 密钥就是唯一的门槛，所以请相应地保护好该端口。根文件夹必须放在 `__magic__` **内部**（`__magic__/tv`、`__magic__/movies`），而不能放在它本身或它的上层，否则客户端的根文件夹健康检查会报错。
+
+切换某个库之前需要知道一点：**失败信号是不完整的**。库中持有某个发布，但其中没有任何可导入的内容（所有文件都损坏、被删除或被过滤掉，或者里面只有修复脚手架和附属文件，比如一个只包含恢复卷的 NZB），这种情况会被报告为 `Failed`。这会让两个客户端把它加入黑名单，并抓取替代版本。RAR 分卷集算作内容，因为 zurg 会直接从中流式播放视频。但如果是 zurg 完全无法流式读取的那种，即里面只有压缩条目，那么一旦有东西打开了它并发现这一点，就会从那一刻起报告为 Failed。这个判定会随发布一起保存，因为得出它需要读取该分卷集中的每一个卷。没有被报告的是：帖子的文章已经从新闻服务器上过期的情况。zurg 目前还不检查这一点，因此一个已失效的发布会像其他发布一样报告为 Completed，并在第一次读取时失败，此时 Sonarr 看到的是导入失败而不是下载失败。这一点仍需要手动判断。其余流程都正常工作，包括导入后的清理：Sonarr 删除的任务文件夹会变成墓碑，而发布仍保留在 `__all__` 中。
+
+抓取不会等待下一次变更轮询：zurg 一旦写入监视目录就会立即重新读取它。这只适用于 Usenet 账户。一个季度整包会在几秒内产生二十次抓取，而为了发现一个本地文件就去重新列出包含数万个种子的 debrid 库，那将是二十倍的错误工作量。如果根本没有配置任何 `nzb` provider，zurg 现在会在启动时明确提示，而不是接受那些永远不会被读取的抓取。
+
+`__magic__` 页面以只读方式列出任务：每个客户端用来识别抓取的 `nzo_id`、其分类、到达时间、库中是否已经列出该发布，以及一旦列出之后 \*arr 导入所用的文件夹。
+
+完整设置说明（包括为容器化 \*arr 配置的远程路径映射，以及每种连接测试错误的含义）请参阅 `docs/sabnzbd.md`。
+
+## 挂载点可以用上更多的可用带宽 {#the-mount-reaches-more-of-the-bandwidth-it-has}
+
+通过 rclone 挂载读取文件，比直接用 HTTP 拉取同样的字节要慢。原因出在读取的开始方式，而不是运行过程。第一块数据原本只请求 4 MB，之后每次翻倍。所以从冷偏移量开始的读取，大部分时间都跑在连接实际能跑到的速度之下。而且每次 seek 都会开始一次新的读取。现在第一块数据改为请求 32 MB。
+
+我们在大约有 70 MB/s 可用下载带宽的主机上做了测试。每个设置轮流采样，避免某一分钟网速变慢只影响其中一个。结果是，Real-Debrid 上挂载的中位吞吐量从 49 MB/s 提升到 57 MB/s，TorBox 也是类似的提升。AllDebrid 的提升较小，因为它的限速是按连接计算的，而不是按账户。
+
+起效的只有块大小这一项。测试时我们还调高了 FUSE 的预读，但没有任何效果。块大小也不会多消耗带宽。它决定的是*请求*多少数据，而不是实际传输多少。播放停止后，rclone 也会停止拉取。之前 4 MB 的读取实际拉取了 6 MB，这和完全关闭预读时的情况一样。所以只是浏览和抽样、并不完整观看的库，下载量和以前相比没有增加。
+
+无需做任何改动。新的值已作为默认值发布，`rclone_extra_args` 仍然可以覆盖它。
+
+## `zurg benchmark-my-setup` 可以告诉你设置的实际速度 {#zurg-benchmark-my-setup-answers-how-fast-the-setup-actually-is}
+
+在此之前,想知道一条慢速流是账户、主机还是挂载点造成的,只能靠猜。这个新命令会通过播放器实际使用的同一条路径读取真实数据,然后给出分布情况:最小值、中位数、平均值、最大值,以及首字节时间(time to first byte)。它不会只给一个数字,那个数字可能只是某次倒霉采样造成的。
+
+它分三个阶段运行。第一阶段是逐个账户单独测试,这是你可以拿来和服务商承诺值对照的数字。第二阶段是所有已配置账户同时测试,这是唯一能分辨"提供商慢"还是"上行链路饱和"的阶段。比如每个账户单独都能跑到 70 MiB/s,但同时跑只有 25 MiB/s,那就是一个瓶颈,而不是三个问题,报告会说明它看到的是哪一种情况。第三阶段是通过 rclone 挂载进行同样的读取,这时它与第一阶段之间的差距,就是 FUSE 和 VFS 带来的开销。如果 `rclone_enabled` 关闭,则跳过挂载阶段。
+
+采样位置是随机偏移的,这一点很关键。底层的每一层都有缓存:rclone 的 VFS 会保留它已经取回的数据,debrid CDN 边缘节点也会保留它已经提供过的内容。所以反复读取同一个偏移,测到的其实是这些缓存,而不是链路本身。在一个实际部署中,同一个文件第一次冷读是 47 MiB/s,第二次读同一区域时却达到了 285 MiB/s。
+
+采样大小会改变挂载阶段数字的含义,所以报告里会说明这一点。rclone 打开文件时从 `vfs_read_chunk_size` 开始,然后逐步翻倍,因此短采样的大部分时间都还在爬坡。在某台机器上测得:256 MiB 采样为 47 MiB/s,1 GiB 采样为 88 MiB/s,而 HTTP 不论哪种都稳定在 ~70 左右。默认的 128 MiB 反映的是拖动和随机跳转时的表现;`--sample-mb 1024` 则是持续运行的上限。两者都没有错,运行结果会告诉你刚才测的是哪一种。
+
+`-n` 设置迭代次数,`--provider` 把测试限定到指定的账户,`--skip-mount` 和 `--skip-concurrent` 用于跳过某个阶段,`--json` 输出报告,方便写脚本处理。它会消耗运营者自己账户的真实带宽:每个账户的消耗量是迭代次数 × 采样大小,要做两遍,外加挂载阶段。请在 zurg 目录下运行它,因为 NZB 后端会相对于工作目录读取 `nzbs/` 文件夹。如果某个账户列出的内容为空,报告会明确说明这一点,而不会误报为该账户没有大文件。
+
+## 可用的 Real-Debrid 资源在链接检查后不再被误标为损坏 {#working-real-debrid-releases-are-no-longer-marked-broken-after-a-link-check}
+
+自 2026-08-20 的每日构建起，健康的库也可能让日志里刷满 `Link verification failed during refresh` 和 `keeping files as broken`，每条都带着 `404 Not Found`，还有指向某个下载主机的 `invalid_download_code`。其实这些发布本身没有任何问题。
+
+这个每日构建为 Real-Debrid 在 My Downloads 中生成的记录加了一个清理步骤：zurg 每验证一个链接，就会生成一条记录。如果不管它，每次冷构建每个种子都会多出一行，最后启动时要翻页读取数万条记录。清理步骤会在后台删除这些记录，它的假设是：记录和它生成的 URL 是两回事。
+
+实际上不是。删除记录会吊销下载码，而让下载码保持有效的，只有已经取过它的那台主机。2026-08-22 的测试显示：在 `124-4` 上生成的一个码，通过 `44-4` 取过一次之后，在 `44-4` 上仍然返回 `200`；而 `124-4` 和一个没动过的 `125-4` 都返回 `404 invalid_download_code`。zurg 会针对每个请求，从最快的几台主机里挑一台，所以验证链接的那台主机，下一次请求往往不是它。解析结果会缓存四小时，在这段时间里，每个请求都返回 `404`。于是系统误以为链接已经失效，把发布标记成了 broken。
+
+现在，只要某条记录被排入删除队列，对应的解析结果就会立刻从链接缓存中移除，因此不会再重放一个即将失效的 URL，下一次请求会解析出一个新的链接。记录照常清理。被错误标记为 broken 的发布会在下一次刷新时自动恢复，不需要重新添加或重新扫描。
+
+## 按播出日期命名的节目会被归类为剧集，而不是电影 {#shows-named-by-air-date-are-filed-as-shows-not-movies}
+
+没有季号和集号的节目，会改用播出日期来命名，例如 `WWE SmackDown 2026-08-21`，之后的每日节目和深夜节目也都是这样。剧集检测之前完全不认识这种规则。它会依次查找 `S01E01`、明写的季号或集号、动画发布的哈希值；如果都找不到，就去看看有没有一串编号文件可以当作序列来读。每日节目只是一个文件，带一个日期，所以结果是“不是”，这个发布就会落到第一个肯接收它的目录里，在大多数配置下就是电影目录。
+
+现在，播出日期会被当作它本来的标记来识别，写法可以是 `2026-08-21`、`2026.08.21`、`2026 08 21`、`2026_08_21` 或 `20260821`。只有真实的日期才算数：月份必须是十二个月中的一个，日期必须是三十一天中的一个。所以像 `Movie.2026.05.1080p` 这样年份紧挨着分辨率的情况，永远不会被误判。用一个包含 6755 个发布的库来测试，没有一部电影改变目录；用 4734 个真实的每日节目发布来测试，现在能识别出 4633 个。剩下的都是较老的 scene 命名，它们把年份缩写成两位，或者把年份放在最后。这些情况和音频声道布局很难可靠地区分，所以目前不处理。
+
+已经在磁盘上的库会在启动时自动重新归档，所以下次重启就够了，不需要重新扫描或重新导入。

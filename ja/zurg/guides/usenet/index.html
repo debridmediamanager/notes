@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="ja" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/ja">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672716444">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Usenet と zurg</title>
+    <meta name="title" content="Usenet と zurg">
+    <meta name="description" content="zurgのnzbバックエンドは.nzbファイルをマウントされたライブラリに変換します。ダウンローダーや完了フォルダーはありません。">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/ja/zurg/guides/usenet/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/ja/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/ja/zurg/guides/usenet/">
+    <meta property="og:title" content="Usenet と zurg">
+    <meta property="og:description" content="zurgのnzbバックエンドは.nzbファイルをマウントされたライブラリに変換します。ダウンローダーや完了フォルダーはありません。">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="ja_JP">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/ja/zurg/guides/usenet/">
+    <meta name="twitter:title" content="Usenet と zurg">
+    <meta name="twitter:description" content="zurgのnzbバックエンドは.nzbファイルをマウントされたライブラリに変換します。ダウンローダーや完了フォルダーはありません。">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/ja/zurg/guides/usenet.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672716444" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672716444" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672716444" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672716444" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/ja/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>日本語</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/download.html" target="_blank">zurgをダウンロード</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/ja/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">スポンサー</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>日本語</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/download.html" target="_blank">zurgをダウンロード</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/ja/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">スポンサー</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="usenet-with-zurg">Usenet と zurg</h1>
+<p>zurgの<code translate="no" v-pre>nzb</code>バックエンドは<code translate="no" v-pre>.nzb</code>ファイルをマウントされたライブラリに変換します。ダウンローダーや完了フォルダーはありません。</p>
+<p>再生する前に何もダウンロードされません。NZBと上限付きのキャッシュ（<code translate="no" v-pre>data/bytecache</code>と<code translate="no" v-pre>data/par2</code>）、およびインデックスのレコードを保存します。<code translate="no" v-pre>nzb_article_disk_cache_mb</code>の既定値は512 MiBです。シークすると、zurgはその範囲のバイトをカバーする記事だけを取得します。60 GBのremuxでも、60 GBのディスクは必要ありません。</p>
+<p>Usenetは、debridバックエンドと同じライブラリフィルター、マウント、メディアサーバー連携を使います。Usenetのリリースは、Real-DebridやTorBoxのコンテンツと並べて置けます。Usenetだけを使うこともできます。</p>
+<p><strong>複数のUsenetプロバイダーに対応しています。</strong> 1つの<code translate="no" v-pre>nzb</code>エントリーには、いくつでもニュースアカウントを入れられます。プロバイダーの数に上限はなく、ブロックアカウントでも、持っているものなら何でも構いません。zurgは記事ごとに、それらを順番に試していきます。ここでは冗長性よりも重要な点です。保存期間（retention）はプロバイダーごとに違うため、2つ目のアカウントがあると、余分に1回取得するだけで済むか、PAR2からリリース全体を組み直すかの差になることがよくあります。<doc-anchor-trigger to="#more-than-one-usenet-provider">複数のUsenetプロバイダー</doc-anchor-trigger>を参照してください。</p>
+<p>このガイドでは、ニュースアカウント、NZB、マウント、Plexについて説明します。</p>
+<retype-table copy-text="| | |
+|---|---|
+| 設定リファレンス | [config.md → Usenet accounts](../reference/config.md#usenet-accounts) |
+| ダッシュボード | `http://localhost:9999/config/` → Essentials → Providers |
+| コードの場所 | `internal/nzb`（バックエンド）、`internal/nntp`（ニュースクライアント）、`internal/par2`（修復の計算） |
+| 監視ディレクトリ | `nzbs/`、zurgの作業ディレクトリ内（Dockerでは`/config`） |
+| 修復キャッシュ | `data/par2/` |
+| 解決済みのファイル名 | `data/nzb-names/`。難読化されたリリースの名前は、再起動のたびではなく一度だけ読み取られます |
+| 記事インデックス | `data/nzb-index/`。`nzb_segments: mmap`の下に保存されます（Linux、macOS、BSDでは既定値） |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>設定リファレンス</td>
+<td><a href="../../reference/config/#usenet-accounts">config.md → Usenet accounts</a></td>
+</tr>
+<tr>
+<td>ダッシュボード</td>
+<td><code translate="no" v-pre>http://localhost:9999/config/</code> → Essentials → Providers</td>
+</tr>
+<tr>
+<td>コードの場所</td>
+<td><code translate="no" v-pre>internal/nzb</code>（バックエンド）、<code translate="no" v-pre>internal/nntp</code>（ニュースクライアント）、<code translate="no" v-pre>internal/par2</code>（修復の計算）</td>
+</tr>
+<tr>
+<td>監視ディレクトリ</td>
+<td><code translate="no" v-pre>nzbs/</code>、zurgの作業ディレクトリ内（Dockerでは<code translate="no" v-pre>/config</code>）</td>
+</tr>
+<tr>
+<td>修復キャッシュ</td>
+<td><code translate="no" v-pre>data/par2/</code></td>
+</tr>
+<tr>
+<td>解決済みのファイル名</td>
+<td><code translate="no" v-pre>data/nzb-names/</code>。難読化されたリリースの名前は、再起動のたびではなく一度だけ読み取られます</td>
+</tr>
+<tr>
+<td>記事インデックス</td>
+<td><code translate="no" v-pre>data/nzb-index/</code>。<code translate="no" v-pre>nzb_segments: mmap</code>の下に保存されます（Linux、macOS、BSDでは既定値）</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<hr>
+<h2 id="what-you-need">必要なもの</h2>
+<ul>
+<li><strong>少なくとも1つの Usenet プロバイダーアカウント。</strong> 最も重要なのは保持期間です。4000日以上のプロバイダーなら、1000日で古くなった投稿もまだ残っています。2つ目に知っておきたいのは、プランの <em>接続数の上限</em> です。zurg はこの数値を見て動作します。</li>
+<li><strong>必要ならアカウントを増やす。</strong> 別のバックボーンにある2つ目の無制限プロバイダー、または欠けている投稿を補う安価なブロックアカウントは、Usenet 環境に追加できるものの中で最も効果の高いものです。詳しくは <doc-anchor-trigger to="#more-than-one-usenet-provider">複数の Usenet プロバイダー</doc-anchor-trigger> を参照してください。</li>
+<li><strong>NZB ファイル、または NZB を取得してくれる仕組み。</strong> インデクサーから NZB をダウンロードして <code translate="no" v-pre>nzbs/</code> に入れてください。または <a href="../sonarr-radarr/">SABnzbd 互換エンドポイント</a> を有効にして、Sonarr と Radarr に NZB を渡させることもできます。書き込み先は同じディレクトリです。zurg は Newznab インデクサーを自分で検索することもできます。<a href="../stremio/">Stremio</a> で再生を押したときや、ウォッチリストや Seerr、*arrs からのリクエストを <a href="../acquisition/">取得機能</a> 経由で処理するときに検索します。デバッドアカウント用のトレントには専用のエンドポイントがあり、<a href="../sonarr-radarr-torrents/">qBittorrent</a> 互換で動作します。</li>
+<li><strong>zurg</strong>。ファイルシステムとしてマウントしたい場合は <code translate="no" v-pre>rclone</code> も必要です。zurg は初回起動時に rclone を自動でダウンロードします。</li>
+</ul>
+<hr>
+<h2 id="1-configure-your-news-accounts">1. ニュースアカウントを設定する</h2>
+<p>zurg の各アカウントは <code translate="no" v-pre>providers:</code> の下の 1 つのエントリです。Usenet のアカウントは API トークンではなくサーバーの認証情報で認証するので、<code translate="no" v-pre>token</code> の代わりに <code translate="no" v-pre>nntp</code> ブロックを持ちます:</p>
+<div id="1-configure-your-news-accounts-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">zurg: v1
+providers:
+  - type: nzb
+    nntp:
+      host: news.example.com
+      port: 563
+      tls: true
+      username: YOUR_USENET_USERNAME
+      password: YOUR_USENET_PASSWORD
+      connections: 30        # your plan's allowance — see below
+      cache_size_mb: 512     # decoded articles held in memory, across all files</code></pre>
+</doc-codeblock></div>
+<p>これだけです。debrid アカウントも持っていれば、その横に追加してください:</p>
+<div id="1-configure-your-news-accounts-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">providers:
+  - type: realdebrid
+    token: YOUR_RD_API_TOKEN
+  - type: nzb
+    nntp:
+      host: news.example.com
+      ...</code></pre>
+</doc-codeblock></div>
+<retype-table copy-text="| キー | デフォルト | 説明 |
+|---|---|---|
+| `host` | *(必須)* | ニュースサーバーです。host が空または未指定の場合は起動時エラーになります。 |
+| `port` | `563`（TLS あり）、`119`（TLS なし） | |
+| `tls` | `false` | 有効にしてください。平文の NNTP では、パスワードが平文で送られ、読み込み内容も経路上の第三者に見えてしまいます。 |
+| `username` / `password` | `&quot;&quot;` | |
+| `connections` | `8` | **ご契約プランで実際に許可された接続数を設定してください。** これは遠慮して控えめにするようなレート制限ではありません。1 つの接続が扱えるのはプロバイダーのスループットの一部だけなので、zurg はこの数に合わせて読み込みを行います。少なすぎるとストリーミングが遅くなり、プランの上限を超えるとサーバーが接続を拒否し始めます。 |
+| `warm_connections` | `4` | 認証済みのアイドル接続を開いたままにして、読み込みが接続の確立を待たないようにします。接続の確立には約 0.8 秒かかります（TCP、TLS、挨拶、`AUTHINFO`）。下限がないと、起動のたびや一時的に静かな状態のあとに、その遅延がデマンド時に発生していました。これらは追加分ではなく `connections` の中から使われます。プランでは開いている接続として数えられ、zurg は定期的な `DATE` で接続を維持します。そのため下限は許可数が上限になります。`-1` にすると接続を保持しません。接続時間で課金されるプランにはこちらが向いています。トップレベルの `warm_connections` は、何も指定していないアカウントのデフォルトを設定します。[ウォーム接続](../reference/config.md#warm-connections)を参照してください。 |
+| `cache_size_mb` | `512` | デコード済みの記事データをメモリに保持します。ファイルごとではなく、読み込まれるすべてのファイルで共有されます。 |
+| `servers` | `[]` | 追加のニュースアカウントです。[複数の Usenet プロバイダー](#more-than-one-usenet-provider)を参照してください。 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>キー</th>
+<th>デフォルト</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>host</code></td>
+<td><em>(必須)</em></td>
+<td>ニュースサーバーです。host が空または未指定の場合は起動時エラーになります。</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>port</code></td>
+<td><code translate="no" v-pre>563</code>（TLS あり）、<code translate="no" v-pre>119</code>（TLS なし）</td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>tls</code></td>
+<td><code translate="no" v-pre>false</code></td>
+<td>有効にしてください。平文の NNTP では、パスワードが平文で送られ、読み込み内容も経路上の第三者に見えてしまいます。</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>username</code> / <code translate="no" v-pre>password</code></td>
+<td><code translate="no" v-pre>&quot;&quot;</code></td>
+<td> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>connections</code></td>
+<td><code translate="no" v-pre>8</code></td>
+<td><strong>ご契約プランで実際に許可された接続数を設定してください。</strong> これは遠慮して控えめにするようなレート制限ではありません。1 つの接続が扱えるのはプロバイダーのスループットの一部だけなので、zurg はこの数に合わせて読み込みを行います。少なすぎるとストリーミングが遅くなり、プランの上限を超えるとサーバーが接続を拒否し始めます。</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>warm_connections</code></td>
+<td><code translate="no" v-pre>4</code></td>
+<td>認証済みのアイドル接続を開いたままにして、読み込みが接続の確立を待たないようにします。接続の確立には約 0.8 秒かかります（TCP、TLS、挨拶、<code translate="no" v-pre>AUTHINFO</code>）。下限がないと、起動のたびや一時的に静かな状態のあとに、その遅延がデマンド時に発生していました。これらは追加分ではなく <code translate="no" v-pre>connections</code> の中から使われます。プランでは開いている接続として数えられ、zurg は定期的な <code translate="no" v-pre>DATE</code> で接続を維持します。そのため下限は許可数が上限になります。<code translate="no" v-pre>-1</code> にすると接続を保持しません。接続時間で課金されるプランにはこちらが向いています。トップレベルの <code translate="no" v-pre>warm_connections</code> は、何も指定していないアカウントのデフォルトを設定します。<a href="../../reference/config/#warm-connections">ウォーム接続</a>を参照してください。</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>cache_size_mb</code></td>
+<td><code translate="no" v-pre>512</code></td>
+<td>デコード済みの記事データをメモリに保持します。ファイルごとではなく、読み込まれるすべてのファイルで共有されます。</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>servers</code></td>
+<td><code translate="no" v-pre>[]</code></td>
+<td>追加のニュースアカウントです。<doc-anchor-trigger to="#more-than-one-usenet-provider">複数の Usenet プロバイダー</doc-anchor-trigger>を参照してください。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>設定のバリデーターが適用する 2 つのルールがあります:</p>
+<ul>
+<li><strong>有効な <code translate="no" v-pre>nzb</code> プロバイダーのエントリは 1 つだけにしてください。</strong> 2 つあると、それぞれが同じ <code translate="no" v-pre>nzbs/</code> ディレクトリをスキャンし、すべてのリリースが重複してしまいます。これは <em>Usenet プロバイダー</em> の数に制限があるという意味ではありません。追加のニュースアカウントは、その 1 つのエントリの <code translate="no" v-pre>nntp.servers</code> の下に入れてください。そうすれば 2 つ目のコピーではなく、同じライブラリを提供します。</li>
+<li><strong><code translate="no" v-pre>watchlist: true</code> は指定できません。</strong> Usenet バックエンドはコンテンツを追加できないため、Plex のウォッチリストへの追加先にはなりえません。</li>
+</ul>
+<h3 id="more-than-one-usenet-provider">Usenet プロバイダーを複数使う</h3>
+<p>retention はプロバイダーごとに決まります。1 回の余分な取得で済むか、リリース全体の PAR2 再構築が必要になるかは、別のアカウントがその記事をまだ持っているかどうかで決まります。そのため、ここでは 2 つ目のアカウントが、一般的な冗長化よりも大きな価値を持ちます。</p>
+<p><code translate="no" v-pre>nntp</code> ブロックにあるキーは 1 つ目のアカウントを表します。<code translate="no" v-pre>servers</code> の下にあるものは、別のアカウントです。同じ <code translate="no" v-pre>priority</code> のアカウントは負荷を分け合います。数値が大きいほど、小さい数値のアカウントの後にだけ問い合わせられます。<code translate="no" v-pre>backup</code> のアカウントは、すべてのプライマリーが記事を届けられなかった後にだけ使われます。既存の単一アカウントの設定は、そのまま動き続けます:</p>
+<div id="more-than-one-usenet-provider-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">providers:
+  - type: nzb
+    nntp:
+      host: unlimited.example.com          # first account: the workhorse
+      tls: true
+      username: USERNAME
+      password: PASSWORD
+      connections: 30
+      servers:
+        - host: second-unlimited.example.com   # different backbone = different retention
+          tls: true
+          username: USERNAME
+          password: PASSWORD
+          connections: 20
+          backbone: usenetexpress
+        - host: block.example.com              # metered — only for what the others lack
+          tls: true
+          username: USERNAME
+          password: PASSWORD
+          connections: 10
+          backup: true
+          backbone: omicron</code></pre>
+</doc-codeblock></div>
+<p>各アカウントは、それぞれ独自の接続上限を持ちます。読み込みは、最も小さい、稼働中の <code translate="no" v-pre>priority</code> を共有する非バックアップアカウントの<strong>合計上限</strong>で進められます。上の例では 30 + 20 = 50 です。どちらも既定の priority にあるためです。同じ priority にもう 1 つ無制限のプロバイダーを追加すると、保持期間の保険になるだけでなく、スループットも上がります。一方、<code translate="no" v-pre>backup</code> のアカウントは、設計上どちらももたらしません。使われるのは、プライマリーが供給できなかった分だけです。これを数えてしまうと、通常の再生では決して使われない容量のために、先読みのウィンドウがすべて広がってしまうからです。</p>
+<p>誰に問い合わせるかは、次の 3 つのキーで決まります。</p>
+<retype-table copy-text="| キー | 既定値 | 効果 |
+|---|---|---|
+| `name` | `host` の値 | ログ上でアカウントに名前を付けます。 |
+| `priority` | `0` | 最初に問い合わせる先を決めます。小さい値から順に問い合わせます。同じ priority のアカウントは、書かれた順に問い合わせられます。ただし、空き接続があるアカウントは、上限を使い切ったアカウントより優先されます。つまり、同じ条件の 2 つのアカウントは、1 つに待たされるのではなく、負荷を分け合います。 |
+| `backup` | `false` | 従量課金のブロックアカウントであることを示します。すべてのプライマリーが、記事がないと答えた、壊れたコピーを送ってきた、途中で失敗した、または接続できなかった場合にだけ参照されます。プライマリーが**busy** なだけでは不十分です。無制限のアカウントで済むものに従量課金のバイトを使わないよう、zurg は待機します。 |
+| `backbone` | `&quot;&quot;` | アカウントが解決先とする記事スプールの名前を指定します。同じ backbone の 2 つのアカウントは同じ記事を持っています。そのため、1 つが記事がないと答えた後は、同じスプール上の他のアカウントは飛ばされます。同じ答えのために往復の時間を無駄にしないためです。 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>キー</th>
+<th>既定値</th>
+<th>効果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>name</code></td>
+<td><code translate="no" v-pre>host</code> の値</td>
+<td>ログ上でアカウントに名前を付けます。</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>priority</code></td>
+<td><code translate="no" v-pre>0</code></td>
+<td>最初に問い合わせる先を決めます。小さい値から順に問い合わせます。同じ priority のアカウントは、書かれた順に問い合わせられます。ただし、空き接続があるアカウントは、上限を使い切ったアカウントより優先されます。つまり、同じ条件の 2 つのアカウントは、1 つに待たされるのではなく、負荷を分け合います。</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>backup</code></td>
+<td><code translate="no" v-pre>false</code></td>
+<td>従量課金のブロックアカウントであることを示します。すべてのプライマリーが、記事がないと答えた、壊れたコピーを送ってきた、途中で失敗した、または接続できなかった場合にだけ参照されます。プライマリーが<strong>busy</strong> なだけでは不十分です。無制限のアカウントで済むものに従量課金のバイトを使わないよう、zurg は待機します。</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>backbone</code></td>
+<td><code translate="no" v-pre>&quot;&quot;</code></td>
+<td>アカウントが解決先とする記事スプールの名前を指定します。同じ backbone の 2 つのアカウントは同じ記事を持っています。そのため、1 つが記事がないと答えた後は、同じスプール上の他のアカウントは飛ばされます。同じ答えのために往復の時間を無駄にしないためです。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>各アカウントは、自分の上限の中から、独自のウォーム枠も確保します。保持期間の隙間があると、読み込みはプライマリーを飛ばして直接先へ進みます。そのため、初めて使われるアカウントは、まだ誰も接続コストを払っていないアカウントになります。従量課金のブロックアカウントで、ウォーム接続を一切持たせたくない場合は、<code translate="no" v-pre>warm_connections: -1</code> と指定できます。</p>
+<p>再販は横行しているので、<code translate="no" v-pre>backbone</code> を埋めておく価値があります。別々の会社から購入した 2 つのアカウントが、同じスプールに載っていることがあります。それを指定しないと、どの欠落も 2 回問い合わせることになります。グループ名は好きな文字列で構いません。その文字列は、他のエントリーとの比較にだけ使われます。</p>
+<p>起動時に、zurg は使用するすべてのアカウントに名前を付けて表示します:</p>
+<div id="more-than-one-usenet-provider-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Usenet account nzb connected: nntps://unlimited.example.com:563 (30 connections) + nntps://second-unlimited.example.com:563 (20 connections) [usenetexpress] + nntps://block.example.com:563 (10 connections) [backup] [omicron]</code></pre>
+</doc-codeblock></div>
+<p>リリースを修復する必要があるかを判断する集計では、記事が欠けていると判断する前に、すべてのアカウントに問い合わせます。そして、各アカウントには、前のアカウントが持っていなかったものだけを問い合わせます。転送の失敗は、期限切れになった記事と取り違えられることは決してありません。アカウントがタイムアウトした場合や、途中で記事を落とした場合は、その失敗が報告されます。そのため、タイムアウトによって沈黙が返されたり、存在していたものに対して修復がスケジュールされたりすることはありません。まったく接続できなかったアカウントは数に入りません。別のアカウントが記事は消えたと答えた場合は、消えたものとして扱われます。</p>
+<h3 id="configuring-providers-in-the-dashboard">ダッシュボードでプロバイダーを設定する</h3>
+<p><code translate="no" v-pre>http://localhost:9999/config/</code> → <strong>Essentials</strong> → <strong>Providers</strong> を開くと、YAML を編集せずに同じことができます。テーブルには、設定の順番どおりにすべてのアカウントが並びます:</p>
+<div id="configuring-providers-in-the-dashboard-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">#  Name        Type        Token                Flags
+1  realdebrid  realdebrid  …DFFND4OA            —          [Edit] [Delete]
+2  nzb         nzb         news.example.com     —          [Edit] [Delete]</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>nzb</code> の行では、Token 列にトークンのヒントは出ません。代わりに <strong>news server host</strong>（ニュースサーバーのホスト名）が表示され、その後ろに追加のニュースサーバーの数が続きます。トークンがないので、隠す値がないためです。</p>
+<p><strong>Usenet アカウントを追加する手順:</strong></p>
+<ol>
+<li><strong>Add provider</strong> をクリックします。</li>
+<li><strong>Type</strong> を <code translate="no" v-pre>nzb</code> に設定します。トークン用の欄が消えて、その場所に NNTP の欄が表示されます。</li>
+<li><strong>Name</strong> は、<code translate="no" v-pre>nzb</code> 以外にしたい場合だけ入力します。これはアカウントごとのディレクトリ名になります。たとえば <code translate="no" v-pre>usenet</code> と入力すると、マウント内では <code translate="no" v-pre>__usenet__</code> になります。空欄のままでも構いません。</li>
+<li><strong>NNTP host</strong>、<strong>Port</strong>、<strong>TLS</strong>、<strong>Username</strong>、<strong>Password</strong>、<strong>Connections</strong>、<strong>Cache size MB</strong> を入力します。<strong>TLS</strong> はデフォルトでオンになっているので、そのままにしてください。<strong>Connections</strong> の placeholder は <code translate="no" v-pre>8</code> です。契約プランで使える接続数を入力してください。<strong>Cache size MB</strong> の placeholder は <code translate="no" v-pre>512</code> です。</li>
+<li><strong>Watchlist target</strong> はオフのままにします。バックエンドはコンテンツを追加できないため、オンにして保存するとエラーになります。<strong>Disabled</strong> をオンにすると、そのエントリは <code translate="no" v-pre>config.yml</code> に残りますが、読み込まれません。</li>
+<li><strong>Save</strong> をクリックします。</li>
+</ol>
+<p>フォームは、変更が適用された場合と同じように検証されます。そのため、入力ミスがあると壊れた設定になる前にアラートで知らされます。<strong>2つ目</strong>の <code translate="no" v-pre>nzb</code> プロバイダーを追加しようとすると、そこでは受け付けられません。エラーは <strong>Further news servers</strong>（または <code translate="no" v-pre>nntp.servers</code>）を案内します。追加のニュースアカウントは、そちらに入れるものです。</p>
+<p><strong>別のニュースサーバーを追加する</strong>（2つ目のアカウントや、別のバックボーンのブロックアカウント）には、<code translate="no" v-pre>nzb</code> の行で <strong>Edit</strong> をクリックし、<strong>Further news servers</strong> の下にある <strong>Add news server</strong> をクリックします。各サーバーには、<strong>Name</strong>、<strong>NNTP host</strong>、<strong>Port</strong>、<strong>TLS</strong>、<strong>Username</strong>、<strong>Password</strong>、<strong>Connections</strong>、<strong>Priority</strong>、<strong>Backbone</strong>、<strong>Backup only</strong> を設定できます。<strong>Remove server</strong> を押すと、そのサーバーを削除できます。<strong>Save</strong> を押すと、すべてのサーバーが <code translate="no" v-pre>nntp.servers</code> に書き込まれます。</p>
+<p><strong>1つを編集するには</strong>、その行の <strong>Edit</strong> をクリックします。フォームにはパスワードを除くすべての情報が読み込まれます。最初のアカウントも、追加した各ニュースサーバーも、パスワード欄は空欄のままになります。空欄は <em>既存のものを維持する</em> という意味です。パスワードを変更する場合だけ、新しいパスワードを入力してください。フォームに入力欄がない設定は、<code translate="no" v-pre>config.yml</code> の内容のまま残ります。</p>
+<p><strong>Delete</strong> をクリックすると確認が出ます。確定すると、そのプロバイダーのエントリが <code translate="no" v-pre>config.yml</code> から削除されます。<code translate="no" v-pre>nzbs/</code> ディレクトリは削除されません。NZB ファイルはそのまま残り、プロバイダーを再び追加すると戻ってきます。有効なプロバイダーが1つしかない場合は、削除も無効化もできません。</p>
+<p>ここでの変更はすべて <code translate="no" v-pre>config.yml</code> に直接書き込まれ、次のメッセージが表示されます:</p>
+<blockquote>
+<p>Provider changes saved to config.yml — restart zurg to apply</p>
+</blockquote>
+<p>プロバイダーの変更は、<strong>ホットリロードされません</strong>。変更を反映させるには、zurg を再起動してください。</p>
+<hr>
+<h2 id="2-start-zurg-and-confirm-the-accounts">2. zurg を起動してアカウントを確認する</h2>
+<doc-tabs>
+<doc-tab v-cloak id="linux-と-macos">
+<template #title>Linux と macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./zurg</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">.\zurg.exe</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p><code translate="no" v-pre>zurg setup</code> で zurg が自動起動するように設定されている場合は、代わりに <code translate="no" v-pre>zurg service restart</code> で再起動してください（Linux/macOS なら <code translate="no" v-pre>./zurg service restart</code>、Windows なら <code translate="no" v-pre>.\zurg.exe service restart</code>）。</p>
+<p>zurg は起動時に Usenet アカウントを一度だけ確認します。パスワードが間違っていると、そのままでは後になって全ファイルの再生が失敗するだけなので、原因がわかりにくいからです:</p>
+<div id="2-start-zurg-and-confirm-the-accounts-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Usenet account nzb connected: nntps://news.example.com:563 (30 connections)</code></pre>
+</doc-codeblock></div>
+<p>全部失敗した場合も、同じくらいはっきり表示されます:</p>
+<div id="2-start-zurg-and-confirm-the-accounts-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Cannot reach the news server for nzb: &lt;reason&gt;</code></pre>
+</doc-codeblock></div>
+<p>まずポートと TLS の組み合わせを確認してください（<code translate="no" v-pre>563</code>+<code translate="no" v-pre>tls: true</code>、または <code translate="no" v-pre>119</code>+<code translate="no" v-pre>tls: false</code>）。次に認証情報、最後にプランが実際に有効かどうかを確認します。</p>
+<p><strong>アカウントが複数ある場合は、connected の行だけでなく警告も読んでください。</strong> 接続できなかったアカウントごとに、それぞれ警告が 1 件ずつ出ます。起動は <em>1 つでも</em> アカウントが応答すれば続行されるので、上のエラーが出るのは全アカウントに接続できなかった場合だけです。そのため、2 つ目のプロバイダーが動いていなくても、警告に気づかなければ正常に起動したように見えてしまいます:</p>
+<div id="2-start-zurg-and-confirm-the-accounts-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Usenet account block.example.com is not reachable: &lt;reason&gt;</code></pre>
+</doc-codeblock></div>
+<hr>
+<h2 id="3-add-nzb-files">3. NZB ファイルを追加する</h2>
+<p>zurg は起動すると <code translate="no" v-pre>nzbs/</code> という監視フォルダを作ります。zurg を実行しているフォルダの中にできます。NZB ファイルをそのフォルダにコピーしてください。</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-と-macos-1">
+<template #title>Linux と macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cp ~/Downloads/Some.Release.2024.2160p.nzb nzbs/</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-1">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">Copy-Item &quot;$HOME\Downloads\Some.Release.2024.2160p.nzb&quot; nzbs\</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p>1〜2 秒以内に zurg がファイルに気づいて読み込みます。読み込みが終わるとすぐにライブラリに表示されます。ログには何を読み込んだかが出ます:</p>
+<div id="3-add-nzb-files-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Loaded NZB Some.Release.2024.2160p.nzb: 94 files</code></pre>
+</doc-codeblock></div>
+<h3 id="how-quickly-it-appears">反映されるまでの時間</h3>
+<p>zurg は <code translate="no" v-pre>nzbs/</code> そのものを監視しています。約1秒ごとに確認しますが、その確認コストはディレクトリ内の NZB の数に関係なく、システムコール1回分だけです。そのため、ファイルが届くと、次のライブラリ変更チェックの順番を待つことなく、ほぼすぐに読み込まれます。<doc-anchor-trigger to="#obfuscated-releases">難読化されたリリース</doc-anchor-trigger>は少しだけ時間がかかります。実際のファイル名をその記事から先に読み出す必要があるためで、通常は1秒もかかりません。読み出しが終わった時点で一覧に表示されます。どちらの待ち時間も、もう <code translate="no" v-pre>check_for_changes_every_secs</code> には依存しません。以前は依存していました。難読化されたリリースは、ディレクトリの読み込みを待つ1インターバル分と、チェックの直後に名前が解決されたことによるもう1インターバル分、最大で合計2インターバル分も一覧に出てこないことがありました。間隔を10秒にして計測したところ、ドロップからリリースが表示されるまで17.7秒かかっていました。そのうち作業そのものにかかっていたのは0.67秒だけです。</p>
+<p>定期チェックは今もあり、最後の砦として残っています。監視対象のディレクトリだけでは検知できない2つのケースを拾うためのものです。1つ目は、すでにある名前のまま NZB が<strong>その場で置き換えられた</strong>場合。2つ目は、ディレクトリのタイムスタンプの精度が粗く、同じ秒内に行われた2つの変更を区別できないファイルシステムの場合です。</p>
+<h3 id="what-gets-picked-up">取り込まれる対象</h3>
+<ul>
+<li><strong><code translate="no" v-pre>nzbs/</code> の直下にあるファイル</strong>で、名前が <code translate="no" v-pre>.nzb</code> で終わるもの（大文字・小文字は区別しません）。</li>
+<li><strong>サブディレクトリはスキップされます。</strong> <code translate="no" v-pre>nzbs/movies/foo.nzb</code> は見えません。整理するのではなく、フラットに置いてください。ライブラリの整理はこのフォルダーではなく、ディレクトリフィルターで行います。</li>
+<li><strong>プレーンな XML のみ対応です。</strong> <code translate="no" v-pre>.nzb.gz</code> は展開も読み込みもされません。先に解凍してください。</li>
+<li>解析に失敗したファイルは警告とともにスキップされ、スキャンは止まりません。</li>
+</ul>
+<h3 id="what-the-release-is-called">リリース名の扱い</h3>
+<p>zurgが表示する名前、つまりPlexが見るフォルダ名は次のとおりです:</p>
+<ol>
+<li>NZB自身の <code translate="no" v-pre>&lt;meta type=&quot;name&quot;&gt;</code> の値（その値があって、サニタイズを通っても残る場合）。そうでなければ、</li>
+<li><strong><code translate="no" v-pre>.nzb</code> を取り除いたファイル名</strong>。</li>
+</ol>
+<p>なので、ほとんどの場合、<em>NZBのファイル名がそのままリリース名になります</em>。メディアサーバーはまさにその名前でマッチングを試みるので、リリース名を付けるつもりでファイルに名前を付けてください:</p>
+<div id="what-the-release-is-called-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash"># good
+nzbs/Some.Movie.2024.2160p.UHD.BluRay.x265-GROUP.nzb
+
+# bad — Plex has nothing to work with
+nzbs/indexer_download_48213.nzb</code></pre>
+</doc-codeblock></div>
+<p>同じ名前になってしまった別々のリリースは、zurgの他の場所と同じく、短いハッシュタグ（<code translate="no" v-pre>Some.Release {a1b2c3}</code>）で区別されます。</p>
+<h3 id="password-protected-releases">パスワード付きのリリース</h3>
+<p>インデクサーが NZB のメタデータブロックにアーカイブのパスワードを記録している場合、zurg は RAR セットからストリーミングするときにそれを使います:</p>
+<div id="password-protected-releases-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-markup"><code v-pre class="language-markup">&lt;head&gt;
+  &lt;meta type=&quot;password&quot;&gt;thepassword&lt;/meta&gt;
+&lt;/head&gt;</code></pre>
+</doc-codeblock></div>
+<p>ほかに必要なことはありません。パスワードのメタデータが入っていない NZB のパスワード付きリリースは、開けません。</p>
+<h3 id="obfuscated-releases">難読化されたリリース</h3>
+<p>ファイル名がランダムな投稿も扱えます。その代わり、コストはスキャン時に一度だけ払われます。</p>
+<p>zurgはまず手軽な情報源を試します。それは、記事のyEncヘッダーにまだ宣言されているファイル名です（記事1つにつきファイル1つ）。それでだめなら、リリースのPAR2インデックスにフォールバックします。PAR2インデックスには、各ファイルの本当の名前が、先頭16 KiBのMD5とともに記録されています。</p>
+<p>名前と正確なサイズはどちらも記事のヘッダーに入っています。そのため、スキャンはヘッダーが届いた時点で結果を返せます。本体のデータは、後で読み込むためにキャッシュへ取り込まれ続けます。そのため、難読化されたリリースも同じ記事から名前とサイズが決まります。復元した内容はログに記録されます:</p>
+<div id="obfuscated-releases-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Recovered 27 filename(s) in Some.Release</code></pre>
+</doc-codeblock></div>
+<p>命名処理全体は、NZBごとに90秒を上限としています。そのため、サーバーに接続できなくても、スキャンが止まることはなく遅れるだけです。ライブラリはファイル名をキーにして作られるため、名前は<em>ライブラリを作る前に</em>確定させます。後から名前を変えると、ファイルを見失ってしまうからです。</p>
+<p>完全に難読化された投稿には、復元できる本当の名前がありません。投稿者によっては、リカバリーセットを作る前に難読化してしまいます。そのため、PAR2インデックスが復元する名前自体もランダムになります（<code translate="no" v-pre>aJPSgA7eYizyzjJXT.part01.rar</code>）。さらに、アーカイブ内のファイルもハッシュ値になっています。投稿の中には、そのリリースが何なのかを示すものがありません。わかるのはNZB自体の名前だけです。</p>
+<p>そのため、zurgは中身のファイルをリリース名で表示します。これはSABnzbdが展開の最後に行うのと同じ処理です:</p>
+<div id="obfuscated-releases-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Ugliest.House.in.America.S08E02.720p.AMZN.WEB-DL-RAWR/
+└── Ugliest.House.in.America.S08E02.720p.AMZN.WEB-DL-RAWR.mkv</code></pre>
+</doc-codeblock></div>
+<p>名前を変えるのは、明らかにリリース本体であるファイルだけです。具体的には、アーカイブ内で最も大きいエントリーで、かつ2番目に大きいものの3倍以上のサイズがあり、拡張子がディスク構造の一部ではなく（<code translate="no" v-pre>.vob</code>、<code translate="no" v-pre>.m2ts</code>、<code translate="no" v-pre>.mpls</code>ではなく）、名前から中身が何も読み取れない場合に限ります。同じ名前を共有する字幕やサンプルも、それに続いて名前が変わります。</p>
+<p>似たサイズのファイルが複数入っているアーカイブ（シーズンパックなど）は、どれもリリース本体ではないため、そのままにします。アーカイブ側の元の名前も、引き続きアドレスとして使えます。そのため、再スキャン前に再生を始めたプレイヤーがファイルを見失うことはありません。</p>
+<h3 id="replacing-and-removing">置き換えと削除</h3>
+<ul>
+<li><strong>Entfernen</strong> einer NZB aus <code translate="no" v-pre>nzbs/</code> entfernt das Release aus der Bibliothek, verwirft seinen zwischengespeicherten Reader und den Artikel-Cache und vergisst alle reparierten Bytes, die es gehalten hat.</li>
+<li><strong>Ein Usenet-Release im Dashboard zu löschen, löscht die <code translate="no" v-pre>.nzb</code>-Datei von der Festplatte.</strong> Sie hat keinen anderen Ort, an dem sie liegen könnte. Das ist nicht dasselbe wie ein Torrent aus einem Debrid-Konto zu löschen, bei dem die Datei beim Dienst bleibt.</li>
+<li><strong>Eine NZB direkt zu überschreiben ist der langsame Weg.</strong> Wenn du über eine Datei schreibst, ändert sich das Verzeichnis nicht, deshalb bekommt die oben beschriebene Überwachung das nicht mit. Stattdessen merkt es die regelmäßige Änderungsprüfung: Sie liest die Änderungszeit der Datei und parst sie neu, und zwar bei der ersten <code translate="no" v-pre>check_for_changes_every_secs</code>-Prüfung, die mehr als 15 Sekunden nach dem letzten Verzeichnislesen kommt (bei der Standardeinstellung etwa 30 Sekunden). Wenn du die alte Datei entfernst und die neue hinzufügst, wird das innerhalb von ein oder zwei Sekunden bemerkt. Genau so machen es ohnehin ein Indexer oder der SABnzbd-Endpunkt.</li>
+</ul>
+<h2 id="4-where-releases-land-in-the-mount">4. リリースがマウントのどこに現れるか</h2>
+<p>Usenet のリリースも通常のライブラリエントリなので、既存の <code translate="no" v-pre>directories:</code> フィルターがそのまま適用されます:</p>
+<div id="4-where-releases-land-in-the-mount-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">directories:
+  shows:
+    group: media
+    group_order: 20
+    filters:
+      - has_episodes: true
+  movies:
+    group: media
+    group_order: 30
+    only_show_the_biggest_file: true
+    filters:
+      - any_file_inside_not_regex: /\.(mp3|flac|m4b)$/i</code></pre>
+</doc-codeblock></div>
+<p>それとは別に、アカウントには専用のディレクトリが追加されます。デフォルトは <code translate="no" v-pre>__nzb__</code> で、プロバイダーエントリに <code translate="no" v-pre>name:</code> を設定している場合は <code translate="no" v-pre>__&lt;name&gt;__</code> になります。このディレクトリは単なるビューではなく、その下での読み取りは Usenet アカウントに<strong>固定</strong>され、フェイルオーバーはありません。そのため、debrid アカウントが裏で応答していないかを確かめて Usenet 再生をテストするのに最適な場所です。Usenet だけをアカウントとして使っている場合、このフォルダはマウントのルート一覧から外され、同じファイルは <code translate="no" v-pre>__all__</code> に入ります。マウント上の <code translate="no" v-pre>__all__</code> 配下で再生をテストするか、直接の HTTP パス <code translate="no" v-pre>http://localhost:9999/http/__nzb__/</code> を開いてください。</p>
+<p>フィルターを書くときに知っておきたい Usenet 固有の点が4つあります。</p>
+<ul>
+<li><strong>タグフィルターは、Usenet のコンテンツが解析された後に一致します。</strong> <code translate="no" v-pre>zurg_*</code> タグ（解像度、HDR、ビットレート、長さ、言語）はすべて ffprobe から得られます。zurg は Usenet ファイルに対しても自分で ffprobe を実行します。自分のサーバー経由で、ニュースサーバーが耐えられる速度で動かすので、解析が済めば Usenet のリリースも他と同じようにタグが付きます。それまでは <code translate="no" v-pre>tags_match_any</code> で絞ったディレクトリにはそのリリースは入りません。</li>
+<li><strong><code translate="no" v-pre>.par2</code> と <code translate="no" v-pre>.sfv</code> ファイルは非表示になります。</strong> これらは修復用の補助ファイルです。zurg 自身が読むので、シーズンパックごとに8個もあってもメディアサーバーには不要です。<code translate="no" v-pre>.nfo</code> は Kodi、Emby、Jellyfin が読むので残します。</li>
+<li><strong>RAR セットは展開するアーカイブではなく、コンテンツとして扱われます。</strong> <code translate="no" v-pre>.rar</code> と <code translate="no" v-pre>.rNN</code> は表示されたままで、ボリュームセットはマウント内に<em>フォルダ</em>として現れ、中のファイルがその内容になります。zurg は展開せずに、アーカイブから直接動画をストリーミングします。リリースが<em>ボリュームセット1つだけ</em>の場合は、アーカイブフォルダを挟まず、そのリリースが中身を直接表します。ペイロードはリリースフォルダ直下に置かれるので、メディアサーバーもそこを探します。セットと一緒に投稿されたファイル（<code translate="no" v-pre>.nfo</code>、投稿者の <code translate="no" v-pre>.txt</code>、アートワーク、字幕など）も、そこに引き続き表示されます。</li>
+<li><strong><code translate="no" v-pre>force_select_playable_files</code> は適用されません。</strong> Usenet の投稿は丸ごと1つなので、選ぶものがありません。コンテンツファイルはすべて最初から提供されます。</li>
+</ul>
+<p>メディアサーバーを使う前に中身を確認してください。<code translate="no" v-pre>http://localhost:9999/http/</code> は、マウントに表示される内容をそのまま示すシンプルな HTML インデックスです:</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-と-macos-2">
+<template #title>Linux と macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s http://localhost:9999/http/__nzb__/ | head</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-2">
+<template #title>Windows</template>
+<p><code translate="no" v-pre>curl</code> ではなく <code translate="no" v-pre>curl.exe</code> と入力してください。Windows PowerShell 5.1 では <code translate="no" v-pre>curl</code> は <code translate="no" v-pre>Invoke-WebRequest</code> の別名だからです。</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">curl.exe -s http://localhost:9999/http/__nzb__/ | Select-Object -First 10</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<hr>
+<h2 id="5-mount-it-with-rclone">5. rclone でマウントする</h2>
+<h3 id="the-easy-path-let-zurg-run-rclone">手軽な方法: zurg に rclone を実行させる</h3>
+<div id="the-easy-path-let-zurg-run-rclone-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">rclone_enabled: true
+rclone_binary: bin/rclone      # downloaded automatically on first run
+mount_path: &quot;/mnt/zurg&quot;        # /Volumes/Zurg on macOS, Z: on Windows</code></pre>
+</doc-codeblock></div>
+<p>zurg は、読み取りパターンに合わせてあらかじめ調整された VFS プロファイル（バッファサイズ、チャンクサイズ、キャッシュモード、dir-cache の時間、タイムアウト）を使って rclone を起動し、マウントを維持して、ライブラリが変わったときに正しい dircache エントリを無効化します。<code translate="no" v-pre>mount_path</code> は、zurg が Plex にスキャンすべきパスを伝えるときのプレフィックスでもあるので、別の場所にマウントする場合でも必ず設定してください。</p>
+<p>確認方法:</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux">
+<template #title>Linux</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">ls /mnt/zurg/
+ls /mnt/zurg/__all__/</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="macos">
+<template #title>macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">ls /Volumes/Zurg/
+ls /Volumes/Zurg/__all__/</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-3">
+<template #title>Windows</template>
+<p>デスクトップ上の PowerShell ウィンドウで実行してください。ドライブは、マウントしたログオンセッションからしか見えません（<a href="../../setup/windows/#keeping-it-running-the-session-rules">セッションのルール</a>）。</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">Get-ChildItem Z:\
+Get-ChildItem Z:\__all__\</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<h3 id="the-manual-path-your-own-rclone">手動の方法: 自分で rclone を使う</h3>
+<p>すでに rclone を使っているなら、zurg を指す WebDAV リモートを設定してください:</p>
+<div id="the-manual-path-your-own-rclone-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-ini"><code v-pre class="language-ini">[zurg]
+type = webdav
+url = http://localhost:9999/dav/
+vendor = other
+pacer_min_sleep = 0</code></pre>
+</doc-codeblock></div>
+<doc-tabs>
+<doc-tab v-cloak id="linux-1">
+<template #title>Linux</template>
+<p>rclone はマウントポイントを作成しません。また <code translate="no" v-pre>/mnt</code> は root の所有です:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo mkdir -p /mnt/zurg &amp;&amp; sudo chown &quot;$USER&quot; /mnt/zurg
+rclone mount zurg: /mnt/zurg --config rclone.conf --dir-cache-time 10s --vfs-handle-caching 0</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="macos-1">
+<template #title>macOS</template>
+<p><a href="../../setup/macos/#step-1-install-macfuse">macFUSE</a> と <a href="https://rclone.org/downloads/">rclone.org</a> の rclone が必要です。Homebrew 版の rclone ではマウントできません。rclone はマウントポイントを作成しません。また <code translate="no" v-pre>/Volumes</code> は root の所有です:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo mkdir -p /Volumes/Zurg &amp;&amp; sudo chown &quot;$USER&quot; /Volumes/Zurg
+rclone mount zurg: /Volumes/Zurg --config rclone.conf --dir-cache-time 10s --vfs-handle-caching 0</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-4">
+<template #title>Windows</template>
+<p><a href="https://winfsp.dev">WinFsp</a> が必要です。ドライブレターが使用中でないことが必要で、マウントは rclone を実行しているログオンセッション内のプログラムからしか見えません（<a href="../../setup/windows/#keeping-it-running-the-session-rules">セッションのルール</a>を参照）。</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">rclone mount zurg: Z: --config rclone.conf --dir-cache-time 10s --vfs-handle-caching 0</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p><code translate="no" v-pre>--vfs-handle-caching 0</code> には rclone 1.74 以降が必要です。これを指定すると、読み取り側がファイルを閉じた後も rclone が 5 秒間ダウンロードを続けるのを防げます。省略した場合のコストについては README で説明しています。</p>
+<p>それでも <code translate="no" v-pre>config.yml</code> の <code translate="no" v-pre>mount_path</code> には、マウントした場所を設定してください。設定しないと、メディアサーバーのスキャン通知が間違ったプレフィックスで作られてしまいます。</p>
+<h3 id="docker">Docker</h3>
+<p>zurg の作業ディレクトリはイメージ内で <code translate="no" v-pre>/config</code> です。監視ディレクトリと修復キャッシュはどちらもその下にあります。1 つのバインドマウントで、それらすべてをまとめて渡せます:</p>
+<div id="docker-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">services:
+  zurg:
+    image: ghcr.io/debridmediamanager/zurg:latest
+    volumes:
+      - ./:/config
+    ports:
+      - 9999:9999</code></pre>
+</doc-codeblock></div>
+<p>ホスト側の <code translate="no" v-pre>./nzbs</code> に NZB を置くと、再起動なしでコンテナ内でも自動的に読み取られます。</p>
+<p>このマウントには Linux ホストが必要です。macOS と Windows の Docker Desktop は、コンテナを VM 内で動かすため、マウントは Finder、エクスプローラー、ホストにインストールした Plex まで届きません。そちらでは <a href="../../setup/macos/">macOS</a> または <a href="../../setup/windows/">Windows</a> 版のバイナリを使ってください (<a href="../../setup/docker/">理由</a>)。</p>
+<blockquote>
+<p><code translate="no" v-pre>/config</code> が <code translate="no" v-pre>/app/config.yml</code>、<code translate="no" v-pre>/app/nzbs</code>、<code translate="no" v-pre>/app/data</code> を個別にバインドマウントする前にインストールした環境は、以前と同じように今まで通り動きます。詳しくは <a href="../../setup/docker/#upgrading-an-install-that-mounted-app">docker.md</a> を参照してください。</p>
+</blockquote>
+<hr>
+<h2 id="6-point-plex-at-it">6. Plex を接続する</h2>
+<ol>
+<li>
+<p><strong>zurgにPlexの認証情報を渡してください。</strong> そうすると、定期的なフルスキャンを待たなくても、変更されたパスだけをスキャンするようPlexに依頼できます。一番簡単なのはDashboardのPlex認証フローを使う方法です。その値が<code translate="no" v-pre>config.yml</code>に書き戻されます:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">plex_server_url: &quot;http://localhost:32400&quot;
+plex_token: YOUR_PLEX_TOKEN</code></pre>
+</doc-codeblock></div>
+</li>
+<li>
+<p><strong>ライブラリは、マウントのルートではなく、マウント内のサブディレクトリを指すように追加してください:</strong></p>
+<ul>
+<li>Movies → <code translate="no" v-pre>/mnt/zurg/movies</code>（macOSでは<code translate="no" v-pre>/Volumes/Zurg/movies</code>、Windowsでは<code translate="no" v-pre>Z:\movies</code>）</li>
+<li>TV Shows → <code translate="no" v-pre>/mnt/zurg/shows</code>（macOSでは<code translate="no" v-pre>/Volumes/Zurg/shows</code>、Windowsでは<code translate="no" v-pre>Z:\shows</code>）</li>
+</ul>
+<p>Windowsでは、Plexがzurgと同じログオンセッションで動いている場合にのみ<code translate="no" v-pre>Z:</code>が見えます。<code translate="no" v-pre>zurg setup</code>のログオンタスクがこれを用意してくれます。詳しくは<a href="../../setup/windows/#keeping-it-running-the-session-rules">セッションのルール</a>をご覧ください。</p>
+<p>同じリリースは、そのリリースにフィルターが一致するすべてのディレクトリに加えて、<code translate="no" v-pre>__all__</code>と<code translate="no" v-pre>__nzb__</code>の下にも現れます。Plexをルートに向けると、同じファイルを何度もスキャンしてしまいます。</p>
+</li>
+<li>
+<p><strong>各ライブラリのEdit → Advancedで、次の2つのオプションを設定してください:</strong></p>
+<ul>
+<li><strong>&quot;Empty trash automatically after every scan&quot;のチェックを外してください。</strong> これが一番重要です。スキャン中にマウントが一瞬途切れると（zurgの再起動やrcloneの再マウントなど）、Plexはすべてのファイルが削除されたと判断します。この設定が有効だと、ファイルは即座に完全に削除されます。無効なら、ゴミ箱に残り、マウントが戻ったときに再び表示されます。以前、30,000件のライブラリでこの被害が出たことがあります。</li>
+<li><strong>&quot;Generate video preview thumbnails&quot;のチェックを外してください。</strong> サムネイルは1枚ごとにファイル全体へのシークになります。Usenetでは、それはリリース全体を接続の許容量を使って読み込むことを意味します。</li>
+</ul>
+</li>
+<li>
+<p><strong>Plexのスキャン中はzurgを絶対に再起動しないでください。</strong> 再起動する前に確認してください:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">TOKEN=$(grep ^plex_token: config.yml | awk '{print $2}' | tr -d &quot;\&quot;'&quot;)
+curl -s &quot;http://localhost:32400/status/sessions?X-Plex-Token=$TOKEN&quot; | grep -o 'size=&quot;[0-9]*&quot;'
+curl -s &quot;http://localhost:32400/library/sections?X-Plex-Token=$TOKEN&quot; | grep -o 'refreshing=&quot;1&quot;' | wc -l</code></pre>
+</doc-codeblock></div>
+<p>Windowsでは、zurgのフォルダーからPowerShellで実行してください:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$TOKEN = ((Select-String -Path config.yml -Pattern '^plex_token:').Line -split '\s+')[1].Trim('&quot;', &quot;'&quot;)
+(Invoke-RestMethod &quot;http://localhost:32400/status/sessions?X-Plex-Token=$TOKEN&quot;).MediaContainer.size
+@((Invoke-RestMethod &quot;http://localhost:32400/library/sections?X-Plex-Token=$TOKEN&quot;).MediaContainer.Directory | Where-Object refreshing -eq 1).Count</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>size=&quot;0&quot;</code>（Windowsでは<code translate="no" v-pre>0</code>）のセッションがあり、更新されるカウントが<code translate="no" v-pre>0</code>であれば安全です。セッションの行が何も表示されない場合、Plexがトークンを拒否したか応答しなかったことを意味します。その下の<code translate="no" v-pre>0</code>は意味がありません。再起動前に<code translate="no" v-pre>plex_token</code>を確認してください。（PowerShellでは代わりに<code translate="no" v-pre>401</code>エラーとして表示されます。）
+（<code translate="no" v-pre>grep -c</code>ではなく<code translate="no" v-pre>grep -o … | wc -l</code>を使ってください。grepは何も見つからないと非ゼロで終了します。それはむしろ<em>良い</em>ケースですが、守ろうとしていた再起動の直前に<code translate="no" v-pre>&amp;&amp;</code>チェーンを中断させてしまいます。）</p>
+</li>
+<li>
+<p><strong>部分スキャン。</strong> <code translate="no" v-pre>on_library_update</code>には、変更されたすべてのパスが渡されます。リポジトリのルートにある<code translate="no" v-pre>plex_update.sh</code>が参考スクリプトです:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">on_library_update: sh plex_update.sh &quot;$@&quot;</code></pre>
+</doc-codeblock></div>
+<p>このスクリプトには<code translate="no" v-pre>curl</code>、<code translate="no" v-pre>xmllint</code>、<code translate="no" v-pre>python3</code>が必要です。Dockerイメージにはこれらが入っています。また、<code translate="no" v-pre>zurg_mount</code>の行をマウントのパスに設定してください。Windowsでは、フックは<code translate="no" v-pre>sh</code>ではなくPowerShellで動くため、このスクリプトはそこでは動きません。変更された各パスは<code translate="no" v-pre>$args</code>の1つの要素として渡されます。マウントからの相対パスで、スラッシュは前向きです（<code translate="no" v-pre>movies/Big Buck Bunny</code>）。PowerShellスクリプトには<code translate="no" v-pre>@args</code>で渡してください:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">on_library_update: '&amp; C:\zurg\my_update.ps1 @args'</code></pre>
+</doc-codeblock></div>
+<p>手順1が終わり<code translate="no" v-pre>mount_path</code>が設定されていれば、zurgはすでに変更されたパスのスキャンをPlexに依頼しています。そのため、フックが必要なのはそれ以外の場合だけです。</p>
+</li>
+</ol>
+<p><strong>Usenetのコンテンツでは、Plexがすぐに得られないもの:</strong> zurgが解析を終えるまでは何もありません（セクション4を参照）。そのため、ローカルファイルと同様に、最初の再生時にPlexが独自に解析する場合があります。ファイルサイズは、リリースがスキャンされた後すぐに確定します。最初の一覧では記事数から求めた概算値が表示されることがあり、正確なサイズはその後に届きます。リカバリーインデックスがあればそこから、なければ各ファイルの1記事から得られます。リカバリーインデックスにすべての正確なサイズが記載されている大きなマルチボリュームのアーカイブでは、検証済みの1ボリュームから共通の記事ストライドを確定できます。同じアーカイブの他の各ボリュームは、最初のバイトを返す前に、その推論を自身のヘッダーと照合します。サイズが確定すると、ライブラリにはリリースが変更されたと通知されるため、マウントとPlexの両方が実際のサイズを認識します。</p>
+<p>zurgは、接続数が12以下のアカウントでは一度に最大8つのリリースのサイズを確認します（アカウントの接続数を超えることはありません）。接続数が多いアカウントではさらに多くなります（16接続では12、20接続以上では16）。取得処理がニュースサーバーでリリースを確認するときは、その確認はこのサイズ確認や先読みと並んでキューに入ります。プレーヤーが待っている読み込み用の接続を奪うことは決してありません。</p>
+<h3 id="jellyfin--emby--infuse">Jellyfin / Emby / Infuse</h3>
+<p>Jellyfin と Emby は <code translate="no" v-pre>jellyfin_server_url</code> / <code translate="no" v-pre>jellyfin_token</code> と <code translate="no" v-pre>emby_server_url</code> / <code translate="no" v-pre>emby_token</code> を使い、同じスキャン通知を受け取ります。詳しくは <a href="../jellyfin/">jellyfin.md</a> を見てください。Infuse は <code translate="no" v-pre>http://&lt;host&gt;:9999/dav/</code> に直接つなげるので、rclone はまったく不要です。</p>
+<hr>
+<h2 id="7-when-an-article-is-missing">7. 記事が見つからないとき</h2>
+<p>これは Usenet にあって、debrid にはない故障パターンです。記事はプロバイダーの保持期間を過ぎて消えたり、削除されたりします。リリースは一覧にはきちんと出ていても、一部の記事だけがなくなっていることがあります。</p>
+<p>zurg の対応策は、優先度の高い順に次のとおりです:</p>
+<ol>
+<li><strong>別のニュースサーバーに問い合わせる。</strong> あるプロバイダーで期限切れになった記事が、別のプロバイダーにはまだ残っていることがよくあります。取得は1回だけです。<doc-anchor-trigger to="#more-than-one-usenet-provider">複数の Usenet プロバイダー</doc-anchor-trigger> を参照してください。</li>
+<li><strong>リリース自身の PAR2 ファイルから復元する。</strong> PAR2 はそのためにポストされているものです。ただし、<em>リリース全体</em>を読み込む必要があります。Reed-Solomon は、欠けた部分を求めるために残っているすべてのスライスを畳み込み計算しなければならないからです。つまり 200 GB の投稿であれば、数メガバイトを復元するのに 200 GB を読むことになります。</li>
+<li><strong>無音を返す。</strong> 上記のどちらも応答できない場合にのみ行います。</li>
+</ol>
+<p>PAR2 の修復はバックグラウンドジョブとして動作し、同時に処理するリリースは最大2つまでです。必要なものは次のとおりです:</p>
+<div id="7-when-an-article-is-missing-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">enable_repair: true            # the default; set false to turn PAR2 repair off
+par2_patch_cache_mb: 512       # budget for data/par2/; -1 keeps repairs in memory only</code></pre>
+</doc-codeblock></div>
+<p>復元されたバイト列は <code translate="no" v-pre>data/par2/&lt;nzb-id&gt;/</code> 以下に書き込まれ、次回そのファイルを開いたときに再利用されます。そのため、再起動してもリリース全体を読み直す必要はありません。実際に欠けている範囲だけが保存されます。損傷したリリースの場合、通常は数メガバイトで済みます。上限を超えた場合は、リリース全体が最も長く使われていないものから順に削除されます。各リリースの範囲には、復元元となった NZB の更新日時が記録されます。そのため NZB を保存し直すと、それらの範囲は破棄され、位置がずれているかもしれないバイト列を返すことはありません。</p>
+<p>修復は開始時にそのことを知らせ、その後かかったコストを報告します:</p>
+<div id="7-when-an-article-is-missing-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">PAR2 repair of Some.Release: 5 slice(s) missing; reading the release to rebuild them
+PAR2 repair of Some.Release rebuilt 5 slice(s) in 55s on the avx2 kernel, keeping 3.4 MiB of them (library holds 3.4 MiB in memory, 3.4 MiB on disk)</code></pre>
+</doc-codeblock></div>
+<p>知っておくと良いことが2つあります:</p>
+<ul>
+<li><strong>再生は常に修復より優先されます。</strong> 接続は待っている処理の順に割り当てられます。まず要求された読み込み、次に先読み、修復は最後です。ただし修復には、先読みに対して許容数の4分の1が保証されています。そのため、再生中のファイルは、詰まっている欠損部分を今でも修復できます。</li>
+<li><strong>zurg のライブラリレベルの修復では、ここでは役に立ちません。</strong> その仕組みは、トレントを元のアカウントに再追加するものです。コンテンツを追加できないバックエンドは、リリースが壊れていると報告することはできても、修復はできません。Usenet の場合は、PAR2 <em>こそ</em>が修復手段です。</li>
+</ul>
+<p>NZB に PAR2 ファイルがなく、2つ目のニュースアカウントもないリリースには、復旧の手段が一切ありません。これは投稿そのものの性質であり、zurg の問題ではありません。</p>
+<hr>
+<h2 id="performance">パフォーマンス</h2>
+<retype-table copy-text="| | |
+|---|---|
+| 単一ストリーム、直接ファイル | ~100 Mbit/s |
+| 単一ストリーム、RAR セットから | 90–106 Mbit/s |
+| 同時 2 ストリーム、合計 | ~124 Mbit/s |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>単一ストリーム、直接ファイル</td>
+<td>~100 Mbit/s</td>
+</tr>
+<tr>
+<td>単一ストリーム、RAR セットから</td>
+<td>90–106 Mbit/s</td>
+</tr>
+<tr>
+<td>同時 2 ストリーム、合計</td>
+<td>~124 Mbit/s</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>単一ストリームの速度の最初の上限を決めるのは、接続数の上限です。zurg は、記事とバイト数の両方で先読み量を決めて、この上限を使い切るようにしています。小さい記事のアーカイブ投稿では、最低 64 MiB 先まで読みます。数 MB の投稿では、今まで通りの接続数とパイプラインの幅を使います。だから次のようになります。</p>
+<ul>
+<li><strong><code translate="no" v-pre>connections</code> は、契約プランの実際の数に設定してください。</strong> これが調整のつまみです。8 接続では remux はストリーミングできません。</li>
+<li><strong>プライマリアカウントを 2 つ使うと、合計されます。</strong> 読み込みは、現在有効な最も低い <code translate="no" v-pre>priority</code> を持つ、<code translate="no" v-pre>backup</code> 以外のアカウントの接続数の合計で行われます。同じ優先度の 2 つ目の無制限プロバイダーがあれば、上限が上がるだけでなく、1 つ目の保持期間の欠落もカバーできます。<code translate="no" v-pre>backup</code> アカウントは、この合計には含まれません。</li>
+<li><strong><code translate="no" v-pre>warm_connections</code>（デフォルトは 4）は、スループットではなくレイテンシを改善します。</strong> この数の接続を、アイドル状態で認証済みのまま開いておきます。そのため、起動直後や静かな時間帯のあとの最初の読み込みで、最初のバイトが届くまでに約 0.8 秒の接続時間を使わずに済みます。コールドでは最初のバイトまで 1.5 秒、ウォームでは 0.15 秒です。ストリームが動き始めると、この設定は何も変えません。</li>
+<li><strong>発生する接続は 1 つのバックエンドに固定されるので、TLS セッションが再開されます。</strong> 1 回の接続には約 0.8 秒かかります。これは 2026-08-29 に、実際のニュースサーバーで測定した値です。内訳は、TCP が 106ms、TLS ハンドシェイクが 213ms、挨拶が 256ms、<code translate="no" v-pre>AUTHINFO</code> のやり取り 2 回で 218ms です。プロバイダーのホスト名は、ローテーションされるアドレスの集まりになります（このホストは 11 個のアドレスに解決されます）。また TLS セッションチケットは、発行したマシンでしか使えません。そのため、リゾルバーが最初に返したアドレスに毎回接続し直すと、セッションは <strong>3 件中 0 件</strong>しか再開されませんでした。同じアドレスに接続し直すと、<strong>3 件中 3 件</strong>が再開されました。今では各アカウントが、直前の接続で使ったアドレスに再接続します。これにより、再接続のたびに <strong>110〜140ms</strong> 短縮されます。再開されたハンドシェイクは 109〜141ms で、フルのハンドシェイクは 225〜261ms です。ラウンドトリップが約 18ms のサーバーでは、短縮効果はこれより小さくなります。そのアドレスが応答しなくなると、固定は解除され、名前が改めて解決されます。そのため、プロバイダーが廃止したマシンに固定されたままになることはありません。ただし、NNTP まで届いた拒否は固定を維持します。たとえば、アカウントが接続上限に達している場合や、パスワードが拒否された場合です。それはバックエンドの判断ではなく、アカウントの応答だからです。接続のたびに、各フェーズを debug レベルでログに出します。<code translate="no" v-pre>resumed=</code> も含まれます。</li>
+<li><code translate="no" v-pre>cache_size_mb</code>（デフォルトは 512）は、読み込み中のすべてのファイルで共有されます。同時に複数のストリームを動かすなら、この値を上げてください。ただし、1 ストリームが速くなるわけではありません。投機的な読み込みが確保できるのは、その半分までで、かつ最大 2 つのリーダーまでです。残りの半分は、すでに消費した記事や、これから消費する記事のために空けておきます。</li>
+<li>RAR でパックされているか、普通のファイルとして投稿されているかは、もはやスループットにはほとんど影響しません。</li>
+</ul>
+<p><strong>遅い記事 1 本で、ストリームが止まることはなくなりました。</strong> 平均 約 90 MB/s で順番に読み込んでいても、1 秒ほど 1〜5 MB/s に落ち込むことがあります。その落ち込みはすべて同じ原因です。ほかの接続が自分の記事を終えてアイドルになる間に、ある記事が届かなくなっているのです。読み込みが 1 つの記事で、そのリーダーが普段想定している時間より長く待たされると、zurg は同じ記事を <strong>2 本目の接続</strong>に要求し、先に届いた方を返します。パイプライン処理された止まったバッチは、同じ死んだソケット上で連続する再生ヘッドの記事を複数ブロックすることがあります。そのため、1 つのリーダーから最大 5 本の異なる記事を、まとめてヘッジすることがあります。投稿の記事が 1 MiB 未満の場合は、1〜2 本です。同じ記事を 2 回要求することはありません。アカウントが払うのは、2 本目の要求を 1 分あたり最大 20 件までです。締め切りは、そのリーダー自身の直近の待ち時間の 2 倍です。下限は 250 ms（1 MiB 未満の記事の投稿では 125 ms）、上限は 2 s です。ヘッジされるのは、クライアントが実際に待っている読み込みだけです。先読み、次のボリュームのプリフェッチ、修復はヘッジされません。サーバーがたった今 <em>拒否</em> した記事も、ヘッジされません。その記事はすでに 1 秒後の確認を待っていて、その時間内に要求しても、何も証明できないからです。ヘッジのたびに、読み込みが何ミリ秒ブロックされたかを示す行を debug レベルで 1 行出力します。その次の行は、2 本目の要求が勝ったかどうかを示します。</p>
+<p>宣言された範囲については、後のバイトが提供される前に、再生ヘッドの記事が優先度スケジューラに入ります。パイプライン処理された接続には、連続したチャンクではなく、連続する記事のラウンドが割り当てられます。そのため、最初に役立つ記事が接続枠全体に分散されます。64 MiB 以上のリクエストは再生として扱われ、範囲のフロンティア全体を使います。小さなシークは probe のままで、狭いランプだけを開きます。</p>
+<h3 id="crossing-a-volume-boundary">ボリューム境界をまたぐ場合</h3>
+<p>RAR セット内のファイルは、一度に1ボリュームずつ配信されます。各ボリュームは、ニュースアカウントへの個別の読み込みになります。zurg は、現在のボリュームの再生中に次のボリュームを開き、その先頭4 MB を読み込みます。そのため、ボリュームの切り替え時に読み込みがゼロから始まることはありません。小さなボリュームで投稿されたリリースでは、この先頭部分だけでは不十分です。4 MB は ~395 KB のパートで投稿されたリリースの約10記事分にあたり、~26 MB のボリュームだと再生1.7秒ごとに境界が来てしまいます。そのため、ストリームはメモリ上の先頭部分を0.25秒で使い切り、その後は残りのデータを待つ往復通信を繰り返していました。Hetzner CCX23 で10接続を使い、2026年9月8日に測定したところ、このリリースの配信速度は <strong>14〜16 MB/s</strong> でした。同じアカウント上の通常のファイルは <strong>86〜99 MB/s</strong> に達していたので、大きな差があります。1秒あたりの速度も 1 MB/s から 29 MB/s の間で大きく揺れていました。さらに、アカウントの先読みスロット60個のうち、46〜55個が使われずに余っていました。</p>
+<p>zurg は、ストリームが境界から 32 MiB 以内に近づくと、次のボリュームを先読みウィンドウ1つ分まで深く温めるようになりました。また、ストリームが切り替わったばかりのボリュームは、最初の2記事からやり直すのではなく、それまでに獲得したウィンドウを維持します。再生位置がまだ数秒先にならないボリュームは、これまでどおり先頭部分だけを温めます。これにより、ライブラリスキャン（各エントリに対するリーダーが、それぞれ数 MB ずつ読む処理）が、読まれることのない次のボリュームすべてのウィンドウを読み込んでしまうことを防げます。この変更に設定は必要なく、メモリの上限も変わりません。アカウントは引き続き、再生中のボリュームと温めている次のボリュームの2つ分の先読みウィンドウを、<code translate="no" v-pre>cache_size_mb</code> の範囲内で使います。</p>
+<p>修復処理は本質的に時間がかかります。リリース全体を読むためです。ただし、修復はバックグラウンド優先度で実行され、速度はzurg の計算ではなく、ニュースサーバー側の制限によって決まります。</p>
+<h3 id="memory-what-a-watch-directory-costs">メモリ: ウォッチディレクトリのコスト</h3>
+<p>NZB は記事のリストで、大きなライブラリには記事がたくさんあります。パースすると、各記事のメッセージ ID とそのオフセットがメモリに保持され、読み取り時にそれらを見つけられるようになっています。以前のビルドでは、プロセスが動いている間ずっとすべての記事を保持していました。2,636 個の NZB を入れた監視ディレクトリ（<code translate="no" v-pre>&lt;segment&gt;</code> 要素 2,760 万個）で測ったところ、記事 1 件あたり約 58 バイト、<strong>1.52 GB のライブヒープ</strong>を使っていました。記事キャッシュとは別です。そのほとんどは実際には使われていません。一覧表示に必要なのは名前、サイズ、数だけで、記事の名前がわかる必要があるのは、実際に読み取られているか修復されているファイルだけです。</p>
+<p><code translate="no" v-pre>nzb_segments</code> で、zurg がこれらを保持するかどうかを決めます。</p>
+<div id="memory-what-a-watch-directory-costs-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">nzb_segments: mmap             # mmap (default) | reparse | resident
+nzb_segments_idle_secs: 120    # how long a release's articles are kept after the last read</code></pre>
+</doc-codeblock></div>
+<ul>
+<li><strong><code translate="no" v-pre>mmap</code></strong>：リストは <code translate="no" v-pre>data/nzb-index/&lt;id&gt;.bin</code> に書き出され、そのファイルはオンデマンドでマップされます。そのためデータは zurg のヒープではなくページキャッシュに置かれ、メモリが逼迫するとカーネルが回収します。<strong>Linux、macOS、BSD でのデフォルトです。</strong> ディスク容量はリスト自体とほぼ同じだけ使います。</li>
+<li><strong><code translate="no" v-pre>reparse</code></strong>：リリースが落ち着いたらリストを解放し、読み取りや修復が必要になったときに NZB をディスクから読み直します。ディスクは一切使いません。これを選ぶ理由はそこにあります。<code translate="no" v-pre>data/</code> が大きくなってはいけないホストで使います。</li>
+<li><strong><code translate="no" v-pre>resident</code></strong>：すべての記事リストを常にメモリに置きます。<strong>以前の動作</strong>で、それ以前のすべてのビルドがこの方式でした。今も対応していますが、もうデフォルトではありません。</li>
+</ul>
+<p>どの設定でも、一覧表示では何も読み込みません。ファイル名、サイズ、記事数は、記事リストをメモリに置かずに返されます。そのため、ライブラリの更新、フィンガープリントの確認、*arr がジョブの完了を問い合わせる処理は、どれもメモリを消費しません。遅延モードのコストは、<code translate="no" v-pre>nzb_segments_idle_secs</code> の間（スイープは 30 秒ごとに実行されます）誰も触れていないリリースを初めて読むときに出ます。また、リリースのファイルは全部まとめて読み込まれます。そのため、シーズンパックの rar ボリュームを順番にたどると、読み込みコストは一度だけ払うことになります。</p>
+<p>60 ファイル、記事 30,000 件のリリースで測ると次のようになりました。</p>
+<retype-table copy-text="| | リリースごとのヒープ | 停止中リリースの初回読み取り | 読み取りパスでの記事 1 件あたり |
+|---|---|---|---|
+| `resident` | 1.74 MB | — | 6 ns |
+| `reparse` | 21.3 kB | 39 ms | 52 ns |
+| `mmap` | 16.6 kB | 0.27 ms | 63 ns |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>リリースごとのヒープ</th>
+<th>停止中リリースの初回読み取り</th>
+<th>読み取りパスでの記事 1 件あたり</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>resident</code></td>
+<td>1.74 MB</td>
+<td>—</td>
+<td>6 ns</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>reparse</code></td>
+<td>21.3 kB</td>
+<td>39 ms</td>
+<td>52 ns</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>mmap</code></td>
+<td>16.6 kB</td>
+<td>0.27 ms</td>
+<td>63 ns</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>記事 1 件あたり 50 ナノ秒は、1 件取得するのにかかるミリ秒単位の時間に比べれば無視できる量です。そのため、読み取りパスの数字は見た目ほど重要ではありません。注目すべきは再読み込みです。<code translate="no" v-pre>reparse</code> は XML 文書全体を読み直してパースし直します。シーズンパックでは、最初のバイトが動くまでに数十ミリ秒かかります。<code translate="no" v-pre>mmap</code> の場合は <code translate="no" v-pre>mmap</code> 呼び出し、ファイルごとのスライスヘッダー、そして今マップしたインデックスのチェックサム計算だけです。合計 0.08 ms で、残りの 0.19 ms は不正なバイトを、メッセージ ID として配信する前に検出するための代償です。</p>
+<p>リリース 1 件ではなく、ライブラリ全体で測るとこうなります。2,636 個の NZB、記事 2,760 万件。同じコーパスで同じバイナリを 3 回実行し、スキャン後にアイドル状態にしました。</p>
+<retype-table copy-text="| | 常駐セット | ライブヒープ | アイドル時の CPU | コールドオープン（p50） | ディスク上のインデックス |
+|---|---|---|---|---|---|
+| `resident` | 2,921 MB | 2,677 MB | 23 % | 806 ms | — |
+| `reparse` | 1,188 MB | 987 MB | 31 % | 1,018 ms | — |
+| `mmap` | **1,135 MB** | **921 MB** | 23 % | **694 ms** | 1,456 MB |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>常駐セット</th>
+<th>ライブヒープ</th>
+<th>アイドル時の CPU</th>
+<th>コールドオープン（p50）</th>
+<th>ディスク上のインデックス</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>resident</code></td>
+<td>2,921 MB</td>
+<td>2,677 MB</td>
+<td>23 %</td>
+<td>806 ms</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>reparse</code></td>
+<td>1,188 MB</td>
+<td>987 MB</td>
+<td>31 %</td>
+<td>1,018 ms</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>mmap</code></td>
+<td><strong>1,135 MB</strong></td>
+<td><strong>921 MB</strong></td>
+<td>23 %</td>
+<td><strong>694 ms</strong></td>
+<td>1,456 MB</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>ウォームオープン（1 ms）、ストリーミングのスループット（38〜39 MB/s）、起動時間は、3 つのモードでほとんど差がありませんでした。<code translate="no" v-pre>mmap</code> は、コールドのリリースを全部メモリに置いておくより<em>速く</em>開けます。<code translate="no" v-pre>resident</code> でも、この実行中に一度も開かれていないリリースはパースしなければならないからです。書き出されたアリーナをマップするのはシステムコール 1 回で済みますが、パースには数メガバイトの XML 処理が必要です。</p>
+<p>インデックスは NZB が変わるたびに自動で書き直されます。読めなくなったときは自分で修復します。NZB に戻って書き出し直すのです。NZB が監視ディレクトリから消えると、インデックスも削除されます。ヘッダーと中身の両方にチェックサムが付いているので、不正なバイトは、誰も投稿していないメッセージ ID として配信される前に検出されます。現在のサイズは、ダッシュボードのトップページの <strong>Article Index</strong> に表示されます。起動時にバックエンドが出力するログの行にも書かれています。<strong>Windows</strong> にはマッピングがありません。代わりにインデックスをヒープに読み込むことになりますが、それは常駐メモリに加えて再読み込みも発生する形になります。そのため Windows のデフォルトは <code translate="no" v-pre>resident</code> のままで、遅延モードを選ぶなら <code translate="no" v-pre>reparse</code> が候補になります。</p>
+<h2 id="troubleshooting">トラブルシューティング</h2>
+<retype-table copy-text="| 症状 | 原因 | 対処法 |
+|---|---|---|
+| 起動時に `Cannot reach the news server for nzb` と表示される | host/port/TLS の組み合わせが間違っている、認証情報が正しくない、またはプランが有効でない | `563` は `tls: true`、`119` は `tls: false` にします。そのあと認証情報を確認し直してください |
+| ライブラリが空で、`Loaded NZB` の行がない | `nzbs/` がない、または置き場所が違う | zurg の**作業ディレクトリ**からの相対パスです。systemd ユニットの `WorkingDirectory=`、Docker の場合は `/config` にマウントされているディレクトリ（compose ファイルの横にある `nzbs/`）を確認してください。`/config` より前のインストールだけが `/app/nzbs` を監視します |
+| 特定の NZB が表示されない | サブディレクトリにある、`.nzb.gz` という名前になっている、または解析できない | `nzbs/` 直下に移動し、展開してください。ログで `Skipping` の警告がないか確認してください |
+| リリースが意味のない名前で表示される | `&lt;meta type=&quot;name&quot;&gt;` がない場合、NZB のファイル名がそのまま名前になる | `.nzb` ファイルの名前をリリース名に変更してください |
+| リリース内のファイル名がランダムになっている | 難読化された投稿で、復元に失敗している | `Recovered N filename(s)` があるか確認してください。NZB に PAR2 ファイルが含まれていないと、本当の名前を取得する元がありません |
+| フォルダは正しいのに動画名がランダムのまま | 完全に難読化された投稿で、アーカイブに似たサイズのファイルが複数入っている | はっきりした単一のメインファイルだけがリリース名に変更されます。1 つのアーカイブにまとめられたシーズンパックは、アーカイブが持っていた名前のままになります |
+| ストリーミングが遅い | `connections` がデフォルトの 8 のまま | プランで許可されている数に設定してください |
+| しばらく再生していなかった後の最初の再生が、開始まで 1 秒ほどかかる（その後は問題ない） | warm floor がオフになっているか、1 接続のアカウントによって 0 に制限されている | `warm_connections` は未設定のままにしてください（デフォルトは 4）。`warm_connections` と、トップレベルの `warm_connections` のどちらも負の値に設定されていないか確認してください |
+| プロバイダーに接続が拒否される | `connections` がプランの上限を超えている | 実際の上限値まで下げてください |
+| 再生がカクつく、またはギャップが無音になる | 記事が欠けている | ログで `PAR2 repair of …` を探してください。`enable_repair: true` になっているか確認し、[別の Usenet プロバイダー](#more-than-one-usenet-provider)を追加してください |
+| ギャップが無音のままで、修復の行が一切出ない | `enable_repair` がオフになっているか、NZB に `.par2` ファイルが含まれていない | `enable_repair: true` に設定してください。投稿に復旧用ファイルがない場合、別のニュースアカウントしか助けになりません |
+| 2 つ目のプロバイダーに一度も問い合わせられていないようだ | 両方のアカウントが同じ `backbone` を持っていて、1 つ目が記事なしと答えた時点で 2 つ目がスキップされている | `backbone` の値を修正してください。本当に同じスプールにあるアカウントだけが同じ名前を共有すべきです |
+| 複数のアカウントのうち 1 つが使えないのに、起動は正常に見えた | 起動に失敗するのは、*すべての*アカウントに接続できない場合だけ | ログで `is not reachable` を検索してください。問題のあるアカウントごとに名前付きで警告が出ます |
+| 無制限のアカウントが持っている記事について、従量課金のアカウントに課金されている | そのアカウントに `backup: true` が設定されていない | 設定してください。これでプライマリが単に混雑しているだけの場合に、読み取りが従量課金のアカウントへ回されなくなります |
+| タグでフィルタしたディレクトリにリリースが表示されない | まだ解析されていないため、`zurg_*` タグが付いていない | 解析が終わるのを待つか、Dashboard から Analyze &amp; Tag Library を実行してください |
+| マウントに `.par2` ファイルが表示されない | 意図的な仕様で、修復用の補助ファイルとして非表示になっている | 対処は不要です。zurg は引き続きこれらを読み込みます |
+| Dashboard でプロバイダーを変更したが何も起きない | プロバイダーの変更は `config.yml` に書き込まれるが、ホットリロードはされない | zurg を再起動してください。プロバイダー表の下のバナーにもその旨が書かれています |
+| zurg の再起動後に Plex のライブラリが空になった | マウントが切れている間にスキャンが進行中で、auto-empty-trash が有効だった | auto-empty-trash を無効にし、再起動の前には必ずセッションを確認して、状態を更新してください |
+| リリースが表示された直後、ファイルサイズがわずかに変わった | 最初の一覧は記事数からの推定しかできず、正確なサイズは後から PAR2 インデックスまたはファイル自身の yEnc ヘッダーから届く | 想定どおりの動作で、一度で落ち着きます。サイズは `data/nzb-sizes/` に保存され、NZB が変わるまで保持されます |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>症状</th>
+<th>原因</th>
+<th>対処法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>起動時に <code translate="no" v-pre>Cannot reach the news server for nzb</code> と表示される</td>
+<td>host/port/TLS の組み合わせが間違っている、認証情報が正しくない、またはプランが有効でない</td>
+<td><code translate="no" v-pre>563</code> は <code translate="no" v-pre>tls: true</code>、<code translate="no" v-pre>119</code> は <code translate="no" v-pre>tls: false</code> にします。そのあと認証情報を確認し直してください</td>
+</tr>
+<tr>
+<td>ライブラリが空で、<code translate="no" v-pre>Loaded NZB</code> の行がない</td>
+<td><code translate="no" v-pre>nzbs/</code> がない、または置き場所が違う</td>
+<td>zurg の<strong>作業ディレクトリ</strong>からの相対パスです。systemd ユニットの <code translate="no" v-pre>WorkingDirectory=</code>、Docker の場合は <code translate="no" v-pre>/config</code> にマウントされているディレクトリ（compose ファイルの横にある <code translate="no" v-pre>nzbs/</code>）を確認してください。<code translate="no" v-pre>/config</code> より前のインストールだけが <code translate="no" v-pre>/app/nzbs</code> を監視します</td>
+</tr>
+<tr>
+<td>特定の NZB が表示されない</td>
+<td>サブディレクトリにある、<code translate="no" v-pre>.nzb.gz</code> という名前になっている、または解析できない</td>
+<td><code translate="no" v-pre>nzbs/</code> 直下に移動し、展開してください。ログで <code translate="no" v-pre>Skipping</code> の警告がないか確認してください</td>
+</tr>
+<tr>
+<td>リリースが意味のない名前で表示される</td>
+<td><code translate="no" v-pre>&lt;meta type=&quot;name&quot;&gt;</code> がない場合、NZB のファイル名がそのまま名前になる</td>
+<td><code translate="no" v-pre>.nzb</code> ファイルの名前をリリース名に変更してください</td>
+</tr>
+<tr>
+<td>リリース内のファイル名がランダムになっている</td>
+<td>難読化された投稿で、復元に失敗している</td>
+<td><code translate="no" v-pre>Recovered N filename(s)</code> があるか確認してください。NZB に PAR2 ファイルが含まれていないと、本当の名前を取得する元がありません</td>
+</tr>
+<tr>
+<td>フォルダは正しいのに動画名がランダムのまま</td>
+<td>完全に難読化された投稿で、アーカイブに似たサイズのファイルが複数入っている</td>
+<td>はっきりした単一のメインファイルだけがリリース名に変更されます。1 つのアーカイブにまとめられたシーズンパックは、アーカイブが持っていた名前のままになります</td>
+</tr>
+<tr>
+<td>ストリーミングが遅い</td>
+<td><code translate="no" v-pre>connections</code> がデフォルトの 8 のまま</td>
+<td>プランで許可されている数に設定してください</td>
+</tr>
+<tr>
+<td>しばらく再生していなかった後の最初の再生が、開始まで 1 秒ほどかかる（その後は問題ない）</td>
+<td>warm floor がオフになっているか、1 接続のアカウントによって 0 に制限されている</td>
+<td><code translate="no" v-pre>warm_connections</code> は未設定のままにしてください（デフォルトは 4）。<code translate="no" v-pre>warm_connections</code> と、トップレベルの <code translate="no" v-pre>warm_connections</code> のどちらも負の値に設定されていないか確認してください</td>
+</tr>
+<tr>
+<td>プロバイダーに接続が拒否される</td>
+<td><code translate="no" v-pre>connections</code> がプランの上限を超えている</td>
+<td>実際の上限値まで下げてください</td>
+</tr>
+<tr>
+<td>再生がカクつく、またはギャップが無音になる</td>
+<td>記事が欠けている</td>
+<td>ログで <code translate="no" v-pre>PAR2 repair of …</code> を探してください。<code translate="no" v-pre>enable_repair: true</code> になっているか確認し、<doc-anchor-trigger to="#more-than-one-usenet-provider">別の Usenet プロバイダー</doc-anchor-trigger>を追加してください</td>
+</tr>
+<tr>
+<td>ギャップが無音のままで、修復の行が一切出ない</td>
+<td><code translate="no" v-pre>enable_repair</code> がオフになっているか、NZB に <code translate="no" v-pre>.par2</code> ファイルが含まれていない</td>
+<td><code translate="no" v-pre>enable_repair: true</code> に設定してください。投稿に復旧用ファイルがない場合、別のニュースアカウントしか助けになりません</td>
+</tr>
+<tr>
+<td>2 つ目のプロバイダーに一度も問い合わせられていないようだ</td>
+<td>両方のアカウントが同じ <code translate="no" v-pre>backbone</code> を持っていて、1 つ目が記事なしと答えた時点で 2 つ目がスキップされている</td>
+<td><code translate="no" v-pre>backbone</code> の値を修正してください。本当に同じスプールにあるアカウントだけが同じ名前を共有すべきです</td>
+</tr>
+<tr>
+<td>複数のアカウントのうち 1 つが使えないのに、起動は正常に見えた</td>
+<td>起動に失敗するのは、<em>すべての</em>アカウントに接続できない場合だけ</td>
+<td>ログで <code translate="no" v-pre>is not reachable</code> を検索してください。問題のあるアカウントごとに名前付きで警告が出ます</td>
+</tr>
+<tr>
+<td>無制限のアカウントが持っている記事について、従量課金のアカウントに課金されている</td>
+<td>そのアカウントに <code translate="no" v-pre>backup: true</code> が設定されていない</td>
+<td>設定してください。これでプライマリが単に混雑しているだけの場合に、読み取りが従量課金のアカウントへ回されなくなります</td>
+</tr>
+<tr>
+<td>タグでフィルタしたディレクトリにリリースが表示されない</td>
+<td>まだ解析されていないため、<code translate="no" v-pre>zurg_*</code> タグが付いていない</td>
+<td>解析が終わるのを待つか、Dashboard から Analyze &amp; Tag Library を実行してください</td>
+</tr>
+<tr>
+<td>マウントに <code translate="no" v-pre>.par2</code> ファイルが表示されない</td>
+<td>意図的な仕様で、修復用の補助ファイルとして非表示になっている</td>
+<td>対処は不要です。zurg は引き続きこれらを読み込みます</td>
+</tr>
+<tr>
+<td>Dashboard でプロバイダーを変更したが何も起きない</td>
+<td>プロバイダーの変更は <code translate="no" v-pre>config.yml</code> に書き込まれるが、ホットリロードはされない</td>
+<td>zurg を再起動してください。プロバイダー表の下のバナーにもその旨が書かれています</td>
+</tr>
+<tr>
+<td>zurg の再起動後に Plex のライブラリが空になった</td>
+<td>マウントが切れている間にスキャンが進行中で、auto-empty-trash が有効だった</td>
+<td>auto-empty-trash を無効にし、再起動の前には必ずセッションを確認して、状態を更新してください</td>
+</tr>
+<tr>
+<td>リリースが表示された直後、ファイルサイズがわずかに変わった</td>
+<td>最初の一覧は記事数からの推定しかできず、正確なサイズは後から PAR2 インデックスまたはファイル自身の yEnc ヘッダーから届く</td>
+<td>想定どおりの動作で、一度で落ち着きます。サイズは <code translate="no" v-pre>data/nzb-sizes/</code> に保存され、NZB が変わるまで保持されます</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="asking-about-one-article">1 つの記事について問い合わせる</h3>
+<p><code translate="no" v-pre>GET /debug/nzb/probe</code> は、zurg がすでに使っているプールを通じて、ニュースアカウントに 1 件の問い合わせを送ります。優先度は通常のデマンド読み取りと同じです。このエンドポイントがあるのは、ほかの方法がうまくいかなかったからです。アカウントの接続数は 8 本で、zurg がその 8 本をすべて使ってしまいます。そのため投稿を手動で確認しようとすると、別のアカウントを用意するか、サーバーを止めるしかありませんでした。しかしサーバーを止めると、調べたい状態そのものが消えてしまいます。</p>
+<p>Windows では、これらのコマンドで <code translate="no" v-pre>curl</code> ではなく <code translate="no" v-pre>curl.exe</code> を入力してください。</p>
+<div id="asking-about-one-article-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash"># Is this article still there? A STAT, so nothing is transferred.
+curl -u user:pass 'http://localhost:9999/debug/nzb/probe?message_id=abc@news.example'
+
+# The same question addressed the way you have it: a release id from the
+# library, a file index counting from zero, an article number counting from one.
+curl -u user:pass 'http://localhost:9999/debug/nzb/probe?release=&lt;nzb id&gt;&amp;file=0&amp;article=3'
+
+# &amp;body=1 fetches the one article and reports what actually arrived against what
+# the article says should have. This is how a provider that strips trailing
+# bytes is identified: `short: true` with `decoded_bytes` below `span_bytes`.
+curl -u user:pass 'http://localhost:9999/debug/nzb/probe?release=&lt;nzb id&gt;&amp;article=3&amp;body=1'</code></pre>
+</doc-codeblock></div>
+<p>レスポンスは <code translate="no" v-pre>{&quot;probes&quot;: [...]}</code> の形で返ります。<code translate="no" v-pre>nzb</code> プロバイダーの 1 件のオブジェクトに、<code translate="no" v-pre>found</code>(見つかったか)、<code translate="no" v-pre>missing</code>(見つからなかったか)、かかった時間が入ります。ニュースアカウントには優先順に問い合わせていき、どれかが記事を持っていた時点で止まります。バックアップのアカウントは、プライマリがすべて見つけられなかった場合にだけ問い合わせます。どのニュースアカウントが記事を持っていたかは返りません。このエンドポイントは読み取り専用です。取得したデータが記事キャッシュに入ることはありません。また、見つからなかった記事が「dead」として記録されることもないので、再生できているファイルがこの問い合わせで止められることはありません。</p>
+<hr>
+<p>まだ解決しませんか？ <a href="https://discord.com/invite/7u4YjMThXP">Discord</a> の <strong>zurg-support</strong> フォーラムで質問してください。何を書けばよいかは <a href="../../../guides/remote-help/">サポートの受け方</a> にまとめてあります。</p>
+<h2 id="see-also">関連項目</h2>
+<ul>
+<li><a href="../../reference/config/">config.md</a> — すべてのオプション。<a href="../../reference/config/#usenet-accounts">Usenet アカウントのリファレンス</a>と<a href="../../reference/config/#7-directories--filters">ディレクトリフィルターのリファレンス</a>も含みます。</li>
+<li><a href="../plex/">plex.md</a> — zurg が Plex のスキャン、マッチング、ゴミ箱掃除をどう動かすか</li>
+<li><a href="../jellyfin/">jellyfin.md</a> — Jellyfin との連携</li>
+<li><a href="../../setup/docker/">docker.md</a> — Docker のセットアップ、FUSE の伝播、トラブルシューティング</li>
+<li><a href="../../reference/tags/">tags.md</a> — タグシステム</li>
+<li><a href="../../internals/architecture/">architecture.md</a> — 全体の中での <code translate="no" v-pre>internal/nzb</code> と <code translate="no" v-pre>internal/nntp</code></li>
+</ul>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/guides/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">前へ</span>
+                                <span class="block mt-1">ガイド</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/guides/sonarr-radarr/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">次へ</span>
+                                <span class="block mt-1">Sonarr と Radarr で Usenet を使う</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Usenet", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/guides/usenet.md" }</script>
+</body>
+</html>

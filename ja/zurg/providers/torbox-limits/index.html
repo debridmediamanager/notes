@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="ja" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/ja">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672716444">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>TorBoxの制限と、zurgがそれにどう対応するか</title>
+    <meta name="title" content="TorBoxの制限と、zurgがそれにどう対応するか">
+    <meta name="description" content="zurg のライブラリ動作は Real-Debrid の制約に合わせて育ってきました。TorBox の制約は規模が違うだけでなく、性質そのものが違います。Real-Debrid">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/ja/zurg/providers/torbox-limits/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/ja/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/ja/zurg/providers/torbox-limits/">
+    <meta property="og:title" content="TorBoxの制限と、zurgがそれにどう対応するか">
+    <meta property="og:description" content="zurg のライブラリ動作は Real-Debrid の制約に合わせて育ってきました。TorBox の制約は規模が違うだけでなく、性質そのものが違います。Real-Debrid">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="ja_JP">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/ja/zurg/providers/torbox-limits/">
+    <meta name="twitter:title" content="TorBoxの制限と、zurgがそれにどう対応するか">
+    <meta name="twitter:description" content="zurg のライブラリ動作は Real-Debrid の制約に合わせて育ってきました。TorBox の制約は規模が違うだけでなく、性質そのものが違います。Real-Debrid">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/ja/zurg/providers/torbox-limits.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672716444" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672716444" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672716444" data-turbo-eval="false" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/ja/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>日本語</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/download.html" target="_blank">zurgをダウンロード</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/ja/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">スポンサー</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>日本語</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/download.html" target="_blank">zurgをダウンロード</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/ja/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">スポンサー</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="torbox-limits-and-how-zurg-adapts-to-them">TorBoxの制限と、zurgがそれにどう対応するか</h1>
+<p>zurg のライブラリ動作は Real-Debrid の制約に合わせて育ってきました。TorBox の制約は規模が違うだけでなく、性質そのものが違います。Real-Debrid と同じように扱うと、最初のライブラリスキャンから数秒でアカウントがレート制限を受けてしまいます。ここでは、その制限が何か、数値がどこから来ているか、そして zurg が各制限にどう対処するかを説明します。</p>
+<p>プロバイダーの制限はコード内で <code translate="no" v-pre>debrid.Capabilities</code> として宣言されており、汎用のライブラリコードはそれを直接読み取ります。そのため、ほかのバックエンドを追加するときは、この構造体を埋めるだけで済みます。torrent マネージャーを編集する必要はありません。</p>
+<h2 id="rate-limits">レート制限</h2>
+<retype-table copy-text="| 上限 | 値 | 出典 |
+|---|---|---|
+| 全エンドポイント合計、APIトークンごと | 300/min | [公式](https://api-docs.torbox.app/) |
+| `POST /torrents/createtorrent`（キャッシュにないものだけ） | 60/hour | 公式に記載 |
+| `POST /webdl/createwebdownload`、`POST /usenet/createusenetdownload` | 60/hour | 公式に記載 |
+| `GET /torrents/requestdl` | **約100回の呼び出しの後に429** — レートではなく予算 | 実測、2026-08-30 |
+| 1つのCDNホストへの同時接続数 | **ちょうど20**、それを超えると429 | 実測、2026-08-23 |
+| 全体のバースト上限 | 約40の同時接続で発動し、*全*エンドポイントを絞る | 実測 |
+| 429からの回復 | `Retry-After: 300`、二択の切り替え | 実測 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>上限</th>
+<th>値</th>
+<th>出典</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>全エンドポイント合計、APIトークンごと</td>
+<td>300/min</td>
+<td><a href="https://api-docs.torbox.app/">公式</a></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>POST /torrents/createtorrent</code>（キャッシュにないものだけ）</td>
+<td>60/hour</td>
+<td>公式に記載</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>POST /webdl/createwebdownload</code>、<code translate="no" v-pre>POST /usenet/createusenetdownload</code></td>
+<td>60/hour</td>
+<td>公式に記載</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>GET /torrents/requestdl</code></td>
+<td><strong>約100回の呼び出しの後に429</strong> — レートではなく予算</td>
+<td>実測、2026-08-30</td>
+</tr>
+<tr>
+<td>1つのCDNホストへの同時接続数</td>
+<td><strong>ちょうど20</strong>、それを超えると429</td>
+<td>実測、2026-08-23</td>
+</tr>
+<tr>
+<td>全体のバースト上限</td>
+<td>約40の同時接続で発動し、<em>全</em>エンドポイントを絞る</td>
+<td>実測</td>
+</tr>
+<tr>
+<td>429からの回復</td>
+<td><code translate="no" v-pre>Retry-After: 300</code>、二択の切り替え</td>
+<td>実測</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>上限はAPIトークンごとで、TorBoxのサーバー間で同期されています。IPごとではないので、他のマシンからの追加クライアントも同じ予算を共有します。TorBoxも明言していて、上限はトークンで管理されているため、IPホワイトリストの申請受付を停止しました。</p>
+<p>見出しの300/minの数字より厳しくなる理由が3つあります:</p>
+<ul>
+<li><strong>300/minはエンドポイントごとではありません。</strong> キー全体で使う1つの予算なので、各エンドポイントを個別にペース調整すると、どれも単独では超えない上限を合計が超えてしまうことがあります。</li>
+<li>
+<p><strong><code translate="no" v-pre>requestdl</code>はドキュメントより遥かに厳しく、しかもレートではありません。</strong> ダウンロードURLを発行するエンドポイントで、同じ同時実行数で<code translate="no" v-pre>user/me</code>、<code translate="no" v-pre>mylist</code>、<code translate="no" v-pre>checkcached</code>が500回以上を処理できたのに、約100回で打ち切られました。</p>
+<p>ペースを落としても増えません。2026-08-30にメインアカウントで実測しました。各回ロックアウトをリセットした状態から3回ずつ実行:</p>
+<retype-table copy-text="| ペース | 429が発生した時点 | 経過時間 |
+  |---|---|---|
+  | できるだけ速く、60→240/minに段階的に上げる | 呼び出し **100** 回目 | 56s |
+  | 1秒に1回（60/min） | 呼び出し **94** 回目 | 108s |
+  | 2秒に1回（30/min） | 呼び出し **101** 回目 | 198s |
+  | 3秒に1回（20/min） | **発生せず** — 241回 | 721s、問題なし |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>ペース</th>
+<th>429が発生した時点</th>
+<th>経過時間</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>できるだけ速く、60→240/minに段階的に上げる</td>
+<td>呼び出し <strong>100</strong> 回目</td>
+<td>56s</td>
+</tr>
+<tr>
+<td>1秒に1回（60/min）</td>
+<td>呼び出し <strong>94</strong> 回目</td>
+<td>108s</td>
+</tr>
+<tr>
+<td>2秒に1回（30/min）</td>
+<td>呼び出し <strong>101</strong> 回目</td>
+<td>198s</td>
+</tr>
+<tr>
+<td>3秒に1回（20/min）</td>
+<td><strong>発生せず</strong> — 241回</td>
+<td>721s、問題なし</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>レートを半分にすると90秒多く使えただけで呼び出し数は増えず、さらに半分にすると429は一切発生しませんでした。このアカウントが持っているのは <strong>5分間のローリングウィンドウで100回、つまり20/min</strong> で、4回の実行すべてに合うのはこの解釈だけです。最初の3回ではt≈100s、t≈200s、そして即時に発生すると予測し、4回目はちょうど境界線上で耐えると予測します。</p>
+<p>このファイルの残りを読むうえで一番大事な訂正です。分単位のリミッターではzurgを予算内に収められないので、以下のペース設定の数値は余裕を作るためではなく滑らかさのためのものです。リミッターを速くしてもライブラリスキャンが早く終わるわけではなく、同じロックアウトに早く到達して、発生すると5分間マウントが何にも応答しなくなるだけです。スキャンがどこまで進むかを決めるのは <strong>呼び出しを減らすこと</strong> だけです。だからここでは先読みを見送り、解決済みファイルの名前付けでリクエストを1回も使ってはいけないのです。</p>
+</li>
+<li><strong>429は坂ではなく崖です。</strong> 一度発動すると、約5分間すべてのリクエストが失敗します。耐えられる部分的なスループット低下はありません。</li>
+</ul>
+<p>CDNのダウンロードは別で計測され、APIの予算は共有 <strong>しません</strong>。ファイルのストリーミングがリンク解決の枠を消費することはありません。これは両方向で確認しました。CDNダウンロードを429まで飽和させても<code translate="no" v-pre>requestdl</code>は正常に応答し続け、逆も同様でした。</p>
+<h3 id="two-different-limits-both-numbered-20">どちらも20という数字の、2つの異なる制限</h3>
+<p>上の表には 20 が2回出てきますが、この2つは無関係です。混同しやすく、間違ったものを制限してしまう原因になります。</p>
+<ul>
+<li><strong><code translate="no" v-pre>requestdl</code> の同時実行 ~20</strong> は <em>API</em> の上限です。この同時実行数だと、429 が返されるまでに約100回の呼び出しができ、アカウントのリクエスト枠を消費します。</li>
+<li><strong>CDN ホストあたり 20 接続</strong> は <em>バイト転送経路</em> の上限です。2026-08-23 に、段階的に増やしながら計測しました。<code translate="no" v-pre>requestdl</code> の呼び出しは一切不要で、一度取得済みの URL を再利用するだけで到達します。</li>
+</ul>
+<p>バイト転送経路の上限は <strong>ちょうど 20</strong> です。なだらかに頭打ちになるのではなく、厳密な上限として動作します。24、32、40、48 接続を要求しても、常に 20 接続で安定し、上限を超える分は接続拒否（refusals）として返されます。</p>
+<p>これは <strong>CDN ホスト単位であり、オブジェクト単位でも IP 単位でもありません</strong>。以前の「Cloudflare 層での IP 単位」という理解を訂正するものです。</p>
+<ul>
+<li>1つの <code translate="no" v-pre>nexus-NNN</code> ホストから配信される <strong>異なる2つのファイル</strong> は、20 の上限を1つの枠として共有し、超過分は同じように拒否されます。</li>
+<li>同じ負荷を2つのホストに分けると、問題なく動作します。</li>
+<li>同じ IP から、16 ホストに分散した 32 の同時ストリームは問題ありません。</li>
+</ul>
+<p>同じ方法で計測した他のプロバイダーとの比較です。Real-Debrid はホストあたり 32 が上限で、TCP 層で HTTP ステータスなしに拒否します。AllDebrid は 32 で、HTTP 429 を返します。Premiumize は 64 まで上限が見られませんでした。TorBox の 20 は、4社の中で最も低い数値です。</p>
+<p><strong>TorBox のグローバルエッジには、この上限はありません。</strong> 20 は、<code translate="no" v-pre>requestdl</code> が発行するノードごとの <code translate="no" v-pre>nexus-NNN.&lt;region&gt;.tb-cdn.st</code> ホストの特性です。2つのグローバルエッジ（<code translate="no" v-pre>nexus.erth.tb-cdn.earth</code> と <code translate="no" v-pre>nexus.hare.tb-cdn.earth</code>）は、アカウント内の任意のファイルを配信でき、どちらも 64 同時接続まで段階的に増やしても拒否はゼロでした。異なるのはホストだけで、パスとトークンは今もリクエストの認証に使われます。zurg は現時点ではそちらへ書き換えません（兄弟サービスの <code translate="no" v-pre>debrid</code> は <code translate="no" v-pre>TORBOX_CDN_EDGE</code> 経由で書き換えます）。そのため、ここでは下記の上限が適用されます。</p>
+<h3 id="what-zurg-does">zurgがやること</h3>
+<ul>
+<li>
+<p><strong><code translate="no" v-pre>GetTorrentInfo</code> は torrent 一覧から返されます。</strong> TorBox の <code translate="no" v-pre>mylist</code> にはすべての torrent のファイル一覧がすでに含まれているため、ライブラリの更新は torrent ごとに 1 回ずつではなく、リクエスト 1 回で済みます。これは <code translate="no" v-pre>Capabilities.ListIncludesFiles</code> として宣言されています。このフラグを設定したプロバイダーでは、更新処理が torrent ごとの呼び出しとディスク上の情報キャッシュの両方をスキップします。torrent が 213 件あるアカウントでは、リクエスト数が 213 回から 1 回になります。</p>
+</li>
+<li>
+<p><strong>1 つのリミッターですべてのエンドポイントを制御します。</strong> 上限は文書化された 300/分に対して 240/分に設定しています。同じキーを使う他のもの（TorBox のダッシュボード、別のクライアント、2 つ目の zurg など）のために余裕を残しています。</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>requestdl</code> には、さらに別のリミッターがあります。</strong> 上限は 15/分です。解決処理は両方のリミッターから枠を使います。この数値は実測の 20/分ちょうどではなく、少し下に設定しています。理由は、全体のリミッターを 300 ではなく 240 にしているのと同じです。枠はそのキーを持つすべてのものが使うため、20/分は他に何も使っていない状態で測定された値だからです。<code translate="no" v-pre>TestTheRequestdlBudgetCannotBeSpentInsideItsWindow</code> が本当に守りたい条件を検証しています。つまり、枠を全部使い切ると、それを補充するウィンドウの中で使えてしまう、という状態を防ぎます。そのため、この定数がこっそり上限を超える値に戻ることはありません。</p>
+</li>
+<li>
+<p><strong>ダウンロードクライアントは、CDN ホストごとに 20 接続までに制限しています。</strong> （<code translate="no" v-pre>internal/torbox/client.go</code> の <code translate="no" v-pre>maxConnsPerCDNHost</code>。<code translate="no" v-pre>rdclient.HTTPClientOptions.MaxConnsPerHost</code> 経由で渡しています。）Go の <code translate="no" v-pre>MaxConnsPerHost</code> は、21 個目のリクエストを失敗させるのではなく、空きの接続ができるまで<em>待たせます</em>。そのため、この上限によって、プロバイダーによる拒否が手元でのキューイングに変わります。この設定がないと、ダウンロードクライアントは汎用トランスポートの無制限設定を引き継いでしまい、すべての API リミッターを守っていても、バイト転送の段階で 429 を受ける可能性がありました。</p>
+</li>
+<li>
+<p><strong>429 応答が出ると、すべての呼び出し元を <code translate="no" v-pre>Retry-After</code> の時間だけ待機させます。</strong> 各呼び出しが個別にリクエストを消費してロックアウトを確かめ直す、という無駄を防ぎます。このロックアウトはアカウント単位なので、どれかのエンドポイントで 429 を受けると、他のすべてのエンドポイントも待機します。</p>
+</li>
+<li>
+<p><strong>同時実行は、処理中のリクエストを 16 件までに制限しています。</strong> これは全体のバースト上限（約 40）より低く、ダウンロードクライアント用の余裕を残すためです。</p>
+</li>
+<li>
+<p><strong>先読みはしないことにしました。</strong> zurg は、コールドリードの際に、そのリリースの次のファイルを先に温めます。分あたりの枠に実際の上限があるバックエンドなら、これを吸収できます。問題になるのはライブラリのスキャンです。スキャンは各ファイルを 1 回ずつ開くため、開くたびにコールドになります。そのため、ウォームリードの拒否判定が一度も働かず、ファイル 1 つにつき 2 回の解決がアカウントに要求されてしまいます。2026-08-30 の計測では、40 ファイルのスキャンで、読み込み 40 回と並行して投機的な解決が 40 回発生しました。誰も求めていないファイルのために、枠の半分を使っていたことになります。TorBox は <code translate="no" v-pre>Capabilities.SpeculativeResolutionsAffordable</code> を false として宣言しており、投機的な解決は一切要求されません。</p>
+</li>
+<li>
+<p><strong>解決済みファイルの名前取得では、リクエストを消費しません。</strong> 解決のたびに、ダウンロード記録用にそのファイルの名前とサイズを調べます。以前はこの調べ物をリストのスナップショット経由で行っていたため、30 秒の鮮度ウィンドウが切れると、次の読み込みでは答える前に torrent 一覧全体を取得する必要がありました。スキャン中は 30 秒ごとに、スキャンが続く限りこれが繰り返され、3,700 件のライブラリでは一覧取得が 4 ページ分に及びました。今は、そのリストがどれだけ古くても、手元にある一覧をそのまま読みます。完了した torrent のファイル名とサイズは変わらないため、これで問題ありません。</p>
+</li>
+<li>
+<p><strong>リンクキャッシュは 1 日保持し、明示的な拒否があった場合は回復します。</strong> 2026-08-30 の検証では、<code translate="no" v-pre>requestdl</code> を繰り返し呼ぶと、1 時間後であっても同じ URL が返されました。また、3 時間 25 分経過した URL でもまだ <code translate="no" v-pre>206</code> が返されました。これは再利用されることを示していますが、無期限に有効だという意味ではありません。2026-09-04 には、正しく認証された、キャッシュ済みの URL が <code translate="no" v-pre>400</code> と「Invalid Presigned Token」を返しました。一方で、同じ torrent とファイルに対する新しい解決では、別のホストとパスが返され、<code translate="no" v-pre>206</code> が配信されました。クエリは変わっていませんでした。古い URL のパスとクエリだけを新しいホストに移しても、やはり <code translate="no" v-pre>400</code> が返されました。</p>
+<p>24 時間のキャッシュは、枠の使い方を考えた結果です。スキャンは 20/分で解決を進めるため、数時間かかることがあります。明示的な無効トークンの拒否があった場合、その URL を無効にして、新しく解決し直します。同時に読み込む処理は解決の作業を共有します。また、遅れて届いた拒否が、より新しいキャッシュ済み URL を追い出すことはありません。新しく解決した URL も拒否された場合、そのファイルに問題があると判断せず、再生をローカルで 1 分間一時停止します。曖昧な 400 は、URL が古いという証拠にはならないため、短いクールダウンを発生させるだけです。CDN からの 429 では <code translate="no" v-pre>Retry-After</code> を保持し、ファイルをまたいで、また検証の呼び出しも含めて、そのホストへの読み込みを待機させます。API の枠は別管理のままです。</p>
+</li>
+<li>
+<p><strong>すべての一覧呼び出しで <code translate="no" v-pre>bypass_cache=true</code> を指定します。</strong> TorBox 側の <code translate="no" v-pre>mylist</code> キャッシュの TTL は約 5 分です。そのキャッシュから返すと、WebDAV マウントが実際の状態より 5〜15 分遅れる原因になります。このパラメーターはレート制限の枠を消費せず、反映までの時間を 1 秒未満に短縮します。</p>
+</li>
+<li>
+<p><strong>ポーリング 1 回につき、一覧取得も 1 回だけです。</strong> ライブラリの変更ポーリングだけが強制的に取得を行います。変更を検知することがその役割だからです。同じティックで行うアクティブ数の取得と、変更後に続く完全な更新は、直前に埋められたスナップショットを読みます。ここでも強制取得すると、ポーリング 1 回につきライブラリ全体を 2〜3 回読み直すことになります。デフォルトの 10 秒間隔では、1 日に数千回もの無駄なライブラリ全体の読み込みが発生します。しかも、zurg がすでにバイパスしている、TorBox 側の一覧キャッシュに対してです。</p>
+</li>
+<li>
+<p><strong>一覧は 1000 件ずつのページに分けて取得します。</strong> <code translate="no" v-pre>mylist</code> は 1 回の応答を 1000 件までに制限します。これは <code translate="no" v-pre>limit</code> の文書化されたデフォルト値で、それ以上を指定しても上限は上がりません。一方で、総数も「まだ続きがある」という情報も返しません。そのため、1 回のリクエストでは、件数の多いアカウントに対して最新の 1000 件だけが返り、完全なライブラリとまったく同じに見えてしまいます。zurg は、ページが不足するまで <code translate="no" v-pre>offset</code> でページングを続け、途中で ID の重複を除去します。一覧は ID の降順で並んでいるため、取得の途中で新しい torrent が追加されると、ウィンドウが 1 つずれ、境界で同じ項目が重複して現れることがあるためです。</p>
+</li>
+</ul>
+<h2 id="account-limits">アカウントの制限</h2>
+<retype-table copy-text="| プラン | アクティブスロット | シーディング | 最大トレントサイズ | 備考 |
+|---|---|---|---|---|
+| Free | 1 | なし | 10 GB | 24時間に1件、月10件まで追加可能、プライベートトレントなし |
+| Essential | 3 | — | 200 GB | クールダウンなし、キャッシュ済みの追加は無制限 |
+| Standard | 5 | 2週間 | — | |
+| Pro | 10 | 30日 | — | 30日で期限切れ |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>プラン</th>
+<th>アクティブスロット</th>
+<th>シーディング</th>
+<th>最大トレントサイズ</th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Free</td>
+<td>1</td>
+<td>なし</td>
+<td>10 GB</td>
+<td>24時間に1件、月10件まで追加可能、プライベートトレントなし</td>
+</tr>
+<tr>
+<td>Essential</td>
+<td>3</td>
+<td>—</td>
+<td>200 GB</td>
+<td>クールダウンなし、キャッシュ済みの追加は無制限</td>
+</tr>
+<tr>
+<td>Standard</td>
+<td>5</td>
+<td>2週間</td>
+<td>—</td>
+<td> </td>
+</tr>
+<tr>
+<td>Pro</td>
+<td>10</td>
+<td>30日</td>
+<td>—</td>
+<td>30日で期限切れ</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>出典: <a href="https://support.torbox.app/en/articles/9836418-account-restrictions">アカウント制限</a>。</p>
+<p><code translate="no" v-pre>/user/me</code> はプランを数字で返しますが、その数字は価格順ではありません: <strong>0 Free, 1 Essential, 2 Pro, 3 Standard</strong>。Standard は Pro の後に追加されました。2026-10-03 まで zurg はプラン 2 を Standard として読んでいたため、Pro アカウントは 5 スロットと Standard の利用下限を与えられていました。</p>
+<p><strong>アクティブスロットは TorBox を特徴づける制限で、Real-Debrid では帯域幅がそれにあたります。</strong> トレントはダウンロード中も <em>シーディング中も</em> スロットを占有するため、有料プランでは完了したトレントが最長 30 日間スロットを使い続けることがあります。</p>
+<h3 id="what-zurg-does-1">zurgがやること</h3>
+<ul>
+<li>
+<p><strong><code translate="no" v-pre>GetActiveTorrentCount</code> は、プランの実際の上限を報告します。</strong>
+user レコードの <code translate="no" v-pre>plan</code> から読み取るため、repair は上限に達するとブロックして待機し、アカウントに拒否される追加を queue に入れなくなります。プロバイダーが上限を報告しない場合は、永遠にブロックするのではなく、無制限として扱います。</p>
+</li>
+<li>
+<p><strong>追加したトレントは、デフォルトで seed しない設定になります。</strong> Seeding は数週間もスロットを占有し、送信トラフィックも課金されるため、ストリーミング用のマウントには何の役にも立ちません。プライベートトラッカーで ratio を気にするオペレーターの場合は、<code translate="no" v-pre>tb_seed_torrents</code> で変更できます。<code translate="no" v-pre>never</code> は <code translate="no" v-pre>seed=3</code>（デフォルト）を送信し、<code translate="no" v-pre>always</code> は <code translate="no" v-pre>seed=2</code> を送信し、<code translate="no" v-pre>auto</code> はこのフィールドを省きます。TorBox 自身によるこのフィールドの説明は &quot;1 is auto. 2 is seed. 3 is don&#x27;t seed. Optional. Default is 1, or whatever the user has in their settings. Overwrites option in settings&quot; です。つまり、<code translate="no" v-pre>1</code> を含め送信した値はどれもアカウントの Seeding 設定を上書きし、フィールドを省いた場合だけ設定が適用されます。同じモードは 3 つの追加パスすべて（magnet 追加、キャッシュのみの追加、<code translate="no" v-pre>.torrent</code> のアップロード）に適用されます。Seeding を有効にすると、完了したトレントがスロットを保持し続けるため、seed 中のトレントがすべてのスロットを占有すると、repair と download-client エンドポイントが上限に当たって止まります。</p>
+</li>
+<li>
+<p><strong>追加する前にキャッシュを確認することは一切ありません。</strong> <code translate="no" v-pre>checkcached</code> は呼び出し箇所が一つもありません。キャッシュのみモード（<code translate="no" v-pre>qbittorrent.download_timeout_mins: 0</code>）だけが例外でしたが、現在はこのモードでも他のバックエンドと同じように、トレントを追加してインスタンスを監視する方式に変わりました。理由は、このエンドポイントが報告するのは、コンテンツが TorBox のキャッシュにあるかどうかであって、このアカウントが実際にそれを保持できるかどうかではないからです。キャッシュにない場合は実際にコストがかかります。キャッシュにない追加は、確認だけなら消費しなかった 60 回/時の枠を消費します。キャッシュにある追加は、引き続き 300 回/分の枠の対象です。</p>
+</li>
+</ul>
+<h2 id="content-expiry">コンテンツの有効期限</h2>
+<p>Pro のコンテンツは30日で期限切れになります。期限切れのトレントは、API からは <code translate="no" v-pre>expired</code> または <code translate="no" v-pre>reported missing</code> として返ってきます。それでも <code translate="no" v-pre>download_finished: true</code> と <code translate="no" v-pre>download_present: false</code> は報告されたままです。</p>
+<p><code translate="no" v-pre>download_finished</code> だけを見ると、どのリンクも 404 になるトレント全体をマウントしてしまいます。zurg は両方の表現を <code translate="no" v-pre>error</code> ステータスにマップし、<code translate="no" v-pre>Capabilities.ContentExpires</code> でそれをバックエンドの通常の状態として扱い、障害とはみなしません。</p>
+<p><strong>この2つのブール値だけでは、データが消えたとは判断できません。</strong> 正常なキャッシュなしダウンロードも、<code translate="no" v-pre>processing</code>、<code translate="no" v-pre>downloading</code>、<code translate="no" v-pre>uploading</code> を経る間の最後の 9.6 秒間は <code translate="no" v-pre>download_finished: true</code> と <code translate="no" v-pre>download_present: false</code> を報告します。これは 2026-08-30 に 0.5 秒間隔のポーリングで測定し、<code translate="no" v-pre>docs/torrent-lifecycle.md</code> にまとめてあります。以前の zurg は、state の文字列に関係なくこの組み合わせを死とみなしていたため、<code translate="no" v-pre>delete_error_torrents: true</code> で動いているインスタンスでは、ダウンロードの途中でこうしたトレントが削除されてしまいました。当日だけで5つのプローブ用トレントがこの形で消えています。現在は、<code translate="no" v-pre>download_state</code> がまったくないペイロードに対してのみ構造ルールで判断します。コードがまだ見たことのない表現は、代わりに作業中として扱われます。<code translate="no" v-pre>processing</code> も測定されるまではそうした表現の一つだったからです。</p>
+<p>それでもそうしたファイルに読み取りが届いた場合、呼び出し回数は1回では済まなくなりました。配信パスは、発行済みの配信 URL に対する 404 を、ファイルがないのではなく失効したリンクとして扱います。これは Real-Debrid での挙動と同じで、Real-Debrid ではダウンロードの行が削除されるとコードが無効になります。そのため、諦める前に再解決を行います。その結果、期限切れの TorBox ファイルは、1回の読み取りあたり <code translate="no" v-pre>requestdl</code> を最大4回呼び出すようになりました（以前は1回）。呼び出し回数は読み取りごとに上限があり、一覧ではすでにそのトレントが <code translate="no" v-pre>error</code> とマークされているので、この速度で期限切れのライブラリ全体を走査することはありません。ただし、同じ期限切れパスを連続で叩くクライアントは、以前の4倍のコストを払うことになります。</p>
+<h3 id="what-zurg-does-2">zurgがやること</h3>
+<p><strong>期限切れになるバックエンドのトレントは、何があっても自動で再追加されません。</strong> 修復では、壊れたトレントのマグネットをもう一度追加します。これは、コンテンツを保持するバックエンドでは修復になりますが、期限切れにするバックエンドでは再ダウンロードになります。ライブラリ全体にこれをタイマーで繰り返すのは、TorBoxがアカウント停止の理由として最初に挙げている行為です。「excessive transfer retention (using tools to artificially keep transfers active)」（転送を人為的に維持するツールを使った過剰な転送保持）がそれにあたります。さらに、キャッシュされていない再追加はどれも、プランの枠に数えられる受信転送になります。</p>
+<p>そのため、定期スキャンは、修復可能なコピーが<code translate="no" v-pre>ContentExpires</code>を宣言しているプロバイダーにあるトレントをスキップします。これらは壊れたまま表示され続けます。ダッシュボードの修復ボタンは引き続き動作しますし、Real-Debridにも同じリリースがあれば、そのコピーからいつも通り修復されます。違いは何が壊れたかではなく、誰が要求したかです。</p>
+<h2 id="usage-and-the-abuse-system">利用状況と不正利用対策システム</h2>
+<p>TorBox は、リクエストを細かく取り締まったりはしません。代わりに、15日間のローリングウィンドウで転送されたバイト数を測ります。その上限は、各プランの99パーセンタイルから導き出された値です。警告は3回出て、<strong>警告のたびに API キーがローテーションされます</strong>。4回目でBANです。公表されている下限（動的しきい値がこれ以下にはならない値）は次のとおりです。</p>
+<retype-table copy-text="| Plan | Floor |
+|---|---|
+| Free | 5 TB/month |
+| Essential | 10 TB/month |
+| Standard | 20 TB/month |
+| Pro | 30 TB/month |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Plan</th>
+<th>Floor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Free</td>
+<td>5 TB/month</td>
+</tr>
+<tr>
+<td>Essential</td>
+<td>10 TB/month</td>
+</tr>
+<tr>
+<td>Standard</td>
+<td>20 TB/month</td>
+</tr>
+<tr>
+<td>Pro</td>
+<td>30 TB/month</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>カウントは両方向です。キャッシュされていない追加の受信と、デバイスやスウォームへ送り出すすべての送信が対象になります。キャッシュ済みの追加は対象外です。計測はバイト単位で正確なので、一部だけ読んだファイルは読んだ分だけのコストになります。</p>
+<p><strong><code translate="no" v-pre>/user/me</code> の <code translate="no" v-pre>cooldown_until</code> は、これらの警告のどれでもありません。</strong> これを警告だと読むと、丸1日を無駄にします。2026-08-12 に plan-2 のアカウントで検証しました。クールダウンが有効で、たった今設定されたばかり（24時間後まで、<code translate="no" v-pre>updated_at</code> は1分前）の状態です。このとき <code translate="no" v-pre>/user/me</code>、<code translate="no" v-pre>checkcached</code>、<code translate="no" v-pre>mylist</code> はすべて <code translate="no" v-pre>200 success:true</code> を返し、WebDAV の <code translate="no" v-pre>PROPFIND</code> は <code translate="no" v-pre>207</code> を返しました。さらに <code translate="no" v-pre>bytes=0-0</code> の範囲読み取りは、正しい <code translate="no" v-pre>Content-Range</code> 付きで <code translate="no" v-pre>206</code> を2.8秒で返しました。どの層でもサービスが拒否されることはありませんでした。このアカウントの累計転送量は14.1 GBで、月30 TB の下限には遠く及ばないので、これは帯域制限ではなく API レート制限のクールダウンでした。見分けるポイントは<strong>キー</strong>です。本物の警告ではキーがローテーションされ、その後すべてのエンドポイントが <code translate="no" v-pre>AUTH_ERROR</code> を返します。一方、キーがそのままのクールダウンでは、目に見える影響はありません。そして <code translate="no" v-pre>checkcached</code> は、TorBox が実際には配信しないリリースをキャッシュ済みと報告することがあるため、<strong>範囲読み取りだけがサービス可能かどうかを確かめられるプローブ</strong>です。TorBox が使えないと結論づける前に、必ずバイトの経路を確認してください。</p>
+<p>出典: <a href="https://support.torbox.app/en/articles/10336778-the-torbox-abuse-system">The TorBox Abuse System</a>。</p>
+<h3 id="what-zurg-does-3">zurgがやること</h3>
+<ul>
+<li><strong>追加したtorrentはデフォルトでは決してseedされない</strong>ため、zurgが読むだけのコンテンツについて外向きの課金は発生しません。<code translate="no" v-pre>tb_seed_torrents: always</code>（またはseedする設定のアカウントでの<code translate="no" v-pre>auto</code>）だけがこの動作を変える設定で、そのときのアップロードも通常どおり課金されます。</li>
+<li><strong>使用量はサンプリングして差分を取ります。</strong> APIは直近の値を公開しておらず、<code translate="no" v-pre>/user/me</code>で生涯カウンターだけを取得できます。そのため、アカウントのリフレッシャーが30分ごとにこのカウンターを<code translate="no" v-pre>data/torbox_usage.json</code>に記録し、サンプル同士の差分を計算します。直近30日の使用量がプランの下限の80%を超えると、警告ログが出ます。この警告こそがサンプリングの目的です。ダッシュボードに表示されるのはzurg自身がプロキシした分だけで、この差分は表示されません。新規インストールには履歴がないため、安心できる0を表示するのではなく、その旨を表示します。</li>
+<li><strong>拒否されたキーは、設定ミスやコンテンツの不具合ではなく、悪用の可能性があるという警告として報告されます。</strong> キーのローテーションこそがTorBoxがこの種の警告を伝える方法だからです。これを不具合として扱うと、ライブラリ全体を修復対象にしてしまいます。</li>
+</ul>
+<h2 id="deliberately-unmapped">意図的に対応付けていない項目</h2>
+<p>エラーが起きていないことを示すため、ここでは単に<strong>unrecognised</strong>→「認識されない」と訳します。</p>
+<p>認識されない <code translate="no" v-pre>download_state</code> は、<code translate="no" v-pre>error</code> ではなく <code translate="no" v-pre>downloading</code> として報告されます。
+<code translate="no" v-pre>delete_error_torrents</code> が有効になっている場合、エラー状態になると zurg はそのトレントをアカウントから削除します。そのため、このコードを書いた後に TorBox が新しく導入した状態が、削除を引き起こすことがあってはなりません。</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/providers/torbox-nzb/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">前へ</span>
+                                <span class="block mt-1">Tor​Box でホストされている Usenet</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/providers/torbox-news-server/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">次へ</span>
+                                <span class="block mt-1">Tor​Box ニュースサーバー</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "TorBoxの制限", level: 3, icon: "file", hasPrism: false, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/providers/torbox-limits.md" }</script>
+</body>
+</html>

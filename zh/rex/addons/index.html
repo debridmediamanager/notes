@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="zh" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/zh">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672741088">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>构建 rex 插件</title>
+    <meta name="title" content="构建 rex 插件">
+    <meta name="description" content="rex 会展示其来源告诉它的内容。来源通过 feed API 告诉 rex 它有哪些内容，并在 rex 请求时提供文件。rex 对所有来源一视同仁。插件是你自己编写的来源，用于家庭视频、录像、Stremio 目录、音乐或直播频道。">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/zh/rex/addons/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/zh/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/zh/rex/addons/">
+    <meta property="og:title" content="构建 rex 插件">
+    <meta property="og:description" content="rex 会展示其来源告诉它的内容。来源通过 feed API 告诉 rex 它有哪些内容，并在 rex 请求时提供文件。rex 对所有来源一视同仁。插件是你自己编写的来源，用于家庭视频、录像、Stremio 目录、音乐或直播频道。">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="zh_CN">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/zh/rex/addons/">
+    <meta name="twitter:title" content="构建 rex 插件">
+    <meta name="twitter:description" content="rex 会展示其来源告诉它的内容。来源通过 feed API 告诉 rex 它有哪些内容，并在 rex 请求时提供文件。rex 对所有来源一视同仁。插件是你自己编写的来源，用于家庭视频、录像、Stremio 目录、音乐或直播频道。">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/zh/rex/addons.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../resources/css/retype.css?v=4.6.0.847672741088" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.847672741088" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.847672741088" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.847672741088" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/zh/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>中文</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/download.html" target="_blank">下载 zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/zh/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">赞助</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>中文</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/download.html" target="_blank">下载 zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/zh/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">赞助</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="building-rex-addons">构建 rex 插件</h1>
+<p><a href="https://rex.debridmediamanager.com/zh/">rex</a> 会展示其来源告诉它的内容。来源通过 feed API 告诉 rex 它有哪些内容，并在 rex 请求时提供文件。rex 对所有来源一视同仁。<strong>插件</strong>是你自己编写的来源，用于家庭视频、录像、Stremio 目录、<doc-anchor-trigger to="#music">音乐</doc-anchor-trigger>或<doc-anchor-trigger to="#live-tv">直播频道</doc-anchor-trigger>。</p>
+<p>本页介绍 rex 对插件的要求、如何为条目命名，以及几条关键规则。最后以 <a href="https://github.com/debridmediamanager/rex-stremio">rex-stremio</a> 作为单文件示例结束。</p>
+<p>插件要做三件事：</p>
+<ul>
+<li><strong>提供数据本身。</strong> 有人点击播放时，rex 会通过 HTTP 从你的插件获取每一个字节：一个文件，或者 rex 被重定向到的一个流。</li>
+<li><strong>告诉 rex 它有什么。</strong> 插件通过 rex 的 feed API 发送一份列表，之后的每次变动也都发送。rex 从不扫描任何东西。</li>
+<li><strong>为它带来的内容命名。</strong> 对于没有任何元数据代理认识的内容，你的插件自己发送标题、简介、日期和封面图。Plex 应用会像显示其他媒体库一样显示这些内容。</li>
+</ul>
+<p>如果你要带来的是 Plex 已经认识的电影和剧集（它有这些内容的 IMDb 或 TMDB ID），你应该改用 <a href="../any-source/">rex 搭配你自己的应用</a>：这样 Plex 会为你完成所有命名和描述。</p>
+<p>要把你的 Stremio 插件目录接入 rex，什么都不用写：rex-stremio 已经现成可用。你只需在它的设置页面粘贴插件链接，然后勾选想要的目录。</p>
+<p><strong>想直接从现成代码开始？</strong> 三个教程各自用一个 Python 文件构建完整的插件，只使用标准库，并说明每个部分的作用：</p>
+<retype-table copy-text="| 教程 | 接入 rex 的内容 |
+|---|---|
+| [家庭视频](addon-home-videos.md) | 你自己的一个视频文件夹，作为媒体库提供，附带从视频中截取的标题、日期和海报 |
+| [音乐](addon-music.md) | 一个专辑文件夹，由 Plex 通过 MusicBrainz 命名，并附带歌词 |
+| [IPTV](addon-iptv.md) | 一个 M3U 播放列表及其 XMLTV 节目指南，作为带节目指南的 Live TV 频道 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>教程</th>
+<th>接入 rex 的内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../addon-home-videos/">家庭视频</a></td>
+<td>你自己的一个视频文件夹，作为媒体库提供，附带从视频中截取的标题、日期和海报</td>
+</tr>
+<tr>
+<td><a href="../addon-music/">音乐</a></td>
+<td>一个专辑文件夹，由 Plex 通过 MusicBrainz 命名，并附带歌词</td>
+</tr>
+<tr>
+<td><a href="../addon-iptv/">IPTV</a></td>
+<td>一个 M3U 播放列表及其 XMLTV 节目指南，作为带节目指南的 Live TV 频道</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>本页会解释这些教程涉及的每一步。<a href="../addon-more/">插件的更多功能</a>则介绍字幕、预告片、章节、合集、播放列表等其他功能。</p>
+<h2 id="before-you-start">开始之前</h2>
+<retype-table copy-text="| 你需要 | 原因 |
+|---|---|
+| 按 [使用你自己的应用配置 rex](any-source.md) 设置 rex（第 1 到 3 步） | 你的插件库会显示在这里 |
+| 日期为 2026.10.25 或更新的 rex 每日构建版；如果要用 [音乐](#music) 和 [直播电视](#live-tv)，需要 2026.11.02 或更新版本 | 本页就是按这个版本编写的 |
+| 如果你的插件提供流，rex 所在的机器上需要安装 FFmpeg | rex 通过转换来播放流（只是复制，开销很小）。rex 会自己找到 FFmpeg，详见 [转换视频](any-source.md#converting-video-optional) |
+| 你的插件与 rex 在同一台机器上，或在你的家庭网络中 | rex 的 feed 只会响应这些来源，详见 [保持端口私密](any-source.md#keep-the-port-private) |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>你需要</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>按 <a href="../any-source/">使用你自己的应用配置 rex</a> 设置 rex（第 1 到 3 步）</td>
+<td>你的插件库会显示在这里</td>
+</tr>
+<tr>
+<td>日期为 2026.10.25 或更新的 rex 每日构建版；如果要用 <doc-anchor-trigger to="#music">音乐</doc-anchor-trigger> 和 <doc-anchor-trigger to="#live-tv">直播电视</doc-anchor-trigger>，需要 2026.11.02 或更新版本</td>
+<td>本页就是按这个版本编写的</td>
+</tr>
+<tr>
+<td>如果你的插件提供流，rex 所在的机器上需要安装 FFmpeg</td>
+<td>rex 通过转换来播放流（只是复制，开销很小）。rex 会自己找到 FFmpeg，详见 <a href="../any-source/#converting-video-optional">转换视频</a></td>
+</tr>
+<tr>
+<td>你的插件与 rex 在同一台机器上，或在你的家庭网络中</td>
+<td>rex 的 feed 只会响应这些来源，详见 <a href="../any-source/#keep-the-port-private">保持端口私密</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>本页将 rex 的地址写作 <code translate="no" v-pre>192.168.1.20:32400</code>，插件的地址写作 <code translate="no" v-pre>127.0.0.1:9981</code>。请替换成你自己的地址。rex 的完整 API 参考见 <a href="https://github.com/debridmediamanager/rex/blob/main/docs/feed-api.md">docs/feed-api.md</a>。</p>
+<h2 id="step-1-serve-the-bytes">第 1 步：提供文件流</h2>
+<p><strong>作用。</strong> 为每个视频提供一个 rex 可以读取的 URL。</p>
+<p><strong>为什么重要。</strong> rex 不保存任何媒体文件。每次有人点击播放时,rex 都会从你的插件里读取视频。</p>
+<p>你的插件是一个 HTTP 服务器。视频位于 <code translate="no" v-pre>&lt;your address&gt;/&lt;path&gt;</code>,其中 <code translate="no" v-pre>path</code> 由你自己决定。视频分为两种:</p>
+<retype-table copy-text="| 你提供的内容 | 方式 | rex 的处理 |
+|---|---|---|
+| **文件**(`.mkv`、`.mp4` 等) | 对 `GET` 返回文件本身。支持 `Range` 请求(`206`),这样拖动进度条才快;没有它,rex 每次跳转都要从头读取 | Plex 应用能直接播放时就直接播放,否则 rex 会进行转换 |
+| **流**(HLS,`.m3u8`) | 对 `GET` 返回播放列表,或者重定向到播放列表。会跟随重定向,并且你的登录信息永远不会发送到其他主机 | rex 始终会转换它:把画面和声音转码成应用可以播放的格式。如果应用直接读取文件,也会被引导到这个转换流程 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>你提供的内容</th>
+<th>方式</th>
+<th>rex 的处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>文件</strong>(<code translate="no" v-pre>.mkv</code>、<code translate="no" v-pre>.mp4</code> 等)</td>
+<td>对 <code translate="no" v-pre>GET</code> 返回文件本身。支持 <code translate="no" v-pre>Range</code> 请求(<code translate="no" v-pre>206</code>),这样拖动进度条才快;没有它,rex 每次跳转都要从头读取</td>
+<td>Plex 应用能直接播放时就直接播放,否则 rex 会进行转换</td>
+</tr>
+<tr>
+<td><strong>流</strong>(HLS,<code translate="no" v-pre>.m3u8</code>)</td>
+<td>对 <code translate="no" v-pre>GET</code> 返回播放列表,或者重定向到播放列表。会跟随重定向,并且你的登录信息永远不会发送到其他主机</td>
+<td>rex 始终会转换它:把画面和声音转码成应用可以播放的格式。如果应用直接读取文件,也会被引导到这个转换流程</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>可选但值得设置的内容:</p>
+<ul>
+<li><strong>登录。</strong> Basic auth(<code translate="no" v-pre>user</code>、<code translate="no" v-pre>password</code>)或 bearer token。rex 只会把它发送到你插件自己的地址。</li>
+<li><strong>删除。</strong> 当有人在 Plex 应用中删除某个条目时,rex 会先向你的插件发送该路径的 WebDAV <code translate="no" v-pre>DELETE</code> 请求。如果返回 <code translate="no" v-pre>2xx</code>(已删除)或 <code translate="no" v-pre>404</code>(已经不存在),rex 就会移除该条目。返回其他任何结果,Plex 应用都会提示无法删除。</li>
+</ul>
+<h2 id="step-2-register-with-rex">第 2 步：在 rex 中注册</h2>
+<p><strong>它的作用。</strong> 告诉 rex 你的插件叫什么名字、字节数据放在哪里，以及它会往哪些媒体库里填内容。</p>
+<p><strong>为什么重要。</strong> rex 不会读取它不认识的源。重复注册不会产生任何变化，所以每次插件启动时都要注册一次。</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-和-macos">
+<template #title>Linux 和 macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -X PUT http://192.168.1.20:32400/rex/sources/myaddon \
+  -H 'Content-Type: application/json' \
+  -d '{&quot;url&quot;: &quot;http://127.0.0.1:9981&quot;,
+       &quot;directories&quot;: [{&quot;name&quot;: &quot;kids&quot;, &quot;shows&quot;: &quot;Kids&quot;}]}'</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">Invoke-RestMethod -Method Put http://192.168.1.20:32400/rex/sources/myaddon -ContentType application/json `
+  -Body '{&quot;url&quot;: &quot;http://127.0.0.1:9981&quot;, &quot;directories&quot;: [{&quot;name&quot;: &quot;kids&quot;, &quot;shows&quot;: &quot;Kids&quot;}]}'</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<retype-table copy-text="| 字段 | 含义 |
+|---|---|
+| `url` | 字节数据所在的位置。视频的字节数据是 `GET &lt;url&gt;/&lt;path&gt;` |
+| `user` 和 `password`，或 `bearer` | 插件的登录信息（如果有）。绝不要放在 `url` 里 |
+| `directories` | 你的插件会往里填内容的媒体库。每一项由路径的第一段（`name`）和媒体库的标题组成：`shows` 对应电视剧库，`movies` 对应电影库，`music` 对应音乐库，也可以写多个。rex 第一次会自动创建每个媒体库；你在 Plex 里改了名字，会保留下来 |
+| `trash` | 设为 `false` 时，你的插件删除的内容（快照中被剔除的条目，或 `DELETE` 请求）会直接删除，而不是保存到 rex 的回收站里 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>url</code></td>
+<td>字节数据所在的位置。视频的字节数据是 <code translate="no" v-pre>GET &lt;url&gt;/&lt;path&gt;</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>user</code> 和 <code translate="no" v-pre>password</code>，或 <code translate="no" v-pre>bearer</code></td>
+<td>插件的登录信息（如果有）。绝不要放在 <code translate="no" v-pre>url</code> 里</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>directories</code></td>
+<td>你的插件会往里填内容的媒体库。每一项由路径的第一段（<code translate="no" v-pre>name</code>）和媒体库的标题组成：<code translate="no" v-pre>shows</code> 对应电视剧库，<code translate="no" v-pre>movies</code> 对应电影库，<code translate="no" v-pre>music</code> 对应音乐库，也可以写多个。rex 第一次会自动创建每个媒体库；你在 Plex 里改了名字，会保留下来</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>trash</code></td>
+<td>设为 <code translate="no" v-pre>false</code> 时，你的插件删除的内容（快照中被剔除的条目，或 <code translate="no" v-pre>DELETE</code> 请求）会直接删除，而不是保存到 rex 的回收站里</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>路径的第一段决定它属于哪个媒体库。以上面的例子为例，所有以 <code translate="no" v-pre>kids/</code> 开头的路径都会进入 <strong>Kids</strong>。每个媒体库请使用不同的第一段。</p>
+<p><strong>你应该看到的效果。</strong> rex 会返回这个源。rex 的日志会显示 <code translate="no" v-pre>SOURCES myaddon registered at http://127.0.0.1:9981</code>，第一次注册时还会显示 <code translate="no" v-pre>SECTION create Kids (show) for myaddon's kids</code>。媒体库会在一秒内出现在 Plex 应用的 More 下面。</p>
+<h2 id="step-3-describe-each-video">第 3 步：描述每个视频</h2>
+<p><strong>作用。</strong> 生成 rex 为每个视频保存的记录：视频在哪里、是什么、长什么样。</p>
+<p><strong>为什么重要。</strong> 这条记录就是 rex 的全部依据。缺少 probe 或 id 随意变动，是大多数插件问题的根源。</p>
+<div id="step-3-describe-each-video-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;id&quot;: &quot;home-2026-07-22-beach&quot;,
+  &quot;path&quot;: &quot;kids/summer-2026/beach.mp4&quot;,
+  &quot;kind&quot;: &quot;episode&quot;, &quot;season&quot;: 1, &quot;episode&quot;: 3,
+  &quot;name&quot;: &quot;Summer 2026&quot;,
+  &quot;media_info&quot;: { &quot;...&quot;: &quot;ffprobe's output, whole&quot; },
+  &quot;display&quot;: {
+    &quot;title&quot;: &quot;First day at the beach&quot;,
+    &quot;summary&quot;: &quot;...&quot;,
+    &quot;date&quot;: &quot;2026-07-22&quot;,
+    &quot;thumb&quot;: &quot;http://127.0.0.1:9981/kids/summer-2026/beach.jpg&quot;,
+    &quot;show&quot;: {&quot;title&quot;: &quot;Summer 2026&quot;, &quot;summary&quot;: &quot;...&quot;, &quot;poster&quot;: &quot;https://...&quot;, &quot;art&quot;: &quot;https://...&quot;},
+    &quot;season&quot;: {&quot;poster&quot;: &quot;https://...&quot;}
+  }
+}</code></pre>
+</doc-codeblock></div>
+<retype-table copy-text="| 字段 | 是否必填 | 含义 |
+|---|---|---|
+| `id` | 是 | 你给这个视频起的键，**要一直保持不变**。rex 的观看历史就靠它记录 |
+| `path` | 是 | 视频文件在你的 `url` 下的位置。它的第一段决定使用哪个媒体库 |
+| `media_info` | 实际上必填 | 视频的 ffprobe `-show_format -show_streams` JSON（如果是流，就对它的 URL 做 probe）。没有它，文件会被**挂起**：存得下，但不会显示，因为 Plex 应用不会播放它不认识的视频。`.m3u8` 流如果没有它会被拒绝，报 `not a video file`，所以只有 probe 过之后再提交流 |
+| `kind` | 剧集时需要 | `episode` 或 `movie`。没有它，就没人知道该把视频放在哪：在剧集库里，它会被当作以 `name` 命名的剧集，按文件顺序编号；在电影库里，它会按文件名当作一部电影 |
+| `season`、`episode` | 剧集时需要 | 决定它放在哪。给剧集编号时要保证新增的剧集不会挤掉其他剧集的编号 |
+| `name` | 否 | 剧集的名字，也是把同一部剧的分集归到一起的依据。默认是它所在文件夹的名字（如果 path 没有文件夹，则用文件名） |
+| `release` | 否 | 把应该归在一起的视频分组。默认是视频所在的文件夹 |
+| `display` | 对于没有任何 agent 认识的内容需要 | 标题、简介、日期和封面：见第 4 步 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>字段</th>
+<th>是否必填</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>id</code></td>
+<td>是</td>
+<td>你给这个视频起的键，<strong>要一直保持不变</strong>。rex 的观看历史就靠它记录</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>path</code></td>
+<td>是</td>
+<td>视频文件在你的 <code translate="no" v-pre>url</code> 下的位置。它的第一段决定使用哪个媒体库</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>media_info</code></td>
+<td>实际上必填</td>
+<td>视频的 ffprobe <code translate="no" v-pre>-show_format -show_streams</code> JSON（如果是流，就对它的 URL 做 probe）。没有它，文件会被<strong>挂起</strong>：存得下，但不会显示，因为 Plex 应用不会播放它不认识的视频。<code translate="no" v-pre>.m3u8</code> 流如果没有它会被拒绝，报 <code translate="no" v-pre>not a video file</code>，所以只有 probe 过之后再提交流</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>kind</code></td>
+<td>剧集时需要</td>
+<td><code translate="no" v-pre>episode</code> 或 <code translate="no" v-pre>movie</code>。没有它，就没人知道该把视频放在哪：在剧集库里，它会被当作以 <code translate="no" v-pre>name</code> 命名的剧集，按文件顺序编号；在电影库里，它会按文件名当作一部电影</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>season</code>、<code translate="no" v-pre>episode</code></td>
+<td>剧集时需要</td>
+<td>决定它放在哪。给剧集编号时要保证新增的剧集不会挤掉其他剧集的编号</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>name</code></td>
+<td>否</td>
+<td>剧集的名字，也是把同一部剧的分集归到一起的依据。默认是它所在文件夹的名字（如果 path 没有文件夹，则用文件名）</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>release</code></td>
+<td>否</td>
+<td>把应该归在一起的视频分组。默认是视频所在的文件夹</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>display</code></td>
+<td>对于没有任何 agent 认识的内容需要</td>
+<td>标题、简介、日期和封面：见第 4 步</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>流的 <code translate="no" v-pre>path</code> 以 <code translate="no" v-pre>.m3u8</code> 结尾，并且它的 <code translate="no" v-pre>media_info</code> 里要有 <code translate="no" v-pre>&quot;format_name&quot;: &quot;hls&quot;</code>。rex 只有两者同时满足时才会接受。其他文件必须使用视频扩展名。</p>
+<h2 id="step-4-name-and-dress-it">第 4 步：命名并美化</h2>
+<p><strong>做什么。</strong> 为 Plex 中没有任何 Plex 元数据代理认识的内容，提供标题、简介、日期和图片。</p>
+<p><strong>为什么重要。</strong> 没有 <code translate="no" v-pre>display</code> 的话，剧集只会显示&quot;Episode 3&quot;加一个空白封面，剧集本身也没有海报。</p>
+<retype-table copy-text="| 字段 | 显示位置 |
+|---|---|
+| `title`、`summary` | 视频的标题和简介，按发送的原样显示 |
+| `date` | 发布日期（`YYYY-MM-DD`），并从中取出年份。如果只知道年份（比如一部老电影），可以只填年份（`YYYY`）：Plex 应用会显示年份，不显示具体发布日 |
+| `thumb` | 电影的海报，或剧集的剧照 |
+| `art` | 电影的背景图 |
+| `show.title`、`show.summary`、`show.poster`、`show.art` | 剧集所属的剧集（节目） |
+| `season.summary`、`season.poster` | 剧集所属的季（如果没有季海报，则用剧集的海报） |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>字段</th>
+<th>显示位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>title</code>、<code translate="no" v-pre>summary</code></td>
+<td>视频的标题和简介，按发送的原样显示</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>date</code></td>
+<td>发布日期（<code translate="no" v-pre>YYYY-MM-DD</code>），并从中取出年份。如果只知道年份（比如一部老电影），可以只填年份（<code translate="no" v-pre>YYYY</code>）：Plex 应用会显示年份，不显示具体发布日</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>thumb</code></td>
+<td>电影的海报，或剧集的剧照</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>art</code></td>
+<td>电影的背景图</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>show.title</code>、<code translate="no" v-pre>show.summary</code>、<code translate="no" v-pre>show.poster</code>、<code translate="no" v-pre>show.art</code></td>
+<td>剧集所属的剧集（节目）</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>season.summary</code>、<code translate="no" v-pre>season.poster</code></td>
+<td>剧集所属的季（如果没有季海报，则用剧集的海报）</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>所有字段都是可选的。图片必须是 <code translate="no" v-pre>http://</code> 或 <code translate="no" v-pre>https://</code> 网址。rex 会自己去获取这些图片：可以来自公共互联网，也可以来自你的插件自己的地址（你注册时填的 <code translate="no" v-pre>url</code>），并带上你插件的登录信息。其他位于你家庭网络中的地址会被拒绝。因此，插件可以提供自己的图片，比如从每个家庭视频中截取的一帧。2:3 的图片最适合做海报，16:9 的图片最适合做剧照和背景。</p>
+<p>rex 对这些内容的处理方式如下：</p>
+<ul>
+<li><strong>只用于没有其他来源命名的内容。</strong> 如果视频带有 Plex 能识别的 <code translate="no" v-pre>kind</code> 和 <code translate="no" v-pre>ids</code>，就按 Plex 的描述显示，<code translate="no" v-pre>display</code> 会被忽略。</li>
+<li><strong>之后的发送会更新内容。</strong> 用新的 <code translate="no" v-pre>display</code> 再次发送视频，它的那一行、剧集和季都会原地更新；应用会重新绘制新的图片。剧集会保留创建时使用的标题。</li>
+<li><strong>用户的设置优先。</strong> 有人在 Plex 应用里编辑并锁定的字段会保留他们的值，他们上传的海报也会保留。</li>
+<li><strong>会做检查。</strong> 如果图片不是 http(s) 网址，或者日期格式不对，视频会被拒绝，并且会指出是哪个字段出了问题。</li>
+</ul>
+<h2 id="step-5-send-it">第 5 步：发送</h2>
+<p><strong>它的作用。</strong> 把你的视频发送给 rex：一次性发送全部，之后有变化时再发送变化的部分。</p>
+<p><strong>为什么重要。</strong> rex 会准确显示你上次发送的内容。</p>
+<retype-table copy-text="| 操作 | 发送内容 | rex 的回复 |
+|---|---|---|
+| 添加或修改视频 | `POST /rex/feed/myaddon/items` 配合 `{&quot;items&quot;: [...]}` | 有多少被 `created`、`updated`、`held`、`unchanged`，以及每个 `rejected` 的视频和原因 |
+| 删除视频 | `DELETE /rex/feed/myaddon/items` 配合 `{&quot;ids&quot;: [...]}` | 有多少被 `trashed`、`deleted`、`released`（被 held 的视频会被忘掉）和 `unknown` |
+| 发送全部 | `PUT /rex/feed/myaddon/snapshot` 配合 `{&quot;items&quot;: [...]}`。分批发送时：`&quot;session&quot;`（任意文本）、从 0 开始的 `&quot;part&quot;`，最后一批加上 `&quot;complete&quot;: true` | 同样的统计数字，以及 `removed` 的内容：快照中没有列出的你的每个视频 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>操作</th>
+<th>发送内容</th>
+<th>rex 的回复</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>添加或修改视频</td>
+<td><code translate="no" v-pre>POST /rex/feed/myaddon/items</code> 配合 <code translate="no" v-pre>{&quot;items&quot;: [...]}</code></td>
+<td>有多少被 <code translate="no" v-pre>created</code>、<code translate="no" v-pre>updated</code>、<code translate="no" v-pre>held</code>、<code translate="no" v-pre>unchanged</code>，以及每个 <code translate="no" v-pre>rejected</code> 的视频和原因</td>
+</tr>
+<tr>
+<td>删除视频</td>
+<td><code translate="no" v-pre>DELETE /rex/feed/myaddon/items</code> 配合 <code translate="no" v-pre>{&quot;ids&quot;: [...]}</code></td>
+<td>有多少被 <code translate="no" v-pre>trashed</code>、<code translate="no" v-pre>deleted</code>、<code translate="no" v-pre>released</code>（被 held 的视频会被忘掉）和 <code translate="no" v-pre>unknown</code></td>
+</tr>
+<tr>
+<td>发送全部</td>
+<td><code translate="no" v-pre>PUT /rex/feed/myaddon/snapshot</code> 配合 <code translate="no" v-pre>{&quot;items&quot;: [...]}</code>。分批发送时：<code translate="no" v-pre>&quot;session&quot;</code>（任意文本）、从 0 开始的 <code translate="no" v-pre>&quot;part&quot;</code>，最后一批加上 <code translate="no" v-pre>&quot;complete&quot;: true</code></td>
+<td>同样的统计数字，以及 <code translate="no" v-pre>removed</code> 的内容：快照中没有列出的你的每个视频</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>每次请求发送几百个视频。一个不包含任何视频的快照不会删除任何东西。如果快照会删除超过一半的视频，那么除非最后一部分带有 <code translate="no" v-pre>&quot;force&quot;: true</code>，否则会被拒绝。这样一个丢失了记录的插件就不会意外清空你的库。</p>
+<p><strong>你应该看到的内容。</strong></p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-和-macos-1">
+<template #title>Linux 和 macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s http://192.168.1.20:32400/rex/feed/myaddon/items | head -c 400   # what rex shows, with each ratingKey
+curl -s http://192.168.1.20:32400/rex/feed/myaddon/held                  # what waits for a probe</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-1">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">curl.exe -s http://192.168.1.20:32400/rex/feed/myaddon/items   # what rex shows, with each ratingKey
+curl.exe -s http://192.168.1.20:32400/rex/feed/myaddon/held    # what waits for a probe</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p>rex 的日志会列出每个被拒绝的视频及原因：<code translate="no" v-pre>FEED myaddon rejected &lt;id&gt;: &lt;reason&gt;</code>。</p>
+<h2 id="music">音乐</h2>
+<p><strong>它的作用。</strong> 把专辑放进音乐库，Plexamp、Plex 网页版和 Plex for Android 都能播放。</p>
+<p><strong>为什么重要。</strong> Plex 通过专辑在 MusicBrainz 上的 release 来给音乐命名。发送这个 id，Plex 就会自己补全所有标题、封面、艺人照片和简介。</p>
+<p>把每个音频文件作为一个 track 发送：</p>
+<div id="music-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;id&quot;: &quot;albums/in-rainbows/01&quot;,
+  &quot;path&quot;: &quot;music/Radiohead/In Rainbows/01 - 15 Step.flac&quot;,
+  &quot;kind&quot;: &quot;track&quot;,
+  &quot;ids&quot;: {&quot;mbid&quot;: &quot;3b408cb5-7d51-4188-b07c-fabcf308cda3&quot;},
+  &quot;disc&quot;: 1, &quot;track&quot;: 1,
+  &quot;media_info&quot;: { &quot;...&quot;: &quot;ffprobe's output, whole&quot; }
+}</code></pre>
+</doc-codeblock></div>
+<retype-table copy-text="| 字段 | 含义 |
+|---|---|
+| `kind` | `track` |
+| `path` | 音频文件：`.flac`、`.mp3`、`.m4a`、`.aac`、`.ogg`、`.oga`、`.opus`、`.wav`、`.alac`、`.aif`、`.aiff`、`.wma`、`.ape`、`.wv`、`.dsf` 或 `.mka` |
+| `ids.mbid` | 这首歌所在专辑的 MusicBrainz **release** id：即 `musicbrainz.org/release/&lt;id&gt;` 链接里的 id，而不是 release group 或 recording 的 id。也可以用 `ids.plex`，即 Plex 自己的专辑 guid（`plex://album/&lt;id&gt;`） |
+| `disc`、`track` | 这首歌在该 release 中的位置。Plex 显示的是对应这些编号的那首曲目 |
+| `release` | 这首歌属于专辑的哪一个版本。默认是它所在的文件夹。Plex 会把两个版本列为两张独立的专辑，所以如果一个版本的文件放在碟片文件夹（`CD1/`、`CD2/`）里，请为这个版本的所有文件发送同一个 `release` |
+| `display` | 用于 Plex 不认识的音乐：歌曲的 `title`，艺人的 `artist`（`title`、`summary`、`poster`、`art`），以及专辑的 `album`（`title`、`summary`、`poster`、`date`） |
+| `lyrics` | 附加在你的 addon 上、与它同目录的歌词文件：`[{&quot;path&quot;: &quot;music/.../01 - 15 Step.lrc&quot;, &quot;size&quot;: 147}]`。`.lrc`（带时间轴的歌词）或 `.txt`，会作为歌曲的歌词显示 |
+| `loudness` | 仅当你的 addon 测量响度时使用，字段名沿用 Plex 的命名：`gain`、`albumGain`、`peak`、`albumPeak`、`albumRange`、`loudness` 和 `lra`，`startRamp` 和 `endRamp` 淡入淡出，以及 `levels`（每 100 ms 的响度）。rex 自己不做任何测量 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>kind</code></td>
+<td><code translate="no" v-pre>track</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>path</code></td>
+<td>音频文件：<code translate="no" v-pre>.flac</code>、<code translate="no" v-pre>.mp3</code>、<code translate="no" v-pre>.m4a</code>、<code translate="no" v-pre>.aac</code>、<code translate="no" v-pre>.ogg</code>、<code translate="no" v-pre>.oga</code>、<code translate="no" v-pre>.opus</code>、<code translate="no" v-pre>.wav</code>、<code translate="no" v-pre>.alac</code>、<code translate="no" v-pre>.aif</code>、<code translate="no" v-pre>.aiff</code>、<code translate="no" v-pre>.wma</code>、<code translate="no" v-pre>.ape</code>、<code translate="no" v-pre>.wv</code>、<code translate="no" v-pre>.dsf</code> 或 <code translate="no" v-pre>.mka</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>ids.mbid</code></td>
+<td>这首歌所在专辑的 MusicBrainz <strong>release</strong> id：即 <code translate="no" v-pre>musicbrainz.org/release/&lt;id&gt;</code> 链接里的 id，而不是 release group 或 recording 的 id。也可以用 <code translate="no" v-pre>ids.plex</code>，即 Plex 自己的专辑 guid（<code translate="no" v-pre>plex://album/&lt;id&gt;</code>）</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>disc</code>、<code translate="no" v-pre>track</code></td>
+<td>这首歌在该 release 中的位置。Plex 显示的是对应这些编号的那首曲目</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>release</code></td>
+<td>这首歌属于专辑的哪一个版本。默认是它所在的文件夹。Plex 会把两个版本列为两张独立的专辑，所以如果一个版本的文件放在碟片文件夹（<code translate="no" v-pre>CD1/</code>、<code translate="no" v-pre>CD2/</code>）里，请为这个版本的所有文件发送同一个 <code translate="no" v-pre>release</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>display</code></td>
+<td>用于 Plex 不认识的音乐：歌曲的 <code translate="no" v-pre>title</code>，艺人的 <code translate="no" v-pre>artist</code>（<code translate="no" v-pre>title</code>、<code translate="no" v-pre>summary</code>、<code translate="no" v-pre>poster</code>、<code translate="no" v-pre>art</code>），以及专辑的 <code translate="no" v-pre>album</code>（<code translate="no" v-pre>title</code>、<code translate="no" v-pre>summary</code>、<code translate="no" v-pre>poster</code>、<code translate="no" v-pre>date</code>）</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>lyrics</code></td>
+<td>附加在你的 addon 上、与它同目录的歌词文件：<code translate="no" v-pre>[{&quot;path&quot;: &quot;music/.../01 - 15 Step.lrc&quot;, &quot;size&quot;: 147}]</code>。<code translate="no" v-pre>.lrc</code>（带时间轴的歌词）或 <code translate="no" v-pre>.txt</code>，会作为歌曲的歌词显示</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>loudness</code></td>
+<td>仅当你的 addon 测量响度时使用，字段名沿用 Plex 的命名：<code translate="no" v-pre>gain</code>、<code translate="no" v-pre>albumGain</code>、<code translate="no" v-pre>peak</code>、<code translate="no" v-pre>albumPeak</code>、<code translate="no" v-pre>albumRange</code>、<code translate="no" v-pre>loudness</code> 和 <code translate="no" v-pre>lra</code>，<code translate="no" v-pre>startRamp</code> 和 <code translate="no" v-pre>endRamp</code> 淡入淡出，以及 <code translate="no" v-pre>levels</code>（每 100 ms 的响度）。rex 自己不做任何测量</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<ul>
+<li><strong>先要有音乐库。</strong> 在第 2 步中声明一个（<code translate="no" v-pre>&quot;directories&quot;: [{&quot;name&quot;: &quot;music&quot;, &quot;music&quot;: &quot;Music&quot;}]</code>），或在 Plex 应用里添加一个音乐库。没有任何音乐库接收的曲目会被拒绝：<code translate="no" v-pre>no music library holds &lt;file&gt;</code>。</li>
+<li><strong>查找 release id。</strong> 用专辑名和艺人名在 MusicBrainz 上搜索（<code translate="no" v-pre>https://musicbrainz.org/ws/2/release?query=release:%22In%20Rainbows%22%20AND%20artist:Radiohead&amp;fmt=json</code>），选一个曲目数与你的相符的官方 release。通常会匹配到好几个（每个国家一个），其中任何一个都能确定这张专辑。MusicBrainz 每个地址每秒只接受一次请求，超出就拒绝，并且要求提供写明你的 addon 名称的 User-Agent。每张专辑只查询一次，并保存结果。</li>
+<li><strong>rex 不读取标签。</strong> 标题、封面、流派和相似艺人都由 Plex 提供。如果 Plex 不认识某首曲目的 release，它会显示你提供的 <code translate="no" v-pre>display</code>，并归在你指定的艺人和专辑下；如果没有提供 <code translate="no" v-pre>display</code>，则会以文件名显示在 <code translate="no" v-pre>[Unknown Artist]</code> 下。</li>
+<li><strong>原样播放。</strong> 无需 FFmpeg，除非某个应用请求低于原始质量的版本：此时 rex 会像 Plex 那样用 FFmpeg 进行转码。</li>
+<li><strong>暂不支持。</strong> Plexamp 的电台、混音、Stations 和音效相似曲目需要 rex 不做的分析。</li>
+</ul>
+<p><strong>你应该看到的效果。</strong> 音乐库里出现该专辑，带有 Plex 提供的封面和曲目名，艺人也带有照片。在 Plexamp 中，选择 rex 的音乐库作为其 library。</p>
+<h2 id="live-tv">直播电视</h2>
+<p><strong>它的作用。</strong> 让直播流在 Plex Web 和 Plex for Android 的 <strong>Live TV</strong> 中成为一个频道，并带有电视节目指南、What&#x27;s On 和频道号。</p>
+<p><strong>为什么重要。</strong> 光有直播流，它只是媒体库里的一行。加上 <code translate="no" v-pre>channel</code> 之后，大家就能像找电视节目一样找到它：在节目指南里，按现在正在播出的内容查找。</p>
+<p>和第 3 步一样发送直播流（带探测的 <code translate="no" v-pre>.m3u8</code>），再加上 <code translate="no" v-pre>channel</code>：</p>
+<div id="live-tv-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">&quot;channel&quot;: {
+  &quot;number&quot;: &quot;100.1&quot;,
+  &quot;title&quot;: &quot;Rex News&quot;,
+  &quot;guide&quot;: [
+    {&quot;start&quot;: &quot;2026-11-01T18:00:00Z&quot;, &quot;end&quot;: &quot;2026-11-01T19:00:00Z&quot;,
+     &quot;title&quot;: &quot;Evening News&quot;, &quot;summary&quot;: &quot;The day's headlines.&quot;, &quot;categories&quot;: [&quot;News&quot;]},
+    {&quot;start&quot;: &quot;2026-11-01T19:00:00Z&quot;, &quot;end&quot;: &quot;2026-11-01T19:45:00Z&quot;,
+     &quot;title&quot;: &quot;The Pilot&quot;, &quot;type&quot;: &quot;episode&quot;, &quot;show&quot;: &quot;Rex Stories&quot;, &quot;season&quot;: 1, &quot;episode&quot;: 1,
+     &quot;categories&quot;: [&quot;Drama&quot;]}
+  ]
+}</code></pre>
+</doc-codeblock></div>
+<retype-table copy-text="| 字段 | 含义 |
+|---|---|
+| `number` | 频道在节目指南中的编号（如 `100.1`、`704`）：可以使用字母、数字、`.`、`-` 和 `_`。请选择其他插件没有用过的编号；第一个带编号发送的频道会保留该编号 |
+| `title` | 频道在节目指南中的名称。默认值：直播流的 `display` 标题 |
+| `call_sign` | 频道的简称。默认值：`title` |
+| `guide` | 正在播出的节目：`start` 和 `end`（Unix 时间戳，单位秒，或带 `Z` 或时区偏移的 ISO 8601 格式）、`title`，以及可选的 `summary`、`categories`、`thumb` 和 `previously_shown`（重播时设为 `true`）。剧集需要加上 `&quot;type&quot;: &quot;episode&quot;`，以及 `show`、`season` 和 `episode`，节目指南会把它归到所属剧集下面 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>number</code></td>
+<td>频道在节目指南中的编号（如 <code translate="no" v-pre>100.1</code>、<code translate="no" v-pre>704</code>）：可以使用字母、数字、<code translate="no" v-pre>.</code>、<code translate="no" v-pre>-</code> 和 <code translate="no" v-pre>_</code>。请选择其他插件没有用过的编号；第一个带编号发送的频道会保留该编号</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>title</code></td>
+<td>频道在节目指南中的名称。默认值：直播流的 <code translate="no" v-pre>display</code> 标题</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>call_sign</code></td>
+<td>频道的简称。默认值：<code translate="no" v-pre>title</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>guide</code></td>
+<td>正在播出的节目：<code translate="no" v-pre>start</code> 和 <code translate="no" v-pre>end</code>（Unix 时间戳，单位秒，或带 <code translate="no" v-pre>Z</code> 或时区偏移的 ISO 8601 格式）、<code translate="no" v-pre>title</code>，以及可选的 <code translate="no" v-pre>summary</code>、<code translate="no" v-pre>categories</code>、<code translate="no" v-pre>thumb</code> 和 <code translate="no" v-pre>previously_shown</code>（重播时设为 <code translate="no" v-pre>true</code>）。剧集需要加上 <code translate="no" v-pre>&quot;type&quot;: &quot;episode&quot;</code>，以及 <code translate="no" v-pre>show</code>、<code translate="no" v-pre>season</code> 和 <code translate="no" v-pre>episode</code>，节目指南会把它归到所属剧集下面</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<ul>
+<li><strong>发送从几小时前到你所知的最远未来的节目单</strong>（大约一周，和电视节目指南文件的常见范围一致），节目单有变化时要重新发送。rex 会一直列出节目，直到它结束后三小时。每次发送都会替换频道的节目单；不带 <code translate="no" v-pre>channel</code> 的发送会保留原有节目单；<code translate="no" v-pre>&quot;channel&quot;: null</code> 会结束该频道。</li>
+<li><strong>需要 FFmpeg</strong>，和所有直播流一样：rex 会在有人观看时实时转换频道。</li>
+<li><strong>不会录制。</strong> Plex Web 和 Plex for Android 都没有 Record 按钮。</li>
+<li><strong>频道可以结束。</strong> 注册时使用 <code translate="no" v-pre>&quot;trash&quot;: false</code>（见第 2 步），这样你删除的频道会被直接删掉，而不会进入 rex 的回收站。</li>
+<li><strong>分类的作用。</strong> <code translate="no" v-pre>Sports</code> 或 <code translate="no" v-pre>News</code> 分类的剧集会出现在 What&#x27;s On 的 Sports 和 News 栏目中。没有 <code translate="no" v-pre>type</code> 的节目会按电影显示，这和 Plex 处理任何电视节目指南的方式一样。</li>
+</ul>
+<p><strong>你应该看到的效果。</strong> 在 Plex Web 或 Plex for Android 中，应用菜单里有 <strong>Live TV</strong>，节目指南中该频道显示在对应编号下，打开它时直播流会开始播放。如果 rex 拒绝了某个频道，日志会指出是哪个频道以及原因，例如 <code translate="no" v-pre>channel.guide[3]: end must be after start</code>。</p>
+<p><a href="https://github.com/debridmediamanager/rex-live-sports">rex-live-sports</a> 为直播体育服务器的频道完成了以上全部工作：它按分组从 <code translate="no" v-pre>100.1</code> 开始编号，保留每个频道的编号，并从 Pluto TV 和 epgshare01 的免费 XMLTV 文件获取节目单。</p>
+<h2 id="the-rules-that-trip-people-up">容易踩坑的规则</h2>
+<retype-table copy-text="| Rule | What happens if you break it |
+|---|---|
+| **ID 一经确定永不更改。** 修改它，视频就会变成一个新标题 | 观看记录和编辑内容会留在旧行上，下一次快照会将其删除 |
+| **一个视频，一个路径。** 两个 ID 不能共用同一个 `path` | 第二个会被拒绝：`... is already &lt;id&gt;'s file` |
+| **每个 ID 对应的文件字节是固定的。** rex 会保留首次探测时得到的流；之后的探测只会更新章节。只有流（`.m3u8`）在探测到的流不同时才会接受新的探测结果 | 如果文件字节发生了变化（比如换了格式、重新上传了修复版），就给它分配新的 ID 和路径 |
+| **所有内容都要探测。** 没有 `media_info` 就没有视频 | 文件会一直处于 `held` 状态，直到某次发送附带了媒体信息；流则会被拒绝 |
+| **保持来源名称不变。** 数据行属于 (source, id) | 换一个名称会新建一个空的来源；旧来源的数据行会一直保留，直到你手动删除 |
+| **快照必须完整。** 缺少某个频道的快照会把该频道删除 | 部分失败后不要发送快照：跳过这一轮 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Rule</th>
+<th>What happens if you break it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ID 一经确定永不更改。</strong> 修改它，视频就会变成一个新标题</td>
+<td>观看记录和编辑内容会留在旧行上，下一次快照会将其删除</td>
+</tr>
+<tr>
+<td><strong>一个视频，一个路径。</strong> 两个 ID 不能共用同一个 <code translate="no" v-pre>path</code></td>
+<td>第二个会被拒绝：<code translate="no" v-pre>... is already &lt;id&gt;'s file</code></td>
+</tr>
+<tr>
+<td><strong>每个 ID 对应的文件字节是固定的。</strong> rex 会保留首次探测时得到的流；之后的探测只会更新章节。只有流（<code translate="no" v-pre>.m3u8</code>）在探测到的流不同时才会接受新的探测结果</td>
+<td>如果文件字节发生了变化（比如换了格式、重新上传了修复版），就给它分配新的 ID 和路径</td>
+</tr>
+<tr>
+<td><strong>所有内容都要探测。</strong> 没有 <code translate="no" v-pre>media_info</code> 就没有视频</td>
+<td>文件会一直处于 <code translate="no" v-pre>held</code> 状态，直到某次发送附带了媒体信息；流则会被拒绝</td>
+</tr>
+<tr>
+<td><strong>保持来源名称不变。</strong> 数据行属于 (source, id)</td>
+<td>换一个名称会新建一个空的来源；旧来源的数据行会一直保留，直到你手动删除</td>
+</tr>
+<tr>
+<td><strong>快照必须完整。</strong> 缺少某个频道的快照会把该频道删除</td>
+<td>部分失败后不要发送快照：跳过这一轮</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>要<strong>替换</strong>已经填充过媒体库的插件（或脚本），请保持它的来源名称、ID 和第一段路径不变。这样你的第一次发送会原地更新其数据行，包括观看记录，而不是新建数据行。</p>
+<h2 id="example-rex-stremio">示例：rex-stremio</h2>
+<p><a href="https://github.com/debridmediamanager/rex-stremio">rex-stremio</a> 可以把你的 Stremio 插件目录变成 rex 库：电影进入电影库，剧集进入剧集库，直播频道进入名为 Live TV 的库（不是 Live TV 节目指南）。它负责第 1 到第 5 步，只有一个 Python 文件，仅使用标准库。它不会删除任何内容，目录里的标题不归它管，所以它不会去删。</p>
+<p><strong>注册。</strong> 你勾选的每个目录都对应一个库，除非你改了名字，否则就是 Stremio Films、Stremio Shows 或 Live TV。rex-stremio 以 <code translate="no" v-pre>stremio</code> 注册，每个库对应一个目录，目录名与库名相关（<code translate="no" v-pre>stremio-films</code>）。剧集目录的库会声明为目录的 <code translate="no" v-pre>shows</code> 标题，电影和直播目录则声明为 <code translate="no" v-pre>movies</code> 标题。</p>
+<p><strong>提供播放。</strong> 流媒体插件的链接会过期，所以 rex-stremio 不保存任何链接。它为每个标题提供一个地址 <code translate="no" v-pre>/&lt;directory&gt;/&lt;catalog&gt;/&lt;id&gt;.&lt;ext&gt;</code>，并重定向到此刻现取的链接：</p>
+<div id="example-rex-stremio-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-python"><code v-pre class="language-python">url = app.sync.resolve(vid)   # ask every stream addon, rank, take the first link that opens
+self.send_response(302)
+self.send_header(&quot;Location&quot;, url)</code></pre>
+</doc-codeblock></div>
+<p>它会向每个提供该标题的插件请求（<code translate="no" v-pre>/stream/&lt;movie or series&gt;/&lt;id&gt;.json</code>），只保留普通的 <code translate="no" v-pre>http(s)</code> 链接（种子的 <code translate="no" v-pre>infoHash</code> 不是 rex 能读的文件），去掉超出你分辨率或大小限制的，然后按分辨率从高到低依次尝试。能打开的链接会缓存，直到它过期前一小时为止（如果链接里没有过期时间，则缓存一小时）。rex 跟随重定向，直接从链接读取文件，支持跳转。需要自带请求头的链接，由 rex-stremio 自己中转；HLS 主播放列表则只返回其中最佳的一个变体。</p>
+<p><strong>探测。</strong> 每个标题只探测一次：rex-stremio 对它自己的地址运行 ffprobe，因此 <code translate="no" v-pre>media_info</code> 描述的正是 rex 将要读取的内容，并缓存结果。同时最多检查 <code translate="no" v-pre>probe_workers</code> 个标题（未设置时为 4 个），并且对每个插件主机的请求间隔仍不少于 <code translate="no" v-pre>stream_interval_seconds</code>。探测所用的流会被记住，之后每次播放都优先尝试它，所以播放的内容就是 rex 被告知的内容。探测得到的容器决定路径的扩展名：<code translate="no" v-pre>.mkv</code>、<code translate="no" v-pre>.mp4</code>、<code translate="no" v-pre>.ts</code>、<code translate="no" v-pre>.avi</code>，或 HLS 的 <code translate="no" v-pre>.m3u8</code>。</p>
+<p><strong>已存的探测结果。</strong> 如果你设置了 DMM API 密钥（<code translate="no" v-pre>dmm_api_key</code>，或设置页上的 <strong>DMM</strong>），当 DMM 已经有某个种子文件的探测结果时，种子流就会跳过 ffprobe。种子的哈希来自流的 <code translate="no" v-pre>infoHash</code>，或来自它的链接（Torrentio 的 debrid 链接在路径里带有哈希）。rex-stremio 通过对链接发送一个字节的 <code translate="no" v-pre>Range</code> 请求，从响应中读取文件大小，然后调用 DMM 的 <code translate="no" v-pre>POST /api/sponsor/mediainfo</code>，每次最多查询 100 个哈希。只有当该发布版本中恰好有一个文件的大小相符时，它才采用 DMM 的探测结果；如果流里写明了文件名，还要求文件名也对得上。其他情况仍按上面的方式探测，而且探测结果会回传给 DMM（<code translate="no" v-pre>POST /api/sponsor/probes</code>：种子哈希、文件大小、流中写明的文件名（如有），以及 ffprobe 的输出，但不含它读取的地址），这样下一个遇到该文件的赞助者就能跳过探测。DMM 保留某个文件的第一份探测结果，并优先采用 zurg 自己的快照。设置 <code translate="no" v-pre>share_probes: false</code> 则只留在 rex-stremio 内部，DMM 的结果仍然会被使用。播放列表的探测结果从不会被发送。</p>
+<p><strong>命名。</strong> 每部电影和每集都会带着 <code translate="no" v-pre>kind</code> 和它的 IMDb id（放在 <code translate="no" v-pre>ids</code> 中）交给 rex，因此 Plex 会按 <a href="../any-source/">用你自己的应用接入 rex</a> 中的方式命名。目录自带的标题、简介、日期和海报放在 <code translate="no" v-pre>display</code> 中，它只在 Plex 完成命名之前显示。直播频道，或者只有插件自己知道的标题，没有 IMDb id，因此仅靠 <code translate="no" v-pre>display</code> 来命名。</p>
+<p><strong>编号。</strong> 电影就是电影。剧集的季和集来自 Cinemeta，它的 id 与 IMDb 一致，并保留其原有编号，所以新增一集不会挤乱其他集。rex 会按 TMDB 的编号放置它们，因此当 Cinemeta 的编号与之不同时，某一集就会被放到错误的位置。</p>
+<p><strong>Id。</strong> id 由目录加上 IMDb id（以及季和集）组成，例如 <code translate="no" v-pre>st-&lt;catalog&gt;-tt0111161</code>。它永远不变，所以同一部电影出现在两个目录里就是两个条目。开启 <strong>Catalogs as collections</strong> 后，同一库中多个目录都列出的电影或剧集，在库里只算一个标题，并分别出现在各自目录的合集中。</p>
+<p><strong>发送。</strong> 每六小时以及每次保存后执行一轮：先注册，然后每个标题在检查完成后立即发送（<code translate="no" v-pre>POST .../items</code>，每次最多 20 个标题，或每 5 秒发送一次已就绪的标题），最后为每个目录发送一次快照，每份快照分成每部分 200 项。保存后的第一份快照带有 <code translate="no" v-pre>&quot;force&quot;: true</code>，因为取消勾选目录可能一次移除超过一半的内容。如果某个目录返回空结果或只返回部分结果，这一轮就不发送快照：它只添加和更新，不删除任何内容；之后一轮完整的更新会移除真正已经消失的内容。</p>
+<h2 id="troubleshooting">故障排除</h2>
+<retype-table copy-text="| 你看到的 | 原因 | 解决办法 |
+|---|---|---|
+| `rejected`：`not a video file` | 文件名没有视频扩展名，或者是 probe 不是 `hls` 的 `.m3u8` | 把流命名为 `.m3u8` 并发送它的 probe。歌曲需要 `&quot;kind&quot;: &quot;track&quot;` |
+| `rejected`：`no music library holds &lt;file&gt;` | 没有音乐库接收这首曲目 | 在第 2 步用 `music` 声明一个音乐库 |
+| 专辑中你的文件名显示在 `[Unknown Artist]` 下 | 没有 `ids.mbid`，或者 Plex 不认识那个 release id，并且没有 `display` | 发送专辑的 MusicBrainz release id，或者发送 `display` |
+| 专辑显示的曲目不对 | `ids.mbid` 指向了该专辑的另一个版本，比如曲目更多的豪华版 | 选一个曲目数与你的一致的 release |
+| 频道不在 Live TV 节目指南中 | 没有 `channel`；它被拒绝了，rex 的日志会说明原因（`channel.guide[...]`）；或者另一个频道已经占用了这个编号，这种情况不会记录在日志中 | 修正日志中指出的字段，或者选一个空闲的编号 |
+| Plex 应用中看不到 Live TV | 还没有发送带 `channel` 的项目，或者应用没有经过测试 | 发送一个 `channel`，并使用 Plex Web 或 Plex for Android，这两个是经过测试的应用 |
+| 视频一直不出现 | 它被扣住了（其 `media_info` 没有流，或者发送时没带流信息），或者发送时没有 `media_info` 的流被拒绝了 | 对它做 probe 然后重新发送 |
+| `rejected`：`... is already &lt;id&gt;'s file` | 另一个 id 已经使用了这个 `path` | 每个路径只保留一个 id |
+| 快照返回 `409`：`the snapshot would remove more than half of this source's items` | 你的快照遗漏了 rex 从你那里拿到的一半以上内容：可能是磁盘缺失、列表获取失败，或者真的做了清理 | 修复丢失的部分。如果确实是有意的，就发送快照的最后一部分并带上 `&quot;force&quot;: true` |
+| 剧集标题显示为 &quot;Episode 1&quot;，并且海报是空白的 | 没有 `display` | 发送每个视频时附带 `display` |
+| 用 IMDb id 发送的电影仍显示你的 `display` 标题，而不是 Plex 的标题 | rex 只有在被认领后才会向 Plex 请求标题 | 认领 rex：[使用你自己的应用时的第 3 步](any-source.md#step-3-add-it-to-a-plex-account) |
+| 图片不显示 | URL 在你的家庭网络上，但不在你的插件注册的 `url` 之下，或者不是 http(s) | 从你插件自己的地址提供图片，或者把图片托管到公网上。 |
+| 播放时 rex 日志中出现 502 | 你的插件没有应答，或者流的站点拒绝了它 | 先检查你插件自己的日志 |
+| 在 Plex 应用中删除的标题仍然存在 | 你的插件对 `DELETE` 的应答不是 `2xx` 或 `404` | 先在你这边删除它，然后应答 `2xx` |
+| 已删除的标题又回来了 | 你的插件仍然在发送这个视频 | 停止发送已被删除的内容 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>你看到的</th>
+<th>原因</th>
+<th>解决办法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>rejected</code>：<code translate="no" v-pre>not a video file</code></td>
+<td>文件名没有视频扩展名，或者是 probe 不是 <code translate="no" v-pre>hls</code> 的 <code translate="no" v-pre>.m3u8</code></td>
+<td>把流命名为 <code translate="no" v-pre>.m3u8</code> 并发送它的 probe。歌曲需要 <code translate="no" v-pre>&quot;kind&quot;: &quot;track&quot;</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>rejected</code>：<code translate="no" v-pre>no music library holds &lt;file&gt;</code></td>
+<td>没有音乐库接收这首曲目</td>
+<td>在第 2 步用 <code translate="no" v-pre>music</code> 声明一个音乐库</td>
+</tr>
+<tr>
+<td>专辑中你的文件名显示在 <code translate="no" v-pre>[Unknown Artist]</code> 下</td>
+<td>没有 <code translate="no" v-pre>ids.mbid</code>，或者 Plex 不认识那个 release id，并且没有 <code translate="no" v-pre>display</code></td>
+<td>发送专辑的 MusicBrainz release id，或者发送 <code translate="no" v-pre>display</code></td>
+</tr>
+<tr>
+<td>专辑显示的曲目不对</td>
+<td><code translate="no" v-pre>ids.mbid</code> 指向了该专辑的另一个版本，比如曲目更多的豪华版</td>
+<td>选一个曲目数与你的一致的 release</td>
+</tr>
+<tr>
+<td>频道不在 Live TV 节目指南中</td>
+<td>没有 <code translate="no" v-pre>channel</code>；它被拒绝了，rex 的日志会说明原因（<code translate="no" v-pre>channel.guide[...]</code>）；或者另一个频道已经占用了这个编号，这种情况不会记录在日志中</td>
+<td>修正日志中指出的字段，或者选一个空闲的编号</td>
+</tr>
+<tr>
+<td>Plex 应用中看不到 Live TV</td>
+<td>还没有发送带 <code translate="no" v-pre>channel</code> 的项目，或者应用没有经过测试</td>
+<td>发送一个 <code translate="no" v-pre>channel</code>，并使用 Plex Web 或 Plex for Android，这两个是经过测试的应用</td>
+</tr>
+<tr>
+<td>视频一直不出现</td>
+<td>它被扣住了（其 <code translate="no" v-pre>media_info</code> 没有流，或者发送时没带流信息），或者发送时没有 <code translate="no" v-pre>media_info</code> 的流被拒绝了</td>
+<td>对它做 probe 然后重新发送</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>rejected</code>：<code translate="no" v-pre>... is already &lt;id&gt;'s file</code></td>
+<td>另一个 id 已经使用了这个 <code translate="no" v-pre>path</code></td>
+<td>每个路径只保留一个 id</td>
+</tr>
+<tr>
+<td>快照返回 <code translate="no" v-pre>409</code>：<code translate="no" v-pre>the snapshot would remove more than half of this source's items</code></td>
+<td>你的快照遗漏了 rex 从你那里拿到的一半以上内容：可能是磁盘缺失、列表获取失败，或者真的做了清理</td>
+<td>修复丢失的部分。如果确实是有意的，就发送快照的最后一部分并带上 <code translate="no" v-pre>&quot;force&quot;: true</code></td>
+</tr>
+<tr>
+<td>剧集标题显示为 &quot;Episode 1&quot;，并且海报是空白的</td>
+<td>没有 <code translate="no" v-pre>display</code></td>
+<td>发送每个视频时附带 <code translate="no" v-pre>display</code></td>
+</tr>
+<tr>
+<td>用 IMDb id 发送的电影仍显示你的 <code translate="no" v-pre>display</code> 标题，而不是 Plex 的标题</td>
+<td>rex 只有在被认领后才会向 Plex 请求标题</td>
+<td>认领 rex：<a href="../any-source/#step-3-add-it-to-a-plex-account">使用你自己的应用时的第 3 步</a></td>
+</tr>
+<tr>
+<td>图片不显示</td>
+<td>URL 在你的家庭网络上，但不在你的插件注册的 <code translate="no" v-pre>url</code> 之下，或者不是 http(s)</td>
+<td>从你插件自己的地址提供图片，或者把图片托管到公网上。</td>
+</tr>
+<tr>
+<td>播放时 rex 日志中出现 502</td>
+<td>你的插件没有应答，或者流的站点拒绝了它</td>
+<td>先检查你插件自己的日志</td>
+</tr>
+<tr>
+<td>在 Plex 应用中删除的标题仍然存在</td>
+<td>你的插件对 <code translate="no" v-pre>DELETE</code> 的应答不是 <code translate="no" v-pre>2xx</code> 或 <code translate="no" v-pre>404</code></td>
+<td>先在你这边删除它，然后应答 <code translate="no" v-pre>2xx</code></td>
+</tr>
+<tr>
+<td>已删除的标题又回来了</td>
+<td>你的插件仍然在发送这个视频</td>
+<td>停止发送已被删除的内容</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>还是没解决？请到 <a href="https://discord.com/invite/7u4YjMThXP">Discord</a> 上的 <strong>rex-support</strong> 论坛提问。<a href="../../guides/remote-help/">获取帮助</a> 说明了需要提供哪些信息。</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../rex/import-watched/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">上一个</span>
+                                <span class="block mt-1">带上你的观看历史</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../rex/addon-home-videos/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">下一个</span>
+                                <span class="block mt-1">教程：家庭视频插件</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "构建 rex 插件", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/rex/addons.md" }</script>
+</body>
+</html>

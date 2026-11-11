@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="de" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/de">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672682913">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Eigene rex-Addons bauen</title>
+    <meta name="title" content="Eigene rex-Addons bauen">
+    <meta name="description" content="rex zeigt, was seine Quellen ihm mitteilen. Eine Quelle sagt rex über die Feed-API, was sie hat, und liefert die Dateien aus, wenn rex sie anfordert. rex behandelt jede Quelle gleich.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/de/rex/addons/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/de/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/de/rex/addons/">
+    <meta property="og:title" content="Eigene rex-Addons bauen">
+    <meta property="og:description" content="rex zeigt, was seine Quellen ihm mitteilen. Eine Quelle sagt rex über die Feed-API, was sie hat, und liefert die Dateien aus, wenn rex sie anfordert. rex behandelt jede Quelle gleich.">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="de_DE">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/de/rex/addons/">
+    <meta name="twitter:title" content="Eigene rex-Addons bauen">
+    <meta name="twitter:description" content="rex zeigt, was seine Quellen ihm mitteilen. Eine Quelle sagt rex über die Feed-API, was sie hat, und liefert die Dateien aus, wenn rex sie anfordert. rex behandelt jede Quelle gleich.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/de/rex/addons.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../resources/css/retype.css?v=4.6.0.847672682913" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.847672682913" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.847672682913" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.847672682913" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/de/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>Deutsch</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/de/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/de/download.html" target="_blank">zurg herunterladen</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/de/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>Deutsch</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/de/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/de/download.html" target="_blank">zurg herunterladen</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/de/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="building-rex-addons">Eigene rex-Addons bauen</h1>
+<p><a href="https://rex.debridmediamanager.com/de/">rex</a> zeigt, was seine Quellen ihm mitteilen. Eine Quelle sagt rex über die Feed-API, was sie hat, und liefert die Dateien aus, wenn rex sie anfordert. rex behandelt jede Quelle gleich. Ein <strong>Addon</strong> ist eine Quelle, die du selbst schreibst, für Heimvideos, Aufnahmen, Stremio-Kataloge, <doc-anchor-trigger to="#music">Musik</doc-anchor-trigger> oder <doc-anchor-trigger to="#live-tv">Live-Kanäle</doc-anchor-trigger>.</p>
+<p>Diese Seite erklärt, was rex von einem Addon braucht, wie du seine Einträge benennst und welche Regeln wichtig sind. Am Ende steht <a href="https://github.com/debridmediamanager/rex-stremio">rex-stremio</a> als Beispiel in einer einzigen Datei.</p>
+<p>Ein Addon macht drei Dinge:</p>
+<ul>
+<li><strong>Liefert die Bytes aus.</strong> rex holt jedes Byte über HTTP von deinem Addon, wenn jemand auf Play drückt: eine Datei oder einen Stream, auf den rex weitergeleitet wird.</li>
+<li><strong>Sagt rex, was es hat.</strong> Es schickt rex über die Feed-API von rex eine Liste und danach jede Änderung. rex durchsucht nie etwas selbst.</li>
+<li><strong>Benennt, was es bringt.</strong> Bei Dingen, die kein Agent kennt, schickt dein Addon Titel, Beschreibung, Datum und Artwork selbst mit. Plex-Apps zeigen sie wie jede andere Bibliothek an.</li>
+</ul>
+<p>Wenn du Filme und Serien bringst, die Plex schon kennt (es hat ihre IMDb- oder TMDB-IDs), brauchst du stattdessen <a href="../any-source/">rex mit deiner eigenen App</a>: Plex benennt und beschreibt dann alles für dich.</p>
+<p>Um deine Stremio-Addon-Kataloge in rex einzubinden, musst du nichts schreiben: rex-stremio ist fertig. Du fügst die Links deiner Addons auf seiner Einstellungsseite ein und setzt Häkchen bei den Katalogen, die du willst.</p>
+<p><strong>Lieber mit fertigem Code starten?</strong> Drei Anleitungen bauen jeweils ein komplettes Addon in einer einzigen Python-Datei, nur mit der Standardbibliothek, und erklären, was jeder Teil tut:</p>
+<retype-table copy-text="| Anleitung | Bringt in rex |
+|---|---|
+| [Heimvideos](addon-home-videos.md) | Ein Ordner mit deinen eigenen Videos, als Bibliothek mit Titeln, Datum und Postern, die aus den Videos geschnitten werden |
+| [Musik](addon-music.md) | Ein Ordner mit Alben, von Plex über MusicBrainz benannt, mit Songtexten |
+| [IPTV](addon-iptv.md) | Eine M3U-Playlist und ihr XMLTV-Programm, als Live-TV-Kanäle mit Programmübersicht |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Anleitung</th>
+<th>Bringt in rex</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../addon-home-videos/">Heimvideos</a></td>
+<td>Ein Ordner mit deinen eigenen Videos, als Bibliothek mit Titeln, Datum und Postern, die aus den Videos geschnitten werden</td>
+</tr>
+<tr>
+<td><a href="../addon-music/">Musik</a></td>
+<td>Ein Ordner mit Alben, von Plex über MusicBrainz benannt, mit Songtexten</td>
+</tr>
+<tr>
+<td><a href="../addon-iptv/">IPTV</a></td>
+<td>Eine M3U-Playlist und ihr XMLTV-Programm, als Live-TV-Kanäle mit Programmübersicht</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Diese Seite erklärt jeden Schritt, den diese Anleitungen gehen. <a href="../addon-more/">Mehr aus deinem Addon</a> ergänzt Untertitel, Trailer, Kapitel, Sammlungen, Playlists und den Rest.</p>
+<h2 id="before-you-start">Bevor du anfängst</h2>
+<retype-table copy-text="| Du brauchst | Warum |
+|---|---|
+| rex, eingerichtet wie in [rex mit deiner eigenen App](any-source.md) (Schritt 1 bis 3) | Dort taucht die Bibliothek deines Addons auf |
+| Ein rex-Nightly mit Datum 2026.10.25 oder neuer, oder 2026.11.02 oder neuer für [Music](#music) und [Live TV](#live-tv) | Diese Seite ist dafür geschrieben |
+| FFmpeg dort, wo rex läuft, falls dein Addon Streams liefert | rex spielt einen Stream ab, indem er ihn konvertiert (ein Kopieren, also günstig). rex findet FFmpeg selbst; siehe [Video konvertieren](any-source.md#converting-video-optional) |
+| Dein Addon auf demselben Rechner wie rex oder in deinem Heimnetzwerk | Der Feed von rex antwortet nur diesen: siehe [Port privat halten](any-source.md#keep-the-port-private) |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Du brauchst</th>
+<th>Warum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rex, eingerichtet wie in <a href="../any-source/">rex mit deiner eigenen App</a> (Schritt 1 bis 3)</td>
+<td>Dort taucht die Bibliothek deines Addons auf</td>
+</tr>
+<tr>
+<td>Ein rex-Nightly mit Datum 2026.10.25 oder neuer, oder 2026.11.02 oder neuer für <doc-anchor-trigger to="#music">Music</doc-anchor-trigger> und <doc-anchor-trigger to="#live-tv">Live TV</doc-anchor-trigger></td>
+<td>Diese Seite ist dafür geschrieben</td>
+</tr>
+<tr>
+<td>FFmpeg dort, wo rex läuft, falls dein Addon Streams liefert</td>
+<td>rex spielt einen Stream ab, indem er ihn konvertiert (ein Kopieren, also günstig). rex findet FFmpeg selbst; siehe <a href="../any-source/#converting-video-optional">Video konvertieren</a></td>
+</tr>
+<tr>
+<td>Dein Addon auf demselben Rechner wie rex oder in deinem Heimnetzwerk</td>
+<td>Der Feed von rex antwortet nur diesen: siehe <a href="../any-source/#keep-the-port-private">Port privat halten</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Diese Seite schreibt die Adresse von rex als <code translate="no" v-pre>192.168.1.20:32400</code> und die des Addons als <code translate="no" v-pre>127.0.0.1:9981</code>. Setze deine eigenen Werte an deren Stelle. Die vollständige API-Referenz von rex findest du unter <a href="https://github.com/debridmediamanager/rex/blob/main/docs/feed-api.md">docs/feed-api.md</a>.</p>
+<h2 id="step-1-serve-the-bytes">Schritt 1. Die Bytes ausliefern</h2>
+<p><strong>Was es macht.</strong> Gibt jedem Video eine URL, die rex lesen kann.</p>
+<p><strong>Warum es wichtig ist.</strong> rex speichert keine Medien. Jedes Mal, wenn jemand auf Play drückt, liest rex das Video von deinem Addon.</p>
+<p>Dein Addon ist ein HTTP-Server. Ein Video liegt unter <code translate="no" v-pre>&lt;your address&gt;/&lt;path&gt;</code>, und <code translate="no" v-pre>path</code> wählst du selbst. Es gibt zwei Arten:</p>
+<retype-table copy-text="| Du lieferst | Wie | Was rex macht |
+|---|---|---|
+| **Eine Datei** (`.mkv`, `.mp4`, ...) | Beantworte `GET` mit der Datei. Beantworte `Range`-Anfragen (`206`), damit das Spulen schnell geht. Ohne sie liest rex bei jedem Spulen vom Anfang bis zur Position | Plex-Apps spielen sie direkt ab, wenn sie das können, oder rex konvertiert sie |
+| **Einen Stream** (HLS, `.m3u8`) | Beantworte `GET` mit der Playlist oder mit einer Weiterleitung dorthin. Weiterleitungen werden gefolgt, und dein Login wird nie an einen anderen Host geschickt | rex konvertiert ihn immer: eine Kopie von Bild und Ton in das Format, das die App abspielt. Eine App, die die Datei direkt liest, wird zu dieser Konvertierung geschickt |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Du lieferst</th>
+<th>Wie</th>
+<th>Was rex macht</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Eine Datei</strong> (<code translate="no" v-pre>.mkv</code>, <code translate="no" v-pre>.mp4</code>, ...)</td>
+<td>Beantworte <code translate="no" v-pre>GET</code> mit der Datei. Beantworte <code translate="no" v-pre>Range</code>-Anfragen (<code translate="no" v-pre>206</code>), damit das Spulen schnell geht. Ohne sie liest rex bei jedem Spulen vom Anfang bis zur Position</td>
+<td>Plex-Apps spielen sie direkt ab, wenn sie das können, oder rex konvertiert sie</td>
+</tr>
+<tr>
+<td><strong>Einen Stream</strong> (HLS, <code translate="no" v-pre>.m3u8</code>)</td>
+<td>Beantworte <code translate="no" v-pre>GET</code> mit der Playlist oder mit einer Weiterleitung dorthin. Weiterleitungen werden gefolgt, und dein Login wird nie an einen anderen Host geschickt</td>
+<td>rex konvertiert ihn immer: eine Kopie von Bild und Ton in das Format, das die App abspielt. Eine App, die die Datei direkt liest, wird zu dieser Konvertierung geschickt</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Optional, aber lohnenswert:</p>
+<ul>
+<li><strong>Ein Login.</strong> Basic Auth (<code translate="no" v-pre>user</code>, <code translate="no" v-pre>password</code>) oder ein Bearer-Token. rex schickt ihn nur an die eigene Adresse deines Addons.</li>
+<li><strong>Löschen.</strong> Wenn jemand einen Titel in einer Plex-App löscht, schickt rex deinem Addon zuerst ein WebDAV-<code translate="no" v-pre>DELETE</code> für den Pfad. Antwortest du mit <code translate="no" v-pre>2xx</code> (gelöscht) oder <code translate="no" v-pre>404</code> (schon weg), entfernt rex den Titel. Bei allem anderen sagt die Plex-App, dass er nicht gelöscht werden konnte.</li>
+</ul>
+<h2 id="step-2-register-with-rex">Schritt 2. Bei rex registrieren</h2>
+<p><strong>Was es macht.</strong> Sagt rex den Namen deines Addons, wo seine Daten liegen und welche Bibliotheken es befüllt.</p>
+<p><strong>Warum es wichtig ist.</strong> rex liest nichts von einer Quelle, die es nicht kennt. Erneutes Registrieren ändert nichts, also mach es jedes Mal, wenn dein Addon startet.</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-und-macos">
+<template #title>Linux und macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -X PUT http://192.168.1.20:32400/rex/sources/myaddon \
+  -H 'Content-Type: application/json' \
+  -d '{&quot;url&quot;: &quot;http://127.0.0.1:9981&quot;,
+       &quot;directories&quot;: [{&quot;name&quot;: &quot;kids&quot;, &quot;shows&quot;: &quot;Kids&quot;}]}'</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">Invoke-RestMethod -Method Put http://192.168.1.20:32400/rex/sources/myaddon -ContentType application/json `
+  -Body '{&quot;url&quot;: &quot;http://127.0.0.1:9981&quot;, &quot;directories&quot;: [{&quot;name&quot;: &quot;kids&quot;, &quot;shows&quot;: &quot;Kids&quot;}]}'</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<retype-table copy-text="| Feld | Bedeutung |
+|---|---|
+| `url` | Wo deine Daten liegen. Die Daten eines Videos sind `GET &lt;url&gt;/&lt;path&gt;` |
+| `user` und `password`, oder `bearer` | Der Login deines Addons, falls es einen gibt. Niemals innerhalb von `url` |
+| `directories` | Die Bibliotheken, die dein Addon befüllt. Jeder Eintrag ist ein erstes Pfadsegment (`name`) und der Titel der Bibliothek: `shows` für eine TV-Bibliothek, `movies` für eine Film-Bibliothek, `music` für eine Musik-Bibliothek, oder mehrere. rex legt jede Bibliothek beim ersten Mal an; wenn du sie in Plex umbenennst, bleibt der Name so |
+| `trash` | `false` löscht, was dein Addon entfernt (ein Snapshot, der es weglässt, oder ein `DELETE`), statt es in rex' Papierkorb zu verschieben |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Feld</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>url</code></td>
+<td>Wo deine Daten liegen. Die Daten eines Videos sind <code translate="no" v-pre>GET &lt;url&gt;/&lt;path&gt;</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>user</code> und <code translate="no" v-pre>password</code>, oder <code translate="no" v-pre>bearer</code></td>
+<td>Der Login deines Addons, falls es einen gibt. Niemals innerhalb von <code translate="no" v-pre>url</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>directories</code></td>
+<td>Die Bibliotheken, die dein Addon befüllt. Jeder Eintrag ist ein erstes Pfadsegment (<code translate="no" v-pre>name</code>) und der Titel der Bibliothek: <code translate="no" v-pre>shows</code> für eine TV-Bibliothek, <code translate="no" v-pre>movies</code> für eine Film-Bibliothek, <code translate="no" v-pre>music</code> für eine Musik-Bibliothek, oder mehrere. rex legt jede Bibliothek beim ersten Mal an; wenn du sie in Plex umbenennst, bleibt der Name so</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>trash</code></td>
+<td><code translate="no" v-pre>false</code> löscht, was dein Addon entfernt (ein Snapshot, der es weglässt, oder ein <code translate="no" v-pre>DELETE</code>), statt es in rex&#x27; Papierkorb zu verschieben</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Das erste Pfadsegment bestimmt die Bibliothek: Mit dem Beispiel oben landet jeder Pfad, der mit <code translate="no" v-pre>kids/</code> beginnt, in <strong>Kids</strong>. Verwende für jede Bibliothek ein anderes erstes Segment.</p>
+<p><strong>Was du sehen solltest.</strong> rex antwortet mit der Quelle. Das Log von rex zeigt <code translate="no" v-pre>SOURCES myaddon registered at http://127.0.0.1:9981</code> und beim ersten Mal <code translate="no" v-pre>SECTION create Kids (show) for myaddon's kids</code>. Die Bibliothek erscheint innerhalb einer Sekunde in den Plex-Apps unter More.</p>
+<h2 id="step-3-describe-each-video">Schritt 3. Jedes Video beschreiben</h2>
+<p><strong>Was es tut.</strong> Baut den Datensatz auf, den rex für jedes Video speichert: wo es liegt, was es ist und wie es aussieht.</p>
+<p><strong>Warum es wichtig ist.</strong> Dieser Datensatz ist alles, was rex weiß. Ein fehlendes Probe oder eine sich ändernde ID verursacht die meisten Addon-Fehler.</p>
+<div id="step-3-describe-each-video-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;id&quot;: &quot;home-2026-07-22-beach&quot;,
+  &quot;path&quot;: &quot;kids/summer-2026/beach.mp4&quot;,
+  &quot;kind&quot;: &quot;episode&quot;, &quot;season&quot;: 1, &quot;episode&quot;: 3,
+  &quot;name&quot;: &quot;Summer 2026&quot;,
+  &quot;media_info&quot;: { &quot;...&quot;: &quot;ffprobe's output, whole&quot; },
+  &quot;display&quot;: {
+    &quot;title&quot;: &quot;First day at the beach&quot;,
+    &quot;summary&quot;: &quot;...&quot;,
+    &quot;date&quot;: &quot;2026-07-22&quot;,
+    &quot;thumb&quot;: &quot;http://127.0.0.1:9981/kids/summer-2026/beach.jpg&quot;,
+    &quot;show&quot;: {&quot;title&quot;: &quot;Summer 2026&quot;, &quot;summary&quot;: &quot;...&quot;, &quot;poster&quot;: &quot;https://...&quot;, &quot;art&quot;: &quot;https://...&quot;},
+    &quot;season&quot;: {&quot;poster&quot;: &quot;https://...&quot;}
+  }
+}</code></pre>
+</doc-codeblock></div>
+<retype-table copy-text="| Feld | Pflicht | Bedeutung |
+|---|---|---|
+| `id` | ja | Dein Schlüssel für dieses Video, **dauerhaft**. rex speichert den Wiedergabeverlauf darunter |
+| `path` | ja | Wo seine Daten unter deiner `url` liegen. Das erste Segment wählt die Bibliothek |
+| `media_info` | ja, praktisch | Die ffprobe-JSON-Ausgabe von `-show_format -show_streams` für das Video (bei einem Stream probst du seine URL). Ohne sie wird eine Datei **zurückgehalten**: gespeichert, aber nicht angezeigt, weil Plex-Apps kein Video abspielen, das sie nicht kennen. Ein Stream (`.m3u8`) ohne sie wird mit `not a video file` abgelehnt, also schick einen Stream erst, wenn du ihn geprobt hast |
+| `kind` | bei einer Serie | `episode` oder `movie`. Ohne sie wird das Video nirgends einsortiert: In einer Serienbibliothek ist es eine Episode einer Serie mit dem Namen aus `name`, nummeriert in Dateireihenfolge. In einer Filmbibliothek ist es ein Film, der wie seine Datei heißt |
+| `season`, `episode` | bei einer Episode | Wohin sie gehört. Nummeriere Episoden so, dass eine neue nie die anderen verschiebt |
+| `name` | nein | Der Name der Serie und das, was ihre Episoden gruppiert. Standard: der Name ihres Ordners (bei einem Pfad ohne Ordner der Dateiname) |
+| `release` | nein | Gruppiert Videos, die zusammengehören. Standard: der Ordner des Videos |
+| `display` | bei allem, was kein Agent kennt | Titel, Zusammenfassung, Datum und Artwork: Schritt 4 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Feld</th>
+<th>Pflicht</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>id</code></td>
+<td>ja</td>
+<td>Dein Schlüssel für dieses Video, <strong>dauerhaft</strong>. rex speichert den Wiedergabeverlauf darunter</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>path</code></td>
+<td>ja</td>
+<td>Wo seine Daten unter deiner <code translate="no" v-pre>url</code> liegen. Das erste Segment wählt die Bibliothek</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>media_info</code></td>
+<td>ja, praktisch</td>
+<td>Die ffprobe-JSON-Ausgabe von <code translate="no" v-pre>-show_format -show_streams</code> für das Video (bei einem Stream probst du seine URL). Ohne sie wird eine Datei <strong>zurückgehalten</strong>: gespeichert, aber nicht angezeigt, weil Plex-Apps kein Video abspielen, das sie nicht kennen. Ein Stream (<code translate="no" v-pre>.m3u8</code>) ohne sie wird mit <code translate="no" v-pre>not a video file</code> abgelehnt, also schick einen Stream erst, wenn du ihn geprobt hast</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>kind</code></td>
+<td>bei einer Serie</td>
+<td><code translate="no" v-pre>episode</code> oder <code translate="no" v-pre>movie</code>. Ohne sie wird das Video nirgends einsortiert: In einer Serienbibliothek ist es eine Episode einer Serie mit dem Namen aus <code translate="no" v-pre>name</code>, nummeriert in Dateireihenfolge. In einer Filmbibliothek ist es ein Film, der wie seine Datei heißt</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>season</code>, <code translate="no" v-pre>episode</code></td>
+<td>bei einer Episode</td>
+<td>Wohin sie gehört. Nummeriere Episoden so, dass eine neue nie die anderen verschiebt</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>name</code></td>
+<td>nein</td>
+<td>Der Name der Serie und das, was ihre Episoden gruppiert. Standard: der Name ihres Ordners (bei einem Pfad ohne Ordner der Dateiname)</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>release</code></td>
+<td>nein</td>
+<td>Gruppiert Videos, die zusammengehören. Standard: der Ordner des Videos</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>display</code></td>
+<td>bei allem, was kein Agent kennt</td>
+<td>Titel, Zusammenfassung, Datum und Artwork: Schritt 4</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Der <code translate="no" v-pre>path</code> eines Streams endet auf <code translate="no" v-pre>.m3u8</code>, und seine <code translate="no" v-pre>media_info</code> enthält <code translate="no" v-pre>&quot;format_name&quot;: &quot;hls&quot;</code>. rex akzeptiert ihn nur mit beidem. Jede andere Datei braucht eine Video-Endung.</p>
+<h2 id="step-4-name-and-dress-it">Schritt 4. Benennen und aufhübschen</h2>
+<p>Was es tut. Gibt Plex-Apps einen Titel, eine Zusammenfassung, ein Datum und Bilder für alles, was kein Plex-Agent kennt.</p>
+<p>Warum das wichtig ist. Ohne <code translate="no" v-pre>display</code> steht bei einer Episode nur „Episode 3“ mit einer leeren Kachel, und eine Serie hat kein Poster.</p>
+<retype-table copy-text="| Feld | Wo es angezeigt wird |
+|---|---|
+| `title`, `summary` | Der Titel und die Zusammenfassung des Videos, genau so wie gesendet |
+| `date` | Sein Veröffentlichungsdatum (`YYYY-MM-DD`) und das Jahr daraus. Oder nur das Jahr (`YYYY`) bei etwas, das nur über sein Jahr bekannt ist, etwa ein alter Film: Plex-Apps zeigen dann das Jahr und keinen Veröffentlichungstag |
+| `thumb` | Das Poster eines Films oder das Standbild einer Episode |
+| `art` | Der Hintergrund eines Films |
+| `show.title`, `show.summary`, `show.poster`, `show.art` | Die Serie der Episode |
+| `season.summary`, `season.poster` | Die Staffel der Episode (das Serien-Poster, wenn es keins gibt) |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Feld</th>
+<th>Wo es angezeigt wird</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>title</code>, <code translate="no" v-pre>summary</code></td>
+<td>Der Titel und die Zusammenfassung des Videos, genau so wie gesendet</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>date</code></td>
+<td>Sein Veröffentlichungsdatum (<code translate="no" v-pre>YYYY-MM-DD</code>) und das Jahr daraus. Oder nur das Jahr (<code translate="no" v-pre>YYYY</code>) bei etwas, das nur über sein Jahr bekannt ist, etwa ein alter Film: Plex-Apps zeigen dann das Jahr und keinen Veröffentlichungstag</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>thumb</code></td>
+<td>Das Poster eines Films oder das Standbild einer Episode</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>art</code></td>
+<td>Der Hintergrund eines Films</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>show.title</code>, <code translate="no" v-pre>show.summary</code>, <code translate="no" v-pre>show.poster</code>, <code translate="no" v-pre>show.art</code></td>
+<td>Die Serie der Episode</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>season.summary</code>, <code translate="no" v-pre>season.poster</code></td>
+<td>Die Staffel der Episode (das Serien-Poster, wenn es keins gibt)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Jedes Feld ist optional. Bilder sind <code translate="no" v-pre>http://</code>- oder <code translate="no" v-pre>https://</code>-URLs. rex holt sie selbst ab: aus dem öffentlichen Internet oder von der eigenen Adresse deines Addons (die <code translate="no" v-pre>url</code>, die du registriert hast), mit dem Login deines Addons. Jede andere Adresse in deinem Heimnetz wird abgelehnt. So kann ein Addon eigene Bilder ausliefern, zum Beispiel ein Standbild aus jedem Heimvideo. Ein 2:3-Bild eignet sich am besten als Poster, ein 16:9-Bild am besten als Standbild und Hintergrund.</p>
+<p>So behandelt rex sie:</p>
+<ul>
+<li><strong>Nur wenn nichts benannt ist.</strong> Ein Video, das mit <code translate="no" v-pre>kind</code> und <code translate="no" v-pre>ids</code> gesendet wird, die Plex kennt, wird so angezeigt, wie Plex es beschreibt, und <code translate="no" v-pre>display</code> wird ignoriert.</li>
+<li><strong>Spätere Sendungen aktualisieren.</strong> Sendest du ein Video erneut mit einem neuen <code translate="no" v-pre>display</code>, ändern sich seine Zeile, Serie und Staffel direkt; Apps zeichnen die neuen Bilder neu. Eine Serie behält den Titel, mit dem sie angelegt wurde.</li>
+<li><strong>Menschen haben Vorrang.</strong> Ein Feld, das jemand in einer Plex-App bearbeitet und gesperrt hat, behält seinen Wert, und ein Poster, das jemand hochgeladen hat, bleibt erhalten.</li>
+<li><strong>Es wird geprüft.</strong> Ein Bild, das keine http(s)-URL ist, oder ein Datum in einem anderen Format lehnt das Video ab und nennt das betroffene Feld.</li>
+</ul>
+<h2 id="step-5-send-it">Schritt 5. Abschicken</h2>
+<p><strong>Was es macht.</strong> Schickt rex deine Videos: alles auf einmal ab und zu, und Änderungen, sobald sie passieren.</p>
+<p><strong>Warum es wichtig ist.</strong> rex zeigt dir genau, was du zuletzt geschickt hast.</p>
+<retype-table copy-text="| Zum Ziel | Senden | rex antwortet |
+|---|---|---|
+| Videos hinzufügen oder ändern | `POST /rex/feed/myaddon/items` mit `{&quot;items&quot;: [...]}` | Wie viele `created`, `updated`, `held`, `unchanged` waren, und jedes `rejected` Video mit seinem Grund |
+| Videos entfernen | `DELETE /rex/feed/myaddon/items` mit `{&quot;ids&quot;: [...]}` | Wie viele `trashed`, `deleted`, `released` (gehaltene wurden vergessen) und `unknown` waren |
+| Alles senden | `PUT /rex/feed/myaddon/snapshot` mit `{&quot;items&quot;: [...]}`. In Teilen: `&quot;session&quot;` (beliebiger Text), `&quot;part&quot;` ab 0, `&quot;complete&quot;: true` beim letzten | Dieselben Zählungen und was es `removed` hat: jedes deiner Videos, das im Snapshot nicht genannt wurde |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Zum Ziel</th>
+<th>Senden</th>
+<th>rex antwortet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Videos hinzufügen oder ändern</td>
+<td><code translate="no" v-pre>POST /rex/feed/myaddon/items</code> mit <code translate="no" v-pre>{&quot;items&quot;: [...]}</code></td>
+<td>Wie viele <code translate="no" v-pre>created</code>, <code translate="no" v-pre>updated</code>, <code translate="no" v-pre>held</code>, <code translate="no" v-pre>unchanged</code> waren, und jedes <code translate="no" v-pre>rejected</code> Video mit seinem Grund</td>
+</tr>
+<tr>
+<td>Videos entfernen</td>
+<td><code translate="no" v-pre>DELETE /rex/feed/myaddon/items</code> mit <code translate="no" v-pre>{&quot;ids&quot;: [...]}</code></td>
+<td>Wie viele <code translate="no" v-pre>trashed</code>, <code translate="no" v-pre>deleted</code>, <code translate="no" v-pre>released</code> (gehaltene wurden vergessen) und <code translate="no" v-pre>unknown</code> waren</td>
+</tr>
+<tr>
+<td>Alles senden</td>
+<td><code translate="no" v-pre>PUT /rex/feed/myaddon/snapshot</code> mit <code translate="no" v-pre>{&quot;items&quot;: [...]}</code>. In Teilen: <code translate="no" v-pre>&quot;session&quot;</code> (beliebiger Text), <code translate="no" v-pre>&quot;part&quot;</code> ab 0, <code translate="no" v-pre>&quot;complete&quot;: true</code> beim letzten</td>
+<td>Dieselben Zählungen und was es <code translate="no" v-pre>removed</code> hat: jedes deiner Videos, das im Snapshot nicht genannt wurde</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Sende pro Anfrage ein paar hundert Videos. Ein Snapshot, der nichts nennt, entfernt auch nichts. Und einer, der mehr als die Hälfte deiner Videos entfernen würde, wird abgelehnt, es sei denn, der letzte Teil enthält <code translate="no" v-pre>&quot;force&quot;: true</code>. So kann ein Addon, das den Überblick verloren hat, deine Bibliothek nicht aus Versehen leeren.</p>
+<p><strong>Was du sehen solltest.</strong></p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-und-macos-1">
+<template #title>Linux und macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s http://192.168.1.20:32400/rex/feed/myaddon/items | head -c 400   # what rex shows, with each ratingKey
+curl -s http://192.168.1.20:32400/rex/feed/myaddon/held                  # what waits for a probe</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-1">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">curl.exe -s http://192.168.1.20:32400/rex/feed/myaddon/items   # what rex shows, with each ratingKey
+curl.exe -s http://192.168.1.20:32400/rex/feed/myaddon/held    # what waits for a probe</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p>Das Log von rex nennt jedes abgelehnte Video und den Grund: <code translate="no" v-pre>FEED myaddon rejected &lt;id&gt;: &lt;reason&gt;</code>.</p>
+<h2 id="music">Musik</h2>
+<p><strong>Was es macht.</strong> Bringt Alben in eine Musikbibliothek, die Plexamp, Plex Web und Plex für Android abspielen.</p>
+<p><strong>Warum das wichtig ist.</strong> Plex benennt Musik anhand des MusicBrainz-Releases des Albums. Schickst du diese ID, füllt Plex alle Titel, Cover, Künstlerfotos und Biografien selbst aus.</p>
+<p>Schick jede Audiodatei als Track:</p>
+<div id="music-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;id&quot;: &quot;albums/in-rainbows/01&quot;,
+  &quot;path&quot;: &quot;music/Radiohead/In Rainbows/01 - 15 Step.flac&quot;,
+  &quot;kind&quot;: &quot;track&quot;,
+  &quot;ids&quot;: {&quot;mbid&quot;: &quot;3b408cb5-7d51-4188-b07c-fabcf308cda3&quot;},
+  &quot;disc&quot;: 1, &quot;track&quot;: 1,
+  &quot;media_info&quot;: { &quot;...&quot;: &quot;ffprobe's output, whole&quot; }
+}</code></pre>
+</doc-codeblock></div>
+<retype-table copy-text="| Field | Bedeutung |
+|---|---|
+| `kind` | `track` |
+| `path` | Eine Audiodatei: `.flac`, `.mp3`, `.m4a`, `.aac`, `.ogg`, `.oga`, `.opus`, `.wav`, `.alac`, `.aif`, `.aiff`, `.wma`, `.ape`, `.wv`, `.dsf` oder `.mka` |
+| `ids.mbid` | Die MusicBrainz-**Release**-ID des Albums des Tracks: die ID in einem `musicbrainz.org/release/&lt;id&gt;`-Link, nicht die einer Release Group oder einer Recording. Oder `ids.plex`, Plex' eigene Album-GUID (`plex://album/&lt;id&gt;`) |
+| `disc`, `track` | Wo der Track auf diesem Release liegt. Der Track, den Plex unter diesen Nummern führt, wird angezeigt |
+| `release` | Zu welcher Kopie des Albums der Track gehört. Standard: sein Ordner. Jede Kopie ist ein eigenes Album, da Plex zwei Kopien als zwei Alben listet. Schick also für die Dateien einer Kopie, die in Disc-Ordnern (`CD1/`, `CD2/`) liegen, ein gemeinsames `release` |
+| `display` | Für Musik, die Plex nicht kennt: den `title` des Tracks, seinen `artist` (`title`, `summary`, `poster`, `art`) und sein `album` (`title`, `summary`, `poster`, `date`) |
+| `lyrics` | Liedtextdateien neben dem Track in deinem Addon: `[{&quot;path&quot;: &quot;music/.../01 - 15 Step.lrc&quot;, &quot;size&quot;: 147}]`. Eine `.lrc` (Text mit Zeitangaben) oder eine `.txt`, angezeigt als Liedtext |
+| `loudness` | Nur wenn dein Addon die Lautstärke misst, mit Plex-Namen: `gain`, `albumGain`, `peak`, `albumPeak`, `albumRange`, `loudness` und `lra`, die Ein- und Ausblendungen `startRamp` und `endRamp` und `levels`, die Lautstärke alle 100 ms. rex misst selbst nichts |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Field</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>kind</code></td>
+<td><code translate="no" v-pre>track</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>path</code></td>
+<td>Eine Audiodatei: <code translate="no" v-pre>.flac</code>, <code translate="no" v-pre>.mp3</code>, <code translate="no" v-pre>.m4a</code>, <code translate="no" v-pre>.aac</code>, <code translate="no" v-pre>.ogg</code>, <code translate="no" v-pre>.oga</code>, <code translate="no" v-pre>.opus</code>, <code translate="no" v-pre>.wav</code>, <code translate="no" v-pre>.alac</code>, <code translate="no" v-pre>.aif</code>, <code translate="no" v-pre>.aiff</code>, <code translate="no" v-pre>.wma</code>, <code translate="no" v-pre>.ape</code>, <code translate="no" v-pre>.wv</code>, <code translate="no" v-pre>.dsf</code> oder <code translate="no" v-pre>.mka</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>ids.mbid</code></td>
+<td>Die MusicBrainz-<strong>Release</strong>-ID des Albums des Tracks: die ID in einem <code translate="no" v-pre>musicbrainz.org/release/&lt;id&gt;</code>-Link, nicht die einer Release Group oder einer Recording. Oder <code translate="no" v-pre>ids.plex</code>, Plex&#x27; eigene Album-GUID (<code translate="no" v-pre>plex://album/&lt;id&gt;</code>)</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>disc</code>, <code translate="no" v-pre>track</code></td>
+<td>Wo der Track auf diesem Release liegt. Der Track, den Plex unter diesen Nummern führt, wird angezeigt</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>release</code></td>
+<td>Zu welcher Kopie des Albums der Track gehört. Standard: sein Ordner. Jede Kopie ist ein eigenes Album, da Plex zwei Kopien als zwei Alben listet. Schick also für die Dateien einer Kopie, die in Disc-Ordnern (<code translate="no" v-pre>CD1/</code>, <code translate="no" v-pre>CD2/</code>) liegen, ein gemeinsames <code translate="no" v-pre>release</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>display</code></td>
+<td>Für Musik, die Plex nicht kennt: den <code translate="no" v-pre>title</code> des Tracks, seinen <code translate="no" v-pre>artist</code> (<code translate="no" v-pre>title</code>, <code translate="no" v-pre>summary</code>, <code translate="no" v-pre>poster</code>, <code translate="no" v-pre>art</code>) und sein <code translate="no" v-pre>album</code> (<code translate="no" v-pre>title</code>, <code translate="no" v-pre>summary</code>, <code translate="no" v-pre>poster</code>, <code translate="no" v-pre>date</code>)</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>lyrics</code></td>
+<td>Liedtextdateien neben dem Track in deinem Addon: <code translate="no" v-pre>[{&quot;path&quot;: &quot;music/.../01 - 15 Step.lrc&quot;, &quot;size&quot;: 147}]</code>. Eine <code translate="no" v-pre>.lrc</code> (Text mit Zeitangaben) oder eine <code translate="no" v-pre>.txt</code>, angezeigt als Liedtext</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>loudness</code></td>
+<td>Nur wenn dein Addon die Lautstärke misst, mit Plex-Namen: <code translate="no" v-pre>gain</code>, <code translate="no" v-pre>albumGain</code>, <code translate="no" v-pre>peak</code>, <code translate="no" v-pre>albumPeak</code>, <code translate="no" v-pre>albumRange</code>, <code translate="no" v-pre>loudness</code> und <code translate="no" v-pre>lra</code>, die Ein- und Ausblendungen <code translate="no" v-pre>startRamp</code> und <code translate="no" v-pre>endRamp</code> und <code translate="no" v-pre>levels</code>, die Lautstärke alle 100 ms. rex misst selbst nichts</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<ul>
+<li><strong>Zuerst eine Musikbibliothek.</strong> Leg eine in Schritt 2 an (<code translate="no" v-pre>&quot;directories&quot;: [{&quot;name&quot;: &quot;music&quot;, &quot;music&quot;: &quot;Music&quot;}]</code>) oder füg in einer Plex-App eine Musikbibliothek hinzu. Ein Track, den keine Musikbibliothek aufnimmt, wird abgelehnt: <code translate="no" v-pre>no music library holds &lt;file&gt;</code>.</li>
+<li><strong>Die Release-ID finden.</strong> Such bei MusicBrainz nach Albumtitel und Künstler (<code translate="no" v-pre>https://musicbrainz.org/ws/2/release?query=release:%22In%20Rainbows%22%20AND%20artist:Radiohead&amp;fmt=json</code>) und wähl ein offizielles Release mit deiner Trackanzahl. Oft passen mehrere (eines pro Land), und jedes davon nennt das Album. MusicBrainz beantwortet pro Adresse nur eine Anfrage pro Sekunde und lehnt mehr ab. Außerdem verlangt es einen User-Agent mit dem Namen deines Addons. Frag einmal pro Album und heb die Antwort auf.</li>
+<li><strong>rex liest keine Tags.</strong> Titel, Cover, Genres und ähnliche Künstler kommen von Plex. Ein Track, dessen Release Plex nicht kennt, zeigt dein <code translate="no" v-pre>display</code>, gruppiert unter dem Künstler und Album, die du angibst. Ohne das zeigt er seinen Dateinamen unter <code translate="no" v-pre>[Unknown Artist]</code>.</li>
+<li><strong>Es wird unverändert abgespielt.</strong> FFmpeg brauchst du nicht, außer eine App verlangt eine niedrigere Qualität als das Original. Dann konvertiert rex mit FFmpeg, wie Plex es auch tut.</li>
+<li><strong>Nicht vorhanden.</strong> Plexamps Radio, Mixe, Sender und klanglich ähnliche Tracks brauchen eine Analyse, die rex nicht macht.</li>
+</ul>
+<p><strong>Was du sehen solltest.</strong> Das Album in der Musikbibliothek mit Plex&#x27; Cover und Tracknamen, und seinen Künstler mit einem Foto. In Plexamp wählst du die Musikbibliothek von rex als Bibliothek aus.</p>
+<h2 id="live-tv">Live-TV</h2>
+<p><strong>Was es macht.</strong> Macht einen Livestream zu einem Kanal von <strong>Live TV</strong> in Plex Web und Plex für Android, mit einem TV-Guide, What&#x27;s On und einer Kanalnummer.</p>
+<p><strong>Warum es wichtig ist.</strong> Ein Livestream allein ist nur eine Zeile in einer Bibliothek. Mit einem <code translate="no" v-pre>channel</code> finden die Leute ihn so, wie sie auch Fernsehen finden: im Guide, nach dem, was gerade läuft.</p>
+<p>Sende den Livestream wie in Schritt 3 (eine <code translate="no" v-pre>.m3u8</code> mit ihrem Probe), zusammen mit einem <code translate="no" v-pre>channel</code>:</p>
+<div id="live-tv-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">&quot;channel&quot;: {
+  &quot;number&quot;: &quot;100.1&quot;,
+  &quot;title&quot;: &quot;Rex News&quot;,
+  &quot;guide&quot;: [
+    {&quot;start&quot;: &quot;2026-11-01T18:00:00Z&quot;, &quot;end&quot;: &quot;2026-11-01T19:00:00Z&quot;,
+     &quot;title&quot;: &quot;Evening News&quot;, &quot;summary&quot;: &quot;The day's headlines.&quot;, &quot;categories&quot;: [&quot;News&quot;]},
+    {&quot;start&quot;: &quot;2026-11-01T19:00:00Z&quot;, &quot;end&quot;: &quot;2026-11-01T19:45:00Z&quot;,
+     &quot;title&quot;: &quot;The Pilot&quot;, &quot;type&quot;: &quot;episode&quot;, &quot;show&quot;: &quot;Rex Stories&quot;, &quot;season&quot;: 1, &quot;episode&quot;: 1,
+     &quot;categories&quot;: [&quot;Drama&quot;]}
+  ]
+}</code></pre>
+</doc-codeblock></div>
+<retype-table copy-text="| Feld | Bedeutung |
+|---|---|
+| `number` | Die Nummer des Kanals im Guide (`100.1`, `704`): Buchstaben, Ziffern, `.`, `-` und `_`. Wähle Nummern, die andere Addons nicht nutzen. Der erste Kanal, der mit einer Nummer gesendet wird, behält sie |
+| `title` | Sein Name im Guide. Standard: der `display`-Titel des Streams |
+| `call_sign` | Sein Kurzname. Standard: `title` |
+| `guide` | Was läuft: `start` und `end` (Epoch-Sekunden oder ISO 8601 mit `Z` oder einem Offset), `title`, und optional `summary`, `categories`, `thumb` und `previously_shown` (`true` für eine Wiederholung). Eine Episode bekommt `&quot;type&quot;: &quot;episode&quot;` mit `show`, `season` und `episode`, und der Guide gruppiert sie unter ihrer Serie |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Feld</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>number</code></td>
+<td>Die Nummer des Kanals im Guide (<code translate="no" v-pre>100.1</code>, <code translate="no" v-pre>704</code>): Buchstaben, Ziffern, <code translate="no" v-pre>.</code>, <code translate="no" v-pre>-</code> und <code translate="no" v-pre>_</code>. Wähle Nummern, die andere Addons nicht nutzen. Der erste Kanal, der mit einer Nummer gesendet wird, behält sie</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>title</code></td>
+<td>Sein Name im Guide. Standard: der <code translate="no" v-pre>display</code>-Titel des Streams</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>call_sign</code></td>
+<td>Sein Kurzname. Standard: <code translate="no" v-pre>title</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>guide</code></td>
+<td>Was läuft: <code translate="no" v-pre>start</code> und <code translate="no" v-pre>end</code> (Epoch-Sekunden oder ISO 8601 mit <code translate="no" v-pre>Z</code> oder einem Offset), <code translate="no" v-pre>title</code>, und optional <code translate="no" v-pre>summary</code>, <code translate="no" v-pre>categories</code>, <code translate="no" v-pre>thumb</code> und <code translate="no" v-pre>previously_shown</code> (<code translate="no" v-pre>true</code> für eine Wiederholung). Eine Episode bekommt <code translate="no" v-pre>&quot;type&quot;: &quot;episode&quot;</code> mit <code translate="no" v-pre>show</code>, <code translate="no" v-pre>season</code> und <code translate="no" v-pre>episode</code>, und der Guide gruppiert sie unter ihrer Serie</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<ul>
+<li><strong>Sende den Guide von ein paar Stunden zurück bis so weit voraus, wie du ihn kennst</strong> (etwa eine Woche, wie es TV-Guide-Dateien machen), und sende ihn erneut, wenn er sich ändert. rex zeigt eine Sendung bis drei Stunden nach ihrem Ende an. Jedes Senden ersetzt den Guide des Kanals. Ein Senden ohne <code translate="no" v-pre>channel</code> behält ihn. <code translate="no" v-pre>&quot;channel&quot;: null</code> beendet den Kanal.</li>
+<li><strong>FFmpeg wird benötigt</strong>, wie bei jedem Stream: rex wandelt den Kanal um, während jemand zuschaut.</li>
+<li><strong>Nichts wird aufgenommen.</strong> Plex Web und Plex für Android haben keinen Record-Button.</li>
+<li><strong>Kanäle, die enden.</strong> Registriere mit <code translate="no" v-pre>&quot;trash&quot;: false</code> (Schritt 2), damit ein entfernter Kanal gelöscht und nicht in rex&#x27; Papierkorb behalten wird.</li>
+<li><strong>Was eine Kategorie bewirkt.</strong> Eine Episode in <code translate="no" v-pre>Sports</code> oder <code translate="no" v-pre>News</code> erscheint in den Regalen Sports und News von What&#x27;s On. Eine Sendung ohne <code translate="no" v-pre>type</code> wird als Film angezeigt, so wie Plex es bei jedem TV-Guide macht.</li>
+</ul>
+<p><strong>Was du sehen solltest.</strong> In Plex Web oder Plex für Android steht <strong>Live TV</strong> im Menü der App, der Kanal steht im Guide unter seiner Nummer, und der Stream läuft, wenn du ihn öffnest. Das Log von rex nennt einen abgelehnten Kanal und den Grund, zum Beispiel <code translate="no" v-pre>channel.guide[3]: end must be after start</code>.</p>
+<p><a href="https://github.com/debridmediamanager/rex-live-sports">rex-live-sports</a> macht all das für die Kanäle eines Live-Sport-Servers: Es nummeriert sie nach Gruppe ab <code translate="no" v-pre>100.1</code>, behält die Nummer jedes Kanals bei und bezieht deren Guides von Pluto TV und den kostenlosen XMLTV-Dateien von epgshare01.</p>
+<h2 id="the-rules-that-trip-people-up">Die Regeln, über die man stolpert</h2>
+<retype-table copy-text="| Regel | Was passiert, wenn du sie brichst |
+|---|---|
+| **Eine ID bleibt für immer.** Änderst du sie, ist das Video ein neuer Titel | Wiedergabeverlauf und Bearbeitungen bleiben in der alten Zeile, die der nächste Snapshot entfernt |
+| **Ein Video, ein Pfad.** Zwei IDs dürfen nicht denselben `path` haben | Die zweite wird abgelehnt: `... is already &lt;id&gt;'s file` |
+| **Die Bytes einer Datei sind pro ID festgelegt.** rex behält die Streams der ersten Analyse; eine spätere Analyse ändert nur die Kapitel. Nur ein Stream (`.m3u8`) übernimmt eine neue Analyse, wenn deren Streams abweichen | Ändern sich die Bytes einer Datei (anderes Format, eine korrigierte Hochladung), vergib eine neue ID und einen neuen Pfad |
+| **Analysiere alles.** Ohne `media_info` gibt es kein Video | Eine Datei wartet in `held`, bis ein Versand eine liefert; ein Stream wird abgelehnt |
+| **Behalte den Quellnamen bei.** Zeilen gehören zu (source, id) | Ein anderer Name startet eine leere Quelle; die Zeilen der alten bleiben, bis du sie löschst |
+| **Snapshots sind vollständig.** Fehlt in einem Snapshot ein Kanal, wird er entfernt | Sende nach einem teilweisen Fehler keinen Snapshot: überspring diese Runde |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Regel</th>
+<th>Was passiert, wenn du sie brichst</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Eine ID bleibt für immer.</strong> Änderst du sie, ist das Video ein neuer Titel</td>
+<td>Wiedergabeverlauf und Bearbeitungen bleiben in der alten Zeile, die der nächste Snapshot entfernt</td>
+</tr>
+<tr>
+<td><strong>Ein Video, ein Pfad.</strong> Zwei IDs dürfen nicht denselben <code translate="no" v-pre>path</code> haben</td>
+<td>Die zweite wird abgelehnt: <code translate="no" v-pre>... is already &lt;id&gt;'s file</code></td>
+</tr>
+<tr>
+<td><strong>Die Bytes einer Datei sind pro ID festgelegt.</strong> rex behält die Streams der ersten Analyse; eine spätere Analyse ändert nur die Kapitel. Nur ein Stream (<code translate="no" v-pre>.m3u8</code>) übernimmt eine neue Analyse, wenn deren Streams abweichen</td>
+<td>Ändern sich die Bytes einer Datei (anderes Format, eine korrigierte Hochladung), vergib eine neue ID und einen neuen Pfad</td>
+</tr>
+<tr>
+<td><strong>Analysiere alles.</strong> Ohne <code translate="no" v-pre>media_info</code> gibt es kein Video</td>
+<td>Eine Datei wartet in <code translate="no" v-pre>held</code>, bis ein Versand eine liefert; ein Stream wird abgelehnt</td>
+</tr>
+<tr>
+<td><strong>Behalte den Quellnamen bei.</strong> Zeilen gehören zu (source, id)</td>
+<td>Ein anderer Name startet eine leere Quelle; die Zeilen der alten bleiben, bis du sie löschst</td>
+</tr>
+<tr>
+<td><strong>Snapshots sind vollständig.</strong> Fehlt in einem Snapshot ein Kanal, wird er entfernt</td>
+<td>Sende nach einem teilweisen Fehler keinen Snapshot: überspring diese Runde</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Um ein Addon (oder ein Skript), das bereits eine Bibliothek gefüllt hat, zu <strong>ersetzen</strong>, behalte seinen Quellnamen, seine IDs und das erste Pfadsegment bei. Dein erster Versand aktualisiert dann seine Zeilen direkt, inklusive Wiedergabeverlauf, statt neue anzulegen.</p>
+<h2 id="example-rex-stremio">Beispiel: rex-stremio</h2>
+<p><a href="https://github.com/debridmediamanager/rex-stremio">rex-stremio</a> verwandelt die Kataloge deiner Stremio-Addons in rex-Bibliotheken: Filme in eine Filmbibliothek, Serien in eine TV-Bibliothek, Live-Kanäle in eine Bibliothek namens Live TV (nicht der Live-TV-Guide). Es macht die Schritte 1 bis 5 und besteht aus einer einzigen Python-Datei, nur mit der Standardbibliothek. Es nimmt keine Löschungen an: Die Titel eines Katalogs gehören nicht ihm zum Löschen.</p>
+<p><strong>Registering.</strong> Jeder Katalog, den du anhakst, benennt eine Bibliothek: Stremio Films, Stremio Shows oder Live TV, sofern du sie nicht umbenennst. rex-stremio registriert sich als <code translate="no" v-pre>stremio</code> mit einem Verzeichnis pro Bibliothek, benannt nach ihr (<code translate="no" v-pre>stremio-films</code>), und meldet diese Bibliothek als <code translate="no" v-pre>shows</code>-Titel des Verzeichnisses für Serienkataloge oder als <code translate="no" v-pre>movies</code>-Titel für Film- und Live-TV-Kataloge.</p>
+<p><strong>Serving.</strong> Die Links von Stream-Addons laufen ab, daher speichert rex-stremio keine Links. Es stellt eine URL pro Titel bereit, <code translate="no" v-pre>/&lt;directory&gt;/&lt;catalog&gt;/&lt;id&gt;.&lt;ext&gt;</code>, und antwortet darauf mit einer Weiterleitung zu einem Link, den es in diesem Moment anfordert:</p>
+<div id="example-rex-stremio-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-python"><code v-pre class="language-python">url = app.sync.resolve(vid)   # ask every stream addon, rank, take the first link that opens
+self.send_response(302)
+self.send_header(&quot;Location&quot;, url)</code></pre>
+</doc-codeblock></div>
+<p>Es fragt jedes Addon, das den Titel anbietet (<code translate="no" v-pre>/stream/&lt;movie or series&gt;/&lt;id&gt;.json</code>), filtert nur einfache <code translate="no" v-pre>http(s)</code>-Links (der <code translate="no" v-pre>infoHash</code> eines Torrents ist keine Datei, die rex lesen kann), wirft alles weg, was über deinen Auflösungs- oder Größenlimits liegt, und probiert den Rest mit der höchsten Auflösung zuerst. Der Link, der funktioniert, wird bis eine Stunde vor seinem Ablauf zwischengespeichert (bei Links ohne Ablaufangabe eine Stunde lang). rex folgt der Weiterleitung und liest die Datei direkt vom Link, mit Spulen. Ein Link, der eigene Header braucht, wird von rex-stremio selbst weitergereicht. Eine HLS-Master-Playlist liefert es nur mit ihrer besten Variante.</p>
+<p><strong>Probing.</strong> Einmal pro Titel führt rex-stremio ffprobe auf seine eigene URL aus, damit <code translate="no" v-pre>media_info</code> genau beschreibt, was rex lesen wird, und speichert das Ergebnis. Es prüft <code translate="no" v-pre>probe_workers</code> Titel gleichzeitig (standardmäßig 4) und fragt trotzdem jeden Addon-Host höchstens einmal pro <code translate="no" v-pre>stream_interval_seconds</code>. Der Stream, aus dem die Probe stammte, wird gemerkt und bei jeder Wiedergabe zuerst versucht. So wird abgespielt, was rex mitgeteilt wurde. Der Container der Probe bestimmt die Dateiendung im Pfad: <code translate="no" v-pre>.mkv</code>, <code translate="no" v-pre>.mp4</code>, <code translate="no" v-pre>.ts</code>, <code translate="no" v-pre>.avi</code> oder <code translate="no" v-pre>.m3u8</code> für HLS.</p>
+<p><strong>Stored probes.</strong> Mit einem DMM-API-Key (<code translate="no" v-pre>dmm_api_key</code> oder <strong>DMM</strong> auf der Einstellungsseite) überspringt ein Torrent-Stream ffprobe, wenn DMM bereits eine Probe seiner Datei hat. Der Hash des Torrents kommt aus dem <code translate="no" v-pre>infoHash</code> des Streams oder aus seinem Link (die Debrid-Links von Torrentio enthalten ihn im Pfad). rex-stremio liest die Dateigröße aus der Antwort des Links auf ein Ein-Byte-<code translate="no" v-pre>Range</code>-Request und fragt DMMs <code translate="no" v-pre>POST /api/sponsor/mediainfo</code> für bis zu 100 Hashes auf einmal ab. Es übernimmt die Probe von DMM nur, wenn genau eine Datei dieses Releases diese Größe hat, und zusätzlich den Namen, wenn der Stream seine Datei benennt. Alles andere wird wie oben geprobt, und diese Probe geht zurück an DMM (<code translate="no" v-pre>POST /api/sponsor/probes</code>: der Hash des Torrents, die Dateigröße, ihr Name, falls der Stream ihn nennt, und die Ausgabe von ffprobe ohne die Adresse, von der gelesen wurde), damit der nächste Sponsor, der die Datei trifft, sie überspringen kann. DMM behält die erste Probe einer Datei und beantwortet zuerst die eigenen Snapshots von zurg. <code translate="no" v-pre>share_probes: false</code> behält sie bei rex-stremio; DMMs Probes werden trotzdem genutzt. Die Probe einer Playlist wird nie gesendet.</p>
+<p><strong>Naming.</strong> Jeder Film und jede Episode geht mit <code translate="no" v-pre>kind</code> und ihrer IMDb-ID in <code translate="no" v-pre>ids</code> an rex, sodass Plex sie benennt, wie in <a href="../any-source/">rex with your own app</a> beschrieben. Titel, Zusammenfassung, Datum und Poster des Katalogs stehen in <code translate="no" v-pre>display</code>, das nur angezeigt wird, bis Plex sie benennt. Ein Live-Kanal oder ein Titel, den nur sein Addon kennt, hat keine IMDb-ID, daher benennt ihn allein <code translate="no" v-pre>display</code>.</p>
+<p><strong>Numbering.</strong> Ein Film ist ein Film. Staffeln und Episoden einer Serie kommen von Cinemeta, dessen IDs die von IMDb sind, und behalten dessen Nummern, sodass eine neue Episode die anderen nie verschiebt. rex ordnet sie nach den Nummern von TMDB ein. Wo Cinemetas Nummern davon abweichen, landet eine Episode daher an der falschen Stelle.</p>
+<p><strong>Ids.</strong> Eine ID besteht aus dem Katalog plus der IMDb-ID (und Staffel und Episode), zum Beispiel <code translate="no" v-pre>st-&lt;catalog&gt;-tt0111161</code>. Sie ändert sich nie, daher sind ein Film in zwei Katalogen zwei Einträge. Mit eingeschaltetem <strong>Catalogs as collections</strong> ist ein Film oder eine Serie, die mehrere Kataloge derselben Bibliothek auflisten, dort ein einziger Titel, und zwar in der Collection jedes Katalogs.</p>
+<p><strong>Sending.</strong> Alle sechs Stunden und nach jedem Speichern: zuerst die Registrierung, dann jeder Titel, sobald er geprüft ist (<code translate="no" v-pre>POST .../items</code>, bis zu 20 Titel oder was alle 5 Sekunden bereitliegt), danach ein Snapshot jedes Katalogs in Teilen zu je 200. Der erste Snapshot nach einem Speichern trägt <code translate="no" v-pre>&quot;force&quot;: true</code>, weil das Abhaken von Katalogen mehr als die Hälfte entfernen kann. Wenn ein Katalog leer oder nur teilweise antwortet, sendet die Runde keinen Snapshot: Sie fügt hinzu und aktualisiert, entfernt aber nichts, und erst eine spätere vollständige Runde entfernt, was wirklich verschwunden ist.</p>
+<h2 id="troubleshooting">Fehlerbehebung</h2>
+<retype-table copy-text="| Du siehst | Warum | Lösung |
+|---|---|---|
+| `rejected`: `not a video file` | Der Dateiname hat keine Videoendung, oder es ist eine `.m3u8`, deren Probe nicht `hls` ist | Benenne Streams als `.m3u8` und schick ihre Probe mit. Ein Song braucht `&quot;kind&quot;: &quot;track&quot;` |
+| `rejected`: `no music library holds &lt;file&gt;` | Keine Musikbibliothek nimmt den Track auf | Deklariere eine mit `music` in Schritt 2 |
+| Alben zeigen deine Dateinamen unter `[Unknown Artist]` | Keine `ids.mbid`, oder eine Release-ID, die Plex nicht kennt, und kein `display` | Schick die MusicBrainz-Release-ID des Albums oder `display` |
+| Ein Album zeigt die falschen Tracks | `ids.mbid` verweist auf eine andere Edition, zum Beispiel eine Deluxe-Version mit mehr Tracks | Wähle ein Release mit deiner Anzahl an Tracks |
+| Ein Kanal fehlt im Live-TV-Guide | Kein `channel`; er wurde abgelehnt, und rex' Log sagt warum (`channel.guide[...]`); oder ein anderer Kanal hat die Nummer schon, was nicht geloggt wird | Korrigiere das Feld, das im Log genannt wird, oder wähle eine freie Nummer |
+| Live TV fehlt in einer Plex-App | Noch kein Item mit `channel` geschickt, oder die App wurde nicht getestet | Schick einen `channel` und nutze Plex Web oder Plex for Android, die getesteten Apps |
+| Ein Video taucht nie auf | Es wird zurückgehalten (sein `media_info` hat keine Streams, oder eine Datei wurde ohne gesendet), oder ein Stream ohne `media_info` wurde abgelehnt | Lass es proben und schick es erneut |
+| `rejected`: `... is already &lt;id&gt;'s file` | Eine andere ID hat diesen `path` | Behalte pro Pfad nur eine ID |
+| Ein Snapshot antwortet mit `409`: `the snapshot would remove more than half of this source's items` | Dein Snapshot lässt mehr als die Hälfte dessen weg, was rex von dir hat: eine fehlende Festplatte, ein fehlgeschlagenes Listing oder eine echte Aufräumaktion | Behebe, was verschwunden ist. Wenn du es so gewollt hast, schick den letzten Teil des Snapshots mit `&quot;force&quot;: true` |
+| Episoden heißen &quot;Episode 1&quot; und die Kacheln sind leer | Kein `display` | Schick `display` mit jedem Video |
+| Ein Film, den du mit seiner IMDb-ID schickst, behält deinen `display`-Titel statt dem von Plex | rex fragt Plex erst nach Titeln, wenn es beansprucht wurde | Beanspruche rex: [Schritt 3 von rex mit deiner eigenen App](any-source.md#step-3-add-it-to-a-plex-account) |
+| Bilder werden nicht angezeigt | Die URL liegt in deinem Heimnetz, aber nicht unter der bei deinem Addon registrierten `url`, oder sie ist nicht http(s) | Liefere sie von der eigenen Adresse deines Addons aus oder hoste sie im öffentlichen Internet. |
+| Wiedergabe schlägt mit 502 im rex-Log fehl | Dein Addon hat nicht geantwortet, oder die Seite des Streams hat es abgelehnt | Prüfe zuerst das eigene Log deines Addons |
+| Ein in einer Plex-App gelöschter Titel bleibt bestehen | Dein Addon hat das `DELETE` mit etwas anderem als `2xx` oder `404` beantwortet | Lösche ihn auf deiner Seite und antworte dann mit `2xx` |
+| Ein gelöschter Titel kommt zurück | Dein Addon schickt das Video immer noch | Hör auf, Gelöschtes zu schicken |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Du siehst</th>
+<th>Warum</th>
+<th>Lösung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>rejected</code>: <code translate="no" v-pre>not a video file</code></td>
+<td>Der Dateiname hat keine Videoendung, oder es ist eine <code translate="no" v-pre>.m3u8</code>, deren Probe nicht <code translate="no" v-pre>hls</code> ist</td>
+<td>Benenne Streams als <code translate="no" v-pre>.m3u8</code> und schick ihre Probe mit. Ein Song braucht <code translate="no" v-pre>&quot;kind&quot;: &quot;track&quot;</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>rejected</code>: <code translate="no" v-pre>no music library holds &lt;file&gt;</code></td>
+<td>Keine Musikbibliothek nimmt den Track auf</td>
+<td>Deklariere eine mit <code translate="no" v-pre>music</code> in Schritt 2</td>
+</tr>
+<tr>
+<td>Alben zeigen deine Dateinamen unter <code translate="no" v-pre>[Unknown Artist]</code></td>
+<td>Keine <code translate="no" v-pre>ids.mbid</code>, oder eine Release-ID, die Plex nicht kennt, und kein <code translate="no" v-pre>display</code></td>
+<td>Schick die MusicBrainz-Release-ID des Albums oder <code translate="no" v-pre>display</code></td>
+</tr>
+<tr>
+<td>Ein Album zeigt die falschen Tracks</td>
+<td><code translate="no" v-pre>ids.mbid</code> verweist auf eine andere Edition, zum Beispiel eine Deluxe-Version mit mehr Tracks</td>
+<td>Wähle ein Release mit deiner Anzahl an Tracks</td>
+</tr>
+<tr>
+<td>Ein Kanal fehlt im Live-TV-Guide</td>
+<td>Kein <code translate="no" v-pre>channel</code>; er wurde abgelehnt, und rex&#x27; Log sagt warum (<code translate="no" v-pre>channel.guide[...]</code>); oder ein anderer Kanal hat die Nummer schon, was nicht geloggt wird</td>
+<td>Korrigiere das Feld, das im Log genannt wird, oder wähle eine freie Nummer</td>
+</tr>
+<tr>
+<td>Live TV fehlt in einer Plex-App</td>
+<td>Noch kein Item mit <code translate="no" v-pre>channel</code> geschickt, oder die App wurde nicht getestet</td>
+<td>Schick einen <code translate="no" v-pre>channel</code> und nutze Plex Web oder Plex for Android, die getesteten Apps</td>
+</tr>
+<tr>
+<td>Ein Video taucht nie auf</td>
+<td>Es wird zurückgehalten (sein <code translate="no" v-pre>media_info</code> hat keine Streams, oder eine Datei wurde ohne gesendet), oder ein Stream ohne <code translate="no" v-pre>media_info</code> wurde abgelehnt</td>
+<td>Lass es proben und schick es erneut</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>rejected</code>: <code translate="no" v-pre>... is already &lt;id&gt;'s file</code></td>
+<td>Eine andere ID hat diesen <code translate="no" v-pre>path</code></td>
+<td>Behalte pro Pfad nur eine ID</td>
+</tr>
+<tr>
+<td>Ein Snapshot antwortet mit <code translate="no" v-pre>409</code>: <code translate="no" v-pre>the snapshot would remove more than half of this source's items</code></td>
+<td>Dein Snapshot lässt mehr als die Hälfte dessen weg, was rex von dir hat: eine fehlende Festplatte, ein fehlgeschlagenes Listing oder eine echte Aufräumaktion</td>
+<td>Behebe, was verschwunden ist. Wenn du es so gewollt hast, schick den letzten Teil des Snapshots mit <code translate="no" v-pre>&quot;force&quot;: true</code></td>
+</tr>
+<tr>
+<td>Episoden heißen &quot;Episode 1&quot; und die Kacheln sind leer</td>
+<td>Kein <code translate="no" v-pre>display</code></td>
+<td>Schick <code translate="no" v-pre>display</code> mit jedem Video</td>
+</tr>
+<tr>
+<td>Ein Film, den du mit seiner IMDb-ID schickst, behält deinen <code translate="no" v-pre>display</code>-Titel statt dem von Plex</td>
+<td>rex fragt Plex erst nach Titeln, wenn es beansprucht wurde</td>
+<td>Beanspruche rex: <a href="../any-source/#step-3-add-it-to-a-plex-account">Schritt 3 von rex mit deiner eigenen App</a></td>
+</tr>
+<tr>
+<td>Bilder werden nicht angezeigt</td>
+<td>Die URL liegt in deinem Heimnetz, aber nicht unter der bei deinem Addon registrierten <code translate="no" v-pre>url</code>, oder sie ist nicht http(s)</td>
+<td>Liefere sie von der eigenen Adresse deines Addons aus oder hoste sie im öffentlichen Internet.</td>
+</tr>
+<tr>
+<td>Wiedergabe schlägt mit 502 im rex-Log fehl</td>
+<td>Dein Addon hat nicht geantwortet, oder die Seite des Streams hat es abgelehnt</td>
+<td>Prüfe zuerst das eigene Log deines Addons</td>
+</tr>
+<tr>
+<td>Ein in einer Plex-App gelöschter Titel bleibt bestehen</td>
+<td>Dein Addon hat das <code translate="no" v-pre>DELETE</code> mit etwas anderem als <code translate="no" v-pre>2xx</code> oder <code translate="no" v-pre>404</code> beantwortet</td>
+<td>Lösche ihn auf deiner Seite und antworte dann mit <code translate="no" v-pre>2xx</code></td>
+</tr>
+<tr>
+<td>Ein gelöschter Titel kommt zurück</td>
+<td>Dein Addon schickt das Video immer noch</td>
+<td>Hör auf, Gelöschtes zu schicken</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Immer noch fest? Frag im Forum <strong>rex-support</strong> auf <a href="https://discord.com/invite/7u4YjMThXP">Discord</a>. <a href="../../guides/remote-help/">Hilfe bekommen</a> beschreibt, was du angeben solltest.</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../rex/import-watched/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Vorheriger</span>
+                                <span class="block mt-1">Bring deine Wiedergabeverlauf mit</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../rex/addon-home-videos/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Nächster</span>
+                                <span class="block mt-1">Anleitung: Addon f&#252;r Heimvideos</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Eigene rex-Addons bauen", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/rex/addons.md" }</script>
+</body>
+</html>

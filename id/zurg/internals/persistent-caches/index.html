@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/id">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672707986">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Cache baca yang persisten</title>
+    <meta name="title" content="Cache baca yang persisten">
+    <meta name="description" content="Entri NZB yang diimpor, Real-Debrid, AllDebrid, dan TorBox semuanya menyimpan status library mereka di data/*.zurgtorrent. File-file ini menjelaskan isi library.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/id/zurg/internals/persistent-caches/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/id/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/id/zurg/internals/persistent-caches/">
+    <meta property="og:title" content="Cache baca yang persisten">
+    <meta property="og:description" content="Entri NZB yang diimpor, Real-Debrid, AllDebrid, dan TorBox semuanya menyimpan status library mereka di data/*.zurgtorrent. File-file ini menjelaskan isi library.">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/id/zurg/internals/persistent-caches/">
+    <meta name="twitter:title" content="Cache baca yang persisten">
+    <meta name="twitter:description" content="Entri NZB yang diimpor, Real-Debrid, AllDebrid, dan TorBox semuanya menyimpan status library mereka di data/*.zurgtorrent. File-file ini menjelaskan isi library.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/id/zurg/internals/persistent-caches.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672707986" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672707986" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672707986" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672707986" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/id/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>Bahasa Indonesia</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/id/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/id/download.html" target="_blank">Unduh zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/id/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>Bahasa Indonesia</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/id/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/id/download.html" target="_blank">Unduh zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/id/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="persistent-read-caches">Cache baca yang persisten</h1>
+<p>Entri NZB yang diimpor, Real-Debrid, AllDebrid, dan TorBox semuanya menyimpan status library mereka di <code translate="no" v-pre>data/*.zurgtorrent</code>. File-file ini menjelaskan isi library. Cache persiapan baca dan cache byte disimpan di sebelahnya, jadi saat cache turunan diubah atau dibersihkan, library tidak ditulis ulang dan tag, nama, serta asosiasi akun tidak hilang.</p>
+<h2 id="what-survives-a-restart">Apa yang tetap ada setelah restart</h2>
+<retype-table copy-text="| Cache | Lokasi | Pekerjaan yang dihindari |
+| --- | --- | --- |
+| Manifest dokumen NZB | `data/nzb-manifests/` | Mengurai ulang XML yang tidak berubah untuk nama, ukuran, klasifikasi recovery, password, dan jumlah segmen |
+| Indeks artikel NZB | `data/nzb-index/` | Membangun ulang referensi artikel; dipakai oleh mode `mmap` dan `resident` |
+| Artikel Usenet yang sudah di-decode | `data/bytecache/articles/` | Mengambil dan yEnc-decode artikel yang sudah pernah dibaca |
+| Layout arsip | `data/archive-layouts/` | Membaca ulang header arsip untuk membangun ulang rentang volume, entri bertingkat, dan offset ZIP yang sudah dipelajari |
+| Blok arsip yang sudah di-decompress | `data/bytecache/decoded/` | Men-decode ulang untuk mencapai rentang byte yang tersimpan setelah restart atau backward seek |
+| State provider | `data/provider-cache/` | Membangun ulang jendela unduhan RD yang tidak berubah atau mengambil tabel region TorBox yang baru |
+| Link pengiriman | `data/linkcache/` | Me-resolve URL yang masih valid lagi |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Cache</th>
+<th>Lokasi</th>
+<th>Pekerjaan yang dihindari</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Manifest dokumen NZB</td>
+<td><code translate="no" v-pre>data/nzb-manifests/</code></td>
+<td>Mengurai ulang XML yang tidak berubah untuk nama, ukuran, klasifikasi recovery, password, dan jumlah segmen</td>
+</tr>
+<tr>
+<td>Indeks artikel NZB</td>
+<td><code translate="no" v-pre>data/nzb-index/</code></td>
+<td>Membangun ulang referensi artikel; dipakai oleh mode <code translate="no" v-pre>mmap</code> dan <code translate="no" v-pre>resident</code></td>
+</tr>
+<tr>
+<td>Artikel Usenet yang sudah di-decode</td>
+<td><code translate="no" v-pre>data/bytecache/articles/</code></td>
+<td>Mengambil dan yEnc-decode artikel yang sudah pernah dibaca</td>
+</tr>
+<tr>
+<td>Layout arsip</td>
+<td><code translate="no" v-pre>data/archive-layouts/</code></td>
+<td>Membaca ulang header arsip untuk membangun ulang rentang volume, entri bertingkat, dan offset ZIP yang sudah dipelajari</td>
+</tr>
+<tr>
+<td>Blok arsip yang sudah di-decompress</td>
+<td><code translate="no" v-pre>data/bytecache/decoded/</code></td>
+<td>Men-decode ulang untuk mencapai rentang byte yang tersimpan setelah restart atau backward seek</td>
+</tr>
+<tr>
+<td>State provider</td>
+<td><code translate="no" v-pre>data/provider-cache/</code></td>
+<td>Membangun ulang jendela unduhan RD yang tidak berubah atau mengambil tabel region TorBox yang baru</td>
+</tr>
+<tr>
+<td>Link pengiriman</td>
+<td><code translate="no" v-pre>data/linkcache/</code></td>
+<td>Me-resolve URL yang masih valid lagi</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Layout arsip mendukung entri RAR/ZIP yang disimpan maupun dikompres, sumber bertingkat, span terenkripsi, dan arsip split yang didukung. Layout hanya menyimpan referensi sumber dan offset, bukan pembaca HTTP yang aktif. URL provider saat ini dipasang saat restore. Layout yang tidak lengkap karena volume hilang dibangun ulang dari sumber. Offset payload ZIP yang sudah dipelajari disimpan setelah pembacaan pertama, tanpa mengambil header setiap entri saat daftar direktori ditampilkan.</p>
+<p>Manifest NZB dicek terhadap ukuran file sumber, waktu modifikasi dalam nanodetik, dan versi parser. <code translate="no" v-pre>mmap</code> memulihkan metadata secara langsung dan memetakan indeks artikel saat dibutuhkan. <code translate="no" v-pre>resident</code> memuat indeks itu ke memori heap. <code translate="no" v-pre>reparse</code> memulihkan metadata secara langsung, tetapi tetap mengurai XML saat referensi artikel dibutuhkan. Library yang sudah ada akan membangun manifest saat scan pertama dengan versi ini; penyimpanan saat startup berlaku pada scan dan restart berikutnya.</p>
+<p>Permintaan bersamaan untuk akun/file yang belum di-cache di AllDebrid dan TorBox sekarang berbagi satu resolusi. Membatalkan satu pemanggil tidak membatalkan resolusi milik pemanggil lain. RD tetap memakai coalescing yang sudah ada. TorBox memakai nama dan ukuran katalog yang sudah diketahui saat me-resolve file, sehingga tidak perlu mengambil detail itu lagi.</p>
+<p>Record detail provider di <code translate="no" v-pre>data/info/</code> di-memoize setelah JSON pertama kali di-decode per proses. Setiap penggunaan ulang memeriksa identitas file, ukuran, dan waktu modifikasi, lalu mengembalikan salinan yang independen. File library dan detail diganti secara atomik.</p>
+<h2 id="storage-budgets">Batas penyimpanan</h2>
+<div id="storage-budgets-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">nzb_article_disk_cache_mb: 512
+archive_decoded_disk_cache_mb: 512</code></pre>
+</doc-codeblock></div>
+<p>Pengaturan tingkat atas opsional ini diukur dalam MiB dan baru berlaku setelah
+restart:</p>
+<p>Setiap cache defaultnya 512 MiB untuk seluruh instance. Nilai nol akan mematikan cache tersebut;
+nilai negatif dianggap nol. Budget ini menghitung byte record termasuk checksum, bukan
+overhead alokasi filesystem. Record yang paling lama tidak dipakai akan dihapus saat record baru masuk.
+Mengurangi budget akan memangkas cache yang sudah ada saat inisialisasi. Jika dimatikan, file yang ada tetap bisa dihapus secara manual.</p>
+<p>Cache artikel melengkapi cache RAM yang sudah ada. Cache archive menyimpan blok terdekode 64 KiB
+dan melengkapi jendela RAM bergulir 64 MiB milik setiap decoder. Tidak ada cache yang mengunduh library di depan.
+Pembacaan di luar blok terdekode yang disimpan tetap perlu didekode dari awal entri terkompresi. Cache VFS milik rclone
+terpisah dan tetap melayani rentang yang sudah lengkap di cache tanpa masuk ke jalur ini; cache-cache ini juga
+membantu pembacaan HTTP/WebDAV langsung.</p>
+<p>Entri terkompresi hanya bisa didekode dari awalnya, jadi pembacaan yang jauh ke dalamnya berarti seluruh archive diambil dulu. zurg menahan pembacaan seperti ini selama 20 detik
+lalu menjawab <code translate="no" v-pre>503</code> daripada membiarkan klien tanpa balasan. Hasil dekode yang sudah dicapai disimpan, jadi pemutar yang mencoba ulang seek maju akan
+makin jauh setiap kali. Pembacaan yang ditolak dekat akhir entri juga memulai satu dekode latar belakang untuk entri itu, satu entri setiap kali, yang menyimpan
+8 MiB terakhir entri di <code translate="no" v-pre>data/bytecache/decoded-tails/</code>. Setelah itu akhir file terbaca langsung, dan inilah yang diminta media server saat menganalisis file.
+Penyimpanan itu memakai budget yang sama dengan <code translate="no" v-pre>archive_decoded_disk_cache_mb</code> lagi dan dimatikan bersamanya.</p>
+<p>Metadata turunan bertambah seiring library dan terpisah dari budget byte ini.
+Pemindaian NZB menghapus manifest dan indeks artikel untuk dokumen yang sudah dihapus. Revisi layout archive yang usang bisa dihapus saat instance dihentikan; file itu bisa dibuang dan akan dibangun ulang saat dibutuhkan.</p>
+<h2 id="validation-and-recovery">Validasi dan pemulihan</h2>
+<p>Catatan metadata dan blob byte yang baru punya checksum. Record yang rusak dan penulisan cache yang gagal akan kembali ke sumber. Record artikel hanya masuk ke disk cache setelah fetch lengkap berhasil, dan ditulis setelah artikelnya diserahkan ke read yang mengambilnya, jadi read tidak pernah menunggu cache. Jika ada banyak penulisan artikel sekaligus, lebih dari yang boleh berjalan bersamaan, record tambahan akan dibuang alih-alih menahan read. Record yang dibuang akan diambil ulang saat dibutuhkan lagi. Identitas artikel mencakup revisi NZB, konfigurasi server, file, dan segment. Identitas arsip mencakup referensi sumber saat ini, ukuran, konfigurasi akun, password, dan versi format. Penggantian sumber NZB juga membatalkan layout arsip dan byte yang sudah di-decode.</p>
+<p>Sidik jari sumber lokal mengasumsikan penggantian mengubah ukuran atau waktu modifikasi. Sengaja tidak meng-hash seluruh XML setiap kali startup. Jika ingin mempertahankan keduanya saat penggantian, cache turunan yang terkait harus dihapus.</p>
+<p>Snapshot RD hanya diterima untuk token dan batas download yang dikonfigurasi sama, dalam satu jam, dan setelah probe live mengonfirmasi entri terbaru dan total jumlahnya cocok. Jika daftar berubah, rekonsiliasi penuh akan dijalankan. Tabel region TorBox tetap memakai masa berlaku enam jam yang sudah ada. Masa berlaku URL pengiriman dan penanganan kegagalan provider tidak berubah: layout yang sudah hangat akan membuka payload-nya dulu sebelum mencatat keberhasilan HTTP, sehingga URL yang sudah dicabut bisa mengikuti jalur resolusi/retry yang normal.</p>
+<p>Mutasi link pengiriman memicu flush disk yang digabung sekitar satu detik kemudian. Retry lima menit dan flush saat shutdown tetap berjalan. Penulisan atomik mencegah read melihat record yang belum selesai ditulis, tetapi ini bukan jaminan fsync terhadap pemadaman listrik. File cache baru memakai mode <code translate="no" v-pre>0600</code> di Unix karena link dan layout arsip terenkripsi bisa membawa kredensial atau kunci turunan. Di Windows, ACL dari direktori tempat file berada yang dipakai, bukan bit izin Unix.</p>
+<h2 id="backups-with-warm-caches">Backup dengan cache yang sudah hangat</h2>
+<p>Backup default tetap menyimpan state utama yang otoritatif. Untuk menyertakan cache turunan dan cache VFS rclone milik instance ini:</p>
+<div id="backups-with-warm-caches-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./zurg backup --include-caches --out warm.zurgbackup</code></pre>
+</doc-codeblock></div>
+<p>Ukurannya bisa jauh lebih besar dari backup standar. Backup ini mencakup root yang tercantum di atas, cache penamaan, ukuran, dan PAR2 NZB, serta state network-test. Log dan snapshot database Plex tetap dikecualikan. Cache rclone di luar <code translate="no" v-pre>data/rclone-cache/</code> tidak ikut disertakan. Hentikan instance jika snapshot yang konsisten dari cache aktif itu penting.</p>
+<p>Untuk restore, hentikan instance dulu, lalu jalankan <code translate="no" v-pre>./zurg restore-backup warm.zurgbackup</code>.
+Backup menyimpan timestamp sumber dengan presisi nanodetik, jadi NZB yang tidak berubah bisa tetap memakai indeks dan manifest-nya. Cache yang di-restore tetap menjalani pengecekan validasi dan kedaluwarsa yang normal. Backup juga berisi token dan kredensial yang di-cache dari config.</p>
+<h2 id="reproducible-checks">Pemeriksaan yang bisa direproduksi</h2>
+<p><code translate="no" v-pre>BenchmarkParsedDocumentStartup</code> membandingkan parsing XML dengan setiap mode restore manifest, memakai 60 file dan 30.000 segmen. <code translate="no" v-pre>BenchmarkDetailJSONRefresh</code> membandingkan jalur baca JSON dengan akses memoized untuk record 1.000 file. Keduanya adalah benchmark filesystem lokal yang sudah warm, bukan pengukuran startup produksi end-to-end.</p>
+<p>Diukur di Apple M3 Pro dengan tiga kali run 500 ms pada 2026-09-05 (median per operasi):</p>
+<retype-table copy-text="| Operasi | Waktu | Byte yang dialokasikan |
+| --- | ---: | ---: |
+| Parse XML NZB | 43,49 ms | 20,27 MB |
+| Restore metadata di mode `mmap` | 0,224 ms | 59 KB |
+| Restore metadata dan indeks artikel yang resident | 0,577 ms | 1,79 MB |
+| Restore metadata di mode `reparse` | 0,199 ms | 59 KB |
+| Baca/decode record detail provider | 0,538 ms | 784 KB |
+| Pakai ulang record detail dengan cek stat dan copy | 0,0084 ms | 59 KB |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Operasi</th>
+<th style="text-align: right;">Waktu</th>
+<th style="text-align: right;">Byte yang dialokasikan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Parse XML NZB</td>
+<td style="text-align: right;">43,49 ms</td>
+<td style="text-align: right;">20,27 MB</td>
+</tr>
+<tr>
+<td>Restore metadata di mode <code translate="no" v-pre>mmap</code></td>
+<td style="text-align: right;">0,224 ms</td>
+<td style="text-align: right;">59 KB</td>
+</tr>
+<tr>
+<td>Restore metadata dan indeks artikel yang resident</td>
+<td style="text-align: right;">0,577 ms</td>
+<td style="text-align: right;">1,79 MB</td>
+</tr>
+<tr>
+<td>Restore metadata di mode <code translate="no" v-pre>reparse</code></td>
+<td style="text-align: right;">0,199 ms</td>
+<td style="text-align: right;">59 KB</td>
+</tr>
+<tr>
+<td>Baca/decode record detail provider</td>
+<td style="text-align: right;">0,538 ms</td>
+<td style="text-align: right;">784 KB</td>
+</tr>
+<tr>
+<td>Pakai ulang record detail dengan cek stat dan copy</td>
+<td style="text-align: right;">0,0084 ms</td>
+<td style="text-align: right;">59 KB</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Kasus decode detail mengosongkan memo baru sebelum setiap pemanggilan dan sudah termasuk biaya pengisian memo itu. Angka-angka ini hanya membandingkan dua jalur akses yang ada sekarang. Angka ini tidak memperkirakan latensi jaringan dan tidak memproyeksikan waktu boot seluruh library.</p>
+<p>Regression test mencakup penggunaan ulang setelah restart, korupsi, perubahan sumber, isolasi akun, resolusi concurrent, identitas byte di awal/tengah/akhir, seek mundur melewati jendela RAM, dan pencabutan URL setelah layout di-restore.</p>
+<div id="reproducible-checks-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">go test ./...
+go test -race ./internal/debrid ./internal/nzb ./internal/rarstream ./internal/universal ./pkg/cachefile ./pkg/diskcache
+go test ./internal/nzb ./internal/torrent -run '^$' -bench 'Benchmark(ParsedDocumentStartup|DetailJSONRefresh)$' -benchmem
+make integration-test</code></pre>
+</doc-codeblock></div>
+<p>Integration target membutuhkan akun uji live yang sudah didokumentasikan dan dependensi host. Script integration yang di-skip tidak memverifikasi perubahan cache.</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/architecture/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Previous</span>
+                                <span class="block mt-1">Arsitektur</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/debrid-baseline/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Next</span>
+                                <span class="block mt-1">Dasar Debrid</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Cache persisten", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/internals/persistent-caches.md" }</script>
+</body>
+</html>

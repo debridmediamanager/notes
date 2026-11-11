@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/es">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672691398">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Arquitectura</title>
+    <meta name="title" content="Arquitectura">
+    <meta name="description" content="A mapa de lo que es zurg, cómo encajan las piezas y por qué existe cada paquete. Pensado para alguien que está a punto de cambiar el código: nombra las decisiones que sostienen todo el diseño y los invariantes que son fáciles de romper sin darse cuenta.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/es/zurg/internals/architecture/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/es/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/es/zurg/internals/architecture/">
+    <meta property="og:title" content="Arquitectura">
+    <meta property="og:description" content="A mapa de lo que es zurg, cómo encajan las piezas y por qué existe cada paquete. Pensado para alguien que está a punto de cambiar el código: nombra las decisiones que sostienen todo el diseño y los invariantes que son fáciles de romper sin darse cuenta.">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="es_ES">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/es/zurg/internals/architecture/">
+    <meta name="twitter:title" content="Arquitectura">
+    <meta name="twitter:description" content="A mapa de lo que es zurg, cómo encajan las piezas y por qué existe cada paquete. Pensado para alguien que está a punto de cambiar el código: nombra las decisiones que sostienen todo el diseño y los invariantes que son fáciles de romper sin darse cuenta.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/es/zurg/internals/architecture.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672691398" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672691398" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672691398" data-turbo-eval="false" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/es/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>Español</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/es/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/es/download.html" target="_blank">Descargar zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/es/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Patrocinador</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>Español</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/es/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/es/download.html" target="_blank">Descargar zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/es/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Patrocinador</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="architecture">Arquitectura</h1>
+<p>A mapa de lo que es zurg, cómo encajan las piezas y por qué existe cada paquete. Pensado para alguien que está a punto de cambiar el código: nombra las decisiones que sostienen todo el diseño y los invariantes que son fáciles de romper sin darse cuenta.</p>
+<p>El detalle de cada paquete está en su <code translate="no" v-pre>doc.go</code>. Este documento está un nivel por encima: la forma del conjunto y el razonamiento que se deriva de esa forma.</p>
+<h2 id="what-zurg-is">Qué es zurg</h2>
+<p>Un daemon en Go que muestra la biblioteca de torrents de una cuenta debrid como un sistema de archivos virtual. No guarda ningún medio. Cada lectura se convierte en un GET HTTP con rangos contra el CDN del proveedor, en el momento de la petición.</p>
+<p>No guarda contenido propio y rechaza los PUT, así que, en lo que importa para los bytes, es de solo lectura. Se aceptan dos escrituras: un rename, que guarda un nombre y no toca ninguna cuenta (<a href="../../guides/renaming/">renaming.md</a>), y un DELETE, que elimina la release de todas las cuentas que la tengan. <code translate="no" v-pre>__magic__</code> añade una tercera dentro de un espacio de nombres, un layout guardado (<a href="../../guides/magic/">magic.md</a>), en todo su contenido excepto en <code translate="no" v-pre>__magic__/__all__</code> y en las carpetas de release que hay directamente dentro, que es el espejo calculado del que importan los clientes de descarga.</p>
+<p>Cuatro vistas de la misma biblioteca:</p>
+<retype-table copy-text="| Endpoint | Para |
+|---|---|
+| `/dav/` | WebDAV, lo que monta rclone |
+| `/http/` | Explorador de directorios HTML |
+| `/infuse/` | Variante de WebDAV con las peculiaridades de Infuse ya contempladas |
+| `/strm/` | URLs firmadas dentro de archivos `.strm`, para reproductores que quieren una URL y no un montaje |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Para</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>/dav/</code></td>
+<td>WebDAV, lo que monta rclone</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>/http/</code></td>
+<td>Explorador de directorios HTML</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>/infuse/</code></td>
+<td>Variante de WebDAV con las peculiaridades de Infuse ya contempladas</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>/strm/</code></td>
+<td>URLs firmadas dentro de archivos <code translate="no" v-pre>.strm</code>, para reproductores que quieren una URL y no un montaje</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>rclone monta <code translate="no" v-pre>/dav/</code> con FUSE, así que Plex, Jellyfin, Emby e Infuse ven un árbol de directorios normal.</p>
+<p>El problema de diseño en todo el proyecto es la distancia entre lo que promete un sistema de archivos (rutas estables, <code translate="no" v-pre>stat</code> instantáneo, bytes bajo demanda) y lo que da una API debrid: JSON con límite de peticiones, enlaces que caducan y ninguna semántica de sistema de archivos. Casi cada paquete existe para cerrar una parte de esa distancia.</p>
+<div id="what-zurg-is-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">media player
+    │
+    ├─ rclone FUSE ──► /dav/  ──┐
+    └─ direct HTTP ──► /http/ ──┤
+                                ▼
+                    internal/handlers  (chi router, auth, routing)
+                                │
+                internal/dav ───┤─── internal/htmlindex     (listings)
+                                │
+                                ▼
+                    internal/torrent   (the library, in memory)
+                                │  resolve link for this file
+                                ▼
+                    internal/universal (byte path, proxy/redirect, RAR)
+                                │
+                                ▼
+                    internal/debrid    (Provider dispatch)
+                                │
+        ┌───────────┬───────────┼────────────┬──────────┐
+        ▼           ▼           ▼            ▼          ▼
+   realdebrid    torbox     alldebrid       nzb ──► nntp ──► par2
+        └───────────┴───────────┘            (Usenet, no debrid service)
+                    │
+              internal/rdclient  (host rotation, rate limit, retry, DNS)</code></pre>
+</doc-codeblock></div>
+<h2 id="boot-sequence">Secuencia de arranque</h2>
+<p><code translate="no" v-pre>cmd/zurg</code> es una CLI de Cobra ligera (serve, version, network-test, clear downloads/torrents, mount control, download requirements). Todo lo importante ocurre en <code translate="no" v-pre>internal/app.go</code>, cuyo <code translate="no" v-pre>MainApp</code> es, a propósito, una sola función fácil de leer:</p>
+<ol>
+<li>Crea los directorios de ejecución (<code translate="no" v-pre>logs</code>, <code translate="no" v-pre>data</code>, <code translate="no" v-pre>data/info</code>, <code translate="no" v-pre>dump</code>, <code translate="no" v-pre>strm</code>, <code translate="no" v-pre>nzbs</code>) y el logger.</li>
+<li><code translate="no" v-pre>ensureConfigAndRequirements</code> — carga la configuración y descarga <code translate="no" v-pre>ffprobe</code> y <code translate="no" v-pre>rclone</code> si no están (<code translate="no" v-pre>internal/requirements</code>). En la primera ejecución, si no hay configuración, escribe una por defecto y se detiene, salvo que el token venga del entorno.</li>
+<li>Inicializa <code translate="no" v-pre>strmlink</code> pronto, para que un directorio de datos sin permisos de escritura se reporte ahora y no como archivos <code translate="no" v-pre>.strm</code> que dejan de resolverse tras el próximo reinicio.</li>
+<li>Ejecuta el <strong>test de latencia de red</strong> contra los hosts de descarga de Real-Debrid (<code translate="no" v-pre>internal/rdclient</code>), o carga su resultado en caché desde disco si es lo bastante reciente. Esto ordena los hosts CDN y es lo que luego usa la rotación de hosts.</li>
+<li>Construye todos los proveedores configurados desde el registro, los agrupa en un <code translate="no" v-pre>debrid.Set</code> y guarda una referencia tipada al primero de Real-Debrid: el panel, la página de hosts y el test de red siguen hablando con RD específicamente.</li>
+<li>Crea el <code translate="no" v-pre>TorrentManager</code>, que de inmediato empieza a cargar la biblioteca en caché desde disco en segundo plano y luego la actualiza.</li>
+<li>Conecta el router chi, arranca el servidor HTTP y luego inicia rclone cuando el servidor ya acepta conexiones.</li>
+<li>Espera a SIGINT/SIGTERM/SIGQUIT; al recibir una señal, cierra el servidor HTTP de forma ordenada, detiene el servicio de Plex y desmonta rclone, cada uno con un límite de 20 s.</li>
+</ol>
+<p><code translate="no" v-pre>ZURG_PPROF=1</code> activa pprof en <code translate="no" v-pre>127.0.0.1:6060</code>: solo loopback, porque perfilar una instancia en vivo es la única forma de atribuir el uso de CPU durante una tormenta de escaneos, pero ese endpoint nunca debe ser accesible desde la red.</p>
+<h2 id="layer-1--config">Capa 1 — Configuración</h2>
+<p>La parte más importante es <code translate="no" v-pre>filters.go</code>: un lenguaje de filtros anidados AND/OR que asigna cada torrent a uno o más <strong>directorios virtuales</strong>. Así es como una lista plana de torrents se convierte en <code translate="no" v-pre>movies/</code>, <code translate="no" v-pre>shows/</code>, <code translate="no" v-pre>anime/</code>, <code translate="no" v-pre>recent/</code>.</p>
+<p><code translate="no" v-pre>internal/config</code> es la fuente única de la verdad; casi todos los demás paquetes leen <code translate="no" v-pre>ZurgConfigV1</code>. Los getters tipados aplican valores por defecto cuando un campo está en cero, así que quien los llama nunca tiene que comprobar si el valor falta.</p>
+<p>Las condiciones cubren el nombre del torrent (<code translate="no" v-pre>regex</code>, <code translate="no" v-pre>contains</code>, <code translate="no" v-pre>not_regex</code>), su tamaño, sus archivos (<code translate="no" v-pre>any_file_inside_regex</code>, <code translate="no" v-pre>any_file_inside_size_gte</code>), sus etiquetas (<code translate="no" v-pre>tags_match_any</code>, <code translate="no" v-pre>tags_missing_all</code>), su antigüedad (<code translate="no" v-pre>added_within_hours</code>, <code translate="no" v-pre>added_after</code>), propiedades derivadas (<code translate="no" v-pre>has_episodes</code>, <code translate="no" v-pre>is_music</code>) y de qué cuenta viene (<code translate="no" v-pre>provider</code>, <code translate="no" v-pre>not_provider</code>). Junto a ellas están las reglas de visualización por directorio: <code translate="no" v-pre>only_show_the_biggest_file</code>, y los mínimos y máximos de tamaño.</p>
+<p>Las regex que se usan por torrent en cada pasada de asignación se compilan una sola vez a nivel de paquete. Compilarlas con <code translate="no" v-pre>MustCompile</code> en cada llamada dominaba el tiempo de arranque, y se notaba bastante.</p>
+<p>Se puede editar la configuración en vivo desde el panel. <code translate="no" v-pre>UpdateConfigFileAtomic</code> hace ediciones clave por clave en lugar de volver a serializar el archivo entero, así que los comentarios y las claves desconocidas se conservan.</p>
+<h2 id="layer-2--backend-abstraction">Capa 2 — Abstracción de backends</h2>
+<p><code translate="no" v-pre>internal/debrid</code> es la columna vertebral. Es dueño de los tipos de dominio que hablan todos los demás paquetes (<code translate="no" v-pre>Torrent</code>, <code translate="no" v-pre>TorrentInfo</code>, <code translate="no" v-pre>File</code>, <code translate="no" v-pre>Download</code>, <code translate="no" v-pre>User</code>) y de la interfaz <code translate="no" v-pre>Provider</code> que implementa cada backend.</p>
+<h3 id="provider-and-capabilities">Proveedor y capacidades</h3>
+<p><code translate="no" v-pre>Provider</code> se mantiene pequeña: listar torrents, obtener info, borrar, resolver un enlace, verificarlo, descargar los bytes e informar del estado de la cuenta. Todo lo que un servicio razonablemente podría no tener es una <strong>interfaz de capacidad opcional</strong> que los llamadores comprueban con type-assert y con la que degradan el comportamiento si no existe:</p>
+<retype-table copy-text="| Interfaz | Qué añade | Quién la necesita |
+|---|---|---|
+| `MagnetAdder` | añadir por hash, seleccionar archivos, número de slots activos | repair |
+| `TorrentRestarter` | reintentar un torrent fallido en el sitio | repair, la estrategia más barata |
+| `HostRotator` | cambiar el pool de hosts CDN | network test, página `/hosts` |
+| `DownloadLister` | una lista separada de descargas de hosters | el directorio `__downloads__` |
+| `ArchivePasswordKeeper` | contraseña para los archivos de un release | solo Usenet |
+| `PremiumMonitor` | tiempo restante del plan | aviso de inicio |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Interfaz</th>
+<th>Qué añade</th>
+<th>Quién la necesita</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>MagnetAdder</code></td>
+<td>añadir por hash, seleccionar archivos, número de slots activos</td>
+<td>repair</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>TorrentRestarter</code></td>
+<td>reintentar un torrent fallido en el sitio</td>
+<td>repair, la estrategia más barata</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>HostRotator</code></td>
+<td>cambiar el pool de hosts CDN</td>
+<td>network test, página <code translate="no" v-pre>/hosts</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>DownloadLister</code></td>
+<td>una lista separada de descargas de hosters</td>
+<td>el directorio <code translate="no" v-pre>__downloads__</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>ArchivePasswordKeeper</code></td>
+<td>contraseña para los archivos de un release</td>
+<td>solo Usenet</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>PremiumMonitor</code></td>
+<td>tiempo restante del plan</td>
+<td>aviso de inicio</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Junto a eso, <code translate="no" v-pre>Capabilities</code> es la autodescripción del proveedor: no dice lo que puede hacer, sino los límites dentro de los que debe funcionar. Existe porque el comportamiento de la biblioteca de zurg creció alrededor de la forma de Real-Debrid, y dejar esa forma fija en el código hace que cualquier otro backend acabe roto o desperdiciando recursos.</p>
+<p>Hay dos banderas que ya controlan el comportamiento real:</p>
+<ul>
+<li><strong><code translate="no" v-pre>ListIncludesFiles</code></strong>: la lista de torrents ya trae el detalle de cada archivo. Convierte un escaneo en frío de la biblioteca de una llamada a la API por torrent en una sola llamada en total. Es la diferencia más costosa entre backends.</li>
+<li><strong><code translate="no" v-pre>StoredLinksCanRot</code></strong>: un enlace guardado puede morir mientras el torrent sigue pareciendo sano, así que hay que comprobar los enlaces. Es una propiedad de Real-Debrid y además muy costosa. En un backend que genera las URLs bajo demanda no hay nada que comprobar, y saltarse esa pasada es la diferencia entre que un escaneo sea gratis o que active un bloqueo de toda la cuenta.</li>
+</ul>
+<p>El resto (<code translate="no" v-pre>ServesLinksLocally</code>, <code translate="no" v-pre>MaxActiveSlots</code>, <code translate="no" v-pre>MaxConcurrentRequests</code>, <code translate="no" v-pre>AddsPerHour</code>, <code translate="no" v-pre>ContentExpires</code>, <code translate="no" v-pre>SupportsFileSelection</code>) lo declaran todos los backends y lo leen los códigos genéricos. El valor cero es deliberadamente la lectura más conservadora, así que un proveedor que olvide un campo recibe un comportamiento cauto en lugar de una avalancha de peticiones. Y un proveedor que zurg no pueda resolver del todo cae en <code translate="no" v-pre>unknownProviderCaps</code> en <code translate="no" v-pre>internal/torrent/providers.go</code>, que enuncia esa respuesta cauta una sola vez en lugar de en cada punto de llamada.</p>
+<p>Hay una tercera forma que ninguna de las dos banderas expresa: la lista de AllDebrid no trae archivos, pero su endpoint por torrent acepta un <em>lote</em> de ids. Eso se maneja dentro del proveedor en lugar de con una capacidad, porque solo cambia cómo el proveedor gasta sus propias peticiones. El refresco genérico sigue pidiendo un torrent a la vez y no necesita saber nada de ello.</p>
+<h3 id="set">Set</h3>
+<p><code translate="no" v-pre>Set</code> es cada proveedor configurado, en el orden del config, y es lo que el torrent manager, los handlers y el dashboard usan en lugar de cualquier cliente concreto. Hay dos patrones de acceso que importan: <strong>fan-out</strong>, donde una operación se ejecuta contra todas las cuentas (por ejemplo, un refresh de la biblioteca), y <strong>dispatch</strong>, donde una operación debe llegar a la única cuenta que es dueña de un torrent (delete, resolve, repair). También guarda el estado de salud/disponibilidad de las cuentas.</p>
+<h3 id="link-cache">Caché de enlaces</h3>
+<p><code translate="no" v-pre>LinkCache</code> almacena las URL resueltas indexadas <strong>por token</strong>, no solo por enlace. Una URL generada con un token solo es válida con la cuota de ese token, así que cuando un token llega al límite de ancho de banda, sus entradas deben descartarse por completo en lugar de reutilizarse con el siguiente token de la rotación. Las entradas caducan según su marca de tiempo <code translate="no" v-pre>Generated</code> y no según el momento de inserción, de modo que los enlaces cargados desde la lista de descargas del propio proveedor caducan según el calendario del proveedor.</p>
+<h3 id="the-backends">Los backends</h3>
+<retype-table copy-text="| Paquete | Qué es | Lo que hay que saber |
+|---|---|---|
+| `internal/realdebrid` | Real-Debrid, el backend original | Tres clientes HTTP separados: API con límite de tasa, unrestrict con límite de tasa y descarga con rotación de hosts. Las marcas de tiempo en hora de París se normalizan en el límite del paquete y nunca salen de él. `DownloadTokenManager` rota los tokens cuando uno caduca. |
+| `internal/torbox` | REST de TorBox | Usa REST con `bypass_cache=true` en lugar del WebDAV de TorBox, cuya vista va 5–15 minutos por detrás de la realidad. No existe un enlace por archivo, así que los enlaces se sintetizan como `torbox://&lt;torrent-id&gt;/&lt;file-id&gt;`: son estables entre reinicios y legibles en los logs, algo que una URL de CDN con la clave de API no sería. Dos limitadores apilados: el de 300/min documentado y otro mucho más estricto para `requestdl`. Consulta [torbox-limits.md](../providers/torbox-limits.md). |
+| `internal/alldebrid` | AllDebrid v4.1 | Los POST son form-encoded; un fallo lógico llega como HTTP **200** con `status:&quot;error&quot;`, así que el código HTTP nunca indica si una llamada funcionó. Los archivos están detrás de `/magnet/files`, que acepta un lote, así que las búsquedas concurrentes se agrupan en peticiones únicas. El árbol anidado de archivos se aplana en profundidad primero, y ese orden es imprescindible. |
+| `internal/nzb` | Usenet, que no es en absoluto un servicio debrid | Los archivos NZB de `nzbs/` se convierten en torrents; las lecturas descargan artículos y los decodifican con yEnc bajo demanda. Los enlaces son `nzb://&lt;nzb-id&gt;/&lt;file-index&gt;` y se sirven en local, así que `DownloadFile` sintetiza la respuesta HTTP en lugar de hacer de proxy. |
+| `internal/nntp` | Cliente Usenet mínimo | Pool de conexiones limitado por el número de conexiones que permite la cuenta, BODY/STAT por id de mensaje, decodificación yEnc. Una sola conexión obtiene solo una fracción del rendimiento alcanzable, así que las lecturas de un archivo se reparten entre todo el margen de conexiones. |
+| `internal/par2` | PAR2 / Reed-Solomon sobre GF(2^16) | Cuando un artículo ya no está en el servidor, los volúmenes de recuperación propios de la release reconstruyen los bytes que transportaba. Es costoso de una forma concreta: la aritmética necesita todas las porciones supervivientes de cada archivo cubierto, una sola vez. Por eso se ejecuta como tarea en segundo plano, una release a la vez, y genera parches de rangos de bytes que los lectores sirven en lugar de silencio. |
+| `internal/rdclient` | HTTP de bajo nivel compartido | Rotación de hosts entre endpoints de CDN ordenados por latencia, limitación con token bucket, reintentos con backoff, soporte de proxy, DNS personalizado, forzado de IPv4/IPv6 y preferencia de CDN anclada a una geolocalización. `IPRepository` gestiona la prueba de red y su caché en disco. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Paquete</th>
+<th>Qué es</th>
+<th>Lo que hay que saber</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>internal/realdebrid</code></td>
+<td>Real-Debrid, el backend original</td>
+<td>Tres clientes HTTP separados: API con límite de tasa, unrestrict con límite de tasa y descarga con rotación de hosts. Las marcas de tiempo en hora de París se normalizan en el límite del paquete y nunca salen de él. <code translate="no" v-pre>DownloadTokenManager</code> rota los tokens cuando uno caduca.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>internal/torbox</code></td>
+<td>REST de TorBox</td>
+<td>Usa REST con <code translate="no" v-pre>bypass_cache=true</code> en lugar del WebDAV de TorBox, cuya vista va 5–15 minutos por detrás de la realidad. No existe un enlace por archivo, así que los enlaces se sintetizan como <code translate="no" v-pre>torbox://&lt;torrent-id&gt;/&lt;file-id&gt;</code>: son estables entre reinicios y legibles en los logs, algo que una URL de CDN con la clave de API no sería. Dos limitadores apilados: el de 300/min documentado y otro mucho más estricto para <code translate="no" v-pre>requestdl</code>. Consulta <a href="../../providers/torbox-limits/">torbox-limits.md</a>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>internal/alldebrid</code></td>
+<td>AllDebrid v4.1</td>
+<td>Los POST son form-encoded; un fallo lógico llega como HTTP <strong>200</strong> con <code translate="no" v-pre>status:&quot;error&quot;</code>, así que el código HTTP nunca indica si una llamada funcionó. Los archivos están detrás de <code translate="no" v-pre>/magnet/files</code>, que acepta un lote, así que las búsquedas concurrentes se agrupan en peticiones únicas. El árbol anidado de archivos se aplana en profundidad primero, y ese orden es imprescindible.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>internal/nzb</code></td>
+<td>Usenet, que no es en absoluto un servicio debrid</td>
+<td>Los archivos NZB de <code translate="no" v-pre>nzbs/</code> se convierten en torrents; las lecturas descargan artículos y los decodifican con yEnc bajo demanda. Los enlaces son <code translate="no" v-pre>nzb://&lt;nzb-id&gt;/&lt;file-index&gt;</code> y se sirven en local, así que <code translate="no" v-pre>DownloadFile</code> sintetiza la respuesta HTTP en lugar de hacer de proxy.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>internal/nntp</code></td>
+<td>Cliente Usenet mínimo</td>
+<td>Pool de conexiones limitado por el número de conexiones que permite la cuenta, BODY/STAT por id de mensaje, decodificación yEnc. Una sola conexión obtiene solo una fracción del rendimiento alcanzable, así que las lecturas de un archivo se reparten entre todo el margen de conexiones.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>internal/par2</code></td>
+<td>PAR2 / Reed-Solomon sobre GF(2^16)</td>
+<td>Cuando un artículo ya no está en el servidor, los volúmenes de recuperación propios de la release reconstruyen los bytes que transportaba. Es costoso de una forma concreta: la aritmética necesita todas las porciones supervivientes de cada archivo cubierto, una sola vez. Por eso se ejecuta como tarea en segundo plano, una release a la vez, y genera parches de rangos de bytes que los lectores sirven en lugar de silencio.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>internal/rdclient</code></td>
+<td>HTTP de bajo nivel compartido</td>
+<td>Rotación de hosts entre endpoints de CDN ordenados por latencia, limitación con token bucket, reintentos con backoff, soporte de proxy, DNS personalizado, forzado de IPv4/IPv6 y preferencia de CDN anclada a una geolocalización. <code translate="no" v-pre>IPRepository</code> gestiona la prueba de red y su caché en disco.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>internal/nzb</code> es la prueba de que la abstracción funciona. Implementa la misma
+interfaz sobre un directorio local y un servidor de noticias, y eso funciona porque
+el contrato real de la interfaz es <em>&quot;responder un GET por rango con bytes&quot;</em>, no
+<em>&quot;hacer de proxy de una CDN&quot;</em>.</p>
+<h3 id="adding-a-backend">Añadir un backend</h3>
+<p>Paquete nuevo: implementa <code translate="no" v-pre>debrid.Provider</code>, llama a <code translate="no" v-pre>debrid.Register</code> en <code translate="no" v-pre>init</code> y añade un import en blanco en <code translate="no" v-pre>internal/app.go</code>. No cambia nada en <code translate="no" v-pre>internal/debrid</code>.</p>
+<h2 id="layer-3--the-library">Capa 3 — La biblioteca</h2>
+<p><code translate="no" v-pre>internal/torrent</code> es el núcleo de zurg y su paquete más grande. <code translate="no" v-pre>TorrentManager</code> guarda toda la biblioteca en mapas concurrentes <code translate="no" v-pre>cmap</code> para lecturas sin bloqueos, asigna los torrents a los directorios evaluando los filtros de la configuración, resuelve y guarda en caché los enlaces, y ejecuta los trabajos en segundo plano.</p>
+<h3 id="persistence">Persistencia</h3>
+<p>Cada entrada se guarda en <code translate="no" v-pre>data/&lt;name&gt;.zurgtorrent</code> como JSON, y la información de cada torrent se guarda en caché en <code translate="no" v-pre>data/info/</code>. Al reiniciar, se carga desde disco y queda operativo al instante, y luego se actualiza. Esto importa porque un escaneo en frío está limitado por el rate limit, no por la CPU.</p>
+<p>Los torrents que ya no están en la cuenta se pueden archivar en <code translate="no" v-pre>dump/</code> y mostrar como el directorio <code translate="no" v-pre>__dump__</code> (<code translate="no" v-pre>load_dumped_torrents</code>).</p>
+<p>El estado que nada más puede reconstruir (la configuración, cada zurgtorrent, el almacén <code translate="no" v-pre>__magic__</code> en <code translate="no" v-pre>data/local/</code> y los NZB de origen en <code translate="no" v-pre>nzbs/</code>) se guarda en un único <code translate="no" v-pre>.zurgbackup</code> en streaming. <code translate="no" v-pre>zurg backup</code> genera uno (igual que la página Backup &amp; Restore del dashboard), y <code translate="no" v-pre>zurg restore-backup &lt;file&gt;</code> lo descomprime en el directorio de trabajo. <code translate="no" v-pre>internal/backup</code> se encarga del formato. Un manifiesto es la primera entrada, así que una restauración valida lo que tiene antes de escribir nada.</p>
+<p>Nombres de directorio reservados: <code translate="no" v-pre>__all__</code>, <code translate="no" v-pre>__unplayable__</code>, <code translate="no" v-pre>__dump__</code>, <code translate="no" v-pre>__downloads__</code>, y uno por cuenta como <code translate="no" v-pre>__&lt;provider-name&gt;__</code>.</p>
+<h3 id="torrent-vs-torrentcopy">Torrent vs TorrentCopy</h3>
+<p>Un release puede vivir en más de una cuenta. zurg lo muestra una sola vez. La división:</p>
+<ul>
+<li><strong>Los datos del contenido pertenecen a la entrada</strong> (<code translate="no" v-pre>Torrent</code>): nombre, hash, qué archivos existen, etiquetas, id de IMDB, rename.</li>
+<li><strong>Los datos de la cuenta pertenecen a una copia</strong> (<code translate="no" v-pre>TorrentCopy</code>): los ids de torrent que generó esa cuenta, los enlaces que entrega, su propio estado de rotura y sus contadores de reintentos.</li>
+</ul>
+<p>Los ids de archivo, en particular, son por cuenta: Real-Debrid numera los archivos dentro de un torrent y marca un subconjunto como seleccionado; TorBox lista solo lo que descargó y los numera a su manera. Por eso <code translate="no" v-pre>FileSource</code> guarda <code translate="no" v-pre>FileID</code> por proveedor. Repair construye su selección a partir de los ids de la copia que está reparando; si lees el id de la cuenta equivocada, vuelves a añadir los archivos equivocados.</p>
+<p>Las copias se guardan en el orden de la configuración, que es el orden de preferencia. Las lecturas prefieren la primera copia sana y, si falla, pasan a la siguiente. Al borrar la entrada se borran todas las copias. Una entrada sin copias no existe.</p>
+<h3 id="getkey-must-stay-pure">GetKey debe seguir siendo puro</h3>
+<p><code translate="no" v-pre>GetKey</code> es el nombre de un torrent en la biblioteca virtual: su entrada de directorio, su nombre de archivo <code translate="no" v-pre>.zurgtorrent</code> y el identificador que usa cada búsqueda. Se <strong>recalcula en cada búsqueda y nunca se guarda</strong>, lo que descarta resolver los choques de nombres comprobando qué ya está en uso: la respuesta cambiaría según cambiara la biblioteca, y un torrent dejaría de encontrarse con el nombre con el que se había registrado.</p>
+<p>El único sufijo es para el caso menos frecuente en que dos <em>versiones distintas</em> comparten nombre, y es una etiqueta del propio hash del contenido, tan pura como el propio nombre. La marca que lo activa la decide el proceso de actualización, que puede ver toda la biblioteca, y se guarda en el torrent.</p>
+<h3 id="background-jobs">Trabajos en segundo plano</h3>
+<retype-table copy-text="| Job | File | What it does |
+|---|---|---|
+| Refresh | `refresh.go` | Consulta cada cuenta, combina las instancias listadas en entradas, obtiene la información de las nuevas, asigna los directorios y depura. Usa una consulta barata de un solo elemento como comprobación de cambios entre consultas completas. |
+| Repair | `repair.go` | Encuentra y arregla torrents rotos. |
+| Downloads | `manager.go` | Actualiza la lista de descargas de hosters en `__downloads__`. |
+| Network test | `handlers` | Vuelve a ordenar periódicamente los hosts CDN. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Job</th>
+<th>File</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Refresh</td>
+<td><code translate="no" v-pre>refresh.go</code></td>
+<td>Consulta cada cuenta, combina las instancias listadas en entradas, obtiene la información de las nuevas, asigna los directorios y depura. Usa una consulta barata de un solo elemento como comprobación de cambios entre consultas completas.</td>
+</tr>
+<tr>
+<td>Repair</td>
+<td><code translate="no" v-pre>repair.go</code></td>
+<td>Encuentra y arregla torrents rotos.</td>
+</tr>
+<tr>
+<td>Downloads</td>
+<td><code translate="no" v-pre>manager.go</code></td>
+<td>Actualiza la lista de descargas de hosters en <code translate="no" v-pre>__downloads__</code>.</td>
+</tr>
+<tr>
+<td>Network test</td>
+<td><code translate="no" v-pre>handlers</code></td>
+<td>Vuelve a ordenar periódicamente los hosts CDN.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>El intervalo de cada job se puede restablecer en tiempo de ejecución a través de un canal, así que si cambias la
+config desde el panel, el cambio se aplica sin reiniciar. Las marcas de tiempo de la última ejecución se guardan
+(<code translate="no" v-pre>data/repair_timestamp</code>, <code translate="no" v-pre>data/downloads_timestamp</code>) para que un reinicio no vuelva a ejecutar un job que acaba de correr.</p>
+<h3 id="repair">Reparación</h3>
+<p>La segunda preocupación más importante del paquete. Los archivos tienen un estado FSM (<code translate="no" v-pre>ok_file</code> / <code translate="no" v-pre>broken_file</code>, mediante <code translate="no" v-pre>pkg/fsm</code>); los torrents y las copias tienen el suyo propio. Cuando los enlaces dejan de servir bytes, la reparación escala por estrategias:</p>
+<ol>
+<li><strong>Reiniciar en el sitio</strong> (<code translate="no" v-pre>TorrentRestarter</code>): la más barata. No hay subida nueva, no se gasta ningún slot de adición, y el torrent conserva su id, así que la entrada de la biblioteca sobrevive en lugar de borrarse y volver a descubrirse. El refresco la lanza para un torrent fallido que encuentra en la cuenta, y solo en una instancia que tenga permiso para actuar sobre torrents fallidos: <code translate="no" v-pre>enable_repair</code> o <code translate="no" v-pre>delete_error_torrents</code>. Si ambas están desactivadas, la cuenta se deja como está (<code translate="no" v-pre>mayRestartFailedTorrents</code>).</li>
+<li><strong>Volver a descargar los archivos rotos</strong>: volver a seleccionar solo lo que está roto.</li>
+<li><strong>Reinsertar</strong>: volver a añadir el magnet y recoger enlaces nuevos.</li>
+<li><strong>Archivar</strong>: último recurso para las releases que no se pueden recuperar.</li>
+<li><strong>Ofrecérselo a una cuenta que no lo tiene</strong> (<code translate="no" v-pre>repair_across_accounts.go</code>): los servicios mantienen cachés independientes, así que una release que una cuenta ha purgado, o que rechaza por nombre de archivo, puede estar en caché en otra. Cuando ninguna cuenta que tiene la release puede arreglarla, se pregunta en orden a las cuentas configuradas que no la tienen, y la primera que ya tiene el hash se la queda. El listado que sigue la une a la entrada como segunda copia a través de la ruta habitual <code translate="no" v-pre>absorbCopy</code>, que limpia por sí sola el veredicto de la entrada. Siempre solo en caché, mediante <code translate="no" v-pre>AddIfCached</code> y nunca mediante <code translate="no" v-pre>restrict_repair_to_cached</code>: una adición que la cuenta tendría que descargar se retira y se vuelve a borrar, así que esto es una reparación y nunca una nueva descarga. Una cuenta que no responde entra en espera de entre un día y unas dos semanas, y un barrido hace como máximo diez ofertas. Eso es lo que hace asumible ejecutarlo sin que nadie lo pida contra una biblioteca de releases condenadas.</li>
+</ol>
+<p>Alrededor de todo esto hay backoff exponencial, techos de reintentos por copia (<code translate="no" v-pre>RepairCycles</code>, <code translate="no" v-pre>AssignRetries</code>, persistidos para que los techos sobrevivan a los reinicios), límites horarios de adiciones desde <code translate="no" v-pre>Capabilities.AddsPerHour</code>, comprobaciones de slots activos, deduplicación mediante una cola basada en un set, y una heurística de todo el barrido que lee una ráfaga de fallos de hoster no disponible como una caída de un solo proveedor en lugar de N torrents rotos.</p>
+<p>Los veredictos de irreparable se registran por copia y solo se propagan a la entrada cuando <em>todas</em> las copias tienen uno. Un error permanente de Real-Debrid no dice nada sobre la copia de TorBox.</p>
+<p>Un operador puede forzar una reparación a mano. La condición de forzado vive en el torrent y no en el contexto, porque una petición que llega a mitad de barrido se aparca en la cola y se recoge más tarde con el contexto propio del barrido.</p>
+<p>El botón también llega al paso 5, y en ese orden: primero borra todos los veredictos de la release, así que la cuenta que la tiene se reintenta exactamente como antes, y la oferta solo sigue si ese intento falla. Como borra esos veredictos, un torrent con nombre es elegible cuando el barrido recoge sus entradas condenadas, y solo vuelve a quedar condenado por la reparación que acaba de ejecutarse. Por eso se recoge después de esa reparación y no en el bucle. Si no, el único camino en el que alguien está esperando sería el único que nunca ofrece.</p>
+<h3 id="everything-else-in-the-package">Todo lo demás del paquete</h3>
+<p><code translate="no" v-pre>mediainfo.go</code> (análisis con ffprobe que alimenta las etiquetas de duración y códec), <code translate="no" v-pre>tags.go</code>, <code translate="no" v-pre>rename.go</code> (renombrados que deben sobrevivir a la actualización), <code translate="no" v-pre>delete.go</code>, <code translate="no" v-pre>strm.go</code> (genera archivos <code translate="no" v-pre>.strm</code> para toda la biblioteca), <code translate="no" v-pre>hooks.go</code> (scripts de usuario en eventos del ciclo de vida), <code translate="no" v-pre>assign_links.go</code>, <code translate="no" v-pre>unrestrict.go</code>, <code translate="no" v-pre>opensubtitles.go</code>, <code translate="no" v-pre>provider_directories.go</code>, <code translate="no" v-pre>reset_all.go</code>.</p>
+<h2 id="layer-4--serving">Capa 4 — Servicio</h2>
+<h3 id="router">Router</h3>
+<p><code translate="no" v-pre>internal/handlers</code> construye el router de chi y conecta todo. Los métodos no estándar de WebDAV (<code translate="no" v-pre>PROPFIND</code>, <code translate="no" v-pre>MKCOL</code>, <code translate="no" v-pre>MOVE</code>) se registran en chi en <code translate="no" v-pre>init</code>. La autenticación básica envuelve todo <em>excepto</em> <code translate="no" v-pre>version.txt</code> y <code translate="no" v-pre>/ready</code> (para que funcionen los health checks) y los endpoints <code translate="no" v-pre>.strm</code> (un reproductor multimedia que abre un <code translate="no" v-pre>.strm</code> no tiene credenciales que enviar; en su lugar, el token firmado en la ruta lo autoriza).</p>
+<p>Hay dos lecciones de enrutamiento anotadas en los comentarios que vale la pena no volver a aprender: chi aplica un parámetro de ruta con regex <strong>dentro de un solo segmento</strong>, así que un archivo al que se accede a través de un archivo comprimido (<code translate="no" v-pre>&lt;archive&gt;.rar/&lt;inner&gt;.mkv</code>) o un directorio anidado dentro de uno no coincidía con ninguna ruta. Ambos necesitaban comodines al final. Y una ruta dentro de un torrent se divide entre listado y descarga según tenga o no una barra final, una vez que la ruta deja de importar qué tan profunda es.</p>
+<h3 id="listings">Listados</h3>
+<p><code translate="no" v-pre>internal/dav</code> genera el XML de PROPFIND y gestiona DELETE, MOVE (renombrados, con validación entre directorios y entre torrents) y las variantes de Infuse.
+<code translate="no" v-pre>pkg/dav</code> genera el XML en sí con construcción de cadenas optimizada en lugar de marshalling XML, hace la conversión de RFC 3339 a RFC 1123 que necesitan los clientes WebDAV y escapa las rutas tanto para URL como para XML.</p>
+<p><code translate="no" v-pre>internal/htmlindex</code> muestra el mismo árbol como HTML para <code translate="no" v-pre>/http/</code>.</p>
+<p>Ambos aplican las mismas reglas de visibilidad (solo el archivo más grande, umbrales de tamaño, estado broken/deleted) y ambos agrupan los archivos RAR de varios volúmenes para que solo sea visible el primer volumen.</p>
+<h3 id="the-byte-path">La ruta de bytes</h3>
+<p><code translate="no" v-pre>internal/universal</code> es donde una petición se convierte en bytes:</p>
+<ul>
+<li>La resolución de enlaces se deduplica con <code translate="no" v-pre>singleflight</code>, así que cien lecturas simultáneas del mismo archivo cuestan una sola resolución.</li>
+<li>Proxy o redirección, según <code translate="no" v-pre>disable_stream_proxy</code>. Excepto que un enlace servido localmente (<code translate="no" v-pre>ServesLinksLocally</code>) nunca puede redirigirse, porque el cliente no tiene nada que abrir.</li>
+<li>Vuelve a hacer el unrestrict de un enlace roto, hasta un límite pequeño.</li>
+<li>Un enfriamiento por archivo para fallos de red: 3 errores seguidos dejan el archivo en pausa durante 5 minutos. Eso es lo que evita que un host CDN inalcanzable se convierta en un bucle de reintentos infinito.</li>
+<li>Pausas breves durante una ventana de límite de tasa en lugar de devolver error. Si las lecturas dan error durante el enfriamiento corto, una cuenta limitada se convierte en una tormenta de errores a través del VFS de rclone: esperas bloqueadas, lectores en estado D, un servidor multimedia colgado. Por eso, retener la lectura es la opción más barata. Las clases de enfriamiento más largas siguen fallando rápido.</li>
+<li>Contabilidad de ancho de banda por token, con los contadores reiniciados a medianoche CET para coincidir con el reinicio diario de tráfico de Real-Debrid.</li>
+</ul>
+<h3 id="archives">Archivos</h3>
+<p><code translate="no" v-pre>internal/rarstream</code> analiza las cabeceras RAR4, RAR5 y ZIP mediante peticiones de rango de bytes (HTTP 206), construye un mapa de fragmentos entre volúmenes y reconstruye el contenido de un solo archivo sobre la marcha. <strong>Sin descompresión</strong>: solo se admiten datos almacenados, que es lo que usan los releases scene. <code translate="no" v-pre>VolumeKey</code> e <code translate="no" v-pre>IsVolume</code> normalizan las muchas convenciones de nombres de partes múltiples (<code translate="no" v-pre>.part001.rar</code>, <code translate="no" v-pre>.r00</code>, <code translate="no" v-pre>.rar</code>) que <code translate="no" v-pre>dav</code> y <code translate="no" v-pre>htmlindex</code> usan para agrupar los volúmenes en una sola entrada. Los listados se guardan en caché en el torrent y se marcan con el <code translate="no" v-pre>ListingVersion</code> del analizador, así que un listado generado por otro analizador se descarta en lugar de servirse.</p>
+<h3 id="strm">STRM</h3>
+<p><code translate="no" v-pre>internal/strmlink</code> codifica y firma la URL que contiene un <code translate="no" v-pre>.strm</code>. El esquema solo para Real-Debrid al que sustituye era seguro por casualidad: la URL contenía el código de descarga de 13 caracteres de RD, así que tenerla <em>era</em> la prueba de autorización. Otros backends direccionan los archivos con ids fácilmente enumerables (<code translate="no" v-pre>torbox://17/3</code>), así que con la misma forma cualquiera que pudiera llegar al puerto podría generar URLs del CDN para la cuenta o gastar sus conexiones a servidores Usenet. Un HMAC sobre un secreto guardado en <code translate="no" v-pre>data/strm_secret</code> evita eso: un token que zurg no escribió no se resuelve. El secreto debe sobrevivir al proceso: cada <code translate="no" v-pre>.strm</code> ya escrito seguirá siendo válido solo mientras lo siga siendo su clave de firma.</p>
+<h3 id="dashboard-and-management">Panel y gestión</h3>
+<p><code translate="no" v-pre>internal/handlers/dashboard</code> genera la interfaz web a partir de plantillas incrustadas, que se analizan al arrancar para que un error de sintaxis falle al momento y no cuando llegue una petición. Las páginas son: estado de torrents en vivo, un editor interactivo de configuración YAML, latencia del host, gestión de directorios, gestión de proveedores, estado de la conexión con los servidores de medios, información de cuenta y premium, ancho de banda, estado de rclone y las estadísticas &quot;Wrapped&quot; de Plex. Los obtenedores de estado de cada servidor de medios se ejecutan en paralelo para que las páginas carguen rápido.</p>
+<p><code translate="no" v-pre>internal/handlers/manage</code> es la interfaz de operaciones por torrent: etiquetas, listados de archivos con detalle de estado, coincidencia con Plex, renombrados, eliminar/restaurar/forzar mostrar por archivo, eliminación masiva y escaneo.</p>
+<p>Su vista de duplicados es <code translate="no" v-pre>internal/duplicates</code>. <code translate="no" v-pre>internal/arrinventory</code> y los lectores <code translate="no" v-pre>Inventory</code> junto a los adaptadores de Radarr y Sonarr leen cada archivo que tiene un *arr, en modo solo lectura y sin intervenir en la adquisición. <code translate="no" v-pre>magic.Resolver.HolderOf</code> rastrea la ruta de cada archivo hasta la release de la que vino, y el paquete agrupa las releases que pueden contener la misma película o los mismos episodios. La agrupación usa nombres, IDs de IMDb y el historial de *arr. Si una release está en uso lo decide únicamente el rastreo de rutas.</p>
+<p><code translate="no" v-pre>internal/static</code> incrusta CSS, favicon, logo y robots.txt con <code translate="no" v-pre>go:embed</code>, así que el binario es autocontenido.</p>
+<h2 id="layer-5--the-mount">Capa 5 — El montaje</h2>
+<p><code translate="no" v-pre>internal/rclone</code> supervisa rclone como subproceso: construye el comando de montaje (un remoto WebDAV que apunta a <code translate="no" v-pre>/dav/</code> de zurg), lo inicia y lo detiene, comprueba su estado cada 30 s con una espera exponencial antes de reiniciar (de 1 s a 60 s) y lo reinicia si falla.</p>
+<p>En el arranque se elige un puerto RC efímero dentro del rango 49152–65535 para invalidar la caché de VFS y consultar el estado. Esa invalidación es importante en dos momentos: cuando la biblioteca en caché termina de cargarse y otra vez después de la primera actualización completa. Si no, los listados parciales que el montaje obtuvo a mitad de la carga se quedan durante todo el <code translate="no" v-pre>--dir-cache-time</code>.</p>
+<p>Las credenciales se pasan mediante una variable de entorno, nunca en la línea de comandos. <code translate="no" v-pre>Controller</code> es la interfaz que usan los manejadores y el panel, mientras que <code translate="no" v-pre>Runner</code> y <code translate="no" v-pre>Command</code> abstraen la gestión de procesos para las pruebas.</p>
+<h2 id="layer-6--media-servers">Capa 6 — Servidores multimedia</h2>
+<p>Dos cosas distintas comparten la palabra &quot;Plex&quot;:</p>
+<ul>
+<li><strong><code translate="no" v-pre>pkg/plex</code>, <code translate="no" v-pre>pkg/jellyfin</code>, <code translate="no" v-pre>pkg/emby</code></strong> son <em>clientes</em> de servidores de medios, y cada uno cumple con <code translate="no" v-pre>common.MediaServerWorker</code>. <code translate="no" v-pre>pkg/common</code> ofrece el ciclo de vida compartido de los trabajos: una cola dinámica sin límite, seguimiento de reintentos por trabajo, backoff exponencial con jitter, un circuit breaker tras fallos consecutivos y detección de trabajos atascados. También incluye las funciones de rutas que se encargan del APFS de macOS, que no distingue mayúsculas. <code translate="no" v-pre>pkg/scan</code> está encima como un <code translate="no" v-pre>MediaScanner</code> unificado que envía un trabajo de actualización de rutas al servidor que tenga esa ruta e informa de la profundidad de la cola de cada servidor.</li>
+<li><strong><code translate="no" v-pre>internal/plex</code></strong> es el comportamiento específico de zurg: <code translate="no" v-pre>Matcher</code> relaciona torrents con los elementos de la biblioteca de Plex usando rutas de archivo, ids de IMDB e identificadores de TVDb/TMDb. Se ejecuta periódicamente en pools de workers con metadatos en caché, y rellena en los torrents los ids de IMDB que descubre.</li>
+<li><strong><code translate="no" v-pre>internal/acquisition</code></strong> gestiona la cola de adquisición persistente y el executor compartido, que obtiene NZB de indexadores Newznab y torrents en caché de indexadores Torznab. La watchlist de Plex, Seerr, Radarr y Sonarr son adaptadores de origen que convierten las solicitudes en objetivos de película, temporada o episodio. <code translate="no" v-pre>data/acquisition.json</code> guarda los plazos de reintento y el progreso por objetivo entre reinicios. Consulta <a href="../../guides/acquisition/">fuentes de adquisición</a> para la configuración y los contratos de los adaptadores.</li>
+</ul>
+<p><code translate="no" v-pre>pkg/mediabrowser</code> contiene los tipos que comparten Emby y Jellyfin.</p>
+<h2 id="layer-7--support">Capa 7 — Soporte</h2>
+<retype-table copy-text="| Paquete | Propósito |
+|---|---|
+| `pkg/fsm` | Dos variantes de máquina de estados sencilla: `FSMWithExternalMutex` para cuando la FSM va incrustada en algo que ya está bloqueado, y `FSMWithTime` para cuando necesita su propio bloqueo y una marca de tiempo de la transición (así `SinceWhen` puede responder &quot;cuánto tiempo lleva roto esto&quot;). |
+| `pkg/logutil` | Zap con doble salida: consola con colores y un archivo rotatorio (10 MB × 20 mediante lumberjack). El nivel de detalle viene de `log_level` en config.yml, con respaldo en la variable de entorno `LOG_LEVEL` y, si no existe, en DEBUG. El nivel se guarda en un `zap.AtomicLevel` compartido, así que el panel puede cambiar el nivel de todos los loggers a la vez sin reiniciar. Incluye la lectura del log para el visor del panel y su subida a 0x0.st para soporte. |
+| `pkg/utils` | Persistencia de hosts bloqueados, reglas de visibilidad de archivos, ocultación de tokens, detección de vídeo/audio, nombres `.strm` y `GetZurgBaseURL` (que respeta `X-Forwarded-*` detrás de un proxy inverso). |
+| `pkg/script` | Ejecuta los scripts de eventos del ciclo de vida definidos por el usuario; PowerShell en Windows, `/bin/sh` en el resto de sistemas. |
+| `pkg/dmm` | Cliente para la API de búsqueda de debridmediamanager.com, limitado a 1 petición cada 2 segundos, que es el límite del lado del servidor. Lo usa el monitor de watchlist. |
+| `internal/version` | Metadatos de compilación inyectados mediante ldflags; también el banner ASCII en `/http/version.txt`. |
+| `internal/requirements` | Descarga `ffprobe` y `rclone` compatibles con tu plataforma desde las releases de GitHub en el primer arranque y escribe rutas *relativas* en config.yml, para que la configuración sea portable. Las plataformas no soportadas muestran un aviso en lugar de fallar. |
+| `internal/clear` | Borra en masa las descargas y los torrents de RD manejando la interfaz web con una cookie de autenticación, repitiendo el proceso hasta que esté vacío. |
+| `internal/handlers/tmplcache` | Caché de plantillas para el panel. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Paquete</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>pkg/fsm</code></td>
+<td>Dos variantes de máquina de estados sencilla: <code translate="no" v-pre>FSMWithExternalMutex</code> para cuando la FSM va incrustada en algo que ya está bloqueado, y <code translate="no" v-pre>FSMWithTime</code> para cuando necesita su propio bloqueo y una marca de tiempo de la transición (así <code translate="no" v-pre>SinceWhen</code> puede responder &quot;cuánto tiempo lleva roto esto&quot;).</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>pkg/logutil</code></td>
+<td>Zap con doble salida: consola con colores y un archivo rotatorio (10 MB × 20 mediante lumberjack). El nivel de detalle viene de <code translate="no" v-pre>log_level</code> en config.yml, con respaldo en la variable de entorno <code translate="no" v-pre>LOG_LEVEL</code> y, si no existe, en DEBUG. El nivel se guarda en un <code translate="no" v-pre>zap.AtomicLevel</code> compartido, así que el panel puede cambiar el nivel de todos los loggers a la vez sin reiniciar. Incluye la lectura del log para el visor del panel y su subida a 0x0.st para soporte.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>pkg/utils</code></td>
+<td>Persistencia de hosts bloqueados, reglas de visibilidad de archivos, ocultación de tokens, detección de vídeo/audio, nombres <code translate="no" v-pre>.strm</code> y <code translate="no" v-pre>GetZurgBaseURL</code> (que respeta <code translate="no" v-pre>X-Forwarded-*</code> detrás de un proxy inverso).</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>pkg/script</code></td>
+<td>Ejecuta los scripts de eventos del ciclo de vida definidos por el usuario; PowerShell en Windows, <code translate="no" v-pre>/bin/sh</code> en el resto de sistemas.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>pkg/dmm</code></td>
+<td>Cliente para la API de búsqueda de debridmediamanager.com, limitado a 1 petición cada 2 segundos, que es el límite del lado del servidor. Lo usa el monitor de watchlist.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>internal/version</code></td>
+<td>Metadatos de compilación inyectados mediante ldflags; también el banner ASCII en <code translate="no" v-pre>/http/version.txt</code>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>internal/requirements</code></td>
+<td>Descarga <code translate="no" v-pre>ffprobe</code> y <code translate="no" v-pre>rclone</code> compatibles con tu plataforma desde las releases de GitHub en el primer arranque y escribe rutas <em>relativas</em> en config.yml, para que la configuración sea portable. Las plataformas no soportadas muestran un aviso en lugar de fallar.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>internal/clear</code></td>
+<td>Borra en masa las descargas y los torrents de RD manejando la interfaz web con una cookie de autenticación, repitiendo el proceso hasta que esté vacío.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>internal/handlers/tmplcache</code></td>
+<td>Caché de plantillas para el panel.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h2 id="cross-cutting-decisions">Decisiones transversales</h2>
+<p><strong>Capacidades en lugar de <code translate="no" v-pre>if provider == &quot;realdebrid&quot;</code>.</strong> Cualquier cosa que asuma la forma de Real-Debrid debe ir detrás de una bandera de capacidad, no de una comprobación de tipo. Esta es la regla que mantiene al gestor de torrents independiente del backend.</p>
+<p><strong>El contrato de la interfaz son bytes, no proxy.</strong> <code translate="no" v-pre>Provider</code> nunca promete un CDN remoto; solo que una petición GET con rango pueda responderse. Por eso encaja un backend de Usenet. Los dos sitios donde se filtró la suposición del CDN (las redirecciones y pasar una URL a ffprobe, que necesita algo que un binario externo pueda abrir) ahora están protegidos por <code translate="no" v-pre>ServesLinksLocally</code>.</p>
+<p><strong>El emparejamiento posicional de enlaces es crítico.</strong> <code translate="no" v-pre>TorrentInfo.Links[i]</code> se empareja con el i-ésimo archivo <strong>seleccionado</strong> de <code translate="no" v-pre>TorrentInfo.Files</code>. Un proveedor que no pueda enlazar un archivo debe reportarlo como <em>no seleccionado</em> en lugar de omitirlo; si no, todos los archivos siguientes se resolverán silenciosamente al enlace equivocado. Todos los backends deben cumplir esto.</p>
+<p><strong>Un torrent pertenece a exactamente una cuenta.</strong> Cualquier llamada que llegue a un servicio debe despacharse a través del proveedor del torrent (<code translate="no" v-pre>ProviderFor</code>, <code translate="no" v-pre>resolveLink</code>, <code translate="no" v-pre>verifyLink</code>, <code translate="no" v-pre>DeleteByID</code>), nunca a través del proveedor principal. Si esto sale mal, se borra en la cuenta equivocada.</p>
+<p><strong>El disco es un nivel real.</strong> Las entradas <code translate="no" v-pre>.zurgtorrent</code>, el detalle por torrent en <code translate="no" v-pre>data/info/</code>, los resultados de las pruebas de red y sus marcas de tiempo, las marcas de tiempo de los trabajos, el secreto de firma de STRM, las cachés de listados RAR y los hosts bloqueados. Al reiniciar se reanuda en lugar de volver a escanear.</p>
+<p><strong>Todo va con ritmo controlado.</strong> Cubos de tokens por proveedor, límites de concurrencia, cupos horarios para añadir, TTL de enlaces, enfriamientos por archivo y pausas por límite de peticiones. En TorBox sobre todo, la resolución de enlaces es el recurso escaso, y la caché de enlaces que hay delante es lo que hace posible escanear una biblioteca.</p>
+<p><strong>Las lecturas no usan bloqueos, las escrituras son acotadas.</strong> Los mapas concurrentes sostienen los árboles de directorios, torrents y archivos; la mutación se protege con bloqueos por torrent (<code translate="no" v-pre>copiesMu</code>, <code translate="no" v-pre>tagsMutex</code>, <code translate="no" v-pre>operationsMutex</code>, <code translate="no" v-pre>archiveCacheMutex</code>) en lugar de con algo global.</p>
+<p><strong><code translate="no" v-pre>rdclient</code> es compartido, pero su política es la de Real-Debrid.</strong> Su clasificación de errores y sus reglas de reintento vienen de RD. Reporta un código no 2xx como error aunque siga devolviendo la respuesta, así que un proveedor que necesite el estado (un 429 con <code translate="no" v-pre>Retry-After</code>) debe revisar <code translate="no" v-pre>resp</code> antes que <code translate="no" v-pre>err</code>.</p>
+<h2 id="build-test-deploy">Compilar, probar y desplegar</h2>
+<ul>
+<li>
+<p><strong>Build</strong>: <code translate="no" v-pre>make build</code>. La versión, el commit y la hora de compilación se inyectan mediante
+ldflags en <code translate="no" v-pre>internal/version</code>.</p>
+</li>
+<li>
+<p><strong>Unit tests</strong>: <code translate="no" v-pre>go test ./...</code>. El pre-commit ejecuta gofmt, golangci-lint,
+<code translate="no" v-pre>go test -short</code> y un conjunto de calidad completo.</p>
+</li>
+<li>
+<p><strong>Integration tests</strong>: <code translate="no" v-pre>make integration-test</code>, de más barato a más caro, con
+<code translate="no" v-pre>refresh_repair</code> al final porque espera a que termine un escaneo completo de la biblioteca. Ejecútalos en un
+equipo que tenga Go, rclone, FUSE y Plex juntos. En otro caso, las pruebas de montaje y de Plex se omiten con un aviso bien visible pero aun así terminan con código 0, así que fíjate en la salida y no en el código de salida. Consulta <a href="../e2e-test/">e2e-test.md</a>.</p>
+</li>
+<li>
+<p><strong>Docker</strong>: compilación en dos etapas sobre Alpine; la imagen de ejecución añade ffmpeg, rclone,
+fuse3 y un healthcheck.</p>
+</li>
+<li>
+<p><strong>Deploy</strong>: <code translate="no" v-pre>make deploy USER=… HOST=… DIR=…</code>, que detiene Plex y los servicios de zurg,
+reemplaza el binario, espera a que <code translate="no" v-pre>version.txt</code> responda 200 y luego reinicia Plex.</p>
+</li>
+</ul>
+<h2 id="where-to-look-first">Por dónde empezar a mirar</h2>
+<p>El código de este proyecto suele dejar constancia del <em>porqué</em> en los comentarios, normalmente con el fallo que motivó el cambio. Cada paquete tiene un <code translate="no" v-pre>doc.go</code>. Si vas a cambiar algo, lee primero el <code translate="no" v-pre>doc.go</code> de ese paquete y el comentario de bloque encima del tipo que vas a tocar: ahí están las restricciones que no se ven en las firmas.</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Anterior</span>
+                                <span class="block mt-1">Internos</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/persistent-caches/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Siguiente</span>
+                                <span class="block mt-1">Cach&#233;s persistentes</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Arquitectura", level: 3, icon: "file", hasPrism: false, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/internals/architecture.md" }</script>
+</body>
+</html>

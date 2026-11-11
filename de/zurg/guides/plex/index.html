@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="de" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/de">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672682913">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Plex-Funktionen &amp; M&#246;glichkeiten</title>
+    <meta name="title" content="Plex-Funktionen & Möglichkeiten">
+    <meta name="description" content="Läuft rex neben Plex Media Server oder anstelle davon? Von Plex zu rex wechseln erklärt, was du in zurg behalten solltest, deinen rclone-Mount eingeschlossen, und welche Plex-Einstellungen von zurg du entfernen solltest.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/de/zurg/guides/plex/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/de/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/de/zurg/guides/plex/">
+    <meta property="og:title" content="Plex-Funktionen & Möglichkeiten">
+    <meta property="og:description" content="Läuft rex neben Plex Media Server oder anstelle davon? Von Plex zu rex wechseln erklärt, was du in zurg behalten solltest, deinen rclone-Mount eingeschlossen, und welche Plex-Einstellungen von zurg du entfernen solltest.">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="de_DE">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/de/zurg/guides/plex/">
+    <meta name="twitter:title" content="Plex-Funktionen & Möglichkeiten">
+    <meta name="twitter:description" content="Läuft rex neben Plex Media Server oder anstelle davon? Von Plex zu rex wechseln erklärt, was du in zurg behalten solltest, deinen rclone-Mount eingeschlossen, und welche Plex-Einstellungen von zurg du entfernen solltest.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/de/zurg/guides/plex.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672682913" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672682913" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672682913" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672682913" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/de/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>Deutsch</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/de/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/de/download.html" target="_blank">zurg herunterladen</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/de/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>Deutsch</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/de/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/de/download.html" target="_blank">zurg herunterladen</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/de/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="plex-features--capabilities">Plex-Funktionen &amp; Möglichkeiten</h1>
+<p>Läuft rex neben Plex Media Server oder anstelle davon? <a href="../../../rex/from-plex/">Von Plex zu rex wechseln</a> erklärt, was du in zurg behalten solltest, deinen rclone-Mount eingeschlossen, und welche Plex-Einstellungen von zurg du entfernen solltest.</p>
+<h2 id="configuration--storage">Konfiguration &amp; Speicher</h2>
+<ul>
+<li>Konfigurationsschlüssel aus <a href="../../reference/config/"><code translate="no" v-pre>config.md</code></a>/<code translate="no" v-pre>config.example.yml</code>: <code translate="no" v-pre>plex_server_url</code>, <code translate="no" v-pre>plex_token</code>, <code translate="no" v-pre>plex_match_every_mins</code> (Standard 1440), <code translate="no" v-pre>plex_watchlist_enabled</code>, <code translate="no" v-pre>plex_watchlist_check_every_secs</code> (die veraltete Schreibweise von <code translate="no" v-pre>watchlist.check_every_secs</code>, Standard 60s), <code translate="no" v-pre>mount_path</code> (erforderlich für Abgleich und Aufbau der Scan-Pfade). Über das Dashboard gesetzte Einstellungen werden über den Config-Writer (<code translate="no" v-pre>updateConfigFileAtomic</code>) direkt in <code translate="no" v-pre>config.yml</code> gespeichert.</li>
+<li>Das Watchlist-Intervall fällt bei jedem Wert von 0 oder darunter auf den Standardwert zurück (<code translate="no" v-pre>GetWatchlistCheckEverySecs</code>). <code translate="no" v-pre>plex_match_every_mins</code> fällt nur dann zurück, wenn der Wert genau <code translate="no" v-pre>0</code> ist (<code translate="no" v-pre>intOr</code>, <code translate="no" v-pre>internal/config/config.go</code>). Keines von beiden lässt sich deaktivieren. Das Dashboard lehnt alles unter 1 ab (<code translate="no" v-pre>internal/handlers/dashboard/dashboard.go</code>). Ein negativer Wert für <code translate="no" v-pre>plex_match_every_mins</code> in <code translate="no" v-pre>config.yml</code> stoppt zurg beim Start mit <code translate="no" v-pre>is negative; use 0 for the default</code>. Der Abgleich wird dadurch nicht abgeschaltet.</li>
+<li>Die Watchlist-Beschaffung wird über den Block <code translate="no" v-pre>watchlist:</code> konfiguriert: <code translate="no" v-pre>enabled</code>, <code translate="no" v-pre>check_every_secs</code>, <code translate="no" v-pre>indexers</code>, <code translate="no" v-pre>max_size_gb</code>, <code translate="no" v-pre>max_season_size_gb</code> und <code translate="no" v-pre>quality</code> (Standard <code translate="no" v-pre>best</code>). Ist <code translate="no" v-pre>indexers</code> leer, werden die Indexer aus <code translate="no" v-pre>stremio.indexers</code> übernommen. Die flachen Schlüssel <code translate="no" v-pre>plex_watchlist_enabled</code>, <code translate="no" v-pre>plex_watchlist_check_every_secs</code> und <code translate="no" v-pre>watchlist_quality</code> gelten weiterhin als veraltete Schreibweisen des ersten, zweiten und letzten dieser Einträge. Siehe <a href="../../reference/config/#watchlist">config.md</a>.</li>
+<li><code translate="no" v-pre>mount_path</code> ist außerdem das Präfix für Scan-Pfade, die an Plex und den verwalteten rclone-Mount gesendet werden (<a href="../../reference/config/"><code translate="no" v-pre>config.md</code></a>, <code translate="no" v-pre>pkg/scan/scanner.go</code>).</li>
+<li>Der Hook <code translate="no" v-pre>on_library_update</code> erhält jeden geänderten Pfad als Argument. Er wird um 500 ms verzögert und doppelte Einträge werden entfernt. Es läuft immer nur eine Ausführung gleichzeitig. So lassen sich Plex-Autoscan-Skripte einbinden (<code translate="no" v-pre>internal/torrent/hooks.go</code>).</li>
+</ul>
+<h2 id="authentication--server-discovery">Authentifizierung &amp; Server-Erkennung</h2>
+<ul>
+<li>Ablauf im Web-Dashboard: <code translate="no" v-pre>/plex/auth</code> erstellt eine PIN-Session (<code translate="no" v-pre>pkg/plex/auth.go</code>, <code translate="no" v-pre>CreatePlexAuthURL</code>), speichert sie in <code translate="no" v-pre>pkg/plex/auth_session.go</code> (automatische Bereinigung nach 10 Minuten, Prüfung alle 5) und fragt über <code translate="no" v-pre>/plex/auth/status</code> ab, ob die Autorisierung abgeschlossen ist (<code translate="no" v-pre>PollForAuthToken</code>, 60 Versuche im Abstand von 5 Sekunden, bevor es zum Timeout kommt).</li>
+<li><code translate="no" v-pre>/plex/callback</code> zeigt eine Fortschrittsseite, die nach erfolgter Autorisierung <code translate="no" v-pre>/plex/servers</code> aufruft, um die Server aufzulisten, und <code translate="no" v-pre>/plex/server</code> zum Auswählen eines Servers. (<code translate="no" v-pre>internal/handlers/dashboard/dashboard.go</code>)</li>
+<li>Server-Erkennung (<code translate="no" v-pre>pkg/plex/auth.go</code>): Holt die Plex-Ressourcen mit HTTP- und HTTPS-Endpunkten, filtert Relay-Verbindungen heraus, wenn eine direkte Verbindung existiert, verarbeitet IPv6-Adressen und prüft jeden Eintrag über <code translate="no" v-pre>/identity</code> (TLS-Verifizierung deaktiviert). Berücksichtigt werden nur Server, die dem Konto <strong>gehören</strong> (<code translate="no" v-pre>device.Owned</code>, <code translate="no" v-pre>auth.go</code>). Geteilte Server tauchen nie auf. Einträge, die die Prüfung nicht bestehen, werden aus der Antwort entfernt, statt mit gesetztem <code translate="no" v-pre>last_error</code> zurückgegeben zu werden (<code translate="no" v-pre>enrichServersWithIdentity</code>, <code translate="no" v-pre>auth.go</code>).</li>
+<li>Beim Auswählen eines Servers werden <code translate="no" v-pre>plex_server_url</code> und <code translate="no" v-pre>plex_token</code> in der Konfiguration gespeichert, der Plex-Client neu initialisiert, der Matcher-Scheduler (neu) gestartet, ein Match-Trigger ausgelöst und der zwischengespeicherte Dashboard-Status aktualisiert (<code translate="no" v-pre>HandlePlexServerSelect</code>, <code translate="no" v-pre>internal/handlers/dashboard/dashboard.go</code>). <code translate="no" v-pre>/plex/logout</code> löscht die gespeicherten Werte und den Status-Cache.</li>
+</ul>
+<h2 id="plex-client-capabilities-pkgplexclientgo">Plex-Client-Funktionen (<code translate="no" v-pre>pkg/plex/client.go</code>)</h2>
+<ul>
+<li>Lebenszyklus der Verbindung: Option für verzögerten Start (<code translate="no" v-pre>WithDeferredStart</code>), <code translate="no" v-pre>ValidateConnection</code>-Schutz gegen <code translate="no" v-pre>/identity</code>, sauberes <code translate="no" v-pre>Close</code>. Es gibt keine Restart-API. <code translate="no" v-pre>RestartAllowed</code>/<code translate="no" v-pre>RestartReason</code> im Dashboard werden aus der Server-URL abgeleitet (lokal/LAN vs. remote) und dienen nur der Anzeige (<code translate="no" v-pre>internal/handlers/dashboard/plex_status.go:getPlexConnectionDetails</code>).</li>
+<li>Scan-Queue: dynamische Job-Queue/Worker (<code translate="no" v-pre>common.DynamicJobQueue</code>). <code translate="no" v-pre>ProcessJob</code> ruft <code translate="no" v-pre>GET /library/sections/{key}/refresh</code> mit Plex-Headern auf und übergibt pro Job <strong>höchstens einen</strong> <code translate="no" v-pre>path</code>-Query-Parameter. Mehr als einer wird direkt abgelehnt (<code translate="no" v-pre>client.go</code>). Ein Job ohne Pfad ist ein Refresh der gesamten Section. 503 wird zu einem Server-busy-Fehler, 404 meldet die Bibliothek als in Plex gelöscht. <code translate="no" v-pre>GetJobQueueSize</code> zeigt den Rückstau.</li>
+<li>Last- und Stuck-Erkennung: <code translate="no" v-pre>CheckServerLoad</code> liest <code translate="no" v-pre>/activities</code> aus und verfolgt den Fortschritt von <code translate="no" v-pre>library.update.section</code> pro UUID. Ein geänderter Fortschritt <em>oder</em> Untertitel zählt als Fortschritt. <code translate="no" v-pre>IsJobStuck</code> markiert veraltete Jobs anhand von <code translate="no" v-pre>librarySectionID</code>, mit Title als Ersatz. <code translate="no" v-pre>GetServerActivitiesDetails</code> legt dieselben Tracker an und räumt sie auch wieder auf, denn <code translate="no" v-pre>CheckServerLoad</code> läuft nur, solange der Worker einen Job in der Queue hat. Ein Scan, den Plex von selbst gestartet hat, bekam früher gar keinen Tracker. Deshalb konnte er nie als hängend gemeldet werden, und seine verstrichene Zeit war bei jedem Refresh null. Beide Wege behalten die Historie nur für <code translate="no" v-pre>library.update.section</code>. Alles andere hier zu tracken würde mit dem Prune des Workers flackern.</li>
+<li><strong>Der Aktivitäts-Untertitel ist nicht die Datei, auf die ein hängender Scan wartet.</strong> Gemessen auf dem plex503-Rig, 2026-09-15: Der <code translate="no" v-pre>library.update.section</code>-Untertitel ist der Aufzählungszeiger des Scanners und läuft den Lesevorgängen voraus. Bei drei vom Mount abgelehnten Dateien nannte er eine vierte Datei, die nie angefragt worden war. Die blockierte Datei nannte er nur 290 ms eines 56-s-Zyklus lang. Das Dashboard zeigt ihn als &quot;Plex reports&quot; an und verknüpft ihn nicht mit einem Release. Worauf der Scan tatsächlich wartet, kommt aus zurgs eigenen Ablehnungen (<code translate="no" v-pre>internal/universal/refused_reads.go</code>), denn nur diese Seite weiß es. Das Korpus liegt in <code translate="no" v-pre>internal/handlers/dashboard/testdata/plex503-*</code>.</li>
+<li>Bibliotheksabfragen: <code translate="no" v-pre>GetSections</code> (Film- und Serien-Sections mit Pfaden), <code translate="no" v-pre>GetSectionItemCount</code>, <code translate="no" v-pre>FindSectionNormalized</code> (gleicht einen Pfad mit einem Section-Pfad ab und korrigiert das Präfix auf die Schreibweise der Bibliothek), <code translate="no" v-pre>GetAllMediaItemsConcurrent</code> (gebündelter, paralleler Abruf mit <code translate="no" v-pre>includeGuids</code>, um Pfade, GUIDs und IMDB-IDs zu sammeln) und <code translate="no" v-pre>GetShowLevelIMDBIndex</code> (IDs auf Serienebene für TV-Sections, damit Episoden sie erben können).</li>
+<li>Metadaten- und Matching-Helfer (<code translate="no" v-pre>pkg/plex/match.go</code>): <code translate="no" v-pre>GetMetadataSummary</code> (<code translate="no" v-pre>GET /library/metadata/{ratingKey}</code>), <code translate="no" v-pre>GetMatchCandidates</code> (<code translate="no" v-pre>GET /library/metadata/{ratingKey}/matches?manual=1</code>, mit Überschreibungen für Titel/Jahr/Sprache), <code translate="no" v-pre>LookupMetadataByGUID</code>/<code translate="no" v-pre>LookupRatingKeyByGUID</code> (<code translate="no" v-pre>GET /library/all?guid=…</code>), <code translate="no" v-pre>ApplyManualMatch</code> (<code translate="no" v-pre>PUT /library/metadata/{ratingKey}/match</code>) sowie GUID-Parsing (<code translate="no" v-pre>ExtractIMDBIDFromGUID</code>, <code translate="no" v-pre>ExtractTMDBIDFromGUID</code>, <code translate="no" v-pre>ExtractTVDBIDFromGUID</code>, <code translate="no" v-pre>ExtractAnyIDFromGUIDs</code>; die Typen <code translate="no" v-pre>MatchResult</code>/<code translate="no" v-pre>MatchSelection</code>).</li>
+<li>Server-Infos: <code translate="no" v-pre>GetServerIdentityOnly</code> und <code translate="no" v-pre>GetServerDetails</code> (Machine-ID/Version; letztere summiert außerdem Sessions/Transcodes/Bandbreite), <code translate="no" v-pre>GetStreamingSessions</code>, <code translate="no" v-pre>GetTranscodeSessions</code>, <code translate="no" v-pre>GetServerActivitiesDetails</code> (mit Stuck-Status annotiert).</li>
+<li>Wiedergabeverlauf: <code translate="no" v-pre>GetWatchHistory</code> (<code translate="no" v-pre>GET /status/sessions/history/all</code>), <code translate="no" v-pre>GetMetadataBatch</code> (kommagetrennte Rating-Keys gegen <code translate="no" v-pre>/library/metadata</code>) und <code translate="no" v-pre>GetWatchHistoryWithMetadata</code> (<code translate="no" v-pre>pkg/plex/history.go</code>). Letztere speist die Statistiken in <code translate="no" v-pre>pkg/plex/stats.go</code>.</li>
+</ul>
+<h2 id="media-scanner-integration-pkgscanscannergo">Media-Scanner-Integration (<code translate="no" v-pre>pkg/scan/scanner.go</code>)</h2>
+<ul>
+<li>Initialisiert den Plex-Client, sobald <code translate="no" v-pre>mount_path</code>, <code translate="no" v-pre>plex_server_url</code> und <code translate="no" v-pre>plex_token</code> gesetzt sind. Danach wird alle 5s erneut versucht, bis die Verbindung steht, und dabei werden die <code translate="no" v-pre>OnPlexReconnected</code>-Callbacks aufgerufen.</li>
+<li><code translate="no" v-pre>TriggerScan</code> gruppiert die Pfade pro Plex-Section (über <code translate="no" v-pre>FindSectionNormalized</code>) und legt für jeden Pfad mit mount_path-Präfix einen Refresh-Job in die Warteschlange. Der Fortschritt wird alle 50 Pfade protokolliert. Jellyfin und Emby werden ebenfalls unterstützt, sie bekommen den nicht gruppierten Pfad. Ein Pfad, der in keiner Section landet, wird nur dann gemeldet, wenn <em>keiner</em> der Pfade im Batch gepasst hat. Sonst ist es nur eine Debug-Zeile. So löst ein Torrent, der sowohl in einem Bibliotheksordner als auch in einem nur-zurg-Ordner (recent, music, …) liegt, keine Warnung aus.</li>
+<li><code translate="no" v-pre>ReinitializePlexClient</code> erlaubt es, Server und Tokens per Dashboard-Update live auszutauschen.</li>
+<li><code translate="no" v-pre>GetQueueSizes</code> zeigt die Warteschlangentiefe von Plex für UI und Monitoring an.</li>
+</ul>
+<h2 id="matching--metadata-sync-internalplexmatchergo-internalplexschedulego">Abgleich &amp; Metadaten-Synchronisierung (<code translate="no" v-pre>internal/plex/matcher.go</code>, <code translate="no" v-pre>internal/plex/schedule.go</code>)</h2>
+<ul>
+<li>Voraussetzungen: Du brauchst eine konfigurierte Plex-URL und ein Token, <code translate="no" v-pre>mount_path</code> und einen laufenden <code translate="no" v-pre>scanner.PlexClient</code>. Fehlt etwas davon, gibt die Funktion klare Fehlermeldungen zurück.</li>
+<li>Der einzige Plex-Status, den ein Torrent speichert, ist <code translate="no" v-pre>PlexRatingKey</code> (bei Serien auf Show-Ebene) und <code translate="no" v-pre>IMDBID</code> (<code translate="no" v-pre>internal/torrent/torrent_types.go</code>). Plex-GUIDs werden während des Laufs zur ID-Extraktion und für Berichte genutzt, aber nie gespeichert.</li>
+<li>Datensammlung: Es werden alle Torrents aus der Verzeichnis-Map und alle Plex-Items über <code translate="no" v-pre>GetAllMediaItemsConcurrent</code> geladen. Davor läuft ein <code translate="no" v-pre>GetShowLevelIMDBIndex</code>-Durchlauf, damit Episoden die IMDB-, TVDB- und TMDB-ID der Show übernehmen und nicht eine eigene auf Episodenebene. Items werden über <code translate="no" v-pre>GrandparentRatingKey</code> indiziert, wenn er vorhanden ist.</li>
+<li>Sync-Schritte:
+<ul>
+<li>Jeder gespeicherte Rating-Key wird gegen die frisch geladenen Plex-Items geprüft. Ein Key, den Plex nicht mehr kennt, wird zusammen mit der IMDB-ID des Torrents gelöscht, und der Torrent kommt zurück in die Warteschlange fürs Matching.</li>
+<li>Pfadbasiertes Matching für Torrents ohne Rating-Key: <code translate="no" v-pre>buildPlexDirIndex</code> indexiert jede kleingeschriebene Pfadkomponente jeder Plex-Datei. Dann wird der <code translate="no" v-pre>GetKey</code> des Torrents darin nachgeschlagen (O(1), der erste Eintrag gewinnt). Torrents, deren zugewiesene Verzeichnisse zu keinem Plex-Section-Location passen, werden vorher übersprungen.</li>
+<li>IMDB-Nachtrag: zuerst aus dem bereits geladenen Batch (ohne API-Aufrufe), danach pro Torrent über <code translate="no" v-pre>GetMetadataSummary</code> (maximal 20 gleichzeitig).</li>
+<li>Erkennt Plex-Items ohne Torrents.</li>
+<li>Schickt an DMM nur die Hash+IMDB-Paare, die du von Hand gesetzt hast, nie IDs, die Plex nur geraten hat. DMM nimmt sie ohne Key an, und <code translate="no" v-pre>dmm_api_key</code> wird mitgeschickt, wenn sie gesetzt ist (<code translate="no" v-pre>sendHashImdbPairs</code> → <code translate="no" v-pre>TorrentManager.SendHashImdbPairs</code>, <code translate="no" v-pre>internal/torrent/mediainfo.go</code>).</li>
+</ul>
+</li>
+<li><code translate="no" v-pre>MatchSingleTorrent</code> führt denselben Pfad-Lookup für einen einzelnen Torrent aus, etwa direkt nach einem gezielten Scan. Hat der Torrent schon einen Rating-Key, tut die Funktion nichts.</li>
+<li>Berichte: Es wird <code translate="no" v-pre>logs/match_report.txt</code> geschrieben. Die Datei fasst Anzahlen, nicht zugeordnete Torrents, übersprungene Torrents, Plex-Items ohne Torrents und Matches ohne IMDB-ID zusammen.</li>
+<li>Zeitplan (<code translate="no" v-pre>internal/plex/schedule.go</code>): Jeder abgeschlossene Lauf schreibt einen Zeitstempel nach <code translate="no" v-pre>data/plex_match_timestamp</code>. Beim Start läuft <code translate="no" v-pre>StartMatchingJob</code> sofort nur dann, wenn dieser Stempel fehlt oder älter als <code translate="no" v-pre>plex_match_every_mins</code> ist. Ansonsten wartet er den Rest des Intervalls ab. Er hört auf manuelle Auslöser über <code translate="no" v-pre>TorrentManager.PlexMatchTrigger</code>, auf Änderungen des Intervalls zur Laufzeit über <code translate="no" v-pre>ResetPlexMatchTicker</code> und startet den Job bis zu dreimal neu, falls er in Panik gerät.</li>
+<li>Manueller Auslöser: Der Endpunkt <code translate="no" v-pre>/plex/match-torrents</code> schiebt einen Auftrag in den Trigger-Kanal und lehnt ab, solange ein Lauf noch läuft. <code translate="no" v-pre>/plex/match-torrents/status</code> meldet, ob gerade ein Lauf aktiv ist (<code translate="no" v-pre>internal/handlers/utilities.go</code>).</li>
+</ul>
+<h2 id="manual-matching--manage-ui-internalhandlersmanage">Manueller Abgleich &amp; Verwaltungs-UI (<code translate="no" v-pre>internal/handlers/manage</code>)</h2>
+<ul>
+<li>Die Torrent-Listenfilter zeigen Plex-Status für schnelle Ansichten an: <code translate="no" v-pre>plex_matched</code>, <code translate="no" v-pre>plex_in_library_not_matched</code>, <code translate="no" v-pre>plex_no_imdb</code>, <code translate="no" v-pre>plex_missing_metadata</code> (<code translate="no" v-pre>torrent_list_state.go</code>).</li>
+<li>Seite für manuelles Zuordnen pro Torrent unter <code translate="no" v-pre>/manage/{hash}/plex-match</code>:
+<ul>
+<li>Der Torrent muss bereits einen <code translate="no" v-pre>PlexRatingKey</code> haben (wird vom Matcher gesetzt). Fehlt er, zeigt die Seite „torrent is not linked to Plex“ an. <code translate="no" v-pre>resolvePlexRatingKey</code> prüft diesen Schlüssel mit <code translate="no" v-pre>GetMetadataSummary</code>, füllt eine fehlende IMDB-ID aus diesen Daten nach und ermittelt bei einem veralteten Schlüssel über <code translate="no" v-pre>LookupRatingKeyByGUID</code> einen neuen. Dabei wird die gespeicherte <code translate="no" v-pre>tt…</code>/<code translate="no" v-pre>tvdb://</code>/<code translate="no" v-pre>tmdb://</code>-ID des Torrents verwendet (<code translate="no" v-pre>internal/handlers/manage/handler.go</code>).</li>
+<li>Ruft die Kandidaten für das manuelle Zuordnen in Plex ab, optional mit überschriebenem Titel, Jahr oder Sprache (44 Sprachoptionen, Standard <code translate="no" v-pre>en-US</code>). Die Treffer werden angezeigt, die aktuelle Auswahl ist hervorgehoben (<code translate="no" v-pre>torrent_matches.go</code>).</li>
+<li>Beim Anwenden einer Zuordnung (<code translate="no" v-pre>HandleApplyPlexMatch</code>) ruft der Code <code translate="no" v-pre>ApplyManualMatch</code> auf. Danach sucht er den Rating Key über die gewählte GUID neu, weil Plex ihn neu vergeben kann. Anschließend aktualisiert er Rating Key und IMDB-ID des Torrents (inklusive einer optionalen, vom Nutzer angegebenen IMDB-ID), speichert die Änderungen und leitet mit einer Erfolgs- oder Fehlermeldung weiter.</li>
+</ul>
+</li>
+</ul>
+<h2 id="watchlist-acquisition">Watchlist-Beschaffung</h2>
+<ul>
+<li>Die Plex-Watchlist ist ein Adapter in <code translate="no" v-pre>internal/acquisition/plex</code>. Er läuft auf dem gemeinsamen Acquisition-Dienst neben Seerr. Deine bestehenden Watchlist-Einstellungen funktionieren weiterhin. Adapter kannst du außerdem unter <code translate="no" v-pre>acquisition.sources</code> konfigurieren.</li>
+<li>Der Client nutzt <code translate="no" v-pre>discover.provider.plex.tv</code> und lädt jeweils 100 Einträge pro Seite. Das Plex-Token wird für jede Anfrage neu gelesen. Eine erneute Authentifizierung greift dadurch, ohne dass du den Adapter neu starten musst.</li>
+<li>Der gemeinsame Executor holt Filme oder jede geplante Staffel von Newznab- und Torznab-Indexern. Dabei bevorzugt er Staffel-Packs. Bei TV-Suchen probiert er zuerst TVDB und erst dann IMDb, weil die Zuordnungen der Indexer unterschiedlich sind.</li>
+<li>Fortschritt, Retry-Fristen und Belege pro Episode bleiben nach einem Neustart in <code translate="no" v-pre>data/acquisition.json</code> erhalten. Das frühere Plex-Ledger wird automatisch importiert.</li>
+<li>Das Entfernen erfolgt, sobald alle geplanten Ziele beschafft wurden. Fehlgeschlagene Anfragen bleiben auf der Watchlist und werden mit persistentem Backoff erneut versucht. Ein Retry, der nur das Entfernen betrifft, beschafft nicht noch einmal. Grenzen findest du unter <a href="../plex-watchlist/">Plex-Watchlist-Beschaffung</a>, die gemeinsame Konfiguration unter <a href="../acquisition/">Acquisition-Quellen</a>.</li>
+</ul>
+<h2 id="dashboard--api-endpoints-internalhandlersroutergo-internalhandlersdashboard">Dashboard &amp; API-Endpunkte (<code translate="no" v-pre>internal/handlers/router.go</code>, <code translate="no" v-pre>internal/handlers/dashboard</code>)</h2>
+<ul>
+<li>Routen: <code translate="no" v-pre>/plex/auth</code>, <code translate="no" v-pre>/plex/callback</code>, <code translate="no" v-pre>/plex/auth/status</code>, <code translate="no" v-pre>/plex/servers</code>, <code translate="no" v-pre>/plex/server</code>, <code translate="no" v-pre>/plex/logout</code>, <code translate="no" v-pre>/plex/match-torrents</code>, <code translate="no" v-pre>/plex/match-torrents/status</code>, <code translate="no" v-pre>/plex/scan/{sectionKey}</code>, <code translate="no" v-pre>/plex/scan-all</code>, <code translate="no" v-pre>/plex-stats</code>, <code translate="no" v-pre>/plex-stats/data</code>, <code translate="no" v-pre>/plex-stats/image</code>, <code translate="no" v-pre>/manage/{hash}/plex-match</code>.</li>
+<li>Das Dashboard zeigt Plex-Serverinfos und Status über <code translate="no" v-pre>PlexStatusFetcher</code> an, und zwar mit zwei Timern: Alle 30 Sekunden werden Streaming-Sitzungen, Transcodes, Bandbreite und Server-Aktivitäten aktualisiert (<code translate="no" v-pre>GetStreamingSessions</code>/<code translate="no" v-pre>GetTranscodeSessions</code>/<code translate="no" v-pre>GetServerActivitiesDetails</code>). Alle 5 Minuten läuft ein vollständiger Abruf, der zusätzlich die Identität erneut einliest (<code translate="no" v-pre>GetServerIdentityOnly</code>), die Bibliotheksbereiche und die Anzahl der Einträge pro Bereich. Scan-Aktivitäten werden anhand des Dateinamens mit der Torrent-Liste abgeglichen, damit das Dashboard eine Aktivität mit einem Torrent-Hash verknüpfen kann.</li>
+<li>Die Endpunkte für Bereichs- und Gesamt-Scans stellen eine <strong>vollständige</strong> Aktualisierung des Bereichs in die Warteschlange (<code translate="no" v-pre>RefreshSection(key, nil)</code>, ohne Pfad), für einen oder alle Bereiche. Sie greifen nicht auf STRM-Dateien zu und lösen keine Bibliotheks-Nebeneffekte aus (<code translate="no" v-pre>HandlePlexScan</code>/<code translate="no" v-pre>HandlePlexScanAll</code>).</li>
+</ul>
+<h2 id="plex-wrapped-internalhandlersdashboardplex_wrappedgo">Plex Wrapped (<code translate="no" v-pre>internal/handlers/dashboard/plex_wrapped.go</code>)</h2>
+<ul>
+<li><code translate="no" v-pre>/plex-stats</code> rendert einen 9-Folien-Jahresrückblick aus dem Wiedergabeverlauf der letzten 12 Monate in Plex. <code translate="no" v-pre>/plex-stats/data</code> gibt dieselben Statistiken als JSON zurück, <code translate="no" v-pre>/plex-stats/image</code> rendert ein teilbares PNG über headless chromedp (<code translate="no" v-pre>square</code> 1080x1080 als Standard, <code translate="no" v-pre>instagram</code> 1080x1920, <code translate="no" v-pre>facebook</code> 1200x630).</li>
+<li>Die Statistiken werden höchstens einmal alle 24h abgerufen (<code translate="no" v-pre>?refresh=true</code> erzwingt einen neuen Abruf). Es werden maximal 10000 Verlaufseinträge berücksichtigt. Die Daten werden sowohl im Arbeitsspeicher als auch auf der Festplatte unter <code translate="no" v-pre>data/plex_wrapped_cache.json</code> zwischengespeichert und beim Start wieder geladen. Während ein Abruf läuft, zeigt die Seite einen Ladezustand an, statt zu blockieren.</li>
+</ul>
+<h2 id="library-side-effects--refresh-links">Bibliotheks-Nebenwirkungen &amp; Aktualisierungs-Links</h2>
+<ul>
+<li>Bibliotheks-Nebeneffekte werden ausgelöst, wenn sich Verzeichniszuweisungen ändern, bei Umbenennungen, Löschungen und Dateireparaturen: <code translate="no" v-pre>TriggerLibrarySideEffects</code> invalidiert den rclone-VFS-Dircache für die betroffenen Pfade (damit die Medienserver keine veraltete Liste scannen), ruft <code translate="no" v-pre>MediaScanner.TriggerScan</code> auf (was den Plex-Refresh anstößt) und führt den <code translate="no" v-pre>on_library_update</code>-Hook des Benutzers aus (<code translate="no" v-pre>internal/torrent/hooks.go</code>).</li>
+<li>Die Refresh-Pipeline führt STRM-Generierung und Nebeneffekte erst aus, nachdem die Initialisierung abgeschlossen ist, damit keine verfrühten Plex-Scans passieren (<code translate="no" v-pre>internal/torrent/refresh.go</code>).</li>
+</ul>
+<h2 id="infrastructure--scripts">Infrastruktur &amp; Skripte</h2>
+<ul>
+<li>Beispiel für einen Nginx-vhost zum Weiterleiten des Plex-Traffics (<code translate="no" v-pre>nginx/plex.conf</code>).</li>
+<li><code translate="no" v-pre>plex_update.sh</code> ist das Referenzskript für Teil-Scans für <code translate="no" v-pre>on_library_update: sh plex_update.sh &quot;$@&quot;</code>. Leg es neben <code translate="no" v-pre>docker-compose.yml</code> ab. Dessen Ordner wird unter <code translate="no" v-pre>/config</code> eingebunden, daher liegt das Skript schon im Container. Unter Windows läuft der Hook über PowerShell statt über <code translate="no" v-pre>/bin/sh</code> (<code translate="no" v-pre>pkg/script/script.go</code>), deshalb läuft dieses Skript dort nicht. Die PowerShell-Variante zeigt <a href="../usenet/#6-point-plex-at-it">Usenet → Point Plex at it</a>.</li>
+<li><code translate="no" v-pre>integration/plex_integration.sh</code> läuft unter <code translate="no" v-pre>make integration-test</code> und <code translate="no" v-pre>make integration-test-media</code>. Wenn auf dem Host kein Plex-Server läuft, wird laut übersprungen. Schau dir daher die Ausgabe an und nicht den Exit-Code. <code translate="no" v-pre>scripts/plex-e2e-test.sh</code> ist ein eigenständiger Wiedergabetest, der <code translate="no" v-pre>plex_server_url</code> und <code translate="no" v-pre>plex_token</code> aus <code translate="no" v-pre>config.yml</code> liest.</li>
+</ul>
+<h2 id="recommended-plex-settings">Empfohlene Plex-Einstellungen</h2>
+<p>Die Standardwerte von Plex gehen davon aus, dass lokale Festplatten immer da sind und sich problemlos lesen lassen. Ein zurg-Mount ist beides nicht: Seine Daten kommen per HTTP von einem Anbieter, und er kann kurz nicht lesbar sein, während rclone sich wieder verbindet. Mehrere Plex-Standardwerte sind unter diesen Bedingungen sogar schädlich.</p>
+<p>zurg gleicht diese Einstellungen bei jedem Plex-Statusabruf ab. <code translate="no" v-pre>plex_settings_policy</code> legt fest, wie weit das geht: <code translate="no" v-pre>off</code>, <code translate="no" v-pre>warn</code>, <code translate="no" v-pre>guard</code> (Standard) oder <code translate="no" v-pre>enforce</code>. Die Liste steht in <code translate="no" v-pre>pkg/plex/settings.go</code> (<code translate="no" v-pre>RecommendedSettings</code>), die Richtlinie in <code translate="no" v-pre>pkg/plex/reconcile.go</code>.</p>
+<p>Eine Einstellung, die der Server nicht meldet, wird übersprungen. So wird eine Plex-Version, der eine Einstellung fehlt, nicht als falsch konfiguriert gemeldet.</p>
+<p>Neun der sechzehn Werte unten weichen vom Plex-Standard ab. Die anderen sieben stimmen mit dem Standard überein und sind Schutzregeln statt Korrekturen. Sie greifen nur bei Betreibern, die eine davon selbst aktiviert haben. Bei diesen Zeilen steht in beiden Spalten derselbe Wert. Das ist kein Fehler: Plex liefert <code translate="no" v-pre>GenerateBIFBehavior</code> mit <code translate="no" v-pre>never</code> aus, der Server, mit dem diese Werte gemessen wurden, stand aber auf <code translate="no" v-pre>scheduled</code>. Plex meldet den eigenen Standard pro Einstellung in <code translate="no" v-pre>/:/prefs</code>. Deshalb wird die Spalte „Plex ships“ direkt vom Server gelesen und nicht angenommen (gemessen am 2026-09-05 mit Plex 1.42.2).</p>
+<h3 id="opting-out-of-one-setting">Eine Einstellung abwählen</h3>
+<p><code translate="no" v-pre>plex_settings_policy</code> ist gestuft, und die Stufe ist nicht immer die Frage, die gestellt wird. Ein Betreiber, dessen Dateien zwischen Bibliotheksordnern wandern (etwa beim tag-gesteuerten Sortieren), ist darauf angewiesen, dass Plex seinen eigenen Papierkorb leert, um den übriggebliebenen Eintrag zu entfernen. <code translate="no" v-pre>guard</code> schaltet das aus. Wenn du auf <code translate="no" v-pre>warn</code> wechselst, um es zurückzubekommen, verlierst du auch die Filesystem-Event-Guards. Die liegen auf derselben Stufe, und du wolltest sie gar nicht ändern.</p>
+<p><code translate="no" v-pre>plex_settings_ignore</code> benennt Einstellungen einzeln:</p>
+<div id="opting-out-of-one-setting-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">plex_settings_policy: guard
+plex_settings_ignore:
+  - autoEmptyTrash</code></pre>
+</doc-codeblock></div>
+<p>Diesen Eintrag schreibt das Dashboard für dich. Auf der Konfigurationsseite gibt es über den Library-Trash-Sweep-Einstellungen einen Schalter <strong>Let Plex Empty Its Own Trash</strong>. Er fügt <code translate="no" v-pre>autoEmptyTrash</code> hier hinzu oder entfernt es wieder und lässt den Rest der Liste unverändert. Wenn du ihn einschaltest, wirkt das beim nächsten Neustart.</p>
+<p>Eine ignorierte Einstellung wird weiterhin gelesen und weiterhin im Dashboard und in <code translate="no" v-pre>zurg plex-settings</code> angezeigt (mit <code translate="no" v-pre>skip</code> markiert). Es wird also nichts versteckt. Sie wird nur nie geschrieben, nie als Problem gezählt und nie hinter dem Trash-Banner des Dashboards gezeigt. IDs werden ohne Berücksichtigung von Groß- und Kleinschreibung abgeglichen. Eine ID, die keine Einstellung in den Tabellen unten benennt, wird beim Start gemeldet, und die Einstellung bleibt überwacht, denn ein Tippfehler darf nicht wie ein Opt-out wirken.</p>
+<p>Eine Sicherheitseinstellung zu ignorieren geschieht auf eigene Gefahr. zurg weist beim Start einmal darauf hin, nicht bei jeder Aktualisierung. <code translate="no" v-pre>autoEmptyTrash</code> ist besonders heikel, denn damit wird eine Bibliothek geleert, wenn ein Scan auf einen Mount trifft, der kurz ausgefallen war. Wenn du es ignorierst, gibst du außerdem die Aufräumaufgabe an Plex zurück. Details dazu unten.</p>
+<h3 id="who-empties-the-trash">Wer leert den Papierkorb</h3>
+<p>Wenn du <code translate="no" v-pre>autoEmptyTrash</code> ausschaltest, bleibt eine Aufgabe liegen. Plex wurde angewiesen, Einträge nicht zu entfernen, deren Dateien weg sind, und zurg hat das eigene Entfernen lange nur auf Wunsch gemacht. Ohne Einstellungen hat sich deshalb eine Bibliothek mit toten Einträgen gefüllt, und niemand hat sie aufgeräumt. Keine Seite lag falsch, aber die Lücke war echt: Sie zeigt sich, wenn eine Datei in einen anderen Bibliotheksordner wandert und der alte Eintrag für immer bleibt.</p>
+<p>zurg übernimmt jetzt die Aufgabe, die es abgegeben hat. Wenn <code translate="no" v-pre>plex_trash_sweep_every_mins</code> nicht gesetzt ist, entfernt der <a href="../../internals/plex-trash-sweep/">Papierkorb-Sweep</a> Einträge alle 60 Minuten, aber nur, wenn sonst niemand das tut. Wenn Plex seinen eigenen Papierkorb noch leert, etwa weil <code translate="no" v-pre>plex_settings_policy</code> auf <code translate="no" v-pre>off</code> oder <code translate="no" v-pre>warn</code> steht oder weil <code translate="no" v-pre>autoEmptyTrash</code> in <code translate="no" v-pre>plex_settings_ignore</code> steht, hält sich zurg zurück und überlässt es Plex. Zwei Aufräumer an einer Bibliothek sind der Weg, auf dem ein Streit zwischen ihnen zur Löschung wird.</p>
+<p>Der Sweep ist viel enger als Plex&#x27; eigenes Leeren, und genau deshalb bevorzugen wir ihn: Er entfernt jeweils einen Eintrag, nie einen, der noch eine Datei hat, nur von einem Mount, der in diesem Moment lesbar ist, höchstens 50 Entfernungen und 10 % des Papierkorbs pro Durchlauf. Einträge, zu denen er kein Urteil hat, bleiben zuerst 14 Tage lang als defekt sichtbar. Er braucht außerdem <code translate="no" v-pre>plex_database_path</code>, läuft also nur dort, wo Plex auf diesem Host läuft, und wo zurg das Mount selbst betreibt (<code translate="no" v-pre>rclone_enabled</code> mit gesetztem <code translate="no" v-pre>mount_path</code>). zurg liest diese Datenbank mit dem Programm <code translate="no" v-pre>Plex SQLite</code>, das Plex installiert, und findet es dort, wo Plex&#x27; Installer es auf Linux, macOS und Windows ablegt. Du musst also nur <code translate="no" v-pre>plex_database_path</code> setzen:</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux">
+<template #title>Linux</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">plex_database_path: &quot;/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db&quot;</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="macos">
+<template #title>macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">plex_database_path: &quot;/Users/YOU/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db&quot;</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">plex_database_path: 'C:\Users\YOU\AppData\Local\Plex Media Server\Plug-in Support\Databases\com.plexapp.plugins.library.db'</code></pre>
+</doc-codeblock></div>
+<p>Die einfachen Anführungszeichen beibehalten: In doppelten Anführungszeichen liest YAML einen Backslash als Escape-Zeichen. Setze <code translate="no" v-pre>plex_sqlite_binary</code> nur für Plex an einem anderen Ort, etwa bei einem 32-Bit-Plex: <code translate="no" v-pre>'C:\Program Files (x86)\Plex\Plex Media Server\Plex SQLite.exe'</code>.</p>
+</doc-tab>
+</doc-tabs>
+<p>Ersetze <code translate="no" v-pre>YOU</code> durch deinen Benutzernamen: zurg erweitert weder <code translate="no" v-pre>~</code> noch <code translate="no" v-pre>%LOCALAPPDATA%</code>. Der Sweep gleicht die Pfade, die Plex speichert, mit <code translate="no" v-pre>mount_path</code> ab, das auch einen Laufwerksbuchstaben wie <code translate="no" v-pre>Z:</code> verarbeitet (<code translate="no" v-pre>pkg/utils/path_within.go</code>).</p>
+<p>Um das Entfernen auszuschalten und den Papierkorb selbst zu leeren, schreibe <code translate="no" v-pre>plex_trash_sweep_every_mins: 0</code>. Das ist das ausdrückliche Nein und unterscheidet sich davon, den Schlüssel wegzulassen.</p>
+<p>Dieser Schlüssel schaltet nur das eigene Entfernen von zurg aus. Er gibt Plex seine Einstellung nicht zurück. Unter <code translate="no" v-pre>guard</code> schreibt zurg weiterhin <code translate="no" v-pre>autoEmptyTrash</code> auf off, also leert Plex seinen Papierkorb nach einem Scan weiterhin nicht, und die Einträge sammeln sich ohne Aufräumer an. Nutze den Schalter im Dashboard oder <code translate="no" v-pre>plex_settings_ignore</code>, um Plex die Aufgabe zurückzugeben.</p>
+<h3 id="safety--corrected-under-guard-and-enforce">Sicherheit — korrigiert unter <code translate="no" v-pre>guard</code> und <code translate="no" v-pre>enforce</code></h3>
+<p>Diese verlieren Daten statt Zeit, deshalb schreibt die Standardrichtlinie sie fest vor, anstatt nur zu warnen. Nur <code translate="no" v-pre>autoEmptyTrash</code> wird mit dem gefährlichen Wert ausgeliefert. Die anderen drei stehen bereits auf dem Wert, den zurg haben möchte, und sind nur da, um einen Betreiber zu erwischen, der eine davon eingeschaltet hat.</p>
+<retype-table copy-text="| Einstellung | Plex-Standard | zurg will | Warum |
+|---|---|---|---|
+| `autoEmptyTrash` | `1` | `0` | Plex leert seinen Papierkorb nach jedem Scan. Wenn der Mount während eines Scans kurz nicht lesbar ist, gelten alle Dateien als gelöscht, und Plex entfernt sie dauerhaft, statt sie im Papierkorb zu lassen, wo sie mit dem Mount wieder auftauchen würden. |
+| `FSEventLibraryUpdatesEnabled` | `0` | `0` | Ereignisgesteuerte Updates verpassen genau das, was sich hier tatsächlich ändert. zurgs Baum ändert sich auf seiner eigenen Seite, und das läuft nie durch den lokalen Kernel. Deshalb wird kein Ereignis ausgelöst, und die Bibliothek veraltet still und leise. Die Ereignisse, die ankommen, sind Schreibvorgänge *durch* den Mount, die landen, während ein Verzeichnis noch zusammengebaut wird. |
+| `FSEventLibraryPartialScanEnabled` | `0` | `0` | Ein partieller Scan läuft über genau diese Ereignisse. Er wird also bei den Schreibvorgängen durch den Mount ausgelöst, genau dann, wenn ein Verzeichnis halb geschrieben ist, und nie bei den Änderungen auf der Gegenseite, die tatsächlich einen Scan bräuchten. |
+| `ButlerTaskBackupDatabase` | `1` | `1` | Das nächtliche Datenbank-Backup ist das Einzige, was eine Bibliothek wiederherstellt, die Plex bereits gelöscht hat. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Einstellung</th>
+<th>Plex-Standard</th>
+<th>zurg will</th>
+<th>Warum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>autoEmptyTrash</code></td>
+<td><code translate="no" v-pre>1</code></td>
+<td><code translate="no" v-pre>0</code></td>
+<td>Plex leert seinen Papierkorb nach jedem Scan. Wenn der Mount während eines Scans kurz nicht lesbar ist, gelten alle Dateien als gelöscht, und Plex entfernt sie dauerhaft, statt sie im Papierkorb zu lassen, wo sie mit dem Mount wieder auftauchen würden.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>FSEventLibraryUpdatesEnabled</code></td>
+<td><code translate="no" v-pre>0</code></td>
+<td><code translate="no" v-pre>0</code></td>
+<td>Ereignisgesteuerte Updates verpassen genau das, was sich hier tatsächlich ändert. zurgs Baum ändert sich auf seiner eigenen Seite, und das läuft nie durch den lokalen Kernel. Deshalb wird kein Ereignis ausgelöst, und die Bibliothek veraltet still und leise. Die Ereignisse, die ankommen, sind Schreibvorgänge <em>durch</em> den Mount, die landen, während ein Verzeichnis noch zusammengebaut wird.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>FSEventLibraryPartialScanEnabled</code></td>
+<td><code translate="no" v-pre>0</code></td>
+<td><code translate="no" v-pre>0</code></td>
+<td>Ein partieller Scan läuft über genau diese Ereignisse. Er wird also bei den Schreibvorgängen durch den Mount ausgelöst, genau dann, wenn ein Verzeichnis halb geschrieben ist, und nie bei den Änderungen auf der Gegenseite, die tatsächlich einen Scan bräuchten.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>ButlerTaskBackupDatabase</code></td>
+<td><code translate="no" v-pre>1</code></td>
+<td><code translate="no" v-pre>1</code></td>
+<td>Das nächtliche Datenbank-Backup ist das Einzige, was eine Bibliothek wiederherstellt, die Plex bereits gelöscht hat.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Die beiden <code translate="no" v-pre>FSEvent</code>-Begründungen wurden nach Messungen auf allen Plattformen, auf die zurg mountet, neu geschrieben. Der frühere Wortlaut besagte, ein FUSE-Mount &quot;gebe sie nicht zuverlässig aus, daher erzeuge dies Scans zu Zeitpunkten, die niemand angefordert hat&quot;. Beide Hälften davon sind falsch.</p>
+<p>Gemessen am 2026-09-05: Auf jeder Plattform wurde mit der API überwacht, die der jeweilige Medienserver tatsächlich verwendet. Getestet wurde gegen einen rclone-Mount, dessen Backing-Verzeichnis direkt verändert werden konnte. <strong>A</strong> ist ein Schreibvorgang durch den Mount. <strong>B</strong> ist dieselbe Datei, die auf der Gegenseite erscheint, so wie es passiert, wenn sich zurgs eigener Baum ändert.</p>
+<retype-table copy-text="| Plattform | Mount | Überwacht mit | A: durch den Mount | B: auf der Gegenseite geändert |
+|---|---|---|---|---|
+| Linux | `fuse.rclone` | inotify | `CREATE` `OPEN` `ATTRIB` `CLOSE_WRITE` | **keine Ereignisse** |
+| Docker | gleicher Mount, per Bind-Mount in einen Container eingebunden | inotify, im Container | dieselben vier, im Container gesehen | **keine Ereignisse** |
+| macOS | macFUSE | FSEvents | `Created IsFile` | **keine Ereignisse** |
+| Windows | WinFsp | `ReadDirectoryChangesW` | `Created` `Changed` | **keine Ereignisse** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Plattform</th>
+<th>Mount</th>
+<th>Überwacht mit</th>
+<th>A: durch den Mount</th>
+<th>B: auf der Gegenseite geändert</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Linux</td>
+<td><code translate="no" v-pre>fuse.rclone</code></td>
+<td>inotify</td>
+<td><code translate="no" v-pre>CREATE</code> <code translate="no" v-pre>OPEN</code> <code translate="no" v-pre>ATTRIB</code> <code translate="no" v-pre>CLOSE_WRITE</code></td>
+<td><strong>keine Ereignisse</strong></td>
+</tr>
+<tr>
+<td>Docker</td>
+<td>gleicher Mount, per Bind-Mount in einen Container eingebunden</td>
+<td>inotify, im Container</td>
+<td>dieselben vier, im Container gesehen</td>
+<td><strong>keine Ereignisse</strong></td>
+</tr>
+<tr>
+<td>macOS</td>
+<td>macFUSE</td>
+<td>FSEvents</td>
+<td><code translate="no" v-pre>Created IsFile</code></td>
+<td><strong>keine Ereignisse</strong></td>
+</tr>
+<tr>
+<td>Windows</td>
+<td>WinFsp</td>
+<td><code translate="no" v-pre>ReadDirectoryChangesW</code></td>
+<td><code translate="no" v-pre>Created</code> <code translate="no" v-pre>Changed</code></td>
+<td><strong>keine Ereignisse</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Jede Plattform lieferte A. Ein gleichzeitiger Kontrolllauf auf einem nativen Dateisystem (APFS, NTFS) erzeugte dieselben Ereignisse, also funktionierten die Watcher. Keine Plattform lieferte B, obwohl die Datei nach Ablauf des Verzeichnis-Caches durch den Mount sichtbar war.</p>
+<p>Der Fehlermodus ist also das Gegenteil dessen, was behauptet wurde. Ein ereignisgesteuertes Update wird bei Schreibvorgängen <em>durch</em> den Mount ausgelöst, etwa wenn ein *arr-Import in einem noch zusammengebauten Verzeichnis landet. Und es wird nie für die Änderungen auf der Gegenseite ausgelöst, die der eigentliche Grund für einen Scan sind. Ereignisse sind nicht unzuverlässig. Sie melden nur die falsche Hälfte dessen, was auf einem Debrid-Mount passiert.</p>
+<h3 id="bandwidth--corrected-under-enforce-only">Bandbreite — nur unter <code translate="no" v-pre>enforce</code> korrigiert</h3>
+<p>Auf lokalem Speicher ist das harmlos. Über einen Debrid-Mount dagegen ist jedes Byte eine Anfrage an den Anbieter, und das passiert für die ganze Bibliothek. Analysen, deren Ergebnis <em>sichtbar</em> ist, also Scrubbing-Vorschauen, Kapitelbilder, Lautstärkeangleichung und Sonic-Analyse, landen stattdessen in der Stufe darunter für Geschmackssachen. Dort greift <code translate="no" v-pre>enforce</code> nicht ein.</p>
+<retype-table copy-text="| Einstellung | Plex-Standard | zurg will |
+|---|---|---|
+| `ButlerTaskDeepMediaAnalysis` | `1` | `0` |
+| `ButlerTaskUpgradeMediaAnalysis` | `1` | `0` |
+| `GenerateAdMarkerBehavior` | `scheduled` | `never` |
+| `GenerateVADBehavior` | `never` | `never` |
+| `GenerateIndexFilesDuringAnalysis` | `0` | `0` |
+| `ButlerTaskGenerateMediaIndexFiles` | `0` | `0` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Einstellung</th>
+<th>Plex-Standard</th>
+<th>zurg will</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>ButlerTaskDeepMediaAnalysis</code></td>
+<td><code translate="no" v-pre>1</code></td>
+<td><code translate="no" v-pre>0</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>ButlerTaskUpgradeMediaAnalysis</code></td>
+<td><code translate="no" v-pre>1</code></td>
+<td><code translate="no" v-pre>0</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>GenerateAdMarkerBehavior</code></td>
+<td><code translate="no" v-pre>scheduled</code></td>
+<td><code translate="no" v-pre>never</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>GenerateVADBehavior</code></td>
+<td><code translate="no" v-pre>never</code></td>
+<td><code translate="no" v-pre>never</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>GenerateIndexFilesDuringAnalysis</code></td>
+<td><code translate="no" v-pre>0</code></td>
+<td><code translate="no" v-pre>0</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>ButlerTaskGenerateMediaIndexFiles</code></td>
+<td><code translate="no" v-pre>0</code></td>
+<td><code translate="no" v-pre>0</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="taste--always-reported-never-corrected">Geschmack — wird immer gemeldet, nie korrigiert</h3>
+<p>Es steckt hinter jedem dieser Werte eine Funktion. zurg zeigt also, was der Wert kostet, und lässt die Wahl offen. Eine Funktion ungefragt abzuschalten würde dem Betreiber etwas wegnehmen, das er sehen kann. Das steht nicht in zurgs Ermessen, auch wenn dadurch Bandbreite gespart würde. Bei den ersten beiden behält die günstigere Option die Funktion und verschiebt die Arbeit ins Wartungsfenster. Bei den restlichen geht es um die Wahl zwischen Funktion und Bandbreite.</p>
+<retype-table copy-text="| Einstellung | Plex-Standard | zurg empfiehlt | Warum |
+|---|---|---|---|
+| `GenerateIntroMarkerBehavior` | `asap` | `scheduled` oder `never` | `asap` dekodiert jede Datei, sobald sie ankommt, also außerhalb jedes Wartungsfensters. `scheduled` behält den Skip Intro-Button und verschiebt die Arbeit ins Fenster. |
+| `GenerateCreditsMarkerBehavior` | `asap` | `scheduled` oder `never` | Dasselbe, für Skip Credits. |
+| `GenerateBIFBehavior` | `never` | `never` | Dekodiert das ganze Video, um die Bildleiste zu erstellen, die beim Spulen angezeigt wird. Für die Wiedergabe wird sie nicht gebraucht. |
+| `GenerateChapterThumbBehavior` | `scheduled` | `never` | Dekodiert die Datei, um pro Kapitel ein Bild zu holen, das neben jedem Eintrag in der Kapitelliste steht. |
+| `LoudnessAnalysisBehavior` | `scheduled` | `never` | Dekodiert den Ton jeder Datei komplett, um ihn zu messen, damit die Lautstärke zwischen Titeln und Folgen angeglichen werden kann. |
+| `MusicAnalysisBehavior` | `scheduled` | `never` | Dekodiert jeden Titel. Das sind viele kleine Dateien, deshalb ist das die Anzahl an Anfragen, die einem Konto das Rate-Limit einbringt. Dafür gibt es die Klanganalyse: Mischungen aus ähnlichen Titeln und den Visualisierer. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Einstellung</th>
+<th>Plex-Standard</th>
+<th>zurg empfiehlt</th>
+<th>Warum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>GenerateIntroMarkerBehavior</code></td>
+<td><code translate="no" v-pre>asap</code></td>
+<td><code translate="no" v-pre>scheduled</code> oder <code translate="no" v-pre>never</code></td>
+<td><code translate="no" v-pre>asap</code> dekodiert jede Datei, sobald sie ankommt, also außerhalb jedes Wartungsfensters. <code translate="no" v-pre>scheduled</code> behält den Skip Intro-Button und verschiebt die Arbeit ins Fenster.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>GenerateCreditsMarkerBehavior</code></td>
+<td><code translate="no" v-pre>asap</code></td>
+<td><code translate="no" v-pre>scheduled</code> oder <code translate="no" v-pre>never</code></td>
+<td>Dasselbe, für Skip Credits.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>GenerateBIFBehavior</code></td>
+<td><code translate="no" v-pre>never</code></td>
+<td><code translate="no" v-pre>never</code></td>
+<td>Dekodiert das ganze Video, um die Bildleiste zu erstellen, die beim Spulen angezeigt wird. Für die Wiedergabe wird sie nicht gebraucht.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>GenerateChapterThumbBehavior</code></td>
+<td><code translate="no" v-pre>scheduled</code></td>
+<td><code translate="no" v-pre>never</code></td>
+<td>Dekodiert die Datei, um pro Kapitel ein Bild zu holen, das neben jedem Eintrag in der Kapitelliste steht.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>LoudnessAnalysisBehavior</code></td>
+<td><code translate="no" v-pre>scheduled</code></td>
+<td><code translate="no" v-pre>never</code></td>
+<td>Dekodiert den Ton jeder Datei komplett, um ihn zu messen, damit die Lautstärke zwischen Titeln und Folgen angeglichen werden kann.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>MusicAnalysisBehavior</code></td>
+<td><code translate="no" v-pre>scheduled</code></td>
+<td><code translate="no" v-pre>never</code></td>
+<td>Dekodiert jeden Titel. Das sind viele kleine Dateien, deshalb ist das die Anzahl an Anfragen, die einem Konto das Rate-Limit einbringt. Dafür gibt es die Klanganalyse: Mischungen aus ähnlichen Titeln und den Visualisierer.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="the-maintenance-window">Das Wartungsfenster</h3>
+<p>zurg fasst <code translate="no" v-pre>ButlerStartHour</code>/<code translate="no" v-pre>ButlerEndHour</code> nicht an, weil es keine Stunde gibt, die für alle passt. Es lohnt sich, sie von Hand zu setzen: Plex hat standardmäßig 02:00–05:00, und ein Zeitfenster, das sich mit den Stunden überschneidet, in denen jemand schaut, macht jede Wartungsaufgabe zu einem Stillstand. Was in der Bandbreiten-Stufe übrig bleibt, läuft innerhalb dieses Fensters.</p>
+<h3 id="stopping-a-pass-already-in-flight">Einen laufenden Durchlauf stoppen</h3>
+<p>Eine geänderte Einstellung gilt nur für künftige Läufe, nicht für den bereits laufenden. Plex Media Server startet seine Scanner-Kindprozesse neu, also bringt es nichts, sie zu beenden:</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-und-macos">
+<template #title>Linux und macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -X DELETE &quot;http://localhost:32400/butler?X-Plex-Token=$TOKEN&quot;</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-1">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">curl.exe -X DELETE &quot;http://localhost:32400/butler?X-Plex-Token=$TOKEN&quot;</code></pre>
+</doc-codeblock></div>
+<p>In Windows PowerShell 5.1 ist <code translate="no" v-pre>curl</code> nur ein anderer Name für <code translate="no" v-pre>Invoke-WebRequest</code>, also schreib <code translate="no" v-pre>curl.exe</code>.</p>
+</doc-tab>
+</doc-tabs>
+<p>Setze zuerst <code translate="no" v-pre>$TOKEN</code> auf dein Plex-Token: <code translate="no" v-pre>TOKEN=your-token</code> in einer Shell, <code translate="no" v-pre>$TOKEN = 'your-token'</code> in PowerShell.</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/guides/renaming/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Vorheriger</span>
+                                <span class="block mt-1">Umbenennung</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/guides/acquisition/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Nächster</span>
+                                <span class="block mt-1">Watchlist und Seerr</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Plex", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/guides/plex.md" }</script>
+</body>
+</html>

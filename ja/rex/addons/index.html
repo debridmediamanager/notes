@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="ja" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/ja">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672716444">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>rex アドオンの作り方</title>
+    <meta name="title" content="rex アドオンの作り方">
+    <meta name="description" content="rex は、ソースが伝えてくれた内容を表示します。ソースは feed API を通じて rex に手持ちのものを伝え、rex が求めたときにファイルを配信します。rex はすべてのソースを同じように扱います。アドオンとは、ホームビデオ、録画、Stremio">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/ja/rex/addons/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/ja/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/ja/rex/addons/">
+    <meta property="og:title" content="rex アドオンの作り方">
+    <meta property="og:description" content="rex は、ソースが伝えてくれた内容を表示します。ソースは feed API を通じて rex に手持ちのものを伝え、rex が求めたときにファイルを配信します。rex はすべてのソースを同じように扱います。アドオンとは、ホームビデオ、録画、Stremio">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="ja_JP">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/ja/rex/addons/">
+    <meta name="twitter:title" content="rex アドオンの作り方">
+    <meta name="twitter:description" content="rex は、ソースが伝えてくれた内容を表示します。ソースは feed API を通じて rex に手持ちのものを伝え、rex が求めたときにファイルを配信します。rex はすべてのソースを同じように扱います。アドオンとは、ホームビデオ、録画、Stremio">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/ja/rex/addons.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../resources/css/retype.css?v=4.6.0.847672716444" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.847672716444" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.847672716444" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.847672716444" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/ja/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>日本語</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/download.html" target="_blank">zurgをダウンロード</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/ja/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">スポンサー</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>日本語</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/download.html" target="_blank">zurgをダウンロード</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/ja/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">スポンサー</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="building-rex-addons">rex アドオンの作り方</h1>
+<p><a href="https://rex.debridmediamanager.com/ja/">rex</a> は、ソースが伝えてくれた内容を表示します。ソースは feed API を通じて rex に手持ちのものを伝え、rex が求めたときにファイルを配信します。rex はすべてのソースを同じように扱います。<strong>アドオン</strong>とは、ホームビデオ、録画、Stremio のカタログ、<doc-anchor-trigger to="#music">音楽</doc-anchor-trigger>、<doc-anchor-trigger to="#live-tv">ライブチャンネル</doc-anchor-trigger>などのために自分で書くソースのことです。</p>
+<p>このページでは、rex がアドオンに求めるものと、アイテムの名前の付け方、そして重要なルールを説明します。最後に、1 ファイルのサンプルとして <a href="https://github.com/debridmediamanager/rex-stremio">rex-stremio</a> を紹介します。</p>
+<p>アドオンがすることは 3 つです。</p>
+<ul>
+<li><strong>データを配信する。</strong> 誰かが再生を押すと、rex はアドオンから HTTP で必要なバイトをすべて取得します。ファイルのこともあれば、rex がリダイレクトされるストリームのこともあります。</li>
+<li><strong>rex に手持ちのものを伝える。</strong> rex の feed API を通じて一覧を送り、その後の変更もすべて送ります。rex が自分でスキャンすることはありません。</li>
+<li><strong>持ち込むものに名前を付ける。</strong> どのエージェントも知らないものについては、タイトル、概要、日付、アートワークをアドオン自身が送ります。Plex アプリは、ほかのライブラリと同じようにそれらを表示します。</li>
+</ul>
+<p>持ち込むのが、Plex がすでに知っている映画やシリーズ（IMDb や TMDB の ID がわかっているもの）であれば、代わりに <a href="../any-source/">rex with your own app</a> を使うほうが向いています。Plex がすべての名前と説明を用意してくれます。</p>
+<p>Stremio のアドオンのカタログを rex に取り込むだけなら、自分で書く必要はありません。rex-stremio がすでに用意されています。その設定ページにアドオンのリンクを貼り付け、使いたいカタログにチェックを入れるだけです。</p>
+<p><strong>すぐに動くコードから始めたいですか？</strong> それぞれ 1 つの Python ファイルで完結するチュートリアルが 3 つあります。標準ライブラリだけを使い、各部分が何をしているかを説明しています。</p>
+<retype-table copy-text="| チュートリアル | rex に取り込むもの |
+|---|---|
+| [ホームビデオ](addon-home-videos.md) | 自分の動画フォルダー。動画から切り出したタイトル、日付、ポスター付きのライブラリとして |
+| [音楽](addon-music.md) | アルバムのフォルダー。MusicBrainz を通じて Plex が名前を付け、歌詞も付きます |
+| [IPTV](addon-iptv.md) | M3U プレイリストとその XMLTV ガイド。ガイド付きのライブ TV チャンネルとして |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>チュートリアル</th>
+<th>rex に取り込むもの</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../addon-home-videos/">ホームビデオ</a></td>
+<td>自分の動画フォルダー。動画から切り出したタイトル、日付、ポスター付きのライブラリとして</td>
+</tr>
+<tr>
+<td><a href="../addon-music/">音楽</a></td>
+<td>アルバムのフォルダー。MusicBrainz を通じて Plex が名前を付け、歌詞も付きます</td>
+</tr>
+<tr>
+<td><a href="../addon-iptv/">IPTV</a></td>
+<td>M3U プレイリストとその XMLTV ガイド。ガイド付きのライブ TV チャンネルとして</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>このページでは、それらのチュートリアルが行うすべての手順を説明します。<a href="../addon-more/">アドオンからさらに</a>では、字幕、予告編、チャプター、コレクション、プレイリストなどを追加します。</p>
+<h2 id="before-you-start">始める前に</h2>
+<retype-table copy-text="| 必要なもの | 理由 |
+|---|---|
+| rex を [独自アプリで rex を使う](any-source.md) の手順 (手順 1 から 3) どおりにセットアップしておく | アドオンのライブラリがここに表示されます |
+| 2026.10.25 以降の rex nightly、[Music](#music) と [Live TV](#live-tv) を使うなら 2026.11.02 以降 | このページはそのバージョン向けに書かれています |
+| アドオンがストリームを配信する場合は、rex を動かす場所に FFmpeg | rex はストリームを変換 (コピーなので負荷は小さめ) して再生します。rex は FFmpeg を自動で見つけます。[動画の変換](any-source.md#converting-video-optional) を参照してください |
+| アドオンを rex と同じマシン、または自宅のネットワーク上に置く | rex のフィードは、この範囲からの接続にだけ応答します。[ポートを非公開にする](any-source.md#keep-the-port-private) を参照してください |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>必要なもの</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rex を <a href="../any-source/">独自アプリで rex を使う</a> の手順 (手順 1 から 3) どおりにセットアップしておく</td>
+<td>アドオンのライブラリがここに表示されます</td>
+</tr>
+<tr>
+<td>2026.10.25 以降の rex nightly、<doc-anchor-trigger to="#music">Music</doc-anchor-trigger> と <doc-anchor-trigger to="#live-tv">Live TV</doc-anchor-trigger> を使うなら 2026.11.02 以降</td>
+<td>このページはそのバージョン向けに書かれています</td>
+</tr>
+<tr>
+<td>アドオンがストリームを配信する場合は、rex を動かす場所に FFmpeg</td>
+<td>rex はストリームを変換 (コピーなので負荷は小さめ) して再生します。rex は FFmpeg を自動で見つけます。<a href="../any-source/#converting-video-optional">動画の変換</a> を参照してください</td>
+</tr>
+<tr>
+<td>アドオンを rex と同じマシン、または自宅のネットワーク上に置く</td>
+<td>rex のフィードは、この範囲からの接続にだけ応答します。<a href="../any-source/#keep-the-port-private">ポートを非公開にする</a> を参照してください</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>このページでは、rex のアドレスを <code translate="no" v-pre>192.168.1.20:32400</code>、アドオンのアドレスを <code translate="no" v-pre>127.0.0.1:9981</code> と書いています。お使いの環境の値に読み替えてください。rex の API の全体像は <a href="https://github.com/debridmediamanager/rex/blob/main/docs/feed-api.md">docs/feed-api.md</a> にあります。</p>
+<h2 id="step-1-serve-the-bytes">手順 1. ファイルを配信する</h2>
+<p><strong>何をするか。</strong> rex が読み取れるURLを、すべての動画に用意します。</p>
+<p><strong>なぜ重要か。</strong> rex はメディアを保存しません。誰かが再生ボタンを押すたびに、rex があなたのアドオンから動画を読み込みます。</p>
+<p>アドオンは HTTP サーバーです。動画は <code translate="no" v-pre>&lt;your address&gt;/&lt;path&gt;</code> にあり、<code translate="no" v-pre>path</code> は好きに決めてかまいません。種類は2つあります。</p>
+<retype-table copy-text="| 配信するもの | 方法 | rex の動作 |
+|---|---|---|
+| **ファイル** (`.mkv`, `.mp4`, ...) | `GET` にファイルで応答します。`Range` リクエスト (`206`) に応答すると、シークが速くなります。応答しないと、シークのたびに rex は最初から読み直します | Plex アプリは可能であれば直接再生します。できない場合は rex が変換します |
+| **ストリーム** (HLS, `.m3u8`) | `GET` にプレイリストで応答するか、そこへのリダイレクトを返します。リダイレクトは追跡され、ログイン情報が別のホストに送られることはありません | rex は必ず変換します。映像と音声のコピーを、アプリが再生できる形にします。ファイルを直接読むアプリも、この変換に回されます |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>配信するもの</th>
+<th>方法</th>
+<th>rex の動作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ファイル</strong> (<code translate="no" v-pre>.mkv</code>, <code translate="no" v-pre>.mp4</code>, ...)</td>
+<td><code translate="no" v-pre>GET</code> にファイルで応答します。<code translate="no" v-pre>Range</code> リクエスト (<code translate="no" v-pre>206</code>) に応答すると、シークが速くなります。応答しないと、シークのたびに rex は最初から読み直します</td>
+<td>Plex アプリは可能であれば直接再生します。できない場合は rex が変換します</td>
+</tr>
+<tr>
+<td><strong>ストリーム</strong> (HLS, <code translate="no" v-pre>.m3u8</code>)</td>
+<td><code translate="no" v-pre>GET</code> にプレイリストで応答するか、そこへのリダイレクトを返します。リダイレクトは追跡され、ログイン情報が別のホストに送られることはありません</td>
+<td>rex は必ず変換します。映像と音声のコピーを、アプリが再生できる形にします。ファイルを直接読むアプリも、この変換に回されます</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>必須ではありませんが、設定しておくと良いものがあります。</p>
+<ul>
+<li><strong>ログイン。</strong> Basic 認証 (<code translate="no" v-pre>user</code>, <code translate="no" v-pre>password</code>) またはベアラートークンを使えます。rex はアドオン自身のアドレスにだけ送ります。</li>
+<li><strong>削除。</strong> Plex アプリでタイトルを削除すると、rex は最初にそのパスに対して WebDAV の <code translate="no" v-pre>DELETE</code> をアドオンに送ります。<code translate="no" v-pre>2xx</code>（削除済み）または <code translate="no" v-pre>404</code>（すでにない）で応答すると、rex はタイトルを削除します。それ以外の応答だと、Plex アプリは削除できなかったと表示します。</li>
+</ul>
+<h2 id="step-2-register-with-rex">手順 2. rex に登録する</h2>
+<p><strong>何をするか。</strong> rex にアドオンの名前、バイトの場所、そしてそれが埋めるライブラリを伝えるよ。</p>
+<p><strong>なぜ大事か。</strong> rex は、知らないソースからは何も読み込まない。もう一度登録しても何も変わらないので、アドオンが起動するたびに毎回実行しよう。</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-と-macos">
+<template #title>Linux と macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -X PUT http://192.168.1.20:32400/rex/sources/myaddon \
+  -H 'Content-Type: application/json' \
+  -d '{&quot;url&quot;: &quot;http://127.0.0.1:9981&quot;,
+       &quot;directories&quot;: [{&quot;name&quot;: &quot;kids&quot;, &quot;shows&quot;: &quot;Kids&quot;}]}'</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">Invoke-RestMethod -Method Put http://192.168.1.20:32400/rex/sources/myaddon -ContentType application/json `
+  -Body '{&quot;url&quot;: &quot;http://127.0.0.1:9981&quot;, &quot;directories&quot;: [{&quot;name&quot;: &quot;kids&quot;, &quot;shows&quot;: &quot;Kids&quot;}]}'</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<retype-table copy-text="| 項目 | 意味 |
+|---|---|
+| `url` | バイトがある場所。動画のバイトは `GET &lt;url&gt;/&lt;path&gt;` で取得される |
+| `user` と `password`、または `bearer` | アドオンのログイン情報（あれば）。`url` の中には絶対に入れないこと |
+| `directories` | アドオンが埋めるライブラリ。各エントリは最初のパスセグメント（`name`）とライブラリのタイトルで、`shows`（TV ライブラリ）、`movies`（映画ライブラリ）、`music`（音楽ライブラリ）のいずれか、または複数指定できる。rex は初回にライブラリを作成する。Plex で名前を変えても、その変更はそのまま残る |
+| `trash` | `false` にすると、アドオンが削除したもの（スナップショットから外れたものや `DELETE` されたもの）を rex のゴミ箱に入れず、そのまま完全に削除する |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>項目</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>url</code></td>
+<td>バイトがある場所。動画のバイトは <code translate="no" v-pre>GET &lt;url&gt;/&lt;path&gt;</code> で取得される</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>user</code> と <code translate="no" v-pre>password</code>、または <code translate="no" v-pre>bearer</code></td>
+<td>アドオンのログイン情報（あれば）。<code translate="no" v-pre>url</code> の中には絶対に入れないこと</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>directories</code></td>
+<td>アドオンが埋めるライブラリ。各エントリは最初のパスセグメント（<code translate="no" v-pre>name</code>）とライブラリのタイトルで、<code translate="no" v-pre>shows</code>（TV ライブラリ）、<code translate="no" v-pre>movies</code>（映画ライブラリ）、<code translate="no" v-pre>music</code>（音楽ライブラリ）のいずれか、または複数指定できる。rex は初回にライブラリを作成する。Plex で名前を変えても、その変更はそのまま残る</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>trash</code></td>
+<td><code translate="no" v-pre>false</code> にすると、アドオンが削除したもの（スナップショットから外れたものや <code translate="no" v-pre>DELETE</code> されたもの）を rex のゴミ箱に入れず、そのまま完全に削除する</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>最初のパスセグメントで、どのライブラリに入るかが決まる。上の例では <code translate="no" v-pre>kids/</code> で始まるパスはすべて <strong>Kids</strong> に入る。ライブラリごとに、違う最初のセグメントを使ってね。</p>
+<p><strong>見えるはずのもの。</strong> rex はソースを返す。rex のログには <code translate="no" v-pre>SOURCES myaddon registered at http://127.0.0.1:9981</code> と出る。初回だけ <code translate="no" v-pre>SECTION create Kids (show) for myaddon's kids</code> も出る。ライブラリは 1 秒以内に、Plex のアプリの More の下に表示される。</p>
+<h2 id="step-3-describe-each-video">手順 3. 各動画を説明する</h2>
+<p><strong>何をするか。</strong> rex が動画ごとに保持するレコードを作ります。動画の場所、種類、見た目の情報です。</p>
+<p><strong>なぜ重要か。</strong> このレコードが rex にとってのすべてです。プローブの欠落や id の変更が、アドオンのバグの大半の原因になります。</p>
+<div id="step-3-describe-each-video-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;id&quot;: &quot;home-2026-07-22-beach&quot;,
+  &quot;path&quot;: &quot;kids/summer-2026/beach.mp4&quot;,
+  &quot;kind&quot;: &quot;episode&quot;, &quot;season&quot;: 1, &quot;episode&quot;: 3,
+  &quot;name&quot;: &quot;Summer 2026&quot;,
+  &quot;media_info&quot;: { &quot;...&quot;: &quot;ffprobe's output, whole&quot; },
+  &quot;display&quot;: {
+    &quot;title&quot;: &quot;First day at the beach&quot;,
+    &quot;summary&quot;: &quot;...&quot;,
+    &quot;date&quot;: &quot;2026-07-22&quot;,
+    &quot;thumb&quot;: &quot;http://127.0.0.1:9981/kids/summer-2026/beach.jpg&quot;,
+    &quot;show&quot;: {&quot;title&quot;: &quot;Summer 2026&quot;, &quot;summary&quot;: &quot;...&quot;, &quot;poster&quot;: &quot;https://...&quot;, &quot;art&quot;: &quot;https://...&quot;},
+    &quot;season&quot;: {&quot;poster&quot;: &quot;https://...&quot;}
+  }
+}</code></pre>
+</doc-codeblock></div>
+<retype-table copy-text="| Field | Required | Meaning |
+|---|---|---|
+| `id` | はい | 動画ごとのキーです。**ずっと変えないでください**。rex は視聴履歴をこの id に紐づけます |
+| `path` | はい | `url` の下にある動画データの場所です。最初のセグメントでライブラリが決まります |
+| `media_info` | 実際には必須 | 動画の ffprobe の `-show_format -show_streams` JSON です（ストリームの場合は、その URL に対してプローブします）。これがないと、ファイルは**保留**になります。保存はされますが表示されません。Plex アプリは中身が分からない動画を再生しないためです。`.m3u8` のストリームにこれがないと `not a video file` で拒否されるので、プローブしてからストリームを送ってください |
+| `kind` | 番組の場合 | `episode` または `movie` です。これがないと動画の配置先が決まりません。テレビライブラリでは `name` という名前の番組のエピソードとして、ファイルの順番で番号が振られます。映画ライブラリではファイル名をタイトルにした映画として扱われます |
+| `season`, `episode` | エピソードの場合 | 配置先です。エピソードに番号を振るときは、新しいエピソードを追加しても他の番号がずれないようにしてください |
+| `name` | いいえ | 番組の名前で、そのエピソードをまとめる単位にもなります。デフォルトはフォルダー名です（フォルダーがないパスの場合はファイル名）|
+| `release` | いいえ | 一緒に扱うべき動画をまとめます。デフォルトは動画のフォルダーです |
+| `display` | 既存のエージェントが知らない場合 | タイトル、概要、日付、アートワークです。ステップ4を参照してください |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Field</th>
+<th>Required</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>id</code></td>
+<td>はい</td>
+<td>動画ごとのキーです。<strong>ずっと変えないでください</strong>。rex は視聴履歴をこの id に紐づけます</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>path</code></td>
+<td>はい</td>
+<td><code translate="no" v-pre>url</code> の下にある動画データの場所です。最初のセグメントでライブラリが決まります</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>media_info</code></td>
+<td>実際には必須</td>
+<td>動画の ffprobe の <code translate="no" v-pre>-show_format -show_streams</code> JSON です（ストリームの場合は、その URL に対してプローブします）。これがないと、ファイルは<strong>保留</strong>になります。保存はされますが表示されません。Plex アプリは中身が分からない動画を再生しないためです。<code translate="no" v-pre>.m3u8</code> のストリームにこれがないと <code translate="no" v-pre>not a video file</code> で拒否されるので、プローブしてからストリームを送ってください</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>kind</code></td>
+<td>番組の場合</td>
+<td><code translate="no" v-pre>episode</code> または <code translate="no" v-pre>movie</code> です。これがないと動画の配置先が決まりません。テレビライブラリでは <code translate="no" v-pre>name</code> という名前の番組のエピソードとして、ファイルの順番で番号が振られます。映画ライブラリではファイル名をタイトルにした映画として扱われます</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>season</code>, <code translate="no" v-pre>episode</code></td>
+<td>エピソードの場合</td>
+<td>配置先です。エピソードに番号を振るときは、新しいエピソードを追加しても他の番号がずれないようにしてください</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>name</code></td>
+<td>いいえ</td>
+<td>番組の名前で、そのエピソードをまとめる単位にもなります。デフォルトはフォルダー名です（フォルダーがないパスの場合はファイル名）</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>release</code></td>
+<td>いいえ</td>
+<td>一緒に扱うべき動画をまとめます。デフォルトは動画のフォルダーです</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>display</code></td>
+<td>既存のエージェントが知らない場合</td>
+<td>タイトル、概要、日付、アートワークです。ステップ4を参照してください</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>ストリームの <code translate="no" v-pre>path</code> は <code translate="no" v-pre>.m3u8</code> で終わり、その <code translate="no" v-pre>media_info</code> には <code translate="no" v-pre>&quot;format_name&quot;: &quot;hls&quot;</code> と書かれている必要があります。rex はこの両方がそろっている場合にのみ受け付けます。それ以外のファイルは、動画の拡張子を持っている必要があります。</p>
+<h2 id="step-4-name-and-dress-it">手順 4. 名前と見た目を整える</h2>
+<p><strong>何をするか。</strong> Plex のエージェントが知らないものについて、Plex アプリにタイトル、あらすじ、日付、画像を表示します。</p>
+<p><strong>なぜ重要か。</strong> <code translate="no" v-pre>display</code> がないと、エピソードは空のタイルに「Episode 3」と表示され、シリーズにはポスターがありません。</p>
+<retype-table copy-text="| フィールド | 表示される場所 |
+|---|---|
+| `title`, `summary` | 動画のタイトルとあらすじです。送ったとおりに表示されます |
+| `date` | 公開日 (`YYYY-MM-DD`) と、そこから取った年です。年しかわからないもの（古い映画など）は、年だけ (`YYYY`) を指定できます。その場合、Plex アプリは年だけを表示し、公開日は表示しません |
+| `thumb` | 映画のポスター、またはエピソードのスチルです |
+| `art` | 映画の背景です |
+| `show.title`, `show.summary`, `show.poster`, `show.art` | エピソードのシリーズです |
+| `season.summary`, `season.poster` | エピソードのシーズンです（ない場合はシリーズのポスターを使います） |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>フィールド</th>
+<th>表示される場所</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>title</code>, <code translate="no" v-pre>summary</code></td>
+<td>動画のタイトルとあらすじです。送ったとおりに表示されます</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>date</code></td>
+<td>公開日 (<code translate="no" v-pre>YYYY-MM-DD</code>) と、そこから取った年です。年しかわからないもの（古い映画など）は、年だけ (<code translate="no" v-pre>YYYY</code>) を指定できます。その場合、Plex アプリは年だけを表示し、公開日は表示しません</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>thumb</code></td>
+<td>映画のポスター、またはエピソードのスチルです</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>art</code></td>
+<td>映画の背景です</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>show.title</code>, <code translate="no" v-pre>show.summary</code>, <code translate="no" v-pre>show.poster</code>, <code translate="no" v-pre>show.art</code></td>
+<td>エピソードのシリーズです</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>season.summary</code>, <code translate="no" v-pre>season.poster</code></td>
+<td>エピソードのシーズンです（ない場合はシリーズのポスターを使います）</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>どのフィールドも任意です。画像は <code translate="no" v-pre>http://</code> または <code translate="no" v-pre>https://</code> の URL にしてください。rex が画像を自分で取得します。取得元は、公開インターネットか、登録した <code translate="no" v-pre>url</code>（アドオン自身のアドレス）です。後者の場合は、そのアドオンのログインを使います。ホームネットワーク上のそれ以外のアドレスは拒否されます。そのため、アドオンが自分の画像を配信することもできます。たとえばホームビデオの各フレームを使えます。ポスターには 2:3 の画像が最適で、スチルと背景には 16:9 の画像が最適です。</p>
+<p>rex の動作は次のとおりです。</p>
+<ul>
+<li><strong>何も指定されていないものだけ。</strong> <code translate="no" v-pre>kind</code> と、Plex が知っている <code translate="no" v-pre>ids</code> で送られた動画は、Plex の説明どおりに表示されます。そのときは <code translate="no" v-pre>display</code> を無視します。</li>
+<li><strong>後から送ると更新されます。</strong> 新しい <code translate="no" v-pre>display</code> を付けて動画をもう一度送ると、その行、シリーズ、シーズンがその場で変わります。アプリには新しい画像が表示されます。シリーズは、最初に作られたときのタイトルを保ちます。</li>
+<li><strong>ユーザーの設定が優先されます。</strong> 誰かが Plex アプリで編集してロックしたフィールドは、その値が保たれます。アップロードされたポスターもそのまま残ります。</li>
+<li><strong>内容はチェックされます。</strong> http(s) で始まらない URL の画像や、別の形式の日付があると、その動画は拒否されます。どのフィールドが原因かも表示されます。</li>
+</ul>
+<h2 id="step-5-send-it">手順 5. 送信する</h2>
+<p><strong>やること。</strong> 動画をrexに送ります。最初に全部送り、その後は変更があるたびに送ります。</p>
+<p><strong>なぜ大事か。</strong> rexは、最後に送った内容を正確に表示します。</p>
+<retype-table copy-text="| 目的 | 送るもの | rexの返答 |
+|---|---|---|
+| 動画を追加・変更する | `POST /rex/feed/myaddon/items` と `{&quot;items&quot;: [...]}` | `created`、`updated`、`held`、`unchanged` の数と、拒否された動画ごとの `rejected` と理由 |
+| 動画を削除する | `DELETE /rex/feed/myaddon/items` と `{&quot;ids&quot;: [...]}` | `trashed`、`deleted`、`released`（保留中だったものは忘れられます）、`unknown` の数 |
+| 全部送る | `PUT /rex/feed/myaddon/snapshot` と `{&quot;items&quot;: [...]}`。分割する場合は `&quot;session&quot;`（任意のテキスト）、0から始まる `&quot;part&quot;`、最後のパートに `&quot;complete&quot;: true` | 同じ数に加えて、`removed`（スナップショットに含まれなかったあなたの動画すべて） |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>目的</th>
+<th>送るもの</th>
+<th>rexの返答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>動画を追加・変更する</td>
+<td><code translate="no" v-pre>POST /rex/feed/myaddon/items</code> と <code translate="no" v-pre>{&quot;items&quot;: [...]}</code></td>
+<td><code translate="no" v-pre>created</code>、<code translate="no" v-pre>updated</code>、<code translate="no" v-pre>held</code>、<code translate="no" v-pre>unchanged</code> の数と、拒否された動画ごとの <code translate="no" v-pre>rejected</code> と理由</td>
+</tr>
+<tr>
+<td>動画を削除する</td>
+<td><code translate="no" v-pre>DELETE /rex/feed/myaddon/items</code> と <code translate="no" v-pre>{&quot;ids&quot;: [...]}</code></td>
+<td><code translate="no" v-pre>trashed</code>、<code translate="no" v-pre>deleted</code>、<code translate="no" v-pre>released</code>（保留中だったものは忘れられます）、<code translate="no" v-pre>unknown</code> の数</td>
+</tr>
+<tr>
+<td>全部送る</td>
+<td><code translate="no" v-pre>PUT /rex/feed/myaddon/snapshot</code> と <code translate="no" v-pre>{&quot;items&quot;: [...]}</code>。分割する場合は <code translate="no" v-pre>&quot;session&quot;</code>（任意のテキスト）、0から始まる <code translate="no" v-pre>&quot;part&quot;</code>、最後のパートに <code translate="no" v-pre>&quot;complete&quot;: true</code></td>
+<td>同じ数に加えて、<code translate="no" v-pre>removed</code>（スナップショットに含まれなかったあなたの動画すべて）</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>1回のリクエストには数百本程度の動画を送ってください。何も含まないスナップショットでは何も削除されません。動画の半分より多くを削除するスナップショットは、最後のパートに <code translate="no" v-pre>&quot;force&quot;: true</code> を付けない限り拒否されます。これは、状態を見失ったアドオンがうっかりライブラリを空にしてしまうのを防ぐためです。</p>
+<p><strong>表示される内容。</strong></p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-と-macos-1">
+<template #title>Linux と macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -s http://192.168.1.20:32400/rex/feed/myaddon/items | head -c 400   # what rex shows, with each ratingKey
+curl -s http://192.168.1.20:32400/rex/feed/myaddon/held                  # what waits for a probe</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-1">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">curl.exe -s http://192.168.1.20:32400/rex/feed/myaddon/items   # what rex shows, with each ratingKey
+curl.exe -s http://192.168.1.20:32400/rex/feed/myaddon/held    # what waits for a probe</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p>rexのログには、拒否された動画ごとに理由が表示されます。形式は <code translate="no" v-pre>FEED myaddon rejected &lt;id&gt;: &lt;reason&gt;</code> です。</p>
+<h2 id="music">音楽</h2>
+<p><strong>何をするか。</strong> アルバムを音楽ライブラリに取り込みます。取り込んだアルバムは Plexamp、Plex Web、Plex for Android で再生できます。</p>
+<p><strong>なぜ重要か。</strong> Plex は音楽を MusicBrainz のリリースで識別します。そのリリース ID を送ると、Plex がタイトル、カバー、アーティスト写真、経歴をすべて自分で埋めてくれます。</p>
+<p>音声ファイルはそれぞれトラックとして送ります:</p>
+<div id="music-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">{
+  &quot;id&quot;: &quot;albums/in-rainbows/01&quot;,
+  &quot;path&quot;: &quot;music/Radiohead/In Rainbows/01 - 15 Step.flac&quot;,
+  &quot;kind&quot;: &quot;track&quot;,
+  &quot;ids&quot;: {&quot;mbid&quot;: &quot;3b408cb5-7d51-4188-b07c-fabcf308cda3&quot;},
+  &quot;disc&quot;: 1, &quot;track&quot;: 1,
+  &quot;media_info&quot;: { &quot;...&quot;: &quot;ffprobe's output, whole&quot; }
+}</code></pre>
+</doc-codeblock></div>
+<retype-table copy-text="| フィールド | 意味 |
+|---|---|
+| `kind` | `track` |
+| `path` | 音声ファイル。`.flac`、`.mp3`、`.m4a`、`.aac`、`.ogg`、`.oga`、`.opus`、`.wav`、`.alac`、`.aif`、`.aiff`、`.wma`、`.ape`、`.wv`、`.dsf`、`.mka` のいずれか |
+| `ids.mbid` | トラックのアルバムの MusicBrainz **リリース** ID。`musicbrainz.org/release/&lt;id&gt;` リンクの ID を使います。リリースグループや録音の ID ではありません。または `ids.plex`（Plex 独自のアルバム GUID、`plex://album/&lt;id&gt;`） |
+| `disc`、`track` | そのリリースでのトラックの位置。その番号で Plex が表示するトラックが選ばれます |
+| `release` | トラックがどのアルバムのコピーに属するか。デフォルトはそのフォルダーです。Plex はコピーごとに別のアルバムとして表示するため、ディスクフォルダー（`CD1/`、`CD2/`）に入ったファイルは、1つのコピーにつき1つの `release` を送ってください |
+| `display` | Plex が知らない音楽用の情報。トラックの `title`、アーティストの `artist`（`title`、`summary`、`poster`、`art`）、アルバムの `album`（`title`、`summary`、`poster`、`date`） |
+| `lyrics` | アドオン上でそのファイルの隣にある歌詞ファイル。例: `[{&quot;path&quot;: &quot;music/.../01 - 15 Step.lrc&quot;, &quot;size&quot;: 147}]`。時間付きの `.lrc` または `.txt` を、曲の歌詞として表示します |
+| `loudness` | アドオンが音量を測定している場合のみ。Plex の名前で `gain`、`albumGain`、`peak`、`albumPeak`、`albumRange`、`loudness`、`lra`、フェードの `startRamp` と `endRamp`、100 ms ごとの音量 `levels` を指定します。rex 自体は音量を測定しません |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>フィールド</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>kind</code></td>
+<td><code translate="no" v-pre>track</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>path</code></td>
+<td>音声ファイル。<code translate="no" v-pre>.flac</code>、<code translate="no" v-pre>.mp3</code>、<code translate="no" v-pre>.m4a</code>、<code translate="no" v-pre>.aac</code>、<code translate="no" v-pre>.ogg</code>、<code translate="no" v-pre>.oga</code>、<code translate="no" v-pre>.opus</code>、<code translate="no" v-pre>.wav</code>、<code translate="no" v-pre>.alac</code>、<code translate="no" v-pre>.aif</code>、<code translate="no" v-pre>.aiff</code>、<code translate="no" v-pre>.wma</code>、<code translate="no" v-pre>.ape</code>、<code translate="no" v-pre>.wv</code>、<code translate="no" v-pre>.dsf</code>、<code translate="no" v-pre>.mka</code> のいずれか</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>ids.mbid</code></td>
+<td>トラックのアルバムの MusicBrainz <strong>リリース</strong> ID。<code translate="no" v-pre>musicbrainz.org/release/&lt;id&gt;</code> リンクの ID を使います。リリースグループや録音の ID ではありません。または <code translate="no" v-pre>ids.plex</code>（Plex 独自のアルバム GUID、<code translate="no" v-pre>plex://album/&lt;id&gt;</code>）</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>disc</code>、<code translate="no" v-pre>track</code></td>
+<td>そのリリースでのトラックの位置。その番号で Plex が表示するトラックが選ばれます</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>release</code></td>
+<td>トラックがどのアルバムのコピーに属するか。デフォルトはそのフォルダーです。Plex はコピーごとに別のアルバムとして表示するため、ディスクフォルダー（<code translate="no" v-pre>CD1/</code>、<code translate="no" v-pre>CD2/</code>）に入ったファイルは、1つのコピーにつき1つの <code translate="no" v-pre>release</code> を送ってください</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>display</code></td>
+<td>Plex が知らない音楽用の情報。トラックの <code translate="no" v-pre>title</code>、アーティストの <code translate="no" v-pre>artist</code>（<code translate="no" v-pre>title</code>、<code translate="no" v-pre>summary</code>、<code translate="no" v-pre>poster</code>、<code translate="no" v-pre>art</code>）、アルバムの <code translate="no" v-pre>album</code>（<code translate="no" v-pre>title</code>、<code translate="no" v-pre>summary</code>、<code translate="no" v-pre>poster</code>、<code translate="no" v-pre>date</code>）</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>lyrics</code></td>
+<td>アドオン上でそのファイルの隣にある歌詞ファイル。例: <code translate="no" v-pre>[{&quot;path&quot;: &quot;music/.../01 - 15 Step.lrc&quot;, &quot;size&quot;: 147}]</code>。時間付きの <code translate="no" v-pre>.lrc</code> または <code translate="no" v-pre>.txt</code> を、曲の歌詞として表示します</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>loudness</code></td>
+<td>アドオンが音量を測定している場合のみ。Plex の名前で <code translate="no" v-pre>gain</code>、<code translate="no" v-pre>albumGain</code>、<code translate="no" v-pre>peak</code>、<code translate="no" v-pre>albumPeak</code>、<code translate="no" v-pre>albumRange</code>、<code translate="no" v-pre>loudness</code>、<code translate="no" v-pre>lra</code>、フェードの <code translate="no" v-pre>startRamp</code> と <code translate="no" v-pre>endRamp</code>、100 ms ごとの音量 <code translate="no" v-pre>levels</code> を指定します。rex 自体は音量を測定しません</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<ul>
+<li><strong>先に音楽ライブラリが必要です。</strong> ステップ 2 で宣言する（<code translate="no" v-pre>&quot;directories&quot;: [{&quot;name&quot;: &quot;music&quot;, &quot;music&quot;: &quot;Music&quot;}]</code>）か、Plex アプリで音楽ライブラリを追加してください。どの音楽ライブラリも受け取らないトラックは拒否されます: <code translate="no" v-pre>no music library holds &lt;file&gt;</code>。</li>
+<li><strong>リリース ID の探し方。</strong> アルバムのタイトルとアーティストで MusicBrainz を検索し（<code translate="no" v-pre>https://musicbrainz.org/ws/2/release?query=release:%22In%20Rainbows%22%20AND%20artist:Radiohead&amp;fmt=json</code>）、トラック数が合う公式リリースを選びます。国ごとに複数一致することが多いですが、どれもアルバムを指しています。MusicBrainz は 1 つのアドレスからのリクエストを 1 秒に 1 回までしか受け付けず、それ以上は拒否します。また、アドオン名を含む User-Agent を求めています。アルバムごとに 1 回だけ問い合わせて、結果を保存しておいてください。</li>
+<li><strong>rex はタグを読みません。</strong> タイトル、カバー、ジャンル、類似アーティストは Plex が提供します。Plex がリリースを知らないトラックは、指定した <code translate="no" v-pre>display</code> の内容が、指定したアーティストとアルバムの下にまとめて表示されます。<code translate="no" v-pre>display</code> がない場合は、<code translate="no" v-pre>[Unknown Artist]</code> の下にファイル名で表示されます。</li>
+<li><strong>そのまま再生されます。</strong> FFmpeg は不要です。ただし、アプリが元の品質より低い品質を求めた場合は、Plex と同じく rex が FFmpeg で変換します。</li>
+<li><strong>含まれないもの。</strong> Plexamp のラジオ、ミックス、ステーション、音響的に似たトラックには、rex が行わない解析が必要です。</li>
+</ul>
+<p><strong>表示される結果。</strong> 音楽ライブラリにアルバムが Plex のカバーとトラック名付きで表示され、アーティストには写真が付きます。Plexamp では、ライブラリとして rex の音楽ライブラリを選んでください。</p>
+<h2 id="live-tv">ライブ TV</h2>
+<p><strong>何をするか。</strong> ライブ配信を、Plex Web と Plex for Android の <strong>Live TV</strong> のチャンネルにします。番組表、What&#x27;s On、チャンネル番号が付きます。</p>
+<p><strong>なぜ大事か。</strong> ライブ配信だけだと、ライブラリの中の1行にすぎません。<code translate="no" v-pre>channel</code> を付けると、テレビと同じように、番組表から、今放送中の番組で見つけられます。</p>
+<p>手順3のとおりに(<code translate="no" v-pre>.m3u8</code> と probe を付けて)ライブ配信を送り、さらに <code translate="no" v-pre>channel</code> を付けます:</p>
+<div id="live-tv-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-json"><code v-pre class="language-json">&quot;channel&quot;: {
+  &quot;number&quot;: &quot;100.1&quot;,
+  &quot;title&quot;: &quot;Rex News&quot;,
+  &quot;guide&quot;: [
+    {&quot;start&quot;: &quot;2026-11-01T18:00:00Z&quot;, &quot;end&quot;: &quot;2026-11-01T19:00:00Z&quot;,
+     &quot;title&quot;: &quot;Evening News&quot;, &quot;summary&quot;: &quot;The day's headlines.&quot;, &quot;categories&quot;: [&quot;News&quot;]},
+    {&quot;start&quot;: &quot;2026-11-01T19:00:00Z&quot;, &quot;end&quot;: &quot;2026-11-01T19:45:00Z&quot;,
+     &quot;title&quot;: &quot;The Pilot&quot;, &quot;type&quot;: &quot;episode&quot;, &quot;show&quot;: &quot;Rex Stories&quot;, &quot;season&quot;: 1, &quot;episode&quot;: 1,
+     &quot;categories&quot;: [&quot;Drama&quot;]}
+  ]
+}</code></pre>
+</doc-codeblock></div>
+<retype-table copy-text="| Field | Meaning |
+|---|---|
+| `number` | 番組表でのチャンネル番号(`100.1`、`704`)。英字、数字、`.`、`-`、`_` が使えます。他のアドオンのものと重ならない番号を選んでください。番号付きで最初に送られたチャンネルがその番号を保つ |
+| `title` | 番組表に出る名前。既定値はストリームの `display` タイトル |
+| `call_sign` | 短い名前。既定値は `title` |
+| `guide` | 放送内容。`start` と `end`(エポック秒、または `Z` かオフセット付きの ISO 8601)、`title`、そして任意で `summary`、`categories`、`thumb`、`previously_shown`(再放送なら `true`)。エピソードの場合は `&quot;type&quot;: &quot;episode&quot;` と `show`、`season`、`episode` を追加します。番組表はそれを番組名ごとにまとめます |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>number</code></td>
+<td>番組表でのチャンネル番号(<code translate="no" v-pre>100.1</code>、<code translate="no" v-pre>704</code>)。英字、数字、<code translate="no" v-pre>.</code>、<code translate="no" v-pre>-</code>、<code translate="no" v-pre>_</code> が使えます。他のアドオンのものと重ならない番号を選んでください。番号付きで最初に送られたチャンネルがその番号を保つ</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>title</code></td>
+<td>番組表に出る名前。既定値はストリームの <code translate="no" v-pre>display</code> タイトル</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>call_sign</code></td>
+<td>短い名前。既定値は <code translate="no" v-pre>title</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>guide</code></td>
+<td>放送内容。<code translate="no" v-pre>start</code> と <code translate="no" v-pre>end</code>(エポック秒、または <code translate="no" v-pre>Z</code> かオフセット付きの ISO 8601)、<code translate="no" v-pre>title</code>、そして任意で <code translate="no" v-pre>summary</code>、<code translate="no" v-pre>categories</code>、<code translate="no" v-pre>thumb</code>、<code translate="no" v-pre>previously_shown</code>(再放送なら <code translate="no" v-pre>true</code>)。エピソードの場合は <code translate="no" v-pre>&quot;type&quot;: &quot;episode&quot;</code> と <code translate="no" v-pre>show</code>、<code translate="no" v-pre>season</code>、<code translate="no" v-pre>episode</code> を追加します。番組表はそれを番組名ごとにまとめます</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<ul>
+<li><strong>番組表は、数時間前から、わかっている範囲で先まで送ってください</strong>(テレビ番組表のファイルと同じく、約1週間分)。番組が変わるたびに、もう一度送ってください。rex は番組が終わって3時間後まで番組を一覧に載せます。送信するたびに、そのチャンネルの番組表が置き換わります。<code translate="no" v-pre>channel</code> を付けずに送ると番組表は残ります。<code translate="no" v-pre>&quot;channel&quot;: null</code> にするとチャンネルが終了します。</li>
+<li><strong>FFmpeg が必要です</strong>。ほかのストリームと同じく、rex は誰かが視聴しているあいだにチャンネルを変換します。</li>
+<li><strong>録画はできません。</strong> Plex Web と Plex for Android には Record ボタンがありません。</li>
+<li><strong>終了するチャンネル。</strong> 手順2のとおり <code translate="no" v-pre>&quot;trash&quot;: false</code> を付けて登録してください。そうすると、削除したチャンネルは rex のゴミ箱に残らず、完全に削除されます。</li>
+<li><strong>カテゴリの効果。</strong> <code translate="no" v-pre>Sports</code> や <code translate="no" v-pre>News</code> のエピソードは、What&#x27;s On の Sports と News の棚に表示されます。<code translate="no" v-pre>type</code> がない番組は、Plex が任意のテレビ番組表で行うのと同じく、映画として表示されます。</li>
+</ul>
+<p><strong>表示されるはずのもの。</strong> Plex Web または Plex for Android のアプリのメニューに <strong>Live TV</strong> があり、番組表のその番号にチャンネルがあり、開くとストリームが再生されます。rex のログには、受け付けられなかったチャンネルと理由が出ます(例: <code translate="no" v-pre>channel.guide[3]: end must be after start</code>)。</p>
+<p><a href="https://github.com/debridmediamanager/rex-live-sports">rex-live-sports</a> は、ライブスポーツのサーバーのチャンネルについて、これらすべてを行います。グループごとに <code translate="no" v-pre>100.1</code> から番号を振り、各チャンネルの番号を保ち、番組表を Pluto TV と epgshare01 の無料の XMLTV ファイルから取得します。</p>
+<h2 id="the-rules-that-trip-people-up">つまずきやすいルール</h2>
+<retype-table copy-text="| ルール | 破るとどうなるか |
+|---|---|
+| **IDは永久です。** 変更すると、その動画は別のタイトルになります | 視聴履歴や編集内容は古い行に残り、次のスナップショットで削除されます |
+| **1つの動画につき1つのパス。** 2つのIDが同じ `path` を共有することはできません | 2つ目は拒否されます: `... is already &lt;id&gt;'s file` |
+| **ファイルのバイト列はIDごとに固定です。** rexは最初にプローブしたストリームを保持し、後からのプローブではチャプターだけが変わります。新しいプローブでストリームが変わるのは、ストリーム（`.m3u8`）の場合だけです | ファイルのバイト列が変わる場合（別のフォーマットや修正版のアップロードなど）は、新しいIDとパスを割り当ててください |
+| **必ずプローブしてください。** `media_info` がなければ、動画としては扱われません | 送信で `media_info` が届くまで、ファイルは `held` のまま待機します。ストリームは拒否されます |
+| **ソース名は変えないでください。** 行は (source, id) の組に属します | 別の名前を使うと空のソースが新しく作られ、古いソースの行は削除するまで残ります |
+| **スナップショットは完全である必要があります。** チャンネルが欠けたスナップショットは、そのチャンネルを削除します | **部分的な失敗の後にはスナップショットを送らないでください。** そのラウンドはスキップしてください |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>ルール</th>
+<th>破るとどうなるか</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>IDは永久です。</strong> 変更すると、その動画は別のタイトルになります</td>
+<td>視聴履歴や編集内容は古い行に残り、次のスナップショットで削除されます</td>
+</tr>
+<tr>
+<td><strong>1つの動画につき1つのパス。</strong> 2つのIDが同じ <code translate="no" v-pre>path</code> を共有することはできません</td>
+<td>2つ目は拒否されます: <code translate="no" v-pre>... is already &lt;id&gt;'s file</code></td>
+</tr>
+<tr>
+<td><strong>ファイルのバイト列はIDごとに固定です。</strong> rexは最初にプローブしたストリームを保持し、後からのプローブではチャプターだけが変わります。新しいプローブでストリームが変わるのは、ストリーム（<code translate="no" v-pre>.m3u8</code>）の場合だけです</td>
+<td>ファイルのバイト列が変わる場合（別のフォーマットや修正版のアップロードなど）は、新しいIDとパスを割り当ててください</td>
+</tr>
+<tr>
+<td><strong>必ずプローブしてください。</strong> <code translate="no" v-pre>media_info</code> がなければ、動画としては扱われません</td>
+<td>送信で <code translate="no" v-pre>media_info</code> が届くまで、ファイルは <code translate="no" v-pre>held</code> のまま待機します。ストリームは拒否されます</td>
+</tr>
+<tr>
+<td><strong>ソース名は変えないでください。</strong> 行は (source, id) の組に属します</td>
+<td>別の名前を使うと空のソースが新しく作られ、古いソースの行は削除するまで残ります</td>
+</tr>
+<tr>
+<td><strong>スナップショットは完全である必要があります。</strong> チャンネルが欠けたスナップショットは、そのチャンネルを削除します</td>
+<td><strong>部分的な失敗の後にはスナップショットを送らないでください。</strong> そのラウンドはスキップしてください</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>ライブラリをすでに埋めているアドオン（またはスクリプト）を<strong>置き換える</strong>場合は、ソース名、ID、パスの最初の部分をそのまま残してください。そうすると最初の送信で、新しい行を作る代わりに既存の行が、視聴履歴ごとその場で更新されます。</p>
+<h2 id="example-rex-stremio">例: rex-stremio</h2>
+<p><a href="https://github.com/debridmediamanager/rex-stremio">rex-stremio</a> は、Stremioアドオンのカタログをrexのライブラリに変換します。映画は映画ライブラリに、シリーズはTVライブラリに、ライブチャンネルは「Live TV」という名前のライブラリに入ります（Live TVガイドではありません）。Steps 1〜5を行い、標準ライブラリだけを使う1つのPythonファイルです。削除には対応していません。カタログのタイトルは、rex-stremioが削除できるものではないからです。</p>
+<p><strong>登録。</strong> チェックしたカタログはそれぞれライブラリを指定します。名前を変えない限り、Stremio Films、Stremio Shows、またはLive TVになります。rex-stremioは <code translate="no" v-pre>stremio</code> として登録し、ライブラリごとにディレクトリを1つ作ります。ディレクトリ名はライブラリ名にちなみ（例：<code translate="no" v-pre>stremio-films</code>）、シリーズのカタログでは <code translate="no" v-pre>shows</code> のタイトル、映画とライブTVのカタログでは <code translate="no" v-pre>movies</code> のタイトルとしてそのライブラリを宣言します。</p>
+<p><strong>配信。</strong> ストリームアドオンのリンクは期限切れになるため、rex-stremioはリンクを保存しません。タイトルごとにURLを1つ提供し、<code translate="no" v-pre>/&lt;directory&gt;/&lt;catalog&gt;/&lt;id&gt;.&lt;ext&gt;</code> の形式でアクセスされると、その時点で新たに取得したリンクへリダイレクトします。</p>
+<div id="example-rex-stremio-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-python"><code v-pre class="language-python">url = app.sync.resolve(vid)   # ask every stream addon, rank, take the first link that opens
+self.send_response(302)
+self.send_header(&quot;Location&quot;, url)</code></pre>
+</doc-codeblock></div>
+<p>rex-stremioは、そのタイトルを提供する各アドオンに問い合わせます（<code translate="no" v-pre>/stream/&lt;movie or series&gt;/&lt;id&gt;.json</code>）。そのうえで、普通の <code translate="no" v-pre>http(s)</code> リンクだけを残します（torrentの <code translate="no" v-pre>infoHash</code> はrexが読めるファイルではないため除外します）。解像度やサイズの上限を超えるものは捨て、残りを解像度の高い順に試します。開けたリンクは、期限の1時間前までキャッシュされます（リンクに期限が書かれていない場合は1時間）。rexはリダイレクトをたどり、シーク付きでリンクから直接ファイルを読みます。独自のヘッダーが必要なリンクはrex-stremioが自分で中継します。HLSのマスタープレイリストには、最も品質の高いバリアントだけを返します。</p>
+<p><strong>プローブ。</strong> タイトルごとに一度、rex-stremioは自分のURLに対してffprobeを実行します。これにより <code translate="no" v-pre>media_info</code> はrexが実際に読む内容と一致し、結果はキャッシュされます。同時に確認するタイトル数は <code translate="no" v-pre>probe_workers</code> で決まります（未設定なら4）。それでも、各アドオンのホストには <code translate="no" v-pre>stream_interval_seconds</code> ごとに最大1回しか問い合わせません。プローブに使ったストリームは覚えておき、再生のたびに最初に試します。そのため、実際に再生されるものは、rexに伝えた情報と同じになります。プローブのコンテナによって、パスの拡張子が決まります。<code translate="no" v-pre>.mkv</code>、<code translate="no" v-pre>.mp4</code>、<code translate="no" v-pre>.ts</code>、<code translate="no" v-pre>.avi</code>、またはHLSの場合は <code translate="no" v-pre>.m3u8</code> です。</p>
+<p><strong>保存済みプローブ。</strong> DMMのAPIキー（<code translate="no" v-pre>dmm_api_key</code>、または設定ページの <strong>DMM</strong>）を設定している場合、DMMがそのファイルのプローブをすでに保持していれば、torrentストリームはffprobeをスキップします。torrentのハッシュは、ストリームの <code translate="no" v-pre>infoHash</code>、またはそのリンクから取得します（Torrentioのdebridリンクはパスにハッシュを含んでいます）。rex-stremioは、リンクに1バイトの <code translate="no" v-pre>Range</code> を送った応答からファイルサイズを読み取り、DMMの <code translate="no" v-pre>POST /api/sponsor/mediainfo</code> に最大100件のハッシュをまとめて問い合わせます。DMMのプローブを使うのは、そのリリースのファイルのうち、このサイズに一致するものがちょうど1つだけの場合に限ります。ストリームがファイル名を示している場合は、その名前も一致の確認に使います。それ以外は上記のとおりプローブし、その結果をDMMに送り返します（<code translate="no" v-pre>POST /api/sponsor/probes</code>）。送るのは、torrentのハッシュ、ファイルサイズ、ストリームがファイル名を示している場合はその名前、そしてffprobeの出力です（読み取ったアドレスは含めません）。これにより、次に同じファイルに出会ったスポンサーはプローブをスキップできます。DMMは、ファイルごとに最初のプローブを保持し、zurg自身のスナップショットを優先して返します。<code translate="no" v-pre>share_probes: false</code> を設定すると、プローブはrex-stremioの中だけに留まります。ただし、DMMのプローブは引き続き使われます。プレイリストのプローブは決して送信されません。</p>
+<p><strong>命名。</strong> 映画とエピソードはそれぞれ、<code translate="no" v-pre>kind</code> とIMDb IDを <code translate="no" v-pre>ids</code> に入れてrexに渡します。そのためPlexは、<a href="../any-source/">rex with your own app</a> と同じ方法で名前を付けます。カタログ自体のタイトル、概要、日付、ポスターは <code translate="no" v-pre>display</code> に入ります。これはPlexが名前を付けるまでの間だけ表示されます。ライブチャンネルや、アドオンだけが知っているタイトルにはIMDb IDがないため、<code translate="no" v-pre>display</code> だけで名前が付けられます。</p>
+<p><strong>番号付け。</strong> 映画は映画のまま扱います。シリーズのシーズンとエピソードは、IMDbのIDを使うCinemetaから取得し、その番号をそのまま使います。そのため、新しいエピソードが追加されても、既存のエピソードの番号はずれません。rexは番号をTMDBの番号に合わせて配置するため、CinemetaとTMDBで番号が異なる場合、エピソードが誤った場所に入ってしまいます。</p>
+<p><strong>ID。</strong> IDは、カタログ名とIMDb ID（およびシーズンとエピソード）を組み合わせたもので、例えば <code translate="no" v-pre>st-&lt;catalog&gt;-tt0111161</code> のようになります。IDは変わらないため、2つのカタログにある同じ映画は、2つの別のアイテムになります。<strong>Catalogs as collections</strong> をオンにすると、同じライブラリ内の複数のカタログに載っている映画やシリーズは、各カタログのコレクションの中で1つのタイトルとして扱われます。</p>
+<p><strong>送信。</strong> 6時間ごとと、設定を保存するたびに、次の処理を行います。まず登録します。次に、各タイトルを確認できた時点で送信します（<code translate="no" v-pre>POST .../items</code>、一度に最大20件、または5秒ごとに準備できたもの）。最後に、各カタログのスナップショットを1つずつ、200件ずつに分けて送信します。保存後の最初のスナップショットには <code translate="no" v-pre>&quot;force&quot;: true</code> が付きます。カタログのチェックを外すと、半分以上が削除される可能性があるためです。カタログが空を返したり、一部しか返さなかったりした場合、その回ではスナップショットを送信しません。追加と更新は行いますが、何も削除しません。後の完全な回で、実際に消えたものだけが削除されます。</p>
+<h2 id="troubleshooting">トラブルシューティング</h2>
+<retype-table copy-text="| 見えるもの | 理由 | 対処法 |
+|---|---|---|
+| `rejected`: `not a video file` | ファイル名に動画の拡張子がないか、probe が `hls` ではない `.m3u8` です | ストリームには `.m3u8` の名前を付けて、その probe も送ってください。曲には `&quot;kind&quot;: &quot;track&quot;` が必要です |
+| `rejected`: `no music library holds &lt;file&gt;` | どの音楽ライブラリもそのトラックを受け取りません | ステップ 2 で `music` を指定して、音楽ライブラリを 1 つ宣言してください |
+| アルバムが `[Unknown Artist]` の下に、あなたのファイル名のまま表示される | `ids.mbid` がないか、Plex が知らない release id が入っていて、`display` もない | アルバムの MusicBrainz release id を送るか、`display` を送ってください |
+| アルバムに違うトラックが表示される | `ids.mbid` が、曲数の多いデラックス版など別のエディションを指している | 曲数が合う release を選んでください |
+| チャンネルが Live TV のガイドに出ない | `channel` がない。拒否されていて、理由は rex のログに出ている（`channel.guide[...]`）。または別のチャンネルがすでにその番号を使っている（これはログに出ません） | ログに出ているフィールドを直すか、空いている番号を選んでください |
+| Plex アプリで Live TV が表示されない | まだ `channel` 付きのアイテムを送っていないか、そのアプリでテストしていない | `channel` を送ってください。テスト済みの Plex Web か Plex for Android を使ってください |
+| 動画がいつまでも表示されない | 保留されている（`media_info` にストリームがないか、ストリームなしで送られた）。または `media_info` なしで送ったストリームが拒否された | probe してから送り直してください |
+| `rejected`: `... is already &lt;id&gt;'s file` | 別の id がその `path` を使っている | path ごとに id は 1 つにしてください |
+| スナップショットが `409`: `the snapshot would remove more than half of this source's items` を返す | スナップショットが、rex があなたから持っているアイテムの半分以上を除外している。ディスクの欠落、一覧取得の失敗、または本当の整理が原因です | 欠けたものを直してください。意図したものなら、スナップショットの最後のパートを `&quot;force&quot;: true` 付きで送ってください |
+| エピソードが「Episode 1」になり、タイルが空白になる | `display` がない | 各動画に `display` を送ってください |
+| IMDb id で送った映画が、Plex のタイトルではなくあなたの `display` のタイトルのままになる | rex は Claim されるまで、Plex にタイトルを問い合わせません | rex を Claim してください: [自分のアプリで rex を使う方法のステップ 3](any-source.md#step-3-add-it-to-a-plex-account) |
+| 画像が表示されない | URL は自宅ネットワーク上にあるか、アドオンに登録した `url` の配下にない、または http(s) ではない | アドオン自身のアドレスから配信するか、インターネットに公開してホストしてください。 |
+| rex のログに 502 が出て再生に失敗する | アドオンが応答しなかったか、ストリームのサイトが接続を拒否した | まずアドオン自身のログを確認してください |
+| Plex アプリで削除したタイトルが残る | アドオンが `DELETE` に `2xx` か `404` 以外で応答した | 自分の側で削除してから、`2xx` を返してください |
+| 削除したタイトルが戻ってくる | アドオンが、削除されたものをまだ送っている | 削除されたものを送るのをやめてください |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>見えるもの</th>
+<th>理由</th>
+<th>対処法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>rejected</code>: <code translate="no" v-pre>not a video file</code></td>
+<td>ファイル名に動画の拡張子がないか、probe が <code translate="no" v-pre>hls</code> ではない <code translate="no" v-pre>.m3u8</code> です</td>
+<td>ストリームには <code translate="no" v-pre>.m3u8</code> の名前を付けて、その probe も送ってください。曲には <code translate="no" v-pre>&quot;kind&quot;: &quot;track&quot;</code> が必要です</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>rejected</code>: <code translate="no" v-pre>no music library holds &lt;file&gt;</code></td>
+<td>どの音楽ライブラリもそのトラックを受け取りません</td>
+<td>ステップ 2 で <code translate="no" v-pre>music</code> を指定して、音楽ライブラリを 1 つ宣言してください</td>
+</tr>
+<tr>
+<td>アルバムが <code translate="no" v-pre>[Unknown Artist]</code> の下に、あなたのファイル名のまま表示される</td>
+<td><code translate="no" v-pre>ids.mbid</code> がないか、Plex が知らない release id が入っていて、<code translate="no" v-pre>display</code> もない</td>
+<td>アルバムの MusicBrainz release id を送るか、<code translate="no" v-pre>display</code> を送ってください</td>
+</tr>
+<tr>
+<td>アルバムに違うトラックが表示される</td>
+<td><code translate="no" v-pre>ids.mbid</code> が、曲数の多いデラックス版など別のエディションを指している</td>
+<td>曲数が合う release を選んでください</td>
+</tr>
+<tr>
+<td>チャンネルが Live TV のガイドに出ない</td>
+<td><code translate="no" v-pre>channel</code> がない。拒否されていて、理由は rex のログに出ている（<code translate="no" v-pre>channel.guide[...]</code>）。または別のチャンネルがすでにその番号を使っている（これはログに出ません）</td>
+<td>ログに出ているフィールドを直すか、空いている番号を選んでください</td>
+</tr>
+<tr>
+<td>Plex アプリで Live TV が表示されない</td>
+<td>まだ <code translate="no" v-pre>channel</code> 付きのアイテムを送っていないか、そのアプリでテストしていない</td>
+<td><code translate="no" v-pre>channel</code> を送ってください。テスト済みの Plex Web か Plex for Android を使ってください</td>
+</tr>
+<tr>
+<td>動画がいつまでも表示されない</td>
+<td>保留されている（<code translate="no" v-pre>media_info</code> にストリームがないか、ストリームなしで送られた）。または <code translate="no" v-pre>media_info</code> なしで送ったストリームが拒否された</td>
+<td>probe してから送り直してください</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>rejected</code>: <code translate="no" v-pre>... is already &lt;id&gt;'s file</code></td>
+<td>別の id がその <code translate="no" v-pre>path</code> を使っている</td>
+<td>path ごとに id は 1 つにしてください</td>
+</tr>
+<tr>
+<td>スナップショットが <code translate="no" v-pre>409</code>: <code translate="no" v-pre>the snapshot would remove more than half of this source's items</code> を返す</td>
+<td>スナップショットが、rex があなたから持っているアイテムの半分以上を除外している。ディスクの欠落、一覧取得の失敗、または本当の整理が原因です</td>
+<td>欠けたものを直してください。意図したものなら、スナップショットの最後のパートを <code translate="no" v-pre>&quot;force&quot;: true</code> 付きで送ってください</td>
+</tr>
+<tr>
+<td>エピソードが「Episode 1」になり、タイルが空白になる</td>
+<td><code translate="no" v-pre>display</code> がない</td>
+<td>各動画に <code translate="no" v-pre>display</code> を送ってください</td>
+</tr>
+<tr>
+<td>IMDb id で送った映画が、Plex のタイトルではなくあなたの <code translate="no" v-pre>display</code> のタイトルのままになる</td>
+<td>rex は Claim されるまで、Plex にタイトルを問い合わせません</td>
+<td>rex を Claim してください: <a href="../any-source/#step-3-add-it-to-a-plex-account">自分のアプリで rex を使う方法のステップ 3</a></td>
+</tr>
+<tr>
+<td>画像が表示されない</td>
+<td>URL は自宅ネットワーク上にあるか、アドオンに登録した <code translate="no" v-pre>url</code> の配下にない、または http(s) ではない</td>
+<td>アドオン自身のアドレスから配信するか、インターネットに公開してホストしてください。</td>
+</tr>
+<tr>
+<td>rex のログに 502 が出て再生に失敗する</td>
+<td>アドオンが応答しなかったか、ストリームのサイトが接続を拒否した</td>
+<td>まずアドオン自身のログを確認してください</td>
+</tr>
+<tr>
+<td>Plex アプリで削除したタイトルが残る</td>
+<td>アドオンが <code translate="no" v-pre>DELETE</code> に <code translate="no" v-pre>2xx</code> か <code translate="no" v-pre>404</code> 以外で応答した</td>
+<td>自分の側で削除してから、<code translate="no" v-pre>2xx</code> を返してください</td>
+</tr>
+<tr>
+<td>削除したタイトルが戻ってくる</td>
+<td>アドオンが、削除されたものをまだ送っている</td>
+<td>削除されたものを送るのをやめてください</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>まだ困っていますか？ <a href="https://discord.com/invite/7u4YjMThXP">Discord</a> の <strong>rex-support</strong> フォーラムで聞いてください。<a href="../../guides/remote-help/">助けを求める方法</a> に、何を含めればよいかが書かれています。</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../rex/import-watched/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">前へ</span>
+                                <span class="block mt-1">視聴履歴を持ち込む</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../rex/addon-home-videos/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">次へ</span>
+                                <span class="block mt-1">チュートリアル: ホームビデオアドオン</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "rex アドオンの作成", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/rex/addons.md" }</script>
+</body>
+</html>

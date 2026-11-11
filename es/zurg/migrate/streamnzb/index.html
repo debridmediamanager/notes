@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/es">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672691398">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Migrar de streamnzb v5.1.0 a zurg</title>
+    <meta name="title" content="Migrar de streamnzb v5.1.0 a zurg">
+    <meta name="description" content="streamnzb es un addon de Stremio. Busca en indexadores Newznab cuando pulsas play y transmite el resultado ganador. No guarda nada. No tiene montaje WebDAV en el sistema de archivos ni biblioteca de Plex.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/es/zurg/migrate/streamnzb/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/es/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/es/zurg/migrate/streamnzb/">
+    <meta property="og:title" content="Migrar de streamnzb v5.1.0 a zurg">
+    <meta property="og:description" content="streamnzb es un addon de Stremio. Busca en indexadores Newznab cuando pulsas play y transmite el resultado ganador. No guarda nada. No tiene montaje WebDAV en el sistema de archivos ni biblioteca de Plex.">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="es_ES">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/es/zurg/migrate/streamnzb/">
+    <meta name="twitter:title" content="Migrar de streamnzb v5.1.0 a zurg">
+    <meta name="twitter:description" content="streamnzb es un addon de Stremio. Busca en indexadores Newznab cuando pulsas play y transmite el resultado ganador. No guarda nada. No tiene montaje WebDAV en el sistema de archivos ni biblioteca de Plex.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/es/zurg/migrate/streamnzb.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672691398" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672691398" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672691398" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672691398" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/es/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>Español</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/es/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/es/download.html" target="_blank">Descargar zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/es/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Patrocinador</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>Español</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/es/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/es/download.html" target="_blank">Descargar zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/es/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Patrocinador</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="migrating-from-streamnzb-v510-to-zurg">Migrar de streamnzb v5.1.0 a zurg</h1>
+<p>streamnzb es un addon de Stremio. Busca en indexadores Newznab cuando pulsas play y transmite el resultado ganador.
+No guarda nada. No tiene montaje WebDAV en el sistema de archivos ni biblioteca de Plex.</p>
+<p>No hay <strong>ninguna biblioteca en disco que conservar ni estado de visualización de Plex en riesgo</strong>. Los pasos de conservación de rutas de las otras guías de migración no se aplican.</p>
+<p>zurg puede ocupar su lugar de dos formas. Usa una de ellas o las dos.</p>
+<ul>
+<li><strong>Mantener Stremio.</strong> zurg tiene un <a href="../../guides/stremio/">addon de Stremio</a> propio. Busca en tus indexadores Newznab cuando pulsas play y transmite la release que elijas a través de tu cuenta de noticias. Así funciona también streamnzb. Solo necesita zurg. Sin rclone y sin servidor multimedia. Cada release reproducida de esta forma también se queda en la biblioteca de zurg.</li>
+<li><strong>Crear una biblioteca.</strong> zurg guarda las releases que tiene en una biblioteca y la monta para Plex, Jellyfin o Emby. Sonarr y Radarr pueden llenarla. También puede hacerlo el propio zurg desde tu watchlist.</li>
+</ul>
+<p>Algunas cosas que hacía streamnzb no tienen equivalente en zurg. Esta guía indica cuáles.</p>
+<p>Esta guía es más corta que sus hermanas porque el problema es más pequeño.</p>
+<h2 id="what-needs-rescanning-and-what-new-content-shows-up">Qué hay que volver a escanear y qué contenido nuevo aparece</h2>
+<p>Las dos preguntas que responden las <a href="../">otras guías de migración</a> no aplican realmente aquí. Vale la pena explicar por qué en lugar de dejarte con la duda.</p>
+<p><strong>No hay que volver a escanear nada porque no hay nada que escanear.</strong> streamnzb no tiene biblioteca y Plex no tiene elementos vinculados a ninguna ruta. Así que la maquinaria de protección contra la papelera de la página compartida no te afecta en absoluto. No hay ningún elemento antiguo que conservar y nada que se pueda enviar a la papelera por un error.</p>
+<p><strong>Todo es contenido nuevo.</strong> Lo que metas en <code translate="no" v-pre>nzbs/</code> de zurg será un primer escaneo sobre una biblioteca vacía. Configura tus bibliotecas como quieres antes del primer pase, en lugar de arreglarlas después. Conviene tener dos ajustes listos antes.</p>
+<ul>
+<li><a href="../../reference/config/"><code translate="no" v-pre>only_show_the_biggest_file: true</code></a> en los directorios que escanean tus bibliotecas multimedia. Si no, verás clips de muestra, archivos <code translate="no" v-pre>.nfo</code> y los archivos <code translate="no" v-pre>.url</code> de publicidad del poster.</li>
+<li>&quot;Generate video preview thumbnails&quot; <strong>desactivado</strong> en esas bibliotecas. En un montaje de streaming, cada pase de miniaturas es una lectura completa del release que consume tu cuota de Usenet. Un primer escaneo le entrega a Plex toda la biblioteca de una vez.</li>
+</ul>
+<hr>
+<h2 id="the-model-change">El cambio de modelo</h2>
+<retype-table copy-text="| | streamnzb | zurg |
+|---|---|---|
+| Adquisición de contenido | Busca en indexadores Newznab por cada solicitud de reproducción | El [addon de Stremio](../guides/stremio.md) busca en indexadores Newznab por cada solicitud de reproducción. Una biblioteca también se llena con archivos `.nzb` y con el endpoint de SABnzbd y [adquisición](../guides/acquisition.md) |
+| Ranking y selección | Rasgos de jhin, perfiles de filtro y una comprobación de AvailNZB | Primero la resolución y luego una gama de tamaños dentro de cada resolución. Sin rasgos ni perfiles de filtro |
+| Retención | No se guarda nada. Cada reproducción es una búsqueda nueva | Biblioteca persistente. Un release reproducido a través del addon se queda en ella |
+| Cliente | Stremio. El addon también es el proveedor de metadatos | Stremio a través del addon de zurg, que solo responde con streams. Cualquier servidor multimedia sobre el montaje. O WebDAV directamente para Infuse |
+| Sistema de archivos | Ninguno | Montaje FUSE de rclone, más WebDAV, más un índice HTTP simple |
+| Archivos comprimidos | RAR y 7z **solo STORE**. Los releases comprimidos no se reproducirán | RAR y 7z comprimidos se transmiten de forma transparente |
+| Publicaciones ofuscadas | Rechazadas | Nombres recuperados de las cabeceras yEnc y PAR2. El contenido se presenta con el nombre del release |
+| Publicaciones dañadas | Omitidas mediante AvailNZB | La reparación PAR2 reconstruye los artículos que faltan. El addon omite un release cuyo inicio ha desaparecido y prueba el siguiente |
+| API de SABnzbd | No. En su lugar tiene un proxy NNTP en el puerto 119 | Sí, y es opcional. Cada descarga se comprueba contra los servidores de noticias. Una publicación muerta se reconstruye desde PAR2 cuando es posible y se informa como Failed cuando no lo es |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>streamnzb</th>
+<th>zurg</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Adquisición de contenido</td>
+<td>Busca en indexadores Newznab por cada solicitud de reproducción</td>
+<td>El <a href="../../guides/stremio/">addon de Stremio</a> busca en indexadores Newznab por cada solicitud de reproducción. Una biblioteca también se llena con archivos <code translate="no" v-pre>.nzb</code> y con el endpoint de SABnzbd y <a href="../../guides/acquisition/">adquisición</a></td>
+</tr>
+<tr>
+<td>Ranking y selección</td>
+<td>Rasgos de jhin, perfiles de filtro y una comprobación de AvailNZB</td>
+<td>Primero la resolución y luego una gama de tamaños dentro de cada resolución. Sin rasgos ni perfiles de filtro</td>
+</tr>
+<tr>
+<td>Retención</td>
+<td>No se guarda nada. Cada reproducción es una búsqueda nueva</td>
+<td>Biblioteca persistente. Un release reproducido a través del addon se queda en ella</td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>Stremio. El addon también es el proveedor de metadatos</td>
+<td>Stremio a través del addon de zurg, que solo responde con streams. Cualquier servidor multimedia sobre el montaje. O WebDAV directamente para Infuse</td>
+</tr>
+<tr>
+<td>Sistema de archivos</td>
+<td>Ninguno</td>
+<td>Montaje FUSE de rclone, más WebDAV, más un índice HTTP simple</td>
+</tr>
+<tr>
+<td>Archivos comprimidos</td>
+<td>RAR y 7z <strong>solo STORE</strong>. Los releases comprimidos no se reproducirán</td>
+<td>RAR y 7z comprimidos se transmiten de forma transparente</td>
+</tr>
+<tr>
+<td>Publicaciones ofuscadas</td>
+<td>Rechazadas</td>
+<td>Nombres recuperados de las cabeceras yEnc y PAR2. El contenido se presenta con el nombre del release</td>
+</tr>
+<tr>
+<td>Publicaciones dañadas</td>
+<td>Omitidas mediante AvailNZB</td>
+<td>La reparación PAR2 reconstruye los artículos que faltan. El addon omite un release cuyo inicio ha desaparecido y prueba el siguiente</td>
+</tr>
+<tr>
+<td>API de SABnzbd</td>
+<td>No. En su lugar tiene un proxy NNTP en el puerto 119</td>
+<td>Sí, y es opcional. Cada descarga se comprueba contra los servidores de noticias. Una publicación muerta se reconstruye desde PAR2 cuando es posible y se informa como Failed cuando no lo es</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>En el día a día, Stremio puede seguir como está. Añade el addon de zurg y elige un título como lo hacías antes. zurg busca en tus indexadores y reproduce lo que elijas. La <a href="../../guides/stremio/">página de Stremio</a> explica la configuración. La primera reproducción de un release espera mientras zurg descarga el NZB y lista el release. Suele tardar unos pocos segundos. Cada reproducción posterior de ese release empieza al instante.</p>
+<p>Una biblioteca para tu servidor multimedia necesita algo que la llene.</p>
+<ul>
+<li><strong>El endpoint de SABnzbd.</strong> Al poner <code translate="no" v-pre>sabnzbd.enabled: true</code>, zurg responde a Sonarr y Radarr como cliente de descargas. La importación es un renombrado dentro de <code translate="no" v-pre>__magic__</code>. La descarga aterriza en <code translate="no" v-pre>__magic__/__all__</code>. La importación mueve el archivo desde ahí a la carpeta raíz que creaste al lado. No se copia nada. La mayoría de configuraciones de biblioteca deberían usar esto. Consulta <a href="../../guides/sonarr-radarr/">Sonarr y Radarr</a>. zurg comprueba cada descarga contra los servidores de noticias antes de informar que ha terminado. Pregunta por el inicio y el final de cada archivo. También descarga el primer artículo de cada archivo. Eso son hasta sesenta y cuatro más algunos extra en un release con pocos archivos. Algunos servidores de noticias siguen diciendo que un artículo existe después de que su contenido fuera retirado, y solo una descarga lo demuestra. zurg reconstruye un release con artículos perdidos a partir de sus archivos PAR2 cuando puede. Si no puede reconstruirlo, se informa como <strong>Failed</strong>. Entonces el *arr lo añade a la lista de bloqueados y descarga otro.</li>
+<li><strong>Adquisición.</strong> zurg puede buscar solicitudes por sí solo. Vienen de tu watchlist de Plex y de Seerr y los *arr. Busca en tus indexadores Newznab y comprueba cada descarga de la misma forma. Consulta <a href="../../guides/acquisition/">adquisición</a>.</li>
+<li><strong>Colocación manual.</strong> Descarga el <code translate="no" v-pre>.nzb</code> desde la web de tu indexador y cópialo en <code translate="no" v-pre>nzbs/</code>. El nombre es fijo, el directorio se vuelve a escanear cada 15 segundos más o menos, y los archivos nunca se mueven ni se consumen. Siempre funciona y es la base más honesta.</li>
+<li><strong>&quot;Usenet Blackhole&quot; de Sonarr y Radarr.</strong> Los *arr se pueden configurar con un cliente de descargas Blackhole cuyo <em>Nzb Folder</em> sea <code translate="no" v-pre>nzbs/</code> de zurg. Así recuperas la automatización de búsqueda y descarga sin el endpoint, pero con un coste. El *arr espera a que aparezca una descarga completada en su carpeta de vigilancia para importarla. zurg nunca genera una, porque el release aparece en el montaje. Así que la cola del *arr muestra el elemento como si nunca terminara. Obtienes entrega automatizada de NZB en lugar del proceso de importación y renombrado del *arr. La parte del *arr de esto no se volvió a verificar para la guía. La parte de zurg sí está verificada en el código en <code translate="no" v-pre>internal/nzb/provider.go:30</code>.</li>
+<li><strong>La descarga RSS o de carrito de un indexador a una carpeta.</strong> Esto depende por completo del indexador y de que tú escribas un script para la descarga. No verificado, y solo se menciona porque algunos indexadores lo ofrecen.</li>
+</ul>
+<p><strong>Pon nombre al archivo antes de soltarlo.</strong> La carpeta del release en el montaje se nombra según el <em>nombre de archivo</em> del NZB. La cabecera <code translate="no" v-pre>&lt;meta type=&quot;name&quot;&gt;</code> solo se usa cuando el nombre de archivo parece un hash. Eso se midió en los cinco servidores el 2026-08-19. Un archivo llamado <code translate="no" v-pre>indexer_download_48213.nzb</code> no le da nada a Plex para emparejar, así que primero cámbiale el nombre por el del release. Esto también significa que el nombre de la carpeta está totalmente bajo tu control. Dos releases distintos con el mismo nombre reciben un sufijo <code translate="no" v-pre> {shorthash}</code>.</p>
+<hr>
+<h2 id="configuration-that-carries-over">Configuración que se mantiene</h2>
+<p>Hay dos cosas que sí se transfieren. La primera es el proveedor de Usenet. streamnzb configura los proveedores en <strong>Settings → Providers</strong> con host, puerto, nombre de usuario, contraseña y conexiones. Las variables de entorno también funcionan. La misma cuenta pasa a ser el bloque <code translate="no" v-pre>nntp</code> de zurg.</p>
+<p>Antes, en streamnzb. Esta es la forma con variables de entorno y los nombres de clave documentados.</p>
+<div id="configuration-that-carries-over-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">PROVIDER_1_HOST=news.example.com
+PROVIDER_1_PORT=563
+PROVIDER_1_SSL=true
+PROVIDER_1_USERNAME=USERNAME
+PROVIDER_1_PASSWORD=PASSWORD
+PROVIDER_1_CONNECTIONS=30
+PROVIDER_1_PRIORITY=1</code></pre>
+</doc-codeblock></div>
+<p>Después, en el <code translate="no" v-pre>config.yml</code> de zurg.</p>
+<div id="configuration-that-carries-over-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">providers:
+  - type: nzb
+    nntp:
+      host: news.example.com
+      port: 563
+      tls: true            # streamnzb's SSL flag
+      username: USERNAME
+      password: PASSWORD
+      connections: 30      # your plan's real allowance and the tuning knob
+      cache_size_mb: 512</code></pre>
+</doc-codeblock></div>
+<p>Un segundo proveedor de streamnzb, como <code translate="no" v-pre>PROVIDER_2_*</code>, va dentro de <code translate="no" v-pre>nntp.servers</code>. Así zurg recorre las cuentas artículo por artículo cuando hace falta. <code translate="no" v-pre>priority</code> se traslada directamente. zurg añade dos conceptos que streamnzb no tiene. Si pones <code translate="no" v-pre>backup: true</code>, marcas una cuenta de bloque medido que solo se consulta cuando todas las principales responden <em>no such article</em>. Y con <code translate="no" v-pre>backbone</code> evitas que dos cuentas del mismo spool reciban la misma pregunta dos veces. Solo se permite una entrada de proveedor <code translate="no" v-pre>nzb</code>. Las cuentas de noticias extra van dentro de ella, no al lado.</p>
+<p>La segunda son tus indexadores. Van en <code translate="no" v-pre>stremio.indexers</code> con la misma URL y la misma API key. Adquisición usa esa misma lista cuando no tiene una propia.</p>
+<div id="configuration-that-carries-over-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">stremio:
+  enabled: true
+  indexers:
+    - name: my-indexer
+      url: https://indexer.example
+      api_key: YOUR_INDEXER_API_KEY</code></pre>
+</doc-codeblock></div>
+<p>Nada más de <code translate="no" v-pre>data/config.json</code> de streamnzb se transfiere. Los bloques <code translate="no" v-pre>streams</code> y <code translate="no" v-pre>filter_profiles</code> daban forma a lo que ofrecía el addon de streamnzb. El addon de zurg tiene una lista por título y su propio ranking. Sus opciones más cercanas son dos. <code translate="no" v-pre>max_size_gb</code> descarta las versiones por encima de un tamaño. <code translate="no" v-pre>max_results</code> indica cuántas versiones conserva cada resolución. El <a href="../../guides/stremio/">página de Stremio</a> explica el resto.</p>
+<h2 id="watch-history">Historial de reproducción</h2>
+<p>streamnzb guarda el historial de reproducción de cada stream en su base de datos. Por defecto es SQLite en <code translate="no" v-pre>data/streamnzb.db</code>, y opcionalmente Postgres. Con esos datos construye las filas Continue Watching y Because You Watched. Su documentación describe el contenido como &quot;library, search and play history, bad releases, and metrics&quot;.</p>
+<p><strong>Nada de eso es portable a una biblioteca de Plex.</strong> El estado de visualización de Plex se guarda por elemento, en la propia base de datos de Plex, y está ligado a elementos que primero deben existir en una biblioteca. No existe ningún importador en ninguno de los dos lados. En realidad no es tanto una pérdida de datos como un desajuste de modelos. Las filas de historial de streamnzb hacen referencia a búsquedas y streams, no a archivos. Si quieres conservar el registro antes de desmantelarlo, la base de datos es SQLite normal y se puede leer directamente.</p>
+<div id="watch-history-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sqlite3 data/streamnzb.db .tables
+sqlite3 data/streamnzb.db &quot;select * from &lt;table&gt; limit 20;&quot;</code></pre>
+</doc-codeblock></div>
+<p>Los nombres exactos de las tablas no están documentados y no se han verificado para esta guía. Para encontrarlos, ejecuta <code translate="no" v-pre>.tables</code>. En Postgres, los mismos datos están en la base de datos a la que apunte <code translate="no" v-pre>DATABASE_URL</code>. El estado de visualización en tu nueva configuración empieza desde cero y se acumula en Plex desde la primera reproducción.</p>
+<hr>
+<h2 id="what-you-gain">Lo que ganas</h2>
+<ul>
+<li><strong>Una biblioteca real.</strong> Plex, Jellyfin y Emby escanean un sistema de archivos y guardan los metadatos y el estado de reproducción en todos los clientes que soportan. No solo Stremio.</li>
+<li><strong>Reparación con PAR2.</strong> Una release con artículos faltantes se reconstruye en segundo plano usando sus propios archivos de recuperación. La respuesta de streamnzb ante una release mala era saltársela. La de zurg es arreglarla.</li>
+<li><strong>Releases ofuscadas.</strong> zurg recupera los nombres de archivo reales a partir de las cabeceras yEnc y del índice PAR2, y presenta un payload completamente ofuscado con el nombre de la release. Medido en el banco, donde <code translate="no" v-pre>Obfuscated.nzb</code> sirvió un <code translate="no" v-pre>Toy.Story.5.2026...KyoGo.mkv</code> limpio. streamnzb rechaza estas directamente.</li>
+<li><strong>RAR y 7z comprimidos.</strong> streamnzb solo transmite archivos comprimidos en modo STORE, y su README lo deja claro: &quot;Compressed RAR releases will not play&quot;. zurg transmite el vídeo de archivos comprimidos y reproduce la estructura de directorios interna mientras lo hace.</li>
+<li><strong>Las segundas reproducciones arrancan al instante.</strong> streamnzb buscaba y comprobaba en cada reproducción. zurg guarda lo que ya reproduciste. Una release que ya está en la biblioteca se reproduce de inmediato. Todo lo que Sonarr o Radarr descargan está en ese estado desde el principio.</li>
+<li><strong>Gran profundidad con varias cuentas.</strong> Prioridades, cuentas <code translate="no" v-pre>backup</code> de pago por uso, deduplicación con <code translate="no" v-pre>backbone</code> y una ruta de reparación cuando todas las cuentas fallan.</li>
+</ul>
+<h2 id="what-you-lose">Lo que pierdes</h2>
+<ul>
+<li><strong>jhin y perfiles de filtro.</strong> El addon de zurg también busca en tus indexadores. Ordena por resolución y tamaño, y nada más. No hay rasgos de jhin, perfiles de filtro ni puntuaciones.</li>
+<li><strong>La comprobación de AvailNZB.</strong> zurg no le pregunta a nadie más si un release sigue disponible. El addon lo averigua leyendo el inicio del release que elegiste. Cuando ese inicio ya no está, pasa al siguiente release de la lista. Una descarga desde Sonarr o Radarr se comprueba contra tus servidores de noticias antes de darse por terminada. Los daños más adentro de un archivo aparecen cuando una lectura llega hasta ellos. Después, la reparación PAR2 lo reconstruye siempre que el post tenga suficientes datos de recuperación. El 2026-08-19, un conjunto de RAR al que le faltaban volúmenes completos apareció como una carpeta vacía en lugar de como un error.</li>
+<li><strong>Los catálogos y filas de streamnzb.</strong> Sus catálogos integrados, sus metadatos y sus filas de Continue Watching y Because You Watched salían de su propio historial. El addon de zurg solo responde con streams. Un servidor multimedia tiene sus propias versiones de esas filas para una biblioteca.</li>
+<li><strong>El proxy NNTP en el puerto 119.</strong> Si SABnzbd o NZBGet apuntaban a streamnzb como su servidor de noticias, ahora necesitan otra vez las credenciales reales del proveedor.</li>
+</ul>
+<h2 id="standing-up-zurg">Poner en marcha zurg</h2>
+<p>A <code translate="no" v-pre>config.yml</code> que funciona solo con Usenet.</p>
+<div id="standing-up-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">zurg: v1
+providers:
+  - type: nzb
+    nntp:
+      host: news.example.com
+      port: 563
+      tls: true
+      username: USERNAME
+      password: PASSWORD
+      connections: 30          # the plan's full allowance once streamnzb is gone
+      cache_size_mb: 512
+
+enable_repair: true            # PAR2 repair does not run without this
+par2_patch_cache_mb: 512
+
+stremio:                       # keeps Stremio working. Leave it out for a library alone
+  enabled: true
+  indexers:
+    - name: my-indexer
+      url: https://indexer.example
+      api_key: YOUR_INDEXER_API_KEY
+
+mount_path: &quot;/mnt/zurg&quot;
+rclone_enabled: true
+rclone_binary: bin/rclone      # downloaded automatically on first run
+
+directories:
+  shows:
+    group: media
+    group_order: 20
+    filters:
+      - has_episodes: true
+  movies:
+    group: media
+    group_order: 30
+    only_show_the_biggest_file: true
+    filters:
+      - any_file_inside_not_regex: /\.(mp3|flac|m4b)$/i</code></pre>
+</doc-codeblock></div>
+<p>No uses filtros <code translate="no" v-pre>tags_match_any</code> para contenido de Usenet. Las etiquetas <code translate="no" v-pre>zurg_*</code> vienen de ffprobe y ffprobe nunca se ejecuta en este backend. Un directorio así simplemente nunca contendrá una release de Usenet. Filtra por nombres, extensiones, tamaños y <code translate="no" v-pre>has_episodes</code>.</p>
+<p>Luego inícialo.</p>
+<div id="standing-up-zurg-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./zurg               # startup verifies the news account and says so, loudly, and makes nzbs/
+ls /mnt/zurg/__all__/</code></pre>
+</doc-codeblock></div>
+<p>Si Usenet es tu única cuenta, su carpeta <code translate="no" v-pre>__nzb__</code> no aparece en el listado raíz del mount, y <code translate="no" v-pre>__all__</code> contiene los mismos archivos. Así que prueba la reproducción en <code translate="no" v-pre>__all__</code> dentro del mount, o abre la ruta HTTP directa <code translate="no" v-pre>http://localhost:9999/http/__nzb__/</code>. Los subdirectorios de <code translate="no" v-pre>nzbs/</code> se omiten y <code translate="no" v-pre>.nzb.gz</code> no se lee.</p>
+<h3 id="the-first-plex-library">La primera biblioteca de Plex</h3>
+<p>Apunta las bibliotecas a <strong>subdirectorios</strong> del montaje, como <code translate="no" v-pre>/mnt/zurg/movies</code> y <code translate="no" v-pre>/mnt/zurg/shows</code>. Nunca a la raíz. La misma versión aparece en <code translate="no" v-pre>__all__</code> y en cada directorio que coincida, así que escanear la raíz la haría recorrerse varias veces.</p>
+<p>Si Usenet es tu única cuenta, <code translate="no" v-pre>__nzb__</code> no aparece en el listado raíz del montaje y no se resuelve a través de él, porque <code translate="no" v-pre>__all__</code> contiene los mismos archivos.</p>
+<p>Dale a zurg <code translate="no" v-pre>plex_server_url</code> y <code translate="no" v-pre>plex_token</code> para que pueda pedir escaneos parciales.</p>
+<p>Hay dos ajustes de la biblioteca que importan desde el primer escaneo, tanto si la biblioteca es nueva como si no. Lo que evitan es que el montaje falle <em>durante</em> un escaneo.</p>
+<ol>
+<li><strong>Desmarca &quot;Empty trash automatically after every scan&quot;</strong> para que <code translate="no" v-pre>autoEmptyTrash</code> sea 0. Si el montaje desaparece a mitad de un escaneo, Plex concluye que todos los archivos se borraron. Basta con reiniciar zurg o volver a montar con rclone para que pase. Con el vaciado automático activado, los elementos se eliminan de forma permanente y al instante. Con él desactivado, se quedan en la papelera y vuelven cuando vuelve el montaje. Esto ya ha costado decenas de miles de elementos.</li>
+<li><strong>Desmarca &quot;Generate video preview thumbnails&quot;.</strong> En Usenet, cada pasada de miniaturas es una lectura completa de la versión a través de tu cupo de conexión.</li>
+</ol>
+<p>Y nunca reinicies zurg mientras Plex está escaneando. La comprobación previa y los dos ajustes deben estar a cero.</p>
+<div id="the-first-plex-library-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">TOKEN=$(grep ^plex_token: config.yml | awk '{print $2}' | tr -d &quot;\&quot;'&quot;)
+curl -s &quot;http://localhost:32400/status/sessions?X-Plex-Token=$TOKEN&quot; | grep -o 'size=&quot;[0-9]*&quot;'          # want size=&quot;0&quot;
+curl -s &quot;http://localhost:32400/library/sections?X-Plex-Token=$TOKEN&quot; | grep -o 'refreshing=&quot;1&quot;' | wc -l # want 0</code></pre>
+</doc-codeblock></div>
+<p>Usa <code translate="no" v-pre>grep -o … | wc -l</code> en lugar de <code translate="no" v-pre>grep -c</code>. grep devuelve un código de salida distinto de cero cuando no encuentra nada, y ese es el caso <em>bueno</em> aquí. Eso interrumpe una cadena <code translate="no" v-pre>&amp;&amp;</code> o un script con <code translate="no" v-pre>set -e</code> justo antes del reinicio que se estaba protegiendo.</p>
+<p>Los tamaños de los archivos se estabilizan un poco después de que una versión aparezca por primera vez en el listado. Un NZB no indica cuánto mide cada archivo. Por eso, el primer listado lo estima a partir de los tamaños de los artículos que registra el NZB. Esa estimación puede salir hasta un 3 por ciento más alta. Después, zurg aprende en segundo plano la longitud exacta y la conserva. Un escaneo que se ejecute antes de eso verá la estimación. Plex entonces considera que el archivo ha cambiado y lo vuelve a analizar una vez. No se borra nada.</p>
+<h2 id="running-both-side-by-side">Ejecutar ambos en paralelo</h2>
+<p>Nada choca en los puertos. streamnzb usa 7000 y 119, y zurg usa 9999. Así que la transición sensata es mantener streamnzb sirviendo Stremio mientras la biblioteca de zurg se va llenando.</p>
+<p>El único recurso compartido es la cuenta de Usenet. <strong>Ambos leen del mismo cupo de conexiones, y el proveedor lo aplica a los dos.</strong> Un plan con 50 conexiones no puede usar 50 para streamnzb y 30 para zurg. El exceso recibe conexiones rechazadas, y en el lado de zurg eso se ve como streams lentos o que se atascan. Repártelo de forma explícita. Prueba <code translate="no" v-pre>PROVIDER_1_CONNECTIONS=20</code> en streamnzb y <code translate="no" v-pre>connections: 30</code> en zurg. Dale a zurg todo el cupo cuando retires streamnzb, porque el rendimiento de zurg por stream depende de ese número.</p>
+<p>Cuando apagues streamnzb, quita su addon de Stremio de tus clientes. Guarda una copia de <code translate="no" v-pre>data/</code> si quieres conservar el historial. Su <code translate="no" v-pre>config.json</code> y <code translate="no" v-pre>streamnzb.db</code> son todo su estado. Después, vuelve a apuntar directamente a tu proveedor cualquier cosa que usara el proxy NNTP del puerto 119.</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/migrate/nzbdav/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Anterior</span>
+                                <span class="block mt-1">Desde nzbdav</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/reference/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Siguiente</span>
+                                <span class="block mt-1">Referencia</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Desde streamnzb", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/migrate/streamnzb.md" }</script>
+</body>
+</html>

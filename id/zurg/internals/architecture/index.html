@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/id">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672707986">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Arsitektur</title>
+    <meta name="title" content="Arsitektur">
+    <meta name="description" content="Peta tentang apa itu zurg, bagaimana bagian-bagiannya saling terhubung, dan mengapa setiap package ada. Ditujukan untuk seseorang yang akan mengubah kode: dokumen ini menjelaskan keputusan-keputusan penting dan invariant yang mudah dilanggar tanpa disadari.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/id/zurg/internals/architecture/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/id/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/id/zurg/internals/architecture/">
+    <meta property="og:title" content="Arsitektur">
+    <meta property="og:description" content="Peta tentang apa itu zurg, bagaimana bagian-bagiannya saling terhubung, dan mengapa setiap package ada. Ditujukan untuk seseorang yang akan mengubah kode: dokumen ini menjelaskan keputusan-keputusan penting dan invariant yang mudah dilanggar tanpa disadari.">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/id/zurg/internals/architecture/">
+    <meta name="twitter:title" content="Arsitektur">
+    <meta name="twitter:description" content="Peta tentang apa itu zurg, bagaimana bagian-bagiannya saling terhubung, dan mengapa setiap package ada. Ditujukan untuk seseorang yang akan mengubah kode: dokumen ini menjelaskan keputusan-keputusan penting dan invariant yang mudah dilanggar tanpa disadari.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/id/zurg/internals/architecture.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672707986" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672707986" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672707986" data-turbo-eval="false" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/id/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>Bahasa Indonesia</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/id/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/id/download.html" target="_blank">Unduh zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/id/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>Bahasa Indonesia</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/id/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/id/download.html" target="_blank">Unduh zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/id/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="architecture">Arsitektur</h1>
+<p>Peta tentang apa itu zurg, bagaimana bagian-bagiannya saling terhubung, dan mengapa setiap package ada. Ditujukan untuk seseorang yang akan mengubah kode: dokumen ini menjelaskan keputusan-keputusan penting dan invariant yang mudah dilanggar tanpa disadari.</p>
+<p>Detail per package ada di <code translate="no" v-pre>doc.go</code> masing-masing package. Dokumen ini adalah tingkat di atasnya: bentuk keseluruhan, dan alasan di balik bentuk tersebut.</p>
+<h2 id="what-zurg-is">Apa itu zurg</h2>
+<p>Sebuah daemon Go yang menampilkan pustaka torrent dari akun debrid sebagai filesystem virtual. Ia tidak menyimpan media apa pun. Setiap read diubah menjadi HTTP GET dengan range ke CDN penyedia saat permintaan dibuat.</p>
+<p>Ia tidak punya konten sendiri dan menolak PUT, jadi dari sisi byte ia bersifat read-only. Ada dua write yang diterima: rename, yang hanya menyimpan nama dan tidak menyentuh akun mana pun (<a href="../../guides/renaming/">renaming.md</a>), dan DELETE, yang menghapus release dari setiap akun yang memilikinya. <code translate="no" v-pre>__magic__</code> menambahkan write ketiga di dalam satu namespace, yaitu layout tersimpan (<a href="../../guides/magic/">magic.md</a>). Ini berlaku di semua tempat dalam namespace itu kecuali di <code translate="no" v-pre>__magic__/__all__</code> dan folder release yang langsung ada di dalamnya, yaitu cermin hasil komputasi yang diimpor oleh download client.</p>
+<p>Empat tampilan untuk pustaka yang sama:</p>
+<retype-table copy-text="| Endpoint | Untuk |
+|---|---|
+| `/dav/` | WebDAV, yang di-mount oleh rclone |
+| `/http/` | Penjelajah direktori HTML |
+| `/infuse/` | Varian WebDAV dengan penyesuaian untuk keanehan Infuse |
+| `/strm/` | Signed URL di dalam file `.strm`, untuk player yang butuh URL, bukan mount |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Untuk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>/dav/</code></td>
+<td>WebDAV, yang di-mount oleh rclone</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>/http/</code></td>
+<td>Penjelajah direktori HTML</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>/infuse/</code></td>
+<td>Varian WebDAV dengan penyesuaian untuk keanehan Infuse</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>/strm/</code></td>
+<td>Signed URL di dalam file <code translate="no" v-pre>.strm</code>, untuk player yang butuh URL, bukan mount</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>rclone melakukan FUSE-mount pada <code translate="no" v-pre>/dav/</code>, sehingga Plex, Jellyfin, Emby dan Infuse melihat pohon direktori biasa.</p>
+<p>Masalah desain di seluruh proyek ini adalah celah antara apa yang dijanjikan filesystem (path yang stabil, <code translate="no" v-pre>stat</code> instan, byte sesuai permintaan) dan apa yang diberikan API debrid (JSON dengan rate limit, link yang cepat kedaluwarsa, dan tanpa semantik filesystem sama sekali). Hampir setiap package ada untuk menutup satu bagian dari celah itu.</p>
+<div id="what-zurg-is-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">media player
+    │
+    ├─ rclone FUSE ──► /dav/  ──┐
+    └─ direct HTTP ──► /http/ ──┤
+                                ▼
+                    internal/handlers  (chi router, auth, routing)
+                                │
+                internal/dav ───┤─── internal/htmlindex     (listings)
+                                │
+                                ▼
+                    internal/torrent   (the library, in memory)
+                                │  resolve link for this file
+                                ▼
+                    internal/universal (byte path, proxy/redirect, RAR)
+                                │
+                                ▼
+                    internal/debrid    (Provider dispatch)
+                                │
+        ┌───────────┬───────────┼────────────┬──────────┐
+        ▼           ▼           ▼            ▼          ▼
+   realdebrid    torbox     alldebrid       nzb ──► nntp ──► par2
+        └───────────┴───────────┘            (Usenet, no debrid service)
+                    │
+              internal/rdclient  (host rotation, rate limit, retry, DNS)</code></pre>
+</doc-codeblock></div>
+<h2 id="boot-sequence">Urutan boot</h2>
+<p><code translate="no" v-pre>cmd/zurg</code> adalah CLI Cobra yang tipis (serve, version, network-test, clear downloads/torrents, kontrol mount, download requirements). Semua hal yang sebenarnya terjadi ada di <code translate="no" v-pre>internal/app.go</code>, yang <code translate="no" v-pre>MainApp</code>-nya sengaja dibuat sebagai satu fungsi yang mudah dibaca:</p>
+<ol>
+<li>Buat direktori runtime (<code translate="no" v-pre>logs</code>, <code translate="no" v-pre>data</code>, <code translate="no" v-pre>data/info</code>, <code translate="no" v-pre>dump</code>, <code translate="no" v-pre>strm</code>, <code translate="no" v-pre>nzbs</code>) dan logger-nya.</li>
+<li><code translate="no" v-pre>ensureConfigAndRequirements</code> — muat config, dan unduh <code translate="no" v-pre>ffprobe</code> dan <code translate="no" v-pre>rclone</code> jika belum ada (<code translate="no" v-pre>internal/requirements</code>). Saat pertama kali dijalankan tanpa config, program akan menulis config default lalu berhenti, kecuali token diambil dari environment.</li>
+<li>Inisialisasi <code translate="no" v-pre>strmlink</code> lebih awal, supaya direktori data yang tidak bisa ditulis langsung dilaporkan sekarang, bukan sebagai file <code translate="no" v-pre>.strm</code> yang berhenti bisa di-resolve setelah restart berikutnya.</li>
+<li>Jalankan <strong>network latency test</strong> ke download host Real-Debrid (<code translate="no" v-pre>internal/rdclient</code>), atau muat hasil cache-nya dari disk jika masih cukup baru. Tes ini meranking host CDN dan dipakai nanti saat rotasi host.</li>
+<li>Bangun setiap provider yang dikonfigurasi dari registry, rakit menjadi <code translate="no" v-pre>debrid.Set</code>, dan simpan handle bertipe pada Real-Debrid pertama. Dashboard, halaman hosts, dan network test tetap berbicara dengan RD secara spesifik.</li>
+<li>Buat <code translate="no" v-pre>TorrentManager</code>, yang langsung memuat library cache dari disk di background lalu me-refresh-nya.</li>
+<li>Pasang router chi, jalankan HTTP server, lalu jalankan rclone setelah server mulai menerima koneksi.</li>
+<li>Tunggu SIGINT/SIGTERM/SIGQUIT. Saat sinyal diterima, hentikan HTTP server, hentikan layanan Plex, dan unmount rclone, masing-masing dengan batas waktu 20 detik.</li>
+</ol>
+<p><code translate="no" v-pre>ZURG_PPROF=1</code> mengaktifkan pprof di <code translate="no" v-pre>127.0.0.1:6060</code>. Hanya loopback, karena profiling instance yang sedang berjalan adalah satu-satunya cara untuk melihat penyebab CPU saat lonjakan scan, tapi endpoint ini tidak boleh bisa diakses dari jaringan.</p>
+<h2 id="layer-1--config">Lapisan 1 — Config</h2>
+<p><code translate="no" v-pre>internal/config</code> adalah satu-satunya sumber kebenaran; hampir semua package lain membaca <code translate="no" v-pre>ZurgConfigV1</code>. Typed getter menerapkan default saat sebuah field bernilai nol, jadi pemanggil tidak perlu mengecek apakah field itu ada atau tidak.</p>
+<p>Bagian terbesarnya adalah <code translate="no" v-pre>filters.go</code>: bahasa filter AND/OR bertingkat yang menetapkan setiap torrent ke satu atau lebih <strong>direktori virtual</strong>. Di sinilah daftar torrent yang datar berubah menjadi <code translate="no" v-pre>movies/</code>, <code translate="no" v-pre>shows/</code>, <code translate="no" v-pre>anime/</code>, <code translate="no" v-pre>recent/</code>.</p>
+<p>Kondisinya mencakup nama torrent (<code translate="no" v-pre>regex</code>, <code translate="no" v-pre>contains</code>, <code translate="no" v-pre>not_regex</code>), ukurannya, file-filenya (<code translate="no" v-pre>any_file_inside_regex</code>, <code translate="no" v-pre>any_file_inside_size_gte</code>), tag-tagnya (<code translate="no" v-pre>tags_match_any</code>, <code translate="no" v-pre>tags_missing_all</code>), umurnya (<code translate="no" v-pre>added_within_hours</code>, <code translate="no" v-pre>added_after</code>), properti turunan (<code translate="no" v-pre>has_episodes</code>, <code translate="no" v-pre>is_music</code>), dan akun asal torrent (<code translate="no" v-pre>provider</code>, <code translate="no" v-pre>not_provider</code>). Ada juga aturan tampilan per direktori: <code translate="no" v-pre>only_show_the_biggest_file</code>, batas minimum dan maksimum ukuran.</p>
+<p>Regex yang dipakai untuk tiap torrent di setiap pass penetapan dikompilasi sekali di level package. Alasannya, <code translate="no" v-pre>MustCompile</code> per pemanggilan ternyata memakan cukup banyak waktu saat startup.</p>
+<p>Config bisa diedit langsung dari dashboard. <code translate="no" v-pre>UpdateConfigFileAtomic</code> melakukan edit per key dan tidak menulis ulang seluruh file, jadi komentar dan key yang tidak dikenal tetap aman.</p>
+<h2 id="layer-2--backend-abstraction">Lapisan 2 — Abstraksi backend</h2>
+<p><code translate="no" v-pre>internal/debrid</code> adalah tulang punggungnya. Package ini memiliki tipe domain yang dipakai oleh semua package lain — <code translate="no" v-pre>Torrent</code>, <code translate="no" v-pre>TorrentInfo</code>, <code translate="no" v-pre>File</code>, <code translate="no" v-pre>Download</code>, <code translate="no" v-pre>User</code> — dan interface <code translate="no" v-pre>Provider</code> yang diimplementasikan oleh setiap backend.</p>
+<h3 id="provider-and-capabilities">Provider dan capabilities</h3>
+<p><code translate="no" v-pre>Provider</code> dibuat tetap kecil: daftar torrent, ambil info, hapus, resolve tautan, verifikasi, ambil byte, dan laporkan status akun. Apa pun yang mungkin tidak dimiliki sebuah layanan dengan wajar dibuat sebagai <strong>antarmuka kapabilitas opsional</strong> yang di-type-assert oleh pemanggil, lalu pemanggil turun level kalau fitur itu tidak ada:</p>
+<retype-table copy-text="| Interface | Apa yang ditambahkan | Siapa yang membutuhkannya |
+|---|---|---|
+| `MagnetAdder` | menambah lewat hash, memilih file, jumlah slot aktif | repair |
+| `TorrentRestarter` | coba ulang torrent yang gagal di tempat | repair, strategi termurah |
+| `HostRotator` | menukar pool host CDN | tes jaringan, halaman `/hosts` |
+| `DownloadLister` | daftar terpisah untuk unduhan hoster | direktori `__downloads__` |
+| `ArchivePasswordKeeper` | password untuk arsip sebuah rilis | hanya Usenet |
+| `PremiumMonitor` | sisa waktu paket | peringatan saat startup |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Interface</th>
+<th>Apa yang ditambahkan</th>
+<th>Siapa yang membutuhkannya</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>MagnetAdder</code></td>
+<td>menambah lewat hash, memilih file, jumlah slot aktif</td>
+<td>repair</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>TorrentRestarter</code></td>
+<td>coba ulang torrent yang gagal di tempat</td>
+<td>repair, strategi termurah</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>HostRotator</code></td>
+<td>menukar pool host CDN</td>
+<td>tes jaringan, halaman <code translate="no" v-pre>/hosts</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>DownloadLister</code></td>
+<td>daftar terpisah untuk unduhan hoster</td>
+<td>direktori <code translate="no" v-pre>__downloads__</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>ArchivePasswordKeeper</code></td>
+<td>password untuk arsip sebuah rilis</td>
+<td>hanya Usenet</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>PremiumMonitor</code></td>
+<td>sisa waktu paket</td>
+<td>peringatan saat startup</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Selain itu, <code translate="no" v-pre>Capabilities</code> adalah deskripsi diri provider. Isinya bukan apa yang bisa dilakukan provider, melainkan batas-batas yang harus dipatuhi saat menjalankannya. Ini ada karena perilaku library zurg berkembang mengikuti bentuk Real-Debrid, dan kalau bentuk itu di-hardcode, setiap backend lain akan jadi rusak atau boros.</p>
+<p>Dua flag ini sudah benar-benar mengatur perilaku:</p>
+<ul>
+<li><strong><code translate="no" v-pre>ListIncludesFiles</code></strong>: daftar torrent sudah memuat detail per file. Ini membuat scan library dari kondisi awal (cold) berubah dari satu panggilan API per torrent menjadi hanya satu panggilan total. Ini perbedaan paling mahal antar backend.</li>
+<li><strong><code translate="no" v-pre>StoredLinksCanRot</code></strong>: tautan yang tersimpan bisa mati padahal torrent-nya masih terlihat sehat, jadi tautan harus diprobe. Ini sifat Real-Debrid dan cukup mahal. Pada backend yang membuat URL sesuai permintaan, tidak ada yang perlu diprobe. Melewati tahap ini adalah bedanya antara scan yang gratis dan scan yang memicu lockout untuk seluruh akun.</li>
+</ul>
+<p>Sisanya (<code translate="no" v-pre>ServesLinksLocally</code>, <code translate="no" v-pre>MaxActiveSlots</code>, <code translate="no" v-pre>MaxConcurrentRequests</code>, <code translate="no" v-pre>AddsPerHour</code>, <code translate="no" v-pre>ContentExpires</code>, <code translate="no" v-pre>SupportsFileSelection</code>) dideklarasikan oleh setiap backend dan dibaca oleh kode generik. Nilai nol sengaja dibuat sebagai pembacaan yang paling konservatif, jadi provider yang lupa mengisi sebuah field akan mendapat perilaku hati-hati, bukan banjir request. Provider yang sama sekali tidak bisa di-resolve oleh zurg akan jatuh ke <code translate="no" v-pre>unknownProviderCaps</code> di <code translate="no" v-pre>internal/torrent/providers.go</code>. Di situ jawaban hati-hati tersebut ditulis sekali saja, alih-alih di setiap call site.</p>
+<p>Ada satu bentuk lagi yang tidak diwakili oleh kedua flag tadi: daftar AllDebrid tidak memuat file, tetapi endpoint per-torrent-nya menerima <em>batch</em> id. Ini ditangani di dalam provider, bukan lewat kapabilitas, karena yang berubah hanya cara provider menggunakan request-nya sendiri. Refresh generik tetap meminta satu torrent per waktu dan tidak perlu tahu apa-apa soal ini.</p>
+<h3 id="set">Set</h3>
+<p><code translate="no" v-pre>Set</code> adalah semua provider yang sudah dikonfigurasi, sesuai urutan di config. Set ini dipakai oleh torrent manager, handler, dan dashboard sebagai pengganti client tertentu. Ada dua pola akses yang penting: <strong>fan-out</strong>, saat sebuah operasi dijalankan ke setiap akun (misalnya refresh library), dan <strong>dispatch</strong>, saat sebuah operasi harus sampai ke satu akun yang memiliki torrent tersebut (delete, resolve, repair). Set ini juga menyimpan state kesehatan/ketersediaan akun.</p>
+<h3 id="link-cache">Link cache</h3>
+<p><code translate="no" v-pre>LinkCache</code> menyimpan URL yang sudah di-resolve dengan kunci <strong>berdasarkan token</strong>, bukan hanya berdasarkan link. URL yang dibuat dari satu token hanya valid untuk kuota token itu, jadi ketika sebuah token kena batas bandwidth, semua entry-nya harus dibuang sekaligus dan tidak boleh dipakai lagi dengan token berikutnya dalam rotasi. Entry kedaluwarsa berdasarkan timestamp <code translate="no" v-pre>Generated</code>, bukan waktu entry dimasukkan, jadi link yang diisi dari daftar unduhan milik provider akan kedaluwarsa sesuai jadwal provider.</p>
+<h3 id="the-backends">Backend-backend</h3>
+<retype-table copy-text="| Paket | Apa itu | Yang perlu diketahui |
+|---|---|---|
+| `internal/realdebrid` | Real-Debrid, backend aslinya | Tiga klien HTTP terpisah: API dengan pembatasan laju, unrestrict dengan pembatasan laju, dan download dengan rotasi host. Timestamp waktu Paris dinormalisasi di batas paket dan tidak pernah bocor keluar darinya. `DownloadTokenManager` mengganti token saat satu token kedaluwarsa. |
+| `internal/torbox` | REST TorBox | Memakai REST dengan `bypass_cache=true`, bukan WebDAV TorBox, karena tampilan WebDAV tertinggal 5–15 menit dari kondisi sebenarnya. Tidak ada tautan per file, jadi tautan dibuat secara sintetis sebagai `torbox://&lt;torrent-id&gt;/&lt;file-id&gt;`. Tautannya tetap sama setelah restart dan mudah dibaca di log, sedangkan URL CDN biasa yang memuat API key tidak. Ada dua pembatas yang bertumpuk: 300/menit sesuai dokumentasi, dan pembatas yang jauh lebih ketat untuk `requestdl`. Lihat [torbox-limits.md](../providers/torbox-limits.md). |
+| `internal/alldebrid` | AllDebrid v4.1 | POST dengan form-encoded. Kegagalan logis datang sebagai HTTP **200** dengan `status:&quot;error&quot;`, jadi status HTTP tidak bisa dijadikan patokan apakah sebuah panggilan berhasil. File ada di balik `/magnet/files`, yang menerima batch, sehingga pencarian yang bersamaan digabung menjadi satu permintaan. Pohon file bertingkat diratakan secara depth-first, dan urutannya itu krusial. |
+| `internal/nzb` | Usenet, sama sekali bukan layanan debrid | File NZB di `nzbs/` diubah menjadi torrent. Pembacaan mengambil artikel dan melakukan yEnc-decode saat dibutuhkan. Tautannya berbentuk `nzb://&lt;nzb-id&gt;/&lt;file-index&gt;` dan disajikan secara lokal, jadi `DownloadFile` membuat respons HTTP sendiri, bukan mem-proxy satu. |
+| `internal/nntp` | Klien Usenet minimal | Connection pool dibatasi oleh jatah koneksi akun, dengan BODY/STAT berdasarkan message id dan yEnc decode. Satu koneksi hanya mendapat sebagian kecil dari throughput yang bisa dicapai, jadi pembacaan sebuah file dibagi ke seluruh jatah koneksi. |
+| `internal/par2` | PAR2 / Reed-Solomon di atas GF(2^16) | Saat sebuah artikel sudah hilang dari server, recovery volume milik rilis itu sendiri membangun ulang byte yang dibawa artikel tersebut. Prosesnya mahal dengan cara tertentu: perhitungannya butuh setiap slice yang masih ada dari setiap file yang tercakup, sekali saja. Karena itu prosesnya dijalankan sebagai background job, satu rilis dalam satu waktu, dan menghasilkan patch rentang byte yang dipakai pembaca sebagai pengganti bagian yang kosong. |
+| `internal/rdclient` | HTTP low-level bersama | Rotasi host di antara endpoint CDN yang diurutkan berdasarkan latensi, pembatasan laju dengan token-bucket, retry dengan backoff, dukungan proxy, DNS kustom, pemaksaan IPv4/IPv6, dan preferensi CDN berbasis geo-pin. `IPRepository` mengelola tes jaringan beserta cache-nya di disk. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Paket</th>
+<th>Apa itu</th>
+<th>Yang perlu diketahui</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>internal/realdebrid</code></td>
+<td>Real-Debrid, backend aslinya</td>
+<td>Tiga klien HTTP terpisah: API dengan pembatasan laju, unrestrict dengan pembatasan laju, dan download dengan rotasi host. Timestamp waktu Paris dinormalisasi di batas paket dan tidak pernah bocor keluar darinya. <code translate="no" v-pre>DownloadTokenManager</code> mengganti token saat satu token kedaluwarsa.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>internal/torbox</code></td>
+<td>REST TorBox</td>
+<td>Memakai REST dengan <code translate="no" v-pre>bypass_cache=true</code>, bukan WebDAV TorBox, karena tampilan WebDAV tertinggal 5–15 menit dari kondisi sebenarnya. Tidak ada tautan per file, jadi tautan dibuat secara sintetis sebagai <code translate="no" v-pre>torbox://&lt;torrent-id&gt;/&lt;file-id&gt;</code>. Tautannya tetap sama setelah restart dan mudah dibaca di log, sedangkan URL CDN biasa yang memuat API key tidak. Ada dua pembatas yang bertumpuk: 300/menit sesuai dokumentasi, dan pembatas yang jauh lebih ketat untuk <code translate="no" v-pre>requestdl</code>. Lihat <a href="../../providers/torbox-limits/">torbox-limits.md</a>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>internal/alldebrid</code></td>
+<td>AllDebrid v4.1</td>
+<td>POST dengan form-encoded. Kegagalan logis datang sebagai HTTP <strong>200</strong> dengan <code translate="no" v-pre>status:&quot;error&quot;</code>, jadi status HTTP tidak bisa dijadikan patokan apakah sebuah panggilan berhasil. File ada di balik <code translate="no" v-pre>/magnet/files</code>, yang menerima batch, sehingga pencarian yang bersamaan digabung menjadi satu permintaan. Pohon file bertingkat diratakan secara depth-first, dan urutannya itu krusial.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>internal/nzb</code></td>
+<td>Usenet, sama sekali bukan layanan debrid</td>
+<td>File NZB di <code translate="no" v-pre>nzbs/</code> diubah menjadi torrent. Pembacaan mengambil artikel dan melakukan yEnc-decode saat dibutuhkan. Tautannya berbentuk <code translate="no" v-pre>nzb://&lt;nzb-id&gt;/&lt;file-index&gt;</code> dan disajikan secara lokal, jadi <code translate="no" v-pre>DownloadFile</code> membuat respons HTTP sendiri, bukan mem-proxy satu.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>internal/nntp</code></td>
+<td>Klien Usenet minimal</td>
+<td>Connection pool dibatasi oleh jatah koneksi akun, dengan BODY/STAT berdasarkan message id dan yEnc decode. Satu koneksi hanya mendapat sebagian kecil dari throughput yang bisa dicapai, jadi pembacaan sebuah file dibagi ke seluruh jatah koneksi.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>internal/par2</code></td>
+<td>PAR2 / Reed-Solomon di atas GF(2^16)</td>
+<td>Saat sebuah artikel sudah hilang dari server, recovery volume milik rilis itu sendiri membangun ulang byte yang dibawa artikel tersebut. Prosesnya mahal dengan cara tertentu: perhitungannya butuh setiap slice yang masih ada dari setiap file yang tercakup, sekali saja. Karena itu prosesnya dijalankan sebagai background job, satu rilis dalam satu waktu, dan menghasilkan patch rentang byte yang dipakai pembaca sebagai pengganti bagian yang kosong.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>internal/rdclient</code></td>
+<td>HTTP low-level bersama</td>
+<td>Rotasi host di antara endpoint CDN yang diurutkan berdasarkan latensi, pembatasan laju dengan token-bucket, retry dengan backoff, dukungan proxy, DNS kustom, pemaksaan IPv4/IPv6, dan preferensi CDN berbasis geo-pin. <code translate="no" v-pre>IPRepository</code> mengelola tes jaringan beserta cache-nya di disk.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>internal/nzb</code> adalah bukti bahwa abstraksinya berhasil. Paket ini mengimplementasikan antarmuka yang sama di atas direktori lokal dan news server. Hal ini bisa berjalan karena kontrak sebenarnya dari antarmuka adalah <em>&quot;jawab GET dengan rentang (ranged) menggunakan bytes&quot;</em>, bukan <em>&quot;proxy sebuah CDN&quot;</em>.</p>
+<h3 id="adding-a-backend">Menambahkan backend</h3>
+<p>Paket baru, implementasikan <code translate="no" v-pre>debrid.Provider</code>, panggil <code translate="no" v-pre>debrid.Register</code> di <code translate="no" v-pre>init</code>, lalu tambahkan blank import di <code translate="no" v-pre>internal/app.go</code>. Tidak ada yang berubah di <code translate="no" v-pre>internal/debrid</code>.</p>
+<h2 id="layer-3--the-library">Lapisan 3 — Library</h2>
+<p><code translate="no" v-pre>internal/torrent</code> adalah inti dari zurg dan paket terbesarnya. <code translate="no" v-pre>TorrentManager</code> menyimpan seluruh library dalam peta konkuren <code translate="no" v-pre>cmap</code> untuk pembacaan tanpa lock, menetapkan torrent ke direktori dengan mengevaluasi filter di config, me-resolve dan men-cache link, serta menjalankan background job.</p>
+<h3 id="persistence">Persistence</h3>
+<p>Setiap entri ditulis ke <code translate="no" v-pre>data/&lt;name&gt;.zurgtorrent</code> sebagai JSON, dan info per-torrent
+di-cache di <code translate="no" v-pre>data/info/</code>. Saat restart, data dimuat dari disk dan langsung siap dipakai,
+lalu di-refresh di belakang layar. Ini penting karena scan dari nol dibatasi oleh
+rate-limit, bukan CPU. Torrent yang sudah tidak ada di akun bisa
+diarsipkan ke <code translate="no" v-pre>dump/</code> dan ditampilkan sebagai direktori <code translate="no" v-pre>__dump__</code>
+(<code translate="no" v-pre>load_dumped_torrents</code>).</p>
+<p>Status yang tidak bisa dibangun ulang dari mana pun (config, setiap zurgtorrent, penyimpanan <code translate="no" v-pre>__magic__</code> di <code translate="no" v-pre>data/local/</code>, dan NZB sumber di <code translate="no" v-pre>nzbs/</code>) disimpan dalam satu file <code translate="no" v-pre>.zurgbackup</code> yang di-stream.
+<code translate="no" v-pre>zurg backup</code> membuatnya (begitu juga halaman Backup &amp; Restore di dashboard), dan <code translate="no" v-pre>zurg restore-backup &lt;file&gt;</code> mengekstraknya
+ke working directory. <code translate="no" v-pre>internal/backup</code> mengatur formatnya. Manifest adalah
+entri pertama, jadi restore akan memvalidasi isi file sebelum menulis apa pun.</p>
+<p>Nama direktori yang dicadangkan: <code translate="no" v-pre>__all__</code>, <code translate="no" v-pre>__unplayable__</code>, <code translate="no" v-pre>__dump__</code>,
+<code translate="no" v-pre>__downloads__</code>, dan satu per akun sebagai <code translate="no" v-pre>__&lt;provider-name&gt;__</code>.</p>
+<h3 id="torrent-vs-torrentcopy">Torrent vs TorrentCopy</h3>
+<p>Satu rilis bisa ada di lebih dari satu akun. zurg hanya menampilkannya sekali. Pembagiannya begini:</p>
+<ul>
+<li><strong>Fakta konten milik entri</strong> (<code translate="no" v-pre>Torrent</code>): nama, hash, file apa saja yang ada, tag, IMDB id, rename.</li>
+<li><strong>Fakta akun milik salinan</strong> (<code translate="no" v-pre>TorrentCopy</code>): torrent id yang dibuat akun itu, link yang dibagikannya, status rusak miliknya sendiri, dan penghitung retry-nya.</li>
+</ul>
+<p>File id khususnya berbeda di tiap akun. Real-Debrid memberi nomor file dalam sebuah torrent dan menandai sebagian file sebagai terpilih. TorBox hanya mencantumkan file yang sudah diunduhnya dan memberi nomor dengan caranya sendiri. Karena itu <code translate="no" v-pre>FileSource</code> menyimpan <code translate="no" v-pre>FileID</code> untuk tiap provider. Repair membangun pilihannya dari id salinan yang sedang diperbaikinya. Kalau kamu membaca id akun yang salah, file yang salah akan ikut ditambahkan lagi.</p>
+<p>Salinan disimpan sesuai urutan di config, dan urutan itu juga menjadi urutan prioritas. Saat membaca, zurg memilih salinan sehat pertama dan pindah ke salinan berikutnya kalau gagal. Menghapus entri akan menghapus semua salinannya. Entri tanpa salinan dianggap tidak ada.</p>
+<h3 id="getkey-must-stay-pure">GetKey harus tetap pure</h3>
+<p><code translate="no" v-pre>GetKey</code> adalah nama sebuah torrent di pustaka virtual: entri direktorinya, nama file <code translate="no" v-pre>.zurgtorrent</code>-nya, dan pegangan yang dipakai setiap pencarian. Nilainya <strong>dihitung ulang di setiap pencarian, tidak pernah disimpan</strong>. Artinya, tabrakan nama tidak bisa diselesaikan dengan mengecek apa yang sudah dipakai, karena jawabannya akan berubah seiring perubahan pustaka, dan sebuah torrent bisa jadi tidak bisa ditemukan lagi dengan nama yang dipakai saat ia didaftarkan.</p>
+<p>Akhiran hanya dipakai untuk kasus yang lebih jarang, yaitu ketika dua rilis <em>berbeda</em> memakai nama yang sama. Akhiran itu berupa tag dari hash konten itu sendiri, dan sama murninya dengan nama itu sendiri. Flag yang mengaktifkannya ditentukan oleh proses refresh, yang bisa melihat seluruh pustaka, lalu disimpan pada torrent.</p>
+<h3 id="background-jobs">Background jobs</h3>
+<retype-table copy-text="| Job | File | Fungsinya |
+|---|---|---|
+| Refresh | `refresh.go` | Cek setiap akun, gabungkan instance yang terdaftar ke dalam entri, ambil info untuk yang baru, tetapkan direktori, lalu bersihkan entri lama. Memakai pengambilan satu item yang ringan sebagai cek perubahan di antara poll penuh. |
+| Repair | `repair.go` | Cari dan perbaiki torrent yang rusak. |
+| Downloads | `manager.go` | Refresh daftar hoster-downloads ke dalam `__downloads__`. |
+| Network test | `handlers` | Secara berkala menyusun ulang peringkat host CDN. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Job</th>
+<th>File</th>
+<th>Fungsinya</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Refresh</td>
+<td><code translate="no" v-pre>refresh.go</code></td>
+<td>Cek setiap akun, gabungkan instance yang terdaftar ke dalam entri, ambil info untuk yang baru, tetapkan direktori, lalu bersihkan entri lama. Memakai pengambilan satu item yang ringan sebagai cek perubahan di antara poll penuh.</td>
+</tr>
+<tr>
+<td>Repair</td>
+<td><code translate="no" v-pre>repair.go</code></td>
+<td>Cari dan perbaiki torrent yang rusak.</td>
+</tr>
+<tr>
+<td>Downloads</td>
+<td><code translate="no" v-pre>manager.go</code></td>
+<td>Refresh daftar hoster-downloads ke dalam <code translate="no" v-pre>__downloads__</code>.</td>
+</tr>
+<tr>
+<td>Network test</td>
+<td><code translate="no" v-pre>handlers</code></td>
+<td>Secara berkala menyusun ulang peringkat host CDN.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Interval tiap job bisa diubah saat runtime lewat channel, jadi perubahan config dari dashboard langsung berlaku tanpa perlu restart. Waktu terakhir job dijalankan disimpan (<code translate="no" v-pre>data/repair_timestamp</code>, <code translate="no" v-pre>data/downloads_timestamp</code>) supaya restart tidak menjalankan ulang job yang baru saja berjalan.</p>
+<h3 id="repair">Repair</h3>
+<p>Ini bagian terbesar kedua di paket ini. File membawa state FSM (<code translate="no" v-pre>ok_file</code> / <code translate="no" v-pre>broken_file</code>, lewat <code translate="no" v-pre>pkg/fsm</code>); torrent dan copy punya state sendiri. Saat link berhenti mengirim byte, repair naik bertahap lewat beberapa strategi:</p>
+<ol>
+<li><strong>Restart di tempat</strong> (<code translate="no" v-pre>TorrentRestarter</code>) — paling murah: tidak ada upload baru, tidak makan slot add, dan torrent tetap memakai id-nya, jadi entri library tetap ada dan tidak dihapus lalu ditemukan lagi. Refresh menjalankannya untuk torrent gagal yang ditemukan di akun, dan hanya pada instance yang memang boleh menangani torrent gagal: <code translate="no" v-pre>enable_repair</code> atau <code translate="no" v-pre>delete_error_torrents</code>. Kalau keduanya mati, akun dibiarkan apa adanya (<code translate="no" v-pre>mayRestartFailedTorrents</code>).</li>
+<li><strong>Download ulang file yang rusak</strong> — pilih ulang hanya file yang rusak.</li>
+<li><strong>Reinsert</strong> — tambahkan lagi magnet dan ambil link baru.</li>
+<li><strong>Archive</strong> — jalan terakhir untuk rilis yang tidak bisa dipulihkan.</li>
+<li><strong>Tawarkan ke akun yang tidak memegang rilis itu</strong> (<code translate="no" v-pre>repair_across_accounts.go</code>) — tiap layanan punya cache sendiri-sendiri, jadi rilis yang sudah dihapus dari satu akun, atau ditolak karena nama file, bisa di-cache di akun lain. Begitu tidak ada akun pemegang rilis yang bisa memperbaikinya, akun yang dikonfigurasi dan tidak memegang rilis itu ditanya satu per satu, dan yang pertama sudah punya hash-nya akan mengambilnya. Listing setelahnya menggabungkannya ke entri sebagai salinan kedua lewat jalur <code translate="no" v-pre>absorbCopy</code> biasa, yang otomatis menghapus verdict entri. Selalu hanya cached-only, lewat <code translate="no" v-pre>AddIfCached</code> dan tidak pernah lewat <code translate="no" v-pre>restrict_repair_to_cached</code> — add yang harus diambil dulu oleh akun akan dibatalkan dan dihapus lagi, jadi ini tetap repair dan bukan download ulang. Akun yang tidak menjawab akan di-backoff dari satu hari sampai sekitar dua minggu, dan satu sweep hanya membuat paling banyak sepuluh tawaran. Itulah yang membuatnya terjangkau dijalankan tanpa diminta terhadap library berisi rilis yang sudah divonis rusak.</li>
+</ol>
+<p>Selain itu ada exponential backoff, batas retry per copy (<code translate="no" v-pre>RepairCycles</code>, <code translate="no" v-pre>AssignRetries</code>, disimpan permanen supaya batasnya tetap berlaku setelah restart), gate budget add per jam dari <code translate="no" v-pre>Capabilities.AddsPerHour</code>, pengecekan slot aktif, deduplikasi lewat antrean berbasis set, dan heuristik untuk satu sweep yang membaca rentetan kegagalan hoster-unavailable sebagai satu outage provider, bukan N torrent rusak. Verdict tidak bisa diperbaiki dicatat per copy dan hanya naik ke entri saat <em>setiap</em> copy punya verdict itu. Error permanen dari Real-Debrid tidak berarti apa-apa untuk copy TorBox.</p>
+<p>Operator bisa memaksa repair secara manual. Status paksa disimpan di torrent, bukan di context, karena permintaan yang datang di tengah sweep akan diparkir di antrean dan diambil nanti di bawah context sweep itu sendiri. Tombol ini juga sampai ke langkah 5, dan urutannya begini: pertama ia menghapus semua verdict pada rilis itu, jadi akun yang memegangnya dicoba lagi persis seperti sebelumnya, dan tawaran hanya jalan kalau percobaan itu gagal. Karena verdict-nya dihapus, torrent yang disebut namanya memenuhi syarat saat sweep mengumpulkan entri yang sudah divonis rusak, dan baru divonis rusak lagi oleh repair yang baru saja berjalan, jadi ia dikumpulkan setelah repair itu, bukan di dalam loop. Kalau tidak, satu-satunya jalur yang ada orang menunggunya justru jalur yang tidak pernah menawarkan apa-apa.</p>
+<h3 id="everything-else-in-the-package">Yang lain di dalam package</h3>
+<p><code translate="no" v-pre>mediainfo.go</code> (analisis ffprobe, yang memberi data durasi/codec ke tag), <code translate="no" v-pre>tags.go</code>, <code translate="no" v-pre>rename.go</code> (rename yang harus tetap ada setelah refresh), <code translate="no" v-pre>delete.go</code>, <code translate="no" v-pre>strm.go</code> (membuat file <code translate="no" v-pre>.strm</code> untuk seluruh library), <code translate="no" v-pre>hooks.go</code> (skrip pengguna pada event siklus hidup), <code translate="no" v-pre>assign_links.go</code>, <code translate="no" v-pre>unrestrict.go</code>, <code translate="no" v-pre>opensubtitles.go</code>, <code translate="no" v-pre>provider_directories.go</code>, <code translate="no" v-pre>reset_all.go</code>.</p>
+<h2 id="layer-4--serving">Lapisan 4 — Serving</h2>
+<h3 id="router">Router</h3>
+<p><code translate="no" v-pre>internal/handlers</code> membangun router chi dan menghubungkan semuanya. Method WebDAV yang tidak standar (<code translate="no" v-pre>PROPFIND</code>, <code translate="no" v-pre>MKCOL</code>, <code translate="no" v-pre>MOVE</code>) didaftarkan ke chi saat <code translate="no" v-pre>init</code>. Basic auth membungkus semuanya <em>kecuali</em> <code translate="no" v-pre>version.txt</code> dan <code translate="no" v-pre>/ready</code> (supaya health check tetap jalan), serta endpoint <code translate="no" v-pre>.strm</code>. Media player yang membuka <code translate="no" v-pre>.strm</code> tidak punya kredensial untuk dikirim, jadi token bertanda tangan di path itulah yang memberi izin.</p>
+<p>Ada dua pelajaran routing yang sudah dicatat di komentar dan sebaiknya tidak perlu dipelajari ulang: chi hanya menerapkan path param regex <strong>di dalam satu segmen</strong>. Akibatnya, file yang diakses lewat arsip (<code translate="no" v-pre>&lt;archive&gt;.rar/&lt;inner&gt;.mkv</code>) atau direktori bertingkat di dalam arsip itu tidak cocok dengan route mana pun. Keduanya butuh wildcard di akhir. Lalu, path di dalam torrent dibagi antara listing dan download berdasarkan trailing slash, setelah route tidak lagi peduli seberapa dalam path itu.</p>
+<h3 id="listings">Listings</h3>
+<p><code translate="no" v-pre>internal/dav</code> menghasilkan XML PROPFIND dan menangani DELETE, MOVE (rename, termasuk validasi lintas direktori dan lintas torrent), serta varian Infuse.</p>
+<p><code translate="no" v-pre>pkg/dav</code> membuat XML sendiri dengan membangun string yang sudah dioptimalkan, bukan memakai XML marshalling. Paket ini juga mengubah format RFC 3339 ke RFC 1123 yang dibutuhkan client WebDAV, dan meng-escape path untuk URL maupun XML.</p>
+<p><code translate="no" v-pre>internal/htmlindex</code> merender pohon yang sama sebagai HTML untuk <code translate="no" v-pre>/http/</code>.</p>
+<p>Keduanya menerapkan aturan visibilitas yang sama, yaitu hanya file terbesar, batas ukuran, serta status broken/deleted. Keduanya juga menggabungkan arsip RAR multi-volume sehingga hanya volume pertama yang terlihat.</p>
+<h3 id="the-byte-path">Jalur byte</h3>
+<p><code translate="no" v-pre>internal/universal</code> adalah tempat permintaan berubah jadi byte:</p>
+<ul>
+<li>Resolusi link di-deduplicate dengan <code translate="no" v-pre>singleflight</code>, jadi seratus pembacaan bersamaan dari file yang sama cuma memakan satu kali resolusi.</li>
+<li>Proxy atau redirect, sesuai <code translate="no" v-pre>disable_stream_proxy</code>. Tapi link yang disajikan secara lokal (<code translate="no" v-pre>ServesLinksLocally</code>) tidak pernah bisa di-redirect, karena client tidak punya apa-apa untuk dibuka.</li>
+<li>Unrestrict ulang saat link rusak, sampai batas kecil.</li>
+<li>Cooldown per-file untuk error jaringan: 3 error berturut-turut membuat file didiamkan selama 5 menit. Ini yang mencegah host CDN yang tidak bisa dijangkau jadi loop retry tanpa henti.</li>
+<li>Menahan pembacaan sebentar selama jendela rate-limit, bukannya langsung error. Kalau pembacaan dibalas error selama cooldown singkat, satu akun yang kena throttle bisa berubah jadi badai error lewat VFS rclone: waiter yang macet, reader D-state, media server yang ikut hang. Jadi menahan pembacaan itu lebih murah. Kelas cooldown yang lebih panjang tetap gagal cepat.</li>
+<li>Pembukuan bandwidth per-token, dengan counter direset jam tengah malam CET supaya cocok dengan reset traffic harian Real-Debrid.</li>
+</ul>
+<h3 id="archives">Archives</h3>
+<p><code translate="no" v-pre>internal/rarstream</code> mengurai header RAR4, RAR5 dan ZIP melalui permintaan rentang byte (HTTP 206), membangun peta chunk di seluruh volume, dan menyusun ulang isi satu file secara langsung. <strong>Tidak ada dekompresi</strong>. Hanya data yang disimpan (stored) yang didukung, dan itu yang dipakai rilisan scene. <code translate="no" v-pre>VolumeKey</code> dan <code translate="no" v-pre>IsVolume</code> menyeragamkan banyak konvensi penamaan multi-bagian (<code translate="no" v-pre>.part001.rar</code>, <code translate="no" v-pre>.r00</code>, <code translate="no" v-pre>.rar</code>) yang dipakai <code translate="no" v-pre>dav</code> dan <code translate="no" v-pre>htmlindex</code> untuk menggabungkan volume menjadi satu entri. Daftar file di-cache pada torrent dan diberi stempel <code translate="no" v-pre>ListingVersion</code> dari parser, sehingga daftar yang dibuat oleh parser berbeda akan dibuang, bukan disajikan.</p>
+<h3 id="strm">STRM</h3>
+<p><code translate="no" v-pre>internal/strmlink</code> meng-encode dan menandatangani URL yang ada di dalam <code translate="no" v-pre>.strm</code>. Skema khusus Real-Debrid yang digantikannya aman hanya karena kebetulan: URL-nya berisi kode download 13 karakter milik RD, jadi memiliki URL itu <em>adalah</em> bukti otorisasi. Backend lain mengakses file lewat id yang sangat mudah ditebak (<code translate="no" v-pre>torbox://17/3</code>), jadi bentuk yang sama akan membiarkan siapa pun yang bisa menjangkau port membuat URL CDN atas nama akun atau menghabiskan koneksi server news-nya. HMAC atas secret di <code translate="no" v-pre>data/strm_secret</code> menutup celah itu. Token yang tidak ditulis oleh zurg tidak akan bisa di-resolve.
+Secret harus bertahan melewati proses. Setiap <code translate="no" v-pre>.strm</code> yang sudah ditulis hanya akan tetap valid selama kunci penandatanganannya masih ada.</p>
+<h3 id="dashboard-and-management">Dashboard dan manajemen</h3>
+<p><code translate="no" v-pre>internal/handlers/dashboard</code> merender UI web dari template yang di-embed,
+di-parse lebih dulu saat startup supaya error sintaks langsung ketahuan, bukan saat ada request.
+Halamannya: status torrent live, editor config YAML yang interaktif, latensi host, manajemen direktori, manajemen provider, status koneksi media server, info akun/premium, bandwidth, status rclone, dan statistik Plex &quot;Wrapped&quot;.
+Pengambil status untuk tiap media server berjalan bersamaan supaya halaman tetap terasa responsif saat dimuat.</p>
+<p><code translate="no" v-pre>internal/handlers/manage</code> adalah UI operasi per-torrent: tag, daftar file beserta detail state, pencocokan Plex, rename, delete/restore/force-show per file, bulk delete, dan scan.</p>
+<p>Tampilan duplikatnya ada di <code translate="no" v-pre>internal/duplicates</code>. <code translate="no" v-pre>internal/arrinventory</code> dan <code translate="no" v-pre>Inventory</code> reader di samping adapter Radarr dan Sonarr membaca setiap file yang dipegang sebuah *arr, hanya-baca dan terpisah dari proses akuisisi. <code translate="no" v-pre>magic.Resolver.HolderOf</code> melacak path tiap file ke release asalnya, dan package ini mengelompokkan release yang mungkin memegang film atau episode yang sama. Pengelompokan memakai nama, IMDb id, dan history *arr. Apakah sebuah release sedang dipakai hanya diputuskan dari path yang sudah dilacak.</p>
+<p><code translate="no" v-pre>internal/static</code> meng-embed CSS, favicon, logo, dan robots.txt dengan <code translate="no" v-pre>go:embed</code>, jadi binary-nya mandiri.</p>
+<h2 id="layer-5--the-mount">Lapisan 5 — Mount</h2>
+<p><code translate="no" v-pre>internal/rclone</code> mengawasi rclone sebagai subproses: ia membangun perintah mount (sebuah WebDAV remote yang mengarah ke <code translate="no" v-pre>/dav/</code> milik zurg sendiri),
+menjalankan dan menghentikannya, melakukan health-check setiap 30 s dengan backoff restart eksponensial (1 s → 60 s), dan memulai ulang saat gagal.</p>
+<p>Port RC sementara di rentang 49152–65535 dipilih saat startup untuk invalidasi cache VFS dan query status. Invalidasi ini penting di dua momen:
+sekali saat library yang di-cache selesai dimuat, dan sekali lagi setelah refresh penuh pertama. Kalau tidak, daftar parsial yang diambil mount
+saat proses loading akan tetap tersimpan selama <code translate="no" v-pre>--dir-cache-time</code>.</p>
+<p>Kredensial dikirim lewat environment variable, tidak pernah lewat command line. <code translate="no" v-pre>Controller</code> adalah interface yang dipakai handler dan dashboard;
+<code translate="no" v-pre>Runner</code> dan <code translate="no" v-pre>Command</code> mengabstraksi manajemen proses untuk testing.</p>
+<h2 id="layer-6--media-servers">Lapisan 6 — Media server</h2>
+<p>Ada dua hal berbeda yang sama-sama memakai kata &quot;Plex&quot;:</p>
+<ul>
+<li><strong><code translate="no" v-pre>pkg/plex</code>, <code translate="no" v-pre>pkg/jellyfin</code>, <code translate="no" v-pre>pkg/emby</code></strong> adalah <em>klien</em> media server. Masing-masing memenuhi <code translate="no" v-pre>common.MediaServerWorker</code>. <code translate="no" v-pre>pkg/common</code> menyediakan siklus hidup job yang dipakai bersama: antrean dinamis tanpa batas, pelacakan percobaan ulang per job, exponential backoff dengan jitter, circuit breaker setelah beberapa kegagalan berturut-turut, dan deteksi job yang macet. Paket ini juga berisi helper path yang menangani case-insensitive APFS di macOS. <code translate="no" v-pre>pkg/scan</code> berada di atasnya sebagai <code translate="no" v-pre>MediaScanner</code> terpadu. Ia meneruskan job refresh path ke server yang memiliki path tersebut dan melaporkan kedalaman antrean per server.</li>
+<li><strong><code translate="no" v-pre>internal/plex</code></strong> berisi perilaku khusus zurg. <code translate="no" v-pre>Matcher</code> mencocokkan torrent dengan item library Plex memakai path file, id IMDB, serta identifier TVDb/TMDb. Ia berjalan berkala dalam worker pool dengan metadata yang di-cache, dan mengisi id IMDB yang ditemukan ke torrent.</li>
+<li><strong><code translate="no" v-pre>internal/acquisition</code></strong> mengurus antrean akuisisi yang persisten dan executor bersama. Executor ini mengambil NZB dari indexer Newznab dan torrent yang sudah cached dari indexer Torznab. Watchlist Plex, Seerr, Radarr, dan Sonarr adalah source adapter yang mengubah permintaan menjadi target movie, season, atau episode. <code translate="no" v-pre>data/acquisition.json</code> menyimpan tenggat percobaan ulang dan progres per target di antara restart. Lihat <a href="../../guides/acquisition/">sumber akuisisi</a> untuk konfigurasi dan kontrak adapter.</li>
+</ul>
+<p><code translate="no" v-pre>pkg/mediabrowser</code> berisi tipe-tipe yang dipakai bersama oleh Emby dan Jellyfin.</p>
+<h2 id="layer-7--support">Lapisan 7 — Pendukung</h2>
+<retype-table copy-text="| Paket | Fungsi |
+|---|---|
+| `pkg/fsm` | Dua jenis state machine kecil: `FSMWithExternalMutex` untuk saat FSM ditanam di dalam sesuatu yang sudah dikunci, `FSMWithTime` untuk saat FSM butuh kunci sendiri dan timestamp transisi (jadi `SinceWhen` bisa menjawab &quot;sudah berapa lama ini rusak&quot;). |
+| `pkg/logutil` | Zap dengan output ganda: konsol berwarna dan file rotasi (10 MB × 20 lewat lumberjack). Tingkat verbositas diambil dari `log_level` di config.yml, lalu dari environment variable `LOG_LEVEL`, dan kalau keduanya tidak ada, pakai DEBUG. Levelnya disimpan di satu `zap.AtomicLevel` bersama, jadi dasbor bisa mengubah level semua logger sekaligus tanpa restart. Termasuk membaca log kembali untuk penampil log di dasbor dan mengunggahnya ke 0x0.st untuk dukungan. |
+| `pkg/utils` | Penyimpanan host yang diblokir, aturan visibilitas file, penyamaran token, deteksi video/audio, penamaan `.strm`, dan `GetZurgBaseURL` (yang memakai `X-Forwarded-*` saat berada di belakang reverse proxy). |
+| `pkg/script` | Menjalankan skrip event lifecycle buatan pengguna; PowerShell di Windows, `/bin/sh` di platform lain. |
+| `pkg/dmm` | Client untuk API pencarian debridmediamanager.com, dibatasi 1 permintaan per 2 detik sesuai batas sisi server. Dipakai oleh pemantau watchlist. |
+| `internal/version` | Metadata build yang disuntikkan lewat ldflags; juga banner ASCII di `/http/version.txt`. |
+| `internal/requirements` | Mengunduh `ffprobe` dan `rclone` yang cocok dengan platform dari GitHub releases saat pertama kali dijalankan, lalu menulis path *relatif* ke config.yml supaya config tetap portabel. Platform yang tidak didukung hanya memberi peringatan, tidak langsung gagal. |
+| `internal/clear` | Menghapus massal unduhan dan torrent RD dengan mengendalikan antarmuka web memakai cookie autentikasi, diulang sampai kosong. |
+| `internal/handlers/tmplcache` | Caching template untuk dasbor. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Paket</th>
+<th>Fungsi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>pkg/fsm</code></td>
+<td>Dua jenis state machine kecil: <code translate="no" v-pre>FSMWithExternalMutex</code> untuk saat FSM ditanam di dalam sesuatu yang sudah dikunci, <code translate="no" v-pre>FSMWithTime</code> untuk saat FSM butuh kunci sendiri dan timestamp transisi (jadi <code translate="no" v-pre>SinceWhen</code> bisa menjawab &quot;sudah berapa lama ini rusak&quot;).</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>pkg/logutil</code></td>
+<td>Zap dengan output ganda: konsol berwarna dan file rotasi (10 MB × 20 lewat lumberjack). Tingkat verbositas diambil dari <code translate="no" v-pre>log_level</code> di config.yml, lalu dari environment variable <code translate="no" v-pre>LOG_LEVEL</code>, dan kalau keduanya tidak ada, pakai DEBUG. Levelnya disimpan di satu <code translate="no" v-pre>zap.AtomicLevel</code> bersama, jadi dasbor bisa mengubah level semua logger sekaligus tanpa restart. Termasuk membaca log kembali untuk penampil log di dasbor dan mengunggahnya ke 0x0.st untuk dukungan.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>pkg/utils</code></td>
+<td>Penyimpanan host yang diblokir, aturan visibilitas file, penyamaran token, deteksi video/audio, penamaan <code translate="no" v-pre>.strm</code>, dan <code translate="no" v-pre>GetZurgBaseURL</code> (yang memakai <code translate="no" v-pre>X-Forwarded-*</code> saat berada di belakang reverse proxy).</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>pkg/script</code></td>
+<td>Menjalankan skrip event lifecycle buatan pengguna; PowerShell di Windows, <code translate="no" v-pre>/bin/sh</code> di platform lain.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>pkg/dmm</code></td>
+<td>Client untuk API pencarian debridmediamanager.com, dibatasi 1 permintaan per 2 detik sesuai batas sisi server. Dipakai oleh pemantau watchlist.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>internal/version</code></td>
+<td>Metadata build yang disuntikkan lewat ldflags; juga banner ASCII di <code translate="no" v-pre>/http/version.txt</code>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>internal/requirements</code></td>
+<td>Mengunduh <code translate="no" v-pre>ffprobe</code> dan <code translate="no" v-pre>rclone</code> yang cocok dengan platform dari GitHub releases saat pertama kali dijalankan, lalu menulis path <em>relatif</em> ke config.yml supaya config tetap portabel. Platform yang tidak didukung hanya memberi peringatan, tidak langsung gagal.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>internal/clear</code></td>
+<td>Menghapus massal unduhan dan torrent RD dengan mengendalikan antarmuka web memakai cookie autentikasi, diulang sampai kosong.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>internal/handlers/tmplcache</code></td>
+<td>Caching template untuk dasbor.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h2 id="cross-cutting-decisions">Keputusan lintas bagian</h2>
+<p><strong>Kapabilitas daripada <code translate="no" v-pre>if provider == &quot;realdebrid&quot;</code>.</strong> Apa pun yang mengasumsikan bentuk Real-Debrid harus ditaruh di balik flag kapabilitas, bukan pengecekan tipe. Aturan inilah yang menjaga torrent manager tetap tidak terikat pada backend tertentu.</p>
+<p><strong>Kontrak interface adalah byte, bukan proxy.</strong> <code translate="no" v-pre>Provider</code> tidak pernah menjanjikan CDN remote, hanya bahwa ranged GET bisa dijawab. Itulah sebabnya backend Usenet cocok. Dua tempat asumsi CDN sempat bocor (redirect, dan memberikan URL ke ffprobe, yang butuh sesuatu yang bisa dibuka oleh binary eksternal) sekarang sudah dijaga oleh <code translate="no" v-pre>ServesLinksLocally</code>.</p>
+<p><strong>Pairing link berdasarkan posisi itu krusial.</strong> <code translate="no" v-pre>TorrentInfo.Links[i]</code> berpasangan dengan file <strong>terpilih</strong> ke-i di <code translate="no" v-pre>TorrentInfo.Files</code>. Provider yang tidak bisa membuat link untuk sebuah file harus melaporkannya sebagai <em>tidak terpilih</em>, bukan menghilangkannya. Kalau tidak, setiap file berikutnya diam-diam akan mengarah ke link yang salah. Setiap backend wajib menjaga aturan ini.</p>
+<p><strong>Satu torrent hanya milik satu akun.</strong> Setiap pemanggilan yang sampai ke layanan harus dikirim lewat provider milik torrent tersebut (<code translate="no" v-pre>ProviderFor</code>, <code translate="no" v-pre>resolveLink</code>, <code translate="no" v-pre>verifyLink</code>, <code translate="no" v-pre>DeleteByID</code>), bukan lewat provider utama. Kalau salah, penghapusan bisa terjadi di akun yang keliru.</p>
+<p><strong>Disk adalah tingkat tersendiri.</strong> Entri <code translate="no" v-pre>.zurgtorrent</code>, detail per-torrent di <code translate="no" v-pre>data/info/</code>, hasil network-test beserta timestamp-nya, timestamp job, secret penandatanganan STRM, cache listing RAR, dan host yang diblokir. Saat restart, sistem melanjutkan dari kondisi tersimpan, bukan memindai ulang.</p>
+<p><strong>Semuanya diatur kecepatannya.</strong> Token bucket per-provider, batas konkurensi, gerbang penambahan per jam, TTL link, cooldown per-file, dan rate-limit hold. Khususnya di TorBox, resolusi link adalah sumber daya yang paling langka, dan link cache di depannya yang membuat scan library menjadi terjangkau.</p>
+<p><strong>Pembacaan tanpa lock, penulisan dipersempit.</strong> Concurrent map menopang pohon directory/torrent/file. Mutasi dijaga oleh lock per-torrent (<code translate="no" v-pre>copiesMu</code>, <code translate="no" v-pre>tagsMutex</code>, <code translate="no" v-pre>operationsMutex</code>, <code translate="no" v-pre>archiveCacheMutex</code>), bukan oleh lock global.</p>
+<p><strong><code translate="no" v-pre>rdclient</code> dipakai bersama, tapi kebijakannya milik Real-Debrid.</strong> Klasifikasi error dan aturan retry-nya berasal dari RD. Ia melaporkan respons non-2xx sebagai error sambil tetap mengembalikan response-nya. Jadi provider yang butuh status, misalnya 429 dengan <code translate="no" v-pre>Retry-After</code>, harus memeriksa <code translate="no" v-pre>resp</code> sebelum <code translate="no" v-pre>err</code>.</p>
+<p>(Terjemahan sebelumnya ditolak: code span-nya berbeda (<code translate="no" v-pre>Retry-After</code>). Pertahankan struktur persis seperti aslinya.)</p>
+<h2 id="build-test-deploy">Build, test, deploy</h2>
+<ul>
+<li>
+<p><strong>Build</strong>: <code translate="no" v-pre>make build</code>. Versi, commit, dan waktu build disisipkan lewat
+ldflags ke dalam <code translate="no" v-pre>internal/version</code>.</p>
+</li>
+<li>
+<p><strong>Tes unit</strong>: <code translate="no" v-pre>go test ./...</code>. Pre-commit menjalankan gofmt, golangci-lint,
+<code translate="no" v-pre>go test -short</code>, dan suite kualitas lengkap.</p>
+</li>
+<li>
+<p><strong>Tes integrasi</strong>: <code translate="no" v-pre>make integration-test</code>, dimulai dari yang paling murah, dengan
+<code translate="no" v-pre>refresh_repair</code> di urutan terakhir karena harus menunggu scan library penuh selesai. Jalankan di host yang sudah punya Go, rclone, FUSE, dan Plex sekaligus. Di tempat lain, tes mount dan Plex akan di-skip dengan jelas tapi tetap exit 0, jadi baca outputnya, jangan cuma lihat exit code. Lihat <a href="../e2e-test/">e2e-test.md</a>.</p>
+</li>
+<li>
+<p><strong>Docker</strong>: build Alpine dua tahap; image runtime menambahkan ffmpeg, rclone,
+fuse3, dan healthcheck.</p>
+</li>
+<li>
+<p><strong>Deploy</strong>: <code translate="no" v-pre>make deploy USER=… HOST=… DIR=…</code>, yang menghentikan Plex dan layanan zurg,
+mengganti binary, menunggu <code translate="no" v-pre>version.txt</code> merespons 200, lalu menjalankan ulang Plex.</p>
+</li>
+</ul>
+<h2 id="where-to-look-first">Di mana mencari dulu</h2>
+<p>Komentar di basis kode ini selalu mencatat <em>mengapa</em>, biasanya kegagalan yang melatarbelakangi kode tersebut.
+Setiap package punya <code translate="no" v-pre>doc.go</code>. Kalau kamu mengubah sesuatu, baca dulu <code translate="no" v-pre>doc.go</code> milik package itu dan block comment di atas type yang kamu sentuh.
+Di sana ada batasan-batasan yang tidak terlihat dari signature-nya.</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Previous</span>
+                                <span class="block mt-1">Internal</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/persistent-caches/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Next</span>
+                                <span class="block mt-1">Cache persisten</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Arsitektur", level: 3, icon: "file", hasPrism: false, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/internals/architecture.md" }</script>
+</body>
+</html>

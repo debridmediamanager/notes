@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/es">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672691398">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Tutorial: un complemento de IPTV</title>
+    <meta name="title" content="Tutorial: un complemento de IPTV">
+    <meta name="description" content="Este tutorial convierte una lista de IPTV (M3U) y una guía de TV (XMLTV) en canales de Live TV en Plex Web y Plex para Android. Cada canal conserva su número y su guía.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/es/rex/addon-iptv/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/es/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/es/rex/addon-iptv/">
+    <meta property="og:title" content="Tutorial: un complemento de IPTV">
+    <meta property="og:description" content="Este tutorial convierte una lista de IPTV (M3U) y una guía de TV (XMLTV) en canales de Live TV en Plex Web y Plex para Android. Cada canal conserva su número y su guía.">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="es_ES">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/es/rex/addon-iptv/">
+    <meta name="twitter:title" content="Tutorial: un complemento de IPTV">
+    <meta name="twitter:description" content="Este tutorial convierte una lista de IPTV (M3U) y una guía de TV (XMLTV) en canales de Live TV en Plex Web y Plex para Android. Cada canal conserva su número y su guía.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/es/rex/addon-iptv.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../resources/css/retype.css?v=4.6.0.847672691398" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../resources/js/config.js?v=4.6.0.847672691398" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../resources/js/lunr.js?v=4.6.0.847672691398" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../resources/js/prism.js?v=4.6.0.847672691398" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/es/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>Español</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/es/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/es/download.html" target="_blank">Descargar zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/es/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Patrocinador</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>Español</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/es/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/es/download.html" target="_blank">Descargar zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/es/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Patrocinador</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="tutorial-an-iptv-addon">Tutorial: un complemento de IPTV</h1>
+<p>Este tutorial convierte una lista de IPTV (M3U) y una guía de TV (XMLTV) en canales de <strong>Live TV</strong> en Plex Web y Plex para Android. Cada canal conserva su número y su guía. Funciona con canales M3U que usan HLS (<code translate="no" v-pre>.m3u8</code>) y con cualquier guía XMLTV que los nombre.</p>
+<p>Sigue <a href="../addons/">Crear addons de rex</a> y su sección <a href="../addons/#live-tv">Live TV</a>. Lee primero el <a href="../addon-home-videos/">tutorial de vídeos personales</a> si es tu primer addon. Para deportes en directo usa <a href="../live-tv/">Live TV con rex</a>.</p>
+<retype-table copy-text="| Necesitas | Por qué |
+|---|---|
+| rex 2026.11.02 o más reciente, configurado como en [rex con tu propia app](any-source.md) (pasos 1 a 3) y reclamado | Live TV está en sus apps de Plex |
+| FFmpeg donde se ejecuta rex | rex convierte un canal mientras alguien lo ve. Consulta [Convertir vídeo](any-source.md#converting-video-optional) |
+| Python 3.8 o más reciente y `ffprobe` donde se ejecuta el addon | El addon usa solo la biblioteca estándar. `ffprobe` comprueba cada canal una vez al día |
+| Una lista M3U | Una URL o un archivo, con líneas `#EXTINF`. `tvg-id` vincula un canal con su guía, `tvg-chno` da su número, `tvg-logo` su logo y `group-title` su grupo |
+| Una guía XMLTV (opcional) | Una URL o un archivo, comprimido con gzip o no. Sin ella, los canales aparecen sin nada en la guía |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Necesitas</th>
+<th>Por qué</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rex 2026.11.02 o más reciente, configurado como en <a href="../any-source/">rex con tu propia app</a> (pasos 1 a 3) y reclamado</td>
+<td>Live TV está en sus apps de Plex</td>
+</tr>
+<tr>
+<td>FFmpeg donde se ejecuta rex</td>
+<td>rex convierte un canal mientras alguien lo ve. Consulta <a href="../any-source/#converting-video-optional">Convertir vídeo</a></td>
+</tr>
+<tr>
+<td>Python 3.8 o más reciente y <code translate="no" v-pre>ffprobe</code> donde se ejecuta el addon</td>
+<td>El addon usa solo la biblioteca estándar. <code translate="no" v-pre>ffprobe</code> comprueba cada canal una vez al día</td>
+</tr>
+<tr>
+<td>Una lista M3U</td>
+<td>Una URL o un archivo, con líneas <code translate="no" v-pre>#EXTINF</code>. <code translate="no" v-pre>tvg-id</code> vincula un canal con su guía, <code translate="no" v-pre>tvg-chno</code> da su número, <code translate="no" v-pre>tvg-logo</code> su logo y <code translate="no" v-pre>group-title</code> su grupo</td>
+</tr>
+<tr>
+<td>Una guía XMLTV (opcional)</td>
+<td>Una URL o un archivo, comprimido con gzip o no. Sin ella, los canales aparecen sin nada en la guía</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Esta página escribe la dirección de rex como <code translate="no" v-pre>192.168.1.20:32400</code> y ejecuta el addon en la misma máquina que rex.</p>
+<h2 id="step-1-save-the-addon">Paso 1. Guarda el addon</h2>
+<p>Guarda esto como <code translate="no" v-pre>iptv.py</code>:</p>
+<div id="step-1-save-the-addon-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-python"><code v-pre class="language-python">#!/usr/bin/env python3
+&quot;&quot;&quot;iptv: a rex addon that turns an M3U playlist and its XMLTV guide into Live TV channels.
+
+Standard library only; needs ffprobe on PATH. Plays HLS (.m3u8) channels; others are skipped.
+&quot;&quot;&quot;
+import gzip, io, json, os, re, subprocess, sys, threading, time, urllib.error, urllib.parse, urllib.request
+import xml.etree.ElementTree as ET
+from datetime import datetime, timedelta, timezone
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+PLAYLIST = &quot;https://example.com/playlist.m3u&quot;   # your M3U: a URL or a file path
+GUIDE = &quot;https://example.com/guide.xml.gz&quot;       # its XMLTV guide: a URL or a file path, .gz or not
+GROUPS = []                                      # only these group-title values; [] keeps every channel
+REX = &quot;http://192.168.1.20:32400&quot;                # rex's address
+LISTEN = (&quot;127.0.0.1&quot;, 9983)                     # where this addon answers; rex must reach it
+NAME, LIBRARY = &quot;iptv&quot;, &quot;Live Channels&quot;          # the source's name and its library's title
+FIRST = 1                                        # the first channel number this addon hands out
+
+ME = &quot;http://%s:%d&quot; % LISTEN
+FORCE = os.environ.get(&quot;REX_FORCE&quot;) == &quot;1&quot;  # REX_FORCE=1 lets one run remove more than half
+STATE = os.path.expanduser(&quot;~/.rex-iptv.json&quot;)   # channel numbers and probes, kept across restarts
+state = json.load(open(STATE)) if os.path.exists(STATE) else {&quot;numbers&quot;: {}, &quot;probes&quot;: {}}
+streams = {}                                     # channel key -&gt; the stream URL to send rex to
+sys.stdout.reconfigure(line_buffering=True)
+
+
+def read(source):
+    &quot;&quot;&quot;A URL's or a file's bytes, un-gzipped.&quot;&quot;&quot;
+    if re.match(r&quot;https?://&quot;, source):
+        with urllib.request.urlopen(urllib.request.Request(source, headers={&quot;User-Agent&quot;: &quot;rex-iptv/1.0&quot;}), timeout=60) as r:
+            data = r.read()
+    else:
+        with open(os.path.expanduser(source), &quot;rb&quot;) as f:
+            data = f.read()
+    return gzip.decompress(data) if data[:2] == b&quot;\x1f\x8b&quot; else data
+
+
+# ---- Serve the bytes: a channel's path redirects to its stream ----------------------------
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        key = urllib.parse.unquote(urllib.parse.urlsplit(self.path).path)[len(&quot;/tv/&quot;):-len(&quot;.m3u8&quot;)]
+        if not self.path.startswith(&quot;/tv/&quot;) or key not in streams:
+            return self.send_error(404)
+        self.send_response(302)  # rex follows it and converts the stream while someone watches
+        self.send_header(&quot;Location&quot;, best_variant(streams[key]))  # asked now: stream links can expire
+        self.end_headers()
+
+    def log_message(self, *args):
+        pass
+
+
+# ---- The playlist --------------------------------------------------------------------------
+def channels():
+    &quot;&quot;&quot;(key, name, logo, number, group, url) for each #EXTINF entry of the playlist.&quot;&quot;&quot;
+    found, info = [], None
+    for line in read(PLAYLIST).decode(&quot;utf-8&quot;, &quot;replace&quot;).splitlines():
+        line = line.strip()
+        if line.startswith(&quot;#EXTINF&quot;):
+            attrs = dict(re.findall(r'([\w-]+)=&quot;([^&quot;]*)&quot;', line))
+            info = (attrs, line.rsplit(&quot;,&quot;, 1)[-1].strip())
+        elif line and not line.startswith(&quot;#&quot;) and info:
+            attrs, name = info
+            info = None
+            if GROUPS and attrs.get(&quot;group-title&quot;) not in GROUPS:
+                continue
+            key = re.sub(r&quot;[^A-Za-z0-9_-]+&quot;, &quot;-&quot;, attrs.get(&quot;tvg-id&quot;) or name).strip(&quot;-&quot;) or &quot;channel&quot;
+            found.append((key, name, attrs.get(&quot;tvg-logo&quot;), attrs.get(&quot;tvg-chno&quot;), attrs.get(&quot;tvg-id&quot;), line))
+    return found
+
+
+def best_variant(url):
+    &quot;&quot;&quot;An HLS master playlist's highest-bandwidth variant; any other playlist as it is.&quot;&quot;&quot;
+    with urllib.request.urlopen(urllib.request.Request(url, headers={&quot;User-Agent&quot;: &quot;rex-iptv/1.0&quot;}), timeout=30) as r:
+        text, final = r.read().decode(&quot;utf-8&quot;, &quot;replace&quot;), r.geturl()
+    best, lines = None, text.splitlines()
+    for i, line in enumerate(lines):
+        if line.startswith(&quot;#EXT-X-STREAM-INF&quot;):
+            bw = int((re.search(r&quot;BANDWIDTH=(\d+)&quot;, line) or [0, 0])[1])
+            nxt = next((l.strip() for l in lines[i + 1:] if l.strip() and not l.startswith(&quot;#&quot;)), None)
+            if nxt and (best is None or bw &gt; best[0]):
+                best = (bw, urllib.parse.urljoin(final, nxt))
+    return best[1] if best else url
+
+
+def probe(url):
+    &quot;&quot;&quot;ffprobe of the stream, kept for a day: rex needs it, and an HLS probe of a live channel has no duration.&quot;&quot;&quot;
+    old = state[&quot;probes&quot;].get(url)
+    if old and old[&quot;at&quot;] &gt; time.time() - 86400:
+        return old[&quot;info&quot;]
+    out = subprocess.run([&quot;ffprobe&quot;, &quot;-v&quot;, &quot;error&quot;, &quot;-rw_timeout&quot;, &quot;15000000&quot;, &quot;-print_format&quot;, &quot;json&quot;,
+                          &quot;-show_format&quot;, &quot;-show_streams&quot;, url], capture_output=True, timeout=60)
+    info = json.loads(out.stdout or b&quot;{}&quot;)
+    if info.get(&quot;format&quot;, {}).get(&quot;format_name&quot;) != &quot;hls&quot; or not info.get(&quot;streams&quot;):
+        raise ValueError(&quot;not a live HLS stream (%s)&quot; % (out.stderr.decode().strip()[-200:] or info.get(&quot;format&quot;, {}).get(&quot;format_name&quot;)))
+    state[&quot;probes&quot;][url] = {&quot;at&quot;: time.time(), &quot;info&quot;: info}
+    return info
+
+
+# ---- The guide -----------------------------------------------------------------------------
+def when(xmltv):
+    &quot;&quot;&quot;XMLTV's &quot;20261104180000 +0100&quot; as ISO 8601, which rex takes.&quot;&quot;&quot;
+    t = datetime.strptime(xmltv[:14], &quot;%Y%m%d%H%M%S&quot;)
+    zone = xmltv[14:].strip() or &quot;+0000&quot;
+    return t.strftime(&quot;%Y-%m-%dT%H:%M:%S&quot;) + zone[:3] + &quot;:&quot; + zone[3:5]
+
+
+def guides(wanted):
+    &quot;&quot;&quot;Each wanted channel's programmes from three hours ago to a week ahead.&quot;&quot;&quot;
+    now = datetime.now(timezone.utc)
+    lo, hi = (now - timedelta(hours=3)).strftime(&quot;%Y%m%d%H%M%S&quot;), (now + timedelta(days=7)).strftime(&quot;%Y%m%d%H%M%S&quot;)
+    found = {c: [] for c in wanted}
+    for _, el in ET.iterparse(io.BytesIO(read(GUIDE))):
+        if el.tag != &quot;programme&quot;:
+            continue
+        start, stop, ch = el.get(&quot;start&quot;, &quot;&quot;), el.get(&quot;stop&quot;, &quot;&quot;), el.get(&quot;channel&quot;)
+        if ch in found and start and stop and stop[:14] &gt; lo and start[:14] &lt; hi:
+            p = {&quot;start&quot;: when(start), &quot;end&quot;: when(stop), &quot;title&quot;: el.findtext(&quot;title&quot;) or &quot;?&quot;,
+                 &quot;summary&quot;: el.findtext(&quot;desc&quot;), &quot;categories&quot;: [c.text for c in el.findall(&quot;category&quot;) if c.text]}
+            ns = el.findtext(&quot;episode-num[@system='xmltv_ns']&quot;)
+            m = re.match(r&quot;\s*(\d+)?\s*\.\s*(\d+)&quot;, ns or &quot;&quot;)
+            if m and m.group(2):  # xmltv_ns counts from 0: &quot;0.4.&quot; is season 1, episode 5
+                p.update(type=&quot;episode&quot;, show=p[&quot;title&quot;], title=el.findtext(&quot;sub-title&quot;) or p[&quot;title&quot;],
+                         season=int(m.group(1) or 0) + 1, episode=int(m.group(2)) + 1)
+            if el.find(&quot;previously-shown&quot;) is not None:
+                p[&quot;previously_shown&quot;] = True
+            icon = el.find(&quot;icon&quot;)
+            if icon is not None and (icon.get(&quot;src&quot;) or &quot;&quot;).startswith(&quot;http&quot;):
+                p[&quot;thumb&quot;] = icon.get(&quot;src&quot;)
+            found[ch].append({k: v for k, v in p.items() if v not in (None, [])})
+        el.clear()
+    return found
+
+
+# ---- Register, then send every channel ------------------------------------------------------
+def rex(method, path, body):
+    req = urllib.request.Request(REX + path, json.dumps(body).encode(), method=method,
+                                 headers={&quot;Content-Type&quot;: &quot;application/json&quot;})
+    try:
+        with urllib.request.urlopen(req, timeout=120) as r:
+            return json.load(r)
+    except urllib.error.HTTPError as e:  # rex says why in the body
+        raise RuntimeError(&quot;rex answered %d: %s&quot; % (e.code, e.read().decode(errors=&quot;replace&quot;)[:300])) from None
+
+
+def number_for(key, chno):
+    &quot;&quot;&quot;Handed out once and kept, so a favourite stays on its channel: the playlist's tvg-chno if free.&quot;&quot;&quot;
+    if key not in state[&quot;numbers&quot;]:
+        taken, n = set(state[&quot;numbers&quot;].values()), FIRST
+        while str(n) in taken:
+            n += 1
+        state[&quot;numbers&quot;][key] = chno if chno and chno not in taken else str(n)
+    return state[&quot;numbers&quot;][key]
+
+
+def sync():
+    rex(&quot;PUT&quot;, &quot;/rex/sources/&quot; + NAME, {&quot;url&quot;: ME, &quot;trash&quot;: False,
+                                        &quot;directories&quot;: [{&quot;name&quot;: &quot;tv&quot;, &quot;movies&quot;: LIBRARY}]})
+    listed = channels()
+    guide = guides({c[4] for c in listed if c[4]})
+    items = []
+    for key, name, logo, chno, tvg_id, url in listed:
+        try:
+            stream = best_variant(url)
+            info = probe(stream)
+        except Exception as e:
+            print(&quot;skipped %s: %s&quot; % (name, e))
+            continue
+        streams[key] = url
+        item = {&quot;id&quot;: key, &quot;path&quot;: &quot;tv/%s.m3u8&quot; % key, &quot;media_info&quot;: info,
+                &quot;display&quot;: {&quot;title&quot;: name},
+                &quot;channel&quot;: {&quot;number&quot;: number_for(key, chno), &quot;title&quot;: name, &quot;guide&quot;: guide.get(tvg_id, [])}}
+        if logo and logo.startswith(&quot;http&quot;):
+            item[&quot;display&quot;][&quot;thumb&quot;] = logo
+        items.append(item)
+    with open(STATE, &quot;w&quot;) as f:
+        json.dump(state, f)
+    if not items:
+        print(&quot;no channel could be probed: not sending a snapshot&quot;)
+        return
+    session = str(time.time())
+    for n in range(0, len(items), 100):  # a week of guide per channel: 100 channels a request
+        answer = rex(&quot;PUT&quot;, &quot;/rex/feed/%s/snapshot&quot; % NAME,
+                     {&quot;session&quot;: session, &quot;part&quot;: n // 100, &quot;complete&quot;: n + 100 &gt;= len(items), &quot;force&quot;: FORCE, &quot;items&quot;: items[n:n + 100]})
+        for bad in answer.get(&quot;rejected&quot;, []):
+            print(&quot;rejected:&quot;, bad)
+    print(&quot;sent %d channels: %d created, %d updated, %d unchanged&quot; % (len(items), answer[&quot;created&quot;], answer[&quot;updated&quot;], answer[&quot;unchanged&quot;]))
+
+
+if __name__ == &quot;__main__&quot;:
+    server = ThreadingHTTPServer(LISTEN, Handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    print(&quot;serving %s at %s&quot; % (PLAYLIST, ME))
+    while True:
+        try:
+            sync()
+        except Exception as e:
+            print(&quot;sync failed, trying again in 30 minutes:&quot;, e)
+        time.sleep(1800)</code></pre>
+</doc-codeblock></div>
+<h2 id="step-2-fill-in-the-settings">Paso 2. Rellena la configuración</h2>
+<retype-table copy-text="| Setting | Poner |
+|---|---|
+| `PLAYLIST` | La URL de tu M3U, o su ruta en esta máquina |
+| `GUIDE` | La URL o ruta de tu guía XMLTV. El enlace de la guía de un proveedor normalmente termina en `xmltv.php`, `.xml` o `.xml.gz` |
+| `GROUPS` | Solo los grupos que quieras, como sus valores de `group-title`: `[&quot;News&quot;, &quot;Sports&quot;]`. Deja `[]` para todos los canales. Cada canal se comprueba con `ffprobe` (unos segundos cada uno), así que una lista de miles tarda mucho: elige grupos |
+| `REX`, `LISTEN` | La dirección de rex, y en qué dirección responde el addon (`127.0.0.1` con el addon en la misma máquina que rex) |
+| `NAME`, `LIBRARY` | El nombre del addon en rex y el título de la biblioteca que también contiene los canales. Mantén `NAME` una vez lo hayas ejecutado |
+| `FIRST` | El número que recibe el primer canal sin `tvg-chno`. Elige números libres de los de otros addons de Live TV, como `500` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Setting</th>
+<th>Poner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>PLAYLIST</code></td>
+<td>La URL de tu M3U, o su ruta en esta máquina</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>GUIDE</code></td>
+<td>La URL o ruta de tu guía XMLTV. El enlace de la guía de un proveedor normalmente termina en <code translate="no" v-pre>xmltv.php</code>, <code translate="no" v-pre>.xml</code> o <code translate="no" v-pre>.xml.gz</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>GROUPS</code></td>
+<td>Solo los grupos que quieras, como sus valores de <code translate="no" v-pre>group-title</code>: <code translate="no" v-pre>[&quot;News&quot;, &quot;Sports&quot;]</code>. Deja <code translate="no" v-pre>[]</code> para todos los canales. Cada canal se comprueba con <code translate="no" v-pre>ffprobe</code> (unos segundos cada uno), así que una lista de miles tarda mucho: elige grupos</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>REX</code>, <code translate="no" v-pre>LISTEN</code></td>
+<td>La dirección de rex, y en qué dirección responde el addon (<code translate="no" v-pre>127.0.0.1</code> con el addon en la misma máquina que rex)</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>NAME</code>, <code translate="no" v-pre>LIBRARY</code></td>
+<td>El nombre del addon en rex y el título de la biblioteca que también contiene los canales. Mantén <code translate="no" v-pre>NAME</code> una vez lo hayas ejecutado</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>FIRST</code></td>
+<td>El número que recibe el primer canal sin <code translate="no" v-pre>tvg-chno</code>. Elige números libres de los de otros addons de Live TV, como <code translate="no" v-pre>500</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h2 id="step-3-run-it">Paso 3. Ejecútalo</h2>
+<doc-tabs>
+<doc-tab v-cloak id="linux-y-macos">
+<template #title>Linux y macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">python3 iptv.py</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">python iptv.py</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p><strong>Lo que deberías ver.</strong> Una línea por cada canal que no se pudo comprobar, y luego el total:</p>
+<div id="step-3-run-it-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">serving https://example.com/playlist.m3u at http://127.0.0.1:9983
+skipped Gone Channel: &lt;urlopen error [Errno 111] Connection refused&gt;
+sent 2 channels: 2 created, 0 updated, 0 unchanged</code></pre>
+</doc-codeblock></div>
+<p>El registro de rex muestra la biblioteca creada para los canales y los canales que van llegando:</p>
+<div id="step-3-run-it-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">SOURCES iptv registered at http://127.0.0.1:9983
+SECTION create Live Channels (movie) for iptv's tv
+FEED iptv upsert: 2 created, 0 updated, 0 held, 0 unchanged, 0 rejected</code></pre>
+</doc-codeblock></div>
+<p>En Plex Web o Plex para Android, abre <strong>Live TV</strong>: una pestaña con el nombre de tu rex lista los canales con sus números, con la guía desde hace tres horas hasta una semana por delante. Elige lo que está en emisión y pulsa <strong>Watch Now</strong>: se reproduce tras unos segundos, el tiempo que tarda rex en empezar a convertirlo. What&#x27;s On muestra lo que está en emisión ahora y lo que viene después; un episodio de la categoría <code translate="no" v-pre>News</code> o <code translate="no" v-pre>Sports</code> de la guía aparece en esas estanterías.</p>
+<p>El addon comprueba la playlist y vuelve a enviar la guía cada 30 minutos. Para mantenerlo en marcha, configúralo igual que el addon de vídeos caseros: <a href="../addon-home-videos/#step-4-keep-it-running">Paso 4</a>, con <code translate="no" v-pre>iptv.py</code> en lugar de <code translate="no" v-pre>homevideos.py</code>.</p>
+<h2 id="how-it-works">Cómo funciona</h2>
+<retype-table copy-text="| Parte | Qué hace |
+|---|---|
+| `channels()` | Lee la lista de reproducción: cada línea `#EXTINF` y la URL que va después. La clave de un canal, que es su `id` en rex para siempre, es su `tvg-id` (o su nombre) |
+| `Handler` | Sirve `/tv/&lt;key&gt;.m3u8` como una redirección al stream del canal. rex la sigue cada vez que alguien sintoniza, y el addon busca el stream en ese momento, así que los enlaces que caducan siguen funcionando |
+| `best_variant()` | Toma la mejor calidad de un stream que ofrece varias (una playlist maestra HLS), para que lo que se reproduce sea lo que se comprobó |
+| `probe()` | `ffprobe` del stream, guardado durante un día. rex lo necesita para saber la imagen y el sonido del canal, y trata el canal como en directo porque su probe no tiene duración. Un stream que no es HLS, o que no responde, se salta en esta ronda |
+| `guides()` | Lee el archivo XMLTV una vez por ronda y guarda los programas de cada canal desde hace tres horas hasta una semana hacia adelante: título, descripción, categorías, imagen y `previously-shown` (una repetición). Un programa con un número de episodio `xmltv_ns` se convierte en un episodio de su serie, numerado desde 1 (XMLTV cuenta desde 0) |
+| `number_for()` | Asigna a cada canal su número una sola vez y lo guarda en `~/.rex-iptv.json`: el `tvg-chno` de la lista de reproducción si ningún otro canal lo tiene, si no, el siguiente libre a partir de `FIRST`. Los favoritos en las apps de Plex se guardan por número, así que un canal debe conservarlo |
+| `sync()` | Se registra con `&quot;trash&quot;: false`, así que un canal que sale de la lista de reproducción se borra, no se guarda en la papelera de rex. Cada canal se envía con su `channel`: número, nombre y guía. Una copia de todos los canales, 100 por petición (con una semana de guía cada uno) |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Parte</th>
+<th>Qué hace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>channels()</code></td>
+<td>Lee la lista de reproducción: cada línea <code translate="no" v-pre>#EXTINF</code> y la URL que va después. La clave de un canal, que es su <code translate="no" v-pre>id</code> en rex para siempre, es su <code translate="no" v-pre>tvg-id</code> (o su nombre)</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Handler</code></td>
+<td>Sirve <code translate="no" v-pre>/tv/&lt;key&gt;.m3u8</code> como una redirección al stream del canal. rex la sigue cada vez que alguien sintoniza, y el addon busca el stream en ese momento, así que los enlaces que caducan siguen funcionando</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>best_variant()</code></td>
+<td>Toma la mejor calidad de un stream que ofrece varias (una playlist maestra HLS), para que lo que se reproduce sea lo que se comprobó</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>probe()</code></td>
+<td><code translate="no" v-pre>ffprobe</code> del stream, guardado durante un día. rex lo necesita para saber la imagen y el sonido del canal, y trata el canal como en directo porque su probe no tiene duración. Un stream que no es HLS, o que no responde, se salta en esta ronda</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>guides()</code></td>
+<td>Lee el archivo XMLTV una vez por ronda y guarda los programas de cada canal desde hace tres horas hasta una semana hacia adelante: título, descripción, categorías, imagen y <code translate="no" v-pre>previously-shown</code> (una repetición). Un programa con un número de episodio <code translate="no" v-pre>xmltv_ns</code> se convierte en un episodio de su serie, numerado desde 1 (XMLTV cuenta desde 0)</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>number_for()</code></td>
+<td>Asigna a cada canal su número una sola vez y lo guarda en <code translate="no" v-pre>~/.rex-iptv.json</code>: el <code translate="no" v-pre>tvg-chno</code> de la lista de reproducción si ningún otro canal lo tiene, si no, el siguiente libre a partir de <code translate="no" v-pre>FIRST</code>. Los favoritos en las apps de Plex se guardan por número, así que un canal debe conservarlo</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>sync()</code></td>
+<td>Se registra con <code translate="no" v-pre>&quot;trash&quot;: false</code>, así que un canal que sale de la lista de reproducción se borra, no se guarda en la papelera de rex. Cada canal se envía con su <code translate="no" v-pre>channel</code>: número, nombre y guía. Una copia de todos los canales, 100 por petición (con una semana de guía cada uno)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h2 id="change-it">Cámbialo</h2>
+<ul>
+<li><strong>Streams que no son HLS.</strong> Muchos proveedores también ofrecen cada canal como MPEG-TS (<code translate="no" v-pre>.ts</code>). rex toma un canal en vivo como stream HLS (<code translate="no" v-pre>.m3u8</code>), así que este addon omite los demás: pide a tu proveedor enlaces HLS (a menudo <code translate="no" v-pre>output=m3u8</code> en la URL de la lista de reproducción).</li>
+<li><strong>Tus propios números.</strong> Edita los números en <code translate="no" v-pre>~/.rex-iptv.json</code> mientras el addon está detenido; la siguiente ronda los envía.</li>
+<li><strong>Logos.</strong> <code translate="no" v-pre>tvg-logo</code> se convierte en la imagen del canal en su biblioteca. La parrilla de la guía muestra números y nombres.</li>
+<li><strong>Una guía de otro sitio.</strong> Cualquier cosa que conozca el horario puede alimentar <code translate="no" v-pre>guide</code>: una API JSON de un proveedor, un calendario deportivo, un bucle fijo. rex-live-sports construye guías a partir del marcador de ESPN, ver <a href="../live-tv/">Live TV with rex</a>.</li>
+</ul>
+<h2 id="troubleshooting">Solución de problemas</h2>
+<retype-table copy-text="| Lo que ves | Por qué | Solución |
+|---|---|---|
+| `skipped &lt;channel&gt;: not a live HLS stream (...)` | El canal es MPEG-TS u otro formato, o su stream respondió con un error (el motivo está al final) | Usa el enlace HLS del canal; un stream que está caído se vuelve a probar en la siguiente ronda |
+| `skipped &lt;channel&gt;: &lt;urlopen error ...&gt;` (`Connection refused`, `actively refused it` en Windows, o `HTTP Error 403`) | El stream no respondió, o rechazó esta máquina | Comprueba el enlace en un reproductor desde la misma máquina. Los enlaces de IPTV a menudo solo funcionan desde la dirección que inició sesión |
+| `no channel could be probed: not sending a snapshot` | Ningún canal respondió: el proveedor está caído, o la lista de reproducción está vacía | No se elimina nada. Revisa `PLAYLIST` |
+| `sync failed, ...: &lt;urlopen error [Errno 111] Connection refused&gt;` (`WinError 10061` en Windows) | rex no está en ejecución, o `REX` no es su dirección | Inicia rex, o corrige `REX` |
+| `sync failed, ...: rex answered 409: ...more than half...` | Más de la mitad de los canales salieron de la lista de reproducción, o fallaron su comprobación, de golpe | Si era lo que querías, ejecútalo una vez con `REX_FORCE=1`; si no, espera a que el proveedor vuelva |
+| Un canal no tiene nada en la guía | Su `tvg-id` no coincide con ningún `&lt;channel id&gt;` de la guía, o la guía no tiene nada para esta semana | Haz que el `tvg-id` de la lista de reproducción coincida con los ids de la guía |
+| No aparece la TV en vivo en una app de Plex | Todavía no se envió ningún canal, o la app no es Plex Web ni Plex para Android, las únicas probadas | Ejecuta el addon, y usa Plex Web o Plex para Android |
+| Watch Now falla | rex no tiene FFmpeg, o el stream se detuvo | El log de rex indica el motivo. Para FFmpeg, consulta [Converting video](any-source.md#converting-video-optional) |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Lo que ves</th>
+<th>Por qué</th>
+<th>Solución</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>skipped &lt;channel&gt;: not a live HLS stream (...)</code></td>
+<td>El canal es MPEG-TS u otro formato, o su stream respondió con un error (el motivo está al final)</td>
+<td>Usa el enlace HLS del canal; un stream que está caído se vuelve a probar en la siguiente ronda</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>skipped &lt;channel&gt;: &lt;urlopen error ...&gt;</code> (<code translate="no" v-pre>Connection refused</code>, <code translate="no" v-pre>actively refused it</code> en Windows, o <code translate="no" v-pre>HTTP Error 403</code>)</td>
+<td>El stream no respondió, o rechazó esta máquina</td>
+<td>Comprueba el enlace en un reproductor desde la misma máquina. Los enlaces de IPTV a menudo solo funcionan desde la dirección que inició sesión</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>no channel could be probed: not sending a snapshot</code></td>
+<td>Ningún canal respondió: el proveedor está caído, o la lista de reproducción está vacía</td>
+<td>No se elimina nada. Revisa <code translate="no" v-pre>PLAYLIST</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>sync failed, ...: &lt;urlopen error [Errno 111] Connection refused&gt;</code> (<code translate="no" v-pre>WinError 10061</code> en Windows)</td>
+<td>rex no está en ejecución, o <code translate="no" v-pre>REX</code> no es su dirección</td>
+<td>Inicia rex, o corrige <code translate="no" v-pre>REX</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>sync failed, ...: rex answered 409: ...more than half...</code></td>
+<td>Más de la mitad de los canales salieron de la lista de reproducción, o fallaron su comprobación, de golpe</td>
+<td>Si era lo que querías, ejecútalo una vez con <code translate="no" v-pre>REX_FORCE=1</code>; si no, espera a que el proveedor vuelva</td>
+</tr>
+<tr>
+<td>Un canal no tiene nada en la guía</td>
+<td>Su <code translate="no" v-pre>tvg-id</code> no coincide con ningún <code translate="no" v-pre>&lt;channel id&gt;</code> de la guía, o la guía no tiene nada para esta semana</td>
+<td>Haz que el <code translate="no" v-pre>tvg-id</code> de la lista de reproducción coincida con los ids de la guía</td>
+</tr>
+<tr>
+<td>No aparece la TV en vivo en una app de Plex</td>
+<td>Todavía no se envió ningún canal, o la app no es Plex Web ni Plex para Android, las únicas probadas</td>
+<td>Ejecuta el addon, y usa Plex Web o Plex para Android</td>
+</tr>
+<tr>
+<td>Watch Now falla</td>
+<td>rex no tiene FFmpeg, o el stream se detuvo</td>
+<td>El log de rex indica el motivo. Para FFmpeg, consulta <a href="../any-source/#converting-video-optional">Converting video</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>¿Sigues atascado? Pregunta en el foro <strong>rex-support</strong> de <a href="https://discord.com/invite/7u4YjMThXP">Discord</a>.</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../rex/addon-music/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Anterior</span>
+                                <span class="block mt-1">Tutorial: complemento de m&#250;sica</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../rex/addon-more/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Siguiente</span>
+                                <span class="block mt-1">M&#225;s de tu addon</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Tutorial: addon de IPTV", level: 2, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/rex/addon-iptv.md" }</script>
+</body>
+</html>

@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="zh" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/zh">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672741088">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Real-Debrid、AllDebrid 和 TorBox 上的种子生命周期</title>
+    <meta name="title" content="Real-Debrid、AllDebrid 和 TorBox 上的种子生命周期">
+    <meta name="description" content="2026-08-30 使用真实账号测量。下文标为 observed 的内容都来自抓包结果。标为 inferred 的内容则不是来自抓包，文中会说明原因。">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/zh/zurg/internals/torrent-lifecycle/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/zh/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/zh/zurg/internals/torrent-lifecycle/">
+    <meta property="og:title" content="Real-Debrid、AllDebrid 和 TorBox 上的种子生命周期">
+    <meta property="og:description" content="2026-08-30 使用真实账号测量。下文标为 observed 的内容都来自抓包结果。标为 inferred 的内容则不是来自抓包，文中会说明原因。">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="zh_CN">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/zh/zurg/internals/torrent-lifecycle/">
+    <meta name="twitter:title" content="Real-Debrid、AllDebrid 和 TorBox 上的种子生命周期">
+    <meta name="twitter:description" content="2026-08-30 使用真实账号测量。下文标为 observed 的内容都来自抓包结果。标为 inferred 的内容则不是来自抓包，文中会说明原因。">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/zh/zurg/internals/torrent-lifecycle.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672741088" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672741088" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672741088" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672741088" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/zh/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>中文</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/download.html" target="_blank">下载 zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/zh/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">赞助</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>中文</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/download.html" target="_blank">下载 zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/zh/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">赞助</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="torrent-lifecycle-on-real-debrid-alldebrid-and-torbox">Real-Debrid、AllDebrid 和 TorBox 上的种子生命周期</h1>
+<p>2026-08-30 使用真实账号测量。下文标为 <strong>observed</strong> 的内容都来自抓包结果。标为 <strong>inferred</strong> 的内容则不是来自抓包，文中会说明原因。</p>
+<p>zurg 需要这些信息，因为 qBittorrent 兼容层必须告诉 Sonarr 和 Radarr 下载目前处于哪个阶段。现在它做不到。</p>
+<p><code translate="no" v-pre>TorrentInfo.Status</code> 使用的是 Real-Debrid 的状态词汇，AllDebrid 和 TorBox 的包在 zurg 自己的代码看到种子之前就会把状态转换成这套词汇。TorBox 的 <code translate="no" v-pre>stalled (no seeds)</code> 会变成 <code translate="no" v-pre>queued</code>。目前完全没有字段携带做种者数、速度或剩余时间。因此，阶段表必须从原始协议数据中构建，而不能依赖那些已经把状态统一掉的提供商包。</p>
+<p>测试脚本是 <code translate="no" v-pre>scripts/torrent_lifecycle_probe.py</code>。它直接调用原始 REST API，所以抓到的是协议层的原始状态。退出时它会删除自己添加的所有内容，包括按 Ctrl-C 中断的时候。</p>
+<hr>
+<h2 id="how-this-was-measured">测量方法</h2>
+<h3 id="the-accounts">账户</h3>
+<retype-table copy-text="| Provider | Account | Why this one |
+|---|---|---|
+| Real-Debrid | a test account | no running zurg uses it, so nothing else touched it during the run |
+| AllDebrid | a test key | the account already held other magnets, so only ids the run created were ever deleted |
+| TorBox | a live key | **another zurg instance was loaded with the same account**, which is not a footnote. See [Hazards](#hazards-found-on-the-way) |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Provider</th>
+<th>Account</th>
+<th>Why this one</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Real-Debrid</td>
+<td>a test account</td>
+<td>no running zurg uses it, so nothing else touched it during the run</td>
+</tr>
+<tr>
+<td>AllDebrid</td>
+<td>a test key</td>
+<td>the account already held other magnets, so only ids the run created were ever deleted</td>
+</tr>
+<tr>
+<td>TorBox</td>
+<td>a live key</td>
+<td><strong>another zurg instance was loaded with the same account</strong>, which is not a footnote. See <doc-anchor-trigger to="#hazards-found-on-the-way">Hazards</doc-anchor-trigger></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Credentials come from <code translate="no" v-pre>RD_TOKEN</code> <code translate="no" v-pre>AD_KEY</code> <code translate="no" v-pre>TB_KEY</code> in the environment. Nothing writes them to a
+capture.</p>
+<h3 id="the-torrents">种子</h3>
+<p>都是合法内容：开源（FOSS）镜像和公有领域影片。凡是来自 <code translate="no" v-pre>.torrent</code> 文件的 info hash，都是测试工具从文件重新计算出来的，而不是手动输入的。Swarm 规模取自 tracker 的 scrape，且是同一天获取的。</p>
+<retype-table copy-text="| 用例 | 种子 | Info hash | 大小 | Tracker 做种数 | Webseeds |
+|---|---|---|---|---|---|
+| cached | Big Buck Bunny | `dd8255ecdc7ca55fb0bbf81323d87062db1f6d1c` | 264 MiB | 不适用 | 不适用 |
+| cached | Sintel | `08ada5a7a6183aae1e09d831df6748d566095a10` | 123 MiB | 不适用 | 不适用 |
+| cached | ubuntu-26.04.1-desktop-amd64.iso | `5b1e0d988fc7a0c9e99bd852071681a59974b39f` | 6.04 GiB | 22 到 27 | 无 |
+| uncached | debian-13.6.0-arm64-DVD-1.iso | `4d38178b8f08447ea8609e844b0071354ed65887` | 3.72 GiB | 212 | 2 |
+| uncached | debian-13.2.0-amd64-DVD-1.iso | `7f23b66ebc763f6d931e999583adfd22a7d796fa` | 3.71 GiB | 328 | 2 |
+| webseed | Prelinger `205882_Home_Movie_005588` | `69e7bba940b3c2edf7ce517330e3ca904877d8d1` | 0.71 GiB | 0 个做种者和 0 个下载者 | 3 |
+| seedless | ubuntu-16.04.6-desktop-i386.iso | `c16796a74dc24cc7c6df2f7b66b861e22dec69b1` | 1.56 GiB | 0 | 无 |
+| seedless | ubuntu-24.04-beta-live-server-s390x.iso | `8e693ebcdda44f741e2034cedbb552e93944143d` | 1.18 GiB | 0 | 无 |
+| nometa | 随机 40 位十六进制 | `3f9c1a77b0e4d2568af3c01e9b7d4a5268c1f0e3` | 无 | 无 | 无 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>用例</th>
+<th>种子</th>
+<th>Info hash</th>
+<th>大小</th>
+<th>Tracker 做种数</th>
+<th>Webseeds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cached</td>
+<td>Big Buck Bunny</td>
+<td><code translate="no" v-pre>dd8255ecdc7ca55fb0bbf81323d87062db1f6d1c</code></td>
+<td>264 MiB</td>
+<td>不适用</td>
+<td>不适用</td>
+</tr>
+<tr>
+<td>cached</td>
+<td>Sintel</td>
+<td><code translate="no" v-pre>08ada5a7a6183aae1e09d831df6748d566095a10</code></td>
+<td>123 MiB</td>
+<td>不适用</td>
+<td>不适用</td>
+</tr>
+<tr>
+<td>cached</td>
+<td>ubuntu-26.04.1-desktop-amd64.iso</td>
+<td><code translate="no" v-pre>5b1e0d988fc7a0c9e99bd852071681a59974b39f</code></td>
+<td>6.04 GiB</td>
+<td>22 到 27</td>
+<td>无</td>
+</tr>
+<tr>
+<td>uncached</td>
+<td>debian-13.6.0-arm64-DVD-1.iso</td>
+<td><code translate="no" v-pre>4d38178b8f08447ea8609e844b0071354ed65887</code></td>
+<td>3.72 GiB</td>
+<td>212</td>
+<td>2</td>
+</tr>
+<tr>
+<td>uncached</td>
+<td>debian-13.2.0-amd64-DVD-1.iso</td>
+<td><code translate="no" v-pre>7f23b66ebc763f6d931e999583adfd22a7d796fa</code></td>
+<td>3.71 GiB</td>
+<td>328</td>
+<td>2</td>
+</tr>
+<tr>
+<td>webseed</td>
+<td>Prelinger <code translate="no" v-pre>205882_Home_Movie_005588</code></td>
+<td><code translate="no" v-pre>69e7bba940b3c2edf7ce517330e3ca904877d8d1</code></td>
+<td>0.71 GiB</td>
+<td>0 个做种者和 0 个下载者</td>
+<td>3</td>
+</tr>
+<tr>
+<td>seedless</td>
+<td>ubuntu-16.04.6-desktop-i386.iso</td>
+<td><code translate="no" v-pre>c16796a74dc24cc7c6df2f7b66b861e22dec69b1</code></td>
+<td>1.56 GiB</td>
+<td>0</td>
+<td>无</td>
+</tr>
+<tr>
+<td>seedless</td>
+<td>ubuntu-24.04-beta-live-server-s390x.iso</td>
+<td><code translate="no" v-pre>8e693ebcdda44f741e2034cedbb552e93944143d</code></td>
+<td>1.18 GiB</td>
+<td>0</td>
+<td>无</td>
+</tr>
+<tr>
+<td>nometa</td>
+<td>随机 40 位十六进制</td>
+<td><code translate="no" v-pre>3f9c1a77b0e4d2568af3c01e9b7d4a5268c1f0e3</code></td>
+<td>无</td>
+<td>无</td>
+<td>无</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>这些 0 是真实的，不是 tracker 挂了。<code translate="no" v-pre>torrent.ubuntu.com</code> 在同一轮循环中，对三个 Ubuntu 条目各 scrape 了两次：对 26.04.1 先返回 22 个、后返回 27 个做种者，而对两个 seedless 条目则返回空的 <code translate="no" v-pre>d5:filesdee</code>。<code translate="no" v-pre>bt1.archive.org</code> 和 Prelinger 条目也是同样的情况。</p>
+<p>在添加任何内容之前，都先用 <code translate="no" v-pre>checkcached</code> 向 TorBox 查询了每个 hash。在这三种缓存探测方式中，它是唯一不会造成破坏的。它对三条 cached 行都返回 cached，对其余六条都返回 uncached。这正好与用例名称所声称的分类一致。</p>
+<h3 id="poll-cadence-and-caps">轮询频率与上限</h3>
+<p>3 s für die ersten 2 Minuten, danach 15 s. 1 s für den Cache-Fall, weil der gesamte Lebenszyklus dort schon innerhalb einer normalen Abfrage abgeschlossen sein kann. Für die Kampagne 15 Minuten pro Torrent als Obergrenze, statt des Script-Standards von 30. Das vorgeschlagene Standard-Timeout des Shims liegt bei 10 Minuten, und ein Torrent, der bei 15 noch läuft, ist bereits über das einzige Zeitfenster hinaus, das zählt. Real-Debrid-Adds liegen mindestens 20 s auseinander.</p>
+<p>Jeder Provider lief als eigener Prozess mit eigenem Ausgabeverzeichnis. So bleibt der Abstand zwischen den Real-Debrid-Adds innerhalb eines Prozesses korrekt, und die drei können gleichzeitig laufen.</p>
+<h2 id="real-debrid">Real-Debrid</h2>
+<h3 id="endpoints">端点</h3>
+<div id="endpoints-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">POST   /rest/1.0/torrents/addMagnet          magnet=magnet:?xt=urn:btih:&lt;hash&gt;   -&gt; 201 {&quot;id&quot;,&quot;uri&quot;}
+POST   /rest/1.0/torrents/selectFiles/{id}   files=all                           -&gt; 204
+GET    /rest/1.0/torrents/info/{id}                                              -&gt; 200 object
+DELETE /rest/1.0/torrents/delete/{id}                                            -&gt; 204</code></pre>
+</doc-codeblock></div>
+<h3 id="status-values-observed">观察到的状态值</h3>
+<p><code translate="no" v-pre>waiting_files_selection</code> <code translate="no" v-pre>magnet_conversion</code> <code translate="no" v-pre>magnet_error</code> <code translate="no" v-pre>queued</code> <code translate="no" v-pre>downloading</code> <code translate="no" v-pre>uploading</code>
+<code translate="no" v-pre>downloaded</code></p>
+<p>这里没有观察到。<code translate="no" v-pre>compressing</code>、<code translate="no" v-pre>virus</code>、<code translate="no" v-pre>error</code>、<code translate="no" v-pre>dead</code>。这些状态需要本次活动无法合法获得的内容才会出现。</p>
+<h3 id="which-wire-fields-exist-in-which-status">每个状态下有哪些线路字段</h3>
+<p>这比词汇本身更重要。字段会出现，也会消失。如果映射器在每个状态下都去读 <code translate="no" v-pre>speed</code>，那么有一半的时候它读到的都是一个不存在的键。</p>
+<retype-table copy-text="| 字段 | magnet_conversion | queued | downloading | uploading | downloaded |
+|---|---|---|---|---|---|
+| `status` | 有 | 有 | 有 | 有 | 有 |
+| `progress` | 0 | 0 | **浮点百分比**，0 到 100 | **从 0 重新开始**并攀升到 100 | 100 |
+| `seeders` | 有 | **缺失** | 有 | **缺失** | **缺失** |
+| `speed` | **缺失** | **缺失** | 有，单位为字节每秒 | 有，抓取数据中始终为 0 | **缺失** |
+| `bytes` / `original_bytes` | 0 | 真实大小 | 真实大小 | 真实大小 | 真实大小 |
+| `filename` | `&quot;Magnet&quot;` | 真实名称 | 真实名称 | 真实名称 | 真实名称 |
+| `files` | `[]` | 有内容 | 有内容 | 有内容 | 有内容 |
+| `links` | `[]` | `[]` | `[]` | 在该阶段逐步填充 | 有内容 |
+| `ended` | 缺失 | 缺失 | 缺失 | 缺失 | 有 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>字段</th>
+<th>magnet_conversion</th>
+<th>queued</th>
+<th>downloading</th>
+<th>uploading</th>
+<th>downloaded</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>status</code></td>
+<td>有</td>
+<td>有</td>
+<td>有</td>
+<td>有</td>
+<td>有</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>progress</code></td>
+<td>0</td>
+<td>0</td>
+<td><strong>浮点百分比</strong>，0 到 100</td>
+<td><strong>从 0 重新开始</strong>并攀升到 100</td>
+<td>100</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>seeders</code></td>
+<td>有</td>
+<td><strong>缺失</strong></td>
+<td>有</td>
+<td><strong>缺失</strong></td>
+<td><strong>缺失</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>speed</code></td>
+<td><strong>缺失</strong></td>
+<td><strong>缺失</strong></td>
+<td>有，单位为字节每秒</td>
+<td>有，抓取数据中始终为 0</td>
+<td><strong>缺失</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>bytes</code> / <code translate="no" v-pre>original_bytes</code></td>
+<td>0</td>
+<td>真实大小</td>
+<td>真实大小</td>
+<td>真实大小</td>
+<td>真实大小</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>filename</code></td>
+<td><code translate="no" v-pre>&quot;Magnet&quot;</code></td>
+<td>真实名称</td>
+<td>真实名称</td>
+<td>真实名称</td>
+<td>真实名称</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>files</code></td>
+<td><code translate="no" v-pre>[]</code></td>
+<td>有内容</td>
+<td>有内容</td>
+<td>有内容</td>
+<td>有内容</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>links</code></td>
+<td><code translate="no" v-pre>[]</code></td>
+<td><code translate="no" v-pre>[]</code></td>
+<td><code translate="no" v-pre>[]</code></td>
+<td>在该阶段逐步填充</td>
+<td>有内容</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>ended</code></td>
+<td>缺失</td>
+<td>缺失</td>
+<td>缺失</td>
+<td>缺失</td>
+<td>有</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>progress</code> 是<strong>浮点数</strong>，不是整数。抓取的数据里除了 100，还有 0.4、0.8 和 1.4。如果卡顿检测器把百分比取整，那么一个 100 GB 的资源即使以 1 MB/s 的速度正常下载，也会被误判为卡住了。</p>
+<p><code translate="no" v-pre>progress</code> <strong>会故意倒退</strong>。当 status 变为 <code translate="no" v-pre>uploading</code> 时，它会重置为 0，然后再次攀升到 100。判断是否有进展，必须以阶段变化或 progress 增长来定义，绝不能把它当作单调递增的百分比。</p>
+<p>当种子离开 <code translate="no" v-pre>downloading</code> 状态后，<code translate="no" v-pre>seeders</code> 不会变成 0，而是直接消失。<code translate="no" v-pre>speed</code> 也是如此。映射器必须把缺失的键视为未知，而不是 0。</p>
+<h3 id="what-each-case-did">每种情况的表现</h3>
+<retype-table copy-text="| Case | Torrent | Transitions with seconds from add | Verdict |
+|---|---|---|---|
+| cached | Big Buck Bunny | `downloaded`@0.0 | 端到端 1.32 秒完成 |
+| cached | Sintel | `downloaded`@0.0 | 0.73 秒完成 |
+| cached | Ubuntu 26.04.1 | `downloaded`@0.0 | 0.32 秒完成 |
+| uncached | Debian 13.6.0 arm64 DVD-1 | `downloaded`@0.0 | 此账户上已缓存 |
+| uncached | Debian 13.2.0 amd64 DVD-1 | `queued`@0.0 `downloading`@3.1 `uploading`@166.5 `downloaded`@196.8 | 完成。3.71 GiB，用时 197 秒 |
+| webseed | Prelinger home movie | `magnet_conversion`@0.0 `magnet_error`@318.0 | 失败 |
+| seedless | ubuntu-16.04.6-desktop-i386 | `queued`@0.0 `downloading`@3.1 `uploading` `downloaded`@166.8 | 完成。未复现该问题 |
+| seedless | ubuntu-24.04-beta-live-server-s390x | `queued`@0.0 `downloading`@3.1 之后再无状态变化 | **在 907.6 秒时仍为 `downloading`，已超时停止**。这就是卡住的表现 |
+| nometa | random 40-hex | `magnet_conversion`@0.0 `magnet_error`@317.9 | 失败 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Case</th>
+<th>Torrent</th>
+<th>Transitions with seconds from add</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cached</td>
+<td>Big Buck Bunny</td>
+<td><code translate="no" v-pre>downloaded</code>@0.0</td>
+<td>端到端 1.32 秒完成</td>
+</tr>
+<tr>
+<td>cached</td>
+<td>Sintel</td>
+<td><code translate="no" v-pre>downloaded</code>@0.0</td>
+<td>0.73 秒完成</td>
+</tr>
+<tr>
+<td>cached</td>
+<td>Ubuntu 26.04.1</td>
+<td><code translate="no" v-pre>downloaded</code>@0.0</td>
+<td>0.32 秒完成</td>
+</tr>
+<tr>
+<td>uncached</td>
+<td>Debian 13.6.0 arm64 DVD-1</td>
+<td><code translate="no" v-pre>downloaded</code>@0.0</td>
+<td>此账户上已缓存</td>
+</tr>
+<tr>
+<td>uncached</td>
+<td>Debian 13.2.0 amd64 DVD-1</td>
+<td><code translate="no" v-pre>queued</code>@0.0 <code translate="no" v-pre>downloading</code>@3.1 <code translate="no" v-pre>uploading</code>@166.5 <code translate="no" v-pre>downloaded</code>@196.8</td>
+<td>完成。3.71 GiB，用时 197 秒</td>
+</tr>
+<tr>
+<td>webseed</td>
+<td>Prelinger home movie</td>
+<td><code translate="no" v-pre>magnet_conversion</code>@0.0 <code translate="no" v-pre>magnet_error</code>@318.0</td>
+<td>失败</td>
+</tr>
+<tr>
+<td>seedless</td>
+<td>ubuntu-16.04.6-desktop-i386</td>
+<td><code translate="no" v-pre>queued</code>@0.0 <code translate="no" v-pre>downloading</code>@3.1 <code translate="no" v-pre>uploading</code> <code translate="no" v-pre>downloaded</code>@166.8</td>
+<td>完成。未复现该问题</td>
+</tr>
+<tr>
+<td>seedless</td>
+<td>ubuntu-24.04-beta-live-server-s390x</td>
+<td><code translate="no" v-pre>queued</code>@0.0 <code translate="no" v-pre>downloading</code>@3.1 之后再无状态变化</td>
+<td><strong>在 907.6 秒时仍为 <code translate="no" v-pre>downloading</code>，已超时停止</strong>。这就是卡住的表现</td>
+</tr>
+<tr>
+<td>nometa</td>
+<td>random 40-hex</td>
+<td><code translate="no" v-pre>magnet_conversion</code>@0.0 <code translate="no" v-pre>magnet_error</code>@317.9</td>
+<td>失败</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="the-cached-add-latency">缓存添加的延迟</h3>
+<p>这就是适配层的仅缓存模式所依据的数字。</p>
+<retype-table copy-text="| Torrent | addMagnet 返回 | selectFiles 返回 | 第一次 `/torrents/info` | status |
+|---|---|---|---|---|
+| Big Buck Bunny | t=0 | t+1.211 s | t+1.318 s | `downloaded` |
+| Sintel | t=0 | t+0.632 s | t+0.729 s | `downloaded` |
+| Ubuntu 26.04.1 | t=0 | t+0.215 s | t+0.320 s | `downloaded` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Torrent</th>
+<th>addMagnet 返回</th>
+<th>selectFiles 返回</th>
+<th>第一次 <code translate="no" v-pre>/torrents/info</code></th>
+<th>status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Big Buck Bunny</td>
+<td>t=0</td>
+<td>t+1.211 s</td>
+<td>t+1.318 s</td>
+<td><code translate="no" v-pre>downloaded</code></td>
+</tr>
+<tr>
+<td>Sintel</td>
+<td>t=0</td>
+<td>t+0.632 s</td>
+<td>t+0.729 s</td>
+<td><code translate="no" v-pre>downloaded</code></td>
+</tr>
+<tr>
+<td>Ubuntu 26.04.1</td>
+<td>t=0</td>
+<td>t+0.215 s</td>
+<td>t+0.320 s</td>
+<td><code translate="no" v-pre>downloaded</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>观察结果。</strong> 缓存过的种子在 <code translate="no" v-pre>selectFiles</code> 之后的第一次读取时就已经是 <code translate="no" v-pre>downloaded</code> 了。整个同步过程的耗时就是两次往返请求。它从不经过 <code translate="no" v-pre>queued</code>，也从不经过 <code translate="no" v-pre>downloading</code>。</p>
+<p>第二次运行在 <code translate="no" v-pre>addMagnet</code> 和 <code translate="no" v-pre>selectFiles</code> 之间，以及之后，每隔 0.25 s 轮询一次 <code translate="no" v-pre>/torrents/info</code>。<code translate="no" v-pre>--rd-select-detail</code> 就是这么做的，结果也确定了整体形态。</p>
+<retype-table copy-text="| Torrent | `selectFiles` 之前的状态 | `selectFiles` | 之后的第一次读取 | addMagnet 到 `downloaded` |
+|---|---|---|---|---|
+| Big Buck Bunny | `waiting_files_selection`，列出 3 个文件，`links` 为空 | 在 t+1.314 s 返回 204 | `downloaded`，`progress` 100，`links` 1 | **1.535 s** |
+| Sintel | `waiting_files_selection`，列出 11 个文件 | 在 t+0.627 s 返回 204 | `downloaded`，`progress` 100，`links` 1 | **0.841 s** |
+| Ubuntu 26.04.1 | `waiting_files_selection`，列出 1 个文件 | 在 t+0.219 s 返回 204 | `downloaded`，`progress` 100，`links` 1 | **0.430 s** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Torrent</th>
+<th><code translate="no" v-pre>selectFiles</code> 之前的状态</th>
+<th><code translate="no" v-pre>selectFiles</code></th>
+<th>之后的第一次读取</th>
+<th>addMagnet 到 <code translate="no" v-pre>downloaded</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Big Buck Bunny</td>
+<td><code translate="no" v-pre>waiting_files_selection</code>，列出 3 个文件，<code translate="no" v-pre>links</code> 为空</td>
+<td>在 t+1.314 s 返回 204</td>
+<td><code translate="no" v-pre>downloaded</code>，<code translate="no" v-pre>progress</code> 100，<code translate="no" v-pre>links</code> 1</td>
+<td><strong>1.535 s</strong></td>
+</tr>
+<tr>
+<td>Sintel</td>
+<td><code translate="no" v-pre>waiting_files_selection</code>，列出 11 个文件</td>
+<td>在 t+0.627 s 返回 204</td>
+<td><code translate="no" v-pre>downloaded</code>，<code translate="no" v-pre>progress</code> 100，<code translate="no" v-pre>links</code> 1</td>
+<td><strong>0.841 s</strong></td>
+</tr>
+<tr>
+<td>Ubuntu 26.04.1</td>
+<td><code translate="no" v-pre>waiting_files_selection</code>，列出 1 个文件</td>
+<td>在 t+0.219 s 返回 204</td>
+<td><code translate="no" v-pre>downloaded</code>，<code translate="no" v-pre>progress</code> 100，<code translate="no" v-pre>links</code> 1</td>
+<td><strong>0.430 s</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>所以完整的缓存流程就是 <code translate="no" v-pre>waiting_files_selection</code> 紧接着 <code translate="no" v-pre>downloaded</code>，中间没有别的状态。文件列表在 <code translate="no" v-pre>selectFiles</code> 之前就已经有了。<code translate="no" v-pre>links</code> 是 <code translate="no" v-pre>selectFiles</code> 填上的。</p>
+<p><strong>仅缓存的探测窗口只需要一次轮询。</strong> 三个种子，大小分别是 123 MiB、264 MiB 和 6.04 GiB，从头到尾耗时 0.43 s 到 1.54 s。两秒的窗口，配合四分之一秒的轮询间隔，已经非常宽裕了。</p>
+<p>Sonarr 和 Radarr 允许 <code translate="no" v-pre>torrents/add</code> 调用最多等待 100 s（见 <a href="../qbittorrent-client-contract/">qbittorrent-client-contract.md §1.7a</a>）。与之相比，几秒的仅缓存探测窗口几乎没有成本。没有理由把它设成几十秒。</p>
+<h3 id="quirks-a-stage-mapper-has-to-survive">阶段映射器必须应对的怪癖</h3>
+<ul>
+<li>
+<p><strong><code translate="no" v-pre>selectFiles</code> 在种子仍处于 <code translate="no" v-pre>magnet_conversion</code> 时返回 404，而且错误信息有误。</strong>
+返回内容是 <code translate="no" v-pre>{&quot;error&quot;:&quot;parameter_missing&quot;,&quot;error_code&quot;:1,&quot;error_details&quot;:&quot;{files} is missing&quot;}</code>，但我们明明发送了 <code translate="no" v-pre>files=all</code>。其实只是还没有可选的文件。这不是添加失败，种子仍然有效。两次遇到这个情况的运行都又存活了 318 秒。</p>
+</li>
+<li>
+<p><strong>私有 tracker 的 hash 可能立刻被判定失败，而不是等到 318 秒。</strong> 2026-08-31 的 qBittorrent 报告中，对应的 hash（来自 UNIT3D 索引站的 CiNEPHiLES remux，<code translate="no" v-pre>45e1ec0d…</code>）在 addMagnet 之后第一次读取时就返回 <code translate="no" v-pre>magnet_error</code>，且没有任何文件，中间完全没有 <code translate="no" v-pre>magnet_conversion</code> 阶段，添加后几秒就失败了。无论 Real-Debrid 是识别出了这个 hash，还是很快就对它失败，表现都一样：私有 hash 没有 DHT 节点群，所以 addMagnet 对它永远不会成功。而在已失效的实例上调用 selectFiles，又会返回前面提到的那个误导性的 404。</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>addTorrent</code> 对未缓存的内容什么都不跳过，对已缓存的却全部跳过。</strong> 为 Real-Debrid 没有的内容上传的 <code translate="no" v-pre>.torrent</code>（archive.org 上的 Big Buck Bunny，有做种但未缓存），和普通磁力链接一样进入 <code translate="no" v-pre>magnet_conversion</code>，文件的元数据并没有被用来解析。已缓存的那个（一个 Ubuntu ISO）在第一次读取时就返回 <code translate="no" v-pre>waiting_files_selection</code> 并带上文件列表，被选中后不到两秒就变成 <code translate="no" v-pre>downloaded</code>，完全没有经过 <code translate="no" v-pre>magnet_conversion</code>。所以上传的价值在于能立即查到 hash 对应的缓存。这正是私有 tracker 的资源只要内容已缓存就能添加成功、而用磁力链接则永远无法添加的原因。</p>
+</li>
+<li>
+<p><strong>元数据解析在 318 秒后放弃。</strong> 两次独立运行都从 <code translate="no" v-pre>magnet_conversion</code> 变成了 <code translate="no" v-pre>magnet_error</code>，时间分别是 317.9 秒和 318.0 秒。这是没有可连接节点的磁力链接会撞上的时间上限。无论该 hash 是否真的存在种子，结果都一样。</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>seeders</code> 在 <code translate="no" v-pre>magnet_conversion</code> 期间是错的。</strong> 那个随机生成的 40 位十六进制 hash 在 80.9 秒时报告 <code translate="no" v-pre>seeders: 1</code>，但实际上根本不存在这个种子。</p>
+</li>
+<li>
+<p><strong>刚添加的已缓存种子，其 <code translate="no" v-pre>ended</code> 日期很旧。</strong> 抓取的数据里，2026-08-30 添加的种子显示的是 <code translate="no" v-pre>2025-12-28</code> 和 <code translate="no" v-pre>2026-07-28</code>。这是 Real-Debrid 第一次拥有该内容的时间，而不是本实例完成下载的时间。不要用它来计算种子的年龄。</p>
+</li>
+<li>
+<p><strong>零节点的磁力链接在元数据解析阶段就失败了，永远到不了 webseed。</strong> Real-Debrid 在拿到种子之后确实会使用 webseed。但它无法从没有节点的磁力链接中获取种子。所以只有 webseed 的资源如果以磁力链接添加，最终会是 <code translate="no" v-pre>magnet_error</code>。这属于元数据失败，而不是 webseed 失败。从 <code translate="no" v-pre>/torrents/info</code> 看，两者表现完全相同。</p>
+</li>
+</ul>
+<h2 id="alldebrid">AllDebrid</h2>
+<h3 id="endpoints-1">端点</h3>
+<p><code translate="no" v-pre>v4</code> 和 <code translate="no" v-pre>v4.1</code> 不能互换，这个差异正好影响了本次测试。</p>
+<div id="endpoints-1-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">POST /v4/magnet/upload      magnets[]=magnet:?xt=urn:btih:&lt;hash&gt;   -&gt; 200, per-magnet `ready` flag
+POST /v4/magnet/upload/file multipart files[]=&lt;the .torrent&gt;       -&gt; 200, per-file `ready` flag
+GET  /v4.1/magnet/status?id=&lt;id&gt;                                   -&gt; 200, data.magnets is an OBJECT
+GET  /v4.1/magnet/status                                           -&gt; 200, data.magnets is a LIST
+POST /v4/magnet/delete      id=&lt;id&gt;                                -&gt; 200</code></pre>
+</doc-codeblock></div>
+<p><strong>文件上传的结果在 <code translate="no" v-pre>files</code> 下返回，而不是 <code translate="no" v-pre>magnets</code>。</strong> 每个条目的字段相同，包括 <code translate="no" v-pre>id</code>、<code translate="no" v-pre>hash</code>、<code translate="no" v-pre>name</code>、<code translate="no" v-pre>ready</code> 和可选的单条 <code translate="no" v-pre>error</code>，所以下面的 <code translate="no" v-pre>ready</code> 标志在两种情况下都是缓存结果。但如果解码器是按磁力链接的响应写的，它读到的会是空列表。</p>
+<p><strong>而且只有文件形式，AllDebrid 才能在没有 swarm 的情况下描述一个资源。</strong> 2026-09-01 在测试账号上测得：两个结构相同的合成私有种子，哈希都是 swarm 从未见过的。以文件形式上传时，返回了真实的名称和大小（<code translate="no" v-pre>&quot;name&quot;:&quot;zurg.private.ad.probe&quot;,&quot;size&quot;:65536</code>），列表状态为 <code translate="no" v-pre>In queue</code>，计时还没开始。如果以单纯的 <code translate="no" v-pre>magnets[]</code> 哈希发送，返回的是 <code translate="no" v-pre>&quot;name&quot;:&quot;noname&quot;,&quot;size&quot;:0</code>。AllDebrid 接受了它，但对它一无所知。这正是所有私有 tracker 的资源通过哈希添加时的情况。</p>
+<p><strong><code translate="no" v-pre>/v4/magnet/status</code> 已经停用。</strong> 无论是否带 id，它都会返回 HTTP 200，内容为 <code translate="no" v-pre>{&quot;status&quot;:&quot;error&quot;,&quot;error&quot;:{&quot;code&quot;:&quot;DISCONTINUED&quot;},&quot;deprecated&quot;:true}</code>。<code translate="no" v-pre>/v4/magnet/upload</code> 和 <code translate="no" v-pre>/v4/magnet/delete</code> 仍然可用。因此，计划中“可以使用 v4 状态接口，并抽样一次 v4.1 做对比”的假设是错误的。v4.1 是唯一可用的状态接口。测试工具会为每个种子保留一次 v4 读取，让抓取记录本身作为证据，而不是只靠结论。</p>
+<p>鉴权方式是 <code translate="no" v-pre>Authorization: Bearer &lt;apikey&gt;</code>。不需要 <code translate="no" v-pre>agent</code> 参数。</p>
+<h3 id="status-values-observed-1">观察到的状态值</h3>
+<retype-table copy-text="| `statusCode` | `status` | 已见 |
+|---|---|---|
+| 0 | `In queue` | 是 |
+| 1 | `Downloading` | 是 |
+| 2 | `Compressing / Moving` | **否** |
+| 3 | `Uploading` | 是 |
+| 4 | `Ready` | 是 |
+| 5 及以上 | 错误代码 | **否** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th><code translate="no" v-pre>statusCode</code></th>
+<th><code translate="no" v-pre>status</code></th>
+<th>已见</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code translate="no" v-pre>In queue</code></td>
+<td>是</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code translate="no" v-pre>Downloading</code></td>
+<td>是</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code translate="no" v-pre>Compressing / Moving</code></td>
+<td><strong>否</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code translate="no" v-pre>Uploading</code></td>
+<td>是</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code translate="no" v-pre>Ready</code></td>
+<td>是</td>
+</tr>
+<tr>
+<td>5 及以上</td>
+<td>错误代码</td>
+<td><strong>否</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="which-wire-fields-exist-in-which-status-1">每个状态下有哪些线路字段</h3>
+<retype-table copy-text="| 字段 | 排队中 (0) | 下载中 (1) | 上传中 (3) | 就绪 (4) |
+|---|---|---|---|---|
+| `status` / `statusCode` | 是 | 是 | 是 | 是 |
+| `version` | 1 | 2 | 2 | 2 |
+| `filename` | 元数据到达前为 `&quot;noname&quot;` | 元数据到达后为真实名称 | 真实名称 | 真实名称 |
+| `size` | 元数据到达前为 0 | 真实大小 | 真实大小 | 真实大小 |
+| `downloaded` | 0 | **进度数值，单位为字节** | 等于 `size` | **不存在** |
+| `downloadSpeed` | 0 | 是，单位为每秒字节数 | 0 | **不存在** |
+| `seeders` | 0 | 是 | 0 | **不存在** |
+| `uploaded` / `uploadSpeed` | 0 | 0 | **该阶段的进度数值** | **不存在** |
+| `processingPerc` | 0 | 0 | 0 | **不存在** |
+| `files` / `nbLinks` | 不存在 | 不存在 | 不存在 | 存在 |
+| `completionDate` | 0 | 0 | 0 | 已设置 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>字段</th>
+<th>排队中 (0)</th>
+<th>下载中 (1)</th>
+<th>上传中 (3)</th>
+<th>就绪 (4)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>status</code> / <code translate="no" v-pre>statusCode</code></td>
+<td>是</td>
+<td>是</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>version</code></td>
+<td>1</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>filename</code></td>
+<td>元数据到达前为 <code translate="no" v-pre>&quot;noname&quot;</code></td>
+<td>元数据到达后为真实名称</td>
+<td>真实名称</td>
+<td>真实名称</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>size</code></td>
+<td>元数据到达前为 0</td>
+<td>真实大小</td>
+<td>真实大小</td>
+<td>真实大小</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloaded</code></td>
+<td>0</td>
+<td><strong>进度数值，单位为字节</strong></td>
+<td>等于 <code translate="no" v-pre>size</code></td>
+<td><strong>不存在</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloadSpeed</code></td>
+<td>0</td>
+<td>是，单位为每秒字节数</td>
+<td>0</td>
+<td><strong>不存在</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>seeders</code></td>
+<td>0</td>
+<td>是</td>
+<td>0</td>
+<td><strong>不存在</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>uploaded</code> / <code translate="no" v-pre>uploadSpeed</code></td>
+<td>0</td>
+<td>0</td>
+<td><strong>该阶段的进度数值</strong></td>
+<td><strong>不存在</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>processingPerc</code></td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td><strong>不存在</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>files</code> / <code translate="no" v-pre>nbLinks</code></td>
+<td>不存在</td>
+<td>不存在</td>
+<td>不存在</td>
+<td>存在</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>completionDate</code></td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>已设置</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>任何地方都没有百分比。</strong> AllDebrid 的进度是 <code translate="no" v-pre>downloaded / size</code>，两者都是以字节为单位的整数。在每次抓取的每个状态下，<code translate="no" v-pre>processingPerc</code> 都保持为 0。</p>
+<p><code translate="no" v-pre>Uploading</code> 是 AllDebrid 把已完成的下载移入其自有存储的阶段。它有自己的进度计数器，即 <code translate="no" v-pre>uploaded</code> 和 <code translate="no" v-pre>uploadSpeed</code>，整个阶段中其 <code translate="no" v-pre>downloadSpeed</code> 都是 0。如果停滞规则只监控 <code translate="no" v-pre>downloaded</code>，就会把正常的 <code translate="no" v-pre>Uploading</code> 阶段判定为停滞。</p>
+<h3 id="what-each-case-did-1">每种情况的表现</h3>
+<retype-table copy-text="| 类型 | 种子 | 上传时的 `ready` | 从添加开始的秒数状态变化 | 结果 |
+|---|---|---|---|---|
+| cached | Big Buck Bunny | true | `Ready`@0.0 | 0.11 秒内完成 |
+| cached | Sintel | true | `Ready`@0.0 | 0.12 秒内完成 |
+| cached | Ubuntu 26.04.1 | true | `Ready`@0.0 | 0.11 秒内完成 |
+| uncached | Debian 13.6.0 arm64 DVD-1 | true | `Ready`@0.0 | 已缓存 |
+| uncached | Debian 13.2.0 amd64 DVD-1 | false | `In queue`@0.0 `Downloading`@12.5，直到 634.9 之前所有计数器都为 0，`Uploading`@650.1 `Ready`@876.9 | 877 秒完成 |
+| webseed | Prelinger home movie | false | `In queue`@0.0 `Downloading`@6.3，之后所有计数器都为 0 | **907.8 秒时达到上限，仍处于 `Downloading`** |
+| seedless | ubuntu-16.04.6-desktop-i386 | false | `In queue`@0.0 `Downloading`@9.4，直到 589.6 之前所有计数器都为 0，`Uploading`@619.9 `Ready`@650.2 | 650 秒完成 |
+| seedless | ubuntu-24.04-beta-live-server-s390x | false | `In queue`@0.0 `Downloading`@3.2，之后所有计数器都为 0 | **907.0 秒时达到上限，仍处于 `Downloading`** |
+| nometa | random 40-hex | false | `In queue`@0.0 `Downloading`@9.4，之后所有计数器都为 0 | **907.4 秒时达到上限，仍处于 `Downloading`** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>类型</th>
+<th>种子</th>
+<th>上传时的 <code translate="no" v-pre>ready</code></th>
+<th>从添加开始的秒数状态变化</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cached</td>
+<td>Big Buck Bunny</td>
+<td>true</td>
+<td><code translate="no" v-pre>Ready</code>@0.0</td>
+<td>0.11 秒内完成</td>
+</tr>
+<tr>
+<td>cached</td>
+<td>Sintel</td>
+<td>true</td>
+<td><code translate="no" v-pre>Ready</code>@0.0</td>
+<td>0.12 秒内完成</td>
+</tr>
+<tr>
+<td>cached</td>
+<td>Ubuntu 26.04.1</td>
+<td>true</td>
+<td><code translate="no" v-pre>Ready</code>@0.0</td>
+<td>0.11 秒内完成</td>
+</tr>
+<tr>
+<td>uncached</td>
+<td>Debian 13.6.0 arm64 DVD-1</td>
+<td>true</td>
+<td><code translate="no" v-pre>Ready</code>@0.0</td>
+<td>已缓存</td>
+</tr>
+<tr>
+<td>uncached</td>
+<td>Debian 13.2.0 amd64 DVD-1</td>
+<td>false</td>
+<td><code translate="no" v-pre>In queue</code>@0.0 <code translate="no" v-pre>Downloading</code>@12.5，直到 634.9 之前所有计数器都为 0，<code translate="no" v-pre>Uploading</code>@650.1 <code translate="no" v-pre>Ready</code>@876.9</td>
+<td>877 秒完成</td>
+</tr>
+<tr>
+<td>webseed</td>
+<td>Prelinger home movie</td>
+<td>false</td>
+<td><code translate="no" v-pre>In queue</code>@0.0 <code translate="no" v-pre>Downloading</code>@6.3，之后所有计数器都为 0</td>
+<td><strong>907.8 秒时达到上限，仍处于 <code translate="no" v-pre>Downloading</code></strong></td>
+</tr>
+<tr>
+<td>seedless</td>
+<td>ubuntu-16.04.6-desktop-i386</td>
+<td>false</td>
+<td><code translate="no" v-pre>In queue</code>@0.0 <code translate="no" v-pre>Downloading</code>@9.4，直到 589.6 之前所有计数器都为 0，<code translate="no" v-pre>Uploading</code>@619.9 <code translate="no" v-pre>Ready</code>@650.2</td>
+<td>650 秒完成</td>
+</tr>
+<tr>
+<td>seedless</td>
+<td>ubuntu-24.04-beta-live-server-s390x</td>
+<td>false</td>
+<td><code translate="no" v-pre>In queue</code>@0.0 <code translate="no" v-pre>Downloading</code>@3.2，之后所有计数器都为 0</td>
+<td><strong>907.0 秒时达到上限，仍处于 <code translate="no" v-pre>Downloading</code></strong></td>
+</tr>
+<tr>
+<td>nometa</td>
+<td>random 40-hex</td>
+<td>false</td>
+<td><code translate="no" v-pre>In queue</code>@0.0 <code translate="no" v-pre>Downloading</code>@9.4，之后所有计数器都为 0</td>
+<td><strong>907.4 秒时达到上限，仍处于 <code translate="no" v-pre>Downloading</code></strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>针对 Debian 13.3.0 arm64 DVD-1（<code translate="no" v-pre>6aa9b0a4709a0d6c4982fd0363614d9006877223</code>）的一次单独运行，捕获到了完整的未缓存生命周期，可以作为参考时序。</p>
+<retype-table copy-text="| 秒数 | 状态 | 变化内容 |
+|---|---|---|
+| 0.0 | `In queue` 0 version 1 | `filename` 为 `&quot;noname&quot;`，`size` 为 0 |
+| 2.2 | `Downloading` 1 version 2 | 仍然没有名称和大小 |
+| 4.3 | `Downloading` | `filename` 和 `size` 已解析出来 |
+| 6.5 到 55.1 | `Downloading` | `downloaded` 逐渐增长到 `size`。`downloadSpeed` 峰值接近 110 MB/s。`seeders` 从 8 增加到 9 |
+| 57.2 | `Uploading` 3 | `downloadSpeed` 降到 0。`uploadSpeed` 和 `uploaded` 开始上升 |
+| 65.6 | `Ready` 4 | `files` 和 `nbLinks` 出现。六个进度字段消失 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>秒数</th>
+<th>状态</th>
+<th>变化内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.0</td>
+<td><code translate="no" v-pre>In queue</code> 0 version 1</td>
+<td><code translate="no" v-pre>filename</code> 为 <code translate="no" v-pre>&quot;noname&quot;</code>，<code translate="no" v-pre>size</code> 为 0</td>
+</tr>
+<tr>
+<td>2.2</td>
+<td><code translate="no" v-pre>Downloading</code> 1 version 2</td>
+<td>仍然没有名称和大小</td>
+</tr>
+<tr>
+<td>4.3</td>
+<td><code translate="no" v-pre>Downloading</code></td>
+<td><code translate="no" v-pre>filename</code> 和 <code translate="no" v-pre>size</code> 已解析出来</td>
+</tr>
+<tr>
+<td>6.5 到 55.1</td>
+<td><code translate="no" v-pre>Downloading</code></td>
+<td><code translate="no" v-pre>downloaded</code> 逐渐增长到 <code translate="no" v-pre>size</code>。<code translate="no" v-pre>downloadSpeed</code> 峰值接近 110 MB/s。<code translate="no" v-pre>seeders</code> 从 8 增加到 9</td>
+</tr>
+<tr>
+<td>57.2</td>
+<td><code translate="no" v-pre>Uploading</code> 3</td>
+<td><code translate="no" v-pre>downloadSpeed</code> 降到 0。<code translate="no" v-pre>uploadSpeed</code> 和 <code translate="no" v-pre>uploaded</code> 开始上升</td>
+</tr>
+<tr>
+<td>65.6</td>
+<td><code translate="no" v-pre>Ready</code> 4</td>
+<td><code translate="no" v-pre>files</code> 和 <code translate="no" v-pre>nbLinks</code> 出现。六个进度字段消失</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>3.72 GiB，用时 65.6 秒。</p>
+<h3 id="alldebrid-reports-no-progress-at-all-while-a-job-waits-for-its-own-infrastructure">AllDebrid 在任务等待自身基础设施时完全不报告进度</h3>
+<p>这是最能改变超时设计的发现，而且经过两次独立运行才确认可信。</p>
+<p><code translate="no" v-pre>Downloading</code> 且 <code translate="no" v-pre>statusCode</code> 为 1 的状态在上传后几秒内就会出现。之后有一段时间，AllDebrid 会报告 <code translate="no" v-pre>downloaded</code> 为 0、<code translate="no" v-pre>downloadSpeed</code> 为 0、<code translate="no" v-pre>seeders</code> 为 0、<code translate="no" v-pre>uploaded</code> 为 0、<code translate="no" v-pre>uploadSpeed</code> 为 0、<code translate="no" v-pre>processingPerc</code> 为 0。即使之前已经正确报告过 <code translate="no" v-pre>size</code> 和 <code translate="no" v-pre>filename</code>，它也会把两者重新设为 0 和信息哈希。</p>
+<retype-table copy-text="| 运行 | 所有计数器保持为零的时长 | 之后发生了什么 |
+|---|---|---|
+| Debian 13.2.0 amd64 DVD-1 | **622 秒**，从 12.5 秒到 634.9 秒 | 15 秒内下载了 3.71 GiB，然后是 `Uploading`，876.9 秒时变为 `Ready` |
+| ubuntu-16.04.6-desktop-i386 | **580 秒**，从 9.4 秒到 589.6 秒 | 30 秒内下载了 1.56 GiB，然后是 `Uploading`，650.2 秒时变为 `Ready` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>运行</th>
+<th>所有计数器保持为零的时长</th>
+<th>之后发生了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Debian 13.2.0 amd64 DVD-1</td>
+<td><strong>622 秒</strong>，从 12.5 秒到 634.9 秒</td>
+<td>15 秒内下载了 3.71 GiB，然后是 <code translate="no" v-pre>Uploading</code>，876.9 秒时变为 <code translate="no" v-pre>Ready</code></td>
+</tr>
+<tr>
+<td>ubuntu-16.04.6-desktop-i386</td>
+<td><strong>580 秒</strong>，从 9.4 秒到 589.6 秒</td>
+<td>30 秒内下载了 1.56 GiB，然后是 <code translate="no" v-pre>Uploading</code>，650.2 秒时变为 <code translate="no" v-pre>Ready</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>两个任务都完成了。前十分钟里，两者都没有报告任何一个字节的变化。</p>
+<p><strong>十分钟的无进度超时会误杀健康的 AllDebrid 任务。</strong> 建议的 <code translate="no" v-pre>download_timeout_mins</code> 默认值 10，两次测试都落在这个时间窗口内。要么超时时间必须更长，要么 AllDebrid 的 <code translate="no" v-pre>Downloading</code> 且 <code translate="no" v-pre>size</code> 为 0 应当被视为一个独立阶段，计时器不对它计时。丢失名称和大小，是 AllDebrid 表示任务已分配但尚未开始的方式，并不是失败。</p>
+<p>对比之下，有一次运行立刻就开始了：Debian 13.3.0 arm64 DVD-1 从 <code translate="no" v-pre>In queue</code> 到出现真实字节计数只用了 6.5 秒。所以这段等待是排队，而不是固定的延迟。</p>
+<h3 id="the-ready-flag-is-a-real-cache-answer"><code translate="no" v-pre>ready</code> 标志是真实的缓存结果</h3>
+<p><code translate="no" v-pre>/v4/magnet/upload</code> 响应里的 <code translate="no" v-pre>ready</code> 字段，对 TorBox 也判定为已缓存的每个 hash 都是 true，对活动里下载的那两个 hash 则是 false。AllDebrid 没有单独的缓存探测接口，所以这个标志就是它的全部缓存信号。现在 zurg 会从两条添加路径（磁力链接和文件上传）中都取出它，作为 <code translate="no" v-pre>MagnetResponse.Cached</code> 返回，并同时设置 <code translate="no" v-pre>CacheKnown</code>。这样，无法回答的后端就不会被误认为是“未缓存”的结果。</p>
+<p><strong><code translate="no" v-pre>ready</code> 为 false 意味着磁力链接已经被添加了。</strong> 在不添加的情况下，没有办法向 AllDebrid 询问某个 hash 是否已缓存。因此，在 AllDebrid 上只走缓存路径时，必须把这次未命中的添加删掉。</p>
+<h2 id="torbox">TorBox</h2>
+<h3 id="endpoints-2">端点</h3>
+<div id="endpoints-2-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">GET  /v1/api/torrents/checkcached?hash=&lt;hash&gt;&amp;format=list
+POST /v1/api/torrents/createtorrent      magnet=…&amp;seed=3&amp;allow_zip=false   -&gt; {&quot;success&quot;:true,&quot;data&quot;:{&quot;torrent_id&quot;:N}}
+POST /v1/api/torrents/createtorrent      multipart file=&lt;the .torrent&gt;    -&gt; the same shape; `detail` says whether it was cached
+GET  /v1/api/torrents/mylist?id=&lt;id&gt;&amp;bypass_cache=true
+POST /v1/api/torrents/controltorrent     {&quot;torrent_id&quot;:N,&quot;operation&quot;:&quot;delete&quot;}</code></pre>
+</doc-codeblock></div>
+<h3 id="status-values-observed-2">观察到的状态值</h3>
+<p><code translate="no" v-pre>metaDL</code> <code translate="no" v-pre>checking</code> <code translate="no" v-pre>stalledDL</code> <code translate="no" v-pre>stalled (no seeds)</code> <code translate="no" v-pre>downloading</code> <code translate="no" v-pre>processing</code>
+<code translate="no" v-pre>uploading (no peers)</code> <code translate="no" v-pre>uploading</code> <code translate="no" v-pre>cached</code></p>
+<p><code translate="no" v-pre>processing</code> and <code translate="no" v-pre>checking</code> and <code translate="no" v-pre>stalledDL</code> are <strong>not in zurg&#x27;s translation table</strong>
+(<code translate="no" v-pre>internal/torbox/types.go</code> <code translate="no" v-pre>normalizeStatus</code>). All three fall to the default branch and are reported
+as <code translate="no" v-pre>downloading</code>.</p>
+<p><code translate="no" v-pre>checking</code> is where TorBox waits for metadata and not where it verifies a hash. A magnet whose swarm
+never answers goes <code translate="no" v-pre>metaDL</code> then <code translate="no" v-pre>checking</code> and stays there. The random 40-hex hash was still
+<code translate="no" v-pre>checking</code> at the 910 s cap and so was the zero-peer Prelinger item at 911 s. TorBox never gives up
+the way Real-Debrid does at 318 s.</p>
+<p><strong>Uploading the <code translate="no" v-pre>.torrent</code> skips that wait entirely, and it is the whole difference for a private
+tracker&#x27;s release.</strong> Measured 2026-09-01 on the account above, the same synthetic private torrent
+sent both ways. As a hash: accepted with a <code translate="no" v-pre>torrent_id</code>, then <code translate="no" v-pre>checking</code> with <code translate="no" v-pre>name</code> set to the bare
+hash, <code translate="no" v-pre>size: -1</code>, <code translate="no" v-pre>files: null</code> and <code translate="no" v-pre>eta: 8640000</code> — TorBox looking for a swarm that is not in the
+DHT, which it will do until the cap and report nothing about. As the file, on
+<code translate="no" v-pre>POST /torrents/createtorrent</code> with the bytes in a multipart <code translate="no" v-pre>file</code> part: read back three seconds
+later carrying the torrent&#x27;s own name, its real size and <code translate="no" v-pre>stalled (no seeds)</code> — the same content
+nobody holds, but now described. The stage is the point. <code translate="no" v-pre>checking</code> with <code translate="no" v-pre>size: -1</code> maps to
+<code translate="no" v-pre>StageResolvingMetadata</code>, which says work is in progress and nothing can be concluded; <code translate="no" v-pre>stalled (no seeds)</code> maps to <code translate="no" v-pre>StageStalledNoPeers</code>, which the qBittorrent endpoint can act on. A cached release
+read back <code translate="no" v-pre>done</code> at 100% with its file list inside the same three seconds. The part name is
+load-bearing: a file sent under any other name is not seen at all, and the endpoint answers
+<code translate="no" v-pre>MISSING_REQUIRED_OPTION</code>, &quot;You must provide either a file or magnet link&quot;.</p>
+<h3 id="which-wire-fields-exist-in-which-status-2">每个状态下有哪些线路字段</h3>
+<p>TorBox 在每个状态下都发送同一组键，只是改变其中的值。因此在这三者中，它最容易读。真正承载含义的是这些值。</p>
+<retype-table copy-text="| 状态 | `download_finished` | `download_present` | `cached` | `active` | `progress` | `eta` | `size` |
+|---|---|---|---|---|---|---|---|
+| `metaDL` | false | false | false | true | 0 | 8640000 | 0 |
+| `checking` | false | false | false | true | 0 | 8640000 | **-1** |
+| `stalledDL` | false | false | false | true | 很小 | 8640000 | 真实值 |
+| `stalled (no seeds)` | false | false | false | true | 0 | 8640000 | 真实值 |
+| `downloading` | false 然后 **true** | false | false | true | 小数 | 秒 | 真实值 |
+| `processing` | **true** | **false** | false | true | 1 | 秒 | 真实值 |
+| `uploading (no peers)` | **true** | **false** | false | true | 1 | 2591994 | 真实值 |
+| `uploading` | true | **true** | true | true | 1 | 0 | 真实值 |
+| `cached` | true | true | true | false | 1 | 0 | 真实值 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>状态</th>
+<th><code translate="no" v-pre>download_finished</code></th>
+<th><code translate="no" v-pre>download_present</code></th>
+<th><code translate="no" v-pre>cached</code></th>
+<th><code translate="no" v-pre>active</code></th>
+<th><code translate="no" v-pre>progress</code></th>
+<th><code translate="no" v-pre>eta</code></th>
+<th><code translate="no" v-pre>size</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>metaDL</code></td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+<td>true</td>
+<td>0</td>
+<td>8640000</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>checking</code></td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+<td>true</td>
+<td>0</td>
+<td>8640000</td>
+<td><strong>-1</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>stalledDL</code></td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+<td>true</td>
+<td>很小</td>
+<td>8640000</td>
+<td>真实值</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>stalled (no seeds)</code></td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+<td>true</td>
+<td>0</td>
+<td>8640000</td>
+<td>真实值</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloading</code></td>
+<td>false 然后 <strong>true</strong></td>
+<td>false</td>
+<td>false</td>
+<td>true</td>
+<td>小数</td>
+<td>秒</td>
+<td>真实值</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>processing</code></td>
+<td><strong>true</strong></td>
+<td><strong>false</strong></td>
+<td>false</td>
+<td>true</td>
+<td>1</td>
+<td>秒</td>
+<td>真实值</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>uploading (no peers)</code></td>
+<td><strong>true</strong></td>
+<td><strong>false</strong></td>
+<td>false</td>
+<td>true</td>
+<td>1</td>
+<td>2591994</td>
+<td>真实值</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>uploading</code></td>
+<td>true</td>
+<td><strong>true</strong></td>
+<td>true</td>
+<td>true</td>
+<td>1</td>
+<td>0</td>
+<td>真实值</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>cached</code></td>
+<td>true</td>
+<td>true</td>
+<td>true</td>
+<td>false</td>
+<td>1</td>
+<td>0</td>
+<td>真实值</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>字段名。计划中把这些字段都列为未经验证。</p>
+<retype-table copy-text="| 内容 | TorBox 字段 | 格式 |
+|---|---|---|
+| 进度 | `progress` | **一个小数**，不是百分比。`0.0793719` |
+| 做种数 | `seeds` | 整数 |
+| 下载者数 | `peers` | 整数 |
+| 下载速率 | `download_speed` | 每秒字节数 |
+| 上传速率 | `upload_speed` | 每秒字节数 |
+| eta | `eta` | 秒。`8640000` 是表示未知的占位值 |
+| 已获取字节数 | `total_downloaded` | 整数 |
+| 资源健康度 | `availability` | 浮点数。在 `uploading (no peers)` 状态下会变成 **-1** |
+| 数据位置 | `download_path` | 数据就绪前为 null |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>内容</th>
+<th>TorBox 字段</th>
+<th>格式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>进度</td>
+<td><code translate="no" v-pre>progress</code></td>
+<td><strong>一个小数</strong>，不是百分比。<code translate="no" v-pre>0.0793719</code></td>
+</tr>
+<tr>
+<td>做种数</td>
+<td><code translate="no" v-pre>seeds</code></td>
+<td>整数</td>
+</tr>
+<tr>
+<td>下载者数</td>
+<td><code translate="no" v-pre>peers</code></td>
+<td>整数</td>
+</tr>
+<tr>
+<td>下载速率</td>
+<td><code translate="no" v-pre>download_speed</code></td>
+<td>每秒字节数</td>
+</tr>
+<tr>
+<td>上传速率</td>
+<td><code translate="no" v-pre>upload_speed</code></td>
+<td>每秒字节数</td>
+</tr>
+<tr>
+<td>eta</td>
+<td><code translate="no" v-pre>eta</code></td>
+<td>秒。<code translate="no" v-pre>8640000</code> 是表示未知的占位值</td>
+</tr>
+<tr>
+<td>已获取字节数</td>
+<td><code translate="no" v-pre>total_downloaded</code></td>
+<td>整数</td>
+</tr>
+<tr>
+<td>资源健康度</td>
+<td><code translate="no" v-pre>availability</code></td>
+<td>浮点数。在 <code translate="no" v-pre>uploading (no peers)</code> 状态下会变成 <strong>-1</strong></td>
+</tr>
+<tr>
+<td>数据位置</td>
+<td><code translate="no" v-pre>download_path</code></td>
+<td>数据就绪前为 null</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>8640000</code> 等于 100 天。这是 TorBox 表示“不知道”的方式。zurg 的 shim 在没有数据可报时交给 Sonarr 的，也是同一个常量。</p>
+<h3 id="what-each-case-did-2">每种情况的表现</h3>
+<retype-table copy-text="| 类别 | 种子 | `checkcached` | 从添加开始计时的状态转换 | 结论 |
+|---|---|---|---|---|
+| 已缓存 | Big Buck Bunny | true | `cached`@0.0 | 在 0.83 s 内完成 |
+| 已缓存 | Sintel | true | `cached`@0.0 | 在 0.94 s 内完成 |
+| 已缓存 | Ubuntu 26.04.1 | true | `cached`@0.0 | 在 0.69 s 内完成 |
+| 未缓存 | Debian 13.6.0 arm64 DVD-1 | false | `metaDL`@0.0 `stalled (no seeds)`@7.3 `downloading`@24.1 然后 **gone**@48.6 | 在 86.7% 时被另一个 zurg 删除 |
+| 未缓存 | Debian 13.2.0 amd64 DVD-1 | false | `metaDL`@0.0 `stalled (no seeds)`@13.8 `downloading`@27.8 `processing`@69.4 `downloading`@72.7 `uploading (no peers)`@83.1 然后 **gone**@86.7 | 被另一个 zurg 删除 |
+| 网络种子 | Prelinger home movie | false | `metaDL`@0.0 `checking`@23.3 之后再没有其他状态 | **在 `checking` 状态下于 911.3 s 时超时**。TorBox 没有使用网络种子 |
+| 无做种者 | ubuntu-16.04.6-desktop-i386 | false | `metaDL`@0.0 `checking`@10.5 `downloading`@20.6 `processing`@184.4 然后 **gone**@200.4 | 在 `processing` 时被另一个 zurg 删除 |
+| 无做种者 | ubuntu-24.04-beta-live-server-s390x | false | `metaDL`@0.0 `checking`@18.9 `stalled (no seeds)`@169.3 `downloading`@230.9 然后 **gone**@462.3 | 在 91.9% 时被另一个 zurg 删除 |
+| 无元数据 | 随机 40 位十六进制 | false | `metaDL`@0.0 `checking`@10.2 之后再没有其他状态 | **在 `checking` 状态下于 910.3 s 时超时** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>类别</th>
+<th>种子</th>
+<th><code translate="no" v-pre>checkcached</code></th>
+<th>从添加开始计时的状态转换</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>已缓存</td>
+<td>Big Buck Bunny</td>
+<td>true</td>
+<td><code translate="no" v-pre>cached</code>@0.0</td>
+<td>在 0.83 s 内完成</td>
+</tr>
+<tr>
+<td>已缓存</td>
+<td>Sintel</td>
+<td>true</td>
+<td><code translate="no" v-pre>cached</code>@0.0</td>
+<td>在 0.94 s 内完成</td>
+</tr>
+<tr>
+<td>已缓存</td>
+<td>Ubuntu 26.04.1</td>
+<td>true</td>
+<td><code translate="no" v-pre>cached</code>@0.0</td>
+<td>在 0.69 s 内完成</td>
+</tr>
+<tr>
+<td>未缓存</td>
+<td>Debian 13.6.0 arm64 DVD-1</td>
+<td>false</td>
+<td><code translate="no" v-pre>metaDL</code>@0.0 <code translate="no" v-pre>stalled (no seeds)</code>@7.3 <code translate="no" v-pre>downloading</code>@24.1 然后 <strong>gone</strong>@48.6</td>
+<td>在 86.7% 时被另一个 zurg 删除</td>
+</tr>
+<tr>
+<td>未缓存</td>
+<td>Debian 13.2.0 amd64 DVD-1</td>
+<td>false</td>
+<td><code translate="no" v-pre>metaDL</code>@0.0 <code translate="no" v-pre>stalled (no seeds)</code>@13.8 <code translate="no" v-pre>downloading</code>@27.8 <code translate="no" v-pre>processing</code>@69.4 <code translate="no" v-pre>downloading</code>@72.7 <code translate="no" v-pre>uploading (no peers)</code>@83.1 然后 <strong>gone</strong>@86.7</td>
+<td>被另一个 zurg 删除</td>
+</tr>
+<tr>
+<td>网络种子</td>
+<td>Prelinger home movie</td>
+<td>false</td>
+<td><code translate="no" v-pre>metaDL</code>@0.0 <code translate="no" v-pre>checking</code>@23.3 之后再没有其他状态</td>
+<td><strong>在 <code translate="no" v-pre>checking</code> 状态下于 911.3 s 时超时</strong>。TorBox 没有使用网络种子</td>
+</tr>
+<tr>
+<td>无做种者</td>
+<td>ubuntu-16.04.6-desktop-i386</td>
+<td>false</td>
+<td><code translate="no" v-pre>metaDL</code>@0.0 <code translate="no" v-pre>checking</code>@10.5 <code translate="no" v-pre>downloading</code>@20.6 <code translate="no" v-pre>processing</code>@184.4 然后 <strong>gone</strong>@200.4</td>
+<td>在 <code translate="no" v-pre>processing</code> 时被另一个 zurg 删除</td>
+</tr>
+<tr>
+<td>无做种者</td>
+<td>ubuntu-24.04-beta-live-server-s390x</td>
+<td>false</td>
+<td><code translate="no" v-pre>metaDL</code>@0.0 <code translate="no" v-pre>checking</code>@18.9 <code translate="no" v-pre>stalled (no seeds)</code>@169.3 <code translate="no" v-pre>downloading</code>@230.9 然后 <strong>gone</strong>@462.3</td>
+<td>在 91.9% 时被另一个 zurg 删除</td>
+</tr>
+<tr>
+<td>无元数据</td>
+<td>随机 40 位十六进制</td>
+<td>false</td>
+<td><code translate="no" v-pre>metaDL</code>@0.0 <code translate="no" v-pre>checking</code>@10.2 之后再没有其他状态</td>
+<td><strong>在 <code translate="no" v-pre>checking</code> 状态下于 910.3 s 时超时</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>在 0.5 s 轮询间隔下，对 Debian 13.5.0 amd64 netinst
+（<code translate="no" v-pre>58846860f0a766f8a42b0bb214d8c713fdf1b167</code>）单独运行了一次。它存活的时间足够长，达到了 done，所以可以作为参考序列。</p>
+<retype-table copy-text="| 秒数 | 状态 | `download_finished` | `download_present` | `progress` |
+|---|---|---|---|---|
+| 0.0 | `stalledDL` | false | false | 0.000289735 |
+| 16.3 | `downloading` | false | false | 0.0608651 |
+| 54.8 | `processing` | **true** | **false** | 1 |
+| 59.1 | `downloading` | **true** | **false** | 0.997972 |
+| 64.4 | `uploading` | true | **true** | 1 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>秒数</th>
+<th>状态</th>
+<th><code translate="no" v-pre>download_finished</code></th>
+<th><code translate="no" v-pre>download_present</code></th>
+<th><code translate="no" v-pre>progress</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.0</td>
+<td><code translate="no" v-pre>stalledDL</code></td>
+<td>false</td>
+<td>false</td>
+<td>0.000289735</td>
+</tr>
+<tr>
+<td>16.3</td>
+<td><code translate="no" v-pre>downloading</code></td>
+<td>false</td>
+<td>false</td>
+<td>0.0608651</td>
+</tr>
+<tr>
+<td>54.8</td>
+<td><code translate="no" v-pre>processing</code></td>
+<td><strong>true</strong></td>
+<td><strong>false</strong></td>
+<td>1</td>
+</tr>
+<tr>
+<td>59.1</td>
+<td><code translate="no" v-pre>downloading</code></td>
+<td><strong>true</strong></td>
+<td><strong>false</strong></td>
+<td>0.997972</td>
+</tr>
+<tr>
+<td>64.4</td>
+<td><code translate="no" v-pre>uploading</code></td>
+<td>true</td>
+<td><strong>true</strong></td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>754 MiB，用时 64.4 s。</p>
+<p>这最后三行值得仔细看两遍。TorBox 大约在数据真正就绪<strong>之前</strong>十秒，就把 <code translate="no" v-pre>download_finished</code> 设为 true，把 <code translate="no" v-pre>progress</code> 设为 1。然后它又回到 <code translate="no" v-pre>downloading</code>，进度值比它刚报告的还要低。在健康的下载中，<code translate="no" v-pre>progress</code> 和 <code translate="no" v-pre>download_state</code> 都会倒退。</p>
+<hr>
+<h2 id="the-stage-table">阶段表</h2>
+<p>shim 将使用的 stage 枚举值为 <code translate="no" v-pre>resolving-metadata</code> <code translate="no" v-pre>queued</code> <code translate="no" v-pre>downloading</code> <code translate="no" v-pre>stalled-no-peers</code>
+<code translate="no" v-pre>finalizing</code> <code translate="no" v-pre>done</code> <code translate="no" v-pre>failed</code>，未知时使用空字符串。</p>
+<h3 id="real-debrid-1">Real-Debrid</h3>
+<retype-table copy-text="| 原始 `status` | 阶段 | 依据 |
+|---|---|---|
+| `magnet_conversion` | `resolving-metadata` | **已观察到**。`bytes` 为 0，`files` 为空，`filename` 为字面值 `&quot;Magnet&quot;` |
+| `waiting_files_selection` | `queued` | **已观察到**，使用 `--rd-select-detail` 时可见。文件列表已经出现。`links` 为空 |
+| `queued` | `queued` | **已观察到**。真实大小和真实名称已经知道。没有 `seeders` 和 `speed` |
+| `downloading` | `downloading` | **已观察到** |
+| `downloading` 且 `seeders` 为 0 | `stalled-no-peers` | **已观察到**。92 次轮询中，`progress` 为 0、`seeders` 为 0、`speed` 为 0，持续了 904 秒 |
+| `compressing` | `finalizing` | **推断**。没有实际见过 |
+| `uploading` | `finalizing` | **已观察到**。进度从 0 重新开始，`seeders` 消失 |
+| `downloaded` | `done` | **已观察到** |
+| `magnet_error` | `failed` | **已观察到**，在 `magnet_conversion` 阶段持续 318 秒后出现 |
+| `error` `virus` `dead` | `failed` | **推断**。没有实际见过 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>原始 <code translate="no" v-pre>status</code></th>
+<th>阶段</th>
+<th>依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>magnet_conversion</code></td>
+<td><code translate="no" v-pre>resolving-metadata</code></td>
+<td><strong>已观察到</strong>。<code translate="no" v-pre>bytes</code> 为 0，<code translate="no" v-pre>files</code> 为空，<code translate="no" v-pre>filename</code> 为字面值 <code translate="no" v-pre>&quot;Magnet&quot;</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>waiting_files_selection</code></td>
+<td><code translate="no" v-pre>queued</code></td>
+<td><strong>已观察到</strong>，使用 <code translate="no" v-pre>--rd-select-detail</code> 时可见。文件列表已经出现。<code translate="no" v-pre>links</code> 为空</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>queued</code></td>
+<td><code translate="no" v-pre>queued</code></td>
+<td><strong>已观察到</strong>。真实大小和真实名称已经知道。没有 <code translate="no" v-pre>seeders</code> 和 <code translate="no" v-pre>speed</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloading</code></td>
+<td><code translate="no" v-pre>downloading</code></td>
+<td><strong>已观察到</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloading</code> 且 <code translate="no" v-pre>seeders</code> 为 0</td>
+<td><code translate="no" v-pre>stalled-no-peers</code></td>
+<td><strong>已观察到</strong>。92 次轮询中，<code translate="no" v-pre>progress</code> 为 0、<code translate="no" v-pre>seeders</code> 为 0、<code translate="no" v-pre>speed</code> 为 0，持续了 904 秒</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>compressing</code></td>
+<td><code translate="no" v-pre>finalizing</code></td>
+<td><strong>推断</strong>。没有实际见过</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>uploading</code></td>
+<td><code translate="no" v-pre>finalizing</code></td>
+<td><strong>已观察到</strong>。进度从 0 重新开始，<code translate="no" v-pre>seeders</code> 消失</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloaded</code></td>
+<td><code translate="no" v-pre>done</code></td>
+<td><strong>已观察到</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>magnet_error</code></td>
+<td><code translate="no" v-pre>failed</code></td>
+<td><strong>已观察到</strong>，在 <code translate="no" v-pre>magnet_conversion</code> 阶段持续 318 秒后出现</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>error</code> <code translate="no" v-pre>virus</code> <code translate="no" v-pre>dead</code></td>
+<td><code translate="no" v-pre>failed</code></td>
+<td><strong>推断</strong>。没有实际见过</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="alldebrid-1">AllDebrid</h3>
+<retype-table copy-text="| `statusCode` | 阶段 | 依据 |
+|---|---|---|
+| 0 `In queue` | `queued` | **已观察到**。持续几秒钟。`filename` 可能仍为 `&quot;noname&quot;`，`size` 为 0 |
+| 1 `Downloading` 且 `size` 为 0 | `queued` | **已观察到**。不是 `downloading`，也不是 `stalled-no-peers`。AllDebrid 已接收任务但尚未开始。在两次运行中分别停留 622 s 和 580 s，之后完成 |
+| 1 `Downloading` 且 `size` 为真实值 | `downloading` | **已观察到** |
+| 1 `Downloading` 且 `seeders` 为 0、`downloaded` 不变 | `stalled-no-peers` | **未观察到，也无法安全推断**。见下文 |
+| 2 `Compressing / Moving` | `finalizing` | **推断得出**。未见到 |
+| 3 `Uploading` | `finalizing` | **已观察到**。进度在这里由 `uploaded` 和 `uploadSpeed` 体现，`downloadSpeed` 为 0 |
+| 4 `Ready` | `done` | **已观察到** |
+| 5 及以上 | `failed` | **推断得出**。未见到 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th><code translate="no" v-pre>statusCode</code></th>
+<th>阶段</th>
+<th>依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 <code translate="no" v-pre>In queue</code></td>
+<td><code translate="no" v-pre>queued</code></td>
+<td><strong>已观察到</strong>。持续几秒钟。<code translate="no" v-pre>filename</code> 可能仍为 <code translate="no" v-pre>&quot;noname&quot;</code>，<code translate="no" v-pre>size</code> 为 0</td>
+</tr>
+<tr>
+<td>1 <code translate="no" v-pre>Downloading</code> 且 <code translate="no" v-pre>size</code> 为 0</td>
+<td><code translate="no" v-pre>queued</code></td>
+<td><strong>已观察到</strong>。不是 <code translate="no" v-pre>downloading</code>，也不是 <code translate="no" v-pre>stalled-no-peers</code>。AllDebrid 已接收任务但尚未开始。在两次运行中分别停留 622 s 和 580 s，之后完成</td>
+</tr>
+<tr>
+<td>1 <code translate="no" v-pre>Downloading</code> 且 <code translate="no" v-pre>size</code> 为真实值</td>
+<td><code translate="no" v-pre>downloading</code></td>
+<td><strong>已观察到</strong></td>
+</tr>
+<tr>
+<td>1 <code translate="no" v-pre>Downloading</code> 且 <code translate="no" v-pre>seeders</code> 为 0、<code translate="no" v-pre>downloaded</code> 不变</td>
+<td><code translate="no" v-pre>stalled-no-peers</code></td>
+<td><strong>未观察到，也无法安全推断</strong>。见下文</td>
+</tr>
+<tr>
+<td>2 <code translate="no" v-pre>Compressing / Moving</code></td>
+<td><code translate="no" v-pre>finalizing</code></td>
+<td><strong>推断得出</strong>。未见到</td>
+</tr>
+<tr>
+<td>3 <code translate="no" v-pre>Uploading</code></td>
+<td><code translate="no" v-pre>finalizing</code></td>
+<td><strong>已观察到</strong>。进度在这里由 <code translate="no" v-pre>uploaded</code> 和 <code translate="no" v-pre>uploadSpeed</code> 体现，<code translate="no" v-pre>downloadSpeed</code> 为 0</td>
+</tr>
+<tr>
+<td>4 <code translate="no" v-pre>Ready</code></td>
+<td><code translate="no" v-pre>done</code></td>
+<td><strong>已观察到</strong></td>
+</tr>
+<tr>
+<td>5 及以上</td>
+<td><code translate="no" v-pre>failed</code></td>
+<td><strong>推断得出</strong>。未见到</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>AllDebrid 没有可观察到的停滞特征。</strong> 一个 AllDebrid 已排队的任务和一个 AllDebrid 无法推进的任务，在网络上看起来完全相同。两者都是 <code translate="no" v-pre>statusCode</code> 为 1、<code translate="no" v-pre>size</code> 为 0，所有计数器都为零。Prelinger 条目在整个 907.8 s 上限内都处于这种状态，另外两个种子各自在这种状态下停留了十分钟，然后完成了。因此 AllDebrid 的响应中没有任何内容能区分这两者，AllDebrid 上的停滞判定只能依靠计时器。</p>
+<p>（之前的译文被拒绝：代码片段不一致。请保持结构完全一致。）</p>
+<h3 id="torbox-1">TorBox</h3>
+<retype-table copy-text="| 原始 `download_state` | 阶段 | 依据 |
+|---|---|---|
+| `metaDL` | `resolving-metadata` | **已观察到**。`size` 为 0，`name` 与哈希值相同 |
+| `checking` | `resolving-metadata` | **已观察到**。等待期间 `size` 为 **-1**。这是 TorBox 在等待种子，而不是在做哈希校验。zurg 目前的表中没有这一项 |
+| `stalledDL` | `stalled-no-peers` | **已观察到**。zurg 目前的表中没有这一项 |
+| `stalled (no seeds)` | `stalled-no-peers` | **已观察到**。名称说得有点夸张。有两次抓取在这个状态下 `seeds` 分别为 1 和 2。zurg 目前把它映射为 `queued` |
+| `downloading` | `downloading` | **已观察到** |
+| `processing` | `finalizing` | **已观察到**。zurg 目前的表中没有这一项 |
+| `uploading (no peers)` | `finalizing` | **已观察到**，此时 `download_present` 为 false |
+| `uploading` | `done` | **已观察到**，此时 `download_present` 为 true |
+| `cached` `completed` `seeding` | `done` | `cached` **已观察到**。另外两个为**推断**得出 |
+| `expired` `reported missing` `failed` `error` `missingfiles` | `failed` | **推断**得出。尚未见到 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>原始 <code translate="no" v-pre>download_state</code></th>
+<th>阶段</th>
+<th>依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>metaDL</code></td>
+<td><code translate="no" v-pre>resolving-metadata</code></td>
+<td><strong>已观察到</strong>。<code translate="no" v-pre>size</code> 为 0，<code translate="no" v-pre>name</code> 与哈希值相同</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>checking</code></td>
+<td><code translate="no" v-pre>resolving-metadata</code></td>
+<td><strong>已观察到</strong>。等待期间 <code translate="no" v-pre>size</code> 为 <strong>-1</strong>。这是 TorBox 在等待种子，而不是在做哈希校验。zurg 目前的表中没有这一项</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>stalledDL</code></td>
+<td><code translate="no" v-pre>stalled-no-peers</code></td>
+<td><strong>已观察到</strong>。zurg 目前的表中没有这一项</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>stalled (no seeds)</code></td>
+<td><code translate="no" v-pre>stalled-no-peers</code></td>
+<td><strong>已观察到</strong>。名称说得有点夸张。有两次抓取在这个状态下 <code translate="no" v-pre>seeds</code> 分别为 1 和 2。zurg 目前把它映射为 <code translate="no" v-pre>queued</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloading</code></td>
+<td><code translate="no" v-pre>downloading</code></td>
+<td><strong>已观察到</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>processing</code></td>
+<td><code translate="no" v-pre>finalizing</code></td>
+<td><strong>已观察到</strong>。zurg 目前的表中没有这一项</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>uploading (no peers)</code></td>
+<td><code translate="no" v-pre>finalizing</code></td>
+<td><strong>已观察到</strong>，此时 <code translate="no" v-pre>download_present</code> 为 false</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>uploading</code></td>
+<td><code translate="no" v-pre>done</code></td>
+<td><strong>已观察到</strong>，此时 <code translate="no" v-pre>download_present</code> 为 true</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>cached</code> <code translate="no" v-pre>completed</code> <code translate="no" v-pre>seeding</code></td>
+<td><code translate="no" v-pre>done</code></td>
+<td><code translate="no" v-pre>cached</code> <strong>已观察到</strong>。另外两个为<strong>推断</strong>得出</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>expired</code> <code translate="no" v-pre>reported missing</code> <code translate="no" v-pre>failed</code> <code translate="no" v-pre>error</code> <code translate="no" v-pre>missingfiles</code></td>
+<td><code translate="no" v-pre>failed</code></td>
+<td><strong>推断</strong>得出。尚未见到</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong><code translate="no" v-pre>download_finished</code> 和 <code translate="no" v-pre>download_present</code> 这一对字段不能替代状态字符串。</strong> <code translate="no" v-pre>processing</code>、<code translate="no" v-pre>uploading (no peers)</code> 以及部分 <code translate="no" v-pre>downloading</code> 的情况，都会出现 <code translate="no" v-pre>download_finished: true</code> 且 <code translate="no" v-pre>download_present: false</code> 的组合。这是正常的收尾阶段，而不是已失效的种子。请参阅下面的注意事项。</p>
+<hr>
+<h2 id="what-could-not-be-measured">无法测量的内容</h2>
+<ul>
+<li>
+<p><strong>在两个候选种子中，有一个复现了无做种的情况。</strong> 两个种子在 tracker 上的做种者数都是零。
+ubuntu-16.04.6-desktop-i386 在三个服务商上仍然都下载成功，因为 DHT 提供了 tracker 不知道的 peer。
+ubuntu-24.04-beta-live-server-s390x 在 Real-Debrid 上卡住，一直到超时上限，也就是上面提到的卡住现象。
+在 tracker 上抓取到零，只是个较弱的预测指标。测试用例里保留两个候选种子。无论如何，Real-Debrid 对这两个种子都已经拿到了元数据，并且在第一次 <code translate="no" v-pre>queued</code> 读取时就正确返回了 <code translate="no" v-pre>bytes</code> 和 <code translate="no" v-pre>filename</code>。</p>
+</li>
+<li>
+<p><strong>从未见到 Real-Debrid 的 <code translate="no" v-pre>compressing</code> 状态。</strong> 每次完整运行都是从 <code translate="no" v-pre>downloading</code> 直接变成 <code translate="no" v-pre>uploading</code>。</p>
+</li>
+<li>
+<p><strong>从未见到 AllDebrid 的状态码 2。</strong> 每次抓取都是从 1 直接变成 3。</p>
+</li>
+<li>
+<p><strong>没有任何服务商触发过它自己的错误状态。</strong> Real-Debrid 的 <code translate="no" v-pre>error</code>、<code translate="no" v-pre>virus</code> 和 <code translate="no" v-pre>dead</code>，以及上面提到的 AllDebrid 所有大于 4 的状态码，还有 TorBox 的所有失败状态，都没有测到。要触发这些状态，需要被屏蔽、带病毒或已失效的内容，而不是 FOSS ISO。</p>
+</li>
+<li>
+<p><strong>TorBox 很少能完整跟踪到下载完成。</strong> 测试批次中的四个种子和后续的一个种子，在下载途中被账号上另一个 zurg 删除了。详见下面的风险说明。只有一个 754 MiB 的镜像在那个进程下一次轮询之前完成了下载。</p>
+</li>
+</ul>
+<hr>
+<h2 id="hazards-found-on-the-way">途中发现的隐患</h2>
+<h3 id="a-second-zurg-on-the-torbox-account-deletes-healthy-downloads">TorBox 账户上的第二个 zurg 会删除正常的下载</h3>
+<p>另一个 zurg 实例使用同一个 TorBox 账户，它的配置如下：</p>
+<div id="a-second-zurg-on-the-torbox-account-deletes-healthy-downloads-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">enable_repair: true
+delete_error_torrents: true
+stalled_download_mins: 120</code></pre>
+</doc-codeblock></div>
+<p><strong>五个</strong>探测用种子在正常下载时被删除了。这一点在<strong>两边都能观察到</strong>。测试脚本看到每个种子消失，另一个实例的日志也写明了原因。</p>
+<div id="a-second-zurg-on-the-torbox-account-deletes-healthy-downloads-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Aug 30 12:43:26 zurg-host zurg: INFO manager Deleting torrent 86695315 because it encountered an error status: error
+Aug 30 12:43:27 zurg-host zurg: DEBUG torbox Deleted TorBox torrent id=86695315
+Aug 30 12:44:56 zurg-host zurg: INFO manager Deleting torrent 86695708 because it encountered an error status: error
+Aug 30 12:47:41 zurg-host zurg: INFO manager Deleting torrent 86697191 because it encountered an error status: error</code></pre>
+</doc-codeblock></div>
+<p>这五个分别是 <code translate="no" v-pre>86695315</code>、<code translate="no" v-pre>86695708</code>、<code translate="no" v-pre>86697191</code>、<code translate="no" v-pre>86702627</code>、<code translate="no" v-pre>86704212</code>。它们的原因都一样，而且都不是坏种子。</p>
+<p>问题出在 <code translate="no" v-pre>internal/torbox/types.go</code> 中 <code translate="no" v-pre>normalizeStatus</code> 的第二条规则。</p>
+<div id="a-second-zurg-on-the-torbox-account-deletes-healthy-downloads-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-go"><code v-pre class="language-go">if w.DownloadFinished &amp;&amp; !w.DownloadPresent {
+    return &quot;error&quot;
+}</code></pre>
+</doc-codeblock></div>
+<p>这种状态组合其实是 TorBox 的正常收尾阶段。0.5 秒一次的抓取给出了具体数字：在一个 754 MiB 的镜像上，从 <code translate="no" v-pre>download_finished</code> 变为 true 到 <code translate="no" v-pre>download_present</code> 变为 true，中间隔了 <strong>9.6 秒</strong>；在一个 3.7 GiB 的镜像上，这段时间至少有 17 秒，而清理恰好落在这段时间里。另一个 zurg 大约每 15 秒轮询一次库。所以，一个正常的 TorBox 下载能不能撑过自己的完成阶段，基本就是五五开。</p>
+<p>这会带来三个后果。第一，用户在 TorBox 界面里看着完成的下载，可能已经从 zurg 库里消失了。第二，<code translate="no" v-pre>delete_error_torrents</code> 的文档说它删除的是服务商标记为出错的种子，但这里它删掉的却是服务商标记为正常的种子。第三，在这个账户上对 TorBox 做的任何测量，都是在和这次清理抢时间。</p>
+<p><strong>这里不修复。</strong> 阶段 0 只负责测量，修复应该放到分阶段的工作中去做。到那时，<code translate="no" v-pre>download_finished &amp;&amp; !download_present</code> 应该被标记为 <code translate="no" v-pre>finalizing</code>，而不是 <code translate="no" v-pre>failed</code>。</p>
+<h3 id="a-second-zurg-on-the-alldebrid-account-got-away-with-it">AllDebrid 账户上的第二个 zurg 侥幸未出问题</h3>
+<p>用于此次活动的 AllDebrid 密钥，也被另一个 zurg 实例加载了，并且使用了与 TorBox 相同的三个 sweep 设置。</p>
+<div id="a-second-zurg-on-the-alldebrid-account-got-away-with-it-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">enable_repair: true
+delete_error_torrents: true
+stalled_download_mins: 120</code></pre>
+</doc-codeblock></div>
+<p>没有删除任何 AllDebrid 探测。原因在代码里，而不是运气好。<code translate="no" v-pre>internal/alldebrid/types.go</code> 中的 <code translate="no" v-pre>normalizeStatus</code> 只把大于等于 5 的状态码映射为 <code translate="no" v-pre>error</code>，没有 <code translate="no" v-pre>download_finished &amp;&amp; !download_present</code> 这类结构性规则。所以一个正常的 AllDebrid 下载永远不会被误判为损坏。TorBox 的 bug 只是多出了这一条规则，而不是整体的 sweep 问题。</p>
+<p>Real-Debrid 比较特殊。测试账号没有被其他 zurg 加载，没有任何东西在清理它，也没有任何东西干扰它。</p>
+<h3 id="torbox-answers-a-delete-for-an-unknown-id-with-http-500">TorBox 对未知 id 的删除请求返回 HTTP 500</h3>
+<div id="torbox-answers-a-delete-for-an-unknown-id-with-http-500-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">POST /v1/api/torrents/controltorrent  {&quot;torrent_id&quot;:86695315,&quot;operation&quot;:&quot;delete&quot;}
+-&gt; HTTP 500 {&quot;success&quot;:false,&quot;error&quot;:&quot;DATABASE_ERROR&quot;,&quot;detail&quot;:&quot;There was an error processing your request. Please try again later.&quot;}</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>GET /torrents/mylist?id=&lt;gone&gt;</code> 的返回也一样。所以一个已经不存在的种子，只看状态码，和 TorBox 故障是分不出来的。
+zurg 会把它报告为 <code translate="no" v-pre>account temporarily unavailable</code>。另一个实例的日志显示，它每 15 秒就重试一次删除已经删掉的
+id。测试框架的应对办法是：删除失败后，再查一次 <code translate="no" v-pre>mylist</code>，如果种子已经不在了，就当作已删除处理。</p>
+<h3 id="real-debrid-throttling-did-not-appear">未出现 Real-Debrid 限流</h3>
+<p>九次添加、间隔 20 秒,整轮下来 451 和 429 都是零次。这和根目录 <code translate="no" v-pre>CLAUDE.md</code> 里的记录一致:6 次添加、间隔 10 秒,结果 0/6;同样 6 次、间隔 20 秒,结果 6/6。20 秒这个下限是真有用的,不是什么迷信。</p>
+<h2 id="re-running-the-campaign">重新运行测试</h2>
+<div id="re-running-the-campaign-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">export RD_TOKEN=…   # a Real-Debrid test account
+export AD_KEY=…     # AllDebrid test
+export TB_KEY=…     # TorBox
+
+# 1. check the catalog still resolves and the swarms are still what the tables claim
+./scripts/torrent_lifecycle_probe.py --inspect-torrents
+
+# 2. non-destructive. Confirms the cached/uncached split before anything is added
+./scripts/torrent_lifecycle_probe.py --cache-probe
+
+# 3. record what each account holds now, so step 6 has something to compare against
+./scripts/torrent_lifecycle_probe.py --list
+
+# 4. the campaign. One process per provider, each with its own output directory
+for p in rd ad tb; do
+  LIFECYCLE_OUTDIR=~/lifecycle/$p ./scripts/torrent_lifecycle_probe.py \
+    --provider $p --case all --cap-mins 15 &gt; ~/lifecycle/$p.out 2&gt;&amp;1 &amp;
+done
+
+# 5. the two follow-ups the campaign cannot do
+./scripts/torrent_lifecycle_probe.py --provider rd --case cached --rd-select-detail
+./scripts/torrent_lifecycle_probe.py --provider tb --case adhoc --fast-poll 0.5 --fast-window 480 \
+  --extra-hash 58846860f0a766f8a42b0bb214d8c713fdf1b167:debian-netinst
+
+# 6. verify nothing was left behind
+./scripts/torrent_lifecycle_probe.py --cleanup-only
+./scripts/torrent_lifecycle_probe.py --list</code></pre>
+</doc-codeblock></div>
+<p>Run it from a machine with residential egress. AllDebrid answers <code translate="no" v-pre>NO_SERVER</code> to datacenter IPs.</p>
+<p>Step 6 is not optional and step 3 is what makes it meaningful. After the 2026-08-30 campaign not one of the 34 instance ids the harness had claimed was left on any of the three accounts. Neither was any of the nine probe hashes.</p>
+<p>Before touching TorBox, check whether any other zurg is loaded with the same account, read its sweep settings and expect the sweep described above.</p>
+<div id="re-running-the-campaign-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">grep -E &quot;delete_error_torrents|stalled_download_mins|enable_repair&quot; config.yml</code></pre>
+</doc-codeblock></div>
+<p>Never change it. A probe that disappears mid-run is data.</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/debrid-baseline/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">上一个</span>
+                                <span class="block mt-1">Debrid 基准配置</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/qbittorrent-client-contract/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">下一个</span>
+                                <span class="block mt-1">q​Bittorrent 客户端契约</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "种子生命周期", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/internals/torrent-lifecycle.md" }</script>
+</body>
+</html>

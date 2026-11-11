@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="ja" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/ja">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672716444">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>E2E テスト</title>
+    <meta name="title" content="E2E テスト">
+    <meta name="description" content="ザーグ（zurg）がデプロイ後に正しく動作しているかを確認するためのエンドツーエンドテスト。">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/ja/zurg/internals/e2e-test/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/ja/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/ja/zurg/internals/e2e-test/">
+    <meta property="og:title" content="E2E テスト">
+    <meta property="og:description" content="ザーグ（zurg）がデプロイ後に正しく動作しているかを確認するためのエンドツーエンドテスト。">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="ja_JP">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/ja/zurg/internals/e2e-test/">
+    <meta name="twitter:title" content="E2E テスト">
+    <meta name="twitter:description" content="ザーグ（zurg）がデプロイ後に正しく動作しているかを確認するためのエンドツーエンドテスト。">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/ja/zurg/internals/e2e-test.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672716444" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672716444" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672716444" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672716444" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/ja/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>日本語</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/download.html" target="_blank">zurgをダウンロード</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/ja/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">スポンサー</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>日本語</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/download.html" target="_blank">zurgをダウンロード</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/ja/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">スポンサー</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="e2e-testing">E2E テスト</h1>
+<p>ザーグ（zurg）がデプロイ後に正しく動作しているかを確認するためのエンドツーエンドテスト。</p>
+<h2 id="plex-playback-test">Plex 再生テスト</h2>
+<p>ランダムに映画を1本選び、再生パイプライン全体をテストして、Plexで実際に再生できるかを確認します。</p>
+<h3 id="run-the-test">テストを実行する</h3>
+<div id="run-the-test-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./scripts/plex-e2e-test.sh</code></pre>
+</doc-codeblock></div>
+<p>このスクリプトは、<code translate="no" v-pre>config.yml</code> から <code translate="no" v-pre>plex_server_url</code> と <code translate="no" v-pre>plex_token</code> を自動的に読み込みます。</p>
+<p>カスタム設定で上書きするには:</p>
+<div id="run-the-test-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">PLEX_URL=&quot;http://your-plex:32400&quot; PLEX_TOKEN=&quot;your-token&quot; ./scripts/plex-e2e-test.sh</code></pre>
+</doc-codeblock></div>
+<h3 id="what-it-tests">テストの内容</h3>
+<retype-table copy-text="| Step | Description |
+|------|-------------|
+| 1 | Plex API で Movies ライブラリを探す |
+| 2 | 映画の総数を取得する |
+| 3 | ランダムに映画を1本選ぶ |
+| 4 | その映画のストリーム URL を取得する |
+| 5 | ストリームにアクセスできるか確認する (HTTP 200) |
+| 6 | ffmpeg で動画を3秒分デコードする |
+| 7 | Plex のセッション追跡を作成して確認する |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Step</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Plex API で Movies ライブラリを探す</td>
+</tr>
+<tr>
+<td>2</td>
+<td>映画の総数を取得する</td>
+</tr>
+<tr>
+<td>3</td>
+<td>ランダムに映画を1本選ぶ</td>
+</tr>
+<tr>
+<td>4</td>
+<td>その映画のストリーム URL を取得する</td>
+</tr>
+<tr>
+<td>5</td>
+<td>ストリームにアクセスできるか確認する (HTTP 200)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>ffmpeg で動画を3秒分デコードする</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Plex のセッション追跡を作成して確認する</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="expected-output">期待される出力</h3>
+<div id="expected-output-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">=== Plex E2E Playback Test ===
+
+[1/7] Finding Movies library...
+  Library key: 15
+[2/7] Getting movie count...
+  Total movies: 1234
+[3/7] Selecting random movie...
+  Selected: 2 Fast 2 Furious (2003) (ratingKey: 756524)
+[4/7] Getting stream URL...
+  File size: 54GiB
+[5/7] Verifying stream accessibility...
+  HTTP Status: 200 OK
+[6/7] Decoding video (3 seconds)...
+  Decoded 72 frames successfully
+[7/7] Testing Plex session tracking...
+  Session created and tracked
+
+=== TEST PASSED ===
+Movie '2 Fast 2 Furious (2003)' is playable via Plex</code></pre>
+</doc-codeblock></div>
+<h3 id="prerequisites">前提条件</h3>
+<ul>
+<li>Plex サーバーが起動していて、アクセスできること</li>
+<li><code translate="no" v-pre>config.yml</code> に <code translate="no" v-pre>plex_server_url</code> と <code translate="no" v-pre>plex_token</code> が設定されていること</li>
+<li><code translate="no" v-pre>curl</code>、<code translate="no" v-pre>jq</code>、<code translate="no" v-pre>ffmpeg</code> がインストールされていること</li>
+</ul>
+<h3 id="troubleshooting">トラブルシューティング</h3>
+<retype-table copy-text="| エラー | 原因 | 対処法 |
+|-------|-------|-----|
+| No movie library found | ライブラリの種類が違うか、空になっている | Plex に &quot;Movies&quot; ライブラリがあるか確認 |
+| Stream not accessible (HTTP 4xx) | 認証またはパスの問題 | トークンを確認し、ファイルが存在するか確認 |
+| Failed to decode video frames | ファイルの破損またはネットワークの問題 | zurg のログを確認し、別の映画を試す |
+| Session not detected | Plex のセッションがタイムアウトした | Plex のログを確認 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>エラー</th>
+<th>原因</th>
+<th>対処法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No movie library found</td>
+<td>ライブラリの種類が違うか、空になっている</td>
+<td>Plex に &quot;Movies&quot; ライブラリがあるか確認</td>
+</tr>
+<tr>
+<td>Stream not accessible (HTTP 4xx)</td>
+<td>認証またはパスの問題</td>
+<td>トークンを確認し、ファイルが存在するか確認</td>
+</tr>
+<tr>
+<td>Failed to decode video frames</td>
+<td>ファイルの破損またはネットワークの問題</td>
+<td>zurg のログを確認し、別の映画を試す</td>
+</tr>
+<tr>
+<td>Session not detected</td>
+<td>Plex のセッションがタイムアウトした</td>
+<td>Plex のログを確認</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h2 id="integration-suite">統合テストスイート</h2>
+<div id="integration-suite-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">ssh zen
+cd /path/to/isolated/zurg/source
+make integration-test</code></pre>
+</doc-codeblock></div>
+<p><strong><code translate="no" v-pre>zen</code> 上の隔離されたターゲットで実行してください。</strong> そこに Go ツールチェーン、shellcheck、rclone、.NET の move probe を用意します。テストスイートは独自の zurg プロセスとマウントを作成するので、zen で普段使っている zurg サービスやマウントを置き換える必要はありません。別のソースディレクトリ、<code translate="no" v-pre>TMPDIR</code>、設定、ポート、<code translate="no" v-pre>MOUNT_PATH</code> を使ってください。実行前に scratch 設定を確認し、<code translate="no" v-pre>TMPDIR</code> を分けている場合でも、ホスト全体で共有する <code translate="no" v-pre>INTEGRATION_LOCK_FILE=/tmp/zurg-integration-rd.lock</code> はそのまま残してください。こうしておくと、他のセッションとも順番待ちになり、テストが重ならずに済みます。</p>
+<p>前提条件が揃っていないテストは、成功終了でスキップされます。出力を読んで、FUSE、rclone、Plex、NNTP が本当に実行されたかを確認してください。</p>
+<retype-table copy-text="| テスト | FUSE が必要 | Plex が必要 | Usenet アカウントが必要 |
+|------|:----------:|:----------:|:----------------------:|
+| `refresh_repair_integration.sh` | | | |
+| `network_test_cache_integration.sh` | | | |
+| `rclone_mount_integration.sh` | はい | | |
+| `magic_mount_integration.sh` | はい | | |
+| `magic_move_refusal.sh` | はい | | |
+| `magic_library_move_integration.sh` | はい | | |
+| `plex_integration.sh` | はい | はい | |
+| `nzb_bench_integration.sh` | | | はい |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>テスト</th>
+<th style="text-align: center;">FUSE が必要</th>
+<th style="text-align: center;">Plex が必要</th>
+<th style="text-align: center;">Usenet アカウントが必要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>refresh_repair_integration.sh</code></td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;"> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>network_test_cache_integration.sh</code></td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;"> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>rclone_mount_integration.sh</code></td>
+<td style="text-align: center;">はい</td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;"> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>magic_mount_integration.sh</code></td>
+<td style="text-align: center;">はい</td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;"> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>magic_move_refusal.sh</code></td>
+<td style="text-align: center;">はい</td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;"> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>magic_library_move_integration.sh</code></td>
+<td style="text-align: center;">はい</td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;"> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>plex_integration.sh</code></td>
+<td style="text-align: center;">はい</td>
+<td style="text-align: center;">はい</td>
+<td style="text-align: center;"> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>nzb_bench_integration.sh</code></td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;">はい</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>force_location_integration.sh</code> はスイートに<strong>含まれていません</strong>。このテストは zurg ではなく、このホストから Real-Debrid の CDN までのネットワーク経路について確認するものです。そのため、変更内容に関係なく、経路が応答しない環境では失敗します。実行するなら、強制するリージョンへ IPv4 で接続できるホストで、<code translate="no" v-pre>make force-location-test</code> を使って意図的に実行してください。詳しくは <doc-anchor-trigger to="#force-location-integration-test">Force Location 統合テスト</doc-anchor-trigger> を参照してください。</p>
+<p>Real-Debrid を使う 5 つのテストは、同じアカウントを使います。詳しくは <doc-anchor-trigger to="#the-real-debrid-test-account-is-shared">テスト用 Real-Debrid アカウントは共有されています</doc-anchor-trigger> を見てください。ベンチマークはニュースアカウントを使い、Real-Debrid にはまったくアクセスしません。ただし、他のテストと同じホスト全体のロックを取ります。他のスイートが読み込みをしている最中に計測すると、計測しているのは別のスイートの負荷になってしまうので注意してください。</p>
+<p>Mac でも、macFUSE が入っていればマウントテストを実行できます。動作確認は macFUSE と Linux の <code translate="no" v-pre>fusermount</code> の両方で行っています。Plex テストには、scratch 設定に <code translate="no" v-pre>plex_server_url</code> と <code translate="no" v-pre>plex_token</code> が必要です。また、Plex はマウント先までの親ディレクトリをすべて辿れる必要があります。プライベートなホームディレクトリの下にマウントすると、テストユーザーからは見えても Plex からは見えない、ということが起きます。</p>
+<p><code translate="no" v-pre>make integration-test</code> は、zurg をビルドし、スクリプトに対して shellcheck を実行し、<code translate="no" v-pre>lib.sh</code> のセルフテストと <code translate="no" v-pre>integration/nzbbench</code> のユニットテストを走らせたあと、7 つすべてを軽いものから順に実行します。順番は、network test cache、rclone マウント、Plex、<code translate="no" v-pre>__magic__</code> マウント、.NET の move 拒否、refresh/repair、最後に Usenet ベンチマークです。最後の 2 つは重いテストです。refresh/repair はライブラリの全体スキャンが終わるまで待ち、ベンチマークはニュースサーバーから数ギガバイトを 2 回読み込みます。そのため、他のテストで問題があれば、その待ち時間を払う前に気づけるようにしてあります。<code translate="no" v-pre>make integration-test-media</code> は rclone、Plex、<code translate="no" v-pre>__magic__</code> マウントのテストを、<code translate="no" v-pre>make nzb-bench-test</code> はベンチマークだけを実行します。</p>
+<p>各スクリプトは <code translate="no" v-pre>$TMPDIR</code> 配下に作業ディレクトリを持ち、独自のポートを使い、zurg のログをそこへ書き出します。スイートは <code translate="no" v-pre>STREAM_LOGS=false</code> で実行されるため、ターミナルに出るのはテスト自身のアサーションだけです。デバッグ中に zurg のログを stderr で追いたいときは、<code translate="no" v-pre>STREAM_LOGS=true</code> を設定してください。</p>
+<p>共通のヘルパーは <code translate="no" v-pre>integration/lib.sh</code>（プロセス制御、Real-Debrid API、ディスク上のライブラリ照会）と <code translate="no" v-pre>integration/lib_media.sh</code>（FUSE と Plex）にあります。新しいテストを追加するときは、これらを source して使ってください。他のスクリプトをコピーしてはいけません。<code translate="no" v-pre>integration/lib_test.sh</code> はヘルパー自体をテストします。アカウントもネットワークも不要で、約 1 秒で終わります。<code translate="no" v-pre>integration/nzb_bench_timing_gate_test.sh</code> は、ベンチマークのラッパーがツールの終了コードをスイートの判定にどう変換するかを確認します。このテストは <code translate="no" v-pre>integration/testdata/</code> にある実際のレポートを一部切り出したものを使います。どちらも <code translate="no" v-pre>make test-integration-lib</code> で実行されます。</p>
+<h3 id="the-real-debrid-test-account-is-shared">Real-Debrid のテストアカウントは共有されています</h3>
+<p>このスイートは Real-Debrid のテスト用アカウントを 1 つ使いますが、そのアカウントは非公開ではありません。<code translate="no" v-pre>zen</code> の本番用 zurg も同じライブラリを監視しているため、テストが追加したばかりのトレントを一覧表示して更新してしまいます。このアカウント上で <strong>修復を有効にした</strong> インスタンスは、それらを検証、修復、整理もします。</p>
+<p>以下の 2 つの失敗は 2026-08-23 に診断したものです。そのとき <code translate="no" v-pre>macmini</code> の zurg が、このアカウントで 10 分ごとの修復を有効にして動いていました。そのインスタンスは 2026-08-29 に停止されており、監視している人もいません。また、zen の実行は <code translate="no" v-pre>enable_repair: false</code> で動いています。そのため 2026-09-01 時点では、どちらの失敗も発生源が残っていません。このアカウントのどこかで修復を再び有効にすると、すぐに再発します。だからこそ、以下の直列化ルールは今も有効です。</p>
+<p>それによって実行が受ける影響は次のとおりです。テスト対象のビルドとそのベースラインの両方で、6 本中 4 本のスクリプトが失敗したあとに、これが起きています。</p>
+<ul>
+<li><strong>いつまでも現れないフィクスチャ。</strong> Real-Debrid はダウンロード ID をリンクごとに重複排除しており、downloads の行を削除すると、そのコードを持つ全員に対してコードが無効になります。別のインスタンスのクリーンアップが、今回の実行が解決したばかりのコードを無効にすると、今回の検証は <code translate="no" v-pre>404 invalid_download_code</code> を返します。すると zurg はそのファイルを壊れたものとして扱います。壊れたトレントはすべての一覧から隠されます。その結果、テストは <code translate="no" v-pre>zurg serves the fixture over HTTP but it never appeared under .../mnt/movies within 180s</code> と表示しますが、これはマウントや dircache のバグのように見えるだけで、実際にはどちらでもありません。</li>
+<li><strong>削除したのに元に戻るケース。</strong> 修復を行うインスタンスが、今回の実行が削除したばかりのトレントを再追加します。その結果、<code translate="no" v-pre>refresh never dropped &lt;hash&gt; after it was deleted from the account</code> が失敗します。しかし、ライブラリは現実を正しく報告しています。</li>
+</ul>
+<p>影響を受けやすいのは、削除と修復に関するアサーションです。変更のせいにする前に、以下で説明する失敗のコンテキストを確認してください。実行を確実にクリーンにしたいなら、他のインスタンスの修復を先に止めてください。</p>
+<p><strong>同時に動かしてはいけないスクリプトがあります。</strong> このホスト上でも、同じホストの別セッションからでも、2 つ以上を同時に実行しないでください。これらはアカウントの 1 分あたりの API 上限を共有しています。そのため 2 本が並ぶと <code translate="no" v-pre>API rate limit (code=34)</code> が発生し、アサーションは動作ではなくトラフィックによって失敗し始めます（<code translate="no" v-pre>fun</code> での 2 並列実行で計測）。また、各スクリプトはトレントをハッシュで削除するため、ある実行のクリーンアップが、別の実行のフィクスチャをためらいなく削除してしまいます。そこで各スクリプトは、<code translate="no" v-pre>main</code> の先頭で、最初の API 呼び出しより前にホスト全体のロックを取得し、終了するまで保持します。</p>
+<retype-table copy-text="| 変数 | デフォルト | 説明 |
+|----------|---------|-------------|
+| `INTEGRATION_LOCK_FILE` | `$TMPDIR/zurg-integration-rd.lock` | ロックファイル。`flock` が使える環境では `flock` を使い、ない環境（macOS には `flock` がありません）では pid を書き込んだ `.d` ディレクトリを使います |
+| `INTEGRATION_LOCK_WAIT` | `0` | 実行中のジョブの後ろで待つ秒数。`0` は即座に拒否します。これが望ましい設定です。待つ代わりに、コールドスキャンの後ろで 1 時間待たされることになるからです |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>変数</th>
+<th>デフォルト</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>INTEGRATION_LOCK_FILE</code></td>
+<td><code translate="no" v-pre>$TMPDIR/zurg-integration-rd.lock</code></td>
+<td>ロックファイル。<code translate="no" v-pre>flock</code> が使える環境では <code translate="no" v-pre>flock</code> を使い、ない環境（macOS には <code translate="no" v-pre>flock</code> がありません）では pid を書き込んだ <code translate="no" v-pre>.d</code> ディレクトリを使います</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>INTEGRATION_LOCK_WAIT</code></td>
+<td><code translate="no" v-pre>0</code></td>
+<td>実行中のジョブの後ろで待つ秒数。<code translate="no" v-pre>0</code> は即座に拒否します。これが望ましい設定です。待つ代わりに、コールドスキャンの後ろで 1 時間待たされることになるからです</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>強制終了された実行が残したロックは自動的に回収されます。ディレクトリにはロック保持者の pid が入っており、<code translate="no" v-pre>flock</code> はカーネルが解放します。もちろん、このロックは zen や macmini には何も伝えません。あくまでこのホストの実行同士を分けておくためのものです。</p>
+<p><strong>失敗の読み方。</strong> 今では、すべての <code translate="no" v-pre>fail</code> が、その実行の zurg ログから次の情報を表示します。共有アカウントに起因する各症状の件数、つまり <code translate="no" v-pre>invalid_download_code</code>、<code translate="no" v-pre>hoster_unavailable</code>、レート制限の行、<code translate="no" v-pre>code=34</code>、<code translate="no" v-pre>Link verification failed</code>、<code translate="no" v-pre>keeping files as broken</code>、<code translate="no" v-pre>broken_file]</code>、<code translate="no" v-pre>Deleted downloads entry</code> です。続いて、それぞれの最後 10 行、そしてテスト対象のフィクスチャ名を含む最後の数行を表示します。<code translate="no" v-pre>none present, so this failure is probably zurg's own and not the account's</code> と表示された場合は、アカウントではなく、コードの方を調べてください、という意味です。</p>
+<p><code translate="no" v-pre>docs/realdebrid-behavior.txt</code> には、これらすべての基礎となるリンクの仕様が書かれています。どのアカウントからどのリンクが引き換えられるか、そして <code translate="no" v-pre>unavailable_file</code> と <code translate="no" v-pre>hoster_unavailable</code> がなぜ別の意味を持つのか、といった内容です。</p>
+<h3 id="runtime">実行時間</h3>
+<p>指定した作業ディレクトリで最初に実行すると、ライブラリのコールドスキャンが発生します。トレントごとに info 呼び出しを 1 回と、リンク検証を 1 回行い、その速度はアカウントの API 上限に合わせて制限されます。数千件のトレントがあるアカウントでは数十分かかります。このアカウントは 2026-08-29 時点で 3,361 件のトレントを持っていて、<code translate="no" v-pre>code=34</code> が継続的に返され、1 スクリプトあたり約 20 分かかりました。作業ディレクトリは実行をまたいで 3 つのキャッシュを保持するので、以降の実行ではこれらをスキップできます。その 3 つは <code translate="no" v-pre>info/</code>、<code translate="no" v-pre>linkcache/</code>、ネットワークテストの結果です。コールドな経路を強制的に使うには、作業ディレクトリを削除してください。</p>
+<p><code translate="no" v-pre>linkcache/</code> は <code translate="no" v-pre>internal/debrid.LinkCache</code> が保存するもので、プロバイダーのインスタンスごとに 1 ファイルです。20 分を削っているのはこちらの半分です。トレントを初めて見たとき、そのリンクの一つを解決して検証します。キャッシュが空なら、トレントごとに <code translate="no" v-pre>unrestrict/link</code> 呼び出しが 1 回発生し、キャッシュが温まっていればこの呼び出しは不要です。効果はキャッシュの 4 時間の TTL で頭打ちになります。翌日にスイートを再実行すると、またコールドな状態に戻ります。つまり、これは反復作業を速くするもので、初回実行を速くするものではありません。</p>
+<p><code translate="no" v-pre>info/</code> も <code translate="no" v-pre>linkcache/</code> もリンクを含まないわけではありません。どちらも、共有アカウント上の別のインスタンスが取り消せるコードを保持しています。<code translate="no" v-pre>.zurginfo</code> は <code translate="no" v-pre>TorrentInfo</code> をそのまま保存したものなので、トレントの Real-Debrid <code translate="no" v-pre>/d/</code> コードが入っています。<code translate="no" v-pre>linkcache/</code> には、それらのコードが解決された先の情報が入っています。それでも両方とも保持されます。再構築にこそ数十分かかるからです。取り消されたエントリは誤った答えではありません。検証は <code translate="no" v-pre>404 invalid_download_code</code> を受け取り、zurg がそのエントリを無効化して再発行するので、呼び出しが必要になるのは取り消されたエントリだけです。毎回いくつかは発生すると考えてください。また、その数によって高速化の度合いは変わります。</p>
+<p>フィクスチャの範囲はさらに狭くなります。<code translate="no" v-pre>clean_state_for_hash</code> は、ハッシュが一致する <code translate="no" v-pre>info/</code> のエントリを削除するので、そのリンク一覧は必ずアカウントから再取得されます。<code translate="no" v-pre>linkcache/</code> はハッシュではなくリンクをキーにしていて、フィクスチャごとに掃除されません。そのため、リンクの<em>解決結果</em>は前回の実行のものが残っている場合があります。ただ、ここでのどのアサーションもそれに依存していません。フィクスチャが検証するのは、リフレッシュ、ルーティング、マウント、修復です。古くなった解決結果は検証に失敗し、どのテストも見る前に再発行されます。</p>
+<h3 id="refreshrepair-integration-test">Refresh/Repair 統合テスト</h3>
+<div id="refreshrepair-integration-test-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./integration/refresh_repair_integration.sh</code></pre>
+</doc-codeblock></div>
+<p>scratch 設定では自動修復が無効のままです。明示的な <code translate="no" v-pre>/manage/{hash}/repair</code> リクエストは2つあり、この設定を無視してフィクスチャを修復します。無人修復を有効にすると、共有アカウント内の無関係なエントリもスキャン・変更してしまい、アサーションに必要な API の枠を使い切ってしまいます。
+<code translate="no" v-pre>refresh_repair_config_test.sh</code> は、2026-09-10 の失敗時に取得したマスク済みの scratch 入力を使い、プロバイダーへの通信なしで生成された設定を確認します。</p>
+<retype-table copy-text="| シナリオ | 説明 |
+|----------|-------------|
+| 1. 自動リフレッシュ（追加） | RD API 経由でトレントを追加し、リフレッシュループがそれを検知するまで待ちます。再起動はしません。さもないとコールドロードのパスをテストしてしまうためです |
+| 2. ディレクトリの割り当てとルーティング | ファイルが HTTP/DAV の仮想ディレクトリに表示されることを確認します |
+| 3. 永続化（再起動） | zurg を再起動し、キャッシュ済みの状態が残っていることを確認します |
+| 4. 自動リフレッシュ（削除） | トレントを削除し、obsolete-key sweep がそれを除外するまで待ちます |
+| 5. 修復のトリガー | Manage API で修復をトリガーし、zurg が要求を受け付けたことをログで確認して、0 個の壊れたファイルで `ok_torrent` になるまで待ちます |
+| 6. 修復の検証 | 2つ目のトレントを修復し、そこから動画ファイルを範囲指定で取得します |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>シナリオ</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. 自動リフレッシュ（追加）</td>
+<td>RD API 経由でトレントを追加し、リフレッシュループがそれを検知するまで待ちます。再起動はしません。さもないとコールドロードのパスをテストしてしまうためです</td>
+</tr>
+<tr>
+<td>2. ディレクトリの割り当てとルーティング</td>
+<td>ファイルが HTTP/DAV の仮想ディレクトリに表示されることを確認します</td>
+</tr>
+<tr>
+<td>3. 永続化（再起動）</td>
+<td>zurg を再起動し、キャッシュ済みの状態が残っていることを確認します</td>
+</tr>
+<tr>
+<td>4. 自動リフレッシュ（削除）</td>
+<td>トレントを削除し、obsolete-key sweep がそれを除外するまで待ちます</td>
+</tr>
+<tr>
+<td>5. 修復のトリガー</td>
+<td>Manage API で修復をトリガーし、zurg が要求を受け付けたことをログで確認して、0 個の壊れたファイルで <code translate="no" v-pre>ok_torrent</code> になるまで待ちます</td>
+</tr>
+<tr>
+<td>6. 修復の検証</td>
+<td>2つ目のトレントを修復し、そこから動画ファイルを範囲指定で取得します</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h4 id="environment-variables">環境変数</h4>
+<retype-table copy-text="| 変数 | デフォルト | 説明 |
+|----------|---------|-------------|
+| `PORT` | `12345` | テスト用 zurg インスタンスのポート |
+| `CONFIG_PATH` | `config.yml` | 認証情報を借りてくる設定ファイル。`realdebrid` プロバイダーの `token` と、トップレベルの `username`/`password` を使います |
+| `TEST_HASH` | *(組み込み)* | リフレッシュテスト用の torrent ハッシュ |
+| `REPAIR_TEST_HASH` | *(組み込み)* | 修復テスト用の、壊れたピースを含む torrent ハッシュ |
+| `VERIFY_TEST_HASH` | *(組み込み)* | 修復検証テスト用の torrent ハッシュ |
+| `READY_TIMEOUT` | `120` | zurg が準備完了になるまで待つ秒数 |
+| `INITIAL_SCAN_TIMEOUT` | `3600` | 最初の完全なリフレッシュパスを待つ秒数 |
+| `REFRESH_TIMEOUT` | `120` | リフレッシュで追加または削除が反映されるまで待つ秒数 |
+| `REPAIR_TIMEOUT` | `300` | 修復が落ち着くまで待つ秒数 |
+| `STREAM_LOGS` | `true` | stderr 上の zurg のログを追跡表示する |
+| `ZURG_BIN` | `$(pwd)/zurg` | zurg バイナリのパス。作業ディレクトリから zurg が起動されるため、絶対パスで指定してください |
+| `WORK_DIR` | `$TMPDIR/zurg-refresh-repair` | 作業ディレクトリ（実行間で保持されます） |
+| `WORK_DIR_CLEANUP` | `false` | 終了時に作業ディレクトリを削除します。これにより、後続の実行を速くしているキャッシュも破棄されます |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>変数</th>
+<th>デフォルト</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>PORT</code></td>
+<td><code translate="no" v-pre>12345</code></td>
+<td>テスト用 zurg インスタンスのポート</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>CONFIG_PATH</code></td>
+<td><code translate="no" v-pre>config.yml</code></td>
+<td>認証情報を借りてくる設定ファイル。<code translate="no" v-pre>realdebrid</code> プロバイダーの <code translate="no" v-pre>token</code> と、トップレベルの <code translate="no" v-pre>username</code>/<code translate="no" v-pre>password</code> を使います</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>TEST_HASH</code></td>
+<td><em>(組み込み)</em></td>
+<td>リフレッシュテスト用の torrent ハッシュ</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>REPAIR_TEST_HASH</code></td>
+<td><em>(組み込み)</em></td>
+<td>修復テスト用の、壊れたピースを含む torrent ハッシュ</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>VERIFY_TEST_HASH</code></td>
+<td><em>(組み込み)</em></td>
+<td>修復検証テスト用の torrent ハッシュ</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>READY_TIMEOUT</code></td>
+<td><code translate="no" v-pre>120</code></td>
+<td>zurg が準備完了になるまで待つ秒数</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>INITIAL_SCAN_TIMEOUT</code></td>
+<td><code translate="no" v-pre>3600</code></td>
+<td>最初の完全なリフレッシュパスを待つ秒数</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>REFRESH_TIMEOUT</code></td>
+<td><code translate="no" v-pre>120</code></td>
+<td>リフレッシュで追加または削除が反映されるまで待つ秒数</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>REPAIR_TIMEOUT</code></td>
+<td><code translate="no" v-pre>300</code></td>
+<td>修復が落ち着くまで待つ秒数</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>STREAM_LOGS</code></td>
+<td><code translate="no" v-pre>true</code></td>
+<td>stderr 上の zurg のログを追跡表示する</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>ZURG_BIN</code></td>
+<td><code translate="no" v-pre>$(pwd)/zurg</code></td>
+<td>zurg バイナリのパス。作業ディレクトリから zurg が起動されるため、絶対パスで指定してください</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>WORK_DIR</code></td>
+<td><code translate="no" v-pre>$TMPDIR/zurg-refresh-repair</code></td>
+<td>作業ディレクトリ（実行間で保持されます）</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>WORK_DIR_CLEANUP</code></td>
+<td><code translate="no" v-pre>false</code></td>
+<td>終了時に作業ディレクトリを削除します。これにより、後続の実行を速くしているキャッシュも破棄されます</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="force-location-integration-test">Force Location 統合テスト</h3>
+<div id="force-location-integration-test-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">make force-location-test</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>make integration-test</code> の一部ではなく、必要なときに個別に実行するテストです。<code translate="no" v-pre>fun</code> で 2026-08-29 に測定したところ、強制指定した <code translate="no" v-pre>nyk</code> のホストが、ダウンロードクライアントが <code translate="no" v-pre>tcp4</code> で接続する AAAA レコードに解決されていました。そのため HEAD リクエストはすべて <code translate="no" v-pre>no suitable address found</code> で失敗しました。このテストが待つライブラリスキャンは、再試行が各 3 回だと、ほとんどの場合 1 時間近く待たされてから失敗します。しかも失敗の原因は zurg ではなく、ホストのネットワークです。このテストには、リージョンが正常でないときにスキップする処理がすでにあります（下記参照）。ただ、その処理では、ホストが<em>正常な</em>リージョンに IPv4 で到達できない場合はカバーできません。</p>
+<p><code translate="no" v-pre>LOCATION</code>（デフォルトは <code translate="no" v-pre>nyk</code>）に固定したネットワークテスト用キャッシュを用意し、zurg の <code translate="no" v-pre>/strm/</code> エンドポイント経由で解決したリンクが、そのロケーションのダウンロードホストへリダイレクトされることを確認します。<code translate="no" v-pre>MAX_GEO_PROBES</code>（デフォルトは <code translate="no" v-pre>4</code>）は、シード処理が調べる geo サーバーの数の上限です。</p>
+<p><code translate="no" v-pre>cdn_host_preference</code> を設定すると、zurg が検証するリンクはすべて強制指定したリージョンを通ります。そのリージョンが正常でないと、一覧が空になり、失敗が zurg のバグのように見えてしまいます。そのため、このテストはまずリージョンを確認します。Real-Debrid がそのリージョン向けのリンクを発行しない場合、または返されたホストがバイトを配信しない場合は、失敗ではなくスキップします。</p>
+<h3 id="network-test-cache-integration-test">Network Test Cache 統合テスト</h3>
+<div id="network-test-cache-integration-test-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./integration/network_test_cache_integration.sh</code></pre>
+</doc-codeblock></div>
+<p>zurg を 2 回起動します。最初の起動でレイテンシ測定 (latency sweep) を実行し、<code translate="no" v-pre>data/network_test_results.json</code> を書き出す必要があります。2 回目の起動ではそのファイルを読み込むだけで、新しい測定は実行されないはずです。</p>
+<h3 id="rclone-mount-integration-test">Rclone Mount 統合テスト</h3>
+<div id="rclone-mount-integration-test-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./integration/rclone_mount_integration.sh</code></pre>
+</doc-codeblock></div>
+<p>プレーヤーが実際にたどる経路を順に見ていきます — FUSE → zurg HTTP → Real-Debrid:</p>
+<retype-table copy-text="| ステップ | 検証内容 |
+|------|-----------|
+| 2 | zurg が自身のマウントを立ち上げ、`Mount verification successful` とログに出力します |
+| 3 | 設定したディレクトリがマウントのルートに表示されます |
+| 4a–4c | フィクスチャがライブラリに入り、HTTP 経由で配信され、マウントに届くまでを段階的に確認します。失敗時には「マウントに無い」だけでなく、どの区間で壊れたかがわかるようになっています |
+| 5 | FUSE 経由でファイルを読むと、実データが返ってきます |
+| 6 | zurg を終了するとマウントが解放されます |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>ステップ</th>
+<th>検証内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>zurg が自身のマウントを立ち上げ、<code translate="no" v-pre>Mount verification successful</code> とログに出力します</td>
+</tr>
+<tr>
+<td>3</td>
+<td>設定したディレクトリがマウントのルートに表示されます</td>
+</tr>
+<tr>
+<td>4a–4c</td>
+<td>フィクスチャがライブラリに入り、HTTP 経由で配信され、マウントに届くまでを段階的に確認します。失敗時には「マウントに無い」だけでなく、どの区間で壊れたかがわかるようになっています</td>
+</tr>
+<tr>
+<td>5</td>
+<td>FUSE 経由でファイルを読むと、実データが返ってきます</td>
+</tr>
+<tr>
+<td>6</td>
+<td>zurg を終了するとマウントが解放されます</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>ステップ 4c は VFS の dircache に関する検証です。フィクスチャがマウントに現れるのは、ディレクトリ一覧が無効化された場合だけです。トレントが届く前にキャッシュされた一覧をそのまま返していたら、ここで失敗します。</p>
+<p>フィクスチャ自身の名前から作られた正規表現でライブラリを絞り込むので、マウントにはアカウント全体ではなく 1 つのリリースだけが入ります。<code translate="no" v-pre>MOUNT_PATH</code> のデフォルトは <code translate="no" v-pre>$WORK_DIR/mnt</code> で、本番の <code translate="no" v-pre>/mnt/zurg</code> は使いません。<code translate="no" v-pre>RCLONE_BIN</code> のデフォルトは <code translate="no" v-pre>$(pwd)/bin/rclone</code> です。</p>
+<h3 id="plex-integration-test">Plex 統合テスト</h3>
+<div id="plex-integration-test-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./integration/plex_integration.sh</code></pre>
+</doc-codeblock></div>
+<retype-table copy-text="| Step | Assertion |
+|------|-----------|
+| 2 | zurg のログに `Successfully connected to Plex server` と出力される |
+| 3 | フィクスチャがライブラリに届くこと。マウントにも現れた場合は読み取り可能であること（Plex は自分のユーザーとして読み取ります） |
+| 4 | 新しい使い捨てのセクションを `$MOUNT_PATH/movies` 上に作成する |
+| 5 | zurg がそのライブラリパスをセクションに解決し、**フィクスチャのパス**に対して更新をキューに入れる |
+| 6 | Plex がアイテムをインデックス済みにする |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Step</th>
+<th>Assertion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>zurg のログに <code translate="no" v-pre>Successfully connected to Plex server</code> と出力される</td>
+</tr>
+<tr>
+<td>3</td>
+<td>フィクスチャがライブラリに届くこと。マウントにも現れた場合は読み取り可能であること（Plex は自分のユーザーとして読み取ります）</td>
+</tr>
+<tr>
+<td>4</td>
+<td>新しい使い捨てのセクションを <code translate="no" v-pre>$MOUNT_PATH/movies</code> 上に作成する</td>
+</tr>
+<tr>
+<td>5</td>
+<td>zurg がそのライブラリパスをセクションに解決し、<strong>フィクスチャのパス</strong>に対して更新をキューに入れる</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Plex がアイテムをインデックス済みにする</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>ここでは、フィクスチャがマウントに表示されることは検証項目ではなく、前提条件です。Plex が設定されていると、zurg は Plex ライブラリ全体に対してもマッチャーを実行するため、更新処理と競合し、VFS の一覧表示が大幅に遅れることがあります。テストはその旨を表示し、<code translate="no" v-pre>MOUNT_VISIBLE_TIMEOUT</code>（デフォルトは <code translate="no" v-pre>420</code>）を過ぎても続行します。ステップ 5 と 6 は、Plex がファイルを見られない場合にすでに失敗するので、無効化が機能することの確認はマウントテストの役目です。<code translate="no" v-pre>PLEX_URL</code> と <code translate="no" v-pre>PLEX_TOKEN</code> は、設定の <code translate="no" v-pre>plex_server_url</code>/<code translate="no" v-pre>plex_token</code> を上書きします。</p>
+<p>Plex は新しいセクションを自動的にスキャンするため、作成が返される前に完了している場合があります。テストは最初の件数を報告します。ステップ 5 は、明示的な manage リクエストの後に zurg が正しいパスをキューに入れるかどうかを、独立して確認します。</p>
+<p>セクションは <code translate="no" v-pre>agent=tv.plex.agents.none</code> と <code translate="no" v-pre>Plex Video Files</code> スキャナーで作成されるため、Plex はオンラインのメタデータエージェントを参照せずにローカルでインデックスを作成します。終了時には、失敗時も含めて EXIT トラップから削除されます。ただし SIGKILL の場合は何も実行されないので、強制終了後は自分のセクションだけを確認して削除してください。既存のセクションは別のセッションに属している可能性があるため、ハーネスは触りません。既存のライブラリは決して変更されません。</p>
+<p>ステップ 5 では、次の完全なパスを待つのではなく、zurg に <code translate="no" v-pre>POST /manage/{hash}/scan</code> で副作用を実行するよう依頼します。ディレクトリ割り当てのトリガーは、トレントが検出された時点で一度だけ発火します。これはセクションが作成される前に必ず起きます。次の完全なパスを待つと、数千本のトレントを持つアカウントでは数十分かかります。テストされているマッピングは変わりません。zurg は、自分のライブラリパスを正しいセクションに自力で解決する必要があります。</p>
+<p>（以前の翻訳は却下されました：コードスパンが一致していませんでした。構造はそのまま保ってください。）</p>
+<h3 id="usenet-benchmark-regression">Usenet ベンチマークの回帰</h3>
+<div id="usenet-benchmark-regression-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./integration/nzb_bench_integration.sh
+make nzb-bench-test</code></pre>
+</doc-codeblock></div>
+<p>ほかのテストでは、NNTP 経由で 1 バイトも読みません。記事の取得、yEnc のデコード、PAR2 の修復、アーカイブの読み取りのどれかを変えると、スループットが半分になったり、メモリが 2 倍になったり、記事が欠けている場所で無音を返すようになったりします。それでも他のテストは全部通ります。このテストでは、用意した 4 つのリリースを使い捨ての zurg 経由で読み、数値とバイト列の両方を確認します。</p>
+<p><strong>なぜ保存した数値ではなく A/B にするのか。</strong> ライブのニュースサーバーのスループットは、夕方の間に 10〜20% ぶれます。同じリリースを 6 回読んだだけでも、1 回のセッションで 34〜50 MB/s の幅が出ました。先週記録した数値に対して狭い許容幅を設けると、コードではなく回線の状態で失敗してしまいます。そこでこのテストは、同じホストで同じ時間帯に 2 つのバイナリを計測します。回ごとに実行順を入れ替えて、プロバイダー側のウォームアップが両方に均等に当たるようにし、それぞれの中央値を比べます。</p>
+<p>A はベースラインです。デフォルトでは、<code translate="no" v-pre>HEAD</code> から到達できる最新の <code translate="no" v-pre>*-nightly</code> タグを使います。<code translate="no" v-pre>git archive</code> で展開して一度ビルドし、その結果を作業ディレクトリにキャッシュします。次回以降の実行ではキャッシュを再利用します。B は候補で、このリポジトリで今ビルドした <code translate="no" v-pre>zurg</code> です。<strong>B が A より 5% を超えて悪い場合、その指標は失敗になります</strong>（<code translate="no" v-pre>BENCH_TOLERANCE</code>）。良くなっている場合は改善として報告します。片方だけに指標がある場合は、回帰ではなく <code translate="no" v-pre>n/a</code> として扱います。</p>
+<p>1 回の実行では、コールドオープン、最初のバイトまでの時間、64 MiB の読み取り、同じ 64 MiB のウォームな再読み取り、8 地点のスクラブ、256 MiB の読み取りを計測します。256 MiB の読み取りでは、ギガバイトあたりの CPU 秒数とピーク RSS も併せて記録します（Linux のみ。どちらも <code translate="no" v-pre>/proc</code> から取得します）。さらに、<code translate="no" v-pre>ffprobe</code> が読んだコンテナの再生時間も計測します。</p>
+<p>正しさの確認は候補のバイナリだけに対して行い、時間では判断しません。すべての読み取りで md5 を記録し、それが記録済みの定数と一致し、2 つのバイナリ間でも一致している必要があります。破損したリリースは、元のバイト列か無音のどちらかを返さなければなりません。それ以外は許されません。修復後は元のデータに戻っている必要があり、さらに再起動後も正しいままであることを確認します。</p>
+<p>テストコーパスは <code translate="no" v-pre>integration/nzbbench/corpus/</code> にチェックインされています。6 つの NZB があり、それぞれ 6 つの問いに対応しています。</p>
+<retype-table copy-text="| NZB | 中身 | 役割 |
+|-----|------|------|
+| `ToyStory5.nzb` | 6.61 GB の WEB-DL、4 MiB の記事 1,576 本 | すべてのスループットとレイテンシの数値、および ffprobe の検証 |
+| `ToyStory5Damaged.nzb` | 同じリリースで、記事 21 の message-id を壊してあり、どのサーバーでも `430` が返る | 穴の部分は元のバイト列か無音で読めなければなりません。それ以外は正しさのバグです。その後 PAR2 で修復でき、修復結果は再起動後も残っている必要があります |
+| `Obfuscated.nzb` | 同じ映画を、`&lt;hex&gt; [n/7] yEnc` という形式の 7 ファイルとして投稿したもの。本当の名前は PAR2 のインデックスからしか分からない | 名前の処理を確認します。正しい `.mkv` 名で、正しいサイズで一覧に出る必要があり、`.par2` は見えてはいけません |
+| `FatherBrown.nzb` | 1 話分を入れた 11 ボリュームの RAR、`Sample/` ディレクトリ、nfo | アーカイブリーダーの確認です。フォルダ構造が残っている必要があります。アーカイブ内の読み取りには専用のスループット値（`rar_read_MBps`、1 回のリードを毎回実行）があります |
+| `WrongTurn3.nzb.gz` | 無圧縮 (stored) の 7z を 1 GiB のボリューム 54 本に分けたもの（最後の 1 本は短い）と PAR2 ファイル 7 本を含む、58 GB の UHD BluRay の一式。NZB が平文で 7 MB あるので gzip 圧縮してあります | 分割 7z のリーダーの確認です。ボリュームを結合し、最後のボリュームの末尾にあるヘッダーを読んでから、何かを一覧表示する必要があります。計測するのはその一覧表示の時間です（`sevenzip_list_s`、クリアしたレイアウトから毎回 1 回）。その後、57.6 GB の本編ストリームで、8 GiB の位置から 16 MiB を読み、記録済みの md5 と一致する必要があります。これはタイミングではなく正しさの確認です。このリリースではスループットの数値は出しません。このプロバイダーでは、どのボリュームも記事の約 5 分の 1 が欠けているため、時間を計ると穴の検出を計ることになってしまうからです |
+| `NestedRar.nzb` | 2 枚組の XviD リポスト。外側に RAR5 のボリュームセットが 1 つあり、そのメンバーはさらに 2 つの RAR セットのボリュームです。内側のセットは `CD1/` と `CD2/` にあります。加えて `Sample/` のクリップと nfo もあります | ネストしたアーカイブのリーダーの確認です。内側の 2 つのセットの両方を開く必要があります。フラットなテストでは、比較可能な 2 つのセットは拒否されます。セットをまとめているのは投稿者のディレクトリ構成です。両方の映画が正しいサイズで一覧に出る必要があり、それぞれに専用のスループット値（`nested_read_MBps`、毎回 1 回のリード）があります |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>NZB</th>
+<th>中身</th>
+<th>役割</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>ToyStory5.nzb</code></td>
+<td>6.61 GB の WEB-DL、4 MiB の記事 1,576 本</td>
+<td>すべてのスループットとレイテンシの数値、および ffprobe の検証</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>ToyStory5Damaged.nzb</code></td>
+<td>同じリリースで、記事 21 の message-id を壊してあり、どのサーバーでも <code translate="no" v-pre>430</code> が返る</td>
+<td>穴の部分は元のバイト列か無音で読めなければなりません。それ以外は正しさのバグです。その後 PAR2 で修復でき、修復結果は再起動後も残っている必要があります</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Obfuscated.nzb</code></td>
+<td>同じ映画を、<code translate="no" v-pre>&lt;hex&gt; [n/7] yEnc</code> という形式の 7 ファイルとして投稿したもの。本当の名前は PAR2 のインデックスからしか分からない</td>
+<td>名前の処理を確認します。正しい <code translate="no" v-pre>.mkv</code> 名で、正しいサイズで一覧に出る必要があり、<code translate="no" v-pre>.par2</code> は見えてはいけません</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>FatherBrown.nzb</code></td>
+<td>1 話分を入れた 11 ボリュームの RAR、<code translate="no" v-pre>Sample/</code> ディレクトリ、nfo</td>
+<td>アーカイブリーダーの確認です。フォルダ構造が残っている必要があります。アーカイブ内の読み取りには専用のスループット値（<code translate="no" v-pre>rar_read_MBps</code>、1 回のリードを毎回実行）があります</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>WrongTurn3.nzb.gz</code></td>
+<td>無圧縮 (stored) の 7z を 1 GiB のボリューム 54 本に分けたもの（最後の 1 本は短い）と PAR2 ファイル 7 本を含む、58 GB の UHD BluRay の一式。NZB が平文で 7 MB あるので gzip 圧縮してあります</td>
+<td>分割 7z のリーダーの確認です。ボリュームを結合し、最後のボリュームの末尾にあるヘッダーを読んでから、何かを一覧表示する必要があります。計測するのはその一覧表示の時間です（<code translate="no" v-pre>sevenzip_list_s</code>、クリアしたレイアウトから毎回 1 回）。その後、57.6 GB の本編ストリームで、8 GiB の位置から 16 MiB を読み、記録済みの md5 と一致する必要があります。これはタイミングではなく正しさの確認です。このリリースではスループットの数値は出しません。このプロバイダーでは、どのボリュームも記事の約 5 分の 1 が欠けているため、時間を計ると穴の検出を計ることになってしまうからです</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>NestedRar.nzb</code></td>
+<td>2 枚組の XviD リポスト。外側に RAR5 のボリュームセットが 1 つあり、そのメンバーはさらに 2 つの RAR セットのボリュームです。内側のセットは <code translate="no" v-pre>CD1/</code> と <code translate="no" v-pre>CD2/</code> にあります。加えて <code translate="no" v-pre>Sample/</code> のクリップと nfo もあります</td>
+<td>ネストしたアーカイブのリーダーの確認です。内側の 2 つのセットの両方を開く必要があります。フラットなテストでは、比較可能な 2 つのセットは拒否されます。セットをまとめているのは投稿者のディレクトリ構成です。両方の映画が正しいサイズで一覧に出る必要があり、それぞれに専用のスループット値（<code translate="no" v-pre>nested_read_MBps</code>、毎回 1 回のリード）があります</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>アカウントは 1 つ、インスタンスも 1 つ。</strong> 同じニュースアカウントで 2 つ目の zurg を動かすと、1 つ目と接続の上限を奪い合います。その場合、サーバーは<em>古い方</em>の接続を拒否します。<code translate="no" v-pre>fun</code> では、本番の <code translate="no" v-pre>zurg-usenet</code> がアカウントのプランで許される接続をすべて保持しているので、ベンチマークは 10 接続（<code translate="no" v-pre>BENCH_NNTP_CONNECTIONS</code>）で動きます。<code translate="no" v-pre>Too many connections</code> の拒否が出た場合は、<strong>失敗ではなくスキップ</strong>として報告します。サーバーに接続できない場合や <code translate="no" v-pre>AUTHINFO</code> が拒否された場合も同じです。環境がこの問いに答えられなかったことになるので、テストはビルドのせいにせず、そのことを伝えます。</p>
+<p>デフォルトの 4 回でおよそ 15〜20 分かかります。ベースラインを初めてビルドする場合は、それに加えて数分かかります。</p>
+<retype-table copy-text="| 変数 | デフォルト | 説明 |
+|----------|---------|-------------|
+| `PORT` | `12358` | ベンチマーク用 zurg インスタンスのポート（一度に 1 つ） |
+| `WORK_DIR` | `$TMPDIR/zurg-nzb-bench` | 生成された設定、両方のバイナリの実行ディレクトリとログ、`report.json`、キャッシュされたベースラインのバイナリを保存します。実行間で保持されます。永続化された `data/` があるおかげで、後続の回は冷えた学習ではなく再起動を計測できます |
+| `BENCH_ENV_FILE` | `~/.config/zurg/bench-account.env` | アカウントファイル。存在する場合に読み込まれます。`BENCH_NNTP_*` 変数を `KEY=value` の行で書きます。**ベンチマーク専用のアカウントを渡すための推奨方法**で、認証情報をリポジトリやシェルの履歴に残さないためのものです |
+| `CONFIG_PATH` | `config.yml` | 環境変数もアカウントファイルも指定していない場合に、ニュースアカウントを借りる設定ファイル。最初の `type: nzb` プロバイダーの `nntp:` ブロックを使います。そのアカウントにここからの接続がすでに開いている場合は、借用を拒否します。詳しくは下を参照してください |
+| `BENCH_NNTP_HOST` / `_PORT` / `_TLS` / `_USER` / `_PASS` | *（まず `BENCH_ENV_FILE`、次に `CONFIG_PATH` から）* | ニュースアカウント。エクスポートされた値はアカウントファイルより優先されます。どこにも値がなければスキップします |
+| `BENCH_NNTP_CONNECTIONS` | `10` | ベンチマークが開く接続数。上限です。それより少ない接続数で設定されたアカウントは、その数をそのまま使います |
+| `BENCH_ALLOW_SHARED_ACCOUNT` | *（未設定）* | `1` にすると、すでに接続が開いている借用アカウントでベンチマークします。アカウントに余裕があると確認できた場合だけ使ってください |
+| `BASELINE_REF` | `HEAD` から到達できる最新の `*-nightly` | 比較対象。ベストエフォートで `git fetch --tags` を実行したあとに解決されます |
+| `BASELINE_BIN` | *（`BASELINE_REF` からビルド）* | 事前にビルド済みのベースラインを、そのまま使います。ここではもうビルドできないものと比較する方法です |
+| `BENCH_REPS` | `4` | バイナリごとの回数。中央値はこの回数から求めます |
+| `BENCH_TOLERANCE` | `0.05` | B がどこまで悪くなっても回帰とみなさないかの許容値 |
+| `BENCH_SKIP` | *（なし）* | 除外するフェーズのカンマ区切りリスト: `repair`, `obfuscated`, `rar`, `ffprobe`。`PATH` にも `bin/` にも ffprobe がない場合は、自動的に `ffprobe` が追加されます |
+| `REPORT_JSON` | `$WORK_DIR/report.json` | レポートの出力先 |
+| `STREAM_LOGS` | `true` | 候補の `zurg.log` を stderr に流します。ツール自身の進捗表示は、この設定に関係なく出力されます |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>変数</th>
+<th>デフォルト</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>PORT</code></td>
+<td><code translate="no" v-pre>12358</code></td>
+<td>ベンチマーク用 zurg インスタンスのポート（一度に 1 つ）</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>WORK_DIR</code></td>
+<td><code translate="no" v-pre>$TMPDIR/zurg-nzb-bench</code></td>
+<td>生成された設定、両方のバイナリの実行ディレクトリとログ、<code translate="no" v-pre>report.json</code>、キャッシュされたベースラインのバイナリを保存します。実行間で保持されます。永続化された <code translate="no" v-pre>data/</code> があるおかげで、後続の回は冷えた学習ではなく再起動を計測できます</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>BENCH_ENV_FILE</code></td>
+<td><code translate="no" v-pre>~/.config/zurg/bench-account.env</code></td>
+<td>アカウントファイル。存在する場合に読み込まれます。<code translate="no" v-pre>BENCH_NNTP_*</code> 変数を <code translate="no" v-pre>KEY=value</code> の行で書きます。<strong>ベンチマーク専用のアカウントを渡すための推奨方法</strong>で、認証情報をリポジトリやシェルの履歴に残さないためのものです</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>CONFIG_PATH</code></td>
+<td><code translate="no" v-pre>config.yml</code></td>
+<td>環境変数もアカウントファイルも指定していない場合に、ニュースアカウントを借りる設定ファイル。最初の <code translate="no" v-pre>type: nzb</code> プロバイダーの <code translate="no" v-pre>nntp:</code> ブロックを使います。そのアカウントにここからの接続がすでに開いている場合は、借用を拒否します。詳しくは下を参照してください</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>BENCH_NNTP_HOST</code> / <code translate="no" v-pre>_PORT</code> / <code translate="no" v-pre>_TLS</code> / <code translate="no" v-pre>_USER</code> / <code translate="no" v-pre>_PASS</code></td>
+<td><em>（まず <code translate="no" v-pre>BENCH_ENV_FILE</code>、次に <code translate="no" v-pre>CONFIG_PATH</code> から）</em></td>
+<td>ニュースアカウント。エクスポートされた値はアカウントファイルより優先されます。どこにも値がなければスキップします</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>BENCH_NNTP_CONNECTIONS</code></td>
+<td><code translate="no" v-pre>10</code></td>
+<td>ベンチマークが開く接続数。上限です。それより少ない接続数で設定されたアカウントは、その数をそのまま使います</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>BENCH_ALLOW_SHARED_ACCOUNT</code></td>
+<td><em>（未設定）</em></td>
+<td><code translate="no" v-pre>1</code> にすると、すでに接続が開いている借用アカウントでベンチマークします。アカウントに余裕があると確認できた場合だけ使ってください</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>BASELINE_REF</code></td>
+<td><code translate="no" v-pre>HEAD</code> から到達できる最新の <code translate="no" v-pre>*-nightly</code></td>
+<td>比較対象。ベストエフォートで <code translate="no" v-pre>git fetch --tags</code> を実行したあとに解決されます</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>BASELINE_BIN</code></td>
+<td><em>（<code translate="no" v-pre>BASELINE_REF</code> からビルド）</em></td>
+<td>事前にビルド済みのベースラインを、そのまま使います。ここではもうビルドできないものと比較する方法です</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>BENCH_REPS</code></td>
+<td><code translate="no" v-pre>4</code></td>
+<td>バイナリごとの回数。中央値はこの回数から求めます</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>BENCH_TOLERANCE</code></td>
+<td><code translate="no" v-pre>0.05</code></td>
+<td>B がどこまで悪くなっても回帰とみなさないかの許容値</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>BENCH_SKIP</code></td>
+<td><em>（なし）</em></td>
+<td>除外するフェーズのカンマ区切りリスト: <code translate="no" v-pre>repair</code>, <code translate="no" v-pre>obfuscated</code>, <code translate="no" v-pre>rar</code>, <code translate="no" v-pre>ffprobe</code>。<code translate="no" v-pre>PATH</code> にも <code translate="no" v-pre>bin/</code> にも ffprobe がない場合は、自動的に <code translate="no" v-pre>ffprobe</code> が追加されます</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>REPORT_JSON</code></td>
+<td><code translate="no" v-pre>$WORK_DIR/report.json</code></td>
+<td>レポートの出力先</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>STREAM_LOGS</code></td>
+<td><code translate="no" v-pre>true</code></td>
+<td>候補の <code translate="no" v-pre>zurg.log</code> を stderr に流します。ツール自身の進捗表示は、この設定に関係なく出力されます</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>report.json</code> には、両方のバイナリについての回ごとの全データ、中央値、指標ごとの判定、両方のバイナリの <code translate="no" v-pre>version</code> 出力、ホストと OS が入ります。そのため、どの数値も、それを生み出したコードと照らし合わせて読めます。何も比較せずに数値だけを記録したい場合は、単一の <code translate="no" v-pre>--bin</code> を指定してツールを直接呼び出してください。計測して JSON を書き出し、終了コード 0 で終わります。</p>
+<div id="usenet-benchmark-regression-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cd integration/nzbbench &amp;&amp; go build -o /tmp/nzbbench . &amp;&amp; cd -
+/tmp/nzbbench --config /path/to/a-config-with-an-nzb-provider.yml --port 12358 \
+  --corpus integration/nzbbench/corpus --work /tmp/nzbbench-record \
+  --bin candidate=./zurg --out /tmp/record.json</code></pre>
+</doc-codeblock></div>
+<p>設定ファイルは必ず自分用のものを使ってください。ラッパーが生成する設定ファイルには、ニュースアカウントのパスワードが平文で入っていて、実行が終わると削除されます。</p>
+<p><code translate="no" v-pre>integration/nzbbench/README.md</code> に、ツール自体のフラグと終了コードがまとめられています。</p>
+<p><strong><code translate="no" v-pre>nzb_bench_integration.sh</code> の終了コード。</strong> <code translate="no" v-pre>0</code> は比較が行われて合格した場合、またはホストがベンチマークを全く実行できずに実行がスキップされた場合です。<code translate="no" v-pre>1</code> は機能アサーションの失敗またはメトリクスの回帰です。<code translate="no" v-pre>4</code> は、すべての機能アサーションは合格したものの、タイミングゲートが<strong>判定されなかった</strong>場合です。実行中にニュースサーバーがツールの安定性の上限を超えたため、スループットとレイテンシの比較は破棄されました。4 は、壊れたビルドの 1 とも、スキップの 0 とも、意図的に区別されています。パフォーマンスについては何も判断されていないので、答えは、より静かな時間帯での再実行です。実行時には、ゲートとそれを破った spread を示すバナーが表示されます。<code translate="no" v-pre>make integration-test</code> は失敗したレシピ行を make 自身の終了コード 2 に変換するため、スイートの実行では、ターゲットの「All integration tests passed.」の行ではなく、非ゼロの make 終了とこのバナーが表示されます。4 そのものによって処理を分岐させる必要がある場合は、スクリプトを直接呼び出してください。</p>
+<h3 id="prerequisites-1">前提条件</h3>
+<ul>
+<li>Real-Debrid のトークン（<code translate="no" v-pre>config.yml</code> 内の <code translate="no" v-pre>realdebrid</code> プロバイダーとして）または <code translate="no" v-pre>RD_TOKEN</code></li>
+<li><code translate="no" v-pre>curl</code>、<code translate="no" v-pre>python3</code>、そしてビルド済みの zurg バイナリ</li>
+<li><code translate="no" v-pre>make lint-integration</code> 用の <code translate="no" v-pre>shellcheck</code>（ない場合は通知が出て、スキップされます）</li>
+<li>マウントと Plex のテスト用: <code translate="no" v-pre>fusermount</code>/macFUSE、rclone バイナリ、そして Plex がマウントを読めるように <code translate="no" v-pre>/etc/fuse.conf</code> の <code translate="no" v-pre>user_allow_other</code></li>
+<li>MOVE の拒否チェック用: <code translate="no" v-pre>scripts/build-rclone-move-fix.sh</code> で作成した修正版 rclone を、<code translate="no" v-pre>RCLONE_BIN</code> と <code translate="no" v-pre>RCLONE_TEST_BIN</code> の両方に設定してください。新しい未修正の upstream rclone では不十分です。詳しくは <a href="../rclone-move-refusal/">MOVE の回帰問題</a> を見てください。ビルド済みのヘルパーは <code translate="no" v-pre>DOTNET_MOVE_PROBE_BIN</code> で指定するか、ビルド用の Docker を用意してください。特権のないコンテナユーザーでビルドする場合は、.NET に CLI と NuGet キャッシュのディレクトリに加えて、書き込み可能な <code translate="no" v-pre>XDG_DATA_HOME</code> も渡してください。</li>
+<li>Usenet ベンチマーク用: ニュースサーバーのアカウントと、Go、<code translate="no" v-pre>git</code>、<code translate="no" v-pre>tar</code>、<code translate="no" v-pre>make</code>。ベースラインは nightly タグの <code translate="no" v-pre>git archive</code> から作られます。</li>
+</ul>
+<h3 id="give-the-benchmark-its-own-news-account">ベンチマーク用に専用のニュースアカウントを用意する</h3>
+<p>接続の上限は<strong>アカウント</strong>に紐づくもので、プロセスごとではありません。ベンチマークを本番インスタンスがすでに使っているアカウントに向けると、両方が同じプランの枠を一緒に使うことになります。そうなると、サーバーは<em>古い</em>接続の持ち主を拒否します。それは、原因となったベンチマークのことを何も知らない本番環境です。</p>
+<p>そのため、ベンチマークは <code translate="no" v-pre>CONFIG_PATH</code> からはフォールバックとしてのみ借ります。また、<strong>このホストですでに接続が開いているアカウントは借りないようになっています</strong>。専用のアカウントを <code translate="no" v-pre>~/.config/zurg/bench-account.env</code> に設定してください:</p>
+<div id="give-the-benchmark-its-own-news-account-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">BENCH_NNTP_HOST=news.example.net
+BENCH_NNTP_PORT=563
+BENCH_NNTP_TLS=true
+BENCH_NNTP_USER=...
+BENCH_NNTP_PASS=...
+BENCH_NNTP_CONNECTIONS=25</code></pre>
+</doc-codeblock></div>
+<p>どこにも使われていない余裕のあるアカウントを選んでください。測定された上限が、どのインスタンスの設定値よりもはるかに高いサーバーであれば、ベンチマークが読み取り側の処理を圧迫することはありません。</p>
+<p>コマンドラインで export した値は、ファイルの設定より優先されます。空きがあることを確認済みであれば、<code translate="no" v-pre>BENCH_ALLOW_SHARED_ACCOUNT=1</code> を設定して拒否を無効にできます。</p>
+<h3 id="not-in-the-suite">スイートには含まれていない</h3>
+<p><code translate="no" v-pre>rename_integration.sh</code>、<code translate="no" v-pre>tag_stats_integration.sh</code>、<code translate="no" v-pre>test_repair_verification.sh</code> は <code translate="no" v-pre>make integration-test</code> では実行されません。今もそれぞれ <code translate="no" v-pre>lib.sh</code> 導入前のヘルパーのコピーを持っています。これらを <code translate="no" v-pre>lib.sh</code> を使うように移植し、組み込む前にポート番号が衝突しないように割り当ててください。</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/uiux/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">前へ</span>
+                                <span class="block mt-1">ディレクトリ設定 UI/UX</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/realdebrid-behavior/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">次へ</span>
+                                <span class="block mt-1">Real-​Debrid APIのメモ</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "E2Eテスト", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/internals/e2e-test.md" }</script>
+</body>
+</html>

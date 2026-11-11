@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="de" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/de">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672682913">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Windows, die Bin&#228;rdatei, von Grund auf</title>
+    <meta name="title" content="Windows, die Binärdatei, von Grund auf">
+    <meta name="description" content="Führe das optionale Sponsor-Bootstrap über PowerShell aus. Es installiert WinFsp über UAC, lädt zurg herunter und startet die Anbieterauswahl und die">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/de/zurg/setup/windows/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/de/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/de/zurg/setup/windows/">
+    <meta property="og:title" content="Windows, die Binärdatei, von Grund auf">
+    <meta property="og:description" content="Führe das optionale Sponsor-Bootstrap über PowerShell aus. Es installiert WinFsp über UAC, lädt zurg herunter und startet die Anbieterauswahl und die">
+    <meta property="og:image" content="https://notes.debridmediamanager.com/de/assets/windows-setup/20-console-rd.webp">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Windows, die Binärdatei, von Grund auf">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="de_DE">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/de/zurg/setup/windows/">
+    <meta name="twitter:title" content="Windows, die Binärdatei, von Grund auf">
+    <meta name="twitter:description" content="Führe das optionale Sponsor-Bootstrap über PowerShell aus. Es installiert WinFsp über UAC, lädt zurg herunter und startet die Anbieterauswahl und die">
+    <meta name="twitter:image" content="https://notes.debridmediamanager.com/de/assets/windows-setup/20-console-rd.webp">
+    <meta name="twitter:image:alt" content="Windows, die Binärdatei, von Grund auf">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/de/zurg/setup/windows.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672682913" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672682913" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672682913" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672682913" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/de/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>Deutsch</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/de/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/de/download.html" target="_blank">zurg herunterladen</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/de/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>Deutsch</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/de/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/de/download.html" target="_blank">zurg herunterladen</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/de/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="windows-the-binary-from-scratch">Windows, die Binärdatei, von Grund auf</h1>
+<h2 id="one-line-option">Einzeilige Option</h2>
+<p>Führe das optionale Sponsor-Bootstrap über PowerShell aus. Es installiert WinFsp über UAC, lädt zurg herunter und startet die
+Anbieterauswahl und die Diagnose:</p>
+<div id="one-line-option-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">irm https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.ps1 | iex</code></pre>
+</doc-codeblock></div>
+<p>Es nutzt die Anmeldung über den Browser bei GitHub und installiert nach <code translate="no" v-pre>$HOME\zurg</code>. Vorhandene Programmdateien und Konfigurationen bleiben erhalten. Für den manuellen Weg geht es unten weiter.</p>
+<p>Kein Docker, kein WSL: die zurg-<code translate="no" v-pre>.exe</code> in einem Ordner, eine <code translate="no" v-pre>config.yml</code>, die du einmal schreibst, und ein <code translate="no" v-pre>Z:</code>-Laufwerk im Explorer.
+Diese Seite geht das Ganze in zwei Durchgängen durch: erst <strong>RealDebrid mit dem qBittorrent-Endpunkt</strong>, dann ein kompletter Reset und <strong>Usenet mit dem SABnzbd-Endpunkt</strong>. Das sind die zwei Installationen, die die Leute tatsächlich machen, und sie beanspruchen jeweils unterschiedliche Teile von zurg.</p>
+<p>Alles unten wurde auf einer echten Installation aufgezeichnet: Windows 11 Pro 23H2 (Build 22631), PowerShell 5.1, WinFsp 2.0.23075, zurg <code translate="no" v-pre>2026.08.30.0459-nightly-73-g5b4c9790</code>, dazu ein Real-Debrid-Konto und ein Usenet-News-Konto. Benutzernamen wurden geändert. API-Schlüssel und Bibliotheksanzahlen sind Beispielwerte. Das gilt auch für alle Zugangsdaten.</p>
+<h2 id="what-you-need">Was du brauchst</h2>
+<ul>
+<li><strong>zurg.exe</strong> — von den <a href="https://github.com/debridmediamanager/zurg/releases">Sponsor-Releases</a>. Werde Sponsor auf <a href="https://gatekeeper.debridmediamanager.com/">gatekeeper</a>, damit dein GitHub-Konto Zugriff bekommt. Diese Seite setzt voraus, dass du es bereits heruntergeladen hast.</li>
+<li>
+<p><strong>WinFsp</strong> — zurg bindet die Bibliothek über rclone ein, und rclone braucht unter Windows WinFsp für einen Laufwerksbuchstaben. Installiere es still oder über den <a href="https://github.com/winfsp/winfsp/releases">Installer</a>:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$url = &quot;https://github.com/winfsp/winfsp/releases/download/v2.1/winfsp-2.1.25156.msi&quot;
+Invoke-WebRequest -Uri $url -OutFile &quot;$env:TEMP\winfsp.msi&quot; -UseBasicParsing
+Start-Process msiexec.exe -ArgumentList &quot;/i&quot;, &quot;$env:TEMP\winfsp.msi&quot;, &quot;/qn&quot;, &quot;/norestart&quot; -Wait</code></pre>
+</doc-codeblock></div>
+</li>
+<li><strong>Ein Konto</strong> — ein Real-Debrid-API-Token für den ersten Durchlauf, einen Newsserver für den zweiten.</li>
+</ul>
+<p>Mehr brauchst du nicht. Der eingebaute Installer lädt rclone herunter, und ffprobe ebenfalls, außer er ist schon in deinem PATH vorhanden.</p>
+<h2 id="recommended-let-zurg-finish-the-setup">Empfohlen: zurg die Einrichtung fertigstellen lassen</h2>
+<p>Erstelle einen Ordner, leg <code translate="no" v-pre>zurg.exe</code> hinein und starte den Installer in PowerShell:</p>
+<div id="recommended-let-zurg-finish-the-setup-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">New-Item -ItemType Directory -Force &quot;$HOME\zurg&quot; | Out-Null
+Set-Location &quot;$HOME\zurg&quot;
+# Copy the downloaded zurg.exe here, then:
+.\zurg.exe setup
+.\zurg.exe doctor</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>setup</code> fragt, welche Provider du einrichten willst. Wähle einen oder mehrere aus Real-Debrid, TorBox, AllDebrid, Usenet, Premiumize, Debrid-Link und Offcloud, in Prioritätsreihenfolge. Es fragt nur nach den Zugangsdaten der ausgewählten Provider. Danach passiert Folgendes:</p>
+<ol>
+<li>Es erstellt <code translate="no" v-pre>config.yml</code> und prüft sie.</li>
+<li>Es beschränkt die ACL auf deinen Benutzer, SYSTEM und Administrators.</li>
+<li>Es lädt <code translate="no" v-pre>bin\rclone.exe</code> herunter sowie <code translate="no" v-pre>bin\ffprobe.exe</code>, außer wenn ffprobe schon in deinem PATH liegt. In dem Fall steht in <code translate="no" v-pre>config.yml</code> <code translate="no" v-pre>ffprobe_binary: ffprobe</code>.</li>
+<li>Es aktiviert den rclone-Mount auf <code translate="no" v-pre>Z:</code>.</li>
+<li>Es registriert <code translate="no" v-pre>\Zurg\zurg</code> als interaktive Anmeldeaufgabe und startet sie, sobald ein Desktop-Benutzer angemeldet ist.</li>
+</ol>
+<p>Wenn nötig, wähle einen anderen freien Laufwerksbuchstaben:</p>
+<div id="recommended-let-zurg-finish-the-setup-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">.\zurg.exe setup --mount-path &quot;Y:&quot;</code></pre>
+</doc-codeblock></div>
+<p>Setup kannst du gefahrlos erneut ausführen. Dabei wird die erstellte Aufgabe aktualisiert, eine vorhandene <code translate="no" v-pre>config.yml</code> aber nicht ersetzt.</p>
+<p>Die interaktive Aufgabe ist Absicht. WinFsp-Laufwerksmounts gehören zur Windows-Anmeldesitzung, die sie erstellt. Ein normaler Windows-Dienst läuft in Session 0, und sein Laufwerk ist für Plex und Explorer auf dem Desktop unsichtbar. Dieses Installer-Verhalten wurde am 4. September 2026 unter Windows 11 geprüft.</p>
+<p>Die Anleitung unten zeigt dir die Dateien und die Konfiguration hinter dem Installer und baut danach Einrichtungen für Real-Debrid und Usenet als Download-Clients auf. Der manuelle erste Start und das Rezept für die geplante Aufgabe helfen dir, wenn du diese Teile selbst zusammenbauen willst.</p>
+<h2 id="1-manual-first-run-zurg-builds-its-own-home">1. Erster manueller Start: zurg baut sein eigenes Zuhause</h2>
+<p>Erstelle einen Ordner, lege die Binärdatei hinein und starte sie einmal ohne Konfigurationsdatei:</p>
+<div id="1-manual-first-run-zurg-builds-its-own-home-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS C:\Users\you&gt; mkdir C:\Users\you\zurg
+PS C:\Users\you\zurg&gt; .\zurg.exe</code></pre>
+</doc-codeblock></div>
+<p>zurg erstellt eine anbieterneutrale Standardkonfiguration, sagt dir, was als Nächstes zu tun ist, und beendet sich dann:</p>
+<div id="1-manual-first-run-zurg-builds-its-own-home-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO  setup  Config file not found, creating default from config.simple.yml
+INFO  zurg   Default config created at config.yml
+INFO  zurg   Run zurg setup to choose provider(s), or add a providers block to config.yml, then rerun zurg.</code></pre>
+</doc-codeblock></div>
+<p>Führe <code translate="no" v-pre>.\zurg.exe setup</code> aus, um Anbieter auszuwählen und die Helfer herunterzuladen. Nach dem Setup sieht der Ordner so aus:</p>
+<div id="1-manual-first-run-zurg-builds-its-own-home-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">C:\Users\you\zurg\
+├── bin\                rclone.exe, and ffprobe.exe unless ffprobe was on your PATH
+├── data\               library cache, keys, the __magic__ table
+├── dump\
+├── logs\               zurg.log, rclone.log
+├── nzbs\               the Usenet watch directory (second pass)
+├── strm\
+├── config.yml
+└── zurg.exe</code></pre>
+</doc-codeblock></div>
+<p>Die erzeugte <code translate="no" v-pre>config.yml</code> beginnt mit einer leeren Anbieterliste und zwei Verzeichnisfiltern. Das Setup füllt die Liste anhand deiner Auswahl. Die manuellen Beispiele weiter unten ersetzen sie durch die Konfiguration für die jeweilige Anleitung.</p>
+<h2 id="2-the-realdebrid-pass">2. Der RealDebrid-Durchgang</h2>
+<h3 id="the-config">Die Konfiguration</h3>
+<p>Überschreibe <code translate="no" v-pre>config.yml</code> mit diesem Inhalt: ein Real-Debrid-Token, der qBittorrent-Endpoint aktiviert und das Mount als <code translate="no" v-pre>Z:</code>:</p>
+<div id="the-config-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">zurg: v1
+providers:
+  - type: realdebrid
+    token: YOUR_RD_API_TOKEN
+
+directories:
+  shows:
+    group: media
+    group_order: 10
+    filters:
+      - has_episodes: true
+  movies:
+    group: media
+    group_order: 20
+    only_show_the_biggest_file: true
+
+ffprobe_binary: bin\ffprobe.exe   # or ffprobe, if that is what setup wrote
+rclone_binary: bin\rclone.exe
+
+rclone_enabled: true
+mount_path: &quot;Z:&quot;
+rclone_extra_args:
+  - &quot;--links&quot;
+
+magic:
+  enabled: true
+
+qbittorrent:
+  enabled: true
+  api_key: &quot;&quot;          # empty = zurg generates one and keeps it
+  categories: [tv-sonarr, radarr]</code></pre>
+</doc-codeblock></div>
+<p>Hier stehen drei Windows-Besonderheiten:</p>
+<ul>
+<li><strong><code translate="no" v-pre>--links</code> ist optional, lohnt sich aber trotzdem.</strong> zurg stellt die Bibliothek als rclone-Union aus einer lokalen und einer entfernten Hälfte bereit. WinFsp fragt beim Erscheinen des Laufwerks am Mount-Root ab, ob es sich um einen Symlink handelt. Ohne das Flag beantwortet rclone diese eine Abfrage mit <code translate="no" v-pre>ERROR : symlinks not supported without the --links flag: /</code> und mountet trotzdem. Gemessen am 2026-08-31 mit zurg <code translate="no" v-pre>2026.08.31.0443-nightly</code> gegen rclone 1.74.2 und 1.75.0: Laufwerk, beide Hälften der Union und ein Schreibvorgang in <code translate="no" v-pre>__magic__</code> verhielten sich mit und ohne Flag identisch. Mit dem Flag protokolliert dieselbe Abfrage stattdessen <code translate="no" v-pre>NOTICE: union root '': Symlinks support enabled</code>, und rclone übernimmt echte Symlinks, falls du jemals welche unter <code translate="no" v-pre>data\local</code> ablegst. Behältst du es, bleibt das Log sauber.</li>
+<li><strong><code translate="no" v-pre>mount_path: &quot;Z:&quot;</code></strong> ist hier ein Laufwerksbuchstabe und kein POSIX-Pfad. Jeder freie Buchstabe funktioniert.</li>
+<li><strong>Lass <code translate="no" v-pre>magic.enabled: true</code> aktiviert</strong>, falls Sonarr oder Radarr jemals von diesem Rechner aus importieren sollen. Ein Import ist ein Umbenennen innerhalb von <code translate="no" v-pre>__magic__</code>, und ohne diese Option wird jeder Import zu einem vollständigen Download. Dasselbe gilt für den Usenet-Teil weiter unten.</li>
+</ul>
+<h3 id="start-it-and-read-the-log">Starten und das Log lesen</h3>
+<p>Starte zurg vorerst auf die einfache Art: ein PowerShell-Fenster im Ordner:</p>
+<div id="start-it-and-read-the-log-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS C:\Users\you\zurg&gt; .\zurg.exe --config config.yml</code></pre>
+</doc-codeblock></div>
+<p>Als Erstes führt es den Netzwerktest von Real-Debrid durch. Dabei werden Testlinks an jede Download-Region entsperrt und die Latenz gemessen. Das dauert etwa zwanzig Sekunden. Danach kommen die wichtigen Zeilen:</p>
+<div id="start-it-and-read-the-log-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO  network_test  Network test completed!
+INFO  zurg          Provider realdebrid ready (type=realdebrid)
+INFO  router        __magic__ serves sidecar files from data\local\__magic__
+INFO  router.qbittorrent  qBittorrent API on /api/v2 and /qbittorrent/api/v2, save path Z:/__magic__/__all__, categories tv-sonarr, radarr
+INFO  router.qbittorrent  qBittorrent: generated an API key in data/qbittorrent-apikey — paste it into Sonarr or Radarr's API Key field, or pin one as qbittorrent.api_key in config.yml
+INFO  zurg          Starting server on http://[::]:9999
+INFO  rclone        rclone started with mount Z:, union local C:\Users\you\zurg\data\local</code></pre>
+</doc-codeblock></div>
+<p>Der Log zeigt den Schlüssel nie an. Er steht in <code translate="no" v-pre>data\qbittorrent-apikey</code>. Danach beginnt der Bibliotheks-Durchlauf. Beim ersten Start werden alle Torrents im Konto gelesen, und bei einem großen Konto dauert das eine Weile. Der Durchlauf teilt sich das API-Kontingent des Anbieters mit allem anderen im Konto.</p>
+<p><strong>Während der Durchlauf läuft, antwortet <code translate="no" v-pre>__magic__</code> mit <em>Library is still loading</em>.</strong> Das ist normal und kein Fehler.</p>
+<p>Eine Warnung kannst du sehen. Sie ist bekannt und nicht schlimm:</p>
+<retype-table copy-text="| Warnung | Was es ist |
+|---|---|
+| `Debug logging is enabled` | Die generierte Konfiguration ist standardmäßig ausführlich. Füge `log_level: INFO` hinzu, um sie ruhiger zu machen. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Warnung</th>
+<th>Was es ist</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>Debug logging is enabled</code></td>
+<td>Die generierte Konfiguration ist standardmäßig ausführlich. Füge <code translate="no" v-pre>log_level: INFO</code> hinzu, um sie ruhiger zu machen.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<figure class="content-center">
+    <img src="../../../assets/windows-setup/20-console-rd.webp" alt="zurg läuft in einem PowerShell-Fenster" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">zurg läuft in einem PowerShell-Fenster</figcaption>
+</figure>
+<h3 id="the-dashboard">Das Dashboard</h3>
+<p><code translate="no" v-pre>http://localhost:9999/</code> — Bibliotheksgröße steigt, während der Scan läuft, dazu Traffic und Speicher. Die <strong>Quick Links</strong> sind die gesamte UI: Torrent Manager, Config, Directories, Magic, Logs.</p>
+<figure class="content-center">
+    <img src="../../../assets/windows-setup/10-dashboard-home.webp" alt="The zurg dashboard on Windows" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The zurg dashboard on Windows</figcaption>
+</figure>
+<p><strong>Config</strong> ist nach dem ersten Start der Ort, an dem alles steht. Der providers-Block zeigt den einen Account:</p>
+<figure class="content-center">
+    <img src="../../../assets/windows-setup/12-config-providers.webp" alt="The providers block with the Real-Debrid row" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The providers block with the Real-Debrid row</figcaption>
+</figure>
+<p>Der download-client-Block – dieselben Schalter, die du in <code translate="no" v-pre>config.yml</code> setzt, hier editierbar. Jede Änderung wird mit <strong>Restart Required</strong> markiert, und das ist wörtlich gemeint: Beide Endpunkte registrieren ihre Routen nur einmal beim Start.</p>
+<figure class="content-center">
+    <img src="../../../assets/windows-setup/13-config-magic-qbittorrent.webp" alt="The magic and download clients block with the qBittorrent endpoint on" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The magic and download clients block with the qBittorrent endpoint on</figcaption>
+</figure>
+<p>Und der mount-Block mit Laufwerksbuchstabe und der rclone-Überwachung:</p>
+<figure class="content-center">
+    <img src="../../../assets/windows-setup/14-config-rclone.webp" alt="The rclone mount block with Z: configured" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The rclone mount block with Z: configured</figcaption>
+</figure>
+<h3 id="the-z-drive">Das Z:-Laufwerk</h3>
+<p>Wenn zurg läuft, ist <code translate="no" v-pre>Z:</code> in Explorer ein Dateisystem in Petabyte-Größe:</p>
+<figure class="content-center">
+    <img src="../../../assets/windows-setup/21-explorer-z.webp" alt="File Explorer am Laufwerk Z:" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">File Explorer am Laufwerk Z:</figcaption>
+</figure>
+<p><strong>Aber nur, wenn zurg dort läuft, wo Explorer es sehen kann. Und genau das ist die eine Regel in diesem Setup, die typisch für Windows ist.</strong> Ein Laufwerksbuchstabe gehört zur <em>Anmeldesitzung</em>, die ihn erstellt hat. Startest du zurg über eine SSH-Verbindung oder als Dienst, existiert das Laufwerk, funktioniert, und dein Desktop sieht es nicht. Das ist kein Fehler in WinFsp oder rclone, sondern so werden Laufwerksbuchstaben unter Windows eingegrenzt. <doc-anchor-trigger to="#keeping-it-running-the-session-rules">Der letzte Abschnitt</doc-anchor-trigger> zeigt dir das funktionierende Rezept, eine interaktive geplante Aufgabe, und was bei den Alternativen gemessen wurde.</p>
+<h3 id="prove-the-qbittorrent-endpoint">Den qBittorrent-Endpunkt prüfen</h3>
+<p>Dieselben Tests wie auf jeder Plattform, aus jeder PowerShell:</p>
+<div id="prove-the-qbittorrent-endpoint-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; $KEY = Get-Content data\qbittorrent-apikey
+PS&gt; Invoke-WebRequest &quot;http://localhost:9999/api/v2/app/webapiVersion&quot;
+
+# the healthy unauthenticated answer is a 403 — &quot;the API is here, log in&quot;
+PS&gt; Invoke-RestMethod &quot;http://localhost:9999/api/v2/app/version&quot; -Headers @{ Authorization = &quot;Bearer $KEY&quot; }
+v5.0.4
+PS&gt; (Invoke-RestMethod &quot;http://localhost:9999/api/v2/app/preferences&quot; -Headers @{ Authorization = &quot;Bearer $KEY&quot; }).save_path
+Z:/__magic__/__all__</code></pre>
+</doc-codeblock></div>
+<p>Und füge einen Torrent hinzu. Eine <code translate="no" v-pre>.torrent</code>-Datei lädst du mit <code translate="no" v-pre>curl.exe -F</code> hoch (das einfache <code translate="no" v-pre>curl</code> in Windows PowerShell ist <code translate="no" v-pre>Invoke-WebRequest</code>, das kein <code translate="no" v-pre>-F</code> kennt), oder ein beliebiger Client erledigt das für dich:</p>
+<div id="prove-the-qbittorrent-endpoint-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO  router.qbittorrent  qBittorrent: added op1176 (dc98af37…) to realdebrid as W7FRRMVJWUOMS</code></pre>
+</doc-codeblock></div>
+<p>Das Release, das diese Installation gegriffen hat, war auf dem Konto nicht gecacht. Deshalb zeigte die *arr-artige Warteschlange einen echten Download: Der Fortschritt stieg in etwa sechs Minuten von 2 % über 10 %, 50 % und 75 % auf 99 %, mit der Geschwindigkeit, die Real-Debrid meldete. Danach kam:</p>
+<div id="prove-the-qbittorrent-endpoint-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO  router.qbittorrent  qBittorrent: op1176 (dc98af37…) finished on realdebrid</code></pre>
+</doc-codeblock></div>
+<p>Der Torrent meldete sich dann als fertig, mit einem Ordner zum Importieren:</p>
+<div id="prove-the-qbittorrent-endpoint-code-4" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">&quot;content_path&quot;: &quot;Z:/__magic__/__all__/[NanakoRaws] One Piece S01E1176 (THK TV 1080p HEVC AAC)&quot;</code></pre>
+</doc-codeblock></div>
+<p>Eine Datei über <code translate="no" v-pre>Z:</code> zu lesen, hat in Millisekunden ein Megabyte geladen. Das VFS-Read-ahead von rclone sitzt vor dem Anbieter, deshalb sind warme Lesezugriffe so schnell wie eine lokale Festplatte, und der Rest wird im Hintergrund nachgeladen.</p>
+<p>Eine Ablehnung solltest du kennen: Das erste Release, das diese Installation probiert hat, hieß <code translate="no" v-pre>…WEBRip…</code>, und Real-Debrid blockiert manche Release-Namen komplett. zurg kennt die Muster und lehnt solche Releases ab, bevor ein Hinzufügen-Slot verbraucht wird:</p>
+<div id="prove-the-qbittorrent-endpoint-code-5" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">WARN  router.qbittorrent  qBittorrent: realdebrid will not take op1176: it refuses that name outright, so the next account is tried</code></pre>
+</doc-codeblock></div>
+<p>Wähle ein anders benanntes Release, dann klappt es. Die <a href="../../guides/sonarr-radarr-torrents/">Torrent-Anleitung</a> erklärt den ganzen Endpunkt ausführlich, also Timeouts, Nur-Cache-Modus und Fehlerverhalten. Die Client-Einstellungen sind dort dieselben, mit zwei Hinweisen für Windows: <strong>Host</strong> <code translate="no" v-pre>localhost</code>, wenn der *arr auf demselben Rechner läuft. Und der *arr muss in derselben Anmeldesitzung wie zurg laufen, damit er <code translate="no" v-pre>Z:</code> sieht. Siehe dazu <doc-anchor-trigger to="#keeping-it-running-the-session-rules">die Sitzungsregeln</doc-anchor-trigger>.</p>
+<h2 id="3-reset">3. Zurücksetzen</h2>
+<p>Der Wechsel einer Installation von Real-Debrid zu Usenet bedeutet ein komplettes Zurücksetzen: zurg stoppen, alles löschen, was der erste Durchlauf erstellt hat, und die Binärdatei sowie <code translate="no" v-pre>bin\</code> behalten, damit die Helfer-Downloads nicht wiederholt werden.</p>
+<div id="3-reset-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; cd C:\Users\you\zurg
+PS&gt; .\zurg.exe service uninstall      # removes the task setup made; or Unregister-ScheduledTask zurg for the manual one, or close the console window
+PS&gt; taskkill /IM zurg.exe /F ; taskkill /IM rclone.exe /F
+PS&gt; Get-ChildItem -Exclude zurg.exe, bin | Remove-Item -Recurse -Force
+PS&gt; Get-ChildItem
+
+bin
+zurg.exe</code></pre>
+</doc-codeblock></div>
+<p>Dieses <code translate="no" v-pre>Get-ChildItem -Exclude … | Remove-Item</code> ist der ganze Reset: <code translate="no" v-pre>config.yml</code>, <code translate="no" v-pre>data\</code>, <code translate="no" v-pre>logs\</code>, <code translate="no" v-pre>nzbs\</code>, alles. Was übrig bleibt, ist genau das, was eine frische Installation braucht.</p>
+<h2 id="4-the-usenet-pass">4. Der Usenet-Durchgang</h2>
+<h3 id="the-config-1">Die Konfiguration</h3>
+<p>Gleiches Grundgerüst, anderer Anbieter: ein Usenet-Konto statt eines Debrid-Tokens und der SABnzbd-Endpunkt statt des qBittorrent-Endpunkts:</p>
+<div id="the-config-1-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">zurg: v1
+providers:
+  - type: nzb
+    nntp:
+      host: news.example.usenet.com
+      port: 563
+      tls: true
+      username: YOUR_NEWS_USERNAME
+      password: YOUR_NEWS_PASSWORD
+      connections: 8
+
+directories:
+  shows:
+    group: media
+    group_order: 10
+    filters:
+      - has_episodes: true
+  movies:
+    group: media
+    group_order: 20
+    only_show_the_biggest_file: true
+
+ffprobe_binary: bin\ffprobe.exe   # or ffprobe, if that is what setup wrote
+rclone_binary: bin\rclone.exe
+
+rclone_enabled: true
+mount_path: &quot;Z:&quot;
+rclone_extra_args:
+  - &quot;--links&quot;
+
+magic:
+  enabled: true
+
+sabnzbd:
+  enabled: true
+  api_key: &quot;&quot;          # empty = zurg generates one and keeps it
+  categories: [tv, movies]</code></pre>
+</doc-codeblock></div>
+<p>Acht Verbindungen reichen fürs Streamen locker aus. Die Obergrenze steht im Tarif deines Kontos.</p>
+<h3 id="start-it">Starten</h3>
+<div id="start-it-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS C:\Users\you\zurg&gt; .\zurg.exe --config config.yml</code></pre>
+</doc-codeblock></div>
+<p>Der Unterschied zum ersten Durchlauf fällt sofort auf: kein Walk. Eine NZB-Bibliothek startet leer. Es gibt nichts zu holen, bis du eine NZB hineinlegst. Der Start besteht deshalb nur aus dem Netzwerktest, den Endpoint-Zeilen und der News-Verbindung:</p>
+<div id="start-it-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO  nzb       NZB articles are kept in memory for the life of the process (nzb_segments: resident)
+INFO  zurg      Provider nzb ready (type=nzb)
+INFO  router    __magic__ serves sidecar files from data\local\__magic__
+INFO  router.sabnzbd  SABnzbd API on /api and /sabnzbd/api, completed directory Z:/__magic__/__all__, categories tv, movies
+INFO  router.sabnzbd  SABnzbd: generated an API key in data/sabnzbd-apikey — paste it into Sonarr or Radarr, or pin one as sabnzbd.api_key in config.yml
+INFO  zurg      Starting server on http://[::]:9999
+INFO  rclone    rclone started with mount Z:, union local C:\Users\you\zurg\data\local
+INFO  zurg      Usenet account nzb connected: nntps://news.example.com:563 (8 connections)</code></pre>
+</doc-codeblock></div>
+<p>zurg baut die Verbindung zum News-Server sofort beim Start auf und hält die Verbindungen warm, inklusive TLS. Der SABnzbd-Key landet in <code translate="no" v-pre>data\sabnzbd-apikey</code>.</p>
+<figure class="content-center">
+    <img src="../../../assets/windows-setup/50-console-usenet.webp" alt="zurg liefert Usenet in einem PowerShell-Fenster aus" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">zurg liefert Usenet in einem PowerShell-Fenster aus</figcaption>
+</figure>
+<p>Das Dashboard zeigt jetzt eine leere Bibliothek, und das ist so richtig:</p>
+<figure class="content-center">
+    <img src="../../../assets/windows-setup/40-dashboard-usenet.webp" alt="Das Dashboard mit dem Usenet-Provider, ein Eintrag nach der NZB unten" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Das Dashboard mit dem Usenet-Provider, ein Eintrag nach der NZB unten</figcaption>
+</figure>
+<p>Der providers-Block enthält den News-Account, und der Download-Client-Block zeigt jetzt den SABnzbd-Teil:</p>
+<figure class="content-center">
+    <img src="../../../assets/windows-setup/41-config-providers-nzb.webp" alt="Der providers-Block mit der nzb-Zeile" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Der providers-Block mit der nzb-Zeile</figcaption>
+</figure>
+<figure class="content-center">
+    <img src="../../../assets/windows-setup/42-config-magic-sabnzbd.webp" alt="Der magic- und Download-Clients-Block mit eingeschaltetem SABnzbd-Endpoint" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Der magic- und Download-Clients-Block mit eingeschaltetem SABnzbd-Endpoint</figcaption>
+</figure>
+<h3 id="drop-an-nzb-in">Eine NZB reinwerfen</h3>
+<p>Lege eine NZB in das Verzeichnis <code translate="no" v-pre>nzbs\</code>. Das ist der ganze Eingang. Egal von welchem Indexer du sie geholt hast, zurg greift sie auf:</p>
+<div id="drop-an-nzb-in-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; Copy-Item .\lanterns.nzb C:\Users\you\zurg\nzbs\</code></pre>
+</doc-codeblock></div>
+<div id="drop-an-nzb-in-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO  nzb  Loaded NZB lanterns.nzb: 8 files</code></pre>
+</doc-codeblock></div>
+<p>Das ist die Zeile, die zeigt, dass die NZB geparst wurde. Das Release erscheint als Ordner unter <code translate="no" v-pre>__magic__\__all__</code> im Mount. Ein Usenet-Release benennt seine Dateien, wie der Poster gerade Lust hat. Die Datei darin kann deshalb so heißen: <code translate="no" v-pre>J8AZfuVQCD4yPpRIF566Bv0xKoEpYa3M.mkv</code>. Der Release-Ordner trägt den Namen der NZB, die Dateien tragen den Namen des Posters:</p>
+<figure class="content-center">
+    <img src="../../../assets/windows-setup/51-explorer-magic-lanterns.webp" alt="Datei-Explorer im Bibliotheksordner, der den Release-Ordner zeigt" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Datei-Explorer im Bibliotheksordner, der den Release-Ordner zeigt</figcaption>
+</figure>
+<p>Zu diesem Zeitpunkt ist noch nichts heruntergeladen worden, und das passiert erst, wenn etwas eine Datei liest. Beim ersten Lesen der Episode (162 MB) wurden genau die Artikel geholt, die den angeforderten Bereich abdecken, per yEnc dekodiert, und dann kam die Antwort. Spätere Lesezugriffe waren sofort da, weil das VFS drumherum schon vorausgelesen hatte. Ein 60-GB-Remux kostet dich auf der Festplatte, bei Usenet oder bei Debrid, gar nichts, solange niemand reinschaut.</p>
+<p>Der SABnzbd-Endpunkt beantwortet die Abfragen wie immer:</p>
+<div id="drop-an-nzb-in-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; $KEY = Get-Content data\sabnzbd-apikey
+PS&gt; Invoke-RestMethod &quot;http://localhost:9999/api?mode=version&amp;apikey=$KEY&amp;output=json&quot;
+{&quot;version&quot;:&quot;4.5.1&quot;}
+PS&gt; (Invoke-RestMethod &quot;http://localhost:9999/api?mode=get_config&amp;apikey=$KEY&amp;output=json&quot;).config.misc.complete_dir
+Z:/__magic__/__all__</code></pre>
+</doc-codeblock></div>
+<p>Ein falscher Schlüssel wird im Body mit einem HTTP-200 abgelehnt. So verhält sich SABnzbd selbst, und zurg übernimmt das:</p>
+<div id="drop-an-nzb-in-code-4" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; Invoke-RestMethod &quot;http://localhost:9999/api?mode=queue&amp;apikey=wrong&amp;output=json&quot;
+{&quot;status&quot;:false,&quot;error&quot;:&quot;API Key Incorrect&quot;}</code></pre>
+</doc-codeblock></div>
+<p>Für die Client-Seite (Sonarr, Radarr, Kategorien, Root-Ordner unter <code translate="no" v-pre>Z:\__magic__</code>) ist die <a href="../../guides/sonarr-radarr/">Usenet-Anleitung</a> die Schritt-für-Schritt-Version. Jeder Pfad darin lässt sich übersetzen, indem du <code translate="no" v-pre>/mnt/zurg/__magic__</code> durch <code translate="no" v-pre>Z:\__magic__</code> ersetzt. Im <a href="../../guides/usenet/">Usenet-Guide</a> findest du Block-Accounts, Retention und Repair.</p>
+<h2 id="keeping-it-running-the-session-rules">Dauerbetrieb halten: die Session-Regeln</h2>
+<p>Eine Laufwerksbuchstabe gehört zu der Anmeldesitzung, die ihn eingebunden hat. Auf dem Rechner, auf dem diese Seite erstellt wurde, sieht das in der Praxis so aus:</p>
+<retype-table copy-text="| So wurde zurg gestartet | Das Laufwerk |
+|---|---|
+| Ein PowerShell-Fenster, das du geöffnet hast | `Z:` auf deinem Desktop |
+| SSH (`ssh you@machine … zurg.exe`) | Funktioniert, liefert aus, **auf dem Desktop unsichtbar** — die SSH-Anmeldesitzung gehört nicht dir |
+| `Invoke-CimMethod Win32_Process Create` über SSH | Dasselbe — der neue Prozess erbt die Anmeldesitzung des Aufrufers |
+| PsExec `-i 1` | Prozess in der interaktiven Sitzung, aber in seiner **eigenen** Anmeldesitzung — das Laufwerk bleibt für den Desktop unsichtbar |
+| **Eine interaktive geplante Aufgabe** | **`Z:` auf deinem Desktop** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>So wurde zurg gestartet</th>
+<th>Das Laufwerk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ein PowerShell-Fenster, das du geöffnet hast</td>
+<td><code translate="no" v-pre>Z:</code> auf deinem Desktop</td>
+</tr>
+<tr>
+<td>SSH (<code translate="no" v-pre>ssh you@machine … zurg.exe</code>)</td>
+<td>Funktioniert, liefert aus, <strong>auf dem Desktop unsichtbar</strong> — die SSH-Anmeldesitzung gehört nicht dir</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Invoke-CimMethod Win32_Process Create</code> über SSH</td>
+<td>Dasselbe — der neue Prozess erbt die Anmeldesitzung des Aufrufers</td>
+</tr>
+<tr>
+<td>PsExec <code translate="no" v-pre>-i 1</code></td>
+<td>Prozess in der interaktiven Sitzung, aber in seiner <strong>eigenen</strong> Anmeldesitzung — das Laufwerk bleibt für den Desktop unsichtbar</td>
+</tr>
+<tr>
+<td><strong>Eine interaktive geplante Aufgabe</strong></td>
+<td><strong><code translate="no" v-pre>Z:</code> auf deinem Desktop</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>zurg setup</code> erstellt die funktionierende interaktive Aufgabe automatisch. Verwalte sie aus dem zurg-Verzeichnis:</p>
+<div id="keeping-it-running-the-session-rules-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">.\zurg.exe service status
+.\zurg.exe service restart
+.\zurg.exe service stop
+.\zurg.exe service start
+.\zurg.exe service uninstall</code></pre>
+</doc-codeblock></div>
+<p>Stop und Restart bitten zurg zuerst, sauber herunterzufahren, damit sein rclone-Kindprozess das Laufwerk freigibt. <code translate="no" v-pre>uninstall</code> entfernt die Aufgabe, lässt aber die Binärdatei, die Konfiguration, die Daten, die Logs und den Cache stehen.</p>
+<p>Das manuelle Gegenstück ist eine geplante Aufgabe, die als du läuft, aber nur, wenn du angemeldet bist:</p>
+<div id="keeping-it-running-the-session-rules-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$wdir = &quot;C:\Users\you\zurg&quot;
+Set-Content &quot;$wdir\start-zurg.cmd&quot; &quot;@echo off`ncd /d $wdir`nzurg.exe --config config.yml&quot;
+
+$action    = New-ScheduledTaskAction -Execute &quot;cmd.exe&quot; -Argument &quot;/c $wdir\start-zurg.cmd&quot;
+$trigger   = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(5)
+$principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType Interactive
+$settings  = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -ExecutionTimeLimit ([TimeSpan]::Zero)
+Register-ScheduledTask -TaskName &quot;zurg&quot; -Action $action -Trigger $trigger `
+  -Principal $principal -Settings $settings -Force
+Start-ScheduledTask -TaskName &quot;zurg&quot;</code></pre>
+</doc-codeblock></div>
+<p>Ein <strong>Anmelde-Trigger</strong> (<code translate="no" v-pre>New-ScheduledTaskTrigger -AtLogOn</code>) statt <code translate="no" v-pre>-Once</code> sorgt dafür, dass sie nach einem Neustart wieder startet. <code translate="no" v-pre>ExecutionTimeLimit ([TimeSpan]::Zero)</code> ist wichtig — ohne diese Einstellung beendet der Task Scheduler die Aufgabe nach 72 Stunden.</p>
+<p>Zwei Fallen, die ich auf diesem Rechner nachgemessen habe:</p>
+<ul>
+<li><strong>Eine Konsole mit <code translate="no" v-pre>-NoExit</code> blockiert den Aufgabenplatz.</strong> Wenn der Launcher ein Fenster offen lässt, nachdem zurg gestoppt wurde, hält der Scheduler die Aufgabe für noch laufend, und jedes spätere <code translate="no" v-pre>Start-ScheduledTask</code> wird mit <code translate="no" v-pre>0x800710E0</code> abgelehnt. Führe <code translate="no" v-pre>Stop-ScheduledTask zurg</code> aus, bevor du sie erneut startest, oder starte die Binärdatei direkt wie oben, dann endet die Aufgabe, sobald zurg endet.</li>
+<li><strong><code translate="no" v-pre>Get-PSDrive</code> in einem Fenster widerlegt das Laufwerk nicht.</strong> Das Laufwerk ist nur für Prozesse in <em>derselben Anmeldesitzung</em> sichtbar — deine Desktop-Apps — nicht für jedes PowerShell-Fenster, das du zufällig öffnest. Wenn <code translate="no" v-pre>Z:</code> in einem Fenster fehlt, prüfe zuerst, aus welcher Sitzung dieses Fenster stammt, bevor du annimmst, dass das Laufwerk weg ist.</li>
+</ul>
+<p>Wenn du Explorer gar nicht brauchst — etwa auf einem Headless-Rechner oder bei Clients, die HTTP sprechen — spielt das alles keine Rolle: Starte zurg wie du willst und richte alles auf <code translate="no" v-pre>http://localhost:9999/dav/</code> oder die Endpunkte. Die Sitzungsregel betrifft nur den Laufwerksbuchstaben.</p>
+<h2 id="reaching-zurg-from-another-machine">zurg von einem anderen Rechner aus erreichen</h2>
+<p>Programme auf diesem PC erreichen zurg über <code translate="no" v-pre>localhost</code>. Die Windows Firewall blockiert alles andere aus deinem Netzwerk, bis du es erlaubst. Für Sonarr, Radarr, einen Medienserver oder einen Browser auf einem anderen Rechner führe das einmal in PowerShell als Administrator aus (wenn du in <code translate="no" v-pre>config.yml</code> einen anderen <code translate="no" v-pre>port:</code> eingetragen hast, nimm diese Nummer):</p>
+<div id="reaching-zurg-from-another-machine-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">New-NetFirewallRule -DisplayName zurg -Protocol TCP -LocalPort 9999</code></pre>
+</doc-codeblock></div>
+<p>Der andere Rechner verwendet dann die IPv4-Adresse dieses PCs, die <code translate="no" v-pre>ipconfig</code> ausgibt, statt <code translate="no" v-pre>localhost</code>.</p>
+<p>Wenn immer noch keine Antwort kommt, such nach einer Regel, die zurg blockiert. Wenn du bei der Windows-Abfrage, ob zurg.exe erlaubt werden soll, auf Cancel klickst, wird so eine Regel gespeichert. Eine Block-Regel hat Vorrang vor der Regel oben. Der folgende Befehl entfernt diese Regeln für <code translate="no" v-pre>zurg.exe</code> in <code translate="no" v-pre>$HOME\zurg</code>, ebenfalls als Administrator (ändere den Pfad, falls zurg woanders liegt):</p>
+<div id="reaching-zurg-from-another-machine-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">Get-NetFirewallApplicationFilter -Program &quot;$HOME\zurg\zurg.exe&quot; | Get-NetFirewallRule | Where-Object Action -eq Block | Remove-NetFirewallRule</code></pre>
+</doc-codeblock></div>
+<h2 id="keeping-the-cache-small">Den Cache klein halten</h2>
+<p>Der Mount speichert jede Datei, die er abspielt, komplett im Ordner <code translate="no" v-pre>data\rclone-cache</code> im zurg-Ordner (<code translate="no" v-pre>$HOME\zurg\data\rclone-cache</code>, wenn du die Ein-Zeilen-Installation benutzt hast). Die Dateien bleiben nach dem Ende der Wiedergabe erhalten und wachsen standardmäßig bis auf 256G.</p>
+<p>Verlass dich nicht auf das 72h-Alterslimit, um aufzuräumen. Die geplanten Aufgaben von Plex lesen die gecachten Dateien jede Nacht, was ihr Alter zurücksetzt, also läuft nie etwas ab. Das Größenlimit ist die Grenze, die wirklich greift.</p>
+<p>Um weniger Speicherplatz zu nutzen, senke das Limit in <code translate="no" v-pre>config.yml</code>. <code translate="no" v-pre>rclone_extra_args</code> ist eine einzige Liste, also füge die neuen Zeilen unter dem <code translate="no" v-pre>--links</code> hinzu, das du schon hast, statt einen zweiten <code translate="no" v-pre>rclone_extra_args:</code> zu schreiben:</p>
+<div id="keeping-the-cache-small-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">rclone_extra_args:
+  - &quot;--links&quot;
+  - &quot;--vfs-cache-max-size&quot;
+  - &quot;50G&quot;
+  - &quot;--vfs-cache-min-free-space&quot;
+  - &quot;20G&quot;</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>--vfs-cache-min-free-space</code> sorgt dafür, dass rclone aufhört zu cachen, wenn die Festplatte so weit voll ist. Starte danach zurg neu:</p>
+<div id="keeping-the-cache-small-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">.\zurg.exe service restart</code></pre>
+</doc-codeblock></div>
+<p>rclone kürzt den Cache nach dem Neustart auf das neue Limit. Um ihn sofort zu leeren, stoppe zuerst zurg:</p>
+<div id="keeping-the-cache-small-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">.\zurg.exe service stop
+Remove-Item -Recurse -Force .\data\rclone-cache\vfs\*, .\data\rclone-cache\vfsMeta\* -ErrorAction SilentlyContinue
+.\zurg.exe service start</code></pre>
+</doc-codeblock></div>
+<p>Um zu prüfen, wie viel Platz er wirklich braucht, öffne die Properties des Ordners <code translate="no" v-pre>rclone-cache</code> und lies <strong>Size on disk</strong> ab. Teilweise heruntergeladene Dateien sind sparse, daher meldet <strong>Size</strong> weit mehr, als die Festplatte tatsächlich belegt.</p>
+<p>Mehr Details findest du unter <a href="../../reference/config/#disk-the-mount-uses">Speicherplatz, den der Mount nutzt</a>.</p>
+<h2 id="updating-zurg">zurg aktualisieren</h2>
+<p>Ein Sponsor-Build ersetzt sich selbst:</p>
+<div id="updating-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">cd $HOME\zurg
+.\zurg.exe update
+.\zurg.exe service restart</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>update</code> holt sich den neuesten Nightly-Build, prüft, dass der Download die erwartete Version meldet, bevor irgendetwas ersetzt wird, und verschiebt die laufende <code translate="no" v-pre>zurg.exe</code> beiseite, damit Windows die neue Version einspielen kann. Ist der installierte Build schon der neueste, sagt es das und ändert nichts. Der Neustart startet den neuen Build.</p>
+<p>Bei einem Build, der zu alt ist, um den Befehl zu kennen, erledigt der Installer dieselbe Aufgabe:</p>
+<div id="updating-zurg-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$env:ZURG_INSTALL_MODE = &quot;update&quot;; irm https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.ps1 | iex</code></pre>
+</doc-codeblock></div>
+<h2 id="troubleshooting">Fehlerbehebung</h2>
+<retype-table copy-text="| Was du siehst | Was es bedeutet |
+|---|---|
+| `Z:` nicht im Explorer | Die Sitzungsregel, siehe [oben](#keeping-it-running-the-session-rules). Der Mount ist wahrscheinlich in Ordnung. Prüfe zuerst `http://localhost:9999/http/`. |
+| `zurg doctor` meldet, dass die Aufgabe bereit ist, aber nicht läuft | Kein interaktiver Benutzer ist angemeldet. Melde dich am Desktop an und führe `.\zurg.exe service start` aus. |
+| `symlinks not supported without the --links flag` | `--links` fehlt in `rclone_extra_args`. Nur kosmetisch: rclone antwortet beim Hochfahren des Laufwerks einmalig auf WinFsps Symlink-Prüfung des Mount-Roots. Der Mount funktioniert auch ohne das Flag. Füge es hinzu, um die Zeile zu unterdrücken. |
+| `Library is still loading` unter `__magic__` oder `/http/` | Der erste Real-Debrid-Lauf durchsucht das Konto. Warte einfach. Bei einem großen Konto kann das fast eine Stunde dauern. Eine NZB-Bibliothek zeigt diese Meldung nie an, sie startet leer. |
+| `realdebrid will not take &lt;name&gt;: it refuses that name outright` | Real-Debrid blockiert manche Release-Namen (`WEBRip` und Co.). Nimm ein Release mit einem anderen Namen. Mit deinem Setup ist alles in Ordnung. |
+| Ein Hinzufügen schlägt mit `could not read back id=…` oder einer Rate-Limit-Meldung fehl | Das API-Kontingent des Kontos ist aufgebraucht. Ein erster Bibliotheksdurchlauf kann es verbrauchen. Ein zweites zurg mit demselben Token kann das auch. Lass den Durchlauf fertig werden. Teile ein Token nicht zwischen mehreren Instanzen. |
+| Start der Aufgabe abgelehnt, `0x800710E0` | Die Aufgabe läuft noch, ein Launcher-Fenster wurde nie beendet. Führe `Stop-ScheduledTask zurg` aus und starte dann neu. |
+| `Get-PSDrive` zeigt aus einer SSH-Sitzung kein `Z:` | Erwartet, da es sich um eine andere Anmeldesitzung handelt. Siehe die Sitzungstabelle. |
+| `data\rclone-cache` wird immer größer | Das ist der Wiedergabe-Cache des Mounts, standardmäßig auf 256G begrenzt. Siehe [Cache klein halten](#keeping-the-cache-small). |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Was du siehst</th>
+<th>Was es bedeutet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>Z:</code> nicht im Explorer</td>
+<td>Die Sitzungsregel, siehe <doc-anchor-trigger to="#keeping-it-running-the-session-rules">oben</doc-anchor-trigger>. Der Mount ist wahrscheinlich in Ordnung. Prüfe zuerst <code translate="no" v-pre>http://localhost:9999/http/</code>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>zurg doctor</code> meldet, dass die Aufgabe bereit ist, aber nicht läuft</td>
+<td>Kein interaktiver Benutzer ist angemeldet. Melde dich am Desktop an und führe <code translate="no" v-pre>.\zurg.exe service start</code> aus.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>symlinks not supported without the --links flag</code></td>
+<td><code translate="no" v-pre>--links</code> fehlt in <code translate="no" v-pre>rclone_extra_args</code>. Nur kosmetisch: rclone antwortet beim Hochfahren des Laufwerks einmalig auf WinFsps Symlink-Prüfung des Mount-Roots. Der Mount funktioniert auch ohne das Flag. Füge es hinzu, um die Zeile zu unterdrücken.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Library is still loading</code> unter <code translate="no" v-pre>__magic__</code> oder <code translate="no" v-pre>/http/</code></td>
+<td>Der erste Real-Debrid-Lauf durchsucht das Konto. Warte einfach. Bei einem großen Konto kann das fast eine Stunde dauern. Eine NZB-Bibliothek zeigt diese Meldung nie an, sie startet leer.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>realdebrid will not take &lt;name&gt;: it refuses that name outright</code></td>
+<td>Real-Debrid blockiert manche Release-Namen (<code translate="no" v-pre>WEBRip</code> und Co.). Nimm ein Release mit einem anderen Namen. Mit deinem Setup ist alles in Ordnung.</td>
+</tr>
+<tr>
+<td>Ein Hinzufügen schlägt mit <code translate="no" v-pre>could not read back id=…</code> oder einer Rate-Limit-Meldung fehl</td>
+<td>Das API-Kontingent des Kontos ist aufgebraucht. Ein erster Bibliotheksdurchlauf kann es verbrauchen. Ein zweites zurg mit demselben Token kann das auch. Lass den Durchlauf fertig werden. Teile ein Token nicht zwischen mehreren Instanzen.</td>
+</tr>
+<tr>
+<td>Start der Aufgabe abgelehnt, <code translate="no" v-pre>0x800710E0</code></td>
+<td>Die Aufgabe läuft noch, ein Launcher-Fenster wurde nie beendet. Führe <code translate="no" v-pre>Stop-ScheduledTask zurg</code> aus und starte dann neu.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Get-PSDrive</code> zeigt aus einer SSH-Sitzung kein <code translate="no" v-pre>Z:</code></td>
+<td>Erwartet, da es sich um eine andere Anmeldesitzung handelt. Siehe die Sitzungstabelle.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>data\rclone-cache</code> wird immer größer</td>
+<td>Das ist der Wiedergabe-Cache des Mounts, standardmäßig auf 256G begrenzt. Siehe <doc-anchor-trigger to="#keeping-the-cache-small">Cache klein halten</doc-anchor-trigger>.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Immer noch nicht weiter? Frag im <strong>zurg-support</strong>-Forum auf <a href="https://discord.com/invite/7u4YjMThXP">Discord</a>. <a href="../../../guides/remote-help/">Hilfe bekommen</a> erklärt, was du angeben solltest.</p>
+<h2 id="powershell-over-ssh-for-the-remote-minded">PowerShell über SSH, für Remote-Fans</h2>
+<p>Windows PowerShell kommt mit einigen POSIX-Gewohnheiten schlecht zurecht, und SSH frisst Anführungszeichen. <code translate="no" v-pre>&amp;&amp;</code> ist kein Trennzeichen; <code translate="no" v-pre>2&gt;/dev/null</code> ist keine Umleitung; <code translate="no" v-pre>$_.Property</code> kommt in einem Inline-<code translate="no" v-pre>-Command</code> verstümmelt an. Bei allem, was nicht trivial ist, leg es in eine <code translate="no" v-pre>.ps1</code>, kopier sie hinüber und führ <code translate="no" v-pre>powershell -ExecutionPolicy Bypass -File C:\path\script.ps1</code> aus. Das ganze Setup auf dieser Seite wurde genau so betrieben.</p>
+<h2 id="see-also">Siehe auch</h2>
+<ul>
+<li><a href="../linux/">Linux</a>, <a href="../docker/">Docker</a> und <a href="../macos/">macOS</a> — dieselbe Installation auf anderen Plattformen</li>
+<li><a href="../../guides/sonarr-radarr-torrents/">Sonarr &amp; Radarr für Torrents</a> — der qBittorrent-Endpoint von Anfang bis Ende, inklusive Client-Einstellungen</li>
+<li><a href="../../guides/sonarr-radarr/">Sonarr &amp; Radarr</a> — der SABnzbd-Endpoint, genauso</li>
+<li><a href="../../guides/usenet/">Usenet</a> — News-Accounts, Retention, Repair, das <code translate="no" v-pre>nzb</code>-Backend im Detail</li>
+<li><a href="../../guides/magic/"><code translate="no" v-pre>__magic__</code></a> — das Verzeichnis, aus dem beide Endpoints importieren</li>
+</ul>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/setup/macos/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Vorheriger</span>
+                                <span class="block mt-1">mac​OS</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/providers/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Nächster</span>
+                                <span class="block mt-1">Anbieter</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Windows", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/setup/windows.md" }</script>
+</body>
+</html>

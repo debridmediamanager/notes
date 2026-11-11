@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="de" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/de">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672682913">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Docker-Einrichtung</title>
+    <meta name="title" content="Docker-Einrichtung">
+    <meta name="description" content="Diese Anleitung betreibt zurg in Docker und stellt dessen FUSE-Mount auf einem Linux-Host bereit. Docker liefert zurg, rclone und ffprobe mit. Der eingebaute setup-Befehl erstellt die Konfiguration.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/de/zurg/setup/docker/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/de/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/de/zurg/setup/docker/">
+    <meta property="og:title" content="Docker-Einrichtung">
+    <meta property="og:description" content="Diese Anleitung betreibt zurg in Docker und stellt dessen FUSE-Mount auf einem Linux-Host bereit. Docker liefert zurg, rclone und ffprobe mit. Der eingebaute setup-Befehl erstellt die Konfiguration.">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="de_DE">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/de/zurg/setup/docker/">
+    <meta name="twitter:title" content="Docker-Einrichtung">
+    <meta name="twitter:description" content="Diese Anleitung betreibt zurg in Docker und stellt dessen FUSE-Mount auf einem Linux-Host bereit. Docker liefert zurg, rclone und ffprobe mit. Der eingebaute setup-Befehl erstellt die Konfiguration.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/de/zurg/setup/docker.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672682913" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672682913" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672682913" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672682913" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/de/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>Deutsch</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/de/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/de/download.html" target="_blank">zurg herunterladen</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/de/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>Deutsch</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/de/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/de/download.html" target="_blank">zurg herunterladen</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/de/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="docker-setup">Docker-Einrichtung</h1>
+<p>Diese Anleitung betreibt zurg in Docker und stellt dessen FUSE-Mount auf einem Linux-Host bereit. Docker liefert zurg, rclone und
+ffprobe mit. Der eingebaute <code translate="no" v-pre>setup</code>-Befehl erstellt die Konfiguration. <code translate="no" v-pre>doctor</code> prüft die Installation.</p>
+<p>Dieser Ablauf wurde am 4. September 2026 mit Docker Engine 29.1.1 getestet. Verwende den neuesten datierten Nightly-Build, damit das Image die Anbieterauswahl unten enthält.</p>
+<blockquote>
+<p><strong>Sponsor-Image:</strong> <code translate="no" v-pre>ghcr.io/debridmediamanager/zurg</code> ist nur für Sponsoren. Werde Sponsor auf <a href="https://gatekeeper.debridmediamanager.com/">gatekeeper</a>. Dadurch bekommt dein GitHub-Konto Zugriff auf das Image.</p>
+</blockquote>
+<blockquote>
+<p><strong>Linux-Host erforderlich:</strong> Der unten gezeigte Host-Mount hängt von der Mount-Propagation unter Linux ab. Docker Desktop führt Container unter macOS und Windows in einer VM aus. Dort kann dieser FUSE-Mount nicht in Finder oder Explorer weitergegeben werden, und rex kann einen zurg darin nicht erreichen, daher würde dort nichts abspielen. Nutze auf einem dieser Systeme stattdessen die Binary-Anleitung für <a href="https://notes.debridmediamanager.com/de/zurg/setup/macos/">macOS</a> oder <a href="https://notes.debridmediamanager.com/de/zurg/setup/windows/">Windows</a>. Wenn du unter Linux rex auf einer anderen Maschine nutzt, setze für den zurg-Container <code translate="no" v-pre>network_mode: host</code>, wie <a href="../../../rex/with-zurg/#d4-connect-zurg-to-rex">rex mit zurg</a> zeigt.</p>
+</blockquote>
+<h2 id="one-line-option">Einzeilige Option</h2>
+<p>Auf einem frischen Linux-Host kann das optionale Bootstrap-Skript, wenn du zustimmst, Docker installieren, die persistente FUSE-Mount-Propagation einrichten, sich bei der Sponsor-Registry anmelden, das Compose-Projekt schreiben, den Provider-Chooser starten und das Ergebnis prüfen:</p>
+<div id="one-line-option-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install-docker.sh | bash</code></pre>
+</doc-codeblock></div>
+<p>Bestehende Compose-Dateien und Konfigurationen bleiben erhalten. Die folgenden Abschnitte zeigen jeden Schritt für alle, die lieber den manuellen Weg gehen.</p>
+<h2 id="what-the-installer-does-in-a-container">Was der Installer im Container macht</h2>
+<p>Die Flags sind bewusst so gewählt:</p>
+<div id="what-the-installer-does-in-a-container-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose run --rm zurg setup \
+  --no-service \
+  --skip-downloads \
+  --mount-path /zurg_mnt/zurg</code></pre>
+</doc-codeblock></div>
+<ul>
+<li><code translate="no" v-pre>setup</code> fragt, welche Anbieter konfiguriert werden sollen, fragt nur deren Zugangsdaten ab und schreibt <code translate="no" v-pre>config.yml</code> mit dem Modus <code translate="no" v-pre>0600</code>.</li>
+<li><code translate="no" v-pre>--no-service</code> überlässt den Autostart der Docker-Richtlinie <code translate="no" v-pre>restart: unless-stopped</code>, statt zu versuchen, systemd in Alpine zu installieren.</li>
+<li><code translate="no" v-pre>--skip-downloads</code> verwendet rclone und ffprobe, die bereits im Image installiert sind.</li>
+<li><code translate="no" v-pre>--mount-path</code> speichert das Unterverzeichnis, dessen FUSE-Mount wieder auf den Host durchgereicht wird.</li>
+</ul>
+<p>Setup erneut auszuführen ist unbedenklich. Es prüft und aktualisiert die Installation, ersetzt aber keine bestehende <code translate="no" v-pre>config.yml</code>.</p>
+<h2 id="1-install-docker-and-unlock-the-image">1. Docker installieren und das Image freischalten</h2>
+<p>Installiere Docker Engine mit dem Compose-Plugin auf dem Linux-Host. Prüfe beide Befehle, bevor du weitermachst:</p>
+<div id="1-install-docker-and-unlock-the-image-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker version
+docker compose version</code></pre>
+</doc-codeblock></div>
+<p>Melde dich mit deinem GitHub-Benutzernamen bei der GitHub Container Registry an. Wenn du nach dem Passwort gefragt wirst, füge ein klassisches Personal Access Token mit den Scopes <code translate="no" v-pre>read:packages</code> und <code translate="no" v-pre>repo</code> ein. Das Image gehört zu einem privaten Repository, und ein Token nur mit <code translate="no" v-pre>read:packages</code> kann sich zwar anmelden, aber das Pullen schlägt trotzdem fehl:</p>
+<div id="1-install-docker-and-unlock-the-image-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker login ghcr.io -u YOUR_GITHUB_USERNAME</code></pre>
+</doc-codeblock></div>
+<p>Setze <code translate="no" v-pre>ZURG_TAG</code> auf das neueste datierte Sponsor-Release. Wenn du es in <code translate="no" v-pre>.env</code> ablegst, hast du ein bekanntes Rollback-Ziel und Upgrades werden nachvollziehbar:</p>
+<div id="1-install-docker-and-unlock-the-image-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">printf 'ZURG_TAG=YYYY.MM.DD.HHMM-nightly\n' &gt; .env</code></pre>
+</doc-codeblock></div>
+<p>Ersetze den Platzhalter durch den tatsächlichen Release-Tag, bevor du weitermachst.</p>
+<h2 id="2-prepare-fuse-mount-propagation">2. FUSE-Mount-Propagation vorbereiten</h2>
+<p>Der FUSE-Mount muss unterhalb eines gemeinsamen übergeordneten Mounts angelegt werden. Führe das einmal aus, bevor der erste Container startet:</p>
+<div id="2-prepare-fuse-mount-propagation-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo mkdir -p /zurg_mnt
+sudo modprobe fuse
+sudo mount --bind /zurg_mnt /zurg_mnt
+sudo mount --make-rshared /zurg_mnt</code></pre>
+</doc-codeblock></div>
+<p>Prüfe das Gerät und den Propagationsmodus:</p>
+<div id="2-prepare-fuse-mount-propagation-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">test -c /dev/fuse
+findmnt -o TARGET,PROPAGATION /zurg_mnt</code></pre>
+</doc-codeblock></div>
+<p>Der zweite Befehl sollte unter <code translate="no" v-pre>PROPAGATION</code> den Wert <code translate="no" v-pre>shared</code> anzeigen.</p>
+<h2 id="3-create-the-compose-project">3. Das Compose-Projekt anlegen</h2>
+<div id="3-create-the-compose-project-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">mkdir -p ~/zurg
+cd ~/zurg</code></pre>
+</doc-codeblock></div>
+<p>Erstelle <code translate="no" v-pre>docker-compose.yml</code>:</p>
+<div id="3-create-the-compose-project-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">services:
+  zurg:
+    image: ghcr.io/debridmediamanager/zurg:${ZURG_TAG}
+    container_name: zurg
+    restart: unless-stopped
+    devices:
+      - /dev/fuse
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    ports:
+      - 9999:9999
+    volumes:
+      - ./:/config
+      - /zurg_mnt:/zurg_mnt:rshared</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>privileged: true</code> ist nicht nötig. Das FUSE-Gerät, die <code translate="no" v-pre>SYS_ADMIN</code>-Capability und das uneingeschränkte AppArmor-Profil sind der engere Satz, den der Mount tatsächlich braucht.</p>
+<p>Binde <code translate="no" v-pre>/zurg_mnt/zurg</code> nicht direkt. Der FUSE-Mount muss ein Kind des <code translate="no" v-pre>rshared</code>-Binds sein, damit sein Mount-Event beim Host ankommt.</p>
+<p>Container, die den Mount lesen, allen voran Sonarr und Radarr, folgen derselben Regel von der anderen Seite: Binde das übergeordnete Verzeichnis (<code translate="no" v-pre>/zurg_mnt</code>) einmal mit <code translate="no" v-pre>rslave</code> ein und greife auf jeden Ordner über diesen einen Bind zu. Wenn du <code translate="no" v-pre>__magic__/__all__</code> und <code translate="no" v-pre>__magic__/tv</code> als zwei Volumes in einen *arr bindest, wird jeder Import zu einer Kopie der ganzen Datei. Siehe <a href="../../guides/sonarr-radarr/#one-volume-for-the-download-folder-and-the-root-folders">sabnzbd.md</a>.</p>
+<p>(Eine frühere Übersetzung wurde abgelehnt: Die Code-Spans stimmten nicht überein. Behalte die Struktur genau bei.)</p>
+<h2 id="4-run-the-built-in-setup">4. Das integrierte Setup ausführen</h2>
+<p>Aus <code translate="no" v-pre>~/zurg</code> ausführen:</p>
+<div id="4-run-the-built-in-setup-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose run --rm zurg setup \
+  --no-service \
+  --skip-downloads \
+  --mount-path /zurg_mnt/zurg</code></pre>
+</doc-codeblock></div>
+<p>Wähle einen oder mehrere Anbieter in Prioritätsreihenfolge. Zum Beispiel gibst du <code translate="no" v-pre>2,4</code> ein, für TorBox gefolgt von Usenet. Das Setup fragt nur nach den Zugangsdaten, erstellt <code translate="no" v-pre>config.yml</code> in <code translate="no" v-pre>~/zurg</code>, aktiviert rclone und legt <code translate="no" v-pre>/zurg_mnt/zurg</code> an. Kein Zugangsdatensatz wird in der Compose-Datei oder im Shell-Verlauf gespeichert.</p>
+<p>Für die Automatisierung wiederholst du <code translate="no" v-pre>--provider</code> und übergibst die anbieterspezifischen Token-Datei- oder <code translate="no" v-pre>--nntp-*</code>-Flags. Das Setup behält eine bestehende Konfiguration bei späteren Durchläufen bei.</p>
+<p>Das Setup schreibt die Accounts nur beim Durchlauf, der <code translate="no" v-pre>config.yml</code> erstellt. Um einen Anbieter zu einer Installation hinzuzufügen, die bereits eine Konfiguration hat, nutze <strong>Add provider</strong> im Dashboard oder bearbeite die Datei und starte danach neu. Jeder Dienst hat eine eigene Seite mit den Zugangsdaten, dem Konfigurationsblock und den wichtigen Grenzen: <a href="../../providers/">Providers</a>.</p>
+<h2 id="5-start-zurg">5. zurg starten</h2>
+<div id="5-start-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose up -d
+docker compose logs -f --tail=100 zurg</code></pre>
+</doc-codeblock></div>
+<p>Verlasse die Log-Ansicht mit <code translate="no" v-pre>Ctrl+C</code>; der Container läuft weiter. Das Dashboard erreichst du unter <code translate="no" v-pre>http://localhost:9999/config/</code>, und es bearbeitet dieselbe <code translate="no" v-pre>config.yml</code>, die neben der Compose-Datei liegt.</p>
+<p>Eine große Bibliothek kann eine Weile zum Laden brauchen. Ordner im Mount lassen sich erst auflisten, wenn das Laden fertig ist. Bis dahin erscheinen sie leer oder als <code translate="no" v-pre>Input/output error</code>, während das Dashboard und <code translate="no" v-pre>version.txt</code> ganz normal funktionieren. Das heißt, zurg lädt noch und der Mount ist nicht kaputt. <doc-anchor-trigger to="#up-versus-ready">Up versus ready</doc-anchor-trigger> zeigt dir, wie du erkennst, wann das Laden abgeschlossen ist.</p>
+<h2 id="6-verify-with-doctor">6. Mit doctor überprüfen</h2>
+<p>Sobald die Bibliothek bereit ist, führe dasselbe Diagnosetool aus, das auch bei einer Binärinstallation verwendet wird:</p>
+<div id="6-verify-with-doctor-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose exec zurg /app/zurg doctor --working-dir /config</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>doctor</code> prüft die Konfiguration und deren Berechtigungen, ffprobe, rclone, FUSE, den HTTP-Endpunkt und den Mount, den zurg meldet. <code translate="no" v-pre>WARN service zurg is not installed</code> ist in Docker normal, weil Compose den Autostart übernimmt. Warnungen lassen den Befehl nicht fehlschlagen, jedes <code translate="no" v-pre>FAIL</code> dagegen schon.</p>
+<p>Prüfe, ob der propagierte Mount auch außerhalb des Containers sichtbar ist:</p>
+<div id="6-verify-with-doctor-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cat /zurg_mnt/zurg/version.txt
+ls -la /zurg_mnt/zurg/</code></pre>
+</doc-codeblock></div>
+<h2 id="7-make-the-shared-parent-survive-reboots">7. Den gemeinsamen Elternordner reboot-fest machen</h2>
+<p>Der Self-Bind aus Schritt 2 übersteht keinen Neustart. Erstelle auf dem Host eine systemd-oneshot-Unit:</p>
+<div id="7-make-the-shared-parent-survive-reboots-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo tee /etc/systemd/system/rshared-zurg-mnt.service &lt;&lt; 'EOF'
+[Unit]
+Description=Make /zurg_mnt rshared for Docker FUSE mounts
+Before=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c &quot;mount --bind /zurg_mnt /zurg_mnt &amp;&amp; mount --make-rshared /zurg_mnt&quot;
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+sudo systemctl enable rshared-zurg-mnt.service</code></pre>
+</doc-codeblock></div>
+<p>Beim nächsten Neustart bereitet der Host das gemeinsame Elternverzeichnis vor, bevor Docker den zurg-Container wiederherstellt.</p>
+<h2 id="up-versus-ready">Up versus ready</h2>
+<p>zurg beantwortet zwei verschiedene Fragen über HTTP. Keine davon braucht ein Passwort, auch wenn <code translate="no" v-pre>username</code> gesetzt ist.</p>
+<retype-table copy-text="| Adresse | Antwortet mit 200, wenn | Während die Bibliothek lädt |
+|---|---|---|
+| `/http/version.txt` | zurg läuft | 200 |
+| `/ready` | die Bibliothek fertig geladen ist | 503 mit `Retry-After: 5` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Adresse</th>
+<th>Antwortet mit 200, wenn</th>
+<th>Während die Bibliothek lädt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>/http/version.txt</code></td>
+<td>zurg läuft</td>
+<td>200</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>/ready</code></td>
+<td>die Bibliothek fertig geladen ist</td>
+<td>503 mit <code translate="no" v-pre>Retry-After: 5</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Der Health-Check des Containers fragt die erste Adresse ab. <code translate="no" v-pre>docker compose ps</code> zeigt <code translate="no" v-pre>healthy</code>, sobald zurg läuft. Eine große Bibliothek kann danach noch lange weiterladen. Frag <code translate="no" v-pre>/ready</code> ab, wenn du die komplette Bibliothek brauchst. Es gibt <code translate="no" v-pre>ready</code> aus, sobald das Laden fertig ist.</p>
+<div id="up-versus-ready-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -fsS http://localhost:9999/ready
+docker compose exec zurg /app/healthcheck.sh --ready &amp;&amp; echo ready</code></pre>
+</doc-codeblock></div>
+<p>Ein Skript kann so darauf warten.</p>
+<div id="up-versus-ready-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">until curl -fsS http://localhost:9999/ready &gt;/dev/null; do sleep 10; done</code></pre>
+</doc-codeblock></div>
+<h3 id="why-the-health-check-does-not-wait-for-the-library">Warum der Health Check nicht auf die Bibliothek wartet</h3>
+<p>Docker speichert pro Container einen einzigen Health-Status. Die Tools, die ihn auslesen, gehen davon aus, dass er bedeutet „läuft zurg noch?“. autoheal und Docker Swarm starten ein Container neu, sobald er unhealthy wird. <code translate="no" v-pre>depends_on</code> mit <code translate="no" v-pre>condition: service_healthy</code> hält andere Dienste so lange zurück, bis zurg healthy ist.</p>
+<p>Für große Bibliotheken wurden Kaltstarts von 15 bis 90 Minuten gemeldet. Ein Health-Check, der auf die Bibliothek wartet, würde jeden abhängigen Dienst so lange zurückhalten. Ein rclone-Container vor zurg würde seinen Mount-Ordner die ganze Zeit leer lassen. Ein leerer Ordner sieht für einen Medienserver aus wie eine gelöschte Bibliothek. Eine Ladezeit, die länger dauert als die Retries des Health-Checks, würde außerdem als unhealthy markiert. Alles, was unhealthy Container neu startet, würde dann das Laden von vorne beginnen. Es käme nie zum Ende.</p>
+<h3 id="using-readiness-with-compose">Readiness mit Compose verwenden</h3>
+<p>Lass einen Mount-Container beim Standard-Health-Check, damit sein Mount hochkommt, sobald zurg läuft.</p>
+<div id="using-readiness-with-compose-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">services:
+  rclone:
+    depends_on:
+      zurg:
+        condition: service_healthy</code></pre>
+</doc-codeblock></div>
+<p>Warte auf <code translate="no" v-pre>/ready</code> in allem, was die ganze Bibliothek braucht. Das kann ein Scan-Skript oder ein Import-Job sein.</p>
+<p>Du kannst den zurg-Container selbst nur dann als healthy melden lassen, wenn die Bibliothek geladen ist. Überschreibe seinen Health-Check in <code translate="no" v-pre>docker-compose.yml</code> und setze <code translate="no" v-pre>start_period</code> länger als dein langsamster Ladevorgang. Docker zählt Fehler innerhalb der start period nicht mit. Jeder Dienst, der von zurg abhängt, wartet dann ebenfalls auf die Bibliothek. Kombiniere das nicht mit autoheal.</p>
+<div id="using-readiness-with-compose-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">services:
+  zurg:
+    healthcheck:
+      test: [&quot;CMD&quot;, &quot;/app/healthcheck.sh&quot;, &quot;--ready&quot;]
+      interval: 30s
+      timeout: 10s
+      start_period: 3h
+      retries: 3</code></pre>
+</doc-codeblock></div>
+<h2 id="managing-and-updating-zurg">zurg verwalten und aktualisieren</h2>
+<p>Führe diese Befehle in <code translate="no" v-pre>~/zurg</code> aus:</p>
+<div id="managing-and-updating-zurg-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose ps
+docker compose logs -f --tail=100 zurg
+docker compose restart zurg
+docker compose stop zurg
+docker compose start zurg</code></pre>
+</doc-codeblock></div>
+<p>Das Compose-Projekt liest <code translate="no" v-pre>ZURG_TAG</code> aus <code translate="no" v-pre>.env</code>. Der Installer setzt den Wert auf <code translate="no" v-pre>latest</code>, damit ein Pull immer die neueste Nightly holt. Zum Aktualisieren ziehst du das Image neu, erstellst den Container neu und führst danach doctor aus:</p>
+<div id="managing-and-updating-zurg-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose pull zurg
+docker compose up -d zurg
+docker compose exec zurg /app/zurg doctor --working-dir /config</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>zurg update</code> ist hier nicht der richtige Weg, und innerhalb eines Containers läuft es ohnehin nicht. Das Binary, das es schreibt, liegt in der Container-Schicht und geht verloren, sobald der Container neu erstellt wird. Dann würde das nächste <code translate="no" v-pre>up</code> stillschweigend wieder mit dem alten Build laufen. Zieh stattdessen das Image. <code translate="no" v-pre>--force</code> überschreibt die Sperre für einen Container, den du behalten willst.</p>
+<p>Um zurückzurollen, setzt du <code translate="no" v-pre>ZURG_TAG</code> in <code translate="no" v-pre>.env</code> auf einen bestimmten Nightly-Tag und führst die drei Befehle erneut aus. Die eingebundene Config, der Bibliotheksstatus, die Logs und der Cache bleiben beim Wechsel des Containers unverändert.</p>
+<p><code translate="no" v-pre>docker compose down</code> entfernt den Container und das Netzwerk, lässt aber die eingebundenen Dateien in <code translate="no" v-pre>~/zurg</code> und den übergeordneten Mountpunkt <code translate="no" v-pre>/zurg_mnt</code> stehen.</p>
+<h2 id="what-lives-where">Was wo liegt</h2>
+<p>Alles, was zurg schreibt, landet unter <code translate="no" v-pre>/config</code>. Deshalb enthält der eine Bind <code translate="no" v-pre>./:/config</code> die komplette Installation:</p>
+<retype-table copy-text="| Pfad | Was es ist |
+|---|---|
+| `config.yml` | Einstellungen und Zugangsdaten der Anbieter; Änderungen im Dashboard werden hier zurückgeschrieben |
+| `data/` | Bibliotheksstatus, lokale Dateien, generierte Schlüssel und der rclone-VFS-Cache |
+| `logs/` | zurg- und rclone-Logs |
+| `dump/` | Torrent-Dumps, wenn aktiviert |
+| `strm/` | `.strm`-Dateien, wenn `save_strm_files` aktiviert ist |
+| `nzbs/` | Watch-Verzeichnis für das Usenet-Backend |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Pfad</th>
+<th>Was es ist</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>config.yml</code></td>
+<td>Einstellungen und Zugangsdaten der Anbieter; Änderungen im Dashboard werden hier zurückgeschrieben</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>data/</code></td>
+<td>Bibliotheksstatus, lokale Dateien, generierte Schlüssel und der rclone-VFS-Cache</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>logs/</code></td>
+<td>zurg- und rclone-Logs</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>dump/</code></td>
+<td>Torrent-Dumps, wenn aktiviert</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>strm/</code></td>
+<td><code translate="no" v-pre>.strm</code>-Dateien, wenn <code translate="no" v-pre>save_strm_files</code> aktiviert ist</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>nzbs/</code></td>
+<td>Watch-Verzeichnis für das Usenet-Backend</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Ein Pull oder das Neuerstellen des Images ändert keine dieser Dateien.</p>
+<p><code translate="no" v-pre>data/rclone-cache</code> ist der Ordner, der wächst. Der Mount lädt jede Datei, die er liest, komplett herunter und behält sie auch nach dem Ende der Wiedergabe, standardmäßig bis zu <strong>256G</strong>. Das Bind-Verzeichnis braucht also zusätzlich zu allem anderen Platz für den Cache. Das 72h-Alter-Limit begrenzt ihn in der Praxis nicht – alles, was auf die Bibliothek zugreift, zählt als Zugriff auf die Datei, auch der nächtliche Durchlauf eines Media-Servers.</p>
+<div id="what-lives-where-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">du -sh ./data/rclone-cache</code></pre>
+</doc-codeblock></div>
+<p>Begrenze ihn niedriger in <code translate="no" v-pre>config.yml</code>, wenn die Festplatte des Hosts so viel nicht entbehren kann:</p>
+<div id="what-lives-where-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">rclone_extra_args:
+  - &quot;--vfs-cache-max-size&quot;
+  - &quot;50G&quot;
+  - &quot;--vfs-cache-min-free-space&quot;
+  - &quot;20G&quot;</code></pre>
+</doc-codeblock></div>
+<p>Wenn du den Host-Pfad hinter <code translate="no" v-pre>/config</code> änderst, wird der Cache umbenannt und die alte Kopie bleibt zurück. zurg räumt solche verwaisten Verzeichnisse beim nächsten Start auf und loggt, wie viel Platz es freigegeben hat. Siehe <a href="../../reference/config/#disk-the-mount-uses">config.md</a>.</p>
+<h3 id="environment-seeding-for-unattended-installs">Umgebungsvariablen für unbeaufsichtigte Installationen vorab setzen</h3>
+<p>Das Image unterstützt weiterhin den älteren Erststart-Weg. Wenn keine <code translate="no" v-pre>config.yml</code> existiert, legen <code translate="no" v-pre>TOKEN</code> oder <code translate="no" v-pre>RD_TOKEN</code> den Account an und <code translate="no" v-pre>MOUNT_PATH</code> aktiviert den Mount. Diese Variablen werden nur gelesen, solange die Datei erstellt wird. Die Datei gewinnt bei jedem späteren Start.</p>
+<p>Real-Debrid ist der einzige Account, den der laufende Container auf diese Weise anlegt. <code translate="no" v-pre>TORBOX_TOKEN</code>, <code translate="no" v-pre>ALLDEBRID_TOKEN</code>, <code translate="no" v-pre>PREMIUMIZE_TOKEN</code>, <code translate="no" v-pre>DEBRIDLINK_TOKEN</code>, <code translate="no" v-pre>OFFCLOUD_TOKEN</code> und <code translate="no" v-pre>NNTP_HOST</code> werden von <code translate="no" v-pre>zurg setup</code> gelesen. Sie wirken also im oben genannten einmaligen Setup-Container und tun nichts, wenn sie im <code translate="no" v-pre>environment:</code>-Block des Dienstes stehen.</p>
+<p>Der interaktive Befehl <code translate="no" v-pre>setup</code> ist für Leute am Terminal die bessere Wahl, weil das Token nie in der Compose-Datei landet. Die Umgebungsvariablen-Variante bleibt nützlich für Automatisierung, die bereits einen Secret-Store hat.</p>
+<h3 id="upgrading-an-install-that-mounted-app">Upgrade einer Installation, die <code translate="no" v-pre>/app</code> gemountet hat</h3>
+<p>Ältere Compose-Projekte haben <code translate="no" v-pre>/app/config.yml</code>, <code translate="no" v-pre>/app/data</code> und andere Pfade einzeln eingebunden. Das Entrypoint wählt weiterhin <code translate="no" v-pre>/app</code>, sobald es dieses Layout findet. Ein neueres Image verwendet dann also weiterhin die alte Konfiguration und den alten Cache.</p>
+<p>Um auf das Ein-Ordner-Layout umzustellen, stoppe den Container. Kopiere danach die vorhandene <code translate="no" v-pre>config.yml</code>, den Ordner <code translate="no" v-pre>data/</code> und die anderen Statusordner in ein Verzeichnis auf dem Host. Binde dieses Verzeichnis anschließend unter <code translate="no" v-pre>/config</code> ein.</p>
+<h2 id="troubleshooting">Fehlerbehebung</h2>
+<p>Fang mit der Diagnose und den aktuellen Logs an:</p>
+<div id="troubleshooting-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose exec zurg /app/zurg doctor --working-dir /config
+docker compose logs --tail=200 zurg</code></pre>
+</doc-codeblock></div>
+<h3 id="unknown-command-setup-or-unknown-command-doctor"><code translate="no" v-pre>unknown command &quot;setup&quot;</code> oder <code translate="no" v-pre>unknown command &quot;doctor&quot;</code></h3>
+<p>Der Container ist älter als der eingebaute Installer. Nutze <code translate="no" v-pre>2026.09.04.1449-nightly</code> oder ein neueres datiertes zurg-Image und erstelle ihn dann neu:</p>
+<div id="unknown-command-setup-or-unknown-command-doctor-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose pull zurg
+docker compose up -d zurg</code></pre>
+</doc-codeblock></div>
+<h3 id="transport-endpoint-is-not-connected"><code translate="no" v-pre>Transport endpoint is not connected</code></h3>
+<p>Das alte FUSE-Mount ist veraltet:</p>
+<div id="transport-endpoint-is-not-connected-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo umount -l /zurg_mnt/zurg
+docker compose restart zurg</code></pre>
+</doc-codeblock></div>
+<h3 id="fuse-device-is-unavailable">FUSE-Gerät ist nicht verfügbar</h3>
+<p>Lade das Modul jetzt und auch bei späteren Starts:</p>
+<div id="fuse-device-is-unavailable-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">sudo modprobe fuse
+echo fuse | sudo tee /etc/modules-load.d/fuse.conf</code></pre>
+</doc-codeblock></div>
+<p>Prüfe danach, ob der Compose-Service noch <code translate="no" v-pre>/dev/fuse</code>, <code translate="no" v-pre>SYS_ADMIN</code> und die AppArmor-Einstellung enthält.</p>
+<h3 id="mount-is-empty">Mount ist leer</h3>
+<p>Prüfe jede Ebene der Reihe nach:</p>
+<div id="mount-is-empty-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose logs zurg 2&gt;&amp;1 | grep -i rclone
+docker compose exec zurg ls -la /zurg_mnt/zurg
+curl -fsS http://localhost:9999/http/version.txt
+curl -fsS http://localhost:9999/ready
+findmnt -o TARGET,PROPAGATION /zurg_mnt</code></pre>
+</doc-codeblock></div>
+<p>Der Host-Pfad muss ein geteilter Bind-Mount sein, und das Compose-Volume muss das übergeordnete Verzeichnis als <code translate="no" v-pre>/zurg_mnt:/zurg_mnt:rshared</code> einbinden.</p>
+<p>Wenn <code translate="no" v-pre>/ready</code> mit Fehler 503 fehlschlägt, lädt die Bibliothek noch und der Mount ist in Ordnung. Die Ordner werden so lange leer angezeigt oder zeigen <code translate="no" v-pre>Input/output error</code>, bis das Laden fertig ist. Warte einfach darauf, statt zurg neu zu starten. Ein Neustart fängt das Laden von vorne an.</p>
+<h3 id="mount-appears-twice-in-mount-output">Mount erscheint zweimal in der <code translate="no" v-pre>mount</code>-Ausgabe</h3>
+<p>Das ist normal. Das gleiche FUSE-Mount ist im Container und im Host-Mount-Namespace sichtbar, weil die Propagation funktioniert.</p>
+<p>Immer noch hängen geblieben? Frag im <strong>zurg-support</strong>-Forum auf <a href="https://discord.com/invite/7u4YjMThXP">Discord</a>. <a href="../../../guides/remote-help/">Getting help</a> sagt dir, was du angeben solltest.</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/setup/linux/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Vorheriger</span>
+                                <span class="block mt-1">Linux</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/setup/macos/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Nächster</span>
+                                <span class="block mt-1">mac​OS</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Docker", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/setup/docker.md" }</script>
+</body>
+</html>

@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="ar" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/ar">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672675057">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>ميزات Plex وإمكانياتها</title>
+    <meta name="title" content="ميزات Plex وإمكانياتها">
+    <meta name="description" content="هل تشغّل rex بجانب Plex Media Server، أم بدلاً منه؟ انتقل من Plex إلى rex يوضّح ما الذي تحتفظ به في zurg، بما في ذلك تركيب rclone الخاص بك، وأي إعدادات Plex في zurg يجب إزالتها.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/ar/zurg/guides/plex/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/ar/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/ar/zurg/guides/plex/">
+    <meta property="og:title" content="ميزات Plex وإمكانياتها">
+    <meta property="og:description" content="هل تشغّل rex بجانب Plex Media Server، أم بدلاً منه؟ انتقل من Plex إلى rex يوضّح ما الذي تحتفظ به في zurg، بما في ذلك تركيب rclone الخاص بك، وأي إعدادات Plex في zurg يجب إزالتها.">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="ar_SA">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/ar/zurg/guides/plex/">
+    <meta name="twitter:title" content="ميزات Plex وإمكانياتها">
+    <meta name="twitter:description" content="هل تشغّل rex بجانب Plex Media Server، أم بدلاً منه؟ انتقل من Plex إلى rex يوضّح ما الذي تحتفظ به في zurg، بما في ذلك تركيب rclone الخاص بك، وأي إعدادات Plex في zurg يجب إزالتها.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/ar/zurg/guides/plex.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672675057" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672675057" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672675057" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672675057" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/ar/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>العربية</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ar/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ar/download.html" target="_blank">تحميل zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/ar/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">الراعي</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>العربية</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ar/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ar/download.html" target="_blank">تحميل zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/ar/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">الراعي</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="plex-features--capabilities">ميزات Plex وإمكانياتها</h1>
+<p>هل تشغّل rex بجانب Plex Media Server، أم بدلاً منه؟ <a href="../../../rex/from-plex/">انتقل من Plex إلى rex</a> يوضّح ما الذي تحتفظ به في zurg، بما في ذلك تركيب rclone الخاص بك، وأي إعدادات Plex في zurg يجب إزالتها.</p>
+<h2 id="configuration--storage">الإعدادات والتخزين</h2>
+<ul>
+<li>Config keys documented in <a href="../../reference/config/"><code translate="no" v-pre>config.md</code></a>/<code translate="no" v-pre>config.example.yml</code>: <code translate="no" v-pre>plex_server_url</code>, <code translate="no" v-pre>plex_token</code>, <code translate="no" v-pre>plex_match_every_mins</code> (default 1440), <code translate="no" v-pre>plex_watchlist_enabled</code>, <code translate="no" v-pre>plex_watchlist_check_every_secs</code> (the legacy spelling of <code translate="no" v-pre>watchlist.check_every_secs</code>, default 60s), <code translate="no" v-pre>mount_path</code> (required for matching/scan path building). Dashboard-authored settings are saved directly to <code translate="no" v-pre>config.yml</code> via the config writer (<code translate="no" v-pre>updateConfigFileAtomic</code>).</li>
+<li>‏الفاصل الزمني لقائمة المراقبة يرجع إلى قيمته الافتراضية لأي قيمة تساوي 0 أو أقل (<code translate="no" v-pre>GetWatchlistCheckEverySecs</code>)، أما <code translate="no" v-pre>plex_match_every_mins</code> فيرجع إلى قيمته الافتراضية فقط إذا كانت تساوي <code translate="no" v-pre>0</code> بالضبط (<code translate="no" v-pre>intOr</code>، <code translate="no" v-pre>internal/config/config.go</code>). ولا يمكن تعطيل أيٍّ منهما. الداشبورد يرفض أي قيمة أقل من 1 (<code translate="no" v-pre>internal/handlers/dashboard/dashboard.go</code>)، وإذا كانت قيمة <code translate="no" v-pre>plex_match_every_mins</code> سالبة في <code translate="no" v-pre>config.yml</code> فإن zurg يتوقف عند بدء التشغيل مع الرسالة <code translate="no" v-pre>is negative; use 0 for the default</code>، ولا يوقف المطابقة أبدًا.</li>
+<li>يُضبط اكتساب قائمة المراقبة من خلال كتلة <code translate="no" v-pre>watchlist:</code>، وفيها المفاتيح <code translate="no" v-pre>enabled</code> و<code translate="no" v-pre>check_every_secs</code> و<code translate="no" v-pre>indexers</code> و<code translate="no" v-pre>max_size_gb</code> و<code translate="no" v-pre>max_season_size_gb</code> و<code translate="no" v-pre>quality</code> (القيمة الافتراضية <code translate="no" v-pre>best</code>). إذا كانت <code translate="no" v-pre>indexers</code> فارغة فإنها تستعير القيمة من <code translate="no" v-pre>stremio.indexers</code>. ولا تزال المفاتيح القديمة المسطحة <code translate="no" v-pre>plex_watchlist_enabled</code> و<code translate="no" v-pre>plex_watchlist_check_every_secs</code> و<code translate="no" v-pre>watchlist_quality</code> تُعتبر الكتابات القديمة للمفاتيح الأول والثاني والأخير من هذه المفاتيح على التوالي. راجع <a href="../../reference/config/#watchlist">config.md</a>.</li>
+<li><code translate="no" v-pre>mount_path</code> هو أيضًا البادئة لمسارات الفحص التي تُرسل إلى Plex وإلى تركيب rclone المُدار (<a href="../../reference/config/"><code translate="no" v-pre>config.md</code></a>، <code translate="no" v-pre>pkg/scan/scanner.go</code>).</li>
+<li>يُمرَّر الخطاف <code translate="no" v-pre>on_library_update</code> كل مسار تغيّر كوسيطات، مع تأخير مدته 500 ms وإزالة التكرار، ولا يعمل إلا استدعاء واحد في كل مرة، وهو ما يتيح سكربتات الفحص التلقائي في Plex (<code translate="no" v-pre>internal/torrent/hooks.go</code>).</li>
+</ul>
+<h2 id="authentication--server-discovery">المصادقة واكتشاف الخادم</h2>
+<ul>
+<li>تدفق لوحة الويب: يُنشئ <code translate="no" v-pre>/plex/auth</code> جلسة PIN (<code translate="no" v-pre>pkg/plex/auth.go</code>، <code translate="no" v-pre>CreatePlexAuthURL</code>)، ويخزّنها في <code translate="no" v-pre>pkg/plex/auth_session.go</code> (تُحذف تلقائيًا بعد 10 دقائق، ويُفحص كل 5)، ويستعلم عن اكتمال التفويض عبر <code translate="no" v-pre>/plex/auth/status</code> (<code translate="no" v-pre>PollForAuthToken</code>، 60 محاولة كل 5 ثوانٍ قبل انتهاء المهلة).</li>
+<li>يعرض <code translate="no" v-pre>/plex/callback</code> صفحة تقدّم، وعند اكتمال التفويض تستدعي <code translate="no" v-pre>/plex/servers</code> لعرض الخوادم، و<code translate="no" v-pre>/plex/server</code> لاختيار أحدها (<code translate="no" v-pre>internal/handlers/dashboard/dashboard.go</code>).</li>
+<li>اكتشاف الخوادم (<code translate="no" v-pre>pkg/plex/auth.go</code>): يجلب موارد Plex مع نقاط النهاية HTTP وHTTPS معًا، ويستبعد نقطة الـ relay إذا كانت هناك نقطة مباشرة (direct)، ويتعامل مع عناوين IPv6، ويفحص <code translate="no" v-pre>/identity</code> لكل عنصر (مع تعطيل التحقق من TLS). تُؤخذ في الاعتبار الخوادم <strong>المملوكة</strong> لحسابك فقط (<code translate="no" v-pre>device.Owned</code>، <code translate="no" v-pre>auth.go</code>)، فلن تظهر الخوادم المشتركة أبدًا، والعناصر التي تفشل في الفحص تُحذف من الاستجابة بدلًا من إرجاعها مع ضبط <code translate="no" v-pre>last_error</code> (<code translate="no" v-pre>enrichServersWithIdentity</code>، <code translate="no" v-pre>auth.go</code>).</li>
+<li>عند اختيار خادم، يُكتب <code translate="no" v-pre>plex_server_url</code> و<code translate="no" v-pre>plex_token</code> في الإعدادات، ثم يُعاد تهيئة عميل Plex، ويُعاد تشغيل جدولة المطابق (matcher scheduler) إن لزم، ويُطلق محفّز المطابقة (match trigger)، ويُحدَّث تخزين حالة لوحة التحكم المؤقت (cached dashboard status) (<code translate="no" v-pre>HandlePlexServerSelect</code>، <code translate="no" v-pre>internal/handlers/dashboard/dashboard.go</code>). أما <code translate="no" v-pre>/plex/logout</code> فيمسح القيم المخزّنة وذاكرة حالة اللوحة.</li>
+</ul>
+<h2 id="plex-client-capabilities-pkgplexclientgo">إمكانيات عميل Plex (<code translate="no" v-pre>pkg/plex/client.go</code>)</h2>
+<ul>
+<li>دورة حياة الاتصال: خيار البدء المؤجل (<code translate="no" v-pre>WithDeferredStart</code>)، وحارس <code translate="no" v-pre>ValidateConnection</code> الذي يمنع الوصول إلى <code translate="no" v-pre>/identity</code>، والإغلاق المنظم عبر <code translate="no" v-pre>Close</code>. لا توجد واجهة لإعادة التشغيل. القيمتان <code translate="no" v-pre>RestartAllowed</code> و<code translate="no" v-pre>RestartReason</code> في لوحة التحكم تُستنتجان من عنوان URL للخادم (محلي/LAN مقابل بعيد)، وهما للعرض فقط (<code translate="no" v-pre>internal/handlers/dashboard/plex_status.go:getPlexConnectionDetails</code>).</li>
+<li>قائمة انتظار الفحص: قائمة مهام وعامل ديناميكيان (<code translate="no" v-pre>common.DynamicJobQueue</code>). تُرسل <code translate="no" v-pre>ProcessJob</code> الطلب <code translate="no" v-pre>GET /library/sections/{key}/refresh</code> مع ترويسات Plex ومعامل <code translate="no" v-pre>path</code> واحد على الأكثر لكل مهمة، وأي عدد أكبر يُرفض مباشرة (<code translate="no" v-pre>client.go</code>). المهمة بدون مسار تعني تحديث القسم بالكامل. الرد 503 يصبح خطأ &quot;الخادم مشغول&quot;، والرد 404 يبلغ بأن المكتبة حُذفت من Plex. و<code translate="no" v-pre>GetJobQueueSize</code> يعرض حجم المتراكم.</li>
+<li>كشف الحمل والتوقف: تفحص <code translate="no" v-pre>CheckServerLoad</code> الطلب <code translate="no" v-pre>/activities</code>، وتتبع تقدّم <code translate="no" v-pre>library.update.section</code> لكل UUID (يُعد تغيّر التقدّم <em>أو</em> العنوان الفرعي تقدّماً)، و<code translate="no" v-pre>IsJobStuck</code> يعلّم المهام القديمة حسب <code translate="no" v-pre>librarySectionID</code> مع الرجوع إلى Title عند الحاجة. تُنشئ <code translate="no" v-pre>GetServerActivitiesDetails</code> المتتبعات نفسها وتُنهيها. السبب أن <code translate="no" v-pre>CheckServerLoad</code> يعمل فقط عندما تكون مهمة في قائمة الانتظار. وكان الفحص الذي يبدأه Plex بنفسه لا يحصل على متتبع أبداً، فلا يمكن الإبلاغ عنه متوقفاً، وكان زمنه المنقضي يُقرأ صفراً في كل تحديث. يحتفظ المساران بالسجل لـ <code translate="no" v-pre>library.update.section</code> فقط، لأن تتبع أي شيء آخر هنا سيتذبذب مع عملية التنظيف (prune) الخاصة بالعامل.</li>
+<li><strong>العنوان الفرعي لنشاط Plex ليس الملف الذي يتوقف عنده الفحص المعلّق.</strong> قيس على جهاز plex503 بتاريخ 2026-09-15: العنوان الفرعي <code translate="no" v-pre>library.update.section</code> هو مؤشر تعداد الماسح، ويسبق القراءات الفعلية. ومع رفض التركيب لثلاثة ملفات، سمّى رابعاً لم يُطلب قط، وسمّى الملف المحجوب لمدة 290 ms فقط من دورة مدتها 56 s. تعرضه لوحة التحكم تحت &quot;Plex reports&quot; ولا تربطه بإصدار. أما ما ينتظره الفحص فعلاً فيأتي من رفضات zurg نفسها (<code translate="no" v-pre>internal/universal/refused_reads.go</code>)، وهي الجهة الوحيدة التي تعرف ذلك. البيانات موجودة في <code translate="no" v-pre>internal/handlers/dashboard/testdata/plex503-*</code>.</li>
+<li>استعلامات المكتبة: <code translate="no" v-pre>GetSections</code> (أقسام الأفلام والمسلسلات مع المواقع)، و<code translate="no" v-pre>GetSectionItemCount</code>، و<code translate="no" v-pre>FindSectionNormalized</code> (يطابق مساراً مع موقع قسم ويصحح بادئة المسار لتطابق حالة أحرف المكتبة)، و<code translate="no" v-pre>GetAllMediaItemsConcurrent</code> (جلب دفعي ومتزامن مع <code translate="no" v-pre>includeGuids</code> لجمع المسارات ومعرّفات GUID ومعرّفات IMDB)، و<code translate="no" v-pre>GetShowLevelIMDBIndex</code> (معرّفات مستوى المسلسل لأقسام المسلسلات حتى تتوارثها الحلقات).</li>
+<li>مساعدات البيانات الوصفية والمطابقة (<code translate="no" v-pre>pkg/plex/match.go</code>): <code translate="no" v-pre>GetMetadataSummary</code> (<code translate="no" v-pre>GET /library/metadata/{ratingKey}</code>)، و<code translate="no" v-pre>GetMatchCandidates</code> (<code translate="no" v-pre>GET /library/metadata/{ratingKey}/matches?manual=1</code>، مع تجاوزات العنوان والسنة واللغة)، و<code translate="no" v-pre>LookupMetadataByGUID</code>/<code translate="no" v-pre>LookupRatingKeyByGUID</code> (<code translate="no" v-pre>GET /library/all?guid=…</code>)، و<code translate="no" v-pre>ApplyManualMatch</code> (<code translate="no" v-pre>PUT /library/metadata/{ratingKey}/match</code>)، وتحليل GUID (<code translate="no" v-pre>ExtractIMDBIDFromGUID</code>، <code translate="no" v-pre>ExtractTMDBIDFromGUID</code>، <code translate="no" v-pre>ExtractTVDBIDFromGUID</code>، <code translate="no" v-pre>ExtractAnyIDFromGUIDs</code>؛ والأنواع <code translate="no" v-pre>MatchResult</code>/<code translate="no" v-pre>MatchSelection</code>).</li>
+<li>معلومات الخادم: <code translate="no" v-pre>GetServerIdentityOnly</code> و<code translate="no" v-pre>GetServerDetails</code> (معرّف الجهاز والإصدار؛ والثانية تجمع أيضاً عدد الجلسات والتحويلات وعرض النطاق)، و<code translate="no" v-pre>GetStreamingSessions</code>، و<code translate="no" v-pre>GetTranscodeSessions</code>، و<code translate="no" v-pre>GetServerActivitiesDetails</code> (مع حالة التوقف).</li>
+<li>سجل المشاهدة: <code translate="no" v-pre>GetWatchHistory</code> (<code translate="no" v-pre>GET /status/sessions/history/all</code>)، و<code translate="no" v-pre>GetMetadataBatch</code> (مفاتيح التقييم ratingKey مدمجة بفواصل على <code translate="no" v-pre>/library/metadata</code>)، و<code translate="no" v-pre>GetWatchHistoryWithMetadata</code> (<code translate="no" v-pre>pkg/plex/history.go</code>)، وهي تغذي الإحصاءات في <code translate="no" v-pre>pkg/plex/stats.go</code>.</li>
+</ul>
+<h2 id="media-scanner-integration-pkgscanscannergo">تكامل ماسح الوسائط (<code translate="no" v-pre>pkg/scan/scanner.go</code>)</h2>
+<ul>
+<li>يُهيّئ عميل Plex عندما تكون <code translate="no" v-pre>mount_path</code> و<code translate="no" v-pre>plex_server_url</code> و<code translate="no" v-pre>plex_token</code> مضبوطة، ويعيد المحاولة كل 5 ثوانٍ حتى يتصل، ويستدعي دوال <code translate="no" v-pre>OnPlexReconnected</code> عند كل إعادة اتصال.</li>
+<li>تُجمّع <code translate="no" v-pre>TriggerScan</code> المسارات حسب كل قسم في Plex (عبر <code translate="no" v-pre>FindSectionNormalized</code>)، وتضع في الطابور مهمة تحديث واحدة لكل مسار يبدأ بـ <code translate="no" v-pre>mount_path</code>، وتسجّل التقدم كل 50 مساراً. وتدعم أيضاً Jellyfin وEmby، وهما يسلكان المسار غير المجمّع. المسار الذي لا يقع في أي قسم لا يُحذَّر منه إلا إذا <em>لم</em> يطابق أي مسار من الدفعة. وغير ذلك يُكتب كسطر debug فقط. لذلك لن يظهر أي تحذير إذا كان الملف موجوداً في مجلد مكتبة ومجلد zurg فقط (recent وmusic وغيرهما…).</li>
+<li>تتيح <code translate="no" v-pre>ReinitializePlexClient</code> لتحديثات لوحة التحكم تبديل الخوادم أو الرموز مباشرةً أثناء التشغيل.</li>
+<li>تعرض <code translate="no" v-pre>GetQueueSizes</code> عمق طابور Plex، لتستخدمه الواجهة أو أدوات المراقبة.</li>
+</ul>
+<h2 id="matching--metadata-sync-internalplexmatchergo-internalplexschedulego">المطابقة ومزامنة البيانات الوصفية (<code translate="no" v-pre>internal/plex/matcher.go</code>, <code translate="no" v-pre>internal/plex/schedule.go</code>)</h2>
+<ul>
+<li>الشروط المسبقة: يحتاج إلى رابط Plex و token مُعدّين، و<code translate="no" v-pre>mount_path</code>، و<code translate="no" v-pre>scanner.PlexClient</code> يعمل فعلياً. وإلا فإنه يُرجع أخطاءً واضحة.</li>
+<li>الحالة الوحيدة الخاصة بـ Plex المحفوظة في كل تورنت هي <code translate="no" v-pre>PlexRatingKey</code> (على مستوى المسلسل للمحتوى الحلقي) إلى جانب <code translate="no" v-pre>IMDBID</code> (<code translate="no" v-pre>internal/torrent/torrent_types.go</code>). أما معرّفات Plex GUIDs فتُستخدم أثناء التشغيل لاستخراج المعرّفات وإعداد التقارير فقط، ولا تُحفظ أبداً.</li>
+<li>جمع البيانات: يسحب كل التورنتات من خريطة المجلدات، وكل عناصر Plex عبر <code translate="no" v-pre>GetAllMediaItemsConcurrent</code>، ويسبقهما تمريرة <code translate="no" v-pre>GetShowLevelIMDBIndex</code> حتى ترث الحلقات معرّفات IMDB/TVDB/TMDB الخاصة بالمسلسل بدلاً من معرّفات خاصة بكل حلقة. تُفهرس العناصر بـ <code translate="no" v-pre>GrandparentRatingKey</code> عند توفره.</li>
+<li>خطوات المزامنة:
+<ul>
+<li>التحقق من كل مفتاح تقييم محفوظ مقابل عناصر Plex المجلوبة حديثاً. إذا لم يعد Plex يملك المفتاح، يُمسح مع معرّف IMDB الخاص بالتورنت، ويُعاد التورنت إلى قائمة المطابقة.</li>
+<li>المطابقة بالمسار للتورنتات التي لا تملك مفتاح تقييم: تقوم <code translate="no" v-pre>buildPlexDirIndex</code> بفهرسة كل مكوّن من مكوّنات المسار بحروف صغيرة لكل ملف في Plex، ثم يُبحث عن <code translate="no" v-pre>GetKey</code> الخاص بالتورنت داخل هذا الفهرس (بزمن O(1)، والإدخال الأول هو الذي يفوز). التورنتات التي لا تطابق مجلداتها المخصصة أي موقع لأي قسم في Plex تُتخطى أولاً.</li>
+<li>ملء معرّفات IMDB الناقصة: أولاً من الدفعة التي جُلبت مسبقاً (دون أي استدعاءات API)، ثم لكل تورنت على حدة عبر <code translate="no" v-pre>GetMetadataSummary</code> (بحد أقصى 20 في الوقت نفسه).</li>
+<li>يكتشف عناصر Plex التي لا تملك أي تورنت.</li>
+<li>يرسل إلى DMM أزواج الـ hash وIMDB التي أدخلها المستخدم يدوياً فقط، ولا يرسل أبداً المعرّفات التي خمّنها Plex. يقبلها DMM دون مفتاح، ويُرفق <code translate="no" v-pre>dmm_api_key</code> معها عند تعيينه (<code translate="no" v-pre>sendHashImdbPairs</code> → <code translate="no" v-pre>TorrentManager.SendHashImdbPairs</code>, <code translate="no" v-pre>internal/torrent/mediainfo.go</code>).</li>
+</ul>
+</li>
+<li>يشغّل <code translate="no" v-pre>MatchSingleTorrent</code> عملية البحث بالمسار نفسها لتورنت واحد، وذلك مباشرةً بعد فحص مستهدف. ولا يفعل شيئاً إذا كان للتورنت مفتاح تقييم مسبقاً.</li>
+<li>التقارير: يكتب <code translate="no" v-pre>logs/match_report.txt</code> ملخصاً يتضمن الأعداد، والتورنتات غير المطابقة، والتورنتات المتخطاة، وعناصر Plex التي لا تملك تورنتات، والتورنتات التي ينقصها IMDB.</li>
+<li>الجدولة (<code translate="no" v-pre>internal/plex/schedule.go</code>): كل تشغيل مكتمل يضع ختماً زمنياً في <code translate="no" v-pre>data/plex_match_timestamp</code>. عند البدء، يعمل <code translate="no" v-pre>StartMatchingJob</code> فوراً فقط إذا كان هذا الختم مفقوداً أو أقدم من <code translate="no" v-pre>plex_match_every_mins</code>، وإلا فإنه ينتظر المدة المتبقية أولاً. يستمع للتشغيل اليدوي عبر <code translate="no" v-pre>TorrentManager.PlexMatchTrigger</code>، ولتغييرات الفاصل الزمني أثناء التشغيل عبر <code translate="no" v-pre>ResetPlexMatchTicker</code>، ويعيد تشغيل المهمة حتى ثلاث مرات إذا تعطّلت بسبب panic.</li>
+<li>نقطة التشغيل اليدوي <code translate="no" v-pre>/plex/match-torrents</code> ترسل إشارة إلى قناة التشغيل، وترفض العمل إذا كانت هناك عملية جارية. أما <code translate="no" v-pre>/plex/match-torrents/status</code> فيخبرك إن كانت هناك عملية قيد التشغيل حالياً (<code translate="no" v-pre>internal/handlers/utilities.go</code>).</li>
+</ul>
+<h2 id="manual-matching--manage-ui-internalhandlersmanage">المطابقة اليدوية وواجهة الإدارة (<code translate="no" v-pre>internal/handlers/manage</code>)</h2>
+<ul>
+<li>فلاتر قائمة التورنتات تعرض حالات Plex (<code translate="no" v-pre>plex_matched</code>، <code translate="no" v-pre>plex_in_library_not_matched</code>، <code translate="no" v-pre>plex_no_imdb</code>، <code translate="no" v-pre>plex_missing_metadata</code>) للعرض السريع (<code translate="no" v-pre>torrent_list_state.go</code>).</li>
+<li>صفحة المطابقة اليدوية لكل تورنت <code translate="no" v-pre>/manage/{hash}/plex-match</code>:
+<ul>
+<li>تحتاج التورنت أن تكون مرتبطة بالفعل بـ <code translate="no" v-pre>PlexRatingKey</code> (يضبطها المطابِق)، وإلا تعرض الصفحة الرسالة &quot;torrent is not linked to Plex&quot;. تتحقق <code translate="no" v-pre>resolvePlexRatingKey</code> من هذا المفتاح باستخدام <code translate="no" v-pre>GetMetadataSummary</code>، وتملأ معرّف IMDB الناقص من خلاله، وإذا كان المفتاح قديماً تعيد البحث عنه عبر <code translate="no" v-pre>LookupRatingKeyByGUID</code> باستخدام معرّف <code translate="no" v-pre>tt…</code>/<code translate="no" v-pre>tvdb://</code>/<code translate="no" v-pre>tmdb://</code> المخزَّن للتورنت (<code translate="no" v-pre>internal/handlers/manage/handler.go</code>).</li>
+<li>تجلب مرشحي المطابقة اليدوية من Plex مع تجاوزات اختيارية للعنوان والسنة واللغة (44 خياراً للغة، والافتراضي <code translate="no" v-pre>en-US</code>)، وتعرض النتائج مع تمييز الاختيار الحالي (<code translate="no" v-pre>torrent_matches.go</code>).</li>
+<li>عند تطبيق مطابقة (<code translate="no" v-pre>HandleApplyPlexMatch</code>) تستدعي <code translate="no" v-pre>ApplyManualMatch</code>، ثم تعيد البحث عن مفتاح التقييم بالمعرّف GUID الذي اخترته لأن Plex قد يعيد تعيين المفتاح. بعد ذلك تحدّث مفتاح التقييم ومعرّف IMDB للتورنت (بما في ذلك معرّف IMDB الاختياري الذي يدخله المستخدم)، وتحفظ التغييرات، ثم تعيد التوجيه مع حالات النجاح أو الخطأ.</li>
+</ul>
+</li>
+</ul>
+<h2 id="watchlist-acquisition">الحصول على الأعمال من قائمة المشاهدة</h2>
+<ul>
+<li>يعمل وضع قائمة المشاهدة في Plex كمحوّل داخل <code translate="no" v-pre>internal/acquisition/plex</code>، ويشتغل على خدمة الحصول المشتركة إلى جانب Seerr. إعدادات قائمة المشاهدة الحالية ما زالت تعمل، ويمكنك أيضًا ضبط المحوّلات من خلال <code translate="no" v-pre>acquisition.sources</code>.</li>
+<li>يتصل العميل بـ <code translate="no" v-pre>discover.provider.plex.tv</code> ويقرأ العناصر على دفعات من 100 عنصر. يُقرأ رمز Plex من جديد مع كل طلب، لذلك تسري إعادة المصادقة من دون الحاجة إلى إعادة تشغيل المحوّل.</li>
+<li>يحصل المنفِّذ المشترك على الأفلام، أو على كل موسم مخطَّط له، من فهارس Newznab وTorznab، ويفضّل حزم المواسم. أما عمليات البحث عن المسلسلات فتجرّب TVDB قبل IMDb، لأن تطابقات الفهارس تختلف من فهرس لآخر.</li>
+<li>يُحفَظ التقدّم ومواعيد إعادة المحاولة والإيصالات لكل حلقة في <code translate="no" v-pre>data/acquisition.json</code>، فتبقى بعد إعادة التشغيل. ويُستورد سجل Plex القديم تلقائيًا.</li>
+<li>تُحذف العناصر بعد الانتهاء من الحصول على كل الأهداف المخطَّط لها. تبقى الطلبات الفاشلة في قائمة المشاهدة وتُعاد محاولتها مع تراجع تدريجي دائم. وإعادة المحاولة التي تقتصر على الحذف لا تعيد عملية الحصول. للاطلاع على الحدود، راجع <a href="../plex-watchlist/">الحصول على قائمة مشاهدة Plex</a>، وللإعدادات المشتركة راجع <a href="../acquisition/">مصادر الحصول</a>.</li>
+</ul>
+<h2 id="dashboard--api-endpoints-internalhandlersroutergo-internalhandlersdashboard">لوحة التحكم ونقاط نهاية API (<code translate="no" v-pre>internal/handlers/router.go</code>, <code translate="no" v-pre>internal/handlers/dashboard</code>)</h2>
+<ul>
+<li>المسارات: <code translate="no" v-pre>/plex/auth</code>، <code translate="no" v-pre>/plex/callback</code>، <code translate="no" v-pre>/plex/auth/status</code>، <code translate="no" v-pre>/plex/servers</code>، <code translate="no" v-pre>/plex/server</code>، <code translate="no" v-pre>/plex/logout</code>، <code translate="no" v-pre>/plex/match-torrents</code>، <code translate="no" v-pre>/plex/match-torrents/status</code>، <code translate="no" v-pre>/plex/scan/{sectionKey}</code>، <code translate="no" v-pre>/plex/scan-all</code>، <code translate="no" v-pre>/plex-stats</code>، <code translate="no" v-pre>/plex-stats/data</code>، <code translate="no" v-pre>/plex-stats/image</code>، <code translate="no" v-pre>/manage/{hash}/plex-match</code>.</li>
+<li>تعرض لوحة التحكم معلومات Plex وحالة الخادم عبر <code translate="no" v-pre>PlexStatusFetcher</code> على مؤقتين. كل 30 ثانية تُحدَّث جلسات البث وعمليات إعادة الترميز وعرض النطاق وأنشطة الخادم (<code translate="no" v-pre>GetStreamingSessions</code>/<code translate="no" v-pre>GetTranscodeSessions</code>/<code translate="no" v-pre>GetServerActivitiesDetails</code>). وكل 5 دقائق يُجرى جلب كامل يعيد قراءة الهوية (<code translate="no" v-pre>GetServerIdentityOnly</code>) وأقسام المكتبة وأعداد العناصر في كل قسم. تُقارَن أنشطة المسح بقائمة التورنت حسب اسم الملف، حتى تتمكن لوحة التحكم من ربط النشاط بـ hash التورنت.</li>
+<li>تضع نقاط نهاية مسح القسم والمسح الشامل في قائمة الانتظار <strong>تحديثًا كاملًا</strong> للقسم (<code translate="no" v-pre>RefreshSection(key, nil)</code>، بدون مسار) لقسم واحد أو لكل الأقسام. لا تمس ملفات STRM ولا تُطلق أي آثار جانبية للمكتبة (<code translate="no" v-pre>HandlePlexScan</code>/<code translate="no" v-pre>HandlePlexScanAll</code>).</li>
+</ul>
+<h2 id="plex-wrapped-internalhandlersdashboardplex_wrappedgo">Plex Wrapped (<code translate="no" v-pre>internal/handlers/dashboard/plex_wrapped.go</code>)</h2>
+<ul>
+<li>
+<p>يعرض <code translate="no" v-pre>/plex-stats</code> عرضًا من 9 شرائح يلخّص سنتك في Plex، مبنيًا على سجل المشاهدة للأشهر الـ 12 الأخيرة.</p>
+</li>
+<li>
+<p>يعيد <code translate="no" v-pre>/plex-stats/data</code> الإحصائيات نفسها بصيغة JSON.</p>
+</li>
+<li>
+<p>يُنشئ <code translate="no" v-pre>/plex-stats/image</code> صورة PNG قابلة للمشاركة باستخدام chromedp في وضع headless. المقاسات المتاحة هي <code translate="no" v-pre>square</code> بحجم 1080x1080 وهو الافتراضي، و<code translate="no" v-pre>instagram</code> بحجم 1080x1920، و<code translate="no" v-pre>facebook</code> بحجم 1200x630.</p>
+</li>
+<li>
+<p>لا تُجلب الإحصائيات أكثر من مرة واحدة كل 24 ساعة كحد أقصى (استخدم <code translate="no" v-pre>?refresh=true</code> لفرض التحديث). يقتصر السجل على 10000 عنصر كحد أقصى. تُخزَّن الإحصائيات مؤقتًا في الذاكرة وعلى القرص في الملف <code translate="no" v-pre>data/plex_wrapped_cache.json</code>، ويُعاد تحميلها عند بدء التشغيل. وأثناء جلب البيانات تعرض الصفحة حالة التحميل بدلًا من تجميد الواجهة.</p>
+</li>
+</ul>
+<h2 id="library-side-effects--refresh-links">الآثار الجانبية على المكتبة وروابط التحديث</h2>
+<ul>
+<li>تُفعَّل تأثيرات جانبية للمكتبة عند تغيير تعيين المجلدات، وإعادة التسمية، والحذف، وإصلاح الملفات. تقوم <code translate="no" v-pre>TriggerLibrarySideEffects</code> بإبطال dircache الخاص بـ rclone VFS للمسارات المتأثرة (حتى لا تفحص خوادم الوسائط قائمة قديمة)، وتستدعي <code translate="no" v-pre>MediaScanner.TriggerScan</code> (فتستدعي تحديث Plex)، وتشغّل الخطاف <code translate="no" v-pre>on_library_update</code> الخاص بالمستخدم (<code translate="no" v-pre>internal/torrent/hooks.go</code>).</li>
+<li>لا يعمل خط معالجة التحديث على إنشاء STRM والتأثيرات الجانبية إلا بعد اكتمال التهيئة، وذلك لتجنب عمليات فحص Plex المبكرة (<code translate="no" v-pre>internal/torrent/refresh.go</code>).</li>
+</ul>
+<h2 id="infrastructure--scripts">البنية التحتية والسكربتات</h2>
+<ul>
+<li>نموذج لملف vhost في Nginx لتمرير حركة Plex (<code translate="no" v-pre>nginx/plex.conf</code>).</li>
+<li><code translate="no" v-pre>plex_update.sh</code> هو سكربت الفحص الجزئي المرجعي لـ <code translate="no" v-pre>on_library_update: sh plex_update.sh &quot;$@&quot;</code>. ضعه بجانب <code translate="no" v-pre>docker-compose.yml</code>، لأن مجلد هذا الملف مركّب على <code translate="no" v-pre>/config</code>، وبالتالي يكون السكربت موجودًا داخل الحاوية أصلًا. على Windows يعمل الـ hook عبر PowerShell وليس <code translate="no" v-pre>/bin/sh</code> (<code translate="no" v-pre>pkg/script/script.go</code>)، لذا لن يعمل هذا السكربت هناك. أما الصيغة الخاصة بـ PowerShell فموضحة في <a href="../usenet/#6-point-plex-at-it">Usenet → Point Plex at it</a>.</li>
+<li><code translate="no" v-pre>integration/plex_integration.sh</code> يعمل عند تشغيل <code translate="no" v-pre>make integration-test</code> و<code translate="no" v-pre>make integration-test-media</code>. إذا لم يكن على الجهاز خادم Plex فإنه يتخطى نفسه ويطبع تحذيرًا واضحًا، لذا اقرأ المخرجات بدلًا من الاعتماد على رمز الخروج. أما <code translate="no" v-pre>scripts/plex-e2e-test.sh</code> فهو فحص تشغيل مستقل يقرأ <code translate="no" v-pre>plex_server_url</code> و<code translate="no" v-pre>plex_token</code> من الملف <code translate="no" v-pre>config.yml</code>.</li>
+</ul>
+<h2 id="recommended-plex-settings">إعدادات Plex الموصى بها</h2>
+<p>تفترض الإعدادات الافتراضية في Plex أن القرص المحلي موجود دائماً ومتاح للقراءة في أي وقت. أما تركيب zurg فليس كذلك. بياناته تأتي من مزوّد عبر HTTP، وقد لا يمكن قراءته لفترة قصيرة أثناء إعادة اتصال rclone. وبعض الإعدادات الافتراضية في Plex تضرّ فعلاً في هذه الظروف.</p>
+<p>يقوم zurg بمطابقة هذه الإعدادات مع كل تحديث لحالة Plex. ويحدد <code translate="no" v-pre>plex_settings_policy</code> مدى تدخله: <code translate="no" v-pre>off</code> أو <code translate="no" v-pre>warn</code> أو <code translate="no" v-pre>guard</code> (وهو الافتراضي) أو <code translate="no" v-pre>enforce</code>. توجد القائمة في <code translate="no" v-pre>pkg/plex/settings.go</code> (<code translate="no" v-pre>RecommendedSettings</code>)، أما السياسة فهي في <code translate="no" v-pre>pkg/plex/reconcile.go</code>.</p>
+<p>يُتجاهل أي إعداد لا يُبلغ عنه الخادم، فلا يُعتبر إصدار Plex الذي لا يحتوي على إعداد معين مُهيّأً بشكل خاطئ.</p>
+<p>من القيم الستة عشر أدناه، تسع منها تختلف عن القيمة الافتراضية لـ Plex نفسه. أما السبع الباقية فتطابق الافتراضي، وهي حمايات لا تصحيحات، ولا تُطبَّق إلا على المشغّل الذي فعّل أحد هذه الإعدادات. لذلك تُظهر تلك الصفوف القيمة نفسها في العمودين، وهذا ليس خطأ. فـ Plex يضبط <code translate="no" v-pre>GenerateBIFBehavior</code> على <code translate="no" v-pre>never</code>، بينما كان الخادم الذي أُجريت عليه القياسات على <code translate="no" v-pre>scheduled</code>. يعرض Plex الإعداد الافتراضي لكل إعداد في <code translate="no" v-pre>/:/prefs</code>، لذا فإن العمود &quot;Plex ships&quot; أدناه مأخوذ من الخادم نفسه وليس مفترضاً (قيس بتاريخ 2026-09-05 مع Plex 1.42.2).</p>
+<h3 id="opting-out-of-one-setting">إلغاء تفعيل إعداد واحد</h3>
+<p><code translate="no" v-pre>plex_settings_policy</code> مُقسَّمة إلى مستويات، ولا يكون المستوى دائمًا هو المسألة المطروحة. المشغِّل الذي تنتقل ملفاته بين مجلدات المكتبة، مثلًا الفرز المدفوع بالوسوم، يعتمد على أن يفرِّغ Plex سلة المهملات الخاصة به ليمسح الإدخال الذي تركه الملف، والمستوى <code translate="no" v-pre>guard</code> يوقف ذلك. أما الانتقال إلى <code translate="no" v-pre>warn</code> لاستعادته فيُسقط حراس أحداث نظام الملفات أيضًا، وهي من المستوى نفسه وليست ما طلبوه.</p>
+<p><code translate="no" v-pre>plex_settings_ignore</code> يسمّي الإعدادات واحدًا واحدًا:</p>
+<div id="opting-out-of-one-setting-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">plex_settings_policy: guard
+plex_settings_ignore:
+  - autoEmptyTrash</code></pre>
+</doc-codeblock></div>
+<p>تكتب لوحة التحكم هذا الإعداد نيابةً عنك. تحتوي صفحة الإعدادات على مفتاح <strong>Let Plex Empty Its Own Trash</strong> فوق إعدادات Library Trash Sweep. يضيف المفتاح <code translate="no" v-pre>autoEmptyTrash</code> إلى هذه القائمة ويحذفه منها، ويترك بقية القائمة كما هي. يسري التفعيل عند إعادة التشغيل التالية.</p>
+<p>الإعداد المتجاهَل ما زال يُقرأ ويظهر في لوحة التحكم وفي <code translate="no" v-pre>zurg plex-settings</code> (معلَّمًا بـ <code translate="no" v-pre>skip</code>)، فلا شيء مخفي. لكنه لا يُكتب أبدًا، ولا يُحسب مشكلةً، ولا يظهر خلف شريط سلة المهملات في لوحة التحكم. تُطابَق المعرّفات دون اعتبار لحالة الأحرف. أما المعرّف الذي لا يسمّي أي إعداد في الجداول أدناه فيُبلَّغ عنه عند البدء، ويبقى الإعداد محميًا، لأن الخطأ المطبعي يجب ألا يُفهم على أنه انسحاب.</p>
+<p>تجاهل إعداد أمان يكون على مسؤوليتك، وتنبّه zurg إلى ذلك مرة واحدة عند البدء لا في كل تحديث. و<code translate="no" v-pre>autoEmptyTrash</code> تحديدًا هو الإعداد الذي يفرّغ المكتبة كاملةً عندما يصادف الفحص تركيبًا انقطع لحظيًا. وتجاهله يعيد أيضًا مهمة التنظيف إلى Plex، انظر أدناه.</p>
+<h3 id="who-empties-the-trash">من يفرغ سلة المهملات</h3>
+<p>إيقاف <code translate="no" v-pre>autoEmptyTrash</code> يترك مهمة بلا من يقوم بها. طلب Plex ألا يمسح الإدخالات التي اختفت ملفاتها، ولفترة طويلة كانت إزالة zurg لهذه الإدخالات اختيارية، فكانت المكتبة تتراكم فيها إدخالات ميتة دون أن يلتقطها أحد. لم يكن أيٌّ من الطرفين مخطئاً، لكن الفجوة كانت حقيقية: هي ما يصطدم به المستخدم حين ينتقل ملف بين مجلدات المكتبة فيبقى الإدخال القديم إلى الأبد.</p>
+<p>صار zurg الآن يتولى المهمة التي تخلّى عنها. عند ترك <code translate="no" v-pre>plex_trash_sweep_every_mins</code> بلا قيمة، يزيل <a href="../../internals/plex-trash-sweep/">الكنس الدوري لسلة المهملات</a> الإدخالات كل 60 دقيقة، لكن فقط حين لا يقوم بذلك أحدٌ غيره. إذا كان Plex ما زال يفرّغ سلة مهملاته بنفسه، لأن <code translate="no" v-pre>plex_settings_policy</code> قيمته <code translate="no" v-pre>off</code> أو <code translate="no" v-pre>warn</code>، أو لأن <code translate="no" v-pre>autoEmptyTrash</code> موجود في <code translate="no" v-pre>plex_settings_ignore</code>، يتنحّى zurg ويترك الأمر لـ Plex. فوجود جامعَين للمهملات على مكتبة واحدة هو ما يحوّل الخلاف بينهما إلى عملية حذف.</p>
+<p>الكنس الدوري أضيق بكثير من تفريغ Plex لسلته، وهذا هو سبب تفضيله. يحذف إدخالاً واحداً في كل مرة، ولا يحذف أي إدخال ما زال له ملف، ولا يعمل إلا على جهاز تركيب يُقرأ في تلك اللحظة، ويقتصر على 50 عملية حذف و10% من السلة في كل دورة. والإدخالات التي لا يملك zurg حكماً واضحاً عليها تبقى ظاهرة كمعطوبة لمدة 14 يوماً أولاً. كما يحتاج الكنس إلى ضبط <code translate="no" v-pre>plex_database_path</code>، فيعمل فقط حيث يعمل Plex على هذا المضيف، وأن يشغّل zurg جهاز التركيب بنفسه (<code translate="no" v-pre>rclone_enabled</code> مع ضبط <code translate="no" v-pre>mount_path</code>). يقرأ zurg قاعدة البيانات هذه بالبرنامج <code translate="no" v-pre>Plex SQLite</code> الذي يثبّته Plex، ويجده في المكان الذي يضعه فيه مثبّت Plex على Linux وmacOS وWindows، لذا فالمفتاح الوحيد الذي يلزم ضبطه هو <code translate="no" v-pre>plex_database_path</code>:</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux">
+<template #title>Linux</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">plex_database_path: &quot;/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db&quot;</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="macos">
+<template #title>macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">plex_database_path: &quot;/Users/YOU/Library/Application Support/Plex Media Server/Plug-in Support/Databases/com.plexapp.plugins.library.db&quot;</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">plex_database_path: 'C:\Users\YOU\AppData\Local\Plex Media Server\Plug-in Support\Databases\com.plexapp.plugins.library.db'</code></pre>
+</doc-codeblock></div>
+<p>أبقِ علامات الاقتباس المفردة، لأن YAML داخل علامات الاقتباس المزدوجة يقرأ الشرطة المائلة العكسية على أنها محرف هروب. واضبط <code translate="no" v-pre>plex_sqlite_binary</code> فقط إذا كان Plex مثبتاً في مكان آخر، مثل نسخة Plex ذات 32 بت: <code translate="no" v-pre>'C:\Program Files (x86)\Plex\Plex Media Server\Plex SQLite.exe'</code>.</p>
+</doc-tab>
+</doc-tabs>
+<p>استبدل <code translate="no" v-pre>YOU</code> باسم مستخدمك، فـ zurg لا يفسّر <code translate="no" v-pre>~</code> ولا <code translate="no" v-pre>%LOCALAPPDATA%</code>. يطابق الكنس المسارات التي يخزنها Plex مع <code translate="no" v-pre>mount_path</code>، وهذا يشمل حرف محرك مثل <code translate="no" v-pre>Z:</code> (<code translate="no" v-pre>pkg/utils/path_within.go</code>).</p>
+<p>لإيقاف الإزالة وإفراغ السلة بنفسك، اكتب <code translate="no" v-pre>plex_trash_sweep_every_mins: 0</code>. هذا رفض صريح، وهو يختلف عن ترك المفتاح غير موجود.</p>
+<p>هذا المفتاح يوقف إزالة zurg فقط، ولا يعيد الإعداد إلى Plex. مع <code translate="no" v-pre>guard</code> ما زال zurg يكتب <code translate="no" v-pre>autoEmptyTrash</code> بقيمة off، فلن يفرّغ Plex سلته بعد الفحص، وتتراكم الإدخالات دون أن يلتقطها أحد. استخدم مفتاح لوحة التحكم أو <code translate="no" v-pre>plex_settings_ignore</code> لتعيد المهمة إلى Plex.</p>
+<h3 id="safety--corrected-under-guard-and-enforce">الأمان — يُصحَّح ضمن <code translate="no" v-pre>guard</code> و <code translate="no" v-pre>enforce</code></h3>
+<retype-table copy-text="| الإعداد | الافتراضي في Plex | ما يريده zurg | السبب |
+|---|---|---|---|
+| `autoEmptyTrash` | `1` | `0` | يفرّغ Plex سلة المهملات بعد كل فحص. إذا أصبح الـ mount غير قابل للقراءة لفترة وجيزة أثناء مرور الفحص عليه، فسيبدو كل ملف محذوفاً، وعندها يزيل Plex الملفات نهائياً بدلاً من تركها في السلة لتعود مع عودة الـ mount. |
+| `FSEventLibraryUpdatesEnabled` | `0` | `0` | التحديثات المعتمدة على الأحداث تفوّت ما يتغيّر فعلاً هنا. شجرة zurg تتغيّر من جهتها الخاصة، وهذا التغيير لا يمرّ عبر النواة المحلية، فلا يُطلق أي حدث، فتبقى المكتبة متأخرة دون أن ينتبه أحد. أما الأحداث التي تصل فعلاً فهي عمليات كتابة تتم *عبر* الـ mount، وتحدث بينما لا يزال المجلد يُجمَّع. |
+| `FSEventLibraryPartialScanEnabled` | `0` | `0` | الفحص الجزئي يعمل بناءً على تلك الأحداث نفسها، فيُطلق عند عمليات الكتابة القادمة عبر الـ mount، أي تحديداً عندما يكون المجلد مكتوباً نصفه، ولا يُطلق أبداً عند التغييرات من الجهة البعيدة، وهي التي كانت تحتاج فعلاً إلى فحص. |
+| `ButlerTaskBackupDatabase` | `1` | `1` | النسخ الاحتياطي الليلي لقاعدة البيانات هو الشيء الوحيد الذي يستعيد مكتبة حذفها Plex بالفعل. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>الإعداد</th>
+<th>الافتراضي في Plex</th>
+<th>ما يريده zurg</th>
+<th>السبب</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>autoEmptyTrash</code></td>
+<td><code translate="no" v-pre>1</code></td>
+<td><code translate="no" v-pre>0</code></td>
+<td>يفرّغ Plex سلة المهملات بعد كل فحص. إذا أصبح الـ mount غير قابل للقراءة لفترة وجيزة أثناء مرور الفحص عليه، فسيبدو كل ملف محذوفاً، وعندها يزيل Plex الملفات نهائياً بدلاً من تركها في السلة لتعود مع عودة الـ mount.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>FSEventLibraryUpdatesEnabled</code></td>
+<td><code translate="no" v-pre>0</code></td>
+<td><code translate="no" v-pre>0</code></td>
+<td>التحديثات المعتمدة على الأحداث تفوّت ما يتغيّر فعلاً هنا. شجرة zurg تتغيّر من جهتها الخاصة، وهذا التغيير لا يمرّ عبر النواة المحلية، فلا يُطلق أي حدث، فتبقى المكتبة متأخرة دون أن ينتبه أحد. أما الأحداث التي تصل فعلاً فهي عمليات كتابة تتم <em>عبر</em> الـ mount، وتحدث بينما لا يزال المجلد يُجمَّع.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>FSEventLibraryPartialScanEnabled</code></td>
+<td><code translate="no" v-pre>0</code></td>
+<td><code translate="no" v-pre>0</code></td>
+<td>الفحص الجزئي يعمل بناءً على تلك الأحداث نفسها، فيُطلق عند عمليات الكتابة القادمة عبر الـ mount، أي تحديداً عندما يكون المجلد مكتوباً نصفه، ولا يُطلق أبداً عند التغييرات من الجهة البعيدة، وهي التي كانت تحتاج فعلاً إلى فحص.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>ButlerTaskBackupDatabase</code></td>
+<td><code translate="no" v-pre>1</code></td>
+<td><code translate="no" v-pre>1</code></td>
+<td>النسخ الاحتياطي الليلي لقاعدة البيانات هو الشيء الوحيد الذي يستعيد مكتبة حذفها Plex بالفعل.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>هذه الإعدادات تُفقد بيانات لا وقتاً، ولهذا تكتب السياسة الافتراضية قيمها بدلاً من الاكتفاء بالتحذير. فقط <code translate="no" v-pre>autoEmptyTrash</code> يأتي بالقيمة المدمّرة افتراضياً؛ أما الثلاثة الأخرى فقيمها الافتراضية هي بالفعل ما يريده zurg، وهي موجودة هنا لتنبيه المشغّل إذا كان قد فعّل أياً منها.</p>
+<p>أُعيدت كتابة السببين الخاصّين بـ <code translate="no" v-pre>FSEvent</code> بعد القياس، على كل منصة يركّب عليها zurg. الصياغة السابقة قالت إن mount من نوع FUSE &quot;لا يُصدر هذه الأحداث بشكل موثوق، لذا فهو يُنتج فحوصات في لحظات لم يطلب أحد فيها فحصاً&quot;. والنصفان كلاهما خاطئان.</p>
+<p>القياس جرى بتاريخ 2026-09-05: راقبت كل منصة بالواجهة البرمجية التي يستخدمها خادم الوسائط فعلاً، على mount من rclone يمكن تغيير مجلده الخلفي مباشرة. <strong>A</strong> هي عملية كتابة تتم عبر الـ mount؛ <strong>B</strong> هي الملف نفسه يظهر من الجهة البعيدة، كما يحدث عندما تتغير شجرة zurg من جهتها.</p>
+<retype-table copy-text="| المنصة | الـ mount | المراقبة بواسطة | A: عبر الـ mount | B: تغيير من الجهة البعيدة |
+|---|---|---|---|---|
+| Linux | `fuse.rclone` | inotify | `CREATE` `OPEN` `ATTRIB` `CLOSE_WRITE` | **بلا أحداث** |
+| Docker | نفس الـ mount مُركّب كـ bind mount داخل حاوية | inotify، داخل الحاوية | نفس الأحداث الأربعة، كما تُرى داخل الحاوية | **بلا أحداث** |
+| macOS | macFUSE | FSEvents | `Created IsFile` | **بلا أحداث** |
+| Windows | WinFsp | `ReadDirectoryChangesW` | `Created` `Changed` | **بلا أحداث** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>المنصة</th>
+<th>الـ mount</th>
+<th>المراقبة بواسطة</th>
+<th>A: عبر الـ mount</th>
+<th>B: تغيير من الجهة البعيدة</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Linux</td>
+<td><code translate="no" v-pre>fuse.rclone</code></td>
+<td>inotify</td>
+<td><code translate="no" v-pre>CREATE</code> <code translate="no" v-pre>OPEN</code> <code translate="no" v-pre>ATTRIB</code> <code translate="no" v-pre>CLOSE_WRITE</code></td>
+<td><strong>بلا أحداث</strong></td>
+</tr>
+<tr>
+<td>Docker</td>
+<td>نفس الـ mount مُركّب كـ bind mount داخل حاوية</td>
+<td>inotify، داخل الحاوية</td>
+<td>نفس الأحداث الأربعة، كما تُرى داخل الحاوية</td>
+<td><strong>بلا أحداث</strong></td>
+</tr>
+<tr>
+<td>macOS</td>
+<td>macFUSE</td>
+<td>FSEvents</td>
+<td><code translate="no" v-pre>Created IsFile</code></td>
+<td><strong>بلا أحداث</strong></td>
+</tr>
+<tr>
+<td>Windows</td>
+<td>WinFsp</td>
+<td><code translate="no" v-pre>ReadDirectoryChangesW</code></td>
+<td><code translate="no" v-pre>Created</code> <code translate="no" v-pre>Changed</code></td>
+<td><strong>بلا أحداث</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>وصلت كل المنصات الحدث A، وأنتج تحكّم مُتزامن على نظام ملفات أصلي (APFS، NTFS) الأحداث نفسها، أي أن المراقبين كانوا يعملون. ولم تصل أي منصة الحدث B، رغم أن الملف كان مرئياً عبر الـ mount بعد انتهاء صلاحية ذاكرة التخزين المؤقت للمجلد.</p>
+<p>إذن نمط الفشل معكوس عما زُعم: التحديث المعتمد على الأحداث يُطلق عند عمليات الكتابة القادمة <em>عبر</em> الـ mount، كأن يصل استيراد من *arr إلى مجلد لا يزال يُجمَّع، ولا يُطلق أبداً للتغييرات من الجهة البعيدة، وهي السبب الوحيد الذي يجعل الفحص مطلوباً أصلاً. المشكلة ليست أن الأحداث غير موثوقة؛ المشكلة أنها تبلّغ عن النصف الخاطئ مما يحدث على mount لخدمة debrid.</p>
+<h3 id="bandwidth--corrected-under-enforce-only">عرض النطاق الترددي — يُصحَّح ضمن <code translate="no" v-pre>enforce</code> فقط</h3>
+<p>كل واحد من هذه الإعدادات يجعل Plex يفكّ ترميز ملفات كاملة من أجل نتيجة لا ينظر إليها أحد. هذا لا يضر على التخزين المحلي، لكن فوق mount من debrid كل بايت يصبح طلبًا إلى المزوّد، وهذه العمليات تعمل على المكتبة كلها. أما التحليل الذي يكون ناتجه <em>مرئيًا</em> مثل معاينات التمرير، وصور الفصول، وتسوية مستوى الصوت، والتحليل الصوتي، فيُنقل بدلًا من ذلك إلى فئة الذوق أدناه، حيث لن يمسّه <code translate="no" v-pre>enforce</code>.</p>
+<retype-table copy-text="| الإعداد | الافتراضي في Plex | ما يريده zurg |
+|---|---|---|
+| `ButlerTaskDeepMediaAnalysis` | `1` | `0` |
+| `ButlerTaskUpgradeMediaAnalysis` | `1` | `0` |
+| `GenerateAdMarkerBehavior` | `scheduled` | `never` |
+| `GenerateVADBehavior` | `never` | `never` |
+| `GenerateIndexFilesDuringAnalysis` | `0` | `0` |
+| `ButlerTaskGenerateMediaIndexFiles` | `0` | `0` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>الإعداد</th>
+<th>الافتراضي في Plex</th>
+<th>ما يريده zurg</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>ButlerTaskDeepMediaAnalysis</code></td>
+<td><code translate="no" v-pre>1</code></td>
+<td><code translate="no" v-pre>0</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>ButlerTaskUpgradeMediaAnalysis</code></td>
+<td><code translate="no" v-pre>1</code></td>
+<td><code translate="no" v-pre>0</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>GenerateAdMarkerBehavior</code></td>
+<td><code translate="no" v-pre>scheduled</code></td>
+<td><code translate="no" v-pre>never</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>GenerateVADBehavior</code></td>
+<td><code translate="no" v-pre>never</code></td>
+<td><code translate="no" v-pre>never</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>GenerateIndexFilesDuringAnalysis</code></td>
+<td><code translate="no" v-pre>0</code></td>
+<td><code translate="no" v-pre>0</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>ButlerTaskGenerateMediaIndexFiles</code></td>
+<td><code translate="no" v-pre>0</code></td>
+<td><code translate="no" v-pre>0</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="taste--always-reported-never-corrected">الذوق — يُبلَّغ عنه دائماً ولا يُصحَّح أبداً</h3>
+<p>لكل من هذه الإعدادات ميزة وراءها، لذلك يذكر zurg التكلفة ويترك الاختيار لك. إيقاف أحدها دون طلب منك سيحرمك من شيء يراه المشغّل، وهذا ليس قراراً يتخذه zurg مهما كان سيوفّر من عرض النطاق. بالنسبة للإعدادين الأولين، الخيار الأرخص يُبقي الميزة ويُنقل العمل إلى نافذة الصيانة. أما بقية الإعدادات فالاختيار فيها بين الميزة وعرض النطاق.</p>
+<retype-table copy-text="| الإعداد | الافتراضي في Plex | ما يقترحه zurg | السبب |
+|---|---|---|---|
+| `GenerateIntroMarkerBehavior` | `asap` | `scheduled` أو `never` | يفكّ `asap` ترميز كل ملف فور وصوله، خارج أي نافذة صيانة. أما `scheduled` فيُبقي زر Skip Intro ويُنقل العمل إلى النافذة. |
+| `GenerateCreditsMarkerBehavior` | `asap` | `scheduled` أو `never` | الأمر نفسه، لكن لزر Skip Credits. |
+| `GenerateBIFBehavior` | `never` | `never` | يفكّ ترميز الفيديو كاملاً لبناء شريط الصور الذي يظهر أثناء التقديم والتأخير. التشغيل لا يحتاج إليه. |
+| `GenerateChapterThumbBehavior` | `scheduled` | `never` | يفكّ ترميز الملف ليستخرج إطاراً واحداً لكل فصل، وهو الصورة المعروضة بجانب كل مدخل في قائمة الفصول. |
+| `LoudnessAnalysisBehavior` | `scheduled` | `never` | يفكّ ترميز صوت كل ملف بالكامل لقياسه، وذلك لتسوية مستوى الصوت بين المقاطع والعناوين. |
+| `MusicAnalysisBehavior` | `scheduled` | `never` | يفكّ ترميز كل مقطع صوتي. الملفات كثيرة وصغيرة، لذلك هذا هو الإعداد الذي يرفع عدد الطلبات ويؤدي إلى تقييد الحساب. يوفّر التحليل الصوتي مزجات لمقاطع متشابهة وعرض المؤثرات البصرية للصوت. |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>الإعداد</th>
+<th>الافتراضي في Plex</th>
+<th>ما يقترحه zurg</th>
+<th>السبب</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>GenerateIntroMarkerBehavior</code></td>
+<td><code translate="no" v-pre>asap</code></td>
+<td><code translate="no" v-pre>scheduled</code> أو <code translate="no" v-pre>never</code></td>
+<td>يفكّ <code translate="no" v-pre>asap</code> ترميز كل ملف فور وصوله، خارج أي نافذة صيانة. أما <code translate="no" v-pre>scheduled</code> فيُبقي زر Skip Intro ويُنقل العمل إلى النافذة.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>GenerateCreditsMarkerBehavior</code></td>
+<td><code translate="no" v-pre>asap</code></td>
+<td><code translate="no" v-pre>scheduled</code> أو <code translate="no" v-pre>never</code></td>
+<td>الأمر نفسه، لكن لزر Skip Credits.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>GenerateBIFBehavior</code></td>
+<td><code translate="no" v-pre>never</code></td>
+<td><code translate="no" v-pre>never</code></td>
+<td>يفكّ ترميز الفيديو كاملاً لبناء شريط الصور الذي يظهر أثناء التقديم والتأخير. التشغيل لا يحتاج إليه.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>GenerateChapterThumbBehavior</code></td>
+<td><code translate="no" v-pre>scheduled</code></td>
+<td><code translate="no" v-pre>never</code></td>
+<td>يفكّ ترميز الملف ليستخرج إطاراً واحداً لكل فصل، وهو الصورة المعروضة بجانب كل مدخل في قائمة الفصول.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>LoudnessAnalysisBehavior</code></td>
+<td><code translate="no" v-pre>scheduled</code></td>
+<td><code translate="no" v-pre>never</code></td>
+<td>يفكّ ترميز صوت كل ملف بالكامل لقياسه، وذلك لتسوية مستوى الصوت بين المقاطع والعناوين.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>MusicAnalysisBehavior</code></td>
+<td><code translate="no" v-pre>scheduled</code></td>
+<td><code translate="no" v-pre>never</code></td>
+<td>يفكّ ترميز كل مقطع صوتي. الملفات كثيرة وصغيرة، لذلك هذا هو الإعداد الذي يرفع عدد الطلبات ويؤدي إلى تقييد الحساب. يوفّر التحليل الصوتي مزجات لمقاطع متشابهة وعرض المؤثرات البصرية للصوت.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="the-maintenance-window">نافذة الصيانة</h3>
+<p>لا يغيّر zurg قيمتي <code translate="no" v-pre>ButlerStartHour</code> و<code translate="no" v-pre>ButlerEndHour</code>، لأنه لا توجد ساعة واحدة تناسب الجميع. يستحق أن تضبطهما بنفسك. Plex يستخدم افتراضياً الفترة من 02:00 إلى 05:00، وإذا تداخلت هذه الفترة مع الساعات التي يشاهد فيها أحدٌ ما، فستتحول كل مهمة صيانة إلى تعطّل. وكل ما يبقى ضمن مستوى النطاق الترددي يعمل داخل هذه الفترة.</p>
+<h3 id="stopping-a-pass-already-in-flight">إيقاف عملية قيد التنفيذ</h3>
+<p>تغيير التفضيل يوقف <em>التشغيلات القادمة</em> فقط، وليس التشغيل الجاري حالياً. يعيد Plex Media Server إنشاء العمليات الفرعية للماسح الضوئي، لذلك فإن إنهاءها لا يفيد بشيء:</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-و-macos">
+<template #title>Linux و macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -X DELETE &quot;http://localhost:32400/butler?X-Plex-Token=$TOKEN&quot;</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-1">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">curl.exe -X DELETE &quot;http://localhost:32400/butler?X-Plex-Token=$TOKEN&quot;</code></pre>
+</doc-codeblock></div>
+<p>في Windows PowerShell 5.1 يكون <code translate="no" v-pre>curl</code> اسماً آخر لـ <code translate="no" v-pre>Invoke-WebRequest</code>، لذا اكتب <code translate="no" v-pre>curl.exe</code>.</p>
+</doc-tab>
+</doc-tabs>
+<p>اضبط <code translate="no" v-pre>$TOKEN</code> على رمز Plex الخاص بك أولاً: <code translate="no" v-pre>TOKEN=your-token</code> في الصدفة، و<code translate="no" v-pre>$TOKEN = 'your-token'</code> في PowerShell.</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/guides/renaming/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">السابق</span>
+                                <span class="block mt-1">إعادة التسمية</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/guides/acquisition/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">التالي</span>
+                                <span class="block mt-1">قائمة المشاهدة وSeerr</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Plex", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/guides/plex.md" }</script>
+</body>
+</html>

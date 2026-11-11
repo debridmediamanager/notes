@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="ja" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/ja">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672716444">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Sonarr と Radarr をトレントで使う、ステップバイステップ</title>
+    <meta name="title" content="Sonarr と Radarr をトレントで使う、ステップバイステップ">
+    <meta name="description" content="三つの使い方があります。本当の選択は、検索を誰がするか、つまり zurg か *arr かです。どちらを選ぶかで両者を比べています。">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/ja/zurg/guides/sonarr-radarr-torrents/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/ja/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/ja/zurg/guides/sonarr-radarr-torrents/">
+    <meta property="og:title" content="Sonarr と Radarr をトレントで使う、ステップバイステップ">
+    <meta property="og:description" content="三つの使い方があります。本当の選択は、検索を誰がするか、つまり zurg か *arr かです。どちらを選ぶかで両者を比べています。">
+    <meta property="og:image" content="https://notes.debridmediamanager.com/ja/assets/sonarr-radarr-torrents/44-zurg-dashboard-home.webp">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Sonarr と Radarr をトレントで使う、ステップバイステップ">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="ja_JP">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/ja/zurg/guides/sonarr-radarr-torrents/">
+    <meta name="twitter:title" content="Sonarr と Radarr をトレントで使う、ステップバイステップ">
+    <meta name="twitter:description" content="三つの使い方があります。本当の選択は、検索を誰がするか、つまり zurg か *arr かです。どちらを選ぶかで両者を比べています。">
+    <meta name="twitter:image" content="https://notes.debridmediamanager.com/ja/assets/sonarr-radarr-torrents/44-zurg-dashboard-home.webp">
+    <meta name="twitter:image:alt" content="Sonarr と Radarr をトレントで使う、ステップバイステップ">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/ja/zurg/guides/sonarr-radarr-torrents.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672716444" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672716444" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672716444" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672716444" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/ja/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>日本語</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/download.html" target="_blank">zurgをダウンロード</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/ja/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">スポンサー</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>日本語</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/download.html" target="_blank">zurgをダウンロード</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/ja/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">スポンサー</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="sonarr-and-radarr-with-torrents-step-by-step">Sonarr と Radarr をトレントで使う、ステップバイステップ</h1>
+<p>三つの使い方があります。本当の選択は、検索を誰がするか、つまり zurg か *arr かです。<a href="../sonarr-radarr-fetch/#which-one-to-pick">どちらを選ぶか</a>で両者を比べています。</p>
+<retype-table copy-text="| ガイド | 検索するのは | zurg の役割 | 必要なもの |
+|---|---|---|---|
+| [Usenet](sonarr-radarr.md) | Sonarr と Radarr | SABnzbd として | Usenet アカウント(`torbox_nzb` バックエンドを使う場合は TorBox Pro)と、Prowlarr または \*arr 側の Usenet インデクサー |
+| [Torrents](sonarr-radarr-torrents.md) | Sonarr と Radarr | qBittorrent として | debrid アカウントと、Prowlarr または \*arr 側のトレントインデクサー |
+| [zurg で検索](sonarr-radarr-fetch.md) | zurg | ダウンロードクライアントは一切なし | Usenet、TorBox Pro、debrid のいずれかのアカウントと、zurg 自身の設定にある Newznab または Torznab インデクサー |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>ガイド</th>
+<th>検索するのは</th>
+<th>zurg の役割</th>
+<th>必要なもの</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../sonarr-radarr/">Usenet</a></td>
+<td>Sonarr と Radarr</td>
+<td>SABnzbd として</td>
+<td>Usenet アカウント(<code translate="no" v-pre>torbox_nzb</code> バックエンドを使う場合は TorBox Pro)と、Prowlarr または *arr 側の Usenet インデクサー</td>
+</tr>
+<tr>
+<td><a href="">Torrents</a></td>
+<td>Sonarr と Radarr</td>
+<td>qBittorrent として</td>
+<td>debrid アカウントと、Prowlarr または *arr 側のトレントインデクサー</td>
+</tr>
+<tr>
+<td><a href="../sonarr-radarr-fetch/">zurg で検索</a></td>
+<td>zurg</td>
+<td>ダウンロードクライアントは一切なし</td>
+<td>Usenet、TorBox Pro、debrid のいずれかのアカウントと、zurg 自身の設定にある Newznab または Torznab インデクサー</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>最初の二つは同時に使えます。どちらも同じ <code translate="no" v-pre>__magic__</code> フォルダーを共有します。</p>
+<p><a href="../sonarr-radarr/">前のチュートリアル</a>では、Usenet 向けに *arr を zurg に向けました。zurg は SABnzbd として応答します。今回はその逆側です。zurg が <strong>qBittorrent</strong> として応答し、*arr は NZB ではなくマグネットリンクか <code translate="no" v-pre>.torrent</code> を渡します。リリースはニュースサーバーではなく debrid アカウントに入ります。インポートの仕組みは同じです。<code translate="no" v-pre>__magic__</code> 内でのリネームだけで、インポートのためにダウンロードもコピーもしません。</p>
+<p><strong>*arr がどちらを送ってくるかは、見た目の問題ではありません。</strong> 通常、<code translate="no" v-pre>.torrent</code> はファイルそのものがアカウントにアップロードされます。マグネットだけが info hash だけで追加されます。デフォルトのキャッシュのみモードでは、TorBox と Debrid-Link は代わりに info hash を受け取ります。キャッシュにないリリースを、追加せずに断るにはその方法しかないからです。マグネットの場合、アカウント側はハッシュから中身を割り出そうとします。ですが、プライベートトラッカーのハッシュには割り出しに使える公開スウォームがありません。Real-Debrid は <code translate="no" v-pre>magnet_error</code> になり、ファイルは何も得られません。TorBox は受け付けたあと <code translate="no" v-pre>checking</code> のまま止まり、ファイル一覧もサイズもなく、推定は100日と表示されます。そのため、グラブは失敗もせず完了もしません。</p>
+<p><code translate="no" v-pre>.torrent</code> ファイルは、アカウントのキャッシュ検索をハッシュで直接行わせます。そのため、アカウントに既にあるコンテンツはマグネットの解決をせず、すぐに追加されます。これがプライベートインデクサーをここで使える理由です。アカウントに既にあるコンテンツなら、リリースは確実に追加できます。コミュニティで共有されているものなら、これはよくあるケースです。*arr は、マグネットではなく <code translate="no" v-pre>.torrent</code> ファイルを配布するインデクサーに向けてください。プライベートインデクサーはそうしています。</p>
+<p>以下はすべて、実際の AllDebrid アカウントを使った本番環境で、zurg <code translate="no" v-pre>2026.08.30.0459-nightly-73-g5b4c9790</code>、Sonarr <code translate="no" v-pre>4.0.19.2979</code>、Radarr <code translate="no" v-pre>6.3.0.10514</code>、Prowlarr <code translate="no" v-pre>2.5.2.5491</code> を使って取得しました。ホスト名とユーザー名は <code translate="no" v-pre>you@zurg-server</code> に変更しています。インデクサー名は <code translate="no" v-pre>my-indexer</code> としています。API キーとライブラリの件数はサンプルです。それ以外は、取得した出力を一切変えていません。</p>
+<h2 id="before-you-start">始める前に</h2>
+<ol>
+<li><strong>zurg に、トレントを追加できるアカウントが必要です。</strong> Real-Debrid、AllDebrid、TorBox、Premiumize、Debrid-Link、Offcloud のどれかです。この6つはどれも、アップロードされた <code translate="no" v-pre>.torrent</code> ファイルそのものを受け付けます。だから、プライベートトラッカーのリリースも追加できるんです。Usenet アカウントは、どちらの形式のトレントも受け付けません。プロバイダーが <code translate="no" v-pre>nzb</code> だけのインストールは、すべての取得を受け付けてから拒否してしまいます。zurg は起動時にそう教えてくれます。</li>
+<li><strong><code translate="no" v-pre>magic.enabled</code> が <code translate="no" v-pre>true</code> になっていること。</strong> これがないと保存パスが存在せず、すべてのインポートが失敗します。<a href="../magic/"><code translate="no" v-pre>__magic__</code></a> を参照してください。</li>
+<li><strong>マウントが、zurg の報告するパスで *arr から見えること。</strong> *arr がコンテナで動いている場合は、設定を始める前に<doc-anchor-trigger to="#8-if-your-arr-is-in-docker">手順 8</doc-anchor-trigger> を読んでください。同じマシンに通常のアプリとしてインストールされている場合は、zurg がマウントした場所でマウントが見えます。ただし、システムごとに注意点が1つあります:
+<ul>
+<li><strong>Linux:</strong> zurg と別のユーザーで動いている *arr は、<code translate="no" v-pre>user_allow_other</code> を有効にするまで空のフォルダーしか見えません。<a href="../../setup/linux/#1-install-fuse-3">Linux のセットアップ</a>を参照してください。</li>
+<li><strong>macOS:</strong> zurg と同じユーザーで実行してください。<code translate="no" v-pre>mount_path</code> を変更していなければ、マウント先は <code translate="no" v-pre>/Volumes/Zurg</code> です。</li>
+<li><strong>Windows:</strong> Sonarr と Radarr は、インストーラーが用意している トレイアプリ として実行してください。Windows サービスとしては実行しないでください。zurg の <code translate="no" v-pre>Z:</code> ドライブはログイン中のセッションに属していて、サービスはそのセッションの外で動くため、ドライブが見えません。<a href="../../setup/windows/#keeping-it-running-the-session-rules">セッションのルール</a>を参照してください。</li>
+</ul>
+</li>
+</ol>
+<p>最初の2つは、zurg の作業ディレクトリにある設定ファイルを直接見て確認してください。Windows では、代わりに Notepad で <code translate="no" v-pre>config.yml</code> を開いてください。</p>
+<div id="before-you-start-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ grep -A3 '^providers:' config.yml
+providers:
+- type: alldebrid
+  token: &lt;redacted&gt;
+
+$ grep -A3 '^magic:' config.yml
+magic:
+  enabled: true
+  allow_delete: false</code></pre>
+</doc-codeblock></div>
+<p><strong><code translate="no" v-pre>providers:</code> リストの順番が重要です。</strong> 取得は、トレントを受け付けるすべてのアカウントに、リストの順番どおりに提示されます。拒否したり止まったりしたアカウントは見限られ、次のアカウントが試されます。2つのアカウントを持っているなら、先に使いたいほうを上に置いてください。</p>
+<p>2つのキーで、アカウントをこの順番から外せます。<code translate="no" v-pre>watchlist: true</code> にすると、ファイル内のどこにあっても、そのアカウントが最優先になります。<code translate="no" v-pre>add_torrents: false</code> にすると、ローテーションから完全に外れます。そのアカウントは、引き続きライブラリの配信と読み取りは行いますが、新しいものは一切追加されません。アーカイブ用のアカウントや、クォータが埋まっているアカウントに向いています。Usenet アカウントは、どちらの設定でも決してトレントを提示されません。両方とも<a href="../../reference/config/#accounts">設定リファレンス</a>にあります。</p>
+<h2 id="1-turn-the-endpoint-on">1. エンドポイントを有効にする</h2>
+<p>2つの方法があり、結果は同じです。どちらも<code translate="no" v-pre>config.yml</code>に書き込み、どちらも再起動が必要です。<code translate="no" v-pre>__magic__</code>を提供するルートとqBittorrentのエンドポイントは、zurgの起動時に一度だけ登録されるためです。</p>
+<h3 id="option-a--the-dashboard">オプション A — ダッシュボード</h3>
+<p>zurgのダッシュボードを開き、<strong>Config</strong>をクリックして、<strong>__magic__ &amp; Download Clients</strong>までスクロールします。<strong>Serve __magic__<strong>と</strong>qBittorrent Endpoint</strong>をオンにします。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/44-zurg-dashboard-home.webp" alt="zurgダッシュボードのQuick Links" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">zurgダッシュボードのQuick Links</figcaption>
+</figure>
+<p><strong>Config</strong>は設定を行う場所です。<strong>Magic</strong>は、後でgrabが届いたときに確認する場所です。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/40-zurg-config-magic-qbittorrent.webp" alt="Configページの__magic__とDownload Clientsのブロック" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Configページの__magic__とDownload Clientsのブロック</figcaption>
+</figure>
+<p><strong>qBittorrent Save Path</strong>は、*arrがzurgとは別の場所にzurgをマウントしている場合を除き、空のままにしてください。詳しくは<doc-anchor-trigger to="#8-if-your-arr-is-in-docker">8番目のステップ</doc-anchor-trigger>を見てください。オレンジ色の<strong>Restart Required</strong>チップの表示は正しいです。ここでの設定は、zurgを再起動するまで反映されません。</p>
+<h3 id="option-b--configyml">オプション B — <code translate="no" v-pre>config.yml</code></h3>
+<p>手作業でブロックを追加して、zurgを再起動してください。</p>
+<div id="option-b--configyml-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">magic:
+  enabled: true
+
+qbittorrent:
+  enabled: true
+  api_key: &quot;&quot;                   # empty = zurg generates one and keeps it
+  categories: [tv-sonarr, radarr]
+  save_path: &quot;&quot;                 # empty = &lt;mount_path&gt;/__magic__/__all__
+  cached_only: true             # the default: only take what an account already holds</code></pre>
+</doc-codeblock></div>
+<p><strong>カテゴリはフォルダではありません。</strong> どれも同じ場所に解決されます。つまり、リリース自身のフォルダ <code translate="no" v-pre>__magic__/__all__</code> の下です。リストはカテゴリを前もって作るだけです。クライアントの <strong>Test</strong> は足りないカテゴリを作成し、zurgはそれを <code translate="no" v-pre>data/qbittorrent-categories.json</code> に保存します。Prowlarrを使う場合は <code translate="no" v-pre>prowlarr</code> が必要です。詳しくは <doc-anchor-trigger to="#10-prowlarr-manual-grabs">手順10</doc-anchor-trigger> を見てください。</p>
+<p>zurgを再起動して、エンドポイントが登録され、プロバイダーが反映されたか確認しましょう:</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/43-zurg-config-providers.webp" alt="zurgの設定ページにあるprovidersブロック" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">zurgの設定ページにあるprovidersブロック</figcaption>
+</figure>
+<p>エンドポイントに必要なのは <code translate="no" v-pre>alldebrid</code> の行1つだけです。対応する6種類のtorrentタイプのどれでも構いません。</p>
+<p>起動ログにも同じ内容が出ているので、一度は読んでおく価値があります:</p>
+<div id="option-b--configyml-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO  router.qbittorrent  qBittorrent API on /api/v2 and /qbittorrent/api/v2, save path /mnt/zurg_qbt/__magic__/__all__, categories tv-sonarr, radarr
+INFO  router.qbittorrent  qBittorrent: cached-only, so a grab is only accepted onto an account that already holds the content; anything else is refused and the *arr takes its next release. Set qbittorrent.cached_only: false to let accounts download
+INFO  router.qbittorrent  qBittorrent: torrents are offered to alldebrid, in that order</code></pre>
+</doc-codeblock></div>
+<h2 id="2-find-the-api-key">2. API キーを見つける</h2>
+<p>APIキーは、このエンドポイントの認証そのものです。一度きちんと設定して、公開の場には貼らないでください。</p>
+<p><strong><code translate="no" v-pre>api_key</code> を空のままにした場合</strong>、zurg は初回起動時にキーを生成して <code translate="no" v-pre>data/qbittorrent-apikey</code> に書き込みます:</p>
+<div id="2-find-the-api-key-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ cat data/qbittorrent-apikey
+fedcba9876543210fedcba9876543210
+</code></pre>
+</doc-codeblock></div>
+<p>これは例のキーです。実際のキーは違う値になります。このファイルは再起動後も残るので、一度生成されたキーは変わりません。</p>
+<p><strong><code translate="no" v-pre>api_key</code> を自分で設定した場合</strong>、キーは <code translate="no" v-pre>config.yml</code> に書かれていて、ファイルは作られません。</p>
+<p><strong>このエンドポイントは zurg の基本認証の対象外です。</strong> *arrs はダウンロードクライアントに、そのクライアント独自の方法で認証します。*arrs の HTTP 層は、基本認証の 401 を「unable to connect」と表示するだけで、対処のヒントが何も出ません。そのため zurg は <code translate="no" v-pre>/api/v2</code> を意図的に除外しています。APIキーがこのエンドポイントを守る唯一の鍵になります。ポートの扱いは zurg の他の部分と同じように考えてください。信頼できるネットワーク内で使うか、それを守る仕組みの後ろに置いてください。</p>
+<p>キーの渡し方は3種類あり、どれも使えます:</p>
+<ul>
+<li><strong><code translate="no" v-pre>Authorization: Bearer &lt;key&gt;</code></strong>: クライアントの <strong>API Key</strong> 欄にキーを入力したときに送られる形式です。おすすめの方法で、ログイン処理を丸ごと飛ばせます。</li>
+<li><strong><code translate="no" v-pre>auth/login</code> でパスワードとしてキーを使う</strong>: ユーザー名は何でもかまいません。Username と Password の欄に入力したい場合はこちらを使ってください。</li>
+<li><strong>zurg 自身のダッシュボードのユーザー名とパスワード</strong>: <code translate="no" v-pre>config.yml</code> に <code translate="no" v-pre>username:</code> と <code translate="no" v-pre>password:</code> が設定されている場合に使えます。</li>
+</ul>
+<h2 id="3-prove-it-answers">3. 応答することを確認する</h2>
+<p>Sonarr に触る前に、これをやっておいてください。10秒で済み、そのあとの設定で「zurg の問題なのか、*arr の問題なのか」をはっきり切り分けられます。</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-と-macos">
+<template #title>Linux と macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ KEY=fedcba9876543210fedcba9876543210
+$ ZURG=192.168.88.244:9995
+
+$ curl -s &quot;http://$ZURG/api/v2/app/webapiVersion&quot;
+Forbidden
+
+$ curl -s -H &quot;Authorization: Bearer $KEY&quot; &quot;http://$ZURG/api/v2/app/webapiVersion&quot;
+2.11.2
+
+$ curl -s -H &quot;Authorization: Bearer $KEY&quot; &quot;http://$ZURG/api/v2/app/version&quot;
+v5.0.4
+
+$ curl -s -H &quot;Authorization: Bearer $KEY&quot; &quot;http://$ZURG/api/v2/app/preferences&quot; | jq .save_path
+&quot;/mnt/zurg_qbt/__magic__/__all__&quot;</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows">
+<template #title>Windows</template>
+<p>PowerShell で実行してください。<code translate="no" v-pre>curl</code> ではなく <code translate="no" v-pre>curl.exe</code> と入力します。Windows PowerShell の <code translate="no" v-pre>curl</code> は別のコマンドです。</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; $KEY = &quot;fedcba9876543210fedcba9876543210&quot;
+PS&gt; $ZURG = &quot;192.168.88.244:9995&quot;
+
+PS&gt; curl.exe -s &quot;http://$ZURG/api/v2/app/webapiVersion&quot;
+Forbidden
+
+PS&gt; curl.exe -s -H &quot;Authorization: Bearer $KEY&quot; &quot;http://$ZURG/api/v2/app/webapiVersion&quot;
+2.11.2
+
+PS&gt; curl.exe -s -H &quot;Authorization: Bearer $KEY&quot; &quot;http://$ZURG/api/v2/app/version&quot;
+v5.0.4
+
+PS&gt; (Invoke-RestMethod &quot;http://$ZURG/api/v2/app/preferences&quot; -Headers @{ Authorization = &quot;Bearer $KEY&quot; }).save_path
+Z:/__magic__/__all__</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p><strong><code translate="no" v-pre>Forbidden</code> だけが返ってきたら正常です。</strong> クライアントが最初に送るプローブは、<em>未認証の</em> <code translate="no" v-pre>GET /api/v2/app/webapiVersion</code> です。本物の qBittorrent も、API はあるがログインしていない場合にこれへ <code translate="no" v-pre>403</code> を返します。zurg も同じ応答を返すので、クライアントは「v2 に対応している。今すぐ認証せよ」と解釈します。</p>
+<p>代わりにプレーンな <strong>404</strong> が返ってきた場合は、<code translate="no" v-pre>qbittorrent.enabled</code> がまだ false になっているか、設定を変えたあとに zurg を再起動していないことを意味します。</p>
+<p>次に、間違ったキーが本当に拒否されるかを確認します:</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-と-macos-1">
+<template #title>Linux と macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ curl -s -o /dev/null -w &quot;%{http_code}\n&quot; -H &quot;Authorization: Bearer wrongkey&quot; \
+    &quot;http://$ZURG/api/v2/torrents/info&quot;
+403</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-1">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; curl.exe -s -o NUL -w &quot;%{http_code}\n&quot; -H &quot;Authorization: Bearer wrongkey&quot; &quot;http://$ZURG/api/v2/torrents/info&quot;
+403</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p><code translate="no" v-pre>save_path</code> は zurg がクライアントに渡すパスです。今のうちに、それが <em>クライアント側</em> で開けるパスかどうか確認しておきましょう。</p>
+<p>どちらの URL 形式でも動作するので、クライアントの <strong>URL Base</strong> 欄にはどちらを入れても構いません:</p>
+<retype-table copy-text="| パス | Sonarr / Radarr での URL Base | 応答 |
+|---|---|---|
+| `/api/v2/…` | *(空欄のまま)* | はい |
+| `/qbittorrent/api/v2/…` | `/qbittorrent` | はい |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>パス</th>
+<th>Sonarr / Radarr での URL Base</th>
+<th>応答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>/api/v2/…</code></td>
+<td><em>(空欄のまま)</em></td>
+<td>はい</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>/qbittorrent/api/v2/…</code></td>
+<td><code translate="no" v-pre>/qbittorrent</code></td>
+<td>はい</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h2 id="4-make-the-root-folders">4. ルートフォルダを作る</h2>
+<p>先に作ってから追加してください。*arr の Add Root Folder ダイアログは実際のファイルシステムを参照するため、存在しないフォルダは表示されません。</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-と-macos-2">
+<template #title>Linux と macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ mkdir -p /mnt/zurg_qbt/__magic__/tv /mnt/zurg_qbt/__magic__/movies
+
+$ ls -d /mnt/zurg_qbt/__magic__/tv /mnt/zurg_qbt/__magic__/movies
+/mnt/zurg_qbt/__magic__/movies
+/mnt/zurg_qbt/__magic__/tv</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-2">
+<template #title>Windows</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; New-Item -ItemType Directory -Force Z:\__magic__\tv, Z:\__magic__\movies</code></pre>
+</doc-codeblock></div>
+<p>または、エクスプローラーで 2 つのフォルダを作成してください。</p>
+</doc-tab>
+</doc-tabs>
+<p><code translate="no" v-pre>/mnt/zurg_qbt</code> の部分は、ご自身の <code translate="no" v-pre>mount_path</code> に置き換えてください。未設定の場合、Linux では <code translate="no" v-pre>/mnt/zurg</code>、macOS では <code translate="no" v-pre>/Volumes/Zurg</code>、Windows では <code translate="no" v-pre>Z:</code> になります。</p>
+<p><strong>ルートフォルダは保存パスの横に置いてください。保存パスの中にも、上にも置かないでください。</strong> これは Usenet のチュートリアルと同じルールで、理由も同じです。zurg は保存パスとして <code translate="no" v-pre>__magic__/__all__</code> を報告します。ルートフォルダがダウンロードクライアントの出力フォルダと同じ場合、両方のクライアントがヘルスチェックの警告を出します。ルートフォルダがその出力フォルダを<em>含んでいる</em>場合は、Radarr も警告を出します。横に並んでいれば、どちらの警告も出ません。間違えたときの画面例は <a href="../sonarr-radarr/#4-make-the-root-folders">そのガイド</a> にあります。</p>
+<p>トレントならではの理由もあります。移動先が <code translate="no" v-pre>__magic__</code> の外にあると、2 つの異なるファイルシステム間の移動になります。これはコピーと同じ扱いになり、デビッドマウントからリリース全体をネットワーク越しに読み直すことになります。<doc-anchor-trigger to="#if-the-import-copies-instead-of-moving">下記</doc-anchor-trigger> の <code translate="no" v-pre>Remove Completed</code> をオンのままにしておけば、インポートはリネームのままになります。名前空間の外にルートフォルダを置くと、どのみちこの効果が失われてしまいます。</p>
+<p>2 つのボリューム間の移動も、同様にコピーになります。これは Docker を使うときに重要です。その点は手順 8 で説明します。</p>
+<p>(以前の翻訳は、マーカーが一致しないとして差し戻されました。構造はそのまま保ってください。)</p>
+<h2 id="5-add-the-client-in-sonarr">5. Sonarr にクライアントを追加する</h2>
+<p>ブランドニューの Sonarr は、最初の起動画面ですべてをブロックします。<strong>Forms (Login Page)</strong> を選び、ユーザー名とパスワードを設定して、<strong>Save</strong> をクリックしてください。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/01-sonarr-firstrun-auth.webp" alt="Sonarr's first-run authentication screen" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr's first-run authentication screen</figcaption>
+</figure>
+<p><strong>Authentication Method</strong> が None 以外になっていないと、先に進めません。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/02-sonarr-firstrun-auth-filled.webp" alt="The same screen filled in" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The same screen filled in</figcaption>
+</figure>
+<p><strong>Save</strong> のあとは一度サインアウトされて、ログインページに移動します。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/04-sonarr-login.webp" alt="Sonarr's login page" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr's login page</figcaption>
+</figure>
+<h3 id="settings--download-clients">Settings → Download Clients</h3>
+<p><strong>Settings → Download Clients</strong> を開いてください。新規インストール直後は、<strong>+</strong> カードしか表示されていません。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/05-sonarr-downloadclients-empty.webp" alt="Sonarr の空のダウンロードクライアントページ" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr の空のダウンロードクライアントページ</figcaption>
+</figure>
+<p>「Download Clients」の下にある <strong>+</strong> をクリックしてください。「Remote Path Mappings」の下にある方ではありません。</p>
+<p><strong>Torrents</strong> 列から <strong>qBittorrent</strong> を選んでください。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/06-sonarr-add-client-picker.webp" alt="qBittorrent が表示されているダウンロードクライアント追加の選択画面" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">qBittorrent が表示されているダウンロードクライアント追加の選択画面</figcaption>
+</figure>
+<p>zurg は qBittorrent を特に偽装するため、このリストの他のものは動作しません。どのガイドに従っているかは、2つの列を見ればわかります。SABnzbd は Usenet の下、qBittorrent は Torrents の下にあります。</p>
+<p>ダイアログは qBittorrent の初期値で開きます。<code translate="no" v-pre>localhost</code>、ポート <code translate="no" v-pre>8080</code>、キーなしです。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/07-sonarr-qbittorrent-dialog-empty.webp" alt="初期状態の qBittorrent ダウンロードクライアントダイアログ" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">初期状態の qBittorrent ダウンロードクライアントダイアログ</figcaption>
+</figure>
+<h3 id="what-to-put-in-each-field">各フィールドに入れる内容</h3>
+<retype-table copy-text="| 項目 | 値 | 理由 |
+|---|---|---|
+| Name | `zurg (torrents)` | 何でも構いません。ただのラベルです。 |
+| Enable | on | チェックを入れたままにしてください。 |
+| Host | `192.168.88.244` | zurg が動いているホストです。*arr から届くアドレスを指定します。*arr が同じマシン上の普通のアプリなら `localhost` でOKです。Docker の場合は下の警告を見てください。 |
+| Port | `9995` | zurg の通常のポートです。デフォルトインストールでは `9999` です。 |
+| Use SSL | off | zurg を自分で TLS の後ろに置いている場合のみ on にします。 |
+| URL Base | empty | `/qbittorrent` でも動きます。手順 3 を参照。 |
+| API Key | from step 2 | ここが要です。bearer token として送られます。 |
+| Username / Password | empty | 両方空欄のままにしてください。キーがその代わりになります。 |
+| Category | `tv-sonarr` | *arr のデフォルトです。zurg にはすでに登録されていて、**Test** は無いカテゴリを作成します。 |
+| Initial State / Sequential / First-Last | defaults | ここには swarm がないので、どれも何の効果もありません。 |
+| **Remove Completed** | **on** | **一番重要な項目です**。[インポートがコピーになる場合](#if-the-import-copies-instead-of-moving)を参照してください。 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>項目</th>
+<th>値</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td><code translate="no" v-pre>zurg (torrents)</code></td>
+<td>何でも構いません。ただのラベルです。</td>
+</tr>
+<tr>
+<td>Enable</td>
+<td>on</td>
+<td>チェックを入れたままにしてください。</td>
+</tr>
+<tr>
+<td>Host</td>
+<td><code translate="no" v-pre>192.168.88.244</code></td>
+<td>zurg が動いているホストです。*arr から届くアドレスを指定します。*arr が同じマシン上の普通のアプリなら <code translate="no" v-pre>localhost</code> でOKです。Docker の場合は下の警告を見てください。</td>
+</tr>
+<tr>
+<td>Port</td>
+<td><code translate="no" v-pre>9995</code></td>
+<td>zurg の通常のポートです。デフォルトインストールでは <code translate="no" v-pre>9999</code> です。</td>
+</tr>
+<tr>
+<td>Use SSL</td>
+<td>off</td>
+<td>zurg を自分で TLS の後ろに置いている場合のみ on にします。</td>
+</tr>
+<tr>
+<td>URL Base</td>
+<td>empty</td>
+<td><code translate="no" v-pre>/qbittorrent</code> でも動きます。手順 3 を参照。</td>
+</tr>
+<tr>
+<td>API Key</td>
+<td>from step 2</td>
+<td>ここが要です。bearer token として送られます。</td>
+</tr>
+<tr>
+<td>Username / Password</td>
+<td>empty</td>
+<td>両方空欄のままにしてください。キーがその代わりになります。</td>
+</tr>
+<tr>
+<td>Category</td>
+<td><code translate="no" v-pre>tv-sonarr</code></td>
+<td>*arr のデフォルトです。zurg にはすでに登録されていて、<strong>Test</strong> は無いカテゴリを作成します。</td>
+</tr>
+<tr>
+<td>Initial State / Sequential / First-Last</td>
+<td>defaults</td>
+<td>ここには swarm がないので、どれも何の効果もありません。</td>
+</tr>
+<tr>
+<td><strong>Remove Completed</strong></td>
+<td><strong>on</strong></td>
+<td><strong>一番重要な項目です</strong>。<doc-anchor-trigger to="#if-the-import-copies-instead-of-moving">インポートがコピーになる場合</doc-anchor-trigger>を参照してください。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/08-sonarr-qbittorrent-dialog-filled.webp" alt="qBittorrent ダイアログに入力した状態" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">qBittorrent ダイアログに入力した状態</figcaption>
+</figure>
+<p>表示されている API キーはサンプルです。ご自身のキーを貼り付けてください。</p>
+<p><strong>Dockerでは「localhost」もホスト名もどちらも当てになりません。</strong> コンテナ内では <code translate="no" v-pre>localhost</code> はそのコンテナ自身を指し、マシン自体のホスト名は通常 <code translate="no" v-pre>127.0.1.1</code> に解決されます。これもコンテナ自身です。このリグのホストは <code translate="no" v-pre>zurg-server</code> という名前ですが、Sonarr コンテナ内から <code translate="no" v-pre>zurg-server</code> を引くと <code translate="no" v-pre>127.0.1.1</code> に解決されました。同じ名前でもホストのシェルからは問題なく繋がりました。ホストの <strong>LAN または Tailscale の IP</strong> を使ってください。<code translate="no" v-pre>localhost</code> もホスト名だけの指定もNGです。</p>
+<p><strong>Test</strong> をクリックします。緑のチェックマークは、クライアントのチェック（API バージョン、認証、カテゴリ、トレントリスト）が通ったことを示します。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/09-sonarr-qbittorrent-test-ok.webp" alt="テスト成功時のダイアログフッター" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">テスト成功時のダイアログフッター</figcaption>
+</figure>
+<p>次に <strong>Save</strong> をクリックします。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/10-sonarr-downloadclient-saved.webp" alt="Sonarr で保存されたダウンロードクライアントのカード" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr で保存されたダウンロードクライアントのカード</figcaption>
+</figure>
+<h2 id="6-add-the-root-folder-in-sonarr">6. Sonarr でルートフォルダを追加する</h2>
+<p><strong>Settings → Media Management</strong> を開いて、一番下までスクロールします。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/11-sonarr-rootfolders-empty.webp" alt="The empty root folders section in Sonarr" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The empty root folders section in Sonarr</figcaption>
+</figure>
+<p><strong>Add Root Folder</strong> をクリックします。ファイルブラウザが開き、Sonarr のファイルシステムが表示されます。Docker を使っている場合は、コンテナ内のファイルシステムです。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/12-sonarr-rootfolder-dialog.webp" alt="Sonarr's file browser at the filesystem root" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr's file browser at the filesystem root</figcaption>
+</figure>
+<p>パスを入力するか、フォルダをたどって移動します。マウントが Sonarr から本当に見えていれば、<code translate="no" v-pre>__magic__</code> が開き、手順 4 で作ったフォルダと、zurg が自動で作る <code translate="no" v-pre>__all__</code> が表示されます。マウントが正しいかを確かめる一番早い方法です。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/13-sonarr-rootfolder-browse.webp" alt="The file browser inside magic, listing tv and movies" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The file browser inside magic, listing tv and movies</figcaption>
+</figure>
+<p>ここが空だったり、エラーになったりする場合は、先に進まずマウントを直してください。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/14-sonarr-rootfolder-typed.webp" alt="The path finished at magic/tv" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The path finished at magic/tv</figcaption>
+</figure>
+<p>パスを <code translate="no" v-pre>__magic__/tv</code> まで入力します（Windows では <code translate="no" v-pre>Z:\__magic__\tv</code>）。そのあと <strong>Ok</strong> をクリックします。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/15-sonarr-rootfolder-added.webp" alt="The root folder added, showing free space" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The root folder added, showing free space</figcaption>
+</figure>
+<p><strong>Free Space</strong> に <code translate="no" v-pre>1 PiB</code> と表示されるのは、zurg が実際のディスクではなく仮想ファイルシステムの容量を報告しているためです。これは想定どおりの動作です。この表示のおかげで、*arr が grab の前に行う空き容量チェックを通過できます。</p>
+<h2 id="7-do-the-same-in-radarr">7. Radarr でも同じことをする</h2>
+<p>前回と同じです。ただし、変えるのは次の2つの値だけです。カテゴリは <code translate="no" v-pre>radarr</code>、ルートフォルダは <code translate="no" v-pre>__magic__/movies</code> です。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/20-radarr-login.webp" alt="Radarr のログインページ" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr のログインページ</figcaption>
+</figure>
+<p>Radarr の初回起動も同じ流れです。まず Forms auth を設定してから、サインインします。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/21-radarr-add-client-picker.webp" alt="Radarr のダウンロードクライアント追加ピッカー" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr のダウンロードクライアント追加ピッカー</figcaption>
+</figure>
+<p><strong>Settings → Download Clients → +</strong> を開き、Torrents の中から <strong>qBittorrent</strong> を選びます。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/22-radarr-qbittorrent-dialog-filled.webp" alt="カテゴリに radarr を入れた Radarr の qBittorrent ダイアログ" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">カテゴリに radarr を入れた Radarr の qBittorrent ダイアログ</figcaption>
+</figure>
+<p>ホスト、ポート、キーは同じです。違うのは <strong>Category</strong> だけで、<code translate="no" v-pre>tv-sonarr</code> ではなく <code translate="no" v-pre>radarr</code> を入れます。</p>
+<p><strong>Test</strong> を押して緑のチェックマークが出たら、<strong>Save</strong> を押します。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/24-radarr-downloadclient-saved.webp" alt="Radarr で保存されたダウンロードクライアントのカード" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr で保存されたダウンロードクライアントのカード</figcaption>
+</figure>
+<p>次に <strong>Settings → Media Management → Root Folders → Add Root Folder</strong> を開いて、<code translate="no" v-pre>/mnt/zurg_qbt/__magic__/movies</code> を追加します。</p>
+<p><strong>zurg は1つ、クライアントは2つ、キューも1つです。</strong> 各クライアントに表示されるトレントの一覧は、カテゴリだけで絞り込まれます。<code translate="no" v-pre>tv-sonarr</code> を使う Sonarr が2つあると、お互いの grab が見えてしまいます。<code translate="no" v-pre>tv-sonarr</code> の Sonarr と <code translate="no" v-pre>radarr</code> の Radarr なら、互いの grab は見えません。カテゴリごとにクライアントを1つにしておけば、この問題は起きません。</p>
+<h2 id="8-if-your-arr-is-in-docker">8. *arr が Docker で動いている場合</h2>
+<p>これは Linux ホスト上の Docker 向けの手順です。macOS と Windows では、<doc-anchor-trigger to="#before-you-start">はじめに</doc-anchor-trigger> で説明しているとおり、*arrs を通常のアプリとしてインストールしてください。その理由は Usenet ウォークスルーのステップ 8 に書かれています。</p>
+<p>Usenet ウォークスルーと同じ 3 つの問題があり、修正方法も同じです。マウントはマウントなので、ここでは簡単に説明します。詳しくは <a href="../sonarr-radarr/#8-if-your-arr-is-in-docker">そのガイドのステップ8</a> を見てください。</p>
+<p><strong>zurg が報告するパスは、クライアントが開けるパスでなければなりません。</strong> コンテナがライブラリを zurg とは別の場所にマウントしていると、インポートはすべて <em>download doesn&#x27;t contain intermediate path</em> で失敗するか、remote-path health check で失敗します。<code translate="no" v-pre>qbittorrent.save_path</code> には、<em>クライアント</em>から見えるパスを設定するか、remote path mapping を追加してください:</p>
+<div id="8-if-your-arr-is-in-docker-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">qbittorrent:
+  save_path: &quot;/data/zurg/__magic__/__all__&quot;   # what the *arr sees, not what zurg sees</code></pre>
+</doc-codeblock></div>
+<p><strong>保存パスとルートフォルダには 1 つのボリュームを使ってください。</strong> コンテナに <code translate="no" v-pre>__magic__/__all__</code> と <code translate="no" v-pre>__magic__/tv</code> を 2 つのボリュームとして渡さないでください。両者の間のリネームがコンテナ内で失敗します。すると、クライアントはあなたのアカウントからのインポートをすべてコピーし、そのことを知らせずに zurg のディスクへ書き込んでしまいます。zurg のマウント全体を含む 1 つのボリュームを渡し、そのボリューム経由で両方のフォルダにアクセスさせてください。下のバインドがそのボリュームです。</p>
+<p><strong>マウントポイントそのものではなく、その親をバインドしてください。</strong> zurg を再起動するとアンマウントと再マウントが行われます。マウントポイントそのものをバインドしたコンテナは、古くなった FUSE 接続を保持し続け、その後のすべての読み取りが <code translate="no" v-pre>Socket not connected</code> を返します。両方のクライアントはグラブの前に空き容量を確認するため、<em>すべてのリリースが黙って拒否されます</em>。親を <code translate="no" v-pre>rslave</code> 付きでバインドすれば、再マウントはサブマウントのイベントとして届き、コンテナがそれを追従します。このリグのコンテナは zurg がマウントする前に起動されていましたが、それでもマウントはコンテナ内に現れました:</p>
+<div id="8-if-your-arr-is-in-docker-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ docker exec sonarr df -h /mnt/zurg_qbt
+Filesystem      Size  Used Avail Use% Mounted on
+zurg{8amax}:    1.0P     0  1.0P   0% /mnt/zurg_qbt</code></pre>
+</doc-codeblock></div>
+<h2 id="9-watch-one-grab-go-through">9. 1 回のグラブが通る流れを見る</h2>
+<p>ひとつ追加して、手動でグラブし、最後まで追いかけてみてください。以下はすべて、上記の構成を通じた実際のグラブです：<em>Ghost in the Shell (1995)</em>、インデクサーから手動で取得したもの。</p>
+<h3 id="grab-it">Grab it</h3>
+<p>映画を開いて、<strong>Interactive Search</strong> をクリックし、リリースを1つ選びます。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/60-radarr-interactive-search.webp" alt="Radarrのインタラクティブ検索結果" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarrのインタラクティブ検索結果</figcaption>
+</figure>
+<p><strong>Source</strong> 列には <code translate="no" v-pre>torrent</code> と表示されています。これは、このエンドポイントが受け付けるプロトコルです。行の末尾にある、矢印の付いた丸いボタンをクリックすると取得できます。クライアントが先にマッピングの確認を求めてきた場合は、次の画面が出ます。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/60b-radarr-override-and-grab.webp" alt="RadarrのOverride and Grabダイアログ" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">RadarrのOverride and Grabダイアログ</figcaption>
+</figure>
+<p><strong>Override and Grab</strong> は、リリースがきれいに一致しないときに表示されます。マッピングを確認して、<strong>Grab Release</strong> をクリックしてください。通常の取得では、このダイアログは表示されません。</p>
+<h3 id="the-account-takes-it">アカウントがそれを取り込む</h3>
+<p>zurg のログで 1 回の追加を確認するには、3 行すべてを見る必要があります。アカウントがジョブを受け取った行、ジョブが登録された行、そして <code translate="no" v-pre>finished</code> の行です。下の出力は古いビルドのもので、最後の 2 行しか記録されていません:</p>
+<div id="the-account-takes-it-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">INFO  router.qbittorrent  qBittorrent: [Polarwindz] Ghost in the Shell (1995) (BD 1080p HEVC FLAC) (0c5e4077…) added to alldebrid as 720824192
+INFO  router.qbittorrent  qBittorrent: [Polarwindz] Ghost in the Shell (1995) (BD 1080p HEVC FLAC) (0c5e4077…) finished on alldebrid</code></pre>
+</doc-codeblock></div>
+<p>ハッシュは、クライアントが送った info hash です。<code translate="no" v-pre>added … as 720824192</code> の部分は、アカウントがそのジョブに付けた ID です。このリリースはすでにアカウントにキャッシュされていたので、約 1 秒後に <code translate="no" v-pre>finished</code> が続きます。キャッシュされていないリリースの場合は、アカウントがダウンロードしている間、2 行の間に少し間が空きます。その間にアカウントが何をしているかは、クライアントのキューに表示されます:</p>
+<retype-table copy-text="| アカウントの状態 | キューの表示 |
+|---|---|
+| magnet の参照先を調べている | *Loading metadata*、まだ計測値なし |
+| アカウントのキューで待機中 | *Queued* |
+| ダウンロード中。速度、スワーム、残り時間はアカウント側の値です | *Downloading*、実際の進捗バー付き |
+| すべてのアカウントが拒否したか、タイムアウトした | 理由付きの **警告**。[トラブルシューティング](#troubleshooting) を参照 |
+| ライブラリ内にあり、インポート用のフォルダが準備できている | *Completed* |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>アカウントの状態</th>
+<th>キューの表示</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>magnet の参照先を調べている</td>
+<td><em>Loading metadata</em>、まだ計測値なし</td>
+</tr>
+<tr>
+<td>アカウントのキューで待機中</td>
+<td><em>Queued</em></td>
+</tr>
+<tr>
+<td>ダウンロード中。速度、スワーム、残り時間はアカウント側の値です</td>
+<td><em>Downloading</em>、実際の進捗バー付き</td>
+</tr>
+<tr>
+<td>すべてのアカウントが拒否したか、タイムアウトした</td>
+<td>理由付きの <strong>警告</strong>。<doc-anchor-trigger to="#troubleshooting">トラブルシューティング</doc-anchor-trigger> を参照</td>
+</tr>
+<tr>
+<td>ライブラリ内にあり、インポート用のフォルダが準備できている</td>
+<td><em>Completed</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>スワームが停滞している場合、キューには停滞の警告ではなく <strong>Downloading</strong> と表示され、速度とシード数は 0 になります。<code translate="no" v-pre>stalledDL</code> は *arrs が失敗したダウンロードを処理するときに使う状態です。しかし、シードがないスワームは、そのリリースが駄目だという判定ではありません。</p>
+<p>magnet はまるごとアカウントに渡ります。zurg は、クライアントが掴んだ表示名と、指定されたトラッカーをそのまま渡します。magnet だけを公開しているインデクサーでは、表示名がリリース名を知る唯一の手がかりです。表示名がないと、TorBox は未解決の grab を、メタデータが未解決のままの間は 40 文字のハッシュ名で一覧に出します。<code translate="no" v-pre>.torrent</code> ファイルは自身の名前とトラッカーを持つため、何も追加されません。例外は、TorBox と Debrid-Link のキャッシュ専用モード（デフォルト）です。ここではハッシュだけで問い合わせます。キャッシュがヒットすると実際の名前で返されるからです。</p>
+<h3 id="the-import-happens">インポートが行われる</h3>
+<p><strong>Activity → Queue</strong>、次に <strong>Activity → History</strong> を開きます。数秒差で2つのイベントが記録されています。最初が <strong>Grabbed</strong>、次が <strong>Movie Imported</strong> です:</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/62-radarr-history.webp" alt="Radarr の履歴: インポートされたファイル。そのソースと保存先はどちらも magic の下にある" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr の履歴: インポートされたファイル。そのソースと保存先はどちらも magic の下にある</figcaption>
+</figure>
+<p>インポートされた行を展開して、パスを確認してください。<strong>Source</strong> は <code translate="no" v-pre>/mnt/zurg_qbt/__magic__/__all__/[Polarwindz] …/[Polarwindz] ….mkv</code> で、<strong>Imported To</strong> は <code translate="no" v-pre>/mnt/zurg_qbt/__magic__/movies/Ghost in the Shell (1995)/…</code> です。ファイルは <code translate="no" v-pre>__magic__</code> の外に一度も出ていません。だからこのインポートは、実質的にリネームになります。このスクリーンショットは、ライブラリが <code translate="no" v-pre>__all__</code> の中に移動する前に撮られたものです。そのため、ソースのパスは、あなたの環境で表示されるものより1階層上になっています。</p>
+<p>クライアントがインポートしないと判断した grab は、代わりにキューに警告として残ります。このスクリーンショットのキューの行は、品質プロファイルが拒否したアップグレードです。表示されていて、<em>Remove</em> を1クリックで押せますが、それだけでは何も消えません:</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/61-radarr-queue.webp" alt="Radarr のキュー。クライアントがインポートしない、完了済みのリリースが残っている" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Radarr のキュー。クライアントがインポートしない、完了済みのリリースが残っている</figcaption>
+</figure>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/63-radarr-movie-imported.webp" alt="Downloaded ステータスを表示している Radarr の映画ページ" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Downloaded ステータスを表示している Radarr の映画ページ</figcaption>
+</figure>
+<p><strong>Status: Downloaded, Size 17.2 GiB</strong> になります。でも、それを実現するために何もダウンロードはされていません。バイト列は、何かがそのファイルを再生したときに、アカウントから読み取られます。</p>
+<h3 id="prove-the-file-is-real">ファイルが本物か確認する</h3>
+<p>ファイルはインポートでルートフォルダーに移動されました。ファイルの両端を読んで、ffprobe に中身を調べてもらいましょう:</p>
+<doc-tabs>
+<doc-tab v-cloak id="linux-and-macos">
+<template #title>Linux and macOS</template>
+<p>シェルで <code translate="no" v-pre>ffprobe</code> が見つからない場合は、<code translate="no" v-pre>~/zurg/bin/ffprobe</code> を使ってください。インストール時に ffprobe が入っていなければ、セットアップがそこに独自のコピーを置いています。</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">$ F=&quot;/mnt/zurg_qbt/__magic__/tv/One Piece/Season 23/[AnoZu] One Piece S23E21 1080p CR WEB-DL AAC 2.0 H.264.mkv&quot;
+
+$ ls -la &quot;$F&quot;
+-rw-rw-r-- 1 you users 1446325722 Aug 31 00:44 …mkv
+
+$ dd if=&quot;$F&quot; bs=1M count=1 &gt;/dev/null
+1048576 bytes (1.0 MB, 1.0 MiB) copied, 0.00592934 s, 177 MB/s
+
+$ ffprobe -v error -show_entries format=duration,size,format_name \
+    -of default=noprint_wrappers=1 &quot;$F&quot;
+format_name=matroska,webm
+duration=1415.808000
+size=1446325722</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-3">
+<template #title>Windows</template>
+<p>PowerShell を開き、zurg のフォルダーから実行します。PATH に <code translate="no" v-pre>ffprobe</code> がすでにない限り、セットアップが <code translate="no" v-pre>bin\ffprobe.exe</code> を置いています。その場合は代わりに <code translate="no" v-pre>ffprobe</code> と入力してください:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">PS&gt; $F = Get-Item -LiteralPath &quot;Z:\__magic__\tv\One Piece\Season 23\[AnoZu] One Piece S23E21 1080p CR WEB-DL AAC 2.0 H.264.mkv&quot;
+PS&gt; $F.Length
+1446325722
+
+PS&gt; bin\ffprobe.exe -v error -show_entries format=duration,size,format_name -of default=noprint_wrappers=1 $F.FullName
+format_name=matroska,webm
+duration=1415.808000
+size=1446325722</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p>これは Sonarr の grab の例です。エピソードも同じ方法で取得され、<code translate="no" v-pre>tv/One Piece/Season 23/</code> にインポートされたものです。23分の Matroska で、debrid アカウントから直接読み取っています。データは、何かがそれを読み込んだときに届くのであって、*arr がインポートしたときではありません。</p>
+<h3 id="from-sonarr-it-looks-the-same">Sonarr から見ると同じように見える</h3>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/50-sonarr-interactive-search.webp" alt="Sonarr の対話型検索で 1 話を検索した画面" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Sonarr の対話型検索で 1 話を検索した画面</figcaption>
+</figure>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/52-sonarr-history.webp" alt="展開されたインポート済みエピソードの詳細が表示された Sonarr の履歴" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">展開されたインポート済みエピソードの詳細が表示された Sonarr の履歴</figcaption>
+</figure>
+<p>履歴に出る 2 つのイベントも、リネームによるインポートも同じです。キューはインポートが終わった瞬間に空になります。キャッシュ済みのリリースは、grab からインポート完了まで数秒で終わるので、ダウンロード途中のスクリーンショットはここには載せていません。</p>
+<h2 id="10-prowlarr-manual-grabs">10. Prowlarr で手動グラブ</h2>
+<p>Prowlarr も同じエンドポイントに接続します。他の2つと同じ qBittorrent クライアントのコードを共有していますが、インポーターではありません。ライブラリを持たず、何かをインポートすることもありません。できるのは、リリースを<strong>手動でアカウントに送信すること</strong>です。これはまさにダウンロードクライアントの役割です。</p>
+<p>Prowlarr の初回起動画面も、他の2つと同じ Forms 認証の画面です。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/70-prowlarr-login.webp" alt="Prowlarr's login page" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Prowlarr's login page</figcaption>
+</figure>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/71-prowlarr-downloadclients-empty.webp" alt="Prowlarr's empty download clients page" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Prowlarr's empty download clients page</figcaption>
+</figure>
+<p><strong>Settings → Download Clients → +</strong> を開き、<strong>qBittorrent</strong> を選びます。Prowlarr の選択画面では、*arr のように2列ではなく、すべてのクライアントが1つのアルファベット順リストに並んでいます。ホスト、ポート、API キーは同じです。*arr と違うのは次の2つのフィールドです。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/72-prowlarr-add-client-picker.webp" alt="Prowlarr's add download client picker" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Prowlarr's add download client picker</figcaption>
+</figure>
+<retype-table copy-text="| フィールド | 値 | 理由 |
+|---|---|---|
+| Default Category | `prowlarr` | Prowlarr のデフォルト値です。ヘルプテキストも読んでおく価値があります: *adding a category specific to Prowlarr avoids conflicts with unrelated non-Prowlarr downloads*。**Test** を実行すると zurg にカテゴリが作成されるので、`qbittorrent.categories` に追加する必要はありません。 |
+| Priority | `Last` | 適用先がないので、そのままで構いません。 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>フィールド</th>
+<th>値</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default Category</td>
+<td><code translate="no" v-pre>prowlarr</code></td>
+<td>Prowlarr のデフォルト値です。ヘルプテキストも読んでおく価値があります: <em>adding a category specific to Prowlarr avoids conflicts with unrelated non-Prowlarr downloads</em>。<strong>Test</strong> を実行すると zurg にカテゴリが作成されるので、<code translate="no" v-pre>qbittorrent.categories</code> に追加する必要はありません。</td>
+</tr>
+<tr>
+<td>Priority</td>
+<td><code translate="no" v-pre>Last</code></td>
+<td>適用先がないので、そのままで構いません。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/73-prowlarr-qbittorrent-dialog-filled.webp" alt="Prowlarr's qBittorrent dialog filled in" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Prowlarr's qBittorrent dialog filled in</figcaption>
+</figure>
+<p><strong>Test</strong> を押して緑のチェックマークが出たら、<strong>Save</strong> を押します。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/74-prowlarr-qbittorrent-test-ok.webp" alt="Prowlarr's dialog footer showing a successful test" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Prowlarr's dialog footer showing a successful test</figcaption>
+</figure>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/75-prowlarr-downloadclient-saved.webp" alt="The saved download client card in Prowlarr" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">The saved download client card in Prowlarr</figcaption>
+</figure>
+<p>次に <strong>Search</strong> を開き、探したいものを入力して、行をクライアントに送信します。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/76-prowlarr-manual-search.webp" alt="Prowlarr's manual search with the push button" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">Prowlarr's manual search with the push button</figcaption>
+</figure>
+<p>リリースは *arr の grab と全く同じ方法でアカウントに追加されます。同じ追加パス、同じカテゴリ、同じ <code translate="no" v-pre>__magic__</code> フォルダーを使います。今回の例では、キャッシュ済みで、1秒以内に <code translate="no" v-pre>finished</code> になりました。ただし、インポートはされません。リリースはアカウントに置かれ、マウントから配信されます。これがポイントです。Prowlarr の push は「今すぐデバッドアカウントに入れたい」ときに使うもので、自動の grab・インポート・クリーンアップのパイプラインのためのものではありません。そちらを使う場合は、Sonarr と Radarr をエンドポイントに向けたままにして、インデクサーの管理は Prowlarr に任せてください。</p>
+<h2 id="11-adding-a-release-by-hand">11. リリースを手動で追加する</h2>
+<doc-tabs>
+<doc-tab v-cloak id="linux-と-macos-3">
+<template #title>Linux と macOS</template>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">KEY=your-qbittorrent-api-key
+curl -H &quot;Authorization: Bearer $KEY&quot; http://localhost:9999/api/v2/torrents/add \
+  -F 'urls=magnet:?xt=urn:btih:&lt;hash&gt;&amp;dn=Movie.Title.2012.1080p.WEB-DL' \
+  -F category=radarr4k</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+<doc-tab v-cloak id="windows-4">
+<template #title>Windows</template>
+<p>PowerShell で、<code translate="no" v-pre>curl</code> ではなく <code translate="no" v-pre>curl.exe</code> を使います:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$KEY = &quot;your-qbittorrent-api-key&quot;
+curl.exe -H &quot;Authorization: Bearer $KEY&quot; http://localhost:9999/api/v2/torrents/add `
+  -F 'urls=magnet:?xt=urn:btih:&lt;hash&gt;&amp;dn=Movie.Title.2012.1080p.WEB-DL' `
+  -F category=radarr4k</code></pre>
+</doc-codeblock></div>
+</doc-tab>
+</doc-tabs>
+<p><code translate="no" v-pre>.torrent</code> ファイルでも使えます。<code translate="no" v-pre>urls</code> の代わりに <code translate="no" v-pre>-F 'torrents=@Movie.Title.2012.1080p.WEB.torrent'</code> と送ってください。</p>
+<p>アプリがインポートするかどうかは、次の4つで決まります。</p>
+<ol>
+<li><strong>映画やドラマが、そのアプリにすでに登録されている必要があります。</strong> アプリは、自分が管理しているものと対応づけられるものだけをインポートします。</li>
+<li><strong>名前で中身がわかる必要があります。</strong> マグネットリンクの名前は <code translate="no" v-pre>dn</code> です。<code translate="no" v-pre>.torrent</code> ファイルの名前はファイル名です。zurg は qBittorrent の <code translate="no" v-pre>rename</code> フィールドを無視します。Radarr は <code translate="no" v-pre>Sintel</code> を解析できず、<em>Unable to parse download</em> として保留にしました。<code translate="no" v-pre>Sintel.2010.1080p.WEB-DL</code> はインポートされました。名前には年を付けてください。</li>
+<li><strong>アプリが最初に見る前に、名前を正しくしておいてください。</strong> Radarr がダウンロードを解析不能と判断すると、Radarr を再起動するまでその判断は変わりません。より良い名前で追加し直しても変わらなかった例があります。再起動後はインポートされました。</li>
+<li><strong>カテゴリーは単なるラベルです。</strong> <code translate="no" v-pre>qbittorrent.categories</code> に含まれていないカテゴリーでも受け付けられます。ただ、カテゴリー一覧には表示されません。リリースは後から別のアプリに移せます。新しいカテゴリーを持つアプリは、次のチェックでそれをインポートします。</li>
+</ol>
+<div id="11-adding-a-release-by-hand-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -H &quot;Authorization: Bearer $KEY&quot; http://localhost:9999/api/v2/torrents/setCategory \
+  -F hashes=&lt;hash&gt; -F category=radarr</code></pre>
+</doc-codeblock></div>
+<p>Windows では、<code translate="no" v-pre>$KEY</code> を上と同じように設定したうえで、<code translate="no" v-pre>curl.exe</code> を1行で実行します。</p>
+<p>すでにアカウントにあるリリースも同じ方法で扱えます。DMM から送ったものも含みます。zurg はそれがライブラリにすでにあることを確認し、二重に追加せず、カテゴリーの下に記録します。このエンドポイント経由で追加しなかったリリースは、Sonarr と Radarr からは見えません。zurg が見せるのは、このエンドポイントを通ったものだけです。</p>
+<p>検証は 2026-10-04 に、AllDebrid アカウントと Radarr 6.3 で行いました。各映画は <code translate="no" v-pre>__magic__/movies</code> に名前を変えてインポートされ、コピーはされませんでした。別のカテゴリーに設定した Radarr は、それを一度も見ませんでした。Sonarr はテストしていません。</p>
+<h2 id="12-plex-reads-one-set-of-folders">12. Plex は 1 セットのフォルダを読む</h2>
+<p>インポートしても、zurg 自身のフォルダからリリースが取り出されるわけではありません。Radarr が <code translate="no" v-pre>__magic__/movies</code> に置いた映画も、<code translate="no" v-pre>movies</code> と <code translate="no" v-pre>__all__</code> に今まで通り残ります。そのため、Plex はどちらか一方のフォルダセットだけを読み込み、両方を読み込まないようにしてください。</p>
+<retype-table copy-text="| Plex が読むフォルダ | 得られるもの |
+|---|---|
+| `movies` と `shows` | debrid アカウント上のすべてです。\*arr による取得分もここに表示されます。名前はリリースの名前そのままです。 |
+| `__magic__/movies` と `__magic__/tv` | Sonarr と Radarr がインポートしたものだけです。名前とフォルダは \*arr が決めたものになります。 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Plex が読むフォルダ</th>
+<th>得られるもの</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>movies</code> と <code translate="no" v-pre>shows</code></td>
+<td>debrid アカウント上のすべてです。*arr による取得分もここに表示されます。名前はリリースの名前そのままです。</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>__magic__/movies</code> と <code translate="no" v-pre>__magic__/tv</code></td>
+<td>Sonarr と Radarr がインポートしたものだけです。名前とフォルダは *arr が決めたものになります。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Plex のライブラリがすでに <code translate="no" v-pre>movies</code> と <code translate="no" v-pre>shows</code> を指しているなら、そのままにしておいてください。*arr による取得分は、何も変更しなくてもそこに表示されます。<code translate="no" v-pre>__magic__</code> フォルダを Plex に追加するのは、*arr のインポートだけで構成されたライブラリが欲しい場合に限ってください。その後で、他のフォルダは外しましょう。両方を読み込むと、すべてのタイトルが 2 回ずつ見つかってしまいます。</p>
+<p><code translate="no" v-pre>__magic__</code> のルートも追加しないでください。そこには <code translate="no" v-pre>__magic__/__all__</code> があり、これはライブラリ全体がもう一度入ったものだからです。</p>
+<h2 id="13-indexers-and-dmm-for-sponsors">13. インデクサーと、スポンサー向けの DMM</h2>
+<p>Sonarr と Radarr は Prowlarr 経由で検索します。zurg がマグネットリンクを debrid アカウントに追加するので、公開トレントインデクサーならどれでも使えます。ただし一部の公開サイトは Cloudflare の裏側にあり、FlareSolverr がないと Prowlarr が追加を拒否します。そういうサイトは使わないでください。</p>
+<p>zurg をスポンサーしているなら、DMM もインデクサーになります。DMM のライブラリ全体を検索し、すでにあなたの debrid アカウントにあるものを一番上にランク付けします。そのグラブは即座に完了します。</p>
+<ol>
+<li><a href="https://gatekeeper.debridmediamanager.com">gatekeeper</a> で DMM API キーを取得します。<strong>Connect GitHub</strong> を押し、Patreon でスポンサーしている場合は、その後に Patreon をリンクします。表示される <strong>DMM API key</strong> をコピーします。これは <doc-anchor-trigger to="#2-find-the-api-key">手順2</doc-anchor-trigger> の zurg キーではありません。DMM の Usenet インデクサーでも同じキーを使います。設定は <a href="https://debridmediamanager.com/newznab">debridmediamanager.com/newznab</a> です。</li>
+<li>Prowlarr で <strong>Indexers → Add Indexer</strong> を開き、<strong>Generic Torznab</strong> を選びます。</li>
+<li>アカウントの URL とキーを入力します。<strong>API Path</strong> は <code translate="no" v-pre>/api</code> のままにしてください。</li>
+</ol>
+<retype-table copy-text="| アカウント | URL |
+|---|---|
+| Real-Debrid | `https://debridmediamanager.com/api/torznab/rd` |
+| AllDebrid | `https://debridmediamanager.com/api/torznab/ad` |
+| TorBox | `https://debridmediamanager.com/api/torznab/tb` |
+| Premiumize | `https://debridmediamanager.com/api/torznab/pm` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>アカウント</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Real-Debrid</td>
+<td><code translate="no" v-pre>https://debridmediamanager.com/api/torznab/rd</code></td>
+</tr>
+<tr>
+<td>AllDebrid</td>
+<td><code translate="no" v-pre>https://debridmediamanager.com/api/torznab/ad</code></td>
+</tr>
+<tr>
+<td>TorBox</td>
+<td><code translate="no" v-pre>https://debridmediamanager.com/api/torznab/tb</code></td>
+</tr>
+<tr>
+<td>Premiumize</td>
+<td><code translate="no" v-pre>https://debridmediamanager.com/api/torznab/pm</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>TorBox と Premiumize では、先に DMM でそのサービスのキーをリンクしておく必要があります。場所は DMM のページに表示されます。アカウントにまだないものを除外したい場合は、URL の末尾に <code translate="no" v-pre>/cached</code> を追加します。</p>
+<p>Prowlarr はインデクサーを保存するときにテストします。キーが拒否された場合は、スポンサーシップが切れているかキーが間違っているので、エラーにその理由が表示されます。問題がなければ、Prowlarr が DMM を自動的に Sonarr と Radarr に渡します。1つのキーで、すべてのアプリを合わせて1分あたり20回まで検索できます。</p>
+<h2 id="14-your-plex-watchlist">14. Plex のウォッチリスト</h2>
+<p>Sonarr と Radarr は Plex のウォッチリストを追いかけられます。Plex に追加したものは、どれも追加されて検索され、ほかの取得と同じように zurg 経由で届きます。</p>
+<p>各アプリで <strong>Settings → Import Lists → + → Plex Watchlist</strong> を開き、<strong>Authenticate with Plex.tv</strong> を押してください。Root folder は <code translate="no" v-pre>__magic__</code> フォルダに設定し、<strong>search on add</strong> をオンにします。Radarr はリストの映画を、Sonarr はリストの番組を拾います。</p>
+<p>zurg には、zurg 自身に指定したインデクサーから取得する <a href="../plex-watchlist/">独自のウォッチリスト</a> もあります。どちらか一方を使ってください。両方を使うと、同じタイトルが二重に取得されてしまいます。</p>
+<p>ジャンルのリストなど、ほかのリストを追いかけたい場合は <a href="../import-lists/">Sonarr と Radarr のリスト</a> を見てください。</p>
+<h2 id="if-the-import-copies-instead-of-moving">インポートがコピーになる場合</h2>
+<p>上記のすべては、インポートが**名前の変更（rename）**であることに依存しています。それを決めるのは2つです。1つ目は、コンテナがマウントにどう接続しているかです。これはあなたしか変更できません。保存パスとルートフォルダーが2つの異なるボリュームにあると、他の設定に関係なく、インポートはすべてコピーになります。<doc-anchor-trigger to="#8-if-your-arr-is-in-docker">手順 8</doc-anchor-trigger>で説明しています。もう1つは *arr の設定のひとつです。</p>
+<p>クライアントは、ダウンロードを後で削除しても問題ないと判断したときだけ、インポートされたファイルを移動します。その条件は3つ同時に満たすことです。<strong>Remove Completed</strong> が有効であること、完了して一時停止中のtorrentであること、そして終了したと確認できるシード制限に達していることです。zurg は後ろの2つを、あるべき通りに正確に報告します。完了したtorrentはすべて一時停止状態で、比率0に対して比率制限0として返されます。<strong>Remove Completed</strong> はあなたが設定する項目です。</p>
+<p>これをオフにすると、代わりにクライアントはコピーします。debrid マウントからのコピーは、リリースのすべてのバイトをネットワーク越しに読み戻し、ローカルディスクに書き込むことを意味します。手順 9 のリリースは、何も移動せずに済む名前変更から、すでにあったファイルをインポートするためだけの 17 GiB のダウンロードへと変わってしまいます。</p>
+<p><strong>zurg は自動的に再び有効にします。</strong> *arr の API キーを持っているとき、<a href="../acquisition/">Radarr または Sonarr のソース</a>（<code translate="no" v-pre>enabled: false</code> のものでも十分です）を通して、またはそれを求めるダッシュボードのバナーを通して有効にします。zurg は起動時、10分ごと、そして *arr が初めて zurg を呼び出したときにチェックし、*arr 自身の API を通して <strong>Remove Completed</strong> を有効にします。クライアントが自身の <strong>Test</strong> に失敗する場合は変更できず、zurg は理由とともに警告を残します。</p>
+<p><strong>*arr 側には、コピーされたという表示は一切ありません。</strong> どちらの場合もインポートは成功として報告されます。移動は zurg のログに <code translate="no" v-pre>MOVE __magic__</code> という1行として出ます。zurg 自身のマウントを経由したコピーは <code translate="no" v-pre>data/local</code> に置かれ、zurg は約2分以内にそれを見つけ、配置情報に戻し、コピーを削除して、<code translate="no" v-pre>A client copied …</code> とログに記録し、ダッシュボードにバナーを表示します。自分で用意したマウントを経由したコピーは、リリースのバイト数すべてを含む <code translate="no" v-pre>PUT</code> になり、zurg はこれを拒否します。コピーのためにかかったダウンロードは取り消せません。</p>
+<p><strong>Use Hardlinks instead of Copy</strong> は代わりにはなりません。クライアントはこの設定を、すでにコピーすると決めた後にだけ参照するため、コピーを移動に戻すことはできません。</p>
+<h2 id="timeouts-and-cached-only-mode">タイムアウトと cached-only モード</h2>
+<p>デフォルトでは、zurg はアカウントに既にキャッシュ済みで保持されている grab だけを受け付けます。これをオフにすると、キャッシュされていない grab はそのアカウント上でダウンロードされます。動かなくなった grab はそのアカウントから外され、次のアカウントに回されます。</p>
+<div id="timeouts-and-cached-only-mode-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">qbittorrent:
+  cached_only: true
+  download_timeout_mins: 15</code></pre>
+</doc-codeblock></div>
+<retype-table copy-text="| 設定 | 動作 |
+|---|---|
+| `cached_only: true` | デフォルトです。アカウントに既にそのコンテンツがある場合だけ grab を受け付け、なければ即座に拒否します。`download_timeout_mins` は使われません。 |
+| `cached_only: false` | キャッシュされていない grab はアカウント上でダウンロードされます。`download_timeout_mins`(デフォルトは 15)の間まったく動かなければ諦めて、次のアカウントを試します。負の値にすると、タイムアウトしません。 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>設定</th>
+<th>動作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>cached_only: true</code></td>
+<td>デフォルトです。アカウントに既にそのコンテンツがある場合だけ grab を受け付け、なければ即座に拒否します。<code translate="no" v-pre>download_timeout_mins</code> は使われません。</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>cached_only: false</code></td>
+<td>キャッシュされていない grab はアカウント上でダウンロードされます。<code translate="no" v-pre>download_timeout_mins</code>(デフォルトは 15)の間まったく動かなければ諦めて、次のアカウントを試します。負の値にすると、タイムアウトしません。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>古い設定ファイル。</strong> <code translate="no" v-pre>cached_only</code> が登場する前は、キャッシュのみの指定を <code translate="no" v-pre>download_timeout_mins: 0</code> と書いていました。<code translate="no" v-pre>cached_only</code> がなく <code translate="no" v-pre>download_timeout_mins</code> だけが書かれている設定は、従来どおりの意味になります。<code translate="no" v-pre>0</code> はキャッシュのみ、それ以外の値はダウンロードです。両方が書かれていて食い違う場合は <code translate="no" v-pre>cached_only</code> が優先され、zurg は起動時に警告をログに出します。</p>
+<p><strong>「動いている」とみなす条件。</strong> 段階が変わったか、進捗が上がったかで判断します。判断に使うのはアカウントが報告する生の割合で、整数のパーセントではありません。100 GB のリリースの 1% は 1 GB にあたるためです。アカウントがリリースを展開している段階はタイマーの対象外です。その段階の数値は、展開が終わるまで変わらないからです。</p>
+<p><strong>15 分は選んだ値ではなく、計測した値です。</strong> AllDebrid では、正常なジョブでもすべてのカウンターが 0 のまま自前のキューに置かれることがあります。試した 2 回のうち、どちらも 580 秒と 622 秒の間そのまま止まっていましたが、その後は数秒でダウンロードが進み、完了しました。デフォルトが 10 分だと、この 2 回とも諦められていたはずです。実際の観測結果と、各アカウント独自の表現を *arrs が理解する 5 つの状態に対応づける表は、<a href="../../internals/torrent-lifecycle/">Torrent lifecycle</a> にあります。</p>
+<p><strong>タイムアウトで削除されるもの。</strong> 削除されるのは、そのアカウント上のインスタンスだけです。削除の対象になるのは、この grab のために zurg が自分で追加し、完了しなかったインスタンスに限られます。他のものには触れません。利用できるアカウントがなくなると、その grab はエラーとして報告されます。理由には、関係したすべてのアカウントと、それぞれで何が起きたかが書かれます。</p>
+<p><strong>アカウント上で手動で削除した torrent。</strong> 手動で削除すると、grab は直ちに次のアカウントに移ります。6 つのサービスすべてが、torrent がなくなったことをはっきり伝えてくれます。</p>
+<p><strong>追加処理全体の制限時間は 75 秒です。</strong> *arrs は 100 秒を過ぎると <code translate="no" v-pre>torrents/add</code> をキャンセルし、その期限切れを接続失敗として報告します。この値は変更できません。すべてのアカウントが同じ期限を共有するので、3 つのアカウントなら余裕で収まります。4 つ目のアカウントには、最初の 3 つが使わなかった残りの時間だけが割り当てられます。</p>
+<p><strong>キャッシュのみモード</strong> では、追加処理の中で拒否判定を行います。*arrs が動作するきっかけになるのは、この追加処理での拒否だけです。拒否されると grab は失敗となり、*arrs はリストの次のリリースに移ります。追加処理の後の出来事は、すべて「ダウンロード中」という警告として *arrs に届きます。*arrs はこの警告を受けると、待機を続けます。各アカウントへの問い合わせ方法は次のとおりです。</p>
+<retype-table copy-text="| アカウント | zurg の問い合わせ方法 |
+|---|---|
+| TorBox | `add_only_if_cached=true` を付けた magnet を送ります。キャッシュがなければ何も追加されません。ただし、TorBox の「非キャッシュ追加」枠(1 時間あたり 60 回)は 1 回消費します。 |
+| Debrid-Link | info hash だけを送ります。Debrid-Link は、コンテンツを持っていない場合は何も追加せずに拒否します。 |
+| AllDebrid、Offcloud | 追加のリクエストそのものが答えになります。サービスはレスポンスで、既にそのコンテンツを持っていたかどうかを示します。持っていなかった場合は、すぐに削除されます。 |
+| Real-Debrid、Premiumize | torrent を追加し、ファイルを選択してから、最大 5 秒間監視します。キャッシュ済みのコンテンツはほぼすぐに完了します(Real-Debrid ではファイル選択後 0.4〜1.5 秒)。5 秒経っても進行中のものは実際のダウンロードとみなされ、削除されます。 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>アカウント</th>
+<th>zurg の問い合わせ方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TorBox</td>
+<td><code translate="no" v-pre>add_only_if_cached=true</code> を付けた magnet を送ります。キャッシュがなければ何も追加されません。ただし、TorBox の「非キャッシュ追加」枠(1 時間あたり 60 回)は 1 回消費します。</td>
+</tr>
+<tr>
+<td>Debrid-Link</td>
+<td>info hash だけを送ります。Debrid-Link は、コンテンツを持っていない場合は何も追加せずに拒否します。</td>
+</tr>
+<tr>
+<td>AllDebrid、Offcloud</td>
+<td>追加のリクエストそのものが答えになります。サービスはレスポンスで、既にそのコンテンツを持っていたかどうかを示します。持っていなかった場合は、すぐに削除されます。</td>
+</tr>
+<tr>
+<td>Real-Debrid、Premiumize</td>
+<td>torrent を追加し、ファイルを選択してから、最大 5 秒間監視します。キャッシュ済みのコンテンツはほぼすぐに完了します(Real-Debrid ではファイル選択後 0.4〜1.5 秒)。5 秒経っても進行中のものは実際のダウンロードとみなされ、削除されます。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>zurg は、TorBox の <code translate="no" v-pre>checkcached</code> などのキャッシュ確認 API は使いません。これらの API が伝えるのは、サービスがそのコンテンツを持っているかどうかだけです。あなたのアカウントに実際に使えるコピーが残るかどうかは分かりません。</p>
+<h2 id="what-works-and-what-does-not">動くものと動かないもの</h2>
+<p>動くもの:</p>
+<ul>
+<li>3つのクライアントすべての接続テスト（API バージョン、認証、カテゴリ、torrent リスト）。</li>
+<li>Sonarr と Radarr での取得、キュー、履歴、リネームによるインポート、インポート後のクリーンアップ。</li>
+<li>アカウントがすでに持っているリリースの再取得。*arr は完了した torrent を受け取ってインポートします。アカウントに残るコピーは1つだけです。</li>
+<li>複数アカウント: 取得は <code translate="no" v-pre>providers:</code> の順にそれぞれのアカウントへ提示され、拒否されたりスタックしたりすると次のアカウントに移ります。</li>
+<li>Prowlarr から手動でリリースを送信。</li>
+</ul>
+<p>動かないもの:</p>
+<ul>
+<li><strong>qBittorrent Web UI。</strong> これは API だけです。開けるページはありません。</li>
+<li><strong>シーディング、キュー、優先度。</strong> swarm はありません。一時停止、強制開始、優先度の変更、再チェック、移動、共有制限は受け付けますが、何もしません。</li>
+<li><strong>失敗を独立した状態として扱うこと。</strong> qBittorrent の API にはダウンロードが失敗したと伝える方法がないため、どのアカウントも受け付けないリリースは *arr に <em>warning</em> として届き、ブロックリストには載りません。理由付きでキューに表示され、<em>Remove → Blocklist and Search</em> をワンクリックで実行できますが、自動では解消されず、無人で再取得されることもありません。これが SABnzbd エンドポイントとの本質的な違いです。SABnzbd では失敗したジョブを報告でき、クライアントがそれに反応できます。</li>
+<li><strong>プレーンな HTTP URL による追加。</strong> <code translate="no" v-pre>torrents/add</code> が受け付けるのは magnet と、アップロードされた <code translate="no" v-pre>.torrent</code> ファイルだけです。両方の *arr はどちらかを送るので、むき出しの <code translate="no" v-pre>http://…/x.torrent</code> は拒否されます。</li>
+<li><strong>エンドポイントでの zurg ダッシュボードのログインチャレンジ。</strong> 適用されません。エンドポイントは API キー（ベアラートークン、ログインパスワード、または Basic ヘッダーとして）か、zurg ダッシュボードのユーザー名とパスワードを受け付けます。</li>
+</ul>
+<p><strong>1回の取得がエラーとしてではなく、キューから消えることがあります。</strong> どのアカウントもそのリリースを受け取らず、どれも取得中でない場合（どのアカウントもハッシュを持っていない場合）、10分後にエラーと報告され、1日後に torrent リストから削除されます。報告すべきダウンロードが存在せず、存在しないものを示すキューのエントリは無いほうがましだからです。それ以外の失敗はすべて表示されたままになります。</p>
+<p><strong>Real-Debrid のみで禁止されるリリース名。</strong> RD は名前だけで一部のリリースを拒否します。2026年10月14日以降、その文字列は11個あります。<code translate="no" v-pre>WEB-DL</code>、<code translate="no" v-pre>WEB.x264</code>、<code translate="no" v-pre>WEB.H264</code> は、まさにその大文字小文字の並びのときだけ該当します。そのため <code translate="no" v-pre>web-dl</code>、<code translate="no" v-pre>Web-Dl</code>、シーン由来の <code translate="no" v-pre>WEB.h264</code> は問題ありません。<code translate="no" v-pre>WEBRip</code>、<code translate="no" v-pre>BDRip</code>、<code translate="no" v-pre>HDRip</code>、<code translate="no" v-pre>DVDRip</code>、<code translate="no" v-pre>HDTV.x264</code>、<code translate="no" v-pre>HDTV.XviD</code>、<code translate="no" v-pre>BluRay.x264</code>、<code translate="no" v-pre>p.BluRay.DTS</code> は大文字小文字を問わず該当します。最後のものは <code translate="no" v-pre>1080p.BluRay.DTS</code> のように直前に p が必要です。<code translate="no" v-pre>2002.BluRay.DTS</code> のリリースは問題ありません。zurg はこれらのパターンを把握しており、そのような名前では Real-Debrid に問い合わせずにスキップし、次のアカウントに取得を提示します。Real-Debrid だけの場合、取得は即座に拒否され、クライアントは次のリリースに進みます。TorBox と AllDebrid では、同じリリースも通常どおり追加されます。</p>
+<h2 id="troubleshooting">トラブルシューティング</h2>
+<retype-table copy-text="| *arr が表示するもの | 意味 |
+|---|---|
+| &quot;Unable to connect to qBittorrent&quot; | そのホストとポートでzurgに届かないか、前段の何かが200以外を返しています。`qbittorrent.enabled` を確認してください。オフの間、`/api/v2` は単なる404になります。Dockerでは、`localhost` やホスト名だけを使っていないか確認してください。 |
+| 接続テストは成功するが、grabが *Download client failed to add torrent* で失敗する | クライアントはzurgに届いていて、zurgが追加を拒否しています。zurgはすべての拒否をログに記録します。ログで `qBittorrent: refusing` をgrepしてください。その行に理由と、試行したすべてのアカウントが書かれています。 |
+| zurgのログにある `every account that takes torrents refused or timed out` | このリリースを受け付けるアカウントがありませんでした。健全なはずのアカウントでレート制限と表示された場合は、同じトークンを使う *他の* zurgインスタンスを数えてください。このリグの最初のgrabは、まさにそれで失敗しました。同じReal-Debridアカウント上の2つ目のzurgが大きなライブラリを走査していて、二つがAPIの上限を共有していたのです。 |
+| &quot;Category … does not exist&quot; | クライアントがまだカテゴリを作成していません。ダウンロードクライアントで **Test** をクリックしてください。これによりzurgにカテゴリが作成されます。 |
+| grabが長い間 *Downloading* のまま | アカウントが実際にダウンロードしています。キューには、提供されていればアカウント自身のレートと残り時間が表示されます。シードのないリリースは両方ともゼロと表示されますが、これはエラーではありません。 |
+| 完了したリリースがキューに警告として残っている | クライアントが取り込まないと判断したか（プロファイルが拒否するアップグレード）、すべてのアカウントが拒否したかのどちらかです。キューの行に理由が表示されます。自動では消えないので、手動で削除してください。リリースが不良なら **Blocklist and Search** を使ってください。 |
+| &quot;Download client zurg places downloads in …/__magic__/__all__ but Radarr cannot see this directory&quot; | zurgがまだライブラリの読み込みを終えていません。マウントの最上位は一覧に出ますが、`__all__` と `__magic__/__all__` は出ず、Plexにも何も表示されません。zurgのログで `rejected the API key` をgrepしてください。キーやプランが使えなくなったアカウントが普通の原因です。無料プランについては [TorBox](../providers/torbox.md#when-it-goes-wrong) を参照してください。警告はライブラリが読み込まれると消えます。 |
+| &quot;Downloads in root folder&quot; / &quot;Remote path mapping&quot; | Usenetエンドポイントと同じルートフォルダとパスのルールです。[手順4](#4-make-the-root-folders)と[手順8](#8-if-your-arr-is-in-docker)を参照してください。 |
+| ルートフォルダのブラウザでzurgのマウントが空に表示される、または `Z:` ドライブがまったくない | *arrからマウントが見えていません。Linuxでは `user_allow_other` のない別ユーザーで動作しており、Windowsではサービスとして動作しています。[始める前に](#before-you-start)を参照してください。 |
+| 拒否がすべてのリリースで起きていて、ログには何もない | 古いバインドマウントです。`docker exec &lt;client&gt; df -h &lt;mount&gt;` を実行してください。`Socket not connected` と表示されたら、親ディレクトリを `rslave` でバインドし、コンテナを作り直してください。 |
+| 取り込みは成功するが、毎回リリース全体をダウンロードしてしまう | *arrは移動ではなくコピーしています。zurgはログに `A client copied …` と出力し、ダッシュボードにバナーを表示します。原因は、ダウンロードクライアントの **Remove Completed** がオフになっているか、コンテナでsave pathとルートフォルダが別々のボリュームに載っているかのどちらかです。[移動ではなくコピーされる場合](#if-the-import-copies-instead-of-moving)と[手順8](#8-if-your-arr-is-in-docker)を参照してください。 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>*arr が表示するもの</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&quot;Unable to connect to qBittorrent&quot;</td>
+<td>そのホストとポートでzurgに届かないか、前段の何かが200以外を返しています。<code translate="no" v-pre>qbittorrent.enabled</code> を確認してください。オフの間、<code translate="no" v-pre>/api/v2</code> は単なる404になります。Dockerでは、<code translate="no" v-pre>localhost</code> やホスト名だけを使っていないか確認してください。</td>
+</tr>
+<tr>
+<td>接続テストは成功するが、grabが <em>Download client failed to add torrent</em> で失敗する</td>
+<td>クライアントはzurgに届いていて、zurgが追加を拒否しています。zurgはすべての拒否をログに記録します。ログで <code translate="no" v-pre>qBittorrent: refusing</code> をgrepしてください。その行に理由と、試行したすべてのアカウントが書かれています。</td>
+</tr>
+<tr>
+<td>zurgのログにある <code translate="no" v-pre>every account that takes torrents refused or timed out</code></td>
+<td>このリリースを受け付けるアカウントがありませんでした。健全なはずのアカウントでレート制限と表示された場合は、同じトークンを使う <em>他の</em> zurgインスタンスを数えてください。このリグの最初のgrabは、まさにそれで失敗しました。同じReal-Debridアカウント上の2つ目のzurgが大きなライブラリを走査していて、二つがAPIの上限を共有していたのです。</td>
+</tr>
+<tr>
+<td>&quot;Category … does not exist&quot;</td>
+<td>クライアントがまだカテゴリを作成していません。ダウンロードクライアントで <strong>Test</strong> をクリックしてください。これによりzurgにカテゴリが作成されます。</td>
+</tr>
+<tr>
+<td>grabが長い間 <em>Downloading</em> のまま</td>
+<td>アカウントが実際にダウンロードしています。キューには、提供されていればアカウント自身のレートと残り時間が表示されます。シードのないリリースは両方ともゼロと表示されますが、これはエラーではありません。</td>
+</tr>
+<tr>
+<td>完了したリリースがキューに警告として残っている</td>
+<td>クライアントが取り込まないと判断したか（プロファイルが拒否するアップグレード）、すべてのアカウントが拒否したかのどちらかです。キューの行に理由が表示されます。自動では消えないので、手動で削除してください。リリースが不良なら <strong>Blocklist and Search</strong> を使ってください。</td>
+</tr>
+<tr>
+<td>&quot;Download client zurg places downloads in …/<strong>magic</strong>/<strong>all</strong> but Radarr cannot see this directory&quot;</td>
+<td>zurgがまだライブラリの読み込みを終えていません。マウントの最上位は一覧に出ますが、<code translate="no" v-pre>__all__</code> と <code translate="no" v-pre>__magic__/__all__</code> は出ず、Plexにも何も表示されません。zurgのログで <code translate="no" v-pre>rejected the API key</code> をgrepしてください。キーやプランが使えなくなったアカウントが普通の原因です。無料プランについては <a href="../../providers/torbox/#when-it-goes-wrong">TorBox</a> を参照してください。警告はライブラリが読み込まれると消えます。</td>
+</tr>
+<tr>
+<td>&quot;Downloads in root folder&quot; / &quot;Remote path mapping&quot;</td>
+<td>Usenetエンドポイントと同じルートフォルダとパスのルールです。<doc-anchor-trigger to="#4-make-the-root-folders">手順4</doc-anchor-trigger>と<doc-anchor-trigger to="#8-if-your-arr-is-in-docker">手順8</doc-anchor-trigger>を参照してください。</td>
+</tr>
+<tr>
+<td>ルートフォルダのブラウザでzurgのマウントが空に表示される、または <code translate="no" v-pre>Z:</code> ドライブがまったくない</td>
+<td>*arrからマウントが見えていません。Linuxでは <code translate="no" v-pre>user_allow_other</code> のない別ユーザーで動作しており、Windowsではサービスとして動作しています。<doc-anchor-trigger to="#before-you-start">始める前に</doc-anchor-trigger>を参照してください。</td>
+</tr>
+<tr>
+<td>拒否がすべてのリリースで起きていて、ログには何もない</td>
+<td>古いバインドマウントです。<code translate="no" v-pre>docker exec &lt;client&gt; df -h &lt;mount&gt;</code> を実行してください。<code translate="no" v-pre>Socket not connected</code> と表示されたら、親ディレクトリを <code translate="no" v-pre>rslave</code> でバインドし、コンテナを作り直してください。</td>
+</tr>
+<tr>
+<td>取り込みは成功するが、毎回リリース全体をダウンロードしてしまう</td>
+<td>*arrは移動ではなくコピーしています。zurgはログに <code translate="no" v-pre>A client copied …</code> と出力し、ダッシュボードにバナーを表示します。原因は、ダウンロードクライアントの <strong>Remove Completed</strong> がオフになっているか、コンテナでsave pathとルートフォルダが別々のボリュームに載っているかのどちらかです。<doc-anchor-trigger to="#if-the-import-copies-instead-of-moving">移動ではなくコピーされる場合</doc-anchor-trigger>と<doc-anchor-trigger to="#8-if-your-arr-is-in-docker">手順8</doc-anchor-trigger>を参照してください。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>まだ解決しませんか？ <a href="https://discord.com/invite/7u4YjMThXP">Discord</a> の <strong>zurg-support</strong> フォーラムで質問してください。<a href="../../../guides/remote-help/">ヘルプを求める</a>には、何を含めるべきかが書かれています。</p>
+<h2 id="where-the-state-lives">状態が保存される場所</h2>
+<retype-table copy-text="| パス | 内容 |
+|---|---|
+| `data/qbittorrent-apikey` | 自動生成される API キーです。`qbittorrent.api_key` が設定されている場合は書き出されません。 |
+| `data/qbittorrent-jobs.json` | クライアントがエンドポイントに渡したジョブの一覧です。各ジョブを保持しているアカウント、そのカテゴリ、そしてすでに試したアカウントがすべて記録されています。 |
+| `data/magic.json` | `__magic__` テーブルです。インポートによって作られたすべての placement と tombstone が入っています。 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>パス</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>data/qbittorrent-apikey</code></td>
+<td>自動生成される API キーです。<code translate="no" v-pre>qbittorrent.api_key</code> が設定されている場合は書き出されません。</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>data/qbittorrent-jobs.json</code></td>
+<td>クライアントがエンドポイントに渡したジョブの一覧です。各ジョブを保持しているアカウント、そのカテゴリ、そしてすでに試したアカウントがすべて記録されています。</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>data/magic.json</code></td>
+<td><code translate="no" v-pre>__magic__</code> テーブルです。インポートによって作られたすべての placement と tombstone が入っています。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>zurg のダッシュボードにある <code translate="no" v-pre>__magic__</code> ページには、インポートの結果が表示されます。placements はクライアントが移動したファイルで、tombstones はインポートの後にクライアントが削除したジョブフォルダーです。エンドポイントが受け取ったリリースは、インポート元のフォルダーに対応する行として並びます。</p>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/41-zurg-magic-header.webp" alt="placements と tombstones の件数が表示された magic ページのヘッダー" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">placements と tombstones の件数が表示された magic ページのヘッダー</figcaption>
+</figure>
+<figure class="content-center">
+    <img src="../../../assets/sonarr-radarr-torrents/42-zurg-magic-overlay.webp" alt="取得した2つのリリースを一覧表示する magic オーバーレイ" class="max-w-full h-auto rounded-image-rounded border-image-border border-image-border-width" />
+    <figcaption class="caption">取得した2つのリリースを一覧表示する magic オーバーレイ</figcaption>
+</figure>
+<p>すべての <code translate="no" v-pre>qbittorrent:</code> キーは <a href="../../reference/config/#qbittorrent-the-torrent-download-client-sonarr-and-radarr-see">リファレンス</a> にまとめられています。<a href="../../internals/qbittorrent-client-contract/">クライアントの契約仕様</a> は Sonarr と Radarr のソースを基に書かれており、エンドポイントが従う仕様です。各主張にはファイル名と行番号が付いています。</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/guides/sonarr-radarr/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">前へ</span>
+                                <span class="block mt-1">Sonarr と Radarr で Usenet を使う</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/guides/sonarr-radarr-fetch/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">次へ</span>
+                                <span class="block mt-1">zurg は Sonarr と Radarr を検索します</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Sonarr と Radarr（トレント用）", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/guides/sonarr-radarr-torrents.md" }</script>
+</body>
+</html>

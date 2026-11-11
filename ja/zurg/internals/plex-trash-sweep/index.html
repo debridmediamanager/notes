@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="ja" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/ja">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672716444">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Plexのトラッシュ掃除をzurg自身のファイル状態に合わせる</title>
+    <meta name="title" content="Plexのトラッシュ掃除をzurg自身のファイル状態に合わせる">
+    <meta name="description" content="Plex の trash sweep は、現在、Plex ライブラリから何を削除するかをファイルの不在とタイマーで判断しています。zurg はそれよりずっと良い情報、つまりそのファイルの中身が修復可能か完全に死んでいるか、をすでに把握していますが、その情報は参照していません。">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/ja/zurg/internals/plex-trash-sweep/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/ja/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/ja/zurg/internals/plex-trash-sweep/">
+    <meta property="og:title" content="Plexのトラッシュ掃除をzurg自身のファイル状態に合わせる">
+    <meta property="og:description" content="Plex の trash sweep は、現在、Plex ライブラリから何を削除するかをファイルの不在とタイマーで判断しています。zurg はそれよりずっと良い情報、つまりそのファイルの中身が修復可能か完全に死んでいるか、をすでに把握していますが、その情報は参照していません。">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="ja_JP">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/ja/zurg/internals/plex-trash-sweep/">
+    <meta name="twitter:title" content="Plexのトラッシュ掃除をzurg自身のファイル状態に合わせる">
+    <meta name="twitter:description" content="Plex の trash sweep は、現在、Plex ライブラリから何を削除するかをファイルの不在とタイマーで判断しています。zurg はそれよりずっと良い情報、つまりそのファイルの中身が修復可能か完全に死んでいるか、をすでに把握していますが、その情報は参照していません。">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/ja/zurg/internals/plex-trash-sweep.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672716444" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672716444" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672716444" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672716444" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/ja/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>日本語</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/download.html" target="_blank">zurgをダウンロード</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/ja/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">スポンサー</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>日本語</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ja/download.html" target="_blank">zurgをダウンロード</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/ja/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">スポンサー</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="aligning-the-plex-trash-sweep-with-zurgs-own-file-status">Plexのトラッシュ掃除をzurg自身のファイル状態に合わせる</h1>
+<h2 id="purpose-of-this-document">このドキュメントの目的</h2>
+<p>Plex の trash sweep は、現在、Plex ライブラリから何を削除するかを<strong>ファイルの不在とタイマー</strong>で判断しています。zurg はそれよりずっと良い情報、つまりそのファイルの中身が修復可能か完全に死んでいるか、をすでに把握していますが、その情報は参照していません。</p>
+<p>この文書は、タイマーをその情報に置き換える計画です。メディアライブラリから何が削除されるかを決める変更なので、コードを書く<strong>前に</strong>レビューしてもらうために作りました。現在の動作は両方向で間違っています。最初の日にすでに死んでいることがわかっているコンテンツを2週間待ってから削除し、zurg がまだ積極的に修復しているコンテンツを削除してしまいます。</p>
+<p>ここには、コードで確認したこと、実際のライブラリで確認したこと、提案する内容、そして意図的に変更しないことを記録しています。以下で事実として書かれていることはすべて、2026-08-16 に動作中のシステムで確認したものです。名前から推測したものではありません。</p>
+<p>対象範囲: <code translate="no" v-pre>internal/plexsweep</code>、<code translate="no" v-pre>internal/plexdb</code>、そして <code translate="no" v-pre>internal/torrent</code> への新しい読み取り専用クエリです。修復の動作そのものは変更しません。</p>
+<hr>
+<h2 id="1-background--what-shipped-and-why-it-needs-revisiting">1. 背景 ― 何がリリースされ、なぜ見直しが必要か</h2>
+<retype-table copy-text="| コミット | 内容 |
+|---|---|
+| `4737b677` | Plex の `autoEmptyTrash` が有効なときに警告を出す |
+| `020042a3` | スイーパー本体：検出、ガード、修復、アイテム単位の削除 |
+| `51cc9f69` | ダッシュボードの設定 UI とドキュメント |
+| `1a481a8f` | 修復も上限にカウントする（削除だけでなく） |
+| `c6f41621` | `plex_trash_sweep_min_age_days` を追加（デフォルトは 14） |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>コミット</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>4737b677</code></td>
+<td>Plex の <code translate="no" v-pre>autoEmptyTrash</code> が有効なときに警告を出す</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>020042a3</code></td>
+<td>スイーパー本体：検出、ガード、修復、アイテム単位の削除</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>51cc9f69</code></td>
+<td>ダッシュボードの設定 UI とドキュメント</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>1a481a8f</code></td>
+<td>修復も上限にカウントする（削除だけでなく）</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>c6f41621</code></td>
+<td><code translate="no" v-pre>plex_trash_sweep_min_age_days</code> を追加（デフォルトは 14）</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>スイープの大原則は変わらず、このままです：<strong>まだファイルが残っているものは、絶対に削除しない。</strong>
+ファイルが有効なアイテムは修復するか、ゴミ箱アイコン付きのまま放置します。有効なエピソードがあるシリーズやシーズンには、一切手を付けません。削除はアイテム単位で行い、Plex のセクション全体を対象にする <code translate="no" v-pre>emptyTrash</code> は使いません。</p>
+<p>見直しているのは、<em>本当に存在しないエントリをいつ削除してよいか</em>というルールだけです。</p>
+<h3 id="the-timer-is-a-proxy-for-a-question-zurg-can-answer-directly">タイマーはzurgが直接答えられる問いの代わりにすぎない</h3>
+<p><code translate="no" v-pre>plex_trash_sweep_min_age_days</code> は、エントリを削除する前に 14 日待ちます。その理由は、赤いゴミ箱アイコンが、コンテンツが消えたことを運用者に知らせる唯一の通知だからです。エントリを消してしまうと、その通知も一緒に消えてしまいます。</p>
+<p>考え方自体は正しいのですが、仕組みは当て推量になっています。そのため、両方向で間違っています。</p>
+<ul>
+<li><code translate="no" v-pre>infringing torrent</code> とマークされたトレントは、<strong>すぐに使えないと分かっています</strong>。Plex のエントリを 2 週間残しても誰の役にも立ちません。待っても元に戻ることはないからです。</li>
+<li>まだ再試行中のトレントは、戻ってくるまでに <strong>14 日より長く</strong> かかることがあります。その場合、zurg がまだ作業中なのに、タイマーがエントリを削除してしまいます。これはより深刻な間違いです。ライブラリのエントリを消してしまい、そのコンテンツが後で戻ってくるからです。</li>
+</ul>
+<hr>
+<h2 id="2-verified-facts">2. 検証済みの事実</h2>
+<h3 id="21-zurgs-state-model">2.1 zurgの状態モデル</h3>
+<p><code translate="no" v-pre>internal/torrent</code> 内（テストを除く）を数えると、ファイルの状態は3つ、torrent の状態は2つあります:</p>
+<retype-table copy-text="| レベル | 状態 |
+|---|---|
+| `File.State` | `ok_file`, `broken_file`, `deleted_file` |
+| `Torrent.State` | `ok_torrent`, `broken_torrent` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>レベル</th>
+<th>状態</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>File.State</code></td>
+<td><code translate="no" v-pre>ok_file</code>, <code translate="no" v-pre>broken_file</code>, <code translate="no" v-pre>deleted_file</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Torrent.State</code></td>
+<td><code translate="no" v-pre>ok_torrent</code>, <code translate="no" v-pre>broken_torrent</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>どちらも <code translate="no" v-pre>pkg/fsm</code> で作られた状態機械です。<code translate="no" v-pre>FSMWithTime</code> は各遷移の unix タイムスタンプを記録し、<code translate="no" v-pre>SinceWhen</code> にも対応しています。そのため「どれくらい壊れたままか」は、何も追加しなくても既に答えられます。</p>
+<p><strong>壊れたファイルが1つあると、torrent 全体が不良扱いになります。</strong>
+<code translate="no" v-pre>MarkFileBrokenAndEnqueueRepair</code>（<code translate="no" v-pre>internal/torrent/hooks.go:215-234</code>）:</p>
+<div id="21-zurgs-state-model-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-go"><code v-pre class="language-go">changed := file.State.Set(&quot;broken_file&quot;, torrent.State.GetMutex()) == nil
+...
+if err := torrent.State.Set(&quot;broken_torrent&quot;); err == nil {
+    t.repairLog.Infof(&quot;Torrent state changed: %s [? -&gt; broken_torrent] (has broken file)&quot;, ...)
+}</code></pre>
+</doc-codeblock></div>
+<p>ログには <em>&quot;has broken file&quot;</em> と単数形で出ます。10個中1個が壊れている場合も、10個すべてが壊れている場合も、torrent の状態は同じになります。ファイルの状態をまとめる仕組みはありません。</p>
+<p><strong><code translate="no" v-pre>Unfixable</code> はファイルではなく、アカウントごとに集計します。</strong>
+<code translate="no" v-pre>markAsUnrepairable</code>（<code translate="no" v-pre>internal/torrent/unplayable_unrepairable.go:44-71</code>）:</p>
+<div id="21-zurgs-state-model-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-go"><code v-pre class="language-go">if cp != nil {
+    cp.SetUnrepairableReasonIfEmpty(reason)      // one account's copy
+    entryCondemned = t.repairableCopy(torrent) == nil
+}
+if entryCondemned {
+    torrent.SetUnrepairableReasonIfEmpty(reason) // the entry
+}</code></pre>
+</doc-codeblock></div>
+<p>エントリは、<strong>修復可能なコピーが1つも残っていない</strong>場合に不良扱いになります。「すべてのコピーに理由がある」という条件にはあえてしていません。もともと修復できないコピー（Usenet バックエンドには magnet adder がありません）があると、死んだリリースが永遠に修復対象に残ってしまうからです。<code translate="no" v-pre>File</code> には修復不可のフィールドが一切ありません（<code translate="no" v-pre>internal/torrent/file_types.go</code>）。</p>
+<p>つまり、3つのレベルはそれぞれ違う質問に答えていて、<strong>どれも影響範囲には答えられません</strong>:</p>
+<retype-table copy-text="| レベル | 分かること | 分からないこと |
+|---|---|---|
+| `File.State` | このファイルが ok / broken / deleted のどれか | 完全に死んでいるかどうか |
+| `TorrentCopy.UnrepairableReason` | このアカウントのコピーが死んでいるかどうか | 他のアカウントについては何も分からない |
+| `Torrent.UnrepairableReason` | どのアカウントでも修復できないかどうか | リリースのどれくらいが影響を受けているか |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>レベル</th>
+<th>分かること</th>
+<th>分からないこと</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>File.State</code></td>
+<td>このファイルが ok / broken / deleted のどれか</td>
+<td>完全に死んでいるかどうか</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>TorrentCopy.UnrepairableReason</code></td>
+<td>このアカウントのコピーが死んでいるかどうか</td>
+<td>他のアカウントについては何も分からない</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Torrent.UnrepairableReason</code></td>
+<td>どのアカウントでも修復できないかどうか</td>
+<td>リリースのどれくらいが影響を受けているか</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="22-live-measurements-a-production-library-2026-08-16">2.2 実測値(本番ライブラリ、2026-08-16)</h3>
+<p>共有した数値は、壊れた torrent の分です。ライブラリ全体の <strong>3%</strong> にあたります。</p>
+<p><strong>壊れたものの、ほぼすべて（98%）には <code translate="no" v-pre>Unfixable</code> の理由が付いています</strong>:</p>
+<retype-table copy-text="| Reason | 壊れたものの割合 |
+|---|---|
+| stalled download | 38% |
+| infringing torrent | 37% |
+| repair failed | 15% |
+| duplicate file IDs (pack torrent) | 4% |
+| rar'ed by RD | 1% |
+| repair failed, no seeders | 1% |
+| the lone cached file is broken | under 1% |
+| invalid file ids | under 1% |
+| repair failed, download status: error | under 1% |
+| provider cannot re-add torrents | under 1% |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Reason</th>
+<th>壊れたものの割合</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>stalled download</td>
+<td>38%</td>
+</tr>
+<tr>
+<td>infringing torrent</td>
+<td>37%</td>
+</tr>
+<tr>
+<td>repair failed</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>duplicate file IDs (pack torrent)</td>
+<td>4%</td>
+</tr>
+<tr>
+<td>rar&#x27;ed by RD</td>
+<td>1%</td>
+</tr>
+<tr>
+<td>repair failed, no seeders</td>
+<td>1%</td>
+</tr>
+<tr>
+<td>the lone cached file is broken</td>
+<td>under 1%</td>
+</tr>
+<tr>
+<td>invalid file ids</td>
+<td>under 1%</td>
+</tr>
+<tr>
+<td>repair failed, download status: error</td>
+<td>under 1%</td>
+</tr>
+<tr>
+<td>provider cannot re-add torrents</td>
+<td>under 1%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>残りの 2% には理由がありません。ただ、まだ修復できる可能性があります。</strong></p>
+<p><strong>ただし、<code translate="no" v-pre>Unfixable</code> は「完全に終わった」という意味ではありません。</strong> zurg はこれらの理由を、もう二度と直らないものと、回復できるものに既に分けています（<code translate="no" v-pre>internal/torrent/unrepairable_reasons.go:44-70</code>）。<code translate="no" v-pre>permanentReasons</code> には、何度リトライしても変わらない 8 つの判定が入っています。infringing、unsupported、unavailable、invalid、too big、not allowed、no repairable files、invalid file ids です。それに加えて、<code translate="no" v-pre>repair failed, download status:</code> で始まる理由もすべて含まれます。それ以外は、上で一番多い 2 つを含めて、明示的に一時的なものとして扱われます。<code translate="no" v-pre>stalled download</code>、<code translate="no" v-pre>repair failed</code>、<code translate="no" v-pre>duplicate file IDs</code>、<code translate="no" v-pre>rar'ed by RD</code>、<code translate="no" v-pre>not cached</code>、<code translate="no" v-pre>the lone cached file is broken</code>、<code translate="no" v-pre>full torrent repair failed</code> がそうです。</p>
+<p><code translate="no" v-pre>repair failed, no seeders</code> は、上の数値を取った時点では 9 番目の理由でした。ここに残っているエントリがこの理由を持っているのは、もうそうではなくなった理由があるからです。zurg が扱えるどのバックエンドも seeders を報告しないため、この判定は一度も実測されていませんでした。修復が時間切れになったことから推測されていただけです。今では一時的な扱いになり、さらに記録もできません（<code translate="no" v-pre>verdictClaims</code>）。そのため、このエントリは消えて、ほかと同じように再試行されます。</p>
+<p>上の数値にこの分類を当てはめると、次のようになります。</p>
+<retype-table copy-text="| | 壊れたものの割合 |
+|---|---|
+| Permanently unrepairable（完全に修復不能） | **39%** |
+| Unrepairable but recoverable（修復不能だが回復の可能性あり） | **59%** |
+| Broken, no reason yet（壊れているが理由はまだない） | 2% |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>壊れたものの割合</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Permanently unrepairable（完全に修復不能）</td>
+<td><strong>39%</strong></td>
+</tr>
+<tr>
+<td>Unrepairable but recoverable（修復不能だが回復の可能性あり）</td>
+<td><strong>59%</strong></td>
+</tr>
+<tr>
+<td>Broken, no reason yet（壊れているが理由はまだない）</td>
+<td>2%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>どの一覧にも入らない理由が 1 つだけあります（<code translate="no" v-pre>provider cannot re-add torrents</code>、ここでは 1 件）。この理由は <code translate="no" v-pre>IsPermanentlyUnrepairable</code> が false を返します。慎重な答えで、これこそ私たちが望む挙動です。</p>
+<p>これは設計にとって最も重要な発見です。<strong>「<code translate="no" v-pre>Unfixable</code> が設定されているか」を基準にしたルールは、実際に死んでいるリリースの 2.5 倍もの数の Plex エントリを削除してしまいます。</strong></p>
+<p>決定的なのは、壊れた torrent がマウントに対してどこにあるかです。</p>
+<retype-table copy-text="| | 壊れたものの割合 | Plex から見えるもの |
+|---|---|---|
+| 壊れていて、**まだマウント上にある** | 約 4 分の 3 | ファイルは存在しているように見える → tombstone 化されない。trash icon は出ず、再生時にだけ失敗する |
+| 壊れていて、**マウントから消えた** | 約 4 分の 1 | ファイルが見つからない → tombstone 化される → **これらがスイープの対象です** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th> </th>
+<th>壊れたものの割合</th>
+<th>Plex から見えるもの</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>壊れていて、<strong>まだマウント上にある</strong></td>
+<td>約 4 分の 3</td>
+<td>ファイルは存在しているように見える → tombstone 化されない。trash icon は出ず、再生時にだけ失敗する</td>
+</tr>
+<tr>
+<td>壊れていて、<strong>マウントから消えた</strong></td>
+<td>約 4 分の 1</td>
+<td>ファイルが見つからない → tombstone 化される → <strong>これらがスイープの対象です</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>これが重要な計測結果です。つまり、スイープが出会うのは 2 つ目のグループだけで、そのグループについては zurg がたいてい既に判定を持っている、ということです。</p>
+<p>Plex 側（同じホスト）には、ゴミ箱に入った leaves が溜まっています。ただし、14 日間の期間をすぎたものは <strong>1 件もありません</strong>（一番古い tombstone は 2026-08-11）。あわせて、空のシリーズ shell が少数と、空のシーズン shell が数十件あります。</p>
+<hr>
+<h2 id="3-the-gap">3. ギャップ</h2>
+<p><code translate="no" v-pre>broken_torrent</code> は「何か一つでも壊れている」という意味です。掃除（sweep）で扱うには粒度が違いすぎます。</p>
+<p>具体的に言うと、10話入りのパックのうち1話のファイルが完全に消えてしまったのに、パック全体はまだ修復可能な場合です。その torrent に問い合わせると「まだ修復可能」と返るので、sweep はその壊れた1話の Plex エントリーを <strong>永遠に</strong> 残してしまいます。</p>
+<p>「この release 全体が死んでいる」という状態と、「release 内のどこかが壊れている」という状態を区別する状態は存在しません。</p>
+<hr>
+<h2 id="4-design">4. 設計</h2>
+<h3 id="41-do-not-add-a-fourth-persisted-state">4.1 永続化する状態を4つ目に増やさない</h3>
+<p>一番わかりやすいのは、新しいtorrentの状態を追加することです。<code translate="no" v-pre>dead_torrent</code> などですね。<strong>却下です。</strong></p>
+<p>torrentの状態を変えるすべての箇所で、この状態を管理しなければなりません。そして古い「すべてのファイルが壊れている」フラグは、フラグが無いより悪いです。<em>削除を許可してしまう</em>からです。情報はファイルの状態として、すでに存在しています。ただ、集約されていないだけです。</p>
+<p>代わりに、そこから導き出します:</p>
+<div id="41-do-not-add-a-fourth-persisted-state-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-go"><code v-pre class="language-go">// AllFilesBroken reports whether nothing in this release still reads.
+// Derived from the file states rather than stored, so it cannot go stale
+// and needs no migration or new transitions.
+func (t *Torrent) AllFilesBroken() bool</code></pre>
+</doc-codeblock></div>
+<p>コストが低く、常に整合性が保たれ、保存しなくてもダッシュボードに表示できます。</p>
+<p>実装中に決めておく定義があります。<code translate="no" v-pre>deleted_file</code> は <code translate="no" v-pre>broken_file</code> と同じく「読めていない」扱いにしてください。また、ファイルが<strong>0個</strong>のtorrentは、空真として true を返すのではなく false を返す必要があります。空のリリースは死んでいる証拠にはならないからです。</p>
+<h3 id="42-ask-the-file-fall-back-to-the-torrent">4.2 ファイルに尋ね、ダメならトレントに戻る</h3>
+<p>スイープは Plex のパスを zurg のファイルに対応づけてから、次のように処理します。</p>
+<retype-table copy-text="| zurg の判定 | スイープ |
+|---|---|
+| ファイルが `ok_file` | **保持** — 実際には消えていません |
+| `broken_file` で、torrent に修復不能の理由がない | **保持** — 修復で戻るかもしれません。どれだけ時間がかかっても |
+| `broken_file` で、理由はあるが**永続的ではない** | **保持** — zurg はまだ回復可能だと見ています |
+| `broken_file` で、理由が**永続的に**修復不能 | **削除** — 何度再試行しても、この判定は変わりません |
+| zurg にこのパスの torrent がない | **年齢の期間にフォールバック** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>zurg の判定</th>
+<th>スイープ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ファイルが <code translate="no" v-pre>ok_file</code></td>
+<td><strong>保持</strong> — 実際には消えていません</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>broken_file</code> で、torrent に修復不能の理由がない</td>
+<td><strong>保持</strong> — 修復で戻るかもしれません。どれだけ時間がかかっても</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>broken_file</code> で、理由はあるが<strong>永続的ではない</strong></td>
+<td><strong>保持</strong> — zurg はまだ回復可能だと見ています</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>broken_file</code> で、理由が<strong>永続的に</strong>修復不能</td>
+<td><strong>削除</strong> — 何度再試行しても、この判定は変わりません</td>
+</tr>
+<tr>
+<td>zurg にこのパスの torrent がない</td>
+<td><strong>年齢の期間にフォールバック</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>永続性の判定には <code translate="no" v-pre>IsPermanentlyUnrepairable(reason)</code>（<code translate="no" v-pre>internal/torrent/unrepairable_reasons.go:59</code>）を使います。<code translate="no" v-pre>ForceRepairTorrent</code> で使われているのと同じ方法です。リストを作り直さず既存の関数を再利用することが大切です。後から <code translate="no" v-pre>permanentReasons</code> に理由を追加すれば、スイープの動作も自動的に変わります。認識されない理由は永続的とは見なされず、非永続のままになります。</p>
+<p><code translate="no" v-pre>AllFilesBroken()</code> だけでは削除の根拠になりません。理由が回復可能なまま全体が壊れたリリースは、今も対応中です。この関数はレポートとダッシュボードの表示を整理するためのもので、ログを読む人が「10 話のうち 1 話が消えた」のか「パック全体が消えた」のかを区別できるようにします。</p>
+<p>最後の行が <code translate="no" v-pre>plex_trash_sweep_min_age_days</code> を残す理由です。torrent がアカウントから完全になくなると、その <code translate="no" v-pre>.zurgtorrent</code> も一緒に消えます。そうなると zurg にはもう判断材料がありません。タイマーはもはや主要なルールではなく、他に手段がない場合だけ使うフォールバックになります。</p>
+<p>これにより、UI 上でもこの設定の位置づけが下がります。「Keep Broken Entries Visible」というラベルは、アクションではなく副作用を説明していたため、その不満もこれで解消されます。</p>
+<h3 id="43-path--torrent--file-lookup">4.3 パス → トレント → ファイルのルックアップ</h3>
+<p>既存の Plex マッチャーは <em>逆向き</em> に動きます。<code translate="no" v-pre>buildPlexDirIndex</code>（<code translate="no" v-pre>internal/plex/matcher.go:539</code>）は Plex のパスの各要素をインデックスにして、torrent のキーで検索します。スイープ処理には逆の仕組みが必要で、同じ考え方で次のように作ります。</p>
+<ol>
+<li><code translate="no" v-pre>DirectoryMap.Get(INT_ALL)</code> から <code translate="no" v-pre>map[strings.ToLower(GetKey(torrent))] *Torrent</code> を作ります。</li>
+<li>Plex のパスを、<code translate="no" v-pre>splitPathComponents</code>（<code translate="no" v-pre>matcher.go:525</code>）と同じ正規化ルールで要素に分割し、それぞれを検索します。ヒットしたものがリリースのディレクトリです。</li>
+<li>その torrent の中で、残りのパスの末尾を <code translate="no" v-pre>File.Path</code>（<code translate="no" v-pre>internal/debrid/types.go:133</code>）と照合して、目的のファイルを特定します。</li>
+</ol>
+<p>この処理は <code translate="no" v-pre>TorrentManager</code> を通す必要があり、<code translate="no" v-pre>data/*.zurgtorrent</code> を文字列でマッチさせるのはダメです。理由は、区別用の接尾辞が付いた名前（<code translate="no" v-pre>Some.Release {a1b2c3}</code>）、複数アカウントのコピー、名前変更の3つを正しく扱えるのは <code translate="no" v-pre>GetKey</code> だけだからです。</p>
+<p><strong>検索に失敗しても削除してはいけません。</strong> 解決できなかった場合は「zurg は判断しない」と扱い、経過時間のウィンドウによるフォールバックに任せてください。</p>
+<h3 id="44-what-does-not-change">4.4 変更しない部分</h3>
+<ul>
+<li>不変条件：ライブのファイルがあるものは、何も削除されません。</li>
+<li>配下にライブのものがある Show や Season には、決して手を付けません。</li>
+<li>削除はアイテムごとに <code translate="no" v-pre>DELETE</code> で行い、<code translate="no" v-pre>emptyTrash</code> は使いません。</li>
+<li>ガード：rclone が管理下で稼働中であること、マウントから読み取れること、Plex がスキャン中でないこと。</li>
+<li>変更の前にスナップショットを取ります。上限は修復と削除の両方にかかります。</li>
+</ul>
+<p>新しいルールは、スイープをより慎重に、またはより正確にするだけです。現在のコードが拒否する削除を許可することは決してありません。</p>
+<hr>
+<h2 id="5-implementation-plan">5. 実装計画</h2>
+<retype-table copy-text="| # | Step | Files |
+|---|---|---|
+| 0 | 何かを削除する前に、ライブのライブラリに対してドライラン件数を取り、永久削除と復元可能の振り分けがこの判定条件で正しいか確認する | — |
+| 1 | `AllFilesBroken()` と単体テストを追加する（空のリリース、混在、すべて壊れている、すべて削除済み） | `internal/torrent/` |
+| 2 | 読み取り専用の状態照会を追加する：パス → torrent → ファイル の順にたどり、小さな判定値を返す | `internal/torrent/` または `internal/plexsweep/` の新しいファイル |
+| 3 | 判定の型（`StatusOK`、`StatusRecoverable`、`StatusPermanentlyDead`、`StatusUnknown`）を定義し、sweep が zurg の内部を直接扱わないようにする | `internal/plexsweep` |
+| 4 | `Mount`/`Library`/`Trash` と同じように、照会を interface 経由で `Sweeper` に組み込む | `internal/plexsweep/sweep.go` |
+| 5 | 判定表を適用する。経過日数の範囲は `StatusUnknown` の場合のフォールバックとして残す | `internal/plexsweep/sweep.go` |
+| 6 | 呼び出し元で `TorrentManager` を注入する | `internal/app.go` |
+| 7 | テスト：判定表の行ごとに1つずつ用意し、さらに照会の失敗テストで、解決できない場合は絶対に削除されないことを確認する | `internal/plexsweep/sweep_test.go` |
+| 8 | ドキュメント：`docs/config.md`、`config.example.yml`、`docs/CHANGELOG.md` を更新し、ダッシュボードのラベルの文言も直す | ドキュメントとテンプレート |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>#</th>
+<th>Step</th>
+<th>Files</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>何かを削除する前に、ライブのライブラリに対してドライラン件数を取り、永久削除と復元可能の振り分けがこの判定条件で正しいか確認する</td>
+<td>—</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code translate="no" v-pre>AllFilesBroken()</code> と単体テストを追加する（空のリリース、混在、すべて壊れている、すべて削除済み）</td>
+<td><code translate="no" v-pre>internal/torrent/</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>読み取り専用の状態照会を追加する：パス → torrent → ファイル の順にたどり、小さな判定値を返す</td>
+<td><code translate="no" v-pre>internal/torrent/</code> または <code translate="no" v-pre>internal/plexsweep/</code> の新しいファイル</td>
+</tr>
+<tr>
+<td>3</td>
+<td>判定の型（<code translate="no" v-pre>StatusOK</code>、<code translate="no" v-pre>StatusRecoverable</code>、<code translate="no" v-pre>StatusPermanentlyDead</code>、<code translate="no" v-pre>StatusUnknown</code>）を定義し、sweep が zurg の内部を直接扱わないようにする</td>
+<td><code translate="no" v-pre>internal/plexsweep</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code translate="no" v-pre>Mount</code>/<code translate="no" v-pre>Library</code>/<code translate="no" v-pre>Trash</code> と同じように、照会を interface 経由で <code translate="no" v-pre>Sweeper</code> に組み込む</td>
+<td><code translate="no" v-pre>internal/plexsweep/sweep.go</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>判定表を適用する。経過日数の範囲は <code translate="no" v-pre>StatusUnknown</code> の場合のフォールバックとして残す</td>
+<td><code translate="no" v-pre>internal/plexsweep/sweep.go</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>呼び出し元で <code translate="no" v-pre>TorrentManager</code> を注入する</td>
+<td><code translate="no" v-pre>internal/app.go</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>テスト：判定表の行ごとに1つずつ用意し、さらに照会の失敗テストで、解決できない場合は絶対に削除されないことを確認する</td>
+<td><code translate="no" v-pre>internal/plexsweep/sweep_test.go</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>ドキュメント：<code translate="no" v-pre>docs/config.md</code>、<code translate="no" v-pre>config.example.yml</code>、<code translate="no" v-pre>docs/CHANGELOG.md</code> を更新し、ダッシュボードのラベルの文言も直す</td>
+<td>ドキュメントとテンプレート</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>順序の注意：ステップ 1〜3 は動作を変えない追加だけなので、1 つのコミットにまとめて入れて構いません。削除対象が実際に変わるのはステップ 5 だけです。</p>
+<h2 id="6-risks-and-open-questions">6. リスクと未解決の問題</h2>
+<ol>
+<li>
+<p><strong>配線の順序。</strong> 確認しました: <code translate="no" v-pre>startPlexTrashSweep</code> は <code translate="no" v-pre>internal/app.go:268</code> で呼ばれていますが、<code translate="no" v-pre>TorrentManager</code> は <code translate="no" v-pre>internal/app.go:285</code> で作られていて、それより後です。呼び出しを後ろに移すか、setter を使う必要があります。現在の位置に依存しているものが他にないかも確認が必要です。</p>
+</li>
+<li>
+<p><strong>検索の曖昧さ。</strong> 同じパスの要素と衝突するキーを持つ torrent が二つあるケースです。解決策: 候補が一つより多くマッチしたら、どちらかを選ぶのではなく <code translate="no" v-pre>StatusUnknown</code> として扱います。</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>only_show_the_biggest_file</code>。</strong> movies ディレクトリはファイルを隠すので、Plex のパスは zurg が配信するファイルとは別のファイルを指しているかもしれません。検索では、Plex のファイル名が <code translate="no" v-pre>File.Path</code> にそのまま含まれていると決めつけてはいけません。</p>
+</li>
+<li>
+<p><strong>コスト。</strong> sweep ごとにキーのインデックスを作ると、コストは O(ライブラリ) になります。数千 torrent なら問題ないですし、sweep は毎日一回しか走りません。インデックスは item ごとではなく、sweep ごとに作りましょう。</p>
+</li>
+<li>
+<p><del><strong><code translate="no" v-pre>Unfixable</code> は元に戻るの?</strong></del> <strong>解決済み: 戻ります。</strong> <code translate="no" v-pre>refresh.go:851-857</code> で、torrent が問題なく検証されて <code translate="no" v-pre>ok_torrent</code>（&quot;all links intact, no broken files&quot;）に戻ると、フラグがクリアされます。<code translate="no" v-pre>repair.go:165-181</code> でも、repair を強制すると、エントリとすべてのコピーの両方からクリアされます。つまり、復旧したリリースに古い「壊れている」判定が残ることはないので、この設計でそれに備える必要はありません。</p>
+</li>
+<li>
+<p><strong>壊れているけど存在する torrent。</strong> ここではスコープ外です。Plex はそれらを tombstone にしないので、sweep からは見えません。この機能からも、再生が失敗するまでは見えないままだという点は覚えておく価値があります。</p>
+</li>
+</ol>
+<h2 id="7-how-it-was-implemented-2026-08-16">7. 実装の経緯(2026-08-16)</h2>
+<p><code translate="no" v-pre>feat: decide plex trash sweep removals from zurg's repair verdicts</code> として取り込まれました。実装が、このドキュメントで未決のままだった問題に結論を出した場合や、§4 から外れた場合は、その決定と理由を以下に示します:</p>
+<ul>
+<li><strong>検索は、パスの親ディレクトリと <code translate="no" v-pre>DirectoryMap[INT_ALL]</code> を完全一致で照合します。</strong> パスの各要素を順に調べる方式 (§4.3) はやめました。マウントはリリースをフラットに配置します (<code translate="no" v-pre>&lt;library dir&gt;/&lt;key&gt;/&lt;visible name&gt;</code>)。Plex もマウントからパスを記録しており、そのパスはキーをそのまま使います。完全一致しなかった場合は不明と返します。完全一致のキー同士は衝突しないので、キーの衝突による曖昧さ (リスク 2) はなくなります。</li>
+<li><strong>判定表の 1 行目を変更しました。</strong> <code translate="no" v-pre>ok_file</code> なのにマウントに存在しないファイルは、フィルターで隠れているだけです。「実際には消えていない」わけではありません。これを永久に残すと、フィルター変更後もゴミ箱アイコンが消えなくなります。そのため、代わりに経過日数の窓による判定に任せます。</li>
+<li><strong><code translate="no" v-pre>deleted_file</code> も <code translate="no" v-pre>broken_file</code> と同じ扱いにしました。</strong> <code translate="no" v-pre>AllFilesBroken()</code> だけでなく、すべてのルールで対象です。判定表の各行は「<code translate="no" v-pre>ok_file</code> ではない」と読むべきものだからです。</li>
+<li><strong>複数バージョンのアイテムは一つの単位として判定します</strong> (判定表はファイル単位でしたが、スイープの単位は部品を持つ Plex のアイテムです)。復旧可能な部品が一つでもあれば、アイテム全体を残します。アイテムが死んでいると判定されるのは、すべての部品が死んでいる場合だけです。それ以外の組み合わせは、経過日数の窓による判定に任せます。</li>
+<li><strong>ファイル名がファイルではなく torrent に解決される場合</strong> (リネーム、アーカイブの一覧、<code translate="no" v-pre>only_show_the_biggest_file</code> — リスク 3) は、エントリーの理由が恒久的 <strong>かつ</strong> <code translate="no" v-pre>AllFilesBroken()</code> のときだけ死亡扱いです。torrent が壊れているが恒久的な判定ではない場合は復旧可能です。それ以外は不明です。読めるファイルが一つでも残っている間は、一致しなかった名前を関連付けだけで死亡扱いにすることはありません。</li>
+<li><strong>接続 (リスク 1):</strong> <code translate="no" v-pre>startPlexTrashSweep</code> を <code translate="no" v-pre>internal/app.go</code> の中で、マネージャーの生成より後ろに移しました。以前の位置に依存しているものはありませんでした。判定は <code translate="no" v-pre>plexsweep.Verdicts</code> の裏側でスイープに渡します。実装は <code translate="no" v-pre>TorrentManager.FileStatusForMountPath</code> です。最初のリフレッシュで <code translate="no" v-pre>INT_ALL</code> が埋まるまでは、すべての検索が不明を返します。その間、スイープは経過日数の窓による旧バージョンとまったく同じ動きをします。</li>
+</ul>
+<h2 id="8-explicitly-out-of-scope">8. 対象外であることを明示する項目</h2>
+<ul>
+<li><strong>空のシリーズとシーズンの残骸。</strong> スイープはリーフ（個々のエピソードやファイル）だけを削除するため、全部壊れているシリーズは殻だけ残ります（測定したライブラリでは数シリーズと数十シーズン）。これは別の問題で、順番に気をつける必要があります。リーフを削除し、親を再確認して、子がゼロになったときだけ削除します。</li>
+<li>修復の動作、修復キュー、zurg がいつ何かを修復不可能とマークするかに関する変更すべて。</li>
+<li>Plex 自身の <code translate="no" v-pre>autoEmptyTrash</code>。これは <code translate="no" v-pre>4737b677</code> の警告ですでに対応済みです。</li>
+<li>測定したライブラリに既にたまっているバックログ。これは意図的に手動で判断するために残しています。</li>
+</ul>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/sabnzbd-client-contract/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">前へ</span>
+                                <span class="block mt-1">SA​Bnzbd クライアントの契約</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/stream-timeout-regression/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">次へ</span>
+                                <span class="block mt-1">ストリームのタイムアウトのリグレッション</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Plexのゴミ掃除", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/internals/plex-trash-sweep.md" }</script>
+</body>
+</html>

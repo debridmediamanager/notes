@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/id">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672707986">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Pengujian E2E</title>
+    <meta name="title" content="Pengujian E2E">
+    <meta name="description" content="Tes end-to-end untuk memastikan zurg berjalan dengan benar setelah deployment.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/id/zurg/internals/e2e-test/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/id/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/id/zurg/internals/e2e-test/">
+    <meta property="og:title" content="Pengujian E2E">
+    <meta property="og:description" content="Tes end-to-end untuk memastikan zurg berjalan dengan benar setelah deployment.">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/id/zurg/internals/e2e-test/">
+    <meta name="twitter:title" content="Pengujian E2E">
+    <meta name="twitter:description" content="Tes end-to-end untuk memastikan zurg berjalan dengan benar setelah deployment.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/id/zurg/internals/e2e-test.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672707986" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672707986" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672707986" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672707986" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/id/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>Bahasa Indonesia</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/id/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/id/download.html" target="_blank">Unduh zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/id/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>Bahasa Indonesia</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/id/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/id/download.html" target="_blank">Unduh zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/id/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">Sponsor</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="e2e-testing">Pengujian E2E</h1>
+<p>Tes end-to-end untuk memastikan zurg berjalan dengan benar setelah deployment.</p>
+<h2 id="plex-playback-test">Tes Playback Plex</h2>
+<p>Memverifikasi bahwa konten benar-benar bisa diputar lewat Plex dengan memilih film secara acak dan menguji seluruh alur pemutaran.</p>
+<h3 id="run-the-test">Jalankan Tes</h3>
+<div id="run-the-test-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./scripts/plex-e2e-test.sh</code></pre>
+</doc-codeblock></div>
+<p>Skrip ini otomatis membaca <code translate="no" v-pre>plex_server_url</code> dan <code translate="no" v-pre>plex_token</code> dari <code translate="no" v-pre>config.yml</code>.</p>
+<p>Untuk menimpa dengan pengaturan kustom:</p>
+<div id="run-the-test-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">PLEX_URL=&quot;http://your-plex:32400&quot; PLEX_TOKEN=&quot;your-token&quot; ./scripts/plex-e2e-test.sh</code></pre>
+</doc-codeblock></div>
+<h3 id="what-it-tests">Apa Yang Diuji</h3>
+<retype-table copy-text="| Step | Description |
+|------|-------------|
+| 1 | Cari library Movies lewat Plex API |
+| 2 | Ambil total jumlah film |
+| 3 | Pilih film secara acak |
+| 4 | Ambil URL stream untuk film tersebut |
+| 5 | Pastikan stream bisa diakses (HTTP 200) |
+| 6 | Decode 3 detik video dengan ffmpeg |
+| 7 | Buat dan verifikasi pelacakan sesi Plex |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Step</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Cari library Movies lewat Plex API</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Ambil total jumlah film</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Pilih film secara acak</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Ambil URL stream untuk film tersebut</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Pastikan stream bisa diakses (HTTP 200)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Decode 3 detik video dengan ffmpeg</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Buat dan verifikasi pelacakan sesi Plex</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="expected-output">Output yang Diharapkan</h3>
+<div id="expected-output-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">=== Plex E2E Playback Test ===
+
+[1/7] Finding Movies library...
+  Library key: 15
+[2/7] Getting movie count...
+  Total movies: 1234
+[3/7] Selecting random movie...
+  Selected: 2 Fast 2 Furious (2003) (ratingKey: 756524)
+[4/7] Getting stream URL...
+  File size: 54GiB
+[5/7] Verifying stream accessibility...
+  HTTP Status: 200 OK
+[6/7] Decoding video (3 seconds)...
+  Decoded 72 frames successfully
+[7/7] Testing Plex session tracking...
+  Session created and tracked
+
+=== TEST PASSED ===
+Movie '2 Fast 2 Furious (2003)' is playable via Plex</code></pre>
+</doc-codeblock></div>
+<h3 id="prerequisites">Prasyarat</h3>
+<ul>
+<li>Server Plex sudah berjalan dan bisa diakses</li>
+<li><code translate="no" v-pre>plex_server_url</code> dan <code translate="no" v-pre>plex_token</code> sudah diatur di <code translate="no" v-pre>config.yml</code></li>
+<li><code translate="no" v-pre>curl</code>, <code translate="no" v-pre>jq</code>, dan <code translate="no" v-pre>ffmpeg</code> sudah terpasang</li>
+</ul>
+<h3 id="troubleshooting">Pemecahan masalah</h3>
+<retype-table copy-text="| Error | Penyebab | Solusi |
+|-------|----------|--------|
+| No movie library found | Tipe library salah atau kosong | Cek apakah Plex punya library &quot;Movies&quot; |
+| Stream not accessible (HTTP 4xx) | Masalah auth atau path | Verifikasi token dan pastikan file-nya ada |
+| Failed to decode video frames | File rusak atau masalah jaringan | Cek log zurg, coba film lain |
+| Session not detected | Sesi Plex timeout | Cek log Plex |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Error</th>
+<th>Penyebab</th>
+<th>Solusi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No movie library found</td>
+<td>Tipe library salah atau kosong</td>
+<td>Cek apakah Plex punya library &quot;Movies&quot;</td>
+</tr>
+<tr>
+<td>Stream not accessible (HTTP 4xx)</td>
+<td>Masalah auth atau path</td>
+<td>Verifikasi token dan pastikan file-nya ada</td>
+</tr>
+<tr>
+<td>Failed to decode video frames</td>
+<td>File rusak atau masalah jaringan</td>
+<td>Cek log zurg, coba film lain</td>
+</tr>
+<tr>
+<td>Session not detected</td>
+<td>Sesi Plex timeout</td>
+<td>Cek log Plex</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h2 id="integration-suite">Suite Integrasi</h2>
+<div id="integration-suite-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">ssh zen
+cd /path/to/isolated/zurg/source
+make integration-test</code></pre>
+</doc-codeblock></div>
+<p><strong>Jalankan di target terisolasi pada <code translate="no" v-pre>zen</code>.</strong> Siapkan toolchain Go, shellcheck, rclone, dan probe move .NET di sana. Suite ini membuat proses zurg dan mount-nya sendiri. Suite ini tidak perlu menggantikan layanan zurg atau mount normal milik zen. Gunakan direktori sumber, <code translate="no" v-pre>TMPDIR</code>, config, port, dan <code translate="no" v-pre>MOUNT_PATH</code> yang terpisah. Periksa config scratch sebelum menjalankannya. Tetap gunakan <code translate="no" v-pre>INTEGRATION_LOCK_FILE=/tmp/zurg-integration-rd.lock</code> di seluruh host, meskipun pakai <code translate="no" v-pre>TMPDIR</code> pribadi, supaya sesi lain tetap antre dengan sesimu.</p>
+<p>Tes yang prasyaratnya tidak ada akan di-skip dengan exit sukses. Baca outputnya untuk memastikan FUSE, rclone, Plex, dan NNTP benar-benar berjalan.</p>
+<retype-table copy-text="| Test | Butuh FUSE | Butuh Plex | Butuh akun Usenet |
+|------|:----------:|:----------:|:-----------------:|
+| `refresh_repair_integration.sh` | | | |
+| `network_test_cache_integration.sh` | | | |
+| `rclone_mount_integration.sh` | ya | | |
+| `magic_mount_integration.sh` | ya | | |
+| `magic_move_refusal.sh` | ya | | |
+| `magic_library_move_integration.sh` | ya | | |
+| `plex_integration.sh` | ya | ya | |
+| `nzb_bench_integration.sh` | | | ya |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Test</th>
+<th style="text-align: center;">Butuh FUSE</th>
+<th style="text-align: center;">Butuh Plex</th>
+<th style="text-align: center;">Butuh akun Usenet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>refresh_repair_integration.sh</code></td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;"> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>network_test_cache_integration.sh</code></td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;"> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>rclone_mount_integration.sh</code></td>
+<td style="text-align: center;">ya</td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;"> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>magic_mount_integration.sh</code></td>
+<td style="text-align: center;">ya</td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;"> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>magic_move_refusal.sh</code></td>
+<td style="text-align: center;">ya</td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;"> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>magic_library_move_integration.sh</code></td>
+<td style="text-align: center;">ya</td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;"> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>plex_integration.sh</code></td>
+<td style="text-align: center;">ya</td>
+<td style="text-align: center;">ya</td>
+<td style="text-align: center;"> </td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>nzb_bench_integration.sh</code></td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;">ya</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>force_location_integration.sh</code> <strong>tidak</strong> termasuk dalam suite. Tes ini memeriksa sesuatu tentang jalur jaringan host ke CDN Real-Debrid, bukan tentang zurg. Jadi tes ini akan gagal di tempat jalur itu tidak bisa dijawab, apa pun perubahan yang sedang diuji. Jalankan secara sengaja dengan <code translate="no" v-pre>make force-location-test</code>, di host yang IPv4-nya ke region yang dipaksa berfungsi. Lihat <doc-anchor-trigger to="#force-location-integration-test">Tes Integrasi Force Location</doc-anchor-trigger>.</p>
+<p>Lima tes yang memakai Real-Debrid menggunakan akun yang sama. Lihat <doc-anchor-trigger to="#the-real-debrid-test-account-is-shared">akun dibagi bersama</doc-anchor-trigger>. Benchmark memakai akun news dan sama sekali tidak menyentuh Real-Debrid. Tapi benchmark tetap mengambil lock host-wide yang sama dengan tes lainnya. Hasil benchmark yang diukur bersamaan dengan pembacaan dari suite lain sebenarnya mengukur suite lain itu.</p>
+<p>Tes mount juga bisa jalan di Mac jika macFUSE terpasang. Tes ini sudah diverifikasi di macFUSE dan di <code translate="no" v-pre>fusermount</code> Linux. Tes Plex membutuhkan <code translate="no" v-pre>plex_server_url</code> dan <code translate="no" v-pre>plex_token</code> di config scratch-nya. Plex juga harus bisa mengakses setiap direktori induk dari mount scratch. Mount yang berada di bawah home directory pribadi bisa berfungsi untuk user tes, tetapi tidak bisa diakses oleh Plex.</p>
+<p><code translate="no" v-pre>make integration-test</code> membangun zurg, menjalankan shellcheck pada script, self-test <code translate="no" v-pre>lib.sh</code>, dan unit test <code translate="no" v-pre>integration/nzbbench</code>, lalu menjalankan ketujuh tes dari yang paling murah: network test cache, rclone mount, Plex, mount <code translate="no" v-pre>__magic__</code>, penolakan move .NET, refresh/repair, dan benchmark Usenet di urutan terakhir. Dua yang terakhir adalah yang paling mahal. Refresh/repair menunggu scan library penuh, dan benchmark membaca gigabyte dari news server dua kali. Jadi kesalahan di tes lain tidak perlu membuatmu menunggu lama hanya untuk menemukannya. <code translate="no" v-pre>make integration-test-media</code> menjalankan tes mount rclone, Plex, dan mount <code translate="no" v-pre>__magic__</code>. <code translate="no" v-pre>make nzb-bench-test</code> hanya menjalankan benchmark.</p>
+<p>Setiap script memiliki work dir sendiri di bawah <code translate="no" v-pre>$TMPDIR</code>, port sendiri, dan menulis log zurg ke sana. Suite berjalan dengan <code translate="no" v-pre>STREAM_LOGS=false</code>, jadi hanya assertion tes yang tampil di terminal. Set <code translate="no" v-pre>STREAM_LOGS=true</code> untuk mengikuti log zurg di stderr saat debugging.</p>
+<p>Helper bersama ada di <code translate="no" v-pre>integration/lib.sh</code> (kontrol proses, API Real-Debrid, query library di disk) dan <code translate="no" v-pre>integration/lib_media.sh</code> (FUSE dan Plex). Untuk menambah tes, source helper-helper ini, jangan copy script tes lain.</p>
+<p><code translate="no" v-pre>integration/lib_test.sh</code> mencakup helper itu sendiri. Tes ini tidak butuh akun, tidak butuh jaringan, dan selesai sekitar satu detik. <code translate="no" v-pre>integration/nzb_bench_timing_gate_test.sh</code> mencakup cara wrapper benchmark menerjemahkan exit code tool menjadi bahasa suite. Tes ini berjalan dari laporan asli yang sudah dipangkas di <code translate="no" v-pre>integration/testdata/</code>. Keduanya dijalankan dengan <code translate="no" v-pre>make test-integration-lib</code>.</p>
+<h3 id="the-real-debrid-test-account-is-shared">Akun Real-Debrid untuk tes dipakai bersama</h3>
+<p>Suite ini menjalankan satu akun uji Real-Debrid, dan akun itu tidak privat. Zurg produksi milik <code translate="no" v-pre>zen</code> memantau library yang sama, jadi zurg itu ikut mendaftar dan me-refresh torrent yang baru saja ditambahkan oleh tes. Instance mana pun di akun ini <strong>dengan repair diaktifkan</strong> juga ikut memverifikasi, memperbaiki, dan merapikan torrent tersebut.</p>
+<p>Kedua kegagalan di bawah didiagnosis pada 2026-08-23, saat zurg milik <code translate="no" v-pre>macmini</code> berjalan di akun ini dengan repair aktif setiap 10 menit. Instance itu dihentikan pada 2026-08-29 dan tidak ada yang mengawasinya, sementara run milik <code translate="no" v-pre>zen</code> memakai <code translate="no" v-pre>enable_repair: false</code>. Jadi per 2026-09-01 kedua kegagalan itu tidak punya sumber yang aktif. Keduanya akan muncul lagi begitu repair dinyalakan di mana pun pada akun ini, dan itulah sebabnya serialisasi di bawah tetap berlaku.</p>
+<p>Apa dampaknya pada sebuah run, setelah empat dari enam script gagal pada build yang diuji <em>dan</em> juga pada baseline-nya:</p>
+<ul>
+<li><strong>Fixture yang tidak pernah muncul.</strong> Real-Debrid men-dedupe download id per link, dan menghapus baris downloads akan mencabut kode itu untuk siapa pun yang memegangnya. Cleanup dari instance lain mencabut kode yang baru saja di-resolve oleh run ini, verifikasi run ini lalu menjawab <code translate="no" v-pre>404 invalid_download_code</code>, dan zurg menandai file itu sebagai rusak. Torrent yang rusak disembunyikan dari setiap listing. Tes kemudian menulis <code translate="no" v-pre>zurg serves the fixture over HTTP but it never appeared under .../mnt/movies within 180s</code>, yang terkesan seperti bug mount atau dircache, padahal bukan keduanya.</li>
+<li><strong>Delete yang dibatalkan.</strong> Instance yang melakukan repair menambahkan lagi torrent yang baru saja dihapus oleh run ini, sehingga <code translate="no" v-pre>refresh never dropped &lt;hash&gt; after it was deleted from the account</code> gagal, padahal library itu sudah melaporkan kondisi yang benar.</li>
+</ul>
+<p>Assertion delete dan repair yang paling terdampak. Sebelum menyalahkan perubahan, baca konteks kegagalan yang dijelaskan di bawah. Dan jika sebuah run harus bersih, hentikan dulu repair di instance lain.</p>
+<p><strong>Dua script ini tidak boleh berjalan bersamaan</strong>, baik di host ini maupun dari sesi lain di host ini. Keduanya berbagi anggaran API per menit milik akun, sehingga satu pasangan memicu <code translate="no" v-pre>API rate limit (code=34)</code> dan assertion mulai gagal karena trafik, bukan karena perilaku (diukur di <code translate="no" v-pre>fun</code>, dua run paralel). Selain itu, setiap script menghapus torrent <em>berdasarkan hash</em>, sehingga cleanup satu run dengan senang hati akan menghapus fixture run lain. Karena itu setiap script mengambil lock untuk seluruh host di awal <code translate="no" v-pre>main</code>, sebelum panggilan API pertama, dan menahannya sampai keluar.</p>
+<retype-table copy-text="| Variabel | Default | Keterangan |
+|----------|---------|-------------|
+| `INTEGRATION_LOCK_FILE` | `$TMPDIR/zurg-integration-rd.lock` | Lock-nya. `flock` jika tersedia, jika tidak, direktori `.d` yang diberi stempel pid (macOS tidak punya `flock`) |
+| `INTEGRATION_LOCK_WAIT` | `0` | Detik untuk antre di belakang run yang sedang berjalan. `0` langsung menolak, dan itu yang kamu mau. Alternatifnya adalah menunggu satu jam di belakang cold scan |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Variabel</th>
+<th>Default</th>
+<th>Keterangan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>INTEGRATION_LOCK_FILE</code></td>
+<td><code translate="no" v-pre>$TMPDIR/zurg-integration-rd.lock</code></td>
+<td>Lock-nya. <code translate="no" v-pre>flock</code> jika tersedia, jika tidak, direktori <code translate="no" v-pre>.d</code> yang diberi stempel pid (macOS tidak punya <code translate="no" v-pre>flock</code>)</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>INTEGRATION_LOCK_WAIT</code></td>
+<td><code translate="no" v-pre>0</code></td>
+<td>Detik untuk antre di belakang run yang sedang berjalan. <code translate="no" v-pre>0</code> langsung menolak, dan itu yang kamu mau. Alternatifnya adalah menunggu satu jam di belakang cold scan</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Lock yang tertinggal dari run yang dihentikan paksa akan diambil alih secara otomatis: direktori itu menyimpan pid pemiliknya, dan <code translate="no" v-pre>flock</code> dilepas oleh kernel. Lock ini tentu tidak memberi tahu zen atau macmini apa pun. Ia hanya menjaga agar run di host ini tidak saling tabrakan.</p>
+<p><strong>Membaca kegagalan.</strong> Setiap <code translate="no" v-pre>fail</code> sekarang mencetak, dari log zurg run tersebut: jumlah tiap gejala akun bersama, yaitu <code translate="no" v-pre>invalid_download_code</code>, <code translate="no" v-pre>hoster_unavailable</code>, baris rate-limit, <code translate="no" v-pre>code=34</code>, <code translate="no" v-pre>Link verification failed</code>, <code translate="no" v-pre>keeping files as broken</code>, <code translate="no" v-pre>broken_file]</code>, dan <code translate="no" v-pre>Deleted downloads entry</code>. Setelah itu sepuluh baris terakhir dari baris-baris tersebut, lalu beberapa baris terakhir yang menyebut fixture yang sedang diuji. Baris <code translate="no" v-pre>none present, so this failure is probably zurg's own and not the account's</code> adalah tanda untuk memeriksa kodenya sebagai gantinya.</p>
+<p><code translate="no" v-pre>docs/realdebrid-behavior.txt</code> memuat semantik link yang mendasari semua ini: link mana yang di-redeem dari akun mana, dan mengapa <code translate="no" v-pre>unavailable_file</code> serta <code translate="no" v-pre>hoster_unavailable</code> memiliki arti yang berbeda.</p>
+<h3 id="runtime">Durasi Berjalan</h3>
+<p>Run pertama di work dir yang sama harus melewati cold library scan: satu panggilan info dan satu verifikasi link per torrent, dibatasi oleh jatah API akun. Di akun dengan beberapa ribu torrent, itu bisa memakan waktu puluhan menit. Akun ini punya 3.361 torrent pada 2026-08-29, cukup untuk memicu <code translate="no" v-pre>code=34</code> terus-menerus dan membuat satu script berjalan sekitar dua puluh menit. Work dir menyimpan tiga cache di antara run supaya run berikutnya bisa melewatinya: <code translate="no" v-pre>info/</code>, <code translate="no" v-pre>linkcache/</code>, dan hasil network test. Hapus work dir untuk memaksa jalur cold.</p>
+<p><code translate="no" v-pre>linkcache/</code> adalah data yang dipersist oleh <code translate="no" v-pre>internal/debrid.LinkCache</code>, satu file per instance provider. Bagian inilah yang menghemat dua puluh menit tadi. Saat pertama kali melihat sebuah torrent, zurg me-resolve salah satu link-nya untuk verifikasi. Itu satu panggilan <code translate="no" v-pre>unrestrict/link</code> per torrent saat cache kosong, dan gratis saat cache sudah terisi. Manfaatnya dibatasi oleh TTL cache 4 jam. Suite yang dijalankan ulang keesokan harinya akan kembali cold, jadi ini mempercepat iterasi, bukan run pertama.</p>
+<p>Baik <code translate="no" v-pre>info/</code> maupun <code translate="no" v-pre>linkcache/</code> tidak bebas dari link, dan keduanya menyimpan kode yang bisa dicabut oleh instance lain di akun bersama. <code translate="no" v-pre>.zurginfo</code> adalah <code translate="no" v-pre>TorrentInfo</code> apa adanya, jadi isinya termasuk kode <code translate="no" v-pre>/d/</code> Real-Debrid milik torrent, dan <code translate="no" v-pre>linkcache/</code> menyimpan hasil resolve kode-kode tersebut. Keduanya tetap dipertahankan. Membangun ulang keduanya yang memakan waktu puluhan menit. Entry yang dicabut bukan jawaban yang salah. Verifikasi akan menerima <code translate="no" v-pre>404 invalid_download_code</code>, lalu zurg membuang entry itu dan mint ulang, jadi hanya entry yang dicabut yang butuh panggilan. Akan ada beberapa entry seperti itu di setiap run, dan kecepatannya akan bervariasi tergantung jumlahnya.</p>
+<p>Fixture lebih sempit lagi. <code translate="no" v-pre>clean_state_for_hash</code> menghapus entry <code translate="no" v-pre>info/</code> yang hash-nya cocok, jadi daftar link-nya selalu diambil ulang dari akun. <code translate="no" v-pre>linkcache/</code> diindeks per link, bukan per hash, dan tidak disapu per fixture. Itu berarti <em>hasil resolve</em> salah satu link tersebut masih bisa berasal dari run sebelumnya. Hal ini tidak memengaruhi assertion apa pun di sini, karena fixture menguji refresh, routing, mount, dan repair. Resolusi yang sudah basi akan gagal verifikasi dan di-mint ulang sebelum salah satu dari pengujian itu melihatnya.</p>
+<h3 id="refreshrepair-integration-test">Tes Integrasi Refresh/Repair</h3>
+<div id="refreshrepair-integration-test-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./integration/refresh_repair_integration.sh</code></pre>
+</doc-codeblock></div>
+<p>Automatic repair tetap nonaktif di config scratch. Dua permintaan eksplisit <code translate="no" v-pre>/manage/{hash}/repair</code> melewati setting itu dan memperbaiki fixture-nya.
+Mengaktifkan unattended repair juga akan memindai dan mengubah entri yang tidak terkait di akun bersama, sehingga jatah API yang dibutuhkan assertion ikut habis.
+<code translate="no" v-pre>refresh_repair_config_test.sh</code> memeriksa config yang dihasilkan tanpa lalu lintas provider, dengan menggunakan input scratch yang sudah di-redact dan diambil dari kegagalan 2026-09-10.</p>
+<retype-table copy-text="| Skenario | Deskripsi |
+|----------|-----------|
+| 1. Refresh Otomatis (Penambahan) | Menambahkan torrent lewat RD API lalu menunggu refresh loop mendeteksinya — tanpa restart, karena kalau tidak, yang diuji malah jalur cold-load |
+| 2. Penugasan &amp; Perutean Direktori | Memverifikasi file muncul di direktori virtual HTTP/DAV |
+| 3. Persistensi (Restart) | Me-restart zurg dan memastikan state cache tetap ada |
+| 4. Refresh Otomatis (Penghapusan) | Menghapus torrent dan menunggu obsolete-key sweep menghapusnya |
+| 5. Pemicu Repair | Memicu repair lewat Manage API, memastikan zurg mencatat bahwa permintaan diterima, dan menunggu `ok_torrent` dengan 0 file rusak |
+| 6. Verifikasi Repair | Me-repair torrent kedua dan mengambil file video darinya dengan range request |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Skenario</th>
+<th>Deskripsi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Refresh Otomatis (Penambahan)</td>
+<td>Menambahkan torrent lewat RD API lalu menunggu refresh loop mendeteksinya — tanpa restart, karena kalau tidak, yang diuji malah jalur cold-load</td>
+</tr>
+<tr>
+<td>2. Penugasan &amp; Perutean Direktori</td>
+<td>Memverifikasi file muncul di direktori virtual HTTP/DAV</td>
+</tr>
+<tr>
+<td>3. Persistensi (Restart)</td>
+<td>Me-restart zurg dan memastikan state cache tetap ada</td>
+</tr>
+<tr>
+<td>4. Refresh Otomatis (Penghapusan)</td>
+<td>Menghapus torrent dan menunggu obsolete-key sweep menghapusnya</td>
+</tr>
+<tr>
+<td>5. Pemicu Repair</td>
+<td>Memicu repair lewat Manage API, memastikan zurg mencatat bahwa permintaan diterima, dan menunggu <code translate="no" v-pre>ok_torrent</code> dengan 0 file rusak</td>
+</tr>
+<tr>
+<td>6. Verifikasi Repair</td>
+<td>Me-repair torrent kedua dan mengambil file video darinya dengan range request</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h4 id="environment-variables">Variabel Lingkungan</h4>
+<retype-table copy-text="| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `12345` | Port untuk instance zurg uji coba |
+| `CONFIG_PATH` | `config.yml` | Config tempat meminjam kredensial: `token` dari provider `realdebrid`, serta `username`/`password` di level atas |
+| `TEST_HASH` | *(bawaan)* | Hash torrent untuk tes refresh |
+| `REPAIR_TEST_HASH` | *(bawaan)* | Hash torrent dengan bagian yang rusak untuk tes repair |
+| `VERIFY_TEST_HASH` | *(bawaan)* | Hash torrent untuk tes verifikasi repair |
+| `READY_TIMEOUT` | `120` | Detik untuk menunggu zurg siap |
+| `INITIAL_SCAN_TIMEOUT` | `3600` | Detik untuk menunggu putaran refresh penuh pertama selesai |
+| `REFRESH_TIMEOUT` | `120` | Detik untuk menunggu refresh mendeteksi penambahan atau penghapusan |
+| `REPAIR_TIMEOUT` | `300` | Detik untuk menunggu repair selesai |
+| `STREAM_LOGS` | `true` | Ikuti log zurg di stderr |
+| `ZURG_BIN` | `$(pwd)/zurg` | Path ke binary zurg. Harus absolut, karena zurg dijalankan dari direktori kerja |
+| `WORK_DIR` | `$TMPDIR/zurg-refresh-repair` | Direktori kerja (dipertahankan di antara run) |
+| `WORK_DIR_CLEANUP` | `false` | Hapus direktori kerja saat keluar, sehingga cache yang membuat run berikutnya lebih cepat ikut terhapus |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>PORT</code></td>
+<td><code translate="no" v-pre>12345</code></td>
+<td>Port untuk instance zurg uji coba</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>CONFIG_PATH</code></td>
+<td><code translate="no" v-pre>config.yml</code></td>
+<td>Config tempat meminjam kredensial: <code translate="no" v-pre>token</code> dari provider <code translate="no" v-pre>realdebrid</code>, serta <code translate="no" v-pre>username</code>/<code translate="no" v-pre>password</code> di level atas</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>TEST_HASH</code></td>
+<td><em>(bawaan)</em></td>
+<td>Hash torrent untuk tes refresh</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>REPAIR_TEST_HASH</code></td>
+<td><em>(bawaan)</em></td>
+<td>Hash torrent dengan bagian yang rusak untuk tes repair</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>VERIFY_TEST_HASH</code></td>
+<td><em>(bawaan)</em></td>
+<td>Hash torrent untuk tes verifikasi repair</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>READY_TIMEOUT</code></td>
+<td><code translate="no" v-pre>120</code></td>
+<td>Detik untuk menunggu zurg siap</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>INITIAL_SCAN_TIMEOUT</code></td>
+<td><code translate="no" v-pre>3600</code></td>
+<td>Detik untuk menunggu putaran refresh penuh pertama selesai</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>REFRESH_TIMEOUT</code></td>
+<td><code translate="no" v-pre>120</code></td>
+<td>Detik untuk menunggu refresh mendeteksi penambahan atau penghapusan</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>REPAIR_TIMEOUT</code></td>
+<td><code translate="no" v-pre>300</code></td>
+<td>Detik untuk menunggu repair selesai</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>STREAM_LOGS</code></td>
+<td><code translate="no" v-pre>true</code></td>
+<td>Ikuti log zurg di stderr</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>ZURG_BIN</code></td>
+<td><code translate="no" v-pre>$(pwd)/zurg</code></td>
+<td>Path ke binary zurg. Harus absolut, karena zurg dijalankan dari direktori kerja</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>WORK_DIR</code></td>
+<td><code translate="no" v-pre>$TMPDIR/zurg-refresh-repair</code></td>
+<td>Direktori kerja (dipertahankan di antara run)</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>WORK_DIR_CLEANUP</code></td>
+<td><code translate="no" v-pre>false</code></td>
+<td>Hapus direktori kerja saat keluar, sehingga cache yang membuat run berikutnya lebih cepat ikut terhapus</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="force-location-integration-test">Tes Integrasi Force Location</h3>
+<div id="force-location-integration-test-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">make force-location-test</code></pre>
+</doc-codeblock></div>
+<p>Tidak ikut <code translate="no" v-pre>make integration-test</code>. Tes ini dijalankan secara manual. Saat diukur di <code translate="no" v-pre>fun</code> pada 2026-08-29, host <code translate="no" v-pre>nyk</code> yang dipaksa ternyata me-resolve ke rekaman AAAA, dan download client memakai <code translate="no" v-pre>tcp4</code> untuk menghubunginya. Akibatnya, setiap HEAD berakhir dengan <code translate="no" v-pre>no suitable address found</code>. Dengan tiga kali percobaan ulang untuk tiap link, pemindaian library yang ditunggu tes ini bisa terus berjalan hampir satu jam sebelum gagal, dan kegagalannya ada di jaringan host, bukan di zurg. Tes ini sebenarnya sudah melewati pengecekan jika sebuah region tidak sehat (lihat di bawah), tetapi pengecekan itu tidak menangani host yang tidak bisa menjangkau region yang <em>sehat</em> lewat IPv4.</p>
+<p>Tes ini menyiapkan cache jaringan yang dikunci ke <code translate="no" v-pre>LOCATION</code> (default <code translate="no" v-pre>nyk</code>), lalu memastikan bahwa link yang di-resolve lewat endpoint <code translate="no" v-pre>/strm/</code> milik zurg mengarahkan ke host download di lokasi tersebut. <code translate="no" v-pre>MAX_GEO_PROBES</code> (default <code translate="no" v-pre>4</code>) membatasi jumlah geo server yang diperiksa oleh tahap seed.</p>
+<p>Dengan <code translate="no" v-pre>cdn_host_preference</code> diatur, setiap link yang diverifikasi zurg akan lewat region yang dipaksa. Jika region itu tidak sehat, daftar hasilnya kosong dan kegagalannya terlihat seperti bug di zurg. Karena itu, tes ini mengecek region dulu dan melewatinya (skip), bukan gagal, jika Real-Debrid tidak mau membuat link untuk region tersebut atau host yang diberikan tidak mau menyajikan data.</p>
+<h3 id="network-test-cache-integration-test">Tes Integrasi Network Test Cache</h3>
+<div id="network-test-cache-integration-test-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./integration/network_test_cache_integration.sh</code></pre>
+</doc-codeblock></div>
+<p>Menjalankan zurg dua kali: start pertama harus menjalankan latency sweep dan menulis <code translate="no" v-pre>data/network_test_results.json</code>, sedangkan start kedua harus memuat file itu dan tidak menjalankan sweep baru.</p>
+<h3 id="rclone-mount-integration-test">Tes Integrasi Rclone Mount</h3>
+<div id="rclone-mount-integration-test-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./integration/rclone_mount_integration.sh</code></pre>
+</doc-codeblock></div>
+<p>Ini menelusuri jalur yang benar-benar dilalui player: FUSE → zurg HTTP → Real-Debrid:</p>
+<retype-table copy-text="| Step | Assertion |
+|------|-----------|
+| 2 | zurg memasang mount-nya sendiri dan mencatat `Mount verification successful` |
+| 3 | direktori yang dikonfigurasi terlihat di root mount |
+| 4a–4c | fixture masuk ke library, disajikan lewat HTTP, dan sampai ke mount. Langkahnya dibuat bertahap supaya kalau gagal, pesannya menyebut hop yang rusak, bukan sekadar &quot;not in the mount&quot; |
+| 5 | membaca file lewat FUSE mengembalikan byte asli |
+| 6 | mematikan zurg melepas mount |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Step</th>
+<th>Assertion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>zurg memasang mount-nya sendiri dan mencatat <code translate="no" v-pre>Mount verification successful</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>direktori yang dikonfigurasi terlihat di root mount</td>
+</tr>
+<tr>
+<td>4a–4c</td>
+<td>fixture masuk ke library, disajikan lewat HTTP, dan sampai ke mount. Langkahnya dibuat bertahap supaya kalau gagal, pesannya menyebut hop yang rusak, bukan sekadar &quot;not in the mount&quot;</td>
+</tr>
+<tr>
+<td>5</td>
+<td>membaca file lewat FUSE mengembalikan byte asli</td>
+</tr>
+<tr>
+<td>6</td>
+<td>mematikan zurg melepas mount</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Langkah 4c adalah assertion dircache VFS. Fixture hanya sampai ke mount kalau daftar direktorinya di-invalidate, bukan disajikan dari daftar yang sudah di-cache sebelum torrent-nya masuk.</p>
+<p>Library dipersempit dengan regex yang dibuat dari nama fixture itu sendiri, jadi mount hanya berisi satu rilis, bukan seluruh akun. <code translate="no" v-pre>MOUNT_PATH</code> default-nya <code translate="no" v-pre>$WORK_DIR/mnt</code>, tidak pernah <code translate="no" v-pre>/mnt/zurg</code> milik produksi. <code translate="no" v-pre>RCLONE_BIN</code> default-nya <code translate="no" v-pre>$(pwd)/bin/rclone</code>.</p>
+<h3 id="plex-integration-test">Tes Integrasi Plex</h3>
+<div id="plex-integration-test-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./integration/plex_integration.sh</code></pre>
+</doc-codeblock></div>
+<retype-table copy-text="| Langkah | Yang dicek |
+|------|-----------|
+| 2 | zurg mencatat log `Successfully connected to Plex server` |
+| 3 | fixture-nya muncul di library, dan kalau juga muncul di mount, file itu harus bisa dibaca (Plex membacanya sebagai user-nya sendiri) |
+| 4 | section baru yang sekali pakai dibuat di atas `$MOUNT_PATH/movies` |
+| 5 | zurg me-resolve path library-nya ke section itu, lalu mengantri refresh **untuk path fixture** |
+| 6 | Plex akhirnya mengindeks item-nya |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Langkah</th>
+<th>Yang dicek</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>zurg mencatat log <code translate="no" v-pre>Successfully connected to Plex server</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>fixture-nya muncul di library, dan kalau juga muncul di mount, file itu harus bisa dibaca (Plex membacanya sebagai user-nya sendiri)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>section baru yang sekali pakai dibuat di atas <code translate="no" v-pre>$MOUNT_PATH/movies</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>zurg me-resolve path library-nya ke section itu, lalu mengantri refresh <strong>untuk path fixture</strong></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Plex akhirnya mengindeks item-nya</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>Fixture yang muncul di mount itu prasyarat di sini, bukan asersinya. Kalau Plex sudah dikonfigurasi, zurg juga menjalankan matcher-nya ke seluruh library Plex. Itu bersaing dengan refresh, jadi daftar VFS bisa tertinggal jauh. Test-nya mencatat hal ini lalu lanjut setelah <code translate="no" v-pre>MOUNT_VISIBLE_TIMEOUT</code> (default <code translate="no" v-pre>420</code>). Langkah 5 dan 6 sudah gagal kalau Plex tidak bisa melihat file-nya, dan memastikan invalidasi bekerja adalah tugas test mount. <code translate="no" v-pre>PLEX_URL</code> dan <code translate="no" v-pre>PLEX_TOKEN</code> menimpa <code translate="no" v-pre>plex_server_url</code>/<code translate="no" v-pre>plex_token</code> di config.</p>
+<p>Plex otomatis men-scan section baru dan bisa selesai sebelum pembuatan section kembali. Test melaporkan jumlah awal itu. Langkah 5 secara terpisah mengecek bahwa zurg mengantri path yang benar setelah permintaan manage eksplisit.</p>
+<p>Section dibuat dengan <code translate="no" v-pre>agent=tv.plex.agents.none</code> dan scanner <code translate="no" v-pre>Plex Video Files</code>, jadi Plex mengindeks secara lokal tanpa menanyakan agent metadata online. Section itu dihapus saat keluar, termasuk saat gagal, dari EXIT trap. Tapi tidak ada yang jalan saat SIGKILL, jadi setelah run yang di-kill, cek dan hapus hanya section milik kamu sendiri. Harness membiarkan section yang sudah ada karena bisa jadi milik sesi lain. Library yang sudah ada tidak pernah disentuh.</p>
+<p>Langkah 5 meminta zurg menjalankan efek sampingnya lewat <code translate="no" v-pre>POST /manage/{hash}/scan</code>, bukan menunggu pass refresh. Trigger penugasan direktori hanya jalan sekali, yaitu saat torrent ditemukan, dan itu pasti terjadi sebelum section ada. Menunggu pass penuh berikutnya memakan waktu puluhan menit di akun dengan beberapa ribu torrent. Mapping yang diuji tidak berubah: zurg tetap harus me-resolve path library-nya sendiri ke section yang tepat.</p>
+<h3 id="usenet-benchmark-regression">Regresi Benchmark Usenet</h3>
+<div id="usenet-benchmark-regression-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">./integration/nzb_bench_integration.sh
+make nzb-bench-test</code></pre>
+</doc-codeblock></div>
+<p>Tidak ada bagian lain di suite yang membaca satu byte pun lewat NNTP. Perubahan pada article fetcher, yEnc decoder, PAR2 repair, atau archive reader bisa membuat throughput turun setengah, memori dua kali lipat, atau mulai menyajikan silence untuk article yang sudah hilang, dan semua test lain tetap lulus. Test ini membaca empat release yang sudah di-stage lewat zurg scratch, lalu memeriksa angka dan byte-nya.</p>
+<p><strong>Kenapa pakai A/B dan bukan angka yang disimpan.</strong> Throughput di news server live naik turun 10–20% sepanjang malam. Enam kali baca release yang sama pernah berada di kisaran 34–50 MB/s dalam satu sesi. Jadi kalau pakai rentang ketat terhadap angka yang dicatat minggu lalu, test akan gagal karena kondisi jaringan, bukan karena kodenya. Makanya test ini mengukur dua binary di jendela waktu yang sama, di host yang sama, dengan urutan yang bergantian di tiap rep supaya pemanasan di sisi provider kena ke keduanya, lalu membandingkan median-nya.</p>
+<p>A adalah baseline: secara default, tag <code translate="no" v-pre>*-nightly</code> terbaru yang bisa dijangkau dari <code translate="no" v-pre>HEAD</code>. Tag itu di-extract dengan <code translate="no" v-pre>git archive</code>, dibangun sekali, lalu di-cache di work dir supaya run berikutnya bisa memakainya lagi. B adalah kandidat, yaitu <code translate="no" v-pre>zurg</code> yang baru saja dibangun dari repo ini. <strong>Sebuah metrik dianggap gagal kalau B lebih buruk dari A lebih dari 5%</strong> (<code translate="no" v-pre>BENCH_TOLERANCE</code>). Kalau lebih baik, dilaporkan sebagai peningkatan. Kalau metrik hilang di salah satu sisi, hasilnya <code translate="no" v-pre>n/a</code>, bukan regresi. Di tiap rep, test mengukur cold open, time to first byte, read 64 MiB, re-read 64 MiB yang sama dalam keadaan warm, scrub delapan titik, read 256 MiB beserta CPU-detik per gigabyte dan peak RSS di sebelahnya (hanya Linux, karena keduanya diambil dari <code translate="no" v-pre>/proc</code>), dan durasi container yang dibaca <code translate="no" v-pre>ffprobe</code>.</p>
+<p>Correctness hanya diperiksa pada kandidat, dan tidak pernah lewat clock. Setiap read mencatat md5 yang harus cocok dengan konstanta yang tercatat dan harus sama antara kedua binary. Release yang rusak hanya boleh menyajikan byte asli atau silence, tidak ada yang lain. Repair kemudian harus mencapai byte asli dan tetap benar setelah restart.</p>
+<p>Corpus-nya tersimpan di <code translate="no" v-pre>integration/nzbbench/corpus/</code>, berisi enam NZB untuk enam pertanyaan:</p>
+<retype-table copy-text="| NZB | Isinya | Untuk apa |
+|-----|--------|-----------|
+| `ToyStory5.nzb` | WEB-DL 6.61 GB, 1.576 article × 4 MiB | semua angka throughput dan latency, dan assertion ffprobe |
+| `ToyStory5Damaged.nzb` | release yang sama, tapi message-id article 21 dirusak sehingga server mana pun menjawab `430` | hole harus terbaca sebagai byte asli atau silence. Selain itu adalah bug correctness. Lalu PAR2 harus memperbaikinya, dan hasil repair harus bertahan setelah restart |
+| `Obfuscated.nzb` | film yang sama, diposting sebagai tujuh file dengan nama `&lt;hex&gt; [n/7] yEnc`. Nama aslinya hanya bisa diambil dari index PAR2 | pemeriksaan penamaan: file harus muncul dengan nama `.mkv` yang asli dan ukuran yang benar, tanpa `.par2` yang terlihat |
+| `FatherBrown.nzb` | RAR 11 volume berisi satu episode, direktori `Sample/`, dan nfo | archive reader: struktur folder harus tetap utuh, dan read di dalam archive punya angka throughput sendiri (`rar_read_MBps`, satu read per rep) |
+| `WrongTurn3.nzb.gz` | 7z stored 58 GB dalam 54 volume masing-masing 1 GiB (yang terakhir lebih kecil) plus tujuh file PAR2, berupa tree UHD BluRay lengkap. Di-gzip karena NZB-nya 7 MB dalam bentuk biasa | split-7z reader: volume harus digabung dan header di ujung volume terakhir harus dibaca sebelum apa pun di-list. Listing itulah yang diukur (`sevenzip_list_s`, satu per rep dari layout yang sudah dibersihkan). Setelah itu, stream fitur 57.6 GB harus membalas 16 MiB pada offset 8 GiB dengan md5 yang tercatat. Ini pemeriksaan correctness, bukan pemeriksaan waktu. Tidak ada angka throughput, karena setiap volume release ini kehilangan sekitar seperlima article-nya di provider ini. Read yang diukur akan lebih banyak mengukur waktu pencarian hole |
+| `NestedRar.nzb` | repost XviD dua CD: satu set volume RAR5 luar yang member-nya adalah volume dari dua set RAR di dalamnya, di `CD1/` dan `CD2/`, plus klip `Sample/` dan nfo | nested-archive reader: kedua set dalam harus dibuka. Flat test menolak dua set yang bisa dibandingkan, dan direktori dari poster-lah yang mengelompokkannya. Kedua film harus muncul dengan ukuran aslinya dan punya angka throughput sendiri (`nested_read_MBps`, satu read per rep) |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>NZB</th>
+<th>Isinya</th>
+<th>Untuk apa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>ToyStory5.nzb</code></td>
+<td>WEB-DL 6.61 GB, 1.576 article × 4 MiB</td>
+<td>semua angka throughput dan latency, dan assertion ffprobe</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>ToyStory5Damaged.nzb</code></td>
+<td>release yang sama, tapi message-id article 21 dirusak sehingga server mana pun menjawab <code translate="no" v-pre>430</code></td>
+<td>hole harus terbaca sebagai byte asli atau silence. Selain itu adalah bug correctness. Lalu PAR2 harus memperbaikinya, dan hasil repair harus bertahan setelah restart</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Obfuscated.nzb</code></td>
+<td>film yang sama, diposting sebagai tujuh file dengan nama <code translate="no" v-pre>&lt;hex&gt; [n/7] yEnc</code>. Nama aslinya hanya bisa diambil dari index PAR2</td>
+<td>pemeriksaan penamaan: file harus muncul dengan nama <code translate="no" v-pre>.mkv</code> yang asli dan ukuran yang benar, tanpa <code translate="no" v-pre>.par2</code> yang terlihat</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>FatherBrown.nzb</code></td>
+<td>RAR 11 volume berisi satu episode, direktori <code translate="no" v-pre>Sample/</code>, dan nfo</td>
+<td>archive reader: struktur folder harus tetap utuh, dan read di dalam archive punya angka throughput sendiri (<code translate="no" v-pre>rar_read_MBps</code>, satu read per rep)</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>WrongTurn3.nzb.gz</code></td>
+<td>7z stored 58 GB dalam 54 volume masing-masing 1 GiB (yang terakhir lebih kecil) plus tujuh file PAR2, berupa tree UHD BluRay lengkap. Di-gzip karena NZB-nya 7 MB dalam bentuk biasa</td>
+<td>split-7z reader: volume harus digabung dan header di ujung volume terakhir harus dibaca sebelum apa pun di-list. Listing itulah yang diukur (<code translate="no" v-pre>sevenzip_list_s</code>, satu per rep dari layout yang sudah dibersihkan). Setelah itu, stream fitur 57.6 GB harus membalas 16 MiB pada offset 8 GiB dengan md5 yang tercatat. Ini pemeriksaan correctness, bukan pemeriksaan waktu. Tidak ada angka throughput, karena setiap volume release ini kehilangan sekitar seperlima article-nya di provider ini. Read yang diukur akan lebih banyak mengukur waktu pencarian hole</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>NestedRar.nzb</code></td>
+<td>repost XviD dua CD: satu set volume RAR5 luar yang member-nya adalah volume dari dua set RAR di dalamnya, di <code translate="no" v-pre>CD1/</code> dan <code translate="no" v-pre>CD2/</code>, plus klip <code translate="no" v-pre>Sample/</code> dan nfo</td>
+<td>nested-archive reader: kedua set dalam harus dibuka. Flat test menolak dua set yang bisa dibandingkan, dan direktori dari poster-lah yang mengelompokkannya. Kedua film harus muncul dengan ukuran aslinya dan punya angka throughput sendiri (<code translate="no" v-pre>nested_read_MBps</code>, satu read per rep)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>Satu akun, satu instance.</strong> Zurg kedua di akun news akan bersaing dengan yang pertama untuk jatah koneksinya, dan server akan menolak yang <em>lebih lama</em>. Di <code translate="no" v-pre>fun</code>, <code translate="no" v-pre>zurg-usenet</code> produksi memegang semua koneksi yang diizinkan paket akun, jadi benchmark berjalan dengan 10 koneksi (<code translate="no" v-pre>BENCH_NNTP_CONNECTIONS</code>). Penolakan <code translate="no" v-pre>Too many connections</code> dilaporkan sebagai <strong>skip, bukan kegagalan</strong>. Hal yang sama berlaku untuk server yang tidak bisa dijangkau atau <code translate="no" v-pre>AUTHINFO</code> yang ditolak. Lingkungannya memang tidak bisa menjawab pertanyaan itu, jadi test memberi tahu hal tersebut dan tidak menyalahkan build-nya.</p>
+<p>Sekitar 15–20 menit untuk default empat rep, ditambah beberapa menit sekali saja saat baseline pertama kali harus dibangun.</p>
+<retype-table copy-text="| Variable | Default | Deskripsi |
+|----------|---------|-----------|
+| `PORT` | `12358` | Port untuk instance zurg benchmark (satu per waktu) |
+| `WORK_DIR` | `$TMPDIR/zurg-nzb-bench` | Menyimpan config yang dibuat, run dir dan log kedua binary, `report.json`, dan binary baseline yang di-cache. Disimpan di antara run. `data/` yang persisten itulah yang membuat rep berikutnya mengukur restart, bukan cold learn |
+| `BENCH_ENV_FILE` | `~/.config/zurg/bench-account.env` | File akun, di-source kalau ada. Baris `KEY=value` untuk variabel `BENCH_NNTP_*`. **Cara yang didukung untuk memberi benchmark akunnya sendiri**, dan yang menjaga credential tetap di luar repo dan di luar shell history |
+| `CONFIG_PATH` | `config.yml` | Config tempat meminjam akun news, kalau environment dan file akun tidak menyebutkannya: blok `nntp:` dari provider `type: nzb` pertama. Peminjaman ditolak kalau akun itu sudah punya koneksi terbuka di sini. Lihat di bawah |
+| `BENCH_NNTP_HOST` / `_PORT` / `_TLS` / `_USER` / `_PASS` | *(dari `BENCH_ENV_FILE`, lalu `CONFIG_PATH`)* | Akun news. Nilai yang di-export mengalahkan file akun. Kalau tidak ditemukan di mana pun → skip |
+| `BENCH_NNTP_CONNECTIONS` | `10` | Koneksi yang dibuka benchmark. Ini batas atas: akun yang dikonfigurasi dengan jumlah lebih kecil tetap memakai angkanya sendiri |
+| `BENCH_ALLOW_SHARED_ACCOUNT` | *(tidak diatur)* | Set ke `1` untuk benchmark di akun pinjaman yang sudah punya koneksi terbuka. Hanya kalau kamu sudah memastikan akunnya masih punya ruang |
+| `BASELINE_REF` | `*-nightly` terbaru yang bisa dijangkau dari `HEAD` | Pembanding. Di-resolve setelah `git fetch --tags` yang dilakukan sebisanya |
+| `BASELINE_BIN` | *(dibangun dari `BASELINE_REF`)* | Baseline yang sudah dibangun sebelumnya, dipakai apa adanya. Cara membandingkan dengan sesuatu yang sudah tidak bisa dibangun di sini |
+| `BENCH_REPS` | `4` | Rep per binary. Median dihitung dari rep-rep ini |
+| `BENCH_TOLERANCE` | `0.05` | Seberapa buruk B boleh lebih dari A sebelum dianggap regresi |
+| `BENCH_SKIP` | *(kosong)* | Daftar phase yang dipisah koma untuk dilewati: `repair`, `obfuscated`, `rar`, `ffprobe`. `ffprobe` otomatis ditambahkan kalau tidak ada di `PATH` dan tidak ada di `bin/` |
+| `REPORT_JSON` | `$WORK_DIR/report.json` | Tempat report disimpan |
+| `STREAM_LOGS` | `true` | Ikuti `zurg.log` kandidat di stderr. Progres dari tool tetap dicetak dalam kondisi apa pun |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Deskripsi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>PORT</code></td>
+<td><code translate="no" v-pre>12358</code></td>
+<td>Port untuk instance zurg benchmark (satu per waktu)</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>WORK_DIR</code></td>
+<td><code translate="no" v-pre>$TMPDIR/zurg-nzb-bench</code></td>
+<td>Menyimpan config yang dibuat, run dir dan log kedua binary, <code translate="no" v-pre>report.json</code>, dan binary baseline yang di-cache. Disimpan di antara run. <code translate="no" v-pre>data/</code> yang persisten itulah yang membuat rep berikutnya mengukur restart, bukan cold learn</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>BENCH_ENV_FILE</code></td>
+<td><code translate="no" v-pre>~/.config/zurg/bench-account.env</code></td>
+<td>File akun, di-source kalau ada. Baris <code translate="no" v-pre>KEY=value</code> untuk variabel <code translate="no" v-pre>BENCH_NNTP_*</code>. <strong>Cara yang didukung untuk memberi benchmark akunnya sendiri</strong>, dan yang menjaga credential tetap di luar repo dan di luar shell history</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>CONFIG_PATH</code></td>
+<td><code translate="no" v-pre>config.yml</code></td>
+<td>Config tempat meminjam akun news, kalau environment dan file akun tidak menyebutkannya: blok <code translate="no" v-pre>nntp:</code> dari provider <code translate="no" v-pre>type: nzb</code> pertama. Peminjaman ditolak kalau akun itu sudah punya koneksi terbuka di sini. Lihat di bawah</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>BENCH_NNTP_HOST</code> / <code translate="no" v-pre>_PORT</code> / <code translate="no" v-pre>_TLS</code> / <code translate="no" v-pre>_USER</code> / <code translate="no" v-pre>_PASS</code></td>
+<td><em>(dari <code translate="no" v-pre>BENCH_ENV_FILE</code>, lalu <code translate="no" v-pre>CONFIG_PATH</code>)</em></td>
+<td>Akun news. Nilai yang di-export mengalahkan file akun. Kalau tidak ditemukan di mana pun → skip</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>BENCH_NNTP_CONNECTIONS</code></td>
+<td><code translate="no" v-pre>10</code></td>
+<td>Koneksi yang dibuka benchmark. Ini batas atas: akun yang dikonfigurasi dengan jumlah lebih kecil tetap memakai angkanya sendiri</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>BENCH_ALLOW_SHARED_ACCOUNT</code></td>
+<td><em>(tidak diatur)</em></td>
+<td>Set ke <code translate="no" v-pre>1</code> untuk benchmark di akun pinjaman yang sudah punya koneksi terbuka. Hanya kalau kamu sudah memastikan akunnya masih punya ruang</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>BASELINE_REF</code></td>
+<td><code translate="no" v-pre>*-nightly</code> terbaru yang bisa dijangkau dari <code translate="no" v-pre>HEAD</code></td>
+<td>Pembanding. Di-resolve setelah <code translate="no" v-pre>git fetch --tags</code> yang dilakukan sebisanya</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>BASELINE_BIN</code></td>
+<td><em>(dibangun dari <code translate="no" v-pre>BASELINE_REF</code>)</em></td>
+<td>Baseline yang sudah dibangun sebelumnya, dipakai apa adanya. Cara membandingkan dengan sesuatu yang sudah tidak bisa dibangun di sini</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>BENCH_REPS</code></td>
+<td><code translate="no" v-pre>4</code></td>
+<td>Rep per binary. Median dihitung dari rep-rep ini</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>BENCH_TOLERANCE</code></td>
+<td><code translate="no" v-pre>0.05</code></td>
+<td>Seberapa buruk B boleh lebih dari A sebelum dianggap regresi</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>BENCH_SKIP</code></td>
+<td><em>(kosong)</em></td>
+<td>Daftar phase yang dipisah koma untuk dilewati: <code translate="no" v-pre>repair</code>, <code translate="no" v-pre>obfuscated</code>, <code translate="no" v-pre>rar</code>, <code translate="no" v-pre>ffprobe</code>. <code translate="no" v-pre>ffprobe</code> otomatis ditambahkan kalau tidak ada di <code translate="no" v-pre>PATH</code> dan tidak ada di <code translate="no" v-pre>bin/</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>REPORT_JSON</code></td>
+<td><code translate="no" v-pre>$WORK_DIR/report.json</code></td>
+<td>Tempat report disimpan</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>STREAM_LOGS</code></td>
+<td><code translate="no" v-pre>true</code></td>
+<td>Ikuti <code translate="no" v-pre>zurg.log</code> kandidat di stderr. Progres dari tool tetap dicetak dalam kondisi apa pun</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>report.json</code> berisi setiap baris per rep untuk kedua binary, median, verdict per metrik, output <code translate="no" v-pre>version</code> dari kedua binary, serta host dan OS. Jadi angka di dalamnya bisa dibaca bersama kode yang menghasilkannya. Untuk mencatat sekumpulan angka tanpa membandingkan apa pun, panggil tool langsung dengan satu <code translate="no" v-pre>--bin</code>. Tool akan mengukur, menulis JSON, lalu keluar dengan kode 0:</p>
+<div id="usenet-benchmark-regression-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cd integration/nzbbench &amp;&amp; go build -o /tmp/nzbbench . &amp;&amp; cd -
+/tmp/nzbbench --config /path/to/a-config-with-an-nzb-provider.yml --port 12358 \
+  --corpus integration/nzbbench/corpus --work /tmp/nzbbench-record \
+  --bin candidate=./zurg --out /tmp/record.json</code></pre>
+</doc-codeblock></div>
+<p>Config harus milik Anda sendiri: config yang dibuat wrapper membawa password akun news dalam teks biasa dan dihapus saat run selesai.</p>
+<p><code translate="no" v-pre>integration/nzbbench/README.md</code> mendokumentasikan flag dan exit code milik tool itu sendiri.</p>
+<p><strong>Exit code <code translate="no" v-pre>nzb_bench_integration.sh</code>.</strong> <code translate="no" v-pre>0</code> perbandingan sudah dibuat dan lulus, atau host tidak bisa melakukan benchmark sama sekali dan run dilewati; <code translate="no" v-pre>1</code> sebuah assertion fungsional gagal atau sebuah metrik mundur; <code translate="no" v-pre>4</code> semua assertion fungsional lulus dan timing gate <strong>tidak dinilai</strong> -- news server melewati batas stabilitas tool selama window itu, sehingga perbandingan throughput dan latency dibuang. 4 sengaja dibuat bukan 1 seperti build yang rusak dan bukan 0 seperti skip: tidak ada keputusan soal performa, solusinya adalah jalankan ulang di window yang lebih tenang, dan run mencetak banner yang menyebut gate beserta spread yang membuatnya gagal. <code translate="no" v-pre>make integration-test</code> mengubah setiap baris recipe yang gagal menjadi exit 2 milik make sendiri, jadi saat suite dijalankan Anda akan melihat make dengan exit non-zero plus banner tadi, bukan baris &quot;All integration tests passed.&quot; dari target tersebut; panggil script secara langsung jika ada yang perlu bercabang berdasarkan nilai 4 itu sendiri.</p>
+<h3 id="prerequisites-1">Prasyarat</h3>
+<ul>
+<li>
+<p>Token Real-Debrid di <code translate="no" v-pre>config.yml</code> (sebagai provider <code translate="no" v-pre>realdebrid</code>) atau <code translate="no" v-pre>RD_TOKEN</code></p>
+</li>
+<li>
+<p><code translate="no" v-pre>curl</code>, <code translate="no" v-pre>python3</code>, dan binary zurg yang sudah dibangun</p>
+</li>
+<li>
+<p><code translate="no" v-pre>shellcheck</code> untuk <code translate="no" v-pre>make lint-integration</code> (dilewati dengan pemberitahuan jika tidak ada)</p>
+</li>
+<li>
+<p>Untuk tes mount dan Plex: <code translate="no" v-pre>fusermount</code>/macFUSE, binary rclone, dan
+<code translate="no" v-pre>user_allow_other</code> di <code translate="no" v-pre>/etc/fuse.conf</code> supaya Plex bisa membaca mount-nya</p>
+</li>
+<li>
+<p>Untuk pengecekan penolakan move: rclone yang sudah diperbaiki dari
+<code translate="no" v-pre>scripts/build-rclone-move-fix.sh</code>, diatur
+lewat <code translate="no" v-pre>RCLONE_BIN</code> dan <code translate="no" v-pre>RCLONE_TEST_BIN</code> sekaligus. rclone upstream yang lebih baru tapi belum di-patch tidak cukup. Lihat <a href="../rclone-move-refusal/">regresi MOVE</a>.
+Berikan helper yang sudah dibangun lewat <code translate="no" v-pre>DOTNET_MOVE_PROBE_BIN</code>, atau Docker untuk membangunnya. Saat membangunnya sebagai user container tanpa privilege, berikan .NET <code translate="no" v-pre>XDG_DATA_HOME</code> yang bisa ditulis, serta direktori cache CLI dan NuGet-nya.</p>
+</li>
+<li>
+<p>Untuk benchmark Usenet: akun berita, plus Go, <code translate="no" v-pre>git</code>, <code translate="no" v-pre>tar</code>, dan <code translate="no" v-pre>make</code> —
+benchmark ini membangun baseline-nya dari <code translate="no" v-pre>git archive</code> sebuah tag nightly</p>
+</li>
+</ul>
+<h3 id="give-the-benchmark-its-own-news-account">Beri benchmark akun news sendiri</h3>
+<p>Jatah koneksi itu milik <strong>akun</strong>, bukan milik proses. Kalau benchmark kamu arahkan ke akun yang sudah dipakai instance produksi, keduanya akan berbagi jatah yang sama. Pada titik itu server akan menolak pemegang koneksi yang <em>lebih lama</em>, yaitu produksi, yang sama sekali tidak tahu soal benchmark yang menyebabkannya.</p>
+<p>Karena itu, benchmark hanya meminjam dari <code translate="no" v-pre>CONFIG_PATH</code> sebagai cadangan, dan <strong>menolak meminjam akun yang sudah punya koneksi terbuka di host ini</strong>. Siapkan akun sendiri di <code translate="no" v-pre>~/.config/zurg/bench-account.env</code>:</p>
+<div id="give-the-benchmark-its-own-news-account-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">BENCH_NNTP_HOST=news.example.net
+BENCH_NNTP_PORT=563
+BENCH_NNTP_TLS=true
+BENCH_NNTP_USER=...
+BENCH_NNTP_PASS=...
+BENCH_NNTP_CONNECTIONS=25</code></pre>
+</doc-codeblock></div>
+<p>Pilih akun yang punya sisa kapasitas yang tidak dipakai siapa pun. Pilih server yang batas maksimal terukurnya jauh di atas konfigurasi instance mana pun, supaya benchmark tidak sampai membuat reader kehabisan jatah. Apa pun yang kamu <code translate="no" v-pre>export</code> di command line tetap lebih diutamakan daripada file tersebut. Kalau kamu sudah memastikan ada sisa kapasitas, <code translate="no" v-pre>BENCH_ALLOW_SHARED_ACCOUNT=1</code> bisa dipakai untuk melewati penolakan itu.</p>
+<h3 id="not-in-the-suite">Tidak termasuk dalam suite</h3>
+<p><code translate="no" v-pre>rename_integration.sh</code>, <code translate="no" v-pre>tag_stats_integration.sh</code> dan
+<code translate="no" v-pre>test_repair_verification.sh</code> tidak dijalankan oleh <code translate="no" v-pre>make integration-test</code>. Mereka masih punya salinan sendiri dari helper versi lama, yang ada sebelum <code translate="no" v-pre>lib.sh</code>. Pindahkan ke <code translate="no" v-pre>lib.sh</code> dan beri mereka port yang tidak bentrok sebelum dihubungkan.</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/uiux/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">Previous</span>
+                                <span class="block mt-1">Antarmuka konfigurasi direktori</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/realdebrid-behavior/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">Next</span>
+                                <span class="block mt-1">Catatan API Real-​Debrid</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Pengujian E2E", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/internals/e2e-test.md" }</script>
+</body>
+</html>

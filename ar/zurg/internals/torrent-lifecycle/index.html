@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="ar" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/ar">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847672675057">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>دورة حياة التورنت على Real-Debrid وAllDebrid وTorBox</title>
+    <meta name="title" content="دورة حياة التورنت على Real-Debrid وAllDebrid وTorBox">
+    <meta name="description" content="تم القياس بتاريخ 2026-08-30 على حسابات حية. كل ما هو مكتوب أدناه بعلامة observed جاء من التقاط للبيانات. وكل ما هو مكتوب بعلامة inferred لم يأتِ من ذلك، والنص يوضح السبب.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/ar/zurg/internals/torrent-lifecycle/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/ar/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/ar/zurg/internals/torrent-lifecycle/">
+    <meta property="og:title" content="دورة حياة التورنت على Real-Debrid وAllDebrid وTorBox">
+    <meta property="og:description" content="تم القياس بتاريخ 2026-08-30 على حسابات حية. كل ما هو مكتوب أدناه بعلامة observed جاء من التقاط للبيانات. وكل ما هو مكتوب بعلامة inferred لم يأتِ من ذلك، والنص يوضح السبب.">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="ar_SA">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/ar/zurg/internals/torrent-lifecycle/">
+    <meta name="twitter:title" content="دورة حياة التورنت على Real-Debrid وAllDebrid وTorBox">
+    <meta name="twitter:description" content="تم القياس بتاريخ 2026-08-30 على حسابات حية. كل ما هو مكتوب أدناه بعلامة observed جاء من التقاط للبيانات. وكل ما هو مكتوب بعلامة inferred لم يأتِ من ذلك، والنص يوضح السبب.">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/ar/zurg/internals/torrent-lifecycle.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link href="../../../resources/css/retype.css?v=4.6.0.847672675057" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847672675057" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847672675057" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847672675057" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+
+</head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/ar/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>العربية</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">中文</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ar/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ar/download.html" target="_blank">تحميل zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/ar/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">الراعي</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>العربية</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/zh/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">中文</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ar/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/ar/download.html" target="_blank">تحميل zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/ar/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">الراعي</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="torrent-lifecycle-on-real-debrid-alldebrid-and-torbox">دورة حياة التورنت على Real-Debrid وAllDebrid وTorBox</h1>
+<p><strong>تم القياس بتاريخ 2026-08-30 على حسابات حية.</strong> كل ما هو مكتوب أدناه بعلامة <strong>observed</strong> جاء من التقاط للبيانات. وكل ما هو مكتوب بعلامة <strong>inferred</strong> لم يأتِ من ذلك، والنص يوضح السبب.</p>
+<p>يحتاج zurg إلى هذا لأن شيم qBittorrent يجب أن يخبر Sonarr وRadarr بالمرحلة التي وصل إليها التنزيل. ولا يستطيع zurg فعل ذلك اليوم. فحقل <code translate="no" v-pre>TorrentInfo.Status</code> يحمل مفردات حالة Real-Debrid، وحزم AllDebrid وTorBox تحوّل حالاتها إليها قبل أن يرى كود zurg نفسه أي torrent. وتصل حالة TorBox <code translate="no" v-pre>stalled (no seeds)</code> على أنها <code translate="no" v-pre>queued</code>. ولا يُمرَّر أي شيء عن seeders أو speed أو eta على الإطلاق. لذلك كان لا بد من بناء جدول المراحل من البيانات الخام على الشبكة، لا من حزم المزودين التي تقوم أصلاً بتوحيد هذه الحالات وإخفائها.</p>
+<p>أداة الاختبار هي <code translate="no" v-pre>scripts/torrent_lifecycle_probe.py</code>. وهي تتصل مباشرة بواجهات REST الخام، فتكون الالتقاطات حالة wire الخام. وتحذف كل ما تضيفه أثناء العمل، حتى عند الضغط على Ctrl-C.</p>
+<hr>
+<h2 id="how-this-was-measured">كيف تم القياس</h2>
+<h3 id="the-accounts">الحسابات</h3>
+<retype-table copy-text="| المزوّد | الحساب | لماذا هذا الحساب؟ |
+|---|---|---|
+| Real-Debrid | حساب تجريبي | لا يوجد zurg قيد التشغيل يستخدمه، لذلك لم يلمسه أي شيء آخر أثناء التشغيل |
+| AllDebrid | مفتاح تجريبي | كان الحساب يحتوي بالفعل على روابط مغناطيسية أخرى، لذلك لم يُحذف إلا المعرّفات التي أنشأها التشغيل |
+| TorBox | مفتاح حقيقي | **تم تحميل نسخة أخرى من zurg على الحساب نفسه**، وهذا ليس ملاحظة هامشية. راجع [المخاطر التي وُجدت في الطريق](#hazards-found-on-the-way) |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>المزوّد</th>
+<th>الحساب</th>
+<th>لماذا هذا الحساب؟</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Real-Debrid</td>
+<td>حساب تجريبي</td>
+<td>لا يوجد zurg قيد التشغيل يستخدمه، لذلك لم يلمسه أي شيء آخر أثناء التشغيل</td>
+</tr>
+<tr>
+<td>AllDebrid</td>
+<td>مفتاح تجريبي</td>
+<td>كان الحساب يحتوي بالفعل على روابط مغناطيسية أخرى، لذلك لم يُحذف إلا المعرّفات التي أنشأها التشغيل</td>
+</tr>
+<tr>
+<td>TorBox</td>
+<td>مفتاح حقيقي</td>
+<td><strong>تم تحميل نسخة أخرى من zurg على الحساب نفسه</strong>، وهذا ليس ملاحظة هامشية. راجع <doc-anchor-trigger to="#hazards-found-on-the-way">المخاطر التي وُجدت في الطريق</doc-anchor-trigger></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>تُقرأ بيانات الاعتماد من <code translate="no" v-pre>RD_TOKEN</code> و<code translate="no" v-pre>AD_KEY</code> و<code translate="no" v-pre>TB_KEY</code> في متغيرات البيئة. لا شيء يكتبها
+في أي تسجيل التقاط.</p>
+<h3 id="the-torrents">التورنتات</h3>
+<p>كلها قانونية. صور FOSS وفيلم في الملك العام. كل info hash جاء من ملف <code translate="no" v-pre>.torrent</code> أعاد الـ harness حسابه من الملف نفسه، ولم يُكتب يدويًا. أحجام الـ swarm مأخوذة من scrape للـ tracker في نفس اليوم.</p>
+<retype-table copy-text="| الحالة | التورنت | Info hash | الحجم | Seeders في الـ tracker | Webseeds |
+|---|---|---|---|---|---|
+| cached | Big Buck Bunny | `dd8255ecdc7ca55fb0bbf81323d87062db1f6d1c` | 264 MiB | n/a | n/a |
+| cached | Sintel | `08ada5a7a6183aae1e09d831df6748d566095a10` | 123 MiB | n/a | n/a |
+| cached | ubuntu-26.04.1-desktop-amd64.iso | `5b1e0d988fc7a0c9e99bd852071681a59974b39f` | 6.04 GiB | 22 إلى 27 | لا يوجد |
+| uncached | debian-13.6.0-arm64-DVD-1.iso | `4d38178b8f08447ea8609e844b0071354ed65887` | 3.72 GiB | 212 | 2 |
+| uncached | debian-13.2.0-amd64-DVD-1.iso | `7f23b66ebc763f6d931e999583adfd22a7d796fa` | 3.71 GiB | 328 | 2 |
+| webseed | Prelinger `205882_Home_Movie_005588` | `69e7bba940b3c2edf7ce517330e3ca904877d8d1` | 0.71 GiB | 0 seeders و 0 leechers | 3 |
+| seedless | ubuntu-16.04.6-desktop-i386.iso | `c16796a74dc24cc7c6df2f7b66b861e22dec69b1` | 1.56 GiB | 0 | لا يوجد |
+| seedless | ubuntu-24.04-beta-live-server-s390x.iso | `8e693ebcdda44f741e2034cedbb552e93944143d` | 1.18 GiB | 0 | لا يوجد |
+| nometa | random 40-hex | `3f9c1a77b0e4d2568af3c01e9b7d4a5268c1f0e3` | لا يوجد | لا يوجد | لا يوجد |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>الحالة</th>
+<th>التورنت</th>
+<th>Info hash</th>
+<th>الحجم</th>
+<th>Seeders في الـ tracker</th>
+<th>Webseeds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cached</td>
+<td>Big Buck Bunny</td>
+<td><code translate="no" v-pre>dd8255ecdc7ca55fb0bbf81323d87062db1f6d1c</code></td>
+<td>264 MiB</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>cached</td>
+<td>Sintel</td>
+<td><code translate="no" v-pre>08ada5a7a6183aae1e09d831df6748d566095a10</code></td>
+<td>123 MiB</td>
+<td>n/a</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>cached</td>
+<td>ubuntu-26.04.1-desktop-amd64.iso</td>
+<td><code translate="no" v-pre>5b1e0d988fc7a0c9e99bd852071681a59974b39f</code></td>
+<td>6.04 GiB</td>
+<td>22 إلى 27</td>
+<td>لا يوجد</td>
+</tr>
+<tr>
+<td>uncached</td>
+<td>debian-13.6.0-arm64-DVD-1.iso</td>
+<td><code translate="no" v-pre>4d38178b8f08447ea8609e844b0071354ed65887</code></td>
+<td>3.72 GiB</td>
+<td>212</td>
+<td>2</td>
+</tr>
+<tr>
+<td>uncached</td>
+<td>debian-13.2.0-amd64-DVD-1.iso</td>
+<td><code translate="no" v-pre>7f23b66ebc763f6d931e999583adfd22a7d796fa</code></td>
+<td>3.71 GiB</td>
+<td>328</td>
+<td>2</td>
+</tr>
+<tr>
+<td>webseed</td>
+<td>Prelinger <code translate="no" v-pre>205882_Home_Movie_005588</code></td>
+<td><code translate="no" v-pre>69e7bba940b3c2edf7ce517330e3ca904877d8d1</code></td>
+<td>0.71 GiB</td>
+<td>0 seeders و 0 leechers</td>
+<td>3</td>
+</tr>
+<tr>
+<td>seedless</td>
+<td>ubuntu-16.04.6-desktop-i386.iso</td>
+<td><code translate="no" v-pre>c16796a74dc24cc7c6df2f7b66b861e22dec69b1</code></td>
+<td>1.56 GiB</td>
+<td>0</td>
+<td>لا يوجد</td>
+</tr>
+<tr>
+<td>seedless</td>
+<td>ubuntu-24.04-beta-live-server-s390x.iso</td>
+<td><code translate="no" v-pre>8e693ebcdda44f741e2034cedbb552e93944143d</code></td>
+<td>1.18 GiB</td>
+<td>0</td>
+<td>لا يوجد</td>
+</tr>
+<tr>
+<td>nometa</td>
+<td>random 40-hex</td>
+<td><code translate="no" v-pre>3f9c1a77b0e4d2568af3c01e9b7d4a5268c1f0e3</code></td>
+<td>لا يوجد</td>
+<td>لا يوجد</td>
+<td>لا يوجد</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>الأصفار حقيقية وليست tracker ميتًا. تم scrape لـ <code translate="no" v-pre>torrent.ubuntu.com</code> مرتين لكل إدخالات Ubuntu الثلاثة في نفس الحلقة، فأعطى 22 ثم 27 seeder لـ 26.04.1، بينما أعاد <code translate="no" v-pre>d5:filesdee</code> فارغًا للإدخالين seedless. الأمر نفسه مع <code translate="no" v-pre>bt1.archive.org</code> وعنصر Prelinger.</p>
+<p>تم سؤال TorBox عبر <code translate="no" v-pre>checkcached</code> عن كل hash قبل إضافة أي شيء. وهو الفحص الوحيد للكاش بين الثلاثة الذي لا يُحدث أي تغيير. أجاب بأنها cached لصفوف cached الثلاثة، وuncached للصفوف الستة الأخرى. وهذا هو التقسيم الذي تدّعيه أسماء الحالات.</p>
+<h3 id="poll-cadence-and-caps">وتيرة الاستعلام والحدود</h3>
+<p>3 s خلال أول دقيقتين، ثم 15 s. و1 s للحالة المخزّنة مسبقاً (cached)، لأن دورة الحياة كاملةً هناك يمكن أن تنتهي خلال استطلاع (poll) عادي واحد.
+حدّد الحد الأقصى بـ 15 دقيقة لكل تورنت في الحملة، بدلاً من الافتراضي في السكربت وهو 30 دقيقة. المهلة الافتراضية المقترحة في الطبقة الوسيطة (shim) هي 10 دقائق، والتورنت الذي ما زال يتحرك عند 15 دقيقة يكون قد تجاوز النافذة الوحيدة المهمة.
+تفصل عمليات الإضافة في Real-Debrid 20 s على الأقل.</p>
+<p>كان كل مزوّد يعمل كعملية مستقلة مع مجلد إخراج خاص به. هذا يُبقي تباعد إضافات Real-Debrid دقيقاً داخل عملية واحدة، ويسمح بتشغيل الثلاثة في الوقت نفسه.</p>
+<hr>
+<h2 id="real-debrid">Real-Debrid</h2>
+<h3 id="endpoints">نقاط النهاية</h3>
+<div id="endpoints-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">POST   /rest/1.0/torrents/addMagnet          magnet=magnet:?xt=urn:btih:&lt;hash&gt;   -&gt; 201 {&quot;id&quot;,&quot;uri&quot;}
+POST   /rest/1.0/torrents/selectFiles/{id}   files=all                           -&gt; 204
+GET    /rest/1.0/torrents/info/{id}                                              -&gt; 200 object
+DELETE /rest/1.0/torrents/delete/{id}                                            -&gt; 204</code></pre>
+</doc-codeblock></div>
+<h3 id="status-values-observed">قيم الحالة التي لوحظت</h3>
+<p><code translate="no" v-pre>waiting_files_selection</code> <code translate="no" v-pre>magnet_conversion</code> <code translate="no" v-pre>magnet_error</code> <code translate="no" v-pre>queued</code> <code translate="no" v-pre>downloading</code> <code translate="no" v-pre>uploading</code>
+<code translate="no" v-pre>downloaded</code></p>
+<p>لم نلاحظ ذلك هنا. <code translate="no" v-pre>compressing</code> <code translate="no" v-pre>virus</code> <code translate="no" v-pre>error</code> <code translate="no" v-pre>dead</code>. هذه الحالات تحتاج إلى محتوى لم يكن لدى هذه الحملة أي طريقة مشروعة لإنتاجه.</p>
+<h3 id="which-wire-fields-exist-in-which-status">أي حقول الشبكة تظهر في أي حالة</h3>
+<p>هذا أهم من المفردات. الحقول تأتي وتذهب. الـ mapper الذي يقرأ <code translate="no" v-pre>speed</code> في كل حالة يقرأ مفتاحاً غائباً نصف الوقت.</p>
+<retype-table copy-text="| Field | magnet_conversion | queued | downloading | uploading | downloaded |
+|---|---|---|---|---|---|
+| `status` | نعم | نعم | نعم | نعم | نعم |
+| `progress` | 0 | 0 | **عدد عشري (float) نسبة مئوية** من 0 إلى 100 | **يبدأ من 0 من جديد** ويتصاعد حتى 100 | 100 |
+| `seeders` | نعم | **غائب** | نعم | **غائب** | **غائب** |
+| `speed` | **غائب** | **غائب** | نعم، بايت في الثانية | نعم، دائماً 0 في الالتقاط | **غائب** |
+| `bytes` / `original_bytes` | 0 | الحجم الفعلي | الحجم الفعلي | الحجم الفعلي | الحجم الفعلي |
+| `filename` | `&quot;Magnet&quot;` | الاسم الفعلي | الاسم الفعلي | الاسم الفعلي | الاسم الفعلي |
+| `files` | `[]` | ممتلئ | ممتلئ | ممتلئ | ممتلئ |
+| `links` | `[]` | `[]` | `[]` | تمتلئ خلال المرحلة | ممتلئ |
+| `ended` | غائب | غائب | غائب | غائب | موجود |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>Field</th>
+<th>magnet_conversion</th>
+<th>queued</th>
+<th>downloading</th>
+<th>uploading</th>
+<th>downloaded</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>status</code></td>
+<td>نعم</td>
+<td>نعم</td>
+<td>نعم</td>
+<td>نعم</td>
+<td>نعم</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>progress</code></td>
+<td>0</td>
+<td>0</td>
+<td><strong>عدد عشري (float) نسبة مئوية</strong> من 0 إلى 100</td>
+<td><strong>يبدأ من 0 من جديد</strong> ويتصاعد حتى 100</td>
+<td>100</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>seeders</code></td>
+<td>نعم</td>
+<td><strong>غائب</strong></td>
+<td>نعم</td>
+<td><strong>غائب</strong></td>
+<td><strong>غائب</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>speed</code></td>
+<td><strong>غائب</strong></td>
+<td><strong>غائب</strong></td>
+<td>نعم، بايت في الثانية</td>
+<td>نعم، دائماً 0 في الالتقاط</td>
+<td><strong>غائب</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>bytes</code> / <code translate="no" v-pre>original_bytes</code></td>
+<td>0</td>
+<td>الحجم الفعلي</td>
+<td>الحجم الفعلي</td>
+<td>الحجم الفعلي</td>
+<td>الحجم الفعلي</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>filename</code></td>
+<td><code translate="no" v-pre>&quot;Magnet&quot;</code></td>
+<td>الاسم الفعلي</td>
+<td>الاسم الفعلي</td>
+<td>الاسم الفعلي</td>
+<td>الاسم الفعلي</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>files</code></td>
+<td><code translate="no" v-pre>[]</code></td>
+<td>ممتلئ</td>
+<td>ممتلئ</td>
+<td>ممتلئ</td>
+<td>ممتلئ</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>links</code></td>
+<td><code translate="no" v-pre>[]</code></td>
+<td><code translate="no" v-pre>[]</code></td>
+<td><code translate="no" v-pre>[]</code></td>
+<td>تمتلئ خلال المرحلة</td>
+<td>ممتلئ</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>ended</code></td>
+<td>غائب</td>
+<td>غائب</td>
+<td>غائب</td>
+<td>غائب</td>
+<td>موجود</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>progress</code> هو <strong>float</strong> وليس عدداً صحيحاً. الالتقاط يحتوي على 0.4 و0.8 و1.4 إلى جانب 100.</p>
+<p>كاشف التوقف الذي يقرب النسبة إلى عدد صحيح سيعتبر إصداراً بحجم 100 GB متوقفاً عند 1 MB/s.</p>
+<p><code translate="no" v-pre>progress</code> <strong>يرجع إلى الوراء عن قصد</strong>. يُعاد ضبطه إلى 0 عندما تصبح الحالة <code translate="no" v-pre>uploading</code> ثم يتصاعد إلى 100 من جديد. يجب تعريف الحركة على أنها تغيّر في المرحلة أو زيادة في progress، وليس كنسبة مئوية متصاعدة دائماً.</p>
+<p><code translate="no" v-pre>seeders</code> يختفي بدلاً من أن يصبح صفراً عندما يغادر التورنت الحالة <code translate="no" v-pre>downloading</code>. وكذلك <code translate="no" v-pre>speed</code>. يجب أن يتعامل الـ mapper مع المفتاح الغائب على أنه مجهول، وليس على أنه صفر.</p>
+<h3 id="what-each-case-did">ما الذي فعلته كل حالة</h3>
+<retype-table copy-text="| الحالة | التورنت | الانتقالات مع الثواني منذ الإضافة | الحكم |
+|---|---|---|---|
+| مخزّن مؤقتاً | Big Buck Bunny | `downloaded`@0.0 | اكتمل في 1.32 ث من البداية إلى النهاية |
+| مخزّن مؤقتاً | Sintel | `downloaded`@0.0 | اكتمل في 0.73 ث |
+| مخزّن مؤقتاً | Ubuntu 26.04.1 | `downloaded`@0.0 | اكتمل في 0.32 ث |
+| غير مخزّن | Debian 13.6.0 arm64 DVD-1 | `downloaded`@0.0 | مخزّن مسبقاً على هذا الحساب |
+| غير مخزّن | Debian 13.2.0 amd64 DVD-1 | `queued`@0.0 `downloading`@3.1 `uploading`@166.5 `downloaded`@196.8 | اكتمل. 3.71 GiB في 197 ث |
+| webseed | Prelinger home movie | `magnet_conversion`@0.0 `magnet_error`@318.0 | فشل |
+| بلا بذور | ubuntu-16.04.6-desktop-i386 | `queued`@0.0 `downloading`@3.1 `uploading` `downloaded`@166.8 | اكتمل. لم تتكرر الحالة |
+| بلا بذور | ubuntu-24.04-beta-live-server-s390x | `queued`@0.0 `downloading`@3.1 ولا شيء بعد ذلك | **توقف عند 907.6 ث وما زال `downloading`**. هذا هو شكل التعليق |
+| بلا بيانات وصفية | 40 رقماً سداسياً عشرياً عشوائياً | `magnet_conversion`@0.0 `magnet_error`@317.9 | فشل |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>الحالة</th>
+<th>التورنت</th>
+<th>الانتقالات مع الثواني منذ الإضافة</th>
+<th>الحكم</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>مخزّن مؤقتاً</td>
+<td>Big Buck Bunny</td>
+<td><code translate="no" v-pre>downloaded</code>@0.0</td>
+<td>اكتمل في 1.32 ث من البداية إلى النهاية</td>
+</tr>
+<tr>
+<td>مخزّن مؤقتاً</td>
+<td>Sintel</td>
+<td><code translate="no" v-pre>downloaded</code>@0.0</td>
+<td>اكتمل في 0.73 ث</td>
+</tr>
+<tr>
+<td>مخزّن مؤقتاً</td>
+<td>Ubuntu 26.04.1</td>
+<td><code translate="no" v-pre>downloaded</code>@0.0</td>
+<td>اكتمل في 0.32 ث</td>
+</tr>
+<tr>
+<td>غير مخزّن</td>
+<td>Debian 13.6.0 arm64 DVD-1</td>
+<td><code translate="no" v-pre>downloaded</code>@0.0</td>
+<td>مخزّن مسبقاً على هذا الحساب</td>
+</tr>
+<tr>
+<td>غير مخزّن</td>
+<td>Debian 13.2.0 amd64 DVD-1</td>
+<td><code translate="no" v-pre>queued</code>@0.0 <code translate="no" v-pre>downloading</code>@3.1 <code translate="no" v-pre>uploading</code>@166.5 <code translate="no" v-pre>downloaded</code>@196.8</td>
+<td>اكتمل. 3.71 GiB في 197 ث</td>
+</tr>
+<tr>
+<td>webseed</td>
+<td>Prelinger home movie</td>
+<td><code translate="no" v-pre>magnet_conversion</code>@0.0 <code translate="no" v-pre>magnet_error</code>@318.0</td>
+<td>فشل</td>
+</tr>
+<tr>
+<td>بلا بذور</td>
+<td>ubuntu-16.04.6-desktop-i386</td>
+<td><code translate="no" v-pre>queued</code>@0.0 <code translate="no" v-pre>downloading</code>@3.1 <code translate="no" v-pre>uploading</code> <code translate="no" v-pre>downloaded</code>@166.8</td>
+<td>اكتمل. لم تتكرر الحالة</td>
+</tr>
+<tr>
+<td>بلا بذور</td>
+<td>ubuntu-24.04-beta-live-server-s390x</td>
+<td><code translate="no" v-pre>queued</code>@0.0 <code translate="no" v-pre>downloading</code>@3.1 ولا شيء بعد ذلك</td>
+<td><strong>توقف عند 907.6 ث وما زال <code translate="no" v-pre>downloading</code></strong>. هذا هو شكل التعليق</td>
+</tr>
+<tr>
+<td>بلا بيانات وصفية</td>
+<td>40 رقماً سداسياً عشرياً عشوائياً</td>
+<td><code translate="no" v-pre>magnet_conversion</code>@0.0 <code translate="no" v-pre>magnet_error</code>@317.9</td>
+<td>فشل</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="the-cached-add-latency">زمن الإضافة المخزنة مؤقتاً</h3>
+<p>هذا هو الرقم الذي يقوم عليه وضع الطبقة الوسيطة الخاص بالتورنتات المخزَّنة مؤقتًا فقط.</p>
+<retype-table copy-text="| التورنت | addMagnet returns | selectFiles returns | أول `/torrents/info` | الحالة |
+|---|---|---|---|---|
+| Big Buck Bunny | t=0 | t+1.211 s | t+1.318 s | `downloaded` |
+| Sintel | t=0 | t+0.632 s | t+0.729 s | `downloaded` |
+| Ubuntu 26.04.1 | t=0 | t+0.215 s | t+0.320 s | `downloaded` |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>التورنت</th>
+<th>addMagnet returns</th>
+<th>selectFiles returns</th>
+<th>أول <code translate="no" v-pre>/torrents/info</code></th>
+<th>الحالة</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Big Buck Bunny</td>
+<td>t=0</td>
+<td>t+1.211 s</td>
+<td>t+1.318 s</td>
+<td><code translate="no" v-pre>downloaded</code></td>
+</tr>
+<tr>
+<td>Sintel</td>
+<td>t=0</td>
+<td>t+0.632 s</td>
+<td>t+0.729 s</td>
+<td><code translate="no" v-pre>downloaded</code></td>
+</tr>
+<tr>
+<td>Ubuntu 26.04.1</td>
+<td>t=0</td>
+<td>t+0.215 s</td>
+<td>t+0.320 s</td>
+<td><code translate="no" v-pre>downloaded</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>ما لاحظناه.</strong> التورنت المخزَّن مؤقتًا يصبح <code translate="no" v-pre>downloaded</code> عند أول قراءة مباشرة بعد <code translate="no" v-pre>selectFiles</code>. كامل التكلفة المتزامنة هي طلبان ذهابًا وإيابًا فقط. لا يمرّ أبدًا بالحالة <code translate="no" v-pre>queued</code> ولا بالحالة <code translate="no" v-pre>downloading</code>.</p>
+<p>شغّلنا تجربة ثانية استعلمنا فيها <code translate="no" v-pre>/torrents/info</code> كل 0.25 s في الفترة الفاصلة بين <code translate="no" v-pre>addMagnet</code> و<code translate="no" v-pre>selectFiles</code>، وكذلك بعدها. هذا ما يفعله <code translate="no" v-pre>--rd-select-detail</code>، وهو يحسم الشكل النهائي.</p>
+<retype-table copy-text="| التورنت | الحالة قبل `selectFiles` | `selectFiles` | أول قراءة بعده | من addMagnet إلى `downloaded` |
+|---|---|---|---|---|
+| Big Buck Bunny | `waiting_files_selection` مع 3 ملفات مدرجة و`links` فارغ | 204 عند t+1.314 s | `downloaded` `progress` 100 `links` 1 | **1.535 s** |
+| Sintel | `waiting_files_selection` مع 11 ملفًا مدرجًا | 204 عند t+0.627 s | `downloaded` `progress` 100 `links` 1 | **0.841 s** |
+| Ubuntu 26.04.1 | `waiting_files_selection` مع ملف واحد مدرج | 204 عند t+0.219 s | `downloaded` `progress` 100 `links` 1 | **0.430 s** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>التورنت</th>
+<th>الحالة قبل <code translate="no" v-pre>selectFiles</code></th>
+<th><code translate="no" v-pre>selectFiles</code></th>
+<th>أول قراءة بعده</th>
+<th>من addMagnet إلى <code translate="no" v-pre>downloaded</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Big Buck Bunny</td>
+<td><code translate="no" v-pre>waiting_files_selection</code> مع 3 ملفات مدرجة و<code translate="no" v-pre>links</code> فارغ</td>
+<td>204 عند t+1.314 s</td>
+<td><code translate="no" v-pre>downloaded</code> <code translate="no" v-pre>progress</code> 100 <code translate="no" v-pre>links</code> 1</td>
+<td><strong>1.535 s</strong></td>
+</tr>
+<tr>
+<td>Sintel</td>
+<td><code translate="no" v-pre>waiting_files_selection</code> مع 11 ملفًا مدرجًا</td>
+<td>204 عند t+0.627 s</td>
+<td><code translate="no" v-pre>downloaded</code> <code translate="no" v-pre>progress</code> 100 <code translate="no" v-pre>links</code> 1</td>
+<td><strong>0.841 s</strong></td>
+</tr>
+<tr>
+<td>Ubuntu 26.04.1</td>
+<td><code translate="no" v-pre>waiting_files_selection</code> مع ملف واحد مدرج</td>
+<td>204 عند t+0.219 s</td>
+<td><code translate="no" v-pre>downloaded</code> <code translate="no" v-pre>progress</code> 100 <code translate="no" v-pre>links</code> 1</td>
+<td><strong>0.430 s</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>إذن التسلسل الكامل للتورنت المخزَّن مؤقتًا هو <code translate="no" v-pre>waiting_files_selection</code> ثم <code translate="no" v-pre>downloaded</code>، ولا شيء بينهما. قائمة الملفات موجودة أصلًا قبل <code translate="no" v-pre>selectFiles</code>. و<code translate="no" v-pre>links</code> هو ما يملؤه <code translate="no" v-pre>selectFiles</code>.</p>
+<p><strong>يمكن أن تكون نافذة الفحص للتخزين المؤقت فقط استعلامًا واحدًا.</strong> تراوحت المدة من البداية للنهاية بين 0.43 s و1.54 s عبر ثلاثة تورنتات بأحجام 123 MiB و264 MiB و6.04 GiB. ونافذة مدتها ثانيتان مع استعلام كل ربع ثانية سخية.</p>
+<p>ومقارنةً بالـ100 s التي تسمح بها Sonarr وRadarr لاستدعاء <code translate="no" v-pre>torrents/add</code> (انظر <a href="../qbittorrent-client-contract/">qbittorrent-client-contract.md §1.7a</a>)، فإن نافذة فحص مدتها ثانيتان تقريبًا لا تكلّف شيئًا. ولا يوجد سبب لضبطها بعشرات الثواني.</p>
+<p>(تم رفض ترجمة سابقة لأن الأكواد المكتوبة بين علامات الاقتباس الخلفية كانت مختلفة. حافظ على البنية تمامًا كما هي.)</p>
+<h3 id="quirks-a-stage-mapper-has-to-survive">أمور غريبة على مُحوِّل المرحلة أن يتعامل معها</h3>
+<ul>
+<li>
+<p><strong><code translate="no" v-pre>selectFiles</code> يُرجع 404 بينما التورنت ما زال في <code translate="no" v-pre>magnet_conversion</code>، والخطأ مُضلِّل.</strong>
+نص الاستجابة هو <code translate="no" v-pre>{&quot;error&quot;:&quot;parameter_missing&quot;,&quot;error_code&quot;:1,&quot;error_details&quot;:&quot;{files} is missing&quot;}</code> مع أنه أُرسل
+<code translate="no" v-pre>files=all</code>. ببساطة لا توجد ملفات لاختيارها بعد. هذا ليس فشلًا في الإضافة، والتورنت يبقى حيًا. كلتا التجربتين اللتين واجهتاه
+عاشتا 318 ثانية أخرى.</p>
+</li>
+<li>
+<p><strong>يمكن رفض هاش تورنت من تراكر خاص فورًا بدلًا من الانتظار 318 ثانية.</strong> الهاش وراء تقرير qBittorrent بتاريخ
+2026-08-31 (نسخة remux من CiNEPHiLES من أرشيف UNIT3D، <code translate="no" v-pre>45e1ec0d…</code>) أجاب <code translate="no" v-pre>magnet_error</code> مع صفر ملفات في أول قراءة بعد addMagnet، ولم تكن هناك أي فترة <code translate="no" v-pre>magnet_conversion</code> على الإطلاق، بل ثوانٍ فقط بعد الإضافة. سواء تعرّف Real-Debrid على الهاش أو فشل فيه سريعًا، فالنتيجة الملاحظة واحدة: الهاش الخاص ليس له سرب DHT، لذلك لا يمكن أن ينجح addMagnet معه أبدًا، ويُرجع selectFiles على النسخة الميتة الخطأ 404 المضلِّل أعلاه.</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>addTorrent</code> لا يتجاوز أي خطوة للمحتوى غير المخزّن مؤقتًا، لكنه يتجاوز كل شيء للمحتوى المخزّن.</strong> ملف <code translate="no" v-pre>.torrent</code> رُفع لمحتوى لا يملكه Real-Debrid (نسخة Big Buck Bunny من archive.org، متاحة للتحميل لكنها غير مخزّنة)، ذهب إلى <code translate="no" v-pre>magnet_conversion</code> كما لو كان magnet مجردًا، ولم يُستخدم بيانات الملف الوصفية للحل. أما الملف المخزّن (ISO من Ubuntu) فأجاب <code translate="no" v-pre>waiting_files_selection</code> مع قائمة ملفاته في أول قراءة، وتم اختياره، وانتهى <code translate="no" v-pre>downloaded</code> خلال ثانيتين، ولم يمر بـ <code translate="no" v-pre>magnet_conversion</code> أصلًا. إذن قيمة الرفع تكمن في البحث الفوري من الهاش إلى التخزين المؤقت، وهذا ما يجعل إضافة إصدار من تراكر خاص ممكنة متى كان المحتوى مخزّنًا، ومستحيلة أبدًا كـ magnet.</p>
+</li>
+<li>
+<p><strong>حل البيانات الوصفية يستسلم بعد 318 ثانية.</strong> تجربتان مستقلتان انتقلتا من <code translate="no" v-pre>magnet_conversion</code> إلى <code translate="no" v-pre>magnet_error</code> عند 317.9 ثانية و318.0 ثانية. هذا هو الحد الذي يصل إليه أي magnet لا توجد له نظراء يمكن الوصول إليهم. والأمر نفسه سواء وُجد تورنت للهاش أم لم يوجد.</p>
+</li>
+<li>
+<p><strong><code translate="no" v-pre>seeders</code> يكذب أثناء <code translate="no" v-pre>magnet_conversion</code>.</strong> الهاش العشوائي المكوّن من 40 حرفًا سداسيًا عشريًا أبلغ عن <code translate="no" v-pre>seeders: 1</code> عند 80.9 ثانية. لا يوجد تورنت لهذا الهاش أصلًا.</p>
+</li>
+<li>
+<p><strong>حقل <code translate="no" v-pre>ended</code> لتورنت مخزّن أُضيف حديثًا يحمل تاريخًا قديمًا.</strong> تحتوي اللقطات على <code translate="no" v-pre>2025-12-28</code> و<code translate="no" v-pre>2026-07-28</code> لتورنتات أُضيفت بتاريخ 2026-08-30. هذا هو التاريخ الذي امتلك فيه Real-Debrid المحتوى لأول مرة، لا وقت انتهاء هذه النسخة. لا تحسب عمر التورنت منه.</p>
+</li>
+<li>
+<p><strong>عنصر webseed فقط يُضاف كـ magnet بلا نظراء ينتهي في حل البيانات الوصفية ولا يصل إلى الـ webseed أبدًا.</strong> Real-Debrid يحترم الـ webseeds بمجرد أن يحصل على التورنت. لكنه لا يستطيع الحصول على التورنت من magnet بلا نظراء. لذلك ينتهي العنصر الذي يحتوي على webseed فقط ويُضاف كـ magnet بحالة <code translate="no" v-pre>magnet_error</code>. وهذا فشل في البيانات الوصفية وليس فشلًا في الـ webseed، والاثنان يبدوان متطابقين من <code translate="no" v-pre>/torrents/info</code>.</p>
+</li>
+</ul>
+<h2 id="alldebrid">AllDebrid</h2>
+<h3 id="endpoints-1">نقاط النهاية</h3>
+<p><code translate="no" v-pre>v4</code> و<code translate="no" v-pre>v4.1</code> ليستا قابلتين للتبادل، وكان الفرق بينهما مؤثرًا في هذه الحملة.</p>
+<div id="endpoints-1-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">POST /v4/magnet/upload      magnets[]=magnet:?xt=urn:btih:&lt;hash&gt;   -&gt; 200, per-magnet `ready` flag
+POST /v4/magnet/upload/file multipart files[]=&lt;the .torrent&gt;       -&gt; 200, per-file `ready` flag
+GET  /v4.1/magnet/status?id=&lt;id&gt;                                   -&gt; 200, data.magnets is an OBJECT
+GET  /v4.1/magnet/status                                           -&gt; 200, data.magnets is a LIST
+POST /v4/magnet/delete      id=&lt;id&gt;                                -&gt; 200</code></pre>
+</doc-codeblock></div>
+<p><strong>يردّ رفع الملفات تحت <code translate="no" v-pre>files</code>، وليس <code translate="no" v-pre>magnets</code>.</strong> الحقول نفسها لكل عنصر: <code translate="no" v-pre>id</code>، <code translate="no" v-pre>hash</code>، <code translate="no" v-pre>name</code>، <code translate="no" v-pre>ready</code>، و<code translate="no" v-pre>error</code> اختياري لكل عنصر. لذلك فإن علامة <code translate="no" v-pre>ready</code> أدناه هي إجابة الذاكرة المؤقتة في الحالتين، لكن أداة فك الترميز المكتوبة لاستجابة الـ magnet ستقرأ قائمة فارغة.</p>
+<p><strong>والملف هو الشكل الوحيد للإصدار الذي يستطيع AllDebrid وصفه دون swarm.</strong> تم القياس بتاريخ 2026-09-01 على حساب الاختبار، باستخدام تورنتين خاصين اصطناعيين من الشكل نفسه، وتجزئتاهما لم يرهما أي swarm من قبل. عند رفعهما كملفات عادا بأسمائهما الحقيقية وأحجامهما الحقيقية (<code translate="no" v-pre>&quot;name&quot;:&quot;zurg.private.ad.probe&quot;,&quot;size&quot;:65536</code>)، وظهرا في القائمة بحالة <code translate="no" v-pre>In queue</code> والعدّاد لم يبدأ بعد. أما عند إرسالهما كتجزئة <code translate="no" v-pre>magnets[]</code> مجردة فكانت الإجابة <code translate="no" v-pre>&quot;name&quot;:&quot;noname&quot;,&quot;size&quot;:0</code>. قبِل AllDebrid التجزئة ولم تكن لديه عنها أي معلومة، وهذا ما يحدث لكل إصدار من متتبعات خاصة يُضاف بالتجزئة.</p>
+<p><strong>نقطة <code translate="no" v-pre>/v4/magnet/status</code> لم تعد موجودة.</strong> سواء أُرسل معرّف أم لا، ترد بـ HTTP 200 مع <code translate="no" v-pre>{&quot;status&quot;:&quot;error&quot;,&quot;error&quot;:{&quot;code&quot;:&quot;DISCONTINUED&quot;},&quot;deprecated&quot;:true}</code>. أما <code translate="no" v-pre>/v4/magnet/upload</code> و<code translate="no" v-pre>/v4/magnet/delete</code> فما زالتا تعملان. لذلك فافتراض الخطة بأن نقطة الحالة في v4 يمكن استخدامها، وأن v4.1 تُعاين مرة واحدة للمقارنة، كان خاطئًا. فـv4.1 هي نقطة الحالة الوحيدة، والأداة تسجّل قراءة v4 واحدة لكل تورنت، حتى يحمل التسجيل الدليل لا مجرد الادعاء.</p>
+<p>المصادقة تتم عبر <code translate="no" v-pre>Authorization: Bearer &lt;apikey&gt;</code>. لا حاجة إلى معامل <code translate="no" v-pre>agent</code>.</p>
+<h3 id="status-values-observed-1">قيم الحالة التي لوحظت</h3>
+<retype-table copy-text="| `statusCode` | `status` | شوهدت |
+|---|---|---|
+| 0 | `In queue` | نعم |
+| 1 | `Downloading` | نعم |
+| 2 | `Compressing / Moving` | **لا** |
+| 3 | `Uploading` | نعم |
+| 4 | `Ready` | نعم |
+| 5 فما فوق | أكواد الخطأ | **لا** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th><code translate="no" v-pre>statusCode</code></th>
+<th><code translate="no" v-pre>status</code></th>
+<th>شوهدت</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code translate="no" v-pre>In queue</code></td>
+<td>نعم</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code translate="no" v-pre>Downloading</code></td>
+<td>نعم</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code translate="no" v-pre>Compressing / Moving</code></td>
+<td><strong>لا</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code translate="no" v-pre>Uploading</code></td>
+<td>نعم</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code translate="no" v-pre>Ready</code></td>
+<td>نعم</td>
+</tr>
+<tr>
+<td>5 فما فوق</td>
+<td>أكواد الخطأ</td>
+<td><strong>لا</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="which-wire-fields-exist-in-which-status-1">أي حقول الشبكة تظهر في أي حالة</h3>
+<retype-table copy-text="| الحقل | In queue (0) | Downloading (1) | Uploading (3) | Ready (4) |
+|---|---|---|---|---|
+| `status` / `statusCode` | نعم | نعم | نعم | نعم |
+| `version` | 1 | 2 | 2 | 2 |
+| `filename` | `&quot;noname&quot;` حتى تصل البيانات الوصفية | الاسم الحقيقي بعد وصول البيانات الوصفية | الاسم الحقيقي | الاسم الحقيقي |
+| `size` | 0 حتى تصل البيانات الوصفية | الحجم الحقيقي | الحجم الحقيقي | الحجم الحقيقي |
+| `downloaded` | 0 | **رقم التقدم، بالبايت** | يساوي `size` | **غير موجود** |
+| `downloadSpeed` | 0 | نعم، بايت في الثانية | 0 | **غير موجود** |
+| `seeders` | 0 | نعم | 0 | **غير موجود** |
+| `uploaded` / `uploadSpeed` | 0 | 0 | **رقم التقدم لهذه المرحلة** | **غير موجود** |
+| `processingPerc` | 0 | 0 | 0 | **غير موجود** |
+| `files` / `nbLinks` | غير موجود | غير موجود | غير موجود | موجود |
+| `completionDate` | 0 | 0 | 0 | مضبوط |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>الحقل</th>
+<th>In queue (0)</th>
+<th>Downloading (1)</th>
+<th>Uploading (3)</th>
+<th>Ready (4)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>status</code> / <code translate="no" v-pre>statusCode</code></td>
+<td>نعم</td>
+<td>نعم</td>
+<td>نعم</td>
+<td>نعم</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>version</code></td>
+<td>1</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>filename</code></td>
+<td><code translate="no" v-pre>&quot;noname&quot;</code> حتى تصل البيانات الوصفية</td>
+<td>الاسم الحقيقي بعد وصول البيانات الوصفية</td>
+<td>الاسم الحقيقي</td>
+<td>الاسم الحقيقي</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>size</code></td>
+<td>0 حتى تصل البيانات الوصفية</td>
+<td>الحجم الحقيقي</td>
+<td>الحجم الحقيقي</td>
+<td>الحجم الحقيقي</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloaded</code></td>
+<td>0</td>
+<td><strong>رقم التقدم، بالبايت</strong></td>
+<td>يساوي <code translate="no" v-pre>size</code></td>
+<td><strong>غير موجود</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloadSpeed</code></td>
+<td>0</td>
+<td>نعم، بايت في الثانية</td>
+<td>0</td>
+<td><strong>غير موجود</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>seeders</code></td>
+<td>0</td>
+<td>نعم</td>
+<td>0</td>
+<td><strong>غير موجود</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>uploaded</code> / <code translate="no" v-pre>uploadSpeed</code></td>
+<td>0</td>
+<td>0</td>
+<td><strong>رقم التقدم لهذه المرحلة</strong></td>
+<td><strong>غير موجود</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>processingPerc</code></td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td><strong>غير موجود</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>files</code> / <code translate="no" v-pre>nbLinks</code></td>
+<td>غير موجود</td>
+<td>غير موجود</td>
+<td>غير موجود</td>
+<td>موجود</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>completionDate</code></td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>مضبوط</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>لا توجد نسبة مئوية في أي مكان.</strong> التقدم على AllDebrid هو <code translate="no" v-pre>downloaded / size</code> وكلاهما أعداد صحيحة بالبايت.
+بقيت <code translate="no" v-pre>processingPerc</code> تساوي 0 في كل حالة وفي كل لقطة.</p>
+<p><code translate="no" v-pre>Uploading</code> تعني أن AllDebrid تنقل التحميل المكتمل إلى مساحتها التخزينية الخاصة. لها عداد تقدم خاص بها في <code translate="no" v-pre>uploaded</code> و<code translate="no" v-pre>uploadSpeed</code>، و<code translate="no" v-pre>downloadSpeed</code> تساوي 0 طوال المرحلة. قاعدة الكشف عن التوقف التي تراقب <code translate="no" v-pre>downloaded</code> فقط ستعتبر مرحلة <code translate="no" v-pre>Uploading</code> السليمة متوقفة.</p>
+<h3 id="what-each-case-did-1">ما الذي فعلته كل حالة</h3>
+<retype-table copy-text="| الحالة | التورّنت | `ready` عند الرفع | الانتقالات بالثواني منذ الإضافة | الحكم |
+|---|---|---|---|---|
+| مخزّن | Big Buck Bunny | true | `Ready`@0.0 | انتهى في 0.11 s |
+| مخزّن | Sintel | true | `Ready`@0.0 | انتهى في 0.12 s |
+| مخزّن | Ubuntu 26.04.1 | true | `Ready`@0.0 | انتهى في 0.11 s |
+| غير مخزّن | Debian 13.6.0 arm64 DVD-1 | true | `Ready`@0.0 | مخزّن مسبقًا |
+| غير مخزّن | Debian 13.2.0 amd64 DVD-1 | false | `In queue`@0.0 `Downloading`@12.5 وكل العدّادات صفر حتى 634.9 `Uploading`@650.1 `Ready`@876.9 | انتهى في 877 s |
+| webseed | Prelinger home movie | false | `In queue`@0.0 `Downloading`@6.3 وكل العدّادات صفر بعد ذلك | **انتهت المهلة عند 907.8 s وما زالت `Downloading`** |
+| بلا بذور | ubuntu-16.04.6-desktop-i386 | false | `In queue`@0.0 `Downloading`@9.4 وكل العدّادات صفر حتى 589.6 `Uploading`@619.9 `Ready`@650.2 | انتهى في 650 s |
+| بلا بذور | ubuntu-24.04-beta-live-server-s390x | false | `In queue`@0.0 `Downloading`@3.2 وكل العدّادات صفر بعد ذلك | **انتهت المهلة عند 907.0 s وما زالت `Downloading`** |
+| بلا بيانات وصفية | 40-hex عشوائي | false | `In queue`@0.0 `Downloading`@9.4 وكل العدّادات صفر بعد ذلك | **انتهت المهلة عند 907.4 s وما زالت `Downloading`** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>الحالة</th>
+<th>التورّنت</th>
+<th><code translate="no" v-pre>ready</code> عند الرفع</th>
+<th>الانتقالات بالثواني منذ الإضافة</th>
+<th>الحكم</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>مخزّن</td>
+<td>Big Buck Bunny</td>
+<td>true</td>
+<td><code translate="no" v-pre>Ready</code>@0.0</td>
+<td>انتهى في 0.11 s</td>
+</tr>
+<tr>
+<td>مخزّن</td>
+<td>Sintel</td>
+<td>true</td>
+<td><code translate="no" v-pre>Ready</code>@0.0</td>
+<td>انتهى في 0.12 s</td>
+</tr>
+<tr>
+<td>مخزّن</td>
+<td>Ubuntu 26.04.1</td>
+<td>true</td>
+<td><code translate="no" v-pre>Ready</code>@0.0</td>
+<td>انتهى في 0.11 s</td>
+</tr>
+<tr>
+<td>غير مخزّن</td>
+<td>Debian 13.6.0 arm64 DVD-1</td>
+<td>true</td>
+<td><code translate="no" v-pre>Ready</code>@0.0</td>
+<td>مخزّن مسبقًا</td>
+</tr>
+<tr>
+<td>غير مخزّن</td>
+<td>Debian 13.2.0 amd64 DVD-1</td>
+<td>false</td>
+<td><code translate="no" v-pre>In queue</code>@0.0 <code translate="no" v-pre>Downloading</code>@12.5 وكل العدّادات صفر حتى 634.9 <code translate="no" v-pre>Uploading</code>@650.1 <code translate="no" v-pre>Ready</code>@876.9</td>
+<td>انتهى في 877 s</td>
+</tr>
+<tr>
+<td>webseed</td>
+<td>Prelinger home movie</td>
+<td>false</td>
+<td><code translate="no" v-pre>In queue</code>@0.0 <code translate="no" v-pre>Downloading</code>@6.3 وكل العدّادات صفر بعد ذلك</td>
+<td><strong>انتهت المهلة عند 907.8 s وما زالت <code translate="no" v-pre>Downloading</code></strong></td>
+</tr>
+<tr>
+<td>بلا بذور</td>
+<td>ubuntu-16.04.6-desktop-i386</td>
+<td>false</td>
+<td><code translate="no" v-pre>In queue</code>@0.0 <code translate="no" v-pre>Downloading</code>@9.4 وكل العدّادات صفر حتى 589.6 <code translate="no" v-pre>Uploading</code>@619.9 <code translate="no" v-pre>Ready</code>@650.2</td>
+<td>انتهى في 650 s</td>
+</tr>
+<tr>
+<td>بلا بذور</td>
+<td>ubuntu-24.04-beta-live-server-s390x</td>
+<td>false</td>
+<td><code translate="no" v-pre>In queue</code>@0.0 <code translate="no" v-pre>Downloading</code>@3.2 وكل العدّادات صفر بعد ذلك</td>
+<td><strong>انتهت المهلة عند 907.0 s وما زالت <code translate="no" v-pre>Downloading</code></strong></td>
+</tr>
+<tr>
+<td>بلا بيانات وصفية</td>
+<td>40-hex عشوائي</td>
+<td>false</td>
+<td><code translate="no" v-pre>In queue</code>@0.0 <code translate="no" v-pre>Downloading</code>@9.4 وكل العدّادات صفر بعد ذلك</td>
+<td><strong>انتهت المهلة عند 907.4 s وما زالت <code translate="no" v-pre>Downloading</code></strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>شغّلنا تجربة منفصلة على Debian 13.3.0 arm64 DVD-1 (<code translate="no" v-pre>6aa9b0a4709a0d6c4982fd0363614d9006877223</code>) والتقطت دورة حياة كاملة لتورّنت غير مخزّن، وهي التسلسل المرجعي.</p>
+<retype-table copy-text="| الثواني | الحالة | ما الذي تغيّر |
+|---|---|---|
+| 0.0 | `In queue` 0 version 1 | `filename` هو `&quot;noname&quot;` و`size` هو 0 |
+| 2.2 | `Downloading` 1 version 2 | ما زال بلا اسم ولا حجم |
+| 4.3 | `Downloading` | يتم حل `filename` و`size` |
+| 6.5 إلى 55.1 | `Downloading` | يرتفع `downloaded` حتى يصل إلى `size`. تبلغ `downloadSpeed` ذروتها قرب 110 MB/s. `seeders` من 8 إلى 9 |
+| 57.2 | `Uploading` 3 | تنخفض `downloadSpeed` إلى 0. تبدأ `uploadSpeed` و`uploaded` بالارتفاع |
+| 65.6 | `Ready` 4 | يظهر `files` و`nbLinks`. تختفي ستة حقول تقدّم |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>الثواني</th>
+<th>الحالة</th>
+<th>ما الذي تغيّر</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.0</td>
+<td><code translate="no" v-pre>In queue</code> 0 version 1</td>
+<td><code translate="no" v-pre>filename</code> هو <code translate="no" v-pre>&quot;noname&quot;</code> و<code translate="no" v-pre>size</code> هو 0</td>
+</tr>
+<tr>
+<td>2.2</td>
+<td><code translate="no" v-pre>Downloading</code> 1 version 2</td>
+<td>ما زال بلا اسم ولا حجم</td>
+</tr>
+<tr>
+<td>4.3</td>
+<td><code translate="no" v-pre>Downloading</code></td>
+<td>يتم حل <code translate="no" v-pre>filename</code> و<code translate="no" v-pre>size</code></td>
+</tr>
+<tr>
+<td>6.5 إلى 55.1</td>
+<td><code translate="no" v-pre>Downloading</code></td>
+<td>يرتفع <code translate="no" v-pre>downloaded</code> حتى يصل إلى <code translate="no" v-pre>size</code>. تبلغ <code translate="no" v-pre>downloadSpeed</code> ذروتها قرب 110 MB/s. <code translate="no" v-pre>seeders</code> من 8 إلى 9</td>
+</tr>
+<tr>
+<td>57.2</td>
+<td><code translate="no" v-pre>Uploading</code> 3</td>
+<td>تنخفض <code translate="no" v-pre>downloadSpeed</code> إلى 0. تبدأ <code translate="no" v-pre>uploadSpeed</code> و<code translate="no" v-pre>uploaded</code> بالارتفاع</td>
+</tr>
+<tr>
+<td>65.6</td>
+<td><code translate="no" v-pre>Ready</code> 4</td>
+<td>يظهر <code translate="no" v-pre>files</code> و<code translate="no" v-pre>nbLinks</code>. تختفي ستة حقول تقدّم</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>3.72 GiB في 65.6 s.</p>
+<h3 id="alldebrid-reports-no-progress-at-all-while-a-job-waits-for-its-own-infrastructure">AllDebrid لا يُظهر أي تقدم إطلاقاً أثناء انتظار الjob للبنية التحتية الخاصة به</h3>
+<p>هذه هي النتيجة التي تغيّر تصميم المهلة الزمنية أكثر من غيرها، ولم نثق بها إلا بعد تشغيلين مستقلين.</p>
+<p><code translate="no" v-pre>Downloading</code> مع <code translate="no" v-pre>statusCode</code> 1 يظهر خلال ثوانٍ من الرفع. ولفترة بعد ذلك يُبلغ AllDebrid عن <code translate="no" v-pre>downloaded</code> 0 و<code translate="no" v-pre>downloadSpeed</code> 0 و<code translate="no" v-pre>seeders</code> 0 و<code translate="no" v-pre>uploaded</code> 0 و<code translate="no" v-pre>uploadSpeed</code> 0 و<code translate="no" v-pre>processingPerc</code> 0. كما يعيد <code translate="no" v-pre>size</code> إلى 0 و<code translate="no" v-pre>filename</code> إلى الـ info hash، حتى لو كان قد أبلغ عن الاثنين بشكل صحيح من قبل.</p>
+<retype-table copy-text="| التشغيل | المدة التي بقيت فيها كل العدادات على الصفر | ما حدث بعد ذلك |
+|---|---|---|
+| Debian 13.2.0 amd64 DVD-1 | **622 s** من 12.5 s إلى 634.9 s | تم تنزيل 3.71 GiB خلال 15 s، ثم `Uploading`، ثم `Ready` عند 876.9 s |
+| ubuntu-16.04.6-desktop-i386 | **580 s** من 9.4 s إلى 589.6 s | تم تنزيل 1.56 GiB خلال 30 s، ثم `Uploading`، ثم `Ready` عند 650.2 s |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>التشغيل</th>
+<th>المدة التي بقيت فيها كل العدادات على الصفر</th>
+<th>ما حدث بعد ذلك</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Debian 13.2.0 amd64 DVD-1</td>
+<td><strong>622 s</strong> من 12.5 s إلى 634.9 s</td>
+<td>تم تنزيل 3.71 GiB خلال 15 s، ثم <code translate="no" v-pre>Uploading</code>، ثم <code translate="no" v-pre>Ready</code> عند 876.9 s</td>
+</tr>
+<tr>
+<td>ubuntu-16.04.6-desktop-i386</td>
+<td><strong>580 s</strong> من 9.4 s إلى 589.6 s</td>
+<td>تم تنزيل 1.56 GiB خلال 30 s، ثم <code translate="no" v-pre>Uploading</code>، ثم <code translate="no" v-pre>Ready</code> عند 650.2 s</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>انتهى الاثنان بنجاح. ولم يُبلغ أي منهما عن بايت واحد من الحركة خلال أول عشر دقائق.</p>
+<p><strong>مهلة عشر دقائق بلا حركة ستُلغي مهام AllDebrid السليمة.</strong> القيمة الافتراضية المقترحة لـ <code translate="no" v-pre>download_timeout_mins</code> وهي 10 تقع داخل هذه النافذة في المرتين من أصل مرتين. لذلك إما أن تكون المهلة أطول من هذه النافذة، أو أن يُعامَل AllDebrid عند <code translate="no" v-pre>Downloading</code> مع <code translate="no" v-pre>size</code> 0 كمرحلة مستقلة لا تحتسب عليها الساعة. فخسارة الاسم والحجم هي طريقة AllDebrid في القول إن المهمة مُسندة لكنها لم تبدأ بعد، وليست فشلاً.</p>
+<p>التشغيل الذي بدأ فوراً هو ما يُبرز الفرق. فقد انتقل Debian 13.3.0 arm64 DVD-1 من <code translate="no" v-pre>In queue</code> إلى عدادات بايتات حقيقية خلال 6.5 s. إذن الانتظار هو طابور، وليس تأخيراً ثابتاً.</p>
+<h3 id="the-ready-flag-is-a-real-cache-answer">العلامة <code translate="no" v-pre>ready</code> إجابة حقيقية من الذاكرة المؤقتة</h3>
+<p>قيمة <code translate="no" v-pre>ready</code> في استجابة <code translate="no" v-pre>/v4/magnet/upload</code> كانت true لكل hash أكدت TorBox أنه مخزّن مؤقتاً، وكانت false للاثنين اللذين نزّلتهما الحملة. AllDebrid ليس عنده فحص cache منفصل، لذا هذا الـ flag هو إشارة الـ cache كلها. وzurg يمرّره الآن من مساري الإضافة، magnet ورفع الملف، كـ <code translate="no" v-pre>MagnetResponse.Cached</code> مع ضبط <code translate="no" v-pre>CacheKnown</code>، حتى لا يُعامَل backend لا يستطيع الإجابة على أنه أبلغ عن غياب النسخة المخزّنة.</p>
+<p><strong>قيمة <code translate="no" v-pre>ready</code> الـ false تعني أن الـ magnet مُضاف أصلاً.</strong> ليس هناك طريقة لتسأل AllDebrid إن كان hash مخزّناً دون إضافته. أي مسار يقتصر على الـ cached في AllDebrid يجب أن يحذف الـ miss.</p>
+<hr>
+<h2 id="torbox">TorBox</h2>
+<h3 id="endpoints-2">نقاط النهاية</h3>
+<div id="endpoints-2-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">GET  /v1/api/torrents/checkcached?hash=&lt;hash&gt;&amp;format=list
+POST /v1/api/torrents/createtorrent      magnet=…&amp;seed=3&amp;allow_zip=false   -&gt; {&quot;success&quot;:true,&quot;data&quot;:{&quot;torrent_id&quot;:N}}
+POST /v1/api/torrents/createtorrent      multipart file=&lt;the .torrent&gt;    -&gt; the same shape; `detail` says whether it was cached
+GET  /v1/api/torrents/mylist?id=&lt;id&gt;&amp;bypass_cache=true
+POST /v1/api/torrents/controltorrent     {&quot;torrent_id&quot;:N,&quot;operation&quot;:&quot;delete&quot;}</code></pre>
+</doc-codeblock></div>
+<h3 id="status-values-observed-2">قيم الحالة التي لوحظت</h3>
+<p><code translate="no" v-pre>metaDL</code> <code translate="no" v-pre>checking</code> <code translate="no" v-pre>stalledDL</code> <code translate="no" v-pre>stalled (no seeds)</code> <code translate="no" v-pre>downloading</code> <code translate="no" v-pre>processing</code>
+<code translate="no" v-pre>uploading (no peers)</code> <code translate="no" v-pre>uploading</code> <code translate="no" v-pre>cached</code></p>
+<p><code translate="no" v-pre>processing</code> and <code translate="no" v-pre>checking</code> and <code translate="no" v-pre>stalledDL</code> are <strong>not in zurg&#x27;s translation table</strong>
+(<code translate="no" v-pre>internal/torbox/types.go</code> <code translate="no" v-pre>normalizeStatus</code>). All three fall to the default branch and are reported
+as <code translate="no" v-pre>downloading</code>.</p>
+<p><code translate="no" v-pre>checking</code> is where TorBox waits for metadata and not where it verifies a hash. A magnet whose swarm
+never answers goes <code translate="no" v-pre>metaDL</code> then <code translate="no" v-pre>checking</code> and stays there. The random 40-hex hash was still
+<code translate="no" v-pre>checking</code> at the 910 s cap and so was the zero-peer Prelinger item at 911 s. TorBox never gives up
+the way Real-Debrid does at 318 s.</p>
+<p><strong>Uploading the <code translate="no" v-pre>.torrent</code> skips that wait entirely, and it is the whole difference for a private
+tracker&#x27;s release.</strong> Measured 2026-09-01 on the account above, the same synthetic private torrent
+sent both ways. As a hash: accepted with a <code translate="no" v-pre>torrent_id</code>, then <code translate="no" v-pre>checking</code> with <code translate="no" v-pre>name</code> set to the bare
+hash, <code translate="no" v-pre>size: -1</code>, <code translate="no" v-pre>files: null</code> and <code translate="no" v-pre>eta: 8640000</code> — TorBox looking for a swarm that is not in the
+DHT, which it will do until the cap and report nothing about. As the file, on
+<code translate="no" v-pre>POST /torrents/createtorrent</code> with the bytes in a multipart <code translate="no" v-pre>file</code> part: read back three seconds
+later carrying the torrent&#x27;s own name, its real size and <code translate="no" v-pre>stalled (no seeds)</code> — the same content
+nobody holds, but now described. The stage is the point. <code translate="no" v-pre>checking</code> with <code translate="no" v-pre>size: -1</code> maps to
+<code translate="no" v-pre>StageResolvingMetadata</code>, which says work is in progress and nothing can be concluded; <code translate="no" v-pre>stalled (no seeds)</code> maps to <code translate="no" v-pre>StageStalledNoPeers</code>, which the qBittorrent endpoint can act on. A cached release
+read back <code translate="no" v-pre>done</code> at 100% with its file list inside the same three seconds. The part name is
+load-bearing: a file sent under any other name is not seen at all, and the endpoint answers
+<code translate="no" v-pre>MISSING_REQUIRED_OPTION</code>, &quot;You must provide either a file or magnet link&quot;.</p>
+<h3 id="which-wire-fields-exist-in-which-status-2">أي حقول الشبكة تظهر في أي حالة</h3>
+<p>TorBox يرسل نفس مجموعة المفاتيح في كل حالة، ويغيّر القيم فقط. لذلك هو الأسهل في القراءة بين الثلاثة.
+القيم هي التي تحمل المعنى.</p>
+<retype-table copy-text="| الحالة | `download_finished` | `download_present` | `cached` | `active` | `progress` | `eta` | `size` |
+|---|---|---|---|---|---|---|---|
+| `metaDL` | false | false | false | true | 0 | 8640000 | 0 |
+| `checking` | false | false | false | true | 0 | 8640000 | **-1** |
+| `stalledDL` | false | false | false | true | صغيرة جداً | 8640000 | قيمة حقيقية |
+| `stalled (no seeds)` | false | false | false | true | 0 | 8640000 | قيمة حقيقية |
+| `downloading` | false ثم **true** | false | false | true | كسر | ثوانٍ | قيمة حقيقية |
+| `processing` | **true** | **false** | false | true | 1 | ثوانٍ | قيمة حقيقية |
+| `uploading (no peers)` | **true** | **false** | false | true | 1 | 2591994 | قيمة حقيقية |
+| `uploading` | true | **true** | true | true | 1 | 0 | قيمة حقيقية |
+| `cached` | true | true | true | false | 1 | 0 | قيمة حقيقية |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>الحالة</th>
+<th><code translate="no" v-pre>download_finished</code></th>
+<th><code translate="no" v-pre>download_present</code></th>
+<th><code translate="no" v-pre>cached</code></th>
+<th><code translate="no" v-pre>active</code></th>
+<th><code translate="no" v-pre>progress</code></th>
+<th><code translate="no" v-pre>eta</code></th>
+<th><code translate="no" v-pre>size</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>metaDL</code></td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+<td>true</td>
+<td>0</td>
+<td>8640000</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>checking</code></td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+<td>true</td>
+<td>0</td>
+<td>8640000</td>
+<td><strong>-1</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>stalledDL</code></td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+<td>true</td>
+<td>صغيرة جداً</td>
+<td>8640000</td>
+<td>قيمة حقيقية</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>stalled (no seeds)</code></td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+<td>true</td>
+<td>0</td>
+<td>8640000</td>
+<td>قيمة حقيقية</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloading</code></td>
+<td>false ثم <strong>true</strong></td>
+<td>false</td>
+<td>false</td>
+<td>true</td>
+<td>كسر</td>
+<td>ثوانٍ</td>
+<td>قيمة حقيقية</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>processing</code></td>
+<td><strong>true</strong></td>
+<td><strong>false</strong></td>
+<td>false</td>
+<td>true</td>
+<td>1</td>
+<td>ثوانٍ</td>
+<td>قيمة حقيقية</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>uploading (no peers)</code></td>
+<td><strong>true</strong></td>
+<td><strong>false</strong></td>
+<td>false</td>
+<td>true</td>
+<td>1</td>
+<td>2591994</td>
+<td>قيمة حقيقية</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>uploading</code></td>
+<td>true</td>
+<td><strong>true</strong></td>
+<td>true</td>
+<td>true</td>
+<td>1</td>
+<td>0</td>
+<td>قيمة حقيقية</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>cached</code></td>
+<td>true</td>
+<td>true</td>
+<td>true</td>
+<td>false</td>
+<td>1</td>
+<td>0</td>
+<td>قيمة حقيقية</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>أسماء الحقول. كانت الخطة تعتبر كل هذه الأسماء غير مُتحقَّق منها.</p>
+<retype-table copy-text="| المعلومة | حقل TorBox | الشكل |
+|---|---|---|
+| التقدم | `progress` | **كسر من الواحد**، وليس نسبة مئوية. `0.0793719` |
+| عدد البذّارين | `seeds` | عدد صحيح |
+| عدد الممتصّين | `peers` | عدد صحيح |
+| سرعة التنزيل | `download_speed` | بايت في الثانية |
+| سرعة الرفع | `upload_speed` | بايت في الثانية |
+| الوقت المتبقي | `eta` | ثوانٍ. الرقم `8640000` يعني أن القيمة غير معروفة |
+| البايتات المُنزَلة | `total_downloaded` | عدد صحيح |
+| صحة السرب | `availability` | عدد عشري. يصبح **-1** في `uploading (no peers)` |
+| مكان البيانات | `download_path` | null حتى تتوفر البيانات |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>المعلومة</th>
+<th>حقل TorBox</th>
+<th>الشكل</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>التقدم</td>
+<td><code translate="no" v-pre>progress</code></td>
+<td><strong>كسر من الواحد</strong>، وليس نسبة مئوية. <code translate="no" v-pre>0.0793719</code></td>
+</tr>
+<tr>
+<td>عدد البذّارين</td>
+<td><code translate="no" v-pre>seeds</code></td>
+<td>عدد صحيح</td>
+</tr>
+<tr>
+<td>عدد الممتصّين</td>
+<td><code translate="no" v-pre>peers</code></td>
+<td>عدد صحيح</td>
+</tr>
+<tr>
+<td>سرعة التنزيل</td>
+<td><code translate="no" v-pre>download_speed</code></td>
+<td>بايت في الثانية</td>
+</tr>
+<tr>
+<td>سرعة الرفع</td>
+<td><code translate="no" v-pre>upload_speed</code></td>
+<td>بايت في الثانية</td>
+</tr>
+<tr>
+<td>الوقت المتبقي</td>
+<td><code translate="no" v-pre>eta</code></td>
+<td>ثوانٍ. الرقم <code translate="no" v-pre>8640000</code> يعني أن القيمة غير معروفة</td>
+</tr>
+<tr>
+<td>البايتات المُنزَلة</td>
+<td><code translate="no" v-pre>total_downloaded</code></td>
+<td>عدد صحيح</td>
+</tr>
+<tr>
+<td>صحة السرب</td>
+<td><code translate="no" v-pre>availability</code></td>
+<td>عدد عشري. يصبح <strong>-1</strong> في <code translate="no" v-pre>uploading (no peers)</code></td>
+</tr>
+<tr>
+<td>مكان البيانات</td>
+<td><code translate="no" v-pre>download_path</code></td>
+<td>null حتى تتوفر البيانات</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><code translate="no" v-pre>8640000</code> هي 100 يوماً. هذه طريقة TorBox للقول إنه لا يعرف. وهي أيضاً نفس القيمة الثابتة التي تعطيها طبقة zurg المساعدة لـ Sonarr اليوم عندما لا يكون لديها ما تبلغ عنه.</p>
+<h3 id="what-each-case-did-2">ما الذي فعلته كل حالة</h3>
+<retype-table copy-text="| الحالة | التورنت | `checkcached` | الانتقالات مع الثواني منذ الإضافة | الحكم |
+|---|---|---|---|---|
+| cached | Big Buck Bunny | true | `cached`@0.0 | انتهى خلال 0.83 ث |
+| cached | Sintel | true | `cached`@0.0 | انتهى خلال 0.94 ث |
+| cached | Ubuntu 26.04.1 | true | `cached`@0.0 | انتهى خلال 0.69 ث |
+| uncached | Debian 13.6.0 arm64 DVD-1 | false | `metaDL`@0.0 `stalled (no seeds)`@7.3 `downloading`@24.1 ثم **اختفى**@48.6 | حذفه zurg الآخر عند 86.7% |
+| uncached | Debian 13.2.0 amd64 DVD-1 | false | `metaDL`@0.0 `stalled (no seeds)`@13.8 `downloading`@27.8 `processing`@69.4 `downloading`@72.7 `uploading (no peers)`@83.1 ثم **اختفى**@86.7 | حذفه zurg الآخر |
+| webseed | Prelinger home movie | false | `metaDL`@0.0 `checking`@23.3 ولم يحدث شيء آخر أبدًا | **عالق عند 911.3 ث في `checking`**. TorBox لم يستخدم الـ webseed |
+| seedless | ubuntu-16.04.6-desktop-i386 | false | `metaDL`@0.0 `checking`@10.5 `downloading`@20.6 `processing`@184.4 ثم **اختفى**@200.4 | حذفه zurg الآخر أثناء `processing` |
+| seedless | ubuntu-24.04-beta-live-server-s390x | false | `metaDL`@0.0 `checking`@18.9 `stalled (no seeds)`@169.3 `downloading`@230.9 ثم **اختفى**@462.3 | حذفه zurg الآخر عند 91.9 بالمئة |
+| nometa | 40-hex عشوائي | false | `metaDL`@0.0 `checking`@10.2 ولم يحدث شيء آخر أبدًا | **عالق عند 910.3 ث في `checking`** |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>الحالة</th>
+<th>التورنت</th>
+<th><code translate="no" v-pre>checkcached</code></th>
+<th>الانتقالات مع الثواني منذ الإضافة</th>
+<th>الحكم</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cached</td>
+<td>Big Buck Bunny</td>
+<td>true</td>
+<td><code translate="no" v-pre>cached</code>@0.0</td>
+<td>انتهى خلال 0.83 ث</td>
+</tr>
+<tr>
+<td>cached</td>
+<td>Sintel</td>
+<td>true</td>
+<td><code translate="no" v-pre>cached</code>@0.0</td>
+<td>انتهى خلال 0.94 ث</td>
+</tr>
+<tr>
+<td>cached</td>
+<td>Ubuntu 26.04.1</td>
+<td>true</td>
+<td><code translate="no" v-pre>cached</code>@0.0</td>
+<td>انتهى خلال 0.69 ث</td>
+</tr>
+<tr>
+<td>uncached</td>
+<td>Debian 13.6.0 arm64 DVD-1</td>
+<td>false</td>
+<td><code translate="no" v-pre>metaDL</code>@0.0 <code translate="no" v-pre>stalled (no seeds)</code>@7.3 <code translate="no" v-pre>downloading</code>@24.1 ثم <strong>اختفى</strong>@48.6</td>
+<td>حذفه zurg الآخر عند 86.7%</td>
+</tr>
+<tr>
+<td>uncached</td>
+<td>Debian 13.2.0 amd64 DVD-1</td>
+<td>false</td>
+<td><code translate="no" v-pre>metaDL</code>@0.0 <code translate="no" v-pre>stalled (no seeds)</code>@13.8 <code translate="no" v-pre>downloading</code>@27.8 <code translate="no" v-pre>processing</code>@69.4 <code translate="no" v-pre>downloading</code>@72.7 <code translate="no" v-pre>uploading (no peers)</code>@83.1 ثم <strong>اختفى</strong>@86.7</td>
+<td>حذفه zurg الآخر</td>
+</tr>
+<tr>
+<td>webseed</td>
+<td>Prelinger home movie</td>
+<td>false</td>
+<td><code translate="no" v-pre>metaDL</code>@0.0 <code translate="no" v-pre>checking</code>@23.3 ولم يحدث شيء آخر أبدًا</td>
+<td><strong>عالق عند 911.3 ث في <code translate="no" v-pre>checking</code></strong>. TorBox لم يستخدم الـ webseed</td>
+</tr>
+<tr>
+<td>seedless</td>
+<td>ubuntu-16.04.6-desktop-i386</td>
+<td>false</td>
+<td><code translate="no" v-pre>metaDL</code>@0.0 <code translate="no" v-pre>checking</code>@10.5 <code translate="no" v-pre>downloading</code>@20.6 <code translate="no" v-pre>processing</code>@184.4 ثم <strong>اختفى</strong>@200.4</td>
+<td>حذفه zurg الآخر أثناء <code translate="no" v-pre>processing</code></td>
+</tr>
+<tr>
+<td>seedless</td>
+<td>ubuntu-24.04-beta-live-server-s390x</td>
+<td>false</td>
+<td><code translate="no" v-pre>metaDL</code>@0.0 <code translate="no" v-pre>checking</code>@18.9 <code translate="no" v-pre>stalled (no seeds)</code>@169.3 <code translate="no" v-pre>downloading</code>@230.9 ثم <strong>اختفى</strong>@462.3</td>
+<td>حذفه zurg الآخر عند 91.9 بالمئة</td>
+</tr>
+<tr>
+<td>nometa</td>
+<td>40-hex عشوائي</td>
+<td>false</td>
+<td><code translate="no" v-pre>metaDL</code>@0.0 <code translate="no" v-pre>checking</code>@10.2 ولم يحدث شيء آخر أبدًا</td>
+<td><strong>عالق عند 910.3 ث في <code translate="no" v-pre>checking</code></strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>تشغيل منفصل بفاصل استطلاع 0.5 ث على Debian 13.5.0 amd64 netinst (<code translate="no" v-pre>58846860f0a766f8a42b0bb214d8c713fdf1b167</code>) صمد وقتًا كافيًا ليصل إلى مرحلة الانتهاء، وهو التسلسل المرجعي.</p>
+<retype-table copy-text="| الثواني | الحالة | `download_finished` | `download_present` | `progress` |
+|---|---|---|---|---|
+| 0.0 | `stalledDL` | false | false | 0.000289735 |
+| 16.3 | `downloading` | false | false | 0.0608651 |
+| 54.8 | `processing` | **true** | **false** | 1 |
+| 59.1 | `downloading` | **true** | **false** | 0.997972 |
+| 64.4 | `uploading` | true | **true** | 1 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>الثواني</th>
+<th>الحالة</th>
+<th><code translate="no" v-pre>download_finished</code></th>
+<th><code translate="no" v-pre>download_present</code></th>
+<th><code translate="no" v-pre>progress</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.0</td>
+<td><code translate="no" v-pre>stalledDL</code></td>
+<td>false</td>
+<td>false</td>
+<td>0.000289735</td>
+</tr>
+<tr>
+<td>16.3</td>
+<td><code translate="no" v-pre>downloading</code></td>
+<td>false</td>
+<td>false</td>
+<td>0.0608651</td>
+</tr>
+<tr>
+<td>54.8</td>
+<td><code translate="no" v-pre>processing</code></td>
+<td><strong>true</strong></td>
+<td><strong>false</strong></td>
+<td>1</td>
+</tr>
+<tr>
+<td>59.1</td>
+<td><code translate="no" v-pre>downloading</code></td>
+<td><strong>true</strong></td>
+<td><strong>false</strong></td>
+<td>0.997972</td>
+</tr>
+<tr>
+<td>64.4</td>
+<td><code translate="no" v-pre>uploading</code></td>
+<td>true</td>
+<td><strong>true</strong></td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>754 MiB خلال 64.4 ث.</p>
+<p>اقرأ الصفوف الثلاثة الأخيرة مرتين. يضبط TorBox القيمة <code translate="no" v-pre>download_finished</code> على true والقيمة <code translate="no" v-pre>progress</code> على 1 قبل حوالي عشر ثوانٍ من <strong>وصول</strong> البيانات فعليًا. ثم يعود إلى <code translate="no" v-pre>downloading</code> بقيمة progress أقل من التي أبلغ عنها للتو. يتراجع كل من <code translate="no" v-pre>progress</code> و<code translate="no" v-pre>download_state</code> إلى الخلف في تنزيل سليم.</p>
+<h2 id="the-stage-table">جدول المراحل</h2>
+<p>قائمة القيم (enum) التي سيتحدث بها الـ shim هي <code translate="no" v-pre>resolving-metadata</code> <code translate="no" v-pre>queued</code> <code translate="no" v-pre>downloading</code> <code translate="no" v-pre>stalled-no-peers</code>
+<code translate="no" v-pre>finalizing</code> <code translate="no" v-pre>done</code> <code translate="no" v-pre>failed</code> والسلسلة النصية الفارغة (empty string) للحالة غير المعروفة.</p>
+<p>(رُفضت ترجمة سابقة: مقاطع الكود لم تتطابق. حافظ على البنية تماماً كما هي.)</p>
+<h3 id="real-debrid-1">Real-Debrid</h3>
+<retype-table copy-text="| الحالة الخام `status` | المرحلة | الأساس |
+|---|---|---|
+| `magnet_conversion` | `resolving-metadata` | **ملاحَظ**. `bytes` يساوي 0 و`files` فارغ و`filename` هو النص الحرفي `&quot;Magnet&quot;` |
+| `waiting_files_selection` | `queued` | **ملاحَظ** مع `--rd-select-detail`. الملفات معروضة بالفعل. `links` فارغ |
+| `queued` | `queued` | **ملاحَظ**. الحجم الحقيقي والاسم الحقيقي معروفان بالفعل. لا توجد `seeders` ولا `speed` |
+| `downloading` | `downloading` | **ملاحَظ** |
+| `downloading` مع `seeders` تساوي 0 | `stalled-no-peers` | **ملاحَظ**. 904 ثانية من `progress` تساوي 0 و`seeders` تساوي 0 و`speed` تساوي 0 عبر 92 استطلاعاً |
+| `compressing` | `finalizing` | **مُستنتَج**. لم يُشاهد |
+| `uploading` | `finalizing` | **ملاحَظ**. يعود progress إلى 0 ويختفي `seeders` |
+| `downloaded` | `done` | **ملاحَظ** |
+| `magnet_error` | `failed` | **ملاحَظ** بعد 318 ثانية في `magnet_conversion` |
+| `error` `virus` `dead` | `failed` | **مُستنتَج**. لم يُشاهد |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>الحالة الخام <code translate="no" v-pre>status</code></th>
+<th>المرحلة</th>
+<th>الأساس</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>magnet_conversion</code></td>
+<td><code translate="no" v-pre>resolving-metadata</code></td>
+<td><strong>ملاحَظ</strong>. <code translate="no" v-pre>bytes</code> يساوي 0 و<code translate="no" v-pre>files</code> فارغ و<code translate="no" v-pre>filename</code> هو النص الحرفي <code translate="no" v-pre>&quot;Magnet&quot;</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>waiting_files_selection</code></td>
+<td><code translate="no" v-pre>queued</code></td>
+<td><strong>ملاحَظ</strong> مع <code translate="no" v-pre>--rd-select-detail</code>. الملفات معروضة بالفعل. <code translate="no" v-pre>links</code> فارغ</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>queued</code></td>
+<td><code translate="no" v-pre>queued</code></td>
+<td><strong>ملاحَظ</strong>. الحجم الحقيقي والاسم الحقيقي معروفان بالفعل. لا توجد <code translate="no" v-pre>seeders</code> ولا <code translate="no" v-pre>speed</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloading</code></td>
+<td><code translate="no" v-pre>downloading</code></td>
+<td><strong>ملاحَظ</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloading</code> مع <code translate="no" v-pre>seeders</code> تساوي 0</td>
+<td><code translate="no" v-pre>stalled-no-peers</code></td>
+<td><strong>ملاحَظ</strong>. 904 ثانية من <code translate="no" v-pre>progress</code> تساوي 0 و<code translate="no" v-pre>seeders</code> تساوي 0 و<code translate="no" v-pre>speed</code> تساوي 0 عبر 92 استطلاعاً</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>compressing</code></td>
+<td><code translate="no" v-pre>finalizing</code></td>
+<td><strong>مُستنتَج</strong>. لم يُشاهد</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>uploading</code></td>
+<td><code translate="no" v-pre>finalizing</code></td>
+<td><strong>ملاحَظ</strong>. يعود progress إلى 0 ويختفي <code translate="no" v-pre>seeders</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloaded</code></td>
+<td><code translate="no" v-pre>done</code></td>
+<td><strong>ملاحَظ</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>magnet_error</code></td>
+<td><code translate="no" v-pre>failed</code></td>
+<td><strong>ملاحَظ</strong> بعد 318 ثانية في <code translate="no" v-pre>magnet_conversion</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>error</code> <code translate="no" v-pre>virus</code> <code translate="no" v-pre>dead</code></td>
+<td><code translate="no" v-pre>failed</code></td>
+<td><strong>مُستنتَج</strong>. لم يُشاهد</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<h3 id="alldebrid-1">AllDebrid</h3>
+<retype-table copy-text="| `statusCode` | المرحلة | الأساس |
+|---|---|---|
+| 0 `In queue` | `queued` | **ملحوظ**. تستمر بضع ثوانٍ. قد يبقى `filename` على `&quot;noname&quot;` و`size` على 0 |
+| 1 `Downloading` مع `size` 0 | `queued` | **ملحوظ**. ليست `downloading` ولا `stalled-no-peers`. أخذ AllDebrid المهمة ولم يبدأ بها. احتُجزت لمدة 622 s و580 s في تشغيلين اكتملا بعد ذلك |
+| 1 `Downloading` مع `size` حقيقي | `downloading` | **ملحوظ** |
+| 1 `Downloading` مع `seeders` 0 و`downloaded` ثابتًا | `stalled-no-peers` | **غير ملحوظ ولا يمكن استنتاجه بأمان**. انظر أدناه |
+| 2 `Compressing / Moving` | `finalizing` | **مستنتَج**. لم يُشاهد |
+| 3 `Uploading` | `finalizing` | **ملحوظ**. يحمل `uploaded` و`uploadSpeed` التقدم هنا، و`downloadSpeed` يساوي 0 |
+| 4 `Ready` | `done` | **ملحوظ** |
+| 5 فما فوق | `failed` | **مستنتَج**. لم يُشاهد |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th><code translate="no" v-pre>statusCode</code></th>
+<th>المرحلة</th>
+<th>الأساس</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 <code translate="no" v-pre>In queue</code></td>
+<td><code translate="no" v-pre>queued</code></td>
+<td><strong>ملحوظ</strong>. تستمر بضع ثوانٍ. قد يبقى <code translate="no" v-pre>filename</code> على <code translate="no" v-pre>&quot;noname&quot;</code> و<code translate="no" v-pre>size</code> على 0</td>
+</tr>
+<tr>
+<td>1 <code translate="no" v-pre>Downloading</code> مع <code translate="no" v-pre>size</code> 0</td>
+<td><code translate="no" v-pre>queued</code></td>
+<td><strong>ملحوظ</strong>. ليست <code translate="no" v-pre>downloading</code> ولا <code translate="no" v-pre>stalled-no-peers</code>. أخذ AllDebrid المهمة ولم يبدأ بها. احتُجزت لمدة 622 s و580 s في تشغيلين اكتملا بعد ذلك</td>
+</tr>
+<tr>
+<td>1 <code translate="no" v-pre>Downloading</code> مع <code translate="no" v-pre>size</code> حقيقي</td>
+<td><code translate="no" v-pre>downloading</code></td>
+<td><strong>ملحوظ</strong></td>
+</tr>
+<tr>
+<td>1 <code translate="no" v-pre>Downloading</code> مع <code translate="no" v-pre>seeders</code> 0 و<code translate="no" v-pre>downloaded</code> ثابتًا</td>
+<td><code translate="no" v-pre>stalled-no-peers</code></td>
+<td><strong>غير ملحوظ ولا يمكن استنتاجه بأمان</strong>. انظر أدناه</td>
+</tr>
+<tr>
+<td>2 <code translate="no" v-pre>Compressing / Moving</code></td>
+<td><code translate="no" v-pre>finalizing</code></td>
+<td><strong>مستنتَج</strong>. لم يُشاهد</td>
+</tr>
+<tr>
+<td>3 <code translate="no" v-pre>Uploading</code></td>
+<td><code translate="no" v-pre>finalizing</code></td>
+<td><strong>ملحوظ</strong>. يحمل <code translate="no" v-pre>uploaded</code> و<code translate="no" v-pre>uploadSpeed</code> التقدم هنا، و<code translate="no" v-pre>downloadSpeed</code> يساوي 0</td>
+</tr>
+<tr>
+<td>4 <code translate="no" v-pre>Ready</code></td>
+<td><code translate="no" v-pre>done</code></td>
+<td><strong>ملحوظ</strong></td>
+</tr>
+<tr>
+<td>5 فما فوق</td>
+<td><code translate="no" v-pre>failed</code></td>
+<td><strong>مستنتَج</strong>. لم يُشاهد</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>لا توجد على AllDebrid صورة يمكن رصدها للتوقف.</strong> المهمة التي وضعها AllDebrid في الطابور والمهمة التي لا يستطيع AllDebrid أن يتقدم فيها تبدوان متطابقتين تمامًا على الشبكة.
+كلتاهما <code translate="no" v-pre>statusCode</code> 1 مع <code translate="no" v-pre>size</code> 0 وكل العدادات عند صفر. عنصر Prelinger بقي في هذه الصورة بالضبط طوال الحد الأقصى البالغ 907.8 s، وبقي مرّان آخران في الحالة نفسها عشر دقائق لكل منهما ثم اكتملا. لذلك لا شيء في استجابة AllDebrid يميز بينهما، وحكم التوقف على AllDebrid لا يمكن أن يأتي إلا من ساعة.</p>
+<h3 id="torbox-1">TorBox</h3>
+<retype-table copy-text="| `download_state` الخام | المرحلة | الأساس |
+|---|---|---|
+| `metaDL` | `resolving-metadata` | **تمت ملاحظته**. `size` يساوي 0 و`name` يساوي الـhash |
+| `checking` | `resolving-metadata` | **تمت ملاحظته**. يكون `size` **-1** طوال هذه المرحلة. هنا ينتظر TorBox التورنت، وليس فحص الـhash. غير موجود في جدول zurg حاليًا |
+| `stalledDL` | `stalled-no-peers` | **تمت ملاحظته**. غير موجود في جدول zurg حاليًا |
+| `stalled (no seeds)` | `stalled-no-peers` | **تمت ملاحظته**. الاسم يبالغ في الأمر. لقطتان سجّلتا `seeds` بقيمة 1 و2 وهو في هذه الحالة. يربطها zurg حاليًا بـ`queued` |
+| `downloading` | `downloading` | **تمت ملاحظته** |
+| `processing` | `finalizing` | **تمت ملاحظته**. غير موجود في جدول zurg حاليًا |
+| `uploading (no peers)` | `finalizing` | **تمت ملاحظته** عندما تكون `download_present` قيمتها false |
+| `uploading` | `done` | **تمت ملاحظته** عندما تكون `download_present` قيمتها true |
+| `cached` `completed` `seeding` | `done` | `cached` **تمت ملاحظته**. الحالتان الأخريان **مستنتجتان** |
+| `expired` `reported missing` `failed` `error` `missingfiles` | `failed` | **مستنتجة**. لم تُرصد أي منها |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th><code translate="no" v-pre>download_state</code> الخام</th>
+<th>المرحلة</th>
+<th>الأساس</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code translate="no" v-pre>metaDL</code></td>
+<td><code translate="no" v-pre>resolving-metadata</code></td>
+<td><strong>تمت ملاحظته</strong>. <code translate="no" v-pre>size</code> يساوي 0 و<code translate="no" v-pre>name</code> يساوي الـhash</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>checking</code></td>
+<td><code translate="no" v-pre>resolving-metadata</code></td>
+<td><strong>تمت ملاحظته</strong>. يكون <code translate="no" v-pre>size</code> <strong>-1</strong> طوال هذه المرحلة. هنا ينتظر TorBox التورنت، وليس فحص الـhash. غير موجود في جدول zurg حاليًا</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>stalledDL</code></td>
+<td><code translate="no" v-pre>stalled-no-peers</code></td>
+<td><strong>تمت ملاحظته</strong>. غير موجود في جدول zurg حاليًا</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>stalled (no seeds)</code></td>
+<td><code translate="no" v-pre>stalled-no-peers</code></td>
+<td><strong>تمت ملاحظته</strong>. الاسم يبالغ في الأمر. لقطتان سجّلتا <code translate="no" v-pre>seeds</code> بقيمة 1 و2 وهو في هذه الحالة. يربطها zurg حاليًا بـ<code translate="no" v-pre>queued</code></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>downloading</code></td>
+<td><code translate="no" v-pre>downloading</code></td>
+<td><strong>تمت ملاحظته</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>processing</code></td>
+<td><code translate="no" v-pre>finalizing</code></td>
+<td><strong>تمت ملاحظته</strong>. غير موجود في جدول zurg حاليًا</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>uploading (no peers)</code></td>
+<td><code translate="no" v-pre>finalizing</code></td>
+<td><strong>تمت ملاحظته</strong> عندما تكون <code translate="no" v-pre>download_present</code> قيمتها false</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>uploading</code></td>
+<td><code translate="no" v-pre>done</code></td>
+<td><strong>تمت ملاحظته</strong> عندما تكون <code translate="no" v-pre>download_present</code> قيمتها true</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>cached</code> <code translate="no" v-pre>completed</code> <code translate="no" v-pre>seeding</code></td>
+<td><code translate="no" v-pre>done</code></td>
+<td><code translate="no" v-pre>cached</code> <strong>تمت ملاحظته</strong>. الحالتان الأخريان <strong>مستنتجتان</strong></td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>expired</code> <code translate="no" v-pre>reported missing</code> <code translate="no" v-pre>failed</code> <code translate="no" v-pre>error</code> <code translate="no" v-pre>missingfiles</code></td>
+<td><code translate="no" v-pre>failed</code></td>
+<td><strong>مستنتجة</strong>. لم تُرصد أي منها</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p><strong>الزوج <code translate="no" v-pre>download_finished</code> و<code translate="no" v-pre>download_present</code> ليس بديلاً عن نص الحالة.</strong> كلٌّ من
+<code translate="no" v-pre>processing</code> و<code translate="no" v-pre>uploading (no peers)</code> وجزء من <code translate="no" v-pre>downloading</code> يحمل <code translate="no" v-pre>download_finished: true</code> مع
+<code translate="no" v-pre>download_present: false</code>. هذا المزيج طبيعي في مرحلة الإنهاء، وليس تورنتًا ميتًا. راجع
+التحذير أدناه.</p>
+<hr>
+<h2 id="what-could-not-be-measured">ما الذي تعذّر قياسه</h2>
+<ul>
+<li>
+<p><strong>تم إعادة إنتاج حالة عدم وجود البذور على مرشح واحد من أصل اثنين.</strong> لم يكن لدى أي منهما أقران في المتتبع.
+تم تنزيل ubuntu-16.04.6-desktop-i386 على أي حال عبر المزودين الثلاثة، لأن DHT وفّر أقرانًا لم يكن المتتبع يعرفهم. تعثّر ubuntu-24.04-beta-live-server-s390x على Real-Debrid طوال الحد الأقصى كله، وهذه هي ملاحظة التوقف أعلاه. الصفر في استعلام المتتبع مؤشر ضعيف. أبقِ مرشحَين اثنين في الحالة. احتفظ Real-Debrid بالبيانات الوصفية لكليهما في كل الأحوال، وأبلغ عن <code translate="no" v-pre>bytes</code> و<code translate="no" v-pre>filename</code> بشكل صحيح في أول قراءة <code translate="no" v-pre>queued</code>.</p>
+</li>
+<li>
+<p><strong>لم نرَ أبدًا الحالة <code translate="no" v-pre>compressing</code> في Real-Debrid.</strong> انتقلت كل التشغيلات المكتملة من <code translate="no" v-pre>downloading</code> مباشرة إلى <code translate="no" v-pre>uploading</code>.</p>
+</li>
+<li>
+<p><strong>لم نرَ أبدًا رمز الحالة 2 في AllDebrid.</strong> انتقلت كل عملية رصد من 1 مباشرة إلى 3.</p>
+</li>
+<li>
+<p><strong>لم يُدفع أي مزود إلى مفردات الأخطاء الخاصة به.</strong> لم تُقَس بعد الحالات <code translate="no" v-pre>error</code> و<code translate="no" v-pre>virus</code> و<code translate="no" v-pre>dead</code> في Real-Debrid، وكذلك كل رمز في AllDebrid أعلى من 4، وكل حالات الفشل في TorBox. لإنتاجها نحتاج إلى محتوى محظور أو مصاب أو منتهي الصلاحية، لا إلى صورة ISO مفتوحة المصدر.</p>
+</li>
+<li>
+<p><strong>نادرًا ما أمكن متابعة TorBox حتى الاكتمال.</strong> حُذفت أربعة تورنتات من الحملة وتورنت متابعة واحد أثناء التنزيل بواسطة zurg آخر على الحساب. راجع الخطر أدناه. لم تكتمل إلا صورة بحجم 754 MiB قبل أن تستعلم تلك العملية مرة أخرى.</p>
+</li>
+</ul>
+<hr>
+<h2 id="hazards-found-on-the-way">مخاطر وُجدت أثناء العمل</h2>
+<h3 id="a-second-zurg-on-the-torbox-account-deletes-healthy-downloads">zurg ثانٍ على حساب TorBox يحذف التنزيلات السليمة</h3>
+<p>حُمِّلت نسخة أخرى من zurg على حساب TorBox نفسه. ويقرأ ملف إعداداتها:</p>
+<div id="a-second-zurg-on-the-torbox-account-deletes-healthy-downloads-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">enable_repair: true
+delete_error_torrents: true
+stalled_download_mins: 120</code></pre>
+</doc-codeblock></div>
+<p>حُذفت <strong>خمسة</strong> تورنتات اختبار أثناء تنزيلها بشكل طبيعي. وهذا <strong>ملاحَظ</strong> من الجهتين. رصد الاختبار اختفاء كل تورنت، وسجلّ النسخة الأخرى يوضح السبب.</p>
+<div id="a-second-zurg-on-the-torbox-account-deletes-healthy-downloads-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">Aug 30 12:43:26 zurg-host zurg: INFO manager Deleting torrent 86695315 because it encountered an error status: error
+Aug 30 12:43:27 zurg-host zurg: DEBUG torbox Deleted TorBox torrent id=86695315
+Aug 30 12:44:56 zurg-host zurg: INFO manager Deleting torrent 86695708 because it encountered an error status: error
+Aug 30 12:47:41 zurg-host zurg: INFO manager Deleting torrent 86697191 because it encountered an error status: error</code></pre>
+</doc-codeblock></div>
+<p>التورنتات الخمسة هي <code translate="no" v-pre>86695315</code> <code translate="no" v-pre>86695708</code> <code translate="no" v-pre>86697191</code> <code translate="no" v-pre>86702627</code> <code translate="no" v-pre>86704212</code>. وحمل كل واحد منها السبب نفسه. ولم يكن أيٌّ منها معطوباً.</p>
+<p>والآلية هي القاعدة الثانية في <code translate="no" v-pre>normalizeStatus</code> داخل <code translate="no" v-pre>internal/torbox/types.go</code>.</p>
+<div id="a-second-zurg-on-the-torbox-account-deletes-healthy-downloads-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-go"><code v-pre class="language-go">if w.DownloadFinished &amp;&amp; !w.DownloadPresent {
+    return &quot;error&quot;
+}</code></pre>
+</doc-codeblock></div>
+<p>هذا المزيج مرحلة إنهاء عادية في TorBox. ويعطينا التقاط الحالة كل 0.5 s رقماً محدداً لذلك. في صورة بحجم 754 MiB، كانت الفترة من تحوّل <code translate="no" v-pre>download_finished</code> إلى true حتى تحوّل <code translate="no" v-pre>download_present</code> إلى true <strong>9.6 ثانية</strong>. وفي صورة بحجم 3.7 GiB كانت 17 s على الأقل، وقد وقعت عملية المسح داخل هذه الفترة. أما النسخة الأخرى من zurg فتستعلم المكتبة كل 15 s تقريباً. وإن كان تنزيل سليم من TorBox سيبقى بعد اكتماله فهذا أشبه برمية عملة.</p>
+<p>ثلاث نتائج. قد يختفي من مكتبة zurg الخاصة بالمستخدم تنزيلٌ من TorBox شاهده يكتمل في واجهة TorBox. والتوثيق يقول إن <code translate="no" v-pre>delete_error_torrents</code> يحذف التورنتات التي يصفها المزوّد بأنها معطوبة، لكنه هنا يحذف تورنتات يصفها المزوّد بأنها سليمة. وأي قياس لـ TorBox على هذا الحساب يسابق عملية المسح هذه.</p>
+<p><strong>لم يُصلَح هنا.</strong> المرحلة 0 للقياس فقط. والإصلاح يندرج ضمن عمل المراحل. وهناك يصبح <code translate="no" v-pre>download_finished &amp;&amp; !download_present</code> الحالة <code translate="no" v-pre>finalizing</code> بدلاً من <code translate="no" v-pre>failed</code>.</p>
+<h3 id="a-second-zurg-on-the-alldebrid-account-got-away-with-it">zurg ثانٍ على حساب AllDebrid مرّ دون مشاكل</h3>
+<p>استُخدم مفتاح AllDebrid في هذه الحملة من قبل نسخة zurg أخرى أيضًا، مع نفس الإعدادات الثلاثة لعملية المسح التي استُخدمت مع TorBox.</p>
+<div id="a-second-zurg-on-the-alldebrid-account-got-away-with-it-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">enable_repair: true
+delete_error_torrents: true
+stalled_download_mins: 120</code></pre>
+</doc-codeblock></div>
+<p>لم يُحذف أي فحص خاص بـ AllDebrid. والسبب موجود في الكود وليس في الحظ. تقوم الدالة <code translate="no" v-pre>normalizeStatus</code> في <code translate="no" v-pre>internal/alldebrid/types.go</code> بتحويل رموز الحالة التي قيمتها 5 أو أكبر فقط إلى <code translate="no" v-pre>error</code>، ولا تحتوي على أي قاعدة بنيوية من نوع <code translate="no" v-pre>download_finished &amp;&amp; !download_present</code>. لذلك لا يمكن أبدًا أن تُقرأ عملية تنزيل سليمة في AllDebrid على أنها معطلة. خلل TorBox يكمن في تلك القاعدة الإضافية وحدها، وليس في عملية المسح بشكل عام.</p>
+<p>Real-Debrid هو الاستثناء. لم تكن أي نسخة zurg أخرى محمّلة بحساب الاختبار. ولم يكن هناك أي شيء يمسح حسابه، ولم يتدخل فيه شيء.</p>
+<h3 id="torbox-answers-a-delete-for-an-unknown-id-with-http-500">TorBox يرد برمز HTTP 500 عند طلب حذف معرّف غير معروف</h3>
+<div id="torbox-answers-a-delete-for-an-unknown-id-with-http-500-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-none"><code v-pre class="language-none">POST /v1/api/torrents/controltorrent  {&quot;torrent_id&quot;:86695315,&quot;operation&quot;:&quot;delete&quot;}
+-&gt; HTTP 500 {&quot;success&quot;:false,&quot;error&quot;:&quot;DATABASE_ERROR&quot;,&quot;detail&quot;:&quot;There was an error processing your request. Please try again later.&quot;}</code></pre>
+</doc-codeblock></div>
+<p><code translate="no" v-pre>GET /torrents/mylist?id=&lt;gone&gt;</code> يعطي الرد نفسه. لذلك لا يمكن تمييز torrent لم يعد موجودًا عن انقطاع TorBox بالاعتماد على رمز الحالة وحده. يُبلغ zurg عنه بالرسالة <code translate="no" v-pre>account temporarily unavailable</code>. ويُظهر سجل المثيل الآخر أنه يعيد محاولة حذف id محذوف بالفعل كل 15 ثانية. يتجاوز الـ harness هذه المشكلة بطلب <code translate="no" v-pre>mylist</code> بعد فشل الحذف، ويعتبر torrent المفقود محذوفًا.</p>
+<h3 id="real-debrid-throttling-did-not-appear">لم يظهر تقييد Real-Debrid</h3>
+<p>تسع إضافات بفاصل 20 ثانية لم تُنتج أي استجابة 451 ولا أي استجابة 429 طوال الحملة كلها. وهذا يتوافق مع الملاحظة في <code translate="no" v-pre>CLAUDE.md</code> الموجود في الجذر، التي تقول إن 6 إضافات بفاصل 10 ثوانٍ فشلت 0/6، وإن الست نفسها بفاصل 20 ثانية نجحت 6/6. إذن الحد الأدنى 20 ثانية يؤدي دورًا فعليًا وليس مجرد خرافة.</p>
+<h2 id="re-running-the-campaign">إعادة تشغيل الحملة</h2>
+<div id="re-running-the-campaign-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">export RD_TOKEN=…   # a Real-Debrid test account
+export AD_KEY=…     # AllDebrid test
+export TB_KEY=…     # TorBox
+
+# 1. check the catalog still resolves and the swarms are still what the tables claim
+./scripts/torrent_lifecycle_probe.py --inspect-torrents
+
+# 2. non-destructive. Confirms the cached/uncached split before anything is added
+./scripts/torrent_lifecycle_probe.py --cache-probe
+
+# 3. record what each account holds now, so step 6 has something to compare against
+./scripts/torrent_lifecycle_probe.py --list
+
+# 4. the campaign. One process per provider, each with its own output directory
+for p in rd ad tb; do
+  LIFECYCLE_OUTDIR=~/lifecycle/$p ./scripts/torrent_lifecycle_probe.py \
+    --provider $p --case all --cap-mins 15 &gt; ~/lifecycle/$p.out 2&gt;&amp;1 &amp;
+done
+
+# 5. the two follow-ups the campaign cannot do
+./scripts/torrent_lifecycle_probe.py --provider rd --case cached --rd-select-detail
+./scripts/torrent_lifecycle_probe.py --provider tb --case adhoc --fast-poll 0.5 --fast-window 480 \
+  --extra-hash 58846860f0a766f8a42b0bb214d8c713fdf1b167:debian-netinst
+
+# 6. verify nothing was left behind
+./scripts/torrent_lifecycle_probe.py --cleanup-only
+./scripts/torrent_lifecycle_probe.py --list</code></pre>
+</doc-codeblock></div>
+<p>Spusť to z počítače s rezidenční IP. AllDebrid vrací <code translate="no" v-pre>NO_SERVER</code> na IP z datacenter.</p>
+<p>Krok 6 není volitelný a krok 3 je to, co z toho dělá smysl. Po kampani z 2026-08-30 nezůstala na žádném ze tří účtů ani jedna z 34 instance id, která si harness nárokoval. Stejně tak žádný z devíti probe hashů.</p>
+<p>Než sáhneš na TorBox, zkontroluj, jestli není se stejným účtem načtený nějaký jiný zurg. Přečti jeho nastavení sweepu a počítej s tím sweepem, který je popsán výše.</p>
+<div id="re-running-the-campaign-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">grep -E &quot;delete_error_torrents|stalled_download_mins|enable_repair&quot; config.yml</code></pre>
+</doc-codeblock></div>
+<p>Nikdy to neměň. Probe, který během běhu zmizí, je data.</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/debrid-baseline/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">السابق</span>
+                                <span class="block mt-1">خط الأساس للـ Debrid</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/internals/qbittorrent-client-contract/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">التالي</span>
+                                <span class="block mt-1">عقد عميل q​Bittorrent</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "دورة حياة التورنت", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/internals/torrent-lifecycle.md" }</script>
+</body>
+</html>
