@@ -4,7 +4,7 @@
 # OpenRouter only when OPENROUTER_TRANSLATE_KEY is set, otherwise they stay English for now).
 set -uo pipefail
 cd "$(dirname "$0")/.."
-retype="npx --yes retypeapp@latest"
+retype=$(command -v retype || echo "npx --yes retypeapp@latest")  # CI installs it globally; npx works on a Mac
 
 python3 i18n/translate.py md --src . --out build/i18n
 status=$?
