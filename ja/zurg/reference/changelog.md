@@ -131,6 +131,12 @@ Sonarr や Radarr が整理しているライブラリでは、インポート�
 
 On Windows, zurg logged `cannot truncate data\magic.journal ... Access is
 denied.` every time it tried to tidy the file where `__magic__` records your
+移動やフォルダーを記録している`__magic__`のファイルを整理しようとするたびに、
+
+Let me redo this properly with the exact line structure.
+
+On Windows, zurg logged `cannot truncate data\magic.journal ... Access is
+denied.` every time it tried to tidy the file where `__magic__` records your
 moves and folders. The file was never emptied, so it grew with every change
 and every start read all of it again. After a few thousand changes in one run,
 each further change also rewrote the whole saved layout. zurg now empties it
