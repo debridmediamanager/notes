@@ -21,5 +21,7 @@ for dir in build/i18n/*/; do
   # Old URLs keep redirecting in every language.
   awk -v l="/$lang" '!/^#/ && NF >= 2 { to = ($2 ~ /^\//) ? l $2 : $2; print l $1, to, $3 }' _redirects >> .retype/_redirects
 done
+# Every page names its translations (hreflang) and one sitemap lists all languages for search engines.
+python3 i18n/translate.py seo --site .retype --host notes.debridmediamanager.com || exit 1
 git checkout -q -- retype.manifest 2>/dev/null || true  # retype rewrites the tracked manifest on every build
 exit "$status"
