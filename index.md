@@ -1,5 +1,6 @@
 ---
 label: Home
+description: "Guides and reference for Debrid Media Manager, zurg and rex: set up a debrid or Usenet library and play it in Plex, Jellyfin, Emby and other apps."
 icon: home
 order: 100
 ---

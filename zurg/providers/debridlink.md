@@ -1,5 +1,6 @@
 ---
 label: Debrid-Link
+description: "Use a Debrid-Link account with zurg: get the API key, add it to config.yml and see how zurg keeps the seedbox in sync."
 icon: key
 order: 60
 ---

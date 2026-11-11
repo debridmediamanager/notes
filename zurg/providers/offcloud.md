@@ -1,5 +1,6 @@
 ---
 label: Offcloud
+description: "Use an Offcloud account with zurg: get the API key, add it to config.yml and see how zurg lists and checks Offcloud files."
 icon: key
 order: 50
 ---

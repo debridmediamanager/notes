@@ -1,5 +1,6 @@
 ---
 label: Guides
+description: "Every guide for DMM, zurg and rex in one list: choosing a setup, getting help, sponsorship and each project's how-tos."
 icon: book
 order: 60
 ---

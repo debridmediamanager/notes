@@ -1,5 +1,6 @@
 ---
 label: TorBox hosted Usenet
+description: "Let TorBox fetch your Usenet releases for zurg: post NZB files to a TorBox Pro account and play them with no news server of your own."
 icon: broadcast
 order: 38
 ---

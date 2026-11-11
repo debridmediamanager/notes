@@ -1,5 +1,6 @@
 ---
 label: Usenet (nzb)
+description: "Stream Usenet with zurg: drop NZB files in a watch folder and zurg plays them straight from your news server, nothing downloaded first."
 icon: broadcast
 order: 40
 ---

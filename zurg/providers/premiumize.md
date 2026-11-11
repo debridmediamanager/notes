@@ -1,5 +1,6 @@
 ---
 label: Premiumize
+description: "Use a Premiumize account with zurg: get the API key, add it to config.yml and mount both transfers and cloud files."
 icon: key
 order: 70
 ---

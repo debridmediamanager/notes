@@ -1,5 +1,6 @@
 ---
 label: Real-Debrid
+description: "Use a Real-Debrid account with zurg: get the API token, add it to config.yml and see what zurg does with Real-Debrid."
 icon: key
 order: 100
 ---

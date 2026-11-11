@@ -1,5 +1,6 @@
 ---
 label: AllDebrid
+description: "Use an AllDebrid account with zurg: get the API key, add it to config.yml and see how zurg lists and streams AllDebrid files."
 icon: key
 order: 80
 ---

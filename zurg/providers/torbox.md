@@ -1,5 +1,6 @@
 ---
 label: TorBox
+description: "Use a TorBox account with zurg: get the API key, add it to config.yml and see how zurg stays within TorBox's limits."
 icon: key
 order: 90
 ---
