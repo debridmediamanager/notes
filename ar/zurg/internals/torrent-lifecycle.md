@@ -272,28 +272,17 @@ POST /v1/api/torrents/controltorrent     {"torrent_id":N,"operation":"delete"}
 `metaDL` `checking` `stalledDL` `stalled (no seeds)` `downloading` `processing`
 `uploading (no peers)` `uploading` `cached`
 
-`processing` and `checking` and `stalledDL` are **not in zurg's translation table**
-(`internal/torbox/types.go` `normalizeStatus`). All three fall to the default branch and are reported
-as `downloading`.
+`processing` و`checking` و`stalledDL` **غير موجودة في جدول الترجمة الخاص بـ zurg**
+(`internal/torbox/types.go` `normalizeStatus`). تقع الحالات الثلاث كلها في الفرع الافتراضي، ويُبلَّغ عنها على أنها
+`downloading`.
 
-`checking` is where TorBox waits for metadata and not where it verifies a hash. A magnet whose swarm
-never answers goes `metaDL` then `checking` and stays there. The random 40-hex hash was still
-`checking` at the 910 s cap and so was the zero-peer Prelinger item at 911 s. TorBox never gives up
-the way Real-Debrid does at 318 s.
+`checking` هي المرحلة التي ينتظر فيها TorBox البيانات الوصفية، وليست المرحلة التي يتحقق فيها من الهاش. الـ magnet الذي لا يرد عليه السرب أبدًا ينتقل من `metaDL` إلى `checking` ويبقى هناك. الهاش العشوائي المكوّن من 40 خانة سداسية عشرية ما زال `checking` عند الحد الأقصى 910 ثوانٍ، وكذلك عنصر Prelinger الذي لا يملك أي أقران عند 911 ثانية. TorBox لا يتخلى عن المحاولة أبدًا كما يفعل Real-Debrid عند 318 ثانية.
 
-**Uploading the `.torrent` skips that wait entirely, and it is the whole difference for a private
-tracker's release.** Measured 2026-09-01 on the account above, the same synthetic private torrent
-sent both ways. As a hash: accepted with a `torrent_id`, then `checking` with `name` set to the bare
-hash, `size: -1`, `files: null` and `eta: 8640000` — TorBox looking for a swarm that is not in the
-DHT, which it will do until the cap and report nothing about. As the file, on
-`POST /torrents/createtorrent` with the bytes in a multipart `file` part: read back three seconds
-later carrying the torrent's own name, its real size and `stalled (no seeds)` — the same content
-nobody holds, but now described. The stage is the point. `checking` with `size: -1` maps to
-`StageResolvingMetadata`, which says work is in progress and nothing can be concluded; `stalled (no
-seeds)` maps to `StageStalledNoPeers`, which the qBittorrent endpoint can act on. A cached release
-read back `done` at 100% with its file list inside the same three seconds. The part name is
-load-bearing: a file sent under any other name is not seen at all, and the endpoint answers
-`MISSING_REQUIRED_OPTION`, "You must provide either a file or magnet link".
+**رفع ملف `.torrent` يتجاوز هذا الانتظار تمامًا، وهو الفرق كله بالنسبة لإصدار متتبع خاص.** تم القياس في 2026-09-01 على الحساب المذكور أعلاه، وأُرسل التورنت الخاص الاصطناعي نفسه بالطريقتين. كهاش: قُبل مع `torrent_id`، ثم جاءت الحالة `checking` مع `name` مضبوط على الهاش المجرد، و`size: -1`، و`files: null`، و`eta: 8640000`. أي أن TorBox يبحث عن سرب غير موجود في DHT، وسيستمر في ذلك حتى الحد الأقصى دون أن يُبلغ بشيء عنه. كملف: عبر `POST /torrents/createtorrent` مع البايتات في جزء `file` من نوع multipart. عند القراءة بعد ثلاث ثوانٍ كان يحمل اسم التورنت نفسه، وحجمه الحقيقي، والحالة `stalled (no seeds)`. إنه المحتوى نفسه الذي لا يملكه أحد، لكنه الآن موصوف. المرحلة هي المهم. تُربط `checking` مع `size: -1` بـ `StageResolvingMetadata`، وهي تعني أن العمل جارٍ ولا يمكن استخلاص أي نتيجة. أما `stalled (no seeds)` فتُربط بـ `StageStalledNoPeers`، وهي مرحلة يستطيع الـ endpoint الخاص بـ qBittorrent التصرف بناءً عليها. الإصدار المخزَّن مؤقتًا قُرئ بالحالة `done` عند 100% مع قائمة ملفاته خلال الثلاث ثوانٍ نفسها.
+
+اسم الجزء أساسي: الملف المرسل باسم آخر لا يُرى أصلًا، ويرد الـ endpoint بـ `MISSING_REQUIRED_OPTION`، "You must provide either a file or magnet link".
+
+(رُفضت ترجمة سابقة: امتدادات الكود مختلفة (` maps to `). حافظ على البنية تمامًا.)
 
 ### أي حقول الشبكة تظهر في أي حالة {#which-wire-fields-exist-in-which-status-2}
 

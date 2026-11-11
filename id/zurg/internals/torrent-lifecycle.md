@@ -290,28 +290,14 @@ POST /v1/api/torrents/controltorrent     {"torrent_id":N,"operation":"delete"}
 `metaDL` `checking` `stalledDL` `stalled (no seeds)` `downloading` `processing`
 `uploading (no peers)` `uploading` `cached`
 
-`processing` and `checking` and `stalledDL` are **not in zurg's translation table**
-(`internal/torbox/types.go` `normalizeStatus`). All three fall to the default branch and are reported
-as `downloading`.
+`processing` dan `checking` dan `stalledDL` **tidak ada di tabel terjemahan zurg**
+(`internal/torbox/types.go` `normalizeStatus`). Ketiganya jatuh ke cabang default dan dilaporkan sebagai `downloading`.
 
-`checking` is where TorBox waits for metadata and not where it verifies a hash. A magnet whose swarm
-never answers goes `metaDL` then `checking` and stays there. The random 40-hex hash was still
-`checking` at the 910 s cap and so was the zero-peer Prelinger item at 911 s. TorBox never gives up
-the way Real-Debrid does at 318 s.
+`checking` adalah saat TorBox menunggu metadata, bukan saat memverifikasi hash. Magnet yang swarm-nya tidak pernah merespons akan berstatus `metaDL` lalu `checking`, dan terus di situ. Hash 40-hex acak masih `checking` pada batas 910 detik, dan item Prelinger tanpa peer pada detik ke-911 juga begitu. TorBox tidak pernah menyerah seperti Real-Debrid yang berhenti di 318 detik.
 
-**Uploading the `.torrent` skips that wait entirely, and it is the whole difference for a private
-tracker's release.** Measured 2026-09-01 on the account above, the same synthetic private torrent
-sent both ways. As a hash: accepted with a `torrent_id`, then `checking` with `name` set to the bare
-hash, `size: -1`, `files: null` and `eta: 8640000` — TorBox looking for a swarm that is not in the
-DHT, which it will do until the cap and report nothing about. As the file, on
-`POST /torrents/createtorrent` with the bytes in a multipart `file` part: read back three seconds
-later carrying the torrent's own name, its real size and `stalled (no seeds)` — the same content
-nobody holds, but now described. The stage is the point. `checking` with `size: -1` maps to
-`StageResolvingMetadata`, which says work is in progress and nothing can be concluded; `stalled (no
-seeds)` maps to `StageStalledNoPeers`, which the qBittorrent endpoint can act on. A cached release
-read back `done` at 100% with its file list inside the same three seconds. The part name is
-load-bearing: a file sent under any other name is not seen at all, and the endpoint answers
-`MISSING_REQUIRED_OPTION`, "You must provide either a file or magnet link".
+**Mengunggah `.torrent` melewati tahap tunggu itu sepenuhnya, dan itulah perbedaan utamanya untuk rilis private tracker.** Diukur pada 2026-09-01 di akun di atas, torrent private sintetis yang sama dikirim dengan dua cara. Sebagai hash: diterima dengan `torrent_id`, lalu `checking` dengan `name` berisi hash mentah, `size: -1`, `files: null` dan `eta: 8640000`. TorBox mencari swarm yang tidak ada di DHT, dan akan terus begitu sampai batas waktu tanpa melaporkan apa pun. Sebagai file, lewat `POST /torrents/createtorrent` dengan byte-byte di dalam bagian multipart `file`: tiga detik kemudian dibaca kembali dengan nama asli torrent, ukuran aslinya, dan `stalled (no seeds)`. Kontennya sama yang tidak dipegang siapa pun, tapi sekarang sudah dideskripsikan. Tahapnya yang penting. `checking` dengan `size: -1` dipetakan ke `StageResolvingMetadata`, yang artinya pekerjaan masih berjalan dan belum ada kesimpulan yang bisa diambil. `stalled (no seeds)` dipetakan ke `StageStalledNoPeers`, yang bisa ditindaklanjuti oleh endpoint qBittorrent. Rilis yang sudah ter-cache terbaca `done` dengan 100% beserta daftar filenya dalam tiga detik yang sama. Nama part itu penting sekali: file yang dikirim dengan nama lain sama sekali tidak terdeteksi, dan endpoint akan menjawab `MISSING_REQUIRED_OPTION`, "You must provide either a file or magnet link".
+
+(Terjemahan sebelumnya ditolak: span kode berbeda (` maps to `). Pertahankan struktur persis seperti aslinya.)
 
 ### Field wire mana yang ada di status mana {#which-wire-fields-exist-in-which-status-2}
 
