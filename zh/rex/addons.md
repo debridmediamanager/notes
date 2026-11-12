@@ -1,28 +1,30 @@
 # 构建 rex 插件 {#building-rex-addons}
 
-[rex](https://rex.debridmediamanager.com/zh/) 会展示其来源告诉它的内容。来源通过 feed API 告诉 rex 它有哪些内容，并在 rex 请求时提供文件。rex 对所有来源一视同仁。**插件**是你自己编写的来源，用于家庭视频、录像、Stremio 目录、[音乐](#music)或[直播频道](#live-tv)。
+[rex](https://rex.debridmediamanager.com/zh/) 会根据来源告诉它的信息来展示内容。来源通过 feed API 告诉 rex 它有哪些内容，并在 rex 请求时提供文件。rex 对所有来源一视同仁。**addon** 是你为家庭视频、录像、Stremio 目录、[音乐](#music)或[直播频道](#live-tv)自己写的来源。
 
-本页介绍 rex 对插件的要求、如何为条目命名，以及几条关键规则。最后以 [rex-stremio](https://github.com/debridmediamanager/rex-stremio) 作为单文件示例结束。
+本页介绍 rex 对 addon 的要求、如何为条目命名，以及几条关键规则。最后以 [rex-stremio](https://github.com/debridmediamanager/rex-stremio) 作为单文件示例结束。
 
-插件要做三件事：
+addon 做三件事：
 
-- **提供数据本身。** 有人点击播放时，rex 会通过 HTTP 从你的插件获取每一个字节：一个文件，或者 rex 被重定向到的一个流。
-- **告诉 rex 它有什么。** 插件通过 rex 的 feed API 发送一份列表，之后的每次变动也都发送。rex 从不扫描任何东西。
-- **为它带来的内容命名。** 对于没有任何元数据代理认识的内容，你的插件自己发送标题、简介、日期和封面图。Plex 应用会像显示其他媒体库一样显示这些内容。
+- **提供文件内容。** 有人点击播放时，rex 会通过 HTTP 从你的 addon 获取每个字节：可能是一个文件，也可能是 rex 被重定向到的一个流。
+- **告诉 rex 它有哪些内容。** 它通过 rex 的 feed API 发送一份列表，之后的每次变动也都会发送。rex 从不扫描任何东西。
+- **为它提供的内容命名。** 对于没有任何 agent 认识的内容，你的 addon 会自己提供标题、简介、日期和封面图。Plex 应用会像显示其他媒体库一样显示这些内容。
 
-如果你要带来的是 Plex 已经认识的电影和剧集（它有这些内容的 IMDb 或 TMDB ID），你应该改用 [rex 搭配你自己的应用](any-source.md)：这样 Plex 会为你完成所有命名和描述。
+如果你要提供的是 Plex 已经认识的电影和剧集（它有这些内容的 IMDb 或 TMDB id），那么你更适合使用 [rex 搭配你自己的应用](any-source.md)。这样 Plex 会为你完成所有命名和描述。
 
-要把你的 Stremio 插件目录接入 rex，什么都不用写：rex-stremio 已经现成可用。你只需在它的设置页面粘贴插件链接，然后勾选想要的目录。
+如果你想把 Stremio addon 的目录接入 rex，那么无需编写任何代码，rex-stremio 已经现成可用。你只需在它的设置页面粘贴 addon 的链接，然后勾选你想要的目录即可。
 
-**想直接从现成代码开始？** 三个教程各自用一个 Python 文件构建完整的插件，只使用标准库，并说明每个部分的作用：
+如果你不想编写和运行服务器，可以改用 [rex-addons](https://github.com/debridmediamanager/rex-addons) 的 JavaScript addon：由一个 `manifest.json` 和一个 `main.js` 组成，通过 git 仓库分享，并且也能在 [zurg+rex Android 应用](../zurg/guides/android.md)中运行。它运行在沙箱中，只能访问其清单中列出的网站，无法读取你的文件，因此适合互联网上的内容，而不适合你磁盘上的文件夹。[编写 addon](https://github.com/debridmediamanager/rex-addons/blob/main/docs/writing-addons.md) 一文介绍了具体做法。本页中的 addon 可以使用任何语言编写，可以提供你自己的文件，也能做你需要的任何事情。
+
+**想直接从可运行的代码开始？** 以下三个教程各自用一个 Python 文件构建一个完整的 addon，只使用标准库，并说明每个部分的作用：
 
 | 教程 | 接入 rex 的内容 |
 |---|---|
-| [家庭视频](addon-home-videos.md) | 你自己的一个视频文件夹，作为媒体库提供，附带从视频中截取的标题、日期和海报 |
+| [家庭视频](addon-home-videos.md) | 你自己的一个视频文件夹，作为媒体库提供标题、日期，以及从视频中截取的海报 |
 | [音乐](addon-music.md) | 一个专辑文件夹，由 Plex 通过 MusicBrainz 命名，并附带歌词 |
 | [IPTV](addon-iptv.md) | 一个 M3U 播放列表及其 XMLTV 节目指南，作为带节目指南的 Live TV 频道 |
 
-本页会解释这些教程涉及的每一步。[插件的更多功能](addon-more.md)则介绍字幕、预告片、章节、合集、播放列表等其他功能。
+本页会解释这些教程中的每一步。[你的 addon 的更多功能](addon-more.md)补充了字幕、预告片、章节、合集、播放列表等其他内容。
 
 ## 开始之前 {#before-you-start}
 

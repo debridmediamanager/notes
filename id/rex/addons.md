@@ -1,28 +1,30 @@
 # Membangun addon rex {#building-rex-addons}
 
-[rex](https://rex.debridmediamanager.com/id/) menampilkan apa yang dikatakan sumbernya kepadanya. Sumber memberi tahu rex apa yang dimilikinya melalui feed API, lalu menyajikan file saat rex memintanya. rex memperlakukan semua sumber dengan cara yang sama. **Addon** adalah sumber yang kamu tulis sendiri untuk video rumahan, rekaman, katalog [musik](#music), atau [saluran TV langsung](#live-tv) dari Stremio.
+[rex](https://rex.debridmediamanager.com/id/) menampilkan apa yang dikatakan sumbernya tentang dirinya. Sebuah sumber memberi tahu rex apa saja yang dimilikinya lewat feed API dan menyajikan file-file tersebut saat rex memintanya. rex memperlakukan semua sumber dengan cara yang sama. **Addon** adalah sumber yang kamu tulis sendiri untuk video rumahan, rekaman, katalog Stremio, [musik](#music), atau [saluran live](#live-tv).
 
-Halaman ini membahas apa saja yang dibutuhkan rex dari sebuah addon, cara memberi nama item-itemnya, dan aturan-aturan penting. Di akhir, ada [rex-stremio](https://github.com/debridmediamanager/rex-stremio) sebagai contoh satu file.
+Halaman ini menjelaskan apa yang dibutuhkan rex dari sebuah addon, cara memberi nama item-itemnya, dan aturan-aturan penting. Di akhir, ada [rex-stremio](https://github.com/debridmediamanager/rex-stremio) sebagai contoh satu file.
 
 Sebuah addon melakukan tiga hal:
 
-- **Menyajikan data mentahnya.** rex mengambil setiap byte dari addon kamu lewat HTTP saat seseorang menekan play: sebuah file, atau stream yang dialihkan ke rex.
-- **Memberi tahu rex apa yang dimilikinya.** Addon mengirim daftar ke rex lewat feed API rex, dan setiap perubahan setelahnya. rex tidak pernah memindai apa pun.
-- **Memberi nama pada apa yang dibawanya.** Untuk hal-hal yang tidak dikenali agent mana pun, addon kamu mengirim sendiri judul, ringkasan, tanggal, dan artwork. Aplikasi Plex menampilkannya seperti library lainnya.
+- **Menyajikan byte-nya.** rex mengambil setiap byte dari addon-mu lewat HTTP saat seseorang menekan play: sebuah file, atau stream tempat rex dialihkan.
+- **Memberi tahu rex apa yang dimilikinya.** Addon mengirim daftar ke rex lewat feed API rex, dan setiap perubahan sesudahnya. rex tidak pernah memindai apa pun.
+- **Memberi nama pada apa yang dibawanya.** Untuk hal-hal yang tidak dikenal agent mana pun, addon-mu mengirim judul, ringkasan, tanggal, dan artwork-nya sendiri. Aplikasi Plex menampilkannya seperti library lainnya.
 
-Jika yang kamu bawa adalah film dan serial yang sudah dikenal Plex (Plex punya id IMDb atau TMDB-nya), sebaiknya gunakan [rex dengan aplikasi Anda sendiri](any-source.md). Dengan begitu, Plex yang memberi nama dan deskripsi untuk semuanya.
+Jika yang kamu bawa adalah film dan serial yang sudah dikenal Plex (Plex punya id IMDb atau TMDB-nya), kamu sebaiknya memakai [rex dengan aplikasimu sendiri](any-source.md). Dengan cara itu, Plex yang memberi nama dan deskripsi untuk semuanya.
 
-Untuk membawa katalog addon Stremio kamu ke rex, tidak ada yang perlu kamu tulis: rex-stremio sudah siap pakai. Kamu tinggal menempelkan link addon di halaman pengaturannya, lalu centang katalog yang kamu mau.
+Untuk membawa katalog addon Stremio-mu ke rex, kamu tidak perlu menulis apa pun: rex-stremio sudah siap pakai. Kamu tinggal menempelkan tautan addon-mu di halaman pengaturannya dan mencentang katalog yang kamu mau.
 
-**Lebih suka mulai dari kode yang sudah jalan?** Ada tiga tutorial, masing-masing membangun addon lengkap dalam satu file Python, hanya memakai standard library, dan menjelaskan fungsi setiap bagiannya:
+Kalau kamu tidak ingin menulis dan menjalankan server, kamu sebaiknya memakai addon JavaScript untuk [rex-addons](https://github.com/debridmediamanager/rex-addons): sebuah `manifest.json` dan sebuah `main.js`, dibagikan lewat repositori git, dan juga berjalan di [aplikasi Android zurg+rex](../zurg/guides/android.md). Addon ini berjalan di sandbox yang hanya bisa mengakses situs web yang tercantum di dalamnya dan tidak bisa membaca file-mu, jadi cocok untuk hal-hal yang ada di internet, bukan folder di disk-mu. [Menulis addon](https://github.com/debridmediamanager/rex-addons/blob/main/docs/writing-addons.md) menjelaskan caranya. Addon di halaman ini bisa ditulis dengan bahasa apa pun, menyajikan file-mu sendiri, dan melakukan apa pun yang kamu butuhkan.
 
-| Tutorial | Dibawa ke rex |
+**Mau mulai dari kode yang sudah jalan?** Tiga tutorial masing-masing membangun addon lengkap dalam satu file Python, hanya memakai standard library, dan menjelaskan fungsi tiap bagiannya:
+
+| Tutorial | Membawa ke rex |
 |---|---|
-| [Video rumahan](addon-home-videos.md) | Folder berisi video kamu sendiri, sebagai library dengan judul, tanggal, dan poster yang diambil dari video |
-| [Musik](addon-music.md) | Folder berisi album, dinamai oleh Plex lewat MusicBrainz, dengan lirik |
-| [IPTV](addon-iptv.md) | Playlist M3U dan panduan XMLTV-nya, sebagai saluran Live TV dengan panduan |
+| [Video rumahan](addon-home-videos.md) | Sebuah folder berisi video-mu sendiri, sebagai library dengan judul, tanggal, dan poster yang diambil dari video |
+| [Musik](addon-music.md) | Sebuah folder berisi album, dinamai oleh Plex lewat MusicBrainz, dengan lirik |
+| [IPTV](addon-iptv.md) | Sebuah playlist M3U dan panduan XMLTV-nya, sebagai saluran Live TV dengan panduan |
 
-Halaman ini menjelaskan setiap langkah yang diambil tutorial-tutorial tersebut. [Lebih banyak dari addon kamu](addon-more.md) menambahkan subtitle, trailer, chapter, koleksi, playlist, dan lainnya.
+Halaman ini menjelaskan setiap langkah yang diambil tutorial-tutorial tersebut. [Lebih banyak dari addon-mu](addon-more.md) menambahkan subtitle, trailer, chapter, koleksi, playlist, dan lainnya.
 
 ## Sebelum kamu mulai {#before-you-start}
 

@@ -1,32 +1,30 @@
 # Créer des addons pour rex {#building-rex-addons}
 
-[rex](https://rex.debridmediamanager.com/fr/) affiche ce que ses sources lui disent.
-Une source dit à rex ce qu'elle a
-via l'API de flux, et sert les fichiers quand rex les demande. rex traite toutes les sources de la même façon. Un **addon** est une
-source que tu écris toi-même pour des vidéos perso, des enregistrements, des catalogues Stremio, de la [musique](#music) ou des [chaînes en direct](#live-tv).
+[rex](https://rex.debridmediamanager.com/fr/) affiche ce que ses sources lui disent à propos de leur contenu. Une source indique à rex ce qu'elle contient via l'API de flux, puis lui envoie les fichiers quand rex les demande. rex traite toutes les sources de la même façon. Un **addon** est une source que vous écrivez vous-même, pour des vidéos personnelles, des enregistrements, des catalogues Stremio, de la [musique](#music) ou des [chaînes en direct](#live-tv).
 
-Cette page explique ce dont rex a besoin de la part d'un addon, comment nommer ses éléments et les règles importantes. Elle se termine avec
-[rex-stremio](https://github.com/debridmediamanager/rex-stremio), un exemple tenant en un seul fichier.
+Cette page explique ce dont rex a besoin de la part d'un addon, comment nommer ses éléments et les règles importantes. Elle se termine par [rex-stremio](https://github.com/debridmediamanager/rex-stremio), un exemple tenant en un seul fichier.
 
 Un addon fait trois choses :
 
-- **Il sert les données.** rex récupère toutes les données depuis ton addon en HTTP quand quelqu'un appuie sur lecture : un fichier, ou un flux vers lequel rex est redirigé.
-- **Il dit à rex ce qu'il a.** Il envoie à rex une liste via l'API de flux de rex, puis chaque changement ensuite. rex ne scanne jamais rien.
-- **Il nomme ce qu'il apporte.** Pour les éléments qu'aucun agent ne connaît, ton addon envoie lui-même le titre, le résumé, la date et les visuels. Les apps Plex les affichent comme n'importe quelle autre bibliothèque.
+- **Il fournit les données.** rex récupère chaque octet auprès de votre addon via HTTP quand quelqu'un appuie sur lecture : un fichier, ou un flux vers lequel rex est redirigé.
+- **Il indique à rex ce qu'il contient.** Il envoie à rex une liste via l'API de flux de rex, puis chaque changement ensuite. rex ne scanne jamais rien.
+- **Il nomme ce qu'il apporte.** Pour les éléments que aucun agent ne connaît, votre addon envoie lui-même le titre, le résumé, la date et les visuels. Les applications Plex les affichent comme n'importe quelle autre bibliothèque.
 
-Si ce que tu apportes ce sont des films et séries que Plex connaît déjà (il possède leurs ids IMDb ou TMDB), tu veux plutôt [rex avec ta propre app](any-source.md) : Plex se charge alors de tout nommer et décrire pour toi.
+Si ce que vous apportez, ce sont des films et des séries que Plex connaît déjà (il possède leurs identifiants IMDb ou TMDB), vous voulez plutôt [rex avec votre propre application](any-source.md) : Plex se charge alors de nommer et de décrire tout pour vous.
 
-Pour apporter les catalogues de tes addons Stremio dans rex, rien à écrire : rex-stremio est déjà prêt. Tu colles les liens de tes addons sur sa page de réglages et tu coches les catalogues que tu veux.
+Pour importer dans rex les catalogues de vos addons Stremio, vous n'avez rien à écrire : rex-stremio est prêt à l'emploi. Vous collez les liens de vos addons sur sa page de réglages et cochez les catalogues que vous voulez.
 
-**Tu préfères partir d'un code qui marche ?** Trois tutoriels construisent chacun un addon complet dans un seul fichier Python, avec la bibliothèque standard uniquement, et expliquent le rôle de chaque partie :
+Si vous préférez ne pas écrire ni faire tourner de serveur, vous voulez plutôt un addon JavaScript pour [rex-addons](https://github.com/debridmediamanager/rex-addons) : un `manifest.json` et un `main.js`, partagés via un dépôt git, qui fonctionne aussi dans l'[application Android zurg+rex](../zurg/guides/android.md). Il tourne dans un bac à sable qui n'accède qu'aux sites web qu'il déclare et ne peut pas lire vos fichiers. Il convient donc aux contenus sur Internet, pas à un dossier de votre disque. [Écrire un addon](https://github.com/debridmediamanager/rex-addons/blob/main/docs/writing-addons.md) explique comment faire. Les addons présentés sur cette page peuvent être écrits dans n'importe quel langage, servir vos propres fichiers et faire tout ce dont vous avez besoin.
 
-| Tutoriel | Ce qu'il apporte à rex |
+**Vous préférez partir d'un code qui fonctionne ?** Trois tutoriels construisent chacun un addon complet dans un seul fichier Python, avec la bibliothèque standard uniquement, et expliquent le rôle de chaque partie :
+
+| Tutoriel | Apporte dans rex |
 |---|---|
-| [Vidéos perso](addon-home-videos.md) | Un dossier de tes propres vidéos, en bibliothèque avec titres, dates et affiches extraits des vidéos |
+| [Vidéos personnelles](addon-home-videos.md) | Un dossier de vos propres vidéos, sous forme de bibliothèque avec titres, dates et affiches extraites des vidéos |
 | [Musique](addon-music.md) | Un dossier d'albums, nommés par Plex via MusicBrainz, avec paroles |
-| [IPTV](addon-iptv.md) | Une playlist M3U et son guide XMLTV, en chaînes Live TV avec guide |
+| [IPTV](addon-iptv.md) | Une playlist M3U et son guide XMLTV, sous forme de chaînes Live TV avec guide |
 
-Cette page explique chaque étape que prennent ces tutoriels. [Plus de fonctions pour ton addon](addon-more.md) ajoute les sous-titres, les bandes-annonces, les chapitres, les collections, les playlists et le reste.
+Cette page détaille chaque étape que ces tutoriels suivent. [Plus avec votre addon](addon-more.md) ajoute les sous-titres, les bandes-annonces, les chapitres, les collections, les playlists et le reste.
 
 ## Avant de commencer {#before-you-start}
 

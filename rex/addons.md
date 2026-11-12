@@ -17,6 +17,8 @@ If what you bring are movies and shows Plex already knows (it has their IMDb or 
 
 To bring your Stremio addons' catalogs into rex, there is nothing to write: rex-stremio is ready-made. You paste your addons' links on its settings page and tick the catalogs you want.
 
+If you'd rather not write and run a server, you want a JavaScript addon for [rex-addons](https://github.com/debridmediamanager/rex-addons) instead: a `manifest.json` and a `main.js`, shared through a git repository, and it runs in the [zurg+rex Android app](../zurg/guides/android.md) too. It runs in a sandbox that reaches only the websites it lists and can't read your files, so it suits things on the internet, not a folder on your disk. [Writing an addon](https://github.com/debridmediamanager/rex-addons/blob/main/docs/writing-addons.md) shows how. The addons on this page can be in any language, serve your own files and do whatever you need.
+
 **Rather start from working code?** Three tutorials each build a complete addon in one Python file, standard library only, and say what each part does:
 
 | Tutorial | Brings into rex |

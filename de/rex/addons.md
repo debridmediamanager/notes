@@ -1,28 +1,30 @@
 # Eigene rex-Addons bauen {#building-rex-addons}
 
-[rex](https://rex.debridmediamanager.com/de/) zeigt, was seine Quellen ihm mitteilen. Eine Quelle sagt rex über die Feed-API, was sie hat, und liefert die Dateien aus, wenn rex sie anfordert. rex behandelt jede Quelle gleich. Ein **Addon** ist eine Quelle, die du selbst schreibst, für Heimvideos, Aufnahmen, Stremio-Kataloge, [Musik](#music) oder [Live-Kanäle](#live-tv).
+[rex](https://rex.debridmediamanager.com/de/) zeigt das, was seine Quellen ihm über deren Inhalte erzählen. Eine Quelle teilt rex über die Feed-API mit, was sie hat, und liefert die Dateien, wenn rex sie anfordert. rex behandelt jede Quelle gleich. Ein **Addon** ist eine Quelle, die du selbst schreibst, etwa für Heimvideos, Aufnahmen, Stremio-Kataloge, [Musik](#music) oder [Live-Kanäle](#live-tv).
 
-Diese Seite erklärt, was rex von einem Addon braucht, wie du seine Einträge benennst und welche Regeln wichtig sind. Am Ende steht [rex-stremio](https://github.com/debridmediamanager/rex-stremio) als Beispiel in einer einzigen Datei.
+Diese Seite zeigt, was rex von einem Addon braucht, wie du seine Einträge benennst und welche Regeln wichtig sind. Am Ende steht [rex-stremio](https://github.com/debridmediamanager/rex-stremio) als Beispiel in einer einzigen Datei.
 
 Ein Addon macht drei Dinge:
 
-- **Liefert die Bytes aus.** rex holt jedes Byte über HTTP von deinem Addon, wenn jemand auf Play drückt: eine Datei oder einen Stream, auf den rex weitergeleitet wird.
-- **Sagt rex, was es hat.** Es schickt rex über die Feed-API von rex eine Liste und danach jede Änderung. rex durchsucht nie etwas selbst.
-- **Benennt, was es bringt.** Bei Dingen, die kein Agent kennt, schickt dein Addon Titel, Beschreibung, Datum und Artwork selbst mit. Plex-Apps zeigen sie wie jede andere Bibliothek an.
+- **Liefert die Daten.** rex holt jedes Byte über HTTP von deinem Addon, sobald jemand auf Play drückt: eine Datei oder einen Stream, auf den rex weitergeleitet wird.
+- **Sagt rex, was es hat.** Es schickt rex eine Liste über die Feed-API von rex und danach jede Änderung. rex scannt nie selbst etwas.
+- **Benennt, was es mitbringt.** Bei Inhalten, die kein Agent kennt, schickt dein Addon Titel, Beschreibung, Datum und Artwork selbst mit. Plex-Apps zeigen sie wie jede andere Bibliothek.
 
-Wenn du Filme und Serien bringst, die Plex schon kennt (es hat ihre IMDb- oder TMDB-IDs), brauchst du stattdessen [rex mit deiner eigenen App](any-source.md): Plex benennt und beschreibt dann alles für dich.
+Wenn du Filme und Serien mitbringst, die Plex schon kennt (es hat deren IMDb- oder TMDB-IDs), brauchst du stattdessen [rex mit deiner eigenen App](any-source.md). Plex benennt und beschreibt dann alles für dich.
 
-Um deine Stremio-Addon-Kataloge in rex einzubinden, musst du nichts schreiben: rex-stremio ist fertig. Du fügst die Links deiner Addons auf seiner Einstellungsseite ein und setzt Häkchen bei den Katalogen, die du willst.
+Um die Kataloge deiner Stremio-Addons in rex zu holen, musst du nichts schreiben: rex-stremio ist fertig. Du fügst die Links deiner Addons auf der Einstellungsseite ein und setzt Haken bei den Katalogen, die du willst.
 
-**Lieber mit fertigem Code starten?** Drei Anleitungen bauen jeweils ein komplettes Addon in einer einzigen Python-Datei, nur mit der Standardbibliothek, und erklären, was jeder Teil tut:
+Wenn du keinen Server schreiben und betreiben möchtest, nimm stattdessen ein JavaScript-Addon für [rex-addons](https://github.com/debridmediamanager/rex-addons): eine `manifest.json` und eine `main.js`, geteilt über ein Git-Repository. Es läuft auch in der [zurg+rex Android-App](../zurg/guides/android.md). Es läuft in einer Sandbox, die nur die Websites erreicht, die es auflistet, und deine Dateien nicht lesen kann. Es eignet sich also für Inhalte aus dem Internet, nicht für einen Ordner auf deiner Festplatte. [Ein Addon schreiben](https://github.com/debridmediamanager/rex-addons/blob/main/docs/writing-addons.md) zeigt, wie. Die Addons auf dieser Seite können in jeder Sprache geschrieben sein, deine eigenen Dateien ausliefern und alles tun, was du brauchst.
 
-| Anleitung | Bringt in rex |
+**Lieber mit funktionierendem Code anfangen?** Drei Tutorials bauen jeweils ein vollständiges Addon in einer einzigen Python-Datei, nur mit der Standardbibliothek, und erklären, was jeder Teil macht:
+
+| Tutorial | Bringt in rex |
 |---|---|
-| [Heimvideos](addon-home-videos.md) | Ein Ordner mit deinen eigenen Videos, als Bibliothek mit Titeln, Datum und Postern, die aus den Videos geschnitten werden |
-| [Musik](addon-music.md) | Ein Ordner mit Alben, von Plex über MusicBrainz benannt, mit Songtexten |
-| [IPTV](addon-iptv.md) | Eine M3U-Playlist und ihr XMLTV-Programm, als Live-TV-Kanäle mit Programmübersicht |
+| [Heimvideos](addon-home-videos.md) | Einen Ordner mit deinen eigenen Videos, als Bibliothek mit Titeln, Daten und Postern aus den Videos |
+| [Musik](addon-music.md) | Einen Ordner mit Alben, die Plex über MusicBrainz benennt, mit Liedtexten |
+| [IPTV](addon-iptv.md) | Eine M3U-Playlist und ihren XMLTV-Guide, als Live-TV-Kanäle mit Programmübersicht |
 
-Diese Seite erklärt jeden Schritt, den diese Anleitungen gehen. [Mehr aus deinem Addon](addon-more.md) ergänzt Untertitel, Trailer, Kapitel, Sammlungen, Playlists und den Rest.
+Diese Seite erklärt jeden Schritt, den diese Tutorials gehen. [Mehr aus deinem Addon](addon-more.md) ergänzt Untertitel, Trailer, Kapitel, Sammlungen, Playlists und vieles mehr.
 
 ## Bevor du anfängst {#before-you-start}
 
