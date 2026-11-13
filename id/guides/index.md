@@ -37,20 +37,20 @@ Setiap panduan di situs ini, dikelompokkan per proyek.
 
 ## rex
 
-- [Pertanyaan tentang rex](../rex/faq.md): sebelum kamu memasang
-- [rex dengan aplikasi Anda sendiri](../rex/any-source.md)
-- [rex dengan addon Stremio Anda](../rex/stremio.md)
+- [rex FAQ](../rex/faq.md): sebelum kamu install
+- [rex dengan aplikasi sendiri](../rex/any-source.md)
+- [rex dengan addon Stremio kamu](../rex/stremio.md)
 - [rex dengan zurg](../rex/with-zurg.md)
-- [rex untuk Android](../rex/android.md)
+- [rex untuk Android](../rex/android.md): gratis. Untuk sponsor, [zurg+rex](../zurg/guides/android.md), server Plex di HP kamu, juga menghubungkan library debrid dan Usenet kamu ke rex
 - [Live TV dengan rex](../rex/live-tv.md)
 - [Musik dengan rex](../rex/music.md)
 - [Pindah dari Plex ke rex](../rex/from-plex.md)
 - [Bagikan rex ke keluarga dan teman](../rex/sharing.md)
 - [Membuat addon rex](../rex/addons.md)
-  - [Tutorial: addon video rumahan](../rex/addon-home-videos.md)
+  - [Tutorial: addon home videos](../rex/addon-home-videos.md)
   - [Tutorial: addon musik](../rex/addon-music.md)
   - [Tutorial: addon IPTV](../rex/addon-iptv.md)
   - [Lebih banyak dari addon kamu](../rex/addon-more.md)
 - [Bawa riwayat tontonan kamu](../rex/import-watched.md)
 - [Kometa dengan rex](../rex/kometa.md)
-- [Aplikasi mengunduh dari penyedia kamu](../rex/direct-download.md)
+- [Aplikasi download dari provider kamu](../rex/direct-download.md)

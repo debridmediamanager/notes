@@ -66,13 +66,13 @@ Sim. Cada pessoa com quem você compartilhar o rex entra com a própria conta e 
 
 ### Que hardware ele precisa? {#what-hardware-does-it-need}
 
-Uma máquina que fique ligada, rodando Linux (amd64 ou arm64, glibc 2.35 ou mais recente, ou seja, Ubuntu 22.04 ou superior), macOS (Intel ou Apple Silicon) ou Windows 64 bits. Em um celular, tablet ou TV box Android, o [rex for Android](android.md) roda o rex e os addons dele de graça, e o app somente para patrocinadores zurg+rex, um servidor Plex no seu celular, roda o zurg e o rex juntos (veja o [guia do Android](../zurg/guides/android.md)).
+Uma máquina que fica ligada, rodando Linux (amd64 ou arm64, glibc 2.35 ou mais recente, ou seja, Ubuntu 22.04 para cima), macOS (Intel ou Apple Silicon) ou Windows 64 bits. Em um celular, tablet ou TV box Android, o [rex para Android](android.md) roda o rex e seus addons de graça. Para os apoiadores, o app zurg+rex, um servidor Plex no seu celular, também conecta sua biblioteca de debrid e Usenet ao rex (veja o [guia do Android](../zurg/guides/android.md)).
 
-**Memória:** reserve 1 GB. Com uma biblioteca de 4.062 filmes e 656 séries, o rex usou menos de 500 MB durante a inicialização e cerca de 730 MB enquanto a biblioteca era navegada. Converter vídeo exige mais memória além disso.
+**Memória:** reserve 1 GB. Em uma biblioteca de 4.062 filmes e 656 séries, o rex usou menos de 500 MB ao iniciar e cerca de 730 MB enquanto a biblioteca era navegada. A conversão de vídeo precisa de mais do que isso.
 
-**Disco:** nada para filmes. O rex guarda a biblioteca no `rex.db`. Os downloads e as imagens que a análise gera (prévias de busca, imagens de capítulos) também ficam ao lado dele, se você usar esses recursos.
+**Disco:** nada para filmes. O rex guarda a biblioteca em `rex.db`. Os downloads e as imagens que a análise gera (prévias de busca, imagens de capítulos) também ficam ao lado dele, se você usar esses recursos.
 
-**Conversão:** só com FFmpeg. Um chip gráfico deixa tudo mais rápido: um filme em 1080p convertido em um chip Intel pequeno começa em cerca de 2 segundos. Quais chips o rex usa em cada sistema está em [By platform](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform): no macOS, a conversão sempre é feita no processador.
+**Conversão:** só com FFmpeg. Uma placa de vídeo acelera muito: um filme em 1080p convertido em um chip Intel pequeno começa em cerca de 2 segundos. Quais chips o rex usa em cada sistema está em [Por plataforma](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform): no macOS, a conversão sempre acontece no processador.
 
 ### Ele lê meus arquivos locais? {#does-it-read-my-local-files}
 

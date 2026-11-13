@@ -66,13 +66,13 @@ Plex 应用里有 **Downloads**。rex 会在自己所在的机器上准备下载
 
 ### 需要什么硬件？ {#what-hardware-does-it-need}
 
-A cheap, always-on machine running Linux (amd64 or arm64, glibc 2.35 or newer, so Ubuntu 22.04 and up), macOS (Intel or Apple Silicon) or 64-bit Windows. On an Android phone, tablet or TV box, [rex for Android](android.md) runs rex and its addons for free, and the sponsor-only zurg+rex app, a Plex server on your phone, runs zurg and rex together (see the [Android guide](../zurg/guides/android.md)).
+机器需要一直开着,运行 Linux(amd64 或 arm64,glibc 2.35 或更新版本,即 Ubuntu 22.04 及以上)、macOS(Intel 或 Apple Silicon)或 64 位 Windows。如果是 Android 手机、平板或电视盒子,可以用 [rex for Android](android.md) 免费运行 rex 及其插件。赞助者可以使用 zurg+rex 应用,也就是在手机上运行的 Plex 服务器,它同样能把你的 debrid 和 Usenet 库连接到 rex(参见 [Android 指南](../zurg/guides/android.md))。
 
-**Memory:** give it 1 GB. On a library of 4,062 movies and 656 shows, rex used under 500 MB while it started and about 730 MB while the library was browsed. Converting video needs more on top.
+**内存:** 给它 1 GB。在一个包含 4,062 部电影和 656 部剧集的库上,rex 启动时用了不到 500 MB,浏览库时大约用了 730 MB。转换视频需要额外的内存。
 
-**Disk:** none for movies. rex keeps its library in `rex.db`. Downloads and the images analysis makes (seek previews, chapter images) also go beside it, if you use them.
+**磁盘:** 电影本身不占用磁盘。rex 把库保存在 `rex.db` 中。如果你使用下载功能,以及分析时生成的图片(快进预览、章节图片),它们也会保存在它旁边。
 
-**Converting:** only with FFmpeg. A graphics chip makes it fast: a 1080p film converted on a small Intel chip starts in about 2 seconds. Which chips rex uses on each system is in [By platform](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform): on macOS it always converts on the processor.
+**转换:** 只能通过 FFmpeg 进行。显卡芯片可以让转换快很多:在一块小型 Intel 芯片上转换一部 1080p 电影,大约 2 秒就能开始。每个系统上 rex 使用哪些芯片,参见 [By platform](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform);在 macOS 上,转换始终由处理器完成。
 
 ### 它会读取我本地的文件吗？ {#does-it-read-my-local-files}
 

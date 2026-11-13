@@ -38,10 +38,10 @@ Chaque guide de ce site, par projet.
 ## rex
 
 - [Questions sur rex](../rex/faq.md) : avant d'installer
-- [rex avec votre propre application](../rex/any-source.md)
+- [rex avec votre propre app](../rex/any-source.md)
 - [rex avec vos addons Stremio](../rex/stremio.md)
 - [rex avec zurg](../rex/with-zurg.md)
-- [rex pour Android](../rex/android.md)
+- [rex pour Android](../rex/android.md) : gratuit. Pour les sponsors, [zurg+rex](../zurg/guides/android.md), un serveur Plex sur votre téléphone, connecte aussi votre bibliothèque debrid et Usenet à rex
 - [TV en direct avec rex](../rex/live-tv.md)
 - [Musique avec rex](../rex/music.md)
 - [Passer de Plex à rex](../rex/from-plex.md)
@@ -53,4 +53,4 @@ Chaque guide de ce site, par projet.
   - [Plus de choses avec votre addon](../rex/addon-more.md)
 - [Importer votre historique de visionnage](../rex/import-watched.md)
 - [Kometa avec rex](../rex/kometa.md)
-- [Les applications téléchargent depuis votre fournisseur](../rex/direct-download.md)
+- [Les apps téléchargent depuis votre fournisseur](../rex/direct-download.md)

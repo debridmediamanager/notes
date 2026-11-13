@@ -42,7 +42,7 @@ Os recursos de `dmm_api_key` precisam de um build noturno do zurg. O build públ
 
 ## rex
 
-rex é gratuito e não precisa de patrocínio, também no Android: [rex for Android](../rex/android.md) roda o rex e seus addons em um celular ou TV box. Com uma chave, o [rex-stremio](../rex/stremio.md) adiciona streams de debrid de torrents que o DMM já tem um probe em segundos, em vez de testar cada um. Cole ela no campo **DMM** do rex-stremio. Ele compartilha seus probes de arquivos torrent com o DMM, a menos que você desative isso.
+rex é gratuito e não precisa de patrocínio, inclusive no Android: [rex for Android](../rex/android.md) roda o rex e seus addons em um celular ou TV box. Patrocinadores também recebem o zurg+rex (na tabela acima), que conecta a sua biblioteca de debrid e Usenet ao rex no dispositivo. Com uma chave, o [rex-stremio](../rex/stremio.md) adiciona streams de debrid de torrents que o DMM já tem um probe, em segundos, em vez de fazer probe de cada um. Cole a chave no campo **DMM** do rex-stremio. Ele compartilha os probes de arquivos torrent com o DMM, a menos que você desative isso.
 
 ## Ajuda {#help}
 

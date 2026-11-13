@@ -46,7 +46,7 @@ Wait, I need to check the input: it's a Markdown table. Translate into German, k
 
 ## rex
 
-rex ist kostenlos und braucht keine Sponsoring-Anmeldung, auch auf Android: [rex für Android](../rex/android.md) betreibt rex und seine Addons auf einem Handy oder einer TV-Box. Mit einem Schlüssel fügt [rex-stremio](../rex/stremio.md) Debrid-Streams von Torrents hinzu, für die DMM bereits eine Prüfung hat, und zwar in Sekunden statt jeden einzelnen zu prüfen. Füge ihn im Feld **DMM** von rex-stremio ein. Es teilt seine Prüfungen von Torrent-Dateien mit DMM, es sei denn, du schaltest das aus.
+rex ist kostenlos und braucht kein Sponsoring, auch auf Android: [rex for Android](../rex/android.md) betreibt rex und seine Addons auf einem Handy oder einer TV-Box. Sponsoren bekommen außerdem zurg+rex (in der Tabelle oben), das ihre Debrid- und Usenet-Bibliothek mit rex auf dem Gerät verbindet. Mit einem Schlüssel fügt [rex-stremio](../rex/stremio.md) Debrid-Streams von Torrents hinzu, für die DMM bereits eine Prüfung hat. So geht das in Sekunden statt jeden Torrent einzeln zu prüfen. Füge ihn in das Feld **DMM** von rex-stremio ein. Es teilt seine Prüfungen von Torrent-Dateien mit DMM, außer du schaltest das aus.
 
 ## Hilfe {#help}
 

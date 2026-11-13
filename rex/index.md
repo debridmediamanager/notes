@@ -2,7 +2,7 @@
 
 [rex](https://rex.debridmediamanager.com) is a media server for the official Plex apps that owns no files. A source tells it what is in your library and serves each file. rex streams that file when you press play. rex is free for personal use. Its [source code](https://github.com/debridmediamanager/rex) is public under the PolyForm Noncommercial license. It runs on Linux macOS and Windows and as the Linux Docker image `ghcr.io/debridmediamanager/rex:nightly` ([with your own app](any-source.md#run-rex-in-docker), [with zurg](with-zurg.md#run-rex-in-docker)).
 
-- [rex for Android](android.md) runs rex and its addons on a phone, tablet or TV box, with no computer. It is free
+- [rex for Android](android.md) runs rex and its addons on a phone, tablet or TV box, with no computer. It is free. For sponsors, [zurg+rex](../zurg/guides/android.md), a Plex server on your phone, also connects your debrid and Usenet library to rex
 - [rex questions](faq.md) answers what to know before installing
 - [rex with your own app](any-source.md) sets up a source that serves files over HTTP and speaks rex's feed API
 - [rex with your Stremio addons](stremio.md) fills rex with rex-stremio. It is free and needs no sponsorship

@@ -449,7 +449,7 @@ Acquisition: chose <release> for <title>: results=143 local_refusals=97 radarr_r
 ## 检查仅将 zurg 作为下载客户端的 \*arr {#checking-an-arr-that-only-uses-zurg-as-its-download-client}
 
 A Sonarr or Radarr pointed at zurg's [SABnzbd](sonarr-radarr.md) or
-[qBittorrent](sonarr-radarr-torrents.md) endpoint does its own searching, and does not
+[qBittorrent](sonarr-radarr-torrents.md) endpoint does its own searching, so it does not
 need a source here. zurg still wants its API key, because three of its settings
 decide whether every import is a free rename or a whole release downloaded
 from the debrid account and written to zurg's disk: Remove Completed on a

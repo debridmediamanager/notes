@@ -68,7 +68,7 @@ Yes. Everyone you share rex with signs in as themselves and gets their own watch
 
 ### What hardware does it need?
 
-A machine that stays on, running Linux (amd64 or arm64, glibc 2.35 or newer, so Ubuntu 22.04 and up), macOS (Intel or Apple Silicon) or 64-bit Windows. On an Android phone, tablet or TV box, [rex for Android](android.md) runs rex and its addons for free, and the sponsor-only zurg+rex app, a Plex server on your phone, runs zurg and rex together (see the [Android guide](../zurg/guides/android.md)).
+A machine that stays on, running Linux (amd64 or arm64, glibc 2.35 or newer, so Ubuntu 22.04 and up), macOS (Intel or Apple Silicon) or 64-bit Windows. On an Android phone, tablet or TV box, [rex for Android](android.md) runs rex and its addons for free. For sponsors, the zurg+rex app, a Plex server on your phone, also connects your debrid and Usenet library to rex (see the [Android guide](../zurg/guides/android.md)).
 
 **Memory:** give it 1 GB. On a library of 4,062 movies and 656 shows, rex used under 500 MB while it started and about 730 MB while the library was browsed. Converting video needs more on top.
 

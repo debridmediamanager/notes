@@ -37,19 +37,19 @@
 
 ## rex
 
-- [أسئلة rex](../rex/faq.md): قبل أن تثبّت
+- [أسئلة حول rex](../rex/faq.md): قبل ما تثبّت
 - [rex مع تطبيقك الخاص](../rex/any-source.md)
 - [rex مع إضافات Stremio الخاصة بك](../rex/stremio.md)
 - [rex مع zurg](../rex/with-zurg.md)
-- [rex على Android](../rex/android.md)
-- [البث المباشر مع rex](../rex/live-tv.md)
+- [rex على Android](../rex/android.md): مجاني. للداعمين، [zurg+rex](../zurg/guides/android.md)، خادم Plex على هاتفك، يربط كمان مكتبتك من debrid وUsenet بـ rex
+- [التلفزيون المباشر مع rex](../rex/live-tv.md)
 - [الموسيقى مع rex](../rex/music.md)
 - [الانتقال من Plex إلى rex](../rex/from-plex.md)
 - [شارك rex مع العائلة والأصدقاء](../rex/sharing.md)
 - [بناء إضافات rex](../rex/addons.md)
-  - [درس تعليمي: إضافة الفيديوهات المنزلية](../rex/addon-home-videos.md)
-  - [درس تعليمي: إضافة الموسيقى](../rex/addon-music.md)
-  - [درس تعليمي: إضافة IPTV](../rex/addon-iptv.md)
+  - [درس: إضافة الفيديوهات المنزلية](../rex/addon-home-videos.md)
+  - [درس: إضافة الموسيقى](../rex/addon-music.md)
+  - [درس: إضافة IPTV](../rex/addon-iptv.md)
   - [المزيد من إضافتك](../rex/addon-more.md)
 - [أحضر سجل مشاهدتك](../rex/import-watched.md)
 - [Kometa مع rex](../rex/kometa.md)

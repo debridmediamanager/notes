@@ -66,13 +66,13 @@ Ja. Jeder, mit dem du rex teilst, meldet sich mit seinem eigenen Konto an und be
 
 ### Welche Hardware braucht es? {#what-hardware-does-it-need}
 
-Ein Rechner, der dauerhaft läuft, mit Linux (amd64 oder arm64, glibc 2.35 oder neuer, also Ubuntu 22.04 und höher), macOS (Intel oder Apple Silicon) oder 64-Bit-Windows. Auf einem Android-Handy, -Tablet oder einer TV-Box laufen rex und seine Addons kostenlos mit [rex für Android](android.md), und die nur für Sponsoren gedachte zurg+rex-App, ein Plex-Server auf deinem Handy, betreibt zurg und rex zusammen (siehe den [Android-Guide](../zurg/guides/android.md)).
+Ein Rechner, der dauerhaft läuft, mit Linux (amd64 oder arm64, glibc 2.35 oder neuer, also Ubuntu 22.04 und höher), macOS (Intel oder Apple Silicon) oder 64-Bit-Windows. Auf einem Android-Handy, Tablet oder TV-Box läuft [rex für Android](android.md) kostenlos mit rex und seinen Addons. Für Sponsoren verbindet die zurg+rex-App, ein Plex-Server auf dem Handy, deine Debrid- und Usenet-Bibliothek ebenfalls mit rex (siehe den [Android-Guide](../zurg/guides/android.md)).
 
-**Arbeitsspeicher:** Gib ihm 1 GB. Bei einer Bibliothek mit 4.062 Filmen und 656 Serien brauchte rex beim Start weniger als 500 MB und beim Durchsuchen der Bibliothek etwa 730 MB. Video konvertieren braucht zusätzlich mehr.
+**Arbeitsspeicher:** Gib ihm 1 GB. Bei einer Bibliothek mit 4.062 Filmen und 656 Serien hat rex beim Start unter 500 MB verbraucht und beim Durchsuchen der Bibliothek etwa 730 MB. Video konvertieren braucht zusätzlich mehr.
 
-**Festplatte:** Für Filme nichts. rex speichert seine Bibliothek in `rex.db`. Downloads und die Bilder, die die Analyse erstellt (Vorschaubilder zum Spulen, Kapitelbilder), landen ebenfalls daneben, wenn du sie nutzt.
+**Speicherplatz:** Für Filme keinen. rex speichert seine Bibliothek in `rex.db`. Downloads und die Bilder, die die Analyse erstellt (Spulvorschauen, Kapitelbilder), landen ebenfalls daneben, falls du sie nutzt.
 
-**Konvertieren:** Nur mit FFmpeg. Ein Grafikchip macht es schnell: Ein 1080p-Film, konvertiert auf einem kleinen Intel-Chip, startet in etwa 2 Sekunden. Welche Chips rex auf welchem System nutzt, steht unter [By platform](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform): Auf macOS konvertiert rex immer mit dem Prozessor.
+**Konvertierung:** Nur mit FFmpeg. Ein Grafikchip macht sie schnell: Ein 1080p-Film, auf einem kleinen Intel-Chip konvertiert, startet in etwa 2 Sekunden. Welche Chips rex auf welchem System nutzt, steht unter [Nach Plattform](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform): Unter macOS konvertiert rex immer mit dem Prozessor.
 
 ### Liest es meine lokalen Dateien? {#does-it-read-my-local-files}
 

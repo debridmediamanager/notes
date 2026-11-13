@@ -66,13 +66,13 @@ Oui. Chaque personne avec qui vous partagez rex se connecte avec son propre comp
 
 ### Quel matériel faut-il ? {#what-hardware-does-it-need}
 
-Une machine qui reste allumée, avec Linux (amd64 ou arm64, glibc 2.35 ou plus récent, donc Ubuntu 22.04 et supérieur), macOS (Intel ou Apple Silicon) ou Windows 64 bits. Sur un téléphone, une tablette ou une box TV Android, [rex pour Android](android.md) fait tourner rex et ses addons gratuitement, et l'application réservée aux sponsors zurg+rex, un serveur Plex sur votre téléphone, fait tourner zurg et rex ensemble (voir le [guide Android](../zurg/guides/android.md)).
+Une machine qui reste allumée, sous Linux (amd64 ou arm64, glibc 2.35 ou plus récent, donc Ubuntu 22.04 et supérieur), macOS (Intel ou Apple Silicon) ou Windows 64 bits. Sur un téléphone, une tablette ou une box TV Android, [rex pour Android](android.md) fait tourner rex et ses addons gratuitement. Pour les sponsors, l'application zurg+rex, un serveur Plex sur ton téléphone, connecte aussi ta bibliothèque debrid et Usenet à rex (voir le [guide Android](../zurg/guides/android.md)).
 
-**Mémoire :** prévoyez 1 Go. Sur une bibliothèque de 4 062 films et 656 séries, rex a utilisé moins de 500 Mo au démarrage et environ 730 Mo pendant la navigation dans la bibliothèque. La conversion vidéo demande davantage en plus.
+**Mémoire :** prévois 1 Go. Sur une bibliothèque de 4 062 films et 656 séries, rex a utilisé moins de 500 Mo au démarrage et environ 730 Mo pendant la navigation dans la bibliothèque. La conversion vidéo demande davantage en plus.
 
-**Disque :** rien pour les films. rex garde sa bibliothèque dans `rex.db`. Les téléchargements et les images produites par l'analyse (aperçus de recherche, images de chapitres) sont aussi stockés à côté, si vous les utilisez.
+**Disque :** aucun pour les films. rex garde sa bibliothèque dans `rex.db`. Les téléchargements et les images produites par l'analyse (aperçus de recherche, images de chapitres) sont aussi stockés à côté, si tu les utilises.
 
-**Conversion :** uniquement avec FFmpeg. Une puce graphique la rend rapide : un film en 1080p converti sur une petite puce Intel démarre en environ 2 secondes. Les puces utilisées par rex sur chaque système sont décrites dans [Par plateforme](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform) : sous macOS, la conversion se fait toujours sur le processeur.
+**Conversion :** uniquement avec FFmpeg. Une puce graphique la rend rapide : un film en 1080p converti sur une petite puce Intel démarre en environ 2 secondes. Les puces utilisées par rex sur chaque système sont décrites dans [Par plateforme](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform) : sur macOS, la conversion se fait toujours sur le processeur.
 
 ### Est-ce que ça lit mes fichiers locaux ? {#does-it-read-my-local-files}
 

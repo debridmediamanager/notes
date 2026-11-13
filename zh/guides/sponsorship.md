@@ -42,7 +42,7 @@ DMM 免费使用。赞助费用用于支付托管费用，并让 zurg 和 rex �
 
 ## rex
 
-rex 免费使用，无需赞助，Android 上也是如此：[rex for Android](../rex/android.md) 可以在手机或电视盒子上运行 rex 及其插件。配合密钥使用时，[rex-stremio](../rex/stremio.md) 会添加 DMM 已经有探测结果的种子对应的 debrid 流，几秒内即可完成，无需逐个探测。把密钥粘贴到 rex-stremio 的 **DMM** 栏中即可。除非你关闭此功能，否则它会与 DMM 共享种子文件的探测结果。
+rex 免费使用，不需要赞助，Android 上也一样：[rex for Android](../rex/android.md) 可以在手机或电视盒子上运行 rex 及其插件。赞助者还能使用 zurg+rex（见上方表格），它可以把你的 debrid 和 Usenet 库连接到设备上的 rex。拿到密钥后，[rex-stremio](../rex/stremio.md) 会添加 DMM 已经有探测结果的种子的 debrid 流，几秒钟就能完成，不必逐个探测。把密钥粘贴到 rex-stremio 的 **DMM** 字段中。除非你关闭它，否则它会与 DMM 共享种子文件的探测结果。
 
 ## 帮助 {#help}
 

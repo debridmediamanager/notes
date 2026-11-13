@@ -68,13 +68,13 @@ Plex アプリに **Downloads** があります。rex は、ダウンロード�
 
 ### どんなハードウェアが必要ですか? {#what-hardware-does-it-need}
 
-Linuxを動かせる、電源を入れっぱなしにしておけるマシン（amd64またはarm64、glibc 2.35以降、つまりUbuntu 22.04以降）、macOS（Intel または Apple Silicon）、または64ビットのWindows。Android の電話、タブレット、TVボックスでは、[rex for Android](android.md) で rex とそのアドオンを無料で動かせます。スポンサー限定の zurg+rex アプリ（スマホ上の Plex サーバー）を使えば、zurg と rex を一緒に動かせます（[Android ガイド](../zurg/guides/android.md)を参照）。
+マシンは常時起動しているものを用意してください。Linux（amd64 または arm64、glibc 2.35 以降、つまり Ubuntu 22.04 以降）、macOS（Intel または Apple Silicon）、64 ビット版 Windows に対応しています。Android の携帯電話、タブレット、TV ボックスでは、[Android 版 rex](android.md) で rex とそのアドオンを無料で動かせます。スポンサー向けの zurg+rex アプリ（スマホ上で動く Plex サーバー）を使えば、デブリッドとUsenet のライブラリを rex に接続することもできます（[Android ガイド](../zurg/guides/android.md)を参照）。
 
-**メモリ:** 1 GB を用意してください。4,062 本の映画と 656 本のシリーズがあるライブラリで、rex は起動中は 500 MB 未満、ライブラリを閲覧中は約 730 MB を使っていました。動画の変換にはさらに必要です。
+**メモリ:** 1 GB 用意してください。映画 4,062 本とシリーズ 656 本のライブラリでは、起動時の rex の使用量は 500 MB 未満で、ライブラリを閲覧している間は約 730 MB でした。動画の変換にはこれに加えてメモリが必要です。
 
-**ディスク:** 映画には必要ありません。rex はライブラリを `rex.db` に保存します。ダウンロードや、分析で作られる画像（シーク用プレビュー、チャプター画像）も、使う場合は同じ場所に保存されます。
+**ディスク:** 映画については不要です。rex はライブラリを `rex.db` に保存します。ダウンロードや、分析で作られる画像（シークプレビュー、チャプター画像）もその横に保存されます。使う場合のみです。
 
-**変換:** FFmpeg を使う場合のみ行われます。グラフィックチップがあると速くなります。小型の Intel チップでは、1080p の映画の変換が約 2 秒で始まりました。各システムで rex がどのチップを使うかは、[By platform](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform) にあります。macOS では、変換は常にプロセッサで行われます。
+**変換:** FFmpeg を使う場合のみ行われます。グラフィックチップがあると速くなります。小型の Intel チップで 1080p の映画を変換すると、約 2 秒で開始します。各システムで rex がどのチップを使うかは、[プラットフォーム別](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform)にまとめてあります。macOS では、常にプロセッサで変換されます。
 
 ### ローカルのファイルを読み込みますか? {#does-it-read-my-local-files}
 

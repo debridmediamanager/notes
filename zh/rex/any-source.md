@@ -1,17 +1,17 @@
 # rex 与你自己的应用 {#rex-with-your-own-app}
 
-[rex](https://rex.debridmediamanager.com/zh/) 是一个给官方 Plex 应用用的媒体服务器，本身不存放任何文件。官方 Plex 应用会把它当作普通的 Plex 服务器来看待。另一个程序（本页称之为 **你的应用**）负责告诉 rex 你的库里有什么，并提供文件。当你按下播放时，rex 直接从你的应用把文件流过来，不需要先下载。
+[rex](https://rex.debridmediamanager.com/zh/) ist ein Medienserver für die offiziellen Plex-Apps, der selbst keine Dateien besitzt. Die offiziellen Plex-Apps sehen rex als normalen Plex-Server. Ein anderes Programm, das diese Seite **deine App** nennt, teilt rex mit, was in deiner Bibliothek liegt, und liefert die Dateien aus. Wenn du auf Abspielen drückst, streamt rex die Datei direkt aus deiner App. Es wird nichts vorher heruntergeladen.
 
-本页会带你从零开始，一步一步地把电影播放出来。它不假设你用的是哪个特定应用，而是明确说明 rex 对应用有哪些要求，方便你检查自己的应用是否符合，或者自己动手做一个。每一步都会说明它做什么、为什么重要，以及在继续之前你应该看到什么。
+Diese Seite führt dich Schritt für Schritt von null bis zum ersten abgespielten Film. Sie setzt keine bestimmte App voraus. Sie sagt genau, was rex von einer App erwartet, damit du prüfen kannst, ob deine App das leistet, oder selbst eine bauen kannst. Bei jedem Schritt steht, was er tut, warum er wichtig ist und was du sehen solltest, bevor du weitermachst.
 
-开始之前，有四件事需要了解：
+Vier Dinge solltest du vor dem Start wissen:
 
-- **你的应用负责提供文件。** rex 通过 HTTP 或 HTTPS 从你的应用获取每一个字节，就像浏览器下载文件一样。rex 不保存任何文件，也不需要为媒体准备磁盘或挂载点。
-- **你的应用告诉 rex 它有什么。** 它通过 rex 的 feed API 把文件列表发给 rex，之后每次有变化也都会发送。rex 从不列举文件夹，也从不扫描任何东西。
-- **你的应用决定每个文件是什么。** 它要说明一个文件是电影还是剧集，属于哪个作品（通过 IMDb 和 TMDB 的 id），如果是剧集，还要说明它的季和集号。rex 从不根据文件名猜测。
-- **Plex 负责描述内容。** rex 加入某个 Plex 账号后，会按照 Plex 自己的元数据中这些 id 对应的信息，显示每个作品的名称、海报、简介和剧集名称。如果有 Plex 元数据代理不认识的内容，则由你的应用自己提供名称：详见[构建 rex 插件](addons.md)。
+- **Deine App liefert die Dateien.** rex holt jedes Byte von deiner App über HTTP oder HTTPS, so wie ein Browser eine Datei herunterlädt. rex speichert keine Dateien und braucht für Medien keine Festplatte und kein Mount.
+- **Deine App meldet rex, was sie hat.** Sie schickt rex eine Liste der Dateien über die Feed-API von rex und danach jede Änderung. rex listet nie einen Ordner auf und scannt nichts.
+- **Deine App entscheidet, was jede Datei ist.** Sie sagt, ob eine Datei ein Film oder eine Episode ist, zu welchem Titel sie gehört (per IMDb- und TMDB-ID) und bei einer Episode, welche Staffel und Nummer sie hat. rex rät nie anhand des Dateinamens.
+- **Plex beschreibt es.** Sobald rex mit einem Plex-Konto verbunden ist, zeigt es jeden Titel mit Name, Poster, Zusammenfassung und Episodennamen aus den eigenen Metadaten von Plex für diese IDs. Für Inhalte, die kein Plex-Agent kennt, benennt deine App sie selbst: siehe [Building rex addons](addons.md).
 
-rex 个人使用免费（PolyForm Noncommercial 许可）：没有赞助层级，下载也不需要账号。详见 [rex.debridmediamanager.com](https://rex.debridmediamanager.com/zh/)。如果你只有手机或电视盒子，[rex for Android](android.md) 可以在上面运行 rex 及其插件。
+rex ist für die private Nutzung kostenlos (PolyForm Noncommercial). Es gibt keine Sponsorenstufe und du brauchst kein Konto, um es herunterzuladen. Siehe [rex.debridmediamanager.com](https://rex.debridmediamanager.com/zh/). Hast du nur ein Handy oder eine TV-Box? [rex für Android](android.md) betreibt rex und seine Addons auch darauf. Für Sponsoren verbindet [zurg+rex](../zurg/guides/android.md), ein Plex-Server auf deinem Handy, außerdem deine Debrid- und Usenet-Bibliothek mit rex.
 
 ## 开始之前 {#before-you-start}
 
