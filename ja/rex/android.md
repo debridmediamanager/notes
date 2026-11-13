@@ -18,15 +18,17 @@ rex for Android は無料です。デブリッドのアカウントや Usenet �
 
 ## ステップ 1. ダウンロードする {#step-1-download-it}
 
-[最新のリリース](https://github.com/debridmediamanager/rex-android/releases/latest)をデバイスで開き、お使いのプロセッサ向けのファイルをダウンロードしてください。
+デバイスで、お使いのプロセッサ向けのファイルをダウンロードしてください。各リンクは常に最新版です。
 
 | お使いのデバイス | ダウンロード |
 |---|---|
-| ほとんどのスマートフォン、タブレット、テレビボックス（64ビット） | `rex-android-…-arm64-v8a.apk` |
-| 古いものや安価な32ビットのボックス（Fire TV Stick を含む） | `rex-android-…-armeabi-v7a.apk` |
-| PC 上のエミュレーター | `rex-android-…-x86_64.apk` |
+| ほとんどのスマートフォン、タブレット、TVボックス（64ビット） | [rex-android-arm64-v8a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-arm64-v8a.apk) |
+| 古い、または安価な32ビットのボックス（Fire TV Stickなど） | [rex-android-armeabi-v7a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-armeabi-v7a.apk) |
+| PC上のエミュレーター | [rex-android-x86_64.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-x86_64.apk) |
 
-迷ったら、まず `arm64-v8a` を試してみてください。1つのファイルでスマートフォンもテレビも動きます。
+すべてのバージョンとその変更点は、[リリースページ](https://github.com/debridmediamanager/rex-android/releases)にあります。
+
+迷ったら、まず `arm64-v8a` を試してください。このファイル1つでスマートフォンもTVも動きます。
 
 ## ステップ 2. インストールする {#step-2-install-it}
 

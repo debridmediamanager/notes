@@ -1,19 +1,21 @@
 # zurg+rex para Android y Google TV {#zurgrex-for-android-and-google-tv}
 
-The aplicación para Android ejecuta un motor de zurg en el dispositivo y rex junto a él: tu propio servidor de Plex en tu teléfono o en tu caja de TV, para las apps de Plex. Una sola app funciona en teléfonos, tablets, Android TV y Google TV.
-Se requiere Android 8.0 o más reciente. Fire TV puede instalar el mismo APK mediante sideload. Usa un reproductor WebDAV cuando no tenga una app Files del sistema. Usenet requiere Android de 64 bits; los NZB alojados en TorBox (`torbox_nzb`) no están disponibles en Android.
+El app de Android ejecuta un motor de zurg en el dispositivo y rex junto a él: tu propio servidor de Plex en tu teléfono o en tu caja de TV, para las apps de Plex. Una sola app funciona en teléfonos, tabletas, Android TV y Google TV.
+Se requiere Android 8.0 o más reciente. Fire TV puede instalar el mismo APK por sideload. Usa un reproductor WebDAV cuando no tenga una app de Archivos del sistema. Usenet requiere Android de 64 bits; los NZB alojados en TorBox (`torbox_nzb`) no están disponibles en Android.
+
+¿No tienes cuenta de debrid ni Usenet, solo addons? [rex para Android](../../rex/android.md) es gratis y no necesita patrocinio.
 
 ## Instalar y configurar {#install-and-set-up}
 
-Descarga un APK desde la versión nightly del repositorio privado de patrocinadores. Elige `arm64-v8a` para la mayoría de móviles y cajas de TV, `armeabi-v7a` para dispositivos antiguos de 32 bits o `x86_64` para un emulador o un Chromebook compatible. Todos los APK incluyen las interfaces de móvil y de TV.
+[Descarga un APK](https://zurg.debridmediamanager.com/es/download.html#android) desde la versión nightly del repositorio privado de patrocinadores. Elige `arm64-v8a` para la mayoría de móviles y cajas de TV, `armeabi-v7a` para dispositivos antiguos de 32 bits o `x86_64` para un emulador o un Chromebook compatible. Todos los APK incluyen las interfaces de móvil y de TV.
 
-La app no incluye zurg en sí. Después de iniciar sesión en GitHub, instalas el motor desde dentro de la app. Se requiere una cuenta de patrocinador. Patrocina en [gatekeeper](https://gatekeeper.debridmediamanager.com/) para dar acceso a tu cuenta de GitHub. Setup te guía por el proceso.
+La app no incluye zurg en sí. Después de iniciar sesión en GitHub, instalas el motor desde dentro de la app. Se necesita una cuenta de patrocinador. Patrocina en [gatekeeper](https://gatekeeper.debridmediamanager.com/) para dar acceso a tu cuenta de GitHub. Setup te guía en el proceso.
 
-Permite la instalación desde la app que uses para abrir el APK. Android o Play Protect pueden pedirte que confirmes la instalación desde una fuente externa. El ID de la aplicación es `com.debridmediamanager.zurg`. Las actualizaciones deben conservar la identidad de firma de la versión.
+Permite la instalación desde la app que uses para abrir el APK. Android o Play Protect podrían pedirte que confirmes la instalación de una app externa. El ID de la aplicación es `com.debridmediamanager.zurg`. Las actualizaciones deben conservar la identidad de firma de la versión publicada.
 
-1. Abre zurg e inicia sesión en GitHub, y luego instala una versión del motor. La app no puede iniciar una biblioteca hasta que haya un motor instalado.
-2. Añade las cuentas de los proveedores y prueba las credenciales. Los nombres de las cuentas sirven para distinguir varias cuentas del mismo proveedor. Los límites de conexiones de Usenet incluyen a todos los demás usuarios de esa cuenta.
-3. Elige Phone, Tablet, TV box o TV stick. Los perfiles definen el objetivo de memoria del motor y el tamaño de la caché de disco. Un objetivo de heap de Go no es un límite fijo de RSS.
+1. Abre zurg e inicia sesión en GitHub, luego instala una versión del motor. La app no puede iniciar una biblioteca hasta que haya un motor instalado.
+2. Añade las cuentas de los proveedores y prueba las credenciales. Los nombres de cuenta distinguen varias cuentas del mismo proveedor. Los límites de conexión de Usenet incluyen a todos los demás consumidores de esa cuenta.
+3. Elige Phone, Tablet, TV box o TV stick. Los perfiles establecen el objetivo de memoria del motor y los tamaños de la caché de disco. Un objetivo de heap de Go no es un límite fijo de RSS.
 4. Permite las notificaciones y la ejecución en segundo plano. Activa start after reboot si este dispositivo debe servir la biblioteca siempre.
 5. Inicia la biblioteca. La primera carga de una cuenta grande puede tardar varios minutos. La notificación y la pantalla Status muestran cuándo están listos los directorios.
 

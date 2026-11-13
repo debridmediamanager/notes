@@ -18,15 +18,17 @@ rex for Android مجاني. هل تريد إضافة حسابات debrid و Usen
 
 ## الخطوة 1. نزّله {#step-1-download-it}
 
-افتح [أحدث إصدار](https://github.com/debridmediamanager/rex-android/releases/latest) على الجهاز ونزّل الملف الخاص بمعالجه:
+على الجهاز، نزّل الملف المناسب لمعالجه. كل رابط يشير دائمًا إلى أحدث إصدار:
 
-| جهازك | التنزيل |
+| جهازك | التحميل |
 |---|---|
-| معظم الهواتف والأجهزة اللوحية وصناديق التلفاز (64 بت) | `rex-android-…-arm64-v8a.apk` |
-| الصناديق الأقدم أو الأرخص ذات 32 بت، ومنها Fire TV Sticks | `rex-android-…-armeabi-v7a.apk` |
-| المحاكيات على الحاسوب | `rex-android-…-x86_64.apk` |
+| معظم الهواتف والأجهزة اللوحية وصناديق التلفاز (64-bit) | [rex-android-arm64-v8a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-arm64-v8a.apk) |
+| الصناديق القديمة أو الأرخص ذات 32-bit، ومنها Fire TV Stick | [rex-android-armeabi-v7a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-armeabi-v7a.apk) |
+| المحاكيات على الكمبيوتر | [rex-android-x86_64.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-x86_64.apk) |
 
-لست متأكدًا؟ جرّب `arm64-v8a` أولًا. ملف واحد يعمل على الهواتف والتلفاز على حد سواء.
+كل الإصدارات وتغييراتها موجودة في [صفحة الإصدارات](https://github.com/debridmediamanager/rex-android/releases).
+
+لست متأكدًا؟ جرّب `arm64-v8a` أولًا. الملف الواحد يعمل على الهواتف والتلفاز معًا.
 
 ## الخطوة 2. ثبّته {#step-2-install-it}
 

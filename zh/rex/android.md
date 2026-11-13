@@ -18,15 +18,23 @@ rex for Android 是免费的。如果你也想把你的 debrid 账号和 Usenet 
 
 ## 第 1 步：下载 {#step-1-download-it}
 
-在设备上打开[最新版本](https://github.com/debridmediamanager/rex-android/releases/latest)，下载与其处理器对应的文件：
+```
+在设备上，下载适合其处理器的文件。每个链接始终指向最新版本：
+```
+
+Wait, I should not wrap in a code fence. Correct output:
+
+在设备上，下载适合其处理器的文件。每个链接始终指向最新版本：
 
 | 你的设备 | 下载 |
 |---|---|
-| 大多数手机、平板和电视盒子（64 位） | `rex-android-…-arm64-v8a.apk` |
-| 较旧或较便宜的 32 位盒子，包括 Fire TV Stick | `rex-android-…-armeabi-v7a.apk` |
-| PC 上的模拟器 | `rex-android-…-x86_64.apk` |
+| 大多数手机、平板和电视盒子（64 位） | [rex-android-arm64-v8a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-arm64-v8a.apk) |
+| 较旧或较便宜的 32 位盒子，包括 Fire TV Stick | [rex-android-armeabi-v7a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-armeabi-v7a.apk) |
+| 电脑上的模拟器 | [rex-android-x86_64.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-x86_64.apk) |
 
-不确定？先试试 `arm64-v8a`。这一个文件手机和电视都能用。
+每个版本及其更新内容都在[发布页面](https://github.com/debridmediamanager/rex-android/releases)上。
+
+不确定？先试试 `arm64-v8a`。同一个文件既适用于手机，也适用于电视。
 
 ## 第 2 步：安装 {#step-2-install-it}
 

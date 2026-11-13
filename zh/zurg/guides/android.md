@@ -1,20 +1,22 @@
 # zurg+rex 用于 Android 和 Google TV {#zurgrex-for-android-and-google-tv}
 
-The Android 应用会在设备上运行 zurg 引擎，并在它旁边运行 rex：也就是你自己的 Plex 服务器，跑在手机或电视盒子上，供 Plex 应用使用。同一个应用支持手机、平板、Android TV 和 Google TV。需要 Android 8.0 或更高版本。Fire TV 可以侧载同一个 APK。如果播放器没有系统文件应用，请使用 WebDAV 播放器。Usenet 需要 64 位 Android；TorBox 托管的 NZB（`torbox_nzb`）在 Android 上不可用。
+The Android 应用会在设备上运行 zurg 引擎，并在旁边运行 rex：也就是你自己的 Plex 服务器，跑在手机或电视盒子上，供 Plex 应用使用。同一个应用可用于手机、平板、Android TV 和 Google TV。需要 Android 8.0 或更高版本。Fire TV 可以侧载同一个 APK。如果播放器没有系统文件应用，请使用 WebDAV 播放器。Usenet 需要 64 位 Android；TorBox 托管的 NZB（`torbox_nzb`）在 Android 上不可用。
+
+没有网盘账户，也没有 Usenet，只想用插件？[rex for Android](../../rex/android.md) 是免费的，不需要赞助。
 
 ## 安装与设置 {#install-and-set-up}
 
-从私有赞助者仓库的 nightly 版本中下载 APK。大多数手机和电视盒子选择 `arm64-v8a`，较老的 32 位设备选择 `armeabi-v7a`，模拟器或兼容的 Chromebook 选择 `x86_64`。每个 APK 都包含手机和电视界面。
+[从私有赞助者仓库的 nightly 版本中下载 APK](https://zurg.debridmediamanager.com/zh/download.html#android)。手机和电视盒子大多选择 `arm64-v8a`，老旧的 32 位设备选择 `armeabi-v7a`，模拟器或兼容的 Chromebook 选择 `x86_64`。每个 APK 都同时包含手机和电视界面。
 
-应用本身不包含 zurg。登录 GitHub 后，你需要在应用内安装引擎。必须是赞助者账户才能使用。在 [gatekeeper](https://gatekeeper.debridmediamanager.com/) 上赞助一下，就能让你的 GitHub 账户获得访问权限。Setup 会一步步带你完成。
+应用本身不包含 zurg。登录 GitHub 后，你需要在应用内安装引擎。使用前需要赞助者账号。请在 [gatekeeper](https://gatekeeper.debridmediamanager.com/) 上成为赞助者，以便为你的 GitHub 账号开通访问权限。Setup 会一步步引导你完成这些操作。
 
-请允许从你打开 APK 所用的应用安装。Android 或 Play Protect 可能会要求你确认侧载。应用 ID 是 `com.debridmediamanager.zurg`。更新时必须保留发布签名身份，否则无法覆盖安装。
+允许安装来自用于打开 APK 的应用的软件。Android 或 Play Protect 可能会要求你确认侧载。应用 ID 为 `com.debridmediamanager.zurg`。更新时必须保持与正式发布版相同的签名身份。
 
-1. 打开 zurg 并登录 GitHub，然后安装一个引擎版本。没装引擎之前，应用无法启动媒体库。
-2. 添加网盘账户并测试凭据。同一个服务商下有多个账户时，用账户名加以区分。Usenet 的连接数限制会计入该账户的所有其他使用者。
-3. 选择 Phone、Tablet、TV box 或 TV stick。配置文件会设置引擎的内存目标和磁盘缓存大小。Go 堆目标并不是硬性的 RSS 上限。
-4. 允许通知和后台运行。如果这台设备需要一直提供媒体库服务，请开启 start after reboot。
-5. 启动媒体库。账户内容较多时，首次加载可能需要好几分钟。通知和 Status 界面会显示目录何时准备就绪。
+1. 打开 zurg 并登录 GitHub，然后安装一个引擎版本。在安装引擎之前，应用无法启动媒体库。
+2. 添加服务商账号并测试凭据。账号名称用于区分同一服务商下的多个账号。Usenet 的连接数上限由该账号的所有其他使用者共享。
+3. 选择 Phone、Tablet、TV box 或 TV stick。这些配置文件会设置引擎的内存目标和磁盘缓存大小。Go 堆目标并不是硬性的 RSS 上限。
+4. 允许通知和后台运行。如果这台设备需要始终提供媒体库服务，请启用重启后自动启动。
+5. 启动媒体库。账号内容较多时，首次加载可能需要几分钟。通知和 Status 界面会显示目录何时准备就绪。
 
 ## 在本设备上观看 {#watch-on-this-device}
 

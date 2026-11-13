@@ -6,9 +6,12 @@ Android 8.0 or newer is required. Fire TV can sideload the same APK. Use a WebDA
 no system Files app. Usenet requires 64-bit Android; TorBox hosted NZBs (`torbox_nzb`) are not
 available on Android.
 
+No debrid account or Usenet, just addons? [rex for Android](../../rex/android.md) is free and needs no
+sponsorship.
+
 ## Install and set up
 
-Download an APK from the private sponsor repository's nightly release. Choose `arm64-v8a` for
+[Download an APK](https://zurg.debridmediamanager.com/download.html#android) from the private sponsor repository's nightly release. Choose `arm64-v8a` for
 most phones and TV boxes `armeabi-v7a` for older 32-bit devices or `x86_64` for an emulator or
 compatible Chromebook. Every APK includes the phone and TV interfaces.
 

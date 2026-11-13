@@ -18,15 +18,17 @@ Ele ainda não está no Google Play. Você mesmo instala o arquivo do app (APK).
 
 ## Passo 1. Baixe {#step-1-download-it}
 
-Abra [a versão mais recente](https://github.com/debridmediamanager/rex-android/releases/latest) no dispositivo e baixe o arquivo para o processador dele:
+No dispositivo, baixe o arquivo para o processador dele. Cada link sempre aponta para a versão mais nova:
 
 | Seu dispositivo | Download |
 |---|---|
-| A maioria dos celulares, tablets e TV boxes (64 bits) | `rex-android-…-arm64-v8a.apk` |
-| TV boxes e dispositivos mais antigos ou baratos de 32 bits, incluindo o Fire TV Stick | `rex-android-…-armeabi-v7a.apk` |
-| Emuladores em PC | `rex-android-…-x86_64.apk` |
+| A maioria dos celulares, tablets e TV boxes (64 bits) | [rex-android-arm64-v8a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-arm64-v8a.apk) |
+| TV boxes mais antigos ou baratos de 32 bits, incluindo os Fire TV Stick | [rex-android-armeabi-v7a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-armeabi-v7a.apk) |
+| Emuladores em um PC | [rex-android-x86_64.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-x86_64.apk) |
 
-Não tem certeza? Experimente primeiro o `arm64-v8a`. Um único arquivo funciona tanto em celulares quanto em TVs.
+Todas as versões e suas mudanças estão na [página de releases](https://github.com/debridmediamanager/rex-android/releases).
+
+Não tem certeza? Experimente `arm64-v8a` primeiro. Um único arquivo funciona tanto em celulares quanto em TVs.
 
 ## Passo 2. Instale {#step-2-install-it}
 

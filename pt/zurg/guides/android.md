@@ -1,28 +1,22 @@
 # zurg+rex para Android e Google TV {#zurgrex-for-android-and-google-tv}
 
-The aplicativo Android roda um motor zurg no próprio dispositivo e o rex ao lado dele: o seu próprio servidor Plex no seu celular ou na sua TV box, para os apps do Plex. Um único app funciona em celulares, tablets, Android TV e Google TV. É necessário Android 8.0 ou mais recente. O Fire TV pode instalar o mesmo APK por sideload. Use um player WebDAV quando não houver um app Arquivos do sistema. O Usenet exige Android de 64 bits; os NZBs hospedados no TorBox (`torbox_nzb`) não estão disponíveis no Android.
+The aplicativo para Android roda um motor zurg no próprio dispositivo, com o rex ao lado dele: o seu próprio servidor Plex no celular ou no box de TV, para os aplicativos do Plex. Um único app funciona em celulares, tablets, Android TV e Google TV. É preciso Android 8.0 ou mais recente. O Fire TV pode instalar o mesmo APK por sideload. Use um player WebDAV quando ele não tiver um app de Arquivos do sistema. O Usenet exige Android de 64 bits; os NZBs hospedados no TorBox (`torbox_nzb`) não estão disponíveis no Android.
+
+Não tem conta de debrid nem Usenet, só addons? [rex para Android](../../rex/android.md) é gratuito e não precisa de patrocínio.
 
 ## Instalar e configurar {#install-and-set-up}
 
-Baixe um APK da release noturna (nightly) do repositório privado de sponsors. Escolha `arm64-v8a` para a maioria dos celulares e TV boxes, `armeabi-v7a` para dispositivos 32 bits mais antigos, ou `x86_64` para um emulador ou um Chromebook compatível. Todos os APKs incluem as interfaces de celular e de TV.
+[Baixe um APK](https://zurg.debridmediamanager.com/pt/download.html#android) no lançamento noturno (nightly) do repositório privado de patrocinadores. Escolha `arm64-v8a` para a maioria dos celulares e TV boxes, `armeabi-v7a` para dispositivos antigos de 32 bits ou `x86_64` para um emulador ou Chromebook compatível. Todo APK inclui as interfaces de celular e de TV.
 
-O app não contém o próprio zurg. Depois de fazer login no GitHub, você instala o engine pelo próprio app. É necessário ter uma conta de sponsor. Faça sponsor no [gatekeeper](https://gatekeeper.debridmediamanager.com/) para dar acesso à sua conta do GitHub. O Setup guia você nesse processo.
+O app não contém o zurg em si. Depois de entrar com sua conta do GitHub, você instala o motor (engine) pelo próprio app. É preciso ter uma conta de patrocinador. Patrocine no [gatekeeper](https://gatekeeper.debridmediamanager.com/) para dar acesso à sua conta do GitHub. O Setup te guia nesse processo.
 
-Permita a instalação a partir do app usado para abrir o APK. O Android ou o Play Protect podem pedir para você confirmar a instalação de fonte externa. O ID do aplicativo é `com.debridmediamanager.zurg`. As atualizações precisam manter a mesma assinatura de release.
+Permita a instalação a partir do app que você usou para abrir o APK. O Android ou o Play Protect podem pedir para você confirmar a instalação de fonte externa. O ID do aplicativo é `com.debridmediamanager.zurg`. As atualizações precisam manter a mesma assinatura de lançamento.
 
-1. Abra o zurg, faça login no GitHub e depois instale uma versão do engine. O app
-   não consegue iniciar uma biblioteca enquanto nenhum engine estiver instalado.
-2. Adicione as contas dos provedores e teste as credenciais. Os nomes das contas
-   diferenciam várias contas no mesmo provedor. Os limites de conexão Usenet valem
-   para todos os outros consumidores daquela conta.
-3. Escolha Phone, Tablet, TV box ou TV stick. Os perfis definem a meta de memória
-   do engine e o tamanho do cache em disco. A meta de heap do Go não é um limite
-   rígido de RSS.
-4. Permita as notificações e a execução em segundo plano. Ative start after reboot se
-   este dispositivo deve servir a biblioteca o tempo todo.
-5. Inicie a biblioteca. No primeiro carregamento de uma conta grande, isso pode levar
-   vários minutos. A notificação e a tela Status mostram quando os diretórios estiverem
-   prontos.
+1. Abra o zurg, entre com sua conta do GitHub e depois instale uma versão do engine. O app não consegue iniciar uma biblioteca enquanto um engine não estiver instalado.
+2. Adicione as contas dos provedores e teste as credenciais. Os nomes das contas diferenciam várias contas no mesmo provedor. Os limites de conexão Usenet valem para todos os outros consumidores daquela conta.
+3. Escolha Phone, Tablet, TV box ou TV stick. Os perfis definem a meta de memória do engine e o tamanho do cache em disco. Uma meta de heap do Go não é um limite fixo de RSS.
+4. Permita notificações e a execução em segundo plano. Ative o início após reinicialização se este dispositivo deve servir a biblioteca o tempo todo.
+5. Inicie a biblioteca. O primeiro carregamento de uma conta grande pode levar vários minutos. A notificação e a tela Status mostram quando os diretórios estiverem prontos.
 
 ## Assistir neste dispositivo {#watch-on-this-device}
 

@@ -18,15 +18,17 @@ rex для Android бесплатен. Хотите добавить в него
 
 ## Шаг 1. Скачайте его {#step-1-download-it}
 
-Откройте [последний релиз](https://github.com/debridmediamanager/rex-android/releases/latest) на устройстве и скачайте файл для его процессора:
+На устройстве скачай файл для его процессора. Каждая ссылка всегда ведёт на самую новую версию:
 
-| Ваше устройство | Загрузка |
+| Твоё устройство | Скачать |
 |---|---|
-| Большинство телефонов, планшетов и ТВ-приставок (64-бит) | `rex-android-…-arm64-v8a.apk` |
-| Старые или дешёвые 32-битные приставки, в том числе Fire TV Stick | `rex-android-…-armeabi-v7a.apk` |
-| Эмуляторы на ПК | `rex-android-…-x86_64.apk` |
+| Большинство телефонов, планшетов и ТВ-приставок (64-битные) | [rex-android-arm64-v8a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-arm64-v8a.apk) |
+| Старые или дешёвые 32-битные приставки, в том числе Fire TV Stick | [rex-android-armeabi-v7a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-armeabi-v7a.apk) |
+| Эмуляторы на ПК | [rex-android-x86_64.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-x86_64.apk) |
 
-Не уверены? Сначала попробуйте `arm64-v8a`. Один файл подходит и для телефонов, и для ТВ.
+Все версии и их изменения есть на [странице релизов](https://github.com/debridmediamanager/rex-android/releases).
+
+Не уверен? Сначала попробуй `arm64-v8a`. Один файл подходит и для телефонов, и для ТВ.
 
 ## Шаг 2. Установите его {#step-2-install-it}
 

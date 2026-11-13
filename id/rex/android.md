@@ -18,15 +18,17 @@ Aplikasi ini belum ada di Google Play. Anda perlu memasang file aplikasinya (APK
 
 ## Langkah 1. Unduh {#step-1-download-it}
 
-Buka [rilis terbaru](https://github.com/debridmediamanager/rex-android/releases/latest) di perangkat Anda dan unduh file untuk prosesornya:
-
-| Perangkat Anda | Unduhan |
+| Perangkat Anda | Unduh |
 |---|---|
-| Sebagian besar ponsel, tablet, dan TV box (64-bit) | `rex-android-…-arm64-v8a.apk` |
-| Box 32-bit yang lebih tua atau lebih murah, termasuk Fire TV Stick | `rex-android-…-armeabi-v7a.apk` |
-| Emulator di PC | `rex-android-…-x86_64.apk` |
+| Sebagian besar ponsel, tablet, dan TV box (64-bit) | [rex-android-arm64-v8a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-arm64-v8a.apk) |
+| Box 32-bit yang lebih lama atau lebih murah, termasuk Fire TV Stick | [rex-android-armeabi-v7a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-armeabi-v7a.apk) |
+| Emulator di PC | [rex-android-x86_64.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-x86_64.apk) |
 
-Belum yakin? Coba `arm64-v8a` dulu. Satu file bisa dipakai di ponsel maupun TV.
+Pada perangkat Anda, unduh file yang sesuai dengan prosesornya. Setiap tautan selalu mengarah ke versi terbaru.
+
+Semua versi beserta perubahannya ada di [halaman rilis](https://github.com/debridmediamanager/rex-android/releases).
+
+Belum yakin? Coba `arm64-v8a` dulu. Satu file ini bisa dipakai di ponsel maupun TV.
 
 ## Langkah 2. Pasang {#step-2-install-it}
 

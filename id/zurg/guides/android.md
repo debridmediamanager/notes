@@ -1,20 +1,25 @@
 # zurg+rex untuk Android dan Google TV {#zurgrex-for-android-and-google-tv}
 
-Aplikasi Android menjalankan mesin zurg di perangkat dan rex di sebelahnya: server Plex milik Anda sendiri di ponsel atau kotak TV Anda, untuk aplikasi Plex. Satu aplikasi berfungsi di ponsel, tablet, Android TV, dan Google TV. Android 8.0 atau yang lebih baru diperlukan. Fire TV bisa memasang APK yang sama lewat sideload. Gunakan pemutar WebDAV jika perangkat tidak punya aplikasi Files bawaan sistem. Usenet memerlukan Android 64-bit; NZB yang di-host TorBox (`torbox_nzb`) tidak tersedia di Android.
+Aplikasi Android menjalankan mesin zurg di perangkat dan rex di sampingnya: server Plex Anda sendiri di ponsel atau kotak TV Anda, untuk aplikasi Plex. Satu aplikasi berfungsi di ponsel, tablet, Android TV, dan Google TV. Android 8.0 atau yang lebih baru diperlukan. Fire TV dapat memasang APK yang sama lewat sideload. Gunakan pemutar WebDAV jika tidak ada aplikasi Files bawaan sistem. Usenet memerlukan Android 64-bit; NZB yang di-host TorBox (`torbox_nzb`) tidak tersedia di Android.
+
+Tidak punya akun debrid atau Usenet, hanya addon? [rex untuk Android](../../rex/android.md) gratis dan tidak perlu sponsorship.
 
 ## Pasang dan atur {#install-and-set-up}
 
-Unduh APK dari rilis nightly repositori sponsor pribadi. Pilih `arm64-v8a` untuk sebagian besar ponsel dan TV box, `armeabi-v7a` untuk perangkat 32-bit yang lebih lama, atau `x86_64` untuk emulator atau Chromebook yang kompatibel. Setiap APK sudah menyertakan antarmuka ponsel dan TV.
+[Unduh APK](https://zurg.debridmediamanager.com/id/download.html#android) dari rilis nightly di repositori sponsor pribadi. Pilih `arm64-v8a` untuk
+kebanyakan ponsel dan TV box, `armeabi-v7a` untuk perangkat 32-bit yang lebih lama, atau `x86_64` untuk emulator atau
+Chromebook yang kompatibel. Setiap APK sudah menyertakan antarmuka ponsel dan TV.
 
-Aplikasinya tidak berisi zurg itu sendiri. Setelah masuk ke GitHub, kamu instal engine dari dalam aplikasi. Akun sponsor diperlukan. Jadi sponsori dulu di [gatekeeper](https://gatekeeper.debridmediamanager.com/) agar akun GitHub kamu mendapat akses. Setup akan memandumu melakukannya.
+Aplikasi ini tidak berisi zurg itu sendiri. Setelah masuk ke GitHub, kamu instal engine dari dalam aplikasi. Akun sponsor diperlukan. Jadi sponsor di [gatekeeper](https://gatekeeper.debridmediamanager.com/) untuk memberi akun GitHub kamu akses. Setup akan memandu kamu melewati langkah ini.
 
-Izinkan instalasi dari aplikasi yang kamu pakai untuk membuka APK. Android atau Play Protect mungkin meminta konfirmasi untuk sideloading. ID aplikasinya adalah `com.debridmediamanager.zurg`. Pembaruan harus tetap menggunakan identitas penandatanganan rilis yang sama.
+Izinkan instalasi dari aplikasi yang kamu pakai untuk membuka APK. Android atau Play Protect mungkin meminta kamu mengonfirmasi sideloading. ID aplikasinya adalah `com.debridmediamanager.zurg`. Update harus mempertahankan identitas penandatanganan rilis.
 
-1. Buka zurg dan masuk ke GitHub, lalu instal salah satu versi engine. Aplikasi tidak bisa memulai library sebelum engine terpasang.
-2. Tambahkan akun provider dan uji kredensialnya. Nama akun membedakan beberapa akun di provider yang sama. Batas koneksi Usenet berlaku untuk semua pengguna lain dari akun tersebut.
-3. Pilih Phone, Tablet, TV box, atau TV stick. Profil ini menentukan target memori dan ukuran cache disk engine. Target heap Go bukan batas RSS yang pasti.
-4. Izinkan notifikasi dan operasi di latar belakang. Aktifkan start after reboot jika perangkat ini harus selalu menyajikan library.
-5. Mulai library. Pemuatan pertama untuk akun yang besar bisa memakan waktu beberapa menit. Notifikasi dan layar Status menunjukkan kapan direktori sudah siap.
+1. Buka zurg dan masuk ke GitHub, lalu instal versi engine. Aplikasi
+   tidak bisa memulai library sebelum engine terpasang.
+2. Tambahkan akun provider dan uji kredensialnya. Nama akun membedakan beberapa akun di provider yang sama. Batas koneksi Usenet mencakup semua pemakai lain dari akun tersebut.
+3. Pilih Phone, Tablet, TV box, atau TV stick. Profil mengatur target memori engine dan ukuran cache disk. Target heap Go bukan batas RSS yang ketat.
+4. Izinkan notifikasi dan operasi latar belakang. Aktifkan start after reboot jika perangkat ini harus selalu menyajikan library.
+5. Mulai library. Pemuatan pertama untuk akun besar bisa memakan waktu beberapa menit. Notifikasi dan layar Status menunjukkan kapan direktori sudah siap.
 
 ## Tonton di perangkat ini {#watch-on-this-device}
 

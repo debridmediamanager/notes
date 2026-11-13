@@ -1,23 +1,28 @@
 # zurg+rex pour Android et Google TV {#zurgrex-for-android-and-google-tv}
 
-L'application Android fait tourner un moteur zurg sur l'appareil, avec rex à côté : votre propre serveur Plex sur votre téléphone ou votre boîtier TV, pour les applications Plex. Une seule application fonctionne sur les téléphones, les tablettes, Android TV et Google TV.
-Android 8.0 ou plus récent est requis. Fire TV peut installer le même APK en sideload. Utilisez un lecteur WebDAV lorsqu'il n'a pas d'application Fichiers système. Usenet nécessite Android 64 bits ; les NZB hébergés par TorBox (`torbox_nzb`) ne sont pas disponibles sur Android.
+L'application Android fait tourner un moteur zurg sur l'appareil, avec rex à côté : votre propre serveur Plex sur votre téléphone ou votre boîtier TV, pour les applications Plex. Une seule application fonctionne sur les téléphones, les tablettes, Android TV et Google TV. Android 8.0 ou plus récent est requis. Fire TV peut installer le même APK en sideload. Utilisez un lecteur WebDAV lorsqu'il n'y a pas d'application Fichiers système. Usenet nécessite Android 64 bits ; les NZB hébergés par TorBox (`torbox_nzb`) ne sont pas disponibles sur Android.
+
+Pas de compte debrid ni d'Usenet, juste des addons ? [rex pour Android](../../rex/android.md) est gratuit et ne demande aucun parrainage.
 
 ## Installer et configurer {#install-and-set-up}
 
-Télécharge un APK depuis la release nightly du dépôt privé réservé aux sponsors.
-Choisis `arm64-v8a` pour la plupart des téléphones et des boîtiers TV, `armeabi-v7a` pour les anciens appareils 32 bits, ou `x86_64` pour un émulateur ou un Chromebook compatible.
-Chaque APK inclut les interfaces téléphone et TV.
+[Télécharge un APK](https://zurg.debridmediamanager.com/fr/download.html#android) depuis la version nightly du dépôt privé du sponsor. Choisis `arm64-v8a` pour la plupart des téléphones et boîtiers TV, `armeabi-v7a` pour les anciens appareils 32 bits, ou `x86_64` pour un émulateur ou un Chromebook compatible. Chaque APK inclut les interfaces téléphone et TV.
 
-L'appli ne contient pas zurg lui-même. Une fois connecté à GitHub, tu installes le moteur depuis l'appli. Un compte sponsor est obligatoire. Sponsorise [gatekeeper](https://gatekeeper.debridmediamanager.com/) pour donner accès à ton compte GitHub. Setup te guide pas à pas.
+L'application ne contient pas zurg lui-même. Après t'être connecté à GitHub, tu installes le moteur depuis l'application. Un compte sponsor est nécessaire. Deviens sponsor sur [gatekeeper](https://gatekeeper.debridmediamanager.com/) pour donner accès à ton compte GitHub. Setup te guide pas à pas.
 
-Autorise l'installation depuis l'appli utilisée pour ouvrir l'APK. Android ou Play Protect peuvent te demander de confirmer le sideloading. L'identifiant de l'application est `com.debridmediamanager.zurg`. Les mises à jour doivent conserver la même identité de signature de release.
+Autorise l'installation depuis l'application que tu utilises pour ouvrir l'APK. Android ou Play Protect peuvent te demander de confirmer l'installation hors Play Store. L'identifiant de l'application est `com.debridmediamanager.zurg`. Les mises à jour doivent conserver la même identité de signature que la version de release.
 
-1. Ouvre zurg et connecte-toi à GitHub, puis installe une version du moteur. L'appli ne peut pas démarrer une bibliothèque tant qu'aucun moteur n'est installé.
-2. Ajoute tes comptes fournisseurs et teste les identifiants. Les noms de compte permettent de distinguer plusieurs comptes chez le même fournisseur. Les limites de connexions Usenet comptent toutes les autres utilisations de ce compte.
-3. Choisis Phone, Tablet, TV box ou TV stick. Les profils définissent la cible de mémoire du moteur et la taille du cache disque. Une cible de heap Go n'est pas une limite RSS stricte.
-4. Autorise les notifications et le fonctionnement en arrière-plan. Active start after reboot si cet appareil doit toujours servir la bibliothèque.
-5. Démarre la bibliothèque. Le premier chargement d'un gros compte peut prendre plusieurs minutes. La notification et l'écran Status indiquent quand les dossiers sont prêts.
+1. Ouvre zurg, connecte-toi à GitHub, puis installe une version du moteur. L'application
+   ne peut pas démarrer une bibliothèque tant qu'un moteur n'est pas installé.
+2. Ajoute tes comptes de fournisseurs et teste les identifiants. Les noms de comptes permettent
+   de distinguer plusieurs comptes chez un même fournisseur. Les limites de connexions Usenet
+   incluent tous les autres utilisateurs de ce compte.
+3. Choisis Phone, Tablet, TV box ou TV stick. Les profils définissent la cible de mémoire du moteur
+   et la taille du cache disque. Une cible de heap Go n'est pas une limite stricte de RSS.
+4. Autorise les notifications et le fonctionnement en arrière-plan. Active start after reboot si
+   cet appareil doit toujours servir la bibliothèque.
+5. Démarre la bibliothèque. Le premier chargement d'un grand compte peut prendre plusieurs minutes.
+   La notification et l'écran Status indiquent quand les dossiers sont prêts.
 
 ## Regarder sur cet appareil {#watch-on-this-device}
 
