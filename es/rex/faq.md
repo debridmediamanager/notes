@@ -12,16 +12,16 @@ Es un servidor propio. No es un plugin de Plex Media Server y no lo necesita. Ej
 
 ### ¿Cuánto cuesta? {#what-does-it-cost}
 
-rex es gratis para uso personal y no tiene un plan de pago. Su código fuente es público bajo la licencia PolyForm Noncommercial. No se permite el uso comercial. Todas las versiones se publican en [GitHub Releases](https://github.com/debridmediamanager/rex/releases), excepto la versión para Android, que solo viene dentro de la app [zurg+rex Android](../zurg/guides/android.md) para patrocinadores, un servidor Plex en tu teléfono.
+rex es gratis para uso personal, sin plan de pago. Su código fuente es público bajo la licencia PolyForm Noncommercial. No se permite el uso comercial. Cada versión está publicada en [GitHub Releases](https://github.com/debridmediamanager/rex/releases), y la app de Android, en las versiones de [rex for Android](https://github.com/debridmediamanager/rex-android/releases).
 
-Algunas cosas que lo rodean sí pueden costar algo:
+Algunas cosas que están alrededor pueden tener un coste:
 
 | | |
 |---|---|
 | [rex-stremio](stremio.md), tu propia app o un addon como fuente | Gratis |
 | zurg nightly, una fuente para una biblioteca de debrid o Usenet | Una ventaja para los [patrocinadores de DMM](https://gatekeeper.debridmediamanager.com) |
-| Una clave API de DMM, para las coincidencias exactas de DMM en zurg | Opcional, también al patrocinar DMM |
-| La imagen Docker de rex | Gratis y pública, para Linux: [rex en Docker](any-source.md#run-rex-in-docker) |
+| Una API key de DMM, para las coincidencias exactas de DMM en zurg | Opcional, también se obtiene al patrocinar DMM |
+| La imagen de Docker de rex | Gratis y pública, para Linux: [rex en Docker](any-source.md#run-rex-in-docker) |
 
 ### ¿Corre peligro mi cuenta de Plex? {#is-my-plex-account-at-risk}
 
@@ -68,13 +68,13 @@ Sí. Cada persona con la que compartes rex inicia sesión con su propia cuenta y
 
 ### ¿Qué hardware necesita? {#what-hardware-does-it-need}
 
-Una máquina que esté siempre encendida, con Linux (amd64 o arm64, glibc 2.35 o más reciente, es decir, Ubuntu 22.04 o superior), macOS (Intel o Apple Silicon) o Windows de 64 bits; o la app de Android de zurg+rex en un dispositivo Android/Google TV (de 64 bits hasta el nightly del 11 de noviembre de 2026), que ejecuta zurg y rex juntos (solo para patrocinadores; consulta la [guía de Android](../zurg/guides/android.md)).
+Una máquina que esté siempre encendida, con Linux (amd64 o arm64, glibc 2.35 o posterior, es decir, Ubuntu 22.04 y superiores), macOS (Intel o Apple Silicon) o Windows de 64 bits. En un teléfono, tablet o caja TV Android, [rex for Android](https://github.com/debridmediamanager/rex-android) ejecuta rex y sus addons gratis, y la app solo para patrocinadores zurg+rex, un servidor Plex en tu teléfono, ejecuta zurg y rex juntos (consulta la [guía de Android](../zurg/guides/android.md)).
 
-**Memoria:** asigna 1 GB. Con una biblioteca de 4.062 películas y 656 series, rex usó menos de 500 MB al arrancar y unos 730 MB mientras se navegaba por la biblioteca. La conversión de vídeo necesita más memoria además de esto.
+**Memoria:** asigna 1 GB. Con una biblioteca de 4.062 películas y 656 series, rex usó menos de 500 MB al arrancar y unos 730 MB mientras se navegaba la biblioteca. Convertir vídeo necesita más además de eso.
 
-**Disco:** nada para las películas. rex guarda su biblioteca en `rex.db`. Las descargas y las imágenes que genera el análisis (vistas previas de búsqueda, imágenes de capítulos) también se guardan junto a él, si las usas.
+**Disco:** no hace falta para películas. rex guarda su biblioteca en `rex.db`. Las descargas y las imágenes que genera el análisis (vistas previas de búsqueda, imágenes de capítulos) también se guardan junto a él, si las usas.
 
-**Conversión:** solo con FFmpeg. Una GPU lo hace rápido: una película de 1080p convertida en un chip Intel pequeño empieza en unos 2 segundos. Qué chips usa rex en cada sistema está en [By platform](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform): en macOS siempre convierte con el procesador.
+**Conversión:** solo con FFmpeg. Un chip gráfico la hace rápida: una película en 1080p convertida en un chip Intel pequeño empieza en unos 2 segundos. Qué chips usa rex en cada sistema está en [By platform](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform): en macOS siempre convierte con el procesador.
 
 ### ¿Lee mis archivos locales? {#does-it-read-my-local-files}
 

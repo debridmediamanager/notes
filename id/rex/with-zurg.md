@@ -1,19 +1,19 @@
 # rex dengan zurg {#rex-with-zurg}
 
-[rex](https://rex.debridmediamanager.com/id/) adalah media server untuk aplikasi Plex resmi yang tidak menyimpan file apa pun. Aplikasi Plex resmi menganggapnya sebagai server Plex biasa. Aplikasi lain juga bisa mengisinya ([rex dengan aplikasi sendiri](any-source.md)). Halaman ini menyiapkannya dengan zurg, yang mengirim perpustakaan debrid kamu ke rex. Saat kamu menekan putar, rex langsung mengalirkan file dari zurg. Tidak ada yang diunduh dulu.
+[rex](https://rex.debridmediamanager.com/id/) adalah media server untuk aplikasi resmi Plex yang tidak menyimpan file apa pun. Aplikasi resmi Plex melihatnya sebagai server Plex biasa. Aplikasi apa pun bisa mengisinya ([rex dengan aplikasi sendiri](any-source.md)). Halaman ini menyiapkannya dengan zurg, yang mengirimkan library debrid kamu ke rex. Saat kamu menekan play, rex langsung men-stream file dari zurg. Tidak ada yang didownload dulu.
 
-Halaman ini memandu kamu dari nol sampai bisa memutar film, satu langkah demi satu langkah. Setiap langkah menjelaskan apa yang dilakukannya, kenapa penting, dan apa yang seharusnya kamu lihat sebelum lanjut. Kalau yang kamu lihat tidak sesuai, berhenti dulu di situ. Langkah berikutnya tidak akan memperbaikinya.
+Halaman ini memandu kamu dari nol sampai bisa memutar film, satu langkah demi satu langkah. Setiap langkah menjelaskan apa yang dilakukannya, kenapa itu penting, dan apa yang seharusnya kamu lihat sebelum lanjut. Kalau yang kamu lihat tidak sesuai, berhenti dulu di situ. Langkah berikutnya tidak akan memperbaikinya.
 
-![zurg mendaftar ke rex dan mengirim perpustakaannya; aplikasi Plex memutar lewat rex, yang membaca setiap file dari zurg](../assets/rex/how-it-fits.svg)
+![zurg mendaftar ke rex dan mengirimkan library-nya; aplikasi Plex memutar lewat rex, yang membaca setiap file dari zurg](../assets/rex/how-it-fits.svg)
 
 Ada empat hal yang perlu kamu tahu sebelum mulai:
 
-- **zurg adalah bagian yang berbicara dengan layanan debrid kamu.** Ia mendaftar apa saja yang ada di akunmu dan menyajikan file-filenya.
-- **rex adalah bagian yang diajak bicara aplikasi Plex kamu.** Ia tidak menyimpan file dan tidak butuh disk untuk media. Ia juga tidak butuh rclone atau mount.
-- **zurg memberi tahu rex tentang dirinya sendiri.** Kamu memberi zurg alamat rex, dan sisanya zurg yang urus. Kamu tidak perlu mengetik detail zurg di rex.
-- **zurg dan DMM menentukan file itu apa; Plex yang mendeskripsikannya.** zurg bertanya ke DMM film atau episode mana setiap file itu, lalu rex menampilkan judulnya dengan poster dan ringkasan dari metadata Plex, begitu rex terhubung ke akun Plex. rex tidak pernah menebak dari nama file.
+- **zurg adalah bagian yang berbicara dengan layanan debrid kamu.** Ia mendaftar isi akun kamu dan menyajikan file-nya.
+- **rex adalah bagian yang dihubungi aplikasi Plex kamu.** Ia tidak menyimpan file dan tidak butuh disk untuk media. Ia tidak perlu rclone atau mount.
+- **zurg memberi tahu rex tentang dirinya sendiri.** Kamu memberi zurg alamat rex, lalu zurg mengurus sisanya. Kamu tidak perlu mengetik detail zurg ke rex.
+- **zurg dan DMM menentukan apa isi setiap file; Plex yang mendeskripsikannya.** zurg bertanya ke DMM film atau episode apa tiap file itu, lalu rex menampilkan judulnya dengan poster dan ringkasan dari metadata Plex, setelah rex terhubung ke akun Plex. rex tidak pernah menebak dari nama file.
 
-rex gratis untuk penggunaan pribadi (PolyForm Noncommercial): tidak ada tingkat sponsor dan kamu tidak perlu akun untuk mengunduhnya. Rilis nightly zurg yang dipakai panduan ini tetap merupakan rilis sponsor. [rex dengan aplikasi sendiri](any-source.md) menjalankan rex tanpa rilis itu.
+rex gratis untuk penggunaan pribadi (PolyForm Noncommercial): tidak ada tingkat sponsor dan kamu tidak perlu akun untuk mengunduhnya. Rilis nightly zurg yang dipakai panduan ini tetap berupa rilis sponsor. [rex dengan aplikasi sendiri](any-source.md) menjalankan rex tanpa itu. Hanya punya ponsel atau TV box? zurg+rex, sebuah server Plex di ponsel kamu, menjalankan zurg dan rex bersamaan di perangkat itu: lihat [panduan Android](../zurg/guides/android.md).
 
 ## Sebelum kamu mulai {#before-you-start}
 

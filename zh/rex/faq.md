@@ -12,15 +12,15 @@ A 媒体服务器，供官方 Plex 应用使用，本身不存储任何文件。
 
 ### 多少钱？ {#what-does-it-cost}
 
-rex 对个人使用免费，没有付费版本。它的源代码以 PolyForm Noncommercial 许可证公开。不允许商业使用。每个构建版本都公开发布在 [GitHub Releases](https://github.com/debridmediamanager/rex/releases) 上，唯一例外是 Android 版本。Android 版本只包含在仅限赞助者使用的 [zurg+rex Android app](../zurg/guides/android.md) 中，它是一个运行在你手机上的 Plex 服务器。
+rex 对个人使用免费，没有付费版本。它的源代码以 PolyForm Noncommercial 许可证公开。不允许商业使用。每个版本都公开发布在 [GitHub Releases](https://github.com/debridmediamanager/rex/releases)，Android 应用则在 [rex for Android 的](https://github.com/debridmediamanager/rex-android/releases) releases 页面。
 
-周边的部分可能需要付费：
+周边的一些东西可能需要付费：
 
 | | |
 |---|---|
-| [rex-stremio](stremio.md)、你自己的应用或作为来源的插件 | 免费 |
-| zurg nightly，即 debrid 或 Usenet 库的来源 | [DMM 赞助者](https://gatekeeper.debridmediamanager.com)的专属福利 |
-| DMM API key，用于在 zurg 中获取 DMM 的精确匹配 | 可选，同样需要赞助 DMM 才能获得 |
+| [rex-stremio](stremio.md)，你自己的应用或作为来源的插件 | 免费 |
+| zurg nightly，用于 debrid 或 Usenet 库的来源 | [DMM 赞助者](https://gatekeeper.debridmediamanager.com)的福利 |
+| DMM API 密钥，用于在 zurg 中获取 DMM 的精确匹配 | 可选，同样来自赞助 DMM |
 | rex 的 Docker 镜像 | 免费且公开，适用于 Linux：[rex in Docker](any-source.md#run-rex-in-docker) |
 
 ### 我的 Plex 账号有风险吗？ {#is-my-plex-account-at-risk}
@@ -66,13 +66,13 @@ Plex 应用里有 **Downloads**。rex 会在自己所在的机器上准备下载
 
 ### 需要什么硬件？ {#what-hardware-does-it-need}
 
-一台常开的机器，运行 Linux（amd64 或 arm64，glibc 2.35 或更新版本，即 Ubuntu 22.04 及以上）、macOS（Intel 或 Apple Silicon）或 64 位 Windows；也可以是运行在 Android/Google TV 设备上的 zurg+rex Android 应用（截至 2026 年 11 月 11 日的 nightly 版本仅支持 64 位），它会同时运行 zurg 和 rex（仅限赞助者使用；见 [Android 指南](../zurg/guides/android.md)）。
+运行的机器需要一直开着，系统可以是 Linux（amd64 或 arm64，glibc 2.35 或更新版本，即 Ubuntu 22.04 及以上）、macOS（Intel 或 Apple Silicon）或 64 位 Windows。如果是 Android 手机、平板或电视盒子，[rex for Android](https://github.com/debridmediamanager/rex-android) 可以免费运行 rex 及其插件。另外，仅限赞助者使用的 zurg+rex 应用（在手机上运行 Plex 服务器）可以同时运行 zurg 和 rex（参见 [Android 指南](../zurg/guides/android.md)）。
 
-**内存：** 给 1 GB 就够了。在一个包含 4,062 部电影和 656 部剧集的库中，rex 启动时内存占用不到 500 MB，浏览库时约为 730 MB。转换视频还需要额外的内存。
+**内存：**给它 1 GB。在一个包含 4,062 部电影和 656 部剧集的库上，rex 启动时用了不到 500 MB，浏览库时大约用了 730 MB。转换视频还需要额外的内存。
 
-**磁盘：** 电影不占用磁盘空间。rex 把库保存在 `rex.db` 中。如果你使用下载功能，以及分析时生成的图片（拖动预览图、章节图片），它们也会保存在旁边。
+**磁盘：**电影本身不占用磁盘。rex 把库数据保存在 `rex.db` 中。如果你使用下载功能，以及分析时生成的图片（快进预览、章节图片），它们也会保存在它旁边。
 
-**转换：** 只能使用 FFmpeg。显卡芯片能让转换变快：在一颗小型 Intel 芯片上转换一部 1080p 电影，只需约 2 秒就能开始。每个系统上 rex 使用哪种芯片，见 [按平台说明](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform)：在 macOS 上，转换始终由处理器完成。
+**转换：**只能使用 FFmpeg。显卡芯片能让转换变快：在一块小型 Intel 芯片上转换一部 1080p 电影，大约只需 2 秒。每个系统上 rex 会使用哪种芯片，请参见 [By platform](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform)：在 macOS 上，它始终使用处理器进行转换。
 
 ### 它会读取我本地的文件吗？ {#does-it-read-my-local-files}
 

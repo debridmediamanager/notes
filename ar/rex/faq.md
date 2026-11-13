@@ -16,16 +16,16 @@ Wait — the translation target is Arabic. Here is the translation:
 
 ### كم تكلفته؟ {#what-does-it-cost}
 
-rex مجاني للاستخدام الشخصي ولا توجد نسخة مدفوعة. شيفرته المصدرية عامة بموجب ترخيص PolyForm Noncommercial. الاستخدام التجاري غير مسموح. كل إصدار منشور على [GitHub Releases](https://github.com/debridmediamanager/rex/releases) ما عدا نسخة Android، التي تأتي فقط داخل [تطبيق zurg+rex لأندرويد](../zurg/guides/android.md) الخاص بالرعاة فقط، وهو خادم Plex على هاتفك.
+rex مجاني للاستخدام الشخصي ولا توجد نسخة مدفوعة منه. شيفرته المصدرية عامة بموجب رخصة PolyForm Noncommercial، والاستخدام التجاري غير مسموح. كل إصدار منشور على [إصدارات GitHub](https://github.com/debridmediamanager/rex/releases)، وإصدارات تطبيق Android على [إصدارات rex لأندرويد](https://github.com/debridmediamanager/rex-android/releases).
 
-بعض الأشياء المحيطة بـ rex قد تكلّف شيئاً:
+بعض الأشياء المحيطة به قد تكلّف مالًا:
 
 | | |
 |---|---|
-| [rex-stremio](stremio.md)، تطبيقك الخاص أو إضافة كمصدر | مجاني |
-| zurg nightly، مصدر لمكتبة debrid أو Usenet | ميزة لـ[رعاة DMM](https://gatekeeper.debridmediamanager.com) |
-| مفتاح DMM API، لمطابقات DMM الدقيقة في zurg | اختياري، ويأتي أيضاً من رعاية DMM |
-| صورة Docker الخاصة بـ rex | مجانية وعامة، لنظام Linux: [rex in Docker](any-source.md#run-rex-in-docker) |
+| [rex-stremio](stremio.md)، تطبيقك الخاص أو إضافة تستخدمها كمصدر | مجاني |
+| zurg النسخة الليلية، وهي مصدر لمكتبة debrid أو Usenet | ميزة لـ[داعمي DMM](https://gatekeeper.debridmediamanager.com) |
+| مفتاح API لـ DMM، لمطابقات DMM الدقيقة داخل zurg | اختياري، ويأتي أيضًا من دعم DMM |
+| صورة rex على Docker | مجانية ومتاحة للجميع، لنظام Linux: [rex في Docker](any-source.md#run-rex-in-docker) |
 
 ### هل يتعرض حساب Plex الخاص بي للخطر؟ {#is-my-plex-account-at-risk}
 
@@ -70,13 +70,13 @@ rex ليس من إنتاج Plex، وقد تتخذ Plex إجراءً ضد حسا�
 
 ### ما المواصفات المطلوبة للجهاز؟ {#what-hardware-does-it-need}
 
-جهاز يبقى مشغّلاً طوال الوقت، ويعمل بنظام Linux (بمعالج amd64 أو arm64، مع glibc 2.35 أو أحدث، أي Ubuntu 22.04 وما بعده)، أو macOS (Intel أو Apple Silicon)، أو Windows 64 بت؛ أو تطبيق zurg+rex لأجهزة Android/Google TV (يعمل بنظام 64 بت حتى النسخة الليلية بتاريخ 11 نوفمبر 2026)، والذي يشغّل zurg وrex معاً (للداعمين فقط؛ راجع [دليل Android](../zurg/guides/android.md)).
+ماكينة تبقى شغّالة طوال الوقت، وتعمل على Linux (amd64 أو arm64، مع glibc 2.35 أو أحدث، يعني Ubuntu 22.04 وما بعده)، أو macOS (Intel أو Apple Silicon)، أو Windows 64-bit. على هاتف أو جهاز لوحي أو صندوق TV يعمل بنظام Android، يشغّل [rex for Android](https://github.com/debridmediamanager/rex-android) برنامج rex وإضافاته مجانًا، أما تطبيق zurg+rex المخصص للمشتركين فقط، وهو خادم Plex على هاتفك، فيشغّل zurg و rex معًا (راجع [دليل Android](../zurg/guides/android.md)).
 
-**الذاكرة:** خصص لها 1 GB. على مكتبة تضم 4,062 فيلماً و656 مسلسلاً، استخدم rex أقل من 500 MB أثناء البدء، ونحو 730 MB أثناء تصفح المكتبة. تحويل الفيديو يحتاج ذاكرة إضافية فوق ذلك.
+**الذاكرة:** خصّص لها 1 GB. مع مكتبة فيها 4,062 فيلمًا و656 مسلسلًا، استهلك rex أقل من 500 MB أثناء البدء، وحوالي 730 MB أثناء تصفح المكتبة. تحويل الفيديو يحتاج ذاكرة إضافية فوق ذلك.
 
-**القرص:** لا يحتاج إلى مساحة للأفلام. يحتفظ rex بمكتبته في `rex.db`. التنزيلات والصور التي يُنشئها التحليل (معاينات التقديم، وصور الفصول) تُحفظ بجانبه أيضاً، إذا كنت تستخدمها.
+**القرص:** لا يحتاج شيئًا للأفلام. يحفظ rex مكتبته في الملف `rex.db`. التنزيلات والصور التي يصنعها التحليل (معاينات التقديم، وصور الفصول) تُحفظ بجانبه أيضًا، إذا كنت تستخدمها.
 
-**التحويل:** يتم فقط باستخدام FFmpeg. شريحة الرسوميات تجعله أسرع: فيلم 1080p يبدأ تحويله على معالج Intel صغير في نحو ثانيتين. الشرائح التي يستخدمها rex على كل نظام مذكورة في [حسب المنصة](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform): على macOS يتم التحويل دائماً على المعالج.
+**التحويل:** يعمل فقط مع FFmpeg. كرت الرسوميات يجعله أسرع بكثير: فيلم بدقة 1080p تم تحويله على شريحة Intel صغيرة بدأ خلال حوالي 2 ثانية. الشرائح التي يستخدمها rex على كل نظام مذكورة في [By platform](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform): على macOS يحوّل دائمًا بالمعالج.
 
 ### هل يقرأ ملفاتي المحلية؟ {#does-it-read-my-local-files}
 

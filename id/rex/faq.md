@@ -12,15 +12,15 @@ Ini adalah server tersendiri. Ini bukan plugin Plex Media Server dan tidak memer
 
 ### Berapa biayanya? {#what-does-it-cost}
 
-rex gratis untuk penggunaan pribadi tanpa paket berbayar. Kode sumbernya bersifat publik di bawah lisensi PolyForm Noncommercial. Penggunaan komersial tidak diizinkan. Setiap build bisa diunduh secara publik di [GitHub Releases](https://github.com/debridmediamanager/rex/releases), kecuali build Android, yang hanya tersedia di dalam aplikasi [zurg+rex Android](../zurg/guides/android.md) khusus sponsor, yaitu server Plex yang berjalan di ponsel Anda.
+rex gratis untuk penggunaan pribadi, tanpa paket berbayar. Kode sumbernya bersifat publik di bawah lisensi PolyForm Noncommercial. Penggunaan komersial tidak diizinkan. Setiap build tersedia publik di [GitHub Releases](https://github.com/debridmediamanager/rex/releases), dan aplikasi Android ada di [rilis rex for Android](https://github.com/debridmediamanager/rex-android/releases).
 
 Beberapa hal di sekitarnya mungkin berbayar:
 
 | | |
 |---|---|
-| [rex-stremio](stremio.md), aplikasi Anda sendiri atau addon sebagai sumbernya | Gratis |
+| [rex-stremio](stremio.md), aplikasi atau addon milikmu sendiri sebagai sumber | Gratis |
 | zurg nightly, sumber untuk pustaka debrid atau Usenet | Keuntungan untuk [sponsor DMM](https://gatekeeper.debridmediamanager.com) |
-| Kunci API DMM, untuk kecocokan persis DMM di zurg | Opsional, juga dari menjadi sponsor DMM |
+| Kunci API DMM, untuk kecocokan persis DMM di zurg | Opsional, juga didapat dari menyponsori DMM |
 | Image Docker rex | Gratis dan publik, untuk Linux: [rex di Docker](any-source.md#run-rex-in-docker) |
 
 ### Apakah akun Plex saya berisiko? {#is-my-plex-account-at-risk}
@@ -68,13 +68,13 @@ Ya. Setiap orang yang Anda bagikan rex-nya akan masuk dengan akunnya sendiri dan
 
 ### Perangkat keras apa yang dibutuhkan? {#what-hardware-does-it-need}
 
-Mesin yang selalu menyala, dengan Linux (amd64 atau arm64, glibc 2.35 ke atas, jadi Ubuntu 22.04 ke atas), macOS (Intel atau Apple Silicon), atau Windows 64-bit. Bisa juga aplikasi zurg+rex untuk Android di perangkat Android/Google TV (64-bit sampai build nightly 11 November 2026), yang menjalankan zurg dan rex sekaligus (khusus sponsor; lihat [panduan Android](../zurg/guides/android.md)).
+Sebuah mesin yang selalu menyala, berjalan di Linux (amd64 atau arm64, glibc 2.35 atau lebih baru, jadi Ubuntu 22.04 ke atas), macOS (Intel atau Apple Silicon), atau Windows 64-bit. Di ponsel, tablet, atau kotak TV Android, [rex for Android](https://github.com/debridmediamanager/rex-android) menjalankan rex dan addon-addonnya secara gratis, dan aplikasi zurg+rex khusus sponsor, sebuah server Plex di ponsel kamu, menjalankan zurg dan rex bersamaan (lihat [panduan Android](../zurg/guides/android.md)).
 
-**Memori:** siapkan 1 GB. Dengan perpustakaan 4.062 film dan 656 serial, rex memakai kurang dari 500 MB saat start dan sekitar 730 MB saat perpustakaan dijelajahi. Konversi video butuh tambahan memori lagi.
+**Memori:** siapkan 1 GB. Untuk library berisi 4.062 film dan 656 serial, rex memakai kurang dari 500 MB saat mulai dan sekitar 730 MB saat library sedang dijelajahi. Konversi video membutuhkan tambahan lagi.
 
-**Disk:** tidak perlu untuk film. rex menyimpan perpustakaannya di `rex.db`. Unduhan dan gambar yang dibuat analisis (pratinjau seek, gambar bab) juga disimpan di sebelahnya, kalau kamu memakainya.
+**Disk:** tidak perlu untuk film. rex menyimpan library-nya di `rex.db`. Unduhan dan gambar yang dibuat analisis (pratinjau seek, gambar bab) juga disimpan di sebelahnya, jika kamu memakainya.
 
-**Konversi:** hanya dengan FFmpeg. Chip grafis membuatnya cepat: film 1080p yang dikonversi di chip Intel kecil mulai dalam sekitar 2 detik. Chip mana yang dipakai rex di tiap sistem ada di [Per platform](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform): di macOS, konversi selalu dilakukan di prosesor.
+**Konversi:** hanya dengan FFmpeg. Chip grafis membuatnya cepat: film 1080p yang dikonversi di chip Intel kecil mulai dalam sekitar 2 detik. Chip mana yang dipakai rex di tiap sistem ada di [By platform](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform): di macOS, konversi selalu dilakukan di prosesor.
 
 ### Apakah rex membaca file lokal saya? {#does-it-read-my-local-files}
 

@@ -42,7 +42,7 @@ The `dmm_api_key` features need a zurg nightly. The free public build does not i
 
 ## rex
 
-rex is free and needs no sponsorship. Its Android build comes only inside the sponsor-only zurg+rex app. With a key [rex-stremio](../rex/stremio.md) adds debrid streams of torrents DMM already holds a probe of in seconds instead of probing each one. Paste it in rex-stremio's **DMM** field. It shares its probes of torrent files with DMM unless you turn that off.
+rex is free and needs no sponsorship, on Android too: [rex for Android](https://github.com/debridmediamanager/rex-android) runs rex and its addons on a phone or TV box. With a key [rex-stremio](../rex/stremio.md) adds debrid streams of torrents DMM already holds a probe of in seconds instead of probing each one. Paste it in rex-stremio's **DMM** field. It shares its probes of torrent files with DMM unless you turn that off.
 
 ## Help
 

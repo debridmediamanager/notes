@@ -2,18 +2,18 @@
 
 [rex](https://rex.debridmediamanager.com/zh/) is a media server for the official Plex apps that owns no files. The official Plex apps see it as a normal Plex server. Any app can fill it ([rex with your own app](any-source.md)); this page sets it up with zurg, which sends it your debrid library, and when you press play rex streams the file straight from zurg. Nothing is downloaded first.
 
-这篇页面会带你从零开始，一步一步地播放一部电影。每一步都会说明它做什么、为什么重要，以及在继续之前你应该看到什么。如果你看到的和说明不一样，就先停下来：下一步不会修复它。
+Diese Seite führt dich Schritt für Schritt von null bis zum ersten abgespielten Film. Jeder Schritt erklärt, was er tut, warum er wichtig ist und was du sehen solltest, bevor du weitergehst. Wenn das, was du siehst, nicht passt, bleib an dieser Stelle stehen: Der nächste Schritt behebt das nicht.
 
 ![zurg registers with rex and sends it the library; Plex apps play through rex, which reads each file from zurg](../assets/rex/how-it-fits.svg)
 
-开始之前，有四件事要知道：
+Vier Dinge solltest du wissen, bevor du anfängst:
 
-- **zurg 是和你的 debrid 服务通信的部分。** 它会列出你账户里的内容，并提供文件。
-- **rex 是你的 Plex 应用通信的部分。** 它不保存任何文件，也不需要为媒体准备磁盘。它不需要 rclone，也不需要挂载。
-- **zurg 会把自己的信息告诉 rex。** 你只需要把 rex 的地址告诉 zurg，剩下的由 zurg 完成。你永远不需要把 zurg 的详细信息输入到 rex 里。
-- **zurg 和 DMM 负责判断每个文件是什么；Plex 负责描述它。** zurg 会向 DMM 询问每个文件对应哪部电影或哪一集，而一旦 rex 接入了 Plex 账户，它就会用 Plex 自己的元数据（海报和简介）来显示这个标题。rex 从不根据文件名猜测。
+- **zurg ist der Teil, der mit deinem Debrid-Dienst spricht.** Er listet auf, was in deinem Konto liegt, und liefert die Dateien aus.
+- **rex ist der Teil, mit dem deine Plex-Apps sprechen.** Er speichert keine Dateien und braucht keinen Speicherplatz für Medien. Er braucht kein rclone und keinen Mount.
+- **zurg meldet rex selbst, was es ist.** Du gibst zurg die Adresse von rex, und zurg erledigt den Rest. Du tippst nie die Angaben von zurg in rex ein.
+- **zurg und DMM bestimmen, was jede Datei ist; Plex beschreibt sie.** zurg fragt DMM, welcher Film oder welche Episode jede Datei ist, und rex zeigt diesen Titel mit den Postern und Zusammenfassungen, die Plex' eigene Metadaten liefern, sobald rex mit einem Plex-Konto verbunden ist. rex rät nie anhand eines Dateinamens.
 
-rex 可供个人免费使用（PolyForm Noncommercial）：没有赞助者版本，下载也不需要账户。本指南使用的 zurg nightly 版本仍然是赞助者版本；[rex with your own app](any-source.md) 则可以在不使用它的情况下运行 rex。
+rex ist für die private Nutzung kostenlos (PolyForm Noncommercial): kein Sponsor-Tarif und kein Konto nötig, um es herunterzuladen. Die Nightly-Version von zurg, die dieser Leitfaden verwendet, bleibt ein Sponsor-Release; [rex with your own app](any-source.md) betreibt rex ohne sie. Nur ein Handy oder eine TV-Box? zurg+rex, ein Plex-Server auf deinem Handy, betreibt zurg und rex gemeinsam darauf: siehe den [Android-Leitfaden](../zurg/guides/android.md).
 
 ## 开始之前 {#before-you-start}
 

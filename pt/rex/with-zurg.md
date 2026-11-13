@@ -1,19 +1,19 @@
 # rex com zurg {#rex-with-zurg}
 
-[rex](https://rex.debridmediamanager.com/pt/) é um servidor de mídia para os apps oficiais do Plex que não guarda nenhum arquivo. Os apps oficiais do Plex o veem como um servidor Plex normal. Qualquer app pode alimentá-lo ([rex com seu próprio app](any-source.md)). Esta página o configura com o zurg, que envia a sua biblioteca do debrid para ele. Quando você aperta play, o rex transmite o arquivo direto do zurg. Nada é baixado antes.
+[rex](https://rex.debridmediamanager.com/pt/) é um servidor de mídia para os aplicativos oficiais do Plex que não guarda nenhum arquivo. Os aplicativos oficiais do Plex o veem como um servidor Plex normal. Qualquer aplicativo pode alimentá-lo ([rex com seu próprio aplicativo](any-source.md)); esta página o configura com o zurg, que envia para ele a sua biblioteca do debrid, e quando você aperta play o rex transmite o arquivo diretamente do zurg. Nada é baixado antes.
 
-Esta página leva você do zero até assistir a um filme, um passo de cada vez. Cada passo explica o que ele faz, por que importa e o que você deve ver antes de seguir. Se o que você vir não bater com o descrito, pare ali: o próximo passo não vai resolver.
+Esta página leva você do zero até assistir a um filme, passo a passo. Cada passo diz o que ele faz, por que é importante e o que você deve ver antes de seguir em frente. Se o que você vir não bater com o descrito, pare ali: o próximo passo não vai resolver.
 
-![o zurg se registra no rex e envia a biblioteca para ele; os apps do Plex reproduzem pelo rex, que lê cada arquivo do zurg](../assets/rex/how-it-fits.svg)
+![zurg registers with rex and sends it the library; Plex apps play through rex, which reads each file from zurg](../assets/rex/how-it-fits.svg)
 
 Quatro coisas para saber antes de começar:
 
 - **O zurg é a parte que conversa com o seu serviço de debrid.** Ele lista o que está na sua conta e entrega os arquivos.
-- **O rex é a parte com a qual os seus apps do Plex conversam.** Ele não guarda arquivos e não precisa de disco para a mídia. Não precisa de rclone nem de montagem.
-- **O zurg avisa o rex sobre si mesmo.** Você dá ao zurg o endereço do rex, e o zurg faz o resto. Você nunca digita os dados do zurg no rex.
-- **O zurg e o DMM decidem o que cada arquivo é; o Plex descreve.** O zurg pergunta ao DMM qual filme ou episódio é cada arquivo, e o rex mostra esse título com os pôsteres e as sinopses que os próprios metadados do Plex fornecem, assim que o rex estiver em uma conta do Plex. O rex nunca adivinha pelo nome do arquivo.
+- **O rex é a parte com a qual os seus aplicativos do Plex conversam.** Ele não guarda arquivos e não precisa de disco para a mídia. Não precisa de rclone nem de montagem.
+- **O zurg avisa o rex sobre si mesmo.** Você informa ao zurg o endereço do rex, e o zurg faz o resto. Você nunca digita os dados do zurg no rex.
+- **O zurg e o DMM decidem o que cada arquivo é; o Plex descreve.** O zurg pergunta ao DMM qual filme ou episódio é cada arquivo, e o rex mostra esse título com os pôsteres e resumos que os metadados próprios do Plex fornecem, assim que o rex estiver em uma conta Plex. O rex nunca adivinha a partir do nome do arquivo.
 
-O rex é gratuito para uso pessoal (PolyForm Noncommercial): não há nível de patrocinador e você não precisa de conta para baixá-lo. A versão nightly do zurg, que este guia usa, continua sendo uma versão para patrocinadores; o [rex com seu próprio app](any-source.md) executa o rex sem ela.
+O rex é gratuito para uso pessoal (PolyForm Noncommercial): não há plano de patrocinador e você não precisa de conta para baixá-lo. A versão nightly do zurg, que este guia usa, continua sendo uma versão para patrocinadores; o [rex com seu próprio aplicativo](any-source.md) executa o rex sem ela. Só tem um celular ou uma TV box? O zurg+rex, um servidor Plex no seu celular, executa o zurg e o rex juntos nele: veja o [guia para Android](../zurg/guides/android.md).
 
 ## Antes de começar {#before-you-start}
 

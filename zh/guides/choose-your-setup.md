@@ -164,24 +164,24 @@ DMM 的 TorBox **Add** 对话框可以把直接的 HTTP(S) 链接当作网页下
 
 ## 安装前需要权衡的关键点 {#the-tradeoffs-that-matter-before-installing}
 
-| 问题 | 什么情况会改变你的选择 |
+| 问题 | 什么会改变你的选择 |
 |---|---|
-| 另一台机器必须一直开着吗？ | 托管的 Cast/Kodi 路线、网盘服务商 WebDAV 和 DMM Watch 不需要你自己的服务器。zurg、rex、rex-stremio 和媒体服务器插件在你观看时确实需要它们的主机运行。zurg+rex Android 可以让一台 Android 设备充当 zurg 和 rex 的主机；rex-stremio 和媒体服务器插件仍然需要普通主机。租用或托管的主机只改变由谁来运行，不改变底层路线。 |
-| 你的电视能播放这个文件吗？ | WebDAV 和插件路线取决于播放器支持的编解码器、音频和字幕。zurg 只负责传输字节，它不是视频转码器。需要时，Plex Media Server、Jellyfin、Emby，或者带 FFmpeg 的 rex 可以转码，但要有合适的硬件以及服务器和应用的相应能力。 |
-| 需要多少磁盘空间？ | 流式播放避免了把整个收藏都存下来。你需要为数据库、封面图、缓存，以及任何修复、转码或离线下载的工作留出空间。“不必先完整下载”并不代表完全不占用磁盘。 |
-| 谁来承担带宽？ | 服务商的流量配额依然有效。服务器代理会转发播放流量，占用它的上行带宽；直接播放则把连接转移到观看者那边。媒体库分析也可能读取远程文件。 |
-| 在外面能用吗？ | 托管插件不需要暴露你自己的服务器。自托管服务需要一个安全可达的地址，仅有局域网地址在外面是用不了的。参见 [rex 远程访问](../rex/any-source.md#use-it-outside-your-home-optional) 和 [Stremio HTTPS 指南](../zurg/guides/stremio.md#installing-it-on-another-device)。 |
-| 家人能同时使用吗？ | 请查看你的服务商的 IP 和并发规则，以及服务器的共享方式。Real-Debrid 的使用必须固定在同一个公网 IP 上；即使直链是由集中式媒体库提供的，把它们发给不同住户也可能违反这一规则。在没弄清下载来源之前，不要开启重定向。 |
-| 我要为什么付费？ | 请把服务商订阅、索引器访问、DMM 赞助、托管以及播放器/服务器的购买分开看待。DMM 的基础网站和个人使用的 rex 是免费的；rex 的 Android 版本只包含在仅限赞助者使用的 zurg+rex 应用中。当前的 zurg 夜间构建版和 DMM 的插件分发属于赞助者福利；Wanted 和 DMM 的索引器 API 也需要赞助。rex-stremio 不需要赞助。[赞助能获得什么](sponsorship.md) 列出了所有福利以及在哪里设置。 |
-| 目录里有某个条目，就一定能播放吗？ | 不能。插件目录只是描述影片名称；云端文件可能会过期；种子可能没有来源；Usenet 文章可能缺失。请选择你能接受其失败情况和等待方式的路线。 |
+| 另一台机器必须一直开着吗？ | 托管的 Cast/Kodi 路线、网盘商的 WebDAV 和 DMM Watch 不需要你自己的服务器。zurg、rex、rex-stremio 和媒体服务器插件在你观看时确实需要它们的宿主机开着。zurg+rex Android 可以让一台 Android 设备充当 zurg 和 rex 的宿主；rex-stremio 和媒体服务器插件仍然需要普通的宿主机。租用或托管的主机只改变由谁运行它，并不改变底层路线。 |
+| 我的电视能播放这个文件吗？ | WebDAV 和插件路线取决于播放器的编解码器、音频和字幕支持。zurg 只负责提供原始字节，它不是视频转码器。Plex Media Server、Jellyfin、Emby，或者带 FFmpeg 的 rex，在需要时可以转码，但要有合适的硬件以及服务器/应用的相应能力。 |
+| 需要多少磁盘空间？ | 串流播放不用把整个收藏都存下来。你需要给数据库、封面图、缓存，以及任何修复、转码或离线下载的工作留出空间。“不用先完整下载”并不等于完全不占用磁盘。 |
+| 谁来承担带宽？ | 网盘商的流量配额依然适用。服务器代理会转发播放流量，占用它的上行带宽；直接播放则把连接转到了观看者那一端。库分析也可能读取远程文件。 |
+| 在外面能用吗？ | 托管的插件不需要暴露你自己的服务器。自托管的服务需要一个能安全访问的地址；仅有局域网地址在外面是用不了的。参见 [rex 远程访问](../rex/any-source.md#use-it-outside-your-home-optional) 和 [Stremio HTTPS 指南](../zurg/guides/stremio.md#installing-it-on-another-device)。 |
+| 家人能同时使用吗？ | 请查看你的网盘商的 IP/并发规则，以及服务器的共享方式。Real-Debrid 的使用必须固定在同一个公网 IP 上；即使中央库提供了直链，把直链分发给不同住户也可能违反这一规则。在没有弄清下载来源之前，不要开启重定向。 |
+| 我需要为什么付费？ | 请把网盘商订阅、索引器访问、DMM 赞助、主机托管和播放器/服务器的购买分开看待。DMM 的基础网站以及个人使用的 rex 是免费的；[rex for Android](https://github.com/debridmediamanager/rex-android) 也是免费的。当前的 zurg nightly 版本和 DMM 的插件分发属于赞助者福利；Wanted 和 DMM 的索引器 API 也需要赞助。rex-stremio 不需要赞助。[赞助能带来什么](sponsorship.md) 列出了所有福利以及在哪里设置。 |
+| 目录里有条目就能保证能播放吗？ | 不能。插件目录只是描述影片名称；云端文件可能过期；种子可能没有源；Usenet 文章可能缺失。请选择一条你能接受其失败和等待方式的路线。 |
 
-兼容的服务器客户端也可以是第三方应用。[Infuse 支持连接 Plex、Emby 和 Jellyfin](https://support.firecore.com/hc/en-us/articles/360006462093-Streaming-from-Plex-Emby-and-Jellyfin)。你可能不需要单独挂载 zurg。请同时检查插件和客户端。
+兼容的服务器客户端也可以是第三方应用。[Infuse 可以连接 Plex、Emby 和 Jellyfin](https://support.firecore.com/hc/en-us/articles/360006462093-Streaming-from-Plex-Emby-and-Jellyfin)。你可能不需要单独挂载 zurg。请同时检查插件和客户端。
 
-Infuse 支持 [WebDAV 和其他网络共享](https://support.firecore.com/hc/en-us/articles/215090977-Streaming-From-a-Mac-PC-or-NAS)。`.strm` 文件可以为 Kodi 等兼容播放器提供一个 URL。它不能替代通用的挂载方式。请检查客户端，并注意它在代理和故障切换上的行为可能不同。不要把 `.strm` 用作 Plex Media Server 的常规设置。
+Infuse 支持 [WebDAV 和其他网络共享](https://support.firecore.com/hc/en-us/articles/215090977-Streaming-From-a-Mac-PC-or-NAS)。`.strm` 文件会给 Kodi 这类兼容播放器提供一个 URL。它不能替代通用挂载。请检查客户端，并注意代理和故障转移的行为会有所不同。不要把 `.strm` 用作 Plex Media Server 的常规设置。
 
-还有一个 [旧版免费 zurg 发布版](https://github.com/debridmediamanager/zurg-public/releases)。它只支持 Real-Debrid，并且使用不同的配置格式。这里介绍的多服务商 Usenet 和 Android 路线使用的是赞助者夜间构建版。
+还有一个[旧版免费 zurg 发布版](https://github.com/debridmediamanager/zurg-public/releases)。它只支持 Real-Debrid，并且配置格式不同。本文提到的多网盘商 Usenet 和 Android 路线使用的是赞助者 nightly 版本。
 
-**rex 有它自己的兼容性边界。** 它是一个独立的 Plex 应用服务器，不是 Plex Media Server，也不是 Plex 插件。关于经过测试的设备、远程转码和全新账户建议，请查阅其 [常见问题](../rex/faq.md)。传统的 Plex 服务器可以与 rex 一起运行。
+**rex 有它自己的兼容性边界。** 它是一个独立的 Plex 应用服务器，不是 Plex Media Server，也不是 Plex 插件。关于经过测试的设备、远程使用时的转码，以及全新账号的建议，请查看它的 [FAQ](../rex/faq.md)。传统的 Plex 服务器可以和 rex 同时运行。
 
 ## 可能改变路线的需求 {#needs-that-can-change-the-route}
 

@@ -1,19 +1,19 @@
 # rex mit zurg {#rex-with-zurg}
 
-[rex](https://rex.debridmediamanager.com/de/) ist ein Medienserver für die offiziellen Plex-Apps, der selbst keine Dateien besitzt. Die offiziellen Plex-Apps sehen ihn als ganz normalen Plex-Server. Jede App kann ihn füllen ([rex mit deiner eigenen App](any-source.md)). Diese Seite richtet ihn mit zurg ein, das ihm deine Debrid-Bibliothek schickt. Wenn du auf Play drückst, streamt rex die Datei direkt von zurg. Es wird nichts vorher heruntergeladen.
+[rex](https://rex.debridmediamanager.com/de/) ist ein Medienserver für die offiziellen Plex-Apps, der keine Dateien besitzt. Die offiziellen Plex-Apps sehen ihn wie einen normalen Plex-Server. Jede App kann ihn füllen ([rex mit deiner eigenen App](any-source.md)). Diese Seite richtet ihn mit zurg ein, das ihm deine Debrid-Bibliothek schickt. Wenn du auf Play drückst, streamt rex die Datei direkt von zurg. Vorher wird nichts heruntergeladen.
 
-Diese Seite führt dich Schritt für Schritt von null bis zum ersten abgespielten Film. Bei jedem Schritt steht, was er tut, warum er wichtig ist und was du sehen solltest, bevor du weitermachst. Wenn bei dir etwas anders aussieht, halte dort an. Der nächste Schritt behebt das Problem nicht.
+Diese Seite führt dich Schritt für Schritt von null bis zum ersten abgespielten Film. Bei jedem Schritt steht, was er macht, warum er wichtig ist und was du sehen solltest, bevor du weitergehst. Wenn das, was du siehst, nicht passt, hör dort auf. Der nächste Schritt behebt das Problem nicht.
 
-![zurg meldet sich bei rex an und schickt ihm die Bibliothek; Plex-Apps spielen über rex ab, das jede Datei von zurg liest](../assets/rex/how-it-fits.svg)
+![zurg registriert sich bei rex und schickt ihm die Bibliothek; Plex-Apps spielen über rex ab, das jede Datei von zurg liest](../assets/rex/how-it-fits.svg)
 
 Vier Dinge solltest du vor dem Start wissen:
 
 - **zurg ist der Teil, der mit deinem Debrid-Dienst spricht.** Es listet auf, was in deinem Konto liegt, und liefert die Dateien aus.
-- **rex ist der Teil, mit dem deine Plex-Apps sprechen.** Es speichert keine Dateien und braucht keinen Datenträger für Medien. Es braucht weder rclone noch einen Mount.
-- **zurg meldet rex seine Daten selbst.** Du gibst zurg die Adresse von rex, und zurg erledigt den Rest. Die Daten von zurg musst du nie in rex eintragen.
-- **zurg und DMM entscheiden, was jede Datei ist; Plex beschreibt sie.** zurg fragt DMM, welcher Film oder welche Episode jede Datei ist, und rex zeigt diesen Titel mit den Postern und Beschreibungen, die Plex' eigene Metadaten liefern, sobald rex in einem Plex-Konto aktiv ist. rex rät nie anhand des Dateinamens.
+- **rex ist der Teil, mit dem deine Plex-Apps sprechen.** Es speichert keine Dateien und braucht keine Festplatte für Medien. Es braucht weder rclone noch einen Mount.
+- **zurg meldet rex seine eigenen Daten.** Du gibst zurg die Adresse von rex, und zurg erledigt den Rest. Die Daten von zurg tippst du nie in rex ein.
+- **zurg und DMM entscheiden, was jede Datei ist; Plex beschreibt sie.** zurg fragt DMM, welcher Film oder welche Episode jede Datei ist, und rex zeigt diesen Titel mit den Postern und Beschreibungen, die Plex' eigene Metadaten liefern, sobald rex in einem Plex-Konto eingerichtet ist. rex rät nie anhand des Dateinamens.
 
-rex ist für die private Nutzung kostenlos (PolyForm Noncommercial): Es gibt keine Sponsor-Stufe, und zum Herunterladen brauchst du kein Konto. Das Nightly-Build von zurg, das diese Anleitung verwendet, bleibt eine Sponsor-Version. [rex mit deiner eigenen App](any-source.md) betreibt rex ohne sie.
+rex ist für die private Nutzung kostenlos (PolyForm Noncommercial): Es gibt keine Sponsor-Stufe, und du brauchst kein Konto, um es herunterzuladen. Die Nightly-Version von zurg, die diese Anleitung verwendet, bleibt ein Sponsor-Release. [rex mit deiner eigenen App](any-source.md) betreibt rex ohne sie. Du hast nur ein Handy oder eine TV-Box? zurg+rex, ein Plex-Server auf deinem Handy, betreibt zurg und rex gemeinsam darauf: siehe die [Android-Anleitung](../zurg/guides/android.md).
 
 ## Bevor du anfängst {#before-you-start}
 

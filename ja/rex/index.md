@@ -1,18 +1,19 @@
 # rex
 
-[rex](https://rex.debridmediamanager.com/ja/) は、公式の Plex アプリ向けのメディアサーバーで、ファイルは一切持ちません。ソースがライブラリに何があるかを rex に伝え、各ファイルを配信します。再生を押すと、rex がそのファイルをストリーミングします。rex は個人利用であれば無料です。[ソースコード](https://github.com/debridmediamanager/rex)は PolyForm Noncommercial ライセンスで公開されています。Linux、macOS、Windows で動作するほか、Linux 向け Docker イメージ `ghcr.io/debridmediamanager/rex:nightly` としても提供されています（[自分のアプリで使う](any-source.md#run-rex-in-docker)、[zurg で使う](with-zurg.md#run-rex-in-docker)）。
+[rex](https://rex.debridmediamanager.com/ja/) ist ein Medienserver für die offiziellen Plex-Apps, der selbst keine Dateien besitzt. Eine Quelle sagt rex, was in deiner Bibliothek liegt, und liefert jede Datei aus. rex streamt die Datei, wenn du auf Play drückst. rex ist für die private Nutzung kostenlos. Der [Quellcode](https://github.com/debridmediamanager/rex) ist unter der PolyForm-Noncommercial-Lizenz öffentlich. rex läuft unter Linux, macOS und Windows sowie als Linux-Docker-Image `ghcr.io/debridmediamanager/rex:nightly` ([mit deiner eigenen App](any-source.md#run-rex-in-docker), [mit zurg](with-zurg.md#run-rex-in-docker)).
 
-- [rex のよくある質問](faq.md)：インストール前に知っておきたいことをまとめています
-- [自分のアプリで rex を使う](any-source.md)：HTTP でファイルを配信し、rex のフィード API に対応したソースを設定します
-- [Stremio アドオンで rex を使う](stremio.md)：rex-stremio で rex にコンテンツを追加します。無料で、スポンサーも不要です
-- [zurg で rex を使う](with-zurg.md)：zurg を通じて、デビリッドのアカウントや Usenet から rex にコンテンツを追加します
-- [rex でライブ TV を見る](live-tv.md)：rex-live-sports を使ってライブチャンネルとガイドを追加します
-- [rex で音楽を聴く](music.md)：Plexamp や対応する Plex アプリ向けに音楽ライブラリを追加します
-- [Plex から rex に移行する](from-plex.md)：Plex と並べて、または Plex の代わりに rex を動かします
-- [rex を家族や友達と共有する](sharing.md)：一緒に見る人を招待します
-- [rex 用アドオンを作る](addons.md)：ホームビデオ、録画、Stremio のカタログを rex に取り込みます
-- [アドオンのチュートリアル](addon-home-videos.md)：ホームビデオ、音楽、IPTV のアドオンを 1 つの Python ファイルで完成させます
-- [アドオンのその他の機能](addon-more.md)：字幕、エクストラ、チャプター、コレクション、プレイリストなどを追加します
-- [視聴履歴を取り込む](import-watched.md)：視聴状態、評価、再開位置を Plex からコピーします
-- [rex で Kometa を使う](kometa.md)：rex のライブラリにコレクションやポスターバッジを作成します
-- [プロバイダーからアプリでダウンロードする](direct-download.md)：Plex アプリがソースのリンクから直接ダウンロードできるようにします。rex を動かすマシンに映画を置く必要はありません
+- [rex für Android](https://github.com/debridmediamanager/rex-android) betreibt rex und seine Addons auf einem Handy, Tablet oder TV-Box, ganz ohne Computer. Es ist kostenlos
+- [rex-Fragen](faq.md) beantwortet, was du vor der Installation wissen solltest
+- [rex mit deiner eigenen App](any-source.md) richtet eine Quelle ein, die Dateien über HTTP ausliefert und rex' Feed-API spricht
+- [rex mit deinen Stremio-Addons](stremio.md) füllt rex mit rex-stremio. Es ist kostenlos und braucht keine Sponsoring-Mitgliedschaft
+- [rex mit zurg](with-zurg.md) füllt rex aus einem Debrid-Konto oder Usenet über zurg
+- [Live-TV mit rex](live-tv.md) fügt Live-Kanäle und eine EPG-Übersicht über rex-live-sports hinzu
+- [Musik mit rex](music.md) fügt eine Musikbibliothek für Plexamp und unterstützte Plex-Apps hinzu
+- [Von Plex zu rex wechseln](from-plex.md) betreibt rex neben Plex oder anstelle von Plex
+- [rex mit Familie und Freunden teilen](sharing.md) lädt die Leute ein, mit denen du schaust
+- [rex-Addons bauen](addons.md) bringt Heimvideos, Aufnahmen oder Stremio-Kataloge in rex
+- [Addon-Anleitungen](addon-home-videos.md) bauen vollständige Heimvideo-, Musik- oder IPTV-Addons in einer einzigen Python-Datei
+- [Mehr aus deinem Addon](addon-more.md) fügt Untertitel, Extras, Kapitel, Sammlungen, Wiedergabelisten und mehr hinzu
+- [Deinen Wach-Verlauf übernehmen](import-watched.md) kopiert Wiedergabestatus, Bewertungen und Fortsetzungspunkte aus Plex
+- [Kometa mit rex](kometa.md) erstellt Sammlungen und Poster-Badges in rex-Bibliotheken
+- [Apps laden vom Anbieter herunter](direct-download.md) lässt Plex-Apps vom Quelllink herunterladen, sodass der rex-Rechner keinen Film trägt
