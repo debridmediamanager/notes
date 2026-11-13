@@ -1,10 +1,12 @@
 # ¿Qué configuración debería usar? {#which-setup-should-i-use}
 
-**[Encuentra tu configuración con el cuestionario interactivo](https://debridmediamanager.com/choose-your-setup).** Responde a unas cuantas preguntas sobre tus cuentas de reproductor y tu alojamiento. Te devuelve rutas, requisitos y enlaces de configuración. No necesitas iniciar sesión.
+**[Encuentra tu configuración con el cuestionario interactivo](https://debridmediamanager.com/choose-your-setup).** Responde unas preguntas sobre tus cuentas de reproductor y tu alojamiento. Te devuelve las rutas, los requisitos y los enlaces de configuración. No necesitas iniciar sesión.
 
-**Empieza por la app en la que quieres ver el contenido.** No necesitas todas las piezas. DMM te ayuda a elegir los lanzamientos. Un proveedor aporta los archivos. zurg puede convertirlos en una biblioteca compartida. rex presenta una biblioteca a las apps de Plex. Algunas rutas se saltan alguna pieza.
+¿No sabes lo que significa algún nombre? [Qué hace cada pieza](glossary.md) tiene una línea para cada una.
 
-Este mapa cubre las rutas compatibles verificadas el **10 de noviembre de 2026**. Incluye alternativas externas que eliminan un paso. Los complementos y dispositivos de terceros aún pueden diferir. Sigue la guía enlazada y sus límites probados.
+**Empieza por la app en la que quieres ver el contenido.** No necesitas todas las piezas. DMM te ayuda a elegir las versiones. Un proveedor aporta los archivos. zurg puede convertirlos en una biblioteca compartida. rex presenta una biblioteca a las apps de Plex. Algunas rutas se saltan alguna pieza.
+
+Este mapa cubre las rutas compatibles revisadas el **10 de noviembre de 2026**. Incluye alternativas externas que eliminan un paso. Los complementos y dispositivos de terceros pueden seguir siendo diferentes. Sigue la guía enlazada y sus límites probados.
 
 ## Elige según lo que ya usas {#pick-by-what-you-already-use}
 

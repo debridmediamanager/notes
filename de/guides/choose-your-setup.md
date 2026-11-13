@@ -1,10 +1,12 @@
 # Welches Setup sollte ich nutzen? {#which-setup-should-i-use}
 
-**[Finde dein Setup mit dem interaktiven Fragebogen](https://debridmediamanager.com/choose-your-setup).** Beantworte ein paar Fragen zu deinen Player-Konten und zum Hosting. Du bekommst passende Wege, Anforderungen und Setup-Links. Kein Login nötig.
+**[Finde dein Setup mit dem interaktiven Fragebogen](https://debridmediamanager.com/choose-your-setup).** Beantworte ein paar Fragen zu deinen Player-Konten und zum Hosting. Du bekommst Routen, Voraussetzungen und Setup-Links. Kein Login nötig.
 
-**Fang mit der App an, in der du schauen willst.** Du brauchst nicht alle Teile. DMM hilft dir, Releases auszuwählen. Ein Anbieter stellt die Dateien bereit. zurg kann sie in eine gemeinsame Bibliothek umwandeln. rex stellt eine Bibliothek für Plex-Apps bereit. Bei manchen Wegen fällt ein Teil weg.
+Du weißt nicht, was ein Begriff bedeutet? [Was jeder Teil macht](glossary.md) hat für jeden eine Zeile.
 
-Diese Übersicht deckt unterstützte Wege ab, die am **10. November 2026** geprüft wurden. Sie enthält auch externe Alternativen, die einen Schritt überspringen. Drittanbieter-Addons und Geräte können trotzdem abweichen. Folge dem verlinkten Guide und seinen getesteten Grenzen.
+**Fang mit der App an, in der du schauen willst.** Du brauchst nicht jeden Teil. DMM hilft dir, Releases auszuwählen. Ein Provider liefert die Dateien. zurg kann sie in eine gemeinsame Bibliothek verwandeln. rex stellt eine Bibliothek für Plex-Apps bereit. Bei manchen Routen fällt ein Teil weg.
+
+Diese Übersicht deckt unterstützte Routen ab, geprüft am **10. November 2026**. Sie enthält externe Alternativen, die einen Schritt überspringen. Drittanbieter-Addons und Geräte können sich trotzdem unterscheiden. Folge dem verlinkten Guide und seinen getesteten Grenzen.
 
 ## Such dir das aus, was du schon nutzt {#pick-by-what-you-already-use}
 

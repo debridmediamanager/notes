@@ -1,10 +1,12 @@
 # Quelle configuration dois-je utiliser ? {#which-setup-should-i-use}
 
-**[Trouvez votre configuration avec le questionnaire interactif](https://debridmediamanager.com/choose-your-setup).** Répondez à quelques questions sur vos comptes de lecteur et votre hébergement. Il vous indique les routes, les prérequis et les liens de configuration. Aucune connexion nécessaire.
+**[Trouvez votre configuration avec le questionnaire interactif](https://debridmediamanager.com/choose-your-setup).** Répondez à quelques questions sur vos comptes de lecteur et votre hébergement. Il vous donne les itinéraires, les prérequis et les liens de configuration. Aucune connexion nécessaire.
 
-**Commencez par l'application dans laquelle vous voulez regarder.** Vous n'avez pas besoin de tout. DMM vous aide à choisir les versions. Un fournisseur fournit les fichiers. zurg peut les transformer en une bibliothèque partagée. rex présente une bibliothèque aux applications Plex. Certaines routes sautent une étape.
+Vous ne savez pas ce que signifie un nom ? [Ce que fait chaque élément](glossary.md) donne une ligne pour chacun.
 
-Cette carte couvre les routes prises en charge, vérifiées le **10 novembre 2026**. Elle inclut des alternatives externes qui suppriment une étape. Les addons et appareils tiers peuvent toujours différer. Suivez le guide lié et ses limites testées.
+**Commencez par l'application dans laquelle vous voulez regarder.** Vous n'avez pas besoin de tous les éléments. DMM vous aide à choisir les versions. Un fournisseur fournit les fichiers. zurg peut les transformer en une bibliothèque partagée. rex présente une bibliothèque aux applications Plex. Certains itinéraires sautent un élément.
+
+Cette carte couvre les itinéraires pris en charge, vérifiés le **10 novembre 2026**. Elle inclut des alternatives externes qui suppriment une étape. Les addons et appareils tiers peuvent toujours différer. Suivez le guide lié et ses limites testées.
 
 ## Choisissez selon ce que vous utilisez déjà {#pick-by-what-you-already-use}
 

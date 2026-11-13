@@ -1,10 +1,12 @@
 # Setup mana yang sebaiknya saya pakai? {#which-setup-should-i-use}
 
-**[Temukan setup kamu dengan kuesioner interaktif](https://debridmediamanager.com/choose-your-setup).** Jawab beberapa pertanyaan tentang akun pemutar dan hosting kamu. Hasilnya berupa rute, kebutuhan, dan tautan setup. Tidak perlu login.
+**[Temukan setup Anda dengan kuesioner interaktif](https://debridmediamanager.com/choose-your-setup).** Jawab beberapa pertanyaan tentang akun pemutar dan hosting Anda. Hasilnya berupa rute, persyaratan, dan tautan setup. Tidak perlu login.
 
-**Mulai dari aplikasi yang ingin kamu gunakan untuk menonton.** Kamu tidak perlu semua komponen. DMM membantu memilih rilis. Penyedia menyediakan file. zurg bisa mengubahnya menjadi library bersama. rex menampilkan library ke aplikasi Plex. Beberapa rute melewati satu komponen.
+Tidak tahu arti sebuah nama? [Apa fungsi setiap komponen](glossary.md) memuat satu baris untuk tiap istilah.
 
-Peta ini mencakup rute yang didukung dan sudah dicek pada **10 November 2026**. Termasuk alternatif luar yang menghilangkan satu langkah. Addon dan perangkat pihak ketiga tetap bisa berbeda. Ikuti panduan yang ditautkan beserta batasan yang sudah diuji.
+**Mulai dari aplikasi tempat Anda ingin menonton.** Anda tidak perlu semua komponen. DMM membantu Anda memilih rilis. Penyedia menyediakan file. zurg dapat mengubahnya menjadi pustaka bersama. rex menyajikan pustaka ke aplikasi Plex. Beberapa rute melewati satu komponen.
+
+Peta ini mencakup rute yang didukung yang diperiksa pada **10 November 2026**. Peta ini juga mencakup alternatif pihak luar yang menghapus satu langkah. Addon dan perangkat pihak ketiga tetap bisa berbeda. Ikuti panduan yang ditautkan beserta batas yang telah diuji.
 
 ## Pilih berdasarkan yang sudah kamu pakai {#pick-by-what-you-already-use}
 

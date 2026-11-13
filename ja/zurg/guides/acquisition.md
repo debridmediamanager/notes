@@ -481,7 +481,7 @@ Acquisition: chose <release> for <title>: results=143 local_refusals=97 radarr_r
 ## zurg だけをダウンロードクライアントにしている \*arr を確認する {#checking-an-arr-that-only-uses-zurg-as-its-download-client}
 
 A Sonarr or Radarr pointed at zurg's [SABnzbd](sonarr-radarr.md) or
-[qBittorrent](sonarr-radarr-torrents.md) endpoint does its own searching, and does not
+[qBittorrent](sonarr-radarr-torrents.md) endpoint does its own searching, so it doesn't
 need a source here. zurg still wants its API key, because three of its settings
 decide whether every import is a free rename or a whole release downloaded
 from the debrid account and written to zurg's disk: Remove Completed on a
@@ -513,7 +513,7 @@ on for the \*arr's zurg qBittorrent client when it is off, the one change zurg
 makes, and reports a layout that makes imports copies. Every source with a URL
 and an API key, enabled or not, is checked and corrected the same way. It is
 listed on the acquisition page under **Checked, never searched for**, with
-what zurg changed, the findings go to the log, and `zurg doctor` shows them as
+what zurg changed. The findings go to the log, and `zurg doctor` shows them as
 `imports (<name>)`. `library_path` is not judged for such a source, since
 nothing is placed for it. A source added to config.yml by hand is read at
 start, so restart zurg after adding one that way.

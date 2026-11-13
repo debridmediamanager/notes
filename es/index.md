@@ -2,12 +2,13 @@
 
 Guías y referencia para DMM, zurg y rex.
 
-**¿No estás seguro de qué piezas necesitas? [Elige tu configuración](guides/choose-your-setup.md)** compara las rutas y te enlaza con la guía adecuada.
+**¿No sabes qué piezas necesitas? [Elige tu configuración](guides/choose-your-setup.md)** compara las rutas y te enlaza con la guía adecuada.
+[Qué hace cada pieza](guides/glossary.md) explica cada nombre en una línea.
 
 | Proyecto | Qué es | Empieza aquí |
 |---|---|---|
-| [zurg](zurg/index.md) | Una carpeta para cada cuenta de debrid y cada biblioteca de Usenet. Plex, Jellyfin y Emby la leen como una unidad normal | [Configuración](zurg/setup/index.md) |
+| [zurg](zurg/index.md) | Una carpeta para cada cuenta de debrid y biblioteca de Usenet. Plex Jellyfin y Emby la leen como una unidad normal | [Configuración](zurg/setup/index.md) |
 | [rex](rex/index.md) | Un servidor de medios que no guarda ningún archivo. Los addons de Stremio, zurg o tu propia app pueden llenarlo | [Elige una configuración](rex/index.md) |
-| [DMM](dmm/index.md) | Busca lanzamientos y mantiene una biblioteca en tu cuenta de debrid | [debridmediamanager.com](https://debridmediamanager.com) |
+| [DMM](dmm/index.md) | Busca versiones y mantén una biblioteca en tu cuenta de debrid | [debridmediamanager.com](https://debridmediamanager.com) |
 
-[Guías](guides/index.md) muestra todas las guías, incluida [la ayuda remota](guides/remote-help.md) para zurg y rex.
+[Guías](guides/index.md) enumera todas las guías, incluida [la ayuda remota](guides/remote-help.md) con zurg y rex.

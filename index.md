@@ -3,6 +3,7 @@
 Guides and reference for DMM zurg and rex.
 
 **Not sure which pieces you need? [Choose your setup](guides/choose-your-setup.md)** compares the routes and links to the right guide.
+[What each piece does](guides/glossary.md) explains every name in one line.
 
 | Project | What it is | Start here |
 |---|---|---|

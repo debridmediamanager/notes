@@ -4,9 +4,10 @@ Jede Anleitung auf dieser Seite, nach Projekt sortiert.
 
 ## Allgemein {#general}
 
-- [Wähle dein Setup](choose-your-setup.md): Routenübersichten und wann du DMM, zurg, rex, Kodi, Stremio oder die Jellyfin/Emby-Plugins verwendest
+- [Wähle dein Setup](choose-your-setup.md): Routenpläne und wann du DMM, zurg, rex, Kodi, Stremio oder die Jellyfin/Emby-Plugins verwenden solltest
+- [Was jeder Teil macht](glossary.md): eine Zeile für jeden DMM-, zurg- und rex-Teil sowie die Begriffe in den Anleitungen
 - [Hilfe bekommen](remote-help.md) bei zurg und rex: wo du fragen kannst, was du angeben solltest, und Remote-Hilfe für Sponsoren
-- [Was dir eine Sponsorschaft bringt](sponsorship.md): alle Vorteile und wo du sie einrichtest, oder wie du die DMM-Vorteile über das Anfragenboard verdienst
+- [Was dir eine Sponsorschaft bringt](sponsorship.md): jeden Vorteil und wo du ihn einrichtest, oder wie du die DMM-Vorteile über das Anfragenbrett verdienen kannst
 
 ## DMM
 

@@ -5,6 +5,7 @@ Cada guía de este sitio, por proyecto.
 ## General
 
 - [Elige tu configuración](choose-your-setup.md): mapas de rutas y cuándo usar DMM, zurg, rex, Kodi, Stremio o los plugins de Jellyfin/Emby
+- [Qué hace cada pieza](glossary.md): una línea para cada pieza de DMM, zurg y rex y las palabras que aparecen en las guías
 - [Obtener ayuda](remote-help.md) con zurg y rex: dónde preguntar, qué incluir y la ayuda remota para patrocinadores
 - [Qué te da un patrocinio](sponsorship.md): cada ventaja y dónde configurarla, o cómo ganar las de DMM en el tablero de solicitudes
 
