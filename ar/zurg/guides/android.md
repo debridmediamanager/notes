@@ -1,10 +1,11 @@
 # zurg+rex لأجهزة Android وGoogle TV {#zurgrex-for-android-and-google-tv}
 
-لتطبيق Android يشغّل محرك zurg على الجهاز نفسه، ومعه rex بجانبه: خادم Plex الخاص بك على هاتفك أو جهاز TV box، لتطبيقات Plex.
+يشغّل تطبيق Android محرك zurg على الجهاز، ويعمل rex بجانبه: خادم Plex خاص بك على هاتفك أو جهاز التلفاز
+لتستخدمه تطبيقات Plex.
 يعمل التطبيق الواحد على الهواتف والأجهزة اللوحية وAndroid TV وGoogle TV.
-يتطلب الأمر Android 8.0 أو أحدث. يمكن لجهاز Fire TV تثبيت ملف APK نفسه يدوياً (sideload). استخدم مشغّل WebDAV إذا لم يكن لديك تطبيق Files في النظام. يتطلب Usenet نظام Android بمعمارية 64-bit؛ أما NZB المستضافة على TorBox (`torbox_nzb`) فغير متاحة على Android.
-
-ليس لديك حساب debrid ولا Usenet، وتستخدم الإضافات فقط؟ [rex لـ Android](../../rex/android.md) مجاني ولا يحتاج إلى أي رعاية (sponsorship).
+يتطلب Android 8.0 أو أحدث. يمكن تثبيت ملف APK نفسه على Fire TV عبر التثبيت الجانبي. استخدم مشغّل WebDAV عندما
+لا يوجد تطبيق Files في النظام. يتطلب Usenet نظام Android بمعمارية 64-bit، ولا تتوفر ملفات NZB المستضافة على TorBox (`torbox_nzb`)
+على Android.
 
 ## التثبيت والإعداد {#install-and-set-up}
 

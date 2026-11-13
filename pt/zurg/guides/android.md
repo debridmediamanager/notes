@@ -1,8 +1,6 @@
 # zurg+rex para Android e Google TV {#zurgrex-for-android-and-google-tv}
 
-The aplicativo para Android roda um motor zurg no próprio dispositivo, com o rex ao lado dele: o seu próprio servidor Plex no celular ou no box de TV, para os aplicativos do Plex. Um único app funciona em celulares, tablets, Android TV e Google TV. É preciso Android 8.0 ou mais recente. O Fire TV pode instalar o mesmo APK por sideload. Use um player WebDAV quando ele não tiver um app de Arquivos do sistema. O Usenet exige Android de 64 bits; os NZBs hospedados no TorBox (`torbox_nzb`) não estão disponíveis no Android.
-
-Não tem conta de debrid nem Usenet, só addons? [rex para Android](../../rex/android.md) é gratuito e não precisa de patrocínio.
+O aplicativo Android roda um mecanismo zurg no próprio dispositivo, e o rex fica ao lado dele: o seu próprio servidor Plex no celular ou na TV box, para os apps do Plex. Um único app funciona em celulares, tablets, Android TV e Google TV. É necessário Android 8.0 ou mais recente. O Fire TV pode instalar o mesmo APK por sideload. Use um player WebDAV quando ele não tiver um app de Arquivos do sistema. Usenet exige Android de 64 bits; os NZBs hospedados no TorBox (`torbox_nzb`) não estão disponíveis no Android.
 
 ## Instalar e configurar {#install-and-set-up}
 

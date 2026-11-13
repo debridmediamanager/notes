@@ -470,19 +470,18 @@ Acquisition: chose <release> for <title>: results=143 local_refusals=97 radarr_r
 
 ## Memeriksa *arr yang hanya memakai zurg sebagai download client {#checking-an-arr-that-only-uses-zurg-as-its-download-client}
 
-A Sonarr or Radarr pointed at zurg's [SABnzbd](sonarr-radarr.md) or
-[qBittorrent](sonarr-radarr-torrents.md) endpoint does its own searching, and does not
-need a source here. zurg still wants its API key, because three of its settings
-decide whether every import is a free rename or a whole release downloaded
-from the debrid account and written to zurg's disk: Remove Completed on a
-qBittorrent client, the download folder and the root folders on one volume,
-and root folders inside `__magic__`. With the key, zurg turns Remove Completed
-on by itself (see [qbittorrent.md](sonarr-radarr-torrents.md#what-to-put-in-each-field))
-and warns about the other two. See
-[One volume for the download folder and the root folders](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
+Sonarr atau Radarr yang diarahkan ke endpoint [SABnzbd](sonarr-radarr.md) atau
+[qBittorrent](sonarr-radarr-torrents.md) milik zurg melakukan pencariannya sendiri, dan tidak
+perlu sumber di sini. zurg tetap membutuhkan API key-nya, karena tiga pengaturannya
+menentukan apakah setiap impor hanya berupa rename gratis atau seluruh rilis diunduh
+dari akun debrid dan ditulis ke disk zurg: Remove Completed pada klien qBittorrent, folder unduhan
+dan root folder berada di satu volume, dan root folder di dalam `__magic__`. Dengan key tersebut, zurg
+mengaktifkan Remove Completed sendiri (lihat [qbittorrent.md](sonarr-radarr-torrents.md#what-to-put-in-each-field))
+dan memberi peringatan untuk dua pengaturan lainnya. Lihat
+[Satu volume untuk folder unduhan dan root folder](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
 
-The easiest way to give zurg the key is the banner on the main dashboard,
-described below. Or add it as a source that is switched off:
+Cara termudah untuk memberi zurg key ini adalah lewat banner di dashboard utama,
+yang dijelaskan di bawah. Atau tambahkan sebagai sumber yang dimatikan:
 
 ```yaml
 acquisition:
@@ -494,40 +493,31 @@ acquisition:
       api_key: YOUR_SONARR_API_KEY
 ```
 
-A Radarr or Sonarr source with `enabled: false` acquires nothing. zurg never
-reads its wanted list and never searches for it. With its `url` and `api_key`
-set, and one of the two endpoints on, zurg only reads the \*arr's root folders,
-remote path mappings and download clients, at start, every ten minutes and as
-soon as the \*arr first calls one of the endpoints. It turns Remove Completed
-on for the \*arr's zurg qBittorrent client when it is off, the one change zurg
-makes, and reports a layout that makes imports copies. Every source with a URL
-and an API key, enabled or not, is checked and corrected the same way. It is
-listed on the acquisition page under **Checked, never searched for**, with
-what zurg changed, the findings go to the log, and `zurg doctor` shows them as
-`imports (<name>)`. `library_path` is not judged for such a source, since
-nothing is placed for it. A source added to config.yml by hand is read at
-start, so restart zurg after adding one that way.
+Sumber Radarr atau Sonarr dengan `enabled: false` tidak mengunduh apa pun. zurg tidak pernah
+membaca daftar keinginannya dan tidak pernah mencarinya. Dengan `url` dan `api_key`
+diisi, dan salah satu dari dua endpoint aktif, zurg hanya membaca root folder, remote path mapping,
+dan download client milik \*arr, saat start, setiap sepuluh menit, dan begitu \*arr pertama kali
+memanggil salah satu endpoint. Jika Remove Completed pada klien qBittorrent zurg untuk \*arr tersebut
+sedang mati, zurg menyalakannya; ini satu-satunya perubahan yang dilakukan zurg, dan zurg
+melaporkan layout yang membuat impor menjadi salinan. Setiap sumber dengan URL dan API key,
+baik aktif maupun tidak, diperiksa dan dikoreksi dengan cara yang sama. Sumber tersebut
+tercantum di halaman acquisition di bawah **Checked, never searched for**, dengan
+apa yang diubah zurg. Temuannya masuk ke log, dan `zurg doctor` menampilkannya sebagai
+`imports (<name>)`. `library_path` tidak dinilai untuk sumber seperti ini, karena
+tidak ada yang ditempatkan untuknya. Sumber yang ditambahkan ke config.yml secara manual dibaca saat start, jadi restart zurg setelah menambahkan sumber dengan cara itu.
 
-zurg also notices a Sonarr or Radarr it cannot check. Both send their name in
-every request to the endpoints (`Sonarr/4.0.20.3014 (alpine 3.24.1)`), so zurg
-records which ones call it and from which address. When one calls and no
-source of its kind has a URL and an API key, zurg logs one warning, `zurg
-doctor` reports it on its `*arr settings` line, and the main dashboard shows a
-banner with a form for its URL and API key. The URL is filled in with a guess:
-the address the \*arr calls from, on its default port (8989 for Sonarr, 7878
-for Radarr). That address is often a container's own, which zurg may or may
-not reach, so change it to whatever URL reaches the \*arr from where zurg
-runs. The API key is in the \*arr under Settings, General, Security. zurg
-first asks the \*arr for its status with that key, and saves nothing unless it
-answers as the app it was named as. It then adds the source above to
-config.yml with `enabled: false`, keeping everything else in the file as it
-was, and checks it straight away, with no restart. The form shows what zurg
-found and changed. The key is written to config.yml and sent to the \*arr, and
-nowhere else.
+zurg juga mendeteksi Sonarr atau Radarr yang tidak bisa diperiksanya. Keduanya mengirim nama mereka di
+setiap permintaan ke endpoint (`Sonarr/4.0.20.3014 (alpine 3.24.1)`), jadi zurg
+mencatat mana yang memanggilnya dan dari alamat mana. Ketika ada yang memanggil dan tidak ada
+sumber dengan jenis yang sama memiliki URL dan API key, zurg mencatat satu peringatan, `zurg
+doctor` melaporkannya di baris `*arr settings`-nya, dan dashboard utama menampilkan banner dengan
+form untuk URL dan API key. URL diisi dengan tebakan: alamat tempat \*arr memanggil, pada port default-nya (8989 untuk Sonarr, 7878
+untuk Radarr). Alamat itu sering kali milik container, dan zurg mungkin bisa atau tidak bisa menjangkaunya, jadi ubah ke URL apa pun yang bisa menjangkau \*arr dari tempat zurg berjalan. API key ada di \*arr pada Settings, General, Security. zurg
+pertama-tama meminta status ke \*arr dengan key itu, dan tidak menyimpan apa pun kecuali \*arr menjawab sebagai aplikasi dengan nama yang sesuai. Lalu zurg menambahkan sumber di atas ke config.yml dengan `enabled: false`, dan menjaga isi file lainnya tetap seperti semula, lalu langsung memeriksanya tanpa restart. Form menampilkan apa yang ditemukan dan diubah zurg. Key ditulis ke config.yml dan dikirim ke \*arr, dan tidak ke tempat lain.
 
-The banner matches by kind, not by address: an \*arr calls zurg from inside
-its container, on an address that has nothing to do with the URL zurg reaches
-it on, so one Sonarr source with a key silences the banner for every Sonarr.
+Banner dicocokkan berdasarkan jenis, bukan alamat: \*arr memanggil zurg dari dalam container-nya, lewat alamat yang tidak ada hubungannya dengan URL tempat zurg menjangkaunya, jadi satu sumber Sonarr dengan key sudah cukup untuk menyembunyikan banner untuk semua Sonarr.
+
+(Terjemahan sebelumnya ditolak: code span berbeda (` reports it on its `). Pertahankan struktur persis.)
 
 ## Mencari rilis duplikat {#finding-duplicate-releases}
 

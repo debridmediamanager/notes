@@ -1,8 +1,7 @@
 # zurg+rex 用于 Android 和 Google TV {#zurgrex-for-android-and-google-tv}
 
-The Android 应用会在设备上运行 zurg 引擎，并在旁边运行 rex：也就是你自己的 Plex 服务器，跑在手机或电视盒子上，供 Plex 应用使用。同一个应用可用于手机、平板、Android TV 和 Google TV。需要 Android 8.0 或更高版本。Fire TV 可以侧载同一个 APK。如果播放器没有系统文件应用，请使用 WebDAV 播放器。Usenet 需要 64 位 Android；TorBox 托管的 NZB（`torbox_nzb`）在 Android 上不可用。
-
-没有网盘账户，也没有 Usenet，只想用插件？[rex for Android](../../rex/android.md) 是免费的，不需要赞助。
+The Android 应用在设备上运行 zurg 引擎,并在旁边运行 rex:也就是你自己的 Plex 服务器,跑在手机或电视盒子上,供 Plex 应用使用。同一个应用支持手机、平板、Android TV 和 Google TV。
+需要 Android 8.0 或更新版本。Fire TV 可以侧载同一个 APK。如果设备没有系统文件应用,请使用 WebDAV 播放器。Usenet 需要 64 位 Android;TorBox 托管的 NZB(`torbox_nzb`)在 Android 上不可用。
 
 ## 安装与设置 {#install-and-set-up}
 

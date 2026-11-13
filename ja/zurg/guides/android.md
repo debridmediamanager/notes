@@ -1,8 +1,12 @@
 # zurg+rex の Android と Google TV 向け {#zurgrex-for-android-and-google-tv}
 
-Androidアプリは、デバイス上でzurgエンジンを動かし、その横でrexも動かします。つまり、スマホやTVボックスの中に自分専用のPlexサーバーを置き、Plexアプリから見られるようにします。このアプリはスマホ、タブレット、Android TV、Google TVで動きます。Android 8.0以降が必要です。Fire TVでも同じAPKをサイドロードできます。システムのファイルアプリがないときは、WebDAVプレーヤーを使ってください。Usenetには64ビット版のAndroidが必要です。TorBoxでホストされているNZB（`torbox_nzb`）はAndroidでは使えません。
-
-デビッドリッドアカウントもUsenetもなく、アドオンだけを使いたいですか？ [rex for Android](../../rex/android.md)は無料で、スポンサーになる必要もありません。
+Android アプリは、端末上で zurg エンジンを動かし、その横で rex も動かします。
+スマホや TV ボックスの中に自分専用の Plex サーバーができて、Plex アプリから見られるようになります。
+1つのアプリで、スマホ、タブレット、Android TV、Google TV に対応しています。
+Android 8.0 以降が必要です。
+Fire TV でも同じ APK をサイドロードできます。
+端末にシステムのファイルアプリがない場合は、WebDAV プレーヤーを使ってください。
+Usenet には 64 ビットの Android が必要です。TorBox でホストされている NZB (`torbox_nzb`) は、Android では利用できません。
 
 ## インストールとセットアップ {#install-and-set-up}
 

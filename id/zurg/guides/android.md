@@ -1,8 +1,7 @@
 # zurg+rex untuk Android dan Google TV {#zurgrex-for-android-and-google-tv}
 
-Aplikasi Android menjalankan mesin zurg di perangkat dan rex di sampingnya: server Plex Anda sendiri di ponsel atau kotak TV Anda, untuk aplikasi Plex. Satu aplikasi berfungsi di ponsel, tablet, Android TV, dan Google TV. Android 8.0 atau yang lebih baru diperlukan. Fire TV dapat memasang APK yang sama lewat sideload. Gunakan pemutar WebDAV jika tidak ada aplikasi Files bawaan sistem. Usenet memerlukan Android 64-bit; NZB yang di-host TorBox (`torbox_nzb`) tidak tersedia di Android.
-
-Tidak punya akun debrid atau Usenet, hanya addon? [rex untuk Android](../../rex/android.md) gratis dan tidak perlu sponsorship.
+The aplikasi Android menjalankan mesin zurg di perangkat dan rex di sampingnya: server Plex Anda sendiri di ponsel atau kotak TV Anda, untuk aplikasi Plex. Satu aplikasi berfungsi di ponsel, tablet, Android TV, dan Google TV.
+Android 8.0 atau yang lebih baru diperlukan. Fire TV bisa memasang APK yang sama lewat sideload. Gunakan pemutar WebDAV jika tidak ada aplikasi Files bawaan sistem. Usenet memerlukan Android 64-bit; NZB yang di-host TorBox (`torbox_nzb`) tidak tersedia di Android.
 
 ## Pasang dan atur {#install-and-set-up}
 
