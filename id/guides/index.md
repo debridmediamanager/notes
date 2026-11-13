@@ -38,11 +38,11 @@ Setiap panduan di situs ini, dikelompokkan per proyek.
 ## rex
 
 - [Pertanyaan tentang rex](../rex/faq.md): sebelum kamu memasang
-- [rex dengan aplikasi sendiri](../rex/any-source.md)
-- [rex dengan addon Stremio kamu](../rex/stremio.md)
+- [rex dengan aplikasi Anda sendiri](../rex/any-source.md)
+- [rex dengan addon Stremio Anda](../rex/stremio.md)
 - [rex dengan zurg](../rex/with-zurg.md)
-- [rex untuk Android](https://github.com/debridmediamanager/rex-android)
-- [TV Langsung dengan rex](../rex/live-tv.md)
+- [rex untuk Android](../rex/android.md)
+- [Live TV dengan rex](../rex/live-tv.md)
 - [Musik dengan rex](../rex/music.md)
 - [Pindah dari Plex ke rex](../rex/from-plex.md)
 - [Bagikan rex ke keluarga dan teman](../rex/sharing.md)
@@ -50,7 +50,7 @@ Setiap panduan di situs ini, dikelompokkan per proyek.
   - [Tutorial: addon video rumahan](../rex/addon-home-videos.md)
   - [Tutorial: addon musik](../rex/addon-music.md)
   - [Tutorial: addon IPTV](../rex/addon-iptv.md)
-  - [Lainnya dari addon kamu](../rex/addon-more.md)
+  - [Lebih banyak dari addon kamu](../rex/addon-more.md)
 - [Bawa riwayat tontonan kamu](../rex/import-watched.md)
 - [Kometa dengan rex](../rex/kometa.md)
-- [Aplikasi mengunduh dari provider kamu](../rex/direct-download.md)
+- [Aplikasi mengunduh dari penyedia kamu](../rex/direct-download.md)

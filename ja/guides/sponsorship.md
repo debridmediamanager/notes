@@ -42,7 +42,7 @@ DMMは無料です。スポンサーからの支援で、ホスティング費�
 
 ## rex
 
-rex は無料で、スポンサーも不要です。Android でも使えます: [rex for Android](https://github.com/debridmediamanager/rex-android) を使えば、スマホや TV ボックスで rex とそのアドオンを動かせます。キーがあれば、[rex-stremio](../rex/stremio.md) は DMM がすでに保有しているトレントのデバッグ ストリームを、各トレントを個別に調べることなく数秒で追加します。rex-stremio の **DMM** フィールドに貼り付けてください。オフにしない限り、トレントファイルのプローブ結果は DMM と共有されます。
+rex は無料で、スポンサーも必要ありません。Android でも使えます。[rex for Android](../rex/android.md) を使うと、スマホや TV ボックスで rex とそのアドオンを動かせます。キーを用意したら、[rex-stremio](../rex/stremio.md) が DMM がすでに確認済みのトレントのデバッグストリームを追加します。各トレントを一つずつ確認する代わりに、数秒で取得できます。キーは rex-stremio の **DMM** 欄に貼り付けてください。オフにしない限り、トレントファイルの確認結果は DMM と共有されます。
 
 ## ヘルプ {#help}
 

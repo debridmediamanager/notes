@@ -12,16 +12,16 @@ rex は独立したサーバーです。Plex Media Server のプラグインで�
 
 ### 料金はかかりますか? {#what-does-it-cost}
 
-rex は個人利用であれば無料です。有料プランはありません。ソースコードは PolyForm Noncommercial ライセンスのもとで公開されています。商用利用は認められていません。すべてのビルドは [GitHub Releases](https://github.com/debridmediamanager/rex/releases) で公開されており、Android アプリは [rex for Android の](https://github.com/debridmediamanager/rex-android/releases) リリースで公開されています。
+rex は個人利用であれば無料で、有料プランはありません。ソースコードは PolyForm Noncommercial ライセンスのもとで公開されています。商用利用は認められていません。すべてのビルドは [GitHub Releases](https://github.com/debridmediamanager/rex/releases) で公開されています。Android 版は [Android 版 rex](android.md) です。
 
-周辺のものには費用がかかる場合があります:
+rex の周辺のものには費用がかかる場合があります:
 
 | | |
 |---|---|
-| [rex-stremio](stremio.md)、ソースとして使う自分のアプリやアドオン | 無料 |
-| zurg nightly（debrid や Usenet ライブラリのソース） | [DMM のスポンサー](https://gatekeeper.debridmediamanager.com)向けの特典 |
-| DMM API キー（zurg で DMM の完全一致を使うため） | 任意。DMM のスポンサーになると入手できます |
-| rex の Docker イメージ | 無料で公開。Linux 向け: [Docker での rex 実行](any-source.md#run-rex-in-docker) |
+| [rex-stremio](stremio.md)、ソースとして使う自作アプリやアドオン | 無料 |
+| zurg nightly（debrid または Usenet ライブラリのソース） | [DMM スポンサー](https://gatekeeper.debridmediamanager.com)向けの特典 |
+| DMM API キー（zurg で DMM の完全一致を使うため） | 任意。DMM のスポンサーになると入手可能 |
+| rex の Docker イメージ | 無料で公開。Linux 向け: [Docker での rex](any-source.md#run-rex-in-docker) |
 
 ### Plex アカウントは危険になりますか? {#is-my-plex-account-at-risk}
 
@@ -68,13 +68,13 @@ Plex アプリに **Downloads** があります。rex は、ダウンロード�
 
 ### どんなハードウェアが必要ですか? {#what-hardware-does-it-need}
 
-マシンは常時稼働している必要があります。対応OSは、Linux（amd64またはarm64、glibc 2.35以降、つまりUbuntu 22.04以降）、macOS（Intel または Apple Silicon）、64ビット版Windowsです。Androidの携帯電話、タブレット、TVボックスでは、[rex for Android](https://github.com/debridmediamanager/rex-android)を使うと、rexとそのアドオンを無料で動かせます。また、スポンサー限定のzurg+rexアプリ（スマホ上でPlexサーバーを動かすもの）では、zurgとrexを一緒に動かせます（[Androidガイド](../zurg/guides/android.md)を参照してください）。
+Linuxを動かせる、電源を入れっぱなしにしておけるマシン（amd64またはarm64、glibc 2.35以降、つまりUbuntu 22.04以降）、macOS（Intel または Apple Silicon）、または64ビットのWindows。Android の電話、タブレット、TVボックスでは、[rex for Android](android.md) で rex とそのアドオンを無料で動かせます。スポンサー限定の zurg+rex アプリ（スマホ上の Plex サーバー）を使えば、zurg と rex を一緒に動かせます（[Android ガイド](../zurg/guides/android.md)を参照）。
 
-**メモリ:** 1 GB を割り当ててください。4,062本の映画と656本のシリーズがあるライブラリで、rexは起動時に500 MB未満、ライブラリを閲覧している間は約730 MBを使っていました。動画の変換には、さらにメモリが必要です。
+**メモリ:** 1 GB を用意してください。4,062 本の映画と 656 本のシリーズがあるライブラリで、rex は起動中は 500 MB 未満、ライブラリを閲覧中は約 730 MB を使っていました。動画の変換にはさらに必要です。
 
-**ディスク:** 映画の保存には不要です。rexはライブラリを`rex.db`に保存します。ダウンロードや、分析で作られる画像（シークプレビュー、チャプター画像）も、使う場合はその横に保存されます。
+**ディスク:** 映画には必要ありません。rex はライブラリを `rex.db` に保存します。ダウンロードや、分析で作られる画像（シーク用プレビュー、チャプター画像）も、使う場合は同じ場所に保存されます。
 
-**変換:** FFmpegを使う場合のみです。グラフィックチップがあると高速になります。小型のIntelチップでは、1080pの映画の変換が約2秒で始まりました。各システムでrexがどのチップを使うかは、[By platform](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform)にまとめてあります。macOSでは、常にプロセッサで変換されます。
+**変換:** FFmpeg を使う場合のみ行われます。グラフィックチップがあると速くなります。小型の Intel チップでは、1080p の映画の変換が約 2 秒で始まりました。各システムで rex がどのチップを使うかは、[By platform](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform) にあります。macOS では、変換は常にプロセッサで行われます。
 
 ### ローカルのファイルを読み込みますか? {#does-it-read-my-local-files}
 

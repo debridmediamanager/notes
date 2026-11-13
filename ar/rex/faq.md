@@ -16,16 +16,16 @@ Wait — the translation target is Arabic. Here is the translation:
 
 ### كم تكلفته؟ {#what-does-it-cost}
 
-rex مجاني للاستخدام الشخصي ولا توجد نسخة مدفوعة منه. شيفرته المصدرية عامة بموجب رخصة PolyForm Noncommercial، والاستخدام التجاري غير مسموح. كل إصدار منشور على [إصدارات GitHub](https://github.com/debridmediamanager/rex/releases)، وإصدارات تطبيق Android على [إصدارات rex لأندرويد](https://github.com/debridmediamanager/rex-android/releases).
+rex مجاني للاستخدام الشخصي ولا توجد له نسخة مدفوعة. الكود المصدري متاح للعموم بموجب رخصة PolyForm Noncommercial. الاستخدام التجاري غير مسموح. كل إصدار منشور على [GitHub Releases](https://github.com/debridmediamanager/rex/releases)، وتطبيق الأندرويد هو [rex لأندرويد](android.md).
 
-بعض الأشياء المحيطة به قد تكلّف مالًا:
+قد تكلّف بعض الأشياء المرتبطة به شيئًا:
 
 | | |
 |---|---|
 | [rex-stremio](stremio.md)، تطبيقك الخاص أو إضافة تستخدمها كمصدر | مجاني |
-| zurg النسخة الليلية، وهي مصدر لمكتبة debrid أو Usenet | ميزة لـ[داعمي DMM](https://gatekeeper.debridmediamanager.com) |
-| مفتاح API لـ DMM، لمطابقات DMM الدقيقة داخل zurg | اختياري، ويأتي أيضًا من دعم DMM |
-| صورة rex على Docker | مجانية ومتاحة للجميع، لنظام Linux: [rex في Docker](any-source.md#run-rex-in-docker) |
+| zurg nightly، وهو مصدر لمكتبة debrid أو Usenet | ميزة لرعاة [DMM](https://gatekeeper.debridmediamanager.com) |
+| مفتاح API لـ DMM، للمطابقات الدقيقة من DMM داخل zurg | اختياري، ويأتي أيضًا من رعاية DMM |
+| صورة rex على Docker | مجانية ومتاحة للعموم، لنظام Linux: [rex في Docker](any-source.md#run-rex-in-docker) |
 
 ### هل يتعرض حساب Plex الخاص بي للخطر؟ {#is-my-plex-account-at-risk}
 
@@ -70,13 +70,13 @@ rex ليس من إنتاج Plex، وقد تتخذ Plex إجراءً ضد حسا�
 
 ### ما المواصفات المطلوبة للجهاز؟ {#what-hardware-does-it-need}
 
-ماكينة تبقى شغّالة طوال الوقت، وتعمل على Linux (amd64 أو arm64، مع glibc 2.35 أو أحدث، يعني Ubuntu 22.04 وما بعده)، أو macOS (Intel أو Apple Silicon)، أو Windows 64-bit. على هاتف أو جهاز لوحي أو صندوق TV يعمل بنظام Android، يشغّل [rex for Android](https://github.com/debridmediamanager/rex-android) برنامج rex وإضافاته مجانًا، أما تطبيق zurg+rex المخصص للمشتركين فقط، وهو خادم Plex على هاتفك، فيشغّل zurg و rex معًا (راجع [دليل Android](../zurg/guides/android.md)).
+منصة تعمل باستمرار، تشغّل Linux (amd64 أو arm64، مع glibc 2.35 أو أحدث، أي Ubuntu 22.04 وما بعده)، أو macOS (Intel أو Apple Silicon)، أو Windows 64-bit. على هاتف أو تابلت أو صندوق تلفاز يعمل بنظام Android، يشغّل [rex for Android](android.md) برنامج rex وإضافاته مجانًا، أما تطبيق zurg+rex الخاص بالداعمين فهو خادم Plex يعمل على هاتفك، ويشغّل zurg وrex معًا (راجع [دليل Android](../zurg/guides/android.md)).
 
-**الذاكرة:** خصّص لها 1 GB. مع مكتبة فيها 4,062 فيلمًا و656 مسلسلًا، استهلك rex أقل من 500 MB أثناء البدء، وحوالي 730 MB أثناء تصفح المكتبة. تحويل الفيديو يحتاج ذاكرة إضافية فوق ذلك.
+**الذاكرة:** خصّص لها 1 GB. مع مكتبة تضم 4,062 فيلمًا و656 مسلسلًا، استهلك rex أقل من 500 MB أثناء بدء التشغيل، وحوالي 730 MB أثناء تصفح المكتبة. تحويل الفيديو يحتاج إلى ذاكرة إضافية فوق ذلك.
 
-**القرص:** لا يحتاج شيئًا للأفلام. يحفظ rex مكتبته في الملف `rex.db`. التنزيلات والصور التي يصنعها التحليل (معاينات التقديم، وصور الفصول) تُحفظ بجانبه أيضًا، إذا كنت تستخدمها.
+**المساحة:** لا تحتاج مساحة للأفلام. يحفظ rex مكتبته في الملف `rex.db`. التنزيلات والصور التي يصنعها التحليل (معاينات التقديم وصور الفصول) تُحفظ بجانبه أيضًا، إذا كنت تستخدمها.
 
-**التحويل:** يعمل فقط مع FFmpeg. كرت الرسوميات يجعله أسرع بكثير: فيلم بدقة 1080p تم تحويله على شريحة Intel صغيرة بدأ خلال حوالي 2 ثانية. الشرائح التي يستخدمها rex على كل نظام مذكورة في [By platform](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform): على macOS يحوّل دائمًا بالمعالج.
+**التحويل:** يتم فقط عبر FFmpeg. شريحة الرسوميات تجعله سريعًا: فيلم بدقة 1080p يُحوَّل على معالج Intel صغير يبدأ خلال حوالي 2 ثانية. الشرائح التي يستخدمها rex على كل نظام مذكورة في [By platform](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform)، وعلى macOS يتم التحويل دائمًا على المعالج.
 
 ### هل يقرأ ملفاتي المحلية؟ {#does-it-read-my-local-files}
 

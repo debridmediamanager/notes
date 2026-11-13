@@ -41,7 +41,7 @@ Every guide on this site, by project.
 - [rex with your own app](../rex/any-source.md)
 - [rex with your Stremio addons](../rex/stremio.md)
 - [rex with zurg](../rex/with-zurg.md)
-- [rex for Android](https://github.com/debridmediamanager/rex-android)
+- [rex for Android](../rex/android.md)
 - [Live TV with rex](../rex/live-tv.md)
 - [Music with rex](../rex/music.md)
 - [Move from Plex to rex](../rex/from-plex.md)

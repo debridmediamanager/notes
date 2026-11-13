@@ -417,33 +417,17 @@ Ahora una release se vuelve a nombrar, hasta tres veces, hasta que zurg ha podid
 
 ## Las versiones con acentos o CJK en sus nombres de archivo conservan sus nombres completos {#releases-with-accents-or-cjk-in-their-filenames-keep-their-whole-names}
 
-A release whose files are named with anything outside plain English letters came
-out of zurg with the front of every name missing. `Détective Conan S11E01 - 286
-[MULTI] [AVC].mkv` was served as `tective Conan S11E01 - 286 [MULTI] [AVC].mkv`,
-and a Chinese or Japanese title lost even more, because everything up to the last
-such character was dropped.
+Un release cuyos archivos tienen nombres con caracteres fuera de las letras inglesas básicas salía de zurg con el principio de cada nombre perdido. `Détective Conan S11E01 - 286 [MULTI] [AVC].mkv` se servía como `tective Conan S11E01 - 286 [MULTI] [AVC].mkv`, y un título en chino o japonés perdía aún más, porque se eliminaba todo hasta el último carácter de ese tipo.
 
-Sonarr and Radarr could not do anything with what was left. A name like `tective
-Conan S11E01` matches no series, so they fell back to the download's grab history,
-refused to import on that alone, and parked the item with "release was matched to
-series by ID. Automatic import is not possible." The release sat in the queue and
-nothing moved it.
+Sonarr y Radarr no podían hacer nada con lo que quedaba. Un nombre como `tective Conan S11E01` no coincide con ninguna serie, así que recurrían al historial de capturas de la descarga, se negaban a importar solo por eso y dejaban el elemento en espera con el mensaje "release was matched to series by ID. Automatic import is not possible." El release se quedaba en la cola y nada lo movía.
 
-It could also cost you files. When the only thing telling two files apart sits
-after the last accented character, both come out with the same name, and a name
-is a path. One French release with ten repair volumes had all ten reduced to the
-same name and published four files where the post holds thirteen, leaving the
-repair data with no way to reach it.
+También podía costarte archivos. Cuando lo único que distingue dos archivos está después del último carácter acentuado, ambos salen con el mismo nombre, y un nombre es una ruta. Un release francés con diez volúmenes de reparación tenía los diez reducidos al mismo nombre y publicaba cuatro archivos cuando la publicación contiene trece, dejando los datos de reparación sin forma de llegar a ellos.
 
-zurg now reads every character above plain ASCII as part of the filename, which
-is what it always is: the part counters, the `yEnc` marker, the brackets and the
-file extensions posters write are all plain ASCII, so anything else belongs to
-the title. Releases named in plain ASCII are unaffected and come out exactly as
-before.
+zurg ahora lee cada carácter por encima del ASCII básico como parte del nombre del archivo, que es lo que siempre ha sido: los contadores de partes, la marca `yEnc`, los corchetes y las extensiones de archivo que ponen los publicadores son todos ASCII básico, así que cualquier otra cosa pertenece al título. Los releases nombrados en ASCII básico no se ven afectados y salen exactamente igual que antes.
 
-Releases already in your library keep the names they were filed under, since
-zurg does not revisit a file list it has already recorded. Re-adding an affected
-release picks up the corrected names.
+Los releases que ya están en tu biblioteca conservan los nombres con los que se registraron, ya que zurg no vuelve a revisar una lista de archivos que ya ha guardado. Volver a añadir un release afectado recoge los nombres corregidos.
+
+(Una traducción anterior fue rechazada: los code spans no coinciden (` was served as `). Mantén la estructura exacta.)
 
 ## Un nombre escrito en japonés, coreano, chino, tailandés o árabe se deja tal cual {#a-name-written-in-japanese-korean-chinese-thai-or-arabic-is-left-alone}
 

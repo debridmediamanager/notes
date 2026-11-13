@@ -1,17 +1,17 @@
 # rex avec votre propre app {#rex-with-your-own-app}
 
-[rex](https://rex.debridmediamanager.com/fr/) est un serveur multimédia pour les applications Plex officielles, et il ne possède aucun fichier. Les applications Plex officielles le voient comme un serveur Plex normal. Un autre programme, que cette page appelle **votre application**, indique à rex ce qu'il y a dans votre bibliothèque et fournit les fichiers. Quand vous appuyez sur lecture, rex diffuse le fichier directement depuis votre application. Rien n'est téléchargé au préalable.
+[rex](https://rex.debridmediamanager.com/fr/) est un serveur multimédia pour les applications officielles de Plex. Il ne possède aucun fichier. Les applications officielles de Plex le voient comme un serveur Plex normal. Un autre programme, que cette page appelle **votre application**, indique à rex ce qui se trouve dans votre bibliothèque et fournit les fichiers. Quand vous appuyez sur lecture, rex diffuse le fichier directement depuis votre application. Rien n'est téléchargé au préalable.
 
-Cette page vous guide de zéro jusqu'à la lecture d'un film, étape par étape. Elle ne suppose aucune application en particulier. Elle indique exactement ce que rex attend d'une application, pour que vous puissiez vérifier que la vôtre le fait, ou en créer une. Chaque étape explique ce qu'elle fait, pourquoi elle est importante et ce que vous devez voir avant de passer à la suivante.
+Cette page vous guide pas à pas, de zéro jusqu'à la lecture d'un film. Elle ne suppose aucune application en particulier. Elle indique exactement ce que rex attend d'une application, afin que vous puissiez vérifier que la vôtre le fait, ou en créer une. Chaque étape explique ce qu'elle fait, pourquoi elle compte et ce que vous devez voir avant de passer à la suivante.
 
 Quatre points à connaître avant de commencer :
 
-- **Votre application fournit les fichiers.** rex récupère chaque octet depuis votre application en HTTP ou HTTPS, comme un navigateur télécharge un fichier. rex ne garde aucun fichier et n'a besoin d'aucun disque ni montage pour les médias.
-- **Votre application indique à rex ce qu'elle possède.** Elle envoie à rex une liste de fichiers via l'API de flux de rex, puis chaque changement ensuite. rex ne liste jamais un dossier et ne scanne rien.
-- **Votre application décide de ce qu'est chaque fichier.** Elle indique si un fichier est un film ou un épisode, à quel titre il appartient (par identifiant IMDb et TMDB) et, pour un épisode, sa saison et son numéro. rex ne devine jamais à partir d'un nom de fichier.
-- **Plex le décrit.** Une fois rex connecté à un compte Plex, il affiche chaque titre avec le nom, l'affiche, le résumé et les noms d'épisodes que les métadonnées de Plex elles-mêmes associent à ces identifiants. Pour les contenus qu'aucun agent Plex ne connaît, votre application les nomme elle-même : voir [Créer des addons rex](addons.md).
+- **Votre application fournit les fichiers.** rex récupère chaque octet depuis votre application en HTTP ou HTTPS, comme un navigateur télécharge un fichier. rex ne conserve aucun fichier et n'a besoin ni de disque ni de montage pour les médias.
+- **Votre application indique à rex ce qu'elle possède.** Elle envoie à rex une liste de fichiers via l'API de flux de rex, puis chaque modification par la suite. rex ne parcourt jamais un dossier et ne fait aucun scan.
+- **Votre application détermine ce qu'est chaque fichier.** Elle indique si un fichier est un film ou un épisode, à quel titre il appartient (par identifiant IMDb et TMDB) et, pour un épisode, sa saison et son numéro. rex ne devine jamais à partir du nom de fichier.
+- **Plex les décrit.** Une fois rex connecté à un compte Plex, il affiche chaque titre avec le nom, l'affiche, le résumé et les titres d'épisodes que les métadonnées propres à Plex associent à ces identifiants. Pour les contenus qu'aucun agent Plex ne connaît, votre application les nomme elle-même : voir [Créer des addons rex](addons.md).
 
-rex est gratuit pour un usage personnel (PolyForm Noncommercial) : pas de palier sponsor et aucun compte nécessaire pour le télécharger. Voir [rex.debridmediamanager.com](https://rex.debridmediamanager.com/fr/). Vous n'avez qu'un téléphone ou une box TV ? [rex pour Android](https://github.com/debridmediamanager/rex-android) fait tourner rex et ses addons dessus.
+rex est gratuit pour un usage personnel (PolyForm Noncommercial) : pas d'offre sponsor et aucun compte nécessaire pour le télécharger. Voir [rex.debridmediamanager.com](https://rex.debridmediamanager.com/fr/). Vous n'avez qu'un téléphone ou une box TV ? [rex pour Android](android.md) fait tourner rex et ses addons directement dessus.
 
 ## Avant de commencer {#before-you-start}
 

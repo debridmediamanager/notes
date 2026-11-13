@@ -37,20 +37,20 @@ Jede Anleitung auf dieser Seite, nach Projekt sortiert.
 
 ## rex
 
-- [rex-Fragen](../rex/faq.md): bevor du installierst
+- [rex-Fragen](../rex/faq.md): vor der Installation
 - [rex mit deiner eigenen App](../rex/any-source.md)
 - [rex mit deinen Stremio-Addons](../rex/stremio.md)
 - [rex mit zurg](../rex/with-zurg.md)
-- [rex für Android](https://github.com/debridmediamanager/rex-android)
+- [rex für Android](../rex/android.md)
 - [Live-TV mit rex](../rex/live-tv.md)
 - [Musik mit rex](../rex/music.md)
 - [Von Plex zu rex wechseln](../rex/from-plex.md)
 - [rex mit Familie und Freunden teilen](../rex/sharing.md)
-- [rex-Addons bauen](../rex/addons.md)
-  - [Anleitung: Heimvideo-Addon](../rex/addon-home-videos.md)
+- [rex-Addons erstellen](../rex/addons.md)
+  - [Anleitung: Addon für Heimvideos](../rex/addon-home-videos.md)
   - [Anleitung: Musik-Addon](../rex/addon-music.md)
   - [Anleitung: IPTV-Addon](../rex/addon-iptv.md)
   - [Mehr aus deinem Addon](../rex/addon-more.md)
-- [Deine Wiedergabeverlauf übernehmen](../rex/import-watched.md)
+- [Deinen Wiedergabeverlauf importieren](../rex/import-watched.md)
 - [Kometa mit rex](../rex/kometa.md)
-- [Apps laden vom Anbieter herunter](../rex/direct-download.md)
+- [Apps laden von deinem Anbieter herunter](../rex/direct-download.md)

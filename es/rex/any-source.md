@@ -1,17 +1,17 @@
 # rex con tu propia app {#rex-with-your-own-app}
 
-[rex](https://rex.debridmediamanager.com/es/) es un servidor de medios para las apps oficiales de Plex que no es dueño de ningún archivo. Las apps oficiales de Plex lo ven como un servidor Plex normal. Otro programa, que esta página llama **tu app**, le dice a rex qué hay en tu biblioteca y sirve los archivos. Cuando le das a reproducir, rex transmite el archivo directamente desde tu app. No se descarga nada antes.
+[rex](https://rex.debridmediamanager.com/es/) es un servidor multimedia para las apps oficiales de Plex que no es dueño de ningún archivo. Las apps oficiales de Plex lo ven como un servidor Plex normal. Otro programa, al que esta página llama **tu app**, le dice a rex qué hay en tu biblioteca y sirve los archivos. Cuando pulsas play, rex transmite el archivo directamente desde tu app. No se descarga nada antes.
 
-Esta página te lleva de cero a reproducir una película, paso a paso. No asume ninguna app en concreto. Dice exactamente qué espera rex de una app, para que puedas comprobar que la tuya lo hace, o crear una. Cada paso dice qué hace, por qué importa y qué deberías ver antes de seguir.
+Esta página te lleva desde cero hasta reproducir una película, paso a paso. No asume una app en particular. Explica exactamente qué espera rex de una app, para que puedas comprobar que la tuya lo cumple o crear una tú mismo. Cada paso dice qué hace, por qué importa y qué deberías ver antes de seguir.
 
 Cuatro cosas que conviene saber antes de empezar:
 
-- **Tu app sirve los archivos.** rex obtiene cada byte de tu app por HTTP o HTTPS, igual que un navegador descarga un archivo. rex no guarda archivos y no necesita disco ni montaje para los medios.
-- **Tu app le dice a rex lo que tiene.** Le envía a rex una lista de archivos a través de la API de feed de rex, y cada cambio posterior. rex nunca lista una carpeta ni escanea nada.
+- **Tu app sirve los archivos.** rex obtiene cada byte de tu app por HTTP o HTTPS, igual que un navegador descarga un archivo. rex no guarda archivos y no necesita disco ni montaje para el contenido multimedia.
+- **Tu app le dice a rex lo que tiene.** Le envía a rex una lista de archivos a través de la API de feed de rex, y todos los cambios posteriores. rex nunca lista una carpeta ni escanea nada.
 - **Tu app decide qué es cada archivo.** Indica si un archivo es una película o un episodio, a qué título pertenece (por id de IMDb y TMDB) y, en el caso de un episodio, su temporada y número. rex nunca adivina a partir del nombre del archivo.
-- **Plex lo describe.** Una vez que rex está en una cuenta de Plex, muestra cada título con el nombre, el póster, el resumen y los nombres de los episodios que los metadatos propios de Plex tienen para esos ids. Para las cosas que ningún agente de Plex conoce, tu app les pone nombre por sí misma: consulta [Crear addons para rex](addons.md).
+- **Plex lo describe.** Una vez que rex está en una cuenta de Plex, muestra cada título con el nombre, el póster, la sinopsis y los nombres de los episodios que los metadatos propios de Plex tienen para esos ids. Para las cosas que ningún agente de Plex conoce, tu app les pone nombre: consulta [Creación de addons para rex](addons.md).
 
-rex es gratis para uso personal (PolyForm Noncommercial): no hay nivel de patrocinador y no necesitas cuenta para descargarlo. Consulta [rex.debridmediamanager.com](https://rex.debridmediamanager.com/es/). ¿Solo tienes un móvil o una caja de TV? [rex para Android](https://github.com/debridmediamanager/rex-android) ejecuta rex y sus addons en él.
+rex es gratis para uso personal (PolyForm Noncommercial): no hay nivel de patrocinador y no necesitas cuenta para descargarlo. Consulta [rex.debridmediamanager.com](https://rex.debridmediamanager.com/es/). ¿Solo tienes un teléfono o una caja para TV? [rex para Android](android.md) ejecuta rex y sus addons en él.
 
 ## Antes de empezar {#before-you-start}
 

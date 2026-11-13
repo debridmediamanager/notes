@@ -37,20 +37,20 @@ Todos os guias deste site, organizados por projeto.
 
 ## rex
 
-- [Perguntas sobre o rex](../rex/faq.md): antes de instalar
+- [Perguntas sobre o rex](../rex/faq.md): antes de você instalar
 - [rex com seu próprio app](../rex/any-source.md)
 - [rex com seus addons do Stremio](../rex/stremio.md)
-- [rex com o zurg](../rex/with-zurg.md)
-- [rex para Android](https://github.com/debridmediamanager/rex-android)
-- [TV ao vivo com o rex](../rex/live-tv.md)
-- [Música com o rex](../rex/music.md)
-- [Migre do Plex para o rex](../rex/from-plex.md)
+- [rex com zurg](../rex/with-zurg.md)
+- [rex para Android](../rex/android.md)
+- [TV ao vivo com rex](../rex/live-tv.md)
+- [Música com rex](../rex/music.md)
+- [Mudar do Plex para o rex](../rex/from-plex.md)
 - [Compartilhe o rex com família e amigos](../rex/sharing.md)
-- [Criando addons do rex](../rex/addons.md)
+- [Criando addons para o rex](../rex/addons.md)
   - [Tutorial: addon de vídeos caseiros](../rex/addon-home-videos.md)
   - [Tutorial: addon de música](../rex/addon-music.md)
   - [Tutorial: addon de IPTV](../rex/addon-iptv.md)
   - [Mais coisas do seu addon](../rex/addon-more.md)
-- [Traga seu histórico de assistidos](../rex/import-watched.md)
-- [Kometa com o rex](../rex/kometa.md)
+- [Traga seu histórico de exibição](../rex/import-watched.md)
+- [Kometa com rex](../rex/kometa.md)
 - [Apps baixam do seu provedor](../rex/direct-download.md)

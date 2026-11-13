@@ -12,16 +12,16 @@ A 媒体服务器，供官方 Plex 应用使用，本身不存储任何文件。
 
 ### 多少钱？ {#what-does-it-cost}
 
-rex 对个人使用免费，没有付费版本。它的源代码以 PolyForm Noncommercial 许可证公开。不允许商业使用。每个版本都公开发布在 [GitHub Releases](https://github.com/debridmediamanager/rex/releases)，Android 应用则在 [rex for Android 的](https://github.com/debridmediamanager/rex-android/releases) releases 页面。
+rex 对个人使用免费，没有付费版本。它的源代码以 PolyForm Noncommercial 许可证公开。不允许商业使用。每个版本都公开发布在 [GitHub Releases](https://github.com/debridmediamanager/rex/releases) 上，Android 版应用是 [rex for Android](android.md)。
 
-周边的一些东西可能需要付费：
+周边的一些东西可能需要花钱：
 
 | | |
 |---|---|
-| [rex-stremio](stremio.md)，你自己的应用或作为来源的插件 | 免费 |
-| zurg nightly，用于 debrid 或 Usenet 库的来源 | [DMM 赞助者](https://gatekeeper.debridmediamanager.com)的福利 |
-| DMM API 密钥，用于在 zurg 中获取 DMM 的精确匹配 | 可选，同样来自赞助 DMM |
-| rex 的 Docker 镜像 | 免费且公开，适用于 Linux：[rex in Docker](any-source.md#run-rex-in-docker) |
+| [rex-stremio](stremio.md)，你自己的应用或以它为来源的插件 | 免费 |
+| zurg nightly，debrid 或 Usenet 库的一个来源 | [DMM 赞助者](https://gatekeeper.debridmediamanager.com)的福利 |
+| DMM API 密钥，用于在 zurg 中获取 DMM 的精确匹配 | 可选，同样需要赞助 DMM 获取 |
+| rex 的 Docker 镜像 | 免费且公开，适用于 Linux：[在 Docker 中运行 rex](any-source.md#run-rex-in-docker) |
 
 ### 我的 Plex 账号有风险吗？ {#is-my-plex-account-at-risk}
 
@@ -66,13 +66,13 @@ Plex 应用里有 **Downloads**。rex 会在自己所在的机器上准备下载
 
 ### 需要什么硬件？ {#what-hardware-does-it-need}
 
-运行的机器需要一直开着，系统可以是 Linux（amd64 或 arm64，glibc 2.35 或更新版本，即 Ubuntu 22.04 及以上）、macOS（Intel 或 Apple Silicon）或 64 位 Windows。如果是 Android 手机、平板或电视盒子，[rex for Android](https://github.com/debridmediamanager/rex-android) 可以免费运行 rex 及其插件。另外，仅限赞助者使用的 zurg+rex 应用（在手机上运行 Plex 服务器）可以同时运行 zurg 和 rex（参见 [Android 指南](../zurg/guides/android.md)）。
+A cheap, always-on machine running Linux (amd64 or arm64, glibc 2.35 or newer, so Ubuntu 22.04 and up), macOS (Intel or Apple Silicon) or 64-bit Windows. On an Android phone, tablet or TV box, [rex for Android](android.md) runs rex and its addons for free, and the sponsor-only zurg+rex app, a Plex server on your phone, runs zurg and rex together (see the [Android guide](../zurg/guides/android.md)).
 
-**内存：**给它 1 GB。在一个包含 4,062 部电影和 656 部剧集的库上，rex 启动时用了不到 500 MB，浏览库时大约用了 730 MB。转换视频还需要额外的内存。
+**Memory:** give it 1 GB. On a library of 4,062 movies and 656 shows, rex used under 500 MB while it started and about 730 MB while the library was browsed. Converting video needs more on top.
 
-**磁盘：**电影本身不占用磁盘。rex 把库数据保存在 `rex.db` 中。如果你使用下载功能，以及分析时生成的图片（快进预览、章节图片），它们也会保存在它旁边。
+**Disk:** none for movies. rex keeps its library in `rex.db`. Downloads and the images analysis makes (seek previews, chapter images) also go beside it, if you use them.
 
-**转换：**只能使用 FFmpeg。显卡芯片能让转换变快：在一块小型 Intel 芯片上转换一部 1080p 电影，大约只需 2 秒。每个系统上 rex 会使用哪种芯片，请参见 [By platform](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform)：在 macOS 上，它始终使用处理器进行转换。
+**Converting:** only with FFmpeg. A graphics chip makes it fast: a 1080p film converted on a small Intel chip starts in about 2 seconds. Which chips rex uses on each system is in [By platform](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#by-platform): on macOS it always converts on the processor.
 
 ### 它会读取我本地的文件吗？ {#does-it-read-my-local-files}
 

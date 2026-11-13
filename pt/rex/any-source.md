@@ -1,17 +1,17 @@
 # rex com seu próprio app {#rex-with-your-own-app}
 
-[rex](https://rex.debridmediamanager.com/pt/) é um servidor de mídia para os apps oficiais do Plex que não guarda nenhum arquivo. Os apps oficiais do Plex o veem como um servidor Plex normal. Outro programa, que nesta página chamamos de **seu app**, informa ao rex o que existe na sua biblioteca e entrega os arquivos. Quando você aperta play, o rex transmite o arquivo direto do seu app. Nada é baixado antes.
+[rex](https://rex.debridmediamanager.com/pt/) é um servidor de mídia para os aplicativos oficiais do Plex que não guarda nenhum arquivo. Os aplicativos oficiais do Plex o veem como um servidor Plex normal. Outro programa, que nesta página chamamos de **seu app**, informa ao rex o que tem na sua biblioteca e entrega os arquivos. Quando você aperta play, o rex transmite o arquivo direto do seu app. Nada é baixado antes.
 
-Esta página leva você do zero até assistir um filme, passo a passo. Ela não assume nenhum app específico. Ela diz exatamente o que o rex espera de um app, para você conferir se o seu faz isso, ou para criar um. Cada passo diz o que ele faz, por que importa e o que você deve ver antes de seguir em frente.
+Esta página leva você do zero até assistir a um filme, um passo de cada vez. Ela não pressupõe nenhum app específico. Ela diz exatamente o que o rex espera de um app, para você conferir se o seu faz isso ou para criar um. Cada passo explica o que faz, por que importa e o que você deve ver antes de seguir em frente.
 
 Quatro coisas para saber antes de começar:
 
-- **Seu app entrega os arquivos.** O rex busca cada byte do seu app via HTTP ou HTTPS, do mesmo jeito que um navegador baixa um arquivo. O rex não guarda arquivos e não precisa de disco nem de montagem para a mídia.
-- **Seu app informa ao rex o que tem.** Ele envia ao rex uma lista de arquivos pela API de feed do rex, e todas as mudanças depois disso. O rex nunca lista uma pasta nem escaneia nada.
-- **Seu app decide o que cada arquivo é.** Ele diz se o arquivo é um filme ou um episódio, a qual título ele pertence (pelo id do IMDb e do TMDB) e, no caso de episódio, a temporada e o número. O rex nunca adivinha pelo nome do arquivo.
-- **O Plex descreve tudo.** Depois que o rex estiver em uma conta Plex, ele mostra cada título com o nome, o pôster, a sinopse e os nomes dos episódios que os metadados próprios do Plex têm para esses ids. Para coisas que nenhum agente do Plex conhece, seu app dá os nomes sozinho: veja [Criando addons do rex](addons.md).
+- **Seu app entrega os arquivos.** O rex busca cada byte do seu app por HTTP ou HTTPS, do mesmo jeito que um navegador baixa um arquivo. O rex não guarda arquivos e não precisa de disco nem de montagem para a mídia.
+- **Seu app informa ao rex o que ele tem.** Ele envia ao rex uma lista de arquivos pela API de feed do rex, e todas as mudanças depois disso. O rex nunca lista uma pasta nem escaneia nada.
+- **Seu app decide o que cada arquivo é.** Ele diz se um arquivo é um filme ou um episódio, a qual título ele pertence (pelo id do IMDb e do TMDB) e, no caso de um episódio, a temporada e o número. O rex nunca adivinha pelo nome do arquivo.
+- **O Plex descreve o conteúdo.** Quando o rex está em uma conta Plex, ele mostra cada título com o nome, o pôster, a sinopse e os nomes dos episódios que os metadados do próprio Plex têm para esses ids. Para o que nenhum agente do Plex conhece, seu app dá os nomes por conta própria: veja [Criando addons para o rex](addons.md).
 
-O rex é gratuito para uso pessoal (PolyForm Noncommercial): não há plano de patrocínio e você não precisa de conta para baixá-lo. Veja [rex.debridmediamanager.com](https://rex.debridmediamanager.com/pt/). Só tem um celular ou uma TV box? [rex para Android](https://github.com/debridmediamanager/rex-android) roda o rex e os addons nele.
+O rex é gratuito para uso pessoal (PolyForm Noncommercial): não há plano de patrocínio e você não precisa de conta para baixá-lo. Veja [rex.debridmediamanager.com](https://rex.debridmediamanager.com/pt/). Só tem um celular ou uma TV box? [rex para Android](android.md) roda o rex e os addons nele.
 
 ## Antes de começar {#before-you-start}
 

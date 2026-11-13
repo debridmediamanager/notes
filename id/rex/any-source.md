@@ -1,17 +1,17 @@
 # rex dengan aplikasi Anda sendiri {#rex-with-your-own-app}
 
-[rex](https://rex.debridmediamanager.com/id/) adalah media server untuk aplikasi resmi Plex yang tidak menyimpan file apa pun. Aplikasi resmi Plex menganggapnya sebagai server Plex biasa. Program lain, yang di halaman ini disebut **aplikasi kamu**, memberi tahu rex apa saja yang ada di pustakamu dan menyajikan file-filenya. Saat kamu menekan play, rex men-streaming file langsung dari aplikasimu. Tidak ada yang diunduh terlebih dahulu.
+[rex](https://rex.debridmediamanager.com/id/) adalah media server untuk aplikasi Plex resmi, dan rex tidak memiliki file apa pun. Aplikasi Plex resmi melihatnya sebagai server Plex biasa. Program lain, yang di halaman ini disebut **aplikasi kamu**, memberi tahu rex apa saja yang ada di pustakamu dan menyajikan file-filenya. Saat kamu menekan play, rex langsung men-streaming file dari aplikasi kamu. Tidak ada yang diunduh dulu.
 
-Halaman ini memandu kamu dari nol sampai bisa memutar film, langkah demi langkah. Halaman ini tidak mengasumsikan aplikasi tertentu. Halaman ini menjelaskan dengan tepat apa yang diharapkan rex dari sebuah aplikasi, sehingga kamu bisa memeriksa apakah aplikasimu memenuhinya, atau membuat sendiri. Setiap langkah menjelaskan apa yang dilakukannya, mengapa itu penting, dan apa yang seharusnya kamu lihat sebelum lanjut ke langkah berikutnya.
+Halaman ini memandu kamu dari nol sampai bisa memutar film, selangkah demi selangkah. Halaman ini tidak mengasumsikan aplikasi tertentu. Halaman ini menjelaskan dengan tepat apa yang diharapkan rex dari sebuah aplikasi, jadi kamu bisa memeriksa apakah aplikasimu sudah melakukannya, atau membuatnya sendiri. Setiap langkah menjelaskan apa yang dilakukannya, kenapa itu penting, dan apa yang seharusnya kamu lihat sebelum lanjut ke langkah berikutnya.
 
-Ada empat hal yang perlu kamu ketahui sebelum mulai:
+Ada empat hal yang perlu kamu tahu sebelum mulai:
 
-- **Aplikasi kamu menyajikan file.** rex mengambil setiap byte dari aplikasimu lewat HTTP atau HTTPS, seperti browser mengunduh file. rex tidak menyimpan file dan tidak butuh disk atau mount untuk media.
-- **Aplikasi kamu memberi tahu rex apa yang dimilikinya.** Aplikasi mengirim daftar file ke rex melalui feed API milik rex, dan setiap perubahan setelahnya. rex tidak pernah menelusuri folder atau memindai apa pun.
-- **Aplikasi kamu menentukan apa itu setiap file.** Aplikasi menyatakan apakah sebuah file adalah film atau episode, judul mana yang dimilikinya (berdasarkan id IMDb dan TMDB) dan, untuk episode, season serta nomornya. rex tidak pernah menebak dari nama file.
-- **Plex yang mendeskripsikannya.** Setelah rex terhubung ke akun Plex, rex menampilkan setiap judul dengan nama, poster, ringkasan, dan nama episode dari metadata Plex untuk id tersebut. Untuk hal-hal yang tidak dikenali agent Plex mana pun, aplikasi kamu sendiri yang memberi namanya: lihat [Membangun addon rex](addons.md).
+- **Aplikasi kamu yang menyajikan file.** rex mengambil setiap byte dari aplikasi kamu lewat HTTP atau HTTPS, seperti browser mengunduh file. rex tidak menyimpan file apa pun dan tidak butuh disk atau mount untuk media.
+- **Aplikasi kamu memberi tahu rex apa yang dimilikinya.** Aplikasi mengirim daftar file ke rex lewat API feed milik rex, lalu setiap perubahan setelahnya. rex tidak pernah membuka folder atau memindai apa pun.
+- **Aplikasi kamu yang menentukan apa itu setiap file.** Aplikasi menyatakan apakah sebuah file itu film atau episode, judul mana yang dimilikinya (lewat id IMDb dan TMDB), dan untuk episode, nomor season dan nomornya. rex tidak pernah menebak dari nama file.
+- **Plex yang mendeskripsikannya.** Setelah rex terhubung ke akun Plex, rex menampilkan setiap judul dengan nama, poster, ringkasan, dan nama episode dari metadata Plex untuk id tersebut. Untuk hal-hal yang tidak dikenal agent Plex mana pun, aplikasi kamu sendiri yang memberi namanya: lihat [Membuat addon rex](addons.md).
 
-rex gratis untuk penggunaan pribadi (PolyForm Noncommercial): tidak ada tier sponsor dan tidak perlu akun untuk mengunduhnya. Lihat [rex.debridmediamanager.com](https://rex.debridmediamanager.com/id/). Cuma punya ponsel atau TV box? [rex untuk Android](https://github.com/debridmediamanager/rex-android) menjalankan rex dan addon-nya di perangkat itu.
+rex gratis untuk penggunaan pribadi (PolyForm Noncommercial): tidak ada tier sponsor dan tidak perlu akun untuk mengunduhnya. Lihat [rex.debridmediamanager.com](https://rex.debridmediamanager.com/id/). Hanya punya ponsel atau TV box? [rex untuk Android](android.md) menjalankan rex dan addon-addonnya di perangkat tersebut.
 
 ## Sebelum kamu mulai {#before-you-start}
 

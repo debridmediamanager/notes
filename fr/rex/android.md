@@ -1,0 +1,128 @@
+# rex pour Android {#rex-for-android}
+
+rex est un serveur média pour les applications Plex qui ne possède aucun fichier. rex pour Android le fait tourner sur un téléphone, une tablette, Android TV, Google TV ou Fire TV, sans ordinateur. Les applications Plex de vos appareils le trouvent comme n'importe quel serveur Plex et lisent depuis lui.
+
+Ce qui est lu vient des **addons**. Il commence avec les films du domaine public de l'Internet Archive. D'autres addons, comme vos addons Stremio, YouTube et Spotify, s'installent depuis l'application.
+
+rex pour Android est gratuit. Vous voulez aussi y mettre vos comptes debrid et votre Usenet ? zurg+rex, un serveur Plex sur votre téléphone avec zurg intégré, est proposé avec un parrainage : voir [zurg+rex pour Android](../zurg/guides/android.md).
+
+## Avant de commencer {#before-you-start}
+
+| Vous avez besoin de | Pourquoi |
+|---|---|
+| Un appareil avec Android 8.0 ou plus récent | Téléphone, tablette, Android TV, Google TV ou Fire TV |
+| Un compte Plex | rex apparaît dans les applications Plex connectées à ce compte. Un compte gratuit suffit |
+| Une application Plex sur l'appareil que tu utilises pour regarder | Plex pour Android, Android TV, iPhone, une smart TV, Plex Web, Plexamp |
+
+Elle n'est pas encore sur Google Play. Tu installes toi-même le fichier de l'application (APK).
+
+## Étape 1. Téléchargez-le {#step-1-download-it}
+
+[the latest release](https://github.com/debridmediamanager/rex-android/releases/latest) sur l'appareil et téléchargez le fichier correspondant à son processeur :
+
+| Votre appareil | Téléchargement |
+|---|---|
+| La plupart des téléphones, tablettes et boîtiers TV (64 bits) | `rex-android-…-arm64-v8a.apk` |
+| Boîtiers 32 bits plus anciens ou moins chers, dont les Fire TV Stick | `rex-android-…-armeabi-v7a.apk` |
+| Émulateurs sur PC | `rex-android-…-x86_64.apk` |
+
+Pas sûr ? Essayez d'abord `arm64-v8a`. Un seul fichier fonctionne aussi bien sur les téléphones que sur les TV.
+
+## Étape 2. Installez-le {#step-2-install-it}
+
+Ouvre le fichier téléchargé. Android te demande d'abord :
+
+1. Il indique qu'il **n'est pas autorisé à installer des applications inconnues depuis cette source**. Appuie sur **Settings**, active **Allow from this source** et reviens en arrière.
+2. Appuie sur **Install**.
+
+Sur une box TV sans navigateur, télécharge le fichier avec une application de téléchargement capable d'ouvrir les APK.
+
+**Ce que tu dois voir.** **rex** dans ta liste d'applications.
+
+## Étape 3. Lancez rex {#step-3-start-rex}
+
+Ouvre **rex**. Le premier écran affiche **Welcome to rex.**
+
+1. Appuie sur **Allow notifications**, puis sur **Allow**. rex tourne en arrière-plan avec une notification qui te permet de l'arrêter.
+2. Appuie sur **Let rex keep running in the background**. Dans la liste qui s'ouvre, choisis **rex** et sélectionne **Don't optimize**. Sur les versions récentes d'Android, c'est **Allow background usage**, puis **Unrestricted**. Reviens dans rex. Les deux boutons commencent maintenant par un ✓.
+3. **Name** correspond au nom que les applis Plex affichent pour ce serveur. Change-le si tu veux.
+4. Laisse **Port** sur `32400`. Si un autre serveur Plex tourne déjà sur cet appareil, rex affiche **Another app here already uses this port, maybe a Plex server. Try 32500.** Saisis `32500`.
+5. Appuie sur **Start rex**.
+
+**Ce que tu dois voir.** **2 / 2** et **Sign in to Plex.**
+
+## Étape 4. Connectez-vous à Plex {#step-4-sign-in-to-plex}
+
+Appuyez sur **Sign in to Plex**. rex affiche un code : **On any phone or computer, go to plex.tv/link and enter** it.
+
+- **Sur un téléphone ou une tablette**, votre navigateur ouvre aussi une page Plex qui indique **rex for Android would like to sign in to your Plex account**. Connectez-vous là.
+- **Sur une TV**, allez sur [plex.tv/link](https://plex.tv/link) depuis votre téléphone ou votre ordinateur, connectez-vous et saisissez le code.
+
+Utilisez le compte auquel vos applications Plex sont connectées. Vous pouvez appuyer sur **Skip for now** et vous connecter plus tard depuis **Status**.
+
+**Ce que vous devriez voir.** **Signed in. rex shows up in the Plex apps as** le nom de votre serveur. Appuyez sur **Done**. **Status** affiche **RUNNING** et **Ready for the Plex apps.**
+
+## Étape 5. Regardez dans une appli Plex {#step-5-watch-in-a-plex-app}
+
+Ouvrez n'importe quelle application Plex connectée au même compte. Si Plex est sur cet appareil, **Status** affiche un bouton **Open Plex**.
+
+Dans Plex pour Android, ouvrez **Libraries**, puis **All Libraries**, puis **Movies** sous le nom de votre serveur. Les autres applications Plex affichent aussi ce dossier sous le nom du serveur.
+
+La première synchronisation de l'Internet Archive prend un moment : environ une demi-heure sur notre appareil de test, le temps que rex vérifie chaque film. **Status** affiche **Syncing** jusqu'à la fin, puis le nombre, comme **Ready · 97 titles**. Appuyez sur lecture sur n'importe quel film.
+
+## Modules complémentaires {#addons}
+
+**Addons** liste ce que vous avez installé. Chacun affiche ses titres et la date de sa dernière synchronisation. Ses boutons sont **Sync now**, **Settings**, **Log** et **Remove** ; sur téléphone, faites glisser la rangée de boutons vers la gauche ou la droite pour les voir tous. L'interrupteur **Enabled** désactive un addon sans le supprimer.
+
+Les addons viennent de **repositories** : des dépôts git qui contiennent des addons. L'application démarre avec [rex-addons](https://github.com/debridmediamanager/rex-addons) ajouté, qui propose :
+
+| Addon | Ce qu'il apporte |
+|---|---|
+| Internet Archive | Films du domaine public. Installé dès le départ |
+| Stremio addons | Les catalogues de films et de séries de vos addons Stremio, lus depuis les flux fournis par vos addons de flux |
+| YouTube | Vos playlists YouTube. Vous vous connectez avec un code |
+| Spotify | Votre bibliothèque Spotify sous forme de musique pour Plex et Plexamp. Nécessite l'addon YouTube, connecté |
+
+**Installer un addon.** Sous **Repositories**, appuyez sur **Addons** à côté d'un repository, puis sur **Install** sous l'addon. rex affiche les sites web auxquels il peut accéder et vous demande une fois de plus, puis lance la synchronisation.
+
+**Se connecter.** Un addon qui a besoin de votre compte affiche **Sign in to start.** Appuyez sur son bouton **Sign in** : rendez-vous sur la page indiquée depuis n'importe quel appareil et saisissez le code affiché.
+
+**Ajouter un repository.** Sous **Add a repository**, tapez son lien (`github.com/user/repo` suffit) et appuyez sur **Add**. N'installez que des addons venant de personnes en qui vous avez confiance. Pour écrire votre propre addon, consultez [rex-addons](https://github.com/debridmediamanager/rex-addons).
+
+## Regardez sur d'autres appareils à la maison {#watch-on-other-devices-at-home}
+
+Chaque application Plex connectée au même compte trouve rex sur votre réseau domestique grâce à son nom : votre téléviseur, un autre téléphone, Plex Web sur un ordinateur. **Status** affiche l'adresse de rex à la maison, comme `http://192.168.1.20:32400`.
+
+Pour permettre à votre famille de regarder avec son propre compte Plex, consultez [Partager rex avec la famille et les amis](sharing.md).
+
+## Gardez-le en marche {#keep-it-running}
+
+- rex tourne tant que l'appareil est allumé. La notification **Stop** l'arrête ; **Status** propose **Start**, **Stop** et **Restart**.
+- Dans **Settings**, activez **Start when this device turns on**. Sinon, ouvrez rex et appuyez sur **Start** après un redémarrage.
+- Certains téléphones arrêtent encore les applis en arrière-plan. [Don't kill my app](https://dontkillmyapp.com/) explique ce dont la vôtre a besoin.
+- Pour renommer le serveur, ouvrez **Settings**, **General** dans une appli Plex et modifiez **Friendly name**.
+
+## Limites {#limits}
+
+- **Ça marche à la maison.** Hors de chez toi, les applis Plex ont besoin d'une adresse HTTPS qui atteint l'appareil, ce qui demande une redirection de port sur ton routeur vers celui-ci. Voir [Utiliser depuis l'extérieur de chez toi](any-source.md#use-it-outside-your-home-optional).
+- **L'appareil fait office de serveur.** Garde-le allumé, connecté en Wi-Fi ou en Ethernet, et branché. La conversion de vidéos pour un lecteur qui ne sait pas lire un fichier utilise le matériel de l'appareil et peut être lente sur un boîtier bas de gamme.
+- **Uniquement ce que apportent les addons.** Il n'a pas de bibliothèque de fichiers sur l'appareil lui-même.
+- **Pas encore sur Google Play.** Pour mettre à jour, installe le nouveau fichier depuis [les releases](https://github.com/debridmediamanager/rex-android/releases/latest) par-dessus l'ancien, puis ouvre rex et appuie sur **Start**. Ta connexion et tes addons restent en place.
+
+## Dépannage {#troubleshooting}
+
+| Ce que vous voyez | Quoi faire |
+|---|---|
+| **App not installed as app isn't compatible with your phone.** | Vous avez choisi le mauvais fichier pour le processeur. Essayez l'autre dans le tableau de l'Étape 1 |
+| **Another app here already uses this port, maybe a Plex server. Try 32500.** | Tapez `32500` comme port |
+| **Use a number from 1024 to 65535** | Le port doit être un nombre compris dans cette plage |
+| The server isn't in the Plex app | Connectez l'application Plex au même compte que celui utilisé à l'Étape 4, et gardez les deux appareils sur le même réseau domestique |
+| The library is empty | La première synchronisation est toujours en cours : attendez que **Status** affiche un nombre de titres |
+| **Sign in needed** under an addon | Appuyez sur son bouton **Sign in** et saisissez le code |
+| **That isn't a repository link. Try github.com/user/repo.** | Tapez le lien du dépôt, par exemple `github.com/user/repo` |
+| **no public git repository there (it asks for a login)** | Le lien est incorrect ou le dépôt est privé. Vérifiez-le dans un navigateur |
+| rex stops when the screen is off | Refaites le réglage d'arrière-plan de l'Étape 3, et consultez [Don't kill my app](https://dontkillmyapp.com/) |
+
+**Logs** affiche ce que rex et les addons ont dit récemment, avec les clés et mots de passe masqués. Si le support demande les logs, appuyez sur **Send logs to support** : vous voyez tout avant l'envoi, puis appuyez sur **Send** et publiez le code que vous recevez.
+
+Bloqué ? Posez votre question dans le forum **rex-support** sur [Discord](https://discord.com/invite/7u4YjMThXP).

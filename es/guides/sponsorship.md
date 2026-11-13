@@ -42,7 +42,7 @@ Las funciones de `dmm_api_key` necesitan una compilación nocturna de zurg. La c
 
 ## rex
 
-rex es gratuito y no necesita patrocinio, y también en Android: [rex for Android](https://github.com/debridmediamanager/rex-android) ejecuta rex y sus complementos en un teléfono o en una caja de TV. Con una clave, [rex-stremio](../rex/stremio.md) añade streams de debrid de torrents que DMM ya tiene analizados, en cuestión de segundos en lugar de analizar cada uno. Pégala en el campo **DMM** de rex-stremio. Comparte sus análisis de archivos torrent con DMM, a menos que lo desactives.
+rex es gratuito y no necesita patrocinio, y también en Android: [rex para Android](../rex/android.md) ejecuta rex y sus complementos en un teléfono o en un TV box. Con una clave, [rex-stremio](../rex/stremio.md) añade streams de debrid de torrents que DMM ya tiene analizados, en segundos en lugar de analizar cada uno. Pégala en el campo **DMM** de rex-stremio. Comparte sus análisis de archivos torrent con DMM, a menos que lo desactives.
 
 ## Ayuda {#help}
 

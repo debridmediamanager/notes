@@ -42,7 +42,7 @@ Fitur `dmm_api_key` membutuhkan build nightly zurg. Build publik gratis tidak me
 
 ## rex
 
-rex itu gratis dan tidak perlu sponsor, termasuk di Android: [rex for Android](https://github.com/debridmediamanager/rex-android) menjalankan rex dan addon-nya di ponsel atau TV box. Dengan key, [rex-stremio](../rex/stremio.md) menambahkan stream debrid dari torrent yang sudah punya probe di DMM dalam hitungan detik, bukan memeriksa satu per satu. Tempel key-nya di kolom **DMM** rex-stremio. Secara default, probe file torrent juga dibagikan ke DMM, kecuali kamu mematikannya.
+rex itu gratis dan tidak perlu sponsor, di Android juga: [rex for Android](../rex/android.md) menjalankan rex dan addon-nya di ponsel atau TV box. Dengan key, [rex-stremio](../rex/stremio.md) menambahkan stream debrid dari torrent yang sudah punya probe di DMM dalam hitungan detik, tanpa perlu probe satu per satu. Tempelkan di field **DMM** milik rex-stremio. Field itu berbagi hasil probe file torrent dengan DMM, kecuali kamu mematikannya.
 
 ## Bantuan {#help}
 
