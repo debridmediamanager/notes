@@ -8,30 +8,31 @@
 
 ## 今使っているものから選ぶ {#pick-by-what-you-already-use}
 
-スマホでは、表を横にスワイプするとすべての列が見られます。
+スマホでは、表を横にスワイプすると、すべての列が見られます。
 
-| 持っているもの・やりたいこと… | 選ぶルート | 選ぶ理由 | 必要な準備 |
+| 持っているもの・やりたいこと… | 選ぶルート | このルートを選ぶ理由 | 必要になること |
 |---|---|---|---|
-| Stremio と debrid か Easynews のアカウントがあり、サーバーを管理したくない | **DMM Cast → Stremio**、または既存のストリームアドオン | zurg、rex、メディアサーバーを動かさず、自分のアカウント経由で視聴できる | アドオンとプロバイダーが再生可能なストリームを提供する必要があります。再生はデバイスが行います |
-| Kodi と debrid、Easynews、または TorBox Pro のアカウントがある | **DMM の Kodi アドオン → 自分のアカウント** | Kodi 内で閲覧、検索、再生できます。スマホからペアリングできます。アドオンの TorBox ライブラリには、ホストされた NZB のダウンロードが含まれます | 再生は Kodi が行います。スポンサーの Wanted list でリクエストを満たすには、引き続き zurg が必要です |
-| いつも使っているプレーヤーで1本の映画を見たい | **DMM Watch → 外部プレーヤー** | ライブラリ用のサーバーは不要 | 対応プレーヤーをインストールし、再生できるファイルを選びます |
-| Infuse、Kodi、またはその他の WebDAV プレーヤーを使いたい | ホスト不要の **Provider WebDAV**。ホストを常時稼働できる場合は **zurg → WebDAV プレーヤー** | Plex、Jellyfin、Emby、rex を使わずにクラウドライブラリを閲覧できる | Real-Debrid、AllDebrid、Premiumize、TorBox、Debrid-Link は、それぞれ独自のフォルダ構成で独自の WebDAV を提供します。Offcloud には WebDAV がないため、zurg が必要です。zurg は視聴中に稼働しているホストが必要です |
-| Plex Media Server がすでに動いている | **zurg → マウントしたフォルダ → Plex Media Server → Plex アプリ** | サーバー、ライブラリ、既存の作業手順をそのまま使える | zurg とファイルシステムのマウントをサーバーと並行して動かします。スキャンではリモートのファイルを読み込みます |
-| Plex アプリは使いたいが、マウントしたライブラリは管理したくない | **zurg → rex → Plex アプリ** | zurg がマウントや Plex Media Server なしでライブラリを rex に提供する | 両方のサービスを稼働させたままにします。rex のアプリ互換性とアカウントの案内を確認してください |
-| Stremio アドオンは使いたいが、Plex アプリの方が好み | **アドオン → rex-stremio → rex → Plex アプリ** | アドオンのカタログを Plex ライブラリに変換します。zurg は任意です | rex と rex-stremio を動かします。ストリームアドオンは、生のトレントではなく再生可能な URL を返す必要があります |
-| プレーヤーが Jellyfin経由でライブラリにアクセスする | **Jellyfin 内のプロバイダープラグイン → 対応クライアント** | 別途 zurg のサービスやマウントは不要 | Jellyfin 12 と対応するプラグイン。プラグインには独自のアーカイブ制限があります |
-| プレーヤーが Emby経由でライブラリにアクセスする | **Emby 内のプロバイダープラグイン → 対応クライアント** | すべてを既存の Emby サーバー内に収めておける | 対応する Emby バージョンを使ってください。これら6つのプラグインは debrid に対応し、直接の Usenet には対応していません |
-| Jellyfin/Emby に加え、独自のファイルシステムや WebDAV アクセスが必要な利用者がいる | **zurg → マウント → Jellyfin/Emby** | 1つのライブラリで複数の利用者に対応できます | マウントとサーバーのパスを管理します。他の利用者は zurg を直接使えます |
-| NZB ファイル、自分の Usenet アカウント、Jellyfin を使いたい | **Jellyfin 内の NZB プラグイン → 対応クライアント** | 別途 zurg のサービスなしで NZB をストリーミングできる | NNTP アクセスと対応する Jellyfin バージョン。プラグインは圧縮・暗号化されたアーカイブのメンバーを除外し、PAR2 による修復は行いません |
-| SMB 共有を読み込むハードウェアプレーヤー | **zurg → マウント → ホストの SMB 共有 → プレーヤー** | プレーヤー本来のファイルブラウザと再生機能をそのまま使える | SMB はホストが提供します。zurg 自体が提供するのは WebDAV で、SMB サーバーではありません |
-| 自分の Usenet アカウントと Stremio | **Newznab インデクサー → zurg の Stremio アドオン → Stremio** | 再生時に検索し、自分のニュースアカウント経由でストリーミング | 稼働中の zurg、インデクサーへのアクセス、NNTP の認証情報。別のデバイスからは到達可能な HTTPS アドオンのアドレスが必要です |
-| 別のコンピューターなしの Android/Google TV デバイス | **zurg+rex Android → そのデバイス上のプレーヤー、またはそのデバイスや家庭内の Plex アプリ** | Android デバイス上で zurg と rex を動かします。スマホやテレビボックスで自分の Plex サーバーを動かし、その画面と家庭内の Plex アプリで使います | スポンサー向けアクセス、サイドロード、バックグラウンド動作が必要です。Usenet には 64 ビットの Android が必要です。TorBox のホスト型 NZB は Android では利用できません |
-| ディスク/NAS にすでにあるファイル | **既存のメディアサーバーまたはネットワークプレーヤー**。rex を使いたい場合は **HTTP ソース → rex** | 持っているファイルをそのまま使えます。debrid や Usenet のアカウントは不要 | rex には、フィードAPI経由で送信されるメタデータと、ファイルへの HTTP アクセスが必要です。フィードの提供元とファイルサーバーは別々でも構いません。rex はディスクをスキャンしません |
-| ストリーミング可能な HTTP メディアまたは自分の HTTP サーバー | **HTTP ソース + rex フィード → rex → Plex アプリ**、または対応プレーヤーに直接 | debrid や zurg なしで既存のソースを使えます | rex には、識別情報とメディアの詳細を送信するフィードの提供元が必要です。URL だけではそのメタデータは得られません |
+| Stremio と debrid または Easynews のアカウントがある。サーバーの管理はしたくない | **DMM Cast → Stremio**、または既存のストリームアドオン | zurg、rex、メディアサーバーを動かさずに、自分のアカウント経由で視聴できる | アドオンとプロバイダーが再生可能なストリームを返す必要がある。再生はデバイスが行う |
+| Kodi と debrid、Easynews、または TorBox Pro のアカウントがある | **DMM の Kodi アドオン → 自分のアカウント** | Kodi 内で閲覧、検索、再生ができる。スマホでペアリングできる。アドオンの TorBox ライブラリには、ホストされた NZB のダウンロードも含まれる | 再生は Kodi が行う。スポンサーの Wanted list のリクエストを処理するには、それでも zurg が必要 |
+| 普段使っているプレーヤーで映画を 1 本見たい | **DMM Watch → 外部プレーヤー** | ライブラリ用のサーバーは不要 | 対応しているプレーヤーをインストールし、そのプレーヤーで再生できるファイルを選ぶ |
+| Infuse、Kodi、またはその他の WebDAV プレーヤーを使いたい | **プロバイダーの WebDAV**（ホストなし）。ホストを常時起動しておけるなら **zurg → WebDAV プレーヤー** | Plex、Jellyfin、Emby、rex なしで、クラウドライブラリを閲覧できる | Real-Debrid、AllDebrid、Premiumize、TorBox、Debrid-Link は、それぞれ独自のフォルダー構成で独自の WebDAV を提供する。Offcloud には WebDAV がないので zurg が必要。zurg は視聴中ずっと起動しているホストが必要 |
+| Plex Media Server がすでに動いている | **zurg → マウントしたフォルダー → Plex Media Server → Plex アプリ** | サーバー、そのライブラリ、今の運用方法をそのまま使える | zurg とファイルシステムのマウントをサーバーと並行して動かす。スキャンではリモートのファイルを読み込む |
+| Plex アプリは使いたいが、マウントしたライブラリの管理はしたくない | **zurg → rex → Plex アプリ** | zurg が、マウントも Plex Media Server もなしでライブラリを rex に提供する | 両方のサービスを動かし続ける。rex のアプリ互換性とアカウントの注意事項を確認する |
+| Stremio のアドオンは使いたいが、Plex アプリの方が好み | **アドオン → rex-stremio → rex → Plex アプリ** | アドオンのカタログを Plex ライブラリに変換できる。zurg は任意 | rex と rex-stremio を動かす。ストリームアドオンは、生の torrent ではなく再生可能な URL を返す必要がある |
+| Jellyfin からライブラリにアクセスしている | **Jellyfin 内のプロバイダープラグイン → 対応クライアント** | 別の zurg サービスもマウントも不要 | Jellyfin 12 と対応するプラグイン。プラグインには、それぞれ独自のアーカイブの制限がある |
+| Emby からライブラリにアクセスしている | **Emby 内のプロバイダープラグイン → 対応クライアント** | 既存の Emby サーバーの中で、すべてを完結できる | 対応している Emby のバージョンを使う。この 6 つのプラグインは debrid に対応しており、直接の Usenet には対応していない |
+| Jellyfin/Emby を使いつつ、ほかのクライアントもファイルシステムや WebDAV でアクセスする必要がある | **zurg → マウント → Jellyfin/Emby** | 1 つのライブラリを複数のクライアントで共有できる | マウントとサーバーのパスを管理する。ほかのクライアントは zurg を直接使える |
+| NZB ファイル、自分の Usenet アカウント、Jellyfin を使いたい | **Jellyfin 内の NZB プラグイン → 対応クライアント** | 別の zurg サービスなしで NZB をストリーミングできる | NNTP アクセスと対応する Jellyfin のバージョン。このプラグインは圧縮・暗号化されたアーカイブのメンバーを除外し、PAR2 による修復は行わない |
+| SMB 共有を読めるハードウェアプレーヤーを使いたい | **zurg → マウント → ホストの SMB 共有 → プレーヤー** | プレーヤー本来のファイルブラウザーと再生機能をそのまま使える | SMB はホストが提供する。zurg が提供するのは WebDAV で、SMB サーバーではない |
+| 自分の Usenet アカウントと Stremio を使いたい | **Newznab インデクサー → zurg の Stremio アドオン → Stremio** | 再生時に検索し、自分のニュースアカウント経由でストリーミングできる | 動いている zurg、インデクサーへのアクセス、NNTP の認証情報。別のデバイスからは、到達可能な HTTPS のアドオンアドレスが必要 |
+| Android/Google TV デバイスを使いたいが、ほかのコンピューターはない | **Android 上の zurg+rex → そのデバイス上のプレーヤー、またはそこで使う Plex アプリと、自宅の Plex サーバー（スマホや TV ボックス上）** | Android デバイス上で zurg と rex を動かし、その画面と、自宅周りの Plex アプリを使える | スポンサーのアクセス、サイドロード、バックグラウンド動作。Usenet には 64 ビットの Android が必要。TorBox のホストされた NZB は Android では利用できない |
+| Android/Google TV デバイスで Stremio のアドオン、YouTube、Spotify、または NAS 上のファイルを使いたい | **Android 版 rex → そのデバイス上の Plex アプリ、および自宅周りの Plex アプリ** | rex とそのアドオンをデバイス上で、無料かつパソコンなしで使える | サイドロード、バックグラウンド動作。ストリームアドオンは生の torrent ではなく再生可能な URL を返す必要がある。NAS 上のファイルには、自分で作成したアドオンが必要 |
+| ファイルがすでにディスクや NAS にある | **既存のメディアサーバーまたはネットワークプレーヤー**。rex を使いたい場合は **HTTP ソース → rex** | 自分が持っているファイルをそのまま使い続けられる。debrid や Usenet のアカウントは不要 | rex には、フィード API で送信されるメタデータと、ファイルへの HTTP アクセスが必要。フィードの提供元とファイルサーバーは別々でもよい。rex はディスクをスキャンしない |
+| ストリーミング可能な HTTP メディア、または自分の HTTP サーバーを使いたい | **HTTP ソース + rex フィード → rex → Plex アプリ**、または対応プレーヤーに直接接続 | debrid や zurg なしで、既存のソースを使える | rex には、ID とメディアの詳細を送信するフィードの提供元が必要。URL だけではそのメタデータは得られない |
 
-最初に見るページ: [DMM Cast](https://debridmediamanager.com/stremio/) · [Kodi](https://debridmediamanager.com/kodi) · [DMM Settings](https://debridmediamanager.com/settings) · [zurg のセットアップ](../zurg/setup/index.md) · [zurg と使う rex](../rex/with-zurg.md) · [Stremio アドオンと使う rex](../rex/stremio.md) · [Jellyfin プラグイン](https://debridmediamanager.com/jellyfin) · [Emby プラグイン](https://debridmediamanager.com/emby) · [zurg の Stremio アドオン](../zurg/guides/stremio.md) · [Android](../zurg/guides/android.md) · [任意のソースと使う rex](../rex/any-source.md)。
+まずはここから: [DMM Cast](https://debridmediamanager.com/stremio/) · [Kodi](https://debridmediamanager.com/kodi) · [DMM Settings](https://debridmediamanager.com/settings) · [zurg のセットアップ](../zurg/setup/index.md) · [zurg と使う rex](../rex/with-zurg.md) · [Stremio アドオンと使う rex](../rex/stremio.md) · [Jellyfin プラグイン](https://debridmediamanager.com/jellyfin) · [Emby プラグイン](https://debridmediamanager.com/emby) · [zurg の Stremio アドオン](../zurg/guides/stremio.md) · [Android での zurg+rex](../zurg/guides/android.md) · [Android 版 rex](../rex/android.md) · [任意のソースと使う rex](../rex/any-source.md)。
 
-Cast のリンクは Real-Debrid から始まります。アカウントを使う場合は、[TorBox](https://debridmediamanager.com/stremio-torbox/) や [AllDebrid](https://debridmediamanager.com/stremio-alldebrid/) や [Premiumize](https://debridmediamanager.com/stremio-premiumize/) や [Offcloud](https://debridmediamanager.com/stremio-offcloud/) や [Debrid-Link](https://debridmediamanager.com/stremio-debridlink/) や [Easynews](https://debridmediamanager.com/stremio-easynews/) のセットアップページを使ってください。ここでの Cast は **DMM アドオン**を意味します。Chromecast や画面ミラーリングのことではありません。
+Cast のリンクは Real-Debrid から始まります。ほかのアカウントを使う場合は、それぞれのセットアップページを使ってください: [TorBox](https://debridmediamanager.com/stremio-torbox/)、[AllDebrid](https://debridmediamanager.com/stremio-alldebrid/)、[Premiumize](https://debridmediamanager.com/stremio-premiumize/)、[Offcloud](https://debridmediamanager.com/stremio-offcloud/)、[Debrid-Link](https://debridmediamanager.com/stremio-debridlink/)、[Easynews](https://debridmediamanager.com/stremio-easynews/)。ここでの Cast は **DMM アドオン** のことです。Chromecast や画面ミラーリングではありません。
 
 ## 再生の全体像 {#the-playback-map}
 
@@ -164,24 +165,24 @@ DMMのTorBoxの**Add**ダイアログは、直接のHTTP(S)リンクをウェブ
 
 ## インストール前に知っておくべきトレードオフ {#the-tradeoffs-that-matter-before-installing}
 
-| 質問 | 選択を変えるポイント |
+| 質問 | 選択を変えるもの |
 |---|---|
-| 別のマシンを起動したままにする必要がありますか？ | ホスト型の Cast/Kodi ルート、プロバイダーの WebDAV、DMM Watch は自分のサーバーが不要です。zurg、rex、rex-stremio、メディアサーバープラグインは、視聴中にそのホストが動いている必要があります。zurg+rex Android では、Android デバイスを zurg と rex のホストにできます。rex-stremio とメディアサーバープラグインは、通常のホストが必要です。レンタルやマネージドホストを使うと運用する人が変わるだけで、ルート自体は変わりません。 |
-| テレビでそのファイルを再生できますか？ | WebDAV とアドオンのルートは、プレーヤーのコーデック、音声、字幕に依存します。zurg はバイトデータを配信するだけで、動画のトランスコーダーではありません。必要な場合は、Plex Media Server、Jellyfin、Emby、または FFmpeg を使う rex が変換できます。適切なハードウェアとサーバー／アプリの機能が必要です。 |
-| ディスク容量はどのくらい必要ですか？ | ストリーミングなら、コレクション全体を保存する必要はありません。ただし、データベース、アートワーク、キャッシュ、修復・トランスコード・オフラインダウンロードの作業用に容量を確保しておいてください。「先に全部ダウンロードしなくていい」は、ディスクをまったく使わないという意味ではありません。 |
-| 通信量の負担はどこにかかりますか？ | プロバイダーの通信量制限は引き続き適用されます。サーバープロキシを使うと再生の通信がサーバーを通るので、サーバーの送信帯域を使います。直接再生の場合は、接続が視聴者側に移ります。ライブラリの解析でもリモートファイルを読み込むことがあります。 |
-| 外出先でも使えますか？ | ホスト型のアドオンなら、自分のサーバーを公開せずに済みます。自前のサービスは、安全に到達できるアドレスが必要です。LAN のアドレスだけでは外からアクセスできません。[rex のリモートアクセス](../rex/any-source.md#use-it-outside-your-home-optional)と[Stremio の HTTPS ガイド](../zurg/guides/stremio.md#installing-it-on-another-device)を参照してください。 |
-| 家族で同時に使えますか？ | プロバイダーの IP／同時接続ルールと、サーバーの共有の仕組みを確認してください。Real-Debrid の利用は、1 つのパブリック IP に限定しておく必要があります。中央のライブラリが提供したものでも、別の世帯への直接リンクはこの条件に違反する可能性があります。ダウンロード元がどこかを理解しないまま、リダイレクトを有効にしないでください。 |
-| 何に対して料金を払うのですか？ | プロバイダーの契約、インデクサーへのアクセス、DMM のスポンサー、ホスティング、プレーヤーやサーバーの購入は、別々に考えてください。DMM の基本的な Web サイトと、個人利用の rex は無料です。[rex for Android](../rex/android.md) も無料です。最新の zurg ナイトリーと DMM のプラグイン配布は、スポンサー特典です。Wanted と DMM のインデクサー API にも、スポンサーシップが必要です。rex-stremio はスポンサーシップが不要です。[スポンサーシップで得られるもの](sponsorship.md)に、すべての特典と設定場所が載っています。 |
-| カタログに載っていれば、再生できる保証はありますか？ | いいえ。アドオンのカタログはタイトルを示しているだけです。クラウドのファイルは期限切れになることがあり、トレントはソースがないことがあり、Usenet の記事は欠けていることがあります。失敗したときの挙動や待ち時間に納得できるルートを選んでください。 |
+| 別のマシンを起動したままにする必要がありますか？ | ホスト型の Cast/Kodi ルート、プロバイダーの WebDAV、DMM Watch は、自分のサーバーを必要としません。zurg、rex、rex-stremio、メディアサーバープラグインは、視聴中にそのホストが必要です。Android デバイスでは、zurg+rex は zurg と rex を実行し、rex for Android は Stremio アドオンを含むアドオンと一緒に rex を実行します。rex-stremio とメディアサーバープラグインは、引き続き通常のホストが必要です。レンタルや管理されたホストは、誰が運用するかを変えるだけで、ルートそのものは変わりません。 |
+| テレビでファイルを再生できますか？ | WebDAV とアドオンのルートは、プレイヤーのコーデック、音声、字幕に依存します。zurg はバイトを配信するだけで、動画のトランスコーダーではありません。Plex Media Server、Jellyfin、Emby、または FFmpeg を使う rex は、必要に応じて変換できます。適切なハードウェアとサーバー／アプリの機能が必要です。 |
+| ディスク容量はどれくらい必要ですか？ | ストリーミングなら、コレクション全体を保存する必要はありません。データベース、アートワーク、キャッシュ、修復・トランスコード・オフラインダウンロードの作業用に容量を確保してください。「最初に全部ダウンロードしない」は、ディスクをまったく使わないという意味ではありません。 |
+| 帯域幅の費用は誰が負担しますか？ | プロバイダーのトラフィック制限は引き続き適用されます。サーバーのプロキシは再生トラフィックを運び、送信帯域を使います。直接再生の場合は、接続が視聴者側に移ります。ライブラリ解析でも、リモートファイルを読み取ることがあります。 |
+| 外出先でも使えますか？ | ホストされたアドオンなら、自分のサーバーを公開せずに済みます。自前のサービスには、安全に到達できるアドレスが必要です。LAN アドレスだけでは、リモートからは動作しません。[rex のリモートアクセス](../rex/any-source.md#use-it-outside-your-home-optional)と[Stremio の HTTPS ガイド](../zurg/guides/stremio.md#installing-it-on-another-device)を参照してください。 |
+| 家族が同時に使えますか？ | プロバイダーの IP／同時接続ルールと、サーバーの共有モデルを確認してください。Real-Debrid の利用は、1つのパブリック IP に固定しておく必要があります。中央のライブラリが提供したリンクでも、異なる世帯への直接リンクはそれに違反する可能性があります。ダウンロードの発生元を理解しないまま、リダイレクトを有効にしないでください。 |
+| 何にお金を払いますか？ | プロバイダーの契約、インデクサーへのアクセス、DMM のスポンサー、ホスティング、プレイヤー／サーバーの購入は、別々に把握してください。DMM の基本ウェブサイトと個人利用の rex は無料です。[rex for Android](../rex/android.md) も無料です。現在の zurg nightly と DMM のプラグイン配布はスポンサー特典です。Wanted と DMM のインデクサー API も、スポンサーシップが必要です。rex-stremio には必要ありません。[スポンサーシップで得られるもの](sponsorship.md)に、すべての特典と設定場所が載っています。 |
+| カタログの項目は再生を保証しますか？ | いいえ。アドオンのカタログはタイトルを説明するだけです。クラウドのファイルは期限切れになることがあり、torrent はソースがないことがあり、Usenet の記事は欠けていることがあります。失敗時や待ち時間の挙動に納得できるルートを選んでください。 |
 
-互換性のあるサーバークライアントとして、サードパーティ製のアプリを使うこともできます。[Infuse は Plex、Emby、Jellyfin に接続できます](https://support.firecore.com/hc/en-us/articles/360006462093-Streaming-from-Plex-Emby-and-Jellyfin)。別の zurg マウントは不要な場合もあります。プラグインとクライアントを合わせて確認してください。
+互換性のあるサーバークライアントは、サードパーティ製アプリでもかまいません。[Infuse は Plex、Emby、Jellyfin に接続できます](https://support.firecore.com/hc/en-us/articles/360006462093-Streaming-from-Plex-Emby-and-Jellyfin)。別途 zurg のマウントは不要な場合があります。プラグインとクライアントを一緒に確認してください。
 
-Infuse は [WebDAV やその他のネットワーク共有](https://support.firecore.com/hc/en-us/articles/215090977-Streaming-From-a-Mac-PC-or-NAS)に対応しています。`.strm` ファイルを使うと、Kodi のような互換プレーヤーに URL を渡せます。これは汎用的なマウントの代わりにはなりません。クライアントを確認し、プロキシやフェイルオーバーの挙動が異なることを想定してください。通常の Plex Media Server の設定に `.strm` を使わないでください。
+Infuse は、[WebDAV とその他のネットワーク共有](https://support.firecore.com/hc/en-us/articles/215090977-Streaming-From-a-Mac-PC-or-NAS)に対応しています。`.strm` ファイルは、Kodi などの互換プレイヤーに URL を渡すものです。汎用的なマウントの代わりにはなりません。クライアントを確認し、プロキシやフェイルオーバーの挙動が異なることを想定してください。通常の Plex Media Server の設定に `.strm` は使わないでください。
 
-[従来の無料 zurg リリース](https://github.com/debridmediamanager/zurg-public/releases)もあります。これは Real-Debrid のみに対応し、設定形式も異なります。ここで説明しているマルチプロバイダーの Usenet とAndroid のルートは、スポンサー向けのナイトリーを使います。
+[旧式の無料 zurg リリース](https://github.com/debridmediamanager/zurg-public/releases)もあります。これは Real-Debrid のみ対応で、設定形式も異なります。ここにあるマルチプロバイダーの Usenet と Android のルートは、スポンサー向けの nightly を使います。
 
-**rex には独自の互換性の境界があります。** rex は独立した Plex アプリサーバーです。Plex Media Server でも Plex のプラグインでもありません。テスト済みのデバイス、リモートでのトランスコード、新規アカウントの推奨については、[FAQ](../rex/faq.md) を参照してください。従来の Plex サーバーは、rex と並べて動かせます。
+**rex には独自の互換性の境界があります。** rex は独立した Plex アプリサーバーです。Plex Media Server でも Plex プラグインでもありません。テスト済みデバイス、リモート利用時のトランスコード、新規アカウントの推奨については、[FAQ](../rex/faq.md) を参照してください。従来の Plex サーバーは、rex と並行して実行できます。
 
 ## ルートを変える可能性のある条件 {#needs-that-can-change-the-route}
 
