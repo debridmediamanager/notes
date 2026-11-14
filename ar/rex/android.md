@@ -10,54 +10,80 @@ rex for Android مجاني. هل تريد أن تضيف إليه حسابات de
 
 | تحتاج إلى | السبب |
 |---|---|
-| جهاز يعمل بنظام Android 8.0 أو أحدث | هاتف أو جهاز لوحي أو Android TV أو Google TV أو Fire TV |
-| حساب Plex | يظهر rex في تطبيقات Plex المسجّل فيها. يكفي حساب مجاني |
-| تطبيق Plex على الجهاز الذي تشاهد عليه | Plex for Android أو Android TV أو iPhone أو تلفاز ذكي أو Plex Web أو Plexamp |
+| جهاز يعمل بنظام Android 8.0 أو أحدث | هاتف، أو جهاز لوحي، أو Android TV، أو Google TV، أو Fire TV. أجهزة Fire TV التي تعمل بنظام Vega OS، مثل Fire TV Stick 4K Select، لا تشغّل أي تطبيقات Android |
+| حساب Plex | يظهر rex في تطبيقات Plex المسجّل الدخول إليها بهذا الحساب. الحساب المجاني يكفي |
+| تطبيق Plex على الجهاز الذي تشاهد عليه | Plex for Android، وAndroid TV، وiPhone، أو تلفاز ذكي، وPlex Web، وPlexamp |
 
-التطبيق غير متاح على Google Play بعد. تحتاج إلى تثبيت ملف التطبيق (APK) بنفسك.
+## الخطوة 1. احصل على التطبيق {#step-1-get-the-app}
 
-## الخطوة 1. نزّله {#step-1-download-it}
+| الطريقة | مناسبة لـ |
+|---|---|
+| Google Play | الهواتف والأجهزة اللوحية وAndroid TV وGoogle TV. قريبًا |
+| Amazon Appstore | Fire TV وأجهزة Fire اللوحية. قريبًا |
+| [Obtainium](#with-obtainium) | الهواتف والأجهزة اللوحية. التحديثات تأتي تلقائيًا |
+| [Downloader](#with-downloader-on-fire-tv) | Fire TV وصناديق التلفزيون |
+| [الملف من GitHub](#the-file-from-github) | أي جهاز. تثبّت التحديثات بنفسك |
 
-على الجهاز، نزّل الملف المناسب لمعالجه. كل رابط يشير دائمًا إلى أحدث إصدار:
+**الطرق لا تُخلط.** Google Play وAmazon Appstore والملف من GitHub (الذي يثبّته Obtainium وDownloader أيضًا) موقّعة بشكل مختلف، لذا لا يستطيع أحدها تحديث الآخر. للتبديل، احذف rex وأعد تنفيذ الخطوتين 2 و3.
+
+**كل طريقة تبدأ بإضافات مختلفة.** الملف من GitHub يبدأ ومستودع [rex-addons](https://github.com/debridmediamanager/rex-addons) مضاف. نسخ المتاجر تبدأ بإضافة Internet Archive فقط؛ أضف rex-addons بنفسك (انظر [الإضافات](#addons)) إذا أردتها.
+
+### باستخدام Obtainium {#with-obtainium}
+
+[Obtainium](https://obtainium.imranr.dev/) يثبّت التطبيقات من GitHub ويبقيها محدّثة.
+
+1. ثبّت Obtainium.
+2. على الجهاز نفسه، افتح [rex.debridmediamanager.com/obtainium](https://rex.debridmediamanager.com/ar/obtainium). يُفتح Obtainium ويسألك عن **Import app**. اضغط **Continue**.
+3. اضغط **rex**، ثم **Install**. يختار Obtainium الملف المناسب لمعالج جهازك.
+4. في المرة الأولى، يقول Android إن Obtainium غير مسموح له بتثبيت التطبيقات. فعّل **Allow from this source** ثم ارجع.
+5. اضغط **Install**. إذا قال Play Protect **App scan recommended**، اضغط **Scan app** ثم **Install**.
+
+عندما يصدر إصدار جديد، يعرض Obtainium الزر **Update** بجانب rex.
+
+### باستخدام Downloader على Fire TV {#with-downloader-on-fire-tv}
+
+1. على جهاز Fire TV، ثبّت تطبيق **Downloader** من تطوير AFTVnews من متجر التطبيقات (Appstore).
+2. افتحه، واختر خانة العنوان واكتب `rex.debridmediamanager.com/tv`. اضغط **Next**. سيتم تنزيل الملف `rex-android-armeabi-v7a.apk`.
+3. اضغط **Install**. في المرة الأولى، سيفتح Fire TV صفحة **Developer options** بدلاً من ذلك. اختر **Install unknown apps**، ثم **Downloader** حتى يظهر **ON**. اضغط Back مرتين، ثم اضغط **Install** مرة أخرى.
+4. اضغط **Install**، ثم **Open**.
+
+للتحديث، كرر الخطوات من 2 إلى 4. سيتوفر قريباً رمز Downloader قصير.
+
+### الملف من GitHub {#the-file-from-github}
+
+على الجهاز، حمّل الملف الخاص بالمعالج لديك. كل رابط يشير دائماً إلى أحدث إصدار:
 
 | جهازك | التحميل |
 |---|---|
-| معظم الهواتف والأجهزة اللوحية وصناديق التلفاز (64-bit) | [rex-android-arm64-v8a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-arm64-v8a.apk) |
-| الصناديق القديمة أو الأرخص ذات 32-bit، ومنها Fire TV Stick | [rex-android-armeabi-v7a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-armeabi-v7a.apk) |
+| معظم الهواتف والأجهزة اللوحية وصناديق التلفاز (64 بت) | [rex-android-arm64-v8a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-arm64-v8a.apk) |
+| Fire TV، وصناديق 32 بت الأقدم أو الأرخص | [rex-android-armeabi-v7a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-armeabi-v7a.apk) |
 | المحاكيات على الكمبيوتر | [rex-android-x86_64.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-x86_64.apk) |
 
-كل الإصدارات وتغييراتها موجودة في [صفحة الإصدارات](https://github.com/debridmediamanager/rex-android/releases).
+كل إصدار وتغييراته موجودة في [صفحة الإصدارات](https://github.com/debridmediamanager/rex-android/releases). غير متأكد؟ جرّب `arm64-v8a` أولاً. ملف واحد يعمل على الهواتف والتلفاز معاً.
 
-لست متأكدًا؟ جرّب `arm64-v8a` أولًا. الملف الواحد يعمل على الهواتف والتلفاز معًا.
+افتح الملف الذي حمّلته. سيقول Android إنه **لا يُسمح بتثبيت تطبيقات غير معروفة من هذا المصدر**. اضغط **Settings**، ثم فعّل **Allow from this source**، ارجع واضغط **Install**.
 
-## الخطوة 2. ثبّته {#step-2-install-it}
-
-افتح الملف الذي نزّلته. سيسألك Android أولاً:
-
-1. سيقول إنه **لا يُسمح بتثبيت التطبيقات غير المعروفة من هذا المصدر**. اضغط **Settings** (الإعدادات)، وفعّل **Allow from this source** (السماح من هذا المصدر)، ثم ارجع.
-2. اضغط **Install** (تثبيت).
-
-على جهاز TV box بدون متصفح، نزّل الملف باستخدام تطبيق تنزيل يستطيع فتح ملفات APK.
+للتحديث، ثبّت الملف الجديد فوق القديم. سيبدأ rex من جديد تلقائياً وستبقى تسجيلاتك والإضافات كما هي.
 
 **ما الذي يجب أن تراه.** **rex** في قائمة تطبيقاتك.
 
-## الخطوة 3. شغّل rex {#step-3-start-rex}
+## الخطوة 2. شغّل rex {#step-2-start-rex}
 
-افتح **rex**. أول شاشة تقول **Welcome to rex.**
+**rex** افتح. الشاشة الأولى تقول **Welcome to rex.**
 
-1. اضغط **Allow notifications**، ثم **Allow**. يعمل rex في الخلفية ويظهر له إشعار يمكنك إيقافه منه.
-2. اضغط **Let rex keep running in the background**. في القائمة التي تفتح، اختر **rex** ثم اختر **Don't optimize**. في أندرويد الأحدث يكون الخيار **Allow background usage**، ثم **Unrestricted**. ارجع إلى rex. الزرّان الآن يبدآن بعلامة ✓.
-3. **Name** هو الاسم الذي تعرضه تطبيقات Plex لهذا الخادم. غيّره إذا أردت.
-4. اترك **Port** على `32400`. إذا كان خادم Plex آخر يعمل على هذا الجهاز بالفعل، سيقول لك rex **Another app here already uses this port, maybe a Plex server. Try 32500.** اكتب `32500`.
+1. اضغط **Allow notifications** ثم **Allow**. يعمل rex في الخلفية مع إشعار يمكنك إيقافه من خلاله.
+2. اضغط **Let rex keep running in the background**. في القائمة التي تفتح، اختر **rex** ثم اختر **Don't optimize**. في أندرويد الأحدث يكون الخيار **Allow background usage** ثم **Unrestricted**. ارجع إلى rex. الزران يبدآن الآن بعلامة ✓.
+3. **Name** هو الاسم الذي تعرضه تطبيقات Plex لهذا الخادم. غيّره إن أردت.
+4. اترك **Port** على `32400`. إذا كان هناك خادم Plex آخر يعمل على هذا الجهاز، سيقول rex **Another app here already uses this port, maybe a Plex server. Try 32500.** اكتب `32500`.
 5. اضغط **Start rex**.
 
-**ماذا يجب أن تشاهد.** **2 / 2** و **Sign in to Plex.**
+**ما الذي يجب أن تراه.** **2 / 2** و**Sign in to Plex.**
 
-| الشاشة الأولى | صفحة الفيلم في تطبيق Plex (الخطوة 5) |
+| الشاشة الأولى | صفحة الفيلم في تطبيق Plex (الخطوة 4) |
 |---|---|
-| ![الشاشة الأولى لـ rex على أندرويد، مع حقلي الاسم والمنفذ وزر Start rex](../assets/rex/android-setup.webp) | ![فيلم صامت من عام 1916 من Internet Archive في صفحته داخل Plex لأندرويد](../assets/rex/android-plex-film.webp) |
+| ![The first screen of rex for Android, with the name and port fields and Start rex](../assets/rex/android-setup.webp) | ![A 1916 silent film from the Internet Archive on its page in Plex for Android](../assets/rex/android-plex-film.webp) |
 
-## الخطوة 4. سجّل الدخول إلى Plex {#step-4-sign-in-to-plex}
+## الخطوة 3. سجّل الدخول إلى Plex {#step-3-sign-in-to-plex}
 
 اضغط **Sign in to Plex**. يعرض rex رمزًا: **On any phone or computer, go to plex.tv/link and enter** it.
 
@@ -70,7 +96,7 @@ rex for Android مجاني. هل تريد أن تضيف إليه حسابات de
 
 **ما الذي يجب أن تراه.** **Signed in. rex shows up in the Plex apps as** اسم الخادم الخاص بك. اضغط **Done**. تُظهر **Status** الحالة **RUNNING** والرسالة **Ready for the Plex apps.**
 
-## الخطوة 5. شاهد من تطبيق Plex {#step-5-watch-in-a-plex-app}
+## الخطوة 4. شاهد من تطبيق Plex {#step-4-watch-in-a-plex-app}
 
 افتح أي تطبيق Plex مسجّل الدخول بنفس الحساب. إذا كان Plex على هذا الجهاز، فستجد في **Status** زر **Open Plex**.
 
@@ -82,21 +108,21 @@ rex for Android مجاني. هل تريد أن تضيف إليه حسابات de
 
 ## الإضافات {#addons}
 
-**Addons** تعرض ما قمت بتثبيته. تعرض كل إضافة عناوينها ووقت آخر مزامنة لها. أزرارها هي **Sync now** و**Settings** و**Log** و**Remove**. على الهاتف، مرّر صف الأزرار جانبًا لترى كلها. مفتاح **Enabled** يوقف الإضافة دون حذفها.
+**Addons** تعرض ما قمت بتثبيته. يعرض كل addon عناوينه ووقت آخر مزامنة له. أزراره هي **Sync now** و**Settings** و**Log** و**Remove**؛ على الهاتف، مرّر صف الأزرار جانباً لرؤيتها كلها. مفتاح **Enabled** يوقف addon دون حذفه.
 
-تأتي الإضافات من **مستودعات**، وهي مستودعات git تحتوي على إضافات. يبدأ التطبيق ومعه إضافة [rex-addons](https://github.com/debridmediamanager/rex-addons)، وهي تقدم أفلام الملك العام من Internet Archive، وتكون مثبتة من البداية. لمزيد من الإضافات، أضف [rex-community-addons](https://github.com/debridmediamanager/rex-community-addons) (انظر **Add a repository** أدناه)، وهي تقدم:
+تأتي الـ addons من **repositories**: مستودعات git تحتوي على addons. يأتي addon الخاص بـ Internet Archive مثبتاً مسبقاً. لمزيد منها، أضف [rex-community-addons](https://github.com/debridmediamanager/rex-community-addons) (انظر **Add a repository** أدناه)، وهو يوفر:
 
-| الإضافة | ما تضيفه |
+| Addon | ما يضيفه |
 |---|---|
-| إضافات Stremio | كتالوجات الأفلام والمسلسلات من إضافات Stremio الخاصة بك، وتُشغَّل من البثوث التي تقدمها إضافات البث لديك |
-| YouTube | قوائم تشغيل YouTube الخاصة بك. تسجل الدخول برمز |
-| Spotify | مكتبة Spotify الخاصة بك كموسيقى لـ Plex وPlexamp. تحتاج إلى إضافة YouTube، وأن تكون مسجلاً فيها |
+| Stremio addons | كتالوجات الأفلام والمسلسلات من Stremio addons الخاصة بك، وتُشغَّل من الـ streams التي تقدمها stream addons الخاصة بك |
+| YouTube | قوائم تشغيل YouTube الخاصة بك. تسجل الدخول بواسطة رمز |
+| Spotify | مكتبة Spotify الخاصة بك كموسيقى لـ Plex وPlexamp. يحتاج إلى addon الخاص بـ YouTube، وأن يكون مسجَّل الدخول |
 
-**تثبيت إضافة.** ضمن **Repositories**، اضغط **Addons** بجانب المستودع، ثم **Install** أسفل الإضافة. يعرض rex المواقع التي يمكنه الوصول إليها ويسألك مرة أخرى، ثم يبدأ بمزامنتها.
+**التثبيت.** ضمن **Repositories**، اضغط **Addons** بجانب أحد المستودعات، ثم **Install** أسفل الـ addon. يعرض rex المواقع التي يستطيع الوصول إليها ويسألك مرة أخرى، ثم يبدأ مزامنته.
 
-**تسجيل الدخول.** إضافة تحتاج إلى حسابك تعرض **Sign in to start.** اضغط زر **Sign in** الخاص بها: افتح الصفحة المذكورة على أي جهاز وأدخل الرمز الظاهر.
+**تسجيل الدخول.** الـ addon الذي يحتاج إلى حسابك يقول **Sign in to start.** اضغط زر **Sign in** الخاص به: انتقل إلى الصفحة التي يذكرها على أي جهاز وأدخل الرمز المعروض.
 
-**إضافة مستودع.** ضمن **Add a repository**، اكتب رابطه (يكفي `github.com/user/repo`) واضغط **Add**. ثبّت فقط من أشخاص تثق بهم. لكتابة إضافتك الخاصة، راجع [rex-addons](https://github.com/debridmediamanager/rex-addons).
+**إضافة مستودع.** ضمن **Add a repository**، اكتب رابطه (يكفي `github.com/user/repo`) واضغط **Add**. ثبّت فقط من أشخاص تثق بهم. لكتابة addon خاص بك، انظر [rex-addons](https://github.com/debridmediamanager/rex-addons).
 
 ## شاهد على أجهزة أخرى في المنزل {#watch-on-other-devices-at-home}
 
@@ -113,28 +139,27 @@ rex for Android مجاني. هل تريد أن تضيف إليه حسابات de
 
 ## القيود {#limits}
 
-- **يعمل في المنزل.** خارج المنزل، تحتاج تطبيقات Plex إلى عنوان HTTPS يصل إلى الجهاز، ويلزمك تفعيل port forward على الراوتر يوجّه إليه. انظر [استخدامه خارج منزلك](any-source.md#use-it-outside-your-home-optional).
-- **الجهاز هو الخادم.** أبقِه مشغّلاً، متصلاً بالشبكة عبر Wi-Fi أو Ethernet، ومتصلاً بالكهرباء. تحويل الفيديو لمشغّل لا يستطيع تشغيل الملف يعتمد على العتاد الخاص بالجهاز، وقد يكون بطيئاً على جهاز رخيص.
-- **فقط ما تجلبه الإضافات.** لا توجد على الجهاز نفسه مكتبة ملفات خاصة به.
-- **غير متوفر على Google Play بعد.** للتحديث، ثبّت الملف الجديد من [الإصدارات](https://github.com/debridmediamanager/rex-android/releases/latest) فوق القديم، وسيبدأ rex من جديد تلقائياً. يبقى تسجيل دخولك والإضافات كما هي.
+- **تعمل داخل المنزل.** خارج المنزل، تحتاج تطبيقات Plex إلى عنوان HTTPS يصل إلى الجهاز، ويلزم لذلك توجيه منفذ (port forward) على جهاز التوجيه (router) الخاص بك إليه. انظر [الاستخدام خارج منزلك](any-source.md#use-it-outside-your-home-optional).
+- **الجهاز هو الخادم.** أبقِه شغّالاً، متصلاً بشبكة Wi-Fi أو بكابل Ethernet، ومتصلاً بالكهرباء. تحويل الفيديو لمشغّل لا يستطيع تشغيل ملف معين يعتمد على عتاد الجهاز نفسه، وقد يكون بطيئاً على جهاز رخيص.
+- **فقط ما تجلبه الإضافات.** ليس لديه مكتبة ملفات على الجهاز نفسه.
 
 ## استكشاف الأخطاء وإصلاحها {#troubleshooting}
 
-| ما تراه | ما الذي تفعله |
+| What you see | What to do |
 |---|---|
-| **App not installed as app isn't compatible with your phone.** | اخترت الملف الخطأ لنوع المعالج. جرّب الملف الآخر من الجدول في الخطوة 1 |
-| **Another app here already uses this port, maybe a Plex server. Try 32500.** | اكتب `32500` بوصفه المنفذ |
+| **App not installed as app isn't compatible with your phone.** | اخترت الملف الخاطئ للمعالج. جرّب الملف الآخر من الجدول في الخطوة 1 |
+| **Another app here already uses this port, maybe a Plex server. Try 32500.** | اكتب `32500` كمنفذ |
 | **Use a number from 1024 to 65535** | يجب أن يكون المنفذ رقمًا ضمن هذا النطاق |
-| الخادم غير ظاهر في تطبيق Plex | سجّل الدخول إلى تطبيق Plex بالحساب نفسه الذي استخدمته في الخطوة 4، وأبقِ الجهازين على شبكة المنزل نفسها |
-| المكتبة فارغة | المزامنة الأولى ما زالت تعمل: انتظر حتى تظهر قيمة رقمية في **Status** تدل على عدد العناوين |
-| **Sign in needed** تحت إضافة | اضغط على زر **Sign in** الخاص بها وأدخل الرمز |
-| **Needs an update** تحت إضافة | هذا الإصدار من التطبيق لم يعد قادرًا على تشغيل هذه النسخة من الإضافة. حدّث المستودع الخاص بها واضغط على **Update**. تبقى عناوينها متاحة في الأثناء |
+| لا يظهر الخادم في تطبيق Plex | سجّل الدخول في تطبيق Plex بالحساب نفسه الذي استخدمته في الخطوة 3، وأبقِ الجهازين على شبكة المنزل نفسها |
+| المكتبة فارغة | المزامنة الأولى ما زالت جارية: انتظر حتى تظهر في **Status** عدد من العناوين |
+| **Sign in needed** under an addon | اضغط على زر **Sign in** الخاص بها وأدخل الرمز |
+| **Needs an update** under an addon | هذه النسخة من التطبيق لم تعد قادرة على تشغيل نسخة الإضافة هذه. حدّث المستودع الخاص بها واضغط على **Update**. تبقى عناوينها متاحة في هذه الأثناء |
 | **That isn't a repository link. Try github.com/user/repo.** | اكتب رابط المستودع، مثل `github.com/user/repo` |
-| **no public git repository there (it asks for a login)** | الرابط غير صحيح أو أن المستودع خاص. تحقّق منه في المتصفح |
-| يتوقف rex عندما تنطفئ الشاشة | أعد ضبط إعداد الخلفية في الخطوة 3، وراجع [لا تُوقف تطبيقي](https://dontkillmyapp.com/) |
+| **no public git repository there (it asks for a login)** | الرابط خاطئ أو أن المستودع خاص. تحقق منه في المتصفح |
+| يتوقف rex عندما تُطفأ الشاشة | أعد ضبط إعداد التشغيل في الخلفية من الخطوة 2، وراجع [لا تقتل تطبيقي](https://dontkillmyapp.com/) |
 
-**Logs** يعرض ما قاله rex والإضافات مؤخرًا، مع إخفاء المفاتيح وكلمات المرور. إذا طلب الدعم السجلات، فاضغط على **Send logs to support**: سترى كل شيء قبل إرساله، ثم اضغط على **Send** والصق الرمز الذي تحصل عليه.
+**Logs** يعرض ما قاله rex والإضافات مؤخرًا، مع إخفاء المفاتيح وكلمات المرور. إذا طلب الدعم السجلات، اضغط على **Send logs to support**: سترى كل شيء قبل إرساله، ثم اضغط على **Send** وانشر الرمز الذي تحصل عليه.
 
-ما يرسله التطبيق وإلى أين يذهب موضح في [سياسة الخصوصية](android-privacy.md).
+ما يرسله التطبيق وإلى أين يذهب موجود في [سياسة الخصوصية](android-privacy.md).
 
-هل لا تزال عالقًا؟ اسأل في منتدى **rex-support** على [Discord](https://discord.com/invite/7u4YjMThXP).
+إذا علقت، اسأل في منتدى **rex-support** على [Discord](https://discord.com/invite/7u4YjMThXP).

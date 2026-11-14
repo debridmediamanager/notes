@@ -10,38 +10,66 @@ rex for Android is free. Want your debrid accounts and Usenet in it too? zurg+re
 
 | You need | Why |
 |---|---|
-| A device with Android 8.0 or newer | Phone, tablet, Android TV, Google TV or Fire TV |
+| A device with Android 8.0 or newer | Phone, tablet, Android TV, Google TV or Fire TV. Fire TVs on Vega OS, such as the Fire TV Stick 4K Select, run no Android apps |
 | A Plex account | rex shows up in the Plex apps signed in to it. A free account is enough |
 | A Plex app on the device you watch on | Plex for Android, Android TV, iPhone, a smart TV, Plex Web, Plexamp |
 
-It is not on Google Play yet. You install the app file (APK) yourself.
+## Step 1. Get the app
 
-## Step 1. Download it
+Pick one way. Each one keeps rex up to date its own way.
+
+| Way | Good for |
+|---|---|
+| Google Play | Phones, tablets, Android TV and Google TV. Coming soon |
+| Amazon Appstore | Fire TV and Fire tablets. Coming soon |
+| [Obtainium](#with-obtainium) | Phones and tablets. Updates come by themselves |
+| [Downloader](#with-downloader-on-fire-tv) | Fire TV and TV boxes |
+| [The file from GitHub](#the-file-from-github) | Any device. You install updates yourself |
+
+**The ways don't mix.** Google Play, the Amazon Appstore and the file from GitHub (which Obtainium and Downloader install too) are signed differently, so one can't update another. To switch, uninstall rex and do Steps 2 and 3 again.
+
+**They start with different addons.** The file from GitHub starts with the [rex-addons](https://github.com/debridmediamanager/rex-addons) repository added. The store versions start with only the Internet Archive addon; add rex-addons yourself (see [Addons](#addons)) if you want it.
+
+### With Obtainium
+
+[Obtainium](https://obtainium.imranr.dev/) installs apps from GitHub and keeps them updated.
+
+1. Install Obtainium.
+2. On the same device, open [rex.debridmediamanager.com/obtainium](https://rex.debridmediamanager.com/obtainium). Obtainium opens and asks to **Import app**. Press **Continue**.
+3. Press **rex**, then **Install**. Obtainium picks the file for your device's processor.
+4. The first time, Android says Obtainium isn't allowed to install apps. Turn on **Allow from this source** and go back.
+5. Press **Install**. If Play Protect says **App scan recommended**, press **Scan app**, then **Install**.
+
+When a new version is out, Obtainium shows **Update** next to rex.
+
+### With Downloader on Fire TV
+
+1. On the Fire TV, install **Downloader** by AFTVnews from the Appstore.
+2. Open it, select the address box and type `rex.debridmediamanager.com/tv`. Press **Next**. It downloads `rex-android-armeabi-v7a.apk`.
+3. Press **Install**. The first time, Fire TV opens **Developer options** instead. Select **Install unknown apps**, then **Downloader** so it says **ON**. Press Back twice and press **Install** again.
+4. Press **Install**, then **Open**.
+
+To update, do steps 2 to 4 again. A short Downloader code is coming.
+
+### The file from GitHub
 
 On the device, download the file for its processor. Each link is always the newest version:
 
 | Your device | Download |
 |---|---|
 | Most phones, tablets and TV boxes (64-bit) | [rex-android-arm64-v8a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-arm64-v8a.apk) |
-| Older or cheaper 32-bit boxes, Fire TV Sticks among them | [rex-android-armeabi-v7a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-armeabi-v7a.apk) |
+| Fire TV, and older or cheaper 32-bit boxes | [rex-android-armeabi-v7a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-armeabi-v7a.apk) |
 | Emulators on a PC | [rex-android-x86_64.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-x86_64.apk) |
 
-Every version and its changes are on [the releases page](https://github.com/debridmediamanager/rex-android/releases).
+Every version and its changes are on [the releases page](https://github.com/debridmediamanager/rex-android/releases). Not sure? Try `arm64-v8a` first. One file works on phones and TVs alike.
 
-Not sure? Try `arm64-v8a` first. One file works on phones and TVs alike.
+Open the downloaded file. Android says it **isn't allowed to install unknown apps from this source**. Press **Settings**, turn on **Allow from this source**, go back and press **Install**.
 
-## Step 2. Install it
-
-Open the downloaded file. Android asks first:
-
-1. It says it **isn't allowed to install unknown apps from this source**. Press **Settings**, turn on **Allow from this source** and go back.
-2. Press **Install**.
-
-On a TV box without a browser, download the file with a downloader app that can open APKs.
+To update, install the new file over the old one. rex starts again by itself and your sign-in and addons stay.
 
 **What you should see.** **rex** in your list of apps.
 
-## Step 3. Start rex
+## Step 2. Start rex
 
 Open **rex**. The first screen says **Welcome to rex.**
 
@@ -53,11 +81,11 @@ Open **rex**. The first screen says **Welcome to rex.**
 
 **What you should see.** **2 / 2** and **Sign in to Plex.**
 
-| The first screen | The film's page in the Plex app (Step 5) |
+| The first screen | The film's page in the Plex app (Step 4) |
 |---|---|
 | ![The first screen of rex for Android, with the name and port fields and Start rex](../assets/rex/android-setup.webp) | ![A 1916 silent film from the Internet Archive on its page in Plex for Android](../assets/rex/android-plex-film.webp) |
 
-## Step 4. Sign in to Plex
+## Step 3. Sign in to Plex
 
 Press **Sign in to Plex**. rex shows a code: **On any phone or computer, go to plex.tv/link and enter** it.
 
@@ -70,7 +98,7 @@ Use the account your Plex apps are signed in to. You can press **Skip for now** 
 
 **What you should see.** **Signed in. rex shows up in the Plex apps as** your server's name. Press **Done**. **Status** says **RUNNING** and **Ready for the Plex apps.**
 
-## Step 5. Watch in a Plex app
+## Step 4. Watch in a Plex app
 
 Open any Plex app signed in to the same account. If Plex is on this device, **Status** has an **Open Plex** button.
 
@@ -84,7 +112,7 @@ The Internet Archive's first sync takes a while: about half an hour on our test 
 
 **Addons** lists what you installed. Each shows its titles and when it last synced. Its buttons are **Sync now**, **Settings**, **Log** and **Remove**; on a phone, swipe the row of buttons sideways to see them all. The **Enabled** switch turns an addon off without removing it.
 
-Addons come from **repositories**: git repositories that hold addons. The app starts with [rex-addons](https://github.com/debridmediamanager/rex-addons) added, which offers Internet Archive's public domain films, installed from the start. For more, add [rex-community-addons](https://github.com/debridmediamanager/rex-community-addons) (see **Add a repository** below), which offers:
+Addons come from **repositories**: git repositories that hold addons. The Internet Archive addon comes installed. For more, add [rex-community-addons](https://github.com/debridmediamanager/rex-community-addons) (see **Add a repository** below), which offers:
 
 | Addon | What it brings |
 |---|---|
@@ -116,7 +144,6 @@ To let family watch with their own Plex accounts, see [Share rex with family and
 - **It plays at home.** Away from home, Plex apps need an HTTPS address that reaches the device, which needs a port forward on your router to it. See [Use it outside your home](any-source.md#use-it-outside-your-home-optional).
 - **The device is the server.** Keep it on, on Wi-Fi or Ethernet, and plugged in. Converting video for a player that can't play a file uses the device's own hardware and can be slow on a cheap box.
 - **Only what addons bring.** It has no library of files on the device itself.
-- **Not on Google Play yet.** To update, install the new file from [the releases](https://github.com/debridmediamanager/rex-android/releases/latest) over the old one, and rex starts again by itself. Your sign-in and addons stay.
 
 ## Troubleshooting
 
@@ -125,13 +152,13 @@ To let family watch with their own Plex accounts, see [Share rex with family and
 | **App not installed as app isn't compatible with your phone.** | You picked the wrong file for the processor. Try the other one from the table in Step 1 |
 | **Another app here already uses this port, maybe a Plex server. Try 32500.** | Type `32500` as the port |
 | **Use a number from 1024 to 65535** | The port must be a number in that range |
-| The server isn't in the Plex app | Sign the Plex app in to the same account you used in Step 4, and keep both devices on the same home network |
+| The server isn't in the Plex app | Sign the Plex app in to the same account you used in Step 3, and keep both devices on the same home network |
 | The library is empty | The first sync is still running: wait until **Status** shows a number of titles |
 | **Sign in needed** under an addon | Press its **Sign in** button and enter the code |
 | **Needs an update** under an addon | This version of the app can no longer run that copy of the addon. Refresh its repository and press **Update**. Its titles stay meanwhile |
 | **That isn't a repository link. Try github.com/user/repo.** | Type the repository's link, such as `github.com/user/repo` |
 | **no public git repository there (it asks for a login)** | The link is wrong or the repository is private. Check it in a browser |
-| rex stops when the screen is off | Redo Step 3's background setting, and see [Don't kill my app](https://dontkillmyapp.com/) |
+| rex stops when the screen is off | Redo Step 2's background setting, and see [Don't kill my app](https://dontkillmyapp.com/) |
 
 **Logs** shows what rex and the addons said lately, with keys and passwords hidden. If support asks for logs, press **Send logs to support**: you see everything before anything is sent, then press **Send** and post the code you get.
 

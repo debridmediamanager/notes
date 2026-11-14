@@ -10,54 +10,80 @@ rex for Android は無料です。debrid アカウントや Usenet も使いた�
 
 | 必要なもの | 理由 |
 |---|---|
-| Android 8.0以降のデバイス | 電話、タブレット、Android TV、Google TV、Fire TV |
-| Plexアカウント | rexは、そのアカウントでサインインしたPlexアプリに表示されます。無料アカウントで十分です |
-| 視聴するデバイスのPlexアプリ | Plex for Android、Android TV、iPhone、スマートテレビ、Plex Web、Plexamp |
+| Android 8.0 以降のデバイス | スマホ、タブレット、Android TV、Google TV、Fire TV など。Vega OS を使う Fire TV Stick 4K Select などの Fire TV では Android アプリは動きません |
+| Plex アカウント | rex は、そのアカウントでサインインした Plex アプリに表示されます。無料アカウントで十分です |
+| 視聴に使うデバイスの Plex アプリ | Plex for Android、Android TV、iPhone、スマートテレビ、Plex Web、Plexamp |
 
-まだGoogle Playにはありません。APK（アプリのファイル）を自分でインストールする必要があります。
+## ステップ 1. アプリを入手する {#step-1-get-the-app}
 
-## ステップ 1. ダウンロードする {#step-1-download-it}
+| 方法 | 向いている用途 |
+|---|---|
+| Google Play | スマートフォン、タブレット、Android TV、Google TV。近日公開 |
+| Amazon Appstore | Fire TV と Fire タブレット。近日公開 |
+| [Obtainium](#with-obtainium) | スマートフォンとタブレット。更新は自動で届く |
+| [Downloader](#with-downloader-on-fire-tv) | Fire TV とテレビ用ボックス |
+| [GitHub のファイル](#the-file-from-github) | どのデバイスでも。更新は自分でインストールする |
 
-デバイスで、お使いのプロセッサ向けのファイルをダウンロードしてください。各リンクは常に最新版です。
+**方法は混ぜられません。** Google Play、Amazon Appstore、GitHub のファイル（Obtainium と Downloader でインストールするものも含む）は署名が異なるため、ある方法で入れた rex を別の方法で更新することはできません。方法を切り替えるときは、rex をアンインストールしてから手順 2 と 3 をやり直してください。
+
+**最初から入っているアドオンが異なります。** GitHub のファイルは、[rex-addons](https://github.com/debridmediamanager/rex-addons) リポジトリが最初から追加された状態になります。ストア版は Internet Archive アドオンだけで始まります。rex-addons も使いたい場合は、[アドオン](#addons)の説明に従って自分で追加してください。
+
+### Obtainium を使う {#with-obtainium}
+
+[Obtainium](https://obtainium.imranr.dev/) は GitHub からアプリをインストールして、常に最新の状態に保ってくれるアプリです。
+
+1. Obtainium をインストールします。
+2. 同じデバイスで [rex.debridmediamanager.com/obtainium](https://rex.debridmediamanager.com/ja/obtainium) を開きます。Obtainium が開いて **Import app** と聞いてきます。**Continue** を押します。
+3. **rex** を押してから **Install** を押します。Obtainium がお使いのデバイスのプロセッサに合ったファイルを選んでくれます。
+4. 初めてのときは、Android から Obtainium にはアプリのインストールが許可されていないと表示されます。**Allow from this source** をオンにして、戻ります。
+5. **Install** を押します。Play プロテクトに **App scan recommended** と表示されたら、**Scan app** を押してから **Install** を押します。
+
+新しいバージョンが出ると、rex の横に **Update** と表示されます。
+
+### Fire TV の Downloader を使う {#with-downloader-on-fire-tv}
+
+1. Fire TV で、Appstore から AFTVnews の **Downloader** をインストールします。
+2. 開いて、アドレスボックスを選択し、`rex.debridmediamanager.com/tv` と入力します。**Next** を押します。`rex-android-armeabi-v7a.apk` がダウンロードされます。
+3. **Install** を押します。初回は、代わりに Fire TV の **Developer options** が開きます。**Install unknown apps** を選択し、**Downloader** を選んで **ON** と表示されるようにします。Back を 2 回押して、もう一度 **Install** を押します。
+4. **Install** を押してから **Open** を押します。
+
+更新するときは、手順 2 から 4 をもう一度行ってください。短い Downloader コードが近日公開されます。
+
+### GitHub のファイルを使う {#the-file-from-github}
+
+デバイスで、お使いのプロセッサー向けのファイルをダウンロードしてください。各リンクは常に最新バージョンを指します。
 
 | お使いのデバイス | ダウンロード |
 |---|---|
-| ほとんどのスマートフォン、タブレット、TVボックス（64ビット） | [rex-android-arm64-v8a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-arm64-v8a.apk) |
-| 古い、または安価な32ビットのボックス（Fire TV Stickなど） | [rex-android-armeabi-v7a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-armeabi-v7a.apk) |
+| ほとんどのスマホ、タブレット、TVボックス（64ビット） | [rex-android-arm64-v8a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-arm64-v8a.apk) |
+| Fire TV、および古い、または安価な32ビットのボックス | [rex-android-armeabi-v7a.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-armeabi-v7a.apk) |
 | PC上のエミュレーター | [rex-android-x86_64.apk](https://github.com/debridmediamanager/rex-android/releases/latest/download/rex-android-x86_64.apk) |
 
-すべてのバージョンとその変更点は、[リリースページ](https://github.com/debridmediamanager/rex-android/releases)にあります。
+すべてのバージョンとその変更内容は[リリースページ](https://github.com/debridmediamanager/rex-android/releases)にあります。どれか分からない場合は、まず `arm64-v8a` を試してください。1つのファイルでスマホもTVも動作します。
 
-迷ったら、まず `arm64-v8a` を試してください。このファイル1つでスマートフォンもTVも動きます。
+ダウンロードしたファイルを開いてください。Androidから**このソースからの不明なアプリのインストールは許可されていません**と表示されます。**Settings**を押し、**Allow from this source**をオンにして、戻ってから**Install**を押してください。
 
-## ステップ 2. インストールする {#step-2-install-it}
+更新するには、新しいファイルを古いものの上からインストールしてください。rexは自動的に再起動し、サインインとアドオンはそのまま残ります。
 
-開いてください、ダウンロードしたファイルを。Android が最初に確認してきます:
+**表示されれば成功です。** アプリの一覧に**rex**が表示されます。
 
-1. 「この提供元からの不明なアプリのインストールは許可されていません」と表示されます。**設定** を押し、**この提供元を許可** をオンにしてから戻ります。
-2. **インストール** を押します。
-
-ブラウザがないテレビボックスでは、APK を開ける downloader アプリでファイルをダウンロードしてください。
-
-**表示されるはずの画面。** アプリ一覧に **rex** が表示されます。
-
-## ステップ 3. rex を起動する {#step-3-start-rex}
+## ステップ 2. rex を起動する {#step-2-start-rex}
 
 **rex** を開きます。最初の画面には **Welcome to rex.** と表示されます。
 
-1. **Allow notifications** を押してから **Allow** を押します。rex はバックグラウンドで動き、通知からいつでも停止できます。
+1. **Allow notifications** を押し、次に **Allow** を押します。rex は通知を表示しながらバックグラウンドで動きます。その通知から停止できます。
 2. **Let rex keep running in the background** を押します。開いたリストで **rex** を選び、**Don't optimize** を選びます。新しい Android では **Allow background usage** を押してから **Unrestricted** を選びます。rex に戻ると、両方のボタンの先頭に ✓ が付いています。
-3. **Name** は Plex アプリでこのサーバーに表示される名前です。必要なら変更してください。
-4. **Port** は `32400` のままにします。この端末ですでに別の Plex サーバーが動いている場合、rex に **Another app here already uses this port, maybe a Plex server. Try 32500.** と表示されます。その場合は `32500` と入力します。
+3. **Name** は Plex アプリでこのサーバーを表示する名前です。必要なら変更してください。
+4. **Port** は `32400` のままにします。同じ端末で別の Plex サーバーがすでに動いている場合、rex は **Another app here already uses this port, maybe a Plex server. Try 32500.** と表示します。その場合は `32500` と入力します。
 5. **Start rex** を押します。
 
-**表示されるはずの内容。** **2 / 2** と **Sign in to Plex.**
+**表示されるはずの画面。** **2 / 2** と **Sign in to Plex.** が表示されます。
 
-| 最初の画面 | Plex アプリでの映画のページ（手順 5） |
+| 最初の画面 | Plex アプリでの映画のページ（手順 4） |
 |---|---|
-| ![名前とポートの入力欄と Start rex が表示された、Android 版 rex の最初の画面](../assets/rex/android-setup.webp) | ![Internet Archive の 1916 年のサイレント映画の、Plex for Android でのページ](../assets/rex/android-plex-film.webp) |
+| ![name と port の入力欄、Start rex ボタンがある rex for Android の最初の画面](../assets/rex/android-setup.webp) | ![Internet Archive の 1916 年のサイレント映画の Plex for Android でのページ](../assets/rex/android-plex-film.webp) |
 
-## ステップ 4. Plex にサインインする {#step-4-sign-in-to-plex}
+## ステップ 3. Plex にサインインする {#step-3-sign-in-to-plex}
 
 **Sign in to Plex** を押します。rex にコードが表示されます。**On any phone or computer, go to plex.tv/link and enter** it.
 
@@ -70,7 +96,7 @@ Plex アプリにサインインしているのと同じアカウントを使っ
 
 **表示されるはずの内容。** **Signed in. rex shows up in the Plex apps as** のあとにサーバー名が表示されます。**Done** を押してください。**Status** には **RUNNING** と **Ready for the Plex apps.** が表示されます。
 
-## ステップ 5. Plex アプリで視聴する {#step-5-watch-in-a-plex-app}
+## ステップ 4. Plex アプリで視聴する {#step-4-watch-in-a-plex-app}
 
 Plexの同じアカウントでサインインしているアプリを開きます。Plexがこのデバイスにある場合、**Status**に**Open Plex**ボタンがあります。
 
@@ -82,21 +108,21 @@ Internet Archiveの最初の同期には時間がかかります。テスト用�
 
 ## アドオン {#addons}
 
-**アドオン**には、インストール済みのものが一覧で表示されます。それぞれ、そのアドオンが提供するタイトルと最後に同期した時刻が出ます。ボタンは **Sync now**、**Settings**、**Log**、**Remove** の4つです。スマートフォンでは、ボタンの並んだ行を横にスワイプすると、すべて見られます。**Enabled** のスイッチをオフにすると、アドオンを削除せずに無効にできます。
+**Addons** には、インストール済みのアドオンが一覧で表示されます。各アドオンには、そのタイトル数と最後に同期した日時が表示されます。ボタンは **Sync now**、**Settings**、**Log**、**Remove** の4つです。スマートフォンでは、ボタンの並んだ行を横にスワイプすると、すべて表示できます。**Enabled** スイッチを使うと、アドオンを削除せずにオフにできます。
 
-アドオンは**リポジトリ**から入手します。リポジトリとは、アドオンを収めた git のリポジトリのことです。アプリには最初から [rex-addons](https://github.com/debridmediamanager/rex-addons) が追加されています。これはインターネットアーカイブのパブリックドメインの映画を提供するもので、最初からインストールされています。ほかのアドオンも使いたい場合は、[rex-community-addons](https://github.com/debridmediamanager/rex-community-addons) を追加してください（下の **Add a repository** を参照）。このリポジトリでは次のアドオンが使えます。
+アドオンは **repositories** から入手します。repositories とは、アドオンを収めた git リポジトリのことです。Internet Archive アドオンは最初からインストールされています。その他を使うには、[rex-community-addons](https://github.com/debridmediamanager/rex-community-addons) を追加してください（下の **Add a repository** を参照）。このリポジトリでは、次のアドオンが使えます。
 
 | アドオン | 提供される内容 |
 |---|---|
-| Stremio addons | Stremio のアドオンの映画・シリーズのカタログを表示します。再生は、ストリームアドオンが返すストリームから行います |
-| YouTube | YouTube のプレイリストを取り込みます。コードを使ってサインインします |
-| Spotify | Spotify のライブラリを、Plex と Plexamp で聴ける音楽として取り込みます。YouTube アドオンにサインイン済みである必要があります |
+| Stremio addons | Stremio アドオンの映画とシリーズのカタログ。ストリームアドオンが提供するストリームで再生します |
+| YouTube | YouTube のプレイリスト。コードを使ってサインインします |
+| Spotify | Spotify ライブラリを Plex と Plexamp で聴ける音楽として提供します。YouTube アドオンにサインインしておく必要があります |
 
-**インストールする。** **Repositories** の下で、リポジトリの横にある **Addons** を押し、次にアドオンの下にある **Install** を押します。rex は接続できるウェブサイトを表示し、もう一度確認を求めてから、そのアドオンの同期を始めます。
+**インストールする。** **Repositories** で、リポジトリの横にある **Addons** を押し、次にアドオンの下にある **Install** を押します。rex は、そのアドオンがアクセスできるウェブサイトを表示し、もう一度確認してから同期を始めます。
 
-**サインインする。** アカウントが必要なアドオンには **Sign in to start.** と表示されます。その **Sign in** ボタンを押し、表示されたページをどの端末でもいいので開いて、表示されたコードを入力してください。
+**サインインする。** アカウントが必要なアドオンには **Sign in to start.** と表示されます。その **Sign in** ボタンを押し、表示されたページをどの端末でも開いて、表示されたコードを入力してください。
 
-**リポジトリを追加する。** **Add a repository** の下に、リポジトリのリンクを入力し（`github.com/user/repo` だけで十分です）、**Add** を押します。信頼できる人が作ったアドオンだけをインストールしてください。自分でアドオンを作りたい場合は [rex-addons](https://github.com/debridmediamanager/rex-addons) を参照してください。
+**リポジトリを追加する。** **Add a repository** の下に、リポジトリのリンクを入力します（`github.com/user/repo` だけで大丈夫です）。そして **Add** を押します。信頼できる人が作ったものだけをインストールしてください。自分でアドオンを作りたい場合は [rex-addons](https://github.com/debridmediamanager/rex-addons) を参照してください。
 
 ## 自宅の他のデバイスで視聴する {#watch-on-other-devices-at-home}
 
@@ -113,28 +139,27 @@ Plex に同じアカウントでサインインしているアプリはすべて
 
 ## 制限 {#limits}
 
-- **自宅では再生できます。** 外出先から Plex アプリで見るには、デバイスに届く HTTPS アドレスが必要です。そのためには、ルーターでデバイスへのポート転送を設定する必要があります。[自宅の外で使う](any-source.md#use-it-outside-your-home-optional)を参照してください。
-- **デバイスがサーバーになります。** 電源を入れたままにして、Wi-Fi または Ethernet に接続し、電源に挿したままにしてください。再生できないファイルを、プレイヤーで再生できる形式に変換するときは、デバイス自体のハードウェアを使います。安価な機器だと遅くなることがあります。
-- **アドオンが提供するものだけ。** デバイス本体にはファイルのライブラリはありません。
-- **Google Play にはまだありません。** アップデートするには、[リリース](https://github.com/debridmediamanager/rex-android/releases/latest)から新しいファイルをダウンロードして古いものの上からインストールしてください。rex は自動的に起動し直します。サインイン情報とアドオンはそのまま残ります。
+- **自宅では再生できます。** 自宅の外からPlexアプリを使うには、デバイスに届くHTTPSアドレスが必要です。そのためには、ルーターでデバイスへのポート転送を設定する必要があります。[自宅の外で使う](any-source.md#use-it-outside-your-home-optional)を参照してください。
+- **デバイス自体がサーバーになります。** 電源を入れたままにし、Wi-FiまたはEthernetで接続し、電源につないでおいてください。再生できないファイルを再生できる形式に変換する処理はデバイスのハードウェアを使うため、安価な機器では遅くなることがあります。
+- **アドオンが提供するものだけ。** デバイス自体にはファイルのライブラリがありません。
 
 ## トラブルシューティング {#troubleshooting}
 
-| 表示される内容 | 対処法 |
+| 画面に表示される内容 | 対処方法 |
 |---|---|
-| **App not installed as app isn't compatible with your phone.** | 処理装置に合わないファイルを選んでいます。ステップ1の表にあるもう一方のファイルを試してください |
+| **App not installed as app isn't compatible with your phone.** | プロセッサー用のファイルを間違えて選んでいます。手順 1 の表にある別のファイルを試してください |
 | **Another app here already uses this port, maybe a Plex server. Try 32500.** | ポートとして `32500` を入力してください |
-| **Use a number from 1024 to 65535** | ポートは、この範囲の数字である必要があります |
-| Plex アプリにサーバーが表示されない | ステップ4で使ったのと同じアカウントで Plex アプリにサインインし、両方の端末を同じホームネットワークに接続したままにしてください |
-| ライブラリが空っぽ | 最初の同期がまだ動いています。**Status** に作品数が表示されるまで待ってください |
+| **Use a number from 1024 to 65535** | ポートは 1024 から 65535 までの範囲の数字にしてください |
+| Plex アプリにサーバーが表示されない | 手順 3 で使ったのと同じアカウントで Plex アプリにサインインし、両方の端末を同じホームネットワークに接続したままにしてください |
+| ライブラリが空っぽ | 最初の同期がまだ実行中です。**Status** に作品数が表示されるまで待ってください |
 | アドオンの下に **Sign in needed** と表示される | そのアドオンの **Sign in** ボタンを押して、コードを入力してください |
-| アドオンの下に **Needs an update** と表示される | このバージョンのアプリでは、そのアドオンの現在のコピーを動かせなくなっています。リポジトリを更新してから **Update** を押してください。その間も作品は残ります |
-| **That isn't a repository link. Try github.com/user/repo.** | リポジトリのリンクを入力してください。例: `github.com/user/repo` |
-| **no public git repository there (it asks for a login)** | リンクが間違っているか、リポジトリが非公開になっています。ブラウザで確認してください |
-| 画面がオフになると rex が止まる | ステップ3のバックグラウンドの設定をやり直してください。あわせて [Don't kill my app](https://dontkillmyapp.com/) も確認してください |
+| アドオンの下に **Needs an update** と表示される | このバージョンのアプリでは、そのアドオンのコピーをもう実行できません。リポジトリを更新してから **Update** を押してください。その間も作品は残ります |
+| **That isn't a repository link. Try github.com/user/repo.** | `github.com/user/repo` のように、リポジトリのリンクを入力してください |
+| **no public git repository there (it asks for a login)** | リンクが間違っているか、リポジトリが非公開です。ブラウザでリンクを確認してください |
+| 画面がオフになると rex が停止する | 手順 2 のバックグラウンド設定をやり直してください。また [Don't kill my app](https://dontkillmyapp.com/) も参照してください |
 
-**Logs** には、rex とアドオンが最近出力した内容が表示されます。キーやパスワードは隠されています。サポートからログを求められたら **Send logs to support** を押してください。送信前にすべての内容を確認できます。その後 **Send** を押して、表示されたコードを投稿してください。
+**Logs** には、rex とアドオンが最近出力したメッセージが表示されます。キーやパスワードは隠されています。サポートからログを求められたら **Send logs to support** を押してください。送信前に内容をすべて確認できます。その後 **Send** を押し、表示されたコードを投稿してください。
 
-アプリが送信する内容と送信先は、[プライバシーポリシー](android-privacy.md)に記載されています。
+アプリが何を送信し、どこに送るかは、[プライバシーポリシー](android-privacy.md)に書かれています。
 
 困ったときは、[Discord](https://discord.com/invite/7u4YjMThXP) の **rex-support** フォーラムで質問してください。
