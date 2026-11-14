@@ -72,7 +72,7 @@ DMM also serves the other projects:
 
 - **zurg** asks DMM which movie or episode each file is. A sponsor gets the DMM API key from [gatekeeper](https://gatekeeper.debridmediamanager.com/). Without it zurg relies on file names and fewer titles match. [rex with zurg](../rex/with-zurg.md#why-dmm-places-the-files) explains the difference.
 - **Sonarr Radarr and Prowlarr** can search DMM as a Torznab torrent indexer or Newznab Usenet indexer. Both need an active sponsorship and the DMM API key. Set them up on the [Torznab](https://debridmediamanager.com/torznab) and [Newznab](https://debridmediamanager.com/newznab) pages.
-- **Your wanted list**: press **Want** or follow a Trakt or MDBList list. zurg fetches it and new episodes as they air. Sponsorship required. See [DMM wanted list](../zurg/guides/dmm-wanted.md).
+- **Your wanted list**: press **Want** or follow a Trakt, MDBList or TMDB list. zurg fetches it and new episodes as they air. Sponsorship required. See [DMM wanted list](../zurg/guides/dmm-wanted.md).
 - **Seerr Overseerr and Jellyseerr** can use DMM as Radarr and Sonarr. Requests then land on your wanted list for zurg to fetch. Sponsorship required. See [Seerr through DMM](seerr.md).
 - **rex-direct** gives a claimed rex its own address and certificate. See [rex-direct](../rex/any-source.md#rex-direct).
 
