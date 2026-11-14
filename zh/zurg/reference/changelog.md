@@ -104,14 +104,7 @@ zurg 通常会先抓允许的版本里检查起来最快的那个。电影一般
 
 ## Windows 上的 `__magic__` 日志不会无限增长 {#__magic__-on-windows-stops-growing-its-journal-forever}
 
-On Windows, zurg logged `cannot truncate data\magic.journal ... Access is
-denied.` every time it tried to tidy the file where `__magic__` records your
-moves and folders. The file was never emptied, so it grew with every change
-and every start read all of it again. After a few thousand changes in one run,
-each further change also rewrote the whole saved layout. zurg now empties it
-on Windows as it always did elsewhere, and the first start after updating
-clears what has piled up. If tidying ever fails, zurg tries again after more
-changes instead of on every one.
+在 Windows 上，每次 zurg 尝试整理记录你的移动和文件夹的 `__magic__` 文件时，都会记录一条日志：`cannot truncate data\magic.journal ... Access is denied.`。这个文件从来没有被清空，所以它会随着每次改动不断变大，每次启动时都要把它全部重新读一遍。一次运行中积累几千次改动之后，之后的每次改动还会重写整个已保存的布局。现在 zurg 在 Windows 上也会像其他系统一样清空这个文件，更新后第一次启动会清理之前积累的内容。如果整理失败，zurg 会等到又有更多改动之后再重试，而不是每次改动都重试。
 
 ## 通过 MCP 还原文件后，其资源会立即恢复 {#restoring-a-file-over-mcp-puts-its-release-back-right-away}
 

@@ -242,9 +242,7 @@ Film yang hanya rilis dalam 2160p langsung mendapat salinan 4K-nya, dan salinan 
 
 ### Streaming film dari YouTube {#streaming-a-film-from-youtube}
 
-Many wanted films no indexer carries are on YouTube, uploaded whole by the studio that
-made them. With `acquisition.youtube` set, zurg streams such a film from that upload
-instead of leaving it unfetched. Nothing is downloaded.
+Banyak film yang diinginkan tidak ada di indexer mana pun, tetapi ada di YouTube, diunggah utuh oleh studio yang membuatnya. Dengan `acquisition.youtube` diatur, zurg akan men-stream film seperti itu dari unggahan tersebut, alih-alih membiarkannya tidak diambil. Tidak ada yang diunduh.
 
 ```yaml
 acquisition:
@@ -256,54 +254,18 @@ acquisition:
     # searches_per_hour: 20                       # default; films looked for on YouTube in an hour
 ```
 
-- **When.** Only for a film on the DMM wanted list, and only when nothing the indexers
-  return can be taken: no release passes `quality`, `max_size_gb`, `exclude_words` and
-  the title and year checks, or every one was found gone, with every indexer answering.
-  Never for a show or an upgrade, nor with `audio_languages` or `subtitle_languages`
-  set, since an upload's languages cannot be read. Only the wanted list takes a stream:
-  a film the Plex watchlist also wants is not settled for it by one, since Plex cannot
-  play it, and the watchlist keeps looking for a release.
-- **How often.** At most `searches_per_hour` films are looked for in an hour (20 by
-  default: 1,820 films take four days), one at a time. A film YouTube has nothing for is
-  asked about again a day later, restarts included.
-- **Which upload.** zurg searches YouTube for the title and year, and for the original
-  title when DMM sends one, and takes an upload only when all of these hold: it is on
-  one of `channels`; it runs at least 90% of the film's runtime, or an hour when DMM does
-  not know the runtime; its title begins with the film's title (`'Separada' FULL MOVIE |
-  ...`), states no other year, and is no trailer, teaser, clip or `Part N`. Of those it
-  takes the longest, then the most watched, and checks that YouTube streams it with
-  picture and sound together.
-- **Channels.** The default list is the Philippine studios' own channels: ABS-CBN Star
-  Cinema, Regal Entertainment, VIVA Films, SOLAR WATCH NOW, OctoArts Films, CineMo and
-  Cinema One. Of 100 random unfetched films on one wanted list (2026-10-31), 65 had a
-  full-length upload and 33 were on these channels; the rest were re-uploads (every
-  Disney one) and, for new releases, scams titled "full movie". Writing `channels`
-  replaces the list. A channel's id is the `UC...` part of its address, or what
-  `yt-dlp --print channel_id <a video's page>` prints.
-- **What you get.** The film is named `Title.Year.1080p.YouTube.WEB-DL` and DMM is told
-  it was fetched (`youtube:<video id>`). rex gets it as an HLS item in your movies
-  library, read through zurg. Jellyfin and Kodi get
-  `__magic__/__movies__/Title (Year) {tmdb-N}/Title (Year) {tmdb-N}.strm`, with `__magic__`
-  on. The address in the `.strm` is zurg's own, from [`base_url`](../reference/config.md), and needs
-  no login. Either address is the stream's playlist served by zurg, every segment in it
-  an address on zurg too, which zurg fetches from YouTube itself. zurg resolves the
-  stream with yt-dlp and keeps it until an hour before it expires. A segment's address
-  is good for a day; a player that comes back later reads the playlist again.
-- **Upgrades.** A streamed film stays on the wanted list while `upgrades` is on, and any
-  release of it that comes out replaces the stream, whatever its resolution: the stream,
-  its `.strm` and its rex item go once the release has passed its check.
+- **Kapan.** Hanya untuk film di daftar keinginan DMM, dan hanya ketika tidak ada hasil dari indexer yang bisa diambil: tidak ada rilis yang lolos `quality`, `max_size_gb`, `exclude_words`, dan pemeriksaan judul serta tahun, atau semuanya ditemukan sudah hilang dengan semua indexer merespons. Tidak pernah untuk serial atau upgrade, dan tidak juga jika `audio_languages` atau `subtitle_languages` diatur, karena bahasa sebuah unggahan tidak bisa dibaca. Hanya daftar keinginan yang mengambil stream: film yang juga diinginkan oleh watchlist Plex tidak dianggap selesai karena stream itu, sebab Plex tidak bisa memutarnya, jadi watchlist tetap mencari rilis.
+- **Seberapa sering.** Paling banyak `searches_per_hour` film dicari dalam satu jam (default 20: 1.820 film butuh empat hari), satu per satu. Film yang tidak ada di YouTube akan ditanyakan lagi sehari kemudian, termasuk setelah restart.
+- **Unggahan mana.** zurg mencari di YouTube dengan judul dan tahun, dan dengan judul asli jika DMM mengirimkannya, lalu hanya mengambil unggahan yang memenuhi semua syarat ini: berada di salah satu `channels`; durasinya minimal 90% dari durasi film, atau satu jam jika DMM tidak mengetahui durasinya; judulnya diawali dengan judul film (`'Separada' FULL MOVIE | ...`), tidak menyebut tahun lain, dan bukan trailer, teaser, klip, atau `Part N`. Dari yang tersisa, ia mengambil yang paling panjang, lalu yang paling banyak ditonton, dan memeriksa apakah YouTube men-stream-nya dengan gambar dan suara bersama.
+- **Channel.** Daftar default adalah channel milik studio Filipina: ABS-CBN Star Cinema, Regal Entertainment, VIVA Films, SOLAR WATCH NOW, OctoArts Films, CineMo, dan Cinema One. Dari 100 film acak yang belum diambil di satu daftar keinginan (2026-10-31), 65 punya unggahan versi penuh dan 33 ada di channel-channel ini; sisanya adalah unggahan ulang (semua film Disney) dan, untuk rilis baru, penipuan berjudul "full movie". Menulis `channels` akan menggantikan daftar ini. ID channel adalah bagian `UC...` dari alamatnya, atau yang dicetak oleh `yt-dlp --print channel_id <a video's page>`.
+- **Yang kamu dapat.** Film diberi nama `Title.Year.1080p.YouTube.WEB-DL` dan DMM diberi tahu bahwa film itu sudah diambil (`youtube:<video id>`). rex mendapatkannya sebagai item HLS di pustaka film kamu, dibaca melalui zurg. Jellyfin dan Kodi mendapatkan `__magic__/__movies__/Title (Year) {tmdb-N}/Title (Year) {tmdb-N}.strm`, dengan `__magic__` aktif. Alamat di dalam `.strm` adalah alamat zurg sendiri, dari [`base_url`](../reference/config.md), dan tidak memerlukan login. Kedua alamat itu adalah playlist stream yang disajikan oleh zurg, dan setiap segmen di dalamnya juga merupakan alamat di zurg, yang diambil zurg langsung dari YouTube. zurg me-resolve stream dengan yt-dlp dan menyimpannya sampai satu jam sebelum kedaluwarsa. Alamat segmen berlaku selama sehari; pemutar yang kembali nanti akan membaca ulang playlist.
+- **Upgrade.** Film yang sudah di-stream tetap ada di daftar keinginan selama `upgrades` aktif, dan rilis apa pun dari film itu yang tersedia akan menggantikan stream, berapa pun resolusinya: stream, `.strm`, dan item rex-nya dihapus begitu rilis tersebut lolos pemeriksaannya.
 
-Limits:
+Batasan:
 
-- **Plex cannot play it.** It is no file on the mount. Use rex, Jellyfin or Kodi.
-- **Cookies are required.** Without a signed-in account's cookies YouTube offers an
-  address that fetches much only video and audio apart, or nothing, so zurg starts with
-  the fallback off and says why. Export them from a browser signed in to YouTube, ideally
-  on the same network. Signing out in that browser ends them.
-- **Every byte passes through zurg.** Nothing is redirected to YouTube: rex sends its
-  source's login with every request its transcoder makes, redirected ones included, and
-  YouTube ties a stream to the address that resolved it. So any player that reaches
-  zurg plays it, and zurg carries the film's traffic.
+- **Plex tidak bisa memutarnya.** Itu bukan file di mount. Gunakan rex, Jellyfin, atau Kodi.
+- **Cookie diperlukan.** Tanpa cookie dari akun yang sudah login, YouTube hanya menawarkan alamat yang mengambil video dan audio secara terpisah, atau tidak ada sama sekali, jadi zurg memulai dengan fallback dimatikan dan memberi tahu alasannya. Ekspor cookie dari browser yang sudah login ke YouTube, sebaiknya di jaringan yang sama. Logout di browser tersebut akan membuat cookie-nya tidak berlaku.
+- **Setiap byte melewati zurg.** Tidak ada yang dialihkan ke YouTube: rex mengirim login sumbernya di setiap permintaan yang dibuat transcoder-nya, termasuk yang dialihkan, dan YouTube mengikat stream ke alamat yang me-resolve-nya. Jadi pemutar apa pun yang bisa menjangkau zurg bisa memutarnya, dan zurg yang membawa lalu lintas film tersebut.
 
 ## Perilaku Seerr {#seerr-behavior}
 

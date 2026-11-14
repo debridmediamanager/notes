@@ -1013,9 +1013,8 @@ your qBittorrent settings. Enable it in qBittorrent or select 'Last' as priority
 
 ### 6.4 `TestGetTorrents` (`:599-612`)
 
-`Proxy.GetTorrents(Settings)`; any exception becomes `("", "Failed to get the list of torrents:
-{exceptionMessage}")`. This is the check that catches a malformed `torrents/info` body — a JSON object
-instead of an array, a bad enum, a non-numeric `size`.
+`Proxy.GetTorrents(Settings)` で例外が出ると、`("", "Failed to get the list of torrents:
+{exceptionMessage}")` が返されます。これは `torrents/info` の本文が壊れているかを見るチェックです。たとえば、配列ではなく JSON オブジェクトが返ってきた場合、enum の値が不正な場合、`size` が数値ではない場合などを検出します。
 
 ### 6.5 `dht` のチェック {#65-the-dht-check}
 

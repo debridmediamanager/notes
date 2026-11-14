@@ -113,14 +113,7 @@ Ini juga cara mengembalikan rilis yang ada di `__all__` tapi tidak pernah muncul
 
 ## `__magic__` di Windows berhenti menambah journal-nya selamanya {#__magic__-on-windows-stops-growing-its-journal-forever}
 
-On Windows, zurg logged `cannot truncate data\magic.journal ... Access is
-denied.` every time it tried to tidy the file where `__magic__` records your
-moves and folders. The file was never emptied, so it grew with every change
-and every start read all of it again. After a few thousand changes in one run,
-each further change also rewrote the whole saved layout. zurg now empties it
-on Windows as it always did elsewhere, and the first start after updating
-clears what has piled up. If tidying ever fails, zurg tries again after more
-changes instead of on every one.
+Di Windows, zurg mencatat `cannot truncate data\magic.journal ... Access is denied.` setiap kali mencoba merapikan file tempat `__magic__` menyimpan pemindahan dan folder kamu. File itu tidak pernah dikosongkan, jadi terus membesar dengan setiap perubahan, dan setiap kali start semuanya dibaca ulang. Setelah beberapa ribu perubahan dalam satu kali jalan, setiap perubahan berikutnya juga menulis ulang seluruh tata letak yang tersimpan. Sekarang zurg mengosongkannya di Windows seperti yang selalu dilakukan di platform lain, dan start pertama setelah update akan membersihkan semua yang sudah menumpuk. Kalau proses merapikan gagal, zurg akan mencoba lagi setelah lebih banyak perubahan, bukan di setiap perubahan.
 
 ## Memulihkan file lewat MCP langsung mengembalikan rilisnya {#restoring-a-file-over-mcp-puts-its-release-back-right-away}
 

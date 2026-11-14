@@ -49,10 +49,7 @@ O proxy fica no caminho da requisição, então ele é usado só nas fases de cu
 
 ## Resultados {#results}
 
-All numbers from build `23869fa4` on zen, 2026-08-19. Latency and throughput come
-from one interleaved run over the same 7.31 GB file — same infohash on all three
-accounts, and `ffprobe` reports the identical 8552.574 s duration through each, so
-the content really is byte-identical.
+Todos os números são do build `23869fa4` na zen, de 2026-08-19. Latência e throughput vêm de uma única execução intercalada sobre o mesmo arquivo de 7.31 GB. O infohash é o mesmo nas três contas, e o `ffprobe` informa a mesma duração de 8552.574 s em todas, então o conteúdo é realmente idêntico byte a byte.
 
 ### Construção da biblioteca a frio {#cold-library-build}
 

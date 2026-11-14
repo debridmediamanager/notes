@@ -56,38 +56,18 @@
 
 ### الانتقال من مكتبة روابط رمزية {#coming-off-a-symlink-library}
 
-You are not moving a library. You are rebuilding one. And `__magic__` gives the
-\*arrs exactly what the symlink farm gave them without the farm. They move and
-rename inside it as freely as before. Each move is a row write instead of a
-file operation.
+أنت لا تنقل مكتبة. أنت تعيد بناءها. و`__magic__` يمنح الـ\*arrs بالضبط ما كانت تمنحه لهم مزرعة الروابط الرمزية، ولكن من دون المزرعة. فهي تنقل الملفات وتعيد تسميتها داخله بالحرية نفسها كما كان الأمر من قبل. كل عملية نقل تصبح كتابة صف بدلاً من عملية على الملفات.
 
-!!!danger Never let an \*arr move the old library into `__magic__`
-Changing a series or movie root folder makes Sonarr or Radarr offer to **move**
-the files. Say no. A move inside `__magic__` is free. A move from anywhere else crosses the
-mount boundary and that is a copy. So is a move between two volumes of the same
-mount. In Docker give the \*arr one volume that holds zurg's whole mount. A copy off a streaming mount pulls your
-entire library down through your news or debrid allowance. Your old library is
-a tree of symlinks so what gets copied is every target they resolve to.
+!!!danger لا تسمح أبداً لأي \*arr بنقل المكتبة القديمة إلى `__magic__`
+عند تغيير مجلد الجذر لمسلسل أو فيلم، يعرض Sonarr أو Radarr عليك **نقل** الملفات. قل لا. النقل داخل `__magic__` لا يكلف شيئاً. أما النقل من أي مكان آخر فيعبر حدود الجبل (mount)، وهذا نسخ. وكذلك النقل بين وحدتين تخزين مختلفتين ضمن الجبل نفسه. في Docker أعطِ الـ\*arr وحدة تخزين واحدة تحتوي على الجبل كاملاً الخاص بـ zurg. النسخ من جبل بث يسحب مكتبتك كلها عبر حصتك من الأخبار أو من debrid. مكتبتك القديمة هي شجرة من الروابط الرمزية، لذلك ما يُنسخ فعلاً هو كل هدف تشير إليه هذه الروابط.
 !!!
 
-Move each file into place yourself instead. Every move is one rename through
-zurg's mount. Nothing is copied and nothing on your account changes. The script
-below does it from your old library of symlinks. A link's path under the old
-root folder is where Sonarr or Radarr expects the episode or film. Its target
-names the file. So each file lands at the same path under the new root folder
-that its link had under the old one. The old library is only read. It keeps
-working until you switch the \*arr over.
+انقل كل ملف إلى مكانه بنفسك بدلاً من ذلك. كل عملية نقل هي إعادة تسمية واحدة عبر جبل zurg. لا يُنسخ شيء ولا يتغير شيء في حسابك. يقوم السكربت أدناه بهذا من مكتبتك القديمة المؤلفة من روابط رمزية. مسار الرابط ضمن مجلد الجذر القديم هو المكان الذي يتوقعه Sonarr أو Radarr للحلقة أو الفيلم. أما هدف الرابط فيحدد اسم الملف. لذلك يُوضع كل ملف في المسار نفسه ضمن مجلد الجذر الجديد الذي كان يشير إليه الرابط في المجلد القديم. تُقرأ المكتبة القديمة فقط ولا تُعدَّل، وتبقى تعمل حتى تبدّل الـ\*arr إلى الجديد.
 
-1. **Build zurg beside the old server** as its page shows. Let it list the
-   whole library first.
-2. **Turn on `__magic__`** as its page shows. Keep Plex scans off and the
-   \*arr queues paused.
-3. **Save the `zurg_path` function from your server's page** as
-   `zurg_path.sh` beside the script. It turns an old link's target into the
-   file zurg serves. Each server lays its files out differently.
-4. **Run the script** once per root folder. Set `OLD` and `NEW` and `LOG` for
-   each one. A setup with `sonarr4k` and `radarr4k` beside the regular pair
-   needs four runs.
+1. **ابنِ zurg بجانب الخادم القديم** كما تشرح صفحته. دعه يسرد المكتبة كاملة أولاً.
+2. **فعّل `__magic__`** كما تشرح صفحته. أبقِ عمليات مسح Plex متوقفة، وأوقف طوابير الـ\*arr مؤقتاً.
+3. **احفظ دالة `zurg_path` من صفحة خادمك** باسم `zurg_path.sh` بجانب السكربت. تحوّل هدف الرابط القديم إلى الملف الذي يخدمه zurg. كل خادم يرتب ملفاته بطريقة مختلفة.
+4. **شغّل السكربت** مرة واحدة لكل مجلد جذر. عيّن `OLD` و`NEW` و`LOG` لكل واحد منها. إذا كان لديك `sonarr4k` و`radarr4k` إلى جانب الزوجين العاديين فستحتاج إلى أربع مرات تشغيل.
 
    ```bash
    #!/bin/bash
@@ -118,47 +98,23 @@ working until you switch the \*arr over.
    done
    ```
 
-   It prints a line for every link it leaves alone.
+   يطبع السكربت سطراً لكل رابط يتركه دون تغيير.
 
-   - `NOT IN ZURG` is a link to a file zurg does not have. Its NZB could not be
-     recovered or its account is not in zurg's config.
-   - `FAILED` is a move zurg refused. A second link to a file the script
-     already moved prints this after a line from `mv` that says `No such file
-     or directory`. A file can sit at only one path in `__magic__`. It stays
-     where the first link put it.
-   - `ALREADY THERE` is a path the new root folder already holds. Running the
-     script again skips everything it placed before.
+   - `NOT IN ZURG` يعني أن الرابط يشير إلى ملف لا يملكه zurg. إما أنه تعذّر استرداد الـ NZB الخاص به أو أن حسابه غير موجود في إعدادات zurg.
+   - `FAILED` يعني أن zurg رفض النقل. إذا أشار رابط ثانٍ إلى ملف نقله السكربت سابقاً، فسيطبع هذا السطر بعد سطر من `mv` يقول `No such file or directory`. لا يمكن أن يوجد الملف في مسار واحد فقط داخل `__magic__`. يبقى في المكان الذي وضعه فيه الرابط الأول.
+   - `ALREADY THERE` يعني أن مجلد الجذر الجديد يحتوي على هذا المسار سابقاً. إعادة تشغيل السكربت تتخطى كل ما وضعه من قبل.
 
-5. **Switch each \*arr over.** Select every series or every movie and edit them
-   together. Set the root folder to the new one under `__magic__`. When it asks
-   whether to move the files answer **No, I'll Move the Files Myself**. The
-   script already put them there. Then run **Update All** so it finds them.
-6. **Point Plex at the new root folders** and at nothing else. The next box
-   says why.
+5. **بدّل كل \*arr إلى الجديد.** حدد كل المسلسلات أو كل الأفلام وعدّلها معاً. اضبط مجلد الجذر على الجديد تحت `__magic__`. عندما يسألك عما إذا كنت تريد نقل الملفات، أجب بـ**No, I'll Move the Files Myself**. السكربت وضعها هناك بالفعل. ثم شغّل **Update All** ليجدها.
+6. **وجّه Plex إلى مجلدات الجذر الجديدة وإلى لا شيء غيرها.** المربع التالي يشرح السبب.
 
-Each move took about 15 milliseconds on a test library and nothing was copied.
-Watch `data/local` on zurg's `/magic/` dashboard while the script runs. It
-grows only by the subtitles and other small files the script copies. A number
-that grows by gigabytes means something is being copied. Stop and look.
+استغرقت كل عملية نقل نحو 15 مللي ثانية في مكتبة تجريبية، ولم يُنسخ شيء. راقب `data/local` في لوحة `/magic/` في zurg أثناء عمل السكربت. يزداد هذا الرقم فقط بمقدار الترجمات والملفات الصغيرة الأخرى التي ينسخها السكربت. إذا بدأ الرقم يزداد بالغيغابايت فهذا يعني أن شيئاً يُنسخ. توقف وتحقق.
 
-The old links keep working. A moved file still shows at its old `__all__` path
-as well as at its new one. Builds before the 2026.10.04 nightly hid it at the
-old path for up to 12 hours even though zurg still served it there. On one of
-those builds restart zurg once the script is done. Keep Plex away from the old
-folders and from `__all__` until you have.
+تبقى الروابط القديمة تعمل. الملف المنقول ما زال يظهر في مساره القديم تحت `__all__` بالإضافة إلى مساره الجديد. الإصدارات التي سبقت النسخة الليلية 2026.10.04 كانت تخفي الملف عن المسار القديم لمدة تصل إلى 12 ساعة، رغم أن zurg ما زال يخدمه من هناك. إذا كنت تستخدم أحد تلك الإصدارات فأعد تشغيل zurg مرة واحدة بعد انتهاء السكربت. أبقِ Plex بعيداً عن المجلدات القديمة وعن `__all__` حتى تفعل ذلك.
 
-The zurg side of this was measured on 2026-10-03. The \*arr side is its
-ordinary root folder edit and was not tested for this guide. Do one series
-first.
+اختُبر الجانب الخاص بـ zurg من هذا الدليل بتاريخ 2026-10-03. أما الجانب الخاص بالـ\*arr فهو تعديل مجلد الجذر المعتاد ولم يُختبر لأغراض هذا الدليل. جرّب مسلسلاً واحداً أولاً.
 
-!!!warning Point each Plex library at one directory and not two
-A library that scans a filter directory such as `movies` or `shows` or
-`__all__` **and** scans `__magic__` finds every episode twice — and `__magic__`
-holds its own `__all__`, so pointing a library at the root of the namespace
-scans the whole library along with what you organised. Pick one. If you use the
-\*arrs then point Plex at the root folders you made, `__magic__/tv` and
-`__magic__/movies`. If you browse a library nobody organises then pick the
-filter directories and leave `__magic__` off.
+!!!warning وجّه كل مكتبة Plex إلى مجلد واحد لا إلى مجلدين
+المكتبة التي تفحص مجلداً تصفوياً مثل `movies` أو `shows` أو `__all__` **و** تفحص `__magic__` ستجد كل حلقة مرتين. و`__magic__` يحتوي على `__all__` خاص به، لذلك فإن توجيه مكتبة إلى جذر مساحة الأسماء يعني فحص المكتبة كلها إلى جانب ما نظّمته. اختر واحداً. إذا كنت تستخدم الـ\*arrs فوجّه Plex إلى مجلدات الجذر التي أنشأتها، أي `__magic__/tv` و`__magic__/movies`. وإذا كنت تتصفح مكتبة لا ينظمها أحد، فاختر المجلدات التصفوية ودع `__magic__` جانباً.
 !!!
 
 ## الحماية الوحيدة التي لا يجب أن تتجاوزها {#the-one-guard-you-must-not-skip}

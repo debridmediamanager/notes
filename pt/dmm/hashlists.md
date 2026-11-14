@@ -75,7 +75,7 @@ No Real-Debrid, o DMM adiciona um lançamento por minuto para que o Real-Debrid 
 
 ### Existe uma API para consultar as hash lists? {#is-there-an-api-to-query-the-hash-lists}
 
-There's no search API. Every shared list is a file in the public [hashlists repository](https://github.com/debridmediamanager/hashlists) on GitHub. Each page points at DMM with the list packed into the link after `#` (lz-string compressed JSON of names, hashes and sizes). A very big list sits beside it as `lists/<id>.txt` instead.
+Não existe API de busca. Cada lista compartilhada é um arquivo no [repositório de hashlists](https://github.com/debridmediamanager/hashlists) público do GitHub. Cada página aponta para o DMM com a lista empacotada no link depois de `#` (JSON com nomes, hashes e tamanhos comprimido com lz-string). Uma lista muito grande fica ao lado dela como `lists/<id>.txt`.
 
 ### Compartilhar uma lista compartilha a minha conta? {#does-sharing-a-list-share-my-account}
 

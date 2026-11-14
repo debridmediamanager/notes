@@ -235,9 +235,7 @@ acquisition:
 
 ### YouTube から映画をストリーミングする {#streaming-a-film-from-youtube}
 
-Many wanted films no indexer carries are on YouTube, uploaded whole by the studio that
-made them. With `acquisition.youtube` set, zurg streams such a film from that upload
-instead of leaving it unfetched. Nothing is downloaded.
+多くの見たい映画は、どのインデクサーにも載っていませんが、制作スタジオ自身がフルで YouTube にアップロードしています。`acquisition.youtube` を設定すると、zurg はそうした映画を取得せずに放置するのではなく、そのアップロードからストリーミングします。何もダウンロードされません。
 
 ```yaml
 acquisition:
@@ -249,54 +247,19 @@ acquisition:
     # searches_per_hour: 20                       # default; films looked for on YouTube in an hour
 ```
 
-- **When.** Only for a film on the DMM wanted list, and only when nothing the indexers
-  return can be taken: no release passes `quality`, `max_size_gb`, `exclude_words` and
-  the title and year checks, or every one was found gone, with every indexer answering.
-  Never for a show or an upgrade, nor with `audio_languages` or `subtitle_languages`
-  set, since an upload's languages cannot be read. Only the wanted list takes a stream:
-  a film the Plex watchlist also wants is not settled for it by one, since Plex cannot
-  play it, and the watchlist keeps looking for a release.
-- **How often.** At most `searches_per_hour` films are looked for in an hour (20 by
-  default: 1,820 films take four days), one at a time. A film YouTube has nothing for is
-  asked about again a day later, restarts included.
-- **Which upload.** zurg searches YouTube for the title and year, and for the original
-  title when DMM sends one, and takes an upload only when all of these hold: it is on
-  one of `channels`; it runs at least 90% of the film's runtime, or an hour when DMM does
-  not know the runtime; its title begins with the film's title (`'Separada' FULL MOVIE |
-  ...`), states no other year, and is no trailer, teaser, clip or `Part N`. Of those it
-  takes the longest, then the most watched, and checks that YouTube streams it with
-  picture and sound together.
-- **Channels.** The default list is the Philippine studios' own channels: ABS-CBN Star
-  Cinema, Regal Entertainment, VIVA Films, SOLAR WATCH NOW, OctoArts Films, CineMo and
-  Cinema One. Of 100 random unfetched films on one wanted list (2026-10-31), 65 had a
-  full-length upload and 33 were on these channels; the rest were re-uploads (every
-  Disney one) and, for new releases, scams titled "full movie". Writing `channels`
-  replaces the list. A channel's id is the `UC...` part of its address, or what
-  `yt-dlp --print channel_id <a video's page>` prints.
-- **What you get.** The film is named `Title.Year.1080p.YouTube.WEB-DL` and DMM is told
-  it was fetched (`youtube:<video id>`). rex gets it as an HLS item in your movies
-  library, read through zurg. Jellyfin and Kodi get
-  `__magic__/__movies__/Title (Year) {tmdb-N}/Title (Year) {tmdb-N}.strm`, with `__magic__`
-  on. The address in the `.strm` is zurg's own, from [`base_url`](../reference/config.md), and needs
-  no login. Either address is the stream's playlist served by zurg, every segment in it
-  an address on zurg too, which zurg fetches from YouTube itself. zurg resolves the
-  stream with yt-dlp and keeps it until an hour before it expires. A segment's address
-  is good for a day; a player that comes back later reads the playlist again.
-- **Upgrades.** A streamed film stays on the wanted list while `upgrades` is on, and any
-  release of it that comes out replaces the stream, whatever its resolution: the stream,
-  its `.strm` and its rex item go once the release has passed its check.
+- **いつ。** DMM の wanted リストにある映画で、かつインデクサーが返したどのリリースも使えない場合のみです。つまり、`quality`、`max_size_gb`、`exclude_words`、タイトルと年の確認のいずれも通るリリースがない場合、または全てのインデクサーが応答したうえで、すべてが消えていたと分かった場合です。番組やアップグレードには使いません。`audio_languages` や `subtitle_languages` を設定している場合も使いません。アップロードの言語は読み取れないからです。ストリームを受け入れるのは wanted リストだけです。Plex のウォッチリストも欲しがっている映画は、ストリームで済ませることはありません。Plex はそれを再生できないためで、ウォッチリストは引き続きリリースを探します。
+- **頻度。** 1 時間あたり最大で `searches_per_hour` 本の映画を、一度に一本ずつ探します（既定は 20 で、1,820 本なら 4 日かかります）。YouTube に該当がなかった映画は、再起動をまたいでも 1 日後にもう一度確認します。
+- **どのアップロードか。** zurg はタイトルと年で YouTube を検索し、DMM が送ってくる場合は原題でも検索します。次の条件をすべて満たすアップロードだけを採用します。`channels` のいずれかのチャンネルにあること。映画の上映時間の 90% 以上の長さがあること（DMM が上映時間を知らない場合は 1 時間以上）。タイトルが映画のタイトルで始まっていること（`'Separada' FULL MOVIE |
+  ...`）。ほかの年を含まず、予告編、ティーザー、クリップ、`Part N` ではないこと。これらのうち最も長いものを選び、同じ長さなら再生回数の多いものを選びます。最後に、YouTube が映像と音声を一緒にストリームしているかを確認します。
+- **チャンネル。** 既定のリストは、フィリピンのスタジオ自身のチャンネルです。ABS-CBN Star Cinema、Regal Entertainment、VIVA Films、SOLAR WATCH NOW、OctoArts Films、CineMo、Cinema One です。2026-10-31 時点の、ある wanted リストからランダムに選んだ未取得の映画 100 本のうち、65 本にはフルの長さのアップロードがあり、33 本がこれらのチャンネルにありました。残りは再アップロードで（Disney の作品はすべてこれでした）、新作では「full movie」と題した詐欺でした。`channels` を書くとリストが置き換わります。チャンネル ID は、アドレスの `UC...` の部分か、`yt-dlp --print channel_id <a video's page>` が表示するものです。
+- **得られるもの。** 映画は `Title.Year.1080p.YouTube.WEB-DL` という名前になり、DMM には取得済みとして `youtube:<video id>` が伝えられます。rex はそれを、zurg 経由で読み込まれる HLS アイテムとして movies ライブラリに受け取ります。Jellyfin と Kodi は `__magic__/__movies__/Title (Year) {tmdb-N}/Title (Year) {tmdb-N}.strm` を受け取ります（`__magic__` はオンです）。`.strm` のアドレスは zurg 自身のもので、[`base_url`](../reference/config.md) から来ており、ログインは不要です。どちらのアドレスも、zurg が配信するストリームのプレイリストです。そこに含まれる各セグメントも zurg のアドレスで、zurg が YouTube から直接取得します。zurg は yt-dlp でストリームを解決し、有効期限の 1 時間前まで保持します。セグメントのアドレスは 1 日有効です。後から戻ってきたプレイヤーは、プレイリストを読み直します。
+- **アップグレード。** `upgrades` がオンの間、ストリーミングされた映画は wanted リストに残ります。その映画の新しいリリースが出てチェックを通過すると、どの解像度であってもそのリリースがストリームに置き換わります。ストリーム、その `.strm`、rex のアイテムはすべて削除されます。
 
-Limits:
+制限:
 
-- **Plex cannot play it.** It is no file on the mount. Use rex, Jellyfin or Kodi.
-- **Cookies are required.** Without a signed-in account's cookies YouTube offers an
-  address that fetches much only video and audio apart, or nothing, so zurg starts with
-  the fallback off and says why. Export them from a browser signed in to YouTube, ideally
-  on the same network. Signing out in that browser ends them.
-- **Every byte passes through zurg.** Nothing is redirected to YouTube: rex sends its
-  source's login with every request its transcoder makes, redirected ones included, and
-  YouTube ties a stream to the address that resolved it. So any player that reaches
-  zurg plays it, and zurg carries the film's traffic.
+- **Plex では再生できません。** マウント上のファイルではないためです。rex、Jellyfin、Kodi を使ってください。
+- **Cookie が必要です。** サインイン済みアカウントの Cookie がないと、YouTube は映像と音声が分かれているアドレスか、ほとんど何も返さないアドレスしか提示しません。そのため zurg はフォールバックをオフにして起動し、その理由を表示します。YouTube にサインインしているブラウザから書き出してください。同じネットワーク上のブラウザだと理想的です。そのブラウザでサインアウトすると、Cookie は無効になります。
+- **すべてのデータが zurg を通ります。** YouTube にリダイレクトされるものはありません。rex は、トランスコーダーが行うすべてのリクエストに、リダイレクト先のものも含めて、ソースのログイン情報を付けます。また YouTube は、ストリームを解決したアドレスに紐づけます。そのため、zurg に届くプレイヤーならどれでも再生でき、映画のトラフィックは zurg が運びます。
 
 ## Seerr の動作 {#seerr-behavior}
 
@@ -457,19 +420,9 @@ Acquisition: chose <release> for <title>: results=143 local_refusals=97 radarr_r
 
 ## zurg だけをダウンロードクライアントにしている \*arr を確認する {#checking-an-arr-that-only-uses-zurg-as-its-download-client}
 
-A Sonarr or Radarr pointed at zurg's [SABnzbd](sonarr-radarr.md) or
-[qBittorrent](sonarr-radarr-torrents.md) endpoint does its own searching, and does not
-need a source here. zurg still wants its API key, because three of its settings
-decide whether every import is a free rename or a whole release downloaded
-from the debrid account and written to zurg's disk: Remove Completed on a
-qBittorrent client, the download folder and the root folders on one volume,
-and root folders inside `__magic__`. With the key, zurg turns Remove Completed
-on by itself (see [qbittorrent.md](sonarr-radarr-torrents.md#what-to-put-in-each-field))
-and warns about the other two. See
-[One volume for the download folder and the root folders](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
+Sonarr や Radarr を zurg の [SABnzbd](sonarr-radarr.md) や [qBittorrent](sonarr-radarr-torrents.md) エンドポイントに向けると、それらは自分で検索するので、ここにソースを用意する必要はありません。ただし zurg には API キーが必要です。設定のうち3つが、インポートのたびに「ただの名前変更で済むか」「debrid アカウントからリリース全体をダウンロードして zurg のディスクに書き込むか」を決めるからです。その3つとは、qBittorrent クライアントの Remove Completed、ダウンロードフォルダとルートフォルダが同じボリュームにあるか、そして `__magic__` の中にあるルートフォルダです。API キーがあれば、zurg は Remove Completed を自動的に有効にし（[qbittorrent.md](sonarr-radarr-torrents.md#what-to-put-in-each-field) を参照）、残りの2つについては警告します。詳しくは [One volume for the download folder and the root folders](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders) を参照してください。
 
-The easiest way to give zurg the key is the banner on the main dashboard,
-described below. Or add it as a source that is switched off:
+API キーを zurg に渡す一番簡単な方法は、後述するメインダッシュボードのバナーを使うことです。または、無効にした状態でソースとして追加することもできます。
 
 ```yaml
 acquisition:
@@ -481,40 +434,11 @@ acquisition:
       api_key: YOUR_SONARR_API_KEY
 ```
 
-A Radarr or Sonarr source with `enabled: false` acquires nothing. zurg never
-reads its wanted list and never searches for it. With its `url` and `api_key`
-set, and one of the two endpoints on, zurg only reads the \*arr's root folders,
-remote path mappings and download clients, at start, every ten minutes and as
-soon as the \*arr first calls one of the endpoints. It turns Remove Completed
-on for the \*arr's zurg qBittorrent client when it is off, the one change zurg
-makes, and reports a layout that makes imports copies. Every source with a URL
-and an API key, enabled or not, is checked and corrected the same way. It is
-listed on the acquisition page under **Checked, never searched for**, with
-what zurg changed, the findings go to the log, and `zurg doctor` shows them as
-`imports (<name>)`. `library_path` is not judged for such a source, since
-nothing is placed for it. A source added to config.yml by hand is read at
-start, so restart zurg after adding one that way.
+`enabled: false` が設定された Radarr または Sonarr のソースは、何も取得しません。zurg はそのウィッシュリストを読むことも、検索することもありません。`url` と `api_key` が設定されていて、どちらかのエンドポイントが有効になっている場合、zurg は \*arr のルートフォルダ、リモートパスマッピング、ダウンロードクライアントを読むだけです。読むタイミングは、起動時、10分ごと、そして \*arr が最初にいずれかのエンドポイントを呼び出したときです。\*arr の zurg 用 qBittorrent クライアントで Remove Completed が無効になっていれば、zurg はそれを有効にします。これが zurg が行う唯一の変更です。また、インポートがコピーになってしまうレイアウトを見つけた場合は報告します。URL と API キーが設定されているソースは、有効か無効かに関係なく、同じ方法で確認・修正されます。そのようなソースは取得ページの **Checked, never searched for** の下に、zurg が変更した内容とともに表示されます。検出結果はログに出力され、`zurg doctor` では `imports (<name>)` として表示されます。このソースには何も配置されないため、`library_path` は判定されません。config.yml に手で追加したソースは起動時に読み込まれるので、その方法で追加した場合は zurg を再起動してください。
 
-zurg also notices a Sonarr or Radarr it cannot check. Both send their name in
-every request to the endpoints (`Sonarr/4.0.20.3014 (alpine 3.24.1)`), so zurg
-records which ones call it and from which address. When one calls and no
-source of its kind has a URL and an API key, zurg logs one warning, `zurg
-doctor` reports it on its `*arr settings` line, and the main dashboard shows a
-banner with a form for its URL and API key. The URL is filled in with a guess:
-the address the \*arr calls from, on its default port (8989 for Sonarr, 7878
-for Radarr). That address is often a container's own, which zurg may or may
-not reach, so change it to whatever URL reaches the \*arr from where zurg
-runs. The API key is in the \*arr under Settings, General, Security. zurg
-first asks the \*arr for its status with that key, and saves nothing unless it
-answers as the app it was named as. It then adds the source above to
-config.yml with `enabled: false`, keeping everything else in the file as it
-was, and checks it straight away, with no restart. The form shows what zurg
-found and changed. The key is written to config.yml and sent to the \*arr, and
-nowhere else.
+zurg は、確認できない Sonarr や Radarr があることも検出します。両方とも、エンドポイントへのすべてのリクエストに自分の名前を含めて送ります（例：`Sonarr/4.0.20.3014 (alpine 3.24.1)`）。そのため zurg は、どの \*arr が呼び出してきたか、どのアドレスからかを記録します。ある \*arr が呼び出してきたのに、その種類のソースで URL と API キーが設定されているものがない場合、zurg は警告を1回ログに出力します。`zurg doctor` はそれを `*arr settings` の行で報告し、メインダッシュボードには URL と API キーを入力するフォームつきのバナーが表示されます。URL には推測値が入っています。それは \*arr が呼び出してきているアドレスで、デフォルトポート（Sonarr は 8989、Radarr は 7878）を使ったものです。このアドレスはコンテナ自身のものであることが多く、zurg から届くかどうかは分かりません。そのため、zurg が動いている場所から \*arr に届く URL に変更してください。API キーは \*arr の Settings、General、Security にあります。zurg はまずそのキーで \*arr にステータスを問い合わせ、答えたアプリが想定どおりの名前の場合にのみ保存します。その後、上で説明したソースを `enabled: false` にして config.yml に追加します。ファイルのそれ以外の内容はそのままです。再起動は不要で、すぐに確認されます。フォームには、zurg が見つけたことと変更したことが表示されます。API キーは config.yml に書き込まれ、\*arr に送られるだけで、ほかのどこにも送られません。
 
-The banner matches by kind, not by address: an \*arr calls zurg from inside
-its container, on an address that has nothing to do with the URL zurg reaches
-it on, so one Sonarr source with a key silences the banner for every Sonarr.
+バナーは URL ではなく種類で照合されます。\*arr は、zurg が到達するアドレスとは関係のない、自分のコンテナ内のアドレスから zurg を呼び出すためです。そのため、キーを設定した Sonarr ソースが1つあれば、すべての Sonarr についてバナーは表示されなくなります。
 
 ## 重複するリリースを探す {#finding-duplicate-releases}
 

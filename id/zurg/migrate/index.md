@@ -55,38 +55,18 @@ Perintah shell di halaman per-server ditulis untuk Linux dan macOS (di macOS, ba
 
 ### Berpindah dari pustaka symlink {#coming-off-a-symlink-library}
 
-You are not moving a library. You are rebuilding one. And `__magic__` gives the
-\*arrs exactly what the symlink farm gave them without the farm. They move and
-rename inside it as freely as before. Each move is a row write instead of a
-file operation.
+Anda tidak sedang memindahkan library. Anda sedang membangun ulang library. Dan `__magic__` memberi \*arr persis apa yang dulu diberikan symlink farm, tanpa farm-nya. Mereka tetap bisa memindah dan mengganti nama di dalamnya sebebas sebelumnya. Setiap pemindahan kini berupa penulisan baris, bukan operasi file.
 
-!!!danger Never let an \*arr move the old library into `__magic__`
-Changing a series or movie root folder makes Sonarr or Radarr offer to **move**
-the files. Say no. A move inside `__magic__` is free. A move from anywhere else crosses the
-mount boundary and that is a copy. So is a move between two volumes of the same
-mount. In Docker give the \*arr one volume that holds zurg's whole mount. A copy off a streaming mount pulls your
-entire library down through your news or debrid allowance. Your old library is
-a tree of symlinks so what gets copied is every target they resolve to.
+!!!danger Jangan pernah biarkan \*arr memindahkan library lama ke dalam `__magic__`
+Mengubah root folder series atau movie membuat Sonarr atau Radarr menawarkan untuk **memindahkan** file. Pilih tidak. Pemindahan di dalam `__magic__` gratis. Pemindahan dari tempat lain melintasi batas mount, dan itu berarti copy. Pemindahan antar dua volume dalam mount yang sama juga berarti copy. Di Docker, berikan satu volume untuk \*arr yang memuat seluruh mount milik zurg. Copy dari mount streaming akan menarik seluruh library Anda lewat jatah Usenet atau debrid Anda. Library lama Anda berupa pohon symlink, jadi yang ikut di-copy adalah setiap target yang ditunjuk symlink itu.
 !!!
 
-Move each file into place yourself instead. Every move is one rename through
-zurg's mount. Nothing is copied and nothing on your account changes. The script
-below does it from your old library of symlinks. A link's path under the old
-root folder is where Sonarr or Radarr expects the episode or film. Its target
-names the file. So each file lands at the same path under the new root folder
-that its link had under the old one. The old library is only read. It keeps
-working until you switch the \*arr over.
+Pindahkan setiap file ke tempatnya sendiri. Setiap pemindahan adalah satu rename lewat mount milik zurg. Tidak ada yang di-copy dan tidak ada yang berubah di akun Anda. Script di bawah melakukannya dari library lama Anda yang berisi symlink. Path sebuah link di bawah root folder lama adalah tempat Sonarr atau Radarr mengharapkan episode atau film itu. Target-nya menyebut nama file. Jadi setiap file mendarat di path yang sama di bawah root folder baru seperti path link-nya di root folder lama. Library lama hanya dibaca. Library itu tetap berfungsi sampai Anda mengalihkan \*arr.
 
-1. **Build zurg beside the old server** as its page shows. Let it list the
-   whole library first.
-2. **Turn on `__magic__`** as its page shows. Keep Plex scans off and the
-   \*arr queues paused.
-3. **Save the `zurg_path` function from your server's page** as
-   `zurg_path.sh` beside the script. It turns an old link's target into the
-   file zurg serves. Each server lays its files out differently.
-4. **Run the script** once per root folder. Set `OLD` and `NEW` and `LOG` for
-   each one. A setup with `sonarr4k` and `radarr4k` beside the regular pair
-   needs four runs.
+1. **Bangun zurg di samping server lama** seperti yang ditunjukkan halamannya. Biarkan zurg mendaftar seluruh library terlebih dahulu.
+2. **Nyalakan `__magic__`** seperti yang ditunjukkan halamannya. Biarkan pemindaian Plex tetap mati dan antrean \*arr dijeda.
+3. **Simpan fungsi `zurg_path` dari halaman server Anda** sebagai `zurg_path.sh` di samping script. Fungsi ini mengubah target sebuah link lama menjadi file yang disajikan zurg. Tiap server menata file-nya secara berbeda.
+4. **Jalankan script** sekali untuk setiap root folder. Atur `OLD`, `NEW`, dan `LOG` untuk masing-masing. Setup dengan `sonarr4k` dan `radarr4k` di samping pasangan reguler membutuhkan empat kali jalan.
 
    ```bash
    #!/bin/bash
@@ -117,47 +97,23 @@ working until you switch the \*arr over.
    done
    ```
 
-   It prints a line for every link it leaves alone.
+   Script mencetak satu baris untuk setiap link yang dibiarkannya.
 
-   - `NOT IN ZURG` is a link to a file zurg does not have. Its NZB could not be
-     recovered or its account is not in zurg's config.
-   - `FAILED` is a move zurg refused. A second link to a file the script
-     already moved prints this after a line from `mv` that says `No such file
-     or directory`. A file can sit at only one path in `__magic__`. It stays
-     where the first link put it.
-   - `ALREADY THERE` is a path the new root folder already holds. Running the
-     script again skips everything it placed before.
+   - `NOT IN ZURG` adalah link ke file yang tidak dimiliki zurg. NZB-nya tidak bisa dipulihkan, atau akunnya tidak ada di konfigurasi zurg.
+   - `FAILED` adalah pemindahan yang ditolak zurg. Link kedua ke file yang sudah dipindahkan script akan mencetak ini setelah baris dari `mv` yang berbunyi `No such file or directory`. Sebuah file hanya bisa berada di satu path di `__magic__`. File itu tetap di tempat yang ditaruh link pertama.
+   - `ALREADY THERE` adalah path yang sudah dimiliki root folder baru. Menjalankan script lagi akan melewati semua yang sudah ditempatkan sebelumnya.
 
-5. **Switch each \*arr over.** Select every series or every movie and edit them
-   together. Set the root folder to the new one under `__magic__`. When it asks
-   whether to move the files answer **No, I'll Move the Files Myself**. The
-   script already put them there. Then run **Update All** so it finds them.
-6. **Point Plex at the new root folders** and at nothing else. The next box
-   says why.
+5. **Alihkan setiap \*arr.** Pilih setiap series atau setiap movie, lalu edit bersamaan. Atur root folder ke yang baru di bawah `__magic__`. Saat ditanya apakah file akan dipindahkan, jawab **No, I'll Move the Files Myself**. Script sudah menaruh file-nya di sana. Lalu jalankan **Update All** agar \*arr menemukannya.
+6. **Arahkan Plex ke root folder baru** dan ke tidak ada yang lain. Kotak berikutnya menjelaskan alasannya.
 
-Each move took about 15 milliseconds on a test library and nothing was copied.
-Watch `data/local` on zurg's `/magic/` dashboard while the script runs. It
-grows only by the subtitles and other small files the script copies. A number
-that grows by gigabytes means something is being copied. Stop and look.
+Setiap pemindahan memakan sekitar 15 milidetik pada library uji, dan tidak ada yang di-copy. Pantau `data/local` di dashboard `/magic/` milik zurg saat script berjalan. Angkanya hanya bertambah sebesar subtitle dan file kecil lain yang disalin script. Jika angkanya bertambah gigabyte, berarti ada sesuatu yang sedang di-copy. Berhenti dan periksa.
 
-The old links keep working. A moved file still shows at its old `__all__` path
-as well as at its new one. Builds before the 2026.10.04 nightly hid it at the
-old path for up to 12 hours even though zurg still served it there. On one of
-those builds restart zurg once the script is done. Keep Plex away from the old
-folders and from `__all__` until you have.
+Link lama tetap berfungsi. File yang sudah dipindahkan tetap muncul di path `__all__` lamanya selain di path barunya. Build sebelum nightly 2026.10.04 menyembunyikannya dari path lama hingga 12 jam, padahal zurg tetap menyajikannya di sana. Pada build seperti itu, restart zurg sekali setelah script selesai. Jauhkan Plex dari folder lama dan dari `__all__` sampai Anda melakukannya.
 
-The zurg side of this was measured on 2026-10-03. The \*arr side is its
-ordinary root folder edit and was not tested for this guide. Do one series
-first.
+Bagian zurg dari panduan ini diukur pada 2026-10-03. Bagian \*arr adalah edit root folder biasa dan tidak diuji untuk panduan ini. Coba satu series dulu.
 
-!!!warning Point each Plex library at one directory and not two
-A library that scans a filter directory such as `movies` or `shows` or
-`__all__` **and** scans `__magic__` finds every episode twice — and `__magic__`
-holds its own `__all__`, so pointing a library at the root of the namespace
-scans the whole library along with what you organised. Pick one. If you use the
-\*arrs then point Plex at the root folders you made, `__magic__/tv` and
-`__magic__/movies`. If you browse a library nobody organises then pick the
-filter directories and leave `__magic__` off.
+!!!warning Arahkan setiap library Plex ke satu direktori, bukan dua
+Library yang memindai direktori filter seperti `movies`, `shows`, atau `__all__` **dan** memindai `__magic__` akan menemukan setiap episode dua kali. `__magic__` juga memuat `__all__`-nya sendiri, jadi mengarahkan library ke root namespace berarti memindai seluruh library beserta yang sudah Anda atur. Pilih salah satu. Jika Anda memakai \*arr, arahkan Plex ke root folder yang Anda buat, yaitu `__magic__/tv` dan `__magic__/movies`. Jika Anda menelusuri library yang tidak diatur siapa pun, pilih direktori filter dan biarkan `__magic__` tidak dipakai.
 !!!
 
 ## Satu pengaman yang tidak boleh kamu lewatkan {#the-one-guard-you-must-not-skip}

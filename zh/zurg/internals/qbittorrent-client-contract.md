@@ -989,9 +989,8 @@ your qBittorrent settings. Enable it in qBittorrent or select 'Last' as priority
 
 ### 6.4 `TestGetTorrents`（`:599-612`） {#64-testgettorrents-599-612}
 
-`Proxy.GetTorrents(Settings)`; any exception becomes `("", "Failed to get the list of torrents:
-{exceptionMessage}")`. This is the check that catches a malformed `torrents/info` body — a JSON object
-instead of an array, a bad enum, a non-numeric `size`.
+`Proxy.GetTorrents(Settings)`；任何异常都会变成 `("", "Failed to get the list of torrents:
+{exceptionMessage}")`。这就是用来捕获格式错误的 `torrents/info` 返回内容的检查，比如返回的是 JSON 对象而不是数组、枚举值不对，或者 `size` 不是数字。
 
 ### 6.5 `dht` 检查 {#65-the-dht-check}
 

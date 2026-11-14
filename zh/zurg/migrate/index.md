@@ -62,38 +62,18 @@ zurg 发布得*更少*的只有 par2 奇偶校验文件。Plex 从来不会把�
 
 ### 从符号链接库迁移 {#coming-off-a-symlink-library}
 
-You are not moving a library. You are rebuilding one. And `__magic__` gives the
-\*arrs exactly what the symlink farm gave them without the farm. They move and
-rename inside it as freely as before. Each move is a row write instead of a
-file operation.
+你不是在移动一个库，而是在重建一个库。`__magic__` 给 \*arr 的，正是符号链接农场曾经给它们的东西，而且不需要农场。它们在里面移动和重命名仍然和以前一样自由。每次移动都变成一次行写入，而不是一次文件操作。
 
-!!!danger Never let an \*arr move the old library into `__magic__`
-Changing a series or movie root folder makes Sonarr or Radarr offer to **move**
-the files. Say no. A move inside `__magic__` is free. A move from anywhere else crosses the
-mount boundary and that is a copy. So is a move between two volumes of the same
-mount. In Docker give the \*arr one volume that holds zurg's whole mount. A copy off a streaming mount pulls your
-entire library down through your news or debrid allowance. Your old library is
-a tree of symlinks so what gets copied is every target they resolve to.
+!!!danger 永远不要让 \*arr 把旧库移动到 `__magic__` 里
+修改剧集或电影的根文件夹时，Sonarr 或 Radarr 会提议**移动**文件。这时选择否。`__magic__` 内部的移动是免费的。从其他任何地方移动过来都会跨越挂载边界，这就是复制。同一挂载下两个卷之间的移动也是复制。在 Docker 中，请只给 \*arr 一个卷，让它包含 zurg 的整个挂载。从流媒体挂载上复制会把你的整个库通过你的新闻或网盘额度拉下来。你的旧库是一棵符号链接树，所以被复制的，是它们解析到的每一个目标。
 !!!
 
-Move each file into place yourself instead. Every move is one rename through
-zurg's mount. Nothing is copied and nothing on your account changes. The script
-below does it from your old library of symlinks. A link's path under the old
-root folder is where Sonarr or Radarr expects the episode or film. Its target
-names the file. So each file lands at the same path under the new root folder
-that its link had under the old one. The old library is only read. It keeps
-working until you switch the \*arr over.
+请自己把每个文件移动到位。每次移动都是通过 zurg 挂载的一次重命名。不会复制任何东西，你的账户也不会有任何变化。下面的脚本会从你旧的符号链接库中完成这些操作。链接在旧根文件夹下的路径，就是 Sonarr 或 Radarr 期望剧集或电影所在的位置。链接的目标则指明了文件。因此，每个文件都会落到新根文件夹下与其链接在旧根文件夹下相同的路径上。旧库只会被读取。在你把 \*arr 切换过来之前，它会一直正常工作。
 
-1. **Build zurg beside the old server** as its page shows. Let it list the
-   whole library first.
-2. **Turn on `__magic__`** as its page shows. Keep Plex scans off and the
-   \*arr queues paused.
-3. **Save the `zurg_path` function from your server's page** as
-   `zurg_path.sh` beside the script. It turns an old link's target into the
-   file zurg serves. Each server lays its files out differently.
-4. **Run the script** once per root folder. Set `OLD` and `NEW` and `LOG` for
-   each one. A setup with `sonarr4k` and `radarr4k` beside the regular pair
-   needs four runs.
+1. **在旧服务器旁边搭建 zurg**，按照它的页面操作。先让它列出整个库。
+2. **打开 `__magic__`**，按照它的页面操作。保持 Plex 扫描关闭，并暂停 \*arr 的队列。
+3. **把你服务器页面上的 `zurg_path` 函数保存为 `zurg_path.sh`**，放在脚本旁边。它会把旧链接的目标转换成 zurg 提供的文件。每台服务器的文件布局各不相同。
+4. **为每个根文件夹运行一次脚本。** 每次都要设置 `OLD`、`NEW` 和 `LOG`。如果你的环境中除了常规的一对之外还有 `sonarr4k` 和 `radarr4k`，就需要运行四次。
 
    ```bash
    #!/bin/bash
@@ -124,47 +104,23 @@ working until you switch the \*arr over.
    done
    ```
 
-   It prints a line for every link it leaves alone.
+   对于它不处理的每个链接，脚本都会打印一行。
 
-   - `NOT IN ZURG` is a link to a file zurg does not have. Its NZB could not be
-     recovered or its account is not in zurg's config.
-   - `FAILED` is a move zurg refused. A second link to a file the script
-     already moved prints this after a line from `mv` that says `No such file
-     or directory`. A file can sit at only one path in `__magic__`. It stays
-     where the first link put it.
-   - `ALREADY THERE` is a path the new root folder already holds. Running the
-     script again skips everything it placed before.
+   - `NOT IN ZURG` 表示链接指向 zurg 没有的文件。它的 NZB 无法恢复，或者它的账户不在 zurg 的配置中。
+   - `FAILED` 表示 zurg 拒绝了这次移动。如果脚本已经移动过某个文件，而另一个链接指向同一文件，就会在 `mv` 输出的 `No such file or directory` 这行之后打印此项。一个文件在 `__magic__` 中只能位于一个路径。它会留在第一个链接放置它的地方。
+   - `ALREADY THERE` 表示新根文件夹中已经存在该路径。再次运行脚本会跳过之前已放置的所有内容。
 
-5. **Switch each \*arr over.** Select every series or every movie and edit them
-   together. Set the root folder to the new one under `__magic__`. When it asks
-   whether to move the files answer **No, I'll Move the Files Myself**. The
-   script already put them there. Then run **Update All** so it finds them.
-6. **Point Plex at the new root folders** and at nothing else. The next box
-   says why.
+5. **逐个切换每个 \*arr。** 选中所有剧集或所有电影，一起编辑。把根文件夹设置为 `__magic__` 下的新文件夹。当它询问是否移动文件时，选择**No, I'll Move the Files Myself**。脚本已经把文件放到那里了。然后运行 **Update All**，让它找到这些文件。
+6. **让 Plex 指向新的根文件夹，并且只指向这些。** 下一个方框会解释原因。
 
-Each move took about 15 milliseconds on a test library and nothing was copied.
-Watch `data/local` on zurg's `/magic/` dashboard while the script runs. It
-grows only by the subtitles and other small files the script copies. A number
-that grows by gigabytes means something is being copied. Stop and look.
+在一个测试库上，每次移动大约耗时 15 毫秒，而且没有复制任何东西。脚本运行时，请在 zurg 的 `/magic/` 仪表板上观察 `data/local`。它只会因为脚本复制的字幕和其他小文件而增长。如果这个数字增长了几 GB，说明有东西正在被复制。请停下来检查。
 
-The old links keep working. A moved file still shows at its old `__all__` path
-as well as at its new one. Builds before the 2026.10.04 nightly hid it at the
-old path for up to 12 hours even though zurg still served it there. On one of
-those builds restart zurg once the script is done. Keep Plex away from the old
-folders and from `__all__` until you have.
+旧链接仍然有效。已移动的文件在其旧的 `__all__` 路径和新路径上都能看到。2026.10.04 夜间版之前的构建会把文件在旧路径上隐藏长达 12 小时，尽管 zurg 仍然在那里提供它。如果你使用的是这些构建之一，脚本完成后请重启一次 zurg。在完成之前，请让 Plex 远离旧文件夹和 `__all__`。
 
-The zurg side of this was measured on 2026-10-03. The \*arr side is its
-ordinary root folder edit and was not tested for this guide. Do one series
-first.
+zurg 这一部分的测试时间是 2026-10-03。\*arr 这一侧是其常规的根文件夹编辑，本指南没有对其进行测试。请先只处理一部剧集。
 
-!!!warning Point each Plex library at one directory and not two
-A library that scans a filter directory such as `movies` or `shows` or
-`__all__` **and** scans `__magic__` finds every episode twice — and `__magic__`
-holds its own `__all__`, so pointing a library at the root of the namespace
-scans the whole library along with what you organised. Pick one. If you use the
-\*arrs then point Plex at the root folders you made, `__magic__/tv` and
-`__magic__/movies`. If you browse a library nobody organises then pick the
-filter directories and leave `__magic__` off.
+!!!warning 每个 Plex 库只指向一个目录，不要指向两个
+如果某个库扫描了 `movies`、`shows` 或 `__all__` 这样的过滤目录，**同时**又扫描 `__magic__`，每一集都会被找到两次。而且 `__magic__` 本身包含它自己的 `__all__`，所以把库指向命名空间的根目录，会把整个库连同你整理过的内容一起扫描。二选一即可。如果你使用 \*arr，就让 Plex 指向你创建的根文件夹，即 `__magic__/tv` 和 `__magic__/movies`。如果你浏览的是一个没人整理的库，那就选择过滤目录，并且不要包含 `__magic__`。
 !!!
 
 ## 你绝对不能跳过的一道保护 {#the-one-guard-you-must-not-skip}

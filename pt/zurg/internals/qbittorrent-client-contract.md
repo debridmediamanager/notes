@@ -1038,9 +1038,8 @@ que omite a chave passa, mas omitir é uma mentira se `topPrio` não fizer nada.
 
 ### 6.4 `TestGetTorrents` (`:599-612`)
 
-`Proxy.GetTorrents(Settings)`; any exception becomes `("", "Failed to get the list of torrents:
-{exceptionMessage}")`. This is the check that catches a malformed `torrents/info` body — a JSON object
-instead of an array, a bad enum, a non-numeric `size`.
+`Proxy.GetTorrents(Settings)`; qualquer exceção vira `("", "Failed to get the list of torrents:
+{exceptionMessage}")`. Essa é a verificação que pega um corpo malformado de `torrents/info` — um objeto JSON em vez de um array, um enum inválido, um `size` que não é numérico.
 
 ### 6.5 A verificação `dht` {#65-the-dht-check}
 

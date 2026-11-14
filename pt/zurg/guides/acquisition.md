@@ -244,9 +244,7 @@ Um filme que sai só em 2160p ganha a sua cópia 4K na hora, e a sua cópia 1080
 
 ### Assistindo um filme do YouTube {#streaming-a-film-from-youtube}
 
-Many wanted films no indexer carries are on YouTube, uploaded whole by the studio that
-made them. With `acquisition.youtube` set, zurg streams such a film from that upload
-instead of leaving it unfetched. Nothing is downloaded.
+Muitos filmes desejados que nenhum indexador traz estão no YouTube, enviados inteiros pelo próprio estúdio que os fez. Com `acquisition.youtube` configurado, o zurg transmite um desses filmes a partir desse upload, em vez de deixá-lo sem buscar. Nada é baixado.
 
 ```yaml
 acquisition:
@@ -258,54 +256,18 @@ acquisition:
     # searches_per_hour: 20                       # default; films looked for on YouTube in an hour
 ```
 
-- **When.** Only for a film on the DMM wanted list, and only when nothing the indexers
-  return can be taken: no release passes `quality`, `max_size_gb`, `exclude_words` and
-  the title and year checks, or every one was found gone, with every indexer answering.
-  Never for a show or an upgrade, nor with `audio_languages` or `subtitle_languages`
-  set, since an upload's languages cannot be read. Only the wanted list takes a stream:
-  a film the Plex watchlist also wants is not settled for it by one, since Plex cannot
-  play it, and the watchlist keeps looking for a release.
-- **How often.** At most `searches_per_hour` films are looked for in an hour (20 by
-  default: 1,820 films take four days), one at a time. A film YouTube has nothing for is
-  asked about again a day later, restarts included.
-- **Which upload.** zurg searches YouTube for the title and year, and for the original
-  title when DMM sends one, and takes an upload only when all of these hold: it is on
-  one of `channels`; it runs at least 90% of the film's runtime, or an hour when DMM does
-  not know the runtime; its title begins with the film's title (`'Separada' FULL MOVIE |
-  ...`), states no other year, and is no trailer, teaser, clip or `Part N`. Of those it
-  takes the longest, then the most watched, and checks that YouTube streams it with
-  picture and sound together.
-- **Channels.** The default list is the Philippine studios' own channels: ABS-CBN Star
-  Cinema, Regal Entertainment, VIVA Films, SOLAR WATCH NOW, OctoArts Films, CineMo and
-  Cinema One. Of 100 random unfetched films on one wanted list (2026-10-31), 65 had a
-  full-length upload and 33 were on these channels; the rest were re-uploads (every
-  Disney one) and, for new releases, scams titled "full movie". Writing `channels`
-  replaces the list. A channel's id is the `UC...` part of its address, or what
-  `yt-dlp --print channel_id <a video's page>` prints.
-- **What you get.** The film is named `Title.Year.1080p.YouTube.WEB-DL` and DMM is told
-  it was fetched (`youtube:<video id>`). rex gets it as an HLS item in your movies
-  library, read through zurg. Jellyfin and Kodi get
-  `__magic__/__movies__/Title (Year) {tmdb-N}/Title (Year) {tmdb-N}.strm`, with `__magic__`
-  on. The address in the `.strm` is zurg's own, from [`base_url`](../reference/config.md), and needs
-  no login. Either address is the stream's playlist served by zurg, every segment in it
-  an address on zurg too, which zurg fetches from YouTube itself. zurg resolves the
-  stream with yt-dlp and keeps it until an hour before it expires. A segment's address
-  is good for a day; a player that comes back later reads the playlist again.
-- **Upgrades.** A streamed film stays on the wanted list while `upgrades` is on, and any
-  release of it that comes out replaces the stream, whatever its resolution: the stream,
-  its `.strm` and its rex item go once the release has passed its check.
+- **Quando.** Só para filme da lista de desejados do DMM, e só quando nada do que os indexadores retornam pode ser aproveitado: nenhum release passa em `quality`, `max_size_gb`, `exclude_words` e nas checagens de título e ano, ou todos foram encontrados fora do ar, com todos os indexadores respondendo. Nunca para série ou upgrade, nem com `audio_languages` ou `subtitle_languages` definidos, já que os idiomas de um upload não podem ser lidos. Só a lista de desejados usa stream: um filme que a watchlist do Plex também quer não fica resolvido por isso, porque o Plex não consegue reproduzi-lo, e a watchlist continua procurando um release.
+  - **Com que frequência.** No máximo `searches_per_hour` filmes são buscados por hora (20 por padrão: 1.820 filmes levam quatro dias), um de cada vez. Um filme para o qual o YouTube não tem nada é consultado de novo um dia depois, inclusive depois de reinícios.
+- **Qual upload.** O zurg busca no YouTube pelo título e ano, e pelo título original quando o DMM envia um, e só aceita um upload se todas estas condições valerem: ele está em um dos `channels`; dura pelo menos 90% da duração do filme, ou uma hora quando o DMM não sabe a duração; seu título começa com o título do filme (`'Separada' FULL MOVIE | ...`), não cita outro ano e não é trailer, teaser, clipe nem `Part N`. Entre esses, escolhe o mais longo e, depois, o mais assistido, e verifica se o YouTube o transmite com imagem e som juntos.
+- **Canais.** A lista padrão é formada pelos canais próprios dos estúdios filipinos: ABS-CBN Star Cinema, Regal Entertainment, VIVA Films, SOLAR WATCH NOW, OctoArts Films, CineMo e Cinema One. De 100 filmes não buscados, tirados ao acaso de uma lista de desejados (2026-10-31), 65 tinham um upload de duração completa e 33 estavam nesses canais; o resto eram re-uploads (todos os da Disney) e, para lançamentos novos, golpes com títulos "full movie". Escrever `channels` substitui a lista. O id de um canal é a parte `UC...` do endereço dele, ou o que `yt-dlp --print channel_id <a video's page>` imprime.
+- **O que você recebe.** O filme recebe o nome `Title.Year.1080p.YouTube.WEB-DL` e o DMM é avisado de que foi buscado (`youtube:<video id>`). O rex o recebe como um item HLS na sua biblioteca de filmes, lido pelo zurg. Jellyfin e Kodi recebem `__magic__/__movies__/Title (Year) {tmdb-N}/Title (Year) {tmdb-N}.strm`, com `__magic__` ativado. O endereço no `.strm` é o próprio do zurg, a partir de [`base_url`](../reference/config.md), e não exige login. Qualquer um dos dois endereços é a playlist do stream servida pelo zurg, com cada segmento nela também um endereço no zurg, que ele mesmo busca no YouTube. O zurg resolve o stream com o yt-dlp e o mantém até uma hora antes de expirar. O endereço de um segmento vale por um dia; um player que volta depois lê a playlist de novo.
+- **Upgrades.** Um filme transmitido continua na lista de desejados enquanto `upgrades` estiver ativo, e qualquer release dele que sair substitui o stream, seja qual for a resolução: o stream, o `.strm` e o item do rex saem assim que o release passar na checagem dele.
 
-Limits:
+Limitações:
 
-- **Plex cannot play it.** It is no file on the mount. Use rex, Jellyfin or Kodi.
-- **Cookies are required.** Without a signed-in account's cookies YouTube offers an
-  address that fetches much only video and audio apart, or nothing, so zurg starts with
-  the fallback off and says why. Export them from a browser signed in to YouTube, ideally
-  on the same network. Signing out in that browser ends them.
-- **Every byte passes through zurg.** Nothing is redirected to YouTube: rex sends its
-  source's login with every request its transcoder makes, redirected ones included, and
-  YouTube ties a stream to the address that resolved it. So any player that reaches
-  zurg plays it, and zurg carries the film's traffic.
+- **O Plex não consegue reproduzir.** Ele não é um arquivo no mount. Use rex, Jellyfin ou Kodi.
+- **Os cookies são obrigatórios.** Sem os cookies de uma conta logada, o YouTube oferece um endereço que busca pouco mais que vídeo e áudio separados, ou nada, então o zurg começa com o fallback desligado e diz o motivo. Exporte-os de um navegador logado no YouTube, de preferência na mesma rede. Sair da conta nesse navegador encerra os cookies.
+- **Todo byte passa pelo zurg.** Nada é redirecionado para o YouTube: o rex envia o login da fonte em cada requisição que o transcodificador faz, inclusive nas redirecionadas, e o YouTube amarra um stream ao endereço que o resolveu. Assim, qualquer player que alcance o zurg reproduz, e o zurg carrega todo o tráfego do filme.
 
 ## Comportamento do Seerr {#seerr-behavior}
 
@@ -532,19 +494,10 @@ As versões recusadas sem perguntar são registradas uma a uma, apenas no nível
 
 ## Verificando um \*arr que usa só o zurg como cliente de download {#checking-an-arr-that-only-uses-zurg-as-its-download-client}
 
-A Sonarr or Radarr pointed at zurg's [SABnzbd](sonarr-radarr.md) or
-[qBittorrent](sonarr-radarr-torrents.md) endpoint does its own searching, and does not
-need a source here. zurg still wants its API key, because three of its settings
-decide whether every import is a free rename or a whole release downloaded
-from the debrid account and written to zurg's disk: Remove Completed on a
-qBittorrent client, the download folder and the root folders on one volume,
-and root folders inside `__magic__`. With the key, zurg turns Remove Completed
-on by itself (see [qbittorrent.md](sonarr-radarr-torrents.md#what-to-put-in-each-field))
-and warns about the other two. See
-[One volume for the download folder and the root folders](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
+Um Sonarr ou Radarr apontado para o endpoint [SABnzbd](sonarr-radarr.md) ou
+[qBittorrent](sonarr-radarr-torrents.md) do zurg faz a própria busca e não precisa de uma fonte aqui. O zurg ainda quer a sua API key, porque três das suas configurações decidem se cada importação é uma renomeação gratuita ou um lançamento inteiro baixado da conta debrid e gravado no disco do zurg: Remove Completed em um cliente qBittorrent, a pasta de download e as root folders no mesmo volume, e root folders dentro de `__magic__`. Com a chave, o zurg liga o Remove Completed sozinho (veja [qbittorrent.md](sonarr-radarr-torrents.md#what-to-put-in-each-field)) e avisa sobre as outras duas. Veja [Um volume para a pasta de download e as root folders](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
 
-The easiest way to give zurg the key is the banner on the main dashboard,
-described below. Or add it as a source that is switched off:
+A forma mais fácil de dar a chave ao zurg é pelo banner no dashboard principal, descrito abaixo. Ou adicione-a como uma fonte desligada:
 
 ```yaml
 acquisition:
@@ -556,40 +509,11 @@ acquisition:
       api_key: YOUR_SONARR_API_KEY
 ```
 
-A Radarr or Sonarr source with `enabled: false` acquires nothing. zurg never
-reads its wanted list and never searches for it. With its `url` and `api_key`
-set, and one of the two endpoints on, zurg only reads the \*arr's root folders,
-remote path mappings and download clients, at start, every ten minutes and as
-soon as the \*arr first calls one of the endpoints. It turns Remove Completed
-on for the \*arr's zurg qBittorrent client when it is off, the one change zurg
-makes, and reports a layout that makes imports copies. Every source with a URL
-and an API key, enabled or not, is checked and corrected the same way. It is
-listed on the acquisition page under **Checked, never searched for**, with
-what zurg changed, the findings go to the log, and `zurg doctor` shows them as
-`imports (<name>)`. `library_path` is not judged for such a source, since
-nothing is placed for it. A source added to config.yml by hand is read at
-start, so restart zurg after adding one that way.
+Uma fonte Radarr ou Sonarr com `enabled: false` não adquire nada. O zurg nunca lê a lista de desejados dela e nunca faz busca por ela. Com `url` e `api_key` preenchidos, e um dos dois endpoints ligado, o zurg só lê as root folders, os remote path mappings e os download clients do *arr, no início, a cada dez minutos e assim que o *arr chama um dos endpoints pela primeira vez. Ele liga o Remove Completed no cliente qBittorrent do zurg dentro do *arr quando está desligado, que é a única mudança que o zurg faz, e informa um layout que transforma as importações em cópias. Toda fonte com URL e API key, ligada ou não, é verificada e corrigida da mesma forma. Ela aparece na página de aquisição em **Checked, never searched for**, com o que o zurg mudou. As conclusões vão para o log, e `zurg doctor` as mostra como `imports (<name>)`. `library_path` não é avaliado para essa fonte, já que nada é colocado para ela. Uma fonte adicionada ao config.yml à mão é lida no início, então reinicie o zurg depois de adicionar uma desse jeito.
 
-zurg also notices a Sonarr or Radarr it cannot check. Both send their name in
-every request to the endpoints (`Sonarr/4.0.20.3014 (alpine 3.24.1)`), so zurg
-records which ones call it and from which address. When one calls and no
-source of its kind has a URL and an API key, zurg logs one warning, `zurg
-doctor` reports it on its `*arr settings` line, and the main dashboard shows a
-banner with a form for its URL and API key. The URL is filled in with a guess:
-the address the \*arr calls from, on its default port (8989 for Sonarr, 7878
-for Radarr). That address is often a container's own, which zurg may or may
-not reach, so change it to whatever URL reaches the \*arr from where zurg
-runs. The API key is in the \*arr under Settings, General, Security. zurg
-first asks the \*arr for its status with that key, and saves nothing unless it
-answers as the app it was named as. It then adds the source above to
-config.yml with `enabled: false`, keeping everything else in the file as it
-was, and checks it straight away, with no restart. The form shows what zurg
-found and changed. The key is written to config.yml and sent to the \*arr, and
-nowhere else.
+O zurg também percebe um Sonarr ou Radarr que não consegue verificar. Os dois enviam o nome deles em cada requisição aos endpoints (`Sonarr/4.0.20.3014 (alpine 3.24.1)`), então o zurg registra quais chamam e de qual endereço. Quando um chama e nenhuma fonte do mesmo tipo tem URL e API key, o zurg registra um aviso, o `zurg doctor` informa isso na linha `*arr settings`, e o dashboard principal mostra um banner com um formulário para a URL e a API key. A URL vem preenchida com um palpite: o endereço de onde o *arr chama, na porta padrão (8989 para Sonarr, 7878 para Radarr). Esse endereço costuma ser o de um container, que o zurg pode ou não alcançar, então troque para a URL que alcança o *arr a partir de onde o zurg roda. A API key fica no *arr em Settings, General, Security. O zurg primeiro pede o status ao *arr com essa chave e não salva nada a menos que ele responda como o app com o nome que ele informou. Depois adiciona a fonte acima ao config.yml com `enabled: false`, mantendo o resto do arquivo como estava, e a verifica na hora, sem reiniciar. O formulário mostra o que o zurg encontrou e mudou. A chave é gravada no config.yml e enviada ao *arr, e em nenhum outro lugar.
 
-The banner matches by kind, not by address: an \*arr calls zurg from inside
-its container, on an address that has nothing to do with the URL zurg reaches
-it on, so one Sonarr source with a key silences the banner for every Sonarr.
+O banner combina pelo tipo, não pelo endereço: um *arr chama o zurg de dentro do seu container, em um endereço que não tem nada a ver com a URL pela qual o zurg o alcança, então uma fonte Sonarr com chave silencia o banner para todos os Sonarr.
 
 ## Encontrando releases duplicados {#finding-duplicate-releases}
 

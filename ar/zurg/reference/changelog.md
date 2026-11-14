@@ -116,14 +116,14 @@ Adventures. `DV` و`DoVi` و`Dolby Vision` كلها تعني الشيء نفسه
 
 ## `__magic__` على Windows يتوقف عن تنمية سجله إلى ما لا نهاية {#__magic__-on-windows-stops-growing-its-journal-forever}
 
-On Windows, zurg logged `cannot truncate data\magic.journal ... Access is
-denied.` every time it tried to tidy the file where `__magic__` records your
-moves and folders. The file was never emptied, so it grew with every change
-and every start read all of it again. After a few thousand changes in one run,
-each further change also rewrote the whole saved layout. zurg now empties it
-on Windows as it always did elsewhere, and the first start after updating
-clears what has piled up. If tidying ever fails, zurg tries again after more
-changes instead of on every one.
+على Windows، كان zurg يسجّل `cannot truncate data\magic.journal ... Access is
+denied.` في كل مرة يحاول فيها تنظيف الملف الذي يسجّل فيه `__magic__` تحركاتك
+ومجلداتك. لم يكن الملف يُفرَّغ أبدًا، فكان يكبر مع كل تغيير، وكل تشغيل جديد
+يقرأه كاملًا من البداية. وبعد بضعة آلاف من التغييرات في جلسة واحدة، كان كل تغيير
+إضافي يعيد كتابة التخطيط المحفوظ بالكامل. الآن صار zurg يفرّغ الملف على Windows
+كما كان يفعل في الأنظمة الأخرى، وأول تشغيل بعد التحديث ينظّف ما تراكم. وإذا فشل
+التنظيف في أي وقت، يحاول zurg مرة أخرى بعد عدد أكبر من التغييرات بدلًا من
+المحاولة مع كل تغيير.
 
 ## استعادة ملف عبر MCP تعيد إصداره فورًا {#restoring-a-file-over-mcp-puts-its-release-back-right-away}
 

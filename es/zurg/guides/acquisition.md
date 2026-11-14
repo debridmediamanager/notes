@@ -252,9 +252,7 @@ Una película que solo sale en 2160p obtiene su copia de 4K de inmediato, y su c
 
 ### Reproducir una película desde YouTube {#streaming-a-film-from-youtube}
 
-Many wanted films no indexer carries are on YouTube, uploaded whole by the studio that
-made them. With `acquisition.youtube` set, zurg streams such a film from that upload
-instead of leaving it unfetched. Nothing is downloaded.
+Muchas películas que quieres no las tiene ningún indexador, pero están en YouTube, subidas completas por el estudio que las hizo. Con `acquisition.youtube` activado, zurg transmite una película así desde esa subida en lugar de dejarla sin buscar. No se descarga nada.
 
 ```yaml
 acquisition:
@@ -266,54 +264,18 @@ acquisition:
     # searches_per_hour: 20                       # default; films looked for on YouTube in an hour
 ```
 
-- **When.** Only for a film on the DMM wanted list, and only when nothing the indexers
-  return can be taken: no release passes `quality`, `max_size_gb`, `exclude_words` and
-  the title and year checks, or every one was found gone, with every indexer answering.
-  Never for a show or an upgrade, nor with `audio_languages` or `subtitle_languages`
-  set, since an upload's languages cannot be read. Only the wanted list takes a stream:
-  a film the Plex watchlist also wants is not settled for it by one, since Plex cannot
-  play it, and the watchlist keeps looking for a release.
-- **How often.** At most `searches_per_hour` films are looked for in an hour (20 by
-  default: 1,820 films take four days), one at a time. A film YouTube has nothing for is
-  asked about again a day later, restarts included.
-- **Which upload.** zurg searches YouTube for the title and year, and for the original
-  title when DMM sends one, and takes an upload only when all of these hold: it is on
-  one of `channels`; it runs at least 90% of the film's runtime, or an hour when DMM does
-  not know the runtime; its title begins with the film's title (`'Separada' FULL MOVIE |
-  ...`), states no other year, and is no trailer, teaser, clip or `Part N`. Of those it
-  takes the longest, then the most watched, and checks that YouTube streams it with
-  picture and sound together.
-- **Channels.** The default list is the Philippine studios' own channels: ABS-CBN Star
-  Cinema, Regal Entertainment, VIVA Films, SOLAR WATCH NOW, OctoArts Films, CineMo and
-  Cinema One. Of 100 random unfetched films on one wanted list (2026-10-31), 65 had a
-  full-length upload and 33 were on these channels; the rest were re-uploads (every
-  Disney one) and, for new releases, scams titled "full movie". Writing `channels`
-  replaces the list. A channel's id is the `UC...` part of its address, or what
-  `yt-dlp --print channel_id <a video's page>` prints.
-- **What you get.** The film is named `Title.Year.1080p.YouTube.WEB-DL` and DMM is told
-  it was fetched (`youtube:<video id>`). rex gets it as an HLS item in your movies
-  library, read through zurg. Jellyfin and Kodi get
-  `__magic__/__movies__/Title (Year) {tmdb-N}/Title (Year) {tmdb-N}.strm`, with `__magic__`
-  on. The address in the `.strm` is zurg's own, from [`base_url`](../reference/config.md), and needs
-  no login. Either address is the stream's playlist served by zurg, every segment in it
-  an address on zurg too, which zurg fetches from YouTube itself. zurg resolves the
-  stream with yt-dlp and keeps it until an hour before it expires. A segment's address
-  is good for a day; a player that comes back later reads the playlist again.
-- **Upgrades.** A streamed film stays on the wanted list while `upgrades` is on, and any
-  release of it that comes out replaces the stream, whatever its resolution: the stream,
-  its `.strm` and its rex item go once the release has passed its check.
+- **Cuándo.** Solo para una película de la lista de deseados de DMM, y solo cuando nada de lo que devuelven los indexadores se puede aprovechar: ningún release pasa `quality`, `max_size_gb`, `exclude_words` ni las comprobaciones de título y año, o todos aparecieron caídos, con todos los indexadores respondiendo. Nunca para una serie ni para una mejora, ni con `audio_languages` o `subtitle_languages` configurados, porque los idiomas de una subida no se pueden leer. Solo la lista de deseados usa un stream: una película que también quiere la watchlist de Plex no queda resuelta con uno, porque Plex no la puede reproducir, y la watchlist sigue buscando un release.
+- **Cada cuánto.** Como máximo se buscan `searches_per_hour` películas por hora (20 por defecto: 1,820 películas tardan cuatro días), una a la vez. Una película para la que YouTube no tiene nada se vuelve a consultar un día después, también tras reinicios.
+- **Qué subida.** zurg busca en YouTube el título y el año, y también el título original cuando DMM lo envía, y solo toma una subida si se cumple todo esto: está en uno de `channels`; dura al menos el 90% del tiempo de la película, o una hora cuando DMM no conoce la duración; su título empieza con el título de la película (`'Separada' FULL MOVIE | ...`), no indica otro año y no es un tráiler, teaser, clip ni `Part N`. De esas, toma la más larga, luego la más vista, y comprueba que YouTube la transmite con imagen y sonido juntos.
+- **Canales.** La lista por defecto son los canales propios de los estudios filipinos: ABS-CBN Star Cinema, Regal Entertainment, VIVA Films, SOLAR WATCH NOW, OctoArts Films, CineMo y Cinema One. De 100 películas sin obtener tomadas al azar de una lista de deseados (2026-10-31), 65 tenían una subida completa y 33 estaban en estos canales; el resto eran resubidas (todas las de Disney) y, en estrenos recientes, estafas con el título "full movie". Escribir `channels` reemplaza la lista. El id de un canal es la parte `UC...` de su dirección, o lo que imprime `yt-dlp --print channel_id <a video's page>`.
+- **Qué obtienes.** La película se llama `Title.Year.1080p.YouTube.WEB-DL` y a DMM se le indica que se obtuvo (`youtube:<video id>`). rex lo recibe como un item HLS en tu biblioteca de películas, leído a través de zurg. Jellyfin y Kodi reciben `__magic__/__movies__/Title (Year) {tmdb-N}/Title (Year) {tmdb-N}.strm`, con `__magic__` activado. La dirección del `.strm` es la propia de zurg, a partir de [`base_url`](../reference/config.md), y no necesita inicio de sesión. Cualquiera de las dos direcciones es la playlist del stream servida por zurg, y cada segmento de ella es también una dirección de zurg, que zurg obtiene directamente de YouTube. zurg resuelve el stream con yt-dlp y lo mantiene hasta una hora antes de que caduque. La dirección de un segmento sirve durante un día; un reproductor que vuelva más tarde vuelve a leer la playlist.
+- **Mejoras.** Una película transmitida sigue en la lista de deseados mientras `upgrades` esté activado, y cualquier release de ella que salga reemplaza el stream, sea cual sea su resolución: el stream, su `.strm` y su item de rex se eliminan una vez que el release ha pasado su comprobación.
 
-Limits:
+Límites:
 
-- **Plex cannot play it.** It is no file on the mount. Use rex, Jellyfin or Kodi.
-- **Cookies are required.** Without a signed-in account's cookies YouTube offers an
-  address that fetches much only video and audio apart, or nothing, so zurg starts with
-  the fallback off and says why. Export them from a browser signed in to YouTube, ideally
-  on the same network. Signing out in that browser ends them.
-- **Every byte passes through zurg.** Nothing is redirected to YouTube: rex sends its
-  source's login with every request its transcoder makes, redirected ones included, and
-  YouTube ties a stream to the address that resolved it. So any player that reaches
-  zurg plays it, and zurg carries the film's traffic.
+- **Plex no puede reproducirla.** No es un archivo del mount. Usa rex, Jellyfin o Kodi.
+- **Las cookies son obligatorias.** Sin las cookies de una cuenta con sesión iniciada, YouTube ofrece una dirección que trae mucho solo vídeo y audio por separado, o nada, así que zurg arranca con el fallback desactivado y lo indica. Expórtalas desde un navegador con sesión iniciada en YouTube, idealmente en la misma red. Cerrar sesión en ese navegador las invalida.
+- **Todo el tráfico pasa por zurg.** Nada se redirige a YouTube: rex envía el inicio de sesión de su fuente con cada petición que hace su transcodificador, también las redirigidas, y YouTube liga un stream a la dirección que lo resolvió. Así que cualquier reproductor que llegue a zurg la reproduce, y zurg carga con el tráfico de la película.
 
 ## Comportamiento de Seerr {#seerr-behavior}
 

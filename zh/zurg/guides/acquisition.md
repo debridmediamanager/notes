@@ -227,9 +227,7 @@ acquisition:
 
 ### 从 YouTube 串流一部电影 {#streaming-a-film-from-youtube}
 
-Many wanted films no indexer carries are on YouTube, uploaded whole by the studio that
-made them. With `acquisition.youtube` set, zurg streams such a film from that upload
-instead of leaving it unfetched. Nothing is downloaded.
+many 想看的电影，索引器里都找不到，但它们在 YouTube 上，由制作它的电影公司整部上传。设置 `acquisition.youtube` 后，zurg 会直接从这个上传版本串流这部电影，而不是留着不去获取。什么都不会下载。
 
 ```yaml
 acquisition:
@@ -241,54 +239,18 @@ acquisition:
     # searches_per_hour: 20                       # default; films looked for on YouTube in an hour
 ```
 
-- **When.** Only for a film on the DMM wanted list, and only when nothing the indexers
-  return can be taken: no release passes `quality`, `max_size_gb`, `exclude_words` and
-  the title and year checks, or every one was found gone, with every indexer answering.
-  Never for a show or an upgrade, nor with `audio_languages` or `subtitle_languages`
-  set, since an upload's languages cannot be read. Only the wanted list takes a stream:
-  a film the Plex watchlist also wants is not settled for it by one, since Plex cannot
-  play it, and the watchlist keeps looking for a release.
-- **How often.** At most `searches_per_hour` films are looked for in an hour (20 by
-  default: 1,820 films take four days), one at a time. A film YouTube has nothing for is
-  asked about again a day later, restarts included.
-- **Which upload.** zurg searches YouTube for the title and year, and for the original
-  title when DMM sends one, and takes an upload only when all of these hold: it is on
-  one of `channels`; it runs at least 90% of the film's runtime, or an hour when DMM does
-  not know the runtime; its title begins with the film's title (`'Separada' FULL MOVIE |
-  ...`), states no other year, and is no trailer, teaser, clip or `Part N`. Of those it
-  takes the longest, then the most watched, and checks that YouTube streams it with
-  picture and sound together.
-- **Channels.** The default list is the Philippine studios' own channels: ABS-CBN Star
-  Cinema, Regal Entertainment, VIVA Films, SOLAR WATCH NOW, OctoArts Films, CineMo and
-  Cinema One. Of 100 random unfetched films on one wanted list (2026-10-31), 65 had a
-  full-length upload and 33 were on these channels; the rest were re-uploads (every
-  Disney one) and, for new releases, scams titled "full movie". Writing `channels`
-  replaces the list. A channel's id is the `UC...` part of its address, or what
-  `yt-dlp --print channel_id <a video's page>` prints.
-- **What you get.** The film is named `Title.Year.1080p.YouTube.WEB-DL` and DMM is told
-  it was fetched (`youtube:<video id>`). rex gets it as an HLS item in your movies
-  library, read through zurg. Jellyfin and Kodi get
-  `__magic__/__movies__/Title (Year) {tmdb-N}/Title (Year) {tmdb-N}.strm`, with `__magic__`
-  on. The address in the `.strm` is zurg's own, from [`base_url`](../reference/config.md), and needs
-  no login. Either address is the stream's playlist served by zurg, every segment in it
-  an address on zurg too, which zurg fetches from YouTube itself. zurg resolves the
-  stream with yt-dlp and keeps it until an hour before it expires. A segment's address
-  is good for a day; a player that comes back later reads the playlist again.
-- **Upgrades.** A streamed film stays on the wanted list while `upgrades` is on, and any
-  release of it that comes out replaces the stream, whatever its resolution: the stream,
-  its `.strm` and its rex item go once the release has passed its check.
+- **When.** 只针对 DMM 愿望清单上的电影，并且只有在索引器返回的内容都无法使用时才会启用：没有任何资源能通过 `quality`、`max_size_gb`、`exclude_words` 以及标题和年份检查，或者所有资源都被确认已失效（且每个索引器都有回应）。剧集和升级永远不走这条路，设置了 `audio_languages` 或 `subtitle_languages` 时也不走，因为无法读取上传视频的语言。只有愿望清单会使用串流：如果 Plex 观看列表也想要这部电影，那么即使有串流，也不算解决，因为 Plex 无法播放它，观看列表会继续寻找资源。
+- **How often.** 每小时最多查找 `searches_per_hour` 部电影（默认 20 部：1,820 部电影需要四天），一次一部。YouTube 没有的电影，会在一天后再次查询，重启后也一样。
+- **Which upload.** zurg 会用标题和年份在 YouTube 上搜索，如果 DMM 提供了原片名，也会搜原片名。只有同时满足以下条件的上传才会被采用：来自 `channels` 中的某个频道；时长至少为电影片长的 90%，如果 DMM 不知道片长则至少为一小时；标题以电影标题开头（例如 `'Separada' FULL MOVIE | ...`），没有写其他年份，并且不是预告片、先导片、片段或 `Part N`。在符合条件的上传中，zurg 选择最长的，其次是观看次数最多的，然后检查 YouTube 能否同时串流出画面和声音。
+- **Channels.** 默认列表是菲律宾电影公司自己的频道：ABS-CBN Star Cinema、Regal Entertainment、VIVA Films、SOLAR WATCH NOW、OctoArts Films、CineMo 和 Cinema One。在 2026-10-31 的一份愿望清单中随机抽取的 100 部未获取电影里，65 部有完整长度的上传，其中 33 部来自这些频道；其余的是转载（每一部迪士尼电影都是），而对于新片，则是标题写着 "full movie" 的骗局。写入 `channels` 会替换整个列表。频道 ID 是其地址中的 `UC...` 部分，或者运行 `yt-dlp --print channel_id <a video's page>` 输出的结果。
+- **What you get.** 电影会被命名为 `Title.Year.1080p.YouTube.WEB-DL`，DMM 会被告知已获取（`youtube:<video id>`）。rex 会将它作为 HLS 项目放入你的电影库，通过 zurg 读取。Jellyfin 和 Kodi 得到的是 `__magic__/__movies__/Title (Year) {tmdb-N}/Title (Year) {tmdb-N}.strm`，同时开启 `__magic__`。`.strm` 中的地址是 zurg 自己的地址，来自 [`base_url`](../reference/config.md)，不需要登录。两种地址都指向 zurg 提供的播放列表，其中每个分段的地址也都在 zurg 上，由 zurg 自己从 YouTube 获取。zurg 使用 yt-dlp 解析串流，并保留到其过期前一小时。分段地址有效期为一天；稍后回来的播放器会重新读取播放列表。
+- **Upgrades.** 只要 `upgrades` 开启，已串流的电影就会留在愿望清单上。此后出现的任何该电影的资源，无论分辨率如何，都会替换串流：一旦新资源通过检查，串流、它的 `.strm` 和 rex 项目都会被删除。
 
 Limits:
 
-- **Plex cannot play it.** It is no file on the mount. Use rex, Jellyfin or Kodi.
-- **Cookies are required.** Without a signed-in account's cookies YouTube offers an
-  address that fetches much only video and audio apart, or nothing, so zurg starts with
-  the fallback off and says why. Export them from a browser signed in to YouTube, ideally
-  on the same network. Signing out in that browser ends them.
-- **Every byte passes through zurg.** Nothing is redirected to YouTube: rex sends its
-  source's login with every request its transcoder makes, redirected ones included, and
-  YouTube ties a stream to the address that resolved it. So any player that reaches
-  zurg plays it, and zurg carries the film's traffic.
+- **Plex cannot play it.** 它不是挂载点上的文件。请使用 rex、Jellyfin 或 Kodi。
+- **Cookies are required.** 没有已登录账号的 cookies，YouTube 提供的地址大多只有分开的视频和音频，或者根本没有，所以 zurg 会关闭备用方案启动，并说明原因。请从已登录 YouTube 的浏览器导出 cookies，最好与 zurg 在同一网络中。在该浏览器中退出登录会使 cookies 失效。
+- **Every byte passes through zurg.** 不会重定向到 YouTube：rex 会在其转码器发出的每个请求中附带其来源的登录信息（包括被重定向的请求），而 YouTube 会将串流与解析它的地址绑定。因此，任何能连接到 zurg 的播放器都能播放它，流量也全部由 zurg 承载。
 
 ## Seerr 的行为 {#seerr-behavior}
 
@@ -460,19 +422,15 @@ Acquisition: chose <release> for <title>: results=143 local_refusals=97 radarr_r
 
 ## 检查仅将 zurg 作为下载客户端的 \*arr {#checking-an-arr-that-only-uses-zurg-as-its-download-client}
 
-A Sonarr or Radarr pointed at zurg's [SABnzbd](sonarr-radarr.md) or
-[qBittorrent](sonarr-radarr-torrents.md) endpoint does its own searching, and does not
-need a source here. zurg still wants its API key, because three of its settings
-decide whether every import is a free rename or a whole release downloaded
-from the debrid account and written to zurg's disk: Remove Completed on a
-qBittorrent client, the download folder and the root folders on one volume,
-and root folders inside `__magic__`. With the key, zurg turns Remove Completed
-on by itself (see [qbittorrent.md](sonarr-radarr-torrents.md#what-to-put-in-each-field))
-and warns about the other two. See
-[One volume for the download folder and the root folders](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
+指向 zurg 的 [SABnzbd](sonarr-radarr.md) 或
+[qBittorrent](sonarr-radarr-torrents.md) 端点的 Sonarr 或 Radarr 会自己搜索，不需要在这里添加源。
+zurg 仍然需要它的 API key，因为有三项设置决定每次导入是免费的重命名，还是把整个发布从 debrid 账户下载并写入 zurg 的磁盘：
+qBittorrent 客户端上的 Remove Completed、下载文件夹和根文件夹是否在同一个卷上，以及根文件夹是否位于 `__magic__` 内。
+有了 API key，zurg 会自动开启 Remove Completed（参见 [qbittorrent.md](sonarr-radarr-torrents.md#what-to-put-in-each-field)），并对另外两项发出警告。
+参见 [下载文件夹与根文件夹使用同一个卷](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders)。
 
-The easiest way to give zurg the key is the banner on the main dashboard,
-described below. Or add it as a source that is switched off:
+给 zurg 填入 key 最简单的方法是使用主仪表盘上的横幅，见下文。
+或者把它添加为一个已关闭的源：
 
 ```yaml
 acquisition:
@@ -484,40 +442,29 @@ acquisition:
       api_key: YOUR_SONARR_API_KEY
 ```
 
-A Radarr or Sonarr source with `enabled: false` acquires nothing. zurg never
-reads its wanted list and never searches for it. With its `url` and `api_key`
-set, and one of the two endpoints on, zurg only reads the \*arr's root folders,
-remote path mappings and download clients, at start, every ten minutes and as
-soon as the \*arr first calls one of the endpoints. It turns Remove Completed
-on for the \*arr's zurg qBittorrent client when it is off, the one change zurg
-makes, and reports a layout that makes imports copies. Every source with a URL
-and an API key, enabled or not, is checked and corrected the same way. It is
-listed on the acquisition page under **Checked, never searched for**, with
-what zurg changed, the findings go to the log, and `zurg doctor` shows them as
-`imports (<name>)`. `library_path` is not judged for such a source, since
-nothing is placed for it. A source added to config.yml by hand is read at
-start, so restart zurg after adding one that way.
+`enabled: false` 的 Radarr 或 Sonarr 源不会获取任何内容。
+zurg 从不读取它的想看列表，也从不为它搜索。
+设置了 `url` 和 `api_key`，并且两个端点中至少开启一个时，zurg 只会读取 \*arr 的根文件夹、远程路径映射和下载客户端；
+读取时机是启动时、每十分钟一次，以及 \*arr 第一次调用某个端点时。
+如果 \*arr 的 zurg qBittorrent 客户端上 Remove Completed 处于关闭状态，zurg 会将其开启，这是 zurg 唯一做出的改动，并会报告导致导入变成复制的目录布局。
+所有带 URL 和 API key 的源，无论是否启用，都会以同样的方式检查和修正。
+这类源会列在获取页面的 **Checked, never searched for** 下，并附上 zurg 所做的改动；
+检查结果写入日志，`zurg doctor` 会以 `imports (<name>)` 的形式显示。
+这类源不会检查 `library_path`，因为不会为它放置任何内容。
+手动添加到 config.yml 的源在启动时读取，所以用这种方式添加后需要重启 zurg。
 
-zurg also notices a Sonarr or Radarr it cannot check. Both send their name in
-every request to the endpoints (`Sonarr/4.0.20.3014 (alpine 3.24.1)`), so zurg
-records which ones call it and from which address. When one calls and no
-source of its kind has a URL and an API key, zurg logs one warning, `zurg
-doctor` reports it on its `*arr settings` line, and the main dashboard shows a
-banner with a form for its URL and API key. The URL is filled in with a guess:
-the address the \*arr calls from, on its default port (8989 for Sonarr, 7878
-for Radarr). That address is often a container's own, which zurg may or may
-not reach, so change it to whatever URL reaches the \*arr from where zurg
-runs. The API key is in the \*arr under Settings, General, Security. zurg
-first asks the \*arr for its status with that key, and saves nothing unless it
-answers as the app it was named as. It then adds the source above to
-config.yml with `enabled: false`, keeping everything else in the file as it
-was, and checks it straight away, with no restart. The form shows what zurg
-found and changed. The key is written to config.yml and sent to the \*arr, and
-nowhere else.
+zurg 也会注意到它无法检查的 Sonarr 或 Radarr。
+两者在每次请求端点时都会发送自己的名称（`Sonarr/4.0.20.3014 (alpine 3.24.1)`），因此 zurg 会记录哪些实例在调用它以及来自哪个地址。
+当某个实例调用它，而同类源中没有任何一个同时具有 URL 和 API key 时，zurg 会记录一条警告，`zurg doctor` 会在其 `*arr settings` 行中报告，主仪表盘上也会显示一个横幅，里面有填写 URL 和 API key 的表单。
+URL 会用一个猜测值预先填好：即 \*arr 调用时所用的地址，加上它的默认端口（Sonarr 为 8989，Radarr 为 7878）。
+这个地址通常是容器自己的地址，zurg 不一定能访问到，所以请改成从 zurg 运行的位置能够访问到 \*arr 的 URL。
+API key 位于 \*arr 的 Settings、General、Security 下。
+zurg 会先用这个 key 向 \*arr 请求状态，只有当它以被命名的应用身份作出回应时才会保存任何内容。
+随后，zurg 会把上面所说的源以 `enabled: false` 添加到 config.yml 中，文件里的其他内容保持不变，并立即检查该源，无需重启。
+表单会显示 zurg 发现了什么、做了哪些改动。
+这个 key 只会写入 config.yml 并发送给 \*arr，不会用于其他任何地方。
 
-The banner matches by kind, not by address: an \*arr calls zurg from inside
-its container, on an address that has nothing to do with the URL zurg reaches
-it on, so one Sonarr source with a key silences the banner for every Sonarr.
+横幅按类型匹配，而不是按地址：\*arr 从它的容器内部调用 zurg，其地址与 zurg 访问它所用的 URL 毫无关系，因此只要有一个带 key 的 Sonarr 源，就会为所有 Sonarr 隐藏横幅。
 
 ## 查找重复版本 {#finding-duplicate-releases}
 

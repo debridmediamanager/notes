@@ -1054,9 +1054,8 @@ Eine Exception hier wird zu `("", "Unknown exception: {message}")` (`:590-594`).
 
 ### 6.4 `TestGetTorrents` (`:599-612`)
 
-`Proxy.GetTorrents(Settings)`; any exception becomes `("", "Failed to get the list of torrents:
-{exceptionMessage}")`. This is the check that catches a malformed `torrents/info` body — a JSON object
-instead of an array, a bad enum, a non-numeric `size`.
+`Proxy.GetTorrents(Settings)`; jede Exception wird zu `("", "Failed to get the list of torrents:
+{exceptionMessage}")`. Das ist die Prüfung, die einen fehlerhaften `torrents/info`-Body abfängt — ein JSON-Objekt statt eines Arrays, ein ungültiger Enum-Wert, ein nicht-numerisches `size`.
 
 ### 6.5 Die `dht`-Prüfung {#65-the-dht-check}
 

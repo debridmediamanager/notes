@@ -129,14 +129,9 @@ Sonarr や Radarr が整理しているライブラリでは、インポート�
 
 ## Windows の `__magic__` で、ジャーナルが無限に増え続けなくなりました {#__magic__-on-windows-stops-growing-its-journal-forever}
 
-On Windows, zurg logged `cannot truncate data\magic.journal ... Access is
-denied.` every time it tried to tidy the file where `__magic__` records your
-moves and folders. The file was never emptied, so it grew with every change
-and every start read all of it again. After a few thousand changes in one run,
-each further change also rewrote the whole saved layout. zurg now empties it
-on Windows as it always did elsewhere, and the first start after updating
-clears what has piled up. If tidying ever fails, zurg tries again after more
-changes instead of on every one.
+Windowsでは、zurgが`__magic__`にファイルの移動やフォルダの情報を記録する`data\magic.journal`を整理しようとするたびに、`cannot truncate data\magic.journal ... Access is denied.`というログを出していました。このファイルは一度も空にされなかったため、変更があるたびに大きくなり、起動するたびに全体を読み直していました。1回の実行で数千件の変更があると、それ以降の変更ごとに保存済みのレイアウト全体も書き直されるようになっていました。
+
+zurgは、他のOSと同じようにWindowsでもこのファイルを空にするようになりました。更新後の最初の起動で、それまでにたまった分もクリアされます。整理に失敗した場合も、変更のたびに何度も試すのではなく、さらに数回変更が入ってから再度試すようになりました。
 
 ## MCP でファイルを復元すると、そのリリースもすぐに戻るように {#restoring-a-file-over-mcp-puts-its-release-back-right-away}
 
@@ -480,33 +475,17 @@ Usenet の投稿でファイル名がすべて隠されている場合、zurg �
 
 ## ファイル名にアクセント記号や CJK 文字を含むリリースも、名前全体が保持されます {#releases-with-accents-or-cjk-in-their-filenames-keep-their-whole-names}
 
-A release whose files are named with anything outside plain English letters came
-out of zurg with the front of every name missing. `Détective Conan S11E01 - 286
-[MULTI] [AVC].mkv` was served as `tective Conan S11E01 - 286 [MULTI] [AVC].mkv`,
-and a Chinese or Japanese title lost even more, because everything up to the last
-such character was dropped.
+英字以外の文字を含むファイル名のリリースは、zurg から出力されたとき、すべての名前の先頭が欠けていました。`Détective Conan S11E01 - 286 [MULTI] [AVC].mkv` は `tective Conan S11E01 - 286 [MULTI] [AVC].mkv` として配信されていました。中国語や日本語のタイトルではさらに多くが失われました。最後のそうした文字までのすべてが削られていたためです。
 
-Sonarr and Radarr could not do anything with what was left. A name like `tective
-Conan S11E01` matches no series, so they fell back to the download's grab history,
-refused to import on that alone, and parked the item with "release was matched to
-series by ID. Automatic import is not possible." The release sat in the queue and
-nothing moved it.
+Sonarr と Radarr は、残った名前では何もできませんでした。`tective Conan S11E01` のような名前はどのシリーズにも一致しないため、両者はダウンロードの grab 履歴にフォールバックしました。それだけではインポートを拒否し、アイテムを "release was matched to series by ID. Automatic import is not possible." で保留にしました。リリースはキューに残ったままで、何も動きませんでした。
 
-It could also cost you files. When the only thing telling two files apart sits
-after the last accented character, both come out with the same name, and a name
-is a path. One French release with ten repair volumes had all ten reduced to the
-same name and published four files where the post holds thirteen, leaving the
-repair data with no way to reach it.
+ファイルを失うこともありました。2つのファイルを区別する唯一の手がかりが最後のアクセント付き文字の後ろにあると、両方が同じ名前で出力されてしまいます。名前はそのままパスになるからです。修復ボリュームが10個あるフランス語のリリースでは、10個すべてが同じ名前に変えられ、投稿には13ファイルあるのに4ファイルしか公開されませんでした。そのため修復データにたどり着く方法がなくなりました。
 
-zurg now reads every character above plain ASCII as part of the filename, which
-is what it always is: the part counters, the `yEnc` marker, the brackets and the
-file extensions posters write are all plain ASCII, so anything else belongs to
-the title. Releases named in plain ASCII are unaffected and come out exactly as
-before.
+zurg は、プレーンな ASCII を超えるすべての文字をファイル名の一部として読むようになりました。これが本来の姿です。パートの番号、`yEnc` マーカー、括弧、投稿者が付けるファイル拡張子はすべてプレーンな ASCII なので、それ以外の文字はタイトルに属します。
 
-Releases already in your library keep the names they were filed under, since
-zurg does not revisit a file list it has already recorded. Re-adding an affected
-release picks up the corrected names.
+プレーンな ASCII で名付けられたリリースは影響を受けず、これまでとまったく同じように出力されます。
+
+すでにライブラリにあるリリースは、登録されたときの名前のまま残ります。zurg は一度記録したファイル一覧を見直さないためです。影響を受けたリリースを再追加すると、修正された名前で取り込まれます。
 
 ## 日本語、韓国語、中国語、タイ語、アラビア語で書かれた名前はそのまま残ります {#a-name-written-in-japanese-korean-chinese-thai-or-arabic-is-left-alone}
 

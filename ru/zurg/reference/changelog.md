@@ -100,14 +100,7 @@ Docker считает zurg здоровым сразу после запуска
 
 ## `__magic__` на Windows перестаёт бесконечно расти журнал {#__magic__-on-windows-stops-growing-its-journal-forever}
 
-On Windows, zurg logged `cannot truncate data\magic.journal ... Access is
-denied.` every time it tried to tidy the file where `__magic__` records your
-moves and folders. The file was never emptied, so it grew with every change
-and every start read all of it again. After a few thousand changes in one run,
-each further change also rewrote the whole saved layout. zurg now empties it
-on Windows as it always did elsewhere, and the first start after updating
-clears what has piled up. If tidying ever fails, zurg tries again after more
-changes instead of on every one.
+В Windows zurg каждый раз писал в лог `cannot truncate data\magic.journal ... Access is denied.`, когда пытался привести в порядок файл, где `__magic__` записывает ваши перемещения и папки. Файл так и не очищался, поэтому он рос с каждым изменением, а при каждом запуске читался целиком заново. После нескольких тысяч изменений за один запуск каждое следующее изменение также переписывало весь сохранённый макет. Теперь zurg очищает его в Windows, как и раньше на других системах, а при первом запуске после обновления очищается всё, что накопилось. Если очистка когда-нибудь не удаётся, zurg пробует снова после большего числа изменений, а не на каждом изменении.
 
 ## Восстановление файла через MCP сразу возвращает его релиз {#restoring-a-file-over-mcp-puts-its-release-back-right-away}
 

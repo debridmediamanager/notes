@@ -123,14 +123,7 @@ Também é assim que você traz de volta um release que está em `__all__`, mas 
 
 ## O `__magic__` no Windows deixa de crescer o journal para sempre {#__magic__-on-windows-stops-growing-its-journal-forever}
 
-On Windows, zurg logged `cannot truncate data\magic.journal ... Access is
-denied.` every time it tried to tidy the file where `__magic__` records your
-moves and folders. The file was never emptied, so it grew with every change
-and every start read all of it again. After a few thousand changes in one run,
-each further change also rewrote the whole saved layout. zurg now empties it
-on Windows as it always did elsewhere, and the first start after updating
-clears what has piled up. If tidying ever fails, zurg tries again after more
-changes instead of on every one.
+No Windows, o zurg registrava `cannot truncate data\magic.journal ... Access is denied.` toda vez que tentava limpar o arquivo onde o `__magic__` guarda seus movimentos e pastas. O arquivo nunca era esvaziado, então crescia a cada mudança e cada inicialização lia tudo de novo. Depois de alguns milhares de mudanças em uma mesma execução, cada nova mudança também reescrevia o layout salvo inteiro. Agora o zurg esvazia esse arquivo no Windows, como sempre fez nos outros sistemas, e a primeira inicialização após a atualização limpa o que acumulou. Se a limpeza falhar algum dia, o zurg tenta de novo depois de mais mudanças, em vez de tentar a cada uma.
 
 ## Restaurar um arquivo pelo MCP recoloca a release de volta na hora {#restoring-a-file-over-mcp-puts-its-release-back-right-away}
 

@@ -56,38 +56,18 @@ Os comandos de shell nas páginas de cada servidor são escritos para Linux e ma
 
 ### Saindo de uma biblioteca com symlinks {#coming-off-a-symlink-library}
 
-You are not moving a library. You are rebuilding one. And `__magic__` gives the
-\*arrs exactly what the symlink farm gave them without the farm. They move and
-rename inside it as freely as before. Each move is a row write instead of a
-file operation.
+Você não está movendo uma biblioteca. Você está reconstruindo uma. E `__magic__` entrega aos \*arrs exatamente o que a fazenda de symlinks entregava, só que sem a fazenda. Eles continuam movendo e renomeando dentro dela com a mesma liberdade de antes. Cada movimento agora é uma escrita de linha em vez de uma operação de arquivo.
 
-!!!danger Never let an \*arr move the old library into `__magic__`
-Changing a series or movie root folder makes Sonarr or Radarr offer to **move**
-the files. Say no. A move inside `__magic__` is free. A move from anywhere else crosses the
-mount boundary and that is a copy. So is a move between two volumes of the same
-mount. In Docker give the \*arr one volume that holds zurg's whole mount. A copy off a streaming mount pulls your
-entire library down through your news or debrid allowance. Your old library is
-a tree of symlinks so what gets copied is every target they resolve to.
+!!!danger Nunca deixe um \*arr mover a biblioteca antiga para dentro de `__magic__`
+Ao trocar a pasta raiz de uma série ou de um filme, o Sonarr ou o Radarr oferecem **mover** os arquivos. Diga não. Um movimento dentro de `__magic__` é gratuito. Um movimento de qualquer outro lugar cruza a fronteira do mount, e isso é uma cópia. Também é uma cópia um movimento entre dois volumes do mesmo mount. No Docker, dê ao \*arr um único volume que contenha todo o mount do zurg. Uma cópia a partir de um mount de streaming puxa a sua biblioteca inteira pela sua cota de Usenet ou de debrid. Sua biblioteca antiga é uma árvore de symlinks, então o que seria copiado é cada alvo para o qual eles apontam.
 !!!
 
-Move each file into place yourself instead. Every move is one rename through
-zurg's mount. Nothing is copied and nothing on your account changes. The script
-below does it from your old library of symlinks. A link's path under the old
-root folder is where Sonarr or Radarr expects the episode or film. Its target
-names the file. So each file lands at the same path under the new root folder
-that its link had under the old one. The old library is only read. It keeps
-working until you switch the \*arr over.
+Mova cada arquivo para o lugar certo você mesmo. Cada movimento é um único rename através do mount do zurg. Nada é copiado e nada na sua conta muda. O script abaixo faz isso a partir da sua biblioteca antiga de symlinks. O caminho de um link dentro da pasta raiz antiga é onde o Sonarr ou o Radarr espera o episódio ou o filme. O alvo do link informa qual é o arquivo. Assim, cada arquivo acaba no mesmo caminho dentro da nova pasta raiz que o link tinha na antiga. A biblioteca antiga é só lida. Ela continua funcionando até você trocar os \*arrs.
 
-1. **Build zurg beside the old server** as its page shows. Let it list the
-   whole library first.
-2. **Turn on `__magic__`** as its page shows. Keep Plex scans off and the
-   \*arr queues paused.
-3. **Save the `zurg_path` function from your server's page** as
-   `zurg_path.sh` beside the script. It turns an old link's target into the
-   file zurg serves. Each server lays its files out differently.
-4. **Run the script** once per root folder. Set `OLD` and `NEW` and `LOG` for
-   each one. A setup with `sonarr4k` and `radarr4k` beside the regular pair
-   needs four runs.
+1. **Monte o zurg ao lado do servidor antigo** como mostra a página dele. Deixe-o listar a biblioteca inteira primeiro.
+2. **Ligue o `__magic__`** como mostra a página dele. Mantenha os scans do Plex desligados e as filas dos \*arrs pausadas.
+3. **Salve a função `zurg_path` da página do seu servidor** como `zurg_path.sh` ao lado do script. Ela transforma o alvo de um link antigo no arquivo que o zurg serve. Cada servidor organiza os arquivos de um jeito diferente.
+4. **Rode o script** uma vez para cada pasta raiz. Defina `OLD`, `NEW` e `LOG` para cada uma. Uma configuração com `sonarr4k` e `radarr4k` ao lado do par normal precisa de quatro execuções.
 
    ```bash
    #!/bin/bash
@@ -118,47 +98,23 @@ working until you switch the \*arr over.
    done
    ```
 
-   It prints a line for every link it leaves alone.
+   Ele imprime uma linha para cada link que deixa de lado.
 
-   - `NOT IN ZURG` is a link to a file zurg does not have. Its NZB could not be
-     recovered or its account is not in zurg's config.
-   - `FAILED` is a move zurg refused. A second link to a file the script
-     already moved prints this after a line from `mv` that says `No such file
-     or directory`. A file can sit at only one path in `__magic__`. It stays
-     where the first link put it.
-   - `ALREADY THERE` is a path the new root folder already holds. Running the
-     script again skips everything it placed before.
+   - `NOT IN ZURG` é um link para um arquivo que o zurg não tem. Ou o NZB dele não pôde ser recuperado, ou a conta dele não está na configuração do zurg.
+   - `FAILED` é um movimento que o zurg recusou. Um segundo link para um arquivo que o script já moveu imprime isso depois de uma linha do `mv` dizendo `No such file or directory`. Um arquivo só pode estar em um caminho dentro de `__magic__`. Ele fica onde o primeiro link o colocou.
+   - `ALREADY THERE` é um caminho que a nova pasta raiz já tem. Rodar o script de novo pula tudo o que ele já colocou no lugar.
 
-5. **Switch each \*arr over.** Select every series or every movie and edit them
-   together. Set the root folder to the new one under `__magic__`. When it asks
-   whether to move the files answer **No, I'll Move the Files Myself**. The
-   script already put them there. Then run **Update All** so it finds them.
-6. **Point Plex at the new root folders** and at nothing else. The next box
-   says why.
+5. **Troque cada \*arr.** Selecione todas as séries ou todos os filmes e edite-os juntos. Defina a pasta raiz como a nova dentro de `__magic__`. Quando ele perguntar se deve mover os arquivos, responda **No, I'll Move the Files Myself**. O script já os colocou lá. Depois rode **Update All** para que ele os encontre.
+6. **Aponte o Plex para as novas pastas raiz e para nenhuma outra.** A próxima caixa explica por quê.
 
-Each move took about 15 milliseconds on a test library and nothing was copied.
-Watch `data/local` on zurg's `/magic/` dashboard while the script runs. It
-grows only by the subtitles and other small files the script copies. A number
-that grows by gigabytes means something is being copied. Stop and look.
+Cada movimento levou cerca de 15 milissegundos em uma biblioteca de teste e nada foi copiado. Acompanhe `data/local` no painel `/magic/` do zurg enquanto o script roda. Ele só cresce com as legendas e outros arquivos pequenos que o script copia. Um número que cresce em gigabytes significa que algo está sendo copiado. Pare e verifique.
 
-The old links keep working. A moved file still shows at its old `__all__` path
-as well as at its new one. Builds before the 2026.10.04 nightly hid it at the
-old path for up to 12 hours even though zurg still served it there. On one of
-those builds restart zurg once the script is done. Keep Plex away from the old
-folders and from `__all__` until you have.
+Os links antigos continuam funcionando. Um arquivo movido ainda aparece no caminho antigo em `__all__`, além do novo. As versões anteriores à nightly de 2026.10.04 escondiam o arquivo no caminho antigo por até 12 horas, mesmo com o zurg ainda o servindo ali. Em uma dessas versões, reinicie o zurg uma vez quando o script terminar. Mantenha o Plex longe das pastas antigas e de `__all__` até fazer isso.
 
-The zurg side of this was measured on 2026-10-03. The \*arr side is its
-ordinary root folder edit and was not tested for this guide. Do one series
-first.
+A parte do zurg desta página foi medida em 2026-10-03. A edição de pasta raiz no \*arr é o procedimento comum dele e não foi testada para este guia. Faça uma série primeiro.
 
-!!!warning Point each Plex library at one directory and not two
-A library that scans a filter directory such as `movies` or `shows` or
-`__all__` **and** scans `__magic__` finds every episode twice — and `__magic__`
-holds its own `__all__`, so pointing a library at the root of the namespace
-scans the whole library along with what you organised. Pick one. If you use the
-\*arrs then point Plex at the root folders you made, `__magic__/tv` and
-`__magic__/movies`. If you browse a library nobody organises then pick the
-filter directories and leave `__magic__` off.
+!!!warning Aponte cada biblioteca do Plex para um diretório, e não para dois
+Uma biblioteca que escaneia um diretório de filtro como `movies`, `shows` ou `__all__` **e** também escaneia `__magic__` encontra cada episódio duas vezes. E `__magic__` contém o seu próprio `__all__`, então apontar uma biblioteca para a raiz do namespace escaneia a biblioteca inteira junto com o que você organizou. Escolha um. Se você usa os \*arrs, aponte o Plex para as pastas raiz que você criou, `__magic__/tv` e `__magic__/movies`. Se você navega por uma biblioteca que ninguém organiza, escolha os diretórios de filtro e deixe `__magic__` de fora.
 !!!
 
 ## A única proteção que você não pode pular {#the-one-guard-you-must-not-skip}
