@@ -57,12 +57,13 @@ Press **Library** on the home page. It lists everything in the accounts you sign
 - Search with **search by filename/hash/id, supports regex**, or narrow it with **Movies**, **TV shows** and **Others**.
 - Press a row for its details and its **Hashlist**, **Delete**, **Cast** and **Copy** buttons. The icons at the end of each row do the same.
 - **Backup** saves your list to a `.dmm.json` file. **RD Restore** (**PM Restore** and so on) adds a saved list back.
-- **Share List** turns what's shown, or what you selected, into a hash list other people can add to their own accounts.
+- **Share List** turns what's shown, or what you selected, into a [hash list](hashlists.md) other people can add to their own accounts.
 - **Delete List** deletes everything shown, after a **Yes, delete!** check. Search or select first.
 
 ## Where to go next
 
 - [DMM in Stremio](stremio.md): watch what you find in Stremio with the DMM Cast addon.
+- [Hash lists](hashlists.md): add a whole shared library to yours, or share your own.
 - ["Torrent is being downloaded to debrid"](../guides/torrent-being-downloaded-to-debrid.md): what that screen in Stremio means and how DMM shows what's cached.
 - [DMM buttons in Safari](safari.md): the browser extension adds a DMM button to IMDb, Trakt and other movie and TV sites.
 

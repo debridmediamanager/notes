@@ -21,6 +21,7 @@ Every guide on this site, by project.
 
 - [What DMM is and how to use it](../dmm/index.md): sign in, search, the buttons on a release and your library
 - [DMM in Stremio](../dmm/stremio.md): watch in Stremio with the DMM Cast addon, and what to do when it goes wrong
+- [Hash lists](../dmm/hashlists.md): find shared lists, add them to your debrid library, share your own
 - [DMM buttons in Safari](../dmm/safari.md): the browser extension as a userscript on Mac, iPhone and iPad
 - [Seerr through DMM](../dmm/seerr.md)
 - [DMM wanted list](../zurg/guides/dmm-wanted.md): zurg fetches what you press **Want** on
