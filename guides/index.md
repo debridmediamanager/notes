@@ -41,6 +41,7 @@ Every guide on this site, by project.
 - [\_\_magic\_\_](../zurg/guides/magic.md)
 - [Renaming](../zurg/guides/renaming.md)
 - [Plex](../zurg/guides/plex.md)
+- [One Docker Compose file](../zurg/guides/docker-compose.md): zurg, Plex Media Server and rex on one Linux machine
 - [Jellyfin](../zurg/guides/jellyfin.md)
 - [The Stremio addon](../zurg/guides/stremio.md)
 - [Watchlist and Seerr](../zurg/guides/acquisition.md)
