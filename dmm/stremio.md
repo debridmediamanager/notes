@@ -64,14 +64,11 @@ On Debrid-Link, casting adds the release to your account. One that Debrid-Link d
 
 | What you see | What to do |
 |---|---|
-| After pressing **Cast**, Stremio shows **Failed to get addon manifest from https://detail/movie/…** and **Failed to fetch: Failed to fetch** | Your cast was saved. Stremio read DMM's link to the title as an addon to install. Press **Cancel**, open the title in Stremio yourself, and pick the **(Yours)** stream. |
 | Only **DMM Cast PM ✨ · Cast a file inside a torrent** (RD, TB…) shows, no other streams | Nothing has been cast for this title yet. Press that row: it opens the title on DMM. Press **Cast** on a release, then open the title in Stremio again. |
 | **⚠️ DMM Cast · Set up DMM Cast for Premiumize again** (or your provider) as the only stream | The addon in Stremio no longer matches your DMM sign-in. Press it to open your Cast page, sign in, then remove the old addon from Stremio and install it again from that page. |
 | **Real-Debrid Required. You must be logged in with Real-Debrid to use the Stremio Cast feature.** (or TorBox, Easynews…) | You are not signed in to that provider on DMM, or you opened another provider's Cast page. Press **Login with …**, or use the **Cast for …** button on DMM's home page. |
 | **No episodes in this release on Premiumize** | DMM could not match that release's files to episodes. Cast a different release. |
 | The addon address pasted into the search bar at the top of Stremio Web does nothing | That bar only searches. Use **Addons** → **Add addon**. |
-
-![Stremio's Failed to get addon manifest message after pressing Cast](../assets/dmm-stremio/05-failed-addon-manifest.webp)
 
 Stuck? Ask in the **dmm-cast-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) says what to include.
 

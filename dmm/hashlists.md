@@ -26,11 +26,11 @@ A list holds release names, their hashes and sizes. No files and no accounts.
    - The green **other files** chip next to a title lists all its releases.
    - **quick search on filename, hash, or id; supports regex** searches the list.
 4. Press the button on a row (**RD**, **TB**, **AD**, **PM**, **OC** or **DL**) to add that one release.
-5. Or press **RD Download** (**TB Download**, **PM Download** and so on) to add every release shown. The number on it is how many. It starts right away, with no "are you sure".
+5. Or press **RD Download** (**TB Download**, **PM Download** and so on) to add every release shown. The number on it is how many. DMM asks first, for example **Add 11 releases to Premiumize?**: press **Add 11** to start.
 
 ![A shared hash list of open movies in DMM, signed in with Premiumize](../assets/dmm-hashlists/01-hash-list.webp)
 
-On Real-Debrid, AllDebrid and TorBox, **Show All** also lists the releases your service doesn't have, and **Show Instant** goes back to the cached ones.
+**Show All** also lists the releases your service doesn't have, and **Show Instant** goes back to the cached ones.
 
 **RD Download** only adds releases Real-Debrid already has, one a minute, because Real-Debrid pauses accounts that add faster. Sixty releases take about an hour. The adds run in the page, so keep the tab open until it says **Started 60 downloads.** TorBox and AllDebrid skip anything they don't have cached.
 
@@ -52,7 +52,7 @@ To share a single release without publishing anything, press the share icon at t
 | What you see | What to do |
 |---|---|
 | **Login to RD/AD/TB/PM/OC/DL to download** | You're not signed in to DMM in this browser. Sign in, then open the list again. |
-| Everything is **hidden** and the list looks empty | Hidden rows are already in your library, or your service doesn't have them. On Real-Debrid, AllDebrid or TorBox press **Show All**. |
+| Everything is **hidden** and the list looks empty | Hidden rows are already in your library, or your service doesn't have them. Press **Show All**. |
 | **This hash list is still being published; refresh in a minute or two.** | The list was shared moments ago. Wait a minute or two and refresh. |
 | **0 files** and no rows | That list is empty. Press **Next hash list** or **Random hash list**. |
 | **Everything already downloaded** | Every release shown is already in your library. |
@@ -70,7 +70,7 @@ Open the list, sign in to DMM with your debrid service, then press your service'
 
 ### Why are all the items in my hash list hidden?
 
-DMM hides what's already in your library and what your service doesn't have cached. The **hidden** box says how many. On Real-Debrid, AllDebrid or TorBox, **Show All** shows the rest.
+DMM hides what's already in your library and what your service doesn't have cached. The **hidden** box says how many. **Show All** shows the rest.
 
 ### Why don't TV shows show up in a hash list?
 
