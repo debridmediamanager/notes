@@ -68,7 +68,7 @@ El addon de Stremio de zurg envía su elección a la cuenta NZB que tenga la ins
 ## Comprueba que funcionó {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox_nzb/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox_nzb/test
 ls /zurg_mnt/zurg/__all__/
 curl -s http://localhost:9999/http/__torbox_nzb__/ | head
 ```

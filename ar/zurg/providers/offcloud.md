@@ -73,11 +73,11 @@ Library browsing، والقراءة المتدفقة، والقراءة عبر �
 ## تحقّق من أنه يعمل {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/offcloud/test
+curl -sS -X POST http://localhost:9999/api/providers/offcloud/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-مع حساب واحد فقط، يتم استبعاد مجلده الخاص من قائمة الجذر في الـmount، لذلك يُظهر الـmount نفس الملفات تحت `__all__`.
+مع حساب واحد فقط، يتم استبعاد مجلده الخاص من قائمة الجذر للتثبيت (mount)، لذلك يُظهر التثبيت نفس الملفات تحت `__all__`.
 
 ## عندما تسوء الأمور {#when-it-goes-wrong}
 

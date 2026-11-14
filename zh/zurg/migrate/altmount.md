@@ -35,18 +35,11 @@ unverified after 3 attempts: context deadline exceeded
 
 ## 迁移后你的库是什么样子 {#what-your-library-looks-like-afterwards}
 
-**Everything is re-added** because the library root moves to `__magic__`. See
-[the shared page](index.md) for why there is no cheaper path.
+**一切都要重新添加**，因为库根目录会移动到 `__magic__`。为什么没有更省事的办法，请看[共享页面](index.md)。
 
-What changes on the way through is small. Plain single-file releases keep the
-filename AltMount gave them so most of the library reads the same. **Archive
-releases come back under the poster's name** and one directory deeper. That is
-strictly better for an \*arr. The name
-`father.brown.2013.s02e05.hdtv.x264-tla.mp4` carries the quality and source and
-group that `FatherBrown.mp4` threw away.
+途中发生的变化不大。普通的单文件发布会保留 AltMount 给它的文件名，所以库里大部分内容看起来还是一样的。**压缩包发布会回到发布者的名字下面，并且再往里一层目录。** 这对 \*arr 来说严格意义上更好。文件名 `father.brown.2013.s02e05.hdtv.x264-tla.mp4` 保留了画质、来源和压制组信息，而 `FatherBrown.mp4` 把这些都丢掉了。
 
-Find the archive releases by looking for a mount folder whose single file is
-named after the folder.
+找压缩包发布的方法是：查看挂载目录里那些只有一个文件、且文件名与文件夹同名的文件夹。
 
 ```bash
 AM=/mnt/altmount
@@ -59,15 +52,10 @@ for d in "$AM"/*/; do
 done
 ```
 
-!!!info Whether you see any of this depends on your setup
-If Plex reads the mount directly then the names above are what changes in your
-library. That covers every Windows setup and any Linux or macOS one without an
-\*arr symlink farm.
+!!!info 你能否看到这些，取决于你的设置
+如果 Plex 直接读取挂载目录，那么你的库里会变化的正是上面说的这些名字。这涵盖所有 Windows 设置，以及没有 \*arr 符号链接库的 Linux 或 macOS 设置。
 
-If Sonarr and Radarr organise a symlink library with renaming on then **your
-filenames are already theirs** and none of the names above appear in Plex. What
-the names tell you then is how good a parse the \*arr was working from. That
-matters when you re-import. See [the shared page](index.md).
+如果 Sonarr 和 Radarr 在符号链接库中整理文件并开启了重命名，那么**你的文件名已经是它们起的名字**，上面提到的名字都不会出现在 Plex 里。那时这些名字能告诉你 \*arr 解析文件名的效果如何。重新导入时这一点很重要。请看[共享页面](index.md)。
 !!!
 
 ## 新内容会怎样出现 {#what-new-content-shows-up}

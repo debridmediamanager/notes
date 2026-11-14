@@ -6,16 +6,16 @@
 
 ## Plex 认识的电影和剧集 {#films-and-shows-plex-knows}
 
-**What it does.** Lets Plex name a film or episode, with its poster, cast, summary and ratings, instead of your `display`.
+**作用。** 让 Plex 显示影片或剧集的名称、海报、演员、简介和评分，而不是你的 `display`。
 
-Send `kind` and the title's ids: an IMDb (`tt...`) or TMDB id of the film, or of the **show** for an episode, with `season` and `episode` on TMDB's numbering:
+发送 `kind` 和影片的 id：影片的 IMDb（`tt...`）或 TMDB id；如果是剧集，则发送**剧集所属剧集**的 id，并用 TMDB 的编号方式提供 `season` 和 `episode`：
 
 ```json
 {"id": "films/Big Buck/film.mkv", "path": "films/Big Buck/film.mkv",
  "kind": "movie", "ids": {"tmdb": 10378}, "media_info": { "...": "ffprobe's output" }}
 ```
 
-**What you should see.** The film is **Big Buck Bunny (2008)** with Plex's artwork, whatever the file is called. rex reads nothing from names: what you send is what it shows. [rex with your own app](any-source.md) covers this in full, episodes included.
+**你应该看到的效果。** 无论文件名是什么，显示的影片都是 **Big Buck Bunny (2008)**，并带有 Plex 的封面图。rex 不会从文件名读取任何信息：你发送什么，它就显示什么。[在你自己的应用中使用 rex](any-source.md) 对此有完整说明，包括剧集的情况。
 
 ## 字幕 {#subtitles}
 

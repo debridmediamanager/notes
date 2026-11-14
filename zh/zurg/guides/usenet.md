@@ -288,9 +288,9 @@ Ugliest.House.in.America.S08E02.720p.AMZN.WEB-DL-RAWR/
 
 ### 替换和删除 {#replacing-and-removing}
 
-- **Removing** an NZB from `nzbs/` removes the release from the library, drops its cached reader and article cache, and forgets any repaired bytes it held.
-- **Deleting a Usenet release from the Dashboard deletes the `.nzb` file from disk.** There is nowhere else for it to live. This is not the same as deleting a torrent from a debrid account, where the file stays on the service.
-- **Replacing an NZB in place is the slow way to do it.** Writing over a file does not change the directory, so the watch above cannot see it; what notices is the periodic change check, which reads the file's modification time and re-parses it — up to the first `check_for_changes_every_secs` check that comes more than 15 seconds after the last directory read (about 30 seconds at the default). Removing the old file and adding the new one is noticed within a second or two, and is what an indexer or the SABnzbd endpoint does anyway.
+- **删除** `nzbs/` 中的 NZB 会把该版本从库中移除，同时丢弃它的缓存读取器和文章缓存，并忘记它持有的所有修复后的字节。
+- **在 DMM 仪表盘中删除 Usenet 版本会从磁盘上删除 `.nzb` 文件。** 它没有其他存放位置。这与从调试服务账户中删除种子不同，后者的文件会保留在服务上。
+- **原地替换 NZB 是较慢的做法。** 覆盖写入文件不会改变目录，因此上面的监视无法发现它；能发现的是定期的变更检查，它会读取文件的修改时间并重新解析——最多要等到距离上次目录读取超过 15 秒的第一个 `check_for_changes_every_secs` 检查（默认约 30 秒）。删除旧文件再添加新文件则能在一两秒内被发现，而且这也是索引器或 SABnzbd 端点本来就会做的操作。
 
 ## 4. 发布内容在挂载中的位置 {#4-where-releases-land-in-the-mount}
 

@@ -114,11 +114,12 @@ tb_cdn_host_preference: "auto"
 ## Comprueba que funcionó {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-Con una sola cuenta, su propia carpeta queda fuera del listado raíz del montaje, así que el montaje muestra los mismos archivos bajo `__all__`.
+Con una sola cuenta, su propia carpeta se deja fuera del listado raíz del montaje,
+así que el montaje muestra los mismos archivos bajo `__all__`.
 
 ## Cuando algo sale mal {#when-it-goes-wrong}
 

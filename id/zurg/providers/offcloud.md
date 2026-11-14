@@ -76,11 +76,11 @@ Kosakata kegagalan Offcloud cukup terbatas. `NOAUTH` adalah satu-satunya kode ya
 ## Cek apakah sudah berhasil {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/offcloud/test
+curl -sS -X POST http://localhost:9999/api/providers/offcloud/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-Kalau cuma pakai satu akun, folder akunnya sendiri tidak ditampilkan di daftar root mount, jadi mount menampilkan file yang sama di bawah `__all__`.
+Dengan hanya satu akun, folder miliknya sendiri tidak ditampilkan di daftar root mount, jadi mount menampilkan file yang sama di bawah `__all__`.
 
 ## Saat terjadi masalah {#when-it-goes-wrong}
 

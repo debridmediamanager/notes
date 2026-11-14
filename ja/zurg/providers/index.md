@@ -136,20 +136,22 @@ zurg デーモン自体が読み取るのは、`config.yml` を作成する初�
 
 ## 正しく動いたか確認する {#check-it-worked}
 
+まずログと診断を確認します。
+
 ```bash
 docker compose logs -f --tail=100 zurg
 docker compose exec zurg /app/zurg doctor --working-dir /config
 ```
 
-`WARN service zurg is not installed` は、Docker では想定どおりの表示です。自動起動は Compose が管理しているためです。警告があっても doctor は失敗しません。失敗するのは `FAIL` のときだけです。
+Docker では `WARN service zurg is not installed` が出ますが、これは想定どおりです。自動起動は Compose が管理しているためです。警告があっても doctor は失敗しません。失敗するのは `FAIL` が出たときだけです。
 
-次に、アカウント自体を Dashboard かシェルから確認します。
+次に、アカウントそのものを確認します。Dashboard か shell から調べられます。
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox/test
 ```
 
-`{"success":true}` が返れば、認証情報は通っています。パスに出てくる名前はアカウントの `name` です。デフォルトでは `type` が使われます。`config.yml` に `username` を設定している場合は、`-u user:pass` を追加してください。設定していなければ、公開したポートで Dashboard とその API が開いたままになります。
+`{"success":true}` が返れば、認証情報は通っています。パスに入っている name は、アカウントの `name` です。デフォルトでは `type` と同じ値になります。`config.yml` に `username` を設定している場合は `-u user:pass` を付けてください。設定していなければ、公開したポートで Dashboard と API が開いたままになります。
 
 最後に、マウント上のライブラリを見てみましょう。
 
@@ -157,9 +159,9 @@ curl -fsS -X POST http://localhost:9999/api/providers/torbox/test
 ls /zurg_mnt/zurg/__all__/
 ```
 
-設定したアカウントごとに `__<name>__` ディレクトリが作られます。そのアカウントが持つすべてのデータが入っており、読み込み先もそのアカウントに固定されます。`__torbox__/Some.Release/` は TorBox からだけ配信され、他からは取得しません。単一アカウントのフォルダは、マウントのルート一覧からは外されています。`__all__` と同じライブラリだからです。`/http/__torbox__/` のような直接の HTTP や WebDAV パスは、今も応答します。ただし、マウント経由ではもう解決されません。`__<name>__` を使っていたライブラリやスクリプトは、`__all__` に向け直してください。
+設定したアカウントごとに `__<name>__` ディレクトリができます。そのアカウントが持つものすべてが入っていて、読み込みもそのアカウントに固定されます。`__torbox__/Some.Release/` は TorBox からだけストリーミングし、他からは読みません。個別アカウントのフォルダはマウントのルートの一覧からは外されています。`__all__` が同じライブラリを指すからです。`/http/__torbox__/` のような直接 HTTP や WebDAV のパスは、今も応答します。マウント経由では `__<name>__` はもう解決されません。`__<name>__` を使っているライブラリやスクリプトは、すべて `__all__` に向け直してください。
 
-大きなライブラリは、最初の読み込みに時間がかかります。読み込みが終わるまで `/dav/movies/` は 503 を返し、マウントは何も一覧表示しないこともあります。
+ライブラリが大きいと、最初の読み込みに時間がかかります。読み込みが終わるまでは `/dav/movies/` が 503 を返し、マウントに何も表示されないこともあります。
 
 ## 複数のアカウントを動かす {#running-several-accounts}
 

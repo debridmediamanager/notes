@@ -67,32 +67,28 @@ zurg 経由で Premiumize の転送を削除すると、その転送が所有す
 
 ## 知っておきたい制限 {#limits-worth-knowing}
 
-**Cloud-Speicher und Fair-Use sind die eigenen Grenzen des Kontos.** zurg hebt sie
-nicht auf und umgeht sie auch nicht.
+**クラウドストレージとフェアユースは、アカウント自体の上限です。** zurg はこれらの上限を引き上げたり、回避したりはしません。
 
-**8 gleichzeitige API-Anfragen.** Vier Volumes eines Multi-Volume-Archivs werden
-gleichzeitig aufgelöst.
+**同時 API リクエスト 8 件。** 複数ボリュームのアーカイブの 4 つのボリュームが同時に解決されます。
 
-**Inhalte laufen ab.** Ein Release, das nicht mehr verfügbar ist, ist ein erwartetes
-Ergebnis und kein Fehler. Repair lässt es in Ruhe, außer du forderst es ausdrücklich an.
+**コンテンツは期限切れになります。** リリースが消えているのは想定どおりの結果であり、障害ではありません。修復は、こちらが依頼しない限り、そのリリースには手を出しません。
 
-**Die Torrent-Liste enthält keine Dateidetails.** Jedes Release braucht beim ersten
-Mal eine eigene Abfrage.
+**トレントリストにはファイルの詳細が含まれません。** 各リリースは、初回に個別の検索が 1 回ずつ必要になります。
 
-zurg ordnet die Fehlercodes des Dienstes dem zu, was als Nächstes zu tun ist.
+zurg は、サービスのエラーコードごとに次に取るべき動作を決めています。
 
-| Code von Premiumize | Was zurg macht |
+| Premiumize からのコード | zurg の動作 |
 |---|---|
-| `authentication_failed` | Meldet einen ungültigen Zugangsschlüssel. Korrigiere den Key. |
-| `rate_limit_reached` | Pausiert das Konto für eine Minute. |
-| `account_limit_reached` oder `service_limit_reached` | Meldet ein aufgebrauchtes Kontingent. |
-| `service_down` | Behandelt das Konto als vorübergehend nicht verfügbar. |
-| `not_found` | Behandelt den Torrent als nicht mehr vorhanden. |
+| `authentication_failed` | 認証情報が不正だと報告します。キーを修正してください。 |
+| `rate_limit_reached` | アカウントを 1 分間一時停止します。 |
+| `account_limit_reached` または `service_limit_reached` | 利用枠を使い切ったと報告します。 |
+| `service_down` | アカウントを一時的に利用できない状態として扱います。 |
+| `not_found` | トレントが消えたものとして扱います。 |
 
 ## 正しく動いたか確認する {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/premiumize/test
+curl -sS -X POST http://localhost:9999/api/providers/premiumize/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 

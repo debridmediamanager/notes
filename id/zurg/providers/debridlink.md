@@ -80,11 +80,12 @@ zurg memetakan kode error dari layanan ke langkah yang harus dilakukan berikutny
 ## Cek apakah sudah berhasil {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/debridlink/test
+curl -sS -X POST http://localhost:9999/api/providers/debridlink/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-Kalau cuma pakai satu akun, folder miliknya sendiri tidak ditampilkan di daftar root mount, jadi mount menampilkan file yang sama di bawah `__all__`.
+Dengan hanya satu akun, folder miliknya sendiri tidak ditampilkan di daftar root mount,
+jadi mount menampilkan file yang sama di bawah `__all__`.
 
 ## Saat terjadi masalah {#when-it-goes-wrong}
 

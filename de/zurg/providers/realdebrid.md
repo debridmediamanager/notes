@@ -126,12 +126,12 @@ fetch_torrents_page_size: 5000
 ## Prüfen, ob es funktioniert hat {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/realdebrid/test
+curl -sS -X POST http://localhost:9999/api/providers/realdebrid/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-Bei nur einem Account wird dessen eigener Ordner aus der Root-Ansicht des Mounts ausgelassen,
-daher zeigt der Mount dieselben Dateien unter `__all__` an.
+Bei nur einem Konto wird dessen eigener Ordner aus der Root-Auflistung des Mounts weggelassen.
+Deshalb zeigt der Mount dieselben Dateien unter `__all__` an.
 
 ## Wenn es schiefgeht {#when-it-goes-wrong}
 

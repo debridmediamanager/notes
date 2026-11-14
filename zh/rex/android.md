@@ -124,10 +124,10 @@ Plex 应用只要登录的是同一个账号，就能在家庭网络里通过名
 
 ## 限制 {#limits}
 
-- **It plays at home.** Away from home, Plex apps need an HTTPS address that reaches the device, which needs a port forward on your router to it. See [Use it outside your home](any-source.md#use-it-outside-your-home-optional).
-- **The device is the server.** Keep it on, on Wi-Fi or Ethernet, and plugged in. Converting video for a player that can't play a file uses the device's own hardware and can be slow on a cheap box.
-- **Only what addons bring.** It has no library of files on the device itself.
-- **Not on Google Play yet.** To update, install the new file from [the releases](https://github.com/debridmediamanager/rex-android/releases/latest) over the old one, and rex starts again by itself. Your sign-in and addons stay.
+- **播放在家里进行。** 在外面使用时，Plex 应用需要一个能访问到该设备的 HTTPS 地址，这就需要在你的路由器上设置端口转发到它。请参阅[在外面使用它（可选）](any-source.md#use-it-outside-your-home-optional)。
+- **设备就是服务器。** 请保持它开机，通过 Wi-Fi 或以太网连接，并接通电源。如果要为无法播放某个文件的播放器转换视频，会用到设备自身的硬件，在便宜的盒子上可能会很慢。
+- **只有插件带来的内容。** 设备本身没有存放任何文件的资料库。
+- **暂未在 Google Play 上架。** 要更新的话，把 [releases 页面](https://github.com/debridmediamanager/rex-android/releases/latest)上的新文件直接安装到旧版本之上即可，rex 会自动重新启动。你的登录信息和插件都会保留。
 
 ## 故障排除 {#troubleshooting}
 

@@ -1,25 +1,18 @@
 # 从 streamnzb v5.1.0 迁移到 zurg {#migrating-from-streamnzb-v510-to-zurg}
 
-streamnzb is a Stremio addon. It searches Newznab indexers when you press play and streams the winner.
-Nothing is kept. It has no filesystem WebDAV mount or Plex library.
+streamnzb 是一个 Stremio 插件。按下播放时，它会搜索 Newznab 索引站，然后把选中的资源串流过来。
+它不保存任何内容。没有文件系统上的 WebDAV 挂载，也没有 Plex 媒体库。
 
-There is **no library on disk to preserve and no Plex watch state at risk**. The path-preservation steps in
-the other migration guides do not apply.
+**磁盘上没有需要保留的媒体库，也没有面临风险的 Plex 观看进度。** 其他迁移指南里的路径保留步骤在这里都用不上。
 
-zurg can take its place in two ways. Use one or both.
+zurg 可以通过两种方式替代它，你可以只用其中一种，也可以两种都用。
 
-- **Keep Stremio.** zurg has a [Stremio addon](../guides/stremio.md) of its
-  own. It searches your Newznab indexers when you press play and streams the
-  release you pick through your news account. That is how streamnzb works too.
-  It needs nothing but zurg. No rclone and no media server. Every release played
-  this way also stays in zurg's library.
-- **Build a library.** zurg keeps the releases it has in a library and mounts
-  it for Plex or Jellyfin or Emby. Sonarr and Radarr can fill it. So can zurg
-  itself from your watchlist.
+- **继续使用 Stremio。** zurg 自带一个 [Stremio 插件](../guides/stremio.md)。按下播放时，它会搜索你的 Newznab 索引站，并通过你的 news 账号串流你选中的资源。streamnzb 也是这样工作的。这只需要 zurg，不需要 rclone，也不需要媒体服务器。以这种方式播放过的每个资源，也会保存在 zurg 的媒体库中。
+- **建立媒体库。** zurg 会把它拥有的资源保存在媒体库里，并将其挂载给 Plex、Jellyfin 或 Emby 使用。Sonarr 和 Radarr 可以往里面添加内容。zurg 自己也可以根据你的 watchlist 往里添加。
 
-A few things streamnzb did have no zurg equivalent. This guide says which.
+streamnzb 有几项功能在 zurg 里没有对应的功能。本指南会说明是哪几项。
 
-This guide is shorter than its siblings because the problem is smaller.
+这份指南比同系列的其他指南短，因为这里要解决的问题更简单。
 
 ## 哪些内容需要重新扫描，又有哪些新内容会出现 {#what-needs-rescanning-and-what-new-content-shows-up}
 

@@ -96,23 +96,23 @@ Vous pouvez relancer Setup sans risque. Il met à jour le service généré, mai
 
 ### Choisir la portée systemd {#choosing-the-systemd-scope}
 
-With a working systemd user manager, the default `auto` scope installs `~/.config/systemd/user/zurg.service`. Otherwise, setup installs `/etc/systemd/system/zurg.service` and asks sudo to run it as the current user.
+Avec un gestionnaire systemd utilisateur fonctionnel, le réglage par défaut `auto` installe `~/.config/systemd/user/zurg.service`. Sinon, la configuration installe `/etc/systemd/system/zurg.service` et demande sudo pour l'exécuter sous l'utilisateur courant.
 
-Choose explicitly when needed:
+Choisissez explicitement si nécessaire :
 
 ```bash
 ./zurg setup --service-scope user
 ./zurg setup --service-scope system --service-user "$USER"
 ```
 
-For a user service to start before the first login after a reboot, enable lingering:
+Pour qu'un service utilisateur démarre avant la première connexion après un redémarrage, activez le lingering :
 
 ```bash
 loginctl show-user "$USER" -p Linger
 sudo loginctl enable-linger "$USER"
 ```
 
-Running setup as `root` on a server selects a system service owned by root.
+Lancer la configuration en tant que `root` sur un serveur sélectionne un service système appartenant à root.
 
 ## 4. Vérifier l'installation {#4-verify-the-install}
 

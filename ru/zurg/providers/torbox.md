@@ -113,11 +113,11 @@ tb_cdn_host_preference: "auto"
 ## Проверьте, что всё работает {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-Если у вас только один аккаунт, его собственная папка не выводится в корневом списке монтирования, поэтому монтирование показывает те же файлы в `__all__`.
+При одном аккаунте его собственная папка не попадает в корневой список маунта, поэтому в маунте одни и те же файлы видны в `__all__`.
 
 ## Когда что-то идёт не так {#when-it-goes-wrong}
 

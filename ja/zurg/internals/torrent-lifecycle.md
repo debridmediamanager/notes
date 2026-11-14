@@ -517,14 +517,14 @@ done
 ./scripts/torrent_lifecycle_probe.py --list
 ```
 
-Führ es von einem Rechner mit Residential-Egress aus. AllDebrid antwortet auf Datacenter-IPs mit `NO_SERVER`.
+住宅IPからの環境で実行してください。AllDebridはデータセンターのIPに対して `NO_SERVER` を返します。
 
-Schritt 6 ist nicht optional, und Schritt 3 ist der, der ihn erst sinnvoll macht. Nach der Kampagne vom 2026-08-30 war keine einzige der 34 Instanz-IDs, die das Harness beansprucht hatte, mehr auf einem der drei Accounts übrig. Auch keiner der neun Probe-Hashes.
+手順6は省略できず、手順3がそれを意味のあるものにします。2026-08-30のキャンペーン後、ハーネスが取得した34個のインスタンスIDは、3つのアカウントのどれにも1つも残っていませんでした。9つのプローブハッシュも同様です。
 
-Bevor du TorBox anfasst, prüf, ob ein anderer zurg mit demselben Account geladen ist. Lies dessen Sweep-Einstellungen und erwarte den oben beschriebenen Sweep.
+TorBoxに触る前に、同じアカウントを読み込んでいる他のzurgがないか確認し、その設定を読んで、上で説明したスイープが動くことを想定してください。
 
 ```bash
 grep -E "delete_error_torrents|stalled_download_mins|enable_repair" config.yml
 ```
 
-Nie ändern. Ein Probe, der mitten im Run verschwindet, ist eine Information.
+絶対に変更しないでください。実行中にプローブが消えること自体がデータです。

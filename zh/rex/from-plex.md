@@ -6,12 +6,12 @@
 
 | | Plex Media Server | rex |
 |---|---|---|
-| Where the library comes from | Plex scans folders on a disk or a mount | A source (your own app, rex-stremio or zurg) tells rex what it has. rex never scans a folder and needs no mount |
-| What each file is | Plex matches it from its file name | The source works it out and tells rex. rex never reads a file name |
-| A wrong match | Fix Match on the server | **Fix Match** in a Plex app, signed in as the account that owns rex. rex keeps your pick, and a source can take it back and keep it, as zurg does ([why titles are placed as they are](with-zurg.md#why-dmm-places-the-files)) |
-| The account the server is on | Usually your own | A fresh Plex account made for rex, shared with your own |
-| Music, Live TV and photos | From folders and a tuner | Only from a source that sends them, such as an addon ([Building rex addons](addons.md#music)) or zurg's comic books. Plex Web shows photos; Plex for Android does not |
-| Recording TV | Yes | No |
+| 媒体库从哪里来 | Plex 扫描磁盘或挂载点上的文件夹 | 数据源（你自己的应用、rex-stremio 或 zurg）告诉 rex 它有什么内容。rex 从不扫描文件夹，也不需要挂载 |
+| 每个文件是什么 | Plex 根据文件名进行匹配 | 数据源自己分析出来，再告诉 rex。rex 从不读取文件名 |
+| 匹配错了怎么办 | 在服务器上使用 Fix Match | 在 Plex 应用中使用 **Fix Match**，登录为拥有 rex 的账号。rex 会保留你的选择，数据源也可以收回并保留这个选择，zurg 就是这样做的（[为什么标题这样放置](with-zurg.md#why-dmm-places-the-files)） |
+| 服务器所用的账号 | 通常是你自己的账号 | 为 rex 新建一个 Plex 账号，并与你自己的账号共享 |
+| 音乐、直播电视和照片 | 来自文件夹和电视调谐器 | 只来自会发送这些内容的数据源，例如插件（[编写 rex 插件](addons.md#music)）或 zurg 的漫画。Plex 网页版可以显示照片，Plex for Android 不行 |
+| 录制电视 | 支持 | 不支持 |
 
 ## 选择一种方式 {#pick-a-way}
 
@@ -69,17 +69,17 @@
 
 ## 哪些内容会迁移，哪些不会 {#what-comes-along-and-what-does-not}
 
-| Comes along | How |
+| 会带过来 | 方式 |
 |---|---|
-| Your movies and shows | Your source sends them to rex. With zurg they come from the same debrid account Plex reads |
-| What you watched, where you stopped, your star ratings on movies and episodes | [Bring your watch history](import-watched.md), each person on their own |
+| 你的电影和剧集 | 你的数据源把它们发送到 rex。使用 zurg 时，它们来自 Plex 所读取的同一个 debrid 账户 |
+| 你的观看历史、观看进度，以及你给电影和剧集的星级评分 | [导入你的观看历史](import-watched.md)，每个人分别导入 |
 
-| Does not come along | Why |
+| 不会带过来 | 原因 |
 |---|---|
-| Fix Matches you made on Plex | rex does not use Plex's matches. Your source says what each file is; fix what it gets wrong with **Fix Match** in rex |
-| Collections | Not copied. [Kometa with rex](kometa.md) builds them again from your Kometa config |
-| Posters and artwork you picked | Kept on the old server only |
-| Playlists, and the server's play history list | Kept on the old server only |
-| Your friends' access | They were invited to the old server. Invite them to rex ([step 3](#step-3-invite-your-people-again)) |
-| Music and photos on a disk, Live TV from a tuner, and recordings | rex has no tuner and records nothing; music, photos and live channels come only from a source that sends them. Keep Plex beside rex for them |
-| Files on a local disk | rex scans no folders. An app has to serve them and tell rex about them: [rex with your own app](any-source.md) |
+| 你在 Plex 上手动修正的匹配 | rex 不使用 Plex 的匹配结果。你的数据源会说明每个文件是什么；如果识别有误，请在 rex 中使用 **Fix Match** 修正 |
+| 合集 | 不会复制。[在 rex 中使用 Kometa](kometa.md) 会根据你的 Kometa 配置重新生成合集 |
+| 你选择的海报和封面图 | 仅保留在旧服务器上 |
+| 播放列表，以及服务器的播放历史列表 | 仅保留在旧服务器上 |
+| 你朋友的访问权限 | 他们是受邀加入旧服务器的。请邀请他们加入 rex（[第 3 步](#step-3-invite-your-people-again)） |
+| 硬盘上的音乐和照片、调谐器的直播电视，以及录像 | rex 没有调谐器，也不录制任何内容；音乐、照片和直播频道只能来自会提供它们的数据源。如需这些内容，请保留 Plex 与 rex 并存 |
+| 本地硬盘上的文件 | rex 不扫描任何文件夹。需要由应用提供这些文件并告知 rex：[在 rex 中使用你自己的应用](any-source.md) |

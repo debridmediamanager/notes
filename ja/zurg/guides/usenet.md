@@ -297,9 +297,9 @@ Ugliest.House.in.America.S08E02.720p.AMZN.WEB-DL-RAWR/
 
 ### 置き換えと削除 {#replacing-and-removing}
 
-- **Entfernen** einer NZB aus `nzbs/` entfernt das Release aus der Bibliothek, verwirft seinen zwischengespeicherten Reader und den Artikel-Cache und vergisst alle reparierten Bytes, die es gehalten hat.
-- **Ein Usenet-Release im Dashboard zu löschen, löscht die `.nzb`-Datei von der Festplatte.** Sie hat keinen anderen Ort, an dem sie liegen könnte. Das ist nicht dasselbe wie ein Torrent aus einem Debrid-Konto zu löschen, bei dem die Datei beim Dienst bleibt.
-- **Eine NZB direkt zu überschreiben ist der langsame Weg.** Wenn du über eine Datei schreibst, ändert sich das Verzeichnis nicht, deshalb bekommt die oben beschriebene Überwachung das nicht mit. Stattdessen merkt es die regelmäßige Änderungsprüfung: Sie liest die Änderungszeit der Datei und parst sie neu, und zwar bei der ersten `check_for_changes_every_secs`-Prüfung, die mehr als 15 Sekunden nach dem letzten Verzeichnislesen kommt (bei der Standardeinstellung etwa 30 Sekunden). Wenn du die alte Datei entfernst und die neue hinzufügst, wird das innerhalb von ein oder zwei Sekunden bemerkt. Genau so machen es ohnehin ein Indexer oder der SABnzbd-Endpunkt.
+- **`nzbs/` からNZBを削除**すると、そのリリースがライブラリから消え、キャッシュされたリーダーと記事キャッシュも破棄され、保持していた修復済みのバイト列も忘れられます。
+- **DashboardからUsenetリリースを削除すると、ディスク上の `.nzb` ファイルも削除されます。** ほかに保存先がないためです。これは、debridアカウントからtorrentを削除する場合（ファイルはサービス側に残ります）とは別物です。
+- **NZBをその場で置き換えるのは遅い方法です。** ファイルに上書きしてもディレクトリは変わらないため、上記の監視では検知できません。検知するのは定期的な変更チェックで、これはファイルの更新時刻を読み取り、再パースします。最後のディレクトリ読み取りから15秒以上経過した最初の `check_for_changes_every_secs` チェックで実行されます（デフォルトでは約30秒）。古いファイルを削除して新しいファイルを追加する方法なら1〜2秒以内に検知されます。これはインデクサーやSABnzbdエンドポイントが通常行う方法でもあります。
 
 ## 4. リリースがマウントのどこに現れるか {#4-where-releases-land-in-the-mount}
 

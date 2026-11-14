@@ -40,14 +40,14 @@
 
 ## 为你自动添加影片 {#adding-titles-for-you}
 
-| Name | What it does |
+| 名称 | 功能 |
 |---|---|
-| [Wanted](../zurg/guides/dmm-wanted.md) | Drücke in DMM auf **Want**, und dein zurg holt es, auch neue Folgen. Für Sponsoren |
-| [Seerr through DMM](../dmm/seerr.md) | Anfragen der Familie in Seerr landen auf deiner Wanted-Liste. Für Sponsoren |
-| [Torznab](https://debridmediamanager.com/torznab) and [Newznab](https://debridmediamanager.com/newznab) | DMM als Indexer für Sonarr, Radarr und Prowlarr. Für Sponsoren |
-| zurg as the download client | zurg antwortet Sonarr und Radarr als qBittorrent für [Torrents](../zurg/guides/sonarr-radarr-torrents.md) und als SABnzbd für [Usenet](../zurg/guides/sonarr-radarr.md), du brauchst also keines von beiden. Für Sponsoren |
-| [zurg's Stremio addon](../zurg/guides/stremio.md) | Sucht auf Usenet, wenn du in Stremio auf Play drückst, und streamt es über zurg. Für Sponsoren |
-| [`__magic__`](../zurg/guides/magic.md) | Ein zurg-Ordner, den du selbst einrichtest oder von Sonarr und Radarr einrichten lässt. Für Sponsoren |
+| [Wanted](../zurg/guides/dmm-wanted.md) | 在 DMM 上按 **Want**，你的 zurg 就会去获取它，包括新剧集。仅限赞助者 |
+| [通过 DMM 使用 Seerr](../dmm/seerr.md) | Seerr 中的家庭成员请求会进入你的 Wanted 列表。仅限赞助者 |
+| [Torznab](https://debridmediamanager.com/torznab) 和 [Newznab](https://debridmediamanager.com/newznab) | 将 DMM 用作 Sonarr、Radarr 和 Prowlarr 的索引器。仅限赞助者 |
+| zurg 作为下载客户端 | zurg 会像 qBittorrent 一样回应 Sonarr 和 Radarr 处理[种子](../zurg/guides/sonarr-radarr-torrents.md)，像 SABnzbd 一样处理 [Usenet](../zurg/guides/sonarr-radarr.md)，所以你两者都不用装。仅限赞助者 |
+| [zurg 的 Stremio 插件](../zurg/guides/stremio.md) | 在你于 Stremio 中点击播放时搜索 Usenet，并通过 zurg 进行串流。仅限赞助者 |
+| [`__magic__`](../zurg/guides/magic.md) | 你自己整理的 zurg 文件夹，或让 Sonarr 和 Radarr 替你整理。仅限赞助者 |
 
 ## DMM 的其他功能 {#the-rest-of-dmm}
 

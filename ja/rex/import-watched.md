@@ -16,23 +16,23 @@ rex は最初、視聴履歴が空の状態で始まります。別の Plex サ�
 
 ## 1. 古いサーバーのアドレスをコピーする {#1-copy-your-old-servers-address}
 
-1. Öffne [app.plex.tv](https://app.plex.tv) im Browser und melde dich als **du selbst** an, also mit dem Konto, dessen Verlauf du übernehmen willst.
-2. Wähle deinen alten Server aus und öffne einen beliebigen Film darauf.
-3. Klicke auf **⋯** (More) und dann auf **Get Info**.
-4. Klicke unten links im sich öffnenden **Media Info**-Fenster auf **View XML**. Ein neuer Tab öffnet sich, voller Text.
+1. ブラウザで [app.plex.tv](https://app.plex.tv) を開き、履歴を移行したい**自分自身の**アカウントでサインインします。
+2. 古いサーバーを選び、そのサーバー上の映画を1本開きます。
+3. **⋯** (More) をクリックし、**Get Info** をクリックします。
+4. 開いた **Media Info** ボックスの左下にある **View XML** をクリックします。新しいタブが開き、テキストがびっしり表示されます。
 
-   ![Das Media-Info-Fenster, das Get Info öffnet, mit View XML unten links](../assets/rex/40-plex-get-info.webp)
-5. Kopiere die **gesamte Adresse** aus der Adressleiste dieses Tabs.
+   ![Get Info で開く Media Info ボックス。左下に View XML がある](../assets/rex/40-plex-get-info.webp)
+5. そのタブのアドレスバーから、**アドレス全体**をコピーします。
 
-Sie sieht so aus, alles in einer Zeile, und endet mit `X-Plex-Token=` gefolgt von einem Code:
+1行に全部続いた形で、最後は `X-Plex-Token=` とその後ろのコードで終わります:
 
 ```
 https://192-168-1-5.0123456789abcdef.plex.direct:32400/library/metadata/1234?checkFiles=1&includeAllConcerts=1&X-Plex-Token=AbCdEfGh1234567890xy
 ```
 
-Dieser Code ist dein **Plex-Token** für diesen Server. Er funktioniert wie ein Passwort für dein Plex-Konto: Füge ihn nie in Discord, einen Support-Beitrag oder einen Screenshot ein.
+このコードがそのサーバーの **Plex token** です。Plex アカウントのパスワードのようなものなので、Discord、サポートの投稿、スクリーンショットには絶対に貼らないでください。
 
-**Kein View XML in Schritt 4?** Plex Web zeigt es nur bei einem Server, der dir gehört. Bei einem Server, den dir jemand freigegeben hat, gibt es das also nicht. Nutze stattdessen die Entwicklertools des Browsers auf deinem alten Server, wie in [Schritt 2](#2-get-your-token-on-rex), und wähle eine Anfrage an deinen alten Server aus (ihre Adresse enthält `plex.direct`). Klicke sie mit der rechten Maustaste an und kopiere ihre Adresse: **Copy**, **Copy URL** in Chrome und Edge, **Copy Value**, **Copy URL** in Firefox. Diese Adresse brauchst du. Sie enthält `X-Plex-Token=` und den Code zusammen mit weiteren `X-Plex-`-Teilen: Füge alles ein.
+**手順4に View XML が見当たらない場合:** Plex Web で View XML が出るのは、自分が所有しているサーバーだけです。人から共有されたサーバーには表示されません。その場合は、古いサーバーでブラウザの開発者ツールを使ってください([手順2](#2-get-your-token-on-rex)と同じ方法)。古いサーバーへのリクエスト(アドレスに `plex.direct` が含まれるもの)を選び、右クリックしてアドレスをコピーします。Chrome と Edge では **Copy**、**Copy URL**、Firefox では **Copy Value**、**Copy URL** を選びます。そのアドレスが必要なものです。`X-Plex-Token=` とコードのほか、他の `X-Plex-` の部分も含まれているので、すべて貼り付けてください。
 
 ## 2. rex でトークンを取得する {#2-get-your-token-on-rex}
 

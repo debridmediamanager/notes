@@ -131,11 +131,8 @@ cortado.
 
 ## Notas {#notes}
 
-The endpoint inherits the dashboard's basic auth by being registered inside it.
-A cross-origin request is refused: `/mcp` is for a local agent, not a web page.
-A reverse proxy in front of zurg works — the protocol library's DNS-rebinding
-check would otherwise reject a proxy that forwards its own `Host` while dialling
-`127.0.0.1`, so zurg turns that check off and leaves the gate to basic auth.
+O endpoint herda a autenticação básica do painel por estar registrado dentro dele.
+Uma requisição de origem cruzada é recusada: `/mcp` é para um agente local, não para uma página web.
+Um proxy reverso na frente do zurg funciona — a verificação de DNS-rebinding da biblioteca de protocolo rejeitaria um proxy que encaminha o seu próprio `Host` enquanto conecta em `127.0.0.1`, então o zurg desliga essa verificação e deixa a proteção por conta da autenticação básica.
 
-`zurg mcp --help` lists the bridge's flags. `zurg doctor` checks whether the
-endpoint is answering at all.
+`zurg mcp --help` lista as flags da ponte. `zurg doctor` verifica se o endpoint está respondendo.

@@ -40,14 +40,14 @@
 
 ## 自動でタイトルを追加する {#adding-titles-for-you}
 
-| Name | What it does |
+| 名前 | 機能 |
 |---|---|
-| [Wanted](../zurg/guides/dmm-wanted.md) | Drücke **Want** in DMM und dein zurg holt es, inklusive neuer Folgen. Für Sponsoren |
-| [Seerr through DMM](../dmm/seerr.md) | Anfragen der Familie in Seerr landen auf deiner Wanted-Liste. Für Sponsoren |
-| [Torznab](https://debridmediamanager.com/torznab) und [Newznab](https://debridmediamanager.com/newznab) | DMM als Indexer für Sonarr, Radarr und Prowlarr. Für Sponsoren |
-| zurg als Download-Client | zurg antwortet Sonarr und Radarr als qBittorrent für [Torrents](../zurg/guides/sonarr-radarr-torrents.md) und als SABnzbd für [Usenet](../zurg/guides/sonarr-radarr.md), sodass du keines von beiden selbst betreiben musst. Für Sponsoren |
-| [zurgs Stremio-Addon](../zurg/guides/stremio.md) | Sucht auf Usenet, wenn du in Stremio auf Play drückst, und streamt es über zurg. Für Sponsoren |
-| [`__magic__`](../zurg/guides/magic.md) | Ein zurg-Ordner, den du selbst einrichtest oder von Sonarr und Radarr einrichten lässt. Für Sponsoren |
+| [Wanted](../zurg/guides/dmm-wanted.md) | DMM で **Want** を押すと、zurg が新しいエピソードも含めて取得します。スポンサー向けです |
+| [Seerr through DMM](../dmm/seerr.md) | Seerr での家族のリクエストが Wanted リストに届きます。スポンサー向けです |
+| [Torznab](https://debridmediamanager.com/torznab) と [Newznab](https://debridmediamanager.com/newznab) | DMM を Sonarr、Radarr、Prowlarr のインデクサーとして使えます。スポンサー向けです |
+| zurg をダウンロードクライアントとして使う | zurg が Sonarr と Radarr には qBittorrent として応答し、[torrents](../zurg/guides/sonarr-radarr-torrents.md) 用には、[Usenet](../zurg/guides/sonarr-radarr.md) 用には SABnzbd として応答するので、どちらも別途動かす必要がありません。スポンサー向けです |
+| [zurg の Stremio アドオン](../zurg/guides/stremio.md) | Stremio で再生を押すと Usenet を検索し、zurg 経由でストリーミングします。スポンサー向けです |
+| [`__magic__`](../zurg/guides/magic.md) | 自分で整理する zurg フォルダ、または Sonarr と Radarr に整理を任せるフォルダです。スポンサー向けです |
 
 ## DMMのその他の機能 {#the-rest-of-dmm}
 

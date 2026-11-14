@@ -2,13 +2,15 @@
 
 ## 一行命令方式 {#one-line-option}
 
-The optional sponsor bootstrap installs macFUSE when needed, downloads the Intel or Apple silicon build, and runs the provider chooser and diagnostics:
+可选的赞助者引导脚本会在需要时安装 macFUSE，下载 Intel 或 Apple 芯片版本的构建，然后运行
+服务商选择器和诊断工具：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.sh | bash
 ```
 
-It uses GitHub browser sign-in. macOS may still need approval under **System Settings > Privacy & Security** and a reboot. Existing binaries and configs stay in place. Continue below for the manual route.
+它使用 GitHub 浏览器登录。macOS 可能仍需要你在 **System Settings > Privacy & Security** 下批准，并需要
+重启一次。已有的二进制文件和配置会保留不变。想手动操作的话，请看下面的内容。
 
 ## 第 1 步：安装 macFUSE {#step-1-install-macfuse}
 
@@ -243,27 +245,27 @@ launchctl list | grep zurg
 
 ## 第 8 步：配置 Plex 媒体库 {#step-8-configure-plex-libraries}
 
-Now que zurg está en marcha y el montaje está activo:
+现在 zurg 已经在运行，挂载也已激活：
 
-1. Abre [http://localhost:32400/web](http://localhost:32400/web)
-2. Ve a **Settings** (icono de llave inglesa) → **Manage** → **Libraries**
-3. Haz clic en **Add Library**
+1. 打开 [http://localhost:32400/web](http://localhost:32400/web)
+2. 进入 **Settings**（扳手图标）→ **Manage** → **Libraries**
+3. 点击 **Add Library**
 
-**Añade la biblioteca de películas:**
-- Type: **Movies**
-- Haz clic en **Browse for media folder**
-- Navega hasta `/Volumes/Zurg/movies`
-- Haz clic en **Add Library**
+**添加电影库：**
+- Type：选择 **Movies**
+- 点击 **Browse for media folder**
+- 导航到 `/Volumes/Zurg/movies`
+- 点击 **Add Library**
 
-**Añade la biblioteca de series:**
-- Type: **TV Shows**
-- Haz clic en **Browse for media folder**
-- Navega hasta `/Volumes/Zurg/shows`
-- Haz clic en **Add Library**
+**添加电视剧库：**
+- Type：选择 **TV Shows**
+- 点击 **Browse for media folder**
+- 导航到 `/Volumes/Zurg/shows`
+- 点击 **Add Library**
 
-**Ajustes recomendados de la biblioteca** (en Edit → Advanced de cada biblioteca):
-- Desmarca **Empty trash automatically after every scan**: zurg gestiona el ciclo de vida del contenido
-- Desmarca **Generate video preview thumbnails**: ahorra ancho de banda, ya que los archivos se transmiten desde Real-Debrid
+**推荐的库设置**（在每个库的 Edit → Advanced 下）：
+- 取消勾选 **Empty trash automatically after every scan**，因为内容的生命周期由 zurg 管理
+- 取消勾选 **Generate video preview thumbnails**，由于文件是从 Real-Debrid 流式传输的，这样可以节省带宽
 
 ## 第 9 步：验证一切正常 {#step-9-verify-everything-works}
 

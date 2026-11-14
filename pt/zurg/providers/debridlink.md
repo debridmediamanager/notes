@@ -83,11 +83,11 @@ O zurg associa os códigos de erro do serviço ao que ele deve fazer em seguida.
 ## Verifique se funcionou {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/debridlink/test
+curl -sS -X POST http://localhost:9999/api/providers/debridlink/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-Com apenas uma conta, a pasta própria dela fica fora da listagem da raiz do mount, então o mount mostra os mesmos arquivos em `__all__`.
+Com apenas uma conta, a pasta dela fica de fora da listagem da raiz do mount, então o mount mostra os mesmos arquivos em `__all__`.
 
 ## Quando dá errado {#when-it-goes-wrong}
 

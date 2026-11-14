@@ -116,11 +116,12 @@ tb_cdn_host_preference: "auto"
 ## تحقّق من أنه يعمل {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-مع حساب واحد فقط، يتم استبعاد مجلده الخاص من قائمة الجذر في الـmount، لذلك يُظهر الـmount نفس الملفات تحت `__all__`.
+مع حساب واحد فقط، يتم استبعاد مجلده الخاص من قائمة الجذر للتركيب،
+لذلك يُظهر التركيب نفس الملفات تحت `__all__`.
 
 ## عندما تسوء الأمور {#when-it-goes-wrong}
 

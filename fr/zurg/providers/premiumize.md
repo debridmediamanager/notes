@@ -89,7 +89,7 @@ zurg associe les codes d'erreur du service à l'action à effectuer ensuite.
 ## Vérifier que ça fonctionne {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/premiumize/test
+curl -sS -X POST http://localhost:9999/api/providers/premiumize/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 

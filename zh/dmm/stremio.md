@@ -13,10 +13,10 @@ DMM Cast 是 Debrid Media Manager 的 Stremio 插件。它让 DMM 出现在 Stre
 
 ## 设置方法 {#set-it-up}
 
-1. Melde dich auf [debridmediamanager.com](https://debridmediamanager.com) mit deinem Anbieter an. Easynews meldest du unter **Settings** an.
-2. Drück auf der Startseite von DMM auf **Cast for RD**, **Cast for TB** und so weiter. Wenn mehrere Konten angemeldet sind, gibt es eine Zeile **Cast** mit einem Button pro Anbieter. Jeder Anbieter hat eine eigene Cast-Seite:
+1. 用你的服务商账号在 [debridmediamanager.com](https://debridmediamanager.com) 上登录。Easynews 在 **Settings** 下登录。
+2. 在 DMM 首页按 **Cast for RD**、**Cast for TB** 等按钮。如果登录了多个账号，会出现一行 **Cast**，每个服务商各有一个按钮。每个服务商都有自己的 Cast 页面：
 
-   | Anbieter | Cast-Seite |
+   | 服务商 | Cast 页面 |
    |---|---|
    | Real-Debrid | [debridmediamanager.com/stremio](https://debridmediamanager.com/stremio) |
    | TorBox | [debridmediamanager.com/stremio-torbox](https://debridmediamanager.com/stremio-torbox) |
@@ -26,21 +26,21 @@ DMM Cast 是 Debrid Media Manager 的 Stremio 插件。它让 DMM 出现在 Stre
    | Debrid-Link | [debridmediamanager.com/stremio-debridlink](https://debridmediamanager.com/stremio-debridlink) |
    | Easynews | [debridmediamanager.com/stremio-easynews](https://debridmediamanager.com/stremio-easynews) |
 
-   ![DMM Cast-Seite für Premiumize, mit verwischter Addon-Adresse](../assets/dmm-stremio/01-dmm-cast-page.webp)
+   ![DMM 的 Premiumize Cast 页面，插件地址已打码](../assets/dmm-stremio/01-dmm-cast-page.webp)
 
-3. Drück auf **Install (web)**. Stremio Web öffnet sich mit dem Addon. Drück dort auf **Install**.
+3. 按 **Install (web)**。Stremio Web 会打开并带上这个插件。在那里按 **Install**。
 
-   ![Stremio Web fragt, ob DMM Cast installiert werden soll](../assets/dmm-stremio/02-stremio-install.webp)
+   ![Stremio Web 询问是否安装 DMM Cast](../assets/dmm-stremio/02-stremio-install.webp)
 
-   Für eine andere Stremio-App kopierst du die Adresse, die unter den Buttons angezeigt wird, und fügst sie dort ein. In Stremio Web geht das so: **Addons** → **Add addon** → einfügen → **Add** → **Install**. Die Adresse ist privat für dein Konto: teile sie niemals mit anderen.
+   如果用的是其他 Stremio，复制按钮下方显示的地址，然后在 Stremio 里添加。在 Stremio Web 中的路径是 **Addons** → **Add addon** → 粘贴 → **Add** → **Install**。这个地址只属于你的账号，千万不要分享给别人。
 
-4. Zurück bei DMM suchst du nach einem Film oder einer Serie und öffnest sie. Releases, die dein Anbieter schon hat, bekommen einen **Cast**-Button: **Cast (RD)**, **Cast (TB)**, **Cast (AD)**, **Cast (PM)**, **Cast (OC)** oder **Cast (DL)**. Drück darauf. DMM bestätigt mit **Cast started in Stremio** (bei einer Serie mit **Casting succeeded.** und der Anzahl der gecasteten Episoden) und versucht, den Titel in deiner Stremio-App zu öffnen.
+4. 回到 DMM，搜索电影或剧集并打开。你的服务商已有的资源会显示 **Cast** 按钮：**Cast (RD)**、**Cast (TB)**、**Cast (AD)**、**Cast (PM)**、**Cast (OC)** 或 **Cast (DL)**。按下它。DMM 会提示 **Cast started in Stremio**（如果是剧集，则显示 **Casting succeeded.** 以及投送了多少集），并尝试在你的 Stremio 应用中打开这个影片。
 
-   ![Drücken von Cast (PM) in DMM](../assets/dmm-stremio/03-dmm-cast-button.webp)
+   ![在 DMM 上按下 Cast (PM)](../assets/dmm-stremio/03-dmm-cast-button.webp)
 
-5. Öffne den Titel in Stremio. Dein Cast wird als **DMM Cast PM (Yours)** angezeigt (bei anderen Anbietern entsprechend RD, TB und so weiter). Drück darauf, um abzuspielen.
+5. 在 Stremio 中打开这个影片。你的投送会显示为 **DMM Cast PM (Yours)**（其他服务商则是 RD、TB 等）。点击即可播放。
 
-   ![Stremio zeigt den Cast als DMM Cast PM (Yours) an](../assets/dmm-stremio/04-stremio-streams.webp)
+   ![Stremio 中显示为 DMM Cast PM (Yours) 的投送](../assets/dmm-stremio/04-stremio-streams.webp)
 
 ## 在 Stremio 中还能做什么 {#what-else-you-get-in-stremio}
 

@@ -81,11 +81,11 @@ zurg は、サービスのエラーコードを次に取るべき動作に対応
 ## 正しく動いたか確認する {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/debridlink/test
+curl -sS -X POST http://localhost:9999/api/providers/debridlink/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-アカウントが1つだけだと、そのアカウント用のフォルダはマウントのルート一覧から外されます。
+アカウントが1つだけの場合、そのアカウント用のフォルダーはマウントのルート一覧から外されます。
 そのため、マウントでは同じファイルが `__all__` の下に表示されます。
 
 ## うまくいかないとき {#when-it-goes-wrong}

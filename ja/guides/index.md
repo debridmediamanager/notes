@@ -4,18 +4,21 @@
 
 ## 一般 {#general}
 
-- [セットアップを選ぶ](choose-your-setup.md): 経路図と、DMM、zurg、rex、Kodi、Stremio、Nuvio、Jellyfin/Emby プラグインをいつ使うかの説明です
-- [各パーツの役割](glossary.md): DMM、zurg、rex の各パーツと、ガイドに出てくる用語を1行ずつ説明しています
-- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): Stremio で緑の画面が出たときの意味と、やるべきことです
-- [ヘルプを受ける](remote-help.md): zurg と rex について、どこで質問するか、何を書けばよいか、スポンサー向けのリモートヘルプです
-- [スポンサーになると得られるもの](sponsorship.md): 特典の一覧と、その設定場所です。DMM の特典は、リクエストボードで獲得する方法もあります
+- [Choose your setup](choose-your-setup.md): ルートマップと、DMM、zurg、rex、Kodi、Stremio、Nuvio、Jellyfin/Emby プラグインをいつ使うかの説明
+- [What each piece does](glossary.md): DMM、zurg、rex の各パーツと、ガイドに出てくる用語の一行説明
+- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): Stremio に出る緑の画面が何を意味するのか、そして何をすればよいか
+- [Your Real-Debrid API token](real-debrid-api-token.md): 取得先、DMM と zurg での使い方、そして `bad_token` などのエラーの意味
+- [Getting help](remote-help.md) with zurg and rex: 質問先、含めるべき情報、スポンサー向けのリモートサポート
+- [What a sponsorship gives you](sponsorship.md): 特典の一覧と設定場所、または DMM 関連の特典をリクエストボードで獲得する方法
 
 ## DMM
 
-- [Stremioでの DMM](../dmm/stremio.md): DMM Cast addonを使ってStremioで視聴する方法と、うまくいかないときの対処法
+- [DMMの概要と使い方](../dmm/index.md): サインイン、検索、リリースのボタン、ライブラリについて
+- [StremioでのDMM](../dmm/stremio.md): DMM Castアドオンを使ってStremioで視聴する方法と、うまくいかないときの対処法
+- [ハッシュリスト](../dmm/hashlists.md): 共有リストを探す、デブリッドライブラリに追加する、自分のリストを共有する
 - [SafariでのDMMボタン](../dmm/safari.md): Mac、iPhone、iPadでユーザースクリプトとして使うブラウザ拡張機能
 - [DMM経由のSeerr](../dmm/seerr.md)
-- [DMMのウォッチリスト](../zurg/guides/dmm-wanted.md): **Want**を押したものをzurgが取得します
+- [DMMのウォントリスト](../zurg/guides/dmm-wanted.md): **Want**を押した作品をzurgが取得します
 
 ## zurg
 
@@ -40,20 +43,20 @@
 
 ## rex
 
-- [rex-Fragen](../rex/faq.md): bevor du installierst
-- [rex mit deiner eigenen App](../rex/any-source.md)
-- [rex mit deinen Stremio-Addons](../rex/stremio.md)
-- [rex mit zurg](../rex/with-zurg.md)
-- [rex für Android](../rex/android.md): kostenlos. Für Sponsoren verbindet [zurg+rex](../zurg/guides/android.md), ein Plex-Server auf deinem Handy, deine Debrid- und Usenet-Bibliothek ebenfalls mit rex
-- [Live-TV mit rex](../rex/live-tv.md)
-- [Musik mit rex](../rex/music.md)
-- [Von Plex zu rex wechseln](../rex/from-plex.md)
-- [rex mit Familie und Freunden teilen](../rex/sharing.md)
-- [rex-Addons bauen](../rex/addons.md)
-  - [Anleitung: Addon für Heimvideos](../rex/addon-home-videos.md)
-  - [Anleitung: Musik-Addon](../rex/addon-music.md)
-  - [Anleitung: IPTV-Addon](../rex/addon-iptv.md)
-  - [Mehr aus deinem Addon](../rex/addon-more.md)
-- [Bring deinen Wiedergabeverlauf mit](../rex/import-watched.md)
-- [Kometa mit rex](../rex/kometa.md)
-- [Apps laden von deinem Anbieter herunter](../rex/direct-download.md)
+- [rexのよくある質問](../rex/faq.md): インストール前に
+- [rexを自分のアプリで使う](../rex/any-source.md)
+- [rexをStremioのアドオンと使う](../rex/stremio.md)
+- [rexをzurgと使う](../rex/with-zurg.md)
+- [Android向けのrex](../rex/android.md): 無料です。スポンサーの方は、[zurg+rex](../zurg/guides/android.md)を使うと、スマホ上のPlexサーバーからデブリッドとUsenetのライブラリもrexに接続できます
+- [rexでライブTV](../rex/live-tv.md)
+- [rexで音楽](../rex/music.md)
+- [PlexからrexへのLWrite移行](../rex/from-plex.md)
+- [rexを家族や友人と共有](../rex/sharing.md)
+- [rexアドオンの作成](../rex/addons.md)
+  - [チュートリアル: ホームビデオのアドオン](../rex/addon-home-videos.md)
+  - [チュートリアル: 音楽のアドオン](../rex/addon-music.md)
+  - [チュートリアル: IPTVのアドオン](../rex/addon-iptv.md)
+  - [アドオンのその他の機能](../rex/addon-more.md)
+- [視聴履歴を取り込む](../rex/import-watched.md)
+- [rexでKometa](../rex/kometa.md)
+- [アプリがプロバイダーからダウンロード](../rex/direct-download.md)

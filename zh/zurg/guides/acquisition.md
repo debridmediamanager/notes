@@ -241,13 +241,13 @@ acquisition:
     # searches_per_hour: 20                       # default; films looked for on YouTube in an hour
 ```
 
-- **When.** Only for a film on the DMM 想看列表, and only when nothing the indexers
+- **When.** Only for a film on the DMM wanted list, and only when nothing the indexers
   return can be taken: no release passes `quality`, `max_size_gb`, `exclude_words` and
   the title and year checks, or every one was found gone, with every indexer answering.
   Never for a show or an upgrade, nor with `audio_languages` or `subtitle_languages`
-  set, since an upload's languages cannot be read. Only the 想看列表 takes a stream:
-  a film the Plex 观看列表 also wants is not settled for it by one, since Plex cannot
-  play it, and the 观看列表 keeps looking for a release.
+  set, since an upload's languages cannot be read. Only the wanted list takes a stream:
+  a film the Plex watchlist also wants is not settled for it by one, since Plex cannot
+  play it, and the watchlist keeps looking for a release.
 - **How often.** At most `searches_per_hour` films are looked for in an hour (20 by
   default: 1,820 films take four days), one at a time. A film YouTube has nothing for is
   asked about again a day later, restarts included.
@@ -260,7 +260,7 @@ acquisition:
   picture and sound together.
 - **Channels.** The default list is the Philippine studios' own channels: ABS-CBN Star
   Cinema, Regal Entertainment, VIVA Films, SOLAR WATCH NOW, OctoArts Films, CineMo and
-  Cinema One. Of 100 random unfetched films on one 想看列表 (2026-10-31), 65 had a
+  Cinema One. Of 100 random unfetched films on one wanted list (2026-10-31), 65 had a
   full-length upload and 33 were on these channels; the rest were re-uploads (every
   Disney one) and, for new releases, scams titled "full movie". Writing `channels`
   replaces the list. A channel's id is the `UC...` part of its address, or what
@@ -274,7 +274,7 @@ acquisition:
   an address on zurg too, which zurg fetches from YouTube itself. zurg resolves the
   stream with yt-dlp and keeps it until an hour before it expires. A segment's address
   is good for a day; a player that comes back later reads the playlist again.
-- **Upgrades.** A streamed film stays on the 想看列表 while `upgrades` is on, and any
+- **Upgrades.** A streamed film stays on the wanted list while `upgrades` is on, and any
   release of it that comes out replaces the stream, whatever its resolution: the stream,
   its `.strm` and its rex item go once the release has passed its check.
 
@@ -310,18 +310,30 @@ Radarr 保存片单，并管理媒体库。zurg 负责搜索和下载。Radarr �
 
 ### 设置 Radarr {#setting-up-radarr}
 
-1. **Stammordner innerhalb von `__magic__`, eine Ebene tiefer.** Zum Beispiel
-   `/mnt/zurg/__magic__/movies` (`/Volumes/Zurg/__magic__/movies` unter macOS,
-   `Z:\__magic__\movies` unter Windows). Nicht `__magic__` selbst und nicht
-   `__magic__/__all__`, denn dort sind alle Releases der Bibliothek aufgelistet. Ein Film,
-   dessen Ordner woanders liegt, wird übersprungen, und zurg schreibt eine Warnung in das Log.
-   Unter Windows sieht Radarr `Z:` nur, wenn es in derselben Anmeldesitzung läuft wie zurg, also nicht als Windows-Dienst: siehe
-   [die Sitzungsregeln](../setup/windows.md#keeping-it-running-the-session-rules).
-2. **Importlisten mit Suche beim Hinzufügen deaktiviert.** Füge Filme hinzu, wie du willst (von Hand, über Listen, Seerr mit Verbindung zu Radarr). Lass **Search for Movie** beim Hinzufügen aus, denn die Suche übernimmt zurg.
-3. **Keine Indexer und kein Download-Client nötig.** Hat Radarr welche, kann es parallel zu zurg Releases holen. Deshalb deaktivierst du die automatische Suche bei den Indexern (oder entfernst sie) für die Filme, um die sich zurg kümmert.
-4. **`library_path` ist der Pfad, unter dem Radarr `__magic__` sieht.** Läuft Radarr auf demselben Rechner wie zurg und sieht den Mount an der Stelle, an der zurg ihn einbindet, lass die Option weg: Standardmäßig ist sie zurgs `mount_path` plus `/__magic__`. Läuft Radarr in einem Container, der zurg an einer anderen Stelle einbindet, setze den Pfad dorthin, zum Beispiel `/data/zurg/__magic__`. Ein Film unter `/data/zurg/__magic__/movies/Heat (1995)` wird dann in `movies/Heat (1995)` innerhalb von zurgs `__magic__` abgelegt. Windows-Pfade wie `Z:\__magic__` funktionieren ebenfalls. Ein Radarr-Container wird nur auf einem Linux-Host unterstützt: Docker Desktop unter macOS und Windows führt Container in einer VM aus, und das Durchreichen von zurgs Mount dorthin ist nicht getestet. Betreibe Radarr dort deshalb nativ.
+1. **根文件夹位于 `__magic__` 内，再下一级。** 例如
+   `/mnt/zurg/__magic__/movies`（macOS 上为 `/Volumes/Zurg/__magic__/movies`，
+   Windows 上为 `Z:\__magic__\movies`）。不能是 `__magic__` 本身，也不能是
+   `__magic__/__all__`，后者会列出库中的每个版本。文件夹位置不在这里的电影会被跳过，
+   并在 zurg 的日志中记录一条警告。在 Windows 上，只有当 Radarr 与 zurg 运行在同一个登录会话中时，
+   Radarr 才能看到 `Z:`，所以不要把它作为 Windows 服务运行：参见
+   [会话规则](../setup/windows.md#keeping-it-running-the-session-rules)。
+2. **导入列表，并关闭添加时搜索。** 随你怎么添加电影（手动添加、列表，或让 Seerr 指向 Radarr）。
+   添加时保持 **Search for Movie** 关闭，因为搜索工作由 zurg 完成。
+3. **不需要索引器，也不需要下载客户端。** 如果 Radarr 已经配置了它们，
+   它可能会和 zurg 一起抓取资源，所以对于由 zurg 管理的电影，请关闭其索引器的自动搜索（或直接删除这些索引器）。
+4. **`library_path` 是 Radarr 看到 `__magic__` 的路径。** 如果 Radarr 与 zurg 运行在同一台机器上，
+   并且能看到 zurg 挂载的位置，就不用填写它：默认值为 zurg 的 `mount_path` 加上 `/__magic__`。
+   如果 Radarr 运行在容器中，而容器挂载 zurg 的位置不同，就把它设置为该路径，
+   例如 `/data/zurg/__magic__`。这样，位于 `/data/zurg/__magic__/movies/Heat (1995)` 的电影就会被放到
+   zurg 的 `__magic__` 中的 `movies/Heat (1995)`。Windows 路径如 `Z:\__magic__` 同样适用。
+   Radarr 容器的方案仅适用于 Linux 主机：macOS 和 Windows 上的 Docker Desktop 会在虚拟机中运行容器，
+   将 zurg 的挂载传入其中的做法未经测试，因此在这些系统上请原生运行 Radarr。
 
-   Nimmt Radarr außerdem Downloads über zurgs [SABnzbd](sonarr-radarr.md)- oder [qBittorrent](sonarr-radarr-torrents.md)-Endpunkt entgegen, muss es deren Download-Ordner unter `library_path/__all__` sehen, und zwar über dasselbe Volume wie seine Stammordner. Sonst ist jeder Import daraus eine Kopie der gesamten Datei. zurg fragt Radarr, wo es beide sieht, und meldet dies auf der Acquisition-Seite, im Log und in `zurg doctor`, falls sie sich kein Mount teilen können. Siehe dazu [Ein Volume für den Download-Ordner und die Stammordner](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
+   如果 Radarr 还会从 zurg 的 [SABnzbd](sonarr-radarr.md) 或
+   [qBittorrent](sonarr-radarr-torrents.md) 端点接收抓取任务，它必须通过与根文件夹相同的卷，
+   在 `library_path/__all__` 处看到它们的下载文件夹，否则从中导入的每个文件都会变成整个文件的副本。
+   zurg 会询问 Radarr 它在哪里看到这两者，并在抓取页面、日志以及两者无法共享挂载时的 `zurg doctor` 中说明此情况；
+   参见 [下载文件夹与根文件夹使用同一个卷](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders)。
 
 ### zurg 向 Radarr 请求什么 {#what-zurg-asks-radarr-for}
 
@@ -449,7 +461,7 @@ Acquisition: chose <release> for <title>: results=143 local_refusals=97 radarr_r
 ## 检查仅将 zurg 作为下载客户端的 \*arr {#checking-an-arr-that-only-uses-zurg-as-its-download-client}
 
 A Sonarr or Radarr pointed at zurg's [SABnzbd](sonarr-radarr.md) or
-[qBittorrent](sonarr-radarr-torrents.md) endpoint does its own searching, so it does not
+[qBittorrent](sonarr-radarr-torrents.md) endpoint does its own searching, and does not
 need a source here. zurg still wants its API key, because three of its settings
 decide whether every import is a free rename or a whole release downloaded
 from the debrid account and written to zurg's disk: Remove Completed on a

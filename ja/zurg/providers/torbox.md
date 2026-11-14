@@ -113,11 +113,12 @@ tb_cdn_host_preference: "auto"
 ## 正しく動いたか確認する {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-アカウントが1つだけの場合、そのアカウント用のフォルダーはマウントのルート一覧から除外されるため、同じファイルが `__all__` の下に表示されます。
+アカウントが1つだけの場合、そのアカウント専用のフォルダはマウントのルート一覧から除外されます。
+そのため、マウントでは同じファイルが `__all__` の下に表示されます。
 
 ## うまくいかないとき {#when-it-goes-wrong}
 

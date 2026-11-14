@@ -8,11 +8,11 @@
 
 ## 你需要准备 {#what-you-need}
 
-- **Un plan TorBox Pro.** Un plan inferior no acepta NZB.
-- **Tu clave API de TorBox** desde [torbox.app/settings](https://torbox.app/settings).
-  Es la misma clave que usa una entrada `torbox`.
-- **Una nightly actual de zurg.** Las nightly requieren una suscripción activa.
-- **Un host normal.** zurg+rex Android, un servidor de Plex en tu teléfono, no tiene backend `torbox_nzb`. En un dispositivo Android, reproduce los NZB alojados en TorBox a través de TorBox Cast de DMM o del addon de Kodi.
+- **一个 TorBox Pro 套餐。** 较低的套餐不支持 NZB。
+- **你的 TorBox API 密钥**，从 [torbox.app/settings](https://torbox.app/settings) 获取。
+  它和 `torbox` 条目使用的是同一个密钥。
+- **最新的 zurg nightly 版本。** Nightly 版本需要有效的赞助。
+- **普通主机。** zurg+rex Android（也就是在手机上运行的 Plex 服务器）没有 `torbox_nzb` 后端。在 Android 设备上，请改用 DMM 的 TorBox Cast 或 Kodi 插件来播放 TorBox 托管的 NZB。
 
 ## 配置它 {#configure-it}
 
@@ -74,9 +74,10 @@ zurg 的 Stremio 插件会把它选中的资源发送到该实例所绑定的 NZ
 ## 检查是否生效 {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox_nzb/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox_nzb/test
 ls /zurg_mnt/zurg/__all__/
 curl -s http://localhost:9999/http/__torbox_nzb__/ | head
 ```
 
-使用只有一个账户时，它自己的文件夹会从挂载的根目录列表中省略，因此挂载点会在 `__all__` 下显示相同的文件。目录名称跟随条目的名称，而名称默认为其类型。
+只有一个账号时，它自己的文件夹会从挂载的根目录列表中省略，
+因此挂载点会在 `__all__` 下显示相同的文件。目录名称跟随条目的名称，默认为其类型。

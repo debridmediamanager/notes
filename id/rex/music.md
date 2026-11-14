@@ -27,11 +27,11 @@ Ikuti [rex dengan aplikasimu sendiri](any-source.md):
 
 ## Langkah 2. Arahkan addon musik Anda ke rex {#step-2-point-your-music-addon-at-rex}
 
-rex needs a music library for the songs. Если ваш аддон объявляет её, rex создаёт её при регистрации аддона. Если не объявляет, сначала добавьте её в приложении Plex, вошедшем под новым аккаунтом: **Add Library**, **Music**, любая папка. Песня, отправленная до появления музыкальной библиотеки, отклоняется.
+rex-ko perlu pustaka musik untuk lagu-lagunya. Jika addon Anda mendeklarasikannya, rex akan membuatnya saat addon mendaftar. Jika tidak, tambahkan dulu di aplikasi Plex yang sudah login dengan akun baru: **Add Library**, **Music**, pilih folder mana saja. Lagu yang dikirim sebelum ada pustaka musik akan ditolak.
 
-Затем укажите аддону адрес rex, `http://192.168.1.20:32400`, так, как написано в его собственной инструкции. Он регистрируется в rex и отправляет свои альбомы.
+Lalu berikan alamat rex, `http://192.168.1.20:32400`, ke addon Anda sesuai petunjuknya sendiri. Addon akan mendaftar sendiri ke rex dan mengirimkan album-albumnya.
 
-**Что вы должны увидеть.** В логе rex:
+**Yang seharusnya Anda lihat.** Di log rex:
 
 ```
 INFO    SOURCES PUT /rex/sources/<addon> -> 200
@@ -39,7 +39,7 @@ INFO    SECTION create Music (artist) for <addon>'s music
 INFO    FEED <addon> upsert: ...
 ```
 
-Строка `SECTION create` появляется только тогда, когда аддон объявляет библиотеку. Музыкальная библиотека появляется в rex, каждый альбом находится под своим исполнителем. Песня, которую rex отклонил, попадает в лог с причиной, например `no music library holds <file>`.
+Baris `SECTION create` hanya muncul jika addon mendeklarasikan pustakanya. Pustaka musik akan muncul di rex, dengan setiap album berada di bawah artisnya. Lagu yang ditolak rex akan tercatat di log beserta alasannya, misalnya `no music library holds <file>`.
 
 ## Langkah 3. Bagikan pustaka musik {#step-3-share-the-music-library}
 

@@ -10,10 +10,10 @@ rex を Plex Media Server と並べて使いますか、それとも Plex の代
 - `on_library_update` フックには、変更されたすべてのパスが引数として渡されます。500 ミリ秒のデバウンスと重複排除がかかり、一度に実行されるのは 1 回だけです。Plex の autoscan スクリプトで使えます（`internal/torrent/hooks.go`）。
 
 ## 認証とサーバー検出 {#authentication--server-discovery}
-- Web dashboard flow: `/plex/auth` creates a PIN session (`pkg/plex/auth.go`, `CreatePlexAuthURL`), stores it in `pkg/plex/auth_session.go` (auto-cleanup after 10 min, swept every 5), and polls for completion via `/plex/auth/status` (`PollForAuthToken`, 60 attempts 5s apart before timing out).
-- `/plex/callback` serves a progress page that, once authorized, calls `/plex/servers` to list servers and `/plex/server` to select one (`internal/handlers/dashboard/dashboard.go`).
-- Server discovery (`pkg/plex/auth.go`): fetches Plex resources with both HTTP/HTTPS endpoints, filters relay if direct exists, handles IPv6 addresses, and probes each entry's `/identity` (TLS verification disabled). Only servers **owned** by the account are considered (`device.Owned`, `auth.go`) — shared servers never appear — and entries that fail the probe are dropped from the response rather than returned with `last_error` set (`enrichServersWithIdentity`, `auth.go`).
-- Selecting a server writes `plex_server_url`/`plex_token` to config, reinitializes the Plex client, (re)starts the matcher scheduler, fires a match trigger, and refreshes the cached dashboard status (`HandlePlexServerSelect`, `internal/handlers/dashboard/dashboard.go`). `/plex/logout` clears the stored values and the status cache.
+- Webダッシュボードの流れ: `/plex/auth` でPINセッションを作成し（`pkg/plex/auth.go`、`CreatePlexAuthURL`）、`pkg/plex/auth_session.go` に保存します（10分後に自動削除、5分ごとに掃除）。その後 `/plex/auth/status` で認証完了をポーリングします（`PollForAuthToken`、5秒間隔で60回試行し、そのあとタイムアウト）。
+- `/plex/callback` は進行状況を表示するページを返します。認証が済むと、`/plex/servers` を呼び出してサーバー一覧を取得し、`/plex/server` で1つ選択します（`internal/handlers/dashboard/dashboard.go`）。
+- サーバー検出（`pkg/plex/auth.go`）: HTTP/HTTPSの両方のエンドポイントを持つPlexリソースを取得し、直接接続が使えるものがあればリレーを除外し、IPv6アドレスも扱います。各エントリーについて `/identity` をプローブします（TLS検証は無効）。考慮されるのは、アカウントが**所有する**サーバー（`auth.go` の `device.Owned`）だけです。共有サーバーは一切表示されません。プローブに失敗したエントリーは、`last_error` を設定して返すのではなく、レスポンスから除外されます（`enrichServersWithIdentity`、`auth.go`）。
+- サーバーを選択すると、`plex_server_url` と `plex_token` を設定に書き込み、Plexクライアントを再初期化し、マッチャーのスケジューラを（再）起動し、マッチトリガーを発火させ、キャッシュされたダッシュボードのステータスを更新します（`HandlePlexServerSelect`、`internal/handlers/dashboard/dashboard.go`）。`/plex/logout` は保存された値とステータスキャッシュをクリアします。
 
 ## Plexクライアントの機能 (`pkg/plex/client.go`) {#plex-client-capabilities-pkgplexclientgo}
 - 接続のライフサイクル: 遅延開始オプション (`WithDeferredStart`)、`/identity` に対する `ValidateConnection` のガード、正常な `Close`。再起動 API はありません。ダッシュボードの `RestartAllowed` / `RestartReason` は、サーバー URL (ローカル/LAN かリモートか) から推測される表示用の値です (`internal/handlers/dashboard/plex_status.go:getPlexConnectionDetails`)。

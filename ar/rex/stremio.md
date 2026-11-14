@@ -95,7 +95,7 @@ INFO    FEED stremio upsert: ...
 
 ## في Docker {#in-docker}
 
-rex-stremio's [README](https://github.com/debridmediamanager/rex-stremio#set-up) has the Docker commands. In a container, rex reads the videos from the container's address on your network rather than `127.0.0.1`, which the README shows how to set.
+rex-stremio's [README](https://github.com/debridmediamanager/rex-stremio#set-up) يحتوي على أوامر Docker. داخل الحاوية، يقرأ rex الفيديوهات من عنوان الحاوية على شبكتك بدلاً من `127.0.0.1`، والـ README يوضح كيفية ضبط ذلك.
 
 ## التحديث {#updating}
 

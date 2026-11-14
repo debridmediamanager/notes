@@ -2,15 +2,15 @@
 
 ## Opção de uma linha {#one-line-option}
 
-The optional sponsor bootstrap installs macFUSE when needed, downloads the Intel or Apple silicon build, and runs
-the provider chooser and diagnostics:
+O bootstrap opcional do patrocinador instala o macFUSE quando necessário, baixa o build para Intel ou Apple silicon e executa
+o seletor de provedor e os diagnósticos:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.sh | bash
 ```
 
-It uses GitHub browser sign-in. macOS may still need approval under **System Settings > Privacy & Security** and a
-reboot. Existing binaries and configs stay in place. Continue below for the manual route.
+Ele usa o login no GitHub pelo navegador. O macOS ainda pode precisar de aprovação em **System Settings > Privacy & Security** e de uma
+reinicialização. Os binários e configs existentes são mantidos no lugar. Continue abaixo para o caminho manual.
 
 ## Passo 1: Instalar o macFUSE {#step-1-install-macfuse}
 

@@ -6,30 +6,30 @@
 - السلوك: الضغط على Edit أو Delete ينفّذ إجراءً بسيطاً. لا يوجد تجميع إضافي غير العناوين، ولا توجد شاشة مخصصة لإنشاء المجلدات أو تعديلها بخيارات YAML كاملة.
 
 ## أهم الثغرات في تجربة المستخدم {#key-ux-gaps}
-- **Information architecture**
-  - Groups are visually flattened; users cannot focus on one group at a time.
-  - Ordering relies on manual numbers (`group_order`), which is unintuitive and error-prone.
-  - No search/filter bar to quickly locate directories.
-  - No bulk actions (delete/move) or selection affordances.
-- **Creation/editing experience**
-  - Edit/add flows do not expose the full YAML schema (general settings, size/file/tag/time filters).
-  - No structured layout; fields are not grouped, leading to cognitive overload as options grow.
-  - Lacks a nested AND/OR rule builder to mirror YAML's nested filter logic.
-  - Tag-related fields (`tags_match_all`, `tags_match_any`) lack discoverability and selection help.
-  - No live preview of torrents matching current filter settings.
-- **Guidance and validation**
-  - Missing tooltips/info icons per field and links to deeper docs (e.g., `tags.md`).
-  - No proactive warning when a directory would yield zero torrents or lacks required filters.
-  - Regex and other pattern fields lack real-time validation feedback.
-  - Deletions happen without confirmation or undo.
-- **Accessibility and responsiveness**
-  - Contrast and readability not verified against WCAG; icon-only actions may lack labels.
-  - Drag-and-drop not available; no keyboard-accessible reordering path.
-  - Mobile layout not optimized (table does not adapt to stacked cards; forms may not scroll well).
-  - Action affordances rely on text-only links; icons and clear targets are missing.
-- **Performance and interaction polish**
-  - Search/filter (once added) will need debouncing and pagination/virtualization for large lists.
-  - Drag-and-drop (once added) needs persistence and graceful fallback when persistence fails.
+- **هيكلة المعلومات**
+  - المجموعات تبدو متساوية بصرياً، والمستخدم لا يستطيع التركيز على مجموعة واحدة في كل مرة.
+  - الترتيب يعتمد على أرقام يدوية (`group_order`)، وهذا غير بديهي وسهل الوقوع في الخطأ.
+  - لا يوجد شريط بحث أو فلترة للوصول السريع إلى المجلدات.
+  - لا توجد إجراءات جماعية (حذف/نقل) ولا طريقة واضحة لتحديد عدة عناصر.
+- **تجربة الإنشاء والتعديل**
+  - واجهات الإضافة والتعديل لا تعرض مخطط YAML الكامل (الإعدادات العامة، وفلاتر الحجم والملفات والوسوم والوقت).
+  - لا يوجد تخطيط منظم؛ الحقول غير مجمّعة، مما يسبب إرهاقاً ذهنياً مع زيادة الخيارات.
+  - لا يوجد منشئ قواعد متداخلة لـ AND/OR يعكس منطق الفلاتر المتداخل في YAML.
+  - حقول الوسوم (`tags_match_all`، `tags_match_any`) يصعب اكتشافها، ولا توجد مساعدة كافية في اختيار القيم.
+  - لا توجد معاينة مباشرة للتورنتات التي تطابق إعدادات الفلترة الحالية.
+- **الإرشاد والتحقق**
+  - لا توجد تلميحات أو أيقونات معلومات لكل حقل، ولا روابط إلى الوثائق التفصيلية (مثل `tags.md`).
+  - لا يوجد تحذير مسبق عندما ينتج المجلد صفر تورنتات أو عندما تنقصه فلاتر مطلوبة.
+  - حقول التعبيرات النمطية (Regex) وغيرها لا تعطي تغذية راجعة للتحقق لحظياً.
+  - يتم الحذف دون تأكيد أو إمكانية للتراجع.
+- **إمكانية الوصول والتجاوب مع الشاشات**
+  - لم يتم التحقق من التباين وسهولة القراءة وفق معايير WCAG، وقد تفتقر الإجراءات التي تعتمد على الأيقونات فقط إلى تسميات.
+  - لا يوجد سحب وإفلات، ولا طريقة لإعادة الترتيب بلوحة المفاتيح.
+  - تخطيط الجوال غير محسّن (الجدول لا يتحول إلى بطاقات مرتبة، والنماذج قد لا تتمرر بشكل جيد).
+  - الإجراءات تعتمد على روابط نصية فقط؛ الأيقونات والأهداف الواضحة للنقر غير موجودة.
+- **الأداء وصقل التفاعل**
+  - البحث والفلترة (عند إضافتهما) سيحتاجان إلى تأخير الاستجابة (debouncing) وترقيم الصفحات أو التمرير الافتراضي للقوائم الكبيرة.
+  - السحب والإفلات (عند إضافته) يحتاج إلى حفظ دائم للترتيب، وإلى بديل سلس عند فشل الحفظ.
 
 ## تغييرات الواجهة وتجربة المستخدم الموصى بها {#recommended-uiux-changes}
 - **تقديم المجموعات**

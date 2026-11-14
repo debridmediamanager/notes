@@ -103,11 +103,11 @@ fetch_torrents_page_size: 5000
 ## Проверьте, что всё работает {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/realdebrid/test
+curl -sS -X POST http://localhost:9999/api/providers/realdebrid/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-Если у вас только один аккаунт, его собственная папка не отображается в корневом списке монтирования, поэтому монтирование показывает те же файлы в `__all__`.
+Если у вас только один аккаунт, его собственная папка не выводится в корневом списке маунта, поэтому маунт показывает те же файлы в `__all__`.
 
 ## Когда что-то идёт не так {#when-it-goes-wrong}
 

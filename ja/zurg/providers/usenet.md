@@ -72,11 +72,11 @@ ls /zurg_mnt/zurg/__all__/
 
 ## このタイプ特有のルール {#rules-specific-to-this-type}
 
-- **Nur ein aktivierter `nzb`-Eintrag.** Zwei würden dasselbe Verzeichnis scannen und jede Veröffentlichung doppelt anlegen. Weitere News-Server gehören unter `nntp.servers` dieses einen Eintrags. Dort bedienen sie dieselbe Bibliothek, statt eine zweite Kopie davon zu liefern. Ein `nzb`-Eintrag neben einem [`torbox_nzb`](torbox-nzb.md)-Eintrag wird aus demselben Grund abgelehnt.
-- **`watchlist: true` wird abgelehnt.** Ein News-Server bekommt nie einen Torrent.
-- **`add_torrents` wird ignoriert,** und beim Start gibt es dazu eine Warnung, aus demselben Grund.
-- **`download_tokens` und `strm_link_token` tun nichts.** Es gibt keine Zugangsdaten, die man rotieren müsste.
-- **Das Verzeichnis heißt `__nzb__`,** weil der Name standardmäßig dem Typ entspricht. Wenn du lieber `__usenet__` durchsuchen willst, setz `name: usenet` für den Eintrag.
+- **ユーザーが有効にできる `nzb` エントリは 1 つだけです。** 2 つあると同じディレクトリを二重にスキャンし、すべてのリリースが重複します。ニュースサーバーを追加する場合は、その 1 つのエントリの `nntp.servers` の下に入れてください。そうすれば、ライブラリの 2 つ目のコピーではなく、同じライブラリを配信することになります。[`torbox_nzb`](torbox-nzb.md) のエントリと並べて `nzb` エントリを置くと、同じ理由で拒否されます。
+- **`watchlist: true` は拒否されます。** ニュースサーバーにトレントが渡されることは決してありません。
+- **`add_torrents` は無視され、起動時に同じ理由で警告が出ます。**
+- **`download_tokens` と `strm_link_token` は何もしません。** ローテーションする認証情報がないためです。
+- **ディレクトリ名は `__nzb__` になります。** 名前はタイプがデフォルトになるためです。`__usenet__` を閲覧したい場合は、エントリに `name: usenet` を設定してください。
 
 ## 2つ目のニュースサーバーは思った以上に価値がある {#a-second-news-server-is-worth-more-than-it-looks}
 
@@ -87,14 +87,14 @@ ls /zurg_mnt/zurg/__all__/
 ## 正しく動いたか確認する {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/nzb/test
+curl -sS -X POST http://localhost:9999/api/providers/nzb/test
 docker compose logs --tail=100 zurg
 ls /zurg_mnt/zurg/__all__/
 ```
 
-アカウントが1つだけだと、そのアカウント用のフォルダはマウントのルート一覧から外されます。そのためマウントでは、同じファイルが `__all__` の下に表示されます。
+アカウントが1つだけだと、そのアカウント用のフォルダーはマウントのルート一覧から外されます。そのため、マウントでは同じファイルが `__all__` の下に表示されます。
 
-ここでのプローブは、既存のプールから最大1つの接続だけを使ってニュースサーバーに認証します。アカウントの情報を問い合わせる API はありません。
+ここでのプローブは、既存のプールから最大1本の接続だけを使ってニュースサーバーに認証します。アカウントAPIに問い合わせる方法はありません。
 
 ## うまくいかないとき {#when-it-goes-wrong}
 

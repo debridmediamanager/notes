@@ -11,13 +11,13 @@ ffprobe. Встроенная команда `setup` создаёт конфиг
 
 ## Вариант в одну строку {#one-line-option}
 
-On a fresh Linux host, the optional bootstrap can install Docker when you approve it, set up persistent FUSE mount propagation, log in to the sponsor registry, write the Compose project, run the provider chooser, and check the result:
+На чистом Linux-хосте необязательный скрипт начальной настройки может, если вы подтвердите, установить Docker, настроить постоянное распространение монтирования FUSE, войти в реестр спонсоров, создать Compose-проект, запустить выбор провайдера и проверить результат:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install-docker.sh | bash
 ```
 
-Your existing Compose files and configs are kept as they are. The sections below show every step for those who prefer the manual route.
+Существующие Compose-файлы и конфиги сохраняются. Ниже описаны все шаги для тех, кто предпочитает делать всё вручную.
 
 ## Что делает установщик внутри контейнера {#what-the-installer-does-in-a-container}
 

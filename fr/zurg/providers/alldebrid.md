@@ -79,7 +79,7 @@ La bonne nouvelle, c'est qu'elle n'est nécessaire **qu'une seule fois** et non 
 ## Vérifier que ça fonctionne {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/alldebrid/test
+curl -sS -X POST http://localhost:9999/api/providers/alldebrid/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 

@@ -91,14 +91,14 @@ Akun tambahan ditaruh di bawah `nntp.servers` pada entri ini, bukan di entri `nz
 ## Cek apakah sudah berhasil {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/nzb/test
+curl -sS -X POST http://localhost:9999/api/providers/nzb/test
 docker compose logs --tail=100 zurg
 ls /zurg_mnt/zurg/__all__/
 ```
 
-Dengan hanya satu akun, folder miliknya sendiri tidak ditampilkan di daftar root mount, jadi mount menampilkan file yang sama di bawah `__all__`.
+Dengan hanya satu akun, folder miliknya sendiri tidak ditampilkan di daftar root mount, jadi mount hanya menampilkan file yang sama di bawah `__all__`.
 
-Probe di sini melakukan autentikasi ke news server menggunakan paling banyak satu koneksi dari pool yang sudah ada. Tidak ada account API yang bisa ditanya.
+Probe di sini melakukan autentikasi ke news server dengan memakai paling banyak satu koneksi dari pool yang sudah ada. Tidak ada account API yang bisa ditanya.
 
 ## Saat terjadi masalah {#when-it-goes-wrong}
 

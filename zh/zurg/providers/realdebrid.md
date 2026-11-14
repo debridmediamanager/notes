@@ -102,12 +102,12 @@ fetch_torrents_page_size: 5000
 ## 检查是否生效 {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/realdebrid/test
+curl -sS -X POST http://localhost:9999/api/providers/realdebrid/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-只有一个账户时,它自己的文件夹会从挂载的根目录列表中省略,
-所以挂载点下会在 `__all__` 下显示同样的文件。
+只有一个账号时，它自己的文件夹会从挂载的根目录列表中排除，
+所以挂载点会在 `__all__` 下显示同样的文件。
 
 ## 出错时怎么办 {#when-it-goes-wrong}
 

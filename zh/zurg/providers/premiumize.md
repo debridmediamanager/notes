@@ -99,11 +99,12 @@ zurg 会把服务返回的错误代码映射成它接下来应该做的事。
 ## 检查是否生效 {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/premiumize/test
+curl -sS -X POST http://localhost:9999/api/providers/premiumize/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-只有一个账号时，它自己的文件夹会被排除在挂载的根目录列表之外，所以挂载点会在 `__all__` 下显示同样的文件。
+只有一个账号时，它自己的文件夹会被排除在挂载的根目录列表之外，
+所以挂载点会在 `__all__` 下显示同样的文件。
 
 ## 出错时怎么办 {#when-it-goes-wrong}
 

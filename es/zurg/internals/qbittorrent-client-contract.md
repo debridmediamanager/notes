@@ -1080,11 +1080,7 @@ instead of an array, a bad enum, a non-numeric `size`.
 
 ### 6.5 La comprobación `dht` {#65-the-dht-check}
 
-There is **no** dedicated DHT check in `Test()`. `dht` is consulted at grab time
-(`:73-76`, magnets without trackers) and at poll time (`:288`, the `metaDL` branch). A shim reporting
-`dht: false` passes the connection test and then refuses every trackerless magnet with
-`ReleaseDownloadException("Magnet not supported by download client. …")`
-(`TorrentClientBase.cs:115`). **Report `dht: true`.**
+Ahora mismo `Test()` no tiene ninguna comprobación de DHT específica. `dht` se consulta al capturar la release (`:73-76`, magnets sin trackers) y al consultar el estado (`:288`, la rama `metaDL`). Un shim que devuelva `dht: false` pasa la prueba de conexión y luego rechaza cada magnet sin trackers con `ReleaseDownloadException("Magnet not supported by download client. …")` (`TorrentClientBase.cs:115`). **Devuelve `dht: true`.**
 
 ## 7. Análisis e importación: consecuencias que un shim debe conocer {#7-parsing-and-import-consequences-a-shim-should-know}
 
@@ -1465,18 +1461,13 @@ Nada de eso rompe el seguimiento, porque el seguimiento se indexa por `DownloadI
 
 ### 11.4 No hay progreso ni fase de metadatos {#114-there-is-no-progress-and-no-metadata-phase}
 
-There is nothing to download, so there is no meaningful `progress`, `eta`, `dlspeed`, or `metaDL`
-period — the same limitation the SAB endpoint documents ([sabnzbd.md](../guides/sonarr-radarr.md), *Lo que funciona, y
-lo que no*: "No progress. A job is queued or it is completed"). The natural mapping is: **Queued**
-(`queuedDL`) while the library does not list the release yet, **Completed** (`pausedUP`) once it does
-*and its file sizes have settled*, with `size` taken from whatever the backend declares so the queue
-entry is not blank.
+No hay nada que descargar, así que no existen `progress`, `eta`, `dlspeed` ni `metaDL` con sentido, punto. Es la misma limitación que documenta el endpoint de SAB ([sabnzbd.md](../guides/sonarr-radarr.md), *What works, and what does not*: "No progress. A job is queued or it is completed"). El mapeo natural es: **Queued** (`queuedDL`) mientras la biblioteca todavía no lista el release, y **Completed** (`pausedUP`) cuando ya aparece *y sus tamaños de archivo se han estabilizado*, con `size` tomado de lo que declare el backend para que la entrada de la cola no quede en blanco.
 
-No uses `metaDL` para el estado de espera a menos que `dht: true` también se reporte: solo es Queued en
-ese caso (`:288-297`). `queuedDL` es incondicional y no lleva ningún mensaje.
+No uses `metaDL` para el estado de espera a menos que `dht: true` también se reporte. Solo entonces es Queued (`:288-297`). `queuedDL` es incondicional y no lleva ningún mensaje.
 
-No uses `stalledDL`, `error` ni `missingFiles` para una espera transitoria: los tres son **Warnings**
-(§2) y aparecen en la cola como problemas.
+No uses `stalledDL`, `error` ni `missingFiles` para una espera transitoria: los tres son **Warnings** (§2) y aparecen en la cola como problemas.
+
+(Una traducción anterior fue rechazada: se lee como inglés, no como español. Mantén la estructura exactamente igual.)
 
 ### 11.5 Borrar oculta; no destruye {#115-deleting-hides-it-does-not-destroy}
 

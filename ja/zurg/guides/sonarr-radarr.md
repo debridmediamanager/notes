@@ -321,9 +321,9 @@ Radarrの初回起動も同じ流れです。Forms auth を設定してから、
 
 ## 8. *arr が Docker で動いている場合 {#8-if-your-arr-is-in-docker}
 
-Este paso es para Docker en un host Linux. Docker Desktop en macOS y Windows ejecuta los contenedores dentro de una máquina virtual. El bind `rslave` de abajo depende de la propagación de montajes de Linux (ver [Docker setup](../setup/docker.md)), y pasarle el montaje de zurg a un contenedor en esos sistemas no se ha probado. En macOS y Windows, instala Sonarr y Radarr como aplicaciones normales, tal como describe [Before you start](#before-you-start).
+この手順は Linux ホスト上の Docker 向けです。macOS や Windows の Docker Desktop は、コンテナを仮想マシンの中で動かします。以下の `rslave` バインドは Linux のマウント伝播に依存しており（[Docker setup](../setup/docker.md) を参照）、zurg のマウントをそれらのシステム上のコンテナに渡す方法はテストしていません。macOS や Windows では、代わりに [Before you start](#before-you-start) に書かれているとおり、Sonarr と Radarr を通常のアプリとしてインストールしてください。
 
-Hay tres problemas separados. El segundo te cuesta una descarga en cada importación. El tercero no te afecta hasta la primera vez que zurg se reinicie.
+問題は3つあります。2つ目は、インポートのたびにダウンロードが1回余分に発生します。3つ目は、zurg を初めて再起動したときに初めて問題になります。
 
 ### zurg が報告するパスは、クライアントが開けるパスである必要があります {#the-path-zurg-reports-must-be-a-path-the-client-can-open}
 

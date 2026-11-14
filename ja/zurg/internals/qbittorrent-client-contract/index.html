@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
     <meta name="turbo-root" content="/ja">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847987577864">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847991144043">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -39,12 +39,12 @@
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
     <link id="retype-favicon" rel="icon" href="../../../assets/favicon.png" />
-    <link href="../../../resources/css/retype.css?v=4.6.0.847987577864" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.847991144043" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847987577864" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847991144043" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847987577864" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847987577864" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847991144043" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847991144043" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -1914,16 +1914,8 @@ trackedDownload.DownloadItem.Removed = true;</code></pre>
 </ul>
 <p>存在しない hash に対する <code translate="no" v-pre>torrents/delete</code> も、引き続き 200 を返すべきです。本物の qBittorrent も同じ動きをします（wiki の <em>Delete torrents</em>、「200 | All scenarios」）。ここでエラーを返すと、エラーとしてログに残り、ポーリングのたびに永遠に再試行されてしまいます。</p>
 <h3 id="53-markitemasimported-and-the-post-import-category">5.3 <code translate="no" v-pre>MarkItemAsImported</code> とインポート後のカテゴリ</h3>
-<p><code translate="no" v-pre>QBittorrent.cs:52-69</code> sets the post-import category when <code translate="no" v-pre>TvImportedCategory</code> /
-<code translate="no" v-pre>MovieImportedCategory</code> is configured and different from the main category. It is called for <strong>every</strong>
-completed import (<code translate="no" v-pre>DownloadEventHub.cs:54</code>), before the removal decision.</p>
-<p>If a shim honours <code translate="no" v-pre>setCategory</code> by actually moving the torrent out of the polled category, the torrent
-vanishes from the next <code translate="no" v-pre>torrents/info?category=…</code> — which is what the setting is <em>for</em>, and what the
-UI surfaces as <code translate="no" v-pre>DownloadClientHasPostImportCategory</code>
-(<code translate="no" v-pre>src/NzbDrone.Core/Queue/QueueService.cs:84</code>, sourced from
-<code translate="no" v-pre>DownloadClientItemClientInfo.HasPostImportCategory</code>, <code translate="no" v-pre>QBittorrent.cs:234</code>). Accepting the call and
-recording the new category is the correct behaviour; refusing it produces only a warning
-(<code translate="no" v-pre>:62-67</code>).</p>
+<p><code translate="no" v-pre>QBittorrent.cs:52-69</code> は、<code translate="no" v-pre>TvImportedCategory</code> や <code translate="no" v-pre>MovieImportedCategory</code> が設定されていて、メインのカテゴリと異なる場合に、インポート後のカテゴリを設定します。これは完了したインポートのたびに呼ばれ(<code translate="no" v-pre>DownloadEventHub.cs:54</code>)、削除するかどうかの判断より前に行われます。</p>
+<p>shim が <code translate="no" v-pre>setCategory</code> を実際に受け入れて、torrent をポーリング対象のカテゴリから移動させると、次の <code translate="no" v-pre>torrents/info?category=…</code> で torrent が見えなくなります。これこそがこの設定の目的であり、UI では <code translate="no" v-pre>DownloadClientHasPostImportCategory</code> として表示されます(<code translate="no" v-pre>src/NzbDrone.Core/Queue/QueueService.cs:84</code>。元になるのは <code translate="no" v-pre>DownloadClientItemClientInfo.HasPostImportCategory</code> で、<code translate="no" v-pre>QBittorrent.cs:234</code>)。この呼び出しを受け入れて新しいカテゴリを記録するのが正しい動作です。拒否すると警告が出るだけです(<code translate="no" v-pre>:62-67</code>)。</p>
 <h2 id="6-test--every-check-in-order-and-its-message">6. <code translate="no" v-pre>Test()</code> — すべてのチェックを順番に、そのメッセージ付きで</h2>
 <p><code translate="no" v-pre>DownloadClientBase.Test()</code>（<code translate="no" v-pre>src/NzbDrone.Core/Download/DownloadClientBase.cs:148-163</code>）は処理全体をラップしています。<strong>外に漏れた例外はすべて</strong> <code translate="no" v-pre>ValidationFailure(&quot;&quot;, &quot;Test was aborted due to an error: &quot; + ex.Message)</code> になります。</p>
 <p><code translate="no" v-pre>QBittorrent.Test(List&lt;ValidationFailure&gt;)</code>（<code translate="no" v-pre>:418-429</code>）:</p>
@@ -2072,11 +2064,7 @@ your qBittorrent settings. Enable it in qBittorrent or select &#x27;Last&#x27; a
 <p><code translate="no" v-pre>Proxy.GetTorrents(Settings)</code>; any exception becomes <code translate="no" v-pre>(&quot;&quot;, &quot;Failed to get the list of torrents: {exceptionMessage}&quot;)</code>. This is the check that catches a malformed <code translate="no" v-pre>torrents/info</code> body — a JSON object
 instead of an array, a bad enum, a non-numeric <code translate="no" v-pre>size</code>.</p>
 <h3 id="65-the-dht-check">6.5 <code translate="no" v-pre>dht</code> のチェック</h3>
-<p>There is <strong>no</strong> dedicated DHT check in <code translate="no" v-pre>Test()</code>. <code translate="no" v-pre>dht</code> is consulted at grab time
-(<code translate="no" v-pre>:73-76</code>, magnets without trackers) and at poll time (<code translate="no" v-pre>:288</code>, the <code translate="no" v-pre>metaDL</code> branch). A shim reporting
-<code translate="no" v-pre>dht: false</code> passes the connection test and then refuses every trackerless magnet with
-<code translate="no" v-pre>ReleaseDownloadException(&quot;Magnet not supported by download client. …&quot;)</code>
-(<code translate="no" v-pre>TorrentClientBase.cs:115</code>). <strong>Report <code translate="no" v-pre>dht: true</code>.</strong></p>
+<p><code translate="no" v-pre>Test()</code> には専用の DHT チェックはありません。<code translate="no" v-pre>dht</code> は grab 時（<code translate="no" v-pre>:73-76</code>、トラッカーのない magnet の場合）と poll 時（<code translate="no" v-pre>:288</code>、<code translate="no" v-pre>metaDL</code> の分岐）に参照されます。<code translate="no" v-pre>dht: false</code> を返す shim は接続テストには通りますが、その後トラッカーのない magnet をすべて <code translate="no" v-pre>ReleaseDownloadException(&quot;Magnet not supported by download client. …&quot;)</code>（<code translate="no" v-pre>TorrentClientBase.cs:115</code>）で拒否します。<strong><code translate="no" v-pre>dht: true</code> を返してください。</strong></p>
 <h2 id="7-parsing-and-import-consequences-a-shim-should-know">7. シムが知っておくべき解析とインポートへの影響</h2>
 <h3 id="71-name-becomes-title-and-title-is-used-for-three-different-things">7.1 <code translate="no" v-pre>name</code> は <code translate="no" v-pre>Title</code> になり、<code translate="no" v-pre>Title</code> は3つの用途で使われる</h3>
 <p><code translate="no" v-pre>DownloadClientItem.Title = torrent.Name</code> (<code translate="no" v-pre>QBittorrent.cs:232</code>)。この値は次の場面で使われます:</p>

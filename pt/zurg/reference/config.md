@@ -1376,7 +1376,7 @@ Uma conta com nome igual a um diretório que o zurg já usa (`all`, `unplayable`
 
 ### Catálogos de debrid locais {#local-debrid-catalogs}
 
-Cada entrada de proveedor de debrid acepta un bloque `library` opcional:
+Cada entrada de provedor debrid aceita um bloco `library` opcional:
 
 ```yaml
 providers:
@@ -1390,11 +1390,11 @@ providers:
       path: torrents/rd-local
 ```
 
-`source` tiene `provider` como valor predeterminado. Con `local`, los archivos `.zurgtorrent` portátiles controlan la pertenencia y la reproducción usa las credenciales de esta cuenta. `path` tiene `torrents/<resolved-account-name>` como valor predeterminado y debe quedar dentro de `torrents/`. Un mismo directorio de origen no puede pertenecer a dos cuentas habilitadas. Los proveedores NZB conservan su biblioteca `nzbs/` existente.
+`source` vem `provider` por padrão. Com `local`, os arquivos `.zurgtorrent` portáteis definem a lista de torrents e a reprodução usa as credenciais dessa conta. `path` vem `torrents/<resolved-account-name>` por padrão e precisa ficar dentro de `torrents/`. Dois contas habilitadas não podem usar o mesmo diretório de origem. Provedores NZB mantêm a biblioteca `nzbs/` que já existe.
 
-En este ejemplo, ambos tokens de RD sirven al mismo catálogo en `torrents/rd-local/`. El segundo token no necesita entrada de proveedor ni directorio, y su biblioteca de torrents no se importa. `download_tokens` mantiene su comportamiento de respaldo por ancho de banda; no obliga a que todas las descargas pasen por el segundo token. Dos entradas de proveedor locales separadas controlan dos directorios de catálogo distintos, incluso si ambas son Real-Debrid. Las credenciales se quedan en la configuración y nunca se exportan a archivos portátiles.
+Neste exemplo, os dois tokens do RD usam o mesmo catálogo em `torrents/rd-local/`. O segundo token não precisa de entrada de provedor nem de diretório, e a biblioteca de torrents dele não é importada. `download_tokens` mantém o comportamento de fallback de banda, ou seja, não força todos os downloads a passar pelo segundo token. Já duas entradas de provedor locais separadas têm dois diretórios de catálogo diferentes, mesmo que ambas sejam Real-Debrid. As credenciais ficam na configuração e nunca são exportadas para os arquivos portáteis.
 
-Consulta [bibliotecas portátiles](../guides/local-libraries.md) para la exportación sin conexión, la migración desde `dump/`, la semántica de compartir y los límites de reproducción.
+Veja [bibliotecas portáteis](../guides/local-libraries.md) para exportação offline, migração a partir de `dump/`, regras de compartilhamento e limites de reprodução.
 
 #### Descarregando uma conta online para uma biblioteca local {#offloading-an-online-account-into-a-local-library}
 

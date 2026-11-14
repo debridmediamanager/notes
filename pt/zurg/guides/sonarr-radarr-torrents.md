@@ -95,9 +95,9 @@ INFO  router.qbittorrent  qBittorrent: torrents are offered to alldebrid, in tha
 
 ## 2. Encontre a chave de API {#2-find-the-api-key}
 
-The API key is the entire authentication on this endpoint, so get it right once and don't paste it anywhere public.
+A chave de API é toda a autenticação deste endpoint, então configure-a certo de primeira e não a cole em lugar nenhum público.
 
-**If you left `api_key` empty**, zurg generated one on first start and wrote it to `data/qbittorrent-apikey`:
+**Se você deixou `api_key` vazio**, o zurg gerou uma na primeira inicialização e a gravou em `data/qbittorrent-apikey`:
 
 ```bash
 $ cat data/qbittorrent-apikey
@@ -105,17 +105,17 @@ fedcba9876543210fedcba9876543210
 
 ```
 
-Illustrative key — yours will differ. The file survives restarts, so the key is stable once generated.
+Chave ilustrativa — a sua será diferente. O arquivo sobrevive a reinicializações, então a chave continua a mesma depois de gerada.
 
-**If you set `api_key` yourself**, it is in `config.yml` and no file is written.
+**Se você definiu `api_key` manualmente**, ela está em `config.yml` e nenhum arquivo é gravado.
 
-**This endpoint is outside zurg's basic auth.** The \*arrs authenticate to a download client the download client's own way, and their HTTP layer turns a basic-auth 401 into "unable to connect" with nothing actionable in it — so zurg deliberately exempts `/api/v2`. The API key is the whole gate. Treat the port the way you treat the rest of zurg's: on a trusted network, or behind something that is.
+**Este endpoint fica fora da autenticação básica do zurg.** Os \*arrs se autenticam em um cliente de download do jeito próprio do cliente, e a camada HTTP deles transforma um 401 de autenticação básica em "unable to connect", sem nenhuma informação útil. Por isso o zurg deixa `/api/v2` de fora de propósito. A chave de API é o único portão. Trate a porta como o resto do zurg: em uma rede confiável, ou atrás de algo que seja.
 
-Three ways to present the key, all accepted:
+Três formas de apresentar a chave, todas aceitas:
 
-- **`Authorization: Bearer <key>`** — what the client sends when its **API Key** field is filled in. This is the recommended one; it skips the login entirely.
-- **The key as the password** on `auth/login`, with any username. Use this if you would rather fill in Username and Password.
-- **zurg's own dashboard username and password**, if `username:` and `password:` are set in `config.yml`.
+- **`Authorization: Bearer <key>`** — o que o cliente envia quando o campo **API Key** está preenchido. Esta é a recomendada; ela dispensa o login por completo.
+- **A chave como senha** em `auth/login`, com qualquer nome de usuário. Use isso se preferir preencher Username e Password.
+- **Usuário e senha do próprio dashboard do zurg**, se `username:` e `password:` estiverem definidos em `config.yml`.
 
 ## 3. Confirme que ela responde {#3-prove-it-answers}
 

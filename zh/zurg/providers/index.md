@@ -138,32 +138,32 @@ Premiumize、Debrid-Link 和 Offcloud 会拒绝 `download_tokens`，以及与 `t
 
 ## 检查是否生效 {#check-it-worked}
 
-先从日志和诊断开始。
+先看日志和诊断。
 
 ```bash
 docker compose logs -f --tail=100 zurg
 docker compose exec zurg /app/zurg doctor --working-dir /config
 ```
 
-在 Docker 中，`WARN service zurg is not installed` 属于正常现象，因为 Compose 负责自动启动。警告不会让 doctor 失败，只有 `FAIL` 才会。
+在 Docker 里，`WARN service zurg is not installed` 是正常的，因为 Compose 负责自动启动。警告不会让 doctor 失败，只有 `FAIL` 才会。
 
-然后从 Dashboard 或命令行测试账户本身。
+然后从 Dashboard 或命令行直接检测账户本身。
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox/test
 ```
 
-`{"success":true}` 表示凭据验证通过。路径中的名称就是账户的 `name`，默认与其 `type` 相同。如果你在 `config.yml` 中设置了 `username`，就加上 `-u user:pass`。没有设置的话，Dashboard 及其 API 在你发布的端口上是开放的。
+`{"success":true}` 表示凭据验证通过。路径中的名称就是账户的 `name`，默认与它的 `type` 相同。如果你在 `config.yml` 中设置了 `username`，就加上 `-u user:pass`。没有设置的话，Dashboard 及其 API 在你发布的端口上是开放的。
 
-最后，查看挂载点上的媒体库。
+最后看看挂载点上的库。
 
 ```bash
 ls /zurg_mnt/zurg/__all__/
 ```
 
-每个已配置的账户都会有一个 `__<name>__` 目录。它包含该账户的全部内容，并将读取固定到该账户。`__torbox__/Some.Release/` 只会从 TorBox 串流，不会走其他途径。由于 `__all__` 与之是同一个媒体库，单个账户的文件夹不再列在挂载点的根目录中。`/http/__torbox__/` 之类的 HTTP 和 WebDAV 直接路径仍然可以访问。通过挂载点访问时，它也不再能解析；请把所有使用 `__<name>__` 的媒体库或脚本改为指向 `__all__`。
+每个已配置的账户都会有一个 `__<name>__` 目录。它包含该账户的全部内容，并且会把读取固定到这个账户上。`__torbox__/Some.Release/` 只会从 TorBox 串流，不会走其他地方。单个账户的目录不会出现在挂载根目录的列表里，因为 `__all__` 包含的是同一个库。直接访问的 HTTP 和 WebDAV 路径，比如 `/http/__torbox__/`，仍然可以正常响应。但通过挂载点已经无法解析了，所以把所有用到 `__<name>__` 的库或脚本都改成指向 `__all__`。
 
-大型媒体库首次加载需要一些时间。在加载完成前，`/dav/movies/` 会返回 503，挂载点可能什么也列不出来。
+大型库第一次加载需要一些时间。在加载完成之前，`/dav/movies/` 会返回 503，挂载点可能什么也列不出来。
 
 ## 运行多个账户 {#running-several-accounts}
 

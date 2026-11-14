@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
     <meta name="turbo-root" content="/ja">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847987577864">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847991144043">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -39,12 +39,12 @@
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
     <link id="retype-favicon" rel="icon" href="../../../assets/favicon.png" />
-    <link href="../../../resources/css/retype.css?v=4.6.0.847987577864" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.847991144043" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847987577864" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847991144043" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847987577864" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847987577864" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847991144043" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847991144043" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -423,10 +423,10 @@
 </ul>
 <h2 id="authentication--server-discovery">認証とサーバー検出</h2>
 <ul>
-<li>Web dashboard flow: <code translate="no" v-pre>/plex/auth</code> creates a PIN session (<code translate="no" v-pre>pkg/plex/auth.go</code>, <code translate="no" v-pre>CreatePlexAuthURL</code>), stores it in <code translate="no" v-pre>pkg/plex/auth_session.go</code> (auto-cleanup after 10 min, swept every 5), and polls for completion via <code translate="no" v-pre>/plex/auth/status</code> (<code translate="no" v-pre>PollForAuthToken</code>, 60 attempts 5s apart before timing out).</li>
-<li><code translate="no" v-pre>/plex/callback</code> serves a progress page that, once authorized, calls <code translate="no" v-pre>/plex/servers</code> to list servers and <code translate="no" v-pre>/plex/server</code> to select one (<code translate="no" v-pre>internal/handlers/dashboard/dashboard.go</code>).</li>
-<li>Server discovery (<code translate="no" v-pre>pkg/plex/auth.go</code>): fetches Plex resources with both HTTP/HTTPS endpoints, filters relay if direct exists, handles IPv6 addresses, and probes each entry&#x27;s <code translate="no" v-pre>/identity</code> (TLS verification disabled). Only servers <strong>owned</strong> by the account are considered (<code translate="no" v-pre>device.Owned</code>, <code translate="no" v-pre>auth.go</code>) — shared servers never appear — and entries that fail the probe are dropped from the response rather than returned with <code translate="no" v-pre>last_error</code> set (<code translate="no" v-pre>enrichServersWithIdentity</code>, <code translate="no" v-pre>auth.go</code>).</li>
-<li>Selecting a server writes <code translate="no" v-pre>plex_server_url</code>/<code translate="no" v-pre>plex_token</code> to config, reinitializes the Plex client, (re)starts the matcher scheduler, fires a match trigger, and refreshes the cached dashboard status (<code translate="no" v-pre>HandlePlexServerSelect</code>, <code translate="no" v-pre>internal/handlers/dashboard/dashboard.go</code>). <code translate="no" v-pre>/plex/logout</code> clears the stored values and the status cache.</li>
+<li>Webダッシュボードの流れ: <code translate="no" v-pre>/plex/auth</code> でPINセッションを作成し（<code translate="no" v-pre>pkg/plex/auth.go</code>、<code translate="no" v-pre>CreatePlexAuthURL</code>）、<code translate="no" v-pre>pkg/plex/auth_session.go</code> に保存します（10分後に自動削除、5分ごとに掃除）。その後 <code translate="no" v-pre>/plex/auth/status</code> で認証完了をポーリングします（<code translate="no" v-pre>PollForAuthToken</code>、5秒間隔で60回試行し、そのあとタイムアウト）。</li>
+<li><code translate="no" v-pre>/plex/callback</code> は進行状況を表示するページを返します。認証が済むと、<code translate="no" v-pre>/plex/servers</code> を呼び出してサーバー一覧を取得し、<code translate="no" v-pre>/plex/server</code> で1つ選択します（<code translate="no" v-pre>internal/handlers/dashboard/dashboard.go</code>）。</li>
+<li>サーバー検出（<code translate="no" v-pre>pkg/plex/auth.go</code>）: HTTP/HTTPSの両方のエンドポイントを持つPlexリソースを取得し、直接接続が使えるものがあればリレーを除外し、IPv6アドレスも扱います。各エントリーについて <code translate="no" v-pre>/identity</code> をプローブします（TLS検証は無効）。考慮されるのは、アカウントが<strong>所有する</strong>サーバー（<code translate="no" v-pre>auth.go</code> の <code translate="no" v-pre>device.Owned</code>）だけです。共有サーバーは一切表示されません。プローブに失敗したエントリーは、<code translate="no" v-pre>last_error</code> を設定して返すのではなく、レスポンスから除外されます（<code translate="no" v-pre>enrichServersWithIdentity</code>、<code translate="no" v-pre>auth.go</code>）。</li>
+<li>サーバーを選択すると、<code translate="no" v-pre>plex_server_url</code> と <code translate="no" v-pre>plex_token</code> を設定に書き込み、Plexクライアントを再初期化し、マッチャーのスケジューラを（再）起動し、マッチトリガーを発火させ、キャッシュされたダッシュボードのステータスを更新します（<code translate="no" v-pre>HandlePlexServerSelect</code>、<code translate="no" v-pre>internal/handlers/dashboard/dashboard.go</code>）。<code translate="no" v-pre>/plex/logout</code> は保存された値とステータスキャッシュをクリアします。</li>
 </ul>
 <h2 id="plex-client-capabilities-pkgplexclientgo">Plexクライアントの機能 (<code translate="no" v-pre>pkg/plex/client.go</code>)</h2>
 <ul>

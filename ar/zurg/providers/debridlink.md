@@ -83,12 +83,11 @@ zurg يربط رموز الأخطاء القادمة من الخدمة بما ي
 ## تحقّق من أنه يعمل {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/debridlink/test
+curl -sS -X POST http://localhost:9999/api/providers/debridlink/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-مع حساب واحد فقط، يتم إخفاء مجلده الخاص من قائمة الجذر في الـ mount،
-لذلك يعرض الـ mount نفس الملفات تحت `__all__`.
+مع حساب واحد فقط، يُستثنى مجلده الخاص من قائمة الجذر للتركيبة (mount)، لذلك تُعرض الملفات نفسها تحت `__all__`.
 
 ## عندما تسوء الأمور {#when-it-goes-wrong}
 

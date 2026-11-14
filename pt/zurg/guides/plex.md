@@ -177,16 +177,16 @@ Cada uma dessas opções faz o Plex decodificar arquivos inteiros para um result
 
 ### Hábitos — sempre reportados, nunca corrigidos {#taste--always-reported-never-corrected}
 
-There is a feature behind each of these, so zurg says what the value costs and leaves the choice alone. Turning one off unasked would take away something the operator can see, which is not zurg's call however much bandwidth it would save. For the first two the cheaper option keeps the feature and moves the work into the maintenance window; for the rest the choice is the feature or the bandwidth.
+Tem uma funcionalidade por trás de cada um desses, então o zurg mostra quanto cada valor custa e deixa a escolha com você. Desligar uma delas sem pedir tiraria algo que o operador consegue ver, e isso não cabe ao zurg, por mais banda que fosse economizada. Nas duas primeiras, a opção mais barata mantém a funcionalidade e move o trabalho para a janela de manutenção; nas demais, a escolha é entre a funcionalidade e a banda.
 
-| Preference | Plex default | zurg suggests | Why |
+| Preferência | Padrão do Plex | Sugestão do zurg | Motivo |
 |---|---|---|---|
-| `GenerateIntroMarkerBehavior` | `asap` | `scheduled` or `never` | `asap` decodes each file the moment it lands, outside any maintenance window. `scheduled` keeps the Skip Intro button and moves the work into the window. |
-| `GenerateCreditsMarkerBehavior` | `asap` | `scheduled` or `never` | O mesmo, para o Skip Credits. |
-| `GenerateBIFBehavior` | `never` | `never` | Decodes the whole video to build the image strip shown while scrubbing. Playback does not need it. |
-| `GenerateChapterThumbBehavior` | `scheduled` | `never` | Decodes the file to pull one frame per chapter, for the picture beside each entry in the chapter list. |
-| `LoudnessAnalysisBehavior` | `scheduled` | `never` | Fully decodes every file's audio to measure it, for volume levelling between tracks and titles. |
-| `MusicAnalysisBehavior` | `scheduled` | `never` | Decodes every track — many small files, so this is the request count that gets an account rate-limited. Buys sonic analysis: similar-track mixes and the visualiser. |
+| `GenerateIntroMarkerBehavior` | `asap` | `scheduled` ou `never` | O `asap` decodifica cada arquivo assim que ele chega, fora de qualquer janela de manutenção. O `scheduled` mantém o botão Skip Intro e move o trabalho para a janela. |
+| `GenerateCreditsMarkerBehavior` | `asap` | `scheduled` ou `never` | O mesmo, para o Skip Credits. |
+| `GenerateBIFBehavior` | `never` | `never` | Decodifica o vídeo inteiro para criar a faixa de imagens mostrada ao arrastar a barra de progresso. A reprodução não precisa disso. |
+| `GenerateChapterThumbBehavior` | `scheduled` | `never` | Decodifica o arquivo para extrair um frame por capítulo, para a imagem ao lado de cada item da lista de capítulos. |
+| `LoudnessAnalysisBehavior` | `scheduled` | `never` | Decodifica totalmente o áudio de cada arquivo para medi-lo, para o nivelamento de volume entre faixas e títulos. |
+| `MusicAnalysisBehavior` | `scheduled` | `never` | Decodifica cada faixa. São muitos arquivos pequenos, então é essa quantidade de requisições que faz uma conta ser limitada por taxa. Em troca, traz a análise sonora: mixes de faixas parecidas e o visualizador. |
 
 ### A janela de manutenção {#the-maintenance-window}
 

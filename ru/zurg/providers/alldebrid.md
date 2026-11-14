@@ -74,12 +74,11 @@ AllDebrid v4.1 вынес информацию о файлах из списка
 ## Проверьте, что всё работает {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/alldebrid/test
+curl -sS -X POST http://localhost:9999/api/providers/alldebrid/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-При одном аккаунте его собственная папка не выводится в корневом списке монтирования,
-поэтому монтирование показывает те же файлы в `__all__`.
+Если аккаунт всего один, его собственная папка не попадает в корневой список маунта, поэтому маунт показывает те же файлы в `__all__`.
 
 ## Когда что-то идёт не так {#when-it-goes-wrong}
 

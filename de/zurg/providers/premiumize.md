@@ -95,12 +95,12 @@ sollte.
 ## Prüfen, ob es funktioniert hat {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/premiumize/test
+curl -sS -X POST http://localhost:9999/api/providers/premiumize/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-Bei nur einem Account wird dessen eigener Ordner aus der Root-Auflistung des Mounts weggelassen,
-sodass der Mount dieselben Dateien unter `__all__` zeigt.
+Bei nur einem Konto wird dessen eigener Ordner aus der Root-Auflistung des Mounts weggelassen,
+daher zeigt der Mount dieselben Dateien unter `__all__`.
 
 ## Wenn es schiefgeht {#when-it-goes-wrong}
 

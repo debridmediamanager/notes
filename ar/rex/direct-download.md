@@ -8,18 +8,18 @@ rex عادةً يقرأ كل فيلم من مصدرك ويمرره إلى Plex. 
 
 ## قبل أن تبدأ {#before-you-start}
 
-**Keep the default proxy mode for shared debrid playback.** Redirects are not a safe way to share one debrid account:
+**احتفظ بوضع الوكيل الافتراضي لتشغيل المحتوى من حساب debrid مشترك.** إعادة التوجيه ليست طريقة آمنة لمشاركة حساب debrid واحد:
 
-- **Real-Debrid tracks each downloader's public IP.** Multi-IP use of one account earns a sharing warning even when the CDN serves the file successfully. Keep every use of that account on one public IP. A remote app downloading directly while rex or its source probes or converts from the server's IP violates that rule; a successful play does not prove it safe.
-- **TorBox download URLs contain the full API key in `?token=`.** Redirecting gives every client and shared user account access, including deletion, not just access to that file. Player logs and browser history can retain the key. Do not hand these links to untrusted clients.
+- **Real-Debrid يتتبع عنوان IP العام لكل جهة تنزل.** استخدام الحساب نفسه من عدة عناوين IP يُعرّضك لتحذير مشاركة، حتى لو خدمت الشبكة الملف بنجاح. احتفظ بكل استخدام لذلك الحساب على عنوان IP عام واحد. تطبيق بعيد ينزل مباشرة بينما يفحص rex أو مصدره الرابط أو يحوّله من عنوان IP الخادم يخالف هذه القاعدة، والتشغيل الناجح لا يثبت أن الأمر آمن.
+- **روابط تنزيل TorBox تحتوي على مفتاح API كامل في `?token=`.** إعادة التوجيه تمنح كل عميل وكل حساب مستخدم مشارك صلاحية الوصول، بما في ذلك الحذف، وليس الوصول إلى ذلك الملف فقط. سجلات المشغل وسجل المتصفح قد يحتفظان بالمفتاح. لا تسلّم هذه الروابط لعملاء غير موثوقين.
 
-Only continue if these risks are acceptable. Keeping rex's default proxy mode means rex follows source redirects itself instead of handing the provider link to the app.
+تابع فقط إذا كانت هذه المخاطر مقبولة لديك. الاحتفاظ بوضع الوكيل الافتراضي في rex يعني أن rex يتبع إعادة توجيه المصدر بنفسه، بدلاً من تمرير رابط المزود إلى التطبيق.
 
-| You need | Why |
+| ما تحتاجه | السبب |
 |---|---|
-| rex set up as in [rex with your own app](any-source.md), [rex with your Stremio addons](stremio.md) or [rex with zurg](with-zurg.md), and a movie that plays | This page changes rex's start command and, for some sources, one of the source's settings |
-| rex nightly **2026.10.26 or newer** | Older builds do not have this setting. Update as in [rex's Updating section](any-source.md#updating) |
-| A source that can answer with a link | rex can only pass on a link the source gives it. [Step 1](#step-1-let-your-source-hand-out-links) says which sources do |
+| إعداد rex كما في [rex مع تطبيقك](any-source.md) أو [rex مع إضافات Stremio](stremio.md) أو [rex مع zurg](with-zurg.md)، وفيلم يعمل | هذه الصفحة تغيّر أمر التشغيل في rex، وفي بعض المصادر إعداداً واحداً من إعدادات المصدر |
+| rex nightly إصدار **2026.10.26 أو أحدث** | البنيات الأقدم لا تحتوي على هذا الإعداد. حدّث كما في قسم [Updating في rex](any-source.md#updating) |
+| مصدر يستطيع الرد برابط | يستطيع rex تمرير الروابط التي يعطيه إياها المصدر فقط. [الخطوة 1](#step-1-let-your-source-hand-out-links) توضح أي المصادر تفعل ذلك |
 
 ## اختر مدى الصرامة {#choose-how-strict}
 

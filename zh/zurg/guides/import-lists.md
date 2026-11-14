@@ -32,16 +32,16 @@ Feed URL 就是列表页面的网址,末尾加上 `/json`。先在浏览器中�
 
 | Field | Value |
 |---|---|
-| Name | beliebig, zum Beispiel `Horror` |
-| Enable | an |
-| Enable Automatic Add | an |
-| Search on Add | lies zuerst die Warnung unten |
+| Name | 随便填，例如 `Horror` |
+| Enable | 开启 |
+| Enable Automatic Add | 开启 |
+| Search on Add | 先看下面的警告 |
 | Monitor | Movie Only |
-| Root Folder | dein Filmordner innerhalb von `__magic__`, zum Beispiel `/mnt/zurg/__magic__/movies` (`/Volumes/Zurg/__magic__/movies` unter macOS, `Z:\__magic__\movies` unter Windows) |
-| Quality Profile | das Profil, das du verwendest |
-| List URL | die URL des Film-Feeds |
+| Root Folder | 你放电影的文件夹，位于 `__magic__` 里面，例如 `/mnt/zurg/__magic__/movies`（macOS 上是 `/Volumes/Zurg/__magic__/movies`，Windows 上是 `Z:\__magic__\movies`） |
+| Quality Profile | 你平时用的那个 |
+| List URL | 电影订阅地址 |
 
-Drücke **Test** und danach **Save**.
+点击 **Test**，然后点击 **Save**。
 
 ## 3. 将其添加到 Sonarr {#3-add-it-to-sonarr}
 

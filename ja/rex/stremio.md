@@ -32,7 +32,7 @@ DMM のスポンサーシップは不要です。rex と rex-stremio は無料�
 
 ## ステップ2. rex-stremioをインストールする {#step-2-install-rex-stremio}
 
-**What it does.** Downloads rex-stremio into `~/rex-stremio` on the rex machine and starts it as a service.
+**What it does.** rex マシン上の `~/rex-stremio` にrex-stremioをダウンロードして、サービスとして起動します。
 
 +++ Linux
 ```bash
@@ -50,16 +50,16 @@ cd ~ && git clone https://github.com/debridmediamanager/rex-stremio
 cd ~/rex-stremio && python3 rex_stremio.py
 ```
 
-It runs while that Terminal window stays open.
+このTerminalウィンドウを開いたままにしているあいだ、動き続けます。
 +++
 
-**What you should see.** A line like:
+**What you should see.** 次のような行が表示されます:
 
 ```
 ... INFO relay and settings on http://127.0.0.1:9982/, 0 catalog(s), rex at http://127.0.0.1:32400
 ```
 
-rex-stremio's settings page and the address rex reads videos from are both on `127.0.0.1:9982`, so only this machine reaches them.
+rex-stremioの設定ページと、rexが動画を読み込むアドレスはどちらも `127.0.0.1:9982` にあるので、このマシンからだけアクセスできます。
 
 ## ステップ3. アドオンを追加する {#step-3-add-your-addons}
 

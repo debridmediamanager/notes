@@ -135,32 +135,32 @@ Deskripsi lengkap dan semua yang lain ada di [referensi konfigurasi](../referenc
 
 ## Cek apakah sudah berhasil {#check-it-worked}
 
-Mulai dengan log dan diagnostic.
+Mulai dengan log dan diagnostik.
 
 ```bash
 docker compose logs -f --tail=100 zurg
 docker compose exec zurg /app/zurg doctor --working-dir /config
 ```
 
-`WARN service zurg is not installed` itu wajar di Docker, karena Compose yang mengatur auto-start. Warning tidak membuat doctor gagal. Yang membuatnya gagal hanya `FAIL`.
+`WARN service zurg is not installed` memang wajar di Docker, karena Compose yang mengatur auto-start. Peringatan tidak membuat doctor gagal. Yang membuatnya gagal hanya `FAIL`.
 
-Lalu cek akunnya langsung dari Dashboard atau dari shell.
+Lalu cek akunnya sendiri, dari Dashboard atau dari shell.
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox/test
 ```
 
-`{"success":true}` berarti kredensialnya sudah terautentikasi. Nama di path adalah `name` akun. Defaultnya sama dengan `type`. Tambahkan `-u user:pass` kalau kamu sudah mengisi `username` di `config.yml`. Kalau tidak, Dashboard dan API-nya terbuka di port yang kamu publish.
+`{"success":true}` berarti kredensialnya berhasil terautentikasi. Nama di path adalah `name` milik akun tersebut. Nilai defaultnya mengikuti `type`. Tambahkan `-u user:pass` jika Anda sudah mengatur `username` di `config.yml`. Tanpa itu, Dashboard dan API-nya terbuka di port yang Anda publikasikan.
 
-Terakhir, cek library di mount.
+Terakhir, lihat isi library di mount.
 
 ```bash
 ls /zurg_mnt/zurg/__all__/
 ```
 
-Setiap akun yang dikonfigurasi punya direktori `__<name>__`. Isinya semua yang dimiliki akun itu, dan semua read dipaksa lewat akun tersebut. `__torbox__/Some.Release/` hanya men-stream dari TorBox, tidak dari tempat lain. Folder akun tunggal tidak ditampilkan di listing root mount, karena isinya sama dengan `__all__`. Path HTTP dan WebDAV langsung seperti `/http/__torbox__/` masih bisa diakses. Lewat mount, path itu tidak lagi bisa di-resolve. Jadi arahkan library atau script apa pun yang memakai `__<name>__` ke `__all__`.
+Setiap akun yang dikonfigurasi punya direktori `__<name>__`. Isinya semua yang dimiliki akun itu, dan pembacaannya dipaku ke akun tersebut. `__torbox__/Some.Release/` hanya streaming dari TorBox, tidak dari tempat lain. Folder milik satu akun tidak ditampilkan di daftar root mount, karena `__all__` sudah berisi library yang sama. Path HTTP dan WebDAV langsung seperti `/http/__torbox__/` masih merespons. Lewat mount, path itu sudah tidak bisa diakses. Arahkan library atau script apa pun yang memakai `__<name>__` ke `__all__`.
 
-Library yang besar butuh waktu saat pertama kali dimuat. Sampai prosesnya selesai, `/dav/movies/` mengembalikan 503 dan mount mungkin tidak menampilkan apa-apa.
+Library yang besar butuh waktu cukup lama saat pertama kali dimuat. Selama proses itu belum selesai, `/dav/movies/` akan merespons 503 dan mount mungkin tidak menampilkan apa-apa.
 
 ## Menjalankan beberapa akun {#running-several-accounts}
 

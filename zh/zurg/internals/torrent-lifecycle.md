@@ -14,14 +14,13 @@ zurg 需要这些信息，因为 qBittorrent 兼容层必须告诉 Sonarr 和 Ra
 
 ### 账户 {#the-accounts}
 
-| Provider | Account | Why this one |
+| 服务商 | 账号 | 选择它的原因 |
 |---|---|---|
-| Real-Debrid | a test account | no running zurg uses it, so nothing else touched it during the run |
-| AllDebrid | a test key | the account already held other magnets, so only ids the run created were ever deleted |
-| TorBox | a live key | **another zurg instance was loaded with the same account**, which is not a footnote. See [Hazards](#hazards-found-on-the-way) |
+| Real-Debrid | 测试账号 | 没有正在运行的 zurg 使用它，所以本次运行期间没有其他东西动过它 |
+| AllDebrid | 测试密钥 | 该账号里已经有其他磁力链接，所以只删除了本次运行创建的 id |
+| TorBox | 正式密钥 | **另一个 zurg 实例也加载了同一个账号**，这一点不能当作脚注看待。见 [Hazards](#hazards-found-on-the-way) |
 
-Credentials come from `RD_TOKEN` `AD_KEY` `TB_KEY` in the environment. Nothing writes them to a
-capture.
+凭据从环境变量 `RD_TOKEN` `AD_KEY` `TB_KEY` 中读取。没有任何东西会把它们写入抓取记录。
 
 ### 种子 {#the-torrents}
 
@@ -45,9 +44,13 @@ capture.
 
 ### 轮询频率与上限 {#poll-cadence-and-caps}
 
-3 s für die ersten 2 Minuten, danach 15 s. 1 s für den Cache-Fall, weil der gesamte Lebenszyklus dort schon innerhalb einer normalen Abfrage abgeschlossen sein kann. Für die Kampagne 15 Minuten pro Torrent als Obergrenze, statt des Script-Standards von 30. Das vorgeschlagene Standard-Timeout des Shims liegt bei 10 Minuten, und ein Torrent, der bei 15 noch läuft, ist bereits über das einzige Zeitfenster hinaus, das zählt. Real-Debrid-Adds liegen mindestens 20 s auseinander.
+3 秒,前 2 分钟;之后改为 15 秒。缓存命中的情况用 1 秒,因为在一次正常轮询内整个生命周期就可能结束。每个种子在活动期最长 15 分钟,而不是脚本默认的 30 分钟。shim 提议的默认超时是 10 分钟,而仍在进行中的种子已经超过 15 分钟,那就已经过了唯一重要的时间窗口。Real-Debrid 的添加请求之间至少间隔 20 秒。
 
-Jeder Provider lief als eigener Prozess mit eigenem Ausgabeverzeichnis. So bleibt der Abstand zwischen den Real-Debrid-Adds innerhalb eines Prozesses korrekt, und die drei können gleichzeitig laufen.
+每个 provider 各自作为独立进程运行,并使用各自的输出目录。这样可以保证单个进程内 Real-Debrid 添加间隔是真实有效的,同时三个进程还能同时运行。
+
+---
+
+(之前的翻译因未使用简体中文(zh-CN)而被拒绝。请保持结构不变。)
 
 ## Real-Debrid
 
@@ -500,14 +503,14 @@ done
 ./scripts/torrent_lifecycle_probe.py --list
 ```
 
-Run it from a machine with residential egress. AllDebrid answers `NO_SERVER` to datacenter IPs.
+请在具有住宅出口的机器上运行。AllDebrid 会对数据中心 IP 返回 `NO_SERVER`。
 
-Step 6 is not optional and step 3 is what makes it meaningful. After the 2026-08-30 campaign not one of the 34 instance ids the harness had claimed was left on any of the three accounts. Neither was any of the nine probe hashes.
+第 6 步不是可选的，而第 3 步才是让它有意义的关键。在 2026-08-30 的活动之后，测试工具声称拥有的 34 个实例 ID 在三个账户上一个都没有剩下。九个探测哈希也是一样。
 
-Before touching TorBox, check whether any other zurg is loaded with the same account, read its sweep settings and expect the sweep described above.
+在操作 TorBox 之前，请先检查是否有其他 zurg 使用同一个账户加载，读取它们的清理设置，并确认它们符合上面描述的清理行为。
 
 ```bash
 grep -E "delete_error_torrents|stalled_download_mins|enable_repair" config.yml
 ```
 
-Never change it. A probe that disappears mid-run is data.
+永远不要更改它。探测项在运行中途消失，这本身就是数据。

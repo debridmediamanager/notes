@@ -106,16 +106,16 @@ zurg не ведёт счётчик исходящих запросов, а `log
 
 ### Теплый перезапуск {#warm-restart}
 
-The cold cost is genuinely one-time.
+Холодный запуск действительно разовый.
 
 | | Real-Debrid | AllDebrid | TorBox |
 |---|---|---|---|
-| Time to compiled | 4.0 s | 1.0 s | 2.0 s |
-| API requests | 17 | 6 | 4 |
-| Network-test requests | 8 | 0 | 0 |
-| Peak RSS | 77 MB | 27 MB | 39 MB |
+| Время до компиляции | 4.0 s | 1.0 s | 2.0 s |
+| Запросы к API | 17 | 6 | 4 |
+| Запросы для теста сети | 8 | 0 | 0 |
+| Пиковый RSS | 77 MB | 27 MB | 39 MB |
 
-1,774 s becomes 4.0 s, and 7,442 calls become 17.
+1,774 s становится 4.0 s, а 7,442 вызова становятся 17.
 
 ### Стабильное простаивание {#idle-steady-state}
 

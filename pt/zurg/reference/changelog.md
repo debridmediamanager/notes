@@ -24,7 +24,7 @@ Os links do Real-Debrid param de funcionar alguns meses depois de criados, entã
 
 ## Os links de sessão do Emby no painel abrem o painel do Emby {#the-dashboards-emby-session-links-open-embys-dashboard}
 
-The links "active sessions" and "transcodes" on the dashboard's Emby panel opened `/web/#/dashboard`, which is Jellyfin's address for that page, and Emby ficava parado na tela de abertura para sempre. Both links now open `/web/index.html#!/dashboard`, the address Emby uses itself. The Jellyfin panel's links are unchanged.
+The links "active sessions" e "transcodes" no painel do Emby, no dashboard, abriam `/web/#/dashboard`, que é o endereço do Jellyfin para essa página, e o Emby ficava na tela de abertura para sempre. Agora os dois links abrem `/web/index.html#!/dashboard`, o endereço que o próprio Emby usa. Os links do painel do Jellyfin não foram alterados.
 
 ## Um .nfo ausente não envia mais uma release do Usenet para o repair {#a-missing-nfo-no-longer-sends-a-usenet-release-to-repair}
 
@@ -271,10 +271,9 @@ The botão de segurar para escanear na lista de não detectados recarregava a p�
 
 ## Um release cujo nome termina em espaço é associado ao Plex {#a-release-whose-name-ends-in-a-space-is-matched-to-plex}
 
-A release whose file name has a space before the extension, such as
-`... [Hurtom] v2 .mkv`, gets a directory whose name ends in a space. Plex found
-it, but zurg could never match it, so it stayed on the undetected list after
-every scan. Agora ele é reconhecido.
+Um lançamento cujo nome de arquivo tem um espaço antes da extensão, como
+`... [Hurtom] v2 .mkv`, recebe um diretório com nome terminando em espaço. O Plex encontrava
+o arquivo, mas o zurg nunca conseguia associá-lo, então ele continuava na lista de não detectados após cada varredura. Agora ele é associado.
 
 ## Excluir um arquivo na página de gerenciamento mantém sua posição {#deleting-a-file-on-the-manage-page-keeps-your-place}
 
@@ -398,7 +397,7 @@ Quando uma release da Usenet estava com partes faltando, a mensagem de falha do 
 
 ## O Stremio pula uma release cujo vídeo começa com nada {#stremio-skips-a-release-whose-video-starts-with-nothing}
 
-When a Usenet release's video is missing its beginning on the news servers, zurg filled it with silence and handed it to Stremio as if it were fine, so the player showed nothing and the film looked broken. zurg now checks the first bytes before it starts playback. If there is nothing real there, it moves on to the next release in the list, the same way it already does for a release with nothing playable in it. A film with a gap somewhere later still plays.
+Quando o começo do vídeo de uma release Usenet sumia dos servidores de notícias, o zurg preenchia esse trecho com silêncio e entregava para o Stremio como se estivesse tudo bem. Resultado: o player não mostrava nada e o filme parecia quebrado. Agora o zurg verifica os primeiros bytes antes de começar a reprodução. Se não houver nada de verdade ali, ele passa para a próxima release da lista, do mesmo jeito que já faz com uma release que não tenha nada reproduzível. Um filme com uma falha em algum ponto mais adiante continua sendo reproduzido.
 
 ## Arquivos quebrados continuam na biblioteca enquanto o zurg ainda tenta de novo {#broken-files-stay-in-the-library-while-zurg-will-still-retry-them}
 

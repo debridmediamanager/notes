@@ -15,11 +15,11 @@ zurgは、TorBoxが取得したものをマウント内でほかのものと並�
 
 ## 必要なもの {#what-you-need}
 
-- **Ein TorBox Pro-Abo.** Niedrigere Pläne unterstützen keine NZBs.
-- **Dein TorBox-API-Schlüssel** von [torbox.app/settings](https://torbox.app/settings).
-  Es ist derselbe Schlüssel, den ein `torbox`-Eintrag verwendet.
-- **Eine aktuelle zurg-Nightly.** Nightlies setzen eine aktive Sponsorschaft voraus.
-- **Ein normaler Host.** zurg+rex auf Android, ein Plex-Server auf deinem Handy, hat kein `torbox_nzb`-Backend. Auf einem Android-Gerät spielst du von TorBox gehostete NZBs stattdessen über DMM's TorBox Cast oder das Kodi-Addon ab.
+- **TorBox Pro プラン。** 下位のプランでは NZB を利用できません。
+- **TorBox API キー** ([torbox.app/settings](https://torbox.app/settings))。
+  `torbox` エントリで使うのと同じキーです。
+- **最新の zurg nightly。** Nightly を使うには、有効なスポンサーシップが必要です。
+- **通常のホスト。** zurg+rex Android(スマートフォン上で動く Plex サーバー)には `torbox_nzb` バックエンドがありません。Android デバイスでは、代わりに DMM の TorBox Cast か Kodi アドオンで TorBox がホストする NZB を再生してください。
 
 ## 設定する {#configure-it}
 
@@ -75,11 +75,9 @@ zurg の Stremio アドオンは、選んだ候補を、そのインスタンス
 ## 正しく動いたか確認する {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox_nzb/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox_nzb/test
 ls /zurg_mnt/zurg/__all__/
 curl -s http://localhost:9999/http/__torbox_nzb__/ | head
 ```
 
-アカウントが1つだけの場合、そのアカウント用のフォルダーはマウントのルート一覧から外されます。
-そのため、マウントでは同じファイルが `__all__` の下に表示されます。
-ディレクトリー名は項目の名前に従い、名前が設定されていない場合は種類(type)になります。
+アカウントが1つだけの場合、そのフォルダーはマウントのルート一覧から除外されるため、マウントには `__all__` の下に同じファイルが表示されます。ディレクトリ名はエントリーの名前に従い、名前の既定値はその種類です。

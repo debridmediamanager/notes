@@ -1,8 +1,8 @@
 # Limites do TorBox e como o zurg se adapta a eles {#torbox-limits-and-how-zurg-adapts-to-them}
 
-zurg's library behaviour grew around Real-Debrid's constraints. TorBox's are different in kind, not just in magnitude, and driving it like Real-Debrid gets the account rate-limited within seconds of a first library scan. This is what the limits are, where the figures come from, and what zurg does about each.
+zurg, o comportamento da biblioteca cresceu em torno das limitações da Real-Debrid. As da TorBox são diferentes em natureza, não só em magnitude, e tratá-la como a Real-Debrid faz a conta receber rate-limit em poucos segundos após a primeira varredura da biblioteca. Veja aqui quais são os limites, de onde vêm os números e o que o zurg faz em cada caso.
 
-As limites dos provedores são declaradas no código como `debrid.Capabilities`, para que o código genérico da biblioteca as leia em vez de presumi-las. Adicionar um backend significa preencher essa struct, sem editar o gerenciador de torrents.
+Os limites dos provedores são declarados no código como `debrid.Capabilities`, para que o código genérico da biblioteca os leia em vez de presumi-los. Para adicionar um backend, basta preencher essa struct, sem editar o gerenciador de torrents.
 
 ## Limites de requisições {#rate-limits}
 
@@ -157,29 +157,32 @@ Fonte: [Restrições de conta](https://support.torbox.app/en/articles/9836418-ac
 
 ### O que o zurg faz {#what-zurg-does-1}
 
-- **`GetActiveTorrentCount` reports the plan's real ceiling**, read from
-  `plan` on the user record, so repair blocks and waits instead of queueing
-  adds the account will reject. A provider reporting no ceiling is treated as
-  unbounded rather than blocking forever.
-- **Added torrents are marked never-seed by default.** Seeding holds a slot for
-  weeks and bills outgoing traffic, neither of which helps a streaming mount.
-  `tb_seed_torrents` changes it for an operator whose private tracker counts
-  ratio: `never` sends `seed=3` (the default), `always` sends `seed=2`, and
-  `auto` leaves the field out. TorBox's own description of the field is "1 is
-  auto. 2 is seed. 3 is don't seed. Optional. Default is 1, or whatever the user
-  has in their settings. Overwrites option in settings", so any value sent,
-  `1` included, replaces the account's Seeding setting and only an absent field
-  lets it apply. The same mode goes on all three add paths: the magnet add, the
-  cached-only add and the `.torrent` upload. With seeding on, finished torrents
-  keep their slots, so repair and the download-client endpoints stall against
-  the ceiling once seeding torrents hold all of them.
-- **The cache is never checked before adding.** `checkcached` has no call site
-  at all. Cached-only mode (`qbittorrent.download_timeout_mins: 0`) was the one
-  exception until it was made to add the torrent and watch the instance like
-  every other backend, because the endpoint reports whether the content is in
-  TorBox's cache rather than whether this account ends up holding it. That costs
-  something real on a miss: an uncached add consumes the 60/hour allowance where
-  a probe consumed nothing. Cached adds still fall under the 300/min budget.
+- **`GetActiveTorrentCount` informa o limite real do plano**, lido de
+  `plan` no registro do usuário, então o repair bloqueia e espera em vez de
+  enfileirar adições que a conta vai rejeitar. Um provedor que não informa
+  limite é tratado como sem limite, em vez de bloquear para sempre.
+- **Torrents adicionados são marcados como never-seed por padrão.** O seeding
+  ocupa um slot por semanas e gera cobrança de tráfego de saída, e nenhuma das
+  duas coisas ajuda um mount de streaming. `tb_seed_torrents` muda isso para um
+  operador cujo tracker privado conta a razão de upload: `never` envia `seed=3`
+  (o padrão), `always` envia `seed=2`, e `auto` deixa o campo de fora. A
+  descrição do próprio TorBox para o campo é "1 is auto. 2 is seed. 3 is don't
+  seed. Optional. Default is 1, or whatever the user has in their settings.
+  Overwrites option in settings", então qualquer valor enviado, incluindo `1`,
+  substitui a configuração de Seeding da conta, e só um campo ausente deixa
+  essa configuração valer. O mesmo modo vale para os três caminhos de adição: a
+  adição por magnet, a adição somente em cache e o upload de `.torrent`. Com o
+  seeding ligado, torrents finalizados mantêm seus slots, então o repair e os
+  endpoints do cliente de download travam no limite quando torrents em seeding
+  ocupam todos eles.
+- **O cache nunca é verificado antes de adicionar.** `checkcached` não tem
+  nenhum ponto de chamada. O modo somente em cache (`qbittorrent.download_timeout_mins: 0`)
+  era a única exceção, até passar a adicionar o torrent e acompanhar a instância
+  como qualquer outro backend, porque o endpoint informa se o conteúdo está no
+  cache do TorBox, e não se esta conta acaba ficando com ele. Isso tem um custo
+  real em caso de falta: uma adição sem cache consome a cota de 60/hora, enquanto
+  uma verificação não consumia nada. Adições com cache continuam sujeitas ao
+  orçamento de 300/min.
 
 ## Expiração do conteúdo {#content-expiry}
 

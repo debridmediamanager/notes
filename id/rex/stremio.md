@@ -107,11 +107,11 @@ Di macOS, hentikan dengan Ctrl+C, jalankan `git pull` di `~/rex-stremio` lalu mu
 
 ## Yang tidak bisa dilakukan {#what-it-cannot-do}
 
-- **Episodes are numbered as Cinemeta numbers them.** For a few shows that differs from TMDB's numbering, which rex follows, so an episode can land in the wrong place.
-- **How many counts episodes** for a series catalog, not shows.
-- **Turning Catalogs as collections on or off** sends the titles to rex again as new ones, so what was watched on them may not carry over. Decide before you start watching.
-- **Only film, series and channel catalogs** are listed, and none that need a search or a genre first.
-- **Live channels** cannot be paused far back, resumed later or marked watched, and play only in apps that ask rex to convert them (the Plex apps and Plezy; Plex Web is not tested). Channels with no working stream, or with DRM, are left out.
-- **Anyone who can reach rex-stremio's address can play through it.** Leave it on `127.0.0.1` unless rex runs elsewhere.
+- **Episode diberi nomor seperti Cinemeta memberinya nomor.** Untuk beberapa acara, nomornya berbeda dengan nomor dari TMDB, yang diikuti rex, sehingga sebuah episode bisa masuk ke tempat yang salah.
+- **Untuk katalog series, yang dihitung adalah jumlah episode, bukan jumlah series.**
+- **Mengaktifkan atau menonaktifkan Catalogs as collections** akan mengirim ulang judul-judul ke rex sebagai judul baru, sehingga apa yang sudah ditonton di sana mungkin tidak ikut terbawa. Putuskan dulu sebelum mulai menonton.
+- **Hanya katalog film, series, dan channel** yang ditampilkan, dan tidak termasuk katalog yang perlu pencarian atau genre dulu.
+- **Live channel** tidak bisa di-pause jauh ke belakang, dilanjutkan nanti, atau ditandai sudah ditonton, dan hanya bisa diputar di aplikasi yang meminta rex untuk mengonversinya (aplikasi Plex dan Plezy; Plex Web belum diuji). Channel tanpa stream yang berfungsi, atau yang memakai DRM, dilewati.
+- **Siapa pun yang bisa menjangkau alamat rex-stremio dapat memutar lewat alamat itu.** Biarkan di `127.0.0.1` kecuali rex berjalan di tempat lain.
 
-The README lists the [rest of its limits](https://github.com/debridmediamanager/rex-stremio#limits) and every setting in `config.json`. To build an addon of your own, see [Building rex addons](addons.md), which also explains how rex-stremio works inside.
+README memuat [batasan lainnya](https://github.com/debridmediamanager/rex-stremio#limits) dan setiap pengaturan di `config.json`. Untuk membuat addon sendiri, lihat [Membuat addon rex](addons.md), yang juga menjelaskan cara kerja rex-stremio di dalamnya.

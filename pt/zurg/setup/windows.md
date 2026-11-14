@@ -176,21 +176,21 @@ Um aviso que você pode ver, conhecido e não fatal:
 
 ### O painel {#the-dashboard}
 
-`http://localhost:9999/` — tamanho da biblioteca aumentando conforme a varredura avança, tráfego servido, memória. Os **Quick Links** são toda a interface: Torrent Manager, Config, Directories, Magic, Logs.
+`http://localhost:9999/` — tamanho da biblioteca subindo conforme a varredura avança, tráfego servido, memória. Os **Quick Links** são toda a interface: Torrent Manager, Config, Directories, Magic, Logs.
 
-![The zurg dashboard on Windows](../../assets/windows-setup/10-dashboard-home.webp)
+![O dashboard do zurg no Windows](../../assets/windows-setup/10-dashboard-home.webp)
 
-**Config** é onde tudo fica depois da primeira execução. O bloco de providers mostra a única conta:
+**Config** é onde fica tudo depois da primeira execução. O bloco de providers mostra a única conta:
 
-![The providers block with the Real-Debrid row](../../assets/windows-setup/12-config-providers.webp)
+![O bloco de providers com a linha do Real-Debrid](../../assets/windows-setup/12-config-providers.webp)
 
-O bloco de download client, com as mesmas opções que você define no `config.yml`, editável aqui. Toda alteração aparece marcada como **Restart Required**, e isso é literal: os dois endpoints registram suas rotas uma única vez, na inicialização.
+O bloco de download clients — as mesmas opções que você define no `config.yml`, editáveis aqui, e toda alteração aparece marcada como **Restart Required**, e isso é literal: os dois endpoints registram suas rotas uma vez, na inicialização.
 
-![The __magic__ and download clients block with the qBittorrent endpoint on](../../assets/windows-setup/13-config-magic-qbittorrent.webp)
+![O bloco de __magic__ e download clients com o endpoint do qBittorrent ativado](../../assets/windows-setup/13-config-magic-qbittorrent.webp)
 
 E o bloco de mount, mostrando a letra da unidade e a supervisão do rclone:
 
-![The rclone mount block with Z: configured](../../assets/windows-setup/14-config-rclone.webp)
+![O bloco de mount do rclone com o Z: configurado](../../assets/windows-setup/14-config-rclone.webp)
 
 ### A unidade Z: {#the-z-drive}
 

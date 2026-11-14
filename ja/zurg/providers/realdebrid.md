@@ -99,11 +99,11 @@ fetch_torrents_page_size: 5000
 ## 正しく動いたか確認する {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/realdebrid/test
+curl -sS -X POST http://localhost:9999/api/providers/realdebrid/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-アカウントが1つだけの場合、そのフォルダはマウントのルート一覧から除外されるため、同じファイルが `__all__` の下に表示されます。
+アカウントが1つだけの場合、そのアカウント用のフォルダはマウントのルート一覧から外されるため、同じファイルが `__all__` の下に表示されます。
 
 ## うまくいかないとき {#when-it-goes-wrong}
 

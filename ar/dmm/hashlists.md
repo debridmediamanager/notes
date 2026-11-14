@@ -1,0 +1,84 @@
+# قوائم الهاش في DMM: أضف مكتبة شخص آخر إلى مكتبتك {#dmm-hash-lists-add-someones-library-to-yours}
+
+قائمة الهاشات هي قائمة بالإصدارات (releases) شاركها شخص ما من مكتبته على الخدمة السحابية (debrid) عبر DMM. افتح القائمة، سجّل الدخول إلى DMM بخدمة الـ debrid الخاصة بك، ثم اضغط على زر خدمتك: ستنتقل الإصدارات إلى حسابك أنت.
+
+القوائم المشتركة متاحة على [hashlists.debridmediamanager.com](https://hashlists.debridmediamanager.com)، ويمكنك مشاركة قائمتك أنت من **Library** عبر **Share List**.
+
+تحتوي القائمة على أسماء الإصدارات وهاشاتها وأحجامها. لا تحتوي على ملفات ولا حسابات.
+
+## ابحث عن قائمة {#find-a-list}
+
+- على الصفحة الرئيسية لـ DMM، اضغط على **Hash lists**. ستُفتح [hashlists.debridmediamanager.com](https://hashlists.debridmediamanager.com) وتعرض قائمة عشوائية. تنقلك الأزرار **Previous hash list** و**Random hash list** و**Next hash list** بين القوائم.
+- يشارك الناس القوائم في منتدى **hashlists** على [Discord](https://discord.com/invite/7u4YjMThXP). كل قائمة هي رابط بالشكل `https://hashlists.debridmediamanager.com/<id>.html`. فتحه يفتح القائمة داخل DMM.
+
+## أضف قائمة إلى مكتبتك {#add-a-list-to-your-library}
+
+1. افتح القائمة. إذا كان مكتوبًا عليها **Login to RD/AD/TB/PM/OC/DL to download**، فسجّل الدخول إلى [DMM](https://debridmediamanager.com) في نفس المتصفح أولًا (راجع [كيفية تسجيل الدخول](index.md#sign-in))، ثم افتح القائمة من جديد.
+2. يتحقق DMM من الإصدارات التي توفرها خدمتك بالفعل. يعرض هذه الإصدارات فقط، ويستبعد ما هو موجود في مكتبتك. يحسب المربع الأخضر **hidden** عدد ما استبعده.
+3. قلّص القائمة إن أردت:
+   - **Movies** و**TV Shows** تعرضان نوعًا واحدًا. الأرقام تحسب العناوين، لا الملفات.
+   - **One per title** يُبقي أفضل إصدار لكل عنوان.
+   - الشارة الخضراء **other files** بجانب العنوان تعرض كل إصداراته.
+   - **quick search on filename, hash, or id; supports regex** يبحث داخل القائمة.
+4. اضغط الزر في أي صف (**RD** أو **TB** أو **AD** أو **PM** أو **OC** أو **DL**) لإضافة هذا الإصدار وحده.
+5. أو اضغط **RD Download** (أو **TB Download** أو **PM Download** وما شابه) لإضافة كل الإصدارات المعروضة. الرقم الموجود عليه هو عددها. تبدأ الإضافة فورًا، دون أي نافذة تأكيد.
+
+![قائمة مشتركة لأفلام مفتوحة في DMM، مسجّل الدخول فيها عبر Premiumize](../assets/dmm-hashlists/01-hash-list.webp)
+
+في Real-Debrid وAllDebrid وTorBox، يعرض الزر **Show All** أيضًا الإصدارات التي لا توفرها خدمتك، ويعيدك الزر **Show Instant** إلى الإصدارات المخزّنة مؤقتًا.
+
+يضيف **RD Download** الإصدارات الموجودة لدى Real-Debrid فقط، واحدًا كل دقيقة، لأن Real-Debrid يوقف الحسابات التي تضيف بسرعة أكبر. ستمائة إصدار تحتاج نحو ساعة. تعمل الإضافات داخل الصفحة، لذا أبقِ التبويب مفتوحًا حتى تظهر رسالة **Started 60 downloads.** TorBox وAllDebrid يتخطيان أي إصدار غير مخزّن لديهما.
+
+## شارك مكتبتك الخاصة {#share-your-own-library}
+
+1. في الصفحة الرئيسية لـ DMM، اضغط **Library**.
+2. ابحث عن الإصدارات التي تريد مشاركتها أو حدّدها. إذا لم تحدد أي شيء، تُشارَك كل الإصدارات المعروضة.
+3. اضغط **Share List** (يظهر النص **Share (3)** إذا حددت ثلاثة إصدارات). اكتب اسماً في الحقل **Enter a title for the hash list** ثم اضغط **OK**.
+4. يفتح DMM عنوان قائمتك الجديد على hashlists.debridmediamanager.com. قد تظهر صفحة 404 لدقيقة أو دقيقتين أثناء النشر. أعد تحميل الصفحة، ثم شارك هذا العنوان.
+
+![نافذة العنوان بعد الضغط على Share List](../assets/dmm-hashlists/02-share-list.webp)
+
+القوائم المشتركة عامة. يستطيع أي شخص يملك العنوان فتحها، ويمكن لزر **Random hash list** أن يعرض قائمتك على غرباء. لا يُضاف إلى القائمة إلا الأسماء والـ hashes والأحجام: لا تُضاف أبداً بيانات حسابك أو مفتاحك أو عنوان أي tracker.
+
+لمشاركة إصدار واحد دون نشر أي شيء، اضغط أيقونة المشاركة في آخر صف الإصدار داخل المكتبة (أو **Hashlist** في تفاصيله). يفتح DMM قائمة تضم إصداراً واحداً. انسخ عنوان تلك الصفحة وأرسله.
+
+## عندما تحدث مشكلة {#when-something-is-wrong}
+
+| ما تراه | ما الذي تفعله |
+|---|---|
+| **Login to RD/AD/TB/PM/OC/DL to download** | أنت غير مسجّل الدخول إلى DMM في هذا المتصفح. سجّل الدخول، ثم افتح القائمة مرة أخرى. |
+| Everything is **hidden** and the list looks empty | الصفوف المخفية موجودة بالفعل في مكتبتك، أو أن خدمتك لا تملكها. على Real-Debrid أو AllDebrid أو TorBox اضغط على **Show All**. |
+| **This hash list is still being published; refresh in a minute or two.** | تمت مشاركة القائمة قبل لحظات. انتظر دقيقة أو دقيقتين ثم أعد التحميل. |
+| **0 files** and no rows | هذه القائمة فارغة. اضغط على **Next hash list** أو **Random hash list**. |
+| **Everything already downloaded** | كل إصدار معروض موجود بالفعل في مكتبتك. |
+| **Torrent not instant in TorBox; skipped.** or **Torrent not instant in AD; skipped.** | خدمتك لا تملك هذا الملف مخزّناً مؤقتاً، لذا تخطّاه DMM بدلاً من بدء التنزيل. |
+| **Skipping 3 items with no info hash — they cannot be shared.** | هذه الصفوف (مثل تنزيلات TorBox عبر الويب، على سبيل المثال) ليس لها hash للمشاركة. بقية القائمة تتم مشاركتها. |
+| **Failed to generate hash list; try again soon.** | فشل نشر القائمة. حاول مرة أخرى لاحقاً. |
+
+هل تواجه مشكلة؟ اسأل في منتدى **dmm-support** على [Discord](https://discord.com/invite/7u4YjMThXP).
+
+## أسئلة {#questions}
+
+### كيف أضيف قوائم الهاش إلى مكتبتي الخاصة؟ {#how-do-i-add-hash-lists-to-my-own-library}
+
+افتح القائمة، وسجّل الدخول إلى DMM باستخدام خدمة الdebrid الخاصة بك، ثم اضغط على زر خدمتك في أحد الصفوف، أو **RD Download** (أو **Download** الخاص بخدمتك) لكل ما هو معروض. راجع [Add a list to your library](#add-a-list-to-your-library).
+
+### لماذا تُخفى كل العناصر في قائمة الهاش الخاصة بي؟ {#why-are-all-the-items-in-my-hash-list-hidden}
+
+تُخفي DMM ما هو موجود بالفعل في مكتبتك وما لا تملكه خدمتك في الذاكرة المؤقتة. يُظهر مربع **hidden** عدد هذه العناصر. على Real-Debrid أو AllDebrid أو TorBox، يُظهر زر **Show All** بقية العناصر.
+
+### لماذا لا تظهر المسلسلات التلفزيونية في قائمة الهاش؟ {#why-dont-tv-shows-show-up-in-a-hash-list}
+
+اضغط على **TV Shows** في أعلى القائمة. إذا كانت تظهر **0 TV Shows**، فهذه القائمة لا تحتوي على أي مسلسلات، لأن معظم القوائم المشتركة تضم أفلامًا. كما أن المسلسلات غير المتوفرة في خدمتك مخفية أيضًا، فجرّب **Show All**.
+
+### لماذا تستغرق إضافة قائمة الهاش وقتاً طويلاً؟ {#why-is-adding-a-hash-list-so-slow}
+
+في Real-Debrid، تضيف DMM إصدارًا واحدًا كل دقيقة حتى لا يتوقف حسابك على Real-Debrid. أما الخدمات الأخرى فتعمل بسرعة أكبر.
+
+### هل توجد واجهة برمجية (API) للاستعلام عن قوائم الهاش؟ {#is-there-an-api-to-query-the-hash-lists}
+
+ليس هناك واجهة برمجة تطبيقات للبحث. كل قائمة مشتركة هي ملف في [مستودع hashlists العام](https://github.com/debridmediamanager/hashlists) على GitHub. كل صفحة تشير إلى DMM وتحمل القائمة داخل الرابط بعد `#` (بيانات JSON مضغوطة بخوارزمية lz-string تحتوي على الأسماء والتجزئات والأحجام). أما القائمة الكبيرة جدًا فتوجد بجانبها كملف `lists/<id>.txt`.
+
+### هل تشارك مشاركة القائمة حسابي؟ {#does-sharing-a-list-share-my-account}
+
+لا. القائمة تحتوي على أسماء الإصدارات والتجزئات (hashes) والأحجام فقط.

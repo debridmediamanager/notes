@@ -356,11 +356,10 @@ foreach (var downloadClientItem in GetQueue().Concat(GetHistory()))
 
 ### 1.11 代理中存在但从未被调用的模式 {#111-modes-that-exist-in-the-proxy-but-are-never-called}
 
-- `mode=retry&value={id}` (`SabnzbdProxy.cs:148-160`, response `{status, nzo_id}` →
-  `Responses/SabnzbdRetryResponse.cs`). `ISabnzbdProxy.RetryDownload` has **no caller** in either repo.
-- `Responses/SabnzbdCategoryResponse.cs` (`{"categories": [...]}`, i.e. `mode=get_cats`) is
-  **entirely unreferenced** in both repos.
-- `Sabnzbd.ValidatePath` (`Sabnzbd.cs:576-592`) is private and never called (dead).
+- `mode=retry&value={id}`（`SabnzbdProxy.cs:148-160`，响应 `{status, nzo_id}` →
+  `Responses/SabnzbdRetryResponse.cs`）。`ISabnzbdProxy.RetryDownload` 在两个仓库中都**没有调用方**。
+- `Responses/SabnzbdCategoryResponse.cs`（`{"categories": [...]}`，即 `mode=get_cats`）在两个仓库中**完全没有被引用**。
+- `Sabnzbd.ValidatePath`（`Sabnzbd.cs:576-592`）是 private 的，而且从未被调用（死代码）。
 
 ## 2. `SabnzbdDownloadStatus` 和 `SabnzbdPriority` — 确切成员，未知值和 null 的处理 {#2-sabnzbddownloadstatus-and-sabnzbdpriority--exact-members-unknownnull-handling}
 
@@ -430,18 +429,11 @@ namespace NzbDrone.Core.Download.Clients.Sabnzbd
 }
 ```
 
-- **No per-property converter.** The globally registered
-  `StringEnumConverter { NamingStrategy = CamelCaseNamingStrategy }` (`Json.cs:32`) handles it.
-- An **unknown name throws** (Newtonsoft `EnumUtils.ParseEnum` → `JsonSerializationException`),
-  and because `GetQueue`/`GetHistory` use `Json.Deserialize` (not Try), the *entire* queue or history
-  call fails. **Never emit a status outside this list.**
-- Emit SAB's canonical spellings exactly as above (`"Downloading"`, `"QuickCheck"`, `"Completed"`,
-  `"Failed"`, `"Propagating"`, ...). Newtonsoft's enum matching does fall back to case-insensitive,
-  but exact case is the only thing worth relying on.
-- Integers are accepted too (`AllowIntegerValues` default true), but don't use them.
-- A JSON `null` for `status` is ignored by `NullValueHandling.Ignore` and the member stays
-  `Grabbing` (0) — a queue slot silently becomes `Queued`, a history slot silently becomes
-  `Downloading`. Always send an explicit status.
+- **没有按属性的转换器。** 全局注册的 `StringEnumConverter { NamingStrategy = CamelCaseNamingStrategy }`（`Json.cs:32`）会处理这一点。
+- 遇到**未知名称会直接抛出异常**（Newtonsoft 的 `EnumUtils.ParseEnum` → `JsonSerializationException`）。由于 `GetQueue`/`GetHistory` 使用的是 `Json.Deserialize`（而不是 Try），整个队列或历史记录调用都会失败。**绝对不要输出此列表之外的状态。**
+- 请严格按照上面的写法输出 SAB 的标准拼写（`"Downloading"`、`"QuickCheck"`、`"Completed"`、`"Failed"`、`"Propagating"` 等）。Newtonsoft 的枚举匹配确实会回退到不区分大小写，但只有大小写完全一致才值得依赖。
+- 整数也可以接受（`AllowIntegerValues` 默认为 true），但不要使用整数。
+- `status` 为 JSON `null` 时，会被 `NullValueHandling.Ignore` 忽略，成员保持为 `Grabbing`（0）：队列中的条目会悄悄变成 `Queued`，历史记录中的条目会悄悄变成 `Downloading`。请始终发送明确的 status。
 
 ---
 

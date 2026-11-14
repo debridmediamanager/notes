@@ -278,32 +278,32 @@ Stop-Process -InputObject $server
 
 ### 新しいアカウントに rex を登録 {#register-rex-on-the-fresh-account}
 
-1. Melde dich bei [plex.tv](https://www.plex.tv) **mit dem frischen Konto** an, öffne [plex.tv/claim](https://www.plex.tv/claim) und kopiere den Code. Er läuft nach etwa fünf Minuten ab.
-2. Auf dem rex-Rechner (`curl.exe` unter Windows):
+1. [plex.tv](https://www.plex.tv) に**新しく作ったアカウントで**サインインし、[plex.tv/claim](https://www.plex.tv/claim) を開いてコードをコピーします。コードの有効期限は約5分です。
+2. rex のマシンで実行します（Windows では `curl.exe`）:
 
    ```bash
    curl -X POST "http://192.168.1.20:32400/myplex/claim?token=claim-xxxxxxxxxxxx"
    curl -s http://192.168.1.20:32400/identity
    ```
 
-**Was du sehen solltest.** Der zweite Befehl zeigt `claimed="1"`, und in rex's Ordner existiert `claim_state.json`. Sichere diese Datei: Ohne sie muss rex neu beansprucht werden, und rex verweigert einen zweiten Claim, solange die Datei vorhanden ist. Ab jetzt kommen Titel mit Namen und Postern an, ohne Neustart.
+**正しく動いていれば表示されるもの。** 2つ目のコマンドで `claimed="1"` と表示され、rex のフォルダに `claim_state.json` ができています。このファイルはバックアップしておいてください。ないと rex を再度 claim し直す必要があり、ファイルが残っている間は rex が2回目の claim を受け付けません。これ以降は、再起動しなくてもタイトルが名前とポスター付きで届くようになります。
 
-**Falls nicht.**
+**うまくいかない場合。**
 
-- Der erste Befehl antwortet mit `409` und `rex: already claimed`: rex hängt bereits an einem Plex-Konto.
-- Er antwortet mit `500 Internal Server Error`, und rex protokolliert `claim exchange failed`: Der Code ist abgelaufen oder wurde schon benutzt. Hol dir einen neuen unter [plex.tv/claim](https://www.plex.tv/claim).
+- 1つ目のコマンドが `409` と `rex: already claimed` を返す場合: rex はすでに Plex アカウントに紐付いています。
+- `500 Internal Server Error` が返り、rex のログに `claim exchange failed` と出る場合: コードの期限が切れているか、すでに使われています。[plex.tv/claim](https://www.plex.tv/claim) で新しいコードを取得してください。
 
 ### 自分のアカウントと共有 {#share-it-with-your-own-account}
 
-1. Du bist noch mit dem frischen Account angemeldet. Öffne [app.plex.tv](https://app.plex.tv), dann **Settings** (der Schraubenschlüssel), **Manage Library Access** und **Grant Library Access**.
-2. Gib den Benutzernamen oder die E-Mail-Adresse deines eigenen Accounts ein, wähle den rex-Server und beide Bibliotheken, **Movies** und **TV Shows**, und schick die Einladung ab.
-3. Melde dich ab, dann mit **deinem eigenen** Account an und nimm die Einladung an. Sie kommt per E-Mail und in app.plex.tv an.
+1. まだ新しいアカウントでサインインしたまま、[app.plex.tv](https://app.plex.tv)を開き、**Settings**（レンチのアイコン）、**Manage Library Access**、**Grant Library Access**の順に進みます。
+2. 自分のアカウントのユーザー名またはメールアドレスを入力し、rexサーバーと両方のライブラリ（**Movies**と**TV Shows**）を選んで、招待を送ります。
+3. サインアウトして、**自分自身**のアカウントでサインインし、招待を承諾します。招待はメールとapp.plex.tvに届きます。
 
-![Manage Library Access in den Einstellungen von app.plex.tv, mit dem Button Grant Library Access](../assets/rex/20-plex-manage-library-access.webp)
+![app.plex.tvの設定にあるManage Library Access。Grant Library Accessボタンが表示されている](../assets/rex/20-plex-manage-library-access.webp)
 
-![Der Dialog Grant Library Access mit angehakten Movies- und TV Shows-Bibliotheken des rex-Servers](../assets/rex/21-plex-grant-library-access.webp)
+![Grant Library Accessダイアログ。rexサーバーのMoviesとTV Showsにチェックが入っている](../assets/rex/21-plex-grant-library-access.webp)
 
-**Das solltest du sehen.** Wenn du mit deinem eigenen Account angemeldet bist, zeigen die Plex-Apps den rex-Server neben deinen eigenen Servern an, mit beiden Bibliotheken. Dein Wiedergabeverlauf auf rex gehört dir: Er wird getrennt vom frischen Account gespeichert. Teile ihn genauso mit allen anderen in deinem Haushalt.
+**表示されるはずの内容。** 自分のアカウントでサインインすると、Plexアプリには自分のサーバーと並んでrexサーバーが両方のライブラリ付きで表示されます。rexでの視聴履歴は自分だけのもので、新しいアカウントの履歴とは分けて保存されます。同じ方法で、家族など他の人とも共有できます。
 
 ## ステップ 4. アプリを接続 {#step-4-connect-your-app}
 

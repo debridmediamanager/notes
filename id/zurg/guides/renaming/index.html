@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
     <meta name="turbo-root" content="/id">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847987561389">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847991130289">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -39,12 +39,12 @@
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
     <link id="retype-favicon" rel="icon" href="../../../assets/favicon.png" />
-    <link href="../../../resources/css/retype.css?v=4.6.0.847987561389" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.847991130289" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847987561389" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847991130289" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847987561389" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847987561389" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847991130289" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847991130289" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -525,13 +525,13 @@ POST /manage/{torrentHash}/files/{fileid}/clear-rename</code></pre>
 <p>Nama itu juga ikut berpindah. <code translate="no" v-pre>.zurgtorrent</code> yang diekspor membawa rename-nya, jadi <a href="../local-libraries/">pustaka lokal</a> akan tiba dengan nama yang sudah kamu berikan.</p>
 <p>Satu hal yang tidak bisa dipertahankan nama itu adalah <code translate="no" v-pre>ignore_renames: true</code>, dan memang itulah fungsi key tersebut. zurg mengabaikan semua nama yang tersimpan, menampilkan nama yang dihitung, dan menolak rename baru lewat mount. Rename-nya tidak dihapus, hanya diabaikan, jadi begitu kamu mengembalikan key itu ke nilai semula, rename-nya muncul lagi.</p>
 <h2 id="what-a-rename-changes-around-it">Apa yang ikut berubah di sekitarnya</h2>
-<p>A rename is a view, but several things are built from that view, and they are updated with it:</p>
+<p>Rename hanya sebuah tampilan, tetapi beberapa hal dibangun dari tampilan itu, dan semuanya ikut diperbarui:</p>
 <ul>
-<li><strong>The mount.</strong> rclone&#x27;s directory cache is invalidated for the old and the new path, so the change shows up without waiting out the cache.</li>
-<li><strong><code translate="no" v-pre>.strm</code> files</strong>, if <code translate="no" v-pre>save_strm_files</code> is on. The old ones are deleted and written again under the new name.</li>
-<li><strong>Plex dan Jellyfin</strong> diminta untuk memeriksa rilis itu lagi.</li>
-<li><strong>The on-disk cache record.</strong> The <code translate="no" v-pre>.zurgtorrent</code> is written under the new name and the old file is deleted. That deletion matters: left behind, a restart loads both, the hash collision resolves back to the other copy, and the rename silently reverts. That was a real bug, seen on 2026-08-17.</li>
-<li><strong>The SABnzbd and qBittorrent endpoints</strong>, which recompute the folder they report to Sonarr and Radarr on every poll, so a rename mid-import moves the path they are told to import from rather than stranding them.</li>
+<li><strong>Mount.</strong> Cache direktori rclone dihapus untuk path lama dan path baru, jadi perubahannya langsung terlihat tanpa menunggu cache habis.</li>
+<li><strong>File <code translate="no" v-pre>.strm</code></strong>, jika <code translate="no" v-pre>save_strm_files</code> aktif. File lama dihapus dan ditulis ulang dengan nama baru.</li>
+<li><strong>Plex dan Jellyfin</strong> diminta untuk memindai ulang rilis tersebut.</li>
+<li><strong>Catatan cache di disk.</strong> File <code translate="no" v-pre>.zurgtorrent</code> ditulis dengan nama baru dan file lama dihapus. Penghapusan ini penting: jika file lama tertinggal, saat restart kedua file akan dimuat, hash collision akan kembali ke salinan yang lain, dan rename diam-diam kembali ke nama semula. Ini pernah menjadi bug nyata, yang ditemukan pada 2026-08-17.</li>
+<li><strong>Endpoint SABnzbd dan qBittorrent</strong>, yang menghitung ulang folder yang dilaporkan ke Sonarr dan Radarr pada setiap polling, jadi rename di tengah proses import akan memindahkan path yang mereka gunakan untuk import, bukan membuat mereka terjebak.</li>
 </ul>
 <h2 id="three-traps">Tiga jebakan</h2>
 <p><strong>Mengganti nama bisa memindahkan sebuah release saat refresh berikutnya.</strong> Keanggotaan direktori ditentukan dengan menjalankan filter <code translate="no" v-pre>directories:</code> pada nama release, dan filter itu membaca <em>nama yang sudah diganti</em>. Proses rename sengaja tidak mengevaluasi ulang filter tersebut. Release tetap berada di direktori yang sudah ada. Tapi refresh berikutnya akan melakukannya. Jadi, jika sebuah filter cocok dengan sesuatu di dalam nama, lalu nama barumu tidak lagi cocok, release itu akan pindah ke direktori lain nanti, tanpa ada tanda apa pun saat rename dilakukan. Saat mengganti nama, berhati-hatilah terhadap filter yang bergantung pada nama.</p>

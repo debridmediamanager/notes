@@ -6,12 +6,12 @@ Vous faites tourner Plex Media Server et vous voulez essayer rex. Vos applicatio
 
 | | Plex Media Server | rex |
 |---|---|---|
-| Where the library comes from | Plex scans folders on a disk or a mount | A source (your own app, rex-stremio or zurg) tells rex what it has. rex never scans a folder and needs no mount |
-| What each file is | Plex matches it from its file name | The source works it out and tells rex. rex never reads a file name |
-| A wrong match | Fix Match on the server | **Fix Match** in a Plex app, signed in as the account that owns rex. rex keeps your pick, and a source can take it back and keep it, as zurg does ([why titles are placed as they are](with-zurg.md#why-dmm-places-the-files)) |
-| The account the server is on | Usually your own | A fresh Plex account made for rex, shared with your own |
-| Music, Live TV and photos | From folders and a tuner | Only from a source that sends them, such as an addon ([Building rex addons](addons.md#music)) or zurg's comic books. Plex Web shows photos; Plex for Android does not |
-| Recording TV | Yes | No |
+| D'où vient la bibliothèque | Plex parcourt des dossiers sur un disque ou un point de montage | Une source (votre propre application, rex-stremio ou zurg) indique à rex ce qu'elle possède. rex ne parcourt jamais de dossier et n'a besoin d'aucun point de montage |
+| Ce que représente chaque fichier | Plex le reconnaît d'après son nom | La source détermine elle-même ce que c'est et l'indique à rex. rex ne lit jamais le nom d'un fichier |
+| Une mauvaise correspondance | Fix Match sur le serveur | **Fix Match** dans une application Plex, connecté avec le compte qui possède rex. rex garde votre choix, et une source peut le reprendre et le conserver, comme le fait zurg ([pourquoi les titres sont placés ainsi](with-zurg.md#why-dmm-places-the-files)) |
+| Le compte du serveur | En général le vôtre | Un nouveau compte Plex créé pour rex, partagé avec le vôtre |
+| Musique, TV en direct et photos | À partir de dossiers et d'un tuner | Uniquement depuis une source qui les envoie, comme un addon ([Building rex addons](addons.md#music)) ou les bandes dessinées de zurg. Plex Web affiche les photos ; Plex pour Android, non |
+| Enregistrer la TV | Oui | Non |
 
 ## Choisir une méthode {#pick-a-way}
 

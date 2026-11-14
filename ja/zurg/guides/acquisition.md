@@ -318,37 +318,14 @@ Radarrはリストを管理し、ライブラリを所有します。検索と�
 
 ### Radarr のセットアップ {#setting-up-radarr}
 
-1. **Ordner-Root innerhalb von `__magic__`, eine Ebene tiefer.** Zum Beispiel
-   `/mnt/zurg/__magic__/movies` (`/Volumes/Zurg/__magic__/movies` unter macOS,
-   `Z:\__magic__\movies` unter Windows). Nicht `__magic__` selbst und auch nicht
-   `__magic__/__all__`, denn dort sind alle Releases der Bibliothek aufgelistet. Ein Film,
-   dessen Ordner woanders liegt, wird übersprungen, und in zurgs Log gibt es dazu eine Warnung.
-   Unter Windows sieht Radarr `Z:` nur, wenn es in derselben Anmeldesitzung wie zurg läuft,
-   also nicht als Windows-Dienst. Siehe dazu
-   [die Sitzungsregeln](../setup/windows.md#keeping-it-running-the-session-rules).
-2. **Importlisten mit Suche beim Hinzufügen aus.** Füge Filme hinzu, wie du willst (von Hand, über Listen,
-   oder Seerr mit Radarr als Ziel). Lass **Search for Movie** beim Hinzufügen aus,
-   denn die Suche übernimmt zurg.
-3. **Keine Indexer und kein Download-Client nötig.** Wenn Radarr welche hat, kann es
-   zusätzlich zu zurg suchen. Schalte deshalb die automatische Suche bei seinen Indexern aus
-   (oder entferne sie) für die Filme, um die sich zurg kümmert.
-4. **`library_path` ist der Pfad, unter dem Radarr `__magic__` sieht.** Wenn Radarr auf demselben Rechner
-   wie zurg läuft und den Mount dort sieht, wo zurg ihn einhängt, lass die Option weg:
-   Standardmäßig ist es zurgs `mount_path` plus `/__magic__`. Wenn Radarr in einem Container
-   läuft, der zurg an einem anderen Ort einhängt, setze den Pfad dorthin, zum Beispiel
-   `/data/zurg/__magic__`. Ein Film unter
-   `/data/zurg/__magic__/movies/Heat (1995)` wird dann in
-   `movies/Heat (1995)` innerhalb von zurgs `__magic__` abgelegt. Windows-Pfade wie
-   `Z:\__magic__` funktionieren ebenfalls. Ein Radarr-Container wird nur auf einem Linux-Host
-   unterstützt: Docker Desktop unter macOS und Windows läuft in einer VM, und zurgs Mount
-   dorthin weiterzureichen ist nicht getestet. Betreibe Radarr dort daher nativ.
+1. **`__magic__` の 1 階層下にあるルートフォルダ。** 例:
+   `/mnt/zurg/__magic__/movies` (macOS では `/Volumes/Zurg/__magic__/movies`、
+   Windows では `Z:\__magic__\movies`)。`__magic__` そのものや、ライブラリ内のすべてのリリースを一覧する `__magic__/__all__` は対象外です。フォルダがそれ以外の場所にある映画はスキップされ、zurg のログに警告が 1 回出ます。Windows では、Radarr が `Z:` を見られるのは zurg と同じログオンセッションで動いているときだけです。Windows サービスとしては動きません。詳しくは [セッションのルール](../setup/windows.md#keeping-it-running-the-session-rules) を参照してください。
+2. **検索をオフにしたインポートリスト。** 映画の追加は好きな方法で行えます(手動、リスト、Radarr 向けの Seerr など)。追加時に **Search for Movie** はオフのままにしてください。検索は zurg が行うためです。
+3. **インデクサーとダウンロードクライアントは不要です。** Radarr にそれらがあると、zurg と並行して取得してしまうことがあります。そのため、zurg が管理する映画については、インデクサーの自動検索をオフにする(またはインデクサーを削除する)ようにしてください。
+4. **`library_path` は Radarr から見た `__magic__` の場所です。** Radarr が zurg と同じマシンで動き、zurg がマウントしている場所と同じマウントを見ている場合は、省略してください。その場合、デフォルトは zurg の `mount_path` に `/__magic__` を付けたものになります。Radarr が、zurg を別の場所にマウントしているコンテナ内で動いている場合は、そのパスを設定してください(例: `/data/zurg/__magic__`)。すると `/data/zurg/__magic__/movies/Heat (1995)` にある映画は、zurg の `__magic__` 内の `movies/Heat (1995)` に配置されます。`Z:\__magic__` のような Windows パスも使えます。Radarr のコンテナは Linux ホストでのみ対応しています。Docker Desktop(macOS と Windows)ではコンテナが VM 内で動くため、zurg のマウントをそこに渡す方法は未検証です。そちらでは Radarr をネイティブに動かしてください。
 
-   Wenn Radarr außerdem Downloads über zurgs [SABnzbd](sonarr-radarr.md)- oder
-   [qBittorrent](sonarr-radarr-torrents.md)-Endpunkt entgegennimmt, muss es deren Download-Ordner
-   unter `library_path/__all__` sehen, und zwar über denselben Volume wie seine Root-Ordner. Sonst ist jeder Import daraus
-   eine Kopie der ganzen Datei. zurg fragt Radarr, wo es beide sieht, und meldet das auf der
-   Acquisition-Seite, im Log und in `zurg doctor`, falls sie sich keinen Mount teilen können. Siehe
-   [Ein Volume für den Download-Ordner und die Root-Ordner](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
+   Radarr が zurg の [SABnzbd](sonarr-radarr.md) または [qBittorrent](sonarr-radarr-torrents.md) エンドポイントからも取得を受け付けている場合、Radarr はそのダウンロードフォルダを `library_path/__all__` で見る必要があります。ルートフォルダと同じボリューム経由で見ていないと、そこからのインポートはすべてファイル全体のコピーになってしまいます。zurg は、Radarr が両方をどこで見ているかを尋ねます。同じマウントを共有できない場合は、取得ページ、ログ、`zurg doctor` でその旨を伝えます。詳しくは [ダウンロードフォルダとルートフォルダで 1 つのボリューム](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders) を参照してください。
 
 ### zurg が Radarr に求めるもの {#what-zurg-asks-radarr-for}
 
@@ -481,7 +458,7 @@ Acquisition: chose <release> for <title>: results=143 local_refusals=97 radarr_r
 ## zurg だけをダウンロードクライアントにしている \*arr を確認する {#checking-an-arr-that-only-uses-zurg-as-its-download-client}
 
 A Sonarr or Radarr pointed at zurg's [SABnzbd](sonarr-radarr.md) or
-[qBittorrent](sonarr-radarr-torrents.md) endpoint does its own searching, so it doesn't
+[qBittorrent](sonarr-radarr-torrents.md) endpoint does its own searching, and does not
 need a source here. zurg still wants its API key, because three of its settings
 decide whether every import is a free rename or a whole release downloaded
 from the debrid account and written to zurg's disk: Remove Completed on a
@@ -513,7 +490,7 @@ on for the \*arr's zurg qBittorrent client when it is off, the one change zurg
 makes, and reports a layout that makes imports copies. Every source with a URL
 and an API key, enabled or not, is checked and corrected the same way. It is
 listed on the acquisition page under **Checked, never searched for**, with
-what zurg changed. The findings go to the log, and `zurg doctor` shows them as
+what zurg changed, the findings go to the log, and `zurg doctor` shows them as
 `imports (<name>)`. `library_path` is not judged for such a source, since
 nothing is placed for it. A source added to config.yml by hand is read at
 start, so restart zurg after adding one that way.

@@ -10,11 +10,11 @@ DOWNLOADCODE ist genau eine 13 Zeichen lange, eindeutige ID der jeweiligen Datei
 
 # Dateien auswählen {#selecting-files}
 
-As mentioned, you can select only the files you want to download from inside a torrent.
-If a torrent contains files A, B and C and you select A and B, it will only download A and B.
-The cached status of a torrent actually depends on this unique file selection.
-Going back to the torrent with files A, B and C, there are different cached statuses for A, B, B (single), A+B, B+C, A+C (pair), or A+B+C (all files).
-Each unique selection downloads the torrent again from the trackers and returns a different cached link, even for the same file.
+Wie bereits erwähnt, kann man innerhalb eines Torrents gezielt nur die Dateien auswählen, die man herunterladen möchte.
+Wenn ein Torrent die Dateien A, B und C enthält und du A und B auswählst, werden nur A und B heruntergeladen.
+Der Cache-Status eines Torrents hängt tatsächlich von genau dieser einzigartigen Dateiauswahl ab.
+Um noch einmal auf den Torrent mit den Dateien A, B und C zurückzukommen: Es gibt verschiedene Cache-Status für A oder B oder B (einzeln), A+B, B+C, A+C (Paar) oder A+B+C (alle Dateien).
+Jede einzelne Auswahl lädt den Torrent erneut von den Trackern herunter und liefert einen anderen Cache-Link, selbst wenn es sich um dieselbe Datei handelt.
 
 # Zwischengespeicherte Links {#cached-links}
 

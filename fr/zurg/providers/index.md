@@ -137,32 +137,33 @@ Les descriptions complètes et tout le reste se trouvent dans la [référence de
 
 ## Vérifier que ça fonctionne {#check-it-worked}
 
-Commence par le log et le diagnostic.
+Commencez par le log et le diagnostic.
 
 ```bash
 docker compose logs -f --tail=100 zurg
 docker compose exec zurg /app/zurg doctor --working-dir /config
 ```
 
-`WARN service zurg is not installed` est normal dans Docker, car Compose gère le démarrage automatique. Les avertissements ne font pas échouer doctor. Seul un `FAIL` le fait.
+`WARN service zurg is not installed` est normal avec Docker, car Compose gère
+le démarrage automatique. Les avertissements ne font pas échouer doctor. Un `FAIL` si.
 
-Ensuite, teste le compte lui-même depuis le Dashboard ou depuis le shell.
+Testez ensuite le compte lui-même depuis le Dashboard ou depuis le shell.
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox/test
 ```
 
-`{"success":true}` signifie que l'identifiant a été authentifié. Le nom dans le chemin est le `name` du compte, qui vaut par défaut son `type`. Ajoute `-u user:pass` si tu as défini un `username` dans `config.yml`. Sans cela, le Dashboard et son API sont accessibles sans authentification sur le port que tu as publié.
+`{"success":true}` veut dire que l'identifiant a été accepté. Le nom dans le chemin est la valeur `name` du compte. Par défaut, c'est son `type`. Ajoutez `-u user:pass` si vous avez défini un `username` dans `config.yml`. Sans cela, le Dashboard et son API sont accessibles sans mot de passe sur le port que vous avez publié.
 
-Pour finir, regarde la bibliothèque sur le montage.
+Enfin, regardez la bibliothèque sur le montage.
 
 ```bash
 ls /zurg_mnt/zurg/__all__/
 ```
 
-Chaque compte configuré a un répertoire `__<name>__`. Il contient tout ce que ce compte possède, et il force les lectures vers ce compte. `__torbox__/Some.Release/` ne diffuse que depuis TorBox, nulle part ailleurs. Le dossier propre à un compte unique n'apparaît pas dans la liste de la racine du montage, puisque `__all__` correspond à la même bibliothèque. Les chemins HTTP et WebDAV directs, comme `/http/__torbox__/`, répondent toujours. Via le montage, ils ne se résolvent plus : remplace donc `__<name>__` par `__all__` dans toute bibliothèque ou script qui l'utilisait.
+Chaque compte configuré a un dossier `__<name>__`. Il contient tout ce que contient ce compte, et les lectures sont forcées vers ce compte. `__torbox__/Some.Release/` ne diffuse que depuis TorBox, et nulle part ailleurs. Le dossier propre à un seul compte n'apparaît pas dans la liste racine du montage, puisque `__all__` correspond à la même bibliothèque. Les chemins HTTP et WebDAV directs, comme `/http/__torbox__/`, répondent toujours. Via le montage, ils ne fonctionnent plus non plus ; faites pointer toute bibliothèque ou tout script qui utilisait `__<name>__` vers `__all__`.
 
-Une grosse bibliothèque prend du temps à se charger la première fois. Tant que ce n'est pas fini, `/dav/movies/` répond 503 et le montage peut ne rien lister.
+Une grosse bibliothèque prend un peu de temps au premier chargement. Tant qu'il n'est pas terminé, `/dav/movies/` répond 503 et le montage peut ne rien afficher.
 
 ## Faire tourner plusieurs comptes {#running-several-accounts}
 

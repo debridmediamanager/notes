@@ -63,14 +63,14 @@ Clique em **Test** e depois em **Save**.
 
 ## Listas grandes baixam tudo de uma vez {#big-lists-grab-everything-at-once}
 
-A list with search on add switched on grabs every title the moment it syncs. The movie list above holds 400 titles and the show list holds 148 shows with every episode. That is a lot of grabs in one go. Your debrid account and your indexers will feel it, and an indexer with a rate limit will start refusing searches.
+A lista com busca ao adicionar ativada pesquisa e baixa cada título assim que ela sincroniza. A lista de filmes acima tem 400 títulos e a lista de séries tem 148 séries com todos os episódios. São muitos downloads de uma vez. A sua conta de debrid e os seus indexadores vão sentir isso, e um indexador com limite de requisições vai começar a recusar buscas.
 
-There are two gentler ways in.
+Há duas formas mais suaves de começar.
 
-- Leave search on add off. The titles get added and monitored and nothing is searched. Search the ones you want from the Movies or Series page.
-- Start with a short list. Add the big one once the first batch has landed.
+- Deixe a busca ao adicionar desativada. Os títulos são adicionados e monitorados, mas nada é pesquisado. Pesquise os que você quiser pelas páginas Movies ou Series.
+- Comece com uma lista curta. Adicione a lista grande depois que o primeiro lote tiver chegado.
 
-The apps also sync lists on their own schedule. **System → Tasks → Import List Sync** runs one now.
+Os apps também sincronizam as listas no próprio cronograma. **System → Tasks → Import List Sync** executa uma sincronização agora.
 
 ## Removendo uma lista {#removing-a-list}
 

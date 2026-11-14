@@ -68,9 +68,11 @@ L'addon Stremio de zurg envoie son choix au compte NZB que l'instance utilise. A
 ## Vérifier que ça fonctionne {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox_nzb/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox_nzb/test
 ls /zurg_mnt/zurg/__all__/
 curl -s http://localhost:9999/http/__torbox_nzb__/ | head
 ```
 
-Avec un seul compte, son propre dossier est exclu de la liste racine du montage, donc le montage affiche les mêmes fichiers sous `__all__`. Le nom du dossier suit le nom de l'entrée, qui vaut par défaut son type.
+Avec un seul compte, son propre dossier est exclu de la liste racine du montage,
+donc le montage affiche les mêmes fichiers sous `__all__`. Le nom du répertoire suit
+le nom de l'entrée, qui vaut par défaut son type.

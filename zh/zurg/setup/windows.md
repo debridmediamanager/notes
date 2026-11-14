@@ -193,11 +193,11 @@ download-client 区块——和你在 `config.yml` 里设置的是同一批开�
 
 ### Z: 盘 {#the-z-drive}
 
-When zurg runs, `Z:` is a petabyte-scale filesystem in Explorer:
+当 zurg 运行时，`Z:` 会在资源管理器里显示为一个 PB 级别的文件系统：
 
-![File Explorer at the Z: drive](../../assets/windows-setup/21-explorer-z.webp)
+![资源管理器中的 Z: 盘](../../assets/windows-setup/21-explorer-z.webp)
 
-**But only if zurg runs where Explorer can see it — and that is the one genuinely Windows-shaped rule in this setup.** A drive-letter mount belongs to the *logon session* that created it. Start zurg from an SSH connection or from a service and the mount exists, works, and is invisible to your desktop. This is not a bug in WinFsp or rclone; it is how Windows scopes drive letters. [The last section](#keeping-it-running-the-session-rules) has the working recipe — an interactive scheduled task — and what was measured trying the alternatives.
+**但前提是 zurg 运行在资源管理器能看到的地方。这也是这套设置里唯一一条真正属于 Windows 特有的规则。** 盘符挂载属于创建它的*登录会话*。如果你从 SSH 连接或服务里启动 zurg，挂载会存在、也能正常工作，但你的桌面看不到它。这不是 WinFsp 或 rclone 的 bug，而是 Windows 限定盘符作用范围的方式。[最后一节](#keeping-it-running-the-session-rules)给出了可行的方法，即交互式计划任务，并说明了测试其他方案的结果。
 
 ### 验证 qBittorrent 端点 {#prove-the-qbittorrent-endpoint}
 
@@ -480,7 +480,7 @@ Remove-Item -Recurse -Force .\data\rclone-cache\vfs\*, .\data\rclone-cache\vfsMe
 
 ## 更新 zurg {#updating-zurg}
 
-A sponsor build replaces itself:
+赞助者版本会自我替换:
 
 ```powershell
 cd $HOME\zurg
@@ -488,9 +488,9 @@ cd $HOME\zurg
 .\zurg.exe service restart
 ```
 
-`update` takes the newest nightly, checks the download reports the version it expected before replacing anything, and moves the running `zurg.exe` aside so Windows will let the new one land. When the installed build is already the newest it says so and changes nothing. The restart runs the new build.
+`update` 会获取最新的 nightly 版本,在替换任何文件之前检查下载内容报告的版本是否符合预期,然后把正在运行的 `zurg.exe` 移到一边,这样 Windows 才会让新文件放进来。如果已安装的版本已经是最新的,它会告诉你并且不做任何改动。重启时会运行新版本。
 
-On a build too old to carry the command, the installer does the same job:
+对于太旧、不支持该命令的版本,安装程序会完成同样的工作:
 
 ```powershell
 $env:ZURG_INSTALL_MODE = "update"; irm https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.ps1 | iex

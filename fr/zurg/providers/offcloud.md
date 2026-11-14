@@ -70,7 +70,7 @@ Le vocabulaire d'erreurs d'Offcloud est pauvre. `NOAUTH` est le seul code sur le
 ## Vérifier que ça fonctionne {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/offcloud/test
+curl -sS -X POST http://localhost:9999/api/providers/offcloud/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 

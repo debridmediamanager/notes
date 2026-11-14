@@ -116,7 +116,7 @@ not marked `backup`. The worked config and what each key buys are in
 ## Check it worked
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/nzb/test
+curl -sS -X POST http://localhost:9999/api/providers/nzb/test
 docker compose logs --tail=100 zurg
 ls /zurg_mnt/zurg/__all__/
 ```

@@ -6,30 +6,30 @@
 - Behavior: Edit と Delete は、どちらもシンプルな操作を実行するだけです。見出し以外のグループ分けはなく、完全な YAML オプションを扱う専用の作成・編集画面もありません。
 
 ## 主な UX の課題 {#key-ux-gaps}
-- **Informationsarchitektur**
-  - Gruppen sind optisch zusammengeschoben; Nutzer können sich nicht auf eine Gruppe konzentrieren.
-  - Die Reihenfolge hängt von manuellen Zahlen ab (`group_order`). Das ist unintuitiv und fehleranfällig.
-  - Keine Such- oder Filterleiste, um Verzeichnisse schnell zu finden.
-  - Keine Massenaktionen (löschen/verschieben) und keine Auswahlmöglichkeiten.
-- **Erstellen und Bearbeiten**
-  - Die Bearbeiten- und Hinzufügen-Abläufe zeigen nicht das komplette YAML-Schema (allgemeine Einstellungen, Größen-, Datei-, Tag- und Zeitfilter).
-  - Kein strukturiertes Layout; Felder sind nicht gruppiert, was bei wachsender Optionsanzahl zu einer Überlastung führt.
-  - Kein verschachtelter UND/ODER-Regeleditor, der die verschachtelte Filterlogik von YAML abbildet.
-  - Tag-Felder (`tags_match_all`, `tags_match_any`) sind schlecht auffindbar und bieten kaum Hilfe bei der Auswahl.
-  - Keine Live-Vorschau der Torrents, die zu den aktuellen Filtereinstellungen passen.
-- **Hilfe und Validierung**
-  - Fehlende Tooltips/Info-Symbole pro Feld und Links zu ausführlicheren Dokumenten (z. B. `tags.md`).
-  - Keine frühzeitige Warnung, wenn ein Verzeichnis keine Torrents liefern würde oder erforderliche Filter fehlen.
-  - Regex- und andere Mustervorgaben liefern keine Echtzeit-Rückmeldung zur Gültigkeit.
-  - Löschvorgänge erfolgen ohne Bestätigung oder Rückgängig-Option.
-- **Barrierefreiheit und Responsivität**
-  - Kontrast und Lesbarkeit sind nicht gegen WCAG geprüft; Aktionen, die nur aus Symbolen bestehen, haben womöglich keine Beschriftung.
-  - Kein Drag-and-drop; keine tastaturbedienbare Möglichkeit zum Umsortieren.
-  - Das mobile Layout ist nicht optimiert (die Tabelle passt sich nicht an gestapelte Karten an; Formulare lassen sich eventuell schlecht scrollen).
-  - Aktionen sind nur als Textlinks umgesetzt; Symbole und klare Klickflächen fehlen.
-- **Performance und Feinschliff bei der Interaktion**
-  - Suche und Filter (sobald sie da sind) brauchen Debouncing sowie Paginierung oder Virtualisierung für große Listen.
-  - Drag-and-drop (sobald es da ist) braucht Persistenz und eine saubere Rückfalloption, falls das Speichern fehlschlägt.
+- **情報の構成（Information architecture）**
+  - グループの見た目がフラットになっていて、ユーザーが一度に1つのグループに集中できません。
+  - 並び順は手動の番号（`group_order`）に頼っているため、分かりにくく、間違えやすくなっています。
+  - ディレクトリをすばやく探せる検索・フィルターバーがありません。
+  - 一括操作（削除・移動）や選択のための操作がありません。
+- **作成・編集の操作性（Creation/editing experience）**
+  - 追加・編集の画面では、YAML スキーマの全項目（一般設定、サイズ・ファイル・タグ・時間のフィルター）が表示されていません。
+  - 項目をまとめるレイアウトがなく、オプションが増えるほど情報が詰め込まれて分かりにくくなります。
+  - YAML のネストされたフィルターのロジックを再現する、AND/OR のネストされたルールビルダーがありません。
+  - タグ関連の項目（`tags_match_all`、`tags_match_any`）は、見つけにくく、選び方のヘルプもありません。
+  - 現在のフィルター設定に一致する torrent をリアルタイムでプレビューする機能がありません。
+- **ガイダンスと検証（Guidance and validation）**
+  - 各項目のツールチップや情報アイコンがなく、`tags.md` などの詳しいドキュメントへのリンクもありません。
+  - ディレクトリが torrent 0 件になる場合や、必須のフィルターが欠けている場合に、事前の警告が出ません。
+  - 正規表現などのパターン項目に、リアルタイムの検証フィードバックがありません。
+  - 削除は確認もなく行われ、取り消しもできません。
+- **アクセシビリティとレスポンシブ対応（Accessibility and responsiveness）**
+  - コントラストや読みやすさが WCAG に照らして確認されておらず、アイコンだけの操作にはラベルがない場合があります。
+  - ドラッグ＆ドロップが使えず、キーボードで並べ替える方法もありません。
+  - モバイルレイアウトが最適化されていません（テーブルがカード形式に切り替わらず、フォームもうまくスクロールしないことがあります）。
+  - 操作の目印がテキストだけのリンクに頼っており、アイコンや分かりやすいボタンがありません。
+- **性能と操作の仕上げ（Performance and interaction polish）**
+  - 検索・フィルター（追加後）には、デバウンス処理と、大量のリストに対するページネーションまたは仮想化が必要になります。
+  - ドラッグ＆ドロップ（追加後）には、保存（永続化）の仕組みと、保存に失敗したときの穏やかなフォールバックが必要です。
 
 ## 推奨する UI/UX の変更 {#recommended-uiux-changes}
 - **グループ表示**

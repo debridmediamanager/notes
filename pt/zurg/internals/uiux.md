@@ -70,10 +70,10 @@
   - Considere usar cores por grupo para facilitar a leitura rápida, sempre com contraste acessível.
 
 ## Dependências e premissas a confirmar {#dependencies-and-assumptions-to-confirm}
-- API support for: persisting group order, bulk operations, nested AND/OR serialization, tag metadata source, and preview query endpoint.
-- Behavior of deletes: soft vs hard delete, undo window, and audit needs.
-- Ownership/permissions model (if multi-user) for displaying last-edited metadata and preventing conflicts.
-- Performance constraints for preview/search; paging or virtualization strategy for large datasets.
+- Suporte de API para: manter a ordem dos grupos, operações em massa, serialização de AND/OR aninhados, fonte de metadados de tags e endpoint de consulta de prévia.
+- Comportamento das exclusões: exclusão lógica (soft) vs. exclusão definitiva (hard), janela para desfazer e necessidades de auditoria.
+- Modelo de propriedade e permissões (se for multiusuário) para exibir os metadados da última edição e evitar conflitos.
+- Restrições de desempenho para prévia e busca; estratégia de paginação ou virtualização para grandes volumes de dados.
 
 ## Prioridades de implementação {#implementation-priorities}
 1) Reestruture a lista em cards/seções recolhíveis; adicione uma barra de busca/filtro e caixas de diálogo de confirmação.

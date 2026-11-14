@@ -6,7 +6,7 @@
 
 ## 为想要的电影保留 1080p 和 4K 两个版本 {#keep-a-wanted-film-at-1080p-and-at-4k}
 
-`quality: [1080p, 4k]` in the `acquisition:` block keeps two copies of each film on your DMM wanted list, so a 1080p TV can play one without transcoding the 4K file. Each copy takes the best release at or below its own resolution and upgrades up to it on its own. While nothing better than 1080p is out, the two share one copy. Shows, and every other source, still get one copy. See [a copy at each of several resolutions](../guides/acquisition.md#a-copy-at-each-of-several-resolutions).
+`quality: [1080p, 4k]` 放在 `acquisition:` 配置块里，会让 DMM 的想看列表为每部电影保留两份副本，这样 1080p 电视就能直接播放 1080p 的版本，而不用转码 4K 文件。每份副本都会选取不高于自身分辨率的最佳版本，并各自升级到该分辨率。在 1080p 之上没有更好的版本发布之前，两份副本共用同一份。剧集和其他所有来源仍然只保留一份副本。详见 [在多个分辨率各保留一份副本](../guides/acquisition.md#a-copy-at-each-of-several-resolutions)。
 
 ## 一行命令安装后也能正常执行 zurg update {#zurg-update-works-after-the-one-line-install}
 
@@ -52,7 +52,7 @@ Real-Debrid 的链接在生成几个月后就会失效，所以在差不多同�
 
 ## 升级下载时，随之而来的 .nfo 或字幕也会被删除 {#upgraded-downloads-that-came-with-an-nfo-or-subtitles-are-deleted-too}
 
-With `magic.allow_delete` on, a deleted video that was not inside a RAR archive used to be deleted on its own. The `.nfo`, subtitles and poster posted beside it kept the download in your library. Its NZB stayed in `nzbs/` and its torrent stayed on your debrid account. Every upgrade of such a download left one behind. Now the whole download is deleted once nothing in `__magic__` uses it any more. A download stays while another episode of it is still in your library or still waiting in its own folder to be imported. Subtitles Sonarr or Radarr imported beside the video keep it until they are deleted too.
+使用 `magic.allow_delete` 时，被删除的视频如果不在 RAR 压缩包里，以前只会单独删掉它自己。它旁边的 `.nfo`、字幕和海报会留在库里，这次下载就一直保留着。它的 NZB 会留在 `nzbs/` 里，它的种子会留在你的 debrid 账户上。每次升级这类下载，都会留下一个这样的残留。现在，只要 `__magic__` 里已经没有任何东西在用这次下载，就会把整个下载一并删除。如果同一次下载里还有其他集仍在你的库里，或者还在它自己的文件夹中等待导入，这次下载就会保留。Sonarr 或 Radarr 导入到视频旁边的字幕也会一直保留这次下载，直到它们也被删除。
 
 ## 被替换和失败的 Usenet 下载不再堆积 {#replaced-and-failed-usenet-downloads-no-longer-pile-up}
 
@@ -115,7 +115,7 @@ changes instead of on every one.
 
 ## 通过 MCP 还原文件后，其资源会立即恢复 {#restoring-a-file-over-mcp-puts-its-release-back-right-away}
 
-Using the `zurg_release_file_restore` MCP tool to restore a file used to bring the file back but left its release marked broken and in `__unplayable__` until the next library refresh. Now it does what the Restore button in the torrent manager does: the release leaves `__unplayable__`, goes back into its folders with its .strm files, and is saved that way. As before, it does not ask Plex, Jellyfin or your on_library_update script to rescan.
+使用 `zurg_release_file_restore` MCP 工具恢复文件后，文件确实找回来了，但它所在的版本仍被标记为损坏，并留在 `__unplayable__` 里，直到下一次媒体库刷新才会变化。现在它的行为和 torrent manager 里的 Restore 按钮一致：版本会离开 `__unplayable__`，连同其 .strm 文件一起回到原来的文件夹，并以这种状态保存。和之前一样，它不会通知 Plex、Jellyfin 或你的 on_library_update 脚本重新扫描。
 
 ## 找回修复失败时被隐藏的文件 {#bring-back-files-a-failed-repair-hid}
 
@@ -254,10 +254,7 @@ Prowlarr 对一个已被禁用的索引器的搜索请求返回 `429`，并带�
 
 ## 名称以空格结尾的发布项现在可以匹配到 Plex {#a-release-whose-name-ends-in-a-space-is-matched-to-plex}
 
-A file name with a space before the extension, such as
-`... [Hurtom] v2 .mkv`, got a directory whose name ended in a space. Plex found
-it, but zurg could never match it, so it stayed on the undetected list after
-every scan. It is matched now.
+＊不对，我需要更仔细地处理：文件名里扩展名前有空格的发行版，例如 `... [Hurtom] v2 .mkv`，会生成一个名字以空格结尾的目录。Plex 能找到它，但 zurg 一直无法匹配，所以每次扫描后它都停留在未识别列表里。现在已经可以匹配了。
 
 ## 在管理页面删除文件后会保留你的位置 {#deleting-a-file-on-the-manage-page-keeps-your-place}
 
@@ -273,7 +270,7 @@ every scan. It is matched now.
 
 ## 损坏程度超过 repair 内存上限的发布会立即失败 {#a-release-too-damaged-for-repairs-memory-fails-at-once}
 
-When a Usenet release is missing more than PAR2 repair can hold in memory at once, zurg now says so and stops, and Sonarr or Radarr pick another release. It used to keep the grab waiting, then try again every few minutes, re-checking the whole release each time for the same answer. Damage that is not yet confirmed as gone, such as articles a server failed to answer, is still retried.
+当 Usenet 发布资源缺失的部分超过了 PAR2 修复一次能在内存中处理的上限时，zurg 现在会直接说明情况并停止，然后 Sonarr 或 Radarr 会改选另一个发布资源。以前它会一直让这次抓取等着，每隔几分钟重试一次，每次都把整个发布资源重新检查一遍，得到的还是同样的结果。对于还没确认彻底丢失的损坏部分，比如服务器没有响应的分段（article），依然会重试。
 
 ## 设置向导可以跳过空配置，并会说明令牌提示何时被隐藏 {#setup-gets-past-an-empty-config-and-says-when-the-token-prompt-is-hidden}
 
@@ -562,9 +559,9 @@ Usenet 读取现在会先把播放头所在的文章放进账户调度器，然�
 
 ## 保存的 .strm 文件会跟随 Base URL 的更改 {#saved-strm-files-follow-a-base-url-change}
 
-Changing Base URL left every `.strm` already in `strm/` pointing at the old address, and restarting did not help, because zurg only ever wrote the files that were missing. Now a `.strm` whose URL differs from the one zurg would write is rewritten in place. That happens at every start, and straight away when Base URL is changed on the dashboard or `save_strm_files` is switched on there. Files that are already right are left alone, so a media server does not re-read the whole folder on every scan.
+更改 Base URL 之后，`strm/` 里已有的 `.strm` 文件仍然指向旧地址，重启也没用，因为 zurg 以前只会写入缺失的文件。现在，如果某个 `.strm` 的 URL 与 zurg 将要写入的不同，就会原地重写。每次启动时都会这样做；在仪表板上更改 Base URL 或打开 `save_strm_files` 时，也会立即执行。已经正确的文件保持不变，这样媒体服务器就不必在每次扫描时重新读取整个文件夹。
 
-Jellyfin keeps the URL it read from a `.strm` and picks up the new one at its next library scan. A `.strm` still holding an account link from an older build is rewritten too, to the form that fails over between accounts and survives repairs. A `.strm` edited by hand inside `strm/` is overwritten, so point Base URL at the address you want instead.
+Jellyfin 会保留它从 `.strm` 中读取到的 URL，并在下一次媒体库扫描时获取新的 URL。仍然保存着旧版本生成的账户链接的 `.strm` 也会被重写，改为可以在多个账户之间故障转移、并且在修复后依然有效的格式。手动编辑 `strm/` 里的 `.strm` 会被覆盖，所以如果你想要某个地址，请直接把 Base URL 设置为该地址。
 
 ## 开启 Plex 监视列表不再将其清空 {#turning-the-plex-watchlist-on-no-longer-empties-it}
 

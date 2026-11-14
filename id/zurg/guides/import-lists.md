@@ -63,14 +63,14 @@ Tekan **Test** lalu **Save**.
 
 ## Daftar besar langsung mengambil semuanya sekaligus {#big-lists-grab-everything-at-once}
 
-A list with search on add switched on grabs every title the moment it syncs. The movie list above holds 400 titles and the show list holds 148 shows with every episode. That is a lot of grabs in one go. Your debrid account and your indexers will feel it, and an indexer with a rate limit will start refusing searches.
+Daftar dengan search on add aktif akan langsung mengambil setiap judul begitu daftar tersebut disinkronkan. Daftar film di atas berisi 400 judul dan daftar serial berisi 148 serial beserta setiap episodenya. Itu banyak pengambilan sekaligus. Akun debrid dan indexer Anda akan terasa bebannya, dan indexer yang punya batas rate limit akan mulai menolak pencarian.
 
-There are two gentler ways in.
+Ada dua cara yang lebih ringan.
 
-- Leave search on add off. The titles get added and monitored and nothing is searched. Search the ones you want from the Movies or Series page.
-- Start with a short list. Add the big one once the first batch has landed.
+- Biarkan search on add tetap mati. Judul-judulnya tetap ditambahkan dan dipantau, tetapi tidak ada pencarian. Cari judul yang Anda inginkan dari halaman Movies atau Series.
+- Mulai dengan daftar yang pendek. Tambahkan daftar yang besar setelah batch pertama sudah masuk.
 
-The apps also sync lists on their own schedule. **System → Tasks → Import List Sync** runs one now.
+Aplikasi juga menyinkronkan daftar sesuai jadwalnya sendiri. **System → Tasks → Import List Sync** menjalankannya sekarang juga.
 
 ## Menghapus daftar {#removing-a-list}
 

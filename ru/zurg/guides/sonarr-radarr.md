@@ -386,7 +386,7 @@ zurg{PGSq4}:    1.0P     0  1.0P   0% /mnt/zurg_usenet
 
 ## 9. Проследите один grab от начала до конца {#9-watch-one-grab-go-through}
 
-I don't see any text below your message to translate. Please paste the page or doc you want translated into Russian, and I'll keep the structure exactly as it is.
+Добавьте один элемент, возьмите его вручную и проследите весь путь. Всё, что ниже, — реальный захват через описанную выше настройку.
 
 ### Grab it
 

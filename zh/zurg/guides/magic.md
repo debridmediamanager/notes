@@ -165,11 +165,11 @@ dmm_api_key: YOUR_DMM_API_KEY
 
 ### 它的作用 {#what-it-does}
 
-- **Film or show is what DMM says it is**, never a folder rule. A film that came inside a show's pack is filed as that film.
-- **Every release of a show lands in one folder**, with seasons and episodes numbered the way TMDB numbers them, the order Plex uses by default. Anime numbered by its run is placed in its season: `Detective Conan - 1194` is S01E1194.
-- **The TMDB id is in the folder, in every file name and in the `.nfo`**, so each player finds it where it looks: Plex in the folder, Kodi in the `.nfo`, and players that read only file names in the file name.
-- **One copy per title.** When two releases are the same episode or film, the better one is filed, by resolution and then size; the other stays in `__all__`.
-- **Extras and samples are left in `__all__`**, and so is anything DMM has not identified. A release is filed once DMM identifies it.
+- **电影或剧集以 DMM 的识别结果为准**，绝不看文件夹规则。混在剧集合集包里的电影，会按那部电影归档。
+- **同一部剧的所有版本都放进同一个文件夹**，季和集的编号按 TMDB 的方式，也就是 Plex 默认使用的顺序。按播出集数编号的动漫会放进对应的季里：`Detective Conan - 1194` 对应 S01E1194。
+- **TMDB id 会出现在文件夹名、每个文件名以及 `.nfo` 中**，这样每个播放器都能在它要找的地方找到：Plex 看文件夹，Kodi 看 `.nfo`，只读取文件名的播放器则看文件名。
+- **每个标题只保留一份。** 当两个版本是同一集或同一部电影时，按分辨率、再按文件大小选出较好的那个归档，另一个留在 `__all__` 中。
+- **花絮和样片留在 `__all__` 中**，DMM 没有识别出来的内容也一样。只有 DMM 识别出某个版本后，才会归档。
 
 ### 动漫放在独立的文件夹中 {#anime-in-a-folder-of-its-own}
 

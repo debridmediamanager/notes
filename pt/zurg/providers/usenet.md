@@ -62,9 +62,7 @@ docker compose restart zurg
 
 ## Onde os NZBs ficam em um container {#where-the-nzbs-go-in-a-container}
 
-The watch directory is `nzbs/` beside the config. That means `~/zurg/nzbs/` on
-the host and `/config/nzbs/` inside the container. It is the same directory. Put
-files in from the host.
+O diretório de monitoramento é `nzbs/` ao lado do config. Ou seja, `~/zurg/nzbs/` no host e `/config/nzbs/` dentro do container. É o mesmo diretório. Coloque os arquivos a partir do host.
 
 ```bash
 mkdir -p ~/zurg/nzbs
@@ -72,7 +70,7 @@ cp /path/to/some.nzb ~/zurg/nzbs/
 ls /zurg_mnt/zurg/__all__/
 ```
 
-Com apenas uma conta, a sua própria pasta `__nzb__` fica de fora da listagem da raiz do mount, então procure em `__all__`. O diretório de monitoramento é verificado a cada 15 segundos, mais ou menos. Como ele fica dentro do bind `./:/config`, ele sobrevive a um `docker compose pull` e a uma recriação do container, assim como todo o resto.
+Com apenas uma conta, a pasta `__nzb__` dela fica de fora da listagem da raiz do mount, então procure dentro de `__all__`. O diretório de monitoramento é verificado a cada 15 segundos, mais ou menos. Como ele fica dentro do bind `./:/config`, ele sobrevive a um `docker compose pull` e a uma recriação do container, como todo o resto.
 
 ## Regras específicas deste tipo {#rules-specific-to-this-type}
 
@@ -91,14 +89,14 @@ As contas extras vão dentro de `nntp.servers` desta entrada, e não em uma segu
 ## Verifique se funcionou {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/nzb/test
+curl -sS -X POST http://localhost:9999/api/providers/nzb/test
 docker compose logs --tail=100 zurg
 ls /zurg_mnt/zurg/__all__/
 ```
 
-Com apenas uma conta, a pasta dela fica de fora da listagem da raiz do mount, então o mount mostra os mesmos arquivos em `__all__`.
+Com apenas uma conta, a pasta dela fica de fora da listagem raiz do mount, então o mount mostra os mesmos arquivos em `__all__`.
 
-A verificação aqui autentica no servidor de notícias usando no máximo uma conexão do pool existente. Não há uma API de conta para consultar.
+A sondagem aqui autentica no servidor de notícias usando no máximo uma conexão do pool existente. Não há uma API de conta para consultar.
 
 ## Quando dá errado {#when-it-goes-wrong}
 

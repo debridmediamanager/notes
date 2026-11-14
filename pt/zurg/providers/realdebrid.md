@@ -106,11 +106,11 @@ fetch_torrents_page_size: 5000
 ## Verifique se funcionou {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/realdebrid/test
+curl -sS -X POST http://localhost:9999/api/providers/realdebrid/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-Com apenas uma conta, a pasta dela fica de fora da listagem da raiz do mount, então o mount mostra os mesmos arquivos em `__all__`.
+Com apenas uma conta, a pasta própria dela fica de fora da listagem da raiz do mount, então o mount mostra os mesmos arquivos dentro de `__all__`.
 
 ## Quando dá errado {#when-it-goes-wrong}
 

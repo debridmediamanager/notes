@@ -279,10 +279,10 @@ journalctl --user -u homevideos -f
 
 ## 修改设置 {#change-it}
 
-- **Serie statt Filme.** Sende `"kind": "episode"` mit den Nummern `season` und `episode` sowie `display.show`, und registriere das Verzeichnis als `"shows"`. Nummeriere die Episoden so, dass ein neues Video die anderen nie verschiebt: nach Datum, nicht nach Position im Ordner. Siehe [Schritt 3](addons.md#step-3-describe-each-video).
-- **Eigene Titel.** Lies sie aus einer Sidecar-Datei oder aus den Tags des Videos (`media_info["format"]["tags"]`) statt aus dem Dateinamen.
-- **Untertitel, Sammlungen, Kapitel.** `.srt`-Dateien neben einem Video, eine Sammlung pro Ordner, Kapitelmarken: siehe [Mehr aus deinem Addon](addon-more.md).
-- **Plex-Apps löschen lassen.** Füge ein `do_DELETE` hinzu, das die Datei löscht und mit `204` antwortet. Ohne das antwortet das Addon mit `501`, rex behält das Video (im Log steht `DELETE refused by the source, row kept: home/... at homevideos: 501`), und die App meldet, dass es nicht gelöscht werden konnte.
+- **剧集而非电影。** 发送 `"kind": "episode"`，并附上 `season` 和 `episode` 编号以及 `display.show`，同时把该目录注册为 `"shows"`。给剧集编号时要保证新增视频不会打乱其他集的顺序：按日期编号，而不是按文件夹里的位置。参见 [第 3 步](addons.md#step-3-describe-each-video)。
+- **自定义标题。** 从 sidecar 文件或视频的标签（`media_info["format"]["tags"]`）中读取标题，而不是使用文件名。
+- **字幕、合集、章节。** 视频旁边的 `.srt` 文件、按文件夹划分的合集、章节标记：参见 [插件的更多功能](addon-more.md)。
+- **让 Plex 应用可以删除。** 添加一个 `do_DELETE`，用于删除文件并返回 `204`。如果没有它，插件会返回 `501`，rex 会保留该视频（其日志显示 `DELETE refused by the source, row kept: home/... at homevideos: 501`），而应用会提示无法删除。
 
 ## 故障排除 {#troubleshooting}
 

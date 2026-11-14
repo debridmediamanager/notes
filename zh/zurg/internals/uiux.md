@@ -32,42 +32,42 @@
   - 拖放功能（添加后）需要保存顺序，并在保存失败时能平稳降级。
 
 ## 建议的 UI/UX 修改 {#recommended-uiux-changes}
-- **Group presentation**
-  - Render each top-level `group` (e.g., media/recent/example) as a card or collapsible section with its own list.
-  - Provide quick actions per group (collapse/expand, bulk select).
-- **Ordering**
-  - Replace numeric order column with drag handles for in-group reordering; show computed order via tooltip or inline badge.
-  - Offer keyboard-friendly reorder controls (move up/down buttons) as accessibility and mobile fallback.
-- **Search and bulk actions**
-  - Add a search/filter bar above the list; debounce input.
-  - Add checkboxes for bulk delete/move; include "select all in group" affordance.
-- **Add/Edit surface**
-  - Use a modal or side panel with sectioned layout: General, Size Filters, File Filters, Tag Filters, Time Filters, and Advanced.
-  - Add collapsible subsections to reduce overwhelm; persist expansion state during a session.
-- **Rule builder**
-  - Provide a visual AND/OR builder mirroring YAML structure: nested groups, condition pills, property/operator/value selectors (e.g., has_episodes, regex with matches/does not match).
-  - Allow converting between AND/OR at each node; show resulting expression preview.
-- **Tag selector**
-  - Multi-select with autocomplete fed by available tags; surface tag descriptions/tooltips and counts when available.
-  - Clearly differentiate `tags_match_all` vs `tags_match_any`.
-- **Preview**
-  - Add "Preview matching torrents" to fetch sample results for current filter state; show skeleton/loading states and error handling.
-- **Guidance**
-  - Inline tooltips or info icons for each field; link to deeper docs where needed (e.g., [tags.md](../reference/tags.md)).
-  - Show contextual hints (e.g., "Only show largest file" clarifies behavior side effects).
-- **Validation and safety**
-  - Block saves when required filters are empty or validation fails; show inline errors.
-  - Real-time regex validation (client-side) plus server confirmation on submit to avoid divergence.
-  - Warn when configuration would match zero torrents (based on preview or heuristics).
-  - Confirmation dialog for deletes; offer short undo/snackbar when feasible (soft delete if supported).
-- **Accessibility and responsive design**
-  - Verify contrast for the chosen palette; ensure focus states and ARIA labels for controls.
-  - Ensure collapsibles, drag handles, and actions are keyboard accessible.
-  - On mobile, render groups as stacked cards; ensure modals/panels are scrollable with sticky headers for actions.
-  - Pair icons with labels for key actions; ensure icon-only targets have accessible names.
-- **Visual polish**
-  - Use consistent iconography for edit/delete/reorder; add subtle dividers and chips to denote group context or status.
-  - Consider color coding by group for quick scanning (with accessible contrast).
+- **分组展示**
+  - 将每个顶层 `group`（例如 media/recent/example）渲染为卡片或可折叠区域，每组带有自己的列表。
+  - 每组提供快捷操作（折叠/展开、批量选择）。
+- **排序**
+  - 用拖拽手柄替换数字排序列，用于组内重新排序；通过工具提示或行内徽标显示计算出的顺序。
+  - 提供便于键盘操作的重排控件（上移/下移按钮），同时作为无障碍和移动端的备选方案。
+- **搜索与批量操作**
+  - 在列表上方添加搜索/筛选栏，并对输入做防抖处理。
+  - 添加用于批量删除/移动的复选框，并提供"选择该组全部"的入口。
+- **添加/编辑界面**
+  - 使用模态框或侧边面板，布局分为以下几个部分：General、Size Filters、File Filters、Tag Filters、Time Filters 和 Advanced。
+  - 添加可折叠的子区域，减少信息压迫感；在本次会话中保持展开状态。
+- **规则构建器**
+  - 提供可视化的 AND/OR 构建器，结构与 YAML 对应：支持嵌套分组、条件胶囊，以及属性/运算符/值选择器（例如 has_episodes，以及 matches/does not match 的正则匹配）。
+  - 允许在每个节点上切换 AND/OR，并显示最终表达式预览。
+- **标签选择器**
+  - 多选，并基于可用标签提供自动补全；在有数据时显示标签说明、工具提示和数量。
+  - 清楚区分 `tags_match_all` 与 `tags_match_any`。
+- **预览**
+  - 添加"Preview matching torrents"，按当前筛选状态获取示例结果；显示骨架屏/加载状态并处理错误。
+- **引导说明**
+  - 为每个字段提供行内工具提示或信息图标；需要时链接到更详细的文档（例如 [tags.md](../reference/tags.md)）。
+  - 显示上下文提示（例如"Only show largest file"用于说明其副作用）。
+- **验证与安全**
+  - 当必填筛选项为空或验证失败时阻止保存，并显示行内错误。
+  - 客户端实时验证正则表达式，提交时再由服务器确认，避免两端结果不一致。
+  - 当配置可能匹配到零个种子时发出警告（基于预览结果或启发式判断）。
+  - 删除前弹出确认对话框；在可行时提供简短的撤销提示/通知条（如果支持，则使用软删除）。
+- **无障碍与响应式设计**
+  - 检查所选配色的对比度；确保控件具有清晰的焦点状态和 ARIA 标签。
+  - 确保可折叠区域、拖拽手柄和操作按钮都支持键盘访问。
+  - 在移动端将分组渲染为堆叠卡片；确保模态框/面板可滚动，并让操作按钮的粘性标题栏始终可见。
+  - 关键操作的图标配以文字标签；仅含图标的目标需要有无障碍名称。
+- **视觉细节**
+  - 编辑、删除、排序使用统一的图标；使用细微的分隔线和标签胶囊来标示分组上下文或状态。
+  - 可考虑按分组进行颜色编码，便于快速浏览（同时保证可访问的对比度）。
 
 ## 需要确认的依赖项与假设 {#dependencies-and-assumptions-to-confirm}
 - API 支持：持久化分组顺序、批量操作、嵌套 AND/OR 序列化、标签元数据来源，以及预览查询端点。

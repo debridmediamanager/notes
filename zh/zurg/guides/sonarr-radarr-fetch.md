@@ -92,15 +92,15 @@ Sonarr 页面上的 **Season Folder Format** 是 zurg 为新季度文件夹命�
 
 ### Radarr
 
-This walkthrough uses an import list. Open **Settings > Import Lists** and add or edit yours.
+本教程使用导入列表。打开 **Settings > Import Lists**,添加或编辑你的列表。
 
-![The import lists page with one list](../../assets/sonarr-radarr-fetch/03-radarr-import-lists.webp)
+![带有一个列表的导入列表页面](../../assets/sonarr-radarr-fetch/03-radarr-import-lists.webp)
 
-In the list's settings keep **Enable Automatic Add** on and turn **Search on Add** off. Pick the quality profile and the root folder from step 2. Set **Minimum Availability** to what you want. zurg waits for Radarr to call a movie available before it looks for it.
+在列表的设置中,保持 **Enable Automatic Add** 开启,并将 **Search on Add** 关闭。选择第 2 步中的质量配置文件和根文件夹。把 **Minimum Availability** 设置为你想要的值。zurg 会等 Radarr 将电影标记为可用后再去查找它。
 
-![Search on Add unchecked in the list's settings](../../assets/sonarr-radarr-fetch/04-radarr-import-list-edit.webp)
+![列表设置中取消勾选 Search on Add](../../assets/sonarr-radarr-fetch/04-radarr-import-list-edit.webp)
 
-When you add a single movie by hand the same switch is called **Start search for missing movie**. Leave it off too.
+如果你手动添加单部电影,同样的开关名为 **Start search for missing movie**。也请保持关闭。
 
 ### Sonarr
 
@@ -154,27 +154,23 @@ Sonarr 的季也会显示在同一个页面上。每一行是一个季，或者�
 
 ## 6. Radarr 和 Sonarr 显示的内容 {#6-what-radarr-and-sonarr-show}
 
-electron
+库会随着重新扫描完成而逐渐填满。这个列表里的每部电影都已经有文件了。
 
-Use the rest of this message to rewrite the translation below.
+![Radarr 电影网格，所有电影都已下载](../../assets/sonarr-radarr-fetch/09-radarr-movies.webp)
 
-The libraries fill in as the rescans land. Every movie in this list has its file.
+电影的详情页会显示它在 `__magic__` 里所在文件夹中的文件，以及 Radarr 从文件名读取到的画质。
 
-![Radarr's movie grid with every movie downloaded](../../assets/sonarr-radarr-fetch/09-radarr-movies.webp)
+![一部电影的详情页，显示其文件](../../assets/sonarr-radarr-fetch/10-radarr-movie-detail.webp)
 
-A movie's page shows the file in its folder inside `__magic__` with the quality Radarr read from the name.
+在 Sonarr 中，全部十集都已在季文件夹里有了文件，画质由 Sonarr 从每个文件名读取。
 
-![One movie's page showing its file](../../assets/sonarr-radarr-fetch/10-radarr-movie-detail.webp)
+![Sonarr 中的一季，每一集都有文件](../../assets/sonarr-radarr-fetch/16-sonarr-season.webp)
 
-In Sonarr all ten episodes have their file in the season folder with the quality Sonarr read from each name.
+两边的 **Activity** 都保持为空。没有队列条目，也没有抓取或导入事件，因为什么都没有被抓取。文件只是直接出现在文件夹里，而 zurg 请求的那次重新扫描把它找了出来。
 
-![A season in Sonarr with every episode's file](../../assets/sonarr-radarr-fetch/16-sonarr-season.webp)
+![Radarr 的队列为空](../../assets/sonarr-radarr-fetch/11-radarr-queue-empty.webp)
 
-**Activity** stays empty in both. There is no queue entry and no grab or import event because nothing was grabbed. The file simply appeared in the folder and the rescan zurg asked for picked it up.
-
-![Radarr's queue is empty](../../assets/sonarr-radarr-fetch/11-radarr-queue-empty.webp)
-
-Two things follow from that. The arrs' blocklist is never written. zurg keeps its own record of posts the news servers no longer hold and does not pick them again. And a title you delete in Radarr or Sonarr is not deleted from your account. The file goes back to being listed under `__all__` like any other release.
+由此可以得出两点。arr 的黑名单从来不会被写入。zurg 会自己记录那些新闻服务器上已经没有的帖子，之后也不会再选它们。另外，你在 Radarr 或 Sonarr 里删除的影片，并不会从你的账户里删除。文件会重新出现在 `__all__` 下，和其他资源一样。
 
 ## zurg 如何挑选资源 {#how-zurg-picks-a-release}
 

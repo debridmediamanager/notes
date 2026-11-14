@@ -645,8 +645,8 @@ Ainda com problemas? Pergunte no fórum **zurg-support** no [Discord](https://di
 
 ## Veja também {#see-also}
 
-- [config.md](../reference/config.md) — every option, including the [Usenet account reference](../reference/config.md#usenet-accounts) and the [directory filter reference](../reference/config.md#7-directories--filters)
-- [plex.md](plex.md) — how zurg drives Plex scanning, matching and the trash sweep
+- [config.md](../reference/config.md) — cada opção, incluindo a [referência de contas Usenet](../reference/config.md#usenet-accounts) e a [referência de filtros de diretórios](../reference/config.md#7-directories--filters)
+- [plex.md](plex.md) — como o zurg controla a varredura, a correspondência e a limpeza de lixo no Plex
 - [jellyfin.md](jellyfin.md) — integração com o Jellyfin
 - [docker.md](../setup/docker.md) — configuração do Docker, propagação do FUSE e solução de problemas
 - [tags.md](../reference/tags.md) — o sistema de tags

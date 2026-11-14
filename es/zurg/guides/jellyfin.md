@@ -1,8 +1,8 @@
 # Funciones y capacidades de Jellyfin {#jellyfin-features--capabilities}
 
 ## Configuración y almacenamiento {#configuration--storage}
-- Config keys ([`config.md`](../reference/config.md), `config.example.yml`): `jellyfin_server_url` (string, default `""`), `jellyfin_token` (string, default `""`). Both ship commented out in `config.example.yml` and are absent from `config.simple.yml`. `mount_path` must be set or media scanning (including Jellyfin) is disabled (`pkg/scan/scanner.go`).
-- Values are persisted in `config.yml` via the dashboard (`updateConfigFileAtomic`); there is no separate Jellyfin data file. The fields and their `Get`/`Set` helpers live on `zurgConfig` in `internal/config/config.go`; `ZurgConfigV1` (`internal/config/filters.go`) embeds that struct inline.
+- Claves de configuración ([`config.md`](../reference/config.md), `config.example.yml`): `jellyfin_server_url` (string, valor por defecto `""`), `jellyfin_token` (string, valor por defecto `""`). Ambas vienen comentadas en `config.example.yml` y no aparecen en `config.simple.yml`. `mount_path` debe estar definido; si no, el escaneo de medios (incluido Jellyfin) queda desactivado (`pkg/scan/scanner.go`).
+- Los valores se guardan en `config.yml` desde el panel (`updateConfigFileAtomic`); no existe un archivo de datos aparte para Jellyfin. Los campos y sus helpers `Get`/`Set` están en `zurgConfig`, en `internal/config/config.go`; `ZurgConfigV1` (`internal/config/filters.go`) incluye esa estructura de forma embebida.
 
 ## Autenticación y validación del servidor (QuickConnect) {#authentication--server-validation-quickconnect}
 - Flujo de QuickConnect del panel:

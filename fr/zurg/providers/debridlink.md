@@ -85,7 +85,7 @@ zurg associe les codes d'erreur du service à ce qu'il doit faire ensuite.
 ## Vérifier que ça fonctionne {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/debridlink/test
+curl -sS -X POST http://localhost:9999/api/providers/debridlink/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 

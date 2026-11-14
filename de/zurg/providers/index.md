@@ -144,25 +144,25 @@ docker compose logs -f --tail=100 zurg
 docker compose exec zurg /app/zurg doctor --working-dir /config
 ```
 
-`WARN service zurg is not installed` ist in Docker erwartet, weil Compose den Autostart übernimmt. Warnungen lassen doctor nicht fehlschlagen. Ein `FAIL` schon.
+`WARN service zurg is not installed` ist in Docker normal, weil Compose den Autostart übernimmt. Warnungen lassen doctor nicht fehlschlagen. Ein `FAIL` tut das.
 
-Prüf dann den Account selbst, entweder im Dashboard oder in der Shell.
+Prüfe danach den Account selbst, entweder im Dashboard oder in der Shell.
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox/test
 ```
 
-`{"success":true}` heißt, dass sich die Zugangsdaten erfolgreich authentifiziert haben. Der Name im Pfad ist das `name` des Accounts. Standardmäßig ist das sein `type`. Falls du in `config.yml` einen `username` gesetzt hast, füg `-u user:pass` hinzu. Ohne einen sind das Dashboard und seine API auf dem Port offen, den du veröffentlicht hast.
+`{"success":true}` heißt, dass sich die Credentials erfolgreich authentifiziert haben. Der Name im Pfad ist der `name` des Accounts. Standardmäßig ist das sein `type`. Füge `-u user:pass` hinzu, wenn du in der `config.yml` einen `username` gesetzt hast. Ohne einen sind das Dashboard und seine API auf dem Port offen, den du veröffentlicht hast.
 
-Zum Schluss schaust du dir die Bibliothek auf dem Mount an.
+Schau zum Schluss in die Bibliothek auf dem Mount.
 
 ```bash
 ls /zurg_mnt/zurg/__all__/
 ```
 
-Jeder konfigurierte Account bekommt ein `__<name>__`-Verzeichnis. Es enthält alles, was dieser Account hat, und es legt Lesezugriffe auf genau diesen Account fest. `__torbox__/Some.Release/` streamt nur von TorBox und von nirgendwo anders. Der Ordner eines einzelnen Accounts fehlt in der Root-Auflistung des Mounts, weil `__all__` dieselbe Bibliothek ist. Direkte HTTP- und WebDAV-Pfade wie `/http/__torbox__/` antworten weiterhin. Über den Mount lösen sie sich nicht mehr auf. Stell jede Bibliothek oder jedes Skript, das `__<name>__` benutzt hat, stattdessen auf `__all__` um.
+Jeder konfigurierte Account bekommt ein `__<name>__`-Verzeichnis. Es enthält alles, was dieser Account hat, und legt Lesezugriffe auf genau diesen Account fest. `__torbox__/Some.Release/` streamt nur von TorBox und von nirgendwo sonst. Der Ordner eines einzelnen Accounts taucht nicht in der Auflistung im Root des Mounts auf, weil `__all__` dieselbe Bibliothek ist. Direkte HTTP- und WebDAV-Pfade wie `/http/__torbox__/` antworten weiterhin. Über den Mount wird er ebenfalls nicht mehr aufgelöst. Stelle jede Bibliothek oder jedes Skript, das `__<name>__` verwendet hat, auf `__all__` um.
 
-Eine große Bibliothek braucht beim ersten Laden eine Weile. Bis sie fertig ist, antwortet `/dav/movies/` mit 503, und der Mount zeigt möglicherweise gar nichts an.
+Eine große Bibliothek braucht beim ersten Laden eine Weile. Bis sie fertig ist, antwortet `/dav/movies/` mit 503, und der Mount zeigt möglicherweise nichts an.
 
 ## Mehrere Konten betreiben {#running-several-accounts}
 

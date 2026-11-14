@@ -44,19 +44,19 @@ Esta página escribe la dirección de rex como `192.168.1.20:32400` y la del add
 
 **Qué hace.** Le da a cada video una URL que rex puede leer.
 
-**Por qué importa.** rex no guarda contenido multimedia. Cada vez que alguien pulsa play, rex lee el video desde tu addon.
+**Por qué importa.** rex no guarda ningún medio. Cada vez que alguien le da a play, rex lee el video desde tu addon.
 
 Tu addon es un servidor HTTP. Un video vive en `<your address>/<path>`, y `path` es lo que tú elijas. Hay dos tipos:
 
-| You serve | How | What rex does |
+| Sirves | Cómo | Qué hace rex |
 |---|---|---|
-| **A file** (`.mkv`, `.mp4`, ...) | Answer `GET` with the file. Answer `Range` requests (`206`) so seeking is fast; without them rex reads from the start to every seek | Plex apps play it directly when they can, or rex converts it |
-| **A stream** (HLS, `.m3u8`) | Answer `GET` with the playlist, or a redirect to it. Redirects are followed, and your login is never sent to another host | rex always converts it: a copy of the picture and sound into what the app plays. An app that reads the file directly is sent to that conversion |
+| **Un archivo** (`.mkv`, `.mp4`, ...) | Responde `GET` con el archivo. Responde a las peticiones `Range` (`206`) para que el salto en el tiempo vaya rápido; sin ellas, rex lee desde el principio cada vez que saltas | Las apps de Plex lo reproducen directamente cuando pueden, o rex lo convierte |
+| **Un stream** (HLS, `.m3u8`) | Responde `GET` con la playlist, o con una redirección a ella. Las redirecciones se siguen, y tu login nunca se envía a otro host | rex siempre lo convierte: hace una copia de la imagen y el sonido en un formato que la app puede reproducir. Una app que lee el archivo directamente también se manda a esa conversión |
 
-Opcional, pero vale la pena:
+Opcional, pero merece la pena:
 
-- **A login.** Basic auth (`user`, `password`) or a bearer token. rex sends it only to your addon's own address.
-- **Deletes.** When someone deletes a title in a Plex app, rex first sends your addon a WebDAV `DELETE` for the path. Answer `2xx` (deleted) or `404` (already gone) and rex removes the title. Anything else, and the Plex app says it could not be deleted.
+- **Un login.** Basic auth (`user`, `password`) o un bearer token. rex solo lo envía a la dirección de tu propio addon.
+- **Borrados.** Cuando alguien borra un título desde una app de Plex, rex primero envía a tu addon un WebDAV `DELETE` para el path. Responde `2xx` (borrado) o `404` (ya no existe) y rex elimina el título. Cualquier otra respuesta hace que la app de Plex diga que no se pudo borrar.
 
 ## Paso 2. Regístrate en rex {#step-2-register-with-rex}
 

@@ -4,16 +4,19 @@
 
 ## عام {#general}
 
-- [اختر الإعداد المناسب لك](choose-your-setup.md): خرائط المسارات ومتى تستخدم DMM وzurg وrex وKodi وStremio وNuvio أو إضافات Jellyfin/Emby
-- [وظيفة كل جزء](glossary.md): سطر واحد لكل جزء من DMM وzurg وrex، والكلمات المستخدمة في الأدلة
-- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): معنى تلك الشاشة الخضراء في Stremio وما الذي يجب فعله
-- [الحصول على المساعدة](remote-help.md) مع zurg وrex: أين تسأل، وما الذي يجب أن تذكره، والمساعدة عن بُعد للرعاة
-- [ما الذي تحصل عليه مع الرعاية](sponsorship.md): كل ميزة وأين تضبطها، أو كيف تحصل على ميزات DMM من خلال لوحة الطلبات
+- [اختر إعدادك](choose-your-setup.md): خرائط المسارات ومتى تستخدم DMM وzurg وrex وKodi وStremio وNuvio أو إضافات Jellyfin/Emby
+- [ما الذي تفعله كل قطعة](glossary.md): سطر واحد لكل قطعة من DMM وzurg وrex والكلمات الواردة في الأدلة
+- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): ماذا تعني تلك الشاشة الخضراء في Stremio وماذا تفعل حيالها
+- [رمز API الخاص بـ Real-Debrid](real-debrid-api-token.md): أين تحصل عليه، وأين يضعه DMM وzurg، وماذا تعني `bad_token` والأخطاء الأخرى
+- [الحصول على المساعدة](remote-help.md) مع zurg وrex: أين تسأل، وماذا تُرفق، والمساعدة عن بُعد للرعاة
+- [ماذا تمنحك الرعاية](sponsorship.md): كل ميزة وأين تُفعَّل، أو كيف تكسب ميزات DMM عبر لوحة الطلبات
 
 ## DMM
 
-- [DMM في Stremio](../dmm/stremio.md): شاهد في Stremio باستخدام إضافة DMM Cast، وما الذي تفعله عندما تسوء الأمور
-- [أزرار DMM في Safari](../dmm/safari.md): إضافة المتصفح كسكريبت مستخدم على Mac وiPhone وiPad
+- [ما هو DMM وكيفية استخدامه](../dmm/index.md): تسجيل الدخول، والبحث، والأزرار الموجودة على الإصدار ومكتبتك
+- [DMM في Stremio](../dmm/stremio.md): المشاهدة في Stremio عبر الإضافة DMM Cast، وما يجب فعله عند حدوث مشكلة
+- [قوائم الهاش](../dmm/hashlists.md): البحث عن القوائم المشتركة، وإضافتها إلى مكتبة debrid الخاصة بك، ومشاركة قوائمك
+- [أزرار DMM في Safari](../dmm/safari.md): إضافة المتصفح كسكربت مستخدم على Mac وiPhone وiPad
 - [Seerr عبر DMM](../dmm/seerr.md)
 - [قائمة DMM المطلوبة](../zurg/guides/dmm-wanted.md): يجلب zurg ما تضغط عليه **Want**
 

@@ -10,13 +10,13 @@ Este flujo se verificó el 4 de septiembre de 2026 con Docker Engine 29.1.1. Usa
 
 ## Opción de una sola línea {#one-line-option}
 
-On a fresh Linux host, the optional bootstrap can install Docker when you approve it, configure persistent FUSE mount propagation, sign in to the sponsor registry, write the Compose project, run the provider chooser, and verify the result:
+En un host Linux limpio, el bootstrap opcional puede instalar Docker si lo apruebas, configurar la propagación de montajes FUSE persistente, autenticarse en el registro del patrocinador, escribir el proyecto de Compose, ejecutar el selector de proveedor y verificar el resultado:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install-docker.sh | bash
 ```
 
-Your existing Compose files and configs are kept. The sections below show every step for those who prefer the manual route.
+Los archivos y configuraciones de Compose existentes se conservan. Las secciones de abajo muestran cada paso para quienes prefieren la ruta manual.
 
 ## Lo que hace el instalador en un contenedor {#what-the-installer-does-in-a-container}
 

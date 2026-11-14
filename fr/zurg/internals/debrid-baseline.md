@@ -56,10 +56,10 @@ le proxy se perd dans le bruit de mesure.
 
 ## Résultats {#results}
 
-All numbers from build `23869fa4` on zen, 2026-08-19. Latency and throughput come
-from one interleaved run over the same 7.31 GB file — same infohash on all three
-accounts, and `ffprobe` reports the identical 8552.574 s duration through each, so
-the content really is byte-identical.
+Tous les chiffres viennent du build `23869fa4` sur zen, le 2026-08-19. La latence et le débit
+viennent d'une seule exécution entrelacée sur le même fichier de 7.31 GB : même infohash sur les trois
+comptes, et `ffprobe` indique la même durée de 8552.574 s pour chacun. Le contenu est donc
+bel et bien identique, octet pour octet.
 
 ### Construction de la bibliothèque à froid {#cold-library-build}
 

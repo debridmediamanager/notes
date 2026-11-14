@@ -51,10 +51,10 @@ done
 
 ## 新内容会怎样出现 {#what-new-content-shows-up}
 
-- **Sample clips.** The `Sample/` directories you already have stop being empty. This is the one worth configuring for. Set [`only_show_the_biggest_file: true`](../reference/config.md) if you do not want a 9 MB sample turning up as a second version of the episode.
-- The `.nfo` inside RAR releases. Inert under Plex's default agents.
-- Empty folders where an archive chain is broken. InfiniDysk created nothing for those.
-- **par2 and sfv stop being visible.** That includes the hash-named volumes inside obfuscated releases. They carry no media extension so Plex will not have itemised them. If any non-Plex tooling of yours walked them then it will notice.
+- **示例片段。** 你现有的 `Sample/` 目录将不再是空的。这是最值得配置的一项。如果你不希望 9 MB 的示例文件作为该集的第二个版本出现，请设置 [`only_show_the_biggest_file: true`](../reference/config.md)。
+- RAR 发布中的 `.nfo` 文件。在 Plex 的默认 agent 下不起作用。
+- 压缩包链断开的位置会留下空文件夹。InfiniDysk 没有为这些位置创建任何内容。
+- **par2 和 sfv 不再可见。** 这包括混淆发布中以哈希命名的分卷文件。它们没有媒体扩展名，因此 Plex 不会将其列为条目。如果你的其他非 Plex 工具会遍历这些文件，它们会注意到这一变化。
 
 ## 把你的 NZB 拿出来 {#get-your-nzbs-out}
 

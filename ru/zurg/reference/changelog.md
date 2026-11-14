@@ -737,7 +737,7 @@ zurg показывает Sonarr, Radarr и другим клиентам заг
 
 ## Ссылка остаётся стабильной для релиза, который есть в аккаунте дважды {#keep-the-link-steady-for-a-release-your-account-holds-twice}
 
-A release added twice to one account has two of everything, including two download links per file. zurg kept one link per account, so each copy replaced the other's on every refresh and the entry never settled. Nothing was unplayable, but the log filled with re-pointing and the library was rewritten to disk every few seconds. zurg now leaves the link alone when it can only see part of what the account holds.
+Релиз, добавленный в один аккаунт дважды, появляется в двух экземплярах по каждому параметру, включая две ссылки на скачивание для каждого файла. zurg хранил одну ссылку на аккаунт, поэтому при каждом обновлении одна копия заменяла другую, и запись так и не успокаивалась. Ничего не было невоспроизводимым, но лог был забит перенаправлениями, а библиотека переписывалась на диск каждые несколько секунд. Теперь zurg не трогает ссылку, если видит только часть того, что есть в аккаунте.
 
 ## Более быстрые проверки изменений на TorBox, когда в аккаунте есть неудачные торренты {#faster-change-checks-on-torbox-when-the-account-holds-failed-torrents}
 

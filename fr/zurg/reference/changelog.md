@@ -913,7 +913,7 @@ Le nettoyage après un rafraîchissement de la bibliothèque attendait avant une
 
 ## Kodi peut parcourir le partage WebDAV {#kodi-can-browse-the-webdav-share}
 
-WebDAV-Listings geben jetzt den vollständigen Pfad jedes Ordners und jeder Datei an, einschließlich des Präfixes `/dav/`. Kodi und andere strikte Player haben dieses Präfix früher weggelassen und konnten dadurch keine Ordner oder Medien öffnen. Namen mit maskierten Zeichen und Pfade in Archiven behalten ihre Adressen.
+Les listings WebDAV donnent désormais le chemin complet de chaque dossier et fichier, avec le préfixe `/dav/` inclus. Kodi et d'autres lecteurs stricts retiraient ce préfixe avant, et ne pouvaient donc pas ouvrir les dossiers ni les médias. Les noms contenant des caractères échappés et les chemins à l'intérieur des archives gardent leurs adresses.
 
 ## Un serveur de news chargé ne laisse plus de trous dans un flux {#a-busy-news-server-no-longer-puts-holes-in-a-stream}
 

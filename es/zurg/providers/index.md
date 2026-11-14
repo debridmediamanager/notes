@@ -140,22 +140,22 @@ Las descripciones completas y todo lo demás están en la [referencia de configu
 
 ## Comprueba que funcionó {#check-it-worked}
 
-Empecemos por el log y el diagnóstico.
+Empieza por el log y el diagnóstico.
 
 ```bash
 docker compose logs -f --tail=100 zurg
 docker compose exec zurg /app/zurg doctor --working-dir /config
 ```
 
-`WARN service zurg is not installed` es lo esperado en Docker, porque Compose se encarga del inicio automático. Las advertencias no hacen que doctor falle. Solo falla con un `FAIL`.
+`WARN service zurg is not installed` es normal en Docker, porque Compose se encarga del inicio automático. Las advertencias no hacen que doctor falle. Lo que sí lo hace es un `FAIL`.
 
-Luego verifica la cuenta en sí desde el Dashboard o desde la shell.
+Luego prueba la cuenta en sí desde el Dashboard o desde la terminal.
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox/test
 ```
 
-`{"success":true}` significa que la credencial se autenticó. El nombre en la ruta es el `name` de la cuenta. Por defecto es su `type`. Añade `-u user:pass` si has definido un `username` en `config.yml`. Si no lo has hecho, el Dashboard y su API están abiertos en el puerto que publicaste.
+`{"success":true}` significa que la credencial se autenticó. El nombre en la ruta es el `name` de la cuenta. Por defecto es su `type`. Añade `-u user:pass` si has definido un `username` en `config.yml`. Si no lo has definido, el Dashboard y su API están abiertos en el puerto que publicaste.
 
 Por último, revisa la biblioteca en el mount.
 
@@ -163,9 +163,9 @@ Por último, revisa la biblioteca en el mount.
 ls /zurg_mnt/zurg/__all__/
 ```
 
-Cada cuenta configurada tiene un directorio `__<name>__`. Contiene todo lo que tiene esa cuenta, y fija las lecturas a esa cuenta. `__torbox__/Some.Release/` se transmite desde TorBox y desde ningún otro sitio. La carpeta de una sola cuenta no aparece en el listado de la raíz del mount, ya que `__all__` es la misma biblioteca. Las rutas HTTP y WebDAV directas, como `/http/__torbox__/`, siguen respondiendo. A través del mount ya no se resuelven; apunta cualquier biblioteca o script que usara `__<name>__` a `__all__`.
+Cada cuenta configurada tiene un directorio `__<name>__`. Contiene todo lo que tiene esa cuenta y fija las lecturas a esa cuenta. `__torbox__/Some.Release/` se reproduce desde TorBox y desde ningún otro sitio. La carpeta propia de una sola cuenta no aparece en el listado raíz del mount, ya que `__all__` es la misma biblioteca. Las rutas HTTP directas y WebDAV, como `/http/__torbox__/`, siguen respondiendo. A través del mount ya no se resuelven; apunta cualquier biblioteca o script que usara `__<name>__` a `__all__`.
 
-Una biblioteca grande tarda un rato en cargarse la primera vez. Hasta que termine, `/dav/movies/` responde 503 y es posible que el mount no muestre nada.
+Una biblioteca grande tarda un rato en cargarse la primera vez. Hasta que termine, `/dav/movies/` responde 503 y el mount puede no listar nada.
 
 ## Ejecutar varias cuentas {#running-several-accounts}
 

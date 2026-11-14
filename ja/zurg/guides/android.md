@@ -136,10 +136,10 @@ GitHub トークンはデバイス上で暗号化されて保存されます。�
 
 ## 制限 {#limits}
 
-- **The device is the server.** Keep it on, connected and plugged in. Converting video is slow on a cheap box.
-- **It plays at home.** Away from home, Plex apps need an HTTPS address that reaches the device, which needs a port forward on your router. See [Use it outside your home](../../rex/with-zurg.md#use-it-outside-your-home-optional).
-- **Usenet needs 64-bit Android.** A 32-bit device runs debrid libraries only.
-- **Not on Google Play.** It updates from inside the app, under **Updates**.
+- **デバイスがサーバーになります。** 電源を入れたまま、ネットワークに接続し、電源につないでおいてください。安いボックスでは動画の変換に時間がかかります。
+- **自宅内で再生します。** 外出先からPlexアプリを使うには、デバイスに届くHTTPSアドレスが必要です。そのためにはルーターでポート転送の設定が必要です。詳しくは [Use it outside your home](../../rex/with-zurg.md#use-it-outside-your-home-optional) を参照してください。
+- **Usenetには64ビットのAndroidが必要です。** 32ビットのデバイスではデブリッドライブラリのみ実行できます。
+- **Google Playでは配布していません。** アップデートはアプリ内の **Updates** から行います。
 
 ## トラブルシューティング {#troubleshooting}
 

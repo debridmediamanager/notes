@@ -10,16 +10,11 @@ DOWNLOADCODE es exactamente un ID único de 13 caracteres del archivo específic
 
 # Selección de archivos {#selecting-files}
 
-As mentioned, it is possible to select files that you only want to download inside a torrent
-Como ya se mencionó, es posible seleccionar solo los archivos que quieres descargar dentro de un torrent
-If a torrent contains files A B and C and you select A and B, it will only download A and B
-Si un torrent contiene los archivos A, B y C y seleccionas A y B, solo descargará A y B
-The cached status of a torrent actually depends on this unique file selection
-El estado de caché de un torrent depende en realidad de esta selección única de archivos
-Going back to the torrent containing files A B and C, there are different cached status for A or B or B (single), A+B, B+C, A+C (pair), or A+B+C (all files)
-Volviendo al torrent con los archivos A, B y C, hay distintos estados de caché para A, B, o B (single), A+B, B+C, A+C (pair), o A+B+C (all files)
-Each unique selection redownloads the torrent again from trackers and returns a different cached link even if for the same file
-Cada selección única vuelve a descargar el torrent desde los trackers y devuelve un enlace en caché distinto, aunque sea para el mismo archivo
+Como se mencionó, es posible seleccionar solo los archivos que quieres descargar dentro de un torrent.
+Si un torrent contiene los archivos A, B y C y seleccionas A y B, solo se descargarán A y B.
+El estado de caché de un torrent depende en realidad de esta selección única de archivos.
+Volviendo al torrent que contiene los archivos A, B y C, existen distintos estados de caché para A, para B, para B (individual), para A+B, para B+C, para A+C (par) o para A+B+C (todos los archivos).
+Cada selección única vuelve a descargar el torrent desde los trackers y devuelve un enlace en caché diferente, incluso para el mismo archivo.
 
 # Enlaces en caché {#cached-links}
 

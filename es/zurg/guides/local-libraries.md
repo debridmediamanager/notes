@@ -1,6 +1,6 @@
 # Bibliotecas de debrid locales y zurgtorrents portátiles {#local-debrid-libraries-and-portable-zurgtorrents}
 
-A local library takes its membership from portable `.zurgtorrent` files. It appears in the normal WebDAV, HTTP and provider directories. Importing files, listing them and refreshing the catalog do not add torrents or resolve download links. Playback resolves the requested file through your configured account.
+Una biblioteca local toma sus miembros de archivos `.zurgtorrent` portátiles. Aparece en los directorios normales de WebDAV, HTTP y del proveedor. Importar archivos, listarlos y actualizar el catálogo no añade torrents ni resuelve enlaces de descarga. La reproducción resuelve el archivo solicitado a través de tu cuenta configurada.
 
 ## Exportar una biblioteca {#export-a-library}
 

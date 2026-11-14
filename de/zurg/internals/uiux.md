@@ -1,9 +1,9 @@
 # Bewertung der UI/UX der Verzeichniskonfiguration {#directory-configuration-uiux-assessment}
 
 ## Umfang und aktueller Stand {#scope-and-current-state}
-- Page: `Directory Configuration` at `http://localhost:9999/directories/`.
-- Current UI: single flat table listing directories under headings like "MEDIA" and "RECENT" with columns for directory name, numeric order, and action links ("Edit", "Delete").
-- Behavior: edit/delete trigger simple actions; no grouping beyond headings, no dedicated creation/editing flow for full YAML options.
+- Seite: `Directory Configuration` unter `http://localhost:9999/directories/`.
+- Aktuelle Oberfläche: eine einzelne flache Tabelle mit Verzeichnissen, gruppiert unter Überschriften wie "MEDIA" und "RECENT", mit Spalten für den Verzeichnisnamen, die numerische Reihenfolge und Aktionslinks ("Edit", "Delete").
+- Verhalten: "Edit" und "Delete" lösen einfache Aktionen aus. Außer den Überschriften gibt es keine weitere Gruppierung, und es gibt keinen eigenen Ablauf zum Anlegen oder Bearbeiten der vollständigen YAML-Optionen.
 
 ## Wichtigste UX-Lücken {#key-ux-gaps}
 - **Informationsarchitektur**

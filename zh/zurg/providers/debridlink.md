@@ -82,11 +82,12 @@ zurg 会把服务返回的错误代码对应到接下来该做的事。
 ## 检查是否生效 {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/debridlink/test
+curl -sS -X POST http://localhost:9999/api/providers/debridlink/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-只有一个账号时，它自己的文件夹不会出现在挂载的根目录列表里，所以挂载点会把同样的文件显示在 `__all__` 下面。
+只有一个账户时，它自己的文件夹会从挂载的根目录列表中省略，
+所以挂载点会在 `__all__` 下显示相同的文件。
 
 ## 出错时怎么办 {#when-it-goes-wrong}
 

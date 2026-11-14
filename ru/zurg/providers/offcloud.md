@@ -70,12 +70,11 @@ providers:
 ## Проверьте, что всё работает {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/offcloud/test
+curl -sS -X POST http://localhost:9999/api/providers/offcloud/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-При одном аккаунте его собственная папка не попадает в корневой листинг монтирования,
-поэтому монтирование показывает те же файлы в `__all__`.
+Если аккаунт один, его собственная папка пропадает из корневого списка маунта, и те же файлы показываются в `__all__`.
 
 ## Когда что-то идёт не так {#when-it-goes-wrong}
 

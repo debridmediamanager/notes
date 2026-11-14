@@ -1,17 +1,17 @@
 # rex 与你自己的应用 {#rex-with-your-own-app}
 
-[rex](https://rex.debridmediamanager.com/zh/) ist ein Medienserver für die offiziellen Plex-Apps, der selbst keine Dateien besitzt. Die offiziellen Plex-Apps sehen rex als normalen Plex-Server. Ein anderes Programm, das diese Seite **deine App** nennt, teilt rex mit, was in deiner Bibliothek liegt, und liefert die Dateien aus. Wenn du auf Abspielen drückst, streamt rex die Datei direkt aus deiner App. Es wird nichts vorher heruntergeladen.
+[rex](https://rex.debridmediamanager.com/zh/) 是一个给官方 Plex 应用用的媒体服务器，它自己不存放任何文件。官方 Plex 应用会把它当作一台普通的 Plex 服务器。另一个程序（本页称之为 **your app**）负责告诉 rex 库里有哪些内容，并提供文件。当你按下播放时，rex 直接从你的应用串流文件，不需要先下载。
 
-Diese Seite führt dich Schritt für Schritt von null bis zum ersten abgespielten Film. Sie setzt keine bestimmte App voraus. Sie sagt genau, was rex von einer App erwartet, damit du prüfen kannst, ob deine App das leistet, oder selbst eine bauen kannst. Bei jedem Schritt steht, was er tut, warum er wichtig ist und was du sehen solltest, bevor du weitermachst.
+本页会带你从零开始，一步一步播放一部电影。这里不假设你用的是某个特定应用。页面会明确说明 rex 对应用有哪些要求，方便你检查自己的应用是否符合，或者自己动手做一个。每一步都会说明它做什么、为什么重要，以及在进入下一步之前你应该看到什么。
 
-Vier Dinge solltest du vor dem Start wissen:
+开始之前有四点需要了解：
 
-- **Deine App liefert die Dateien.** rex holt jedes Byte von deiner App über HTTP oder HTTPS, so wie ein Browser eine Datei herunterlädt. rex speichert keine Dateien und braucht für Medien keine Festplatte und kein Mount.
-- **Deine App meldet rex, was sie hat.** Sie schickt rex eine Liste der Dateien über die Feed-API von rex und danach jede Änderung. rex listet nie einen Ordner auf und scannt nichts.
-- **Deine App entscheidet, was jede Datei ist.** Sie sagt, ob eine Datei ein Film oder eine Episode ist, zu welchem Titel sie gehört (per IMDb- und TMDB-ID) und bei einer Episode, welche Staffel und Nummer sie hat. rex rät nie anhand des Dateinamens.
-- **Plex beschreibt es.** Sobald rex mit einem Plex-Konto verbunden ist, zeigt es jeden Titel mit Name, Poster, Zusammenfassung und Episodennamen aus den eigenen Metadaten von Plex für diese IDs. Für Inhalte, die kein Plex-Agent kennt, benennt deine App sie selbst: siehe [Building rex addons](addons.md).
+- **你的应用负责提供文件。** rex 通过 HTTP 或 HTTPS 从你的应用获取每个字节，就像浏览器下载文件一样。rex 不保存任何文件，也不需要为媒体准备磁盘或挂载点。
+- **你的应用告诉 rex 它有什么。** 它通过 rex 的 feed API 把文件列表发给 rex，之后每次有变化也都会发送。rex 从不列出文件夹，也不扫描任何东西。
+- **你的应用决定每个文件是什么。** 它需要说明文件是电影还是剧集，属于哪个作品（通过 IMDb 和 TMDB id），如果是剧集，还要说明季和集数。rex 从不根据文件名去猜。
+- **Plex 负责描述内容。** rex 添加到 Plex 账号后，会按照 Plex 自己的元数据中对应这些 id 的信息，显示每个作品的名称、海报、简介和剧集名称。对于 Plex 任何一个 agent 都不认识的内容，由你的应用自己提供名称，详见 [编写 rex 插件](addons.md)。
 
-rex ist für die private Nutzung kostenlos (PolyForm Noncommercial). Es gibt keine Sponsorenstufe und du brauchst kein Konto, um es herunterzuladen. Siehe [rex.debridmediamanager.com](https://rex.debridmediamanager.com/zh/). Hast du nur ein Handy oder eine TV-Box? [rex für Android](android.md) betreibt rex und seine Addons auch darauf. Für Sponsoren verbindet [zurg+rex](../zurg/guides/android.md), ein Plex-Server auf deinem Handy, außerdem deine Debrid- und Usenet-Bibliothek mit rex.
+rex 对个人使用免费（PolyForm Noncommercial 许可）：没有赞助者版本，下载也不需要账号。详见 [rex.debridmediamanager.com](https://rex.debridmediamanager.com/zh/)。如果你只有手机或电视盒子，[rex for Android](android.md) 可以在上面运行 rex 及其插件。对于赞助者，[zurg+rex](../zurg/guides/android.md)（运行在手机上的 Plex 服务器）还可以把你的 debrid 和 Usenet 库连接到 rex。
 
 ## 开始之前 {#before-you-start}
 
@@ -270,11 +270,11 @@ Stop-Process -InputObject $server
 
 ## 第 3 步：添加到 Plex 账号 {#step-3-add-it-to-a-plex-account}
 
-**What it does.** Registers rex on a Plex account, as you would a real Plex Media Server, and shares it with your own account.
+**具体作用。** 把 rex 注册到一个 Plex 账号上，就像注册一台真正的 Plex Media Server 一样，并把它共享给你自己的账号。
 
-**Why it matters.** rex gets every title's name, poster, summary and episode names from Plex's own metadata, and it may only ask Plex once it is on an account. What your app sends before the claim is named as soon as it lands, and Fix Match has nothing to offer until then. It also removes the "unclaimed" notice and is needed before [using rex outside your home](#use-it-outside-your-home-optional).
+**为什么重要。** rex 从 Plex 自身的元数据中获取每个影片的名称、海报、简介和剧集名称，而且只有在 rex 绑定到某个账号之后，它才能向 Plex 请求这些信息。在绑定之前，你的应用发送的内容会在到达时就被直接命名，而 Fix Match 在此之前没有任何可选项。绑定还会去掉"unclaimed"提示，并且是[在家庭网络之外使用 rex](#use-it-outside-your-home-optional)所必需的。
 
-**Use a fresh Plex account for this, not your own.** rex is not made by Plex, and Plex could take action against an account that registers it. Keep your real account, with its watch history, friends and any Plex Pass, out of reach: make a new free account at [plex.tv](https://www.plex.tv) with an email address you do not use elsewhere, register rex on that one, and share rex with your own account. You then watch signed in as yourself, the way you would watch a friend's server. rex plays nothing until this step is done.
+**为此请使用一个新的 Plex 账号，不要用你自己的。** rex 不是 Plex 官方出品的，Plex 可能会对注册了它的账号采取措施。请让你的真实账号（包括观看历史、好友和任何 Plex Pass）远离这件事：在 [plex.tv](https://www.plex.tv) 上新建一个免费账号，使用一个你没在其他地方用过的邮箱地址，在这个账号上注册 rex，然后把 rex 共享给你自己的账号。这样你就能以自己的身份登录观看，就像观看朋友的服务器一样。在完成这一步之前，rex 不会播放任何内容。
 
 ### 在新账号上注册 rex {#register-rex-on-the-fresh-account}
 

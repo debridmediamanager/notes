@@ -543,16 +543,16 @@ curl -H "Authorization: Bearer $KEY" http://localhost:9999/api/v2/torrents/setCa
 
 ## 12. Plex 只读取一组文件夹 {#12-plex-reads-one-set-of-folders}
 
-An import does not take a release out of zurg's own folders. A film Radarr placed in `__magic__/movies` is still in `movies` and in `__all__`. So Plex has to read one set of folders and never both.
+导入操作不会把资源从 zurg 自己的文件夹里移走。Radarr 放进 `__magic__/movies` 的电影，仍然在 `movies` 和 `__all__` 里。所以 Plex 只能读一组文件夹，两组都读是不行的。
 
-| Plex reads | You get |
+| Plex 读取的文件夹 | 你会得到 |
 |---|---|
-| `movies` and `shows` | Everything on your debrid accounts. Grabs by the \*arrs show up there too. Names are whatever the release is called. |
-| `__magic__/movies` and `__magic__/tv` | Only what Sonarr and Radarr imported. Names and folders are the ones the \*arrs chose. |
+| `movies` 和 `shows` | 你 debrid 账户里的所有内容。\*arr 抓取的内容也会出现在这里。名称就是资源本身的名字。 |
+| `__magic__/movies` 和 `__magic__/tv` | 只有 Sonarr 和 Radarr 导入的内容。名称和文件夹都是 \*arr 选定的。 |
 
-If your Plex libraries already point at `movies` and `shows` then leave them. The \*arr grabs appear there without any change. Add the `__magic__` folders to Plex only if you want a library made of nothing but \*arr imports and then take the other folders out. Plex with both finds every title twice.
+如果你的 Plex 媒体库已经指向 `movies` 和 `shows`，就保持不变。\*arr 的抓取内容无需任何改动就会出现在那里。只有当你想要一个完全由 \*arr 导入内容组成的媒体库时，才把 `__magic__` 文件夹添加到 Plex，并同时移除其他文件夹。如果两组都读，Plex 会把每个标题都找出两次。
 
-Never add the root of `__magic__` either. It holds `__magic__/__all__` which is the whole library again.
+也千万不要添加 `__magic__` 的根目录。它里面有 `__magic__/__all__`，那就又是整个媒体库了。
 
 ## 13. 索引器，以及面向赞助者的 DMM {#13-indexers-and-dmm-for-sponsors}
 

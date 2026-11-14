@@ -85,14 +85,14 @@ Las cuentas extra van dentro de `nntp.servers` de esta entrada, en lugar de en u
 ## Comprueba que funcionó {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/nzb/test
+curl -sS -X POST http://localhost:9999/api/providers/nzb/test
 docker compose logs --tail=100 zurg
 ls /zurg_mnt/zurg/__all__/
 ```
 
 Con una sola cuenta, su propia carpeta se deja fuera del listado raíz del montaje, así que el montaje muestra los mismos archivos bajo `__all__`.
 
-La comprobación aquí se autentica contra el servidor de noticias usando como máximo una conexión del pool existente. No hay ninguna API de cuenta a la que consultar.
+La comprobación aquí se autentica contra el servidor de noticias usando como máximo una conexión del pool existente. No hay API de cuenta a la que preguntar.
 
 ## Cuando algo sale mal {#when-it-goes-wrong}
 

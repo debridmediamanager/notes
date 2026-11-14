@@ -512,14 +512,14 @@ done
 ./scripts/torrent_lifecycle_probe.py --list
 ```
 
-Spusť to z počítače s rezidenční IP. AllDebrid vrací `NO_SERVER` na IP z datacenter.
+شغّله من جهاز يملك اتصالاً سكنياً بالإنترنت. AllDebrid يرد بـ `NO_SERVER` على عناوين IP الخاصة بمراكز البيانات.
 
-Krok 6 není volitelný a krok 3 je to, co z toho dělá smysl. Po kampani z 2026-08-30 nezůstala na žádném ze tří účtů ani jedna z 34 instance id, která si harness nárokoval. Stejně tak žádný z devíti probe hashů.
+الخطوة 6 ليست اختيارية، والخطوة 3 هي ما يجعلها ذات معنى. بعد حملة 2026-08-30 لم يبقَ أي معرّف من المعرّفات الـ 34 للنسخ التي ادّعاها الاختبار على أي من الحسابات الثلاثة. ولم يبقَ كذلك أي من تجزئات المسبار التسعة.
 
-Než sáhneš na TorBox, zkontroluj, jestli není se stejným účtem načtený nějaký jiný zurg. Přečti jeho nastavení sweepu a počítej s tím sweepem, který je popsán výše.
+قبل أن تلمس TorBox، تحقّق مما إذا كان هناك zurg آخر محمّلاً بالحساب نفسه، واقرأ إعدادات المسح الخاصة به، وتوقّع المسح الموصوف أعلاه.
 
 ```bash
 grep -E "delete_error_torrents|stalled_download_mins|enable_repair" config.yml
 ```
 
-Nikdy to neměň. Probe, který během běhu zmizí, je data.
+لا تغيّره أبداً. المسبار الذي يختفي في منتصف التشغيل بيانات بحد ذاتها.

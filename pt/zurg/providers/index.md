@@ -70,7 +70,7 @@ docker compose restart zurg
 
 ### Ou edite o config.yml manualmente {#or-edit-configyml-by-hand}
 
-The file is `~/zurg/config.yml` on the host. Add the entry and restart.
+O arquivo é `~/zurg/config.yml` no host. Adicione a entrada e reinicie.
 
 ```yaml
 zurg: v1
@@ -82,10 +82,7 @@ providers:
 mount_path: "/zurg_mnt/zurg"
 ```
 
-`mount_path` is `/zurg_mnt/zurg` in a container and the compose file has to bind
-`/zurg_mnt:/zurg_mnt:rshared` for the mount to reach the host. That is the
-[Docker setup](../setup/docker.md) page and it is the one part of a container
-install that is not the same as a binary one.
+`mount_path` é `/zurg_mnt/zurg` em um container, e o arquivo do compose precisa montar `/zurg_mnt:/zurg_mnt:rshared` para que o mount chegue ao host. Essa é a página [Docker setup](../setup/docker.md) e é a única parte de uma instalação em container que não é igual à de um binário.
 
 ## Instalações não assistidas {#unattended-installs}
 
@@ -149,15 +146,15 @@ docker compose logs -f --tail=100 zurg
 docker compose exec zurg /app/zurg doctor --working-dir /config
 ```
 
-`WARN service zurg is not installed` é esperado no Docker porque o Compose cuida do início automático. Avisos não fazem o doctor falhar. Só um `FAIL` faz.
+`WARN service zurg is not installed` é esperado no Docker, porque o Compose cuida do início automático. Avisos não fazem o doctor falhar. Quem faz isso é um `FAIL`.
 
 Depois, teste a própria conta pelo Dashboard ou pelo shell.
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox/test
 ```
 
-`{"success":true}` quer dizer que a credencial foi autenticada. O nome no caminho é o `name` da conta. Por padrão ele é o próprio `type`. Adicione `-u user:pass` se você tiver definido um `username` no `config.yml`. Sem ele, o Dashboard e a API ficam abertos na porta que você publicou.
+`{"success":true}` quer dizer que a credencial autenticou. O nome no caminho é o `name` da conta. Por padrão, ele é o seu `type`. Adicione `-u user:pass` se você tiver definido um `username` no `config.yml`. Sem isso, o Dashboard e a API ficam abertos na porta que você publicou.
 
 Por último, veja a biblioteca no mount.
 
@@ -165,7 +162,7 @@ Por último, veja a biblioteca no mount.
 ls /zurg_mnt/zurg/__all__/
 ```
 
-Cada conta configurada ganha um diretório `__<name>__`. Ele tem tudo o que aquela conta tem e fixa as leituras nessa conta. `__torbox__/Some.Release/` faz streaming só do TorBox e de mais nenhum lugar. A pasta de uma conta única não aparece na listagem da raiz do mount, já que `__all__` é a mesma biblioteca. Caminhos HTTP e WebDAV diretos, como `/http/__torbox__/`, continuam respondendo. Pelo mount eles também deixam de resolver; aponte qualquer biblioteca ou script que usava `__<name>__` para `__all__`.
+Cada conta configurada ganha um diretório `__<name>__`. Ele contém tudo o que aquela conta tem e fixa as leituras nela. `__torbox__/Some.Release/` faz streaming só do TorBox, de mais nenhum lugar. A pasta de uma conta específica não aparece na listagem da raiz do mount, já que `__all__` é a mesma biblioteca. Os caminhos HTTP e WebDAV diretos, como `/http/__torbox__/`, continuam respondendo. Pelo mount, ele também deixa de resolver; aponte qualquer biblioteca ou script que usava `__<name>__` para `__all__`.
 
 Uma biblioteca grande demora um pouco no primeiro carregamento. Até terminar, `/dav/movies/` responde 503 e o mount pode não listar nada.
 

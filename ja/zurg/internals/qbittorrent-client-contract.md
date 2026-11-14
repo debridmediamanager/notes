@@ -927,17 +927,9 @@ qBittorrent の場合も形は同じですが、一点違いがあります。�
 
 ### 5.3 `MarkItemAsImported` とインポート後のカテゴリ {#53-markitemasimported-and-the-post-import-category}
 
-`QBittorrent.cs:52-69` sets the post-import category when `TvImportedCategory` /
-`MovieImportedCategory` is configured and different from the main category. It is called for **every**
-completed import (`DownloadEventHub.cs:54`), before the removal decision.
+`QBittorrent.cs:52-69` は、`TvImportedCategory` や `MovieImportedCategory` が設定されていて、メインのカテゴリと異なる場合に、インポート後のカテゴリを設定します。これは完了したインポートのたびに呼ばれ(`DownloadEventHub.cs:54`)、削除するかどうかの判断より前に行われます。
 
-If a shim honours `setCategory` by actually moving the torrent out of the polled category, the torrent
-vanishes from the next `torrents/info?category=…` — which is what the setting is *for*, and what the
-UI surfaces as `DownloadClientHasPostImportCategory`
-(`src/NzbDrone.Core/Queue/QueueService.cs:84`, sourced from
-`DownloadClientItemClientInfo.HasPostImportCategory`, `QBittorrent.cs:234`). Accepting the call and
-recording the new category is the correct behaviour; refusing it produces only a warning
-(`:62-67`).
+shim が `setCategory` を実際に受け入れて、torrent をポーリング対象のカテゴリから移動させると、次の `torrents/info?category=…` で torrent が見えなくなります。これこそがこの設定の目的であり、UI では `DownloadClientHasPostImportCategory` として表示されます(`src/NzbDrone.Core/Queue/QueueService.cs:84`。元になるのは `DownloadClientItemClientInfo.HasPostImportCategory` で、`QBittorrent.cs:234`)。この呼び出しを受け入れて新しいカテゴリを記録するのが正しい動作です。拒否すると警告が出るだけです(`:62-67`)。
 
 ## 6. `Test()` — すべてのチェックを順番に、そのメッセージ付きで {#6-test--every-check-in-order-and-its-message}
 
@@ -1032,11 +1024,7 @@ instead of an array, a bad enum, a non-numeric `size`.
 
 ### 6.5 `dht` のチェック {#65-the-dht-check}
 
-There is **no** dedicated DHT check in `Test()`. `dht` is consulted at grab time
-(`:73-76`, magnets without trackers) and at poll time (`:288`, the `metaDL` branch). A shim reporting
-`dht: false` passes the connection test and then refuses every trackerless magnet with
-`ReleaseDownloadException("Magnet not supported by download client. …")`
-(`TorrentClientBase.cs:115`). **Report `dht: true`.**
+`Test()` には専用の DHT チェックはありません。`dht` は grab 時（`:73-76`、トラッカーのない magnet の場合）と poll 時（`:288`、`metaDL` の分岐）に参照されます。`dht: false` を返す shim は接続テストには通りますが、その後トラッカーのない magnet をすべて `ReleaseDownloadException("Magnet not supported by download client. …")`（`TorrentClientBase.cs:115`）で拒否します。**`dht: true` を返してください。**
 
 ## 7. シムが知っておくべき解析とインポートへの影響 {#7-parsing-and-import-consequences-a-shim-should-know}
 

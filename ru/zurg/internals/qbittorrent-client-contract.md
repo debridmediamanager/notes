@@ -1063,11 +1063,7 @@ instead of an array, a bad enum, a non-numeric `size`.
 
 ### 6.5 Проверка `dht` {#65-the-dht-check}
 
-There is **no** dedicated DHT check in `Test()`. `dht` is consulted at grab time
-(`:73-76`, magnets without trackers) and at poll time (`:288`, the `metaDL` branch). A shim reporting
-`dht: false` passes the connection test and then refuses every trackerless magnet with
-`ReleaseDownloadException("Magnet not supported by download client. …")`
-(`TorrentClientBase.cs:115`). **Report `dht: true`.**
+В `Test()` нет отдельной проверки DHT. `dht` учитывается при захвате релиза (`:73-76`, магнитные ссылки без трекеров) и при опросе (`:288`, ветка `metaDL`). Шим, который возвращает `dht: false`, проходит тест подключения, а затем отклоняет каждую магнитную ссылку без трекеров с ошибкой `ReleaseDownloadException("Magnet not supported by download client. …")` (`TorrentClientBase.cs:115`). **Возвращайте `dht: true`.**
 
 ## 7. Парсинг и последствия для импорта, которые стоит знать шиму {#7-parsing-and-import-consequences-a-shim-should-know}
 

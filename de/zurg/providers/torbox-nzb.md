@@ -70,9 +70,9 @@ Das Stremio-Addon von zurg schickt seine Auswahl an das NZB-Konto, das die Insta
 ## Prüfen, ob es funktioniert hat {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox_nzb/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox_nzb/test
 ls /zurg_mnt/zurg/__all__/
 curl -s http://localhost:9999/http/__torbox_nzb__/ | head
 ```
 
-Bei nur einem Account wird dessen eigener Ordner aus der Root-Auflistung des Mounts weggelassen, sodass der Mount dieselben Dateien unter `__all__` zeigt. Der Verzeichnisname richtet sich nach dem Namen des Eintrags, der standardmäßig seinem Typ entspricht.
+Bei nur einem Konto wird der eigene Ordner aus der Root-Auflistung des Mounts ausgelassen. Deshalb zeigt der Mount dieselben Dateien unter `__all__`. Der Verzeichnisname richtet sich nach dem Namen des Eintrags, und der ist standardmäßig sein Typ.

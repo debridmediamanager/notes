@@ -337,19 +337,18 @@ Limits:
 
 ### إعداد Radarr {#setting-up-radarr}
 
-1. **Root folder mit `__magic__`, eine Ebene tiefer.** Zum Beispiel
-   `/mnt/zurg/__magic__/movies` (`/Volumes/Zurg/__magic__/movies` unter macOS,
-   `Z:\__magic__\movies` unter Windows). Nicht `__magic__` selbst und nicht
-   `__magic__/__all__`, denn dort sind alle Releases der Bibliothek aufgelistet. Ein Film,
-   dessen Ordner woanders liegt, wird übersprungen, und zurg schreibt eine Warnung in sein Log.
-   Unter Windows sieht Radarr `Z:` nur, wenn es in derselben Anmeldesitzung läuft wie zurg, also nicht
-   als Windows-Dienst: siehe
-   [die Sitzungsregeln](../setup/windows.md#keeping-it-running-the-session-rules).
-2. **Import-Listen mit Suche beim Hinzufügen aus.** Füge Filme hinzu, wie du willst (von Hand, über Listen oder Seerr, das auf Radarr zeigt). Lass **Search for Movie** beim Hinzufügen aus, weil zurg die Suche übernimmt.
-3. **Es werden keine Indexer und kein Download-Client benötigt.** Falls Radarr welche hat, kann es parallel zu zurg greifen. Schalte deshalb die automatische Suche bei seinen Indexern aus (oder entferne sie) für die Filme, um die sich zurg kümmert.
-4. **`library_path` ist der Ort, an dem Radarr `__magic__` sieht.** Wenn Radarr auf demselben Rechner wie zurg läuft und dort den Mount sieht, an dem zurg ihn einhängt, lass die Option weg: Standardmäßig ist sie `mount_path` von zurg plus `/__magic__`. Wenn Radarr in einem Container läuft, der zurg an einem anderen Pfad einhängt, setze sie auf diesen Pfad, zum Beispiel `/data/zurg/__magic__`. Ein Film unter `/data/zurg/__magic__/movies/Heat (1995)` wird dann in `movies/Heat (1995)` innerhalb von `__magic__` von zurg abgelegt. Windows-Pfade wie `Z:\__magic__` funktionieren ebenfalls. Ein Radarr-Container wird nur auf einem Linux-Host unterstützt: Docker Desktop unter macOS und Windows läuft in einer VM, und das Durchreichen des zurg-Mounts dorthin ist nicht getestet. Betreibe Radarr dort deshalb nativ.
+1. **مجلد الجذر داخل `__magic__`، بمستوى واحد أسفله.** مثلاً
+   `/mnt/zurg/__magic__/movies` (و`/Volumes/Zurg/__magic__/movies` على macOS،
+   و`Z:\__magic__\movies` على Windows). لا تضع `__magic__` نفسه، ولا
+   `__magic__/__all__`، لأنه يسرد كل إصدار في المكتبة. أي فيلم يقع مجلده في مكان آخر
+   يُتخطى، مع تحذير واحد في سجل zurg.
+   على Windows، لا يرى Radarr المسار `Z:` إلا إذا كان يعمل في جلسة تسجيل الدخول نفسها التي يعمل فيها zurg،
+   أي ليس كخدمة Windows. راجع [قواعد الجلسة](../setup/windows.md#keeping-it-running-the-session-rules).
+2. **قوائم الاستيراد مع إيقاف البحث عند الإضافة.** أضف الأفلام بالطريقة التي تفضلها (يدوياً، أو من القوائم، أو بتوجيه Seerr إلى Radarr). اترك **Search for Movie** متوقفاً عند الإضافة، لأن zurg هو من يتولى البحث.
+3. **لا حاجة إلى مفهرسات ولا إلى عميل تنزيل.** إذا كانت لدى Radarr، فقد تلتقط الملفات إلى جانب zurg، لذلك أوقف البحث التلقائي في مفهرساتها (أو احذفها) للأفلام التي يديرها zurg.
+4. **`library_path` هو المكان الذي يرى فيه Radarr المسار `__magic__`.** إذا كان Radarr يعمل على الجهاز نفسه الذي يعمل عليه zurg ويرى نقطة التركيب حيث يركّبها zurg، فاتركه غير مضبوط، لأنه يأخذ افتراضياً القيمة `mount_path` في zurg مضافاً إليها `/__magic__`. إذا كان Radarr يعمل في حاوية تركّب zurg في مكان آخر، فاضبطه على ذلك المسار، مثلاً `/data/zurg/__magic__`. عندها يُوضع الفيلم الموجود في `/data/zurg/__magic__/movies/Heat (1995)` داخل `__magic__` الخاص بـ zurg في المسار `movies/Heat (1995)`. مسارات Windows مثل `Z:\__magic__` تعمل أيضاً. تغطية حاوية Radarr تقتصر على مضيف Linux فقط، لأن Docker Desktop على macOS وWindows يشغّل الحاويات داخل آلة افتراضية، وتمرير تركيب zurg إليها لم يُختبر، لذا شغّل Radarr مباشرة على النظام في هذه الحالة.
 
-   Wenn Radarr außerdem Downloads über den [SABnzbd](sonarr-radarr.md)- oder [qBittorrent](sonarr-radarr-torrents.md)-Endpunkt von zurg entgegennimmt, muss es deren Download-Ordner unter `library_path/__all__` sehen, und zwar über dasselbe Volume wie seine Root-Folder. Sonst ist jeder Import daraus eine Kopie der ganzen Datei. zurg fragt bei Radarr ab, wo es beide sieht, und meldet das auf der Acquisition-Seite, im Log und in `zurg doctor`, falls sie sich kein Mount teilen können. Siehe [Ein Volume für den Download-Ordner und die Root-Folder](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
+   إذا كان Radarr يأخذ عمليات تنزيل أيضاً من نقطة [SABnzbd](sonarr-radarr.md) أو [qBittorrent](sonarr-radarr-torrents.md) الخاصة بـ zurg، فيجب أن يرى مجلد التنزيل الخاص بها في `library_path/__all__`، عبر الحجم نفسه الذي تستخدمه مجلدات الجذر، وإلا فكل استيراد منه سيكون نسخة كاملة من الملف. يسأل zurg Radarr عن المسارين اللذين يراهما، ويذكر ذلك في صفحة الحصول على الملفات، وفي سجله، وفي `zurg doctor` عندما لا يستطيعان مشاركة التركيب نفسه. راجع [حجم واحد لمجلد التنزيل ومجلدات الجذر](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
 
 ### ما يطلبه zurg من Radarr {#what-zurg-asks-radarr-for}
 

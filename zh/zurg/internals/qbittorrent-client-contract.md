@@ -995,11 +995,7 @@ instead of an array, a bad enum, a non-numeric `size`.
 
 ### 6.5 `dht` 检查 {#65-the-dht-check}
 
-There is **no** dedicated DHT check in `Test()`. `dht` is consulted at grab time
-(`:73-76`, magnets without trackers) and at poll time (`:288`, the `metaDL` branch). A shim reporting
-`dht: false` passes the connection test and then refuses every trackerless magnet with
-`ReleaseDownloadException("Magnet not supported by download client. …")`
-(`TorrentClientBase.cs:115`). **Report `dht: true`.**
+在 `Test()` 中没有专门的 DHT 检查。`dht` 会在抓取时被检查（`:73-76`，没有 tracker 的磁力链接），也会在轮询时被检查（`:288`，`metaDL` 分支）。如果 shim 返回 `dht: false`，它会通过连接测试，然后拒绝每一个没有 tracker 的磁力链接，并报错 `ReleaseDownloadException("Magnet not supported by download client. …")`（`TorrentClientBase.cs:115`）。**请返回 `dht: true`。**
 
 ## 7. shim 应当了解的解析与导入影响 {#7-parsing-and-import-consequences-a-shim-should-know}
 
@@ -1339,7 +1335,9 @@ Ok.
 
 ### 10.10 `POST /api/v2/torrents/createCategory`、`setCategory`、`setShareLimits`、`topPrio`、`setForceStart` {#1010-post-apiv2torrentscreatecategory-setcategory-setsharelimits-topprio-setforcestart}
 
-All of them take urlencoded forms and all answer `200` with an empty body. `topPrio` may answer **409** to mean "queueing is disabled", and the client swallows exactly that status (§1.10). `setShareLimits` may answer **404** to mean "not supported", which is also swallowed (§1.9).
+所有接口都接受 urlencoded 表单,成功时都返回 `200` 和空正文。`topPrio` 可能返回 **409**,表示"队列功能已禁用"。客户端只会忽略这一个状态码(见 §1.10)。`setShareLimits` 可能返回 **404**,表示"不支持",同样会被忽略(见 §1.9)。
+
+---
 
 ## 11. 与真实 qBittorrent 的差异 —— zurg 模型在哪些地方更窄或更宽 {#11-differences-from-real-qbittorrent--where-zurgs-model-is-narrower-or-wider}
 

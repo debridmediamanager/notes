@@ -248,27 +248,27 @@ launchctl list | grep zurg
 
 ## الخطوة 8: إعداد مكتبات Plex {#step-8-configure-plex-libraries}
 
-Now que zurg está en marcha y el montaje está activo:
+Now that zurg is running and the mount is active:
 
-1. Abre [http://localhost:32400/web](http://localhost:32400/web)
-2. Ve a **Settings** (icono de llave inglesa) → **Manage** → **Libraries**
-3. Haz clic en **Add Library**
+1. افتح [http://localhost:32400/web](http://localhost:32400/web)
+2. انتقل إلى **Settings** (أيقونة المفتاح الإنجليزي) ← **Manage** ← **Libraries**
+3. انقر على **Add Library**
 
-**Añade la biblioteca de películas:**
-- Type: **Movies**
-- Haz clic en **Browse for media folder**
-- Navega hasta `/Volumes/Zurg/movies`
-- Haz clic en **Add Library**
+**أضف مكتبة Movies:**
+- النوع: **Movies**
+- انقر على **Browse for media folder**
+- انتقل إلى `/Volumes/Zurg/movies`
+- انقر على **Add Library**
 
-**Añade la biblioteca de series:**
-- Type: **TV Shows**
-- Haz clic en **Browse for media folder**
-- Navega hasta `/Volumes/Zurg/shows`
-- Haz clic en **Add Library**
+**أضف مكتبة TV Shows:**
+- النوع: **TV Shows**
+- انقر على **Browse for media folder**
+- انتقل إلى `/Volumes/Zurg/shows`
+- انقر على **Add Library**
 
-**Ajustes recomendados de la biblioteca** (en Edit → Advanced de cada biblioteca):
-- Desmarca **Empty trash automatically after every scan**. zurg se encarga del ciclo de vida del contenido.
-- Desmarca **Generate video preview thumbnails**. Así ahorras ancho de banda, porque los archivos se transmiten desde Real-Debrid.
+**إعدادات المكتبة الموصى بها** (تحت Edit ← Advanced لكل مكتبة):
+- ألغِ تحديد **Empty trash automatically after every scan** — فـ zurg يدير دورة حياة المحتوى
+- ألغِ تحديد **Generate video preview thumbnails** — يوفر عرض النطاق الترددي لأن الملفات تُبث من Real-Debrid
 
 ## الخطوة 9: التحقق من أن كل شيء يعمل {#step-9-verify-everything-works}
 

@@ -104,11 +104,11 @@ fetch_torrents_page_size: 5000
 ## Vérifier que ça fonctionne {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/realdebrid/test
+curl -sS -X POST http://localhost:9999/api/providers/realdebrid/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-Avec un seul compte, son propre dossier est retiré de la liste racine du montage,
+Avec un seul compte, son propre dossier est exclu de la liste racine du montage,
 donc le montage affiche les mêmes fichiers sous `__all__`.
 
 ## Quand ça ne marche pas {#when-it-goes-wrong}

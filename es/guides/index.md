@@ -7,15 +7,18 @@ Cada guía de este sitio, por proyecto.
 - [Elige tu configuración](choose-your-setup.md): mapas de rutas y cuándo usar DMM, zurg, rex, Kodi, Stremio, Nuvio o los plugins de Jellyfin/Emby
 - [Qué hace cada pieza](glossary.md): una línea para cada pieza de DMM, zurg y rex y las palabras de las guías
 - ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): qué significa esa pantalla verde en Stremio y qué hacer
-- [Pedir ayuda](remote-help.md) con zurg y rex: dónde preguntar, qué incluir y la ayuda remota para patrocinadores
-- [Qué te da un patrocinio](sponsorship.md): cada ventaja y dónde configurarla, o cómo conseguir las de DMM en el tablón de solicitudes
+- [Tu token de API de Real-Debrid](real-debrid-api-token.md): dónde conseguirlo, dónde lo usan DMM y zurg, y qué significan `bad_token` y los demás errores
+- [Cómo pedir ayuda](remote-help.md) con zurg y rex: dónde preguntar, qué incluir y la ayuda remota para patrocinadores
+- [Qué te da un patrocinio](sponsorship.md): cada ventaja y dónde configurarla, o cómo conseguir las de DMM en el tablero de solicitudes
 
 ## DMM
 
-- [DMM en Stremio](../dmm/stremio.md): mira en Stremio con el addon DMM Cast, y qué hacer cuando algo sale mal
+- [Qué es DMM y cómo usarlo](../dmm/index.md): iniciar sesión, buscar, los botones de una versión y tu biblioteca
+- [DMM en Stremio](../dmm/stremio.md): ver en Stremio con el addon DMM Cast, y qué hacer cuando algo falla
+- [Listas de hashes](../dmm/hashlists.md): encontrar listas compartidas, añadirlas a tu biblioteca de debrid y compartir las tuyas
 - [Botones de DMM en Safari](../dmm/safari.md): la extensión del navegador como userscript en Mac, iPhone y iPad
 - [Seerr a través de DMM](../dmm/seerr.md)
-- [Lista de deseados de DMM](../zurg/guides/dmm-wanted.md): zurg busca lo que pulsas en **Want**
+- [Lista de deseados de DMM](../zurg/guides/dmm-wanted.md): zurg obtiene lo que pulsas **Want**
 
 ## zurg
 

@@ -141,4 +141,4 @@ Riwayat tontonan ikut terhapus bersama barisnya. Mendaftar dan mengirim ulang na
 
 ## Siapa yang boleh mengirim ke rex {#who-may-send-to-rex}
 
-rex 的 feed（`/rex/sources` 和 `/rex/feed`）不需要 token。它只回应来自 rex 所在机器本身、你的家庭网络（`192.168.x.x`、`10.x.x.x`、`172.16-31.x.x` 以及私有 IPv6 地址）和 Tailscale（`100.64-127.x.x`）的程序；对其他任何人来说，这个 feed 就像不存在一样，即使你为 rex-direct 转发了 rex 的端口，或是让它通过 IPv6 对外开放，也是一样。在 rex 所在机器上的反向代理会以本地程序的身份访问它，所以如果你在 rex 前面放了反向代理，就要在那里屏蔽 `/rex/`。
+Feed rex (`/rex/sources` dan `/rex/feed`) tidak memerlukan token. Feed ini hanya bisa diakses oleh program di mesin rex itu sendiri, jaringan rumah Anda (`192.168.x.x`, `10.x.x.x`, `172.16-31.x.x` dan alamat IPv6 privat) dan Tailscale (`100.64-127.x.x`). Bagi pihak lain, feed ini dianggap tidak ada, bahkan setelah Anda meneruskan port rex untuk rex-direct atau membukanya lewat IPv6. Reverse proxy di mesin rex akan mengakses feed sebagai program lokal, jadi blokir `/rex/` di sana jika Anda memasang reverse proxy di depan rex.

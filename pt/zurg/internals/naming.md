@@ -154,31 +154,20 @@ O season fix (`/torrents/season-fix/plan` e `/apply`) é um renomeio de arquivos
 
 ## 10. Consequências para quem integra com o zurg {#10-consequences-for-anything-integrating-with-zurg}
 
-If you are building a path from the torrent's name — a symlink farm, a remote
-path mapping, a script — these are the ways it goes wrong:
+Se você está montando um caminho a partir do nome do torrent (um symlink farm, um mapeamento de caminho remoto, um script), estas são as formas como isso dá errado:
 
-  a. The extension. Only `.mkv` and `.mp4` come off, case sensitively. Any other
-     container keeps its extension in the folder name.
+  a. A extensão. Só `.mkv` e `.mp4` são removidos, diferenciando maiúsculas de minúsculas. Qualquer outro container mantém a extensão no nome da pasta.
 
-  b. The rename. `Torrent.Rename` wins over the derived name, and RD's own
-     renaming of a torrent changes `Name` under you.
+  b. O renomeio. `Torrent.Rename` tem prioridade sobre o nome derivado, e o renomeio feito pelo próprio RD em um torrent muda `Name` por baixo dos seus panos.
 
-  c. The hash suffix. Two different releases sharing a name means one of them is
-     ` {a1b2c3}`, and which one moves as content is added.
+  c. O sufixo de hash. Se duas releases diferentes compartilham o mesmo nome, uma delas recebe ` {a1b2c3}`, e qual delas recebe muda conforme o conteúdo é adicionado.
 
-  d. The duplicate-file tag. A file whose basename repeats inside a release is
-     served as `name (tag).ext`, where the tag is a directory component or a
-     path hash. `filepath.Base(file.Path)` does not reproduce it.
+  d. A tag de arquivo duplicado. Um arquivo cujo basename se repete dentro de uma release é servido como `name (tag).ext`, onde a tag é um componente de diretório ou um hash de caminho. `filepath.Base(file.Path)` não reproduz isso.
 
-  e. The archive rename. An obfuscated payload inside an archive is presented
-     under the release name, not its own.
+  e. O renomeio de arquivo compactado. Um payload ofuscado dentro de um arquivo compactado é apresentado com o nome da release, e não com o próprio nome.
 
-  f. NZB names come from the `.nzb` FILENAME, not from anything inside it, unless
-     the filename is a hash. Name the file, name the folder.
+  f. Os nomes de NZB vêm do FILENAME do `.nzb`, e não de nada que esteja dentro dele, a menos que o nome do arquivo seja um hash. Nomeie o arquivo, nomeie a pasta.
 
-  g. Sanitised on-disk filenames are a different namespace from mount names, and
-     for non-ASCII releases they deliberately do not match.
+  g. Os nomes de arquivo sanitizados no disco são um namespace diferente dos nomes no mount e, em releases com caracteres não ASCII, eles propositalmente não batem.
 
-The robust way to resolve a release is by hash, then ask zurg what it is called.
-Reconstructing the name is guessing, and every rule above is a way for the guess
-to be wrong.
+A forma mais robusta de resolver uma release é pelo hash, e depois perguntar ao zurg como ela se chama. Reconstruir o nome é chutar, e cada regra acima é uma forma de o chute dar errado.

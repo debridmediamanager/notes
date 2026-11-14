@@ -8,7 +8,7 @@ Sonarr のソースは、これまで毎日配信の番組、アニメ、スペ�
 
 ## 見たい映画を 1080p と 4K の両方で保持 {#keep-a-wanted-film-at-1080p-and-at-4k}
 
-`quality: [1080p, 4k]` in the `acquisition:` block keeps two copies of each film on your DMM wanted list, so a 1080p TV can play one without transcoding the 4K file. Each copy takes the best release at or below its own resolution and upgrades up to it on its own. While nothing better than 1080p is out, the two share one copy. Shows, and every other source, still get one copy. See [a copy at each of several resolutions](../guides/acquisition.md#a-copy-at-each-of-several-resolutions).
+`quality: [1080p, 4k]` を `acquisition:` ブロックに書くと、DMM の wanted リストには映画ごとに 2 つのコピーが残ります。これにより、1080p のテレビは 4K ファイルをトランスコードせずに 1080p 版を再生できます。各コピーは自分の解像度以下で最も良いリリースを取得し、そこまで自動的にアップグレードされます。1080p より良いものがまだ公開されていない間は、2 つが 1 つのコピーを共有します。シリーズやその他のソースは、引き続き 1 つのコピーだけです。詳しくは [複数の解像度ごとのコピー](../guides/acquisition.md#a-copy-at-each-of-several-resolutions) を参照してください。
 
 ## one-line install の後でも zurg update が動くように {#zurg-update-works-after-the-one-line-install}
 
@@ -250,12 +250,7 @@ Real-Debrid が追加処理を遅くしているものとして扱われます�
 
 ## ファイルを復元すると、すぐに元の場所へ戻ります {#restoring-a-file-puts-it-back-where-it-belongs-straight-away}
 
-The Restore action on a release's manage page now re-files the release into its
-directories, saves the recovered state and writes its STRM file as soon as the
-file checks out. A restored file no longer sits in the unplayable directory
-until the next provider refresh, and a release whose last broken file was
-restored is no longer reported broken after a restart. Files you deleted still
-stay deleted until you restore them.
+The リリース管理ページの Restore アクションは、ファイルが正常だと確認できた時点で、そのリリースを該当するディレクトリへ振り分け直し、復旧後の状態を保存し、STRM ファイルを書き出すようになりました。復元したファイルは、次のプロバイダー更新まで再生不可ディレクトリに残ることはなくなります。また、壊れていた最後のファイルを復元したリリースは、再起動後も壊れていると報告されなくなりました。削除したファイルは、復元するまで削除されたままです。
 
 ## バイトを配信する前に、無関係な Usenet 記事を除外 {#reject-foreign-usenet-articles-before-serving-bytes}
 
@@ -351,13 +346,8 @@ RAR形式でまとめて投稿されたリリースは、アーカイブが開�
 
 ## サイズルールがアーカイブ内のファイルにも適用されるように {#size-rules-now-apply-to-files-inside-archives}
 
-A Usenet movie posted as a RAR set is shown as the files inside the archive.
-Those files skipped a directory's `only_show_the_biggest_file` and
-`only_show_files_with_size_gte`/`_lte` settings, so anything else the post
-carried stayed visible beside the movie. Many posts include a small image named
-after the movie, a sheet of timestamped stills, and Jellyfin used it as the
-poster. The size settings now apply to archive contents the same way they apply
-to every other file.
+Usenetの映画がRARセットとして投稿されている場合、アーカイブの中身のファイルがそのまま表示されます。
+これらのファイルは、ディレクトリの`only_show_the_biggest_file`や`only_show_files_with_size_gte`/`_lte`の設定を素通りしていたため、投稿に含まれていたその他のファイルも映画の横に表示されたままになっていました。多くの投稿には映画名のついた小さな画像や、タイムスタンプ付きのスチール写真のシートが含まれており、Jellyfinはそれをポスターとして使っていました。現在は、サイズ設定がアーカイブ内のファイルにも、他のすべてのファイルと同じように適用されるようになりました。
 
 ## 最大の PAR2 ファイルが 512 MB を超える Usenet リリースも修復できるように {#usenet-releases-whose-largest-par2-file-is-over-512-mb-can-be-repaired}
 

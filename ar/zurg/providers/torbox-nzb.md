@@ -69,9 +69,9 @@ docker compose restart zurg
 ## تحقّق من أنه يعمل {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox_nzb/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox_nzb/test
 ls /zurg_mnt/zurg/__all__/
 curl -s http://localhost:9999/http/__torbox_nzb__/ | head
 ```
 
-مع حساب واحد فقط، يتم حذف مجلده الخاص من قائمة الجذر للتركيب (mount)، لذلك يعرض التركيب نفس الملفات تحت `__all__`. يتبع اسم المجلد اسم الإدخال، والذي يكون افتراضيًا نوعه.
+مع حساب واحد فقط، يتم حذف مجلده الخاص من قائمة الجذر للتثبيت (mount)، فيُظهر التثبيت نفس الملفات تحت `__all__`. اسم المجلد يتبع اسم الإدخال، والاسم الافتراضي هو نوعه.

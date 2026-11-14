@@ -67,37 +67,32 @@ providers:
 
 ## حدود تستحق الانتباه {#limits-worth-knowing}
 
-**Cloud-Speicher und Fair-Use-Grenzen sind die eigenen Limits des Kontos.** zurg hebt sie nicht an
-und umgeht sie auch nicht.
+**حدود التخزين السحابي والاستخدام العادل هي حدود الحساب نفسه.** لا يرفع zurg هذه الحدود ولا يتجاوزها.
 
-**8 gleichzeitige API-Anfragen.** Vier Teile eines Multi-Volume-Archivs werden
-gleichzeitig aufgelöst.
+**8 طلبات API متزامنة.** يتم حل أربعة أجزاء من أرشيف متعدد الأجزاء في وقت واحد.
 
-**Inhalte laufen ab.** Ein Release, das nicht mehr da ist, ist ein erwartetes Ergebnis und kein
-Fehler. Repair lässt es in Ruhe, außer du bittest ausdrücklich darum.
+**المحتوى ينتهي.** الإصدار الذي اختفى نتيجة متوقعة وليس عطلاً. لا يلمسه Repair إلا إذا طلبت ذلك.
 
-**Die Torrent-Liste enthält keine Dateidetails.** Jedes Release kostet beim ersten Mal
-eine eigene Abfrage.
+**قائمة التورنتات لا تحمل تفاصيل الملفات.** كل إصدار يحتاج إلى بحث خاص به في المرة الأولى.
 
-zurg ordnet die Fehlercodes des Dienstes dem zu, was als Nächstes passieren sollte.
+يربط zurg رموز الخطأ القادمة من الخدمة بالخطوة التالية التي يجب أن يقوم بها.
 
-| Code von Premiumize | Was zurg macht |
+| الرمز القادم من Premiumize | ما يفعله zurg |
 |---|---|
-| `authentication_failed` | Meldet einen ungültigen Zugangsschlüssel. Korrigiere den Key. |
-| `rate_limit_reached` | Pausiert das Konto für eine Minute. |
-| `account_limit_reached` oder `service_limit_reached` | Meldet ein aufgebrauchtes Kontingent. |
-| `service_down` | Behandelt das Konto als vorübergehend nicht verfügbar. |
-| `not_found` | Behandelt den Torrent als nicht mehr vorhanden. |
+| `authentication_failed` | يُبلغ عن بيانات اعتماد غير صحيحة. أصلح المفتاح. |
+| `rate_limit_reached` | يوقف الحساب مؤقتاً لمدة دقيقة. |
+| `account_limit_reached` أو `service_limit_reached` | يُبلغ عن نفاد المساحة المسموحة. |
+| `service_down` | يعامل الحساب على أنه غير متاح مؤقتاً. |
+| `not_found` | يعامل التورنت على أنه غير موجود. |
 
 ## تحقّق من أنه يعمل {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/premiumize/test
+curl -sS -X POST http://localhost:9999/api/providers/premiumize/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-مع حساب واحد فقط، يتم استبعاد مجلده الخاص من قائمة الجذر في الـ mount،
-لذلك يُظهر الـ mount نفس الملفات تحت `__all__`.
+مع وجود حساب واحد فقط، يتم استبعاد مجلده الخاص من قائمة الجذر للتركيب، لذلك يُظهر التركيب نفس الملفات تحت `__all__`.
 
 ## عندما تسوء الأمور {#when-it-goes-wrong}
 

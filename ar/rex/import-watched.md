@@ -80,10 +80,10 @@ curl -d "ADDRESS-FROM-STEP-1" "http://192.168.1.20:32400/rex/import-watched?X-Pl
 
 ## ما الذي لا يتم نسخه {#what-is-not-copied}
 
-- Historial de cualquier otra persona de tu servidor anterior. Cada una ejecuta la importación con sus propios dos tokens.
-- La lista de historial de reproducción, las listas de reproducción y las colecciones del servidor.
-- Las calificaciones con estrellas de series y temporadas completas. Las calificaciones de películas y episodios sí se copian.
-- Títulos de una biblioteca cuyo agente en el servidor anterior no es **Plex Movie** ni **Plex TV Series** (los agentes antiguos, como Plex Movie (Legacy) y TheTVDB). rex encuentra un título por el id que le dan los agentes actuales de Plex, y los antiguos le asignan otro, así que estos cuentan bajo `notInRex`.
+- سجل المشاهدة لأي شخص آخر على خادمك القديم. يشغّل كل شخص الاستيراد برمزيه الخاصين.
+- قائمة سجل التشغيل في الخادم، وقوائم التشغيل والمجموعات.
+- تقييمات النجوم للمسلسلات كاملةً والمواسم. أما التقييمات على الأفلام والحلقات فيتم نسخها.
+- العناوين الموجودة في مكتبة لا يكون الوكيل الخاص بها على الخادم القديم **Plex Movie** أو **Plex TV Series** (الوكلاء الأقدم، مثل Plex Movie (Legacy) وTheTVDB). يعثر rex على العنوان بالمعرّف الذي تمنحه وكلاء Plex الحالية، بينما تمنح الوكلاء الأقدم معرّفاً آخر، لذلك تُحسب هذه العناوين ضمن `notInRex`.
 
 ## إذا لم يعمل {#if-it-does-not-work}
 

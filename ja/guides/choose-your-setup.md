@@ -1,12 +1,12 @@
 # どの構成を使えばいいですか？ {#which-setup-should-i-use}
 
-**[Find your setup with the interactive questionnaire](https://debridmediamanager.com/choose-your-setup).** Answer a few questions about your player accounts and hosting. It returns routes, requirements and setup links. No login needed.
+**[インタラクティブなアンケートで自分に合ったセットアップを探す](https://debridmediamanager.com/choose-your-setup)**。プレイヤーのアカウントやホスティングについていくつか質問に答えてください。おすすめのルート、必要なもの、セットアップのリンクが表示されます。ログインは不要です。
 
-Don't know what a name means? [What each piece does](glossary.md) has one line for each.
+名前の意味がわからない場合は、[各パーツの役割](glossary.md)で一行ずつ説明しています。
 
-**Start with the app you want to watch in.** You do not need every piece. DMM helps you choose releases. A provider supplies the files. zurg can turn them into a shared library. rex presents a library to Plex apps. Some routes skip a piece.
+**まず、視聴に使うアプリから決めましょう。** すべてのパーツが必要なわけではありません。DMM はリリースを選ぶのを手伝います。プロバイダーがファイルを用意します。zurg はそれを共有ライブラリにまとめられます。rex は Plex 系アプリにライブラリを見せます。一部のルートでは、いくつかのパーツを省きます。
 
-This map covers supported routes checked on **10 November 2026**. It includes outside alternatives that remove a step. Third-party addons and devices can still differ. Follow the linked guide and its tested limits.
+この図は **2026年11月10日** に確認した、対応済みのルートを扱っています。手順を一つ減らす外部の代替手段も含みます。サードパーティのアドオンやデバイスは、動作が異なる場合があります。リンク先のガイドと、そこに書かれた検証済みの制限に従ってください。
 
 ## 今使っているものから選ぶ {#pick-by-what-you-already-use}
 

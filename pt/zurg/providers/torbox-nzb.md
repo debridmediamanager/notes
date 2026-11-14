@@ -16,7 +16,7 @@ Isto não é o [servidor de notícias do TorBox](torbox-news-server.md). Esse é
 
 ## Configure {#configure-it}
 
-The entry takes a `token`; there is no `nntp` block. `watchlist` cannot be set on it, because an NZB account cannot add torrents.
+A entrada aceita um `token`; não existe bloco `nntp`. `watchlist` não pode ser definido nela, porque uma conta NZB não pode adicionar torrents.
 
 ```yaml
 providers:
@@ -24,7 +24,7 @@ providers:
     token: YOUR_TORBOX_API_KEY
 ```
 
-On a fresh container install save your key in `~/zurg/secrets/torbox` first, then let setup read it.
+Em uma instalação nova do container, salve sua chave em `~/zurg/secrets/torbox` primeiro e depois deixe o setup ler a partir dela.
 
 ```bash
 cd ~/zurg
@@ -34,7 +34,7 @@ docker compose run --rm zurg setup \
   --torbox-token-file /config/secrets/torbox
 ```
 
-On an install that already has a `config.yml` you can also use **Add provider** in the Dashboard at `http://localhost:9999/config/` and pick `torbox_nzb`. Restart zurg either way.
+Em uma instalação que já tem um `config.yml`, você também pode usar **Add provider** no Dashboard em `http://localhost:9999/config/` e escolher `torbox_nzb`. Reinicie o zurg de qualquer um dos jeitos.
 
 ```bash
 docker compose restart zurg
@@ -68,9 +68,9 @@ O addon Stremio do zurg envia a escolha dele para a conta NZB que a instância t
 ## Verifique se funcionou {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox_nzb/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox_nzb/test
 ls /zurg_mnt/zurg/__all__/
 curl -s http://localhost:9999/http/__torbox_nzb__/ | head
 ```
 
-Com apenas uma conta, a pasta dela fica de fora da listagem da raiz do mount, então o mount mostra os mesmos arquivos em `__all__`. O nome do diretório segue o nome da entrada, que por padrão é o tipo dela.
+Com apenas uma conta, a pasta dela fica de fora da listagem da raiz do mount, então o mount mostra os mesmos arquivos dentro de `__all__`. O nome da pasta segue o nome da entrada, que por padrão é o tipo dela.

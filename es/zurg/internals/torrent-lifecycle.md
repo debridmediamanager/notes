@@ -93,17 +93,17 @@ Un detector de estancamiento que redondea el porcentaje a entero considerará es
 
 ### Lo que hizo cada caso {#what-each-case-did}
 
-| Case | Torrent | Transitions with seconds from add | Verdict |
+| Caso | Torrent | Transiciones con segundos desde el añadido | Veredicto |
 |---|---|---|---|
-| cached | Big Buck Bunny | `downloaded`@0.0 | done in 1.32 s end to end |
-| cached | Sintel | `downloaded`@0.0 | done in 0.73 s |
-| cached | Ubuntu 26.04.1 | `downloaded`@0.0 | done in 0.32 s |
-| uncached | Debian 13.6.0 arm64 DVD-1 | `downloaded`@0.0 | already cached on this account |
-| uncached | Debian 13.2.0 amd64 DVD-1 | `queued`@0.0 `downloading`@3.1 `uploading`@166.5 `downloaded`@196.8 | done. 3.71 GiB in 197 s |
-| webseed | Prelinger home movie | `magnet_conversion`@0.0 `magnet_error`@318.0 | failed |
-| seedless | ubuntu-16.04.6-desktop-i386 | `queued`@0.0 `downloading`@3.1 `uploading` `downloaded`@166.8 | done. The case did not reproduce |
-| seedless | ubuntu-24.04-beta-live-server-s390x | `queued`@0.0 `downloading`@3.1 and nothing after that | **capped at 907.6 s still `downloading`**. This is the stall shape |
-| nometa | random 40-hex | `magnet_conversion`@0.0 `magnet_error`@317.9 | failed |
+| en caché | Big Buck Bunny | `downloaded`@0.0 | hecho en 1.32 s de principio a fin |
+| en caché | Sintel | `downloaded`@0.0 | hecho en 0.73 s |
+| en caché | Ubuntu 26.04.1 | `downloaded`@0.0 | hecho en 0.32 s |
+| sin caché | Debian 13.6.0 arm64 DVD-1 | `downloaded`@0.0 | ya estaba en caché en esta cuenta |
+| sin caché | Debian 13.2.0 amd64 DVD-1 | `queued`@0.0 `downloading`@3.1 `uploading`@166.5 `downloaded`@196.8 | hecho. 3.71 GiB en 197 s |
+| webseed | Prelinger home movie | `magnet_conversion`@0.0 `magnet_error`@318.0 | fallido |
+| sin seeders | ubuntu-16.04.6-desktop-i386 | `queued`@0.0 `downloading`@3.1 `uploading` `downloaded`@166.8 | hecho. El caso no se reprodujo |
+| sin seeders | ubuntu-24.04-beta-live-server-s390x | `queued`@0.0 `downloading`@3.1 y nada después | **cortado a los 907.6 s, todavía en `downloading`**. Esta es la forma del bloqueo |
+| sin metadatos | 40 hex aleatorios | `magnet_conversion`@0.0 `magnet_error`@317.9 | fallido |
 
 ### La latencia del añadido en caché {#the-cached-add-latency}
 
@@ -363,7 +363,7 @@ Lee las últimas tres filas dos veces. TorBox pone `download_finished` a true y 
 
 ## La tabla de etapas {#the-stage-table}
 
-The stage enum the shim will speak is `resolving-metadata` `queued` `downloading` `stalled-no-peers` `finalizing` `done` `failed` and the empty string for unknown.
+El enum de estados que el shim va a usar es `resolving-metadata` `queued` `downloading` `stalled-no-peers` `finalizing` `done` `failed` y la cadena vacía para un estado desconocido.
 
 ### Real-Debrid
 

@@ -156,7 +156,7 @@ Real-Debrid location codes.
 ## Check it worked
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 

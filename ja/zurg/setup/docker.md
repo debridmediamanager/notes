@@ -10,13 +10,13 @@
 
 ## ワンライン オプション {#one-line-option}
 
-On a fresh Linux host, the optional bootstrap can install Docker when you approve it, set up persistent FUSE mount propagation, log in to the sponsor registry, write the Compose project, run the provider chooser, and verify the result:
+まっさらな Linux ホストでは、任意のブートストラップを使って、承認があれば Docker をインストールし、永続的な FUSE マウント伝播を設定し、スポンサー向けレジストリに認証し、Compose プロジェクトを書き出し、プロバイダー選択ツールを実行して、最後に結果を確認できます。
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install-docker.sh | bash
 ```
 
-Existing Compose files and configs are preserved. The sections below show every step for those who prefer the manual route.
+既存の Compose ファイルや設定はそのまま残ります。以下のセクションでは、手動で進めたい方向けに各手順を順番に説明します。
 
 ## コンテナ内でインストーラーが行うこと {#what-the-installer-does-in-a-container}
 

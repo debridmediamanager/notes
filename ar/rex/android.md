@@ -113,10 +113,10 @@ rex for Android مجاني. هل تريد أن تضيف إليه حسابات de
 
 ## القيود {#limits}
 
-- **Funktioniert zu Hause.** Außerhalb deines Zuhauses brauchen Plex-Apps eine HTTPS-Adresse, die das Gerät erreicht. Dafür musst du auf deinem Router eine Portweiterleitung zu diesem Gerät einrichten. Siehe [Außerhalb deines Zuhauses nutzen](any-source.md#use-it-outside-your-home-optional).
-- **Das Gerät ist der Server.** Lass es eingeschaltet, verbinde es per WLAN oder Ethernet und steck es ein. Wenn Videos für einen Player umgewandelt werden müssen, der eine Datei nicht abspielen kann, nutzt das die Hardware des Geräts. Auf einem günstigen Gerät kann das langsam sein.
-- **Nur was Addons liefern.** Auf dem Gerät selbst liegt keine Dateibibliothek.
-- **Noch nicht im Google Play Store.** Zum Aktualisieren installierst du die neue Datei aus [den Releases](https://github.com/debridmediamanager/rex-android/releases/latest) über die alte. rex startet danach von selbst neu. Deine Anmeldung und deine Addons bleiben erhalten.
+- **يعمل في المنزل.** خارج المنزل، تحتاج تطبيقات Plex إلى عنوان HTTPS يصل إلى الجهاز، ويلزمك تفعيل port forward على الراوتر يوجّه إليه. انظر [استخدامه خارج منزلك](any-source.md#use-it-outside-your-home-optional).
+- **الجهاز هو الخادم.** أبقِه مشغّلاً، متصلاً بالشبكة عبر Wi-Fi أو Ethernet، ومتصلاً بالكهرباء. تحويل الفيديو لمشغّل لا يستطيع تشغيل الملف يعتمد على العتاد الخاص بالجهاز، وقد يكون بطيئاً على جهاز رخيص.
+- **فقط ما تجلبه الإضافات.** لا توجد على الجهاز نفسه مكتبة ملفات خاصة به.
+- **غير متوفر على Google Play بعد.** للتحديث، ثبّت الملف الجديد من [الإصدارات](https://github.com/debridmediamanager/rex-android/releases/latest) فوق القديم، وسيبدأ rex من جديد تلقائياً. يبقى تسجيل دخولك والإضافات كما هي.
 
 ## استكشاف الأخطاء وإصلاحها {#troubleshooting}
 

@@ -99,39 +99,15 @@ zurg を停止したり、そのサービスを制御したり、マウントを
 
 ## 頼まれていない限りやらないこと {#what-it-will-not-do-without-being-asked}
 
-**Bestätigung.** Ein Tool, das etwas wegnimmt, beschreibt zuerst, was es tun würde,
-und gibt ein Token zurück; es handelt erst, wenn es noch einmal mit diesem Token
-aufgerufen wird. Das Token wird aus dem Plan abgeleitet, daher lässt sich eine
-Bestätigung nicht auf einen anderen Plan übertragen. Hat sich die Bibliothek in der
-Zwischenzeit geändert, beschreibt der zweite Aufruf erneut, statt etwas zu tun.
-Tokens können nur einmal verwendet werden, sind zwei Minuten gültig und überstehen
-keinen Neustart.
+**確認.** 何かを削除するツールは、何をするつもりかを説明し、トークンを返します。そのトークンを使って再度呼び出されたときにだけ実行します。トークンは計画から作られるので、確認を別の計画に持ち越すことはできません。ライブラリがその間に変わっていた場合、2回目の呼び出しは実行せずに、もう一度説明に戻ります。トークンは一度しか使えず、有効時間は2分で、再起動すると消えます。
 
-**`read_only`.** Ein einziger Schalter, der alle Tools ausblendet, die etwas
-verändern, egal was `toolsets` sagt. Die Frage, die sich ein Betreiber wirklich
-stellt, lautet „kann das meine Bibliothek kaputt machen?“ und nicht „welches dieser
-Tools schreibt?“. Diese Tools fehlen in `tools/list`, sodass ein Client keine
-Funktion auswählen kann, die dieser Endpunkt nie zulassen wird. Die Prüfung beim
-Aufruf bleibt als zusätzliche Absicherung bestehen, falls sich die laufende
-Einstellung nach dem Start des Servers ändert.
+**`read_only`.** 1つのスイッチで、`toolsets` の設定に関係なく、何かを変更するツールをすべて無効にします。運用者が本当に知りたいのは「どのツールが書き込むか」ではなく、「このライブラリが壊れる可能性はあるか」です。これらのツールは `tools/list` から外されるので、このエンドポイントが決して許可しない機能をクライアントが選ぶことはできません。サーバーを作った後で設定が変わった場合に備え、呼び出し時のゲートも残しています(多層防御)。
 
-**`allow_lifecycle`.** Die Tools, die zurg stoppen, seinen Dienst steuern oder den
-Mount neu starten, werden über einen eigenen Schalter ebenso ausgeblendet. Jedes
-davon kann die gesamte Bibliothek auf einen Schlag verschwinden lassen. Außerdem
-können die Prozess- und Dienstaktionen ihr eigenes Ergebnis nicht melden, weil sie
-den Prozess beenden könnten, der gerade den Aufruf beantwortet.
+**`allow_lifecycle`.** zurg を停止するツール、サービスを操作するツール、マウントを再起動するツールは、別のスイッチの背後で同じように無効になります。これらは一度にライブラリ全体を消してしまう可能性があります。また、プロセスやサービスの操作は、呼び出しに応答する前にプロセス自体が終わることがあるため、結果を報告できません。
 
-**Geheimnisse.** Kein Tool-Ergebnis enthält ein Provider-Token, einen API-Key, ein
-News-Server-Passwort, einen aufgelösten CDN-Link oder eine signierte `.strm`-URL.
-Log-Ausgaben werden beim Verlassen des Systems geschwärzt. Ein aufgelöster Link
-kann von jedem eingelöst werden, der ihn hat, und zwar über das Konto, für das er
-erzeugt wurde. Ein Transkript ist deshalb kein Ort dafür.
+**秘密情報.** どのツールの結果にも、プロバイダーのトークン、API キー、ニュースサーバーのパスワード、解決済みの CDN リンク、署名付きの `.strm` URL を含めません。ログ出力は外に出る前に秘匿化されます。解決済みのリンクは、それを発行したアカウントに対して、持っている人なら誰でも使えてしまいます。そのため、やり取りの記録に残してはいけません。
 
-**Größe.** Jede Auflistung ist doppelt begrenzt: durch ein Seitenlimit und durch eine
-Obergrenze für das marshallierte Ergebnis. Ein Konto, das wir dagegen gemessen
-haben, hat 84.000 Releases, was etwa zwölf Megabyte an Namen ergibt, noch bevor
-eine einzige Datei aufgelistet wird. Ein Ergebnis über der Obergrenze wird
-gekürzt, und das wird auch angegeben.
+**サイズ.** どの一覧も2つの上限で制限されます。1つはページ数の上限、もう1つは変換後の結果の上限です。この基準で測ったあるアカウントには 84,000 件のリリースがあり、ファイルを1つも一覧にしない段階でも、名前だけで約12メガバイトになります。上限を超えた結果は切り詰められ、切り詰められたことも明記されます。
 
 ## ノート {#notes}
 

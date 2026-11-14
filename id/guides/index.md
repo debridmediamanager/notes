@@ -4,18 +4,21 @@ Setiap panduan di situs ini, dikelompokkan per proyek.
 
 ## Umum {#general}
 
-- [Pilih setup kamu](choose-your-setup.md): peta rute dan kapan memakai DMM, zurg, rex, Kodi, Stremio, Nuvio atau plugin Jellyfin/Emby
-- [Fungsi tiap bagian](glossary.md): satu baris untuk setiap bagian DMM, zurg dan rex beserta istilah yang dipakai di panduan
-- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): arti layar hijau itu di Stremio dan apa yang harus dilakukan
-- [Meminta bantuan](remote-help.md) untuk zurg dan rex: tempat bertanya, apa saja yang perlu disertakan, dan bantuan jarak jauh untuk sponsor
-- [Keuntungan sponsorship](sponsorship.md): setiap manfaat beserta tempat mengaturnya, atau cara mendapatkan manfaat DMM di papan permintaan
+- [Pilih setup Anda](choose-your-setup.md): peta rute dan kapan memakai DMM, zurg, rex, Kodi, Stremio, Nuvio atau plugin Jellyfin/Emby
+- [Fungsi setiap bagian](glossary.md): satu baris untuk setiap bagian DMM, zurg, dan rex serta istilah yang dipakai di panduan
+- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): arti layar hijau di Stremio itu dan apa yang harus dilakukan
+- [Token API Real-Debrid Anda](real-debrid-api-token.md): cara mendapatkannya, tempat DMM dan zurg memakainya, dan arti `bad_token` serta error lainnya
+- [Meminta bantuan](remote-help.md) untuk zurg dan rex: tempat bertanya, apa yang perlu disertakan, dan bantuan jarak jauh untuk sponsor
+- [Manfaat sponsorship](sponsorship.md): setiap keuntungan dan tempat mengaturnya, atau cara mendapatkan fitur DMM di request board
 
 ## DMM
 
-- [DMM di Stremio](../dmm/stremio.md): tonton di Stremio dengan addon DMM Cast, dan apa yang harus dilakukan saat ada masalah
-- [Tombol DMM di Safari](../dmm/safari.md): ekstensi browser sebagai userscript di Mac, iPhone dan iPad
-- [Seerr lewat DMM](../dmm/seerr.md)
-- [Daftar tunggu DMM](../zurg/guides/dmm-wanted.md): zurg mengambil apa yang kamu tekan **Want**
+- [Apa itu DMM dan cara memakainya](../dmm/index.md): masuk, mencari, tombol-tombol pada rilis dan pustaka Anda
+- [DMM di Stremio](../dmm/stremio.md): menonton di Stremio dengan addon DMM Cast, dan apa yang harus dilakukan saat ada masalah
+- [Daftar hash](../dmm/hashlists.md): menemukan daftar bersama, menambahkannya ke pustaka debrid Anda, membagikan daftar Anda sendiri
+- [Tombol DMM di Safari](../dmm/safari.md): ekstensi browser sebagai userscript di Mac, iPhone, dan iPad
+- [Seerr melalui DMM](../dmm/seerr.md)
+- [Daftar keinginan DMM](../zurg/guides/dmm-wanted.md): zurg mengambil apa yang Anda tekan **Want**
 
 ## zurg
 

@@ -70,14 +70,10 @@
   - Considera codificar los grupos por color para escanearlos rápido (con contraste accesible).
 
 ## Dependencias y supuestos por confirmar {#dependencies-and-assumptions-to-confirm}
-- API support for: persisting group order, bulk operations, nested AND/OR serialization, tag metadata source, and preview query endpoint.
-- Soporte de API para: guardar el orden de los grupos, operaciones en lote, serialización de AND/OR anidados, fuente de metadatos de etiquetas y endpoint de vista previa de consultas.
-- Behavior of deletes: soft vs hard delete, undo window, and audit needs.
+- Soporte de API para: conservar el orden de los grupos, operaciones en lote, serialización anidada de AND/OR, fuente de metadatos de etiquetas y endpoint de vista previa de consultas.
 - Comportamiento de los borrados: borrado suave frente a borrado definitivo, ventana para deshacer y necesidades de auditoría.
-- Ownership/permissions model (if multi-user) for displaying last-edited metadata and preventing conflicts.
 - Modelo de propiedad y permisos (si hay varios usuarios) para mostrar los metadatos de última edición y evitar conflictos.
-- Performance constraints for preview/search; paging or virtualization strategy for large datasets.
-- Limitaciones de rendimiento para la vista previa y la búsqueda; estrategia de paginación o virtualización para conjuntos de datos grandes.
+- Restricciones de rendimiento para la vista previa y la búsqueda; estrategia de paginación o virtualización para conjuntos de datos grandes.
 
 ## Prioridades de implementación {#implementation-priorities}
 1) Reestructurar la lista en tarjetas o secciones desplegables agrupadas; añadir una barra de búsqueda y filtro y diálogos de confirmación.

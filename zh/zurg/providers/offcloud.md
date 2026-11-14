@@ -73,11 +73,12 @@ Offcloud 的失败错误码很少。`NOAUTH` 是 zurg 唯一能处理的错误�
 ## 检查是否生效 {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/offcloud/test
+curl -sS -X POST http://localhost:9999/api/providers/offcloud/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-只有一个账号时，它自己的文件夹不会出现在挂载的根目录列表里，所以挂载点会在 `__all__` 下显示同样的文件。
+只有一个账户时，它自己的文件夹会从挂载的根目录列表中省略，
+因此挂载点会在 `__all__` 下显示同样的文件。
 
 ## 出错时怎么办 {#when-it-goes-wrong}
 

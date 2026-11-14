@@ -198,11 +198,11 @@ rex は自分をマシン名で名乗ります。Plex アプリにはその名�
 
 ## ステップ 3. Plex アカウントに追加 {#step-3-add-it-to-a-plex-account}
 
-**Was es macht.** Registriert rex bei einem Plex-Konto, so wie man einen echten Plex Media Server registrieren würde, und teilt ihn mit deinem eigenen Konto.
+**What it does.** rex を Plex アカウントに登録し、本物の Plex Media Server と同じように扱えるようにします。そのうえで、自分のアカウントと共有します。
 
-**Warum es wichtig ist.** rex holt sich den Namen, das Poster, die Zusammenfassung und die Episodennamen aller Titel aus den eigenen Metadaten von Plex, und das darf es erst, wenn es an einem Konto hängt. Titel, die zurg vor der Registrierung gesendet hat, bekommen ihre Namen, sobald sie fertig ist. Außerdem funktioniert damit Fix Match, der Hinweis „unclaimed“ verschwindet, und es ist nötig, bevor du [rex außerhalb deines Zuhauses nutzt](#use-it-outside-your-home-optional).
+**Why it matters.** rex は各タイトルの名前、ポスター、あらすじ、エピソード名を Plex 自身のメタデータから取得します。そして、アカウントに登録されてからでないと Plex に問い合わせられません。登録前に zurg が送ってきたタイトルは、登録された時点で名前が付きます。また、Fix Match が使えるようになり、"unclaimed" の通知も消えます。[自宅の外で rex を使う](#use-it-outside-your-home-optional)にも、この登録が必要です。
 
-**Nimm dafür ein neues Plex-Konto, nicht dein eigenes.** rex wird nicht von Plex gemacht, und Plex könnte gegen ein Konto vorgehen, das rex registriert. Halte dein echtes Konto mit Wiedergabeverlauf, Freunden und eventuellem Plex Pass da raus: Erstelle auf [plex.tv](https://www.plex.tv) ein neues kostenloses Konto mit einer E-Mail-Adresse, die du sonst nirgends verwendest, registriere rex damit und teile rex mit deinem eigenen Konto. Dann schaust du angemeldet als du selbst, so wie du den Server eines Freundes nutzen würdest. Solange dieser Schritt nicht erledigt ist, spielt rex nichts ab.
+**この作業には自分のアカウントではなく、新しい Plex アカウントを使ってください。** rex は Plex が作ったものではなく、Plex は rex を登録したアカウントに対して措置を取る可能性があります。視聴履歴、友達、Plex Pass のある本来のアカウントを守るために、まず [plex.tv](https://www.plex.tv) で新しい無料アカウントを作ってください。メールアドレスは他で使っていないものを選びます。そのアカウントに rex を登録し、rex を自分のアカウントと共有します。その後は、友達のサーバーを見るのと同じように、自分の名前でサインインして視聴します。この手順が終わるまで、rex は何も再生しません。
 
 ### 新しいアカウントに rex を登録 {#register-rex-on-the-fresh-account}
 
@@ -382,13 +382,13 @@ Docker では、ファイルは `~/rex/config` にあり、root だけが読め�
 
 ## 家の外から使う (任意) {#use-it-outside-your-home-optional}
 
-**Was es macht.** Gibt rex eine HTTPS-Adresse, die Plex-Apps unterwegs erreichen können, und meldet diese Adresse an plex.tv.
+**What it does.** rex に、自宅の外にいる Plex アプリから届く HTTPS アドレスを用意し、そのアドレスを plex.tv に伝えます。
 
-**Warum das wichtig ist.** Unterwegs verbindet sich app.plex.tv nur mit einer HTTPS-Adresse, und die anderen Plex-Apps bevorzugen ebenfalls eine solche. Ein echter Plex-Server kann auf Plex' Relay zurückfallen; rex kann das nicht. Deshalb musst du selbst festlegen, wie rex erreichbar ist. rex muss zuerst [beansprucht](#step-3-add-it-to-a-plex-account) werden, und ein Proxy, der zum Internet hin offen ist, muss `/rex/` blockieren ([Keep the port private](#keep-the-port-private)).
+**Why it matters.** 自宅の外では、app.plex.tv は HTTPS アドレスにしか接続せず、他の Plex アプリも HTTPS を優先します。本物の Plex サーバーは Plex のリレーに切り替えられますが、rex はそれができないため、接続方法は自分で選ぶ必要があります。rex は先に [claimed](#step-3-add-it-to-a-plex-account) しておく必要があり、インターネットに面したプロキシでは `/rex/` をブロックする必要があります（[Keep the port private](#keep-the-port-private)）。
 
-**Plex Pass.** Plex Web spielt unterwegs ab, ohne dass auf einem der beiden Konten ein Plex Pass oder Remote Watch Pass nötig ist. Andere Plex-Apps wurden unterwegs noch nicht getestet.
+**Plex Pass.** Plex Web は、どちらのアカウントにも Plex Pass や Remote Watch Pass がなくても、自宅の外で再生できます。他の Plex アプリについては、自宅の外での動作は確認していません。
 
-Egal, welche Option du wählst: Jedes Byte, das du unterwegs streamst, läuft über die **Upload**-Geschwindigkeit deines Heimanschlusses. Ein Upload von 20 Mbit/s reicht locker für ein 1080p-WEB-DL, aber nicht für ein Remux.
+どの方法を選んでも、自宅の外で見る映像のデータはすべて、自宅回線の**アップロード**速度を通って送られます。20 Mbit/s のアップロードなら 1080p の WEB-DL は余裕で流せますが、リマックスは無理です。
 
 ### どちらを使うか {#which-one-to-use}
 

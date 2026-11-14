@@ -22,14 +22,14 @@
 
 ## تغذية rex {#feeding-rex}
 
-| Name | What it does |
+| الاسم | ماذا يفعل |
 |---|---|
-| [rex-stremio](../rex/stremio.md) | Turns your Stremio addons into rex libraries, so they play in Plex apps |
-| [rex addons](../rex/addons.md) | Kleine Programme, die rex etwas zum Abspielen geben: YouTube, Spotify, IPTV, Heimvideos oder was auch immer du schreibst |
-| [rex-live-sports](../rex/live-tv.md) | Ein rex-Addon, das Live-Sport-Kanäle und einen Programmführer in die Live-TV-Funktion der Plex-Apps bringt |
-| [rex-direct](../rex/any-source.md#rex-direct) | Gibt deinem rex seine eigene sichere Adresse, damit die Plex-Apps auch von unterwegs drankommen |
-| [rex for Android](../rex/android.md) | rex und seine Addons auf einem Android-Handy oder einer Android-TV-Box, ganz ohne Computer |
-| [zurg+rex for Android](../zurg/guides/android.md) | Ein Plex-Server auf deinem Handy: zurg und rex zusammen auf einem Android-Gerät, mit deiner Debrid- und Usenet-Bibliothek. Für Sponsoren |
+| [rex-stremio](../rex/stremio.md) | يحوّل إضافات Stremio إلى مكتبات rex، فتعمل في تطبيقات Plex |
+| [rex addons](../rex/addons.md) | برامج صغيرة تمنح rex شيئاً يشغّله: YouTube، وSpotify، وIPTV، وفيديوهات منزلية، أو أي شيء تكتبه بنفسك |
+| [rex-live-sports](../rex/live-tv.md) | إضافة rex تضع قنوات الرياضة المباشرة ودليل البرامج في Live TV ضمن تطبيقات Plex |
+| [rex-direct](../rex/any-source.md#rex-direct) | يمنح rex عنوان إنترنت آمناً خاصاً به، فتصل إليه تطبيقات Plex من خارج المنزل |
+| [rex for Android](../rex/android.md) | rex وإضافاته على هاتف Android أو جهاز TV box، من دون حاسوب |
+| [zurg+rex for Android](../zurg/guides/android.md) | خادم Plex على هاتفك: zurg وrex معاً على جهاز Android واحد، مع مكتبتك من debrid وUsenet. للرعاة فقط |
 
 ## داخل Jellyfin وEmby {#inside-jellyfin-and-emby}
 

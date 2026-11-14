@@ -1,14 +1,14 @@
 # 注意事项 {#notes}
 
-Guides and reference for DMM zurg and rex.
+Debrid Media Manager 的 DMM、zurg 和 rex 的文档与指南
 
-**Not sure which pieces you need? [Choose your setup](guides/choose-your-setup.md)** compares the routes and links to the right guide.
-[What each piece does](guides/glossary.md) explains every name in one line.
+**还不确定需要哪些组件？[选择你的部署方案](guides/choose-your-setup.md)** 对比了各种方案，并链接到对应的指南。
+[每个组件的作用](guides/glossary.md) 用一句话解释了每个名称。
 
-| Project | What it is | Start here |
+| 项目 | 简介 | 从这里开始 |
 |---|---|---|
-| [zurg](zurg/index.md) | One folder for every debrid account and Usenet library. Plex Jellyfin and Emby read it like a normal drive | [Setup](zurg/setup/index.md) |
-| [rex](rex/index.md) | A media server that owns no files. Stremio addons zurg or your own app can fill it | [Pick a setup](rex/index.md) |
-| [DMM](dmm/index.md) | Find releases and keep a library on your debrid account | [debridmediamanager.com](https://debridmediamanager.com) |
+| [zurg](zurg/index.md) | 为每个 debrid 账户和 Usenet 库提供一个统一文件夹。Plex、Jellyfin 和 Emby 像读取普通硬盘一样读取它 | [安装](zurg/setup/index.md) |
+| [rex](rex/index.md) | 一个不存储任何文件的媒体服务器。Stremio 插件、zurg 或你自己的应用都可以为它提供内容 | [选择部署方式](rex/index.md) |
+| [DMM](dmm/index.md) | 查找资源并在你的 debrid 账户中保存库 | [debridmediamanager.com](https://debridmediamanager.com) |
 
-[Guides](guides/index.md) lists every guide including [getting help](guides/remote-help.md) with zurg and rex.
+[指南](guides/index.md) 列出了所有指南，包括 [获取帮助](guides/remote-help.md)（关于 zurg 和 rex）。

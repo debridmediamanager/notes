@@ -87,14 +87,14 @@ Les comptes supplémentaires vont dans `nntp.servers` de cette entrée, plutôt 
 ## Vérifier que ça fonctionne {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/nzb/test
+curl -sS -X POST http://localhost:9999/api/providers/nzb/test
 docker compose logs --tail=100 zurg
 ls /zurg_mnt/zurg/__all__/
 ```
 
 Avec un seul compte, son propre dossier est exclu de la liste racine du montage, donc le montage affiche les mêmes fichiers sous `__all__`.
 
-La sonde ici s'authentifie auprès du serveur de news en utilisant au plus une connexion du pool existant. Il n'y a pas d'API de compte à interroger.
+La sonde authentifie ici auprès du serveur de news en utilisant au maximum une connexion du pool existant. Il n'existe pas d'API de compte à interroger.
 
 ## Quand ça ne marche pas {#when-it-goes-wrong}
 

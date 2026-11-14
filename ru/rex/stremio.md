@@ -95,7 +95,7 @@ INFO    FEED stremio upsert: ...
 
 ## В Docker {#in-docker}
 
-rex-stremio-ის [README](https://github.com/debridmediamanager/rex-stremio#set-up)-ში მოცემულია Docker-ის ბრძანებები. კონტეინერში rex ვიდეოებს კონტეინერის მისამართიდან კითხულობს თქვენს ქსელში, და არა `127.0.0.1`-დან, რაც README-ში ნაჩვენებია, როგორ უნდა დააყენოთ.
+rex-stremio — в [README](https://github.com/debridmediamanager/rex-stremio#set-up) есть команды для Docker. В контейнере rex читает видео по адресу контейнера в вашей сети, а не по `127.0.0.1`; как это задать, показано в README.
 
 ## Обновление {#updating}
 

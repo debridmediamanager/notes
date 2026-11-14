@@ -98,14 +98,14 @@ Zusätzliche Accounts kommen unter diesen Eintrag bei `nntp.servers`, nicht in e
 ## Prüfen, ob es funktioniert hat {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/nzb/test
+curl -sS -X POST http://localhost:9999/api/providers/nzb/test
 docker compose logs --tail=100 zurg
 ls /zurg_mnt/zurg/__all__/
 ```
 
-Mit nur einem Account wird dessen eigener Ordner in der Root-Auflistung des Mounts weggelassen, daher zeigt der Mount dieselben Dateien unter `__all__` an.
+Bei nur einem Konto fehlt der eigene Ordner in der Root-Auflistung des Mounts, daher zeigt der Mount dieselben Dateien unter `__all__` an.
 
-Die Prüfung hier meldet sich am News-Server an und verwendet dafür höchstens eine Verbindung aus dem bestehenden Pool. Eine Account-API, über die man das abfragen könnte, gibt es nicht.
+Die Prüfung hier meldet sich beim News-Server an und nutzt dafür höchstens eine Verbindung aus dem bestehenden Pool. Eine Konto-API, die man abfragen könnte, gibt es nicht.
 
 ## Wenn es schiefgeht {#when-it-goes-wrong}
 

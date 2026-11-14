@@ -82,11 +82,11 @@ zurg ordnet die Fehlercodes des Dienstes der Aktion zu, die als Nächstes ansteh
 ## Prüfen, ob es funktioniert hat {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/debridlink/test
+curl -sS -X POST http://localhost:9999/api/providers/debridlink/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-Mit nur einem Account wird dessen eigener Ordner aus der Root-Auflistung des Mounts ausgelassen,
+Bei nur einem Account wird dessen eigener Ordner aus der Root-Ansicht des Mounts ausgelassen,
 daher zeigt der Mount dieselben Dateien unter `__all__`.
 
 ## Wenn es schiefgeht {#when-it-goes-wrong}

@@ -70,11 +70,11 @@ ls /zurg_mnt/zurg/__all__/
 
 ## 此类型的专用规则 {#rules-specific-to-this-type}
 
-- **Só pode haver uma entrada `nzb` ativada.** Duas iam escanear o mesmo diretório e duplicar cada release. Mais servidores de notícias devem ir dentro de `nntp.servers` dessa única entrada. Assim servem a mesma biblioteca, em vez de criar uma segunda cópia dela. Uma entrada `nzb` ao lado de uma [`torbox_nzb`](torbox-nzb.md) também é recusada, pelo mesmo motivo.
-- **`watchlist: true` é recusado.** Um servidor de notícias nunca recebe um torrent.
-- **`add_torrents` é ignorado** e o arranque avisa disso, pelo mesmo motivo.
-- **`download_tokens` e `strm_link_token` não fazem nada.** Não há nenhuma credencial para rodar.
-- **O diretório é `__nzb__`** porque o nome assume por defeito o tipo. Defina `name: usenet` na entrada se preferir navegar por `__usenet__`.
+- **只能启用一个 `nzb` 条目。** 两个条目会扫描同一个目录，导致每个版本都重复。更多的新闻服务器应该放在这一个条目的 `nntp.servers` 下面。它们提供的是同一个库，而不是第二份副本。与 [`torbox_nzb`](torbox-nzb.md) 条目并存的 `nzb` 条目同样会被拒绝，原因相同。
+- **`watchlist: true` 会被拒绝。** 新闻服务器从来不会接收种子。
+- **`add_torrents` 会被忽略**，启动时也会对此发出警告，原因相同。
+- **`download_tokens` 和 `strm_link_token` 不起任何作用。** 这里没有需要轮换的凭据。
+- **目录名是 `__nzb__`**，因为名称默认与类型相同。如果你更想浏览 `__usenet__`，可以在该条目上设置 `name: usenet`。
 
 ## 第二个新闻服务器的价值比你想象的更大 {#a-second-news-server-is-worth-more-than-it-looks}
 
@@ -85,14 +85,14 @@ Retention 是按服务商分开计算的。一个服务器已经过期的文章�
 ## 检查是否生效 {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/nzb/test
+curl -sS -X POST http://localhost:9999/api/providers/nzb/test
 docker compose logs --tail=100 zurg
 ls /zurg_mnt/zurg/__all__/
 ```
 
-使用只有一个账号时，它自己的文件夹不会出现在挂载的根目录列表中，因此挂载点会在 `__all__` 下显示同样的文件。
+只有一个账号时，它自己的文件夹会从挂载的根目录列表中省略，所以挂载点会在 `__all__` 下显示同样的文件。
 
-这里的探测会从现有连接池中最多占用一个连接，向新闻服务器进行身份验证。没有可以查询的账号 API。
+这里的探测会使用现有连接池中最多一个连接来向新闻服务器进行身份验证。没有可以查询的账号 API。
 
 ## 出错时怎么办 {#when-it-goes-wrong}
 

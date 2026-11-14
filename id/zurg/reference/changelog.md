@@ -138,7 +138,7 @@ Dulu, akuisisi hanya membaca halaman pertama yang dikembalikan indexer. Dengan D
 
 ## File mati di folder film dan acara `__magic__` kini dikeluarkan agar Radarr dan Sonarr menyadarinya {#dead-files-in-__magic__-movie-and-show-folders-now-drop-out-so-radarr-and-sonarr-notice}
 
-A file that Radarr or Sonarr had imported into a folder under `__magic__` kept showing at its full size after the release stopped working, so a rescan still saw it and the movie or episode never went back to wanted. It now leaves the folder at the same moment it leaves every other listing: once repair can no longer bring it back, or a day after it broke when repair is off. The next rescan marks it missing and acquisition looks for a replacement. If the file starts working again it reappears in the same place.
+A file yang sudah diimpor Radarr atau Sonarr ke folder di bawah `__magic__` sebelumnya tetap tampil dengan ukuran penuh setelah rilisnya berhenti berfungsi. Akibatnya, rescan tetap menganggapnya ada, dan film atau episode tidak pernah kembali ke status wanted. Sekarang file itu keluar dari folder pada saat yang sama dengan keluar dari daftar lainnya: begitu repair tidak bisa lagi memulihkannya, atau sehari setelah rusak jika repair dimatikan. Rescan berikutnya akan menandainya sebagai missing, dan acquisition mencari pengganti. Jika file kembali berfungsi, file itu akan muncul lagi di tempat yang sama.
 
 ## Season Fix mengurutkan paket multi-musim dan extras bernomor {#season-fix-sorts-multi-season-packs-and-numbered-extras}
 
@@ -187,9 +187,10 @@ zurg sekarang hanya menghitung torrent yang oleh TorBox ditandai sebagai aktif.
 
 ## TorBox bisa melakukan seeding untuk private tracker {#torbox-can-seed-for-private-trackers}
 
-A new setting, `tb_seed_torrents`, decides whether the torrents zurg adds to TorBox seed. It stays at `never` unless you change it, so nothing changes for anyone who leaves it alone. Set it to `always` if a private tracker needs your ratio, or to `auto` to let the seeding setting on your TorBox account decide. It can be changed from the dashboard's Health & Repairs section and takes effect on the next add.
+A new setting, `tb_seed_torrents`, menentukan apakah torrent yang ditambahkan zurg akan di-seed ke TorBox. Nilainya tetap `never` kecuali kamu mengubahnya, jadi tidak ada yang berubah bagi siapa pun yang membiarkannya. Atur ke `always` jika sebuah private tracker membutuhkan ratio kamu, atau ke `auto` agar pengaturan seeding di akun TorBox kamu yang menentukan.
+Setting ini bisa diubah dari bagian Health & Repairs di dashboard dan mulai berlaku pada penambahan berikutnya.
 
-Torrent yang sedang di-seed memakai salah satu slot aktif paket TorBox Anda selama masih di-seed, sampai 30 hari di Pro. Jika torrent yang di-seed memenuhi semua slot, unduhan baru dan perbaikan di akun itu harus menunggu sampai ada slot yang kosong.
+Torrent yang sedang di-seed memakai salah satu slot aktif paket TorBox kamu selama masih di-seed, hingga 30 hari di Pro. Saat torrent yang di-seed memenuhi semua slot, grab dan repair baru di akun itu harus menunggu sampai ada slot yang kosong.
 
 ## Set RAR yang volumenya bernama tidak berurutan kini bisa diputar {#rar-sets-whose-volumes-are-named-out-of-order-now-play}
 
@@ -413,10 +414,7 @@ Setelah zurg memberi tahu Radarr atau Sonarr bahwa unduhan gagal, klien akan mem
 
 ## Laporan kerusakan menyebutkan setiap file {#damage-reports-name-every-file}
 
-When a Usenet release was missing pieces, zurg's failure message listed the
-damaged files by name, and a file the post itself never named showed up as a
-blank: "across 4 file(s): , , , ". Such a file is now listed by its place in
-the release, as in "file 12 of 73", so the message says which files are hit.
+Ketika rilis Usenet kehilangan beberapa bagian, pesan kegagalan zurg mencantumkan file yang rusak berdasarkan namanya, dan file yang tidak pernah disebutkan namanya oleh postingan itu muncul sebagai kosong: "across 4 file(s): , , , ". File seperti itu sekarang dicantumkan berdasarkan posisinya dalam rilis, seperti "file 12 of 73", sehingga pesan tersebut menunjukkan file mana saja yang terdampak.
 
 ## Stremio melewati rilis yang videonya dimulai dengan kosong {#stremio-skips-a-release-whose-video-starts-with-nothing}
 
@@ -785,7 +783,7 @@ Pemindaian tetap dijalankan lewat tombol. Proses planning memeriksa setiap torre
 
 ## Putar rilis terkompresi yang terbagi ke beberapa volume {#play-a-compressed-release-that-is-split-across-several-volumes}
 
-A release that was packed with compression rather than stored whole stopped at the end of its first volume. Every file inside it listed with the right name and size and then refused to play, leaving a bad header CRC in the log. zurg now carries the unpacking across each volume join, so these releases play from start to finish.
+Sebuah rilis yang dikemas dengan kompresi, bukan disimpan utuh, berhenti di akhir volume pertamanya. Setiap file di dalamnya tercantum dengan nama dan ukuran yang benar, lalu tidak bisa diputar, dan log menampilkan bad header CRC. Sekarang zurg melanjutkan proses unpacking di setiap sambungan volume, jadi rilis seperti ini bisa diputar dari awal sampai akhir.
 
 ## Startup lebih cepat saat akun Anda menyimpan torrent yang gagal {#start-up-quickly-when-your-account-holds-failed-torrents}
 

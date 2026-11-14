@@ -2,13 +2,13 @@
 
 There are three ways to use Sonarr and Radarr with zurg. The real choice is who searches, zurg or the \*arrs: [which one to pick](#which-one-to-pick) compares them.
 
-| Guide | Who searches | zurg acts as | You need |
+| Guia | Quem pesquisa | O zurg atua como | Você precisa de |
 |---|---|---|---|
-| [Usenet](sonarr-radarr.md) | Sonarr and Radarr | a SABnzbd | a Usenet account (or TorBox Pro for the `torbox_nzb` backend) and Usenet indexers in Prowlarr or the \*arrs |
-| [Torrents](sonarr-radarr-torrents.md) | Sonarr and Radarr | a qBittorrent | a debrid account and torrent indexers in Prowlarr or the \*arrs |
-| [zurg searches](sonarr-radarr-fetch.md) | zurg | no download client at all | a Usenet, TorBox Pro or debrid account, and Newznab or Torznab indexers in zurg's own config |
+| [Usenet](sonarr-radarr.md) | Sonarr e Radarr | um SABnzbd | uma conta Usenet (ou TorBox Pro para o backend `torbox_nzb`) e indexadores Usenet no Prowlarr ou nos \*arrs |
+| [Torrents](sonarr-radarr-torrents.md) | Sonarr e Radarr | um qBittorrent | uma conta de debrid e indexadores de torrent no Prowlarr ou nos \*arrs |
+| [Pesquisas pelo zurg](sonarr-radarr-fetch.md) | zurg | nenhum cliente de download | uma conta Usenet, TorBox Pro ou de debrid, e indexadores Newznab ou Torznab na própria configuração do zurg |
 
-Os dois primeiros podem rodar lado a lado. Eles compartilham a mesma pasta `__magic__`.
+As duas primeiras podem rodar lado a lado. Elas compartilham a mesma pasta `__magic__`.
 
 ### Qual escolher {#which-one-to-pick}
 

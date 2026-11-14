@@ -292,10 +292,10 @@ O rex não lê tags por conta própria. Tudo que o Plex mostra vem do id da rele
 
 ## Altere {#change-it}
 
-- **Another layout.** An album split into disc folders (`CD1/`, `CD2/`) is two albums to this addon, each with too few tracks to match. Group such folders in `albums()` and send one `release` for all their files; see [Music](addons.md#music).
-- **Artists by their own pictures.** Send `display.artist.poster` and register with `"artwork": "source"`: see [More from your addon](addon-more.md#artist-pictures).
-- **Playlists.** Send each song's place in a playlist and rex makes the playlist: see [More from your addon](addon-more.md#collections-and-playlists).
-- **Loudness.** If you measure each song's loudness, send it as `loudness` in Plex's names: see [Music](addons.md#music). rex measures nothing itself.
+- **Outro layout.** Um álbum dividido em pastas de disco (`CD1/`, `CD2/`) é, para este addon, dois álbuns, cada um com poucas faixas para casar. Agrupe essas pastas em `albums()` e envie um `release` para todos os arquivos delas; veja [Music](addons.md#music).
+- **Artistas pelas próprias fotos.** Envie `display.artist.poster` e registre com `"artwork": "source"`: veja [More from your addon](addon-more.md#artist-pictures).
+- **Playlists.** Envie a posição de cada música em uma playlist e o rex monta a playlist: veja [More from your addon](addon-more.md#collections-and-playlists).
+- **Loudness.** Se você medir o volume de cada música, envie-o como `loudness` nos nomes do Plex: veja [Music](addons.md#music). O rex não mede nada por conta própria.
 
 ## Solução de problemas {#troubleshooting}
 

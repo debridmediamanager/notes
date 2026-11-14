@@ -76,11 +76,9 @@ Addon Stremio dari zurg mengirim pilihannya ke akun NZB mana pun yang dimiliki i
 ## Cek apakah sudah berhasil {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox_nzb/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox_nzb/test
 ls /zurg_mnt/zurg/__all__/
 curl -s http://localhost:9999/http/__torbox_nzb__/ | head
 ```
 
-Kalau cuma ada satu akun, folder miliknya sendiri tidak ditampilkan di daftar root mount,
-jadi mount hanya menampilkan file yang sama di bawah `__all__`. Nama direktori mengikuti
-nama entri, dan secara default namanya sama dengan tipenya.
+Jika hanya ada satu akun, folder akunnya sendiri tidak ditampilkan di daftar root mount, sehingga mount menampilkan file yang sama di bawah `__all__`. Nama direktori mengikuti nama entri, yang secara default adalah tipenya.

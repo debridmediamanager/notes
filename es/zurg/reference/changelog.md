@@ -278,7 +278,7 @@ Cuando Plex rechaza una solicitud de la lista de seguimiento, el registro ahora 
 
 ## Un lanzamiento demasiado dañado para la memoria de repair falla de inmediato {#a-release-too-damaged-for-repairs-memory-fails-at-once}
 
-When a Usenet release is missing more than PAR2 repair can hold in memory at once, zurg now says so and stops, and Sonarr or Radarr pick another release. It used to keep the grab waiting, then try again every few minutes, re-checking the whole release each time for the same answer. Damage that is not yet confirmed as gone, such as articles a server failed to answer, is still retried.
+Cuando a una release de Usenet le faltan más datos de los que la reparación PAR2 puede manejar en memoria de una vez, zurg ahora lo indica y se detiene, y Sonarr o Radarr eligen otra release. Antes mantenía la descarga en espera, reintentaba cada pocos minutos y revisaba toda la release otra vez en cada intento para obtener la misma respuesta. El daño que todavía no está confirmado como perdido, como los artículos que un servidor no respondió, sigue reintentándose.
 
 ## La configuración supera una config vacía y dice cuándo está oculto el aviso del token {#setup-gets-past-an-empty-config-and-says-when-the-token-prompt-is-hidden}
 

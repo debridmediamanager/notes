@@ -54,24 +54,24 @@ chmod +x zurg
 
 ## おすすめ: セットアップは zurg に任せる {#recommended-let-zurg-finish-the-setup}
 
-从解压后的目录运行：
+展開したディレクトリで、次を実行します:
 
 ```bash
 ./zurg setup
 ./zurg doctor
 ```
 
-`setup` 会询问要配置哪些服务。按优先级顺序，从 Real-Debrid、TorBox、AllDebrid、Usenet、Premiumize、Debrid-Link 和 Offcloud 中选择一个或多个。比如输入 `2,4`，就是先 TorBox，再 Usenet。它只会询问你所选服务的凭据，然后创建 `config.yml`（权限为 `0600`），下载 rclone（如果 PATH 里没有 ffprobe，也会一并下载），准备 `/Volumes/Zurg`，并安装自动启动。
+`setup` は設定するプロバイダーを尋ねます。Real-Debrid、TorBox、AllDebrid、Usenet、Premiumize、Debrid-Link、Offcloud のうち 1 つ以上を、優先順位の順に選んでください。例えば、TorBox の次に Usenet を使う場合は `2,4` と入力します。選んだプロバイダーの認証情報だけを求められ、`config.yml` を mode `0600` で作成し、rclone（PATH に ffprobe がない場合は ffprobe も）をダウンロードし、`/Volumes/Zurg` を準備して、自動起動を設定します。
 
-如果当前用户有 GUI launchd 域，它会选择 LaunchAgent。如果是没有登录 GUI 用户的无头 Mac，它会安装系统级 LaunchDaemon，仍然以当前用户身份运行 zurg。这种方式不需要开启自动登录。
+現在のユーザーに GUI の launchd ドメインがある場合は、LaunchAgent を選びます。ログイン中の GUI ユーザーがいないヘッドレス Mac では、システムの LaunchDaemon をインストールします。この場合でも zurg は現在のユーザーとして動作します。この方法では自動ログインは不要です。
 
-先决条件检查会区分已安装的 macFUSE 软件包和 macOS 真正能加载的扩展。在 Apple silicon 上，第一次安装 macFUSE 时，可能仍需要在 Recovery 中做一次安全性设置更改，还要在 **System Settings > Privacy & Security** 中批准，然后重启。任何安装程序都无法绕过这些确认步骤。
+前提条件チェックでは、インストール済みの macFUSE パッケージと、macOS が実際に読み込めるエクステンションを区別します。Apple シリコン搭載の Mac では、macFUSE を初めてインストールする際に、一度だけ Recovery でセキュリティ設定を変更し、**System Settings > Privacy & Security** で承認し、再起動が必要になることがあります。これらの確認を回避できるインストーラーはありません。
 
-重复运行 setup 是安全的。它会更新生成的 launchd 服务，但不会替换已有的 `config.yml`。
+setup は何度実行しても安全です。生成された launchd サービスは更新されますが、既存の `config.yml` は置き換えられません。
 
-在通过挂载点串流之前，请打开 `config.yml` 或 `http://localhost:9999/config/` 上的 Dashboard，在 `rclone_extra_args` 下同时设置 `--vfs-cache-max-size` 和 `--vfs-cache-min-free-space`。最大缓存大小要低于当前可用磁盘空间的一半，并用最小可用空间设置至少保留 `20G`。然后运行 `./zurg service restart`。
+マウントを通してストリーミングする前に、`config.yml` を開くか、`http://localhost:9999/config/` の Dashboard を開いて、`rclone_extra_args` の下にある `--vfs-cache-max-size` と `--vfs-cache-min-free-space` の両方を設定してください。上限は現在の空きディスク容量の半分未満に抑え、最小空き容量の設定では `20G` 以上を確保します。その後、`./zurg service restart` を実行します。
 
-本页其余部分说明配置和 Plex 设置。第 3、4、5、7 步是手动方式，`zurg setup` 成功后可以跳过。
+このページの残りでは、config と Plex のセットアップを説明します。手順 3、4、5、7 は手動での方法なので、`zurg setup` が成功した場合はスキップできます。
 
 ## ステップ 3: zurg を手動で設定 {#step-3-configure-zurg-manually}
 
@@ -165,18 +165,18 @@ ls /Volumes/Zurg/
 
 ## ステップ 6: Plex Media Server をインストール {#step-6-install-plex-media-server}
 
-1. Download von [plex.tv/media-server-downloads](https://www.plex.tv/media-server-downloads/) und wähle **macOS** (Universal)
-2. Öffne die `.dmg` und zieh **Plex Media Server** nach `/Applications`
-3. Starte Plex Media Server aus Applications (oder über Spotlight: `Cmd + Space` → „Plex Media Server“)
-4. Dein Browser sollte den Plex-Einrichtungsassistenten öffnen. Folge ihm, um deinen Server zu beanspruchen
-5. **Autostart aktivieren:** Klick mit der rechten Maustaste auf das Plex-Symbol in der Menüleiste und aktiviere **Launch at Login**
-6. Hol dir dein Plex-Token. Am einfachsten geht das so:
-   - Öffne ein beliebiges Medienelement in Plex Web
-   - Klick auf **Get Info** (oder **...** → **Get Info**)
-   - Klick auf **View XML**
-   - Such in der URL-Leiste nach `X-Plex-Token=`
+1. [plex.tv/media-server-downloads](https://www.plex.tv/media-server-downloads/) からダウンロードします。**macOS** (Universal) を選んでください
+2. `.dmg` を開き、**Plex Media Server** を `/Applications` にドラッグします
+3. Applications から Plex Media Server を起動します（または Spotlight で `Cmd + Space` を押して「Plex Media Server」と入力します）
+4. ブラウザで Plex のセットアップウィザードが開きます。画面の指示に従ってサーバーを claim してください
+5. **自動起動を有効にする:** メニューバーの Plex アイコンを右クリックして、**Launch at Login** にチェックを入れます
+6. Plex token を取得します。いちばん簡単な方法は次のとおりです:
+   - Plex Web で任意のメディアアイテムを開きます
+   - **Get Info**（または **...** → **Get Info**）をクリックします
+   - **View XML** をクリックします
+   - URL バーの中の `X-Plex-Token=` を探します
 
-Trag das Plex-Token in deine zurg-Konfiguration ein, indem du `config.yml` bearbeitest:
+Plex token を zurg の設定に追加するには、`config.yml` を編集します:
 
 ```yaml
 plex_server_url: http://localhost:32400

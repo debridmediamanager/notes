@@ -105,7 +105,7 @@ every cold scan to learn what the status said for free.
 ## Check it worked
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/alldebrid/test
+curl -sS -X POST http://localhost:9999/api/providers/alldebrid/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 

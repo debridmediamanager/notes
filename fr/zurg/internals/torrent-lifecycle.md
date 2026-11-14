@@ -43,9 +43,9 @@ TorBox `checkcached` a été interrogé sur chaque hash avant qu'on ajoute quoi 
 
 ### Cadence des sondages et plafonds {#poll-cadence-and-caps}
 
-3 s for the first 2 minutes, then 15 s. 1 s for the cached case, because the whole lifecycle there can be over inside one normal poll. Cap 15 minutes per torrent for the campaign rather than the script default of 30. The shim's proposed default timeout is 10 minutes, and a torrent still moving at 15 is already past the only window that matters. Real-Debrid adds are spaced at least 20 s apart.
+3 s pendant les 2 premières minutes, puis 15 s. 1 s pour le cas déjà en cache, car tout le cycle de vie peut alors se terminer dans un seul cycle de polling normal. Plafond de 15 minutes par torrent pour la campagne, au lieu de la valeur par défaut du script, qui est de 30. Le délai d'attente proposé par le shim est de 10 minutes, et un torrent qui bouge encore à 15 minutes a déjà dépassé la seule fenêtre qui compte. Les ajouts à Real-Debrid sont espacés d'au moins 20 s.
 
-Each provider ran as its own process against its own output directory. That keeps the Real-Debrid add spacing honest inside one process and lets the three run at once.
+Chaque fournisseur tourne dans son propre processus, avec son propre répertoire de sortie. Cela garde l'espacement des ajouts Real-Debrid cohérent à l'intérieur d'un même processus, et permet aux trois de tourner en même temps.
 
 ---
 

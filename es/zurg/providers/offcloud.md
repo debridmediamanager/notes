@@ -71,11 +71,12 @@ El vocabulario de fallos de Offcloud es escaso. `NOAUTH` es el único código co
 ## Comprueba que funcionó {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/offcloud/test
+curl -sS -X POST http://localhost:9999/api/providers/offcloud/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-Con una sola cuenta, su propia carpeta se deja fuera del listado raíz del montaje, así que el montaje muestra los mismos archivos dentro de `__all__`.
+Con una sola cuenta, su propia carpeta se deja fuera del listado raíz del montaje,
+así que el montaje muestra los mismos archivos bajo `__all__`.
 
 ## Cuando algo sale mal {#when-it-goes-wrong}
 

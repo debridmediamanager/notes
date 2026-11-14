@@ -10,13 +10,11 @@ Este fluxo foi verificado em 4 de setembro de 2026 com o Docker Engine 29.1.1. U
 
 ## Opção de uma linha {#one-line-option}
 
-On a fresh Linux host, the optional bootstrap can install Docker when you approve it, configure persistent FUSE mount propagation, log in to the sponsor registry, write the Compose project, run the provider chooser, and verify the result:
-
 ```bash
 curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install-docker.sh | bash
 ```
 
-Existing Compose files and configs are kept as they are. The sections below show every step for people who prefer the manual route.
+Arquivos e configurações existentes do Compose são preservados. As seções abaixo mostram cada passo para quem prefere a rota manual.
 
 ## O que o instalador faz em um contêiner {#what-the-installer-does-in-a-container}
 
@@ -61,7 +59,7 @@ Substitua o placeholder pela tag real da release antes de continuar.
 
 ## 2. Prepare a propagação do mount FUSE {#2-prepare-fuse-mount-propagation}
 
-The FUSE mount must be created below a shared parent mount. Run this once before the first container starts:
+O mount FUSE precisa ser criado abaixo de um mount pai compartilhado. Execute isto uma vez, antes do primeiro container iniciar:
 
 ```bash
 sudo mkdir -p /zurg_mnt
@@ -70,14 +68,14 @@ sudo mount --bind /zurg_mnt /zurg_mnt
 sudo mount --make-rshared /zurg_mnt
 ```
 
-Verify the device and propagation mode:
+Verifique o dispositivo e o modo de propagação:
 
 ```bash
 test -c /dev/fuse
 findmnt -o TARGET,PROPAGATION /zurg_mnt
 ```
 
-The second command should report `shared` under `PROPAGATION`.
+O segundo comando deve mostrar `shared` em `PROPAGATION`.
 
 ## 3. Crie o projeto do compose {#3-create-the-compose-project}
 

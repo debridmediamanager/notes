@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
     <meta name="turbo-root" content="/zh">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847987626404">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847991184308">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -39,12 +39,12 @@
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
     <link id="retype-favicon" rel="icon" href="../../../assets/favicon.png" />
-    <link href="../../../resources/css/retype.css?v=4.6.0.847987626404" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.847991184308" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847987626404" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847991184308" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847987626404" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847987626404" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847991184308" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847991184308" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -1031,15 +1031,14 @@ everything else                               -&gt; Downloading   (:93)</code></
 <h3 id="111-modes-that-exist-in-the-proxy-but-are-never-called">1.11 代理中存在但从未被调用的模式</h3>
 <ul>
 <li>
-<p><code translate="no" v-pre>mode=retry&amp;value={id}</code> (<code translate="no" v-pre>SabnzbdProxy.cs:148-160</code>, response <code translate="no" v-pre>{status, nzo_id}</code> →
-<code translate="no" v-pre>Responses/SabnzbdRetryResponse.cs</code>). <code translate="no" v-pre>ISabnzbdProxy.RetryDownload</code> has <strong>no caller</strong> in either repo.</p>
+<p><code translate="no" v-pre>mode=retry&amp;value={id}</code>（<code translate="no" v-pre>SabnzbdProxy.cs:148-160</code>，响应 <code translate="no" v-pre>{status, nzo_id}</code> →
+<code translate="no" v-pre>Responses/SabnzbdRetryResponse.cs</code>）。<code translate="no" v-pre>ISabnzbdProxy.RetryDownload</code> 在两个仓库中都<strong>没有调用方</strong>。</p>
 </li>
 <li>
-<p><code translate="no" v-pre>Responses/SabnzbdCategoryResponse.cs</code> (<code translate="no" v-pre>{&quot;categories&quot;: [...]}</code>, i.e. <code translate="no" v-pre>mode=get_cats</code>) is
-<strong>entirely unreferenced</strong> in both repos.</p>
+<p><code translate="no" v-pre>Responses/SabnzbdCategoryResponse.cs</code>（<code translate="no" v-pre>{&quot;categories&quot;: [...]}</code>，即 <code translate="no" v-pre>mode=get_cats</code>）在两个仓库中<strong>完全没有被引用</strong>。</p>
 </li>
 <li>
-<p><code translate="no" v-pre>Sabnzbd.ValidatePath</code> (<code translate="no" v-pre>Sabnzbd.cs:576-592</code>) is private and never called (dead).</p>
+<p><code translate="no" v-pre>Sabnzbd.ValidatePath</code>（<code translate="no" v-pre>Sabnzbd.cs:576-592</code>）是 private 的，而且从未被调用（死代码）。</p>
 </li>
 </ul>
 <h2 id="2-sabnzbddownloadstatus-and-sabnzbdpriority--exact-members-unknownnull-handling">2. <code translate="no" v-pre>SabnzbdDownloadStatus</code> 和 <code translate="no" v-pre>SabnzbdPriority</code> — 确切成员，未知值和 null 的处理</h2>
@@ -1117,28 +1116,11 @@ everything else                               -&gt; Downloading   (:93)</code></
 }</code></pre>
 </doc-codeblock></div>
 <ul>
-<li>
-<p><strong>No per-property converter.</strong> The globally registered
-<code translate="no" v-pre>StringEnumConverter { NamingStrategy = CamelCaseNamingStrategy }</code> (<code translate="no" v-pre>Json.cs:32</code>) handles it.</p>
-</li>
-<li>
-<p>An <strong>unknown name throws</strong> (Newtonsoft <code translate="no" v-pre>EnumUtils.ParseEnum</code> → <code translate="no" v-pre>JsonSerializationException</code>),
-and because <code translate="no" v-pre>GetQueue</code>/<code translate="no" v-pre>GetHistory</code> use <code translate="no" v-pre>Json.Deserialize</code> (not Try), the <em>entire</em> queue or history
-call fails. <strong>Never emit a status outside this list.</strong></p>
-</li>
-<li>
-<p>Emit SAB&#x27;s canonical spellings exactly as above (<code translate="no" v-pre>&quot;Downloading&quot;</code>, <code translate="no" v-pre>&quot;QuickCheck&quot;</code>, <code translate="no" v-pre>&quot;Completed&quot;</code>,
-<code translate="no" v-pre>&quot;Failed&quot;</code>, <code translate="no" v-pre>&quot;Propagating&quot;</code>, ...). Newtonsoft&#x27;s enum matching does fall back to case-insensitive,
-but exact case is the only thing worth relying on.</p>
-</li>
-<li>
-<p>Integers are accepted too (<code translate="no" v-pre>AllowIntegerValues</code> default true), but don&#x27;t use them.</p>
-</li>
-<li>
-<p>A JSON <code translate="no" v-pre>null</code> for <code translate="no" v-pre>status</code> is ignored by <code translate="no" v-pre>NullValueHandling.Ignore</code> and the member stays
-<code translate="no" v-pre>Grabbing</code> (0) — a queue slot silently becomes <code translate="no" v-pre>Queued</code>, a history slot silently becomes
-<code translate="no" v-pre>Downloading</code>. Always send an explicit status.</p>
-</li>
+<li><strong>没有按属性的转换器。</strong> 全局注册的 <code translate="no" v-pre>StringEnumConverter { NamingStrategy = CamelCaseNamingStrategy }</code>（<code translate="no" v-pre>Json.cs:32</code>）会处理这一点。</li>
+<li>遇到<strong>未知名称会直接抛出异常</strong>（Newtonsoft 的 <code translate="no" v-pre>EnumUtils.ParseEnum</code> → <code translate="no" v-pre>JsonSerializationException</code>）。由于 <code translate="no" v-pre>GetQueue</code>/<code translate="no" v-pre>GetHistory</code> 使用的是 <code translate="no" v-pre>Json.Deserialize</code>（而不是 Try），整个队列或历史记录调用都会失败。<strong>绝对不要输出此列表之外的状态。</strong></li>
+<li>请严格按照上面的写法输出 SAB 的标准拼写（<code translate="no" v-pre>&quot;Downloading&quot;</code>、<code translate="no" v-pre>&quot;QuickCheck&quot;</code>、<code translate="no" v-pre>&quot;Completed&quot;</code>、<code translate="no" v-pre>&quot;Failed&quot;</code>、<code translate="no" v-pre>&quot;Propagating&quot;</code> 等）。Newtonsoft 的枚举匹配确实会回退到不区分大小写，但只有大小写完全一致才值得依赖。</li>
+<li>整数也可以接受（<code translate="no" v-pre>AllowIntegerValues</code> 默认为 true），但不要使用整数。</li>
+<li><code translate="no" v-pre>status</code> 为 JSON <code translate="no" v-pre>null</code> 时，会被 <code translate="no" v-pre>NullValueHandling.Ignore</code> 忽略，成员保持为 <code translate="no" v-pre>Grabbing</code>（0）：队列中的条目会悄悄变成 <code translate="no" v-pre>Queued</code>，历史记录中的条目会悄悄变成 <code translate="no" v-pre>Downloading</code>。请始终发送明确的 status。</li>
 </ul>
 <hr>
 <h2 id="3-get_config-exactly-what-is-read-and-the-validation-rules">3. <code translate="no" v-pre>get_config</code>：具体读取哪些内容，以及校验规则</h2>

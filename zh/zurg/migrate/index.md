@@ -1,6 +1,6 @@
 # 迁移到 zurg {#migrating-to-zurg}
 
-I don't see the page content yet. Please paste the text you want translated, and I'll translate it into Simplified Chinese.
+我们先读这一页。它适用于每一次迁移，大部分需要的内容都在这里。各个服务器的页面之所以简短，是因为共用的部分都放在这一页里。
 
 ## 简要版 {#the-short-version}
 

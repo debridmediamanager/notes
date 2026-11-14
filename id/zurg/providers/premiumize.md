@@ -100,11 +100,11 @@ zurg memetakan kode error dari layanan ke langkah berikutnya yang seharusnya dil
 ## Cek apakah sudah berhasil {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/premiumize/test
+curl -sS -X POST http://localhost:9999/api/providers/premiumize/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-Kalau cuma pakai satu akun, folder akunmu sendiri tidak ditampilkan di daftar root mount, jadi mount menampilkan file yang sama di bawah `__all__`.
+Dengan hanya satu akun, folder miliknya sendiri tidak muncul di daftar root mount, jadi mount menampilkan file yang sama di bawah `__all__`.
 
 ## Saat terjadi masalah {#when-it-goes-wrong}
 

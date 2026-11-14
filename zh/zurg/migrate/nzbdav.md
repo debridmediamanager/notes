@@ -20,12 +20,12 @@ nzbdav 的 `.ids` 对象存储会在五个层级的每一层都生成全部 16 �
 
 ## 迁移后你的库是什么样子 {#what-your-library-looks-like-afterwards}
 
-**Alles wird neu hinzugefügt**, weil der Bibliotheks-Root nach `__magic__` wechselt.
-Es gibt keinen günstigeren Weg und keinen Teilweg. Warum, steht [auf der gemeinsamen Seite](index.md).
+**所有内容都要重新添加**,因为库根目录会改到 `__magic__`。
+没有更便宜的办法,也没有只做一部分的办法。原因见[共享页面](index.md)。
 
-Die gute Nachricht: Bei nzbdav ist es die eine Migration, bei der **sich nichts außer dem Präfix ändert**. Jeder Dateiname, den zurg ausliefert, ist der, den nzbdav ausgeliefert hat. Ein \*arr, der aus `__magic__` neu importiert, parst genau das, was er vorher geparst hat. Ein Ordner, den du von Hand organisierst, sieht aus wie immer.
+好消息是,nzbdav 是唯一一种迁移方式里**你看到的东西只有前缀会变**的。zurg 提供的每个文件名都和 nzbdav 之前提供的一样。\*arr 从 `__magic__` 重新导入时,解析的内容和之前完全一样。你手动整理的文件夹,看起来也和原来一模一样。
 
-Das gilt für jede Einrichtung. Unter Windows und überall sonst, wo Plex den Mount direkt liest, sind die Dateinamen identisch. Wenn Sonarr und Radarr eine Symlink-Bibliothek organisieren, waren die Dateinamen schon ihre eigenen, und die Quelle, die sie parsen, bleibt unverändert. Diese Migration verändert also nichts daran, wie deine Bibliothek gelesen wird. Sie ändert nur, wo sie liegt.
+不管你用哪种配置都是这样。在 Windows 上,以及 Plex 直接读取挂载目录的其他任何地方,文件名都完全相同。如果 Sonarr 和 Radarr 是在整理符号链接库,那么文件名本来就是它们自己的,它们解析的源也没有变化。所以这次迁移不会改变你的库的读取方式,只会改变它存放的位置。
 
 ## 新内容会怎样出现 {#what-new-content-shows-up}
 

@@ -82,13 +82,13 @@ Satu hal yang tidak bisa dipertahankan nama itu adalah `ignore_renames: true`, d
 
 ## Apa yang ikut berubah di sekitarnya {#what-a-rename-changes-around-it}
 
-A rename is a view, but several things are built from that view, and they are updated with it:
+Rename hanya sebuah tampilan, tetapi beberapa hal dibangun dari tampilan itu, dan semuanya ikut diperbarui:
 
-- **The mount.** rclone's directory cache is invalidated for the old and the new path, so the change shows up without waiting out the cache.
-- **`.strm` files**, if `save_strm_files` is on. The old ones are deleted and written again under the new name.
-- **Plex dan Jellyfin** diminta untuk memeriksa rilis itu lagi.
-- **The on-disk cache record.** The `.zurgtorrent` is written under the new name and the old file is deleted. That deletion matters: left behind, a restart loads both, the hash collision resolves back to the other copy, and the rename silently reverts. That was a real bug, seen on 2026-08-17.
-- **The SABnzbd and qBittorrent endpoints**, which recompute the folder they report to Sonarr and Radarr on every poll, so a rename mid-import moves the path they are told to import from rather than stranding them.
+- **Mount.** Cache direktori rclone dihapus untuk path lama dan path baru, jadi perubahannya langsung terlihat tanpa menunggu cache habis.
+- **File `.strm`**, jika `save_strm_files` aktif. File lama dihapus dan ditulis ulang dengan nama baru.
+- **Plex dan Jellyfin** diminta untuk memindai ulang rilis tersebut.
+- **Catatan cache di disk.** File `.zurgtorrent` ditulis dengan nama baru dan file lama dihapus. Penghapusan ini penting: jika file lama tertinggal, saat restart kedua file akan dimuat, hash collision akan kembali ke salinan yang lain, dan rename diam-diam kembali ke nama semula. Ini pernah menjadi bug nyata, yang ditemukan pada 2026-08-17.
+- **Endpoint SABnzbd dan qBittorrent**, yang menghitung ulang folder yang dilaporkan ke Sonarr dan Radarr pada setiap polling, jadi rename di tengah proses import akan memindahkan path yang mereka gunakan untuk import, bukan membuat mereka terjebak.
 
 ## Tiga jebakan {#three-traps}
 

@@ -74,11 +74,12 @@ providers:
 ## تحقّق من أنه يعمل {#check-it-worked}
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/alldebrid/test
+curl -sS -X POST http://localhost:9999/api/providers/alldebrid/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
-مع حساب واحد فقط، يتم استبعاد مجلده الخاص من قائمة الجذر للتركيب، لذلك يعرض التركيب نفس الملفات تحت `__all__`.
+مع حساب واحد فقط، يتم استبعاد مجلده الخاص من قائمة الجذر للتركيب،
+لذلك يُظهر التركيب نفس الملفات تحت `__all__`.
 
 ## عندما تسوء الأمور {#when-it-goes-wrong}
 
