@@ -384,7 +384,7 @@ Du bist fertig. Die folgenden Abschnitte sind optional.
 
 **Was es macht.** Gibt rex eine HTTPS-Adresse, die Plex-Apps unterwegs erreichen können, und meldet sie bei plex.tv.
 
-**Warum es wichtig ist.** Unterwegs verbindet sich app.plex.tv nur mit einer HTTPS-Adresse, und die anderen Plex-Apps bevorzugen eine solche Adresse. Ein echter Plex-Server kann auf das Relay von Plex zurückgreifen; rex kann das nicht, deshalb legst du selbst fest, wie er erreicht wird. rex muss zuerst [beansprucht](#step-3-add-it-to-a-plex-account) werden, und ein Proxy, der dem Internet zugewandt ist, muss `/rex/` blockieren ([Keep the port private](#keep-the-port-private)).
+**Warum es wichtig ist.** Unterwegs verbindet sich app.plex.tv nur mit einer HTTPS-Adresse, und die anderen Plex-Apps bevorzugen eine solche Adresse. Ein echter Plex-Server kann auf das Relay von Plex zurückgreifen; rex kann das nicht, deshalb legst du selbst fest, wie er erreicht wird. rex muss zuerst [beansprucht](#step-3-add-it-to-a-plex-account) werden, und ein Proxy, der dem Internet zugewandt ist, muss `/rex/` blockieren ([Port privat halten](#keep-the-port-private)).
 
 **Plex Pass.** Plex Web spielt unterwegs ab, ohne Plex Pass oder Remote Watch Pass auf einem der beiden Konten. Andere Plex-Apps wurden unterwegs noch nicht getestet.
 
@@ -524,7 +524,7 @@ rex gibt das bei jedem Start aus. Probleme zeigen sich später als `heartbeat fa
 
 ## Dein Wiedergabeverlauf von einem anderen Plex-Server (optional) {#your-watch-history-from-another-plex-server-optional}
 
-Schon mal auf einem anderen Plex-Server geschaut? Sobald deine Bibliothek in rex liegt, übernimmt [Bring your watch history](import-watched.md) von dort, was du geschaut hast, wo du aufgehört hast und deine Sternebewertungen, und zwar für jede Person einzeln.
+Schon mal auf einem anderen Plex-Server geschaut? Sobald deine Bibliothek in rex liegt, übernimmt [Bring deine Wiedergabeverlauf mit](import-watched.md) von dort, was du geschaut hast, wo du aufgehört hast und deine Sternebewertungen, und zwar für jede Person einzeln.
 
 ## Sonarr, Radarr und Bazarr (optional) {#sonarr-radarr-and-bazarr-optional}
 

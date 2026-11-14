@@ -47,15 +47,15 @@ Mengelola library
 - [Sonarr & Radarr untuk torrent](guides/sonarr-radarr-torrents.md) — sama, dengan zurg menjawab sebagai qBittorrent; Prowlarr juga
 - [Pencarian zurg untuk Sonarr & Radarr](guides/sonarr-radarr-fetch.md). Radarr dan Sonarr menyimpan daftarnya, dan zurg yang mencari serta menempatkan release-nya. Tidak ada indexer atau download client di keduanya.
 - [`__magic__`](guides/magic.md) — satu-satunya direktori yang layout-nya disimpan, jadi kamu sendiri yang mengaturnya, dengan library difile berdasarkan judul untuk Kodi dan Plex
-- [Renaming](guides/renaming.md) — rename release atau file di mana saja di library. Move akan ditolak dan halaman itu menjelaskan alasannya
+- [Mengganti Nama](guides/renaming.md) — rename release atau file di mana saja di library. Move akan ditolak dan halaman itu menjelaskan alasannya
 - [Plex](guides/plex.md) — apa yang dilakukan zurg dengan token Plex, dan apa yang sengaja tidak dilakukannya
 - [Jellyfin](guides/jellyfin.md) — sama, untuk Jellyfin
-- [rex with zurg](../rex/with-zurg.md) — media server untuk aplikasi Plex yang tidak memiliki file apa pun, diisi oleh zurg dari akun debrid kamu. Selengkapnya di [rex](../rex/index.md)
+- [rex dengan zurg](../rex/with-zurg.md) — media server untuk aplikasi Plex yang tidak memiliki file apa pun, diisi oleh zurg dari akun debrid kamu. Selengkapnya di [rex](../rex/index.md)
 - [Addon Stremio](guides/stremio.md) — Stremio mencari lewat indexer kamu sendiri, dan memutar langsung dari backend Usenet
 - [Watchlist dan Seerr](guides/acquisition.md) mengambil apa yang kamu minta lewat indexer kamu sendiri
 - [Watchlist Plex](guides/plex-watchlist.md) adalah sisi Plex dari itu
 - [Daftar wanted DMM](guides/dmm-wanted.md) mengambil apa yang kamu tekan Want di DMM, tanpa perlu setup apa pun lagi
-- [Local libraries](guides/local-libraries.md) memutar daftar release bersama lewat akun kamu sendiri
+- [Perpustakaan lokal](guides/local-libraries.md) memutar daftar release bersama lewat akun kamu sendiri
 - [Android dan Google TV](guides/android.md) menjalankan seluruh library di ponsel atau TV box
 
 ## Migrasi {#migrating}
@@ -71,10 +71,10 @@ Pindahkan pustaka yang sudah ada ke zurg tanpa perlu mengunduh ulang atau memind
 ## Referensi {#reference}
 
 - [Konfigurasi](reference/config.md) — setiap opsi di `config.yml`
-- [Command line](reference/cli.md) berisi daftar setiap perintah dan flag yang diterima binary
-- [Outbound identity](reference/outbound-identity.md) menjelaskan apa yang dikatakan zurg tentang dirinya kepada layanan yang dipanggilnya
-- [MCP server](reference/mcp.md) memungkinkan agen AI mengendalikan zurg melalui Model Context Protocol
-- [Tags](reference/tags.md) — apa yang diterapkan pada torrent, dan alasannya
+- [Baris perintah](reference/cli.md) berisi daftar setiap perintah dan flag yang diterima binary
+- [Identitas keluar](reference/outbound-identity.md) menjelaskan apa yang dikatakan zurg tentang dirinya kepada layanan yang dipanggilnya
+- [Server MCP](reference/mcp.md) memungkinkan agen AI mengendalikan zurg melalui Model Context Protocol
+- [Tag](reference/tags.md) — apa yang diterapkan pada torrent, dan alasannya
 - [Changelog](reference/changelog.md) — apa yang berubah dan kapan
 
 ## Internal {#internals}

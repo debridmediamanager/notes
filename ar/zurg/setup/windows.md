@@ -515,7 +515,7 @@ $env:ZURG_INSTALL_MODE = "update"; irm https://raw.githubusercontent.com/debridm
 
 ## انظر أيضًا {#see-also}
 
-- [Linux](linux.md)، [Docker](docker.md) و[macOS](macos.md) — نفس التثبيت على المنصات الأخرى
+- [لينكس](linux.md)، [Docker](docker.md) و[macOS](macos.md) — نفس التثبيت على المنصات الأخرى
 - [Sonarr و Radarr للتورنتات](../guides/sonarr-radarr-torrents.md) — نقطة نهاية qBittorrent من البداية إلى النهاية، مع إعدادات العميل
 - [Sonarr و Radarr](../guides/sonarr-radarr.md) — نقطة نهاية SABnzbd، بنفس الطريقة
 - [Usenet](../guides/usenet.md) — حسابات الأخبار، ومدة الاحتفاظ، والإصلاح، وواجهة `nzb` الخلفية بالتفصيل

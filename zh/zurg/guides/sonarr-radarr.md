@@ -6,7 +6,7 @@
 | 指南 | 谁来搜索 | zurg 扮演 | 你需要 |
 |---|---|---|---|
 | [Usenet](sonarr-radarr.md) | Sonarr 和 Radarr | 一个 SABnzbd | 一个 Usenet 账户（或者用于 `torbox_nzb` 后端的 TorBox Pro），以及 Prowlarr 或 \*arrs 中的 Usenet 索引器 |
-| [Torrents](sonarr-radarr-torrents.md) | Sonarr 和 Radarr | 一个 qBittorrent | 一个 debrid 账户，以及 Prowlarr 或 \*arrs 中的 torrent 索引器 |
+| [种子](sonarr-radarr-torrents.md) | Sonarr 和 Radarr | 一个 qBittorrent | 一个 debrid 账户，以及 Prowlarr 或 \*arrs 中的 torrent 索引器 |
 | [zurg 搜索](sonarr-radarr-fetch.md) | zurg | 完全不需要下载客户端 | 一个 Usenet、TorBox Pro 或 debrid 账户，以及 zurg 自身配置中的 Newznab 或 Torznab 索引器 |
 
 前两种可以同时运行。它们共用同一个 `__magic__` 文件夹。

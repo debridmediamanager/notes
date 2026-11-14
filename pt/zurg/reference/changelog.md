@@ -917,7 +917,7 @@ As requisições para serviços debrid e indexadores agora usam um User-Agent ge
 
 `user_agent` define outro agente, e `omit_user_agent` faz com que nenhum seja enviado. As chaves `outbound_*` definem os nomes de cliente e de dispositivo que Plex, Jellyfin e Emby veem. Todas estão no painel, em Network & Connectivity, e passam a valer depois de reiniciar. As conexões Usenet não enviam nenhum identificador de software. Isso remove os identificadores próprios do zurg. Não torna você anônimo.
 
-Os detalhes estão em [Outbound identity](outbound-identity.md).
+Os detalhes estão em [Identidade de saída](outbound-identity.md).
 
 ## O zurg esvazia a lixeira do Plex por padrão {#zurg-empties-the-plex-trash-by-default}
 

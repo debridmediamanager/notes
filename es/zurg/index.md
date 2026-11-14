@@ -75,8 +75,8 @@ Mueve una biblioteca existente a zurg sin volver a descargar ni a escanear.
 - [Línea de comandos](reference/cli.md) lista cada comando y flag que acepta el binario
 - [Identidad saliente](reference/outbound-identity.md) explica qué le dice zurg a los servicios que llama sobre sí mismo
 - [Servidor MCP](reference/mcp.md) permite que un agente de IA controle zurg a través del Model Context Protocol
-- [Tags](reference/tags.md) — qué se aplica a un torrent, y por qué
-- [Changelog](reference/changelog.md) — qué cambió y cuándo
+- [Etiquetas](reference/tags.md) — qué se aplica a un torrent, y por qué
+- [Registro de cambios](reference/changelog.md) — qué cambió y cuándo
 
 ## Internos {#internals}
 

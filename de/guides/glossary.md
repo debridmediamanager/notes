@@ -1,6 +1,6 @@
 # Was jedes Teil macht {#what-each-piece-does}
 
-Die Namen sagen nicht direkt, was sie tun, daher hier je eine Zeile zu jedem. Alles, was nicht mit **For sponsors** markiert ist, ist kostenlos. Welche du brauchst, findest du unter [Choose your setup](choose-your-setup.md).
+Die Namen sagen nicht direkt, was sie tun, daher hier je eine Zeile zu jedem. Alles, was nicht mit **For sponsors** markiert ist, ist kostenlos. Welche du brauchst, findest du unter [Wähle dein Setup](choose-your-setup.md).
 
 ## Die drei Projekte {#the-three-projects}
 
@@ -28,7 +28,7 @@ Für keines dieser Tools wird ein Server benötigt.
 | [rex addons](../rex/addons.md) | Kleine Programme, die rex etwas zum Abspielen geben: YouTube, Spotify, IPTV, Heimvideos oder was auch immer du schreibst |
 | [rex-live-sports](../rex/live-tv.md) | Ein rex-Addon, das Live-Sport-Kanäle und einen Programmführer in die Live-TV-Funktion der Plex-Apps bringt |
 | [rex-direct](../rex/any-source.md#rex-direct) | Gibt deinem rex eine eigene sichere Adresse, damit die Plex-Apps auch von unterwegs drankommen |
-| [rex for Android](../rex/android.md) | rex und seine Addons auf einem Android-Handy oder einer TV-Box, ohne Computer |
+| [rex für Android](../rex/android.md) | rex und seine Addons auf einem Android-Handy oder einer TV-Box, ohne Computer |
 | [zurg+rex for Android](../zurg/guides/android.md) | Ein Plex-Server auf deinem Handy: zurg und rex zusammen auf einem Android-Gerät, mit deiner Debrid- und Usenet-Bibliothek. Für Sponsoren |
 
 ## In Jellyfin und Emby {#inside-jellyfin-and-emby}

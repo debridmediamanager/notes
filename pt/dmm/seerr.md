@@ -9,7 +9,7 @@ Isso é para patrocinadores. O Seerr faz login com a chave de API do DMM vinda d
 
 ## O que você precisa {#what-you-need}
 
-- zurg lendo sua lista de desejados do DMM com `dmm_api_key` no `config.yml`. Veja [Fetch what you want from DMM](../zurg/guides/dmm-wanted.md#what-you-need).
+- zurg lendo sua lista de desejados do DMM com `dmm_api_key` no `config.yml`. Veja [Busque o que você quiser no DMM](../zurg/guides/dmm-wanted.md#what-you-need).
 - Seerr configurado com seu servidor Plex, Jellyfin ou Emby para que ele saiba quais episódios você tem.
 
 ## Adicionar o DMM como Radarr {#add-dmm-as-radarr}
@@ -71,7 +71,7 @@ Seerr lê a lista do DMM uma vez por dia em **Radarr Scan** e **Sonarr Scan**. P
 
 Abra o título no Seerr, clique no botão de engrenagem e depois em **Remove from Radarr** (ou **Remove from Sonarr**). Isso tira o título da sua lista de desejados. O que o zurg já baixou continua na sua biblioteca. **Open in Radarr** ao lado abre o título no DMM.
 
-Travou? Pergunte no fórum **dmm-support** do [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) explica o que incluir.
+Travou? Pergunte no fórum **dmm-support** do [Discord](https://discord.com/invite/7u4YjMThXP). [Obtendo ajuda](../guides/remote-help.md) explica o que incluir.
 
 ## Seerr via DMM ou a fonte Seerr própria do zurg {#seerr-through-dmm-or-zurgs-own-seerr-source}
 

@@ -51,7 +51,7 @@ zurg собирает ваши дебрид-аккаунты и библиоте
 - [rex с zurg](../rex/with-zurg.md) — медиасервер для приложений Plex, который не владеет файлами, а наполняется zurg из вашего аккаунта debrid. Подробнее в [rex](../rex/index.md)
 - [Аддон Stremio](guides/stremio.md) — Stremio ищет через ваши индексаторы и воспроизводит прямо из бэкенда Usenet
 - [Watchlist и Seerr](guides/acquisition.md) получает то, что вы запросили, через ваши индексаторы
-- [Plex watchlist](guides/plex-watchlist.md) — сторона Plex для того же самого
+- [Список желаемого в Plex](guides/plex-watchlist.md) — сторона Plex для того же самого
 - [Список желаемого DMM](guides/dmm-wanted.md) получает то, на что вы нажали Want в DMM, и больше ничего настраивать не нужно
 - [Локальные библиотеки](guides/local-libraries.md) воспроизводят общий список релизов через ваш аккаунт
 - [Android и Google TV](guides/android.md) — вся библиотека на телефоне или ТВ-приставке
@@ -79,16 +79,16 @@ zurg собирает ваши дебрид-аккаунты и библиоте
 
 Как устроен zurg, что на нём измеряли и заметки по проектным решениям в сложных местах.
 
-- [Architecture](internals/architecture.md) — общая структура и инварианты, которые легко сломать
-- [Debrid baseline](internals/debrid-baseline.md) — во что обходится zurg и насколько он быстрый на RD, AD и TorBox
-- [Torrent lifecycle](internals/torrent-lifecycle.md) — что каждый аккаунт реально сообщает во время загрузки, замерено вживую
-- [SABnzbd client contract](internals/sabnzbd-client-contract.md) — точный формат ответов, который ожидают Sonarr и Radarr
-- [Plex trash sweep](internals/plex-trash-sweep.md) · [Stream timeout regression](internals/stream-timeout-regression.md) · [Directory config UI/UX](internals/uiux.md)
-- [E2E testing](internals/e2e-test.md) · [Real-Debrid API notes](internals/realdebrid-behavior.md)
-- [qBittorrent client contract](internals/qbittorrent-client-contract.md) · [Persistent caches](internals/persistent-caches.md)
-- [Naming](internals/naming.md) · [rclone move refusal](internals/rclone-move-refusal.md)
+- [Архитектура](internals/architecture.md) — общая структура и инварианты, которые легко сломать
+- [Базовая настройка Debrid](internals/debrid-baseline.md) — во что обходится zurg и насколько он быстрый на RD, AD и TorBox
+- [Жизненный цикл торрента](internals/torrent-lifecycle.md) — что каждый аккаунт реально сообщает во время загрузки, замерено вживую
+- [Контракт клиента SABnzbd](internals/sabnzbd-client-contract.md) — точный формат ответов, который ожидают Sonarr и Radarr
+- [Очистка корзины Plex](internals/plex-trash-sweep.md) · [Регресс таймаута стрима](internals/stream-timeout-regression.md) · [Интерфейс настройки каталога](internals/uiux.md)
+- [E2E-тестирование](internals/e2e-test.md) · [Заметки по Real-Debrid API](internals/realdebrid-behavior.md)
+- [Контракт клиента qBittorrent](internals/qbittorrent-client-contract.md) · [Постоянные кэши](internals/persistent-caches.md)
+- [Именование](internals/naming.md) · [Отказ rclone move](internals/rclone-move-refusal.md)
 
 ---
 
 zurg распространяется спонсорам: [GitHub Releases](https://github.com/debridmediamanager/zurg/releases)
-· [Sponsor](https://gatekeeper.debridmediamanager.com/) · [Discord](https://discord.com/invite/7u4YjMThXP)
+· [Спонсировать](https://gatekeeper.debridmediamanager.com/) · [Discord](https://discord.com/invite/7u4YjMThXP)

@@ -6,7 +6,7 @@
 | الدليل | من يبحث | يعمل zurg كـ | ما تحتاجه |
 |---|---|---|---|
 | [Usenet](sonarr-radarr.md) | Sonarr وRadarr | SABnzbd | حساب Usenet (أو TorBox Pro للواجهة الخلفية `torbox_nzb`) ومفهرسات Usenet في Prowlarr أو في \*arrs |
-| [Torrents](sonarr-radarr-torrents.md) | Sonarr وRadarr | qBittorrent | حساب debrid ومفهرسات تورنت في Prowlarr أو في \*arrs |
+| [التورنتات](sonarr-radarr-torrents.md) | Sonarr وRadarr | qBittorrent | حساب debrid ومفهرسات تورنت في Prowlarr أو في \*arrs |
 | [zurg searches](sonarr-radarr-fetch.md) | zurg | لا يوجد أي عميل تنزيل إطلاقًا | حساب Usenet أو TorBox Pro أو debrid، ومفهرسات Newznab أو Torznab في إعدادات zurg نفسها |
 
 يمكن تشغيل الطريقتين الأوليين جنبًا إلى جنب. فهما تشتركان في المجلد نفسه `__magic__`.
@@ -320,7 +320,7 @@ zurg يحاكي SABnzbd تحديدًا، لذا لن يعمل أي شيء آخر
 
 ## 8. إذا كان \*arr لديك في Docker {#8-if-your-arr-is-in-docker}
 
-هذه الخطوة مخصّصة لـ Docker على مضيف Linux. تعمل Docker Desktop على macOS وWindows داخل آلة افتراضية. يعتمد الربط `rslave` أدناه على انتشار التركيب في Linux (انظر [Docker setup](../setup/docker.md))، ولم يُختبر تمرير تركيب zurg إلى حاوية على هذه الأنظمة. على macOS وWindows، ثبّت Sonarr وRadarr كتطبيقات عادية بدلاً من ذلك، كما يصف [Before you start](#before-you-start).
+هذه الخطوة مخصّصة لـ Docker على مضيف Linux. تعمل Docker Desktop على macOS وWindows داخل آلة افتراضية. يعتمد الربط `rslave` أدناه على انتشار التركيب في Linux (انظر [إعداد Docker](../setup/docker.md))، ولم يُختبر تمرير تركيب zurg إلى حاوية على هذه الأنظمة. على macOS وWindows، ثبّت Sonarr وRadarr كتطبيقات عادية بدلاً من ذلك، كما يصف [قبل أن تبدأ](#before-you-start).
 
 ثلاث مشكلات منفصلة. الثانية تكلّفك تنزيلاً جديداً عند كل استيراد. الثالثة لا تظهر إلا عند أول إعادة تشغيل لـ zurg.
 

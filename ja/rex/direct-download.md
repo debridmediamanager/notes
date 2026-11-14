@@ -17,7 +17,7 @@
 
 | 必要なもの | 理由 |
 |---|---|
-| [rex with your own app](any-source.md)、[rex with your Stremio addons](stremio.md)、[rex with zurg](with-zurg.md) のいずれかの手順で rex を設定済みで、映画が再生できること | このページでは rex の起動コマンドを変更し、一部のソースでは、そのソースの設定も1つ変更します |
+| [rex をご自身のアプリで使う](any-source.md)、[rex を Stremio のアドオンと一緒に使う](stremio.md)、[rex と zurg の併用](with-zurg.md) のいずれかの手順で rex を設定済みで、映画が再生できること | このページでは rex の起動コマンドを変更し、一部のソースでは、そのソースの設定も1つ変更します |
 | rex nightly **2026.10.26 以降** | 古いビルドにはこの設定がありません。[rex's Updating section](any-source.md#updating) の手順に従って更新してください |
 | リンクを返せるソース | rex が渡せるのは、ソースが返したリンクだけです。どのソースがこれに対応しているかは [Step 1](#step-1-let-your-source-hand-out-links) で説明しています |
 

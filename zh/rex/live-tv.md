@@ -128,4 +128,4 @@ cd ~/rex-live-sports && git pull && systemctl --user restart rex-live-sports
 - **直播电视只在 Plex Web 和 Plex for Android 中测试过。** 其他 Plex 应用还没有测试。
 - **任何能访问 rex-live-sports 地址的人都可以通过它播放。** 请保持 `listen` 为 `127.0.0.1`。
 
-如果想用你已有的节目单添加自己的频道，请参阅 [Building rex addons](addons.md#live-tv)。
+如果想用你已有的节目单添加自己的频道，请参阅 [构建 rex 插件](addons.md#live-tv)。

@@ -39,8 +39,8 @@
 - [Jellyfin](../zurg/guides/jellyfin.md)
 - [Stremio 插件](../zurg/guides/stremio.md)
 - [Watchlist 和 Seerr](../zurg/guides/acquisition.md)
-- [Plex watchlist](../zurg/guides/plex-watchlist.md)
-- [DMM wanted list](../zurg/guides/dmm-wanted.md)
+- [Plex 观看列表](../zurg/guides/plex-watchlist.md)
+- [DMM 想看列表](../zurg/guides/dmm-wanted.md)
 - [本地媒体库](../zurg/guides/local-libraries.md)
 - [Android 和 Google TV](../zurg/guides/android.md)
 - [从其他工具迁移](../zurg/migrate/index.md)
@@ -51,7 +51,7 @@
 - [将 rex 用于你自己的应用](../rex/any-source.md)
 - [将 rex 与你的 Stremio 插件配合使用](../rex/stremio.md)
 - [将 rex 与 zurg 配合使用](../rex/with-zurg.md)
-- [rex for Android](../rex/android.md)：免费。赞助者可以使用 [zurg+rex](../zurg/guides/android.md)，这是一个运行在手机上的 Plex 服务器，还能把你的 debrid 和 Usenet 库连接到 rex
+- [rex 安卓版](../rex/android.md)：免费。赞助者可以使用 [zurg+rex](../zurg/guides/android.md)，这是一个运行在手机上的 Plex 服务器，还能把你的 debrid 和 Usenet 库连接到 rex
 - [使用 rex 观看直播电视](../rex/live-tv.md)
 - [使用 rex 播放音乐](../rex/music.md)
 - [从 Plex 迁移到 rex](../rex/from-plex.md)

@@ -12,7 +12,7 @@ Richte rex zuerst auf einem neuen Plex-Konto ein. Nutze dazu [rex mit deiner eig
 | Dein eigenes Konto | Hier schaust du. rex wird damit genauso geteilt wie mit jedem anderen |
 | Familie und Freunde | Ihre eigenen Plex-Konten oder verwaltete Benutzer für Kinder (unten) |
 
-Dein eigenes Konto bekommt nicht mehr Rechte als jeder andere, mit dem du teilst. Warum: [Is my Plex account at risk?](faq.md#is-my-plex-account-at-risk)
+Dein eigenes Konto bekommt nicht mehr Rechte als jeder andere, mit dem du teilst. Warum: [Ist mein Plex-Konto gefährdet?](faq.md#is-my-plex-account-at-risk)
 
 ## Jemanden einladen {#invite-someone}
 

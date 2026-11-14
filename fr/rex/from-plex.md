@@ -10,7 +10,7 @@ Vous faites tourner Plex Media Server et vous voulez essayer rex. Vos applicatio
 | Ce que représente chaque fichier | Plex le reconnaît d'après son nom | La source détermine elle-même ce que c'est et l'indique à rex. rex ne lit jamais le nom d'un fichier |
 | Une mauvaise correspondance | Fix Match sur le serveur | **Fix Match** dans une application Plex, connecté avec le compte qui possède rex. rex garde votre choix, et une source peut le reprendre et le conserver, comme le fait zurg ([pourquoi les titres sont placés ainsi](with-zurg.md#why-dmm-places-the-files)) |
 | Le compte du serveur | En général le vôtre | Un nouveau compte Plex créé pour rex, partagé avec le vôtre |
-| Musique, TV en direct et photos | À partir de dossiers et d'un tuner | Uniquement depuis une source qui les envoie, comme un addon ([Building rex addons](addons.md#music)) ou les bandes dessinées de zurg. Plex Web affiche les photos ; Plex pour Android, non |
+| Musique, TV en direct et photos | À partir de dossiers et d'un tuner | Uniquement depuis une source qui les envoie, comme un addon ([Créer des addons pour rex](addons.md#music)) ou les bandes dessinées de zurg. Plex Web affiche les photos ; Plex pour Android, non |
 | Enregistrer la TV | Oui | Non |
 
 ## Choisir une méthode {#pick-a-way}

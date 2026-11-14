@@ -151,7 +151,7 @@ Seu token do GitHub é armazenado criptografado no dispositivo. Desinstalar o ap
 | **This is a 32-bit device. Debrid libraries are supported; Usenet needs 64-bit Android.** | Adicione uma conta debrid, ou use um dispositivo 64-bit para Usenet |
 | **The Plex code expired. Ask for a new one.** | Toque em **Sign in to Plex** de novo e digite o novo código em até 10 minutos |
 | O servidor não aparece no app do Plex | Entre no app do Plex com a conta que você usou no Passo 6, e mantenha os dois dispositivos na mesma rede doméstica |
-| Os títulos mostram um nome de arquivo e sem pôster | Digite sua chave de API do DMM (veja [Get more titles named](#get-more-titles-named)), ou use **Fix Match** em um app do Plex |
+| Os títulos mostram um nome de arquivo e sem pôster | Digite sua chave de API do DMM (veja [Obtenha mais títulos chamados](#get-more-titles-named)), ou use **Fix Match** em um app do Plex |
 | **Needs an update** em um addon | Esta versão do app não consegue mais rodar essa cópia do addon. Atualize o repositório dele e toque em **Update**. Os títulos continuam disponíveis enquanto isso |
 | Ele para quando a tela é desligada | Permita o uso em segundo plano de novo e veja [Don't kill my app](https://dontkillmyapp.com/) |
 | Uma atualização deixa o app sem engine | Instale um engine em **Updates** uma vez. Seus provedores e configurações são mantidos |

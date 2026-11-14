@@ -9,7 +9,7 @@
 - [عمليات بحث zurg لـ Sonarr و Radarr](sonarr-radarr-fetch.md)
 - [الترجمات باستخدام Bazarr](subtitles.md)
 - [Whisparr](whisparr.md)
-- [\_\_magic\_\_](magic.md)
+- [\_\_السحر\_\_](magic.md)
 - [إعادة التسمية](renaming.md)
 - [Plex](plex.md)
 - [ملف Docker Compose واحد لـ zurg وPlex وrex](docker-compose.md)
@@ -21,4 +21,4 @@
 - [المكتبات المحلية](local-libraries.md)
 - [Android وGoogle TV](android.md)
 
-لربط zurg بحساب، انظر قسم [مزودو الخدمة](../providers/index.md)، فيه صفحة لكل خدمة. أما تشغيل zurg نفسه فيشرحه قسم [الإعداد](../setup/index.md)، مع صفحة لكل من [Linux](../setup/linux.md) و[macOS](../setup/macos.md) و[Windows](../setup/windows.md) و[Docker](../setup/docker.md) على Linux. صفحة Windows دليل خطوة بخطوة من الصفر لتثبيت الملف الثنائي، يبدأ بـ RealDebrid مع نقطة الوصول الخاصة بـ qBittorrent، ثم Usenet مع SABnzbd.
+لربط zurg بحساب، انظر قسم [مزودو الخدمة](../providers/index.md)، فيه صفحة لكل خدمة. أما تشغيل zurg نفسه فيشرحه قسم [الإعداد](../setup/index.md)، مع صفحة لكل من [لينكس](../setup/linux.md) و[macOS](../setup/macos.md) و[ويندوز](../setup/windows.md) و[Docker](../setup/docker.md) على Linux. صفحة Windows دليل خطوة بخطوة من الصفر لتثبيت الملف الثنائي، يبدأ بـ RealDebrid مع نقطة الوصول الخاصة بـ qBittorrent، ثم Usenet مع SABnzbd.

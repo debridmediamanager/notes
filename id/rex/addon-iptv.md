@@ -2,7 +2,7 @@
 
 Tutorial ini mengubah playlist IPTV (M3U) dan panduan TV (XMLTV) menjadi channel **Live TV** di Plex Web dan Plex untuk Android. Tiap channel tetap mempertahankan nomor dan guide-nya. Cara ini bekerja dengan channel M3U yang memakai HLS (`.m3u8`) dan guide XMLTV apa pun yang menyebut channel tersebut.
 
-Tutorial ini mengikuti [Building rex addons](addons.md) dan bagian [Live TV](addons.md#live-tv)-nya. Baca [tutorial home videos](addon-home-videos.md) dulu kalau ini pertama kalinya kamu membuat addon. Untuk olahraga live, pakai [Live TV with rex](live-tv.md).
+Tutorial ini mengikuti [Membangun addon rex](addons.md) dan bagian [TV Langsung](addons.md#live-tv)-nya. Baca [tutorial home videos](addon-home-videos.md) dulu kalau ini pertama kalinya kamu membuat addon. Untuk olahraga live, pakai [Live TV dengan rex](live-tv.md).
 
 | Yang kamu butuhkan | Alasannya |
 |---|---|

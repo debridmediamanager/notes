@@ -48,12 +48,12 @@ Rien de tout ça n'est obligatoire. Voici ce que le bloc `providers` t'apporte :
 
 | Désormais disponible | Où |
 |---|---|
-| Les backends TorBox, AllDebrid et Usenet, en plus de Real-Debrid ou à sa place | [Accounts](#accounts) |
-| Plusieurs comptes du même service, distingués par `name` | [Accounts](#accounts) |
-| `disabled: true` pour mettre un compte en pause sans supprimer ses identifiants | [Accounts](#accounts) |
-| `watchlist: true` pour choisir le compte sur lequel les nouveaux ajouts de torrents sont essayés en premier | [Accounts](#accounts) |
+| Les backends TorBox, AllDebrid et Usenet, en plus de Real-Debrid ou à sa place | [Comptes](#accounts) |
+| Plusieurs comptes du même service, distingués par `name` | [Comptes](#accounts) |
+| `disabled: true` pour mettre un compte en pause sans supprimer ses identifiants | [Comptes](#accounts) |
+| `watchlist: true` pour choisir le compte sur lequel les nouveaux ajouts de torrents sont essayés en premier | [Comptes](#accounts) |
 | Filtres de répertoires `provider:` / `not_provider:`, et répertoires par compte | [Directories](#7-directories--filters) |
-| `rd_cdn_host_preference` et `tb_cdn_host_preference` pour choisir le CDN par service | [CDN & Host Selection](#cdn--host-selection) |
+| `rd_cdn_host_preference` et `tb_cdn_host_preference` pour choisir le CDN par service | [Sélection du CDN et de l'hébergeur](#cdn--host-selection) |
 
 Deux petits changements à connaître :
 
@@ -125,7 +125,7 @@ Ce sont les paramètres indispensables pour faire démarrer le serveur.
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `zurg` | string | *(required)* | Identifiant de version de la configuration. Doit être défini à `v1` ; toute autre valeur (y compris une clé absente) fait échouer le chargement. |
-| `providers` | list | *(required)* | Vos comptes debrid et Usenet, une entrée par compte. Voir [Accounts](#accounts) ci-dessous. Les clés de premier niveau `token`, `download_tokens` et `strm_link_token`, présentes avant `providers`, sont obsolètes : elles fonctionnent toujours, comme un seul compte Real-Debrid, et le démarrage affiche un avertissement. Si un bloc `providers` configure déjà Real-Debrid, c'est lui qui est pris en compte et la clé en trop est ignorée. |
+| `providers` | list | *(required)* | Vos comptes debrid et Usenet, une entrée par compte. Voir [Comptes](#accounts) ci-dessous. Les clés de premier niveau `token`, `download_tokens` et `strm_link_token`, présentes avant `providers`, sont obsolètes : elles fonctionnent toujours, comme un seul compte Real-Debrid, et le démarrage affiche un avertissement. Si un bloc `providers` configure déjà Real-Debrid, c'est lui qui est pris en compte et la clé en trop est ignorée. |
 | `mount_path` | string | OS-dependent | Le chemin du système de fichiers où se trouve votre montage rclone. zurg l'utilise pour indiquer aux serveurs multimédias (Plex, Jellyfin, Emby) où trouver les fichiers. Il sert aussi de point de montage quand `rclone_enabled` est à true. Par défaut `/mnt/zurg` (Linux), `/Volumes/Zurg` (macOS) ou `Z:` (Windows). Les utilisateurs de Docker doivent le définir à `/zurg_mnt/zurg` avec le montage de volume `/zurg_mnt:/zurg_mnt:rshared` (voir [docker.md](../setup/docker.md)). |
 | `base_url` | string | `""` | L'URL accessible de l'extérieur de votre instance zurg. Elle est intégrée dans les fichiers STRM pour que les serveurs multimédias puissent diffuser le contenu. Si elle n'est pas définie, les fichiers STRM contiendront des URL `localhost` qui ne fonctionneront pas depuis d'autres appareils. Utilisez votre IP Tailscale, votre IP LAN ou un domaine derrière un reverse proxy. Exemple : `http://100.x.x.x:9999` |
 

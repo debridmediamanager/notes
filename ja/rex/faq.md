@@ -56,7 +56,7 @@ FFmpeg がないと、アプリで再生できないファイルには "This ser
 
 ### Plex Pass は必要ですか? {#do-i-need-plex-pass}
 
-いいえ。rex は、登録されているアカウントに Plex Pass があることを Plex アプリに伝えるので、無料アカウントでも外出先での再生や動画の変換が使えます。外出先での再生は、両側とも無料アカウントを使った Plex Web で確認しました。他のアプリでは外出先での動作はまだテストしていません。映画のエディション、Dashboard、Downloads、イントロやエンディングのスキップ、その他の [Movie and TV capabilities](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities) も動作します。ただし、アプリ独自のルールが適用される場合があります。
+いいえ。rex は、登録されているアカウントに Plex Pass があることを Plex アプリに伝えるので、無料アカウントでも外出先での再生や動画の変換が使えます。外出先での再生は、両側とも無料アカウントを使った Plex Web で確認しました。他のアプリでは外出先での動作はまだテストしていません。映画のエディション、Dashboard、Downloads、イントロやエンディングのスキップ、その他の [映画と TV の機能](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities) も動作します。ただし、アプリ独自のルールが適用される場合があります。
 
 ### オフラインで見るためにダウンロードできますか? {#can-i-download-for-offline-viewing}
 
@@ -78,7 +78,7 @@ Plex アプリに **Downloads** があります。rex は、ダウンロード�
 
 ### ローカルのファイルを読み込みますか? {#does-it-read-my-local-files}
 
-いいえ。rex はフォルダやディスクをスキャンすることはなく、マウントも必要ありません。すべてのファイルは HTTP 経由でソースから取得します。自分のディスク上のファイルも使えますが、それを配信する何かが必要で、そのファイルについて rex に伝える必要があります。詳しくは [rex with your own app](any-source.md) を参照してください。
+いいえ。rex はフォルダやディスクをスキャンすることはなく、マウントも必要ありません。すべてのファイルは HTTP 経由でソースから取得します。自分のディスク上のファイルも使えますが、それを配信する何かが必要で、そのファイルについて rex に伝える必要があります。詳しくは [rex をご自身のアプリで使う](any-source.md) を参照してください。
 
 ### Usenet にも対応していますか? {#does-it-work-with-usenet}
 
@@ -109,7 +109,7 @@ Plex アプリに **Downloads** があります。rex は、ダウンロード�
 
 ### アプリに Plex のバージョンと「Check for Updates」が表示されるのはなぜですか? {#why-does-the-app-show-a-plex-version-and-check-for-updates}
 
-rex は自分自身をアプリや plex.tv に Plex Media Server として名乗るため、アプリには Plex Media Server のバージョン番号が表示されます。その番号は rex のものではありません。**Check for Updates** は、サーバーが最新だと必ず答えます。rex は自分で更新しないからです。rex を更新するには、[Updating](any-source.md#updating) の手順に従って新しい nightly をダウンロードしてください。
+rex は自分自身をアプリや plex.tv に Plex Media Server として名乗るため、アプリには Plex Media Server のバージョン番号が表示されます。その番号は rex のものではありません。**Check for Updates** は、サーバーが最新だと必ず答えます。rex は自分で更新しないからです。rex を更新するには、[アップデート](any-source.md#updating) の手順に従って新しい nightly をダウンロードしてください。
 
 ### ブラウザで port 32400/web を開いてもライブラリが表示されないのはなぜですか? {#why-does-my-browser-at-port-32400web-not-open-a-library}
 
@@ -148,4 +148,4 @@ Play を押した直後の rex のログを見てください。そこに `upstr
 
 ### ヘルプはどこで得られますか? {#where-do-i-get-help}
 
-[Getting help](../guides/remote-help.md) では、どこで質問すればよいか、何を含めるべきかを説明しています。質問先は [Discord](https://discord.com/invite/7u4YjMThXP) の **rex-support** フォーラムで、スポンサー向けのリモートサポートもあります。
+[ヘルプの入手方法](../guides/remote-help.md) では、どこで質問すればよいか、何を含めるべきかを説明しています。質問先は [Discord](https://discord.com/invite/7u4YjMThXP) の **rex-support** フォーラムで、スポンサー向けのリモートサポートもあります。

@@ -6,7 +6,7 @@
 
 > **صورة للرعاة:** `ghcr.io/debridmediamanager/zurg` مخصصة للرعاة. كن راعيًا عبر [gatekeeper](https://gatekeeper.debridmediamanager.com/). بعدها يحصل حساب GitHub الخاص بك على وصول إلى الصورة.
 
-> **مطلوب مضيف Linux:** يعتمد الجبل الظاهر على المضيف والموضّح أدناه على انتشار تركيبات Linux (mount propagation). لا يعمل Docker Desktop على macOS وWindows إلا داخل جهاز افتراضي، لذلك لا يمكنه نقل جبل FUSE هذا إلى Finder أو Explorer، ولا يستطيع rex الوصول إلى zurg داخله، فلن يشتغل التشغيل هناك. استخدم بدلًا من ذلك دليل الملف الثنائي لـ [macOS](https://notes.debridmediamanager.com/ar/zurg/setup/macos/) أو [Windows](https://notes.debridmediamanager.com/ar/zurg/setup/windows/) على أي منهما. أما على Linux مع تشغيل rex على جهاز آخر، فامنح حاوية zurg القيمة `network_mode: host` كما يوضح [rex with zurg](../../rex/with-zurg.md#d4-connect-zurg-to-rex).
+> **مطلوب مضيف Linux:** يعتمد الجبل الظاهر على المضيف والموضّح أدناه على انتشار تركيبات Linux (mount propagation). لا يعمل Docker Desktop على macOS وWindows إلا داخل جهاز افتراضي، لذلك لا يمكنه نقل جبل FUSE هذا إلى Finder أو Explorer، ولا يستطيع rex الوصول إلى zurg داخله، فلن يشتغل التشغيل هناك. استخدم بدلًا من ذلك دليل الملف الثنائي لـ [macOS](https://notes.debridmediamanager.com/ar/zurg/setup/macos/) أو [ويندوز](https://notes.debridmediamanager.com/ar/zurg/setup/windows/) على أي منهما. أما على Linux مع تشغيل rex على جهاز آخر، فامنح حاوية zurg القيمة `network_mode: host` كما يوضح [rex مع zurg](../../rex/with-zurg.md#d4-connect-zurg-to-rex).
 
 ## خيار سطر واحد {#one-line-option}
 

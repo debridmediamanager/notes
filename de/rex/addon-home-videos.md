@@ -3,12 +3,12 @@
 Dieses Tutorial baut einen rex-Addon in einer einzigen Python-Datei. Es legt deine Handyclips, Camcorder-Dateien oder Bildschirmaufnahmen in eine **Home Videos**-Bibliothek, die in jeder Plex-App erscheint. Jedes Video bekommt einen Titel, ein Datum und ein Standbild als Poster.
 Es wird nichts kopiert oder hochgeladen. rex liest die Datei aus deinem Addon, wenn du auf Play drückst.
 
-Es ist die kürzeste funktionierende Version von [Building rex addons](addons.md), Schritte 1 bis 5. Diese Seite sagt dir, was du eintippen musst.
+Es ist die kürzeste funktionierende Version von [Eigene rex-Addons bauen](addons.md), Schritte 1 bis 5. Diese Seite sagt dir, was du eintippen musst.
 Dort steht, warum. Die Tutorials [music](addon-music.md) und [IPTV](addon-iptv.md) verwenden dasselbe Grundgerüst.
 
 | Du brauchst | Warum |
 |---|---|
-| rex, eingerichtet wie in [rex with your own app](any-source.md) (Schritte 1 bis 3) | Dort taucht die Bibliothek auf. Beansprucht, damit die Plex-Apps sie sehen können |
+| rex, eingerichtet wie in [rex mit deiner eigenen App](any-source.md) (Schritte 1 bis 3) | Dort taucht die Bibliothek auf. Beansprucht, damit die Plex-Apps sie sehen können |
 | Python 3.8 oder neuer | Für das Addon. Es nutzt nur die Standardbibliothek von Python |
 | `ffprobe` und `ffmpeg` | `ffprobe` beschreibt jedes Video für rex, `ffmpeg` schneidet das Standbild für das Poster aus. Beide sind im FFmpeg-Paket enthalten |
 | Ein Ordner mit Videos, auf dem Rechner, der das Addon ausführt | `.mp4`, `.mkv`, `.mov`, `.m4v`, `.avi`, `.webm`, `.mts`, `.m2ts`, `.3gp`, auch in Unterordnern |

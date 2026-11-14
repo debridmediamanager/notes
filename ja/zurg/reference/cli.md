@@ -173,7 +173,7 @@ zurg restore-backup my-backup.zurgbackup
 
 ## Plex
 
-これら3つは、このホスト上のPlexサーバーに対して動作します。まずPlexを設定してください。[Plex Integration](config.md#plex-integration)を参照してください。
+これら3つは、このホスト上のPlexサーバーに対して動作します。まずPlexを設定してください。[Plex 連携](config.md#plex-integration)を参照してください。
 
 ### zurg plex-settings
 

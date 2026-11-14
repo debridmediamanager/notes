@@ -25,7 +25,7 @@
 2. افتح فيلمًا واضغط **Want**. في صفحة موسم مسلسل، يضيف **Want S2** ذلك الموسم، ويضيف **Want all seasons** المسلسل كاملًا، بما في ذلك المواسم الجديدة.
 3. قائمتك موجودة على [debridmediamanager.com/wanted](https://debridmediamanager.com/wanted). تُظهر متى قرأها zurg آخر مرة، ومتى جلب كل فيلم. القوائم الطويلة تُعرض بمعدل 120 عنوانًا في الصفحة.
 
-قد تصل الطلبات من Seerr أو Overseerr أو Jellyseerr إلى القائمة نفسها: راجع [Seerr through DMM](../../dmm/seerr.md).
+قد تصل الطلبات من Seerr أو Overseerr أو Jellyseerr إلى القائمة نفسها: راجع [Seerr عبر DMM](../../dmm/seerr.md).
 
 ## متابعة قائمة {#following-a-list}
 

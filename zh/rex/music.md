@@ -14,8 +14,8 @@ rex 可以为 Plexamp、Plex Web 和 Plex for Android 保存一个音乐库。�
 | 你需要的 | 原因 |
 |---|---|
 | 2026.11.02 或更新日期的 rex nightly 版本 | 音乐功能是在该版本中加入的 |
-| 按照 [rex with your own app](any-source.md) 设置好 rex | 音乐库就是在这里显示的 |
-| 一个音乐 addon | 任何通过 rex 的 feed API 发送歌曲的程序。如果你想用自己硬盘里的专辑文件夹，[Tutorial: a music addon](addon-music.md) 是一个完整的示例，只用一个 Python 文件就能实现 |
+| 按照 [使用你自己的应用搭配 rex](any-source.md) 设置好 rex | 音乐库就是在这里显示的 |
+| 一个音乐 addon | 任何通过 rex 的 feed API 发送歌曲的程序。如果你想用自己硬盘里的专辑文件夹，[教程：音乐插件](addon-music.md) 是一个完整的示例，只用一个 Python 文件就能实现 |
 | [Converting video](any-source.md#converting-video-optional)，可选 | 只有当应用设置的音乐质量低于原始文件时，rex 才会转换歌曲 |
 
 ## 第 1 步：安装 rex 并将其添加到 Plex 账户 {#step-1-install-rex-and-add-it-to-a-plex-account}

@@ -4,7 +4,7 @@
 
 Usenet est un type de fournisseur, pas un service debrid. Il n'y a ni jeton d'API ni bibliothèque distante. Vous déposez des fichiers `.nzb` dans un dossier de surveillance et zurg transforme chacun d'eux en une release. Les articles sont récupérés depuis votre serveur de news et décodés au moment où un lecteur demande ces octets.
 
-Cette page ne couvre que l'entrée du fournisseur et les particularités Docker. Tout le reste sur l'utilisation d'Usenet avec zurg se trouve dans [Usenet with zurg](../guides/usenet.md). C'est le guide complet, avec les comptes de news, les NZB, le montage et Plex. C'est la page à lire en deuxième.
+Cette page ne couvre que l'entrée du fournisseur et les particularités Docker. Tout le reste sur l'utilisation d'Usenet avec zurg se trouve dans [Usenet avec zurg](../guides/usenet.md). C'est le guide complet, avec les comptes de news, les NZB, le montage et Plex. C'est la page à lire en deuxième.
 
 ## La configurer {#configure-it}
 

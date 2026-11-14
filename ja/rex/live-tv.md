@@ -16,7 +16,7 @@ rex は、アドオンのチャンネルを Plex Web と Plex for Android の **
 | 必要なもの | 理由 |
 |---|---|
 | rex の nightly ビルドで、2026.11.02 以降のもの | ライブTV機能はそのビルドから入りました |
-| [rex with your own app](any-source.md) の手順どおりに設定済みで、[動画の変換](any-source.md#converting-video-optional) も設定済み | rex は視聴中に各チャンネルを変換します（コピーなので負荷は軽いです） |
+| [rex をご自身のアプリで使う](any-source.md) の手順どおりに設定済みで、[動画の変換](any-source.md#converting-video-optional) も設定済み | rex は視聴中に各チャンネルを変換します（コピーなので負荷は軽いです） |
 | rex を動かすマシンか自宅ネットワーク上のライブスポーツサーバー | rex-live-sports はチャンネルをそこから取得します |
 | Docker | ステップ2 で live-sports を動かすのに使います。ほかの方法も [README](https://github.com/yowmamasita/live-sports-public) に載っています |
 | rex を動かすマシンに Python 3.9 以降、`git`、`ffmpeg`、`ffprobe` | rex-live-sports は ffprobe で各チャンネルのストリームを確認し、ffmpeg でポスターを作ります |

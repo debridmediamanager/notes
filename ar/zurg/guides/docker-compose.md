@@ -11,7 +11,7 @@
 - **جهاز Linux** يبقى مشغّلاً طوال الوقت. المثبّت يضيف Docker إذا لم يكن موجوداً.
 - **رعاية zurg.** صورة zurg خاصة. ارعَ المشروع على [gatekeeper](https://gatekeeper.debridmediamanager.com/) وسيمنح حسابك على GitHub صلاحية الوصول.
 - **مفتاح API الخاص بك من Real-Debrid**، أو تسجيل الدخول لخدمة أخرى يدعمها zurg: [Your Real-Debrid API token](../../guides/real-debrid-api-token.md).
-- **لخادم Plex Media Server**، حساب Plex الخاص بك. **أما لـ rex**، فأنشئ حساب Plex جديداً خصيصاً له: [rex with zurg](../../rex/with-zurg.md#before-you-start) يشرح السبب.
+- **لخادم Plex Media Server**، حساب Plex الخاص بك. **أما لـ rex**، فأنشئ حساب Plex جديداً خصيصاً له: [rex مع zurg](../../rex/with-zurg.md#before-you-start) يشرح السبب.
 
 ## 1. شغّل مثبّت zurg الخاص بـ Docker {#1-run-zurgs-docker-installer}
 
@@ -100,7 +100,7 @@ docker compose ps
 
 ## 3. أضف مجلدات zurg في Plex {#3-add-zurgs-folders-in-plex}
 
-افتح Plex Web على `http://<this machine's LAN IP>:32400/web`. أضف مكتبة **Movies** بالمجلد `/zurg_mnt/zurg/movies` ومكتبة **TV Shows** بالمجلد `/zurg_mnt/zurg/shows`، كما يظهر في [Real-Debrid in Plex](../../guides/real-debrid-plex.md#3-add-the-folders-in-plex).
+افتح Plex Web على `http://<this machine's LAN IP>:32400/web`. أضف مكتبة **Movies** بالمجلد `/zurg_mnt/zurg/movies` ومكتبة **TV Shows** بالمجلد `/zurg_mnt/zurg/shows`، كما يظهر في [Real-Debrid في Plex](../../guides/real-debrid-plex.md#3-add-the-folders-in-plex).
 
 حتى يعرف Plex بالمحتوى الجديد، افتح لوحة zurg على `http://<this machine's LAN IP>:9999/config/` واضغط **Login with Plex** تحت **Media Server Integration** ([الخطوة 4 هناك](../../guides/real-debrid-plex.md#4-let-zurg-tell-plex-about-new-things)).
 

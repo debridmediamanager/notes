@@ -8,7 +8,7 @@ Semua yang ada di bawah ini diuji pada 2026-10-23 dengan Radarr `6.3.0.10514`, i
 
 ## Sebelum kamu mulai {#before-you-start}
 
-Radarr (atau Sonarr) sudah mengimpor lewat zurg, dengan root folder di dalam `__magic__`, misalnya `/mnt/zurg/__magic__/movies` (`/Volumes/Zurg/__magic__/movies` di macOS, `Z:\__magic__\movies` di Windows). Jika belum, ikuti [Sonarr & Radarr for torrents](sonarr-radarr-torrents.md) atau [for Usenet](sonarr-radarr.md) dulu.
+Radarr (atau Sonarr) sudah mengimpor lewat zurg, dengan root folder di dalam `__magic__`, misalnya `/mnt/zurg/__magic__/movies` (`/Volumes/Zurg/__magic__/movies` di macOS, `Z:\__magic__\movies` di Windows). Jika belum, ikuti [Sonarr & Radarr untuk torrent](sonarr-radarr-torrents.md) atau [for Usenet](sonarr-radarr.md) dulu.
 
 ## 1. Jalankan Bazarr {#1-run-bazarr}
 

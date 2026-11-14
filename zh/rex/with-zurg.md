@@ -232,7 +232,7 @@ rex 会用机器的名字来命名自己，你的 Plex 应用会显示这个名�
 
 **作用。** 告诉 zurg rex 的地址在哪。zurg 会先向 rex 自我介绍，然后发送整个库，读取每个文件的视频和音频信息并一并发送，之后每次有变化都会实时推送。
 
-**为什么重要。** 这是两者之间唯一的连接。rex 没有针对 zurg 的设置项：如果缺少 `rex_url`，rex 就会一直是空的。`rex_url` 必须是 rex 在你家网络中的普通 `http://` 地址，不能是来自 [Use it outside your home](#use-it-outside-your-home-optional) 的 HTTPS 地址：rex 只接受来自你自己网络的 zurg 推送（见 [Keep the port private](#keep-the-port-private)）。你的 DMM 密钥可以让 zurg 向 DMM 查询每个文件对应的是哪部电影或哪一集；没有它，zurg 只能根据文件名来判断，能匹配上的标题就会变少。
+**为什么重要。** 这是两者之间唯一的连接。rex 没有针对 zurg 的设置项：如果缺少 `rex_url`，rex 就会一直是空的。`rex_url` 必须是 rex 在你家网络中的普通 `http://` 地址，不能是来自 [Use it outside your home](#use-it-outside-your-home-optional) 的 HTTPS 地址：rex 只接受来自你自己网络的 zurg 推送（见 [保持端口私有](#keep-the-port-private)）。你的 DMM 密钥可以让 zurg 向 DMM 查询每个文件对应的是哪部电影或哪一集；没有它，zurg 只能根据文件名来判断，能匹配上的标题就会变少。
 
 zurg 不会同时用两次同一个密钥启动。如果你在 zurg 的仪表板里输入密钥，它会把 `dmm_api_key` 写入配置文件。没有 DMM 密钥的话，就不要写 `dmm_api_key`。
 
@@ -286,7 +286,7 @@ rex 会从 `registered at` 那一行的地址读取每个文件，所以 rex 必
   ![zurg 仪表板 Utilities 页面上的 Library Management 卡片，其中有 Analyze & Tag Library](../assets/rex/72-zurg-analyze-tag.webp)
 
 - 标题出现了，但没有 `identified` 相关的行：说明 zurg 无法通过名称匹配这些标题。如果设置了 `dmm_api_key`，而该密钥不是赞助者密钥，zurg 会记录 `DMM refused the API key for placement`。此时 zurg 会改用名称匹配，并在一天后重新尝试该密钥；重启 zurg 时则会立即重试。
-- 标题出现了，但无法播放：说明 rex 无法访问 zurg 的 `registered at` 地址。[When something is wrong](#when-something-is-wrong) 中的 `upstream failed` 一行可以帮你检查这个问题。
+- 标题出现了，但无法播放：说明 rex 无法访问 zurg 的 `registered at` 地址。[出现问题时](#when-something-is-wrong) 中的 `upstream failed` 一行可以帮你检查这个问题。
 
 同时运行多个 zurg（每个对应一个网盘服务）？可以多加一行给每个 zurg 起个名字，比如 `rex_source: rd`、`rex_source: tb` 等。它们会填充到同一个库中。
 
@@ -526,7 +526,7 @@ rex 每次启动都会打印这些。如果之后出现 `heartbeat failed` 或 `
 
 ## Sonarr、Radarr 和 Bazarr（可选） {#sonarr-radarr-and-bazarr-optional}
 
-rex 不需要挂载，但 Sonarr 和 Radarr 需要：它们会导入到 zurg 的挂载点下的 `__magic__` 中。按照 [Sonarr & Radarr for torrents](../zurg/guides/sonarr-radarr-torrents.md) 或 [for Usenet](../zurg/guides/sonarr-radarr.md) 的说明，将它们与 zurg 配置在一起即可；它们获取的内容会像其他内容一样经由 zurg 到达 rex。Bazarr 保存在这些导入文件旁边的字幕，约一分钟内就会出现在 rex 中：[Subtitles with Bazarr](../zurg/guides/subtitles.md)。一个 zurg 可以把你的debrid账户和 Usenet 放在同一个库里（[Usenet](../zurg/guides/usenet.md)），同一部电影的两个副本在 rex 中会被视为一个标题，每个副本对应一个版本。
+rex 不需要挂载，但 Sonarr 和 Radarr 需要：它们会导入到 zurg 的挂载点下的 `__magic__` 中。按照 [Sonarr 和 Radarr 用于 torrents](../zurg/guides/sonarr-radarr-torrents.md) 或 [for Usenet](../zurg/guides/sonarr-radarr.md) 的说明，将它们与 zurg 配置在一起即可；它们获取的内容会像其他内容一样经由 zurg 到达 rex。Bazarr 保存在这些导入文件旁边的字幕，约一分钟内就会出现在 rex 中：[用 Bazarr 获取字幕](../zurg/guides/subtitles.md)。一个 zurg 可以把你的debrid账户和 Usenet 放在同一个库里（[Usenet](../zurg/guides/usenet.md)），同一部电影的两个副本在 rex 中会被视为一个标题，每个副本对应一个版本。
 
 ## 视频转码（可选） {#converting-video-optional}
 
@@ -693,7 +693,7 @@ rex 的日志会按 zurg 读取到的样子列出每个标题，例如 [第 4 �
 cd ~/rex && docker compose pull && docker compose up -d
 ```
 
-rex 会带着同一个库重新回来。关于 zurg，请参阅 [Managing and updating zurg](../zurg/setup/docker.md#managing-and-updating-zurg)。
+rex 会带着同一个库重新回来。关于 zurg，请参阅 [管理与更新 zurg](../zurg/setup/docker.md#managing-and-updating-zurg)。
 
 该镜像内置了 jellyfin-ffmpeg，所以 [converting video](#converting-video-optional) 只需要把显卡设备传进去即可。HTTPS 的配置与上面相同：Tailscale、Caddy 和 frp 都直接运行在这台机器上，`--announce-url ...` 则写在 compose 文件的 `command:` 中。
 

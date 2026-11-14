@@ -41,11 +41,11 @@ Appuyez sur **Library**. Elle affiche vos torrents et téléchargements web TorB
 - **Backup** enregistre votre liste dans un fichier. **TB Restore** rajoute une liste sauvegardée.
 - Le reste fonctionne comme pour n'importe quel service : voir [your library](index.md#your-library).
 
-Les téléchargements Usenet que vous avez envoyés à TorBox ne sont pas dans la bibliothèque de DMM. Retrouvez-les sur le site de TorBox, dans la ligne **DMM TB Library** de DMM Cast dans Stremio, ou via [TorBox hosted Usenet](../zurg/providers/torbox-nzb.md) de zurg.
+Les téléchargements Usenet que vous avez envoyés à TorBox ne sont pas dans la bibliothèque de DMM. Retrouvez-les sur le site de TorBox, dans la ligne **DMM TB Library** de DMM Cast dans Stremio, ou via [TorBox hébergé Usenet](../zurg/providers/torbox-nzb.md) de zurg.
 
 ## Regarder dans Stremio {#watch-in-stremio}
 
-Appuyez sur **Cast for TB** sur la page d'accueil et installez l'addon à partir de là. Ensuite, appuyez sur **Cast (TB)** sur n'importe quelle release que TorBox a en cache. Toutes les étapes sont décrites dans [DMM in Stremio](stremio.md).
+Appuyez sur **Cast for TB** sur la page d'accueil et installez l'addon à partir de là. Ensuite, appuyez sur **Cast (TB)** sur n'importe quelle release que TorBox a en cache. Toutes les étapes sont décrites dans [DMM dans Stremio](stremio.md).
 
 Dans Stremio, l'addon s'appelle **DMM Cast for TorBox**. Sa ligne **DMM TB Library** affiche vos torrents TorBox ainsi que vos téléchargements web et Usenet terminés.
 

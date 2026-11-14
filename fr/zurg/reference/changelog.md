@@ -974,7 +974,7 @@ zurg conserve désormais ses caches de lecture sur le disque, même après un re
 
 Les demandes portant sur le même fichier AllDebrid ou TorBox, au même moment, partagent désormais une seule recherche de lien.
 
-Les paramètres et les limites sont décrits dans [Persistent caches](../internals/persistent-caches.md).
+Les paramètres et les limites sont décrits dans [Caches persistants](../internals/persistent-caches.md).
 
 ## Les grabs Usenet sont vérifiés de plus près avant de passer à Completed {#usenet-grabs-are-checked-more-closely-before-they-read-completed}
 

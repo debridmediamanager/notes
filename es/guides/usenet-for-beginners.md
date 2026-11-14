@@ -36,7 +36,7 @@ Vale la pena añadirlo más adelante: **un segundo proveedor.** Un mensaje que u
 2. En un segundo o dos, zurg lo lee y muestra el lanzamiento en su biblioteca, con el nombre del NZB.
 3. Le das a play en Plex, Jellyfin o rex. zurg descarga de tu proveedor las partes de ese punto y se las entrega al reproductor. Si saltas más adelante, descarga desde ahí.
 
-Nada espera a que termine una descarga. Para configurarlo paso a paso, sigue [Usenet with zurg](../zurg/guides/usenet.md). Los ajustes del proveedor y los detalles de Docker están en [Usenet provider](../zurg/providers/usenet.md).
+Nada espera a que termine una descarga. Para configurarlo paso a paso, sigue [Usenet con zurg](../zurg/guides/usenet.md). Los ajustes del proveedor y los detalles de Docker están en [Usenet provider](../zurg/providers/usenet.md).
 
 ## Dónde encaja DMM {#where-dmm-fits}
 
@@ -94,8 +94,8 @@ Sí, en las compilaciones nocturnas para patrocinadores. Dale los datos de tu pr
 
 TorBox tiene dos funciones de Usenet en su plan Pro. Su página de precios muestra Usenet solo en Pro (comprobado el 14 de noviembre de 2026).
 
-- **Descargas de Usenet alojadas.** TorBox descarga la versión completa por ti y la sirve como cualquier otra descarga de TorBox. Envía los NZB desde la pestaña Usenet de DMM o desde el proveedor `torbox_nzb` de zurg. No necesitas un inicio de sesión en ningún servidor de noticias. Consulta [TorBox hosted Usenet](../zurg/providers/torbox-nzb.md).
-- **Un inicio de sesión en servidor de noticias (NNTP).** Úsalo en zurg como cualquier otro proveedor. Permite 10 conexiones. Medido en septiembre de 2026, encontró menos biblioteca real que otros tres proveedores de pago, así que funciona mejor como respaldo. Consulta [TorBox news server](../zurg/providers/torbox-news-server.md).
+- **Descargas de Usenet alojadas.** TorBox descarga la versión completa por ti y la sirve como cualquier otra descarga de TorBox. Envía los NZB desde la pestaña Usenet de DMM o desde el proveedor `torbox_nzb` de zurg. No necesitas un inicio de sesión en ningún servidor de noticias. Consulta [TorBox alojado en Usenet](../zurg/providers/torbox-nzb.md).
+- **Un inicio de sesión en servidor de noticias (NNTP).** Úsalo en zurg como cualquier otro proveedor. Permite 10 conexiones. Medido en septiembre de 2026, encontró menos biblioteca real que otros tres proveedores de pago, así que funciona mejor como respaldo. Consulta [Servidor de noticias de TorBox](../zurg/providers/torbox-news-server.md).
 
 ### ¿Puedo usar una cuenta de Usenet en dos lugares? {#can-i-use-one-usenet-account-in-two-places}
 

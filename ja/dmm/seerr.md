@@ -65,7 +65,7 @@ Seerr は1日に1回、**Radarr Scan** と **Sonarr Scan** で DMM のリスト�
 
 タイトルを Seerr で開き、歯車ボタンを押してから **Remove from Radarr**（または **Remove from Sonarr**）を選びます。これでウォッチリストから外れます。zurg がすでに取得したものはライブラリに残ります。その横にある **Open in Radarr** を押すと、DMM でそのタイトルが開きます。
 
-困ったときは [Discord](https://discord.com/invite/7u4YjMThXP) の **dmm-support** フォーラムで聞いてください。何を書けばいいかは [Getting help](../guides/remote-help.md) に書いてあります。
+困ったときは [Discord](https://discord.com/invite/7u4YjMThXP) の **dmm-support** フォーラムで聞いてください。何を書けばいいかは [ヘルプの入手方法](../guides/remote-help.md) に書いてあります。
 
 ## DMM 経由の Seerr か zurg 独自の Seerr ソースか {#seerr-through-dmm-or-zurgs-own-seerr-source}
 

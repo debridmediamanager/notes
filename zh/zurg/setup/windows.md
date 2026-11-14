@@ -526,7 +526,7 @@ Windows PowerShell 处理一些 POSIX 写法时会出错，SSH 也会吃掉引�
 ## 另请参阅 {#see-also}
 
 - [Linux](linux.md)、[Docker](docker.md) 和 [macOS](macos.md) —— 在其他平台上的相同安装方式
-- [Sonarr & Radarr for torrents](../guides/sonarr-radarr-torrents.md) —— 从头到尾讲解 qBittorrent 端点，包括客户端设置
+- [Sonarr 和 Radarr 用于 torrents](../guides/sonarr-radarr-torrents.md) —— 从头到尾讲解 qBittorrent 端点，包括客户端设置
 - [Sonarr & Radarr](../guides/sonarr-radarr.md) —— SABnzbd 端点，同上
 - [Usenet](../guides/usenet.md) —— 新闻服务器账户、保留期、修复，以及 `nzb` 后端的详细说明
 - [`__magic__`](../guides/magic.md) —— 两个端点都会导入的目录

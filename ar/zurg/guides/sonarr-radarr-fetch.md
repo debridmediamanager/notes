@@ -5,7 +5,7 @@
 | الدليل | من يبحث | يتصرّف zurg كـ | ما تحتاجه |
 |---|---|---|---|
 | [Usenet](sonarr-radarr.md) | Sonarr وRadarr | SABnzbd | حساب Usenet (أو TorBox Pro لخلفية `torbox_nzb`) ومفهرسات Usenet في Prowlarr أو في \*arrs |
-| [Torrents](sonarr-radarr-torrents.md) | Sonarr وRadarr | qBittorrent | حساب debrid ومفهرسات torrent في Prowlarr أو في \*arrs |
+| [التورنتات](sonarr-radarr-torrents.md) | Sonarr وRadarr | qBittorrent | حساب debrid ومفهرسات torrent في Prowlarr أو في \*arrs |
 | [بحث zurg](sonarr-radarr-fetch.md) | zurg | لا يوجد أي عميل تنزيل على الإطلاق | حساب Usenet أو TorBox Pro أو debrid، ومفهرسات Newznab أو Torznab في إعدادات zurg الخاصة |
 
 يمكن تشغيل الطريقتين الأوليين معًا. وتشتركان في مجلد `__magic__` نفسه.
@@ -33,7 +33,7 @@
 
 ## قبل أن تبدأ {#before-you-start}
 
-1. **zurg يحتاج حساب Usenet أو debrid وفهرسًا واحدًا على الأقل من نوع Newznab أو Torznab.** تُوضع الفهارس في إعدادات zurg تحت `acquisition.indexers`. صفحة [Watchlist and Seerr](acquisition.md) تشرح هذا القسم.
+1. **zurg يحتاج حساب Usenet أو debrid وفهرسًا واحدًا على الأقل من نوع Newznab أو Torznab.** تُوضع الفهارس في إعدادات zurg تحت `acquisition.indexers`. صفحة [قائمة المشاهدة وSeerr](acquisition.md) تشرح هذا القسم.
 2. **`magic.enabled` قيمته `true`.** مصدرا Radarr وSonarr لا يبدآن بدونه، وسيكتب السجل ذلك. راجع [`__magic__`](magic.md).
 3. **Radarr وSonarr يقدران يرون مجلد التركيب الخاص بzurg.** إذا ثبّتهما كتطبيقات عادية، فلكل نظام عقبة واحدة مذكورة في [دليل Usenet](sonarr-radarr.md#before-you-start). وإذا كانا في Docker على مضيف Linux، فهذا يعني ربط المجلد داخل الحاويات الخاصة بهما. اربط المجلد الأب مرة واحدة وسترى كل شيء من خلاله. وإذا كانا أيضًا يستقبلان التنزيلات من zurg كـ download client، فاستخدام volumeين لمجلد التنزيل ومجلدات الجذر سينسخ كل عملية استيراد. راجع [volume واحد](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
 4. **تشغّل nightly بتاريخ 26 سبتمبر 2026 أو بعده.** الإصدارات الأقدم لا تعرف مصدري `radarr` و`sonarr`.

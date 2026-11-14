@@ -4,7 +4,7 @@
 في مكتبة **Home Videos** داخل كل تطبيق Plex. يحصل كل فيديو على عنوان وتاريخ وصورة مصغّرة.
 لا يُنسخ أي شيء ولا يُرفع. تقرأ rex الملف من الإضافة عندما تضغط على تشغيل.
 
-هذه أقصر نسخة تعمل من [Building rex addons](addons.md) الخطوات من 1 إلى 5. تقول هذه الصفحة ما تكتبه.
+هذه أقصر نسخة تعمل من [بناء إضافات rex](addons.md) الخطوات من 1 إلى 5. تقول هذه الصفحة ما تكتبه.
 أما تلك الصفحة فتشرح السبب. تستخدم دروس [الموسيقى](addon-music.md) و[IPTV](addon-iptv.md) الهيكل نفسه.
 
 | تحتاج إلى | السبب |
@@ -261,7 +261,7 @@ journalctl --user -u homevideos -f
 
 لو شغّلت `sudo loginctl enable-linger "$USER"` عشان rex، الإضافة هتفضل شغالة حتى بعد ما تسجّل خروج كمان.
 +++ macOS و Windows
-ابدأها بنفس الطريقة اللي بتبدأ بيها rex في الخطوة 1 من [rex with your own app](any-source.md#step-1-install-rex): LaunchAgent على macOS، أو scheduled task على Windows، مع `python3 homevideos.py` (`python homevideos.py` على Windows) كأمر، ومجلد الإضافة كمجلد شغل.
+ابدأها بنفس الطريقة اللي بتبدأ بيها rex في الخطوة 1 من [rex مع تطبيقك الخاص](any-source.md#step-1-install-rex): LaunchAgent على macOS، أو scheduled task على Windows، مع `python3 homevideos.py` (`python homevideos.py` على Windows) كأمر، ومجلد الإضافة كمجلد شغل.
 +++
 
 ## كيف تعمل {#how-it-works}

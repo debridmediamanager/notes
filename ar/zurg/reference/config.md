@@ -48,12 +48,12 @@ providers:
 
 | متاح الآن | المكان |
 |---|---|
-| TorBox و AllDebrid وخلفيات Usenet، إلى جانب Real-Debrid أو بدلاً منه | [Accounts](#accounts) |
-| عدة حسابات من الخدمة نفسها، تُميَّز عن بعضها بالحقل `name` | [Accounts](#accounts) |
-| `disabled: true` لإيقاف حساب مؤقتاً دون حذف بيانات اعتماده | [Accounts](#accounts) |
-| `watchlist: true` لاختيار الحساب الذي تُجرَّب عليه إضافات التورنت الجديدة أولاً | [Accounts](#accounts) |
+| TorBox و AllDebrid وخلفيات Usenet، إلى جانب Real-Debrid أو بدلاً منه | [الحسابات](#accounts) |
+| عدة حسابات من الخدمة نفسها، تُميَّز عن بعضها بالحقل `name` | [الحسابات](#accounts) |
+| `disabled: true` لإيقاف حساب مؤقتاً دون حذف بيانات اعتماده | [الحسابات](#accounts) |
+| `watchlist: true` لاختيار الحساب الذي تُجرَّب عليه إضافات التورنت الجديدة أولاً | [الحسابات](#accounts) |
 | فلاتر المجلدات `provider:` / `not_provider:`، ومجلدات خاصة بكل حساب | [Directories](#7-directories--filters) |
-| `rd_cdn_host_preference` و `tb_cdn_host_preference` لاختيار مضيف CDN لكل خدمة على حدة | [CDN & Host Selection](#cdn--host-selection) |
+| `rd_cdn_host_preference` و `tb_cdn_host_preference` لاختيار مضيف CDN لكل خدمة على حدة | [اختيار CDN والمضيف](#cdn--host-selection) |
 
 هناك تغييران أصغر تستحق المعرفة:
 
@@ -337,7 +337,7 @@ providers:
 | `plex_watchlist_check_every_secs` | int | — | الاسم القديم لـ `watchlist.check_every_secs`؛ ما زال يُعمل به إذا لم تحدد الكتلة قيمة أخرى. |
 | `watchlist_quality` | string | `"best"` | الاسم القديم لـ `watchlist.quality`؛ ما زال يُعمل به إذا لم تحدد الكتلة قيمة أخرى. |
 | `plex_settings_policy` | string | `"guard"` | إلى أي مدى يُسمح لـ zurg بتصحيح تفضيلات Plex المهمة لتركيب debrid. القيم الممكنة: `off` (لا تلمس شيئاً)، `warn` (أبلغ عن كل شيء ولا تغيّر شيئاً)، `guard` (أصلح فقط الإعدادات التي تُفقد المكتبة قيمتها الخاطئة، وأبلغ عن الباقي)، أو `enforce` (أصلح أيضاً الإعدادات التي تجعل Plex يفكّ تشفير ملفات كاملة لنتيجة لا يراها أحد). أي شيء له ميزة مرئية خلفه — Skip Intro، Skip Credits، معاينات التمرير، صور الفصول، تسوية الصوت، التحليل الصوتي — يُبلَّغ عنه فقط. انظر [Plex settings](../guides/plex.md#recommended-plex-settings). |
-| `plex_settings_ignore` | list | — | معرّفات تفضيلات Plex التي يتركها zurg كما هي مهما كانت السياسة، وتُطابق بغض النظر عن حالة الأحرف. تُطبَّق لكل إعداد لا لكل مستوى، فاستثناء إعداد واحد لا يلغي البقية بجانبه. أي معرّف لا يسمّي إعداداً يعرفه zurg يُبلَّغ عنه عند البدء ولا يغيّر شيئاً. يكتب المفتاح **Let Plex Empty Its Own Trash** في لوحة Dashboard القيمة `autoEmptyTrash` في هذه القائمة. انظر [Opting out of one setting](../guides/plex.md#opting-out-of-one-setting). |
+| `plex_settings_ignore` | list | — | معرّفات تفضيلات Plex التي يتركها zurg كما هي مهما كانت السياسة، وتُطابق بغض النظر عن حالة الأحرف. تُطبَّق لكل إعداد لا لكل مستوى، فاستثناء إعداد واحد لا يلغي البقية بجانبه. أي معرّف لا يسمّي إعداداً يعرفه zurg يُبلَّغ عنه عند البدء ولا يغيّر شيئاً. يكتب المفتاح **Let Plex Empty Its Own Trash** في لوحة Dashboard القيمة `autoEmptyTrash` في هذه القائمة. انظر [إلغاء تفعيل إعداد واحد](../guides/plex.md#opting-out-of-one-setting). |
 
 > **ملاحظة:** يُفضَّل ضبط Plex عبر تدفق المصادقة في Dashboard (واجهة الويب)، فهو يكتب `plex_server_url` و`plex_token` إلى `config.yml`. تبقى المفاتيح أعلاه مدعومة للضبط اليدوي.
 

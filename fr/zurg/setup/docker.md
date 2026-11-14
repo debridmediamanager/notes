@@ -369,4 +369,4 @@ Si `/ready` renvoie une erreur 503, c'est que la bibliothèque est encore en cou
 
 C'est normal. Le même montage FUSE est visible dans les espaces de montage du conteneur et de l'hôte, car la propagation fonctionne.
 
-Toujours bloqué ? Demande dans le forum **zurg-support** sur [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) indique ce qu'il faut inclure.
+Toujours bloqué ? Demande dans le forum **zurg-support** sur [Discord](https://discord.com/invite/7u4YjMThXP). [Obtenir de l'aide](../../guides/remote-help.md) indique ce qu'il faut inclure.

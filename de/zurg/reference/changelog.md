@@ -1000,7 +1000,7 @@ zurg speichert seine Lese-Caches jetzt auf der Festplatte, auch über Neustarts 
 
 Anfragen für dieselbe AllDebrid- oder TorBox-Datei, die im selben Moment eintreffen, teilen sich jetzt eine einzige Link-Abfrage.
 
-Einstellungen und Grenzwerte stehen unter [Persistent caches](../internals/persistent-caches.md).
+Einstellungen und Grenzwerte stehen unter [Persistente Caches](../internals/persistent-caches.md).
 
 ## Usenet-Downloads werden genauer geprüft, bevor sie Completed anzeigen {#usenet-grabs-are-checked-more-closely-before-they-read-completed}
 

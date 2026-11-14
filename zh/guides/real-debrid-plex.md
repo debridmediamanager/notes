@@ -2,7 +2,7 @@
 
 zurg 会把你 Real-Debrid 账户里的所有内容显示为电脑上的文件夹，并已按 `movies` 和 `shows` 分好类。把这两个文件夹添加到 Plex Media Server 中，你的整个 Real-Debrid 库就能在所有 Plex 应用中播放，直接从 Real-Debrid 串流，无需先下载任何内容。你只需安装一次 zurg，它自带 rclone，因此无需再做其他设置。
 
-不想运行 Plex Media Server 或挂载驱动器？[rex with zurg](../rex/with-zurg.md) 介绍了如何在不使用这两者的情况下，让 Plex 应用显示同一个库。
+不想运行 Plex Media Server 或挂载驱动器？[rex 与 zurg](../rex/with-zurg.md) 介绍了如何在不使用这两者的情况下，让 Plex 应用显示同一个库。
 
 ## 你需要准备 {#what-you-need}
 
@@ -46,7 +46,7 @@ Plex 不会察觉到 Real-Debrid 账户里新增了内容,zurg 可以告诉它�
 
 ![The Media Server Integration section of zurg's dashboard, with the Login with Plex button](../assets/real-debrid-plex/01-zurg-login-with-plex.webp)
 
-之后 zurg 会在每个有变化的文件夹上请求 Plex 进行扫描。它还会关闭几项对流媒体库有风险的 Plex 设置,例如 **Empty trash automatically after every scan**:[Recommended Plex Settings](../zurg/guides/plex.md#recommended-plex-settings) 列出了这些设置。
+之后 zurg 会在每个有变化的文件夹上请求 Plex 进行扫描。它还会关闭几项对流媒体库有风险的 Plex 设置,例如 **Empty trash automatically after every scan**:[推荐的 Plex 设置](../zurg/guides/plex.md#recommended-plex-settings) 列出了这些设置。
 
 ## 出现问题时 {#when-something-is-wrong}
 
@@ -78,4 +78,4 @@ Plex 不会察觉到 Real-Debrid 账户里新增了内容,zurg 可以告诉它�
 
 ### 它也支持 TorBox 或 Usenet 吗？ {#does-it-work-with-torbox-or-usenet-too}
 
-Yes。zurg 的安装程序也支持 TorBox、AllDebrid、Premiumize、Debrid-Link、Offcloud 和 Usenet，并且都会放进同一个 `movies` 和 `shows` 文件夹里。[Providers](../zurg/providers/index.md) 页面里每个服务商都有一个单独的说明。
+Yes。zurg 的安装程序也支持 TorBox、AllDebrid、Premiumize、Debrid-Link、Offcloud 和 Usenet，并且都会放进同一个 `movies` 和 `shows` 文件夹里。[提供商](../zurg/providers/index.md) 页面里每个服务商都有一个单独的说明。

@@ -320,7 +320,7 @@ Ensuite, va dans **Settings → Media Management → Root Folders → Add Root F
 
 ## 8. Si votre \*arr tourne dans Docker {#8-if-your-arr-is-in-docker}
 
-Cette étape concerne Docker sur un hôte Linux. Docker Desktop sur macOS et Windows exécute les conteneurs dans une machine virtuelle. Le montage `rslave` ci-dessous repose sur la propagation de montage de Linux (voir [Docker setup](../setup/docker.md)), et le fait de transmettre le montage de zurg à un conteneur sur ces systèmes n'a pas été testé. Sur macOS et Windows, installez plutôt Sonarr et Radarr comme applications classiques, comme le décrit [Before you start](#before-you-start).
+Cette étape concerne Docker sur un hôte Linux. Docker Desktop sur macOS et Windows exécute les conteneurs dans une machine virtuelle. Le montage `rslave` ci-dessous repose sur la propagation de montage de Linux (voir [Configuration Docker](../setup/docker.md)), et le fait de transmettre le montage de zurg à un conteneur sur ces systèmes n'a pas été testé. Sur macOS et Windows, installez plutôt Sonarr et Radarr comme applications classiques, comme le décrit [Avant de commencer](#before-you-start).
 
 Trois problèmes distincts. Le deuxième coûte un téléchargement à chaque import. Le troisième ne se manifeste qu'à la première fois que zurg redémarre.
 

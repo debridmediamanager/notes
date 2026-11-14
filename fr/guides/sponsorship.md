@@ -16,10 +16,10 @@ Les avantages suivent le sponsoring. Quand il se termine, DMM les arrête dès l
 | Chaque version publiée pour rex et Plex | `dmm_api_key` dans la [zurg config](../zurg/reference/config.md) |
 | Les détails média DMM sans lire le fichier au préalable, et les vérifications de langue avant l'ajout d'une version | Rien au-delà de `dmm_api_key` |
 | Les dossiers `__magic__` triés pour vous lorsque l'option est activée | [\_\_magic\_\_](../zurg/guides/magic.md) |
-| Votre liste de souhaits DMM récupérée par zurg | [DMM wanted list](../zurg/guides/dmm-wanted.md) |
+| Votre liste de souhaits DMM récupérée par zurg | [Liste de souhaits DMM](../zurg/guides/dmm-wanted.md) |
 | Les indexeurs Usenet et torrent de DMM interrogés lorsque vous n'en avez aucun à vous | `dmm_api_key` plus un fournisseur Usenet ou un compte debrid capable d'ajouter des torrents |
 | Les versions choisies selon la langue originale de chaque titre | `original` dans [audio and subtitle languages](../zurg/guides/acquisition.md#choosing-by-audio-and-subtitle-language) |
-| Un film souhaité qu'aucun indexeur ne propose, diffusé depuis sa mise en ligne officielle sur YouTube | [Streaming a film from YouTube](../zurg/guides/acquisition.md#streaming-a-film-from-youtube) |
+| Un film souhaité qu'aucun indexeur ne propose, diffusé depuis sa mise en ligne officielle sur YouTube | [Diffuser un film depuis YouTube](../zurg/guides/acquisition.md#streaming-a-film-from-youtube) |
 
 Les fonctionnalités `dmm_api_key` nécessitent un build nightly de zurg. Le build public gratuit ne les inclut pas.
 

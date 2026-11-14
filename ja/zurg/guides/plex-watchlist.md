@@ -4,7 +4,7 @@ Plex watchlist は、[共有の acquisition engine](acquisition.md) 上のアダ
 
 進捗は `data/acquisition.json` に保存されます。以前の `data/plex-watchlist.json` は一度だけ取り込まれますが、削除はされません。履歴、リトライの期限、試行回数、Plex からの削除待ちだけの acquisition は、再起動後も残ります。両方の state ファイルは通常のバックアップに含まれます。コンテナを作り直すときは `data/` と `nzbs/` を残してください。
 
-リリースは、Newznab インデクサーからは NZB として、Torznab インデクサーからは、すでにライブラリに持っている debrid アカウントに渡される info hash として届きます。NZB には `nzb` provider が必要です。torrent には debrid アカウントが必要です。同じ解像度のリリースの中でどちらを先に試すかは `prefer` で決まります。詳しくは [Newznab and Torznab](acquisition.md#newznab-and-torznab) を見てください。
+リリースは、Newznab インデクサーからは NZB として、Torznab インデクサーからは、すでにライブラリに持っている debrid アカウントに渡される info hash として届きます。NZB には `nzb` provider が必要です。torrent には debrid アカウントが必要です。同じ解像度のリリースの中でどちらを先に試すかは `prefer` で決まります。詳しくは [Newznab と Torznab](acquisition.md#newznab-and-torznab) を見てください。
 
 acquisition が成功すると、そのアイテムはウォッチリストから削除されます。ただし `remove_after_grab: false` を設定している場合は残ります。その場合、タイトルはリストに残ったまま、zurg がバックグラウンドで満たしてくれます。すでに持っていたタイトルは、どの場合でもリストに残ります。それを満たすリリースがすべてライブラリにすでにあった場合、zurg は何も取得しないので、リストには手を付けません。`only_new_items`（デフォルトでオン）は、この機能をオンにした時点で、リストにすでにあるものを全部処理するのではなく、そこから監視を始めるという意味です。どちらも [ソース自身のリストに acquisition が何をするか](acquisition.md#what-acquiring-does-to-the-sources-own-list) に書かれています。ショーを削除する前に、計画したシーズンすべてを取得しておく必要があります。成功したシーズンは記録され、残りのシーズンはリトライされます。シーズンパックが優先されます。バラのエピソードへのフォールバックは、インデクサーの結果に見つかったエピソードを取得します。ウォッチリストは期待されるエピソードの一覧を提供しないためです。アイテムがウォッチリストから外れたあとに、今後のエピソードを継続的に監視するわけではありません。
 

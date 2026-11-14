@@ -63,13 +63,13 @@ Drücke auf der Startseite auf **Library**. Dort werden alle Inhalte aufgelistet
 
 DMM hilft auch den anderen Projekten:
 
-- **zurg** fragt DMM, welcher Film oder welche Episode zu jeder Datei gehört. Ein Sponsor bekommt den DMM-API-Key über [gatekeeper](https://gatekeeper.debridmediamanager.com/). Ohne ihn verlässt sich zurg auf Dateinamen und weniger Titel werden erkannt. [rex with zurg](../rex/with-zurg.md#why-dmm-places-the-files) erklärt den Unterschied.
+- **zurg** fragt DMM, welcher Film oder welche Episode zu jeder Datei gehört. Ein Sponsor bekommt den DMM-API-Key über [gatekeeper](https://gatekeeper.debridmediamanager.com/). Ohne ihn verlässt sich zurg auf Dateinamen und weniger Titel werden erkannt. [rex mit zurg](../rex/with-zurg.md#why-dmm-places-the-files) erklärt den Unterschied.
 - **Sonarr Radarr and Prowlarr** können DMM als Torznab-Torrent-Indexer oder Newznab-Usenet-Indexer durchsuchen. Beide brauchen eine aktive Sponsoring-Mitgliedschaft und den DMM-API-Key. Richte sie auf den Seiten [Torznab](https://debridmediamanager.com/torznab) und [Newznab](https://debridmediamanager.com/newznab) ein.
-- **Deine Wunschliste**: Drücke **Want** oder folge einer Trakt- oder MDBList-Liste. zurg holt sie und neue Episoden, sobald sie erscheinen. Sponsoring erforderlich. Siehe [DMM wanted list](../zurg/guides/dmm-wanted.md).
-- **Seerr Overseerr and Jellyseerr** können DMM als Radarr und Sonarr nutzen. Anfragen landen dann auf deiner Wunschliste, die zurg abholt. Sponsoring erforderlich. Siehe [Seerr through DMM](seerr.md).
+- **Deine Wunschliste**: Drücke **Want** oder folge einer Trakt- oder MDBList-Liste. zurg holt sie und neue Episoden, sobald sie erscheinen. Sponsoring erforderlich. Siehe [DMM-Wunschliste](../zurg/guides/dmm-wanted.md).
+- **Seerr Overseerr and Jellyseerr** können DMM als Radarr und Sonarr nutzen. Anfragen landen dann auf deiner Wunschliste, die zurg abholt. Sponsoring erforderlich. Siehe [Seerr über DMM](seerr.md).
 - **rex-direct** gibt einem beanspruchten rex eine eigene Adresse und ein eigenes Zertifikat. Siehe [rex-direct](../rex/any-source.md#rex-direct).
 
-Was ein Sponsoring alles freischaltet und wo du was einrichtest, steht auf [What a sponsorship gives you](../guides/sponsorship.md).
+Was ein Sponsoring alles freischaltet und wo du was einrichtest, steht auf [Was dir eine Sponsoring gibt](../guides/sponsorship.md).
 
 ## Wenn etwas nicht stimmt {#when-something-is-wrong}
 

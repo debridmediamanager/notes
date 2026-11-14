@@ -25,10 +25,10 @@ irm https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/i
 
 يتحقق برنامج التهيئة من متطلبات النظام، ويسجل الدخول إلى GitHub للتحقق من صلاحية الراعي، ثم ينزل النسخة المناسبة ويشغل أداة اختيار المزود. الملفات التنفيذية والإعدادات الموجودة تبقى كما هي. كل دليل أدناه يشرح أيضاً الطريقة اليدوية الكاملة.
 
-- [Linux](linux.md)
+- [لينكس](linux.md)
 - [Docker](docker.md) (مضيفات Linux)
 - [macOS](macos.md)
-- [Windows](windows.md)
+- [ويندوز](windows.md)
 
-بعد تثبيت zurg، تشرح صفحة [Providers](../providers/index.md) كيفية ربطه بحساب.
+بعد تثبيت zurg، تشرح صفحة [مزوّدو الخدمة](../providers/index.md) كيفية ربطه بحساب.
 توجد صفحة لكل خدمة فيها بيانات الاعتماد وإدخال `config.yml` وما تفعله تلك الخدمة بشكل مختلف. كُتبت هذه الصفحات لـ Docker. في التثبيت بالملف التنفيذي، يكون إدخال `config.yml` للمزود وخطوات Dashboard هي نفسها، لكن `./zurg service restart` (`.\zurg.exe service restart` على Windows) يحل محل `docker compose restart zurg`، وسطر `docker compose run --rm zurg setup` يصبح `./zurg setup` (`.\zurg.exe setup` على Windows) مع نفس الخيارات، ما عدا `--no-service --skip-downloads --mount-path /zurg_mnt/zurg` الخاصة بالحاوية. وخيار `--…-file` يشير بعد ذلك إلى ملف على جهازك بدلاً من ملف موجود تحت `/config`.

@@ -9,7 +9,7 @@ Mit der Bibliothek arbeiten: Usenet, die Arrs, `__magic__` und Medienserver. rex
 - [Suchen von zurg für Sonarr & Radarr](sonarr-radarr-fetch.md)
 - [Untertitel mit Bazarr](subtitles.md)
 - [Whisparr](whisparr.md)
-- [\_\_magic\_\_](magic.md)
+- [\_\_Magie\_\_](magic.md)
 - [Umbenennen](renaming.md)
 - [Plex](plex.md)
 - [Eine Docker-Compose-Datei für zurg, Plex und rex](docker-compose.md)

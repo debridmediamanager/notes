@@ -372,4 +372,4 @@ Se `/ready` falhar com erro 503, a biblioteca ainda está carregando e o mount e
 
 That é normal. A mesma montagem FUSE aparece nos namespaces de montagem do container e do host porque a propagação está funcionando.
 
-Ainda travado? Pergunte no fórum **zurg-support** no [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) explica o que incluir.
+Ainda travado? Pergunte no fórum **zurg-support** no [Discord](https://discord.com/invite/7u4YjMThXP). [Obtendo ajuda](../../guides/remote-help.md) explica o que incluir.

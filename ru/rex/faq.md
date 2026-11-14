@@ -12,7 +12,7 @@
 
 ### Сколько это стоит? {#what-does-it-cost}
 
-rex бесплатен для личного использования, платной версии нет. Его исходный код открыт по лицензии PolyForm Noncommercial. Коммерческое использование запрещено. Каждая сборка публикуется на [GitHub Releases](https://github.com/debridmediamanager/rex/releases), а приложение для Android называется [rex for Android](android.md).
+rex бесплатен для личного использования, платной версии нет. Его исходный код открыт по лицензии PolyForm Noncommercial. Коммерческое использование запрещено. Каждая сборка публикуется на [GitHub Releases](https://github.com/debridmediamanager/rex/releases), а приложение для Android называется [rex для Android](android.md).
 
 Некоторые сопутствующие вещи могут стоить денег:
 
@@ -62,11 +62,11 @@ rex не делает Plex, и Plex может принять меры прот�
 
 ### Могут ли пользоваться несколько человек, у каждого своя история? {#can-several-people-use-it-each-with-their-own-history}
 
-Да. Каждый, с кем вы делитесь rex, входит под своим аккаунтом и получает собственные статусы просмотра, «Продолжить просмотр», оценки и плейлисты. Каждый может перенести свою историю со старого сервера Plex ([Bring your watch history](import-watched.md)). В [Share rex with family and friends](sharing.md) описаны шаги, включая управляемых пользователей для детей.
+Да. Каждый, с кем вы делитесь rex, входит под своим аккаунтом и получает собственные статусы просмотра, «Продолжить просмотр», оценки и плейлисты. Каждый может перенести свою историю со старого сервера Plex ([Перенесите историю просмотров](import-watched.md)). В [Поделитесь rex с семьёй и друзьями](sharing.md) описаны шаги, включая управляемых пользователей для детей.
 
 ### Какое железо нужно? {#what-hardware-does-it-need}
 
-Машина, которая постоянно работает, с Linux (amd64 или arm64, glibc 2.35 или новее, то есть Ubuntu 22.04 и выше), macOS (Intel или Apple Silicon) или 64-битной Windows. На Android-телефоне, планшете или ТВ-приставке [rex for Android](android.md) запускает rex и его дополнения бесплатно. Для спонсоров приложение zurg+rex, то есть Plex-сервер на вашем телефоне, тоже подключает вашу библиотеку debrid и Usenet к rex (см. [руководство по Android](../zurg/guides/android.md)).
+Машина, которая постоянно работает, с Linux (amd64 или arm64, glibc 2.35 или новее, то есть Ubuntu 22.04 и выше), macOS (Intel или Apple Silicon) или 64-битной Windows. На Android-телефоне, планшете или ТВ-приставке [rex для Android](android.md) запускает rex и его дополнения бесплатно. Для спонсоров приложение zurg+rex, то есть Plex-сервер на вашем телефоне, тоже подключает вашу библиотеку debrid и Usenet к rex (см. [руководство по Android](../zurg/guides/android.md)).
 
 **Память:** выделите 1 ГБ. На библиотеке из 4 062 фильмов и 656 сериалов rex использовал меньше 500 МБ при запуске и около 730 МБ при просмотре библиотеки. Конвертация видео требует дополнительно.
 
@@ -76,11 +76,11 @@ rex не делает Plex, и Plex может принять меры прот�
 
 ### Читает ли он мои локальные файлы? {#does-it-read-my-local-files}
 
-Нет. rex никогда не сканирует папку или диск и не требует монтирования. Каждый файл берётся из источника по HTTP. Файлы с вашего собственного диска тоже можно подключить: что-то должно их раздавать и сообщить rex о них, как показано в разделе [rex with your own app](any-source.md).
+Нет. rex никогда не сканирует папку или диск и не требует монтирования. Каждый файл берётся из источника по HTTP. Файлы с вашего собственного диска тоже можно подключить: что-то должно их раздавать и сообщить rex о них, как показано в разделе [rex с собственным приложением](any-source.md).
 
 ### Работает ли он с Usenet? {#does-it-work-with-usenet}
 
-Да, через источник, который работает с Usenet, например zurg. rex никогда не обращается напрямую к провайдеру Usenet: источник читает файлы и отдаёт их rex как обычные файлы. Настройте zurg для этого по инструкции [Usenet](../zurg/guides/usenet.md) и укажите его в rex, как описано в [rex with zurg](with-zurg.md).
+Да, через источник, который работает с Usenet, например zurg. rex никогда не обращается напрямую к провайдеру Usenet: источник читает файлы и отдаёт их rex как обычные файлы. Настройте zurg для этого по инструкции [Usenet](../zurg/guides/usenet.md) и укажите его в rex, как описано в [rex с zurg](with-zurg.md).
 
 ### Нужен ли мне zurg? {#do-i-need-zurg}
 
@@ -97,17 +97,17 @@ rex не делает Plex, и Plex может принять меры прот�
 
 Не дома. Приложения Plex в вашей домашней сети находят rex без изменения роутера. app.plex.tv тоже работает через HTTPS-адрес, который даёт [rex-direct](any-source.md#rex-direct), после привязки rex.
 
-rex нужен собственный адрес для просмотра вне дома или для другого домохозяйства. Самый простой путь — один проброс порта ([rex-direct](any-source.md#rex-direct)). Если есть IPv6 и нет публичного IPv4, используйте [rex-direct over IPv6](any-source.md#rex-direct-over-ipv6). [Tailscale serve](any-source.md#tailscale-serve) не требует проброса порта на устройствах, где запущен Tailscale. [Use it outside your home](any-source.md#use-it-outside-your-home-optional) сравнивает варианты.
+rex нужен собственный адрес для просмотра вне дома или для другого домохозяйства. Самый простой путь — один проброс порта ([rex-direct](any-source.md#rex-direct)). Если есть IPv6 и нет публичного IPv4, используйте [rex-direct через IPv6](any-source.md#rex-direct-over-ipv6). [Tailscale serve](any-source.md#tailscale-serve) не требует проброса порта на устройствах, где запущен Tailscale. [Use it outside your home](any-source.md#use-it-outside-your-home-optional) сравнивает варианты.
 
 ### Чего он не умеет? {#what-does-it-not-do}
 
-Тюнера и DVR нет. Музыка, Live TV и фото требуют источник, который их отправляет. См. [Music with rex](music.md) и [Live TV with rex](live-tv.md). zurg отправляет комиксы как фото, которые показывает Plex Web. Радио-миксы и станции Plexamp отсутствуют. У rex нет relay, поэтому для удалённого использования нужен собственный адрес ([Use it outside your home](any-source.md#use-it-outside-your-home-optional)).
+Тюнера и DVR нет. Музыка, Live TV и фото требуют источник, который их отправляет. См. [Музыка с rex](music.md) и [Живое ТВ с rex](live-tv.md). zurg отправляет комиксы как фото, которые показывает Plex Web. Радио-миксы и станции Plexamp отсутствуют. У rex нет relay, поэтому для удалённого использования нужен собственный адрес ([Use it outside your home](any-source.md#use-it-outside-your-home-optional)).
 
 ## После установки {#after-you-install}
 
 ### Почему приложение показывает версию Plex и «Check for Updates»? {#why-does-the-app-show-a-plex-version-and-check-for-updates}
 
-rex представляется приложениям и plex.tv как Plex Media Server, поэтому приложения показывают номер версии Plex Media Server. Этот номер не является номером версии rex. **Check for Updates** всегда отвечает, что сервер актуален: rex никогда не обновляет себя сам. Чтобы обновить rex, скачайте более новую nightly-сборку, как описано в разделе [Updating](any-source.md#updating).
+rex представляется приложениям и plex.tv как Plex Media Server, поэтому приложения показывают номер версии Plex Media Server. Этот номер не является номером версии rex. **Check for Updates** всегда отвечает, что сервер актуален: rex никогда не обновляет себя сам. Чтобы обновить rex, скачайте более новую nightly-сборку, как описано в разделе [Обновление](any-source.md#updating).
 
 ### Почему браузер по адресу port 32400/web не открывает библиотеку? {#why-does-my-browser-at-port-32400web-not-open-a-library}
 
@@ -134,7 +134,7 @@ rex ни у кого не спрашивает, что такое релиз: р
 
 ### Ничего не воспроизводится, или каждое приложение говорит, что оно недостаточно мощное {#nothing-plays-or-every-app-says-it-is-not-powerful-enough}
 
-Посмотрите лог rex сразу после того, как нажали Play. Если там есть `upstream failed` или `502`, значит, rex не может достучаться до вашего источника по адресу, который источник ему выдал. Установка FFmpeg здесь не поможет. Обычно причина в zurg, запущенном в Docker Desktop на Windows или macOS. В строке `upstream failed` в разделе [rex with zurg](with-zurg.md#when-something-is-wrong) или [rex with your own app](any-source.md#when-something-is-wrong) есть проверка адреса и подсказка, что нужно поменять. Если не проигрываются только некоторые файлы, часто только в веб-браузере, значит, устройство не может воспроизвести их в исходном виде. Тогда настройте [Converting video](any-source.md#converting-video-optional).
+Посмотрите лог rex сразу после того, как нажали Play. Если там есть `upstream failed` или `502`, значит, rex не может достучаться до вашего источника по адресу, который источник ему выдал. Установка FFmpeg здесь не поможет. Обычно причина в zurg, запущенном в Docker Desktop на Windows или macOS. В строке `upstream failed` в разделе [rex с zurg](with-zurg.md#when-something-is-wrong) или [rex с собственным приложением](any-source.md#when-something-is-wrong) есть проверка адреса и подсказка, что нужно поменять. Если не проигрываются только некоторые файлы, часто только в веб-браузере, значит, устройство не может воспроизвести их в исходном виде. Тогда настройте [Converting video](any-source.md#converting-video-optional).
 
 ### Название определилось неправильно. Как исправить? {#a-title-is-matched-wrong-how-do-i-fix-it}
 

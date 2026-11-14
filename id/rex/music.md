@@ -43,7 +43,7 @@ Baris `SECTION create` hanya muncul jika addon mendeklarasikan pustakanya. Pusta
 
 ## Langkah 3. Bagikan pustaka musik {#step-3-share-the-music-library}
 
-Perpustakaan musik baru, jadi belum ada yang membagikannya. Saat sudah masuk dengan akun baru, tambahkan ke share akun Anda sendiri dan ke share semua orang lain di **Manage Library Access** ([Share rex](sharing.md)).
+Perpustakaan musik baru, jadi belum ada yang membagikannya. Saat sudah masuk dengan akun baru, tambahkan ke share akun Anda sendiri dan ke share semua orang lain di **Manage Library Access** ([Bagikan rex](sharing.md)).
 
 ## Langkah 4. Dengarkan {#step-4-listen}
 
@@ -59,4 +59,4 @@ Perpustakaan musik baru, jadi belum ada yang membagikannya. Saat sudah masuk den
 - **Dua salinan album berarti dua album**, seperti di server Plex mana pun: salinan FLAC dan salinan MP3 masing-masing tampil sebagai album sendiri.
 - **Sudah diuji di Plexamp, Plex Web, dan Plex untuk Android.** Aplikasi Plex lain, serta unduhan offline di Plexamp, belum pernah dicoba.
 
-Untuk membuat addon musik sendiri, mulailah dari [Tutorial: addon musik](addon-music.md); [Building rex addons](addons.md#music) memuat setiap field-nya.
+Untuk membuat addon musik sendiri, mulailah dari [Tutorial: addon musik](addon-music.md); [Membangun addon rex](addons.md#music) memuat setiap field-nya.

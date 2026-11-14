@@ -439,7 +439,7 @@ Wenn du das manuelle LaunchAgent installiert hast und die automatische Anmeldung
 
 Eine Installation, die `zurg setup` auf einem Mac ohne Bildschirm erstellt, nutzt einen LaunchDaemon und braucht keine grafische Anmeldung. Prüfe das mit `cd ~/zurg && ./zurg service status`.
 
-Immer noch Probleme? Frag im **zurg-support**-Forum auf [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) erklärt, was du angeben solltest.
+Immer noch Probleme? Frag im **zurg-support**-Forum auf [Discord](https://discord.com/invite/7u4YjMThXP). [Hilfe bekommen](../../guides/remote-help.md) erklärt, was du angeben solltest.
 
 ## Architekturübersicht {#architecture-overview}
 

@@ -131,7 +131,7 @@ Wähle einen oder mehrere Anbieter in Prioritätsreihenfolge. Zum Beispiel gibst
 
 Für die Automatisierung wiederholst du `--provider` und übergibst die anbieterspezifischen Token-Datei- oder `--nntp-*`-Flags. Das Setup behält eine bestehende Konfiguration bei späteren Durchläufen bei.
 
-Das Setup schreibt die Accounts nur beim Durchlauf, der `config.yml` erstellt. Um einen Anbieter zu einer Installation hinzuzufügen, die bereits eine Konfiguration hat, nutze **Add provider** im Dashboard oder bearbeite die Datei und starte danach neu. Jeder Dienst hat eine eigene Seite mit den Zugangsdaten, dem Konfigurationsblock und den wichtigen Grenzen: [Providers](../providers/index.md).
+Das Setup schreibt die Accounts nur beim Durchlauf, der `config.yml` erstellt. Um einen Anbieter zu einer Installation hinzuzufügen, die bereits eine Konfiguration hat, nutze **Add provider** im Dashboard oder bearbeite die Datei und starte danach neu. Jeder Dienst hat eine eigene Seite mit den Zugangsdaten, dem Konfigurationsblock und den wichtigen Grenzen: [Anbieter](../providers/index.md).
 
 ## 5. zurg starten {#5-start-zurg}
 
@@ -370,4 +370,4 @@ Wenn `/ready` mit Fehler 503 fehlschlägt, lädt die Bibliothek noch und der Mou
 
 Das ist normal. Das gleiche FUSE-Mount ist im Container und im Host-Mount-Namespace sichtbar, weil die Propagation funktioniert.
 
-Immer noch hängen geblieben? Frag im **zurg-support**-Forum auf [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) sagt dir, was du angeben solltest.
+Immer noch hängen geblieben? Frag im **zurg-support**-Forum auf [Discord](https://discord.com/invite/7u4YjMThXP). [Hilfe bekommen](../../guides/remote-help.md) sagt dir, was du angeben solltest.

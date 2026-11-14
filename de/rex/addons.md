@@ -31,7 +31,7 @@ Diese Seite erklärt jeden Schritt, den diese Tutorials gehen. [Mehr aus deinem 
 | Du brauchst | Warum |
 |---|---|
 | rex, eingerichtet wie in [rex mit deiner eigenen App](any-source.md) (Schritt 1 bis 3) | Dort taucht die Bibliothek deines Addons auf |
-| Ein rex-Nightly mit Datum 2026.10.25 oder neuer, oder 2026.11.02 oder neuer für [Music](#music) und [Live TV](#live-tv) | Diese Seite ist dafür geschrieben |
+| Ein rex-Nightly mit Datum 2026.10.25 oder neuer, oder 2026.11.02 oder neuer für [Musik](#music) und [Live-TV](#live-tv) | Diese Seite ist dafür geschrieben |
 | FFmpeg dort, wo rex läuft, falls dein Addon Streams liefert | rex spielt einen Stream ab, indem er ihn konvertiert (ein Kopieren, also günstig). rex findet FFmpeg selbst; siehe [Video konvertieren](any-source.md#converting-video-optional) |
 | Dein Addon auf demselben Rechner wie rex oder in deinem Heimnetzwerk | Der Feed von rex antwortet nur diesen: siehe [Port privat halten](any-source.md#keep-the-port-private) |
 
@@ -287,7 +287,7 @@ Es fragt jedes Addon, das den Titel anbietet (`/stream/<movie or series>/<id>.js
 
 **Stored probes.** Mit einem DMM-API-Key (`dmm_api_key` oder **DMM** auf der Einstellungsseite) überspringt ein Torrent-Stream ffprobe, wenn DMM bereits eine Probe seiner Datei hat. Der Hash des Torrents kommt aus dem `infoHash` des Streams oder aus seinem Link (die Debrid-Links von Torrentio enthalten ihn im Pfad). rex-stremio liest die Dateigröße aus der Antwort des Links auf ein Ein-Byte-`Range`-Request und fragt DMMs `POST /api/sponsor/mediainfo` für bis zu 100 Hashes auf einmal ab. Es übernimmt die Probe von DMM nur, wenn genau eine Datei dieses Releases diese Größe hat, und zusätzlich den Namen, wenn der Stream seine Datei benennt. Alles andere wird wie oben geprobt, und diese Probe geht zurück an DMM (`POST /api/sponsor/probes`: der Hash des Torrents, die Dateigröße, ihr Name, falls der Stream ihn nennt, und die Ausgabe von ffprobe ohne die Adresse, von der gelesen wurde), damit der nächste Sponsor, der die Datei trifft, sie überspringen kann. DMM behält die erste Probe einer Datei und beantwortet zuerst die eigenen Snapshots von zurg. `share_probes: false` behält sie bei rex-stremio; DMMs Probes werden trotzdem genutzt. Die Probe einer Playlist wird nie gesendet.
 
-**Naming.** Jeder Film und jede Episode geht mit `kind` und ihrer IMDb-ID in `ids` an rex, sodass Plex sie benennt, wie in [rex with your own app](any-source.md) beschrieben. Titel, Zusammenfassung, Datum und Poster des Katalogs stehen in `display`, das nur angezeigt wird, bis Plex sie benennt. Ein Live-Kanal oder ein Titel, den nur sein Addon kennt, hat keine IMDb-ID, daher benennt ihn allein `display`.
+**Naming.** Jeder Film und jede Episode geht mit `kind` und ihrer IMDb-ID in `ids` an rex, sodass Plex sie benennt, wie in [rex mit deiner eigenen App](any-source.md) beschrieben. Titel, Zusammenfassung, Datum und Poster des Katalogs stehen in `display`, das nur angezeigt wird, bis Plex sie benennt. Ein Live-Kanal oder ein Titel, den nur sein Addon kennt, hat keine IMDb-ID, daher benennt ihn allein `display`.
 
 **Numbering.** Ein Film ist ein Film. Staffeln und Episoden einer Serie kommen von Cinemeta, dessen IDs die von IMDb sind, und behalten dessen Nummern, sodass eine neue Episode die anderen nie verschiebt. rex ordnet sie nach den Nummern von TMDB ein. Wo Cinemetas Nummern davon abweichen, landet eine Episode daher an der falschen Stelle.
 

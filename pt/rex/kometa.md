@@ -99,7 +99,7 @@ Em um app do Plex, a biblioteca de filmes tem uma aba **Collections** com as col
 | `Plex URL is probably invalid` ou um timeout | A `url` não chega ao rex a partir de onde o Kometa roda. Abra `http://192.168.1.20:32400/identity` nessa máquina: ela deve mostrar o `machineIdentifier` do rex |
 | `Plex Error: Plex Library '...' not found. Options: [...]` | Um nome em `libraries:` não bate com o nome da biblioteca. Copie um dos nomes da lista que ele mostra |
 
-Ainda travado? Pergunte no fórum **rex-support** do [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) explica o que incluir.
+Ainda travado? Pergunte no fórum **rex-support** do [Discord](https://discord.com/invite/7u4YjMThXP). [Obtendo ajuda](../guides/remote-help.md) explica o que incluir.
 
 ## O que o Kometa consegue e não consegue ver {#what-kometa-can-and-cannot-see}
 

@@ -384,7 +384,7 @@ Pronto, você terminou. As seções abaixo são opcionais.
 
 **O que faz.** Dá ao rex um endereço HTTPS que os apps do Plex fora de casa conseguem acessar, e informa o plex.tv sobre ele.
 
-**Por que importa.** Fora de casa, o app.plex.tv só se conecta a um endereço HTTPS, e os outros apps do Plex dão preferência a esse tipo. Um servidor Plex de verdade pode recorrer ao relay do Plex; o rex não consegue, então você escolhe como ele será acessado. O rex precisa ser [claimed](#step-3-add-it-to-a-plex-account) primeiro, e um proxy voltado para a internet precisa bloquear `/rex/` ([Keep the port private](#keep-the-port-private)).
+**Por que importa.** Fora de casa, o app.plex.tv só se conecta a um endereço HTTPS, e os outros apps do Plex dão preferência a esse tipo. Um servidor Plex de verdade pode recorrer ao relay do Plex; o rex não consegue, então você escolhe como ele será acessado. O rex precisa ser [claimed](#step-3-add-it-to-a-plex-account) primeiro, e um proxy voltado para a internet precisa bloquear `/rex/` ([Mantenha a porta privada](#keep-the-port-private)).
 
 **Plex Pass.** O Plex Web reproduz fora de casa sem um Plex Pass ou Remote Watch Pass em nenhuma das contas. Os outros apps do Plex não foram testados fora de casa.
 
@@ -397,7 +397,7 @@ Seja qual for a opção escolhida, cada byte que você assistir fora de casa sai
 | Seu roteador tem IP público e você consegue fazer port forward | **[rex-direct](#rex-direct)** (o mais simples) | Ativado por padrão: um único port forward. O DMM dá um nome e um certificado para o rex e mantém o nome apontado para o seu IP residencial |
 | Você consegue instalar o Tailscale nos dispositivos em que assiste | **[Tailscale serve](#tailscale-serve)** (o melhor) | Nada para abrir no roteador, e funciona atrás de qualquer conexão de internet. O certificado se renova sozinho, e ninguém fora da sua tailnet consegue acessar o rex |
 | Dispositivos sem Tailscale (a TV de um amigo, um hotel), e seu roteador tem IP público | **[Caddy](#caddy)** com seu próprio domínio, ou com um nome `sslip.io` gratuito | Uma conexão direta, sem ninguém no meio, e um certificado gratuito que se renova sozinho. Você faz port forward da porta 443 |
-| Sua conexão não tem IPv4 público (CGNAT ou DS-Lite, comum em provedores de cabo, móvel e algumas fibras) mas tem IPv6 | **[rex-direct over IPv6](#rex-direct-over-ipv6)** | Sem port forward e sem nada para alugar: você libera a porta 32400 no IPv6. Os dispositivos em que você assiste também precisam de IPv6, o que a maioria das redes móveis oferece |
+| Sua conexão não tem IPv4 público (CGNAT ou DS-Lite, comum em provedores de cabo, móvel e algumas fibras) mas tem IPv6 | **[rex-direct sobre IPv6](#rex-direct-over-ipv6)** | Sem port forward e sem nada para alugar: você libera a porta 32400 no IPv6. Os dispositivos em que você assiste também precisam de IPv6, o que a maioria das redes móveis oferece |
 | Sua conexão não tem IP público, ou você assiste em redes sem IPv6, e dispositivos sem Tailscale | **[Um VPS pequeno](#a-small-vps)** | O rex não tem relay e não vai ter um. Um VPS alugado tem o IP público e um túnel leva tudo até o rex, com a largura de banda total do VPS |
 
 Não recomendado:

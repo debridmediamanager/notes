@@ -1,6 +1,6 @@
 # Ce que fait chaque pièce {#what-each-piece-does}
 
-Les noms ne disent pas à quoi chacun sert, donc voici une ligne pour chacun. Tout ce qui n'est pas marqué **For sponsors** est gratuit. Pour savoir lesquels vous faut, utilisez [Choose your setup](choose-your-setup.md).
+Les noms ne disent pas à quoi chacun sert, donc voici une ligne pour chacun. Tout ce qui n'est pas marqué **For sponsors** est gratuit. Pour savoir lesquels vous faut, utilisez [Choisissez votre configuration](choose-your-setup.md).
 
 ## Les trois projets {#the-three-projects}
 
@@ -28,7 +28,7 @@ Aucun serveur n'est nécessaire pour aucun de ces outils.
 | [rex addons](../rex/addons.md) | Petits programmes qui donnent à rex quelque chose à lire : YouTube, Spotify, IPTV, vidéos perso, ou tout ce que vous écrivez |
 | [rex-live-sports](../rex/live-tv.md) | Un addon rex qui ajoute des chaînes de sport en direct et un guide dans Live TV des apps Plex |
 | [rex-direct](../rex/any-source.md#rex-direct) | Donne à votre rex sa propre adresse sécurisée, pour que les apps Plex y accèdent depuis l'extérieur |
-| [rex for Android](../rex/android.md) | rex et ses addons sur un téléphone Android ou une box TV, sans ordinateur |
+| [rex pour Android](../rex/android.md) | rex et ses addons sur un téléphone Android ou une box TV, sans ordinateur |
 | [zurg+rex for Android](../zurg/guides/android.md) | Un serveur Plex sur votre téléphone : zurg et rex ensemble sur un seul appareil Android, avec votre bibliothèque debrid et Usenet. Pour les sponsors |
 
 ## Dans Jellyfin et Emby {#inside-jellyfin-and-emby}
@@ -55,7 +55,7 @@ Aucun serveur n'est nécessaire pour aucun de ces outils.
 |---|---|
 | Onglet Usenet | Envoie une release Usenet dans ta bibliothèque Real-Debrid, sans compte Usenet. Les sponsors passent en premier et ont un quota quotidien plus élevé |
 | [Request board](https://debridmediamanager.com/requests) | Demande une release que Real-Debrid n'a pas. Un autre utilisateur de DMM la déplace dans ta bibliothèque. Remplis 10 demandes et gagne 7 jours des avantages sponsor DMM |
-| [Hash lists](https://debridmediamanager.com/hashlists) | Partage une liste de releases pour que d'autres puissent les ajouter à leur propre compte |
+| [Listes de hash](https://debridmediamanager.com/hashlists) | Partage une liste de releases pour que d'autres puissent les ajouter à leur propre compte |
 | Extension navigateur | Ajoute des boutons DMM sur les sites de films et de séries et à côté des liens magnet. Pour [Chrome](https://chromewebstore.google.com/detail/Debrid%20Media%20Manager/oeojlegjfhgefhnbjdnaebgdfkbipghm), [Firefox](https://addons.mozilla.org/en-US/firefox/addon/debrid-media-manager/) et [Safari](../dmm/safari.md) |
 | [gatekeeper](https://gatekeeper.debridmediamanager.com) | Le site des sponsors. Deviens sponsor là-bas, lie ton engagement Patreon ou GitHub Sponsors et récupère ta clé API DMM. [Ce que donne un sponsoring](sponsorship.md) |
 

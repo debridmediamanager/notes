@@ -54,7 +54,7 @@ Sim. Os arquivos tocam na qualidade original: o rex entrega o arquivo ao app do 
 
 ### Preciso do Plex Pass? {#do-i-need-plex-pass}
 
-Não. O rex diz aos apps do Plex que a conta em que ele está registrado tem Plex Pass, então reproduzir fora de casa e converter vídeo funcionam com contas gratuitas. Reproduzir fora de casa foi testado no Plex Web com conta gratuita dos dois lados; outros apps não foram testados fora de casa. Edições de filmes, o Dashboard, Downloads, pular intro e créditos e o restante de [Movie and TV capabilities](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities) também funcionam. Um app ainda pode aplicar as próprias regras.
+Não. O rex diz aos apps do Plex que a conta em que ele está registrado tem Plex Pass, então reproduzir fora de casa e converter vídeo funcionam com contas gratuitas. Reproduzir fora de casa foi testado no Plex Web com conta gratuita dos dois lados; outros apps não foram testados fora de casa. Edições de filmes, o Dashboard, Downloads, pular intro e créditos e o restante de [Recursos de filmes e séries](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities) também funcionam. Um app ainda pode aplicar as próprias regras.
 
 ### Posso baixar para assistir offline? {#can-i-download-for-offline-viewing}
 
@@ -97,7 +97,7 @@ Várias fontes podem preencher as mesmas bibliotecas de Movies e TV.
 
 Fora de casa? Os apps do Plex na sua rede doméstica encontram o rex sem precisar mexer no roteador. O app.plex.tv também funciona pelo endereço HTTPS que o [rex-direct](any-source.md#rex-direct) gera para um rex reivindicado.
 
-O rex precisa de um endereço próprio para assistir fora de casa ou para outra residência. O caminho mais simples é um único port forward ([rex-direct](any-source.md#rex-direct)). Com IPv6 e sem IPv4 público, use o [rex-direct over IPv6](any-source.md#rex-direct-over-ipv6). O [Tailscale serve](any-source.md#tailscale-serve) não precisa de port forward nos dispositivos que rodam Tailscale. [Use it outside your home](any-source.md#use-it-outside-your-home-optional) compara as opções.
+O rex precisa de um endereço próprio para assistir fora de casa ou para outra residência. O caminho mais simples é um único port forward ([rex-direct](any-source.md#rex-direct)). Com IPv6 e sem IPv4 público, use o [rex-direct sobre IPv6](any-source.md#rex-direct-over-ipv6). O [Tailscale serve](any-source.md#tailscale-serve) não precisa de port forward nos dispositivos que rodam Tailscale. [Use it outside your home](any-source.md#use-it-outside-your-home-optional) compara as opções.
 
 ### O que ele não faz? {#what-does-it-not-do}
 
@@ -107,7 +107,7 @@ There is no tuner or DVR. Música, TV ao vivo e fotos precisam de uma fonte que 
 
 ### Por que o app mostra uma versão do Plex e "Check for Updates"? {#why-does-the-app-show-a-plex-version-and-check-for-updates}
 
-rex se apresenta para os apps e para o plex.tv como um Plex Media Server, então os apps mostram um número de versão de Plex Media Server. Esse número não é o da rex. **Check for Updates** sempre responde que o servidor está atualizado: a rex nunca se atualiza sozinha. Para atualizar a rex, baixe um nightly mais novo, como em [Updating](any-source.md#updating).
+rex se apresenta para os apps e para o plex.tv como um Plex Media Server, então os apps mostram um número de versão de Plex Media Server. Esse número não é o da rex. **Check for Updates** sempre responde que o servidor está atualizado: a rex nunca se atualiza sozinha. Para atualizar a rex, baixe um nightly mais novo, como em [Atualizando](any-source.md#updating).
 
 ### Por que meu navegador em port 32400/web não abre uma biblioteca? {#why-does-my-browser-at-port-32400web-not-open-a-library}
 

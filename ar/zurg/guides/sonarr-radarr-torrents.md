@@ -5,7 +5,7 @@
 | الدليل | من يبحث | يعمل zurg كـ | ما تحتاجه |
 |---|---|---|---|
 | [Usenet](sonarr-radarr.md) | Sonarr و Radarr | SABnzbd | حساب Usenet (أو TorBox Pro للخلفية `torbox_nzb`) ومفهرسات Usenet في Prowlarr أو في \*arrs |
-| [Torrents](sonarr-radarr-torrents.md) | Sonarr و Radarr | qBittorrent | حساب debrid ومفهرسات تورنت في Prowlarr أو في \*arrs |
+| [التورنتات](sonarr-radarr-torrents.md) | Sonarr و Radarr | qBittorrent | حساب debrid ومفهرسات تورنت في Prowlarr أو في \*arrs |
 | [عمليات البحث عبر zurg](sonarr-radarr-fetch.md) | zurg | لا يوجد عميل تنزيل أصلاً | حساب Usenet أو TorBox Pro أو debrid، ومفهرسات Newznab أو Torznab في ملف إعدادات zurg الخاص |
 
 يمكن تشغيل الطريقتين الأولى والثانية جنبًا إلى جنب، فهما تتشاركان المجلد `__magic__` نفسه.

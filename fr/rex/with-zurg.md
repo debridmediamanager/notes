@@ -384,7 +384,7 @@ Tu as fini. Les sections ci-dessous sont facultatives.
 
 **Ce que ça fait.** Donne à rex une adresse HTTPS que les applis Plex utilisées hors de chez vous peuvent atteindre, et la déclare à plex.tv.
 
-**Pourquoi c'est important.** Hors de chez vous, app.plex.tv ne se connecte qu'à une adresse HTTPS, et les autres applis Plex préfèrent ce type d'adresse. Un vrai serveur Plex peut se rabattre sur le relais de Plex ; rex ne le peut pas, donc c'est à vous de choisir comment il est accessible. rex doit d'abord être [claimed](#step-3-add-it-to-a-plex-account), et un proxy exposé à Internet doit bloquer `/rex/` ([Keep the port private](#keep-the-port-private)).
+**Pourquoi c'est important.** Hors de chez vous, app.plex.tv ne se connecte qu'à une adresse HTTPS, et les autres applis Plex préfèrent ce type d'adresse. Un vrai serveur Plex peut se rabattre sur le relais de Plex ; rex ne le peut pas, donc c'est à vous de choisir comment il est accessible. rex doit d'abord être [claimed](#step-3-add-it-to-a-plex-account), et un proxy exposé à Internet doit bloquer `/rex/` ([Garder le port privé](#keep-the-port-private)).
 
 **Plex Pass.** Plex Web lit hors de chez vous sans Plex Pass ni Remote Watch Pass sur aucun des deux comptes. Les autres applis Plex n'ont pas été testées hors de chez vous.
 
@@ -397,7 +397,7 @@ Quelle que soit l'option choisie, chaque octet que vous regardez hors de chez vo
 | Votre routeur a une IP publique et vous pouvez rediriger un port | **[rex-direct](#rex-direct)** (le plus simple) | Activé par défaut : une seule redirection de port. DMM donne à rex un nom et un certificat, et garde ce nom pointé vers votre IP domestique |
 | Vous pouvez installer Tailscale sur les appareils sur lesquels vous regardez | **[Tailscale serve](#tailscale-serve)** (le meilleur) | Rien à ouvrir sur votre routeur, et ça marche derrière n'importe quelle connexion Internet. Le certificat se renouvelle tout seul, et personne en dehors de votre tailnet ne peut atteindre rex |
 | Appareils sans Tailscale (la TV d'un ami, un hôtel), et votre routeur a une IP publique | **[Caddy](#caddy)** avec votre propre domaine, ou avec un nom `sslip.io` gratuit | Une connexion directe sans intermédiaire, et un certificat gratuit qui se renouvelle tout seul. Vous redirigez le port 443 |
-| Votre connexion n'a pas d'IPv4 publique (CGNAT ou DS-Lite, courant avec le câble, le mobile et certains opérateurs fibre) mais a l'IPv6 | **[rex-direct over IPv6](#rex-direct-over-ipv6)** | Pas de redirection de port et rien à louer : vous laissez passer le port 32400 en IPv6. Les appareils sur lesquels vous regardez doivent aussi avoir l'IPv6, ce que la plupart des réseaux mobiles proposent |
+| Votre connexion n'a pas d'IPv4 publique (CGNAT ou DS-Lite, courant avec le câble, le mobile et certains opérateurs fibre) mais a l'IPv6 | **[rex-direct sur IPv6](#rex-direct-over-ipv6)** | Pas de redirection de port et rien à louer : vous laissez passer le port 32400 en IPv6. Les appareils sur lesquels vous regardez doivent aussi avoir l'IPv6, ce que la plupart des réseaux mobiles proposent |
 | Votre connexion n'a aucune IP publique, ou vous regardez sur des réseaux sans IPv6, et des appareils sans Tailscale | **[Un petit VPS](#a-small-vps)** | rex n'a pas de relais et n'en aura pas. Un VPS loué a l'IP publique et un tunnel fait passer tout le trafic jusqu'à rex, à la pleine bande passante du VPS |
 
 Non recommandé :
@@ -693,7 +693,7 @@ rex journalise chaque titre tel que zurg le lit, comme dans [étape 4](#step-4-c
 cd ~/rex && docker compose pull && docker compose up -d
 ```
 
-rex revient avec la même bibliothèque. Pour zurg, voir [Managing and updating zurg](../zurg/setup/docker.md#managing-and-updating-zurg).
+rex revient avec la même bibliothèque. Pour zurg, voir [Gérer et mettre à jour zurg](../zurg/setup/docker.md#managing-and-updating-zurg).
 
 L'image embarque jellyfin-ffmpeg, donc [converting video](#converting-video-optional) demande seulement de transmettre la puce graphique. HTTPS fonctionne comme ci-dessus : Tailscale, Caddy et frp tournent sur la machine elle-même, et `--announce-url ...` va dans le `command:` du fichier compose.
 
@@ -811,7 +811,7 @@ Demandez sur le forum **rex-support** du [Discord](https://discord.com/invite/7u
 | Un appareil à la maison ne peut pas se connecter, et la ligne `heartbeat ... ->` de rex n'affiche pas `http://192.168.1.20:32400` | rex annonce l'adresse privée du réseau par lequel il atteint Internet ; derrière un VPN ou un nœud de sortie Tailscale, ce n'est pas ton réseau domestique. Ajoute `--announce-url http://192.168.1.20:32400` à la fin de la commande de démarrage de rex ([étape 2](#step-2-install-rex)) et redémarre rex |
 | À la maison, app.plex.tv n'atteint pas rex, et l'adresse `lan.` de [Ce que tu dois voir](#what-you-should-see) ne répond pas | Certains routeurs et filtres DNS bloquent un nom public qui pointe vers une adresse domestique (protection DNS rebind). Autorise `rex-direct.debridmediamanager.com` là-bas, comme les utilisateurs de Plex autorisent `plex.direct` |
 | Une autre machine ne peut pas joindre rex sous Windows, bien que les règles de pare-feu de l'étape 2 existent | Si tu as déjà cliqué sur **Cancel** quand Windows a demandé s'il fallait autoriser rex, Windows a enregistré une règle qui le bloque, et elle l'emporte sur les règles de port. Supprime-la dans PowerShell en administrateur : <code>Get-NetFirewallApplicationFilter -Program "$HOME\rex\rex.exe" &#124; Get-NetFirewallRule &#124; Where-Object Action -eq Block &#124; Remove-NetFirewallRule</code> (si rex est ailleurs, utilise son propre chemin) |
-| rex n'est pas dans les apps Plex hors de chez toi | Non revendiqué, ou l'appareil ne peut pas joindre l'adresse HTTPS (une adresse réservée au tailnet nécessite Tailscale sur cet appareil ; [rex-direct over IPv6](#rex-direct-over-ipv6) nécessite IPv6 sur le réseau de cet appareil) |
+| rex n'est pas dans les apps Plex hors de chez toi | Non revendiqué, ou l'appareil ne peut pas joindre l'adresse HTTPS (une adresse réservée au tailnet nécessite Tailscale sur cet appareil ; [rex-direct sur IPv6](#rex-direct-over-ipv6) nécessite IPv6 sur le réseau de cet appareil) |
 | Le journal affiche `waiting for a claim` | Fais l'[étape 3](#step-3-add-it-to-a-plex-account) |
 | rex s'arrête avec `argument --announce-url: '...' is not an http:// or https:// address` | Donne à `--announce-url` l'adresse seule, par exemple `https://myhost.tailnet.ts.net:443` : sans crochets, guillemets ni lien autour |
 | zurg s'arrête quand tu te déconnectes | Sous Linux, lance `sudo loginctl enable-linger "$USER"` (étape 1) |

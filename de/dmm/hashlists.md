@@ -59,7 +59,7 @@ Du hängst fest? Frag im Forum **dmm-support** auf [Discord](https://discord.com
 
 ### Wie füge ich Hash-Listen zu meiner eigenen Bibliothek hinzu? {#how-do-i-add-hash-lists-to-my-own-library}
 
-Öffne die Liste, melde dich bei DMM mit deinem Debrid-Dienst an und klicke dann in einer Zeile auf die Schaltfläche deines Dienstes oder auf **RD Download** (bzw. **Download** deines Dienstes), um alles Angezeigte herunterzuladen. Siehe [Add a list to your library](#add-a-list-to-your-library).
+Öffne die Liste, melde dich bei DMM mit deinem Debrid-Dienst an und klicke dann in einer Zeile auf die Schaltfläche deines Dienstes oder auf **RD Download** (bzw. **Download** deines Dienstes), um alles Angezeigte herunterzuladen. Siehe [Eine Liste zu deiner Bibliothek hinzufügen](#add-a-list-to-your-library).
 
 ### Warum sind alle Einträge in meiner Hash-Liste ausgeblendet? {#why-are-all-the-items-in-my-hash-list-hidden}
 

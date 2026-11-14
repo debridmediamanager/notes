@@ -217,4 +217,4 @@ curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/p
 
 - [Docker](docker.md) — إعداد الحاوية وانتشار تركيب FUSE
 - [macOS](macos.md) — نفس مثبّت الملف الثنائي مع macFUSE وlaunchd
-- [Windows](windows.md) — نفس مثبّت الملف الثنائي مع WinFsp ومهمة مجدولة تفاعلية
+- [ويندوز](windows.md) — نفس مثبّت الملف الثنائي مع WinFsp ومهمة مجدولة تفاعلية

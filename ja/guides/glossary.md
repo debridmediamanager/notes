@@ -43,7 +43,7 @@
 | 名前 | 機能 |
 |---|---|
 | [Wanted](../zurg/guides/dmm-wanted.md) | DMM で **Want** を押すと、zurg が新しいエピソードも含めて取得します。スポンサー向けです |
-| [Seerr through DMM](../dmm/seerr.md) | Seerr での家族のリクエストが Wanted リストに届きます。スポンサー向けです |
+| [Seerr を DMM 経由で使う](../dmm/seerr.md) | Seerr での家族のリクエストが Wanted リストに届きます。スポンサー向けです |
 | [Torznab](https://debridmediamanager.com/torznab) と [Newznab](https://debridmediamanager.com/newznab) | DMM を Sonarr、Radarr、Prowlarr のインデクサーとして使えます。スポンサー向けです |
 | zurg をダウンロードクライアントとして使う | zurg が Sonarr と Radarr には qBittorrent として応答し、[torrents](../zurg/guides/sonarr-radarr-torrents.md) 用には、[Usenet](../zurg/guides/sonarr-radarr.md) 用には SABnzbd として応答するので、どちらも別途動かす必要がありません。スポンサー向けです |
 | [zurg の Stremio アドオン](../zurg/guides/stremio.md) | Stremio で再生を押すと Usenet を検索し、zurg 経由でストリーミングします。スポンサー向けです |
@@ -55,7 +55,7 @@
 |---|---|
 | Usenet タブ | Usenet のリリースを、Usenet アカウントなしで Real-Debrid ライブラリに送れます。スポンサーが優先され、1日あたりの割り当ても多くなります |
 | [Request board](https://debridmediamanager.com/requests) | Real-Debrid にないリリースをリクエストできます。別の DMM ユーザーがそれをあなたのライブラリに移してくれます。リクエストを 10 件満たすと、DMM スポンサー特典が 7 日間もらえます |
-| [Hash lists](https://debridmediamanager.com/hashlists) | リリースのリストを共有して、ほかの人が自分のアカウントに追加できるようにします |
+| [ハッシュリスト](https://debridmediamanager.com/hashlists) | リリースのリストを共有して、ほかの人が自分のアカウントに追加できるようにします |
 | ブラウザ拡張機能 | 映画や TV のサイトと magnet リンクの横に DMM ボタンを追加します。[Chrome](https://chromewebstore.google.com/detail/Debrid%20Media%20Manager/oeojlegjfhgefhnbjdnaebgdfkbipghm)、[Firefox](https://addons.mozilla.org/en-US/firefox/addon/debrid-media-manager/)、[Safari](../dmm/safari.md) に対応しています |
 | [gatekeeper](https://gatekeeper.debridmediamanager.com) | スポンサーサイトです。ここでスポンサーになり、Patreon または GitHub Sponsors の支援を連携すると、DMM API キーが取得できます。[スポンサーになるとできること](sponsorship.md) |
 

@@ -32,7 +32,7 @@ Jede Anleitung auf dieser Seite, nach Projekt sortiert.
 - [zurg-Suchen für Sonarr & Radarr](../zurg/guides/sonarr-radarr-fetch.md)
 - [Untertitel mit Bazarr](../zurg/guides/subtitles.md)
 - [Whisparr](../zurg/guides/whisparr.md)
-- [\_\_magic\_\_](../zurg/guides/magic.md)
+- [\_\_Magie\_\_](../zurg/guides/magic.md)
 - [Umbenennen](../zurg/guides/renaming.md)
 - [Plex](../zurg/guides/plex.md)
 - [Eine Docker Compose-Datei](../zurg/guides/docker-compose.md): zurg, Plex Media Server und rex auf einem Linux-Rechner

@@ -9,7 +9,7 @@
 | Что нужно | Зачем |
 |---|---|
 | rex настроен и добавлен в аккаунт Plex, как описано в [Add it to a Plex account](any-source.md#step-3-add-it-to-a-plex-account) | Kometa редактирует библиотеку, и делать это может только тот аккаунт, к которому привязан rex. Непривязанный rex никому не служит |
-| rex nightly **2026.10.24 или новее** | Обновление, как в разделе [Updating](any-source.md#updating) у rex |
+| rex nightly **2026.10.24 или новее** | Обновление, как в разделе [Обновление](any-source.md#updating) у rex |
 | Docker на любой машине, с которой есть доступ к rex | Kometa работает в контейнере. В документации Kometa есть [другие способы установки](https://kometa.wiki/en/latest/kometa/install/overview/) |
 | Бесплатный ключ TMDb API | Он нужен самой Kometa, даже если rex его не требует. Получить его можно в **Settings → API** на themoviedb.org, как описано на [странице TMDb getting started](https://developer.themoviedb.org/docs/getting-started) |
 

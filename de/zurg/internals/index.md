@@ -32,13 +32,13 @@ Geschrieben für alle, die gleich am Code etwas ändern wollen. Um zurg auszufü
 
 | Seite | Was sie enthält |
 |---|---|
-| [Plex trash sweep](plex-trash-sweep.md) | Die Bereinigung an zurgs eigene Sicht auf defekte Dateien anpassen. |
-| [Stream timeout regression](stream-timeout-regression.md) | Ein durchgeleiteter Stream, der bei langen Lesevorgängen nicht mehr durchhielt. |
-| [rclone move refusal](rclone-move-refusal.md) | Leere Importe nach einem Backend, das ein MOVE abgelehnt hat, und der Patch dazu. |
+| [Plex-Papierkorb-Aufräumen](plex-trash-sweep.md) | Die Bereinigung an zurgs eigene Sicht auf defekte Dateien anpassen. |
+| [Regression bei Stream-Timeout](stream-timeout-regression.md) | Ein durchgeleiteter Stream, der bei langen Lesevorgängen nicht mehr durchhielt. |
+| [rclone move-Ablehnung](rclone-move-refusal.md) | Leere Importe nach einem Backend, das ein MOVE abgelehnt hat, und der Patch dazu. |
 
 ## Testen {#testing}
 
 - [E2E-Tests](e2e-test.md) erklärt, was die End-to-End-Suite prüft und was ihr Ausführen kostet.
 
 Was ein bestimmter Dienst leistet und welche Grenzen er hat, steht unter
-[Providers](../providers/index.md) und nicht hier.
+[Anbieter](../providers/index.md) und nicht hier.

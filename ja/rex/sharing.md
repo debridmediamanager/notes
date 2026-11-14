@@ -2,7 +2,7 @@
 
 Plex の **Manage Library Access** から、登録済みアカウントの rex を共有します。各ユーザーは自分の Plex にサインインし、他のサーバーと並んで rex を見られます。視聴履歴もそれぞれ別々に残ります。
 
-まず新しい Plex アカウントで rex をセットアップします。方法は [rex with your own app](any-source.md)、[rex with your Stremio addons](stremio.md)、[rex with zurg](with-zurg.md) から選んでください。以下で **the owner** と書いたときは、そのアカウントを指します。
+まず新しい Plex アカウントで rex をセットアップします。方法は [rex をご自身のアプリで使う](any-source.md)、[rex を Stremio のアドオンと一緒に使う](stremio.md)、[rex と zurg の併用](with-zurg.md) から選んでください。以下で **the owner** と書いたときは、そのアカウントを指します。
 
 ## 登場人物と役割 {#who-is-who}
 
@@ -12,7 +12,7 @@ Plex の **Manage Library Access** から、登録済みアカウントの rex �
 | 自分のアカウント | 視聴に使うアカウント。rex は他の人と同じように共有されます |
 | 家族や友人 | 本人の Plex アカウント、または子ども向けの管理対象ユーザー（下記参照） |
 
-自分のアカウントに与えられる権限は、共有する他の人と同じ範囲を超えません。理由は次のとおりです: [Is my Plex account at risk?](faq.md#is-my-plex-account-at-risk)
+自分のアカウントに与えられる権限は、共有する他の人と同じ範囲を超えません。理由は次のとおりです: [Plex アカウントは危険になりますか?](faq.md#is-my-plex-account-at-risk)
 
 ## 招待する {#invite-someone}
 

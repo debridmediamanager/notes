@@ -22,7 +22,7 @@ Sebuah rilis di Usenet diposting sebagai ribuan potongan kecil. NZB mencatat daf
 
 Kamu tidak perlu:
 
-- **Download client** seperti SABnzbd atau NZBGet. zurg yang men-streaming release-nya. Untuk Sonarr dan Radarr, zurg berperan sebagai SABnzbd itu sendiri: lihat [Sonarr & Radarr for Usenet](../zurg/guides/sonarr-radarr.md).
+- **Download client** seperti SABnzbd atau NZBGet. zurg yang men-streaming release-nya. Untuk Sonarr dan Radarr, zurg berperan sebagai SABnzbd itu sendiri: lihat [Sonarr & Radarr untuk Usenet](../zurg/guides/sonarr-radarr.md).
 - **Disk untuk seluruh release.** zurg hanya mengambil bagian yang menutupi apa yang sedang diputar. File remux 60 GB tidak butuh disk 60 GB.
 - **Alat untuk unpack atau repair.** zurg memutar langsung dari dalam set RAR dan membangun ulang bagian yang hilang dari file PAR2 release itu sendiri.
 - **Akun debrid.** Usenet bisa berjalan sendiri, atau berdampingan dengan Real-Debrid dan TorBox dalam library zurg yang sama.
@@ -36,7 +36,7 @@ Layak ditambahkan nanti: **penyedia kedua.** Postingan yang hilang di satu penye
 2. Dalam waktu satu-dua detik, zurg membacanya dan mencantumkan rilisan tersebut di pustakanya, dinamai sesuai NZB-nya.
 3. Kamu tekan play di Plex, Jellyfin, atau rex. zurg mengambil potongan-potongan untuk posisi itu dari provider kamu lalu menyerahkannya. Kalau kamu loncat ke depan, zurg mengambil dari posisi baru itu.
 
-Tidak ada yang menunggu sampai unduhan selesai. Untuk menyiapkannya langkah demi langkah, ikuti [Usenet with zurg](../zurg/guides/usenet.md). Pengaturan provider dan detail Docker ada di [Usenet provider](../zurg/providers/usenet.md).
+Tidak ada yang menunggu sampai unduhan selesai. Untuk menyiapkannya langkah demi langkah, ikuti [Usenet dengan zurg](../zurg/guides/usenet.md). Pengaturan provider dan detail Docker ada di [Usenet provider](../zurg/providers/usenet.md).
 
 ## Di mana posisi DMM {#where-dmm-fits}
 
@@ -70,7 +70,7 @@ Sponsor mendapat dua fitur tambahan:
 | Playback tersendat atau ada celah yang diputar senyap | Potongan rilis hilang dari penyedia Anda. zurg membangun ulang potongan tersebut dari file PAR2 jika posting-nya punya file itu. Penyedia kedua bisa mengatasi sebagian besar masalah ini. |
 | DMM: **No Usenet results found.** | Indexer DMM tidak punya hasil untuk judul ini. Coba tab **Torrents**, atau indexer Anda sendiri. |
 
-Tabel pemecahan masalah lengkap ada di [Usenet with zurg](../zurg/guides/usenet.md#troubleshooting). Masih buntu? Tanyakan di forum **zurg-support** di [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](remote-help.md) menjelaskan apa saja yang perlu disertakan.
+Tabel pemecahan masalah lengkap ada di [Usenet dengan zurg](../zurg/guides/usenet.md#troubleshooting). Masih buntu? Tanyakan di forum **zurg-support** di [Discord](https://discord.com/invite/7u4YjMThXP). [Mendapatkan bantuan](remote-help.md) menjelaskan apa saja yang perlu disertakan.
 
 ## Pertanyaan {#questions}
 
@@ -95,7 +95,7 @@ Ya, di nightly build untuk sponsor. Isi detail provider kamu, masukkan NZB ke `n
 Paket Pro TorBox punya dua fitur Usenet. Halaman harganya menunjukkan Usenet hanya ada di Pro (dicek 14 November 2026).
 
 - **Unduhan Usenet yang di-host.** TorBox mengunduh seluruh rilis untuk kamu dan menyajikannya seperti unduhan TorBox biasa. Kirim NZB dari tab Usenet di DMM atau dari provider `torbox_nzb` di zurg. Kamu tidak perlu login news server. Lihat [TorBox hosted Usenet](../zurg/providers/torbox-nzb.md).
-- **Login news server (NNTP).** Pakai di zurg seperti provider lain. Batasnya 10 koneksi. Hasil pengukuran September 2026 menunjukkan koleksi yang ditemukan lebih sedikit dibanding tiga provider berbayar lain, jadi paling cocok sebagai cadangan. Lihat [TorBox news server](../zurg/providers/torbox-news-server.md).
+- **Login news server (NNTP).** Pakai di zurg seperti provider lain. Batasnya 10 koneksi. Hasil pengukuran September 2026 menunjukkan koleksi yang ditemukan lebih sedikit dibanding tiga provider berbayar lain, jadi paling cocok sebagai cadangan. Lihat [Server berita TorBox](../zurg/providers/torbox-news-server.md).
 
 ### Bisakah saya menggunakan satu akun Usenet di dua tempat? {#can-i-use-one-usenet-account-in-two-places}
 

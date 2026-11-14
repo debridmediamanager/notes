@@ -438,7 +438,7 @@ Jika Anda memasang LaunchAgent manual dan auto-login tidak diaktifkan, Anda haru
 
 Instalasi yang dibuat oleh `zurg setup` di Mac tanpa layar (headless) memakai LaunchDaemon dan tidak memerlukan login GUI. Periksa dengan `cd ~/zurg && ./zurg service status`.
 
-Masih mengalami kendala? Tanyakan di forum **zurg-support** di [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan.
+Masih mengalami kendala? Tanyakan di forum **zurg-support** di [Discord](https://discord.com/invite/7u4YjMThXP). [Mendapatkan bantuan](../../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan.
 
 ## Gambaran Arsitektur {#architecture-overview}
 

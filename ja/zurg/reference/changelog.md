@@ -1006,7 +1006,7 @@ WebDAVのリスト表示では、すべてのフォルダとファイルのフ�
 
 `user_agent` で別のエージェントを設定でき、`omit_user_agent` を使うと何も送らなくなります。`outbound_*` のキーは、Plex、Jellyfin、Emby に表示されるクライアント名とデバイス名を設定します。これらはすべてダッシュボードの Network & Connectivity にあり、再起動後に反映されます。Usenet への接続では、ソフトウェアを示す識別子は一切送られません。これで zurg 独自の識別子はなくなりますが、匿名になるわけではありません。
 
-詳しくは [Outbound identity](outbound-identity.md) を見てください。
+詳しくは [アウトバウンド ID](outbound-identity.md) を見てください。
 
 ## zurg は、デフォルトで Plex のゴミ箱を空にします {#zurg-empties-the-plex-trash-by-default}
 
@@ -1140,7 +1140,7 @@ Stremioに直接応答できるようになりました。`stremio:` ブロッ�
 
 `stremio.max_size_gb`（既定値は40）を超えるリリースは一覧から除外されます。これにより、ディスク全体をそのまま収めたremuxが、再生可能な選択肢をすべて押しのけて上位に来ることを防げます。
 
-初回再生にかかる時間も含めた全体の流れは、こちらをご覧ください：[The Stremio addon](../guides/stremio.md)
+初回再生にかかる時間も含めた全体の流れは、こちらをご覧ください：[Stremioアドオン](../guides/stremio.md)
 
 ## 1つのフォルダがDockerインストール全体で、初回起動時にマウントされます {#one-folder-is-the-whole-docker-install-and-it-mounts-on-the-first-run}
 

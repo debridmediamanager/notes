@@ -18,7 +18,7 @@ Todo lo que aparece abajo se capturó con zurg `nightly-993-g99bcf9a4`, Sonarr `
 
 Tienen que cumplirse tres cosas. Revísalas todas ahora; si alguna falla, más adelante se verá como un problema que no tiene nada que ver.
 
-1. **zurg tiene un proveedor `nzb`, o uno `torbox_nzb` (TorBox Pro).** Sin uno, no hay nada que lea lo que escribe el endpoint, y cada trabajo aparece como Failed después de 30 minutos, cuando zurg deja de esperar a que aparezca en la biblioteca. Consulta [Usenet](usenet.md), o [TorBox hosted Usenet](../providers/torbox-nzb.md) para `torbox_nzb`.
+1. **zurg tiene un proveedor `nzb`, o uno `torbox_nzb` (TorBox Pro).** Sin uno, no hay nada que lea lo que escribe el endpoint, y cada trabajo aparece como Failed después de 30 minutos, cuando zurg deja de esperar a que aparezca en la biblioteca. Consulta [Usenet](usenet.md), o [TorBox alojado en Usenet](../providers/torbox-nzb.md) para `torbox_nzb`.
 2. **`magic.enabled` está en `true`.** Sin eso, el directorio de completados no existe y todas las importaciones fallan. Consulta [`__magic__`](magic.md).
 3. **El montaje debe ser visible para el \*arr en la ruta que informa zurg.** Si Sonarr se ejecuta en un contenedor, lee el [paso 8](#8-if-your-arr-is-in-docker) antes de configurar nada. Si está instalado como una aplicación normal en la misma máquina, ve el montaje donde zurg lo monta, con una advertencia en cada sistema:
    - **Linux:** un \*arr que se ejecuta con un usuario distinto al de zurg ve una carpeta vacía hasta que se active `user_allow_other`. Consulta [Configuración en Linux](../setup/linux.md#1-install-fuse-3).
@@ -317,7 +317,7 @@ Luego ve a **Settings → Media Management → Root Folders → Add Root Folder*
 
 ## 8. Si tu \*arr está en Docker {#8-if-your-arr-is-in-docker}
 
-Este paso es para Docker en un host Linux. Docker Desktop en macOS y Windows ejecuta los contenedores dentro de una máquina virtual. El bind `rslave` de abajo depende de la propagación de montajes de Linux (ver [Docker setup](../setup/docker.md)), y pasarle el montaje de zurg a un contenedor en esos sistemas no se ha probado. En macOS y Windows instala Sonarr y Radarr como aplicaciones normales, tal como describe [Before you start](#before-you-start).
+Este paso es para Docker en un host Linux. Docker Desktop en macOS y Windows ejecuta los contenedores dentro de una máquina virtual. El bind `rslave` de abajo depende de la propagación de montajes de Linux (ver [Configuración con Docker](../setup/docker.md)), y pasarle el montaje de zurg a un contenedor en esos sistemas no se ha probado. En macOS y Windows instala Sonarr y Radarr como aplicaciones normales, tal como describe [Antes de empezar](#before-you-start).
 
 Tres problemas distintos. El segundo te cuesta una descarga en cada importación. El tercero no te afecta hasta la primera vez que se reinicia zurg.
 

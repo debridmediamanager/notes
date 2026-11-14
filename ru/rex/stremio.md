@@ -21,10 +21,10 @@
 
 ## Шаг 1. Установите rex и добавьте его в аккаунт Plex {#step-1-install-rex-and-add-it-to-a-plex-account}
 
-Следуйте инструкции [rex with your own app](any-source.md):
+Следуйте инструкции [rex с собственным приложением](any-source.md):
 
-1. [Step 1. Install rex](any-source.md#step-1-install-rex), включая поиск LAN IP rex. Используйте это имя в каждой команде.
-2. [Step 3. Add it to a Plex account](any-source.md#step-3-add-it-to-a-plex-account): зарегистрируйте rex на новом аккаунте и поделитесь им со своим.
+1. [Шаг 1. Установите rex](any-source.md#step-1-install-rex), включая поиск LAN IP rex. Используйте это имя в каждой команде.
+2. [Шаг 3. Добавьте в аккаунт Plex](any-source.md#step-3-add-it-to-a-plex-account): зарегистрируйте rex на новом аккаунте и поделитесь им со своим.
 
 Шаги 2 и 4 там пропустите: rex-stremio — это ваше приложение.
 

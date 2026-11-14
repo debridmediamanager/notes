@@ -45,7 +45,7 @@ Download Usenet yang kamu kirim ke TorBox tidak ada di library DMM. Kamu bisa me
 
 ## Tonton di Stremio {#watch-in-stremio}
 
-Tekan **Cast for TB** di halaman utama dan pasang addon dari sana. Lalu tekan **Cast (TB)** pada rilis apa pun yang sudah di-cache oleh TorBox. Semua langkahnya ada di [DMM in Stremio](stremio.md).
+Tekan **Cast for TB** di halaman utama dan pasang addon dari sana. Lalu tekan **Cast (TB)** pada rilis apa pun yang sudah di-cache oleh TorBox. Semua langkahnya ada di [DMM di Stremio](stremio.md).
 
 Di Stremio, addon-nya bernama **DMM Cast for TorBox**. Baris **DMM TB Library**-nya menampilkan torrent TorBox kamu beserta download web dan Usenet yang sudah selesai.
 
@@ -60,7 +60,7 @@ Di Stremio, addon-nya bernama **DMM Cast for TorBox**. Baris **DMM TB Library**-
 
 ![Tab Usenet DMM dengan TorBox Pro: Send to TorBox](../assets/dmm-torbox/03-usenet-tab.webp)
 
-Sudah login ke Real-Debrid juga? Daftarnya diberi judul **Send to Real-Debrid or TorBox** dan punya kedua tombol. Ikon file di ujung baris akan menyimpan NZB saja. Baru pertama kali pakai Usenet? Mulai dari [Usenet for beginners](../guides/usenet-for-beginners.md).
+Sudah login ke Real-Debrid juga? Daftarnya diberi judul **Send to Real-Debrid or TorBox** dan punya kedua tombol. Ikon file di ujung baris akan menyimpan NZB saja. Baru pertama kali pakai Usenet? Mulai dari [Usenet untuk pemula](../guides/usenet-for-beginners.md).
 
 TorBox menghapus unduhan Usenet 30 hari setelah di-cache. Kirim ulang untuk mendapatkannya kembali.
 

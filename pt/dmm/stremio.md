@@ -63,7 +63,7 @@ No Debrid-Link, o cast adiciona o release à sua conta. Um release que o Debrid-
 | **No episodes in this release on Premiumize** | O DMM não conseguiu associar os arquivos desse lançamento a episódios. Envie um lançamento diferente. |
 | O endereço do addon colado na barra de pesquisa no topo do Stremio Web não faz nada | Essa barra serve só para pesquisar. Use **Addons** → **Add addon**. |
 
-Travou? Pergunte no fórum **dmm-cast-support** no [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) explica o que incluir.
+Travou? Pergunte no fórum **dmm-cast-support** no [Discord](https://discord.com/invite/7u4YjMThXP). [Obtendo ajuda](../guides/remote-help.md) explica o que incluir.
 
 ## Perguntas {#questions}
 

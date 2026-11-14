@@ -2,7 +2,7 @@
 
 [rex](https://rex.debridmediamanager.com/ja/) は、公式の Plex アプリ向けのメディアサーバーで、ファイルは一切持ちません。ソースがライブラリの中身を rex に伝え、各ファイルを配信します。再生を押すと、rex がそのファイルをストリーミングします。rex は個人利用であれば無料です。[ソースコード](https://github.com/debridmediamanager/rex)は PolyForm Noncommercial ライセンスで公開されています。Linux、macOS、Windows で動作し、Linux 向けの Docker イメージ `ghcr.io/debridmediamanager/rex:nightly` としても提供されています（[自分のアプリで使う](any-source.md#run-rex-in-docker)、[zurg と使う](with-zurg.md#run-rex-in-docker)）。
 
-- [rex for Android](android.md) は、パソコンなしでスマホ、タブレット、TV ボックス上で rex とそのアドオンを動かします。無料です。スポンサー向けには [zurg+rex](../zurg/guides/android.md) もあります。これはスマホ上で動く Plex サーバーで、デブリッドや Usenet のライブラリも rex に接続します。
+- [Android 版 rex](android.md) は、パソコンなしでスマホ、タブレット、TV ボックス上で rex とそのアドオンを動かします。無料です。スポンサー向けには [zurg+rex](../zurg/guides/android.md) もあります。これはスマホ上で動く Plex サーバーで、デブリッドや Usenet のライブラリも rex に接続します。
 - [rex の質問](faq.md) では、インストール前に知っておきたいことをまとめています。
 - [自分のアプリで rex を使う](any-source.md) は、HTTP でファイルを配信し、rex のフィード API に対応したソースを設定する方法です。
 - [Stremio アドオンで rex を使う](stremio.md) では、rex-stremio で rex にコンテンツを追加します。無料で、スポンサーは不要です。

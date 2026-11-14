@@ -11,7 +11,7 @@ Docker Desktop на Windows или Mac этого не потянет: папк�
 - **Linux-машина**, которая работает постоянно. Установщик добавит Docker, если его нет.
 - **Спонсорство zurg.** Образ zurg закрытый. Оформите спонсорство на [gatekeeper](https://gatekeeper.debridmediamanager.com/), и он даст доступ к вашему аккаунту GitHub.
 - **Ваш API-токен Real-Debrid** или логин от другого сервиса, который поддерживает zurg: [Your Real-Debrid API token](../../guides/real-debrid-api-token.md).
-- **Для Plex Media Server** нужен ваш аккаунт Plex. **Для rex** нужен новый аккаунт Plex, созданный специально для него: в [rex with zurg](../../rex/with-zurg.md#before-you-start) объясняется почему.
+- **Для Plex Media Server** нужен ваш аккаунт Plex. **Для rex** нужен новый аккаунт Plex, созданный специально для него: в [rex с zurg](../../rex/with-zurg.md#before-you-start) объясняется почему.
 
 ## 1. Запустите установщик zurg для Docker {#1-run-zurgs-docker-installer}
 
@@ -100,7 +100,7 @@ docker compose ps
 
 ## 3. Добавьте папки zurg в Plex {#3-add-zurgs-folders-in-plex}
 
-Откройте Plex Web по адресу `http://<this machine's LAN IP>:32400/web`. Добавьте библиотеку **Movies** с папкой `/zurg_mnt/zurg/movies` и библиотеку **TV Shows** с папкой `/zurg_mnt/zurg/shows`, как показано в [Real-Debrid in Plex](../../guides/real-debrid-plex.md#3-add-the-folders-in-plex).
+Откройте Plex Web по адресу `http://<this machine's LAN IP>:32400/web`. Добавьте библиотеку **Movies** с папкой `/zurg_mnt/zurg/movies` и библиотеку **TV Shows** с папкой `/zurg_mnt/zurg/shows`, как показано в [Real-Debrid в Plex](../../guides/real-debrid-plex.md#3-add-the-folders-in-plex).
 
 Чтобы Plex узнавал о новых файлах, откройте панель управления zurg по адресу `http://<this machine's LAN IP>:9999/config/` и нажмите **Login with Plex** в разделе **Media Server Integration** ([шаг 4 там](../../guides/real-debrid-plex.md#4-let-zurg-tell-plex-about-new-things)).
 
@@ -128,14 +128,14 @@ docker compose up -d
 | `Error response from daemon: error from registry: unauthorized` при загрузке образа zurg через Docker | Этот компьютер не авторизован в реестре GitHub под аккаунтом, у которого есть доступ к zurg. Станьте спонсором на [gatekeeper](https://gatekeeper.debridmediamanager.com/), затем запустите установщик снова. Чтобы войти вручную, см. [настройку Docker для zurg](../setup/docker.md#1-install-docker-and-unlock-the-image): токену нужны и `read:packages`, и `repo`. |
 | `path /zurg_mnt is mounted on ... but it is not a shared mount` | `/zurg_mnt` пока не общая точка монтирования. Выполните `sudo mount --bind /zurg_mnt /zurg_mnt` и `sudo mount --make-rshared /zurg_mnt`, затем `docker compose up -d`. Установщик делает это постоянным после перезагрузок; вручную см. [шаг 7 настройки Docker для zurg](../setup/docker.md#7-make-the-shared-parent-survive-reboots). |
 | `zurg` постоянно перезапускается, а в логе в конце `Error: config ./config.yml is not valid YAML: yaml: unmarshal errors:` и `mapping key "..." already defined` | Эта настройка указана в конфиге zurg дважды. Выполните `sudo nano ~/zurg/config.yml`, удалите одну из двух строк, на которые указывает ошибка, сохраните и выполните `docker compose restart zurg`. |
-| В логе zurg написано `Mount verification failed: mount verification timeout: /zurg_mnt/zurg/version.txt not accessible after 60 attempts -- you appear to be running inside Docker, mount a parent directory with rshared propagation` | Папки zurg не появились. Проверьте, что строка тома zurg выглядит как `/zurg_mnt:/zurg_mnt:rshared`, то есть указан родитель, а не `/zurg_mnt/zurg`, и что `/zurg_mnt` общий (строка выше). В [Mount is empty](../setup/docker.md#mount-is-empty) есть дополнительные проверки. |
+| В логе zurg написано `Mount verification failed: mount verification timeout: /zurg_mnt/zurg/version.txt not accessible after 60 attempts -- you appear to be running inside Docker, mount a parent directory with rshared propagation` | Папки zurg не появились. Проверьте, что строка тома zurg выглядит как `/zurg_mnt:/zurg_mnt:rshared`, то есть указан родитель, а не `/zurg_mnt/zurg`, и что `/zurg_mnt` общий (строка выше). В [Монтирование пустое](../setup/docker.md#mount-is-empty) есть дополнительные проверки. |
 | После перезапуска zurg библиотеки в Plex становятся пустыми, а `docker exec plex ls /zurg_mnt/zurg` выдаёт `cannot access '/zurg_mnt/zurg': Transport endpoint is not connected` | В строке тома Plex не хватает `rslave`. Она должна быть такой: `/zurg_mnt:/zurg_mnt:rslave`. Исправьте и выполните `docker compose up -d`. |
 | rex останавливается с `rex: cannot bind 0.0.0.0:32400: Address already in use (os error 98) (another rex or Plex on this port? --port picks another)` | Plex Media Server уже занимает порт 32400. Оставьте `command: --port 32500` у rex. |
 | `/zurg_mnt/zurg/movies` пустая или выдаёт `Input/output error` сразу после запуска | zurg всё ещё читает ваш аккаунт. `curl http://localhost:9999/ready` выведет `ready`, когда чтение закончится. Пока не перезапускайте zurg: чтение начнётся заново. |
-| Названия видны в rex, но ничего не воспроизводится | Строка `upstream failed` в разделе [When something is wrong](../../rex/with-zurg.md#when-something-is-wrong) страницы rex с zurg проверяет, достаёт ли rex до zurg. |
-| Диск заполняется | zurg хранит копию того, что уже проигрывалось, в `~/zurg/data/rclone-cache`, до 256G по умолчанию. В [What lives where](../setup/docker.md#what-lives-where) показано, как ограничить размер. |
+| Названия видны в rex, но ничего не воспроизводится | Строка `upstream failed` в разделе [Если что-то не работает](../../rex/with-zurg.md#when-something-is-wrong) страницы rex с zurg проверяет, достаёт ли rex до zurg. |
+| Диск заполняется | zurg хранит копию того, что уже проигрывалось, в `~/zurg/data/rclone-cache`, до 256G по умолчанию. В [Что где находится](../setup/docker.md#what-lives-where) показано, как ограничить размер. |
 
-Всё ещё не получается? Спросите на форуме **zurg-support** в [Discord](https://discord.com/invite/7u4YjMThXP). В [Getting help](../../guides/remote-help.md) написано, что стоит приложить.
+Всё ещё не получается? Спросите на форуме **zurg-support** в [Discord](https://discord.com/invite/7u4YjMThXP). В [Получение помощи](../../guides/remote-help.md) написано, что стоит приложить.
 
 ## Вопросы {#questions}
 

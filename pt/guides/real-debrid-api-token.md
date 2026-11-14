@@ -21,7 +21,7 @@ Trate ele como uma senha. Ele não expira, e quem tiver ele pode usar sua conta 
 
 ![Página Connect Real-Debrid do DMM](../assets/real-debrid-api-token/02-dmm-paste-key.webp)
 
-O DMM não precisa do token: **Sign in with Real-Debrid** mostra um código que você aprova em real-debrid.com/device. Assim o DMM tem o próprio login, que se renova sozinho. Mais detalhes em [What is DMM and how do I use it?](../dmm/index.md#sign-in)
+O DMM não precisa do token: **Sign in with Real-Debrid** mostra um código que você aprova em real-debrid.com/device. Assim o DMM tem o próprio login, que se renova sozinho. Mais detalhes em [O que é o DMM e como eu uso?](../dmm/index.md#sign-in)
 
 ## Coloque no zurg {#put-it-in-zurg}
 

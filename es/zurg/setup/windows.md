@@ -470,7 +470,7 @@ Remove-Item -Recurse -Force .\data\rclone-cache\vfs\*, .\data\rclone-cache\vfsMe
 
 Para comprobar cuánto espacio ocupa realmente, abre las Propiedades de la carpeta `rclone-cache` y lee **Size on disk**. Los archivos descargados parcialmente son dispersos, así que **Size** muestra mucho más de lo que realmente ocupa el disco.
 
-Más detalles en [Disk the mount uses](../reference/config.md#disk-the-mount-uses).
+Más detalles en [Disco que usa el montaje](../reference/config.md#disk-the-mount-uses).
 
 ## Actualizar zurg {#updating-zurg}
 

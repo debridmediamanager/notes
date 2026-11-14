@@ -45,7 +45,7 @@ DMM работает с платным тарифом TorBox: Essential, Standar
 
 ## Смотреть в Stremio {#watch-in-stremio}
 
-Нажмите **Cast for TB** на главной странице и установите аддон оттуда. Затем нажмите **Cast (TB)** на любом релизе, который TorBox уже закешировал. Все шаги описаны в [DMM in Stremio](stremio.md).
+Нажмите **Cast for TB** на главной странице и установите аддон оттуда. Затем нажмите **Cast (TB)** на любом релизе, который TorBox уже закешировал. Все шаги описаны в [DMM в Stremio](stremio.md).
 
 В Stremio аддон называется **DMM Cast for TorBox**. Его строка **DMM TB Library** показывает ваши торренты TorBox, а также завершённые загрузки из веба и Usenet.
 
@@ -60,7 +60,7 @@ DMM работает с платным тарифом TorBox: Essential, Standar
 
 ![DMM's Usenet tab with TorBox Pro: Send to TorBox](../assets/dmm-torbox/03-usenet-tab.webp)
 
-Вы также вошли в Real-Debrid? Тогда над списком будет заголовок **Send to Real-Debrid or TorBox** и обе кнопки. Значок файла в конце строки вместо этого сохраняет NZB. Если вы только начинаете работать с Usenet, сначала прочитайте [Usenet for beginners](../guides/usenet-for-beginners.md).
+Вы также вошли в Real-Debrid? Тогда над списком будет заголовок **Send to Real-Debrid or TorBox** и обе кнопки. Значок файла в конце строки вместо этого сохраняет NZB. Если вы только начинаете работать с Usenet, сначала прочитайте [Usenet для начинающих](../guides/usenet-for-beginners.md).
 
 TorBox удаляет загрузку Usenet через 30 дней после того, как закэширует её. Чтобы вернуть её, отправьте релиз снова.
 

@@ -2,7 +2,7 @@
 
 Este tutorial convierte una lista de IPTV (M3U) y una guía de TV (XMLTV) en canales de **Live TV** en Plex Web y Plex para Android. Cada canal conserva su número y su guía. Funciona con canales M3U que usan HLS (`.m3u8`) y con cualquier guía XMLTV que los nombre.
 
-Sigue [Crear addons de rex](addons.md) y su sección [Live TV](addons.md#live-tv). Lee primero el [tutorial de vídeos personales](addon-home-videos.md) si es tu primer addon. Para deportes en directo usa [Live TV con rex](live-tv.md).
+Sigue [Crear addons de rex](addons.md) y su sección [TV en vivo](addons.md#live-tv). Lee primero el [tutorial de vídeos personales](addon-home-videos.md) si es tu primer addon. Para deportes en directo usa [Live TV con rex](live-tv.md).
 
 | Necesitas | Por qué |
 |---|---|
@@ -279,7 +279,7 @@ El addon comprueba la playlist y vuelve a enviar la guía cada 30 minutos. Para 
 - **Streams que no son HLS.** Muchos proveedores también ofrecen cada canal como MPEG-TS (`.ts`). rex toma un canal en vivo como stream HLS (`.m3u8`), así que este addon omite los demás: pide a tu proveedor enlaces HLS (a menudo `output=m3u8` en la URL de la lista de reproducción).
 - **Tus propios números.** Edita los números en `~/.rex-iptv.json` mientras el addon está detenido; la siguiente ronda los envía.
 - **Logos.** `tvg-logo` se convierte en la imagen del canal en su biblioteca. La parrilla de la guía muestra números y nombres.
-- **Una guía de otro sitio.** Cualquier cosa que conozca el horario puede alimentar `guide`: una API JSON de un proveedor, un calendario deportivo, un bucle fijo. rex-live-sports construye guías a partir del marcador de ESPN, ver [Live TV with rex](live-tv.md).
+- **Una guía de otro sitio.** Cualquier cosa que conozca el horario puede alimentar `guide`: una API JSON de un proveedor, un calendario deportivo, un bucle fijo. rex-live-sports construye guías a partir del marcador de ESPN, ver [TV en vivo con rex](live-tv.md).
 
 ## Solución de problemas {#troubleshooting}
 

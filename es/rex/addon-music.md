@@ -3,7 +3,7 @@
 Este tutorial pone una carpeta de álbumes en una biblioteca **Music** que reproducen Plexamp, Plex Web y Plex para Android.
 Admite FLAC, MP3, AAC y otros formatos de audio comunes. Tus archivos se quedan donde están. MusicBrainz aporta los datos de los álbumes conocidos. Los álbumes desconocidos usan sus etiquetas y `cover.jpg`. Un archivo `.lrc` junto a la canción se convierte en letras con tiempos.
 
-Sigue [Crear addons para rex](addons.md) y su sección [Music](addons.md#music). Si es tu primer addon, lee antes el [tutorial de vídeos caseros](addon-home-videos.md).
+Sigue [Crear addons para rex](addons.md) y su sección [Música](addons.md#music). Si es tu primer addon, lee antes el [tutorial de vídeos caseros](addon-home-videos.md).
 
 | Necesitas | Por qué |
 |---|---|
@@ -291,10 +291,10 @@ rex no lee las etiquetas por sí mismo. Todo lo que muestra Plex sale del id de 
 
 ## Cámbialo {#change-it}
 
-- **Otro diseño.** Un álbum dividido en carpetas de disco (`CD1/`, `CD2/`) es para este addon dos álbumes, cada uno con muy pocas pistas para encontrar coincidencia. Agrupa esas carpetas en `albums()` y envía un `release` para todos sus archivos; consulta [Music](addons.md#music).
-- **Artistas con sus propias fotos.** Envía `display.artist.poster` y regístrate con `"artwork": "source"`: consulta [More from your addon](addon-more.md#artist-pictures).
-- **Listas de reproducción.** Envía la posición de cada canción en una lista de reproducción y rex crea la lista: consulta [More from your addon](addon-more.md#collections-and-playlists).
-- **Volumen (loudness).** Si mides el volumen de cada canción, envíalo como `loudness` con los nombres de Plex: consulta [Music](addons.md#music). rex no mide nada por sí mismo.
+- **Otro diseño.** Un álbum dividido en carpetas de disco (`CD1/`, `CD2/`) es para este addon dos álbumes, cada uno con muy pocas pistas para encontrar coincidencia. Agrupa esas carpetas en `albums()` y envía un `release` para todos sus archivos; consulta [Música](addons.md#music).
+- **Artistas con sus propias fotos.** Envía `display.artist.poster` y regístrate con `"artwork": "source"`: consulta [Más de tu addon](addon-more.md#artist-pictures).
+- **Listas de reproducción.** Envía la posición de cada canción en una lista de reproducción y rex crea la lista: consulta [Más de tu addon](addon-more.md#collections-and-playlists).
+- **Volumen (loudness).** Si mides el volumen de cada canción, envíalo como `loudness` con los nombres de Plex: consulta [Música](addons.md#music). rex no mide nada por sí mismo.
 
 ## Solución de problemas {#troubleshooting}
 

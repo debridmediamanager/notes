@@ -2,7 +2,7 @@
 
 Sonarr 和 Radarr 可以订阅一个剧集或电影列表。列表上的每个标题都会被添加并搜索。把 zurg 设为下载客户端后，每次抓取的内容都会落到你的 debrid 账户里，并像其他内容一样导入 `__magic__`。所以一个列表就是一个会自动填充的完整媒体库分区。比如一个恐怖片列表会给你一个恐怖片分区，列表变长，新标题就会自动出现。
 
-本页假设 \*arrs 已经通过 zurg 抓取内容。如果还没有，请先看 [Sonarr & Radarr for torrents](sonarr-radarr-torrents.md)。
+本页假设 \*arrs 已经通过 zurg 抓取内容。如果还没有，请先看 [Sonarr 和 Radarr 用于 torrents](sonarr-radarr-torrents.md)。
 
 ## 使用 MDBList，而不是 IMDb {#use-mdblist-and-not-imdb}
 

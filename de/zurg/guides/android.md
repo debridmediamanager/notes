@@ -153,7 +153,7 @@ Du hast eine Liste, also gehe ich nach den Regeln vor: Formatierung und Link ble
 | **This is a 32-bit device. Debrid libraries are supported; Usenet needs 64-bit Android.** | Füge ein Debrid-Konto hinzu oder nutze ein 64-Bit-Gerät für Usenet |
 | **The Plex code expired. Ask for a new one.** | Drücke erneut **Sign in to Plex** und gib den neuen Code innerhalb von 10 Minuten ein |
 | Der Server erscheint nicht in der Plex-App | Melde die Plex-App mit dem Account an, den du in Schritt 6 benutzt hast, und halte beide Geräte im selben Heimnetzwerk |
-| Titel zeigen einen Dateinamen und kein Poster | Gib deinen DMM-API-Schlüssel ein (siehe [Get more titles named](#get-more-titles-named)) oder nutze **Fix Match** in einer Plex-App |
+| Titel zeigen einen Dateinamen und kein Poster | Gib deinen DMM-API-Schlüssel ein (siehe [Weitere Titel suchen namens](#get-more-titles-named)) oder nutze **Fix Match** in einer Plex-App |
 | **Needs an update** bei einem Addon | Diese Version der App kann diese Kopie des Addons nicht mehr ausführen. Aktualisiere das Repository und drücke **Update**. Die Titel bleiben solange erhalten |
 | Es stoppt, wenn der Bildschirm aus ist | Erlaube die Hintergrundnutzung wieder und schau dir [Don't kill my app](https://dontkillmyapp.com/) an |
 | Ein Update lässt die App ohne Engine zurück | Installiere einmal eine Engine über **Updates**. Deine Anbieter und Einstellungen bleiben erhalten |

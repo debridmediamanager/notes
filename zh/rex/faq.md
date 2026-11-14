@@ -12,7 +12,7 @@ A 媒体服务器，供官方 Plex 应用使用，本身不存储任何文件。
 
 ### 多少钱？ {#what-does-it-cost}
 
-rex 对个人使用免费，没有付费版本。它的源代码以 PolyForm Noncommercial 许可证公开。不允许商业使用。每个版本都公开发布在 [GitHub Releases](https://github.com/debridmediamanager/rex/releases) 上，Android 版应用是 [rex for Android](android.md)。
+rex 对个人使用免费，没有付费版本。它的源代码以 PolyForm Noncommercial 许可证公开。不允许商业使用。每个版本都公开发布在 [GitHub Releases](https://github.com/debridmediamanager/rex/releases) 上，Android 版应用是 [rex 安卓版](android.md)。
 
 周边的一些东西可能需要花钱：
 
@@ -54,11 +54,11 @@ rex 不是 Plex 开发的，Plex 可能会对注册它的账号采取措施。�
 
 ### 需要 Plex Pass 吗？ {#do-i-need-plex-pass}
 
-不对。rex 会告诉 Plex 应用，它所注册的账户拥有 Plex Pass，因此使用免费账户也可以在外出时播放和转换视频。外出播放已在 Plex Web 上测试过，双方都使用免费账户；其他应用尚未在外出时测试。电影版本、Dashboard、Downloads、片头和片尾跳过，以及 [Movie and TV capabilities](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities) 中的其余功能也都可以使用。应用仍可能有自己的规则。
+不对。rex 会告诉 Plex 应用，它所注册的账户拥有 Plex Pass，因此使用免费账户也可以在外出时播放和转换视频。外出播放已在 Plex Web 上测试过，双方都使用免费账户；其他应用尚未在外出时测试。电影版本、Dashboard、Downloads、片头和片尾跳过，以及 [电影和剧集功能](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities) 中的其余功能也都可以使用。应用仍可能有自己的规则。
 
 ### 可以下载离线观看吗？ {#can-i-download-for-offline-viewing}
 
-Plex 应用里有 **Downloads**。rex 会在自己所在的机器上准备下载内容，可以是原始文件，也可以用 FFmpeg 转换后的文件。这些文件会保存在 `rex.db` 旁边的文件夹里，直到应用来拉取。注册了 rex 的账号随时都能下载。分享给别人的话，对方需要在分享设置里允许下载（[Share rex](sharing.md#what-each-person-may-see-and-do)）。应用本身还可能有它自己的规则。转换后的下载会去掉文本字幕。在手机上保存下载并离线观看，目前还没有测试过。
+Plex 应用里有 **Downloads**。rex 会在自己所在的机器上准备下载内容，可以是原始文件，也可以用 FFmpeg 转换后的文件。这些文件会保存在 `rex.db` 旁边的文件夹里，直到应用来拉取。注册了 rex 的账号随时都能下载。分享给别人的话，对方需要在分享设置里允许下载（[分享 rex](sharing.md#what-each-person-may-see-and-do)）。应用本身还可能有它自己的规则。转换后的下载会去掉文本字幕。在手机上保存下载并离线观看，目前还没有测试过。
 
 ### 多人可以同时用，各自保留观看记录吗？ {#can-several-people-use-it-each-with-their-own-history}
 
@@ -66,7 +66,7 @@ Plex 应用里有 **Downloads**。rex 会在自己所在的机器上准备下载
 
 ### 需要什么硬件？ {#what-hardware-does-it-need}
 
-机器需要一直开着,运行 Linux(amd64 或 arm64,glibc 2.35 或更新版本,即 Ubuntu 22.04 及以上)、macOS(Intel 或 Apple Silicon)或 64 位 Windows。如果是 Android 手机、平板或电视盒子,可以用 [rex for Android](android.md) 免费运行 rex 及其插件。赞助者可以使用 zurg+rex 应用,也就是在手机上运行的 Plex 服务器,它同样能把你的 debrid 和 Usenet 库连接到 rex(参见 [Android 指南](../zurg/guides/android.md))。
+机器需要一直开着,运行 Linux(amd64 或 arm64,glibc 2.35 或更新版本,即 Ubuntu 22.04 及以上)、macOS(Intel 或 Apple Silicon)或 64 位 Windows。如果是 Android 手机、平板或电视盒子,可以用 [rex 安卓版](android.md) 免费运行 rex 及其插件。赞助者可以使用 zurg+rex 应用,也就是在手机上运行的 Plex 服务器,它同样能把你的 debrid 和 Usenet 库连接到 rex(参见 [Android 指南](../zurg/guides/android.md))。
 
 **内存:** 给它 1 GB。在一个包含 4,062 部电影和 656 部剧集的库上,rex 启动时用了不到 500 MB,浏览库时大约用了 730 MB。转换视频需要额外的内存。
 
@@ -80,7 +80,7 @@ Plex 应用里有 **Downloads**。rex 会在自己所在的机器上准备下载
 
 ### 支持 Usenet 吗？ {#does-it-work-with-usenet}
 
-是的，可以通过能读取 Usenet 的来源来实现，比如 zurg。rex 从不直接与 Usenet 提供商通信：来源读取文件，然后像处理其他文件一样把它们提供给 rex。请按照 [Usenet](../zurg/guides/usenet.md) 为 zurg 完成设置，然后按 [rex with zurg](with-zurg.md) 中的说明将 rex 指向 zurg。
+是的，可以通过能读取 Usenet 的来源来实现，比如 zurg。rex 从不直接与 Usenet 提供商通信：来源读取文件，然后像处理其他文件一样把它们提供给 rex。请按照 [Usenet](../zurg/guides/usenet.md) 为 zurg 完成设置，然后按 [rex 与 zurg](with-zurg.md) 中的说明将 rex 指向 zurg。
 
 ### 需要 zurg 吗？ {#do-i-need-zurg}
 
@@ -107,7 +107,7 @@ rex 需要自己的地址，才能在外面观看或供其他家庭使用。最�
 
 ### 为什么应用里会显示 Plex 版本，还有“Check for Updates”？ {#why-does-the-app-show-a-plex-version-and-check-for-updates}
 
-rex 向应用和 plex.tv 的自我介绍是 Plex Media Server，所以应用里显示的 Plex Media Server 版本号并不是 rex 自己的版本。**Check for Updates** 总是会回复服务器已是最新版本，因为 rex 从不自动更新。要更新 rex，请按照 [Updating](any-source.md#updating) 中的说明下载更新的 nightly 版本。
+rex 向应用和 plex.tv 的自我介绍是 Plex Media Server，所以应用里显示的 Plex Media Server 版本号并不是 rex 自己的版本。**Check for Updates** 总是会回复服务器已是最新版本，因为 rex 从不自动更新。要更新 rex，请按照 [更新](any-source.md#updating) 中的说明下载更新的 nightly 版本。
 
 ### 为什么我在浏览器里打开 port 32400/web 看不到媒体库？ {#why-does-my-browser-at-port-32400web-not-open-a-library}
 

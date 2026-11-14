@@ -6,7 +6,7 @@ Alles unten wurde am 2026-10-23 getestet, mit Whisparr `3.6.5.1886` (das Image `
 
 ## Bevor du anfängst {#before-you-start}
 
-Richte zuerst zurg für Radarr ein, mit [Sonarr & Radarr for torrents](sonarr-radarr-torrents.md): ein Konto, das Torrents annimmt, `__magic__` aktiviert und der qBittorrent-Endpunkt aktiviert. Whisparr nutzt alles davon mit.
+Richte zuerst zurg für Radarr ein, mit [Sonarr & Radarr für Torrents](sonarr-radarr-torrents.md): ein Konto, das Torrents annimmt, `__magic__` aktiviert und der qBittorrent-Endpunkt aktiviert. Whisparr nutzt alles davon mit.
 
 ## 1. Whisparr-Kategorie in zurg {#1-whisparrs-category-in-zurg}
 

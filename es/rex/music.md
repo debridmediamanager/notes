@@ -43,7 +43,7 @@ La línea `SECTION create` solo aparece si el addon declara la biblioteca. La bi
 
 ## Paso 3. Comparte la biblioteca de música {#step-3-share-the-music-library}
 
-La biblioteca de música es nueva, así que todavía no está en el compartido de nadie. Con la cuenta nueva iniciada, añádela al compartido de tu propia cuenta y al de todos los demás en **Manage Library Access** ([Share rex](sharing.md)).
+La biblioteca de música es nueva, así que todavía no está en el compartido de nadie. Con la cuenta nueva iniciada, añádela al compartido de tu propia cuenta y al de todos los demás en **Manage Library Access** ([Compartir rex](sharing.md)).
 
 ## Paso 4. Escucha {#step-4-listen}
 
@@ -59,4 +59,4 @@ La biblioteca de música es nueva, así que todavía no está en el compartido d
 - **Dos copias de un álbum son dos álbumes**, como en cualquier servidor de Plex: una copia en FLAC y una copia en MP3 aparecen cada una como su propio álbum.
 - **Probado en Plexamp, Plex Web y Plex para Android.** Otras apps de Plex, y las descargas sin conexión de Plexamp, no se han probado.
 
-Para escribir tu propio addon de música, empieza por [Tutorial: un addon de música](addon-music.md); [Building rex addons](addons.md#music) tiene todos los campos.
+Para escribir tu propio addon de música, empieza por [Tutorial: un addon de música](addon-music.md); [Creación de complementos para rex](addons.md#music) tiene todos los campos.

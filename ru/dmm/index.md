@@ -63,13 +63,13 @@ DMM имеет открытый исходный код и не входит в 
 
 DMM также помогает другим проектам:
 
-- **zurg** спрашивает у DMM, какой фильм или эпизод соответствует каждому файлу. Спонсор получает ключ API DMM в [gatekeeper](https://gatekeeper.debridmediamanager.com/). Без него zurg опирается на имена файлов, и совпадает меньше названий. [rex with zurg](../rex/with-zurg.md#why-dmm-places-the-files) объясняет разницу.
+- **zurg** спрашивает у DMM, какой фильм или эпизод соответствует каждому файлу. Спонсор получает ключ API DMM в [gatekeeper](https://gatekeeper.debridmediamanager.com/). Без него zurg опирается на имена файлов, и совпадает меньше названий. [rex с zurg](../rex/with-zurg.md#why-dmm-places-the-files) объясняет разницу.
 - **Sonarr Radarr и Prowlarr** могут искать в DMM как торрент-индексатор Torznab или Usenet-индексатор Newznab. Для обоих нужны активное спонсорство и ключ API DMM. Настройте их на страницах [Torznab](https://debridmediamanager.com/torznab) и [Newznab](https://debridmediamanager.com/newznab).
 - **Ваш список желаемого**: нажмите **Want** или подпишитесь на список Trakt или MDBList. zurg будет забирать его и новые эпизоды по мере выхода. Требуется спонсорство. См. [список желаемого DMM](../zurg/guides/dmm-wanted.md).
 - **Seerr Overseerr и Jellyseerr** могут использовать DMM вместо Radarr и Sonarr. Запросы тогда попадают в ваш список желаемого, и zurg их загружает. Требуется спонсорство. См. [Seerr через DMM](seerr.md).
 - **rex-direct** даёт зарегистрированному rex собственный адрес и сертификат. См. [rex-direct](../rex/any-source.md#rex-direct).
 
-Всё, что открывает спонсорство, и где что настраивается, описано на странице [What a sponsorship gives you](../guides/sponsorship.md).
+Всё, что открывает спонсорство, и где что настраивается, описано на странице [Что даёт спонсорство](../guides/sponsorship.md).
 
 ## Если что-то не работает {#when-something-is-wrong}
 
@@ -80,7 +80,7 @@ DMM также помогает другим проектам:
 | **Your TorBox account is on the free plan, which has no API access. DMM needs a paid TorBox plan.** | Бесплатный тариф TorBox с DMM не работает. Перейдите на платный тариф или войдите через другой сервис. |
 | Only **DL with RD** buttons, no **Instant RD** | В вашем сервисе нет кэша для этих релизов. Нажмите одну из кнопок и дождитесь загрузки или попробуйте другой релиз. |
 
-Застряли? Спросите на форуме **dmm-support** в [Discord](https://discord.com/invite/7u4YjMThXP). В [Getting help](../guides/remote-help.md) описано, что нужно указать.
+Застряли? Спросите на форуме **dmm-support** в [Discord](https://discord.com/invite/7u4YjMThXP). В [Получение помощи](../guides/remote-help.md) описано, что нужно указать.
 
 ## Вопросы {#questions}
 

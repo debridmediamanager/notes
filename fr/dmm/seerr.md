@@ -9,7 +9,7 @@ C'est réservé aux sponsors. Seerr se connecte avec la clé API DMM de [gatekee
 
 ## Ce dont vous avez besoin {#what-you-need}
 
-- zurg qui lit ta liste de souhaits depuis DMM avec `dmm_api_key` dans `config.yml`. Voir [Fetch what you want from DMM](../zurg/guides/dmm-wanted.md#what-you-need).
+- zurg qui lit ta liste de souhaits depuis DMM avec `dmm_api_key` dans `config.yml`. Voir [Récupérez ce que vous voulez depuis DMM](../zurg/guides/dmm-wanted.md#what-you-need).
 - Seerr configuré avec ton serveur Plex, Jellyfin ou Emby pour qu'il sache quels épisodes tu possèdes.
 
 ## Ajouter DMM comme Radarr {#add-dmm-as-radarr}

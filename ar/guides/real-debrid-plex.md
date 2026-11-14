@@ -2,7 +2,7 @@
 
 zurg يعرض كل ما في حسابك على Real-Debrid كمجلدات على جهازك، مرتبة مسبقاً في `movies` و `shows`. أضف هذين المجلدين إلى Plex Media Server، وستعمل مكتبة Real-Debrid كاملة في كل تطبيقات Plex، وتُبَثّ مباشرة من Real-Debrid دون تنزيل أي شيء أولاً. تثبّت zurg مرة واحدة فقط، ويأتي معه rclone الخاص به، فلا يلزمك إعداد أي شيء آخر.
 
-لا ترغب في تشغيل Plex Media Server أو قرص مثبّت؟ [rex with zurg](../rex/with-zurg.md) يعرض المكتبة نفسها لتطبيقات Plex دون أيٍّ منهما.
+لا ترغب في تشغيل Plex Media Server أو قرص مثبّت؟ [rex مع zurg](../rex/with-zurg.md) يعرض المكتبة نفسها لتطبيقات Plex دون أيٍّ منهما.
 
 ## ما تحتاجه {#what-you-need}
 
@@ -46,7 +46,7 @@ zurg يعرض كل ما في حسابك على Real-Debrid كمجلدات على
 
 ![قسم Media Server Integration في لوحة تحكم zurg، مع زر Login with Plex](../assets/real-debrid-plex/01-zurg-login-with-plex.webp)
 
-من تلك اللحظة يطلب zurg من Plex فحص كل مجلد يتغيّر. كما يوقف بعض إعدادات Plex الخطرة على مكتبة مبثوثة، مثل **Empty trash automatically after every scan**: [Recommended Plex Settings](../zurg/guides/plex.md#recommended-plex-settings) يسرد هذه الإعدادات.
+من تلك اللحظة يطلب zurg من Plex فحص كل مجلد يتغيّر. كما يوقف بعض إعدادات Plex الخطرة على مكتبة مبثوثة، مثل **Empty trash automatically after every scan**: [إعدادات Plex الموصى بها](../zurg/guides/plex.md#recommended-plex-settings) يسرد هذه الإعدادات.
 
 ## عندما تحدث مشكلة {#when-something-is-wrong}
 

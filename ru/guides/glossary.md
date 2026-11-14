@@ -1,6 +1,6 @@
 # Что делает каждая часть {#what-each-piece-does}
 
-Названия сами по себе не говорят, что каждая из них делает, поэтому вот по одной строке на каждую. Всё, что не отмечено **For sponsors**, бесплатно. Чтобы понять, какие из них вам нужны, используйте [Choose your setup](choose-your-setup.md).
+Названия сами по себе не говорят, что каждая из них делает, поэтому вот по одной строке на каждую. Всё, что не отмечено **For sponsors**, бесплатно. Чтобы понять, какие из них вам нужны, используйте [Выберите вашу настройку](choose-your-setup.md).
 
 ## Три проекта {#the-three-projects}
 
@@ -43,7 +43,7 @@
 | Name | What it does |
 |---|---|
 | [Wanted](../zurg/guides/dmm-wanted.md) | Нажмите **Want** в DMM, и ваш zurg сам всё скачает, включая новые серии. Для спонсоров |
-| [Seerr through DMM](../dmm/seerr.md) | Запросы семьи в Seerr попадают в ваш список Wanted. Для спонсоров |
+| [Seerr через DMM](../dmm/seerr.md) | Запросы семьи в Seerr попадают в ваш список Wanted. Для спонсоров |
 | [Torznab](https://debridmediamanager.com/torznab) and [Newznab](https://debridmediamanager.com/newznab) | DMM как индексатор для Sonarr, Radarr и Prowlarr. Для спонсоров |
 | zurg as the download client | zurg отвечает Sonarr и Radarr как qBittorrent для [торрентов](../zurg/guides/sonarr-radarr-torrents.md) и как SABnzbd для [Usenet](../zurg/guides/sonarr-radarr.md), так что ни то, ни другое запускать не нужно. Для спонсоров |
 | [zurg's Stremio addon](../zurg/guides/stremio.md) | Ищет в Usenet, когда вы нажимаете play в Stremio, и стримит через zurg. Для спонсоров |
@@ -55,7 +55,7 @@
 |---|---|
 | Вкладка Usenet | Отправляет релиз из Usenet в вашу библиотеку Real-Debrid без аккаунта Usenet. Спонсоры идут в начале очереди и получают больший дневной лимит |
 | [Request board](https://debridmediamanager.com/requests) | Запросите релиз, которого нет в Real-Debrid. Другой пользователь DMM переносит его в вашу библиотеку. Заполните 10 запросов и получите 7 дней бонусов спонсора DMM |
-| [Hash lists](https://debridmediamanager.com/hashlists) | Поделитесь списком релизов, чтобы другие могли добавить их в свои аккаунты |
+| [Списки хешей](https://debridmediamanager.com/hashlists) | Поделитесь списком релизов, чтобы другие могли добавить их в свои аккаунты |
 | Расширение для браузера | Добавляет кнопки DMM на сайты с фильмами и сериалами и рядом со ссылками magnet. Для [Chrome](https://chromewebstore.google.com/detail/Debrid%20Media%20Manager/oeojlegjfhgefhnbjdnaebgdfkbipghm), [Firefox](https://addons.mozilla.org/en-US/firefox/addon/debrid-media-manager/) и [Safari](../dmm/safari.md) |
 | [gatekeeper](https://gatekeeper.debridmediamanager.com) | Сайт спонсоров. Станьте спонсором там, привяжите свой Patreon или GitHub Sponsors и получите ваш API-ключ DMM. [Что даёт спонсорство](sponsorship.md) |
 

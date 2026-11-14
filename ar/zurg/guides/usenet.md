@@ -424,7 +424,7 @@ services:
 
 بعد ذلك، عند وضع ملف NZB داخل `./nzbs` على الجهاز المضيف، يلتقطه الحاوية مباشرة دون الحاجة إلى إعادة التشغيل.
 
-يتطلب هذا جهازاً مضيفاً يعمل بنظام Linux لعملية الربط. يشغّل Docker Desktop على macOS وWindows الحاوية داخل جهاز افتراضي (VM)، ولا يصل الربط إلى Finder أو Explorer أو Plex المثبّت على الجهاز المضيف. في هذه الحالة استخدم الملف التنفيذي المناسب لـ [macOS](../setup/macos.md) أو [Windows](../setup/windows.md) ([لماذا؟](../setup/docker.md)).
+يتطلب هذا جهازاً مضيفاً يعمل بنظام Linux لعملية الربط. يشغّل Docker Desktop على macOS وWindows الحاوية داخل جهاز افتراضي (VM)، ولا يصل الربط إلى Finder أو Explorer أو Plex المثبّت على الجهاز المضيف. في هذه الحالة استخدم الملف التنفيذي المناسب لـ [macOS](../setup/macos.md) أو [ويندوز](../setup/windows.md) ([لماذا؟](../setup/docker.md)).
 
 > التثبيتات التي تمت قبل أن يقوم `/config` بربط `/app/config.yml` و`/app/nzbs` و`/app/data` كلٌّ على حدة تستمر في العمل تماماً كما كانت. راجع [docker.md](../setup/docker.md#upgrading-an-install-that-mounted-app).
 

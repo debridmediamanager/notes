@@ -36,7 +36,7 @@
 2. خلال ثانية أو ثانيتين يقرأ zurg الملف ويُدرج الإصدار في مكتبته، باسم ملف NZB نفسه.
 3. تضغط play في Plex أو Jellyfin أو rex. يجلب zurg الأجزاء الخاصة بذلك الموضع من مزوّدك ويسلّمها للمشغّل. إذا قفزت إلى موضع لاحق، يجلب الأجزاء من هناك.
 
-لا ينتظر شيء اكتمال تحميل. لإعداد الأمر خطوة بخطوة، اتبع [Usenet with zurg](../zurg/guides/usenet.md). إعدادات المزوّد وتفاصيل Docker موجودة في [Usenet provider](../zurg/providers/usenet.md).
+لا ينتظر شيء اكتمال تحميل. لإعداد الأمر خطوة بخطوة، اتبع [Usenet مع zurg](../zurg/guides/usenet.md). إعدادات المزوّد وتفاصيل Docker موجودة في [Usenet provider](../zurg/providers/usenet.md).
 
 ## أين يأتي DMM في الصورة {#where-dmm-fits}
 
@@ -70,7 +70,7 @@
 | التشغيل يتقطع أو تظهر فجوة صامتة | أجزاء من الإصدار اختفت من مزوّدك. يعيد zurg بناءها من ملفات PAR2 عندما تكون موجودة في المنشور. ومزوّد ثانٍ يحل معظم هذه المشكلات. |
 | DMM: **No Usenet results found.** | لا تملك فهارس DMM أي نتائج لهذا العنوان. جرّب تبويب **Torrents**، أو فهرسك الخاص. |
 
-جدول استكشاف الأخطاء الكامل موجود في [Usenet with zurg](../zurg/guides/usenet.md#troubleshooting). هل علقت؟ اسأل في منتدى **zurg-support** على [Discord](https://discord.com/invite/7u4YjMThXP). يوضح [Getting help](remote-help.md) ما يجب تضمينه.
+جدول استكشاف الأخطاء الكامل موجود في [Usenet مع zurg](../zurg/guides/usenet.md#troubleshooting). هل علقت؟ اسأل في منتدى **zurg-support** على [Discord](https://discord.com/invite/7u4YjMThXP). يوضح [الحصول على المساعدة](remote-help.md) ما يجب تضمينه.
 
 ## أسئلة {#questions}
 
@@ -88,7 +88,7 @@ Usenet هي شبكة من خوادم الأخبار التي تخزّن المن
 
 ### هل يدعم zurg خدمة Usenet؟ {#does-zurg-do-usenet}
 
-نعم، موجود في البنيات الليلية (nightly) للرعاة. أدخل تفاصيل مزوّد الخدمة الخاص بك، وضع ملفات NZB في المجلد `nzbs/` وستعمل مباشرة. يشرح دليل [Usenet with zurg](../zurg/guides/usenet.md) الخطوات بالتفصيل.
+نعم، موجود في البنيات الليلية (nightly) للرعاة. أدخل تفاصيل مزوّد الخدمة الخاص بك، وضع ملفات NZB في المجلد `nzbs/` وستعمل مباشرة. يشرح دليل [Usenet مع zurg](../zurg/guides/usenet.md) الخطوات بالتفصيل.
 
 ### ما هو TorBox NNTP؟ {#what-is-torbox-nntp}
 

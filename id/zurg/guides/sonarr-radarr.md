@@ -5,7 +5,7 @@ Ada tiga cara memakai Sonarr dan Radarr dengan zurg. Pilih siapa yang mencari di
 | Panduan | Siapa yang mencari | zurg berperan sebagai | Yang kamu butuhkan |
 |---|---|---|---|
 | [Usenet](sonarr-radarr.md) | Sonarr dan Radarr | SABnzbd | Akun Usenet (atau TorBox Pro untuk backend `torbox_nzb`) dan indexer Usenet di Prowlarr atau \*arrs |
-| [Torrents](sonarr-radarr-torrents.md) | Sonarr dan Radarr | qBittorrent | Akun debrid dan indexer torrent di Prowlarr atau \*arrs |
+| [Torrent](sonarr-radarr-torrents.md) | Sonarr dan Radarr | qBittorrent | Akun debrid dan indexer torrent di Prowlarr atau \*arrs |
 | [zurg searches](sonarr-radarr-fetch.md) | zurg | tanpa download client sama sekali | Akun Usenet, TorBox Pro, atau debrid, dan indexer Newznab atau Torznab di konfigurasi zurg sendiri |
 
 Dua cara pertama bisa berjalan berdampingan. Keduanya memakai folder `__magic__` yang sama.
@@ -317,7 +317,7 @@ Lalu buka **Settings → Media Management → Root Folders → Add Root Folder**
 
 ## 8. Jika \*arr kamu berjalan di Docker {#8-if-your-arr-is-in-docker}
 
-Langkah ini untuk Docker di host Linux. Docker Desktop di macOS dan Windows menjalankan container di dalam mesin virtual. Bind `rslave` di bawah bergantung pada mount propagation Linux (lihat [Docker setup](../setup/docker.md)), dan meneruskan mount zurg ke container di sistem tersebut belum pernah diuji. Di macOS dan Windows, pasang Sonarr dan Radarr sebagai aplikasi biasa, seperti yang dijelaskan di [Before you start](#before-you-start).
+Langkah ini untuk Docker di host Linux. Docker Desktop di macOS dan Windows menjalankan container di dalam mesin virtual. Bind `rslave` di bawah bergantung pada mount propagation Linux (lihat [Setup dengan Docker](../setup/docker.md)), dan meneruskan mount zurg ke container di sistem tersebut belum pernah diuji. Di macOS dan Windows, pasang Sonarr dan Radarr sebagai aplikasi biasa, seperti yang dijelaskan di [Sebelum kamu mulai](#before-you-start).
 
 Ada tiga masalah yang terpisah. Masalah kedua membuat satu unduhan terulang di setiap impor. Masalah ketiga baru muncul saat zurg restart pertama kali.
 

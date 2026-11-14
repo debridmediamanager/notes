@@ -6,7 +6,7 @@ Sonarr と Radarr を zurg と組み合わせる方法は 3 つあります。�
 | ガイド | 検索するのは | zurg の役割 | 必要なもの |
 |---|---|---|---|
 | [Usenet](sonarr-radarr.md) | Sonarr と Radarr | SABnzbd として動作 | Usenet アカウント（`torbox_nzb` バックエンドを使う場合は TorBox Pro）と、Prowlarr または \*arrs の Usenet インデクサー |
-| [Torrents](sonarr-radarr-torrents.md) | Sonarr と Radarr | qBittorrent として動作 | デブリッドのアカウントと、Prowlarr または \*arrs のトレントインデクサー |
+| [トレント](sonarr-radarr-torrents.md) | Sonarr と Radarr | qBittorrent として動作 | デブリッドのアカウントと、Prowlarr または \*arrs のトレントインデクサー |
 | [zurg が検索](sonarr-radarr-fetch.md) | zurg | ダウンロードクライアントは不要 | Usenet、TorBox Pro、またはデブリッドのアカウントと、zurg 自身の設定にある Newznab または Torznab インデクサー |
 
 最初の 2 つは同時に使えます。どちらも同じ `__magic__` フォルダを共有します。
@@ -321,7 +321,7 @@ Radarrの初回起動も同じ流れです。Forms auth を設定してから、
 
 ## 8. *arr が Docker で動いている場合 {#8-if-your-arr-is-in-docker}
 
-この手順は Linux ホスト上の Docker 向けです。macOS や Windows の Docker Desktop は、コンテナを仮想マシンの中で動かします。以下の `rslave` バインドは Linux のマウント伝播に依存しており（[Docker setup](../setup/docker.md) を参照）、zurg のマウントをそれらのシステム上のコンテナに渡す方法はテストしていません。macOS や Windows では、代わりに [Before you start](#before-you-start) に書かれているとおり、Sonarr と Radarr を通常のアプリとしてインストールしてください。
+この手順は Linux ホスト上の Docker 向けです。macOS や Windows の Docker Desktop は、コンテナを仮想マシンの中で動かします。以下の `rslave` バインドは Linux のマウント伝播に依存しており（[Docker でのセットアップ](../setup/docker.md) を参照）、zurg のマウントをそれらのシステム上のコンテナに渡す方法はテストしていません。macOS や Windows では、代わりに [始める前に](#before-you-start) に書かれているとおり、Sonarr と Radarr を通常のアプリとしてインストールしてください。
 
 問題は3つあります。2つ目は、インポートのたびにダウンロードが1回余分に発生します。3つ目は、zurg を初めて再起動したときに初めて問題になります。
 

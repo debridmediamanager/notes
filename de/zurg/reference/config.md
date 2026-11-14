@@ -53,7 +53,7 @@ Nichts davon ist nötig. Das hat dir der `providers`-Block gebracht:
 | `disabled: true`, um ein Konto zu pausieren, ohne seine Zugangsdaten zu löschen | [Konten](#accounts) |
 | `watchlist: true`, um festzulegen, auf welchem Konto neue Torrent-Hinzufügungen zuerst versucht werden | [Konten](#accounts) |
 | `provider:` / `not_provider:`-Verzeichnisfilter und Verzeichnisse pro Konto | [Verzeichnisse](#7-directories--filters) |
-| `rd_cdn_host_preference` und `tb_cdn_host_preference` für die CDN-Auswahl pro Dienst | [CDN & Host Selection](#cdn--host-selection) |
+| `rd_cdn_host_preference` und `tb_cdn_host_preference` für die CDN-Auswahl pro Dienst | [CDN- & Host-Auswahl](#cdn--host-selection) |
 
 Zwei kleinere Änderungen, die du kennen solltest:
 
@@ -808,7 +808,7 @@ Der Abschnitt „einstellen und vergessen“. Hier legst du fest, wie zurg deine
 | `only_full_torrent_repair` | bool | `false` | Wenn true, fügt die Reparatur den gesamten Torrent mit seiner ursprünglichen Dateiauswahl wieder ein oder gibt auf. Schlägt dieser erste Schritt fehl, wird der Torrent sofort als kaputt markiert, und die Archiv- und Einzeldatei-Strategien, die sonst folgen würden, werden übersprungen. |
 | `check_for_changes_every_secs` | int | `15` | Wie oft (in Sekunden) zurg Real-Debrid abfragt, um Änderungen an der Bibliothek zu erkennen (neue Torrents, entfernte Torrents, Statusänderungen). Niedrigere Werte bedeuten schnellere Updates in deinem Media-Server, aber mehr API-Aufrufe. |
 | `library_resync_every_mins` | int | `10` | Wie oft die Änderungsprüfung aus einer vollständigen Liste neu aufgebaut wird statt aus einer günstigen Probe. Das ist ein Sicherheitsnetz, das Abweichungen auffängt, die eine Probe übersehen kann. Es bestimmt nicht, wie oft zurg abfragt. Real-Debrid geht einen eigenen Weg und ignoriert diesen Wert. |
-| `library_detail` | string | `resident` | `resident` hält Dateidetails im Speicher. `lazy` gibt inaktive Details frei. `auto` gibt inaktive Details nur bei anhaltendem Speicherdruck frei. Alle Provider teilen sich diese instanzweite Einstellung. Neustart erforderlich. Siehe [Library detail](#library-detail). |
+| `library_detail` | string | `resident` | `resident` hält Dateidetails im Speicher. `lazy` gibt inaktive Details frei. `auto` gibt inaktive Details nur bei anhaltendem Speicherdruck frei. Alle Provider teilen sich diese instanzweite Einstellung. Neustart erforderlich. Siehe [Bibliotheksdetails](#library-detail). |
 | `library_detail_idle_secs` | int | `300` | Mindestzeit ohne Lesezugriff auf die Details, bevor `lazy` oder `auto` eine Tabelle freigeben dürfen. Die Prüfung läuft alle 30 Sekunden. Wird bei `resident` ignoriert. Null oder ungültige Werte verwenden 300. Neustart erforderlich. |
 | `downloads_every_mins` | int | `720` | Wie oft (in Minuten) zurg deine RD-Downloads (Unrestricted-Links, File-Locker-Links) neu abruft und einbindet. Dabei handelt es sich um Nicht-Torrent-Downloads von RD. |
 | `delete_error_torrents` | bool | `false` | Wenn true, löscht zurg automatisch Torrents von RD, die sich im Fehlerzustand befinden (z. B. tote Torrents, die sich nicht herunterladen lassen). Das hält deine RD-Bibliothek sauber, bedeutet aber, dass der Torrent dauerhaft entfernt wird. Bei AllDebrid wird ein fehlgeschlagener Magnet, den ein zweiter Versuch beheben kann, neu gestartet statt gelöscht, auch wenn die Reparatur aus ist. Gelöscht wird er nur, wenn der Neustart nicht hilft. |

@@ -15,10 +15,10 @@ zurg يجمع حساباتك في خدمات الدبريد ومكتبة Usenet 
 
 ابدأ تشغيل zurg على جهازك.
 
-- [Linux](setup/linux.md) — ‏FUSE 3 وبدء تشغيل تلقائي عبر systemd
+- [لينكس](setup/linux.md) — ‏FUSE 3 وبدء تشغيل تلقائي عبر systemd
 - [Docker](setup/docker.md) — ‏مضيف Linux مع تركيب مرئي للمضيف
 - [macOS](setup/macos.md) — ‏macFUSE وبدء تشغيل تلقائي عبر launchd
-- [Windows](setup/windows.md) — ‏WinFsp ومهمة بحرف محرك أقراص
+- [ويندوز](setup/windows.md) — ‏WinFsp ومهمة بحرف محرك أقراص
 
 ## المزوّدون {#providers}
 

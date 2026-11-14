@@ -640,7 +640,7 @@ Responde con `{"probes": [...]}`, con un objeto por el proveedor `nzb`: `found`,
 
 ---
 
-¿Sigues atascado? Pregunta en el foro **zurg-support** de [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) explica qué incluir.
+¿Sigues atascado? Pregunta en el foro **zurg-support** de [Discord](https://discord.com/invite/7u4YjMThXP). [Obtener ayuda](../../guides/remote-help.md) explica qué incluir.
 
 ## Ver también {#see-also}
 

@@ -94,8 +94,8 @@ Sim, nas compilações noturnas para patrocinadores. Informe os dados do seu pro
 
 TorBox tem dois recursos de Usenet no plano Pro. A página de preços mostra Usenet só no Pro (verificado em 14 de novembro de 2026).
 
-- **Downloads de Usenet hospedados.** A TorBox baixa a release inteira para você e a entrega como qualquer outro download da TorBox. Envie NZBs pela aba Usenet do DMM ou pelo provider `torbox_nzb` do zurg. Você não precisa de login em servidor de notícias. Veja [TorBox hosted Usenet](../zurg/providers/torbox-nzb.md).
-- **Um login em servidor de notícias (NNTP).** Use no zurg como qualquer outro provider. Ele permite 10 conexões. Medido em setembro de 2026, encontrou menos da biblioteca real do que outros três providers pagos, então funciona melhor como reserva. Veja [TorBox news server](../zurg/providers/torbox-news-server.md).
+- **Downloads de Usenet hospedados.** A TorBox baixa a release inteira para você e a entrega como qualquer outro download da TorBox. Envie NZBs pela aba Usenet do DMM ou pelo provider `torbox_nzb` do zurg. Você não precisa de login em servidor de notícias. Veja [TorBox hospedado de Usenet](../zurg/providers/torbox-nzb.md).
+- **Um login em servidor de notícias (NNTP).** Use no zurg como qualquer outro provider. Ele permite 10 conexões. Medido em setembro de 2026, encontrou menos da biblioteca real do que outros três providers pagos, então funciona melhor como reserva. Veja [Servidor de notícias do TorBox](../zurg/providers/torbox-news-server.md).
 
 ### Posso usar uma conta de Usenet em dois lugares? {#can-i-use-one-usenet-account-in-two-places}
 

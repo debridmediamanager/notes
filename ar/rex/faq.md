@@ -62,11 +62,11 @@ rex ليس من إنتاج Plex، وقد تتخذ Plex إجراءً ضد حسا�
 
 ### هل يمكن لعدة أشخاص استخدامه، لكل منهم سجله الخاص؟ {#can-several-people-use-it-each-with-their-own-history}
 
-لا، هذا ليس مطلوبًا؛ لكل شخص تشاركون معه rex حسابه الخاص. نعم، كل شخص تشاركون معه rex يسجّل الدخول باسمه ويحصل على حالة المشاهدة الخاصة به، وقائمة "Continue Watching"، والتقييمات، وقوائم التشغيل. ويمكن لكل شخص أن ينسخ سجل مشاهدته من خادم Plex قديم ([Bring your watch history](import-watched.md)). يشرح [Share rex with family and friends](sharing.md) الخطوات، بما في ذلك المستخدمون المُدارون للأطفال.
+لا، هذا ليس مطلوبًا؛ لكل شخص تشاركون معه rex حسابه الخاص. نعم، كل شخص تشاركون معه rex يسجّل الدخول باسمه ويحصل على حالة المشاهدة الخاصة به، وقائمة "Continue Watching"، والتقييمات، وقوائم التشغيل. ويمكن لكل شخص أن ينسخ سجل مشاهدته من خادم Plex قديم ([أحضر سجل مشاهدتك](import-watched.md)). يشرح [مشاركة rex مع العائلة والأصدقاء](sharing.md) الخطوات، بما في ذلك المستخدمون المُدارون للأطفال.
 
 ### ما المواصفات المطلوبة للجهاز؟ {#what-hardware-does-it-need}
 
-جهاز يعمل دائماً، ويشغّل Linux (بمعمارية amd64 أو arm64، مع glibc 2.35 أو أحدث، أي Ubuntu 22.04 فما فوق)، أو macOS (Intel أو Apple Silicon)، أو Windows بنسخة 64 بت. على هاتف Android أو جهاز لوحي أو صندوق TV يعمل بنظام Android، يشغّل [rex for Android](android.md) برنامج rex وإضافاته مجاناً. أما الداعمون، فتطبيق zurg+rex، أي خادم Plex على هاتفك، يربط أيضاً مكتبة debrid ومكتبة Usenet لديك بـ rex (راجع [دليل Android](../zurg/guides/android.md)).
+جهاز يعمل دائماً، ويشغّل Linux (بمعمارية amd64 أو arm64، مع glibc 2.35 أو أحدث، أي Ubuntu 22.04 فما فوق)، أو macOS (Intel أو Apple Silicon)، أو Windows بنسخة 64 بت. على هاتف Android أو جهاز لوحي أو صندوق TV يعمل بنظام Android، يشغّل [rex لأندرويد](android.md) برنامج rex وإضافاته مجاناً. أما الداعمون، فتطبيق zurg+rex، أي خادم Plex على هاتفك، يربط أيضاً مكتبة debrid ومكتبة Usenet لديك بـ rex (راجع [دليل Android](../zurg/guides/android.md)).
 
 **الذاكرة:** خصّص لها 1 GB. على مكتبة تضم 4,062 فيلماً و656 مسلسلاً، استخدم rex أقل من 500 MB أثناء بدء التشغيل، ونحو 730 MB أثناء تصفح المكتبة. يحتاج تحويل الفيديو إلى ذاكرة إضافية فوق ذلك.
 
@@ -107,7 +107,7 @@ rex ليس من إنتاج Plex، وقد تتخذ Plex إجراءً ضد حسا�
 
 ### لماذا يعرض التطبيق إصدار Plex وخيار "Check for Updates"؟ {#why-does-the-app-show-a-plex-version-and-check-for-updates}
 
-rex يعرّف نفسه للتطبيقات وlplex.tv على أنه Plex Media Server، لذلك تعرض التطبيقات رقم إصدار Plex Media Server. هذا الرقم ليس رقم rex. **Check for Updates** يجيب دائمًا بأن الخادم محدّث، لأن rex لا يحدّث نفسه أبدًا. لتحديث rex، نزّل نسخة nightly أحدث كما هو موضّح في [Updating](any-source.md#updating).
+rex يعرّف نفسه للتطبيقات وlplex.tv على أنه Plex Media Server، لذلك تعرض التطبيقات رقم إصدار Plex Media Server. هذا الرقم ليس رقم rex. **Check for Updates** يجيب دائمًا بأن الخادم محدّث، لأن rex لا يحدّث نفسه أبدًا. لتحديث rex، نزّل نسخة nightly أحدث كما هو موضّح في [التحديث](any-source.md#updating).
 
 ### لماذا لا يعرض متصفحي على 32400/web أي مكتبة؟ {#why-does-my-browser-at-port-32400web-not-open-a-library}
 
@@ -138,7 +138,7 @@ rex ليس له تطبيق ويب خاص به. فتح `http://<rex's LAN IP>:324
 
 ### عنوان مطابَق بشكل خاطئ. كيف أصلحه؟ {#a-title-is-matched-wrong-how-do-i-fix-it}
 
-المصدر هو الذي يحدد ما هو كل ملف، وrex يعرض ذلك العنوان. سجّل الدخول بالحساب المسجّل عليه rex واستخدم **Fix Match**: يحتفظ rex باختيارك، ويمكن للمصدر أن يقرأه ويحتفظ به على أنه التطابق لذلك الإصدار، كما يفعل zurg ([Why DMM places the files](with-zurg.md#why-dmm-places-the-files)).
+المصدر هو الذي يحدد ما هو كل ملف، وrex يعرض ذلك العنوان. سجّل الدخول بالحساب المسجّل عليه rex واستخدم **Fix Match**: يحتفظ rex باختيارك، ويمكن للمصدر أن يقرأه ويحتفظ به على أنه التطابق لذلك الإصدار، كما يفعل zurg ([لماذا يضع DMM الملفات هنا](with-zurg.md#why-dmm-places-the-files)).
 
 ### أين أجد المساعدة؟ {#where-do-i-get-help}
 

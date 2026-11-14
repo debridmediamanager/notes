@@ -133,7 +133,7 @@ ERROR : __magic__/tv/Saul: Dir.Rename error: RenameDir rmdir: object not found
 
 Las filas acaban exactamente donde las pediste: zurg sirve la nueva ruta y responde 404 a la antigua. Pero `mv` termina con código 1, y el montaje sigue mostrando el directorio de origen vacío y no el de destino hasta que se vuelva a leer su listado. Esa eliminación nunca llega a zurg, así que nada de lo que haga zurg puede impedirla. Mover archivos y mover una carpeta de lanzamiento completa funciona con cualquiera de los dos órdenes. Si reorganizas directorios a través del montaje, configura [`union_writable: server`](../reference/config.md#rclone-settings), donde el directorio solo existe en el espacio de nombres y el renombrado es una única operación en el servidor. Medido con rclone 1.71.2.
 
-`rm` oculta cosas: consulta [Deleting hides, it does not destroy](#deleting-hides-it-does-not-destroy).
+`rm` oculta cosas: consulta [Borrar oculta, no destruye](#deleting-hides-it-does-not-destroy).
 
 ## `__movies__` y `__shows__`, ordenados por título {#__movies__-and-__shows__-sorted-by-title}
 
@@ -339,6 +339,6 @@ Un `MOVE` **desde un archivo** también se comprueba contra el propio archivo an
 ## Ver también {#see-also}
 
 - [sabnzbd.md](sonarr-radarr.md) — conectar Sonarr y Radarr a zurg, que es para lo que se creó `__magic__`
-- [DMM wanted list](dmm-wanted.md) — pulsa Want en DMM y zurg lo trae a `__movies__`, `__shows__` o `__anime__`
+- [Lista de deseados de DMM](dmm-wanted.md) — pulsa Want en DMM y zurg lo trae a `__movies__`, `__shows__` o `__anime__`
 - [usenet.md](usenet.md) — el backend de NZB donde aterrizan esas descargas
 - [config.md](../reference/config.md#__magic__-a-directory-you-can-organise) — cada clave del bloque `magic:`

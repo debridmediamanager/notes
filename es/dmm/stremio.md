@@ -63,7 +63,7 @@ En Debrid-Link, hacer cast añade la versión a tu cuenta. Una que Debrid-Link t
 | **No episodes in this release on Premiumize** | DMM no pudo relacionar los archivos de esa versión con los episodios. Haz cast de otra versión. |
 | La dirección del addon pegada en la barra de búsqueda de la parte superior de Stremio Web no hace nada | Esa barra solo sirve para buscar. Usa **Addons** → **Add addon**. |
 
-¿Te quedaste atascado? Pregunta en el foro **dmm-cast-support** de [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) explica qué incluir.
+¿Te quedaste atascado? Pregunta en el foro **dmm-cast-support** de [Discord](https://discord.com/invite/7u4YjMThXP). [Obtener ayuda](../guides/remote-help.md) explica qué incluir.
 
 ## Preguntas {#questions}
 

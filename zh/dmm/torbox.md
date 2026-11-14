@@ -41,11 +41,11 @@ TorBox 没有的版本会显示 **DL with TB**。点击后，TorBox 会先下载
 - **Backup** 会把你的列表保存到文件中。**TB Restore** 会把保存的列表重新添加回来。
 - 其余功能与其他服务相同：请参阅 [your library](index.md#your-library)。
 
-你发送到 TorBox 的 Usenet 下载不在 DMM 的库中。你可以在 TorBox 网站上找到它们，也可以在 Stremio 中的 DMM Cast 的 **DMM TB Library** 行里找到，或者通过 zurg 的 [TorBox hosted Usenet](../zurg/providers/torbox-nzb.md) 找到。
+你发送到 TorBox 的 Usenet 下载不在 DMM 的库中。你可以在 TorBox 网站上找到它们，也可以在 Stremio 中的 DMM Cast 的 **DMM TB Library** 行里找到，或者通过 zurg 的 [TorBox 托管的 Usenet](../zurg/providers/torbox-nzb.md) 找到。
 
 ## 在 Stremio 中观看 {#watch-in-stremio}
 
-在首页点击 **Cast for TB**，然后从那里安装插件。接着在 TorBox 已缓存的任意资源上点击 **Cast (TB)**。所有步骤都写在 [DMM in Stremio](stremio.md) 中。
+在首页点击 **Cast for TB**，然后从那里安装插件。接着在 TorBox 已缓存的任意资源上点击 **Cast (TB)**。所有步骤都写在 [在 Stremio 中使用 DMM](stremio.md) 中。
 
 在 Stremio 里，这个插件名为 **DMM Cast for TorBox**。它的 **DMM TB Library** 一行会列出你的 TorBox 种子，以及已完成的网盘和 Usenet 下载。
 
@@ -60,7 +60,7 @@ TorBox 没有的版本会显示 **DL with TB**。点击后，TorBox 会先下载
 
 ![DMM's Usenet tab with TorBox Pro: Send to TorBox](../assets/dmm-torbox/03-usenet-tab.webp)
 
-也登录了 Real-Debrid？列表标题会变成 **Send to Real-Debrid or TorBox**，并且会同时显示两个按钮。行末的文件图标则会改为保存 NZB 文件。刚接触 Usenet？先看看 [Usenet for beginners](../guides/usenet-for-beginners.md)。
+也登录了 Real-Debrid？列表标题会变成 **Send to Real-Debrid or TorBox**，并且会同时显示两个按钮。行末的文件图标则会改为保存 NZB 文件。刚接触 Usenet？先看看 [Usenet 新手入门](../guides/usenet-for-beginners.md)。
 
 TorBox 会在缓存某个 Usenet 下载 30 天后将其删除。想要再次获取的话，重新发送一次即可。
 
@@ -83,7 +83,7 @@ Real-Debrid 用户可以在 DMM 的[求片板](https://debridmediamanager.com/re
 | 在 Stremio 里看到：**⚠️ TorBox refused your account** | TorBox 接受了插件的密钥，但不肯提供这个账户的服务，通常是因为套餐到期了。请到 [torbox.app/settings](https://torbox.app/settings) 查看。DMM 这边不用改任何东西。 |
 | zurg 里看到：`Acquisition: dmm-torbox refused the search: No TorBox key linked.` | DMM [Torznab 页面](https://debridmediamanager.com/torznab) 上的赞助 `tb/cached` 源，需要你在该页面的 **Link a provider key** 下绑定 TorBox 密钥。仅在 DMM 上登录 TorBox 是不够的。zurg 里的 `api_key` 仍然填你的 DMM API 密钥。 |
 
-TorBox 本身是不是挂了？可以查看 [Is TorBox Down Or Just Me?](https://debridmediamanager.com/is-torbox-down-or-just-me)。还是解决不了？可以到 [Discord](https://discord.com/invite/7u4YjMThXP) 的 **dmm-support** 论坛提问。[Getting help](../guides/remote-help.md) 里写了该提供哪些信息。
+TorBox 本身是不是挂了？可以查看 [Is TorBox Down Or Just Me?](https://debridmediamanager.com/is-torbox-down-or-just-me)。还是解决不了？可以到 [Discord](https://discord.com/invite/7u4YjMThXP) 的 **dmm-support** 论坛提问。[获取帮助](../guides/remote-help.md) 里写了该提供哪些信息。
 
 ## 常见问题 {#questions}
 

@@ -1,6 +1,6 @@
 # Живое ТВ с rex {#live-tv-with-rex}
 
-Вот как rex показывает каналы-аддоны в **Live TV** в Plex Web и Plex for Android: с гидом и разделом What's On. Выберите канал, и он сразу начнёт играть. [rex-live-sports](https://github.com/debridmediamanager/rex-live-sports) готов к работе с сервером live-спорта. Для IPTV M3U и XMLTV гида см. [Tutorial: an IPTV addon](addon-iptv.md).
+Вот как rex показывает каналы-аддоны в **Live TV** в Plex Web и Plex for Android: с гидом и разделом What's On. Выберите канал, и он сразу начнёт играть. [rex-live-sports](https://github.com/debridmediamanager/rex-live-sports) готов к работе с сервером live-спорта. Для IPTV M3U и XMLTV гида см. [Руководство: дополнение для IPTV](addon-iptv.md).
 
 Что вы получаете:
 
@@ -16,7 +16,7 @@
 | Вам нужно | Зачем |
 |---|---|
 | Ночная сборка rex с датой 2026.11.02 или новее | Live TV появился в этой сборке |
-| rex настроен, как в [rex with your own app](any-source.md), с [Converting video](any-source.md#converting-video-optional) | rex конвертирует каждый канал, пока вы его смотрите (копия, дешёвая операция) |
+| rex настроен, как в [rex с собственным приложением](any-source.md), с [Converting video](any-source.md#converting-video-optional) | rex конвертирует каждый канал, пока вы его смотрите (копия, дешёвая операция) |
 | Сервер live-sports на машине с rex или в вашей домашней сети | rex-live-sports берёт каналы с него |
 | Docker | Нужен для live-sports в Шаге 2. В его [README](https://github.com/yowmamasita/live-sports-public) есть другие способы |
 | Python 3.9 или новее, `git`, `ffmpeg` и `ffprobe` на машине с rex | rex-live-sports проверяет поток каждого канала с помощью ffprobe и рисует постер с помощью ffmpeg |

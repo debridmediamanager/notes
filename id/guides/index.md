@@ -32,8 +32,8 @@ Setiap panduan di situs ini, dikelompokkan per proyek.
 - [Pencarian zurg untuk Sonarr & Radarr](../zurg/guides/sonarr-radarr-fetch.md)
 - [Subtitle dengan Bazarr](../zurg/guides/subtitles.md)
 - [Whisparr](../zurg/guides/whisparr.md)
-- [\_\_magic\_\_](../zurg/guides/magic.md)
-- [Renaming](../zurg/guides/renaming.md)
+- [\_\_sihir\_\_](../zurg/guides/magic.md)
+- [Mengganti Nama](../zurg/guides/renaming.md)
 - [Plex](../zurg/guides/plex.md)
 - [Satu file Docker Compose](../zurg/guides/docker-compose.md): zurg, Plex Media Server dan rex dalam satu mesin Linux
 - [Jellyfin](../zurg/guides/jellyfin.md)

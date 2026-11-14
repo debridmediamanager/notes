@@ -16,10 +16,10 @@ DMMは無料です。スポンサーからの支援で、ホスティング費�
 | rex と Plex 向けに名前を付けたすべてのリリース | [zurg config](../zurg/reference/config.md) にある `dmm_api_key` |
 | ファイルを先に読み込まずに DMM のメディア詳細を取得でき、リリースを追加する前に言語チェックも行えます | `dmm_api_key` 以外は不要 |
 | 有効にすると `__magic__` フォルダーを自動で整理 | [\_\_magic\_\_](../zurg/guides/magic.md) |
-| zurg が DMM のウォントリストを取得 | [DMM wanted list](../zurg/guides/dmm-wanted.md) |
+| zurg が DMM のウォントリストを取得 | [DMM のウォントリスト](../zurg/guides/dmm-wanted.md) |
 | 自分のインデクサーがない場合、DMM の Usenet とトレントのインデクサーを検索 | `dmm_api_key` に加えて Usenet プロバイダー、またはトレントを追加できる debrid アカウント |
 | 各タイトルの原語に合わせてリリースを選択 | [audio and subtitle languages](../zurg/guides/acquisition.md#choosing-by-audio-and-subtitle-language) の `original` |
-| どのインデクサーにもない欲しい映画を、公式 YouTube アップロードからストリーミング | [Streaming a film from YouTube](../zurg/guides/acquisition.md#streaming-a-film-from-youtube) |
+| どのインデクサーにもない欲しい映画を、公式 YouTube アップロードからストリーミング | [YouTube から映画をストリーミングする](../zurg/guides/acquisition.md#streaming-a-film-from-youtube) |
 
 `dmm_api_key` の機能には zurg のナイトリービルドが必要です。無料の公開ビルドには含まれていません。
 
@@ -42,13 +42,13 @@ DMMは無料です。スポンサーからの支援で、ホスティング費�
 
 ## rex
 
-rex は無料で、スポンサーシップも不要です。Android でも使えます。[rex for Android](../rex/android.md) を使うと、スマホや TV ボックスで rex とそのアドオンを動かせます。スポンサーは、上の表にある zurg+rex も使えます。これは、デバッドやUsenet のライブラリをデバイス上の rex につなぐものです。キーがあれば、[rex-stremio](../rex/stremio.md) が DMM がすでにプローブ情報を持っているトレントのデバッドストリームを追加します。各トレントを個別にプローブする代わりに、数秒で済みます。キーは rex-stremio の **DMM** 欄に貼り付けてください。オフにしない限り、トレントファイルのプローブ結果は DMM と共有されます。
+rex は無料で、スポンサーシップも不要です。Android でも使えます。[Android 版 rex](../rex/android.md) を使うと、スマホや TV ボックスで rex とそのアドオンを動かせます。スポンサーは、上の表にある zurg+rex も使えます。これは、デバッドやUsenet のライブラリをデバイス上の rex につなぐものです。キーがあれば、[rex-stremio](../rex/stremio.md) が DMM がすでにプローブ情報を持っているトレントのデバッドストリームを追加します。各トレントを個別にプローブする代わりに、数秒で済みます。キーは rex-stremio の **DMM** 欄に貼り付けてください。オフにしない限り、トレントファイルのプローブ結果は DMM と共有されます。
 
 ## ヘルプ {#help}
 
 | 得られるもの | 場所 |
 |---|---|
-| 視聴しながら、自分のターミナルで zurg と rex の無料リモートサポートを受けられます | [Getting help](remote-help.md) |
+| 視聴しながら、自分のターミナルで zurg と rex の無料リモートサポートを受けられます | [ヘルプの入手方法](remote-help.md) |
 | Discord での Sponsor ロール | gatekeeper で Discord を接続 |
 
 ## お金を払わずに手に入れる {#earn-it-without-paying}

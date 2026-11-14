@@ -11,7 +11,7 @@
 | Debrid-Link | `debridlink` | [Debrid-Link](debridlink.md) |
 | Offcloud | `offcloud` | [Offcloud](offcloud.md) |
 | Usenet | `nzb` | [Usenet](usenet.md) |
-| TorBox hosted Usenet | `torbox_nzb` | [TorBox hosted Usenet](torbox-nzb.md) |
+| TorBox hosted Usenet | `torbox_nzb` | [TorBox でホストされている Usenet](torbox-nzb.md) |
 
 セットアップ以上の詳しい内容は、3 つのページにまとめています。[TorBox の制限](torbox-limits.md)には、TorBox のスロットリングの根拠となる測定値が載っています。[TorBox ニュースサーバー](torbox-news-server.md)と[ElfHosted ニュースサーバー](elfhosted-news-server.md)では、それぞれのプランに含まれる Usenet アカウントの実際の中身を記録しています。プロバイダー枠を使う前に、まずこれらを読んで判断してください。
 
@@ -78,7 +78,7 @@ providers:
 mount_path: "/zurg_mnt/zurg"
 ```
 
-コンテナ内では `mount_path` は `/zurg_mnt/zurg` になり、マウントをホストに届けるには compose ファイルで `/zurg_mnt:/zurg_mnt:rshared` をバインドする必要があります。これは [Docker setup](../setup/docker.md) ページの内容で、コンテナ版のインストールでバイナリ版と違う唯一の部分です。
+コンテナ内では `mount_path` は `/zurg_mnt/zurg` になり、マウントをホストに届けるには compose ファイルで `/zurg_mnt:/zurg_mnt:rshared` をバインドする必要があります。これは [Docker でのセットアップ](../setup/docker.md) ページの内容で、コンテナ版のインストールでバイナリ版と違う唯一の部分です。
 
 ## 無人インストール {#unattended-installs}
 

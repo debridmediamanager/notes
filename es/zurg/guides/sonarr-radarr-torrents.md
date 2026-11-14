@@ -587,7 +587,7 @@ En cada app abre **Settings → Import Lists → + → Plex Watchlist** y pulsa 
 
 zurg tiene una [watchlist propia](plex-watchlist.md) que descarga desde indexers que le das directamente a zurg. Usa una u otra. Si usas las dos, el mismo título se descarga dos veces.
 
-Para seguir otras listas, como una lista de géneros, mira [Lists in Sonarr & Radarr](import-lists.md).
+Para seguir otras listas, como una lista de géneros, mira [Listas en Sonarr y Radarr](import-lists.md).
 
 ## Si la importación copia en vez de mover {#if-the-import-copies-instead-of-moving}
 

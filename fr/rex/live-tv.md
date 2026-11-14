@@ -130,4 +130,4 @@ Voici la traduction française :
 - **Le Live TV a été testé dans Plex Web et Plex pour Android.** Les autres applications Plex n'ont pas été essayées.
 - **Toute personne pouvant atteindre l'adresse de rex-live-sports peut lire à travers elle.** Gardez `listen` sur `127.0.0.1`.
 
-Pour ajouter vos propres chaînes, avec un guide que vous possédez déjà, consultez [Building rex addons](addons.md#live-tv).
+Pour ajouter vos propres chaînes, avec un guide que vous possédez déjà, consultez [Créer des addons pour rex](addons.md#live-tv).

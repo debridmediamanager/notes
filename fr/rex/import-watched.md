@@ -99,4 +99,4 @@ Relancer la commande ne change rien à ce que vous avez déjà, donc lancez-la c
 | Une page `Unauthorized` | rex n'a pas accepté le token de l'étape 2. Copie-le à nouveau, depuis une requête vers rex, et non vers `plex.tv` |
 | `notInRex` est beaucoup plus élevé que prévu | La plus grande partie de ta bibliothèque n'est pas encore dans rex, ou ton ancienne bibliothèque utilise un des anciens agents de Plex. Relance l'opération une fois ta bibliothèque arrivée |
 
-Toujours bloqué ? Demande sur le forum **rex-support** de [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) indique ce qu'il faut inclure.
+Toujours bloqué ? Demande sur le forum **rex-support** de [Discord](https://discord.com/invite/7u4YjMThXP). [Obtenir de l'aide](../guides/remote-help.md) indique ce qu'il faut inclure.

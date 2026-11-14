@@ -214,7 +214,7 @@ Setup ersetzt nie eine bestehende `config.yml`. Für unbeaufsichtigtes Setup wie
 
 Alle Einstellungen findest du in der [Konfigurationsreferenz](../reference/config.md).
 
-Immer noch festgefahren? Frag im **zurg-support**-Forum auf [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) sagt dir, was du angeben solltest.
+Immer noch festgefahren? Frag im **zurg-support**-Forum auf [Discord](https://discord.com/invite/7u4YjMThXP). [Hilfe bekommen](../../guides/remote-help.md) sagt dir, was du angeben solltest.
 
 ## Siehe auch {#see-also}
 

@@ -34,9 +34,9 @@ Esta página explica cada passo que esses tutoriais dão. [Mais do seu addon](ad
 | Você precisa | Por quê |
 |---|---|
 | rex, configurado como em [rex com seu próprio app](any-source.md) (passos 1 a 3) | É aí que a biblioteca do seu addon aparece |
-| Um nightly do rex com data 2026.10.25 ou mais recente, ou 2026.11.02 ou mais recente para [Music](#music) e [Live TV](#live-tv) | Esta página foi escrita para ele |
+| Um nightly do rex com data 2026.10.25 ou mais recente, ou 2026.11.02 ou mais recente para [Música](#music) e [TV ao vivo](#live-tv) | Esta página foi escrita para ele |
 | FFmpeg onde o rex roda, se o seu addon serve streams | O rex toca um stream convertendo-o (uma cópia, barata). O rex encontra o FFmpeg sozinho; veja [Converting video](any-source.md#converting-video-optional) |
-| Seu addon na mesma máquina do rex, ou na sua rede doméstica | O feed do rex responde só para eles: veja [Keep the port private](any-source.md#keep-the-port-private) |
+| Seu addon na mesma máquina do rex, ou na sua rede doméstica | O feed do rex responde só para eles: veja [Mantenha a porta privada](any-source.md#keep-the-port-private) |
 
 Esta página escreve o endereço do rex como `192.168.1.20:32400` e o do addon como `127.0.0.1:9981`. Coloque o seu no lugar deles. A referência completa da API do rex está em [docs/feed-api.md](https://github.com/debridmediamanager/rex/blob/main/docs/feed-api.md).
 
@@ -318,4 +318,4 @@ Ele pergunta a cada addon que serve o título (`/stream/<movie or series>/<id>.j
 | Um título apagado em um app do Plex continua aparecendo | Seu addon respondeu ao `DELETE` com algo diferente de `2xx` ou `404` | Apague do seu lado e depois responda com `2xx` |
 | Um título apagado volta | Seu addon continua enviando o vídeo | Pare de enviar o que foi apagado |
 
-Ainda com problemas? Pergunte no fórum **rex-support** no [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) diz o que incluir.
+Ainda com problemas? Pergunte no fórum **rex-support** no [Discord](https://discord.com/invite/7u4YjMThXP). [Obtendo ajuda](../guides/remote-help.md) diz o que incluir.

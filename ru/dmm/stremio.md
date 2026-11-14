@@ -63,7 +63,7 @@ Cast здесь означает аддон DMM. Это не Chromecast и не 
 | **No episodes in this release on Premiumize** | DMM не смог сопоставить файлы этого релиза с эпизодами. Скастите другой релиз. |
 | Адрес аддона, вставленный в строку поиска вверху Stremio Web, ничего не делает | Эта строка только ищет. Используйте **Addons** → **Add addon**. |
 
-Застряли? Спросите на форуме **dmm-cast-support** в [Discord](https://discord.com/invite/7u4YjMThXP). В [Getting help](../guides/remote-help.md) написано, что указать.
+Застряли? Спросите на форуме **dmm-cast-support** в [Discord](https://discord.com/invite/7u4YjMThXP). В [Получение помощи](../guides/remote-help.md) написано, что указать.
 
 ## Вопросы {#questions}
 

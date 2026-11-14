@@ -25,7 +25,7 @@ Plex Media Serverを使っていて、rexを試してみたいとします。Ple
 
 ## 手順 1. rex を Plex と並べてセットアップする {#step-1-set-up-rex-beside-plex}
 
-[rex with your own app](any-source.md)、[rex with your Stremio addons](stremio.md)、[rex with zurg](with-zurg.md) のように、rex に中身を入れてくれるソースを設定して、何か見られるところまで進めてください。
+[rex をご自身のアプリで使う](any-source.md)、[rex を Stremio のアドオンと一緒に使う](stremio.md)、[rex と zurg の併用](with-zurg.md) のように、rex に中身を入れてくれるソースを設定して、何か見られるところまで進めてください。
 
 すでに Plex 用に zurg を動かしていますか？ その場合は zurg のインストールはスキップして、rex with zurg の手順 1 に書かれている通りに更新してください。zurg は nightly **2026.10.27** 以降から rex にデータを送れます。
 

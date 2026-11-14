@@ -439,7 +439,7 @@ Si vous avez installé le LaunchAgent manuel et que la connexion automatique n'e
 
 Une installation créée par `zurg setup` sur un Mac sans écran utilise un LaunchDaemon et n'a pas besoin d'une connexion graphique. Vérifiez-le avec `cd ~/zurg && ./zurg service status`.
 
-Toujours bloqué ? Posez votre question dans le forum **zurg-support** sur [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) indique ce qu'il faut inclure.
+Toujours bloqué ? Posez votre question dans le forum **zurg-support** sur [Discord](https://discord.com/invite/7u4YjMThXP). [Obtenir de l'aide](../../guides/remote-help.md) indique ce qu'il faut inclure.
 
 ## Vue d'ensemble de l'architecture {#architecture-overview}
 
@@ -466,7 +466,7 @@ launchd (PID 1)
 
 ## Référence rapide {#quick-reference}
 
-Exécutez-les dans `~/zurg`. Les lignes `zurg service` concernent une installation faite avec `zurg setup` ; le LaunchAgent manuel utilise les commandes launchctl décrites dans [Managing the Services](#managing-the-services).
+Exécutez-les dans `~/zurg`. Les lignes `zurg service` concernent une installation faite avec `zurg setup` ; le LaunchAgent manuel utilise les commandes launchctl décrites dans [Gérer les services](#managing-the-services).
 
 | Action | Commande |
 |--------|---------|

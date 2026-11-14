@@ -9,7 +9,7 @@ Quatro coisas para saber antes de começar:
 - **Seu app entrega os arquivos.** O rex busca cada byte do seu app por HTTP ou HTTPS, do mesmo jeito que um navegador baixa um arquivo. O rex não guarda arquivos e não precisa de disco nem de montagem para a mídia.
 - **Seu app informa ao rex o que ele tem.** Ele envia ao rex uma lista de arquivos pela API de feed do rex, e todas as mudanças depois disso. O rex nunca lista uma pasta nem escaneia nada.
 - **Seu app decide o que cada arquivo é.** Ele diz se um arquivo é um filme ou um episódio, a qual título ele pertence (pelo id do IMDb e do TMDB) e, no caso de um episódio, a temporada e o número. O rex nunca adivinha pelo nome do arquivo.
-- **O Plex descreve o conteúdo.** Quando o rex está em uma conta Plex, ele mostra cada título com o nome, o pôster, a sinopse e os nomes dos episódios que os metadados próprios do Plex têm para esses ids. Para coisas que nenhum agente do Plex conhece, seu app dá o nome por conta própria: veja [Building rex addons](addons.md).
+- **O Plex descreve o conteúdo.** Quando o rex está em uma conta Plex, ele mostra cada título com o nome, o pôster, a sinopse e os nomes dos episódios que os metadados próprios do Plex têm para esses ids. Para coisas que nenhum agente do Plex conhece, seu app dá o nome por conta própria: veja [Criando addons para o rex](addons.md).
 
 O rex é gratuito para uso pessoal (PolyForm Noncommercial): não há plano de patrocinador e você não precisa de conta para baixá-lo. Veja [rex.debridmediamanager.com](https://rex.debridmediamanager.com/pt/). Só tem celular ou TV box? [rex para Android](android.md) roda o rex e os addons nele. Para patrocinadores, o [zurg+rex](../zurg/guides/android.md), um servidor Plex no seu celular, também conecta sua biblioteca debrid e Usenet ao rex.
 
@@ -398,7 +398,7 @@ Pronto, você terminou. As seções abaixo são opcionais.
 
 **O que faz.** Dá ao rex um endereço HTTPS que os apps do Plex fora de casa conseguem acessar, e informa o plex.tv sobre ele.
 
-**Por que importa.** Fora de casa, o app.plex.tv só se conecta a um endereço HTTPS, e os outros apps do Plex preferem um também. Um servidor Plex de verdade pode recorrer ao relay do Plex; o rex não pode, então você escolhe como ele será acessado. O rex precisa ser [reivindicado](#step-3-add-it-to-a-plex-account) primeiro. Um proxy que fica exposto à internet precisa bloquear `/rex/`: veja [Keep the port private](#keep-the-port-private).
+**Por que importa.** Fora de casa, o app.plex.tv só se conecta a um endereço HTTPS, e os outros apps do Plex preferem um também. Um servidor Plex de verdade pode recorrer ao relay do Plex; o rex não pode, então você escolhe como ele será acessado. O rex precisa ser [reivindicado](#step-3-add-it-to-a-plex-account) primeiro. Um proxy que fica exposto à internet precisa bloquear `/rex/`: veja [Mantenha a porta privada](#keep-the-port-private).
 
 **Plex Pass.** O Plex Web reproduz fora de casa sem Plex Pass ou Remote Watch Pass em nenhuma das contas. Os outros apps do Plex não foram testados fora de casa.
 
@@ -409,8 +409,8 @@ Seja qual for a opção escolhida, tudo o que você assistir fora de casa sai pe
 | Seu roteador tem IP público e você consegue fazer port forward | **[rex-direct](#rex-direct)** (mais simples) | Ativado por padrão: um único port forward. O DMM dá ao rex um nome e um certificado, e mantém o nome apontando para o seu IP de casa |
 | Você consegue instalar o Tailscale nos dispositivos em que assiste | **[Tailscale serve](#tailscale-serve)** (melhor) | Nada para abrir no roteador, e funciona atrás de qualquer conexão com a internet. O certificado se renova sozinho, e ninguém fora da sua tailnet consegue acessar o rex |
 | Dispositivos sem Tailscale (a TV de um amigo, um hotel), e seu roteador tem IP público | **[Caddy](#caddy)** com seu próprio domínio, ou com um nome `sslip.io` gratuito | Uma conexão direta, sem ninguém no meio, e um certificado gratuito que se renova sozinho. Você faz port forward da porta 443 |
-| Sua conexão não tem IPv4 público (CGNAT ou DS-Lite, comum em cabo, celular e alguns provedores de fibra), mas tem IPv6 | **[rex-direct over IPv6](#rex-direct-over-ipv6)** | Sem port forward e sem nada para alugar: você libera a porta 32400 no IPv6. Os dispositivos em que você assiste também precisam de IPv6, o que a maioria das redes móveis tem |
-| Sua conexão não tem IP público de jeito nenhum, ou você assiste em redes sem IPv6, e dispositivos sem Tailscale | **[A small VPS](#a-small-vps)** | O rex não tem relay e não vai ganhar um. Um VPS alugado tem o IP público e um túnel leva tudo até o rex, com a largura de banda total do VPS |
+| Sua conexão não tem IPv4 público (CGNAT ou DS-Lite, comum em cabo, celular e alguns provedores de fibra), mas tem IPv6 | **[rex-direct sobre IPv6](#rex-direct-over-ipv6)** | Sem port forward e sem nada para alugar: você libera a porta 32400 no IPv6. Os dispositivos em que você assiste também precisam de IPv6, o que a maioria das redes móveis tem |
+| Sua conexão não tem IP público de jeito nenhum, ou você assiste em redes sem IPv6, e dispositivos sem Tailscale | **[Um VPS pequeno](#a-small-vps)** | O rex não tem relay e não vai ganhar um. Um VPS alugado tem o IP público e um túnel leva tudo até o rex, com a largura de banda total do VPS |
 
 Não recomendado:
 
@@ -681,7 +681,7 @@ docker compose up -d
 
 ### Mova o rex para outra máquina {#move-rex-to-another-machine}
 
-Faça um backup como no [passo 5](#step-5-watch-something), depois pare o rex na máquina antiga de vez, como no primeiro bloco de [Remove rex](#remove-rex). Na nova, faça o [passo 1](#step-1-install-rex), mas copie os arquivos do seu backup para a pasta do rex antes de transformá-lo em serviço. É o mesmo servidor para os seus apps do Plex, continua vinculado e compartilhado. Depois:
+Faça um backup como no [passo 5](#step-5-watch-something), depois pare o rex na máquina antiga de vez, como no primeiro bloco de [Remova o rex](#remove-rex). Na nova, faça o [passo 1](#step-1-install-rex), mas copie os arquivos do seu backup para a pasta do rex antes de transformá-lo em serviço. É o mesmo servidor para os seus apps do Plex, continua vinculado e compartilhado. Depois:
 
 - Atualize o seu app com o novo IP da LAN, como no [passo 4](#step-4-connect-your-app).
 - Mova o redirecionamento de porta do seu roteador para a nova máquina, ou a regra de firewall do IPv6, antes de o rex iniciar lá. O nome rex-direct continua o mesmo e acompanha um novo IP público sozinho. O Tailscale serve e o Caddy são configurados de novo na nova máquina.

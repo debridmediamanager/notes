@@ -82,7 +82,7 @@ No. rex nunca escanea una carpeta ni un disco y no necesita montaje. Cada archiv
 
 ### ¿Funciona con Usenet? {#does-it-work-with-usenet}
 
-Sí, a través de una fuente que lee Usenet, como zurg. rex nunca se comunica con un proveedor de Usenet: la fuente lee los archivos y se los sirve a rex como cualquier otro archivo. Configura zurg para ello con [Usenet](../zurg/guides/usenet.md) y apúntalo a rex como se explica en [rex with zurg](with-zurg.md).
+Sí, a través de una fuente que lee Usenet, como zurg. rex nunca se comunica con un proveedor de Usenet: la fuente lee los archivos y se los sirve a rex como cualquier otro archivo. Configura zurg para ello con [Usenet](../zurg/guides/usenet.md) y apúntalo a rex como se explica en [rex con zurg](with-zurg.md).
 
 ### ¿Necesito zurg? {#do-i-need-zurg}
 
@@ -109,7 +109,7 @@ No hay tuner ni DVR. La música, la TV en vivo y las fotos necesitan una fuente 
 
 ### ¿Por qué la app muestra una versión de Plex y "Check for Updates"? {#why-does-the-app-show-a-plex-version-and-check-for-updates}
 
-rex se presenta a las apps y a plex.tv como un Plex Media Server, así que las apps muestran un número de versión de Plex Media Server. Ese número no es el de rex. **Check for Updates** siempre responde que el servidor está actualizado: rex nunca se actualiza solo. Para actualizar rex, descarga una nightly más reciente como se explica en [Updating](any-source.md#updating).
+rex se presenta a las apps y a plex.tv como un Plex Media Server, así que las apps muestran un número de versión de Plex Media Server. Ese número no es el de rex. **Check for Updates** siempre responde que el servidor está actualizado: rex nunca se actualiza solo. Para actualizar rex, descarga una nightly más reciente como se explica en [Actualizar](any-source.md#updating).
 
 ### ¿Por qué mi navegador en port 32400/web no abre una biblioteca? {#why-does-my-browser-at-port-32400web-not-open-a-library}
 

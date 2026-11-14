@@ -21,4 +21,4 @@
 - [Локальные библиотеки](local-libraries.md)
 - [Android и Google TV](android.md)
 
-Подключить zurg к аккаунту можно в разделе [Providers](../providers/index.md), где есть отдельная страница для каждого сервиса. Как запустить сам zurg, описано в разделе [Setup](../setup/index.md): там есть страницы для [Linux](../setup/linux.md), [macOS](../setup/macos.md), [Windows](../setup/windows.md) и [Docker](../setup/docker.md) на Linux. Страница для Windows — это пошаговая инструкция с нуля по установке из бинарного файла: сначала RealDebrid с эндпоинтом qBittorrent, затем Usenet с SABnzbd.
+Подключить zurg к аккаунту можно в разделе [Провайдеры](../providers/index.md), где есть отдельная страница для каждого сервиса. Как запустить сам zurg, описано в разделе [Настройка](../setup/index.md): там есть страницы для [Linux](../setup/linux.md), [macOS](../setup/macos.md), [Windows](../setup/windows.md) и [Docker](../setup/docker.md) на Linux. Страница для Windows — это пошаговая инструкция с нуля по установке из бинарного файла: сначала RealDebrid с эндпоинтом qBittorrent, затем Usenet с SABnzbd.

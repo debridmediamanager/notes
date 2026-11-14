@@ -5,7 +5,7 @@ Sonarr と Radarr を zurg と使う方法は3つあります。本当の選択�
 | ガイド | 検索するのは | zurg の役割 | 必要なもの |
 |---|---|---|---|
 | [Usenet](sonarr-radarr.md) | Sonarr と Radarr | SABnzbd | Usenet アカウント（`torbox_nzb` バックエンドを使う場合は TorBox Pro）と、Prowlarr または \*arrs 内の Usenet インデクサー |
-| [Torrents](sonarr-radarr-torrents.md) | Sonarr と Radarr | qBittorrent | デブリッドアカウントと、Prowlarr または \*arrs 内のトレントインデクサー |
+| [トレント](sonarr-radarr-torrents.md) | Sonarr と Radarr | qBittorrent | デブリッドアカウントと、Prowlarr または \*arrs 内のトレントインデクサー |
 | [zurg による検索](sonarr-radarr-fetch.md) | zurg | ダウンロードクライアントは一切不要 | Usenet、TorBox Pro、またはデブリッドのアカウントと、zurg 自身の設定内の Newznab または Torznab インデクサー |
 
 最初の2つは並べて実行できます。どちらも同じ `__magic__` フォルダを共有します。

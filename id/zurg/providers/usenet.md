@@ -4,7 +4,7 @@
 
 Usenet adalah tipe provider, bukan layanan debrid. Tidak ada API token dan tidak ada remote library. Kamu memasukkan file `.nzb` ke watch directory dan zurg mengubah setiap file menjadi release. Artikel diambil dari news server kamu dan di-decode pada saat player meminta byte tersebut.
 
-Halaman ini hanya berisi entri provider dan spesifik Docker. Semua hal lain tentang menjalankan Usenet di zurg ada di [Usenet with zurg](../guides/usenet.md). Itu panduan lengkapnya, mulai dari akun news dan NZB sampai mount dan Plex. Baca halaman itu setelah ini.
+Halaman ini hanya berisi entri provider dan spesifik Docker. Semua hal lain tentang menjalankan Usenet di zurg ada di [Usenet dengan zurg](../guides/usenet.md). Itu panduan lengkapnya, mulai dari akun news dan NZB sampai mount dan Plex. Baca halaman itu setelah ini.
 
 ## Atur konfigurasinya {#configure-it}
 
@@ -108,4 +108,4 @@ Dua gejala ini berasal dari entri provider itu sendiri, bukan dari library.
 
 **Throughput buruk pada link dengan latency tinggi.** Biarkan `socket_receive_buffer_kb` tidak diatur. Buffer yang di-pin adalah buffer yang berhenti di-tune oleh kernel. Di Linux, itu membuat receive window tertahan di sekitar 64 KiB dan memakan sebagian besar throughput akun.
 
-Semua hal lain ada di baris tabel troubleshooting pada [Usenet with zurg](../guides/usenet.md#troubleshooting). Koneksi yang ditolak, streaming yang lambat, provider yang tidak pernah dihubungi, dan edit Dashboard yang menghapus `nntp.servers` juga ada di sana.
+Semua hal lain ada di baris tabel troubleshooting pada [Usenet dengan zurg](../guides/usenet.md#troubleshooting). Koneksi yang ditolak, streaming yang lambat, provider yang tidak pernah dihubungi, dan edit Dashboard yang menghapus `nntp.servers` juga ada di sana.

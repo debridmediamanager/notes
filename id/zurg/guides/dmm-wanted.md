@@ -28,7 +28,7 @@ Hanya itu persiapannya. zurg membaca daftar kamu sekali per menit sejak zurg mul
    ditampilkan 120 judul per halaman.
 
 Permintaan dari Seerr, Overseerr, atau Jellyseerr juga bisa masuk ke daftar yang sama: lihat
-[Seerr through DMM](../../dmm/seerr.md).
+[Seerr lewat DMM](../../dmm/seerr.md).
 
 ## Mengikuti daftar {#following-a-list}
 
@@ -130,4 +130,4 @@ acquisition:
 
 Jika sponsor Anda berakhir atau Anda mereset kunci Anda, zurg mencatat bahwa DMM menolak kunci tersebut dan meminta lagi setiap jam. Apa yang sudah diambil tetap ada di perpustakaan Anda.
 
-Detail lebih lanjut: [DMM wanted list](acquisition.md#dmm-wanted-list) di referensi acquisition.
+Detail lebih lanjut: [Daftar keinginan DMM](acquisition.md#dmm-wanted-list) di referensi acquisition.

@@ -63,7 +63,7 @@ DMM Cast 是 Debrid Media Manager 的 Stremio 插件。它让 DMM 出现在 Stre
 | **No episodes in this release on Premiumize** | DMM 无法将该版本的文件与剧集匹配。请 cast 另一个版本。 |
 | 粘贴到 Stremio Web 顶部搜索栏中的插件地址没有任何反应 | 那个搜索栏只用来搜索。请使用 **Addons** → **Add addon**。 |
 
-还是搞不定？请到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **dmm-cast-support** 论坛提问。[Getting help](../guides/remote-help.md) 中说明了需要提供哪些信息。
+还是搞不定？请到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **dmm-cast-support** 论坛提问。[获取帮助](../guides/remote-help.md) 中说明了需要提供哪些信息。
 
 ## 常见问题 {#questions}
 

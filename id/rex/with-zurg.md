@@ -325,7 +325,7 @@ Di rumah, tidak perlu tambahan apa pun: aplikasi Plex menemukan rex lewat fitur 
 Ada dua hal yang mungkin kamu temui:
 
 - **"yourhost server is unclaimed and not secure".** Aplikasi Plex menampilkan ini untuk server mana pun yang belum ada di akun Plex, dan rex tidak akan memutar apa pun sampai server itu masuk ke akun. Lakukan [langkah 3](#step-3-add-it-to-a-plex-account). Jangan tekan **Claim it now** saat kamu login sebagai diri sendiri: itu akan mendaftarkan rex ke akun pribadimu.
-- **"This server is not powerful enough to convert video".** Kalau semua judul gagal di semua perangkat, lihat log rex tepat setelah kamu menekan Play: `upstream failed` atau `502` di sana berarti rex tidak bisa menjangkau zurg, dan FFmpeg tidak akan memperbaikinya. Baris `upstream failed` di [When something is wrong](#when-something-is-wrong) menjelaskan apa yang harus dilakukan. Kalau hanya beberapa file yang gagal, sering kali hanya di browser web, berarti perangkatnya tidak bisa memutar file itu apa adanya, biasanya karena suara AC3 atau DTS. Aplikasi Plex di TV dan ponsel memutar sebagian besar file apa adanya. Untuk memutar semuanya di mana saja, atur [Converting video](#converting-video-optional).
+- **"This server is not powerful enough to convert video".** Kalau semua judul gagal di semua perangkat, lihat log rex tepat setelah kamu menekan Play: `upstream failed` atau `502` di sana berarti rex tidak bisa menjangkau zurg, dan FFmpeg tidak akan memperbaikinya. Baris `upstream failed` di [Ketika ada yang salah](#when-something-is-wrong) menjelaskan apa yang harus dilakukan. Kalau hanya beberapa file yang gagal, sering kali hanya di browser web, berarti perangkatnya tidak bisa memutar file itu apa adanya, biasanya karena suara AC3 atau DTS. Aplikasi Plex di TV dan ponsel memutar sebagian besar file apa adanya. Untuk memutar semuanya di mana saja, atur [Converting video](#converting-video-optional).
 
 Folder zurg selain `movies` dan `shows`, misalnya `anime`, tidak perlu apa-apa: setiap file masuk ke **Movies** atau **TV Shows** sesuai dengan jenis yang dikatakan zurg. File yang tidak bisa dikenali zurg sebagai episode akan menunggu di **Movies**.
 
@@ -374,7 +374,7 @@ Start-ScheduledTask rex
 
 Di Docker, file-filenya ada di `~/rex/config`, yang hanya bisa dibaca root. Backup dari dalam container dengan `docker exec rex sqlite3 /config/rex.db ".backup /config/rex.db.bak"`, lalu `mkdir -p ~/rex-backup && sudo cp ~/rex/config/rex.db.bak ~/rex/config/*.json ~/rex-backup/`.
 
-[Restore a backup](#restore-a-backup) mengembalikannya.
+[Pulihkan cadangan](#restore-a-backup) mengembalikannya.
 
 Selesai. Bagian-bagian di bawah ini bersifat opsional.
 
@@ -395,7 +395,7 @@ Apa pun pilihanmu, setiap byte yang kamu tonton di luar rumah keluar lewat kecep
 | Router kamu punya IP publik dan kamu bisa meneruskan port | **[rex-direct](#rex-direct)** (paling sederhana) | Aktif secara default: cukup satu port forward. DMM memberi rex nama dan sertifikat, dan menjaga nama itu tetap mengarah ke IP rumahmu |
 | Kamu bisa memasang Tailscale di perangkat yang dipakai untuk menonton | **[Tailscale serve](#tailscale-serve)** (terbaik) | Tidak ada yang perlu dibuka di router, dan tetap jalan di balik koneksi internet apa pun. Sertifikatnya diperpanjang otomatis, dan tidak ada orang di luar tailnet-mu yang bisa mengakses rex |
 | Perangkat tanpa Tailscale (TV teman, hotel), dan router kamu punya IP publik | **[Caddy](#caddy)** dengan domain sendiri, atau dengan nama `sslip.io` gratis | Koneksi langsung tanpa perantara, dan sertifikat gratis yang diperpanjang otomatis. Kamu meneruskan port 443 |
-| Koneksimu tidak punya IPv4 publik (CGNAT atau DS-Lite, umum di kabel, seluler, dan beberapa penyedia fiber) tapi punya IPv6 | **[rex-direct over IPv6](#rex-direct-over-ipv6)** | Tidak perlu port forward dan tidak ada yang perlu disewa: kamu cukup mengizinkan port 32400 lewat IPv6. Perangkat yang dipakai menonton juga butuh IPv6, yang sudah dimiliki sebagian besar jaringan seluler |
+| Koneksimu tidak punya IPv4 publik (CGNAT atau DS-Lite, umum di kabel, seluler, dan beberapa penyedia fiber) tapi punya IPv6 | **[rex-direct melalui IPv6](#rex-direct-over-ipv6)** | Tidak perlu port forward dan tidak ada yang perlu disewa: kamu cukup mengizinkan port 32400 lewat IPv6. Perangkat yang dipakai menonton juga butuh IPv6, yang sudah dimiliki sebagian besar jaringan seluler |
 | Koneksimu sama sekali tidak punya IP publik, atau kamu menonton di jaringan tanpa IPv6, dan perangkatnya tanpa Tailscale | **[VPS kecil](#a-small-vps)** | rex tidak punya relay dan tidak akan punya. VPS yang kamu sewa punya IP publik, dan tunnel membawa semua lalu lintas ke rex, dengan bandwidth penuh dari VPS |
 
 Tidak direkomendasikan:
@@ -408,9 +408,9 @@ Tidak direkomendasikan:
 
 rex-direct adalah jawaban DMM untuk plex.direct, dan fitur ini aktif secara default. Di router Anda, teruskan port 32400 (TCP) ke mesin rex. Hanya itu, dan tidak perlu restart apa pun.
 
-Setelah diklaim, rex mendapat dua nama dari DMM: `<hash>.rex-direct.debridmediamanager.com`, yang mengarah ke IP publik rumah Anda, dan `lan.<hash>.rex-direct.debridmediamanager.com`, yang mengarah ke IP LAN rex, lengkap dengan sertifikat untuk keduanya. Sertifikat pertama membutuhkan beberapa menit; log rex akan memberi tahu bahwa sertifikat sedang diterbitkan lalu menampilkan setiap nama dalam baris `rex-direct:`. IP rumah baru dan perpanjangan sertifikat akan dideteksi dan diterapkan otomatis. Satu akun Plex dapat memegang hingga sepuluh nama rex-direct. Di rumah, aplikasi Plex, termasuk app.plex.tv, dapat memakai nama `lan.`, yang menjangkau rex langsung lewat jaringan Anda, jadi port forward hanya diperlukan saat Anda di luar rumah. Di app.plex.tv, izinkan akses ke perangkat di jaringan lokal saat Chrome memintanya; jika tidak, aplikasi akan kembali memakai nama publik, yang membutuhkan port forward. [What you should see](#what-you-should-see) memeriksa kedua nama tersebut.
+Setelah diklaim, rex mendapat dua nama dari DMM: `<hash>.rex-direct.debridmediamanager.com`, yang mengarah ke IP publik rumah Anda, dan `lan.<hash>.rex-direct.debridmediamanager.com`, yang mengarah ke IP LAN rex, lengkap dengan sertifikat untuk keduanya. Sertifikat pertama membutuhkan beberapa menit; log rex akan memberi tahu bahwa sertifikat sedang diterbitkan lalu menampilkan setiap nama dalam baris `rex-direct:`. IP rumah baru dan perpanjangan sertifikat akan dideteksi dan diterapkan otomatis. Satu akun Plex dapat memegang hingga sepuluh nama rex-direct. Di rumah, aplikasi Plex, termasuk app.plex.tv, dapat memakai nama `lan.`, yang menjangkau rex langsung lewat jaringan Anda, jadi port forward hanya diperlukan saat Anda di luar rumah. Di app.plex.tv, izinkan akses ke perangkat di jaringan lokal saat Chrome memintanya; jika tidak, aplikasi akan kembali memakai nama publik, yang membutuhkan port forward. [Yang seharusnya Anda lihat](#what-you-should-see) memeriksa kedua nama tersebut.
 
-Jika router Anda meneruskan port luar yang berbeda ke rex, tambahkan kunci `REX_DIRECT_PORT=<that port>` seperti yang ditunjukkan [step 2](#step-2-install-rex) untuk sistem Anda, lalu restart rex. Port forward tidak membuka API yang didorong zurg: lihat [Keep the port private](#keep-the-port-private).
+Jika router Anda meneruskan port luar yang berbeda ke rex, tambahkan kunci `REX_DIRECT_PORT=<that port>` seperti yang ditunjukkan [step 2](#step-2-install-rex) untuk sistem Anda, lalu restart rex. Port forward tidak membuka API yang didorong zurg: lihat [Jaga port tetap privat](#keep-the-port-private).
 
 ### rex-direct melalui IPv6 {#rex-direct-over-ipv6}
 
@@ -460,7 +460,7 @@ Caddy mengambil sertifikat saat memuat file ini dan memperpanjangnya sendiri. Ak
 
 ### VPS kecil {#a-small-vps}
 
-Untuk koneksi yang sama sekali tidak punya IP publik, atau saat kamu menonton di jaringan tanpa IPv6: VPS kemudian membawa semua streaming, menggantikan [rex-direct over IPv6](#rex-direct-over-ipv6). rex tidak punya relay dan tidak akan punya, jadi server yang kamu sewa berperan sebagai router kamu: server itu punya IP publik, dan sebuah tunnel dari mesin rex membawa semuanya ke rex. VPS apa pun dengan IPv4 publik bisa dipakai, biayanya beberapa euro sebulan. **Pilih yang kuota trafik bulanannya cukup untuk apa yang kamu tonton di luar rumah:** setiap byte lewat sana, dan paket dengan batas data kecil akan cepat habis.
+Untuk koneksi yang sama sekali tidak punya IP publik, atau saat kamu menonton di jaringan tanpa IPv6: VPS kemudian membawa semua streaming, menggantikan [rex-direct melalui IPv6](#rex-direct-over-ipv6). rex tidak punya relay dan tidak akan punya, jadi server yang kamu sewa berperan sebagai router kamu: server itu punya IP publik, dan sebuah tunnel dari mesin rex membawa semuanya ke rex. VPS apa pun dengan IPv4 publik bisa dipakai, biayanya beberapa euro sebulan. **Pilih yang kuota trafik bulanannya cukup untuk apa yang kamu tonton di luar rumah:** setiap byte lewat sana, dan paket dengan batas data kecil akan cepat habis.
 
 Kamu butuh IP VPS (`1.2.3.4` di bawah), port 443, 80 dan 7000 terbuka di sana, serta string acak panjang untuk tunnel (`openssl rand -hex 32`).
 
@@ -520,7 +520,7 @@ rex mencetak ini setiap kali mulai. Masalah akan terlihat nanti sebagai `heartbe
 
 ## Riwayat tontonan Anda dari server Plex lain (opsional) {#your-watch-history-from-another-plex-server-optional}
 
-Pernah nonton di server Plex lain sebelumnya? Setelah library kamu ada di rex, [Bring your watch history](import-watched.md) akan menyalin apa yang sudah kamu tonton, di menit mana kamu berhenti, dan rating bintang dari server itu, untuk setiap orang secara terpisah.
+Pernah nonton di server Plex lain sebelumnya? Setelah library kamu ada di rex, [Bawa riwayat tontonanmu](import-watched.md) akan menyalin apa yang sudah kamu tonton, di menit mana kamu berhenti, dan rating bintang dari server itu, untuk setiap orang secara terpisah.
 
 ## Sonarr, Radarr dan Bazarr (opsional) {#sonarr-radarr-and-bazarr-optional}
 
@@ -788,7 +788,7 @@ Lalu hapus baris `rex_url` dari `config.yml` zurg dan restart zurg. Di app.plex.
 
 ### Mendapatkan bantuan {#getting-help}
 
-Tanyakan di forum **rex-support** [Discord](https://discord.com/invite/7u4YjMThXP) DMM: [Getting help](../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan, dan cara sponsor mendapatkan bantuan jarak jauh.
+Tanyakan di forum **rex-support** [Discord](https://discord.com/invite/7u4YjMThXP) DMM: [Mendapatkan bantuan](../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan, dan cara sponsor mendapatkan bantuan jarak jauh.
 
 ## Ketika ada yang salah {#when-something-is-wrong}
 
@@ -807,9 +807,9 @@ Tanyakan di forum **rex-support** [Discord](https://discord.com/invite/7u4YjMThX
 | File Dolby Vision gagal dan log rex menampilkan `DoVi (Profile 5) color space is not supported` | rex tidak punya FFmpeg, atau FFmpeg-nya bukan jellyfin-ffmpeg. Pasang jellyfin-ffmpeg seperti yang ditunjukkan di [Converting video](#converting-video-optional), dan biarkan **Enable HDR tone mapping** aktif (Settings, Transcoder) |
 | rex keluar dengan `cannot bind ...:32400 (another rex or Plex on this port? ...)` | Program lain memakai port itu. Jika Plex Media Server ada di mesin ini, gunakan `--port 32500` seperti yang dijelaskan di [langkah 2](#step-2-install-rex). Jika rex lain, misalnya yang kamu jalankan manual, hentikan rex itu |
 | Perangkat di rumah tidak bisa terhubung, dan baris `heartbeat ... ->` di log rex tidak menampilkan `http://192.168.1.20:32400` | rex mengumumkan alamat privat dari jaringan yang dilewatinya ke internet. Di balik VPN atau Tailscale exit node, itu bukan jaringan rumahmu. Akhiri perintah start rex ([langkah 2](#step-2-install-rex)) dengan `--announce-url http://192.168.1.20:32400`, lalu restart rex |
-| Di rumah, app.plex.tv tidak menjangkau rex, dan alamat `lan.` dari [What you should see](#what-you-should-see) tidak merespons | Beberapa router dan filter DNS memblokir nama publik yang mengarah ke alamat rumah (proteksi DNS rebind). Izinkan `rex-direct.debridmediamanager.com` di sana, seperti pengguna Plex mengizinkan `plex.direct` |
+| Di rumah, app.plex.tv tidak menjangkau rex, dan alamat `lan.` dari [Yang seharusnya Anda lihat](#what-you-should-see) tidak merespons | Beberapa router dan filter DNS memblokir nama publik yang mengarah ke alamat rumah (proteksi DNS rebind). Izinkan `rex-direct.debridmediamanager.com` di sana, seperti pengguna Plex mengizinkan `plex.direct` |
 | Mesin lain tidak bisa menjangkau rex di Windows, walaupun aturan firewall dari langkah 2 sudah ada | Jika kamu pernah klik **Cancel** saat Windows menanyakan apakah rex boleh diizinkan, Windows menyimpan aturan yang memblokirnya, dan aturan itu lebih kuat daripada aturan port. Hapus aturan itu di PowerShell sebagai administrator: <code>Get-NetFirewallApplicationFilter -Program "$HOME\rex\rex.exe" &#124; Get-NetFirewallRule &#124; Where-Object Action -eq Block &#124; Remove-NetFirewallRule</code> (jika rex ada di tempat lain, gunakan path-nya sendiri) |
-| rex tidak muncul di aplikasi Plex saat kamu di luar rumah | Belum diklaim, atau perangkat tidak bisa menjangkau alamat HTTPS. Alamat khusus tailnet butuh Tailscale di perangkat itu, dan [rex-direct over IPv6](#rex-direct-over-ipv6) butuh IPv6 di jaringan perangkat itu |
+| rex tidak muncul di aplikasi Plex saat kamu di luar rumah | Belum diklaim, atau perangkat tidak bisa menjangkau alamat HTTPS. Alamat khusus tailnet butuh Tailscale di perangkat itu, dan [rex-direct melalui IPv6](#rex-direct-over-ipv6) butuh IPv6 di jaringan perangkat itu |
 | Log menampilkan `waiting for a claim` | Lakukan [langkah 3](#step-3-add-it-to-a-plex-account) |
 | rex keluar dengan `argument --announce-url: '...' is not an http:// or https:// address` | Berikan `--announce-url` hanya alamatnya, seperti `https://myhost.tailnet.ts.net:443`: tanpa kurung siku, tanda kutip, atau link di sekitarnya |
 | zurg berhenti saat kamu logout | Di Linux, jalankan `sudo loginctl enable-linger "$USER"` (langkah 1) |

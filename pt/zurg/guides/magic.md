@@ -339,6 +339,6 @@ Um `MOVE` **de dentro de um arquivo** também é verificado contra o próprio ar
 ## Veja também {#see-also}
 
 - [sabnzbd.md](sonarr-radarr.md) — apontando o Sonarr e o Radarr para o zurg, que é o que o `__magic__` foi criado para tornar possível
-- [DMM wanted list](dmm-wanted.md) — clique em Want no DMM e o zurg busca a lista em `__movies__`, `__shows__` ou `__anime__`
+- [Lista de desejos do DMM](dmm-wanted.md) — clique em Want no DMM e o zurg busca a lista em `__movies__`, `__shows__` ou `__anime__`
 - [usenet.md](usenet.md) — o backend de NZB para onde essas buscas vão parar
 - [config.md](../reference/config.md#__magic__-a-directory-you-can-organise) — todas as chaves do bloco `magic:`

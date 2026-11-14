@@ -49,9 +49,9 @@ zurg [command]
 
 لكل منصة دليل خطوات خاص بها.
 
-- [Linux](../setup/linux.md)
+- [لينكس](../setup/linux.md)
 - [macOS](../setup/macos.md)
-- [Windows](../setup/windows.md)
+- [ويندوز](../setup/windows.md)
 - [Docker](../setup/docker.md)
 
 ### zurg doctor
@@ -171,7 +171,7 @@ zurg restore-backup my-backup.zurgbackup
 
 ## Plex
 
-هذه الثلاثة تعمل مع خادم Plex على هذا المضيف. قم بإعداد Plex أولاً. انظر [Plex Integration](config.md#plex-integration).
+هذه الثلاثة تعمل مع خادم Plex على هذا المضيف. قم بإعداد Plex أولاً. انظر [تكامل Plex](config.md#plex-integration).
 
 ### zurg plex-settings
 

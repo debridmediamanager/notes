@@ -150,7 +150,7 @@ Si seguiste [rex en Docker](any-source.md#run-rex-in-docker), el paso 2 es una l
 | `-> 403: the source answered with the bytes, not a link` | `redirect-only` rechaza un archivo que la fuente envió directamente, por las mismas razones de arriba |
 | No aparece ninguna línea `PART` mientras se reproduce una película | La app está reproduciendo una conversión, no el archivo original. Pon su calidad en Original |
 
-¿Sigues atascado? Pregunta en el foro **rex-support** de [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) explica qué incluir.
+¿Sigues atascado? Pregunta en el foro **rex-support** de [Discord](https://discord.com/invite/7u4YjMThXP). [Obtener ayuda](../guides/remote-help.md) explica qué incluir.
 
 ## Volver atrás {#going-back}
 

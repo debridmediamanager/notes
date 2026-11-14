@@ -8,7 +8,7 @@ Bazarr находит субтитры для того, что импортир�
 
 ## Перед началом {#before-you-start}
 
-Radarr (или Sonarr) уже импортирует через zurg, и его корневая папка находится внутри `__magic__`, например `/mnt/zurg/__magic__/movies` (`/Volumes/Zurg/__magic__/movies` на macOS, `Z:\__magic__\movies` на Windows). Если это ещё не так, сначала следуйте инструкции [Sonarr & Radarr for torrents](sonarr-radarr-torrents.md) или [for Usenet](sonarr-radarr.md).
+Radarr (или Sonarr) уже импортирует через zurg, и его корневая папка находится внутри `__magic__`, например `/mnt/zurg/__magic__/movies` (`/Volumes/Zurg/__magic__/movies` на macOS, `Z:\__magic__\movies` на Windows). Если это ещё не так, сначала следуйте инструкции [Sonarr и Radarr для торрентов](sonarr-radarr-torrents.md) или [for Usenet](sonarr-radarr.md).
 
 ## 1. Запустите Bazarr {#1-run-bazarr}
 

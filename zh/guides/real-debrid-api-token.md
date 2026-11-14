@@ -21,7 +21,7 @@
 
 ![DMM's Connect Real-Debrid page](../assets/real-debrid-api-token/02-dmm-paste-key.webp)
 
-DMM 其实完全不需要这个令牌：**Sign in with Real-Debrid** 会显示一个代码，你只需在 real-debrid.com/device 上确认即可。这样 DMM 就有了自己的登录方式，而且会自动续期。更多内容请参阅 [What is DMM and how do I use it?](../dmm/index.md#sign-in)
+DMM 其实完全不需要这个令牌：**Sign in with Real-Debrid** 会显示一个代码，你只需在 real-debrid.com/device 上确认即可。这样 DMM 就有了自己的登录方式，而且会自动续期。更多内容请参阅 [DMM 是什么，我该怎么用？](../dmm/index.md#sign-in)
 
 ## 在 zurg 中填入令牌 {#put-it-in-zurg}
 

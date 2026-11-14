@@ -46,7 +46,7 @@ Plex no se da cuenta cuando algo nuevo llega a tu cuenta de Real-Debrid. zurg se
 
 ![La sección Media Server Integration del panel de zurg, con el botón Login with Plex](../assets/real-debrid-plex/01-zurg-login-with-plex.webp)
 
-A partir de ese momento, zurg le pide a Plex que escanee cada carpeta que cambia. También desactiva algunos ajustes de Plex que son arriesgados en una biblioteca en streaming, como **Empty trash automatically after every scan**: [Recommended Plex Settings](../zurg/guides/plex.md#recommended-plex-settings) los enumera.
+A partir de ese momento, zurg le pide a Plex que escanee cada carpeta que cambia. También desactiva algunos ajustes de Plex que son arriesgados en una biblioteca en streaming, como **Empty trash automatically after every scan**: [Ajustes recomendados de Plex](../zurg/guides/plex.md#recommended-plex-settings) los enumera.
 
 ## Cuando algo va mal {#when-something-is-wrong}
 
@@ -58,9 +58,9 @@ A partir de ese momento, zurg le pide a Plex que escanee cada carpeta que cambia
 | En Docker, las bibliotecas de Plex se quedan vacías después de que zurg se reinicia, y `docker exec plex ls /zurg_mnt/zurg` dice `Transport endpoint is not connected` | Dale al contenedor de Plex la carpeta de zurg con `rslave`: `/zurg_mnt:/zurg_mnt:rslave`. [One Docker Compose file](../zurg/guides/docker-compose.md) lo incluye. |
 | Aparecen cosas nuevas en las carpetas de zurg pero no en Plex | Haz el paso 4. Hasta entonces, pulsa **Scan Library Files** en la biblioteca de Plex. |
 | zurg dice `bad_token` | El token de Real-Debrid está mal o incompleto. [Your Real-Debrid API token](real-debrid-api-token.md#when-something-is-wrong) tiene la solución. |
-| Tu disco se llena | zurg guarda una copia de lo que reproduces, hasta 256G por defecto. Limítalo como indica [Keeping the cache small](../zurg/setup/windows.md#keeping-the-cache-small) (Windows) o [Disk the mount uses](../zurg/setup/linux.md#disk-the-mount-uses) (Linux). |
+| Tu disco se llena | zurg guarda una copia de lo que reproduces, hasta 256G por defecto. Limítalo como indica [Mantener la caché pequeña](../zurg/setup/windows.md#keeping-the-cache-small) (Windows) o [Disco que usa el montaje](../zurg/setup/linux.md#disk-the-mount-uses) (Linux). |
 
-¿Sigues atascado? Pregunta en el foro **zurg-support** de [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](remote-help.md) explica qué incluir.
+¿Sigues atascado? Pregunta en el foro **zurg-support** de [Discord](https://discord.com/invite/7u4YjMThXP). [Obtener ayuda](remote-help.md) explica qué incluir.
 
 ## Preguntas {#questions}
 
@@ -78,4 +78,4 @@ Sí, con rex. [rex con zurg](../rex/with-zurg.md) muestra tu biblioteca de zurg 
 
 ### ¿También funciona con TorBox o Usenet? {#does-it-work-with-torbox-or-usenet-too}
 
-Sí. El instalador de zurg también ofrece TorBox, AllDebrid, Premiumize, Debrid-Link, Offcloud y Usenet, y los coloca todos en las mismas carpetas `movies` y `shows`. [Providers](../zurg/providers/index.md) tiene una página para cada uno.
+Sí. El instalador de zurg también ofrece TorBox, AllDebrid, Premiumize, Debrid-Link, Offcloud y Usenet, y los coloca todos en las mismas carpetas `movies` y `shows`. [Proveedores](../zurg/providers/index.md) tiene una página para cada uno.

@@ -396,7 +396,7 @@ Selesai. Bagian di bawah ini bersifat opsional.
 
 **Apa yang dilakukannya.** Memberi rex alamat HTTPS yang bisa diakses aplikasi Plex dari luar rumah, lalu memberi tahu plex.tv tentang alamat itu.
 
-**Kenapa ini penting.** Di luar rumah, app.plex.tv hanya bisa terhubung ke alamat HTTPS, dan aplikasi Plex lain juga lebih memilih HTTPS. Server Plex sungguhan bisa kembali memakai relay Plex, tapi rex tidak bisa, jadi kamu yang memilih cara aksesnya. rex harus sudah [claimed](#step-3-add-it-to-a-plex-account) dulu. Proxy yang menghadap internet harus memblokir `/rex/`: lihat [Keep the port private](#keep-the-port-private).
+**Kenapa ini penting.** Di luar rumah, app.plex.tv hanya bisa terhubung ke alamat HTTPS, dan aplikasi Plex lain juga lebih memilih HTTPS. Server Plex sungguhan bisa kembali memakai relay Plex, tapi rex tidak bisa, jadi kamu yang memilih cara aksesnya. rex harus sudah [claimed](#step-3-add-it-to-a-plex-account) dulu. Proxy yang menghadap internet harus memblokir `/rex/`: lihat [Jaga port tetap privat](#keep-the-port-private).
 
 **Plex Pass.** Plex Web bisa diputar di luar rumah tanpa Plex Pass atau Remote Watch Pass di kedua akun. Aplikasi Plex lain belum diuji di luar rumah.
 
@@ -407,7 +407,7 @@ Apa pun pilihanmu, setiap data yang kamu tonton di luar rumah akan keluar lewat 
 | Router punya IP publik dan kamu bisa forward satu port | **[rex-direct](#rex-direct)** (paling sederhana) | Aktif secara default: cukup satu port forward. DMM memberi rex nama dan sertifikat, serta menjaga nama itu tetap mengarah ke IP rumahmu |
 | Kamu bisa memasang Tailscale di perangkat tempat kamu menonton | **[Tailscale serve](#tailscale-serve)** (terbaik) | Tidak ada yang perlu dibuka di router, dan tetap jalan di belakang koneksi internet apa pun. Sertifikatnya diperbarui otomatis, dan tidak ada orang di luar tailnet-mu yang bisa mengakses rex |
 | Perangkat tanpa Tailscale (TV teman, hotel), dan router punya IP publik | **[Caddy](#caddy)** dengan domain sendiri, atau dengan nama `sslip.io` gratis | Koneksi langsung tanpa perantara, dan sertifikat gratis yang diperbarui otomatis. Kamu forward port 443 |
-| Koneksimu tidak punya IPv4 publik (CGNAT atau DS-Lite, umum di kabel, seluler, dan beberapa penyedia fiber) tapi punya IPv6 | **[rex-direct over IPv6](#rex-direct-over-ipv6)** | Tidak perlu port forward dan tidak perlu menyewa apa pun: kamu cukup mengizinkan port 32400 lewat IPv6. Perangkat tempat kamu menonton juga perlu IPv6, dan kebanyakan jaringan seluler sudah punya |
+| Koneksimu tidak punya IPv4 publik (CGNAT atau DS-Lite, umum di kabel, seluler, dan beberapa penyedia fiber) tapi punya IPv6 | **[rex-direct melalui IPv6](#rex-direct-over-ipv6)** | Tidak perlu port forward dan tidak perlu menyewa apa pun: kamu cukup mengizinkan port 32400 lewat IPv6. Perangkat tempat kamu menonton juga perlu IPv6, dan kebanyakan jaringan seluler sudah punya |
 | Koneksimu tidak punya IP publik sama sekali, atau kamu menonton di jaringan tanpa IPv6, dan perangkatmu tanpa Tailscale | **[VPS kecil](#a-small-vps)** | rex tidak punya relay dan tidak akan punya. VPS sewaan memberi IP publik, dan tunnel meneruskan semuanya ke rex dengan bandwidth penuh milik VPS |
 
 Tidak direkomendasikan:
@@ -470,7 +470,7 @@ rex.example.com {
 
 ### VPS kecil {#a-small-vps}
 
-Untuk koneksi yang sama sekali tidak punya IP publik, atau saat kamu menonton di jaringan yang tidak memakai IPv6: VPS akan membawa semua stream, menggantikan [rex-direct over IPv6](#rex-direct-over-ipv6). rex tidak punya relay dan memang tidak akan punya, jadi server yang kamu sewa berperan sebagai router kamu: ia punya IP publik, dan sebuah tunnel dari mesin rex membawa semuanya ke rex. VPS apa pun dengan IPv4 publik bisa dipakai, biayanya beberapa euro per bulan. **Pilih yang kuota trafik bulanannya cukup untuk apa yang kamu tonton di luar rumah:** setiap byte lewat di sini, dan paket dengan kuota kecil akan cepat habis.
+Untuk koneksi yang sama sekali tidak punya IP publik, atau saat kamu menonton di jaringan yang tidak memakai IPv6: VPS akan membawa semua stream, menggantikan [rex-direct melalui IPv6](#rex-direct-over-ipv6). rex tidak punya relay dan memang tidak akan punya, jadi server yang kamu sewa berperan sebagai router kamu: ia punya IP publik, dan sebuah tunnel dari mesin rex membawa semuanya ke rex. VPS apa pun dengan IPv4 publik bisa dipakai, biayanya beberapa euro per bulan. **Pilih yang kuota trafik bulanannya cukup untuk apa yang kamu tonton di luar rumah:** setiap byte lewat di sini, dan paket dengan kuota kecil akan cepat habis.
 
 Kamu butuh IP VPS (`1.2.3.4` di bawah), port 443, 80 dan 7000 terbuka di sana, dan string acak panjang untuk tunnel (`openssl rand -hex 32`).
 
@@ -530,7 +530,7 @@ rex mencetak ini setiap kali mulai. Masalah akan terlihat nanti sebagai `heartbe
 
 ## Riwayat tontonan Anda dari server Plex lain (opsional) {#your-watch-history-from-another-plex-server-optional}
 
-Pernah nonton di server Plex lain sebelumnya? Setelah library kamu ada di rex, [Bring your watch history](import-watched.md) akan menyalin apa yang sudah kamu tonton, di menit mana kamu berhenti, dan rating bintang dari server itu, untuk setiap orang secara terpisah.
+Pernah nonton di server Plex lain sebelumnya? Setelah library kamu ada di rex, [Bawa riwayat tontonanmu](import-watched.md) akan menyalin apa yang sudah kamu tonton, di menit mana kamu berhenti, dan rating bintang dari server itu, untuk setiap orang secara terpisah.
 
 ## Konversi video (opsional) {#converting-video-optional}
 
@@ -723,7 +723,7 @@ Lalu hentikan aplikasimu agar tidak lagi mengirim ke rex. Di app.plex.tv, pakai 
 
 ### Mendapatkan bantuan {#getting-help}
 
-Tanyakan di forum **rex-support** [Discord](https://discord.com/invite/7u4YjMThXP) DMM: [Getting help](../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan, dan cara sponsor mendapatkan bantuan jarak jauh.
+Tanyakan di forum **rex-support** [Discord](https://discord.com/invite/7u4YjMThXP) DMM: [Mendapatkan bantuan](../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan, dan cara sponsor mendapatkan bantuan jarak jauh.
 
 ## Ketika ada yang salah {#when-something-is-wrong}
 

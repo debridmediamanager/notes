@@ -1,6 +1,6 @@
 # ما الذي تفعله كل قطعة {#what-each-piece-does}
 
-إذا لم تكن الأسماء واضحة بما يكفي لمعرفة وظيفة كل منها، فإليك سطر واحد لكل منها. كل ما ليس مميزًا بعبارة **For sponsors** مجاني. ولمعرفة ما تحتاجه منها، استخدم [Choose your setup](choose-your-setup.md).
+إذا لم تكن الأسماء واضحة بما يكفي لمعرفة وظيفة كل منها، فإليك سطر واحد لكل منها. كل ما ليس مميزًا بعبارة **For sponsors** مجاني. ولمعرفة ما تحتاجه منها، استخدم [اختر إعدادك](choose-your-setup.md).
 
 ## المشاريع الثلاثة {#the-three-projects}
 
@@ -28,7 +28,7 @@
 | [rex addons](../rex/addons.md) | برامج صغيرة تمنح rex شيئاً يشغّله: YouTube، وSpotify، وIPTV، وفيديوهات منزلية، أو أي شيء تكتبه بنفسك |
 | [rex-live-sports](../rex/live-tv.md) | إضافة rex تضع قنوات الرياضة المباشرة ودليل البرامج في Live TV ضمن تطبيقات Plex |
 | [rex-direct](../rex/any-source.md#rex-direct) | يمنح rex عنوان إنترنت آمناً خاصاً به، فتصل إليه تطبيقات Plex من خارج المنزل |
-| [rex for Android](../rex/android.md) | rex وإضافاته على هاتف Android أو جهاز TV box، من دون حاسوب |
+| [rex لأندرويد](../rex/android.md) | rex وإضافاته على هاتف Android أو جهاز TV box، من دون حاسوب |
 | [zurg+rex for Android](../zurg/guides/android.md) | خادم Plex على هاتفك: zurg وrex معاً على جهاز Android واحد، مع مكتبتك من debrid وUsenet. للرعاة فقط |
 
 ## داخل Jellyfin وEmby {#inside-jellyfin-and-emby}
@@ -43,7 +43,7 @@
 | Name | What it does |
 |---|---|
 | [Wanted](../zurg/guides/dmm-wanted.md) | اضغط **Want** في DMM وسيجلبه zurg الخاص بك، والحلقات الجديدة تُضاف تلقائيًا. للرعاة |
-| [Seerr through DMM](../dmm/seerr.md) | طلبات العائلة في Seerr تذهب إلى قائمة Wanted الخاصة بك. للرعاة |
+| [Seerr عبر DMM](../dmm/seerr.md) | طلبات العائلة في Seerr تذهب إلى قائمة Wanted الخاصة بك. للرعاة |
 | [Torznab](https://debridmediamanager.com/torznab) and [Newznab](https://debridmediamanager.com/newznab) | DMM كمفهرس لـ Sonarr وRadarr وProwlarr. للرعاة |
 | zurg as the download client | zurg يرد على Sonarr وRadarr كـ qBittorrent للـ [torrents](../zurg/guides/sonarr-radarr-torrents.md) وكـ SABnzbd للـ [Usenet](../zurg/guides/sonarr-radarr.md)، فلا تحتاج لتشغيل أيٍّ منهما. للرعاة |
 | [zurg's Stremio addon](../zurg/guides/stremio.md) | يبحث في Usenet عندما تضغط تشغيل في Stremio ويبثه عبر zurg. للرعاة |

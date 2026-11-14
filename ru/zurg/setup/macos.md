@@ -437,7 +437,7 @@ tail -100 ~/zurg/logs/service-stderr.log   # manual LaunchAgent: launchd-stderr.
 
 Установка, созданная командой `zurg setup` на Mac без монитора, использует LaunchDaemon и не требует входа через графический интерфейс. Проверить её можно командой `cd ~/zurg && ./zurg service status`.
 
-Всё ещё не получается? Задайте вопрос в форуме **zurg-support** в [Discord](https://discord.com/invite/7u4YjMThXP). В разделе [Getting help](../../guides/remote-help.md) написано, что нужно указать.
+Всё ещё не получается? Задайте вопрос в форуме **zurg-support** в [Discord](https://discord.com/invite/7u4YjMThXP). В разделе [Получение помощи](../../guides/remote-help.md) написано, что нужно указать.
 
 ## Обзор архитектуры {#architecture-overview}
 
@@ -464,7 +464,7 @@ launchd (PID 1)
 
 ## Краткая справка {#quick-reference}
 
-Запускайте это в `~/zurg`. Строки `zurg service` подходят для установки, сделанной через `zurg setup`; ручной LaunchAgent использует команды launchctl из раздела [Managing the Services](#managing-the-services).
+Запускайте это в `~/zurg`. Строки `zurg service` подходят для установки, сделанной через `zurg setup`; ручной LaunchAgent использует команды launchctl из раздела [Управление сервисами](#managing-the-services).
 
 | Action | Command |
 |--------|---------|

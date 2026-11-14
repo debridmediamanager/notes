@@ -21,7 +21,7 @@ Real-Debrid の API トークンは [real-debrid.com/apitoken](https://real-debr
 
 ![DMM's Connect Real-Debrid page](../assets/real-debrid-api-token/02-dmm-paste-key.webp)
 
-DMM はトークンがなくても使えます。**Sign in with Real-Debrid** を押すと、real-debrid.com/device で承認するためのコードが表示されます。この方法だと DMM 専用のサインインになり、自動で更新されます。詳しくは [What is DMM and how do I use it?](../dmm/index.md#sign-in) を参照してください。
+DMM はトークンがなくても使えます。**Sign in with Real-Debrid** を押すと、real-debrid.com/device で承認するためのコードが表示されます。この方法だと DMM 専用のサインインになり、自動で更新されます。詳しくは [DMMとは何か、そして使い方は?](../dmm/index.md#sign-in) を参照してください。
 
 ## zurgに入れる {#put-it-in-zurg}
 

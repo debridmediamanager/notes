@@ -584,7 +584,7 @@ Sonarr und Radarr können deiner Plex-Watchlist folgen. Alles, was du in Plex hi
 
 zurg hat eine [eigene Watchlist](plex-watchlist.md), die direkt bei Indexern, die du zurg gibst, nach Downloads sucht. Nutze nur eines von beiden. Wenn du beides nutzt, wird derselbe Titel zweimal geholt.
 
-Um andere Listen zu verfolgen, etwa eine Genre-Liste, siehe [Lists in Sonarr & Radarr](import-lists.md).
+Um andere Listen zu verfolgen, etwa eine Genre-Liste, siehe [Listen in Sonarr & Radarr](import-lists.md).
 
 ## Wenn der Import kopiert statt verschiebt {#if-the-import-copies-instead-of-moving}
 
@@ -619,7 +619,7 @@ qbittorrent:
 
 **Was als Bewegung zählt**, ist ein Wechsel der Stufe oder ein Anstieg des Fortschritts. Gemessen wird der rohe Anteil, den der Account meldet, nicht ganze Prozent. Ein Prozent eines 100-GB-Releases ist ein Gigabyte. Ein Release, das der Account gerade entpackt, ist von der Uhr ausgenommen: Diese Stufe bleibt so lange bei einem Wert, wie das Entpacken dauert.
 
-**Fünfzehn ist gemessen, nicht gewählt.** AllDebrid stellt einen gesunden Job mit allen Zählern auf null in die eigene Warteschlange. Zwei von zwei Läufen blieben dort 580 und 622 Sekunden, bevor sie in Sekunden herunterluden und fertig wurden. Ein Standard von zehn Minuten hätte beide abgebrochen. Die Mitschnitte und die Tabelle, die die eigenen Formulierungen jedes Accounts auf die fünf Zustände abbildet, die die \*arrs verstehen, stehen in [Torrent lifecycle](../internals/torrent-lifecycle.md).
+**Fünfzehn ist gemessen, nicht gewählt.** AllDebrid stellt einen gesunden Job mit allen Zählern auf null in die eigene Warteschlange. Zwei von zwei Läufen blieben dort 580 und 622 Sekunden, bevor sie in Sekunden herunterluden und fertig wurden. Ein Standard von zehn Minuten hätte beide abgebrochen. Die Mitschnitte und die Tabelle, die die eigenen Formulierungen jedes Accounts auf die fünf Zustände abbildet, die die \*arrs verstehen, stehen in [Lebenszyklus eines Torrents](../internals/torrent-lifecycle.md).
 
 **Was ein Timeout löscht.** Die Instanz auf diesem Account, und nur diese. Gelöscht wird eine Instanz, die zurg für genau diesen Grab selbst angelegt hat und die nie fertig wurde, sonst nichts. Ist kein Account mehr übrig, wird der Grab als fehlerhaft gemeldet, mit einem Grund, der jeden Account nennt und sagt, was er getan hat.
 

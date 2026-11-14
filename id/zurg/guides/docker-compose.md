@@ -100,13 +100,13 @@ Jika `docker` menampilkan permission denied, tambahkan `sudo` di depan setiap pe
 
 ## 3. Tambahkan folder zurg di Plex {#3-add-zurgs-folders-in-plex}
 
-Buka Plex Web di `http://<this machine's LAN IP>:32400/web`. Tambahkan library **Movies** dengan folder `/zurg_mnt/zurg/movies` dan library **TV Shows** dengan `/zurg_mnt/zurg/shows`, seperti yang ditunjukkan di [Real-Debrid in Plex](../../guides/real-debrid-plex.md#3-add-the-folders-in-plex).
+Buka Plex Web di `http://<this machine's LAN IP>:32400/web`. Tambahkan library **Movies** dengan folder `/zurg_mnt/zurg/movies` dan library **TV Shows** dengan `/zurg_mnt/zurg/shows`, seperti yang ditunjukkan di [Real-Debrid di Plex](../../guides/real-debrid-plex.md#3-add-the-folders-in-plex).
 
 Supaya Plex tahu ada hal baru, buka dashboard zurg di `http://<this machine's LAN IP>:9999/config/` lalu tekan **Login with Plex** di bawah **Media Server Integration** ([langkah 4 di sana](../../guides/real-debrid-plex.md#4-let-zurg-tell-plex-about-new-things)).
 
 ## 4. Siapkan rex {#4-set-up-rex}
 
-Ikuti [rex with zurg](../../rex/with-zurg.md) dari [D3](../../rex/with-zurg.md#d3-add-it-to-a-plex-account) sampai [D5](../../rex/with-zurg.md#d5-watch), dengan `32500` di setiap tempat yang tertulis `32400`. Misalnya, baris zurg adalah `rex_url: http://192.168.1.20:32500`, dengan IP LAN rex. Aplikasi Plex kamu kemudian akan menampilkan kedua server, dan [langkah 2 dari rex with zurg](../../rex/with-zurg.md#step-2-install-rex) menjelaskan cara membedakannya.
+Ikuti [rex dengan zurg](../../rex/with-zurg.md) dari [D3](../../rex/with-zurg.md#d3-add-it-to-a-plex-account) sampai [D5](../../rex/with-zurg.md#d5-watch), dengan `32500` di setiap tempat yang tertulis `32400`. Misalnya, baris zurg adalah `rex_url: http://192.168.1.20:32500`, dengan IP LAN rex. Aplikasi Plex kamu kemudian akan menampilkan kedua server, dan [langkah 2 dari rex with zurg](../../rex/with-zurg.md#step-2-install-rex) menjelaskan cara membedakannya.
 
 ## Memperbarui {#updating}
 
@@ -133,9 +133,9 @@ Itu memperbarui zurg, Plex, dan rex sekaligus. Jika rex bersama zurg menjalankan
 | rex berhenti dengan `rex: cannot bind 0.0.0.0:32400: Address already in use (os error 98) (another rex or Plex on this port? --port picks another)` | Plex Media Server sudah memakai port 32400. Biarkan `command: --port 32500` pada rex. |
 | `/zurg_mnt/zurg/movies` kosong, atau menampilkan `Input/output error`, tepat setelah start | zurg masih membaca akun Anda. `curl http://localhost:9999/ready` akan menampilkan `ready` saat selesai. Jangan restart zurg selama itu: proses membaca akan mulai ulang dari awal. |
 | Judul muncul di rex tapi tidak ada yang bisa diputar | Baris `upstream failed` pada [rex dengan zurg, bagian When something is wrong](../../rex/with-zurg.md#when-something-is-wrong) mengecek apakah rex bisa menjangkau zurg. |
-| Disk penuh | zurg menyimpan salinan dari yang sudah diputar di `~/zurg/data/rclone-cache`, hingga 256G secara default. [What lives where](../setup/docker.md#what-lives-where) menunjukkan cara membatasinya. |
+| Disk penuh | zurg menyimpan salinan dari yang sudah diputar di `~/zurg/data/rclone-cache`, hingga 256G secara default. [Apa yang ada di mana](../setup/docker.md#what-lives-where) menunjukkan cara membatasinya. |
 
-Masih buntu? Tanyakan di forum **zurg-support** di [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan.
+Masih buntu? Tanyakan di forum **zurg-support** di [Discord](https://discord.com/invite/7u4YjMThXP). [Mendapatkan bantuan](../../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan.
 
 ## Pertanyaan {#questions}
 

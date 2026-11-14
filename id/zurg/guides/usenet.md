@@ -25,7 +25,7 @@ Panduan ini mencakup akun berita, NZB, mount, dan Plex.
 ## Yang kamu butuhkan {#what-you-need}
 
 - **Setidaknya satu akun penyedia Usenet.** Retensi adalah yang paling penting. Penyedia dengan retensi 4000+ hari masih menyimpan postingan yang sudah hilang dari penyedia 1000 hari. **Batas koneksi** paketmu adalah angka kedua yang perlu kamu tahu. Angka inilah yang dibaca zurg.
-- **Akun tambahan, jika kamu punya.** Penyedia unlimited kedua di *backbone* yang berbeda, atau akun blok murah untuk menutup celah, adalah hal dengan nilai tertinggi yang bisa kamu tambahkan ke pengaturan Usenet. Lihat [More than one Usenet provider](#more-than-one-usenet-provider).
+- **Akun tambahan, jika kamu punya.** Penyedia unlimited kedua di *backbone* yang berbeda, atau akun blok murah untuk menutup celah, adalah hal dengan nilai tertinggi yang bisa kamu tambahkan ke pengaturan Usenet. Lihat [Lebih dari satu penyedia Usenet](#more-than-one-usenet-provider).
 - **File NZB atau sesuatu yang mengambilnya.** Unduh dari indexer kamu lalu taruh di `nzbs/`. Atau aktifkan [SABnzbd-compatible endpoint](sonarr-radarr.md) dan biarkan Sonarr dan Radarr yang menyerahkannya. Endpoint ini menulis ke direktori yang sama. zurg juga bisa mencari sendiri di indexer Newznab kamu. Ini terjadi saat kamu menekan play di [Stremio](stremio.md). Ini juga terjadi untuk permintaan dari daftar tonton kamu dan dari Seerr serta \*arrs melalui [acquisition](acquisition.md). Torrent untuk akun debrid punya endpoint sendiri yang kompatibel dengan [qBittorrent](sonarr-radarr-torrents.md).
 - **zurg**, ditambah `rclone` jika kamu ingin mount filesystem alih-alih WebDAV langsung. zurg akan mengunduh rclone untukmu saat pertama kali dijalankan.
 
@@ -643,7 +643,7 @@ Endpoint ini membalas `{"probes": [...]}` dengan satu objek untuk provider `nzb`
 
 ---
 
-Masih mentok? Tanya di forum **zurg-support** di [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan.
+Masih mentok? Tanya di forum **zurg-support** di [Discord](https://discord.com/invite/7u4YjMThXP). [Mendapatkan bantuan](../../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan.
 
 ## Lihat juga {#see-also}
 

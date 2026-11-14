@@ -30,5 +30,5 @@ Bootstrap ini memeriksa prasyarat platform, login ke GitHub untuk akses sponsor,
 - [macOS](macos.md)
 - [Windows](windows.md)
 
-Setelah zurg terpasang, [Providers](../providers/index.md) menjelaskan cara mengarahkannya ke sebuah akun.
+Setelah zurg terpasang, [Penyedia](../providers/index.md) menjelaskan cara mengarahkannya ke sebuah akun.
 Ada satu halaman untuk tiap layanan, berisi kredensial, entri `config.yml`, dan apa yang berbeda dari layanan itu. Halaman-halaman tersebut ditulis untuk Docker. Pada instalasi binary, entri `config.yml` provider dan langkah di Dashboard sama saja, `./zurg service restart` (`.\zurg.exe service restart` di Windows) menggantikan `docker compose restart zurg`, dan baris `docker compose run --rm zurg setup` menjadi `./zurg setup` (`.\zurg.exe setup` di Windows) dengan flag yang sama kecuali `--no-service --skip-downloads --mount-path /zurg_mnt/zurg` milik container. Flag `--…-file` kemudian menunjuk ke file di mesin kamu, bukan file di bawah `/config`.

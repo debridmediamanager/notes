@@ -41,7 +41,7 @@ Drück auf **Library**. Dort siehst du deine TorBox-Torrents und Web-Downloads.
 - **Backup** speichert deine Liste in einer Datei. **TB Restore** fügt eine gespeicherte Liste wieder hinzu.
 - Alles Weitere funktioniert wie bei jedem anderen Dienst: siehe [your library](index.md#your-library).
 
-Usenet-Downloads, die du an TorBox geschickt hast, sind nicht in der DMM-Bibliothek. Du findest sie auf der TorBox-Website, in der Zeile **DMM TB Library** von DMM Cast in Stremio oder über [TorBox hosted Usenet](../zurg/providers/torbox-nzb.md) in zurg.
+Usenet-Downloads, die du an TorBox geschickt hast, sind nicht in der DMM-Bibliothek. Du findest sie auf der TorBox-Website, in der Zeile **DMM TB Library** von DMM Cast in Stremio oder über [TorBox gehostetes Usenet](../zurg/providers/torbox-nzb.md) in zurg.
 
 ## In Stremio ansehen {#watch-in-stremio}
 
@@ -60,7 +60,7 @@ In Stremio heißt das Addon **DMM Cast for TorBox**. Seine Zeile **DMM TB Librar
 
 ![DMM's Usenet tab with TorBox Pro: Send to TorBox](../assets/dmm-torbox/03-usenet-tab.webp)
 
-Bist du auch bei Real-Debrid angemeldet? Dann steht über der Liste **Send to Real-Debrid or TorBox**, und es gibt beide Buttons. Das Dateisymbol am Ende einer Zeile speichert stattdessen die NZB. Neu bei Usenet? Fang mit [Usenet for beginners](../guides/usenet-for-beginners.md) an.
+Bist du auch bei Real-Debrid angemeldet? Dann steht über der Liste **Send to Real-Debrid or TorBox**, und es gibt beide Buttons. Das Dateisymbol am Ende einer Zeile speichert stattdessen die NZB. Neu bei Usenet? Fang mit [Usenet für Einsteiger](../guides/usenet-for-beginners.md) an.
 
 TorBox löscht einen Usenet-Download 30 Tage nach dem Zwischenspeichern. Schick ihn einfach noch einmal, dann ist er wieder da.
 

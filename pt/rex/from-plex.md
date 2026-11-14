@@ -10,7 +10,7 @@ Você usa o Plex Media Server e quer testar o rex. Os seus apps do Plex continua
 | O que cada arquivo é | O Plex identifica pelo nome do arquivo | A fonte descobre e informa ao rex. O rex nunca lê um nome de arquivo |
 | Uma identificação errada | Fix Match no servidor | **Fix Match** em um app do Plex, logado com a conta que é dona do rex. O rex guarda a sua escolha, e uma fonte pode desfazê-la e mantê-la, como faz o zurg ([por que os títulos são colocados como estão](with-zurg.md#why-dmm-places-the-files)) |
 | A conta do servidor | Geralmente a sua | Uma conta nova do Plex criada para o rex, compartilhada com a sua |
-| Música, Live TV e fotos | De pastas e de um sintonizador | Somente de uma fonte que as envie, como um addon ([Building rex addons](addons.md#music)) ou os quadrinhos do zurg. O Plex Web mostra fotos; o Plex para Android não |
+| Música, Live TV e fotos | De pastas e de um sintonizador | Somente de uma fonte que as envie, como um addon ([Criando addons para o rex](addons.md#music)) ou os quadrinhos do zurg. O Plex Web mostra fotos; o Plex para Android não |
 | Gravar TV | Sim | Não |
 
 ## Escolha um caminho {#pick-a-way}

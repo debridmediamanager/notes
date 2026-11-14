@@ -341,6 +341,6 @@ magic:
 ## انظر أيضًا {#see-also}
 
 - [sabnzbd.md](sonarr-radarr.md) — ربط Sonarr وRadarr بـ zurg، وهذا ما صُمم `__magic__` لتحقيقه
-- [DMM wanted list](dmm-wanted.md) — اضغط Want في DMM وسيجلب zurg القائمة إلى `__movies__` أو `__shows__` أو `__anime__`
+- [قائمة DMM المطلوبة](dmm-wanted.md) — اضغط Want في DMM وسيجلب zurg القائمة إلى `__movies__` أو `__shows__` أو `__anime__`
 - [usenet.md](usenet.md) — الواجهة الخلفية لـ NZB التي تصل إليها عمليات الجلب
 - [config.md](../reference/config.md#__magic__-a-directory-you-can-organise) — كل مفتاح في كتلة `magic:`

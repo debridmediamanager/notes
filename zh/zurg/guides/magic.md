@@ -338,6 +338,6 @@ magic:
 ## 另请参阅 {#see-also}
 
 - [sabnzbd.md](sonarr-radarr.md) — 将 Sonarr 和 Radarr 指向 zurg，这正是 `__magic__` 的设计初衷
-- [DMM wanted list](dmm-wanted.md) — 在 DMM 上点击 Want，zurg 就会把它抓取到 `__movies__`、`__shows__` 或 `__anime__` 中
+- [DMM 想看列表](dmm-wanted.md) — 在 DMM 上点击 Want，zurg 就会把它抓取到 `__movies__`、`__shows__` 或 `__anime__` 中
 - [usenet.md](usenet.md) — 这些抓取内容最终落地的 NZB 后端
 - [config.md](../reference/config.md#__magic__-a-directory-you-can-organise) — `magic:` 配置块中的每一个键

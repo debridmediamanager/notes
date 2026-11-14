@@ -55,21 +55,21 @@ Tekan **Library** di halaman utama. Di sana tercantum semua yang ada di akun yan
 
 ## Langkah selanjutnya {#where-to-go-next}
 
-- [DMM in Stremio](stremio.md): tonton apa pun yang kamu temukan di Stremio dengan addon DMM Cast.
-- [Hash lists](hashlists.md): tambahkan seluruh perpustakaan bersama ke milikmu, atau bagikan milikmu sendiri.
-- [TorBox in DMM](torbox.md): paket TorBox mana yang melakukan apa di DMM, dan cara mengirim rilis Usenet ke TorBox Pro.
+- [DMM di Stremio](stremio.md): tonton apa pun yang kamu temukan di Stremio dengan addon DMM Cast.
+- [Daftar hash](hashlists.md): tambahkan seluruh perpustakaan bersama ke milikmu, atau bagikan milikmu sendiri.
+- [TorBox di DMM](torbox.md): paket TorBox mana yang melakukan apa di DMM, dan cara mengirim rilis Usenet ke TorBox Pro.
 - ["Torrent is being downloaded to debrid"](../guides/torrent-being-downloaded-to-debrid.md): arti layar itu di Stremio dan cara DMM menampilkan apa yang sudah di-cache.
-- [DMM buttons in Safari](safari.md): ekstensi browser menambahkan tombol DMM ke IMDb, Trakt, dan situs film serta TV lainnya.
+- [Tombol DMM di Safari](safari.md): ekstensi browser menambahkan tombol DMM ke IMDb, Trakt, dan situs film serta TV lainnya.
 
 DMM juga melayani proyek-proyek lainnya:
 
-- **zurg** menanyakan ke DMM film atau episode mana setiap file. Sponsor mendapatkan kunci API DMM dari [gatekeeper](https://gatekeeper.debridmediamanager.com/). Tanpa itu, zurg hanya mengandalkan nama file dan lebih sedikit judul yang cocok. [rex with zurg](../rex/with-zurg.md#why-dmm-places-the-files) menjelaskan perbedaannya.
+- **zurg** menanyakan ke DMM film atau episode mana setiap file. Sponsor mendapatkan kunci API DMM dari [gatekeeper](https://gatekeeper.debridmediamanager.com/). Tanpa itu, zurg hanya mengandalkan nama file dan lebih sedikit judul yang cocok. [rex dengan zurg](../rex/with-zurg.md#why-dmm-places-the-files) menjelaskan perbedaannya.
 - **Sonarr Radarr and Prowlarr** bisa mencari di DMM sebagai indexer torrent Torznab atau indexer Usenet Newznab. Keduanya butuh sponsorship aktif dan kunci API DMM. Atur keduanya di halaman [Torznab](https://debridmediamanager.com/torznab) dan [Newznab](https://debridmediamanager.com/newznab).
-- **Your wanted list**: tekan **Want** atau ikuti daftar Trakt atau MDBList. zurg akan mengambil daftar itu dan episode baru saat tayang. Perlu sponsorship. Lihat [DMM wanted list](../zurg/guides/dmm-wanted.md).
-- **Seerr Overseerr and Jellyseerr** bisa memakai DMM sebagai Radarr dan Sonarr. Permintaan kemudian masuk ke daftar yang kamu inginkan agar zurg mengambilnya. Perlu sponsorship. Lihat [Seerr through DMM](seerr.md).
+- **Your wanted list**: tekan **Want** atau ikuti daftar Trakt atau MDBList. zurg akan mengambil daftar itu dan episode baru saat tayang. Perlu sponsorship. Lihat [Daftar keinginan DMM](../zurg/guides/dmm-wanted.md).
+- **Seerr Overseerr and Jellyseerr** bisa memakai DMM sebagai Radarr dan Sonarr. Permintaan kemudian masuk ke daftar yang kamu inginkan agar zurg mengambilnya. Perlu sponsorship. Lihat [Seerr lewat DMM](seerr.md).
 - **rex-direct** memberi rex yang sudah diklaim alamat dan sertifikatnya sendiri. Lihat [rex-direct](../rex/any-source.md#rex-direct).
 
-Semua yang dibuka oleh sponsorship dan tempat setiap hal diatur ada di [What a sponsorship gives you](../guides/sponsorship.md).
+Semua yang dibuka oleh sponsorship dan tempat setiap hal diatur ada di [Apa yang didapat dari sponsor](../guides/sponsorship.md).
 
 ## Ketika ada yang salah {#when-something-is-wrong}
 
@@ -80,7 +80,7 @@ Semua yang dibuka oleh sponsorship dan tempat setiap hal diatur ada di [What a s
 | **Your TorBox account is on the free plan, which has no API access. DMM needs a paid TorBox plan.** | Paket gratis TorBox tidak bisa dipakai dengan DMM. Upgrade paketnya, atau masuk dengan layanan lain. |
 | Hanya tombol **DL with RD**, tidak ada **Instant RD** | Layanan Anda tidak punya rilis ini di cache. Tekan salah satu dan tunggu sampai selesai diunduh, atau coba rilis lain. |
 
-Masih bingung? Tanya di forum **dmm-support** di [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan.
+Masih bingung? Tanya di forum **dmm-support** di [Discord](https://discord.com/invite/7u4YjMThXP). [Mendapatkan bantuan](../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan.
 
 ## Pertanyaan {#questions}
 

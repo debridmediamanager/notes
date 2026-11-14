@@ -498,7 +498,7 @@ Jellyfin 和 Emby 使用 `jellyfin_server_url` / `jellyfin_token` 以及 `emby_s
 
 zurg 的应对方式，按优先级排列：
 
-1. **问问另一个新闻服务器。** 一个服务商已经过期的文章，通常在另一个服务商那里还能找到。这只需要一次获取，详见 [More than one Usenet provider](#more-than-one-usenet-provider)。
+1. **问问另一个新闻服务器。** 一个服务商已经过期的文章，通常在另一个服务商那里还能找到。这只需要一次获取，详见 [使用多个 Usenet 服务商](#more-than-one-usenet-provider)。
 2. **用发布自带的 PAR2 文件重建。** 这些文件本来就是为此发布的。但代价很高：Reed-Solomon 需要读取每一个幸存的分片，才能算出缺失的那一块。所以一个 200 GB 的发布，要读 200 GB，才能恢复几 MB 的数据。
 3. **返回空白数据。** 只有前两种方法都无法解决时才会这样做。
 

@@ -954,7 +954,7 @@ zurg ahora mantiene sus cachés de lectura en disco entre reinicios. Eso incluye
 
 Las peticiones para el mismo archivo de AllDebrid o TorBox hechas en el mismo momento ahora comparten una sola consulta de enlace.
 
-Los ajustes y los límites están en [Persistent caches](../internals/persistent-caches.md).
+Los ajustes y los límites están en [Cachés persistentes](../internals/persistent-caches.md).
 
 ## Las descargas de Usenet se revisan con más atención antes de marcarse como Completed {#usenet-grabs-are-checked-more-closely-before-they-read-completed}
 

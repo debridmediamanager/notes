@@ -618,7 +618,7 @@ qbittorrent:
 
 **Apa yang dihitung bergerak** adalah perubahan stage atau kenaikan progres. Ini dinilai dari pecahan mentah yang dilaporkan akun, bukan persen bulat. Satu persen dari rilis 100 GB itu satu gigabyte. Rilis yang sedang di-unpack oleh akun dikecualikan dari timer, karena stage itu tetap di satu angka selama proses unpack berjalan.
 
-**Lima belas itu hasil pengukuran, bukan pilihan asal.** AllDebrid menaruh job yang sehat di antrean sendiri dengan semua counter di nol. Dua dari dua percobaan diam di sana selama 580 dan 622 detik, lalu mulai mengunduh dalam hitungan detik dan selesai. Default sepuluh menit akan membatalkan keduanya. Hasil capture-nya, serta tabel yang memetakan kalimat tiap akun ke lima state yang dipahami \*arrs, ada di [Torrent lifecycle](../internals/torrent-lifecycle.md).
+**Lima belas itu hasil pengukuran, bukan pilihan asal.** AllDebrid menaruh job yang sehat di antrean sendiri dengan semua counter di nol. Dua dari dua percobaan diam di sana selama 580 dan 622 detik, lalu mulai mengunduh dalam hitungan detik dan selesai. Default sepuluh menit akan membatalkan keduanya. Hasil capture-nya, serta tabel yang memetakan kalimat tiap akun ke lima state yang dipahami \*arrs, ada di [Siklus hidup torrent](../internals/torrent-lifecycle.md).
 
 **Apa yang dihapus saat timeout.** Hanya instance di akun itu saja. Penghapusan hanya mengenai instance yang ditambahkan zurg sendiri untuk grab ini dan belum selesai. Tidak ada yang lain. Kalau sudah tidak ada akun tersisa, grab dilaporkan error dengan alasan yang menyebut setiap akun dan apa yang dilakukannya.
 

@@ -100,7 +100,7 @@ Ada dua hal yang mengikuti dari ini, dan zurg menanganinya sendiri.
 
 **Tidak ada pemilihan file per file.** Menambahkan torrent mengambil seluruhnya, dan repair menambahkan ulang seluruh rilis.
 
-Gambaran lengkap beserta sumbernya ada di [TorBox limits](torbox-limits.md).
+Gambaran lengkap beserta sumbernya ada di [Batas TorBox](torbox-limits.md).
 
 ## Memilih wilayah CDN {#choosing-a-cdn-region}
 

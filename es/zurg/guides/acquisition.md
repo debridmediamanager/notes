@@ -116,7 +116,7 @@ Excluir una palabra nunca afecta a la resolución. Con `DV` excluido, un release
 
 ### Exclusiones y perfiles de Radarr o Sonarr {#exclusions-and-radarr-or-sonarr-profiles}
 
-Con una fuente `radarr` o `sonarr`, la exclusión va primero. Una release excluida nunca llega al parser de Radarr o Sonarr. Ninguna puntuación de formato personalizado la devuelve, y no cuenta como un rechazo por parte del perfil. Cada una de las demás releases la juzga el perfil tal como se describe en [Radarr behavior](#radarr-behavior) y [Sonarr behavior](#sonarr-behavior). Una release tiene que pasar ambos filtros. Un formato personalizado que puntúe Dolby Vision por debajo del mínimo del perfil hace lo mismo dentro de las *arr, y dejarlo no hace ningún daño.
+Con una fuente `radarr` o `sonarr`, la exclusión va primero. Una release excluida nunca llega al parser de Radarr o Sonarr. Ninguna puntuación de formato personalizado la devuelve, y no cuenta como un rechazo por parte del perfil. Cada una de las demás releases la juzga el perfil tal como se describe en [Comportamiento de Radarr](#radarr-behavior) y [Comportamiento de Sonarr](#sonarr-behavior). Una release tiene que pasar ambos filtros. Un formato personalizado que puntúe Dolby Vision por debajo del mínimo del perfil hace lo mismo dentro de las *arr, y dejarlo no hace ningún daño.
 
 Las mejoras siguen la misma regla. Si las únicas releases que subirían un archivo hasta el cutoff del perfil están excluidas, el archivo se queda por debajo del cutoff y el paso de mejoras de zurg sigue buscando sin quitar nada. Eso pasa cuando un formato personalizado da a Dolby Vision una puntuación alta y la puntuación de cutoff la necesita. Baja la puntuación de cutoff o quita esa puntuación del formato personalizado.
 

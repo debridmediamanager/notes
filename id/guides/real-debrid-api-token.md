@@ -21,7 +21,7 @@ Perlakukan token ini seperti kata sandi. Token ini tidak kedaluwarsa, dan siapa 
 
 ![DMM's Connect Real-Debrid page](../assets/real-debrid-api-token/02-dmm-paste-key.webp)
 
-DMM sebenarnya tidak perlu token: **Sign in with Real-Debrid** menampilkan kode yang kamu setujui di real-debrid.com/device. Dengan cara itu DMM punya sign-in sendiri, dan akan diperbarui otomatis. Selengkapnya di [What is DMM and how do I use it?](../dmm/index.md#sign-in)
+DMM sebenarnya tidak perlu token: **Sign in with Real-Debrid** menampilkan kode yang kamu setujui di real-debrid.com/device. Dengan cara itu DMM punya sign-in sendiri, dan akan diperbarui otomatis. Selengkapnya di [Apa itu DMM dan bagaimana cara memakainya?](../dmm/index.md#sign-in)
 
 ## Masukkan ke zurg {#put-it-in-zurg}
 

@@ -41,11 +41,11 @@ TorBox にないリリースには **DL with TB** が表示されます。これ
 - **Backup** で一覧をファイルに保存できます。**TB Restore** を使うと、保存した一覧を元に戻せます。
 - それ以外の操作は、ほかのサービスと同じです。[your library](index.md#your-library) を参照してください。
 
-TorBox に送った Usenet のダウンロードは、DMM のライブラリには表示されません。TorBox のサイトで確認するか、Stremio の DMM Cast にある **DMM TB Library** の行で探すか、zurg の [TorBox hosted Usenet](../zurg/providers/torbox-nzb.md) から確認してください。
+TorBox に送った Usenet のダウンロードは、DMM のライブラリには表示されません。TorBox のサイトで確認するか、Stremio の DMM Cast にある **DMM TB Library** の行で探すか、zurg の [TorBox でホストされている Usenet](../zurg/providers/torbox-nzb.md) から確認してください。
 
 ## Stremio で視聴する {#watch-in-stremio}
 
-ホームページで**Cast for TB**を押して、そこからアドオンをインストールしてください。その後、TorBoxでキャッシュ済みの任意のリリースで**Cast (TB)**を押します。手順はすべて[DMM in Stremio](stremio.md)にあります。
+ホームページで**Cast for TB**を押して、そこからアドオンをインストールしてください。その後、TorBoxでキャッシュ済みの任意のリリースで**Cast (TB)**を押します。手順はすべて[Stremio で DMM を使う](stremio.md)にあります。
 
 Stremioではアドオン名は**DMM Cast for TorBox**です。**DMM TB Library**の行には、TorBoxのトレントと、完了したWebおよびUsenetのダウンロードが表示されます。
 
@@ -60,7 +60,7 @@ Stremioではアドオン名は**DMM Cast for TorBox**です。**DMM TB Library*
 
 ![DMM's Usenet tab with TorBox Pro: Send to TorBox](../assets/dmm-torbox/03-usenet-tab.webp)
 
-Real-Debrid にもサインインしていますか？その場合、リストの見出しは **Send to Real-Debrid or TorBox** になり、両方のボタンが表示されます。行の末尾にあるファイルアイコンを押すと、代わりに NZB を保存できます。Usenet が初めてなら、まず [Usenet for beginners](../guides/usenet-for-beginners.md) を読んでください。
+Real-Debrid にもサインインしていますか？その場合、リストの見出しは **Send to Real-Debrid or TorBox** になり、両方のボタンが表示されます。行の末尾にあるファイルアイコンを押すと、代わりに NZB を保存できます。Usenet が初めてなら、まず [Usenet入門](../guides/usenet-for-beginners.md) を読んでください。
 
 TorBox は、Usenet のダウンロードをキャッシュしてから 30 日後に削除します。元に戻すには、もう一度送信してください。
 

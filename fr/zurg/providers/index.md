@@ -11,13 +11,13 @@ Un fournisseur est un compte à partir duquel zurg construit sa bibliothèque. C
 | Debrid-Link | `debridlink` | [Debrid-Link](debridlink.md) |
 | Offcloud | `offcloud` | [Offcloud](offcloud.md) |
 | Usenet | `nzb` | [Usenet](usenet.md) |
-| TorBox hosted Usenet | `torbox_nzb` | [TorBox hosted Usenet](torbox-nzb.md) |
+| TorBox hosted Usenet | `torbox_nzb` | [TorBox hébergé Usenet](torbox-nzb.md) |
 
-Trois pages vont plus loin que la configuration de base. [TorBox limits](torbox-limits.md) présente les chiffres mesurés derrière le bridage de TorBox. [TorBox news server](torbox-news-server.md) et [ElfHosted news server](elfhosted-news-server.md) décrivent ce que sont réellement les comptes Usenet inclus avec ces offres. Évalue-les à partir de ces pages avant d'utiliser un emplacement de fournisseur pour l'un d'eux.
+Trois pages vont plus loin que la configuration de base. [Limites de TorBox](torbox-limits.md) présente les chiffres mesurés derrière le bridage de TorBox. [Serveur de news TorBox](torbox-news-server.md) et [Serveur de news ElfHosted](elfhosted-news-server.md) décrivent ce que sont réellement les comptes Usenet inclus avec ces offres. Évalue-les à partir de ces pages avant d'utiliser un emplacement de fournisseur pour l'un d'eux.
 
-Toutes les pages ici supposent l'installation en conteneur décrite dans [Docker setup](../setup/docker.md). `~/zurg` est le dossier compose sur l'hôte. `/config` est ce même dossier vu depuis l'intérieur du conteneur. Il n'existe qu'un seul `config.yml`, et les deux noms y mènent.
+Toutes les pages ici supposent l'installation en conteneur décrite dans [Configuration Docker](../setup/docker.md). `~/zurg` est le dossier compose sur l'hôte. `/config` est ce même dossier vu depuis l'intérieur du conteneur. Il n'existe qu'un seul `config.yml`, et les deux noms y mènent.
 
-Sur une installation binaire sous Linux, macOS ou Windows, [Setup](../setup/index.md) indique ce qui remplace `docker compose restart zurg` et la ligne `setup`. Les vérifications se traduisent de la même façon. Lance-les depuis le dossier de zurg. Lis `logs/zurg.log` au lieu de `docker compose logs` (`Get-Content logs\zurg.log -Tail 100 -Wait` dans PowerShell). Lance `./zurg doctor` (`.\zurg.exe doctor`) sans `--working-dir /config`. Remplace `/zurg_mnt/zurg` par ton propre point de montage : `/mnt/zurg`, `/Volumes/Zurg` ou `Z:\`, sauf si tu as modifié `mount_path`. Dans Windows PowerShell 5.1, tape `curl.exe`, et non `curl`.
+Sur une installation binaire sous Linux, macOS ou Windows, [Configuration](../setup/index.md) indique ce qui remplace `docker compose restart zurg` et la ligne `setup`. Les vérifications se traduisent de la même façon. Lance-les depuis le dossier de zurg. Lis `logs/zurg.log` au lieu de `docker compose logs` (`Get-Content logs\zurg.log -Tail 100 -Wait` dans PowerShell). Lance `./zurg doctor` (`.\zurg.exe doctor`) sans `--working-dir /config`. Remplace `/zurg_mnt/zurg` par ton propre point de montage : `/mnt/zurg`, `/Volumes/Zurg` ou `Z:\`, sauf si tu as modifié `mount_path`. Dans Windows PowerShell 5.1, tape `curl.exe`, et non `curl`.
 
 ## Trois façons d'ajouter un compte {#three-ways-to-add-an-account}
 
@@ -78,7 +78,7 @@ providers:
 mount_path: "/zurg_mnt/zurg"
 ```
 
-`mount_path` vaut `/zurg_mnt/zurg` dans un conteneur, et le fichier compose doit monter `/zurg_mnt:/zurg_mnt:rshared` pour que le montage arrive jusqu'à l'hôte. C'est la page [Docker setup](../setup/docker.md), et c'est la seule partie d'une installation en conteneur qui ne ressemble pas à une installation binaire.
+`mount_path` vaut `/zurg_mnt/zurg` dans un conteneur, et le fichier compose doit monter `/zurg_mnt:/zurg_mnt:rshared` pour que le montage arrive jusqu'à l'hôte. C'est la page [Configuration Docker](../setup/docker.md), et c'est la seule partie d'une installation en conteneur qui ne ressemble pas à une installation binaire.
 
 ## Installations sans surveillance {#unattended-installs}
 

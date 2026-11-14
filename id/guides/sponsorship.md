@@ -15,7 +15,7 @@ Perk mengikuti sponsorship. Saat sponsorship berakhir, DMM menghentikan perk-nya
 | Seluruh source code zurg | Repositori privat di GitHub |
 | Setiap rilis yang diberi nama sesuai rex dan Plex | `dmm_api_key` di [config zurg](../zurg/reference/config.md) |
 | Detail media DMM tanpa membaca file dulu, dan pengecekan bahasa sebelum rilis ditambahkan | Tidak ada selain `dmm_api_key` |
-| Folder `__magic__` yang diurutkan otomatis saat diaktifkan | [\_\_magic\_\_](../zurg/guides/magic.md) |
+| Folder `__magic__` yang diurutkan otomatis saat diaktifkan | [\_\_sihir\_\_](../zurg/guides/magic.md) |
 | Daftar wanted DMM Anda yang diambil oleh zurg | [Daftar wanted DMM](../zurg/guides/dmm-wanted.md) |
 | Indexer Usenet dan torrent milik DMM yang dicari saat Anda tidak punya indexer sendiri | `dmm_api_key` plus penyedia Usenet atau akun debrid yang bisa menambahkan torrent |
 | Rilis dipilih berdasarkan bahasa asli setiap judul | `original` di [bahasa audio dan subtitle](../zurg/guides/acquisition.md#choosing-by-audio-and-subtitle-language) |
@@ -42,7 +42,7 @@ Fitur `dmm_api_key` membutuhkan build nightly zurg. Build publik gratis tidak me
 
 ## rex
 
-rex gratis dan tidak perlu sponsor, di Android juga: [rex for Android](../rex/android.md) menjalankan rex dan addon-nya di ponsel atau TV box. Sponsor juga mendapat zurg+rex (di tabel di atas), yang menghubungkan library debrid dan Usenet mereka ke rex di perangkat. Dengan kunci, [rex-stremio](../rex/stremio.md) menambahkan stream debrid dari torrent yang sudah punya probe di DMM dalam hitungan detik, tanpa perlu probe satu per satu. Tempel kunci itu di kolom **DMM** milik rex-stremio. Probe file torrent juga dibagikan ke DMM, kecuali kamu mematikannya.
+rex gratis dan tidak perlu sponsor, di Android juga: [rex untuk Android](../rex/android.md) menjalankan rex dan addon-nya di ponsel atau TV box. Sponsor juga mendapat zurg+rex (di tabel di atas), yang menghubungkan library debrid dan Usenet mereka ke rex di perangkat. Dengan kunci, [rex-stremio](../rex/stremio.md) menambahkan stream debrid dari torrent yang sudah punya probe di DMM dalam hitungan detik, tanpa perlu probe satu per satu. Tempel kunci itu di kolom **DMM** milik rex-stremio. Probe file torrent juga dibagikan ke DMM, kecuali kamu mematikannya.
 
 ## Bantuan {#help}
 

@@ -41,11 +41,11 @@ Pressione **Library**. Ela lista seus torrents e downloads da web no TorBox.
 - **Backup** salva sua lista em um arquivo. **TB Restore** adiciona de volta uma lista salva.
 - O resto funciona como em qualquer serviço: veja [your library](index.md#your-library).
 
-Downloads de Usenet que você enviou ao TorBox não estão na biblioteca do DMM. Encontre-os no site do TorBox, na linha **DMM TB Library** do DMM Cast no Stremio, ou pelo [TorBox hosted Usenet](../zurg/providers/torbox-nzb.md) do zurg.
+Downloads de Usenet que você enviou ao TorBox não estão na biblioteca do DMM. Encontre-os no site do TorBox, na linha **DMM TB Library** do DMM Cast no Stremio, ou pelo [TorBox hospedado de Usenet](../zurg/providers/torbox-nzb.md) do zurg.
 
 ## Assistir no Stremio {#watch-in-stremio}
 
-Clique em **Cast for TB** na página inicial e instale o addon por lá. Depois, clique em **Cast (TB)** em qualquer release que o TorBox tenha em cache. Todos os passos estão em [DMM in Stremio](stremio.md).
+Clique em **Cast for TB** na página inicial e instale o addon por lá. Depois, clique em **Cast (TB)** em qualquer release que o TorBox tenha em cache. Todos os passos estão em [DMM no Stremio](stremio.md).
 
 No Stremio, o addon se chama **DMM Cast for TorBox**. A linha **DMM TB Library** lista seus torrents do TorBox, além dos seus downloads web e Usenet concluídos.
 
@@ -60,7 +60,7 @@ No Stremio, o addon se chama **DMM Cast for TorBox**. A linha **DMM TB Library**
 
 ![DMM's Usenet tab with TorBox Pro: Send to TorBox](../assets/dmm-torbox/03-usenet-tab.webp)
 
-Também está conectado ao Real-Debrid? A lista tem o título **Send to Real-Debrid or TorBox** e mostra os dois botões. O ícone de arquivo no fim de cada linha salva o NZB. Nunca usou Usenet? Comece com [Usenet for beginners](../guides/usenet-for-beginners.md).
+Também está conectado ao Real-Debrid? A lista tem o título **Send to Real-Debrid or TorBox** e mostra os dois botões. O ícone de arquivo no fim de cada linha salva o NZB. Nunca usou Usenet? Comece com [Usenet para iniciantes](../guides/usenet-for-beginners.md).
 
 O TorBox apaga um download de Usenet 30 dias depois de o colocar em cache. Envie de novo para recuperá-lo.
 

@@ -1,6 +1,6 @@
 # Más de tu addon {#more-from-your-addon}
 
-[Building rex addons](addons.md) cubre lo básico. Esta página añade subtítulos, tráilers, capítulos, colecciones, listas de reproducción, imágenes de artistas, películas conocidas, bibliotecas grandes, correcciones y eliminación. Cada sección añade campos a [Paso 5](addons.md#step-5-send-it). Pruébalos en los tutoriales de [vídeos caseros](addon-home-videos.md), [música](addon-music.md) o [IPTV](addon-iptv.md).
+[Creación de complementos para rex](addons.md) cubre lo básico. Esta página añade subtítulos, tráilers, capítulos, colecciones, listas de reproducción, imágenes de artistas, películas conocidas, bibliotecas grandes, correcciones y eliminación. Cada sección añade campos a [Paso 5](addons.md#step-5-send-it). Pruébalos en los tutoriales de [vídeos caseros](addon-home-videos.md), [música](addon-music.md) o [IPTV](addon-iptv.md).
 
 Todos los ejemplos se enviaron a rex nightly 2026.11.02. La referencia completa está en [docs/feed-api.md](https://github.com/debridmediamanager/rex/blob/main/docs/feed-api.md).
 

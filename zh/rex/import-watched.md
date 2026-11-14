@@ -97,4 +97,4 @@ curl -d "ADDRESS-FROM-STEP-1" "http://192.168.1.20:32400/rex/import-watched?X-Pl
 | 一个 `Unauthorized` 页面 | rex 没有接受第 2 步的 token。请重新复制，并且要从发给 rex 的请求中复制，而不是从 `plex.tv` 复制 |
 | `notInRex` 比你预期的高很多 | 你的大部分库还没有进入 rex，或者你的旧库用的是 Plex 较早的 agent。等库全部到达 rex 之后再运行一次 |
 
-还是解决不了？请到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **rex-support** 论坛提问。[Getting help](../guides/remote-help.md) 里写明了该提供哪些信息。
+还是解决不了？请到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **rex-support** 论坛提问。[获取帮助](../guides/remote-help.md) 里写明了该提供哪些信息。

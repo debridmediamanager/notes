@@ -4,7 +4,7 @@
 Plex for Android の **Live TV** チャンネルに変換します。各チャンネルは、番号と番組表をそのまま保ちます。
 HLS（`.m3u8`）を使う M3U チャンネルと、それを名前で指定している XMLTV 番組表であれば動作します。
 
-このページは [rex アドオンの作り方](addons.md) と、その [Live TV](addons.md#live-tv) のセクションに沿って進みます。アドオンを初めて作るなら、先に [ホームビデオのチュートリアル](addon-home-videos.md) を読んでください。ライブスポーツの場合は [rex での Live TV](live-tv.md) を使ってください。
+このページは [rex アドオンの作り方](addons.md) と、その [ライブ TV](addons.md#live-tv) のセクションに沿って進みます。アドオンを初めて作るなら、先に [ホームビデオのチュートリアル](addon-home-videos.md) を読んでください。ライブスポーツの場合は [rex での Live TV](live-tv.md) を使ってください。
 
 | 必要なもの | 理由 |
 |---|---|

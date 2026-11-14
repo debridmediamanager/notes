@@ -362,4 +362,4 @@ findmnt -o TARGET,PROPAGATION /zurg_mnt
 
 这很正常。同一个 FUSE 挂载在容器和宿主机的挂载命名空间里都能看到，说明挂载传播（propagation）是正常工作的。
 
-还是卡住了？可以到 [Discord](https://discord.com/invite/7u4YjMThXP) 的 **zurg-support** 论坛提问。[Getting help](../../guides/remote-help.md) 里写了提问时需要附上哪些信息。
+还是卡住了？可以到 [Discord](https://discord.com/invite/7u4YjMThXP) 的 **zurg-support** 论坛提问。[获取帮助](../../guides/remote-help.md) 里写了提问时需要附上哪些信息。

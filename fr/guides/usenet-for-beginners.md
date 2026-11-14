@@ -36,7 +36,7 @@ Vous n'avez pas besoin :
 2. En une seconde ou deux, zurg le lit et affiche la release dans sa bibliothèque, avec le nom du NZB.
 3. Vous appuyez sur lecture dans Plex, Jellyfin ou rex. zurg récupère les morceaux correspondant à cet endroit auprès de votre fournisseur et les transmet. Si vous avancez, il récupère à partir du nouvel endroit.
 
-Rien n'attend la fin d'un téléchargement. Pour la configuration pas à pas, suivez [Usenet with zurg](../zurg/guides/usenet.md). Les réglages du fournisseur et les détails Docker se trouvent sur [Usenet provider](../zurg/providers/usenet.md).
+Rien n'attend la fin d'un téléchargement. Pour la configuration pas à pas, suivez [Usenet avec zurg](../zurg/guides/usenet.md). Les réglages du fournisseur et les détails Docker se trouvent sur [Usenet provider](../zurg/providers/usenet.md).
 
 ## Où se situe DMM {#where-dmm-fits}
 
@@ -94,8 +94,8 @@ Oui, dans les builds nightly pour les sponsors. Indiquez-leur les informations d
 
 TorBox a deux fonctionnalités Usenet dans son offre Pro. Sa page de tarifs indique Usenet uniquement pour Pro (vérifié le 14 novembre 2026).
 
-- **Téléchargements Usenet hébergés.** TorBox télécharge la release complète pour vous et la sert comme n'importe quel autre téléchargement TorBox. Envoyez les NZB depuis l'onglet Usenet de DMM ou depuis le provider `torbox_nzb` de zurg. Vous n'avez pas besoin d'identifiants de serveur de news. Voir [TorBox hosted Usenet](../zurg/providers/torbox-nzb.md).
-- **Un identifiant de serveur de news (NNTP).** Utilisez-le dans zurg comme n'importe quel provider. Il autorise 10 connexions. Mesuré en septembre 2026, il trouvait moins de contenu réel dans une bibliothèque que trois autres providers payants. Il convient donc surtout comme solution de secours. Voir [TorBox news server](../zurg/providers/torbox-news-server.md).
+- **Téléchargements Usenet hébergés.** TorBox télécharge la release complète pour vous et la sert comme n'importe quel autre téléchargement TorBox. Envoyez les NZB depuis l'onglet Usenet de DMM ou depuis le provider `torbox_nzb` de zurg. Vous n'avez pas besoin d'identifiants de serveur de news. Voir [TorBox hébergé Usenet](../zurg/providers/torbox-nzb.md).
+- **Un identifiant de serveur de news (NNTP).** Utilisez-le dans zurg comme n'importe quel provider. Il autorise 10 connexions. Mesuré en septembre 2026, il trouvait moins de contenu réel dans une bibliothèque que trois autres providers payants. Il convient donc surtout comme solution de secours. Voir [Serveur de news TorBox](../zurg/providers/torbox-news-server.md).
 
 ### Puis-je utiliser un seul compte Usenet à deux endroits ? {#can-i-use-one-usenet-account-in-two-places}
 

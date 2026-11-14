@@ -2,7 +2,7 @@
 
 zurg+rex 是装在你手机上的 Plex 服务器。zurg 接入你的 debrid 账户和 Usenet，rex 再把它们提供给你家里的每一个 Plex 应用，包括海报、季信息和观看进度。它可以运行在手机、平板、Android TV、Google TV 或 Fire TV 上，不需要电脑。
 
-它需要赞助才能使用。不想赞助？[rex for Android](../../rex/android.md) 是免费的，播放它的插件提供的内容。
+它需要赞助才能使用。不想赞助？[rex 安卓版](../../rex/android.md) 是免费的，播放它的插件提供的内容。
 
 | 应用本身 | 在 Plex 应用中 | 在其他 Plex 应用中 |
 |---|---|---|

@@ -9,7 +9,7 @@
 
 ## Что понадобится {#what-you-need}
 
-- zurg читает ваш список желаемого из DMM с помощью `dmm_api_key` в `config.yml`. См. [Fetch what you want from DMM](../zurg/guides/dmm-wanted.md#what-you-need).
+- zurg читает ваш список желаемого из DMM с помощью `dmm_api_key` в `config.yml`. См. [Загружайте из DMM что хотите](../zurg/guides/dmm-wanted.md#what-you-need).
 - Seerr настроен на ваш сервер Plex, Jellyfin или Emby, чтобы знать, какие эпизоды у вас есть.
 
 ## Добавление DMM как Radarr {#add-dmm-as-radarr}
@@ -68,7 +68,7 @@ Seerr читает список DMM один раз в день в **Radarr Scan
 
 Откройте тайтл в Seerr, нажмите кнопку с шестерёнкой и затем **Remove from Radarr** (или **Remove from Sonarr**). Так он уберётся из вашего списка желаемого. То, что zurg уже загрузил, останется в вашей библиотеке. **Open in Radarr** рядом открывает тайтл в DMM.
 
-Застряли? Спросите в форуме **dmm-support** в [Discord](https://discord.com/invite/7u4YjMThXP). В [Getting help](../guides/remote-help.md) написано, что нужно указать.
+Застряли? Спросите в форуме **dmm-support** в [Discord](https://discord.com/invite/7u4YjMThXP). В [Получение помощи](../guides/remote-help.md) написано, что нужно указать.
 
 ## Seerr через DMM или собственный источник Seerr в zurg {#seerr-through-dmm-or-zurgs-own-seerr-source}
 

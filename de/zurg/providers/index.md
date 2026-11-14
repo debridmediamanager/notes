@@ -11,7 +11,7 @@ Ein Provider ist ein Account, aus dem zurg seine Bibliothek aufbaut. Jeder Accou
 | Debrid-Link | `debridlink` | [Debrid-Link](debridlink.md) |
 | Offcloud | `offcloud` | [Offcloud](offcloud.md) |
 | Usenet | `nzb` | [Usenet](usenet.md) |
-| TorBox hosted Usenet | `torbox_nzb` | [TorBox hosted Usenet](torbox-nzb.md) |
+| TorBox hosted Usenet | `torbox_nzb` | [TorBox gehostetes Usenet](torbox-nzb.md) |
 
 Drei Seiten gehen über die Einrichtung hinaus. [TorBox-Limits](torbox-limits.md) enthält die gemessenen Werte hinter der TorBox-Drosselung. [TorBox-Newsserver](torbox-news-server.md) und [ElfHosted-Newsserver](elfhosted-news-server.md) dokumentieren, was die Usenet-Accounts, die bei diesen Tarifen mitgeliefert werden, tatsächlich sind. Prüfe einen davon dort, bevor du einen Provider-Platz dafür belegst.
 

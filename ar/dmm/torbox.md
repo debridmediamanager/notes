@@ -41,7 +41,7 @@ DMM يعمل مع خطة TorBox مدفوعة: Essential أو Standard أو Pro. 
 - **Backup** يحفظ قائمتك في ملف. **TB Restore** يضيف قائمة محفوظة مرة أخرى.
 - بقية الميزات تعمل كما في أي خدمة أخرى: انظر [مكتبتك](index.md#your-library).
 
-التنزيلات من Usenet التي أرسلتها إلى TorBox لا تظهر في مكتبة DMM. ابحث عنها على موقع TorBox، أو في صف **DMM TB Library** داخل DMM Cast في Stremio، أو عبر [TorBox hosted Usenet](../zurg/providers/torbox-nzb.md) في zurg.
+التنزيلات من Usenet التي أرسلتها إلى TorBox لا تظهر في مكتبة DMM. ابحث عنها على موقع TorBox، أو في صف **DMM TB Library** داخل DMM Cast في Stremio، أو عبر [Usenet المستضاف على TorBox](../zurg/providers/torbox-nzb.md) في zurg.
 
 ## شاهد في Stremio {#watch-in-stremio}
 
@@ -60,7 +60,7 @@ DMM يعمل مع خطة TorBox مدفوعة: Essential أو Standard أو Pro. 
 
 ![تبويب Usenet في DMM مع TorBox Pro: Send to TorBox](../assets/dmm-torbox/03-usenet-tab.webp)
 
-مسجّل الدخول إلى Real-Debrid أيضًا؟ القائمة تكون بعنوان **Send to Real-Debrid or TorBox** وفيها الزرّان معًا. أيقونة الملف في نهاية كل صف تحفظ ملف NZB بدلًا من ذلك. جديد على Usenet؟ ابدأ مع [Usenet for beginners](../guides/usenet-for-beginners.md).
+مسجّل الدخول إلى Real-Debrid أيضًا؟ القائمة تكون بعنوان **Send to Real-Debrid or TorBox** وفيها الزرّان معًا. أيقونة الملف في نهاية كل صف تحفظ ملف NZB بدلًا من ذلك. جديد على Usenet؟ ابدأ مع [Usenet للمبتدئين](../guides/usenet-for-beginners.md).
 
 يحذف TorBox تنزيل Usenet بعد 30 يومًا من تخزينه مؤقتًا. أرسله مرة أخرى لاستعادته.
 
@@ -83,7 +83,7 @@ DMM يعمل مع خطة TorBox مدفوعة: Essential أو Standard أو Pro. 
 | في Stremio: **⚠️ TorBox refused your account** | يقبل TorBox مفتاح الإضافة لكنه يرفض تقديم الخدمة للحساب، غالباً لأن الخطة انتهت. تحقّق منه في [torbox.app/settings](https://torbox.app/settings). لا تحتاج إلى تغيير أي شيء في DMM. |
 | zurg: `Acquisition: dmm-torbox refused the search: No TorBox key linked.` | يحتاج مصدر `tb/cached` في [صفحة Torznab الخاصة بـ DMM](https://debridmediamanager.com/torznab) إلى ربط مفتاح TorBox الخاص بك ضمن **Link a provider key** في تلك الصفحة. تسجيل الدخول إلى TorBox داخل DMM لا يكفي. ويبقى `api_key` في zurg هو مفتاح DMM API الخاص بك. |
 
-هل TorBox نفسه معطّل؟ تحقّق من [Is TorBox Down Or Just Me?](https://debridmediamanager.com/is-torbox-down-or-just-me). متعثر؟ اسأل في منتدى **dmm-support** على [Discord](https://discord.com/invite/7u4YjMThXP). يوضح [Getting help](../guides/remote-help.md) ما الذي يجب تضمينه.
+هل TorBox نفسه معطّل؟ تحقّق من [Is TorBox Down Or Just Me?](https://debridmediamanager.com/is-torbox-down-or-just-me). متعثر؟ اسأل في منتدى **dmm-support** على [Discord](https://discord.com/invite/7u4YjMThXP). يوضح [الحصول على المساعدة](../guides/remote-help.md) ما الذي يجب تضمينه.
 
 ## أسئلة {#questions}
 

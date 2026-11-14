@@ -173,7 +173,7 @@ zurg restore-backup my-backup.zurgbackup
 
 ## Plex
 
-这三个都要对接这台主机上的 Plex 服务器。先配置 Plex。参见 [Plex Integration](config.md#plex-integration)。
+这三个都要对接这台主机上的 Plex 服务器。先配置 Plex。参见 [Plex 集成](config.md#plex-integration)。
 
 ### zurg plex-settings
 

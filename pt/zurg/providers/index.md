@@ -14,7 +14,7 @@ que puder entregá-lo naquele momento.
 | Debrid-Link | `debridlink` | [Debrid-Link](debridlink.md) |
 | Offcloud | `offcloud` | [Offcloud](offcloud.md) |
 | Usenet | `nzb` | [Usenet](usenet.md) |
-| TorBox hosted Usenet | `torbox_nzb` | [TorBox hosted Usenet](torbox-nzb.md) |
+| TorBox hosted Usenet | `torbox_nzb` | [TorBox hospedado de Usenet](torbox-nzb.md) |
 
 Três páginas vão além da configuração inicial. [Limites do TorBox](torbox-limits.md) tem os números medidos por trás da limitação do TorBox. [Servidor de notícias do TorBox](torbox-news-server.md)
 e [Servidor de notícias do ElfHosted](elfhosted-news-server.md) registram o que são, de fato, as contas de Usenet incluídas nesses planos. Avalie uma delas por lá antes de gastar um slot de provedor com ela.
@@ -82,7 +82,7 @@ providers:
 mount_path: "/zurg_mnt/zurg"
 ```
 
-`mount_path` é `/zurg_mnt/zurg` em um container, e o arquivo do compose precisa montar `/zurg_mnt:/zurg_mnt:rshared` para que o mount chegue ao host. Essa é a página [Docker setup](../setup/docker.md) e é a única parte de uma instalação em container que não é igual à de um binário.
+`mount_path` é `/zurg_mnt/zurg` em um container, e o arquivo do compose precisa montar `/zurg_mnt:/zurg_mnt:rshared` para que o mount chegue ao host. Essa é a página [Configuração com Docker](../setup/docker.md) e é a única parte de uma instalação em container que não é igual à de um binário.
 
 ## Instalações não assistidas {#unattended-installs}
 

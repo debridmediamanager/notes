@@ -15,7 +15,7 @@ Vorteile hängen am Sponsoring. Endet es, stoppt DMM sie bei der nächsten Anfra
 | Der komplette zurg-Quellcode | Das private Repository auf GitHub |
 | Jedes Release, das nach rex und Plex benannt ist | `dmm_api_key` in der [zurg-Konfiguration](../zurg/reference/config.md) |
 | DMM-Mediendetails ohne vorheriges Lesen der Datei und Sprachprüfungen, bevor ein Release hinzugefügt wird | Nichts außer `dmm_api_key` |
-| Die `__magic__`-Ordner, wenn aktiviert, für dich sortiert | [\_\_magic\_\_](../zurg/guides/magic.md) |
+| Die `__magic__`-Ordner, wenn aktiviert, für dich sortiert | [\_\_Magie\_\_](../zurg/guides/magic.md) |
 | Deine DMM-Wunschliste, die von zurg abgerufen wird | [DMM-Wunschliste](../zurg/guides/dmm-wanted.md) |
 | DMMs Usenet- und Torrent-Indexer werden durchsucht, wenn du keine eigenen hast | `dmm_api_key` plus ein Usenet-Provider oder ein Debrid-Konto, das Torrents hinzufügen kann |
 | Releases werden nach der Originalsprache jedes Titels ausgewählt | `original` in [Audio- und Untertitelsprachen](../zurg/guides/acquisition.md#choosing-by-audio-and-subtitle-language) |
@@ -42,7 +42,7 @@ Die `dmm_api_key`-Funktionen brauchen einen zurg-Nightly-Build. Die kostenlose �
 
 ## rex
 
-rex ist kostenlos und braucht kein Sponsoring, auch auf Android: [rex for Android](../rex/android.md) betreibt rex und seine Addons auf einem Handy oder einer TV-Box. Sponsoren bekommen außerdem zurg+rex (in der Tabelle oben), das ihre Debrid- und Usenet-Bibliothek mit rex auf dem Gerät verbindet. Mit einem Schlüssel fügt [rex-stremio](../rex/stremio.md) Debrid-Streams von Torrents hinzu, für die DMM bereits eine Prüfung hat. So geht das in Sekunden statt jeden Torrent einzeln zu prüfen. Füge ihn in das Feld **DMM** von rex-stremio ein. Es teilt seine Prüfungen von Torrent-Dateien mit DMM, außer du schaltest das aus.
+rex ist kostenlos und braucht kein Sponsoring, auch auf Android: [rex für Android](../rex/android.md) betreibt rex und seine Addons auf einem Handy oder einer TV-Box. Sponsoren bekommen außerdem zurg+rex (in der Tabelle oben), das ihre Debrid- und Usenet-Bibliothek mit rex auf dem Gerät verbindet. Mit einem Schlüssel fügt [rex-stremio](../rex/stremio.md) Debrid-Streams von Torrents hinzu, für die DMM bereits eine Prüfung hat. So geht das in Sekunden statt jeden Torrent einzeln zu prüfen. Füge ihn in das Feld **DMM** von rex-stremio ein. Es teilt seine Prüfungen von Torrent-Dateien mit DMM, außer du schaltest das aus.
 
 ## Hilfe {#help}
 

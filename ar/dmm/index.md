@@ -63,7 +63,7 @@ DMM مشروع مفتوح المصدر، وليس جزءًا من Real-Debrid أ
 
 يخدم DMM أيضاً المشاريع الأخرى:
 
-- **zurg** يسأل DMM عن الفيلم أو الحلقة التي يمثلها كل ملف. يحصل الراعي على مفتاح DMM API من [gatekeeper](https://gatekeeper.debridmediamanager.com/). بدونه يعتمد zurg على أسماء الملفات، فتتطابق عناوين أقل. يشرح [rex with zurg](../rex/with-zurg.md#why-dmm-places-the-files) الفرق.
+- **zurg** يسأل DMM عن الفيلم أو الحلقة التي يمثلها كل ملف. يحصل الراعي على مفتاح DMM API من [gatekeeper](https://gatekeeper.debridmediamanager.com/). بدونه يعتمد zurg على أسماء الملفات، فتتطابق عناوين أقل. يشرح [rex مع zurg](../rex/with-zurg.md#why-dmm-places-the-files) الفرق.
 - **Sonarr Radarr and Prowlarr** يمكنها البحث في DMM كفهرس torrent من نوع Torznab أو فهرس Usenet من نوع Newznab. يتطلب الأمر رعاية نشطة ومفتاح DMM API. اضبطها من صفحتي [Torznab](https://debridmediamanager.com/torznab) و[Newznab](https://debridmediamanager.com/newznab).
 - **قائمة المطلوبات لديك**: اضغط **Want** أو تابع قائمة Trakt أو MDBList. يجلب zurg القائمة والحلقات الجديدة فور عرضها. تتطلب رعاية. راجع [قائمة DMM المطلوبة](../zurg/guides/dmm-wanted.md).
 - **Seerr Overseerr and Jellyseerr** يمكنها استخدام DMM بدلاً من Radarr وSonarr. عندها تصل الطلبات إلى قائمة المطلوبات لديك ليجلبها zurg. تتطلب رعاية. راجع [Seerr عبر DMM](seerr.md).
@@ -80,7 +80,7 @@ DMM مشروع مفتوح المصدر، وليس جزءًا من Real-Debrid أ
 | **Your TorBox account is on the free plan, which has no API access. DMM needs a paid TorBox plan.** | لا يمكن استخدام الخطة المجانية لـ TorBox مع DMM. قم بترقيتها، أو سجّل الدخول بخدمة أخرى. |
 | Only **DL with RD** buttons, no **Instant RD** | خدمتك لا تملك أيًا من هذه الإصدارات مخزنًا مؤقتًا. اضغط على أحدها وانتظر حتى ينتهي التنزيل، أو جرّب إصدارًا آخر. |
 
-هل تحتاج إلى مساعدة؟ اسأل في منتدى **dmm-support** على [Discord](https://discord.com/invite/7u4YjMThXP). يشرح [Getting help](../guides/remote-help.md) ما الذي يجب تضمينه.
+هل تحتاج إلى مساعدة؟ اسأل في منتدى **dmm-support** على [Discord](https://discord.com/invite/7u4YjMThXP). يشرح [الحصول على المساعدة](../guides/remote-help.md) ما الذي يجب تضمينه.
 
 ## أسئلة {#questions}
 

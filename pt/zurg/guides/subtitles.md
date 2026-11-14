@@ -8,7 +8,7 @@ Tudo abaixo foi testado em 2026-10-23 com o Radarr `6.3.0.10514`, a imagem atual
 
 ## Antes de começar {#before-you-start}
 
-Radarr (ou Sonarr) já importa pelo zurg, com a pasta raiz dentro de `__magic__`, por exemplo `/mnt/zurg/__magic__/movies` (`/Volumes/Zurg/__magic__/movies` no macOS, `Z:\__magic__\movies` no Windows). Se ainda não estiver assim, siga primeiro [Sonarr & Radarr for torrents](sonarr-radarr-torrents.md) ou [for Usenet](sonarr-radarr.md).
+Radarr (ou Sonarr) já importa pelo zurg, com a pasta raiz dentro de `__magic__`, por exemplo `/mnt/zurg/__magic__/movies` (`/Volumes/Zurg/__magic__/movies` no macOS, `Z:\__magic__\movies` no Windows). Se ainda não estiver assim, siga primeiro [Sonarr e Radarr para torrents](sonarr-radarr-torrents.md) ou [for Usenet](sonarr-radarr.md).
 
 ## 1. Execute o Bazarr {#1-run-bazarr}
 

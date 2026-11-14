@@ -32,7 +32,7 @@
 - [عمليات البحث في zurg لـ Sonarr و Radarr](../zurg/guides/sonarr-radarr-fetch.md)
 - [الترجمات مع Bazarr](../zurg/guides/subtitles.md)
 - [Whisparr](../zurg/guides/whisparr.md)
-- [\_\_magic\_\_](../zurg/guides/magic.md)
+- [\_\_السحر\_\_](../zurg/guides/magic.md)
 - [إعادة التسمية](../zurg/guides/renaming.md)
 - [Plex](../zurg/guides/plex.md)
 - [ملف Docker Compose واحد](../zurg/guides/docker-compose.md): zurg وPlex Media Server وrex على جهاز Linux واحد

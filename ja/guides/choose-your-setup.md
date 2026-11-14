@@ -132,7 +132,7 @@ flowchart TD
     R --> P[Your chosen RD playback route]
 ```
 
-**TorBox hosted NZBs を選ぶ**と、ダウンロードと修復はTorBoxが行います。DMMはNZBをTorBoxに送ります。現在のzurgのnightlyでは、プロバイダータイプ`torbox_nzb`を使い、watch directoryとSABnzbdインターフェースから取得したNZBを受け付けます。[TorBox hosted Usenet](../zurg/providers/torbox-nzb.md)にzurgの設定方法があります。キャッシュにない場合は、再生の前にダウンロードが完了している必要があります。ダウンロードはtorrentとスロットを共有します。保存されたファイルは期限切れになることがあり、zurgは期限切れのリリースを再取得することを保証しません。別の取得に備えて、NZBは保存しておいてください。
+**TorBox hosted NZBs を選ぶ**と、ダウンロードと修復はTorBoxが行います。DMMはNZBをTorBoxに送ります。現在のzurgのnightlyでは、プロバイダータイプ`torbox_nzb`を使い、watch directoryとSABnzbdインターフェースから取得したNZBを受け付けます。[TorBox でホストされている Usenet](../zurg/providers/torbox-nzb.md)にzurgの設定方法があります。キャッシュにない場合は、再生の前にダウンロードが完了している必要があります。ダウンロードはtorrentとスロットを共有します。保存されたファイルは期限切れになることがあり、zurgは期限切れのリリースを再取得することを保証しません。別の取得に備えて、NZBは保存しておいてください。
 
 **直接のUsenetを選ぶ**と、自分のニュースアカウント（フォールバックやブロックのアカウントを含む）を通してzurgに読み込ませられます。これは、NNTPの認証情報とともに`nzb`を使います。TorBoxのニュースサーバーのログインもここに含まれます。TorBox hosted NZBsとは別物です。[TorBox NNTP](../zurg/providers/torbox-news-server.md)と[その料金プラン](https://torbox.app/pricing)を参照してください。
 
@@ -156,7 +156,7 @@ DMMのTorBoxの**Add**ダイアログは、直接のHTTP(S)リンクをウェブ
 |---|---|---|
 | 正確なリリースを選ぶ | DMM search/library → provider; または NZB → 選択した NZB バックエンド | エディション、サイズ、リリースを自分で管理できる |
 | Want を押す、または Trakt/MDBList のリストをフォローする | [DMM Wanted](../zurg/guides/dmm-wanted.md) → zurg acquisition | Sonarr/Radarr を動かさずに映画と新しいエピソードを自動取得できる。スポンサーシップが必要 |
-| Seerr/Overseerr/Jellyseerr で家族からリクエストを受ける | [Seerr through DMM](../dmm/seerr.md) → Wanted → zurg | arr サーバーなしで、使い慣れたリクエスト UI を使える。スポンサーシップが必要。Seerr の接続先として Plex、Jellyfin、Emby サーバーのセットアップが必要 |
+| Seerr/Overseerr/Jellyseerr で家族からリクエストを受ける | [Seerr を DMM 経由で使う](../dmm/seerr.md) → Wanted → zurg | arr サーバーなしで、使い慣れたリクエスト UI を使える。スポンサーシップが必要。Seerr の接続先として Plex、Jellyfin、Emby サーバーのセットアップが必要 |
 | 既に Plex のウォッチリストやリクエストの仕組みがある | [zurg acquisition](../zurg/guides/acquisition.md) | 既存のリクエスト元を維持できる。検索先とプロバイダーの設定を行う |
 | Sonarr/Radarr で詳細な監視と品質プロファイルを使いたい | DMM またはインデクサー → arr → zurg のダウンロードクライアントインターフェース → ライブラリ | arr の判断とインポートの流れを維持できる。サービスとパスの設定が増える |
 | 再生ボタンを押したときだけ選びたい | DMM Cast/Kodi、別のストリームアドオン、または zurg の Stremio 検索 | すべての作品を事前に管理ライブラリとして用意する必要がない |
@@ -175,7 +175,7 @@ DMMのTorBoxの**Add**ダイアログは、直接のHTTP(S)リンクをウェブ
 | 通信量の料金は誰が負担しますか？ | プロバイダーの通信量制限は引き続き適用されます。サーバー経由のプロキシでは再生の通信がサーバーを通り、その送信帯域を使います。直接再生の場合は、接続が視聴者側に移ります。ライブラリの解析でもリモートのファイルを読むことがあります。 |
 | 外出先でも使えますか？ | ホスト型のアドオンなら、自分のサーバーを公開せずに済みます。自前でホストするサービスには、安全にアクセスできるアドレスが必要です。LAN のアドレスだけでは、外部から接続できません。[rex のリモートアクセス](../rex/any-source.md#use-it-outside-your-home-optional)と[Stremio の HTTPS ガイド](../zurg/guides/stremio.md#installing-it-on-another-device)を参照してください。 |
 | 家族が同時に使えますか？ | プロバイダーの IP や同時接続のルール、サーバーの共有の仕組みを確認してください。Real-Debrid の利用は、1 つのパブリック IP に固定しておく必要があります。中央のライブラリが提供したものでも、別の世帯への直接リンクはこの条件に違反することがあります。ダウンロード元を理解しないままリダイレクトを有効にしないでください。 |
-| 何に料金を払うのですか？ | プロバイダーの契約、インデクサーへのアクセス、DMM のスポンサー、ホスティング、プレーヤーやサーバーの購入は、それぞれ別に考えてください。DMM の基本的な Web サイトと個人利用の rex は無料です。[rex for Android](../rex/android.md) も無料です。zurg+rex は、Android 上の rex に debrid と Usenet のライブラリを接続するもので、スポンサー向けです。最新の zurg nightly と DMM のプラグイン配布はスポンサー特典です。Wanted や DMM のインデクサー API も、スポンサーシップが必要です。rex-stremio はスポンサーシップが不要です。[スポンサー特典の内容](sponsorship.md)で、すべての特典と設定方法を確認できます。 |
+| 何に料金を払うのですか？ | プロバイダーの契約、インデクサーへのアクセス、DMM のスポンサー、ホスティング、プレーヤーやサーバーの購入は、それぞれ別に考えてください。DMM の基本的な Web サイトと個人利用の rex は無料です。[Android 版 rex](../rex/android.md) も無料です。zurg+rex は、Android 上の rex に debrid と Usenet のライブラリを接続するもので、スポンサー向けです。最新の zurg nightly と DMM のプラグイン配布はスポンサー特典です。Wanted や DMM のインデクサー API も、スポンサーシップが必要です。rex-stremio はスポンサーシップが不要です。[スポンサー特典の内容](sponsorship.md)で、すべての特典と設定方法を確認できます。 |
 | カタログに載っていれば、再生できる保証はありますか？ | いいえ。アドオンのカタログはタイトルを表示しているだけです。クラウド上のファイルは期限切れになることがあり、torrent はソースが見つからないことがあり、Usenet の記事は欠けていることがあります。失敗時の挙動や待ち時間に納得できるルートを選んでください。 |
 
 互換性のあるサーバークライアントとして、サードパーティ製のアプリを使うこともできます。[Infuse は Plex、Emby、Jellyfin に接続できます](https://support.firecore.com/hc/en-us/articles/360006462093-Streaming-from-Plex-Emby-and-Jellyfin)。その場合、別途 zurg のマウントは不要かもしれません。プラグインとクライアントは必ず一緒に確認してください。
@@ -213,4 +213,4 @@ Infuse は [WebDAV などのネットワーク共有](https://support.firecore.c
 4. **「Plex のアプリを使いたく、マウントは不要で、既存のアドオンもそのまま使いたいです。」** rex と一緒に rex-stremio を使います。公開したいものが管理中のデブリッド/Usenet ライブラリの場合は、代わりに zurg をソースとして使います。どちらのソースも同じ rex に供給できます。
 5. **「ニュースサーバーのアカウントがあり、Sonarr/Radarr を使いたいです。」** DMM Newznab か既存のインデクサー、zurg の NZB/SABnzbd ルート、そして最初の表にある再生ルートを使います。ローカルに永続的なファイルを残したい場合は、通常のダウンローダーを選ぶか、完全なコピーを明示的に保存してください。仮想インポートだけではオフラインのファイルにはなりません。
 
-まだ迷っている場合は、**お使いのデバイスやプレーヤー、既存のアカウント、ホストを常時起動しておけるかどうか、そしてオンデマンド再生と自動ライブラリのどちらを望むか**を教えてください。たいていこの答えでルートが決まります。質問先については [Getting help](remote-help.md) を参照してください。
+まだ迷っている場合は、**お使いのデバイスやプレーヤー、既存のアカウント、ホストを常時起動しておけるかどうか、そしてオンデマンド再生と自動ライブラリのどちらを望むか**を教えてください。たいていこの答えでルートが決まります。質問先については [ヘルプの入手方法](remote-help.md) を参照してください。

@@ -193,7 +193,7 @@ Mematikannya akan memindahkan mereka kembali dengan cara yang sama.
 
 ### Dengan daftar keinginan DMM {#with-the-dmm-wanted-list}
 
-Tekan **Want** di DMM dan zurg akan mengambil judulnya ([DMM wanted list](dmm-wanted.md)). Hasil ambilannya langsung disimpan di sini seperti biasa, jadi film atau serial akan muncul di Kodi dan Plex dengan namanya sendiri, tanpa melibatkan Sonarr atau Radarr. Torrent yang sudah diambil bisa butuh waktu hingga satu jam untuk disimpan; NZB disimpan begitu DMM mengenalinya.
+Tekan **Want** di DMM dan zurg akan mengambil judulnya ([Daftar keinginan DMM](dmm-wanted.md)). Hasil ambilannya langsung disimpan di sini seperti biasa, jadi film atau serial akan muncul di Kodi dan Plex dengan namanya sendiri, tanpa melibatkan Sonarr atau Radarr. Torrent yang sudah diambil bisa butuh waktu hingga satu jam untuk disimpan; NZB disimpan begitu DMM mengenalinya.
 
 ### Dengan Sonarr dan Radarr {#with-sonarr-and-radarr}
 
@@ -269,7 +269,7 @@ Untuk media server, arahkan ke **salah satu** dari keduanya. Library Plex yang m
 
 \*arr menulis metadata di sebelah video, dan Bazarr menulis subtitle. Itu file sungguhan dan zurg tidak punya tempat untuk menyimpannya di library debrid, jadi file-file itu disimpan di disk lokal di `data/local/__magic__/`.
 
-Cara mengatur Bazarr, dan bagaimana subtitle-nya sampai ke rex, ada di [Subtitles with Bazarr](subtitles.md).
+Cara mengatur Bazarr, dan bagaimana subtitle-nya sampai ke rex, ada di [Subtitle dengan Bazarr](subtitles.md).
 
 Kalau kamu pakai mount bawaan zurg, ini sudah berjalan dan kamu tidak perlu melakukan apa-apa: mount adalah gabungan dari `data/local` dan WebDAV zurg, dan rclone mengirim setiap file baru ke bagian lokal. zurg bahkan tidak pernah melihat penulisan itu. Inilah juga alasan tes "is this folder writable?" milik Sonarr lolos.
 

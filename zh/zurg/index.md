@@ -23,7 +23,7 @@ zurg 把你的 debrid 账号和 Usenet 库合并到一个虚拟文件夹里。�
 ## 服务商 {#providers}
 
 让 zurg 指向一个账户。每个页面都会介绍凭据和 `config.yml` 条目。
-示例使用 Docker。二进制安装使用相同的配置条目。命令请参阅 [Setup](setup/index.md)。
+示例使用 Docker。二进制安装使用相同的配置条目。命令请参阅 [设置](setup/index.md)。
 
 | 页面 | 它的不同之处 |
 |---|---|
@@ -34,8 +34,8 @@ zurg 把你的 debrid 账号和 Usenet 库合并到一个虚拟文件夹里。�
 | [Debrid-Link](providers/debridlink.md) | 种子盒列表包含所有文件，并且没有缓存检查 |
 | [Offcloud](providers/offcloud.md) | 文件大小对照交付服务器检查，文件夹路径来自缓存的元数据 |
 | [Usenet](providers/usenet.md) | 将 `nzb` 类型作为提供商条目。没有令牌，改用监视目录 |
-| [TorBox limits](providers/torbox-limits.md) | TorBox 限速背后的实测数据，以及 zurg 如何据此控制请求节奏 |
-| [TorBox news server](providers/torbox-news-server.md) · [ElfHosted news server](providers/elfhosted-news-server.md) | 内置 Usenet 账户在网络上的实际表现 |
+| [TorBox 限制](providers/torbox-limits.md) | TorBox 限速背后的实测数据，以及 zurg 如何据此控制请求节奏 |
+| [TorBox 新闻服务器](providers/torbox-news-server.md) · [ElfHosted 新闻服务器](providers/elfhosted-news-server.md) | 内置 Usenet 账户在网络上的实际表现 |
 
 [通用页面](providers/index.md)介绍了在 Docker 中添加账户的三种方式，以及配置加载器强制执行的规则。
 
@@ -71,12 +71,12 @@ Move an existing library onto zurg without a re-download or a re-scan.
 
 ## 参考 {#reference}
 
-- [Configuration](reference/config.md) — every option in `config.yml`
+- [配置](reference/config.md) — every option in `config.yml`
 - [命令行](reference/cli.md) 列出了 binary 接受的每个命令和参数
 - [对外身份](reference/outbound-identity.md) 说明 zurg 在调用的服务面前如何介绍自己
 - [MCP 服务器](reference/mcp.md) 让 AI 智能体通过 Model Context Protocol 操作 zurg
-- [Tags](reference/tags.md) — 会给种子加上哪些标签，以及为什么
-- [Changelog](reference/changelog.md) — 每次改了什么
+- [标签](reference/tags.md) — 会给种子加上哪些标签，以及为什么
+- [更新日志](reference/changelog.md) — 每次改了什么
 
 ## 内部机制 {#internals}
 

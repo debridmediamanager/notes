@@ -63,13 +63,13 @@ Easynews しか持っていない場合は **Login with Easynews** を押して�
 
 DMM は他のプロジェクトにも機能を提供しています:
 
-- **zurg** は、各ファイルがどの映画やエピソードかを DMM に問い合わせます。スポンサーは [gatekeeper](https://gatekeeper.debridmediamanager.com/) から DMM API キーを取得できます。キーがないと zurg はファイル名だけに頼るため、一致するタイトルが減ります。違いについては [rex with zurg](../rex/with-zurg.md#why-dmm-places-the-files) を参照してください。
+- **zurg** は、各ファイルがどの映画やエピソードかを DMM に問い合わせます。スポンサーは [gatekeeper](https://gatekeeper.debridmediamanager.com/) から DMM API キーを取得できます。キーがないと zurg はファイル名だけに頼るため、一致するタイトルが減ります。違いについては [rex と zurg の併用](../rex/with-zurg.md#why-dmm-places-the-files) を参照してください。
 - **Sonarr Radarr and Prowlarr** は、DMM を Torznab の torrent インデクサー、または Newznab の Usenet インデクサーとして検索できます。どちらも有効なスポンサーシップと DMM API キーが必要です。設定は [Torznab](https://debridmediamanager.com/torznab) と [Newznab](https://debridmediamanager.com/newznab) のページで行えます。
-- **ウォントリスト**: **Want** を押すか、Trakt または MDBList のリストをフォローします。zurg がそのリストと、放送開始された新しいエピソードを取得します。スポンサーシップが必要です。詳しくは [DMM wanted list](../zurg/guides/dmm-wanted.md) を参照してください。
-- **Seerr Overseerr and Jellyseerr** は、DMM を Radarr や Sonarr の代わりに使えます。リクエストはウォントリストに入り、zurg が取得します。スポンサーシップが必要です。詳しくは [Seerr through DMM](seerr.md) を参照してください。
+- **ウォントリスト**: **Want** を押すか、Trakt または MDBList のリストをフォローします。zurg がそのリストと、放送開始された新しいエピソードを取得します。スポンサーシップが必要です。詳しくは [DMM のウォントリスト](../zurg/guides/dmm-wanted.md) を参照してください。
+- **Seerr Overseerr and Jellyseerr** は、DMM を Radarr や Sonarr の代わりに使えます。リクエストはウォントリストに入り、zurg が取得します。スポンサーシップが必要です。詳しくは [Seerr を DMM 経由で使う](seerr.md) を参照してください。
 - **rex-direct** は、認証済みの rex に専用のアドレスと証明書を与えます。詳しくは [rex-direct](../rex/any-source.md#rex-direct) を参照してください。
 
-スポンサーシップで利用できる機能の一覧と、それぞれの設定場所は [What a sponsorship gives you](../guides/sponsorship.md) にあります。
+スポンサーシップで利用できる機能の一覧と、それぞれの設定場所は [スポンサーシップで得られるもの](../guides/sponsorship.md) にあります。
 
 ## 問題が起きたとき {#when-something-is-wrong}
 
@@ -80,7 +80,7 @@ DMM は他のプロジェクトにも機能を提供しています:
 | **Your TorBox account is on the free plan, which has no API access. DMM needs a paid TorBox plan.** | TorBox の無料プランでは DMM を使えません。有料プランにアップグレードするか、別のサービスでサインインしてください。 |
 | Only **DL with RD** buttons, no **Instant RD** | お使いのサービスにはこれらのリリースがキャッシュされていません。**DL with RD** を押してダウンロードが終わるのを待つか、別のリリースを試してください。 |
 
-困ったときは、[Discord](https://discord.com/invite/7u4YjMThXP) の **dmm-support** フォーラムで質問してください。何を伝えればよいかは [Getting help](../guides/remote-help.md) に書かれています。
+困ったときは、[Discord](https://discord.com/invite/7u4YjMThXP) の **dmm-support** フォーラムで質問してください。何を伝えればよいかは [ヘルプの入手方法](../guides/remote-help.md) に書かれています。
 
 ## よくある質問 {#questions}
 

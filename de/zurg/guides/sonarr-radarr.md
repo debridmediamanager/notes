@@ -320,7 +320,7 @@ Dann **Settings → Media Management → Root Folders → Add Root Folder** und 
 
 ## 8. Wenn dein \*arr in Docker läuft {#8-if-your-arr-is-in-docker}
 
-Dieser Schritt gilt für Docker auf einem Linux-Host. Docker Desktop unter macOS und Windows führt Container in einer virtuellen Maschine aus. Der `rslave`-Bind unten setzt Linux-Mount-Propagation voraus (siehe [Docker-Einrichtung](../setup/docker.md)). Ob zurgs Mount auf diesen Systemen an einen Container übergeben werden kann, wurde nicht getestet. Installiere Sonarr und Radarr unter macOS und Windows stattdessen als normale Apps, wie unter [Before you start](#before-you-start) beschrieben.
+Dieser Schritt gilt für Docker auf einem Linux-Host. Docker Desktop unter macOS und Windows führt Container in einer virtuellen Maschine aus. Der `rslave`-Bind unten setzt Linux-Mount-Propagation voraus (siehe [Docker-Einrichtung](../setup/docker.md)). Ob zurgs Mount auf diesen Systemen an einen Container übergeben werden kann, wurde nicht getestet. Installiere Sonarr und Radarr unter macOS und Windows stattdessen als normale Apps, wie unter [Bevor du anfängst](#before-you-start) beschrieben.
 
 Drei getrennte Probleme. Das zweite kostet bei jedem Import einen Download. Das dritte macht sich erst bemerkbar, wenn zurg zum ersten Mal neu startet.
 

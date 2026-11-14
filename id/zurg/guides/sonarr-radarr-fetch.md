@@ -33,7 +33,7 @@ Screenshot-nya diambil dari build zurg yang dirilis sebagai nightly 26 September
 
 ## Sebelum kamu mulai {#before-you-start}
 
-1. **zurg punya akun Usenet atau debrid dan minimal satu indexer Newznab atau Torznab.** Indexer-nya dimasukkan ke config zurg di bawah `acquisition.indexers`. Halaman [Watchlist and Seerr](acquisition.md) menjelaskan blok tersebut.
+1. **zurg punya akun Usenet atau debrid dan minimal satu indexer Newznab atau Torznab.** Indexer-nya dimasukkan ke config zurg di bawah `acquisition.indexers`. Halaman [Watchlist dan Seerr](acquisition.md) menjelaskan blok tersebut.
 2. **`magic.enabled` harus `true`.** Sumber Radarr dan Sonarr tidak akan jalan tanpa ini dan log akan memberi tahu kamu. Lihat [`__magic__`](magic.md).
 3. **Radarr dan Sonarr bisa melihat mount zurg.** Kalau dipasang sebagai aplikasi biasa, tiap sistem punya satu hal yang perlu diperhatikan, yang dijelaskan di [panduan Usenet](sonarr-radarr.md#before-you-start). Di Docker pada host Linux, artinya kamu perlu mem-bind mount ke dalam container mereka. Bind parent dari mount sekali saja, lalu akses semuanya lewat situ. Kalau mereka juga menerima grab dari zurg sebagai download client, maka dua volume untuk folder download dan root folder akan membuat setiap impor tersalin. Lihat [satu volume](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
 4. **Kamu menjalankan nightly dari 26 September 2026 atau lebih baru.** Build yang lebih lama tidak mengenal sumber `radarr` atau `sonarr`.

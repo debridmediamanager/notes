@@ -18,7 +18,7 @@ Fahre nur fort, wenn du diese Risiken in Kauf nehmen kannst. Mit dem Standard-Pr
 | Du brauchst | Warum |
 |---|---|
 | rex eingerichtet wie in [rex mit deiner eigenen App](any-source.md), [rex mit deinen Stremio-Addons](stremio.md) oder [rex mit zurg](with-zurg.md), und einen Film, der abspielt | Diese Seite ändert den Startbefehl von rex und bei manchen Quellen eine Einstellung der Quelle |
-| rex-Nightly **2026.10.26 oder neuer** | Ältere Builds haben diese Einstellung nicht. Aktualisiere wie im Abschnitt [Updating](any-source.md#updating) von rex |
+| rex-Nightly **2026.10.26 oder neuer** | Ältere Builds haben diese Einstellung nicht. Aktualisiere wie im Abschnitt [Aktualisieren](any-source.md#updating) von rex |
 | Eine Quelle, die mit einem Link antworten kann | rex kann nur einen Link weitergeben, den die Quelle ihm gibt. [Schritt 1](#step-1-let-your-source-hand-out-links) sagt, welche Quellen das können |
 
 ## Wähle, wie streng {#choose-how-strict}
@@ -143,7 +143,7 @@ Hast du schon `command: --port 32500`? Dann ändere sie zu `command: --port 3250
 
 | Was du siehst | Was es bedeutet |
 |---|---|
-| rex beendet sich mit `invalid choice` bei `--part-mode` | rex ist älter als 2026.10.26. Aktualisiere es, wie im Abschnitt [Updating](any-source.md#updating) von rex beschrieben |
+| rex beendet sich mit `invalid choice` bei `--part-mode` | rex ist älter als 2026.10.26. Aktualisiere es, wie im Abschnitt [Aktualisieren](any-source.md#updating) von rex beschrieben |
 | Das Log von rex zeigt `-> 206 len=...` bei jedem Lesevorgang | Die Quelle schickt die Datei noch selbst. Bei zurg: `disable_stream_proxy: true` fehlt in der zurg-Konfiguration, oder zurg wurde nach Schritt 1 nicht neu gestartet |
 | `-> 206 len=...` nur bei manchen Titeln | Diese schickt die Quelle selbst: zurgs Usenet-Dateien oder rex-stremio-Links, die rex weiterleiten muss |
 | `-> 403: the source answered with the bytes, not a link` | `redirect-only` lehnt eine Datei ab, die die Quelle selbst geschickt hat, aus denselben Gründen wie oben |

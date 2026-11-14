@@ -100,7 +100,7 @@ docker compose ps
 
 ## 3. 在 Plex 中添加 zurg 的文件夹 {#3-add-zurgs-folders-in-plex}
 
-在 Plex Web 中打开 `http://<this machine's LAN IP>:32400/web`。添加一个 **Movies** 资料库,文件夹为 `/zurg_mnt/zurg/movies`,再添加一个 **TV Shows** 资料库,文件夹为 `/zurg_mnt/zurg/shows`,具体做法参见 [Real-Debrid in Plex](../../guides/real-debrid-plex.md#3-add-the-folders-in-plex)。
+在 Plex Web 中打开 `http://<this machine's LAN IP>:32400/web`。添加一个 **Movies** 资料库,文件夹为 `/zurg_mnt/zurg/movies`,再添加一个 **TV Shows** 资料库,文件夹为 `/zurg_mnt/zurg/shows`,具体做法参见 [Plex 中使用 Real-Debrid](../../guides/real-debrid-plex.md#3-add-the-folders-in-plex)。
 
 为了让 Plex 及时知道有新内容,请打开 zurg 的仪表盘 `http://<this machine's LAN IP>:9999/config/`,在 **Media Server Integration** 下点击 **Login with Plex**(参见其中的[第 4 步](../../guides/real-debrid-plex.md#4-let-zurg-tell-plex-about-new-things))。
 
@@ -130,14 +130,14 @@ docker compose up -d
 | Docker 拉取 zurg 时出现 `Error response from daemon: error from registry: unauthorized` | 这台机器没有用一个有 zurg 访问权限的账号登录 GitHub 的镜像仓库。请先在 [gatekeeper](https://gatekeeper.debridmediamanager.com/) 上赞助，然后重新运行安装程序。如果要手动登录，请参阅 [zurg 的 Docker 设置](../setup/docker.md#1-install-docker-and-unlock-the-image)：令牌需要同时具备 `read:packages` 和 `repo` 权限。 |
 | `path /zurg_mnt is mounted on ... but it is not a shared mount` | `/zurg_mnt` 还没有设置为共享挂载。运行 `sudo mount --bind /zurg_mnt /zurg_mnt` 和 `sudo mount --make-rshared /zurg_mnt`，然后执行 `docker compose up -d`。安装程序会让这个设置在重启后依然生效；如果手动操作，请参阅 [zurg 的 Docker 设置第 7 步](../setup/docker.md#7-make-the-shared-parent-survive-reboots)。 |
 | `zurg` 不断重启，日志结尾是 `Error: config ./config.yml is not valid YAML: yaml: unmarshal errors:` 和 `mapping key "..." already defined` | zurg 的配置里有同一个设置写了两次。运行 `sudo nano ~/zurg/config.yml`，删除报错中指出的两行之一，保存后运行 `docker compose restart zurg`。 |
-| zurg 的日志显示 `Mount verification failed: mount verification timeout: /zurg_mnt/zurg/version.txt not accessible after 60 attempts -- you appear to be running inside Docker, mount a parent directory with rshared propagation` | zurg 的文件夹没有挂载成功。请检查 zurg 的 volume 配置行是否为 `/zurg_mnt:/zurg_mnt:rshared`（挂载的是父目录，而不是 `/zurg_mnt/zurg`），并确认 `/zurg_mnt` 已设为共享（见上一行）。[Mount is empty](../setup/docker.md#mount-is-empty) 里有更多检查项。 |
+| zurg 的日志显示 `Mount verification failed: mount verification timeout: /zurg_mnt/zurg/version.txt not accessible after 60 attempts -- you appear to be running inside Docker, mount a parent directory with rshared propagation` | zurg 的文件夹没有挂载成功。请检查 zurg 的 volume 配置行是否为 `/zurg_mnt:/zurg_mnt:rshared`（挂载的是父目录，而不是 `/zurg_mnt/zurg`），并确认 `/zurg_mnt` 已设为共享（见上一行）。[挂载点为空](../setup/docker.md#mount-is-empty) 里有更多检查项。 |
 | zurg 重启后 Plex 的媒体库变空，并且 `docker exec plex ls /zurg_mnt/zurg` 显示 `cannot access '/zurg_mnt/zurg': Transport endpoint is not connected` | Plex 的 volume 配置行缺少 `rslave`。它必须是 `/zurg_mnt:/zurg_mnt:rslave`。改好后运行 `docker compose up -d`。 |
 | rex 启动时报错 `rex: cannot bind 0.0.0.0:32400: Address already in use (os error 98) (another rex or Plex on this port? --port picks another)` | Plex Media Server 已经占用了 32400 端口。请在 rex 上保留 `command: --port 32500`。 |
 | 刚启动后 `/zurg_mnt/zurg/movies` 为空，或者显示 `Input/output error` | zurg 还在读取你的账号内容。运行 `curl http://localhost:9999/ready`，完成后会输出 `ready`。在此期间不要重启 zurg，否则会从头开始读取。 |
 | 标题在 rex 里能看到，但无法播放 | [rex with zurg 的 When something is wrong](../../rex/with-zurg.md#when-something-is-wrong) 中的 `upstream failed` 那一行会检查 rex 能否连到 zurg。 |
-| 磁盘被占满 | zurg 会把播放过的内容副本保存在 `~/zurg/data/rclone-cache` 中，默认最多 256G。[What lives where](../setup/docker.md#what-lives-where) 说明了如何限制大小。 |
+| 磁盘被占满 | zurg 会把播放过的内容副本保存在 `~/zurg/data/rclone-cache` 中，默认最多 256G。[各类文件存放位置](../setup/docker.md#what-lives-where) 说明了如何限制大小。 |
 
-还是解决不了？请到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **zurg-support** 论坛提问。[Getting help](../../guides/remote-help.md) 说明了需要提供哪些信息。
+还是解决不了？请到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **zurg-support** 论坛提问。[获取帮助](../../guides/remote-help.md) 说明了需要提供哪些信息。
 
 ## 常见问题 {#questions}
 

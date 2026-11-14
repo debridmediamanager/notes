@@ -10,7 +10,7 @@ Anda menjalankan Plex Media Server dan ingin mencoba rex. Aplikasi Plex Anda tet
 | Apa isi setiap file | Plex mencocokkannya dari nama file | Source yang mencari tahu lalu memberi tahu rex. rex tidak pernah membaca nama file |
 | Kecocokan yang salah | Fix Match di server | **Fix Match** di aplikasi Plex, login sebagai akun pemilik rex. rex menyimpan pilihan kamu, dan source bisa mengambilnya kembali lalu menyimpannya, seperti yang dilakukan zurg ([kenapa judul ditempatkan seperti itu](with-zurg.md#why-dmm-places-the-files)) |
 | Akun tempat server berada | Biasanya akun kamu sendiri | Akun Plex baru yang dibuat khusus untuk rex, dibagikan dengan akun kamu sendiri |
-| Musik, Live TV, dan foto | Dari folder dan tuner | Hanya dari source yang mengirimkannya, seperti addon ([Building rex addons](addons.md#music)) atau comic books milik zurg. Plex Web menampilkan foto; Plex untuk Android tidak |
+| Musik, Live TV, dan foto | Dari folder dan tuner | Hanya dari source yang mengirimkannya, seperti addon ([Membangun addon rex](addons.md#music)) atau comic books milik zurg. Plex Web menampilkan foto; Plex untuk Android tidak |
 | Merekam TV | Ya | Tidak |
 
 ## Pilih cara {#pick-a-way}

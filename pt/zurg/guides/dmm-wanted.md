@@ -25,7 +25,7 @@ Isso é para patrocinadores: o zurg lê a sua lista usando a sua chave de API do
 2. Abra um filme e clique em **Want**. Na página de uma temporada de uma série, **Want S2** adiciona essa temporada e **Want all seasons** adiciona a série inteira, incluindo as novas temporadas.
 3. Sua lista fica em [debridmediamanager.com/wanted](https://debridmediamanager.com/wanted). Ela mostra quando seu zurg leu a lista pela última vez e quando buscou cada filme. Listas longas são exibidas com 120 títulos por página.
 
-Pedidos feitos no Seerr, Overseerr ou Jellyseerr também podem cair nessa mesma lista: veja [Seerr through DMM](../../dmm/seerr.md).
+Pedidos feitos no Seerr, Overseerr ou Jellyseerr também podem cair nessa mesma lista: veja [Seerr através do DMM](../../dmm/seerr.md).
 
 ## Seguindo uma lista {#following-a-list}
 
@@ -121,4 +121,4 @@ acquisition:
 
 Se sua assinatura expirar ou você redefinir sua chave, o zurg registra que o DMM recusou a chave e pede de novo a cada hora. O que ele já baixou continua na sua biblioteca.
 
-Mais detalhes: [DMM wanted list](acquisition.md#dmm-wanted-list) na referência de aquisição.
+Mais detalhes: [Lista de desejos do DMM](acquisition.md#dmm-wanted-list) na referência de aquisição.

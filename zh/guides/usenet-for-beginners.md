@@ -36,7 +36,7 @@ Usenet 上的一个版本会被发布成成千上万个小分片。NZB 把这些
 2. 一两秒内 zurg 就会读取它，并把这个版本列入库中，名字与 NZB 相同。
 3. 你在 Plex、Jellyfin 或 rex 里点击播放。zurg 会从你的提供商那里抓取该位置对应的分段，再交给播放器。拖动到后面的位置时，它会从那里开始抓取。
 
-无需等待下载完成。想一步步设置，请参考 [Usenet with zurg](../zurg/guides/usenet.md)。提供商设置和 Docker 相关细节见 [Usenet provider](../zurg/providers/usenet.md)。
+无需等待下载完成。想一步步设置，请参考 [使用 zurg 访问 Usenet](../zurg/guides/usenet.md)。提供商设置和 Docker 相关细节见 [Usenet provider](../zurg/providers/usenet.md)。
 
 ## DMM 在其中的位置 {#where-dmm-fits}
 
@@ -70,7 +70,7 @@ Usenet 上的一个版本会被发布成成千上万个小分片。NZB 把这些
 | 播放卡顿，或者某段播放时没有声音 | 资源的部分数据已从你的服务商处消失。如果发布内容中包含 PAR2 文件，zurg 会用它重建缺失的数据。使用第二个服务商可以解决大部分此类问题。 |
 | DMM：**No Usenet results found.** | DMM 的索引器里没有该影片的结果。可以试试 **Torrents** 标签页，或者你自己的索引器。 |
 
-完整的故障排除表在 [Usenet with zurg](../zurg/guides/usenet.md#troubleshooting)。还是搞不定？请到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **zurg-support** 论坛提问。[Getting help](remote-help.md) 说明了提问时应该包含哪些信息。
+完整的故障排除表在 [使用 zurg 访问 Usenet](../zurg/guides/usenet.md#troubleshooting)。还是搞不定？请到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **zurg-support** 论坛提问。[获取帮助](remote-help.md) 说明了提问时应该包含哪些信息。
 
 ## 常见问题 {#questions}
 

@@ -34,8 +34,8 @@ Verbinde zurg mit einem Account. Jede Seite behandelt die Zugangsdaten und den E
 | [Debrid-Link](providers/debridlink.md) | Die Seedbox-Liste enthält jede Datei, und es gibt keine Cache-Prüfung |
 | [Offcloud](providers/offcloud.md) | Größen werden am Auslieferungsserver geprüft, Ordnerpfade stammen aus zwischengespeicherten Metadaten |
 | [Usenet](providers/usenet.md) | Der `nzb`-Typ als Provider-Eintrag. Kein Token, stattdessen ein Watch-Verzeichnis |
-| [TorBox limits](providers/torbox-limits.md) | Die gemessenen Werte hinter der TorBox-Drosselung und wie zurg sich daran orientiert |
-| [TorBox news server](providers/torbox-news-server.md) · [ElfHosted news server](providers/elfhosted-news-server.md) | Was die mitgelieferten Usenet-Konten auf der Leitung tatsächlich sind |
+| [TorBox-Limits](providers/torbox-limits.md) | Die gemessenen Werte hinter der TorBox-Drosselung und wie zurg sich daran orientiert |
+| [TorBox-Newsserver](providers/torbox-news-server.md) · [ElfHosted-Newsserver](providers/elfhosted-news-server.md) | Was die mitgelieferten Usenet-Konten auf der Leitung tatsächlich sind |
 
 Die [gemeinsame Seite](providers/index.md) beschreibt die drei Wege, einen Account in Docker hinzuzufügen, und die Regeln, die der Config-Loader durchsetzt.
 

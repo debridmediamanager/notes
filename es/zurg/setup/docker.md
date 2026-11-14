@@ -128,7 +128,7 @@ Elige uno o varios proveedores en orden de prioridad. Por ejemplo, escribe `2,4`
 
 Para automatizarlo, repite `--provider` y pasa los flags específicos de cada proveedor para el archivo de token o `--nntp-*`. La configuración conserva un config existente en las ejecuciones posteriores.
 
-La configuración escribe las cuentas solo en la ejecución que crea `config.yml`. Para añadir una a una instalación que ya tiene config, usa **Add provider** del Dashboard o edita el archivo y reinicia. Cada servicio tiene su propia página con la credencial, el bloque de config y los límites que conviene conocer: [Providers](../providers/index.md).
+La configuración escribe las cuentas solo en la ejecución que crea `config.yml`. Para añadir una a una instalación que ya tiene config, usa **Add provider** del Dashboard o edita el archivo y reinicia. Cada servicio tiene su propia página con la credencial, el bloque de config y los límites que conviene conocer: [Proveedores](../providers/index.md).
 
 ## 5. Inicia zurg {#5-start-zurg}
 
@@ -139,7 +139,7 @@ docker compose logs -f --tail=100 zurg
 
 Sal del visor de logs con `Ctrl+C`; el contenedor sigue funcionando. El Dashboard está en `http://localhost:9999/config/` y edita el mismo `config.yml` que está junto al archivo compose.
 
-Una biblioteca grande puede tardar un rato en cargarse. Las carpetas del montaje no se listan hasta que termina. Aparecen vacías o como `Input/output error` mientras el Dashboard y `version.txt` funcionan con normalidad. Eso significa que zurg todavía está cargando y no que el montaje esté roto. [Up versus ready](#up-versus-ready) muestra cómo saber cuándo termina la carga.
+Una biblioteca grande puede tardar un rato en cargarse. Las carpetas del montaje no se listan hasta que termina. Aparecen vacías o como `Input/output error` mientras el Dashboard y `version.txt` funcionan con normalidad. Eso significa que zurg todavía está cargando y no que el montaje esté roto. [Up frente a ready](#up-versus-ready) muestra cómo saber cuándo termina la carga.
 
 ## 6. Verifica con doctor {#6-verify-with-doctor}
 
@@ -367,4 +367,4 @@ Si `/ready` falla con el error 503, la biblioteca todavía se está cargando y e
 
 Eso es normal. El mismo montaje FUSE se ve en los espacios de montaje del contenedor y del host porque la propagación está funcionando.
 
-¿Sigues atascado? Pregunta en el foro **zurg-support** de [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) explica qué incluir.
+¿Sigues atascado? Pregunta en el foro **zurg-support** de [Discord](https://discord.com/invite/7u4YjMThXP). [Obtener ayuda](../../guides/remote-help.md) explica qué incluir.

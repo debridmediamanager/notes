@@ -100,7 +100,7 @@ Si `docker` affiche permission denied, mettez `sudo` devant chaque commande `doc
 
 ## 3. Ajoutez les dossiers de zurg dans Plex {#3-add-zurgs-folders-in-plex}
 
-Ouvrez Plex Web à l'adresse `http://<this machine's LAN IP>:32400/web`. Ajoutez une bibliothèque **Movies** avec le dossier `/zurg_mnt/zurg/movies` et une bibliothèque **TV Shows** avec `/zurg_mnt/zurg/shows`, comme le montre [Real-Debrid in Plex](../../guides/real-debrid-plex.md#3-add-the-folders-in-plex).
+Ouvrez Plex Web à l'adresse `http://<this machine's LAN IP>:32400/web`. Ajoutez une bibliothèque **Movies** avec le dossier `/zurg_mnt/zurg/movies` et une bibliothèque **TV Shows** avec `/zurg_mnt/zurg/shows`, comme le montre [Real-Debrid dans Plex](../../guides/real-debrid-plex.md#3-add-the-folders-in-plex).
 
 Pour que Plex soit prévenu des nouveautés, ouvrez le tableau de bord de zurg à l'adresse `http://<this machine's LAN IP>:9999/config/` et appuyez sur **Login with Plex** sous **Media Server Integration** ([étape 4 là-bas](../../guides/real-debrid-plex.md#4-let-zurg-tell-plex-about-new-things)).
 

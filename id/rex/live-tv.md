@@ -128,4 +128,4 @@ Di macOS, hentikan dengan Ctrl+C, jalankan `git pull` di `~/rex-live-sports` lal
 - **Live TV hanya diuji di Plex Web dan Plex untuk Android.** Aplikasi Plex lain belum dicoba.
 - **Siapa pun yang bisa menjangkau alamat rex-live-sports bisa memutar lewat sana.** Biarkan `listen` tetap di `127.0.0.1`.
 
-Untuk membawa saluran Anda sendiri, dengan panduan yang sudah Anda punya, lihat [Building rex addons](addons.md#live-tv).
+Untuk membawa saluran Anda sendiri, dengan panduan yang sudah Anda punya, lihat [Membangun addon rex](addons.md#live-tv).

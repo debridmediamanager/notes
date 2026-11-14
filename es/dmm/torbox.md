@@ -41,11 +41,11 @@ Pulsa **Library**. Lista tus torrents y descargas web de TorBox.
 - **Backup** guarda tu lista en un archivo. **TB Restore** vuelve a añadir una lista guardada.
 - Lo demás funciona igual que con cualquier servicio: consulta [your library](index.md#your-library).
 
-Las descargas de Usenet que enviaste a TorBox no aparecen en la biblioteca de DMM. Búscalas en el sitio de TorBox, en la fila **DMM TB Library** de DMM Cast en Stremio, o a través de [TorBox hosted Usenet](../zurg/providers/torbox-nzb.md) de zurg.
+Las descargas de Usenet que enviaste a TorBox no aparecen en la biblioteca de DMM. Búscalas en el sitio de TorBox, en la fila **DMM TB Library** de DMM Cast en Stremio, o a través de [TorBox alojado en Usenet](../zurg/providers/torbox-nzb.md) de zurg.
 
 ## Mira en Stremio {#watch-in-stremio}
 
-Pulsa **Cast for TB** en la página principal e instala el addon desde ahí. Luego pulsa **Cast (TB)** en cualquier release que TorBox tenga en caché. Todos los pasos están en [DMM in Stremio](stremio.md).
+Pulsa **Cast for TB** en la página principal e instala el addon desde ahí. Luego pulsa **Cast (TB)** en cualquier release que TorBox tenga en caché. Todos los pasos están en [DMM en Stremio](stremio.md).
 
 En Stremio, el addon se llama **DMM Cast for TorBox**. Su fila **DMM TB Library** muestra tus torrents de TorBox más tus descargas web y de Usenet terminadas.
 
@@ -83,7 +83,7 @@ Los usuarios de Real-Debrid piden lanzamientos en el [tablero de solicitudes](ht
 | En Stremio: **⚠️ TorBox refused your account** | TorBox acepta la clave del addon pero no sirve la cuenta, normalmente porque el plan se agotó. Revísalo en [torbox.app/settings](https://torbox.app/settings). No hace falta cambiar nada en DMM. |
 | zurg: `Acquisition: dmm-torbox refused the search: No TorBox key linked.` | El feed patrocinado `tb/cached` de la [página Torznab](https://debridmediamanager.com/torznab) de DMM necesita que vincules tu clave de TorBox en **Link a provider key** de esa misma página. Tener la sesión iniciada en TorBox dentro de DMM no basta. El `api_key` en zurg sigue siendo tu clave API de DMM. |
 
-¿TorBox está caído? Compruébalo en [Is TorBox Down Or Just Me?](https://debridmediamanager.com/is-torbox-down-or-just-me). ¿Sigues atascado? Pregunta en el foro **dmm-support** de [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) explica qué incluir.
+¿TorBox está caído? Compruébalo en [Is TorBox Down Or Just Me?](https://debridmediamanager.com/is-torbox-down-or-just-me). ¿Sigues atascado? Pregunta en el foro **dmm-support** de [Discord](https://discord.com/invite/7u4YjMThXP). [Obtener ayuda](../guides/remote-help.md) explica qué incluir.
 
 ## Preguntas {#questions}
 

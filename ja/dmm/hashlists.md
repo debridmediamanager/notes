@@ -59,7 +59,7 @@
 
 ### 自分のライブラリにハッシュリストを追加するには？ {#how-do-i-add-hash-lists-to-my-own-library}
 
-リストを開き、DMM にデブリッドサービスでサインインしてから、行ごとにサービスのボタンを押すか、表示されているすべてのものに対して **RD Download**（またはサービスの **Download**）を押します。詳しくは [Add a list to your library](#add-a-list-to-your-library) を参照してください。
+リストを開き、DMM にデブリッドサービスでサインインしてから、行ごとにサービスのボタンを押すか、表示されているすべてのものに対して **RD Download**（またはサービスの **Download**）を押します。詳しくは [リストを自分のライブラリに追加](#add-a-list-to-your-library) を参照してください。
 
 ### ハッシュリストのアイテムがすべて非表示になるのはなぜ？ {#why-are-all-the-items-in-my-hash-list-hidden}
 

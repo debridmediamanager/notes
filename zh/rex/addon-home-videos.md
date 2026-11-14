@@ -260,7 +260,7 @@ journalctl --user -u homevideos -f
 
 如果你为 rex 运行过 `sudo loginctl enable-linger "$USER"`，那么你退出登录后，插件也会继续运行。
 +++ macOS 和 Windows
-按照 [rex with your own app](any-source.md#step-1-install-rex) 第 1 步启动 rex 的方式来启动插件：macOS 用 LaunchAgent，Windows 用计划任务。命令用 `python3 homevideos.py`（Windows 上用 `python homevideos.py`），工作文件夹设为插件所在的文件夹。
+按照 [使用你自己的应用搭配 rex](any-source.md#step-1-install-rex) 第 1 步启动 rex 的方式来启动插件：macOS 用 LaunchAgent，Windows 用计划任务。命令用 `python3 homevideos.py`（Windows 上用 `python homevideos.py`），工作文件夹设为插件所在的文件夹。
 +++
 
 ## 工作原理 {#how-it-works}

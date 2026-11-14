@@ -4,7 +4,7 @@
 
 Usenet 是一种提供商类型，但不是 debrid 服务。它没有 API token，也没有远程库。你把 `.nzb` 文件放进监视目录，zurg 会把每个文件变成一个 release。播放器请求数据时，文章才会从你的新闻服务器获取并解码。
 
-本页只介绍提供商条目和 Docker 的具体设置。关于在 zurg 上运行 Usenet 的其他内容，都在 [Usenet with zurg](../guides/usenet.md) 中。那里是完整的教程，包括新闻账号、NZB、挂载和 Plex。建议你在读完本页后再去看那篇。
+本页只介绍提供商条目和 Docker 的具体设置。关于在 zurg 上运行 Usenet 的其他内容，都在 [使用 zurg 访问 Usenet](../guides/usenet.md) 中。那里是完整的教程，包括新闻账号、NZB、挂载和 Plex。建议你在读完本页后再去看那篇。
 
 ## 配置它 {#configure-it}
 
@@ -80,7 +80,7 @@ ls /zurg_mnt/zurg/__all__/
 
 Retention 是按服务商分开计算的。一个服务器已经过期的文章，通常在另一个服务器上还能找到。如果没有第二个账号，恢复一篇失效的文章只能靠 PAR2，而这需要读取**整个发布内容**。所以第二个服务器的作用是：只需抓取一篇文章，还是要把所有内容重新读一遍，两者的差别就在这里。
 
-额外的账号应该放在这个条目的 `nntp.servers` 下面，而不是新建第二个 `nzb` 条目。`priority`、`backup` 和 `backbone` 决定先问谁、按什么顺序来问。读取速率按所有未标记为 `backup` 的账号的合计额度来控制。完整的配置示例以及每个键的作用，请见 [Usenet with zurg](../guides/usenet.md#more-than-one-usenet-provider)。
+额外的账号应该放在这个条目的 `nntp.servers` 下面，而不是新建第二个 `nzb` 条目。`priority`、`backup` 和 `backbone` 决定先问谁、按什么顺序来问。读取速率按所有未标记为 `backup` 的账号的合计额度来控制。完整的配置示例以及每个键的作用，请见 [使用 zurg 访问 Usenet](../guides/usenet.md#more-than-one-usenet-provider)。
 
 ## 检查是否生效 {#check-it-worked}
 

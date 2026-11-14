@@ -2,7 +2,7 @@
 
 zurg は、Real-Debrid アカウント内のすべてを、コンピューター上のフォルダーとして表示します。それらは `movies` と `shows` にすでに振り分けられています。この 2 つのフォルダーを Plex Media Server に追加すれば、Real-Debrid のライブラリ全体が、どの Plex アプリでも再生できるようになります。何もダウンロードせずに、Real-Debrid からストリーミングされます。zurg はインストールするのが 1 回だけで済みます。rclone も一緒に入っているので、ほかに設定することはありません。
 
-Plex Media Server やマウントしたドライブを動かしたくない場合は、[rex with zurg](../rex/with-zurg.md) を見てください。どちらも使わずに、同じライブラリを Plex アプリに表示する方法が書かれています。
+Plex Media Server やマウントしたドライブを動かしたくない場合は、[rex と zurg の併用](../rex/with-zurg.md) を見てください。どちらも使わずに、同じライブラリを Plex アプリに表示する方法が書かれています。
 
 ## 必要なもの {#what-you-need}
 
@@ -46,7 +46,7 @@ Plexは、Real-Debridアカウントに新しいものが追加されても気�
 
 ![The Media Server Integration section of zurg's dashboard, with the Login with Plex button](../assets/real-debrid-plex/01-zurg-login-with-plex.webp)
 
-これ以降、zurgは変更があったフォルダごとにPlexへスキャンを依頼します。また、ストリーミングライブラリでは危険なPlexの設定もいくつか無効にします。たとえば**Empty trash automatically after every scan**などです。対象の設定は[Recommended Plex Settings](../zurg/guides/plex.md#recommended-plex-settings)に一覧があります。
+これ以降、zurgは変更があったフォルダごとにPlexへスキャンを依頼します。また、ストリーミングライブラリでは危険なPlexの設定もいくつか無効にします。たとえば**Empty trash automatically after every scan**などです。対象の設定は[推奨されるPlexの設定](../zurg/guides/plex.md#recommended-plex-settings)に一覧があります。
 
 ## 問題が起きたとき {#when-something-is-wrong}
 
@@ -74,8 +74,8 @@ Plexは、Real-Debridアカウントに新しいものが追加されても気�
 
 ### Plex Media Serverは使わなくてもいいですか？ {#can-i-skip-plex-media-server}
 
-はい、rexを使えば可能です。[rex with zurg](../rex/with-zurg.md)では、Plex Media Serverもマウントも使わずに、zurgのライブラリをPlexアプリで表示できます。両方を同時に動かすこともできます。[One Docker Compose file](../zurg/guides/docker-compose.md)を使えば、zurg、Plex Media Server、rexを1台のマシンで一度に動かせます。
+はい、rexを使えば可能です。[rex と zurg の併用](../rex/with-zurg.md)では、Plex Media Serverもマウントも使わずに、zurgのライブラリをPlexアプリで表示できます。両方を同時に動かすこともできます。[One Docker Compose file](../zurg/guides/docker-compose.md)を使えば、zurg、Plex Media Server、rexを1台のマシンで一度に動かせます。
 
 ### TorBoxやUsenetでも使えますか？ {#does-it-work-with-torbox-or-usenet-too}
 
-はい。zurgのインストーラーでは、TorBox、AllDebrid、Premiumize、Debrid-Link、Offcloud、Usenetも選べて、どれも同じ`movies`と`shows`フォルダーにまとめられます。[Providers](../zurg/providers/index.md)には各プロバイダーのページがあります。
+はい。zurgのインストーラーでは、TorBox、AllDebrid、Premiumize、Debrid-Link、Offcloud、Usenetも選べて、どれも同じ`movies`と`shows`フォルダーにまとめられます。[プロバイダー](../zurg/providers/index.md)には各プロバイダーのページがあります。

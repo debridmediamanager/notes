@@ -2,7 +2,7 @@
 
 rex يعرض قنوات الإضافات في Plex Web وفي **Live TV** على Plex for Android، مع دليل و What's On. اختر قناة فتعمل فورًا.
 [rex-live-sports](https://github.com/debridmediamanager/rex-live-sports) جاهز للاستخدام مع خادم البث الرياضي المباشر.
-أما لدليل IPTV بصيغة M3U وXMLTV فراجع [Tutorial: an IPTV addon](addon-iptv.md).
+أما لدليل IPTV بصيغة M3U وXMLTV فراجع [درس تعليمي: إضافة IPTV](addon-iptv.md).
 
 ما ستحصل عليه:
 
@@ -130,4 +130,4 @@ cd ~/rex-live-sports && git pull && systemctl --user restart rex-live-sports
 - **جرى اختبار البث المباشر في Plex Web وPlex لنظام Android فقط.** لم تُجرَّب تطبيقات Plex الأخرى بعد.
 - **أي شخص يصل إلى عنوان rex-live-sports يستطيع التشغيل من خلاله.** أبقِ `listen` على `127.0.0.1`.
 
-لإضافة قنوات خاصة بك، مع دليل لديك بالفعل، راجع [Building rex addons](addons.md#live-tv).
+لإضافة قنوات خاصة بك، مع دليل لديك بالفعل، راجع [بناء إضافات rex](addons.md#live-tv).

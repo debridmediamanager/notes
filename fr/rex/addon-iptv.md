@@ -4,7 +4,7 @@ Ce tutoriel transforme une playlist IPTV (M3U) et un guide TV (XMLTV) en chaîne
 Plex pour Android. Chaque chaîne garde son numéro et son guide. Ça marche avec les chaînes M3U qui utilisent HLS (`.m3u8`)
 et avec n'importe quel guide XMLTV qui les nomme.
 
-Il suit [Créer des addons rex](addons.md) et sa section [Live TV](addons.md#live-tv). Lis le
+Il suit [Créer des addons rex](addons.md) et sa section [TV en direct](addons.md#live-tv). Lis le
 [tutoriel vidéos personnelles](addon-home-videos.md) d'abord si c'est ton premier addon. Pour le sport en direct, utilise
 [Live TV avec rex](live-tv.md).
 

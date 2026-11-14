@@ -43,7 +43,7 @@ La ligne `SECTION create` n'apparaît que si l'addon déclare la bibliothèque. 
 
 ## Étape 3. Partagez la bibliothèque musicale {#step-3-share-the-music-library}
 
-La bibliothèque musicale est nouvelle, donc elle n'est encore partagée avec personne. Connecté avec le nouveau compte, ajoute-la au partage de ton propre compte et à celui de tous les autres dans **Manage Library Access** ([Share rex](sharing.md)).
+La bibliothèque musicale est nouvelle, donc elle n'est encore partagée avec personne. Connecté avec le nouveau compte, ajoute-la au partage de ton propre compte et à celui de tous les autres dans **Manage Library Access** ([Partager rex](sharing.md)).
 
 ## Étape 4. Écoutez {#step-4-listen}
 

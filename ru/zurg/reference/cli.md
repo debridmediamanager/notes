@@ -171,7 +171,7 @@ zurg restore-backup my-backup.zurgbackup
 
 ## Plex
 
-Эти три работают с Plex-сервером на этом хосте. Сначала настройте Plex. См. [Plex Integration](config.md#plex-integration).
+Эти три работают с Plex-сервером на этом хосте. Сначала настройте Plex. См. [Интеграция с Plex](config.md#plex-integration).
 
 ### zurg plex-settings
 

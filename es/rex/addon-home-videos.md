@@ -4,12 +4,12 @@ Este tutorial crea un addon de rex en un solo archivo de Python. Pone tus clips 
 
 No se copia ni se sube nada. rex lee el archivo desde tu addon cuando pulsas play.
 
-Es la versión funcional más corta de [Building rex addons](addons.md), pasos 1 a 5. Esta página te dice qué escribir.
+Es la versión funcional más corta de [Creación de complementos para rex](addons.md), pasos 1 a 5. Esta página te dice qué escribir.
 Ese explica el porqué. Los tutoriales de [música](addon-music.md) e [IPTV](addon-iptv.md) usan la misma estructura base.
 
 | Necesitas | Por qué |
 |---|---|
-| rex, configurado como en [rex with your own app](any-source.md) (pasos 1 a 3) | Ahí es donde aparece la biblioteca. Claimed, para que las apps de Plex puedan verla |
+| rex, configurado como en [rex con tu propia app](any-source.md) (pasos 1 a 3) | Ahí es donde aparece la biblioteca. Claimed, para que las apps de Plex puedan verla |
 | Python 3.8 o más reciente | El addon. Solo usa la biblioteca estándar de Python |
 | `ffprobe` y `ffmpeg` | `ffprobe` describe cada video para rex, `ffmpeg` recorta la imagen de portada. Ambos vienen con FFmpeg |
 | Una carpeta de videos, en la máquina que ejecuta el addon | `.mp4`, `.mkv`, `.mov`, `.m4v`, `.avi`, `.webm`, `.mts`, `.m2ts`, `.3gp`, en cualquier subcarpeta |
@@ -266,7 +266,7 @@ Inícialo de la misma forma que inicias rex en el paso 1 de [rex con tu propia a
 
 ## Cómo funciona {#how-it-works}
 
-Cada parte del archivo es un paso de [Building rex addons](addons.md):
+Cada parte del archivo es un paso de [Creación de complementos para rex](addons.md):
 
 | Parte | Paso | Qué hace |
 |---|---|---|

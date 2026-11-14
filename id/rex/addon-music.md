@@ -3,7 +3,7 @@
 Tutorial ini memasukkan folder berisi album ke dalam library **Music** yang bisa diputar oleh Plexamp, Plex Web, dan Plex for Android.
 Tutorial ini mendukung FLAC, MP3, AAC, dan file umum lainnya. File kamu tetap berada di tempatnya. MusicBrainz menyediakan detail album yang sudah dikenal. Album yang tidak dikenal memakai tag-nya dan `cover.jpg`. File `.lrc` di dekatnya akan menjadi lirik berwaktu.
 
-Tutorial ini mengikuti [Membangun addon rex](addons.md) dan bagian [Music](addons.md#music) di dalamnya. Baca [tutorial home videos](addon-home-videos.md) dulu jika ini pertama kalinya kamu membuat addon.
+Tutorial ini mengikuti [Membangun addon rex](addons.md) dan bagian [Musik](addons.md#music) di dalamnya. Baca [tutorial home videos](addon-home-videos.md) dulu jika ini pertama kalinya kamu membuat addon.
 
 | Yang kamu butuhkan | Alasannya |
 |---|---|

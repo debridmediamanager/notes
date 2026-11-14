@@ -22,7 +22,7 @@ Usenet 上のリリースは、何千もの小さな断片として投稿され�
 
 次のものは必要ありません:
 
-- **SABnzbd や NZBGet のようなダウンロードクライアント。** zurg がリリースをストリーミングします。Sonarr と Radarr では、zurg が SABnzbd の代わりを務めます。詳しくは [Sonarr & Radarr for Usenet](../zurg/guides/sonarr-radarr.md) を見てください。
+- **SABnzbd や NZBGet のようなダウンロードクライアント。** zurg がリリースをストリーミングします。Sonarr と Radarr では、zurg が SABnzbd の代わりを務めます。詳しくは [Sonarr と Radarr で Usenet を使う](../zurg/guides/sonarr-radarr.md) を見てください。
 - **リリース全体を入れるディスク。** zurg は再生中の部分を cover する分だけ取得します。60 GB のリミックス映像でも 60 GB のディスクは要りません。
 - **展開や修復のツール。** zurg は RAR セットの中から直接再生し、足りない部分はリリースの PAR2 ファイルから自分で復元します。
 - **デブリッドのアカウント。** Usenet だけでも使えますし、同じ zurg のライブラリで Real-Debrid や TorBox と並べて使うこともできます。
@@ -36,7 +36,7 @@ Usenet 上のリリースは、何千もの小さな断片として投稿され�
 2. 1〜2秒以内に zurg がそれを読み込み、NZB にちなんだ名前でライブラリにリリースを表示します。
 3. Plex、Jellyfin、または rex で再生を押します。zurg はその位置に該当する部分をプロバイダーから取得して渡します。途中へ飛ばすと、そこから取得し直します。
 
-ダウンロードが終わるのを待つ必要はありません。手順を追って設定するには、[Usenet with zurg](../zurg/guides/usenet.md) に従ってください。プロバイダーの設定と Docker の詳細は [Usenet provider](../zurg/providers/usenet.md) にあります。
+ダウンロードが終わるのを待つ必要はありません。手順を追って設定するには、[Usenet と zurg](../zurg/guides/usenet.md) に従ってください。プロバイダーの設定と Docker の詳細は [Usenet provider](../zurg/providers/usenet.md) にあります。
 
 ## DMMの役割 {#where-dmm-fits}
 
@@ -70,7 +70,7 @@ Usenet 上のリリースは、何千もの小さな断片として投稿され�
 | 再生がカクついたり、一部が無音になる | リリースの一部のデータがプロバイダから消えています。投稿にPAR2ファイルがあれば、zurgがそこから欠けた部分を復元します。プロバイダを2つ目に追加すると、ほとんどの場合これで直ります。 |
 | DMM: **No Usenet results found.** | DMMのインデクサーにこのタイトルの結果がありません。**Torrents**タブを試すか、自分のインデクサーを使ってください。 |
 
-トラブルシューティングの表全体は[Usenet with zurg](../zurg/guides/usenet.md#troubleshooting)にあります。それでも解決しない場合は、[Discord](https://discord.com/invite/7u4YjMThXP)の**zurg-support**フォーラムで聞いてください。何を伝えればよいかは[Getting help](remote-help.md)に書いてあります。
+トラブルシューティングの表全体は[Usenet と zurg](../zurg/guides/usenet.md#troubleshooting)にあります。それでも解決しない場合は、[Discord](https://discord.com/invite/7u4YjMThXP)の**zurg-support**フォーラムで聞いてください。何を伝えればよいかは[ヘルプの入手方法](remote-help.md)に書いてあります。
 
 ## よくある質問 {#questions}
 
@@ -94,8 +94,8 @@ NZB のファイル名は、リリース名にしてください（例: `Some.Mo
 
 **TorBox の Pro プラン**には Usenet の機能が 2 つあります。料金ページでも Usenet は Pro プランだけに記載されています(2026年11月14日に確認)。
 
-- **Hosted Usenet downloads(TorBox でのホスト型 Usenet ダウンロード)。** TorBox がリリース全体をダウンロードしてくれて、ほかの TorBox のダウンロードと同じように配信します。NZB は DMM の Usenet タブか、zurg の `torbox_nzb` プロバイダーから送ってください。ニュースサーバーへのログインは不要です。詳しくは [TorBox hosted Usenet](../zurg/providers/torbox-nzb.md) を見てください。
-- **ニュースサーバーのログイン(NNTP)。** zurg ではほかのプロバイダーと同じように使えます。接続数は 10 本までです。2026年9月の計測では、有料の他社プロバイダー 3 社と比べてライブラリの実際の見つかり方が少なかったので、予備として使うのがおすすめです。詳しくは [TorBox news server](../zurg/providers/torbox-news-server.md) を見てください。
+- **Hosted Usenet downloads(TorBox でのホスト型 Usenet ダウンロード)。** TorBox がリリース全体をダウンロードしてくれて、ほかの TorBox のダウンロードと同じように配信します。NZB は DMM の Usenet タブか、zurg の `torbox_nzb` プロバイダーから送ってください。ニュースサーバーへのログインは不要です。詳しくは [TorBox でホストされている Usenet](../zurg/providers/torbox-nzb.md) を見てください。
+- **ニュースサーバーのログイン(NNTP)。** zurg ではほかのプロバイダーと同じように使えます。接続数は 10 本までです。2026年9月の計測では、有料の他社プロバイダー 3 社と比べてライブラリの実際の見つかり方が少なかったので、予備として使うのがおすすめです。詳しくは [TorBox ニュースサーバー](../zurg/providers/torbox-news-server.md) を見てください。
 
 ### 1つのUsenetアカウントを2か所で使えますか？ {#can-i-use-one-usenet-account-in-two-places}
 

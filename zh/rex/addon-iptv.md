@@ -2,7 +2,7 @@
 
 本教程会把 IPTV 播放列表（M3U）和电视节目指南（XMLTV）转换成 Plex Web 和 Plex for Android 里的 **Live TV** 频道。每个频道都会保留原来的频道号和节目指南。它适用于使用 HLS（`.m3u8`）的 M3U 频道，以及能对应这些频道的任意 XMLTV 指南。
 
-本教程基于 [构建 rex 插件](addons.md) 及其中的 [Live TV](addons.md#live-tv) 部分。如果这是你第一次做插件，请先阅读 [家庭视频教程](addon-home-videos.md)。如果想看体育直播，请使用 [用 rex 看直播电视](live-tv.md)。
+本教程基于 [构建 rex 插件](addons.md) 及其中的 [直播电视](addons.md#live-tv) 部分。如果这是你第一次做插件，请先阅读 [家庭视频教程](addon-home-videos.md)。如果想看体育直播，请使用 [用 rex 看直播电视](live-tv.md)。
 
 | 你需要 | 原因 |
 |---|---|

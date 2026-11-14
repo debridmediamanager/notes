@@ -41,20 +41,20 @@ Aponte o zurg para uma conta. Cada página cobre a credencial e a entrada no `co
 ## Guias {#guides}
 
 - [Usenet](guides/usenet.md) — o backend `nzb` de ponta a ponta: contas de news, NZBs, o mount, Plex
-- [Sonarr & Radarr for Usenet](guides/sonarr-radarr.md) — os \*arrs buscam e o zurg responde como um SABnzbd, então as importações são só um rename, não um download
-- [Sonarr & Radarr for torrents](guides/sonarr-radarr-torrents.md) — o mesmo, com o zurg respondendo como um qBittorrent; o Prowlarr também
-- [zurg searches for Sonarr & Radarr](guides/sonarr-radarr-fetch.md). O Radarr e o Sonarr guardam a lista, e o zurg encontra e coloca o release. Não há indexers nem download client em nenhum dos dois.
+- [Sonarr e Radarr para Usenet](guides/sonarr-radarr.md) — os \*arrs buscam e o zurg responde como um SABnzbd, então as importações são só um rename, não um download
+- [Sonarr e Radarr para torrents](guides/sonarr-radarr-torrents.md) — o mesmo, com o zurg respondendo como um qBittorrent; o Prowlarr também
+- [zurg pesquisa no Sonarr e no Radarr](guides/sonarr-radarr-fetch.md). O Radarr e o Sonarr guardam a lista, e o zurg encontra e coloca o release. Não há indexers nem download client em nenhum dos dois.
 - [`__magic__`](guides/magic.md) — o único diretório cujo layout fica guardado, e por isso é seu para organizar, com sua biblioteca arquivada por título para Kodi e Plex
-- [Renaming](guides/renaming.md) — renomeie um release ou um arquivo em qualquer lugar da biblioteca. Um move é recusado, e a página explica o motivo
+- [Renomeação](guides/renaming.md) — renomeie um release ou um arquivo em qualquer lugar da biblioteca. Um move é recusado, e a página explica o motivo
 - [Plex](guides/plex.md) — o que o zurg faz com um token do Plex, e o que ele deliberadamente não faz
 - [Jellyfin](guides/jellyfin.md) — o mesmo, para o Jellyfin
-- [rex with zurg](../rex/with-zurg.md) — um servidor de mídia para os apps do Plex que não possui arquivo nenhum, preenchido pelo zurg a partir da sua conta de debrid. Mais em [rex](../rex/index.md)
-- [The Stremio addon](guides/stremio.md) — o Stremio buscando nos seus próprios indexers, reproduzindo direto do backend de Usenet
-- [Watchlist and Seerr](guides/acquisition.md) busca o que você pedir pelos seus próprios indexers
-- [Plex watchlist](guides/plex-watchlist.md) é o lado do Plex nisso
-- [DMM wanted list](guides/dmm-wanted.md) busca o que você marcar com Want no DMM, sem nada mais para configurar
-- [Local libraries](guides/local-libraries.md) reproduz uma lista compartilhada de releases pela sua própria conta
-- [Android and Google TV](guides/android.md) roda a biblioteca inteira em um celular ou em um TV box
+- [rex com zurg](../rex/with-zurg.md) — um servidor de mídia para os apps do Plex que não possui arquivo nenhum, preenchido pelo zurg a partir da sua conta de debrid. Mais em [rex](../rex/index.md)
+- [O addon do Stremio](guides/stremio.md) — o Stremio buscando nos seus próprios indexers, reproduzindo direto do backend de Usenet
+- [Lista de desejos e Seerr](guides/acquisition.md) busca o que você pedir pelos seus próprios indexers
+- [Lista de desejos do Plex](guides/plex-watchlist.md) é o lado do Plex nisso
+- [Lista de desejos do DMM](guides/dmm-wanted.md) busca o que você marcar com Want no DMM, sem nada mais para configurar
+- [Bibliotecas locais](guides/local-libraries.md) reproduz uma lista compartilhada de releases pela sua própria conta
+- [Android e Google TV](guides/android.md) roda a biblioteca inteira em um celular ou em um TV box
 
 ## Migrando {#migrating}
 

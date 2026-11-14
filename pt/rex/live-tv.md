@@ -94,7 +94,7 @@ São os 30 canais da grade que o live-sports tem, mais os slots com um jogo naqu
 
 ## Passo 4. Compartilhe a biblioteca e abra a TV ao vivo {#step-4-share-the-library-and-open-live-tv}
 
-The **Live Sports** biblioteca é nova, então ainda não está no compartilhamento de ninguém. Logado na conta nova, adicione ela ao compartilhamento da sua conta e ao de todo mundo em **Manage Library Access** ([Share rex](sharing.md)). Um compartilhamento permite que a conta assista Live TV, a menos que você tenha desativado isso para ela.
+The **Live Sports** biblioteca é nova, então ainda não está no compartilhamento de ninguém. Logado na conta nova, adicione ela ao compartilhamento da sua conta e ao de todo mundo em **Manage Library Access** ([Compartilhar rex](sharing.md)). Um compartilhamento permite que a conta assista Live TV, a menos que você tenha desativado isso para ela.
 
 Depois, abra um app do Plex como você mesmo:
 

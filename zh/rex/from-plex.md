@@ -25,7 +25,7 @@
 
 ## 第 1 步：在 Plex 旁边设置 rex {#step-1-set-up-rex-beside-plex}
 
-按照 [rex with your own app](any-source.md)、[rex with your Stremio addons](stremio.md) 或 [rex with zurg](with-zurg.md) 的说明设置 rex，配好提供内容的数据源，直到能看到视频为止。已经在用 zurg 给 Plex 提供内容？那就不用重新安装，按 rex with zurg 第 1 步的说明更新即可。从 **2026.10.27** 的 nightly 版本起，zurg 会向 rex 提供内容。
+按照 [使用你自己的应用搭配 rex](any-source.md)、[在 Stremio 插件中使用 rex](stremio.md) 或 [rex 与 zurg](with-zurg.md) 的说明设置 rex，配好提供内容的数据源，直到能看到视频为止。已经在用 zurg 给 Plex 提供内容？那就不用重新安装，按 rex with zurg 第 1 步的说明更新即可。从 **2026.10.27** 的 nightly 版本起，zurg 会向 rex 提供内容。
 
 - **Plex 和 rex 装在同一台机器上？** 按 [Install rex](any-source.md#step-1-install-rex) 中针对这种情况的说明，把 rex 放在端口 `32500` 上，并让数据源也使用这个端口。这样你的应用里会出现两个同名的服务器（都用机器名）：分享给你的那个是 rex，旁边会带着新账号的名字。改名的方法见 [Install rex](any-source.md#step-1-install-rex)。
 - **请在一个新的 Plex 账号上注册 rex**，不要用你 Plex 服务器所用的那个账号。具体见 [Add it to a Plex account](any-source.md#step-3-add-it-to-a-plex-account)。

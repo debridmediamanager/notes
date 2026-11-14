@@ -10,7 +10,7 @@ Du betreibst Plex Media Server und möchtest rex ausprobieren. Deine Plex-Apps b
 | Was jede Datei ist | Plex erkennt sie anhand des Dateinamens | Die Quelle findet es heraus und sagt es rex. rex liest nie einen Dateinamen |
 | Eine falsche Zuordnung | Fix Match auf dem Server | **Fix Match** in einer Plex-App, angemeldet mit dem Account, dem rex gehört. rex behält deine Auswahl, und eine Quelle kann sie zurücknehmen und behalten, wie zurg es macht ([warum Titel so einsortiert werden, wie sie sind](with-zurg.md#why-dmm-places-the-files)) |
 | Der Account, auf dem der Server läuft | Meistens dein eigener | Ein neuer Plex-Account nur für rex, den du mit deinem eigenen teilst |
-| Musik, Live-TV und Fotos | Aus Ordnern und einem Tuner | Nur von einer Quelle, die sie liefert, etwa einem Addon ([Building rex addons](addons.md#music)) oder zurgs Comic-Büchern. Plex Web zeigt Fotos an, Plex für Android nicht |
+| Musik, Live-TV und Fotos | Aus Ordnern und einem Tuner | Nur von einer Quelle, die sie liefert, etwa einem Addon ([Eigene rex-Addons bauen](addons.md#music)) oder zurgs Comic-Büchern. Plex Web zeigt Fotos an, Plex für Android nicht |
 | TV aufnehmen | Ja | Nein |
 
 ## Einen Weg wählen {#pick-a-way}
@@ -35,11 +35,11 @@ Nutzt du zurg? Solange beide laufen, versorgt zurg beide. Lass alles, was zurg f
 
 ## Schritt 2: Deinen Wiedergabeverlauf übernehmen {#step-2-bring-your-watch-history}
 
-Sobald deine Bibliothek in rex ist, kopiert [Bring your watch history](import-watched.md) dein Sehverlauf, die Stelle, an der du aufgehört hast, und deine Sternebewertungen vom Plex-Server. Mach das, solange Plex noch läuft. Jede Person, mit der du teilst, führt es für ihren eigenen Verlauf aus.
+Sobald deine Bibliothek in rex ist, kopiert [Bring deine Wiedergabeverlauf mit](import-watched.md) dein Sehverlauf, die Stelle, an der du aufgehört hast, und deine Sternebewertungen vom Plex-Server. Mach das, solange Plex noch läuft. Jede Person, mit der du teilst, führt es für ihren eigenen Verlauf aus.
 
 ## Schritt 3: Deine Leute wieder einladen {#step-3-invite-your-people-again}
 
-Deine Freunde und Familie wurden zu deinem Plex-Server eingeladen, nicht zu rex. rex ist ein neuer Server auf dem frischen Account. Lade sie also von dort ein, und sie nehmen die Einladung an wie bei jeder anderen Freigabe: [Share rex with family and friends](sharing.md).
+Deine Freunde und Familie wurden zu deinem Plex-Server eingeladen, nicht zu rex. rex ist ein neuer Server auf dem frischen Account. Lade sie also von dort ein, und sie nehmen die Einladung an wie bei jeder anderen Freigabe: [rex mit Familie und Freunden teilen](sharing.md).
 
 ## Schritt 4: Plex ausmustern (optional) {#step-4-retire-plex-optional}
 

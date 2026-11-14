@@ -54,7 +54,7 @@ Ja. Dateien werden in ihrer Originalqualität abgespielt: rex gibt die Datei unv
 
 ### Brauche ich Plex Pass? {#do-i-need-plex-pass}
 
-Nein. rex teilt den Plex-Apps mit, dass das Konto, auf dem es angemeldet ist, Plex Pass hat. Dadurch funktionieren Wiedergabe außerhalb des eigenen WLANs und Videokonvertierung auch mit kostenlosen Konten. Wiedergabe außerhalb des eigenen WLANs wurde in Plex Web mit einem kostenlosen Konto auf beiden Seiten getestet. Andere Apps wurden außerhalb des eigenen WLANs noch nicht getestet. Filmversionen, das Dashboard, Downloads, das Überspringen von Intro und Abspann sowie der Rest der [Movie and TV capabilities](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities) funktionieren ebenfalls. Eine App kann trotzdem eigene Regeln anwenden.
+Nein. rex teilt den Plex-Apps mit, dass das Konto, auf dem es angemeldet ist, Plex Pass hat. Dadurch funktionieren Wiedergabe außerhalb des eigenen WLANs und Videokonvertierung auch mit kostenlosen Konten. Wiedergabe außerhalb des eigenen WLANs wurde in Plex Web mit einem kostenlosen Konto auf beiden Seiten getestet. Andere Apps wurden außerhalb des eigenen WLANs noch nicht getestet. Filmversionen, das Dashboard, Downloads, das Überspringen von Intro und Abspann sowie der Rest der [Film- und Serienfunktionen](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities) funktionieren ebenfalls. Eine App kann trotzdem eigene Regeln anwenden.
 
 ### Kann ich zum Offline-Ansehen herunterladen? {#can-i-download-for-offline-viewing}
 
@@ -62,7 +62,7 @@ Die **Downloads** in den Plex-Apps sind da. rex bereitet den Download auf seinem
 
 ### Können mehrere Leute es nutzen, jeder mit eigenem Verlauf? {#can-several-people-use-it-each-with-their-own-history}
 
-Ja. Jeder, mit dem du rex teilst, meldet sich mit seinem eigenen Konto an und bekommt seinen eigenen Wiedergabestatus, „Weiterschauen“, Bewertungen und Playlists. Jeder kann seinen Verlauf von einem alten Plex-Server übernehmen ([Bring your watch history](import-watched.md)). [Share rex with family and friends](sharing.md) erklärt die Schritte, einschließlich verwalteter Benutzer für Kinder.
+Ja. Jeder, mit dem du rex teilst, meldet sich mit seinem eigenen Konto an und bekommt seinen eigenen Wiedergabestatus, „Weiterschauen“, Bewertungen und Playlists. Jeder kann seinen Verlauf von einem alten Plex-Server übernehmen ([Bring deine Wiedergabeverlauf mit](import-watched.md)). [rex mit Familie und Freunden teilen](sharing.md) erklärt die Schritte, einschließlich verwalteter Benutzer für Kinder.
 
 ### Welche Hardware braucht es? {#what-hardware-does-it-need}
 
@@ -107,7 +107,7 @@ Es gibt keinen Tuner und keinen DVR. Musik, Live-TV und Fotos brauchen eine Quel
 
 ### Warum zeigt die App eine Plex-Version und "Check for Updates"? {#why-does-the-app-show-a-plex-version-and-check-for-updates}
 
-rex stellt sich den Apps und plex.tv als Plex Media Server vor, deshalb zeigen die Apps eine Plex-Media-Server-Versionsnummer an. Diese Nummer gehört nicht zu rex. **Check for Updates** meldet immer, dass der Server auf dem neuesten Stand ist: rex aktualisiert sich nie selbst. Um rex zu aktualisieren, lade dir einen neueren Nightly herunter, wie unter [Updating](any-source.md#updating) beschrieben.
+rex stellt sich den Apps und plex.tv als Plex Media Server vor, deshalb zeigen die Apps eine Plex-Media-Server-Versionsnummer an. Diese Nummer gehört nicht zu rex. **Check for Updates** meldet immer, dass der Server auf dem neuesten Stand ist: rex aktualisiert sich nie selbst. Um rex zu aktualisieren, lade dir einen neueren Nightly herunter, wie unter [Aktualisieren](any-source.md#updating) beschrieben.
 
 ### Warum zeigt mein Browser unter port 32400/web keine Bibliothek an? {#why-does-my-browser-at-port-32400web-not-open-a-library}
 
@@ -138,7 +138,7 @@ Schau dir rex' Log direkt an, nachdem du auf Play gedrückt hast. Steht dort `up
 
 ### Ein Titel wird falsch zugeordnet. Wie behebe ich das? {#a-title-is-matched-wrong-how-do-i-fix-it}
 
-Die Quelle entscheidet, was jede Datei ist, und rex zeigt diesen Titel an. Melde dich mit dem Konto an, bei dem rex registriert ist, und nutze **Fix Match**: rex behält deine Auswahl, und eine Quelle kann sie auslesen, um sie als Zuordnung für dieses Release zu behalten, so wie zurg es tut ([Why DMM places the files](with-zurg.md#why-dmm-places-the-files)).
+Die Quelle entscheidet, was jede Datei ist, und rex zeigt diesen Titel an. Melde dich mit dem Konto an, bei dem rex registriert ist, und nutze **Fix Match**: rex behält deine Auswahl, und eine Quelle kann sie auslesen, um sie als Zuordnung für dieses Release zu behalten, so wie zurg es tut ([Warum DMM die Dateien ablegt](with-zurg.md#why-dmm-places-the-files)).
 
 ### Wo bekomme ich Hilfe? {#where-do-i-get-help}
 

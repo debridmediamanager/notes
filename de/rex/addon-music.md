@@ -3,7 +3,7 @@
 Dieses Tutorial legt einen Ordner mit Alben in eine **Music**-Bibliothek, die Plexamp, Plex Web und Plex for Android abspielen.
 Es unterstützt FLAC, MP3, AAC und andere gängige Dateien. Deine Dateien bleiben, wo sie sind. MusicBrainz liefert bekannte Albumdetails. Unbekannte Alben nutzen ihre Tags und `cover.jpg`. Eine `.lrc`-Datei daneben wird zu zeitgesteuerten Liedtexten.
 
-Es baut auf [Eigene rex-Addons bauen](addons.md) und dessen Abschnitt [Music](addons.md#music) auf. Lies zuerst das [Tutorial zu Heimvideos](addon-home-videos.md), wenn es dein erstes Addon ist.
+Es baut auf [Eigene rex-Addons bauen](addons.md) und dessen Abschnitt [Musik](addons.md#music) auf. Lies zuerst das [Tutorial zu Heimvideos](addon-home-videos.md), wenn es dein erstes Addon ist.
 
 | Du brauchst | Warum |
 |---|---|
@@ -291,10 +291,10 @@ rex liest selbst keine Tags. Alles, was Plex anzeigt, kommt von der Release-ID o
 
 ## Ändern {#change-it}
 
-- **Ein anderes Layout.** Ein Album, das in Disc-Ordner aufgeteilt ist (`CD1/`, `CD2/`), gilt für dieses Addon als zwei Alben, in denen jeweils zu wenige Tracks zum Abgleich sind. Fasse solche Ordner in `albums()` zusammen und schick eine `release` für alle ihre Dateien; siehe [Music](addons.md#music).
-- **Künstler mit eigenen Bildern.** Schick `display.artist.poster` und registriere mit `"artwork": "source"`: siehe [More from your addon](addon-more.md#artist-pictures).
-- **Playlists.** Schick die Position jedes Songs in einer Playlist, und rex erstellt die Playlist: siehe [More from your addon](addon-more.md#collections-and-playlists).
-- **Lautheit.** Wenn du die Lautheit jedes Songs misst, schick sie als `loudness` in Plex-Namen: siehe [Music](addons.md#music). rex misst selbst nichts.
+- **Ein anderes Layout.** Ein Album, das in Disc-Ordner aufgeteilt ist (`CD1/`, `CD2/`), gilt für dieses Addon als zwei Alben, in denen jeweils zu wenige Tracks zum Abgleich sind. Fasse solche Ordner in `albums()` zusammen und schick eine `release` für alle ihre Dateien; siehe [Musik](addons.md#music).
+- **Künstler mit eigenen Bildern.** Schick `display.artist.poster` und registriere mit `"artwork": "source"`: siehe [Mehr aus deinem Addon](addon-more.md#artist-pictures).
+- **Playlists.** Schick die Position jedes Songs in einer Playlist, und rex erstellt die Playlist: siehe [Mehr aus deinem Addon](addon-more.md#collections-and-playlists).
+- **Lautheit.** Wenn du die Lautheit jedes Songs misst, schick sie als `loudness` in Plex-Namen: siehe [Musik](addons.md#music). rex misst selbst nichts.
 
 ## Fehlerbehebung {#troubleshooting}
 

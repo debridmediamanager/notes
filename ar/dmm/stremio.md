@@ -64,7 +64,7 @@ Cast هنا تعني إضافة DMM، وليس Chromecast أو عكس الشاش
 | **No episodes in this release on Premiumize** | لم يتمكن DMM من مطابقة ملفات هذا الإصدار مع الحلقات. أرسل إصداراً آخر إلى Cast. |
 | عنوان الإضافة الملصوق في شريط البحث أعلى Stremio Web لا يفعل شيئاً | هذا الشريط للبحث فقط. استخدم **Addons** ← **Add addon**. |
 
-هل لا تزال عالقاً؟ اسأل في منتدى **dmm-cast-support** على [Discord](https://discord.com/invite/7u4YjMThXP). يوضح [Getting help](../guides/remote-help.md) ما يجب تضمينه.
+هل لا تزال عالقاً؟ اسأل في منتدى **dmm-cast-support** على [Discord](https://discord.com/invite/7u4YjMThXP). يوضح [الحصول على المساعدة](../guides/remote-help.md) ما يجب تضمينه.
 
 ## أسئلة {#questions}
 

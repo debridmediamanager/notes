@@ -100,7 +100,7 @@ Si `docker` dice permission denied, pon `sudo` delante de cada comando `docker` 
 
 ## 3. Agrega las carpetas de zurg en Plex {#3-add-zurgs-folders-in-plex}
 
-Abre Plex Web en `http://<this machine's LAN IP>:32400/web`. Añade una biblioteca **Movies** con la carpeta `/zurg_mnt/zurg/movies` y una biblioteca **TV Shows** con `/zurg_mnt/zurg/shows`, tal como aparece en [Real-Debrid in Plex](../../guides/real-debrid-plex.md#3-add-the-folders-in-plex).
+Abre Plex Web en `http://<this machine's LAN IP>:32400/web`. Añade una biblioteca **Movies** con la carpeta `/zurg_mnt/zurg/movies` y una biblioteca **TV Shows** con `/zurg_mnt/zurg/shows`, tal como aparece en [Real-Debrid en Plex](../../guides/real-debrid-plex.md#3-add-the-folders-in-plex).
 
 Para que Plex se entere de las novedades, abre el panel de zurg en `http://<this machine's LAN IP>:9999/config/` y pulsa **Login with Plex** en **Media Server Integration** ([paso 4 de esa guía](../../guides/real-debrid-plex.md#4-let-zurg-tell-plex-about-new-things)).
 

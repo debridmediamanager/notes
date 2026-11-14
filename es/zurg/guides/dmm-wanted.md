@@ -117,4 +117,4 @@ acquisition:
 
 Si tu patrocinio caduca o restableces tu clave, zurg registra que DMM rechazó la clave y vuelve a preguntar cada hora. Lo que ya se descargó sigue en tu biblioteca.
 
-Más detalles: [DMM wanted list](acquisition.md#dmm-wanted-list) en la referencia de adquisición.
+Más detalles: [Lista de deseados de DMM](acquisition.md#dmm-wanted-list) en la referencia de adquisición.

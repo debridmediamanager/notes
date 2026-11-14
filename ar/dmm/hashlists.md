@@ -61,7 +61,7 @@
 
 ### كيف أضيف قوائم الهاش إلى مكتبتي الخاصة؟ {#how-do-i-add-hash-lists-to-my-own-library}
 
-افتح القائمة، وسجّل الدخول إلى DMM باستخدام خدمة الdebrid الخاصة بك، ثم اضغط على زر خدمتك في أحد الصفوف، أو **RD Download** (أو **Download** الخاص بخدمتك) لكل ما هو معروض. راجع [Add a list to your library](#add-a-list-to-your-library).
+افتح القائمة، وسجّل الدخول إلى DMM باستخدام خدمة الdebrid الخاصة بك، ثم اضغط على زر خدمتك في أحد الصفوف، أو **RD Download** (أو **Download** الخاص بخدمتك) لكل ما هو معروض. راجع [أضف قائمة إلى مكتبتك](#add-a-list-to-your-library).
 
 ### لماذا تُخفى كل العناصر في قائمة الهاش الخاصة بي؟ {#why-are-all-the-items-in-my-hash-list-hidden}
 

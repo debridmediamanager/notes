@@ -46,7 +46,7 @@ Plex не замечает, когда в вашем аккаунте Real-Debri
 
 ![Раздел Media Server Integration на панели управления zurg с кнопкой Login with Plex](../assets/real-debrid-plex/01-zurg-login-with-plex.webp)
 
-После этого zurg просит Plex сканировать каждую папку, которая изменилась. Он также отключает некоторые настройки Plex, которые рискованны для библиотеки со стримингом, например **Empty trash automatically after every scan**: [Recommended Plex Settings](../zurg/guides/plex.md#recommended-plex-settings) перечисляет их.
+После этого zurg просит Plex сканировать каждую папку, которая изменилась. Он также отключает некоторые настройки Plex, которые рискованны для библиотеки со стримингом, например **Empty trash automatically after every scan**: [Рекомендуемые настройки Plex](../zurg/guides/plex.md#recommended-plex-settings) перечисляет их.
 
 ## Если что-то не работает {#when-something-is-wrong}
 
@@ -58,9 +58,9 @@ Plex не замечает, когда в вашем аккаунте Real-Debri
 | В Docker библиотеки Plex пустеют после перезапуска zurg, а `docker exec plex ls /zurg_mnt/zurg` выдаёт `Transport endpoint is not connected` | Передайте контейнеру Plex папку zurg с опцией `rslave`: `/zurg_mnt:/zurg_mnt:rslave`. [В одном файле Docker Compose](../zurg/guides/docker-compose.md) это уже есть. |
 | Новые файлы появляются в папках zurg, но не в Plex | Выполните шаг 4. До этого нажмите **Scan Library Files** в библиотеке Plex. |
 | zurg выдаёт `bad_token` | Токен Real-Debrid неверный или обрезан. [Ваш API-токен Real-Debrid](real-debrid-api-token.md#when-something-is-wrong) описывает, как это исправить. |
-| Диск заполняется | zurg хранит копию того, что вы смотрите, до 256G по умолчанию. Ограничить это можно, как показано в разделе [Keeping the cache small](../zurg/setup/windows.md#keeping-the-cache-small) (Windows) или [Disk the mount uses](../zurg/setup/linux.md#disk-the-mount-uses) (Linux). |
+| Диск заполняется | zurg хранит копию того, что вы смотрите, до 256G по умолчанию. Ограничить это можно, как показано в разделе [Держим кэш маленьким](../zurg/setup/windows.md#keeping-the-cache-small) (Windows) или [Диск, который использует mount](../zurg/setup/linux.md#disk-the-mount-uses) (Linux). |
 
-Всё ещё не получается? Спросите на форуме **zurg-support** в [Discord](https://discord.com/invite/7u4YjMThXP). В [Getting help](remote-help.md) написано, что приложить к вопросу.
+Всё ещё не получается? Спросите на форуме **zurg-support** в [Discord](https://discord.com/invite/7u4YjMThXP). В [Получение помощи](remote-help.md) написано, что приложить к вопросу.
 
 ## Вопросы {#questions}
 
@@ -74,8 +74,8 @@ Plex не замечает, когда в вашем аккаунте Real-Debri
 
 ### Можно ли обойтись без Plex Media Server? {#can-i-skip-plex-media-server}
 
-Да, с rex. [rex with zurg](../rex/with-zurg.md) показывает вашу библиотеку zurg в приложениях Plex, без Plex Media Server и без монтирования. Можно и то, и другое: [One Docker Compose file](../zurg/guides/docker-compose.md) запускает zurg, Plex Media Server и rex на одной машине.
+Да, с rex. [rex с zurg](../rex/with-zurg.md) показывает вашу библиотеку zurg в приложениях Plex, без Plex Media Server и без монтирования. Можно и то, и другое: [One Docker Compose file](../zurg/guides/docker-compose.md) запускает zurg, Plex Media Server и rex на одной машине.
 
 ### Работает ли это и с TorBox или Usenet? {#does-it-work-with-torbox-or-usenet-too}
 
-Да. Установщик zurg также предлагает TorBox, AllDebrid, Premiumize, Debrid-Link, Offcloud и Usenet и складывает их все в одни и те же папки `movies` и `shows`. На странице [Providers](../zurg/providers/index.md) есть отдельная страница для каждого из них.
+Да. Установщик zurg также предлагает TorBox, AllDebrid, Premiumize, Debrid-Link, Offcloud и Usenet и складывает их все в одни и те же папки `movies` и `shows`. На странице [Провайдеры](../zurg/providers/index.md) есть отдельная страница для каждого из них.

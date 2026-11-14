@@ -1,6 +1,6 @@
 # 各部分的作用 {#what-each-piece-does}
 
-名字本身看不出各自的用途，所以这里每个都用一句话说明。没有标注 **For sponsors** 的都是免费的。要找出你需要哪些，请看 [Choose your setup](choose-your-setup.md)。
+名字本身看不出各自的用途，所以这里每个都用一句话说明。没有标注 **For sponsors** 的都是免费的。要找出你需要哪些，请看 [选择你的配置](choose-your-setup.md)。
 
 ## 三个项目 {#the-three-projects}
 
@@ -28,7 +28,7 @@
 | [rex 插件](../rex/addons.md) | 为 rex 提供播放内容的小程序，例如 YouTube、Spotify、IPTV、家庭视频，或你自己编写的任何内容 |
 | [rex-live-sports](../rex/live-tv.md) | 一个 rex 插件，把体育直播频道和节目指南加入 Plex 应用的 Live TV 中 |
 | [rex-direct](../rex/any-source.md#rex-direct) | 为你的 rex 提供专属的安全地址，让 Plex 应用在外面也能访问它 |
-| [rex for Android](../rex/android.md) | 在 Android 手机或电视盒子上运行 rex 及其插件，无需电脑 |
+| [rex 安卓版](../rex/android.md) | 在 Android 手机或电视盒子上运行 rex 及其插件，无需电脑 |
 | [zurg+rex for Android](../zurg/guides/android.md) | 在手机上运行 Plex 服务器：在一台 Android 设备上同时运行 zurg 和 rex，并接入你的 debrid 网盘和 Usenet 库。仅限赞助者 |
 
 ## 在 Jellyfin 和 Emby 中使用 {#inside-jellyfin-and-emby}
@@ -55,7 +55,7 @@
 |---|---|
 | Usenet tab | 无需 Usenet 账号，即可将 Usenet 资源发送到你的 Real-Debrid 库。赞助者优先，并且每日额度更多 |
 | [Request board](https://debridmediamanager.com/requests) | 请求 Real-Debrid 库中没有的资源。其他 DMM 用户会将其移入你的库。满 10 个请求即可获得 7 天的 DMM 赞助者特权 |
-| [Hash lists](https://debridmediamanager.com/hashlists) | 分享资源列表，方便其他人添加到他们自己的账号中 |
+| [哈希列表](https://debridmediamanager.com/hashlists) | 分享资源列表，方便其他人添加到他们自己的账号中 |
 | Browser extension | 在电影和剧集网站上以及磁力链接旁添加 DMM 按钮。适用于 [Chrome](https://chromewebstore.google.com/detail/Debrid%20Media%20Manager/oeojlegjfhgefhnbjdnaebgdfkbipghm)、[Firefox](https://addons.mozilla.org/en-US/firefox/addon/debrid-media-manager/) 和 [Safari](../dmm/safari.md) |
 | [gatekeeper](https://gatekeeper.debridmediamanager.com) | 赞助网站。在这里赞助，关联你的 Patreon 或 GitHub Sponsors 赞助，即可获取你的 DMM API 密钥。[赞助能带来什么](sponsorship.md) |
 

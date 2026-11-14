@@ -132,7 +132,7 @@ flowchart TD
     R --> P[Your chosen RD playback route]
 ```
 
-**Choisis TorBox hosted NZBs** quand tu veux que TorBox télécharge et répare. DMM lui envoie le NZB. Les nightlies actuelles de zurg utilisent le type de provider `torbox_nzb` et acceptent les NZB du répertoire de surveillance et de l'interface SABnzbd. [TorBox hosted Usenet](../zurg/providers/torbox-nzb.md) explique sa configuration dans zurg. Un cache miss doit finir avant la lecture. Les téléchargements partagent les slots avec les torrents. Les fichiers conservés peuvent expirer, et zurg ne promet pas de récupérer à nouveau une release expirée. Garde le NZB pour une future récupération.
+**Choisis TorBox hosted NZBs** quand tu veux que TorBox télécharge et répare. DMM lui envoie le NZB. Les nightlies actuelles de zurg utilisent le type de provider `torbox_nzb` et acceptent les NZB du répertoire de surveillance et de l'interface SABnzbd. [TorBox hébergé Usenet](../zurg/providers/torbox-nzb.md) explique sa configuration dans zurg. Un cache miss doit finir avant la lecture. Les téléchargements partagent les slots avec les torrents. Les fichiers conservés peuvent expirer, et zurg ne promet pas de récupérer à nouveau une release expirée. Garde le NZB pour une future récupération.
 
 **Choisis direct Usenet** quand zurg doit lire via tes propres comptes de news, y compris les comptes de secours ou de blocs. Il utilise `nzb` avec des identifiants NNTP. Un identifiant de serveur de news TorBox va aussi ici. C'est séparé de TorBox hosted NZBs. Voir [TorBox NNTP](../zurg/providers/torbox-news-server.md) et [ses offres](https://torbox.app/pricing).
 

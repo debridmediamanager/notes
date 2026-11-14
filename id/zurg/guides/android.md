@@ -2,7 +2,7 @@
 
 zurg+rex adalah server Plex di ponsel kamu. zurg membawa akun debrid dan Usenet kamu, lalu rex menyajikannya ke setiap aplikasi Plex di rumahmu, lengkap dengan poster, musim, dan progres tontonan. Berjalan di ponsel, tablet, Android TV, Google TV, atau Fire TV, tanpa komputer.
 
-Ada sponsornya. Tidak punya sponsor? [rex for Android](../../rex/android.md) gratis dan memutar apa pun yang dibawa oleh addon-nya.
+Ada sponsornya. Tidak punya sponsor? [rex untuk Android](../../rex/android.md) gratis dan memutar apa pun yang dibawa oleh addon-nya.
 
 | Aplikasinya | Di aplikasi Plex | Di aplikasi Plex lain |
 |---|---|---|
@@ -149,7 +149,7 @@ Token GitHub kamu disimpan terenkripsi di perangkat. Jika aplikasi dicopot, semu
 | **This is a 32-bit device. Debrid libraries are supported; Usenet needs 64-bit Android.** | Tambahkan akun debrid, atau gunakan perangkat 64-bit untuk Usenet |
 | **The Plex code expired. Ask for a new one.** | Tekan **Sign in to Plex** lagi lalu masukkan kode baru dalam 10 menit |
 | Server tidak muncul di aplikasi Plex | Masuk ke aplikasi Plex dengan akun yang Anda pakai di Langkah 6, dan pastikan kedua perangkat berada di jaringan rumah yang sama |
-| Judul hanya menampilkan nama file dan tanpa poster | Masukkan API key DMM Anda (lihat [Get more titles named](#get-more-titles-named)), atau gunakan **Fix Match** di aplikasi Plex |
+| Judul hanya menampilkan nama file dan tanpa poster | Masukkan API key DMM Anda (lihat [Dapatkan lebih banyak judul bernama](#get-more-titles-named)), atau gunakan **Fix Match** di aplikasi Plex |
 | **Needs an update** di bawah addon | Versi aplikasi ini tidak bisa lagi menjalankan salinan addon tersebut. Segarkan repository-nya lalu tekan **Update**. Judulnya tetap tersimpan sementara itu |
 | Aplikasi berhenti saat layar mati | Izinkan penggunaan di latar belakang lagi dan lihat [Don't kill my app](https://dontkillmyapp.com/) |
 | Pembaruan membuat aplikasi tidak punya engine | Pasang engine dari **Updates** sekali saja. Penyedia dan pengaturan Anda tetap ada |

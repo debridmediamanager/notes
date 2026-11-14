@@ -46,7 +46,7 @@ Plex merkt nicht, wenn etwas Neues in deinem Real-Debrid-Konto landet. zurg kann
 
 ![The Media Server Integration section of zurg's dashboard, with the Login with Plex button](../assets/real-debrid-plex/01-zurg-login-with-plex.webp)
 
-Ab dann bittet zurg Plex, jeden Ordner zu scannen, der sich ändert. Außerdem schaltet es ein paar Plex-Einstellungen ab, die bei einer gestreamten Bibliothek riskant sind, zum Beispiel **Empty trash automatically after every scan**: [Recommended Plex Settings](../zurg/guides/plex.md#recommended-plex-settings) listet sie auf.
+Ab dann bittet zurg Plex, jeden Ordner zu scannen, der sich ändert. Außerdem schaltet es ein paar Plex-Einstellungen ab, die bei einer gestreamten Bibliothek riskant sind, zum Beispiel **Empty trash automatically after every scan**: [Empfohlene Plex-Einstellungen](../zurg/guides/plex.md#recommended-plex-settings) listet sie auf.
 
 ## Wenn etwas nicht stimmt {#when-something-is-wrong}
 
@@ -78,4 +78,4 @@ Ja, mit rex. [rex mit zurg](../rex/with-zurg.md) zeigt deine zurg-Bibliothek in 
 
 ### Funktioniert es auch mit TorBox oder Usenet? {#does-it-work-with-torbox-or-usenet-too}
 
-Ja. Das Installationsprogramm von zurg bietet außerdem TorBox, AllDebrid, Premiumize, Debrid-Link, Offcloud und Usenet an und legt alle in denselben Ordnern `movies` und `shows` ab. Für jeden Anbieter gibt es eine eigene Seite unter [Providers](../zurg/providers/index.md).
+Ja. Das Installationsprogramm von zurg bietet außerdem TorBox, AllDebrid, Premiumize, Debrid-Link, Offcloud und Usenet an und legt alle in denselben Ordnern `movies` und `shows` ab. Für jeden Anbieter gibt es eine eigene Seite unter [Anbieter](../zurg/providers/index.md).

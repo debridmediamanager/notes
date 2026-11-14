@@ -9,7 +9,7 @@ Fitur ini untuk sponsor. Seerr masuk menggunakan API key DMM dari [gatekeeper](h
 
 ## Yang kamu butuhkan {#what-you-need}
 
-- zurg membaca daftar wanted Anda dengan `dmm_api_key` di `config.yml`. Lihat [Fetch what you want from DMM](../zurg/guides/dmm-wanted.md#what-you-need).
+- zurg membaca daftar wanted Anda dengan `dmm_api_key` di `config.yml`. Lihat [Ambil apa yang kamu mau dari DMM](../zurg/guides/dmm-wanted.md#what-you-need).
 - Seerr sudah disiapkan dengan server Plex, Jellyfin atau Emby Anda supaya tahu episode mana yang sudah Anda punya.
 
 ## Tambahkan DMM sebagai Radarr {#add-dmm-as-radarr}
@@ -69,7 +69,7 @@ Seerr membaca daftar DMM sekali sehari di **Radarr Scan** dan **Sonarr Scan**. U
 
 Buka judul di Seerr, tekan tombol roda gigi lalu pilih **Remove from Radarr** (atau **Remove from Sonarr**). Itu akan menghapusnya dari daftar yang diinginkan. Yang sudah diambil zurg tetap ada di perpustakaanmu. **Open in Radarr** di sebelahnya akan membuka judul tersebut di DMM.
 
-Mentok? Tanya di forum **dmm-support** di [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan.
+Mentok? Tanya di forum **dmm-support** di [Discord](https://discord.com/invite/7u4YjMThXP). [Mendapatkan bantuan](../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan.
 
 ## Seerr melalui DMM atau sumber Seerr milik zurg sendiri {#seerr-through-dmm-or-zurgs-own-seerr-source}
 

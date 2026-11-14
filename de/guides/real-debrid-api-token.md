@@ -21,7 +21,7 @@ Mit **Refresh** auf dieser Seite bekommst du einen neuen Token. Real-Debrid empf
 
 ![DMM's Connect Real-Debrid page](../assets/real-debrid-api-token/02-dmm-paste-key.webp)
 
-DMM braucht den Token gar nicht: **Sign in with Real-Debrid** zeigt dir einen Code, den du unter real-debrid.com/device bestätigst. So bekommt DMM seine eigene Anmeldung, die sich selbst erneuert. Mehr dazu unter [What is DMM and how do I use it?](../dmm/index.md#sign-in)
+DMM braucht den Token gar nicht: **Sign in with Real-Debrid** zeigt dir einen Code, den du unter real-debrid.com/device bestätigst. So bekommt DMM seine eigene Anmeldung, die sich selbst erneuert. Mehr dazu unter [Was ist DMM und wie benutze ich es?](../dmm/index.md#sign-in)
 
 ## In zurg eintragen {#put-it-in-zurg}
 

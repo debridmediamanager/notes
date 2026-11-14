@@ -11,7 +11,7 @@
 | Debrid-Link | `debridlink` | [Debrid-Link](debridlink.md) |
 | Offcloud | `offcloud` | [Offcloud](offcloud.md) |
 | Usenet | `nzb` | [Usenet](usenet.md) |
-| TorBox hosted Usenet | `torbox_nzb` | [TorBox hosted Usenet](torbox-nzb.md) |
+| TorBox hosted Usenet | `torbox_nzb` | [TorBox 托管的 Usenet](torbox-nzb.md) |
 
 有三个页面比基础设置讲得更深。[TorBox 限制](torbox-limits.md) 列出了 TorBox 限速背后的实测数据。[TorBox 新闻服务器](torbox-news-server.md) 和 [ElfHosted 新闻服务器](elfhosted-news-server.md) 记录了这些套餐附带的 Usenet 账号实际是什么。在花一个 provider 名额之前，先看看这些页面，再做判断。
 

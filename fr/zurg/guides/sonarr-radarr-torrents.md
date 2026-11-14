@@ -583,7 +583,7 @@ Dans chaque application, ouvre **Settings → Import Lists → + → Plex Watchl
 
 zurg a [sa propre liste de suivi](plex-watchlist.md) qui télécharge depuis les indexeurs que tu lui donnes directement. Utilise l'une ou l'autre. Avec les deux, le même titre est téléchargé deux fois.
 
-Pour suivre d'autres listes, comme une liste par genre, voir [Lists in Sonarr & Radarr](import-lists.md).
+Pour suivre d'autres listes, comme une liste par genre, voir [Listes dans Sonarr et Radarr](import-lists.md).
 
 ## Si l'import copie au lieu de déplacer {#if-the-import-copies-instead-of-moving}
 
@@ -618,7 +618,7 @@ qbittorrent:
 
 **Ce qui compte comme avancer** : un changement d'étape ou une hausse de la progression, évalués sur la fraction brute que le compte renvoie et non sur le pourcentage entier. Un pour cent d'une release de 100 Go représente un gigaoctet. Une release que le compte est en train de décompresser n'est pas soumise au chronomètre : cette étape reste à la même valeur tant qu'il le faut.
 
-**Quinze a été mesuré, pas choisi.** AllDebrid place un job sain dans sa propre file d'attente avec tous les compteurs à zéro. Sur deux essais, deux, le job est resté là pendant 580 et 622 secondes avant de se télécharger en quelques secondes et de se terminer. Un délai par défaut de dix minutes les aurait abandonnés tous les deux. Les captures, ainsi que le tableau qui fait correspondre les formulations propres à chaque compte aux cinq états compris par les \*arrs, se trouvent dans [Torrent lifecycle](../internals/torrent-lifecycle.md).
+**Quinze a été mesuré, pas choisi.** AllDebrid place un job sain dans sa propre file d'attente avec tous les compteurs à zéro. Sur deux essais, deux, le job est resté là pendant 580 et 622 secondes avant de se télécharger en quelques secondes et de se terminer. Un délai par défaut de dix minutes les aurait abandonnés tous les deux. Les captures, ainsi que le tableau qui fait correspondre les formulations propres à chaque compte aux cinq états compris par les \*arrs, se trouvent dans [Cycle de vie d'un torrent](../internals/torrent-lifecycle.md).
 
 **Ce que supprime un délai dépassé.** L'instance sur ce compte, et seulement celle-là. La suppression ne touche qu'une instance que zurg a ajoutée lui-même pour ce grab et qui n'a jamais abouti, rien d'autre. Lorsqu'il ne reste plus aucun compte, le grab est signalé en erreur, avec une raison qui nomme chaque compte et ce qu'il a fait.
 

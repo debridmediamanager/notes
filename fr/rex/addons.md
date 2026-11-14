@@ -31,9 +31,9 @@ Cette page détaille chaque étape que ces tutoriels suivent. [Plus avec votre a
 | Vous avez besoin de | Pourquoi |
 |---|---|
 | rex, configuré comme dans [rex avec votre propre app](any-source.md) (étapes 1 à 3) | C'est là que la bibliothèque de votre addon apparaît |
-| Un nightly de rex daté du 2026.10.25 ou plus récent, ou du 2026.11.02 ou plus récent pour [Music](#music) et [Live TV](#live-tv) | Cette page est écrite pour cette version |
+| Un nightly de rex daté du 2026.10.25 ou plus récent, ou du 2026.11.02 ou plus récent pour [Musique](#music) et [TV en direct](#live-tv) | Cette page est écrite pour cette version |
 | FFmpeg sur la machine où tourne rex, si votre addon sert des flux | rex lit un flux en le convertissant (une copie, peu coûteuse). rex trouve FFmpeg tout seul ; voir [Converting video](any-source.md#converting-video-optional) |
-| Votre addon sur la même machine que rex, ou sur votre réseau domestique | Le flux de rex ne répond qu'à ceux-là : voir [Keep the port private](any-source.md#keep-the-port-private) |
+| Votre addon sur la même machine que rex, ou sur votre réseau domestique | Le flux de rex ne répond qu'à ceux-là : voir [Garder le port privé](any-source.md#keep-the-port-private) |
 
 Cette page note l'adresse de rex `192.168.1.20:32400` et celle de l'addon `127.0.0.1:9981`. Mettez les vôtres à leur place. La référence complète de l'API de rex est [docs/feed-api.md](https://github.com/debridmediamanager/rex/blob/main/docs/feed-api.md).
 

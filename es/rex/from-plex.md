@@ -10,7 +10,7 @@ Ejecutas Plex Media Server y quieres probar rex. Tus apps de Plex siguen igual. 
 | Qué es cada archivo | Plex lo identifica por su nombre de archivo | La fuente lo averigua y se lo dice a rex. rex nunca lee un nombre de archivo |
 | Una coincidencia incorrecta | Fix Match en el servidor | **Fix Match** en una app de Plex, con sesión iniciada con la cuenta que es dueña de rex. rex guarda tu elección, y una fuente puede quitarla y conservarla, como hace zurg ([por qué los títulos se colocan como están](with-zurg.md#why-dmm-places-the-files)) |
 | La cuenta en la que está el servidor | Normalmente la tuya | Una cuenta nueva de Plex creada para rex, compartida con la tuya |
-| Música, TV en vivo y fotos | Desde carpetas y un sintonizador | Solo desde una fuente que las envíe, como un addon ([Building rex addons](addons.md#music)) o los cómics de zurg. Plex Web muestra fotos; Plex para Android no |
+| Música, TV en vivo y fotos | Desde carpetas y un sintonizador | Solo desde una fuente que las envíe, como un addon ([Creación de complementos para rex](addons.md#music)) o los cómics de zurg. Plex Web muestra fotos; Plex para Android no |
 | Grabar TV | Sí | No |
 
 ## Elige una forma {#pick-a-way}
@@ -25,7 +25,7 @@ Empieza junto a Plex incluso si piensas reemplazarlo: copiar tu historial de rep
 
 ## Paso 1. Instala rex junto a Plex {#step-1-set-up-rex-beside-plex}
 
-Configura rex con la fuente que lo va a alimentar, como en [rex with your own app](any-source.md), [rex with your Stremio addons](stremio.md) o [rex with zurg](with-zurg.md), hasta poder ver algo. ¿Ya tienes zurg funcionando para Plex? Sáltate la instalación y actualízalo como indica el paso 1 de rex with zurg: zurg alimenta a rex desde la versión nightly **2026.10.27** en adelante.
+Configura rex con la fuente que lo va a alimentar, como en [rex con tu propia app](any-source.md), [rex con tus addons de Stremio](stremio.md) o [rex con zurg](with-zurg.md), hasta poder ver algo. ¿Ya tienes zurg funcionando para Plex? Sáltate la instalación y actualízalo como indica el paso 1 de rex with zurg: zurg alimenta a rex desde la versión nightly **2026.10.27** en adelante.
 
 - **¿Plex funciona en la misma máquina?** Pon rex en el puerto `32500`, como indica [Install rex](any-source.md#step-1-install-rex) para ese caso, y dale ese mismo puerto a tu fuente. Tus apps entonces mostrarán dos servidores con el nombre de la máquina: rex es el que se comparte contigo, con el nombre de la cuenta nueva al lado. [Install rex](any-source.md#step-1-install-rex) explica cómo cambiarle el nombre.
 - **Registra rex en una cuenta nueva de Plex,** no en la que está tu servidor de Plex, como explica [Add it to a Plex account](any-source.md#step-3-add-it-to-a-plex-account).

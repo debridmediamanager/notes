@@ -422,7 +422,7 @@ Die rex-direct ist DMMs Antwort auf plex.direct und ist standardmäßig aktivier
 
 Sobald rex beansprucht ist, bekommt rex von DMM zwei Namen: `<hash>.rex-direct.debridmediamanager.com`, der auf die öffentliche IP deines Zuhauses zeigt, und `lan.<hash>.rex-direct.debridmediamanager.com`, der auf die LAN-IP von rex zeigt, mit einem Zertifikat für beide. Das erste Zertifikat braucht ein paar Minuten. Im rex-Log steht, dass es ausgestellt wird, und danach wird jeder Name in einer Zeile `rex-direct:` angezeigt. Eine neue Heim-IP und Zertifikatserneuerungen werden automatisch übernommen. Ein Plex-Konto kann bis zu zehn rex-direct-Namen haben. Zu Hause können Plex-Apps, auch app.plex.tv, den `lan.`-Namen verwenden. Der erreicht rex direkt über dein Netzwerk, daher wird die Portweiterleitung nur für unterwegs gebraucht. Erlaube in app.plex.tv den Zugriff auf Geräte im lokalen Netzwerk, wenn Chrome danach fragt. Sonst weicht die Seite auf den öffentlichen Namen aus, und der braucht die Portweiterleitung. [Was du sehen solltest](#what-you-should-see) prüft beide Namen.
 
-Leitet dein Router an rex einen anderen externen Port weiter, füge den Schlüssel `REX_DIRECT_PORT=<that port>` hinzu, wie es [Schritt 1](#step-1-install-rex) für dein System zeigt, und starte rex neu. Die Portweiterleitung öffnet die Feed-API nicht: siehe [Keep the port private](#keep-the-port-private).
+Leitet dein Router an rex einen anderen externen Port weiter, füge den Schlüssel `REX_DIRECT_PORT=<that port>` hinzu, wie es [Schritt 1](#step-1-install-rex) für dein System zeigt, und starte rex neu. Die Portweiterleitung öffnet die Feed-API nicht: siehe [Port privat halten](#keep-the-port-private).
 
 ### rex-direct über IPv6 {#rex-direct-over-ipv6}
 
@@ -530,7 +530,7 @@ rex gibt das bei jedem Start aus. Probleme zeigen sich später als `heartbeat fa
 
 ## Dein Wiedergabeverlauf von einem anderen Plex-Server (optional) {#your-watch-history-from-another-plex-server-optional}
 
-Schon mal auf einem anderen Plex-Server geschaut? Sobald deine Bibliothek in rex liegt, übernimmt [Bring your watch history](import-watched.md) von dort, was du geschaut hast, wo du aufgehört hast und deine Sternebewertungen, und zwar für jede Person einzeln.
+Schon mal auf einem anderen Plex-Server geschaut? Sobald deine Bibliothek in rex liegt, übernimmt [Bring deine Wiedergabeverlauf mit](import-watched.md) von dort, was du geschaut hast, wo du aufgehört hast und deine Sternebewertungen, und zwar für jede Person einzeln.
 
 ## Video konvertieren (optional) {#converting-video-optional}
 

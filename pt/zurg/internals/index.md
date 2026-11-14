@@ -15,9 +15,9 @@ Como o zurg é construído. Como ele foi medido. As notas de design por trás da
 
 | Página | O que contém |
 |---|---|
-| [Debrid baseline](debrid-baseline.md) | Quanto o zurg custa e a velocidade dele com Real-Debrid, AllDebrid e TorBox. |
-| [Torrent lifecycle](torrent-lifecycle.md) | O que cada conta realmente informa durante um download, capturado ao vivo. |
-| [Real-Debrid API notes](realdebrid-behavior.md) | Semântica dos links, seleção de arquivos e o que "cached" realmente significa. |
+| [Baseline de debrid](debrid-baseline.md) | Quanto o zurg custa e a velocidade dele com Real-Debrid, AllDebrid e TorBox. |
+| [Ciclo de vida do torrent](torrent-lifecycle.md) | O que cada conta realmente informa durante um download, capturado ao vivo. |
+| [Notas da API do Real-Debrid](realdebrid-behavior.md) | Semântica dos links, seleção de arquivos e o que "cached" realmente significa. |
 
 ## Contratos que o zurg precisa cumprir {#contracts-zurg-has-to-satisfy}
 
@@ -31,9 +31,9 @@ Como o zurg é construído. Como ele foi medido. As notas de design por trás da
 
 | Página | O que contém |
 |---|---|
-| [Plex trash sweep](plex-trash-sweep.md) | Alinhar a limpeza do Plex com a visão do próprio zurg sobre o que está quebrado. |
-| [Stream timeout regression](stream-timeout-regression.md) | Um stream em proxy que deixou de aguentar leituras longas. |
-| [rclone move refusal](rclone-move-refusal.md) | Importações vazias depois que um backend recusou um MOVE, e o patch. |
+| [Limpeza de lixo do Plex](plex-trash-sweep.md) | Alinhar a limpeza do Plex com a visão do próprio zurg sobre o que está quebrado. |
+| [Regressão de timeout no stream](stream-timeout-regression.md) | Um stream em proxy que deixou de aguentar leituras longas. |
+| [recusa do rclone move](rclone-move-refusal.md) | Importações vazias depois que um backend recusou um MOVE, e o patch. |
 
 ## Testes {#testing}
 

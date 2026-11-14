@@ -80,7 +80,7 @@ Tudo o que um patrocínio libera e onde cada coisa é configurada está em [O qu
 | **Your TorBox account is on the free plan, which has no API access. DMM needs a paid TorBox plan.** | O plano gratuito do TorBox não pode ser usado com o DMM. Faça upgrade para um plano pago, ou entre com outro serviço. |
 | Only **DL with RD** buttons, no **Instant RD** | Seu serviço não tem nenhum desses lançamentos em cache. Clique em um deles e espere baixar, ou tente outro lançamento. |
 
-Ficou com dúvida? Pergunte no fórum **dmm-support** no [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) explica o que incluir.
+Ficou com dúvida? Pergunte no fórum **dmm-support** no [Discord](https://discord.com/invite/7u4YjMThXP). [Obtendo ajuda](../guides/remote-help.md) explica o que incluir.
 
 ## Perguntas {#questions}
 

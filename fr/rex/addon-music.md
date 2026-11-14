@@ -5,7 +5,7 @@ Il prend en charge FLAC, MP3, AAC et d'autres formats courants. Vos fichiers res
 MusicBrainz fournit les informations des albums connus. Les albums inconnus utilisent leurs tags et `cover.jpg`.
 Un fichier `.lrc` situé à côté devient des paroles synchronisées.
 
-Il suit [Building rex addons](addons.md) et sa section [Musique](addons.md#music). Lisez d'abord le [tutoriel sur les vidéos personnelles](addon-home-videos.md) si c'est votre premier addon.
+Il suit [Créer des addons pour rex](addons.md) et sa section [Musique](addons.md#music). Lisez d'abord le [tutoriel sur les vidéos personnelles](addon-home-videos.md) si c'est votre premier addon.
 
 | Il vous faut | Pourquoi |
 |---|---|

@@ -213,7 +213,7 @@ Setup tidak pernah menimpa `config.yml` yang sudah ada. Untuk setup tanpa intera
 
 Lihat [configuration reference](../reference/config.md) untuk setiap pengaturan.
 
-Masih bingung? Tanya di forum **zurg-support** di [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan.
+Masih bingung? Tanya di forum **zurg-support** di [Discord](https://discord.com/invite/7u4YjMThXP). [Mendapatkan bantuan](../../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan.
 
 ## Lihat juga {#see-also}
 

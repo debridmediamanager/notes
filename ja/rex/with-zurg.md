@@ -384,7 +384,7 @@ Docker では、ファイルは `~/rex/config` にあり、root だけが読め�
 
 **What it does.** rex に、自宅の外にいる Plex アプリから届く HTTPS アドレスを用意し、そのアドレスを plex.tv に伝えます。
 
-**Why it matters.** 自宅の外では、app.plex.tv は HTTPS アドレスにしか接続せず、他の Plex アプリも HTTPS を優先します。本物の Plex サーバーは Plex のリレーに切り替えられますが、rex はそれができないため、接続方法は自分で選ぶ必要があります。rex は先に [claimed](#step-3-add-it-to-a-plex-account) しておく必要があり、インターネットに面したプロキシでは `/rex/` をブロックする必要があります（[Keep the port private](#keep-the-port-private)）。
+**Why it matters.** 自宅の外では、app.plex.tv は HTTPS アドレスにしか接続せず、他の Plex アプリも HTTPS を優先します。本物の Plex サーバーは Plex のリレーに切り替えられますが、rex はそれができないため、接続方法は自分で選ぶ必要があります。rex は先に [claimed](#step-3-add-it-to-a-plex-account) しておく必要があり、インターネットに面したプロキシでは `/rex/` をブロックする必要があります（[ポートを非公開にする](#keep-the-port-private)）。
 
 **Plex Pass.** Plex Web は、どちらのアカウントにも Plex Pass や Remote Watch Pass がなくても、自宅の外で再生できます。他の Plex アプリについては、自宅の外での動作は確認していません。
 
@@ -802,7 +802,7 @@ cd ~/rex && docker compose down
 
 ### ヘルプを求める {#getting-help}
 
-DMM [Discord](https://discord.com/invite/7u4YjMThXP) の **rex-support** フォーラムで質問してください。何を含めればよいかは [Getting help](../guides/remote-help.md) に書いてあり、スポンサーがリモートサポートを受ける方法も載っています。
+DMM [Discord](https://discord.com/invite/7u4YjMThXP) の **rex-support** フォーラムで質問してください。何を含めればよいかは [ヘルプの入手方法](../guides/remote-help.md) に書いてあり、スポンサーがリモートサポートを受ける方法も載っています。
 
 ## 問題が起きたとき {#when-something-is-wrong}
 

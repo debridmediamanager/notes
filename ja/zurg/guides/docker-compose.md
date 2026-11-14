@@ -85,7 +85,7 @@ services:
 - **zurg** はインストーラー自身のサービスで、変更はありません。
 - **plex** は zurg のフォルダーを、zurg が使うのと同じパス `/zurg_mnt/zurg` で見ます。そのため zurg がスキャンを求めるとき、Plex が知っているフォルダー名を指定します。`rslave` のおかげで、zurg を再起動してもフォルダーはそのまま残ります。`TZ` には自分のタイムゾーンを入れてください。
 - **PLEX_CLAIM** は、最初に起動したときに Plex Media Server をあなたのアカウントにサインインさせます。Plex にサインインした状態で [plex.tv/claim](https://www.plex.tv/claim) を開き、コードをコピーして `=` の直後に貼り付けてください。コードは数分で期限切れになるので、すぐにスタックを起動しましょう。
-- **rex** は [rex with zurg](../../rex/with-zurg.md#d2-start-rex-in-docker) にあるサービスです。Plex Media Server が 32400 番ポートを使っているので、32500 番ポートで動きます。ファイルは `~/rex/config` に保存され、rex with zurg もそこを参照します。
+- **rex** は [rex と zurg の併用](../../rex/with-zurg.md#d2-start-rex-in-docker) にあるサービスです。Plex Media Server が 32400 番ポートを使っているので、32500 番ポートで動きます。ファイルは `~/rex/config` に保存され、rex with zurg もそこを参照します。
 
 保存して、すべて起動します:
 
@@ -100,7 +100,7 @@ docker compose ps
 
 ## 3. Plex に zurg のフォルダーを追加する {#3-add-zurgs-folders-in-plex}
 
-Plex Webを`http://<this machine's LAN IP>:32400/web`で開きます。[Real-Debrid in Plex](../../guides/real-debrid-plex.md#3-add-the-folders-in-plex)に書かれているとおりに、`/zurg_mnt/zurg/movies`フォルダーの**Movies**ライブラリと、`/zurg_mnt/zurg/shows`フォルダーの**TV Shows**ライブラリを追加します。
+Plex Webを`http://<this machine's LAN IP>:32400/web`で開きます。[Plex で Real-Debrid を使う](../../guides/real-debrid-plex.md#3-add-the-folders-in-plex)に書かれているとおりに、`/zurg_mnt/zurg/movies`フォルダーの**Movies**ライブラリと、`/zurg_mnt/zurg/shows`フォルダーの**TV Shows**ライブラリを追加します。
 
 Plexに新しいコンテンツを知らせるため、zurgのダッシュボード`http://<this machine's LAN IP>:9999/config/`を開き、**Media Server Integration**の下にある**Login with Plex**を押します([そのページの4番目の手順](../../guides/real-debrid-plex.md#4-let-zurg-tell-plex-about-new-things)を参照)。
 

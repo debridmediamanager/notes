@@ -16,7 +16,7 @@ decypharr 和 zurg 解决的是同一个问题，它们的根目录结构很接�
 
 开始之前，有两件事要先确认。
 
-- **Providers。** 它们不会限制迁移。zurg 支持 decypharr 所有的服务。Premiumize 和 Debrid-Link 账号也一样可以迁过来。每个服务都有自己的页面，见 [Providers](../providers/index.md)。
+- **Providers。** 它们不会限制迁移。zurg 支持 decypharr 所有的服务。Premiumize 和 Debrid-Link 账号也一样可以迁过来。每个服务都有自己的页面，见 [提供商](../providers/index.md)。
 - **迁移前不要改 decypharr 的 `folder_naming`。** 它会一次性重命名库里的每一个文件夹。这样一来，所有符号链接目标和所有 mount-direct 的 Plex 路径都会同时失效。
 
 ## Usenet 方面有哪些不同 {#what-differs-on-the-usenet-side}

@@ -350,6 +350,6 @@ WebDAV で名前空間を直接操作する場合に役立ちます。マウン�
 ## 関連項目 {#see-also}
 
 - [sabnzbd.md](sonarr-radarr.md) — Sonarr と Radarr を zurg に向ける方法です。`__magic__` はこれを可能にするために作られました
-- [DMM wanted list](dmm-wanted.md) — DMM で Want を押すと、zurg がそれを `__movies__`、`__shows__`、`__anime__` に取り込みます
+- [DMM のウォントリスト](dmm-wanted.md) — DMM で Want を押すと、zurg がそれを `__movies__`、`__shows__`、`__anime__` に取り込みます
 - [usenet.md](usenet.md) — その取得（grab）が届く NZB バックエンドです
 - [config.md](../reference/config.md#__magic__-a-directory-you-can-organise) — `magic:` ブロック内のすべてのキーです

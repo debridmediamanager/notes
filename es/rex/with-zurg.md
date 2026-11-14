@@ -384,7 +384,7 @@ Ya está. Las secciones siguientes son opcionales.
 
 **Qué hace.** Le da a rex una dirección HTTPS a la que pueden acceder las apps de Plex fuera de casa, y se la comunica a plex.tv.
 
-**Por qué importa.** Fuera de casa, app.plex.tv solo se conecta a una dirección HTTPS, y las otras apps de Plex prefieren una también. Un servidor de Plex real puede recurrir al relay de Plex; rex no puede, así que tú eliges cómo se accede. rex debe estar [reclamado](#step-3-add-it-to-a-plex-account) primero, y un proxy que da a internet debe bloquear `/rex/` ([Keep the port private](#keep-the-port-private)).
+**Por qué importa.** Fuera de casa, app.plex.tv solo se conecta a una dirección HTTPS, y las otras apps de Plex prefieren una también. Un servidor de Plex real puede recurrir al relay de Plex; rex no puede, así que tú eliges cómo se accede. rex debe estar [reclamado](#step-3-add-it-to-a-plex-account) primero, y un proxy que da a internet debe bloquear `/rex/` ([Mantén el puerto privado](#keep-the-port-private)).
 
 **Plex Pass.** Plex Web reproduce fuera de casa sin un Plex Pass o un Remote Watch Pass en ninguna de las dos cuentas. Las otras apps de Plex no se han probado fuera de casa.
 
@@ -397,7 +397,7 @@ Elijas la opción que elijas, cada byte que veas fuera de casa sale por la veloc
 | Tu router tiene IP pública y puedes redirigir un puerto | **[rex-direct](#rex-direct)** (lo más sencillo) | Activado por defecto: un solo reenvío de puerto. DMM le da a rex un nombre y un certificado, y mantiene el nombre apuntando a tu IP de casa |
 | Puedes instalar Tailscale en los dispositivos desde los que ves contenido | **[Tailscale serve](#tailscale-serve)** (lo mejor) | No tienes que abrir nada en tu router, y funciona detrás de cualquier conexión a internet. El certificado se renueva solo, y nadie fuera de tu tailnet puede acceder a rex |
 | Dispositivos sin Tailscale (la tele de un amigo, un hotel), y tu router tiene IP pública | **[Caddy](#caddy)** con tu propio dominio, o con un nombre gratuito de `sslip.io` | Una conexión directa sin nadie en medio, y un certificado gratuito que se renueva solo. Redirigues el puerto 443 |
-| Tu conexión no tiene IPv4 pública (CGNAT o DS-Lite, habitual en cable, móvil y algunas compañías de fibra) pero sí tiene IPv6 | **[rex-direct over IPv6](#rex-direct-over-ipv6)** | Sin reenvío de puertos y sin nada que alquilar: dejas entrar el puerto 32400 por IPv6. Los dispositivos desde los que ves contenido también necesitan IPv6, que tienen la mayoría de las redes móviles |
+| Tu conexión no tiene IPv4 pública (CGNAT o DS-Lite, habitual en cable, móvil y algunas compañías de fibra) pero sí tiene IPv6 | **[rex-direct sobre IPv6](#rex-direct-over-ipv6)** | Sin reenvío de puertos y sin nada que alquilar: dejas entrar el puerto 32400 por IPv6. Los dispositivos desde los que ves contenido también necesitan IPv6, que tienen la mayoría de las redes móviles |
 | Tu conexión no tiene IP pública, o ves contenido en redes sin IPv6, y tienes dispositivos sin Tailscale | **[Un VPS pequeño](#a-small-vps)** | rex no tiene relay ni lo tendrá. Un VPS que alquilas tiene la IP pública y un túnel lleva todo el tráfico hasta rex, con todo el ancho de banda del VPS |
 
 No recomendado:
@@ -744,7 +744,7 @@ docker compose up -d
 
 ### Mueve rex a otra máquina {#move-rex-to-another-machine}
 
-Haz una copia de seguridad como en el [paso 5](#step-5-watch-something), luego detén rex en la máquina antigua de forma definitiva, tal como hace el primer bloque de [Remove rex](#remove-rex). En la nueva, sigue el [paso 2](#step-2-install-rex), pero copia los archivos de tu copia de seguridad en la carpeta de rex antes de convertirlo en un servicio. Es el mismo servidor para tus apps de Plex, sigue reclamado y compartido. Después:
+Haz una copia de seguridad como en el [paso 5](#step-5-watch-something), luego detén rex en la máquina antigua de forma definitiva, tal como hace el primer bloque de [Elimina rex](#remove-rex). En la nueva, sigue el [paso 2](#step-2-install-rex), pero copia los archivos de tu copia de seguridad en la carpeta de rex antes de convertirlo en un servicio. Es el mismo servidor para tus apps de Plex, sigue reclamado y compartido. Después:
 
 - Pon la nueva IP de LAN en `rex_url` de zurg y reinicia zurg ([paso 4](#step-4-connect-zurg-to-rex)).
 - Mueve el port forward de tu router a la nueva máquina, o su regla de firewall de IPv6, antes de que rex arranque ahí. El nombre rex-direct sigue igual y se actualiza solo si cambia la IP pública. Tailscale serve y Caddy se vuelven a configurar en la nueva máquina.

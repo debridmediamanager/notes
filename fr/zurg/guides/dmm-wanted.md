@@ -29,7 +29,7 @@ C'est tout pour la configuration. zurg lit ta liste une fois par minute dès son
    affichent 120 titres par page.
 
 Les demandes venant de Seerr, Overseerr ou Jellyseerr peuvent aussi arriver dans cette même liste : voir
-[Seerr through DMM](../../dmm/seerr.md).
+[Seerr via DMM](../../dmm/seerr.md).
 
 ## Suivre une liste {#following-a-list}
 

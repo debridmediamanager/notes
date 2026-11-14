@@ -22,7 +22,7 @@ Ein Release auf Usenet wird als Tausende kleiner Teile gepostet. Die NZB listet 
 
 Das brauchst du nicht:
 
-- **Einen Download-Client** wie SABnzbd oder NZBGet. zurg streamt das Release. Für Sonarr und Radarr agiert zurg selbst als SABnzbd: siehe [Sonarr & Radarr for Usenet](../zurg/guides/sonarr-radarr.md).
+- **Einen Download-Client** wie SABnzbd oder NZBGet. zurg streamt das Release. Für Sonarr und Radarr agiert zurg selbst als SABnzbd: siehe [Sonarr & Radarr für Usenet](../zurg/guides/sonarr-radarr.md).
 - **Speicherplatz für ganze Releases.** zurg lädt nur die Teile, die gerade abgespielt werden. Ein 60-GB-Remux braucht also nicht 60 GB Festplatte.
 - **Tools zum Entpacken oder Reparieren.** zurg spielt direkt aus RAR-Sets ab und baut fehlende Teile selbst aus den PAR2-Dateien des Releases wieder auf.
 - **Ein Debrid-Konto.** Usenet funktioniert allein oder neben Real-Debrid und TorBox in derselben zurg-Bibliothek.
@@ -36,7 +36,7 @@ Lohnt sich später: **ein zweiter Provider.** Ein Beitrag, den ein Provider verl
 2. Innerhalb einer oder zwei Sekunden liest zurg sie ein und listet das Release in seiner Bibliothek auf, benannt nach der NZB.
 3. Du drückst in Plex, Jellyfin oder rex auf Play. zurg holt die Teile für genau diese Stelle von deinem Provider und reicht sie weiter. Springst du weiter vor, holt es die Teile ab dort.
 
-Niemand muss auf einen abgeschlossenen Download warten. Um alles Schritt für Schritt einzurichten, folge [Usenet with zurg](../zurg/guides/usenet.md). Die Provider-Einstellungen und Docker-Details findest du unter [Usenet provider](../zurg/providers/usenet.md).
+Niemand muss auf einen abgeschlossenen Download warten. Um alles Schritt für Schritt einzurichten, folge [Usenet mit zurg](../zurg/guides/usenet.md). Die Provider-Einstellungen und Docker-Details findest du unter [Usenet provider](../zurg/providers/usenet.md).
 
 ## Wo DMM ins Spiel kommt {#where-dmm-fits}
 
@@ -94,8 +94,8 @@ Ja, in den Nightly-Builds für Sponsoren. Trag einfach die Daten deines Provider
 
 TorBox' Pro-Tarif hat zwei Usenet-Funktionen. Auf der Preisseite steht Usenet nur bei Pro (geprüft am 14. November 2026).
 
-- **Gehostete Usenet-Downloads.** TorBox lädt die ganze Veröffentlichung für dich herunter und liefert sie wie jeden anderen TorBox-Download aus. Schick NZBs vom Usenet-Tab in DMM oder vom `torbox_nzb`-Provider in zurg. Du brauchst keinen Login bei einem News-Server. Siehe [TorBox hosted Usenet](../zurg/providers/torbox-nzb.md).
-- **Ein News-Server-Login (NNTP).** Du nutzt ihn in zurg wie jeden anderen Provider. Er erlaubt 10 Verbindungen. Im September 2026 fand er gemessen weniger von einer echten Bibliothek als drei andere kostenpflichtige Provider, deshalb eignet er sich am besten als Ersatz. Siehe [TorBox news server](../zurg/providers/torbox-news-server.md).
+- **Gehostete Usenet-Downloads.** TorBox lädt die ganze Veröffentlichung für dich herunter und liefert sie wie jeden anderen TorBox-Download aus. Schick NZBs vom Usenet-Tab in DMM oder vom `torbox_nzb`-Provider in zurg. Du brauchst keinen Login bei einem News-Server. Siehe [TorBox gehostetes Usenet](../zurg/providers/torbox-nzb.md).
+- **Ein News-Server-Login (NNTP).** Du nutzt ihn in zurg wie jeden anderen Provider. Er erlaubt 10 Verbindungen. Im September 2026 fand er gemessen weniger von einer echten Bibliothek als drei andere kostenpflichtige Provider, deshalb eignet er sich am besten als Ersatz. Siehe [TorBox-Newsserver](../zurg/providers/torbox-news-server.md).
 
 ### Kann ich einen Usenet-Account an zwei Orten nutzen? {#can-i-use-one-usenet-account-in-two-places}
 

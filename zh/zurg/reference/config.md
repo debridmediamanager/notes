@@ -331,11 +331,11 @@ Offcloud 通过云端 explore 端点解析文件句柄。文件大小会与交�
 | `plex_scan_check_url` | string | `plex_server_url` 的值 | zurg 在重启挂载之前，会先问这个 Plex 服务器是否正在扫描库。如果在扫描，它就等着。扫描途中挂载突然消失，Plex 会把它看不到的内容全部删掉。在不需要自己运行 Plex 集成的实例上设置这个值。通常每个提供商一个实例就够了。如果在那里设置 `plex_server_url`，也会启动 Plex 匹配。 |
 | `plex_scan_check_token` | string | `plex_token` 的值 | `plex_scan_check_url` 使用的 token。 |
 | `plex_match_every_mins` | int | `1440` | zurg 多久扫描一次你的 Plex 库，把种子和 Plex 条目对应起来（单位：分钟）。这样就能显示哪些种子对应哪些 Plex 媒体等功能。最小值为 1；填 `0` 会使用默认值。需要设置 `mount_path`。 |
-| `plex_watchlist_enabled` | bool | `false` | `watchlist.enabled` 的旧写法（参见 [Watchlist](#watchlist)）；仍然有效。 |
+| `plex_watchlist_enabled` | bool | `false` | `watchlist.enabled` 的旧写法（参见 [关注列表](#watchlist)）；仍然有效。 |
 | `plex_watchlist_check_every_secs` | int | — | `watchlist.check_every_secs` 的旧写法；如果对应的配置块没有设置它，仍然有效。 |
 | `watchlist_quality` | string | `"best"` | `watchlist.quality` 的旧写法；如果对应的配置块没有设置它，仍然有效。 |
 | `plex_settings_policy` | string | `"guard"` | zurg 可以在多大范围内修改对挂载很重要的 Plex 设置。可选值：`off`（什么都不动）、`warn`（全部报告，不做修改）、`guard`（只修复错误值会导致丢失库内容的设置，其余只报告）或 `enforce`（另外修复那些会让 Plex 为没人看的结果解码整个文件的设置）。凡是背后有可见功能的设置，比如 Skip Intro、Skip Credits、拖动预览缩略图、章节图片、音量均衡、声音分析，都只会报告，不会修改。参见 [Plex settings](../guides/plex.md#recommended-plex-settings)。 |
-| `plex_settings_ignore` | list | — | zurg 不论策略如何都不去动的 Plex 偏好设置 id，匹配时不区分大小写。这是按单个设置生效，而不是按档位生效，所以排除其中一个不会影响它旁边的其他设置。如果某个 id 对应的设置 zurg 并不认识，启动时会报告，不做任何修改。仪表板（Dashboard）上的 **Let Plex Empty Its Own Trash** 开关会把 `autoEmptyTrash` 写进这个列表。参见 [Opting out of one setting](../guides/plex.md#opting-out-of-one-setting)。 |
+| `plex_settings_ignore` | list | — | zurg 不论策略如何都不去动的 Plex 偏好设置 id，匹配时不区分大小写。这是按单个设置生效，而不是按档位生效，所以排除其中一个不会影响它旁边的其他设置。如果某个 id 对应的设置 zurg 并不认识，启动时会报告，不做任何修改。仪表板（Dashboard）上的 **Let Plex Empty Its Own Trash** 开关会把 `autoEmptyTrash` 写进这个列表。参见 [关闭某个设置](../guides/plex.md#opting-out-of-one-setting)。 |
 
 > **注意：** 最好通过仪表板（Dashboard，网页界面）的认证流程来配置 Plex，它会把 `plex_server_url` 和 `plex_token` 写回 `config.yml`。上面这些键依然支持手动配置。
 

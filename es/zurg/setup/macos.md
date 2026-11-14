@@ -435,7 +435,7 @@ Si instalaste el LaunchAgent manual y el inicio de sesión automático no está 
 
 Una instalación creada con `zurg setup` en un Mac sin pantalla usa un LaunchDaemon y no necesita iniciar sesión con interfaz gráfica. Compruébalo con `cd ~/zurg && ./zurg service status`.
 
-¿Sigues atascado? Pregunta en el foro **zurg-support** de [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) explica qué incluir.
+¿Sigues atascado? Pregunta en el foro **zurg-support** de [Discord](https://discord.com/invite/7u4YjMThXP). [Obtener ayuda](../../guides/remote-help.md) explica qué incluir.
 
 ## Visión general de la arquitectura {#architecture-overview}
 
@@ -462,7 +462,7 @@ launchd (PID 1)
 
 ## Referencia rápida {#quick-reference}
 
-Ejecuta estos comandos en `~/zurg`. Las líneas `zurg service` son para una instalación hecha con `zurg setup`; el LaunchAgent manual usa los comandos de launchctl de [Managing the Services](#managing-the-services).
+Ejecuta estos comandos en `~/zurg`. Las líneas `zurg service` son para una instalación hecha con `zurg setup`; el LaunchAgent manual usa los comandos de launchctl de [Gestionar los servicios](#managing-the-services).
 
 | Acción | Comando |
 |--------|---------|

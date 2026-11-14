@@ -6,18 +6,18 @@ Cómo está hecho zurg. Con qué se midió. Las notas de diseño detrás de las 
 
 | Página | Qué contiene |
 |---|---|
-| [Architecture](architecture.md) | La forma general del conjunto y los invariantes que son fáciles de romper. Empieza aquí. |
-| [Naming](naming.md) | Cómo un release y sus archivos terminan con los nombres que muestra el mount. |
-| [Persistent caches](persistent-caches.md) | Qué se guarda en disco entre reinicios y cuánto cuesta. |
-| [Directory config UI/UX](uiux.md) | La evaluación de diseño detrás del editor de directorios. |
+| [Arquitectura](architecture.md) | La forma general del conjunto y los invariantes que son fáciles de romper. Empieza aquí. |
+| [Nombres](naming.md) | Cómo un release y sus archivos terminan con los nombres que muestra el mount. |
+| [Cachés persistentes](persistent-caches.md) | Qué se guarda en disco entre reinicios y cuánto cuesta. |
+| [Interfaz de configuración de directorios (UI/UX)](uiux.md) | La evaluación de diseño detrás del editor de directorios. |
 
 ## Qué se midió {#what-was-measured}
 
 | Página | Qué contiene |
 |---|---|
-| [Debrid baseline](debrid-baseline.md) | Lo que cuesta zurg y qué tan rápido se siente con Real-Debrid, AllDebrid y TorBox. |
-| [Torrent lifecycle](torrent-lifecycle.md) | Lo que informa cada cuenta mientras corre una descarga, capturado en vivo. |
-| [Real-Debrid API notes](realdebrid-behavior.md) | Semántica de los enlaces, selección de archivos y lo que realmente significa cached. |
+| [Línea base de Debrid](debrid-baseline.md) | Lo que cuesta zurg y qué tan rápido se siente con Real-Debrid, AllDebrid y TorBox. |
+| [Ciclo de vida del torrent](torrent-lifecycle.md) | Lo que informa cada cuenta mientras corre una descarga, capturado en vivo. |
+| [Notas de la API de Real-Debrid](realdebrid-behavior.md) | Semántica de los enlaces, selección de archivos y lo que realmente significa cached. |
 
 ## Contratos que zurg tiene que cumplir {#contracts-zurg-has-to-satisfy}
 
@@ -31,9 +31,9 @@ Cómo está hecho zurg. Con qué se midió. Las notas de diseño detrás de las 
 
 | Página | Qué contiene |
 |---|---|
-| [Plex trash sweep](plex-trash-sweep.md) | Alinear la limpieza con la propia visión de zurg sobre qué está roto. |
-| [Stream timeout regression](stream-timeout-regression.md) | Un stream proxificado que dejó de aguantar lecturas largas. |
-| [rclone move refusal](rclone-move-refusal.md) | Importaciones vacías tras un backend que rechazó un MOVE, y el parche. |
+| [Barrido de papelera en Plex](plex-trash-sweep.md) | Alinear la limpieza con la propia visión de zurg sobre qué está roto. |
+| [Regresión de timeout en el stream](stream-timeout-regression.md) | Un stream proxificado que dejó de aguantar lecturas largas. |
+| [Rechazo de rclone move](rclone-move-refusal.md) | Importaciones vacías tras un backend que rechazó un MOVE, y el parche. |
 
 ## Pruebas {#testing}
 

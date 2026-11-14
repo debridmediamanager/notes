@@ -34,7 +34,7 @@ Vous n'avez qu'Easynews ? Appuyez sur **Login with Easynews**. Vous pouvez reche
 | **DL with RD** (**DL with TB** et ainsi de suite ; **Add to DL** sur Debrid-Link) | Votre service ne l'a pas encore. Appuyer dessus l'ajoute quand même, et le service la télécharge d'abord. Choisissez un bouton **Instant** si vous voulez regarder tout de suite. [Pourquoi cela arrive](../guides/torrent-being-downloaded-to-debrid.md). |
 | **RD (100%)** (**PM (100%)** et ainsi de suite) | Elle est dans votre bibliothèque. Le nombre indique où en est le téléchargement. Appuyez dessus pour la retirer de votre bibliothèque. |
 | **Check RD** (**Check AD**, **Check DL**) | Demande à ce service s'il a cette release en cache en ce moment. |
-| **Cast (RD)** (**Cast (PM)** et ainsi de suite) | Envoie la release à Stremio. Voir [DMM in Stremio](stremio.md). |
+| **Cast (RD)** (**Cast (PM)** et ainsi de suite) | Envoie la release à Stremio. Voir [DMM dans Stremio](stremio.md). |
 | **Watch** | Ouvre un onglet **Ready to play**. Appuyez sur **Play** et votre lecteur s'ouvre. Choisissez le lecteur sous **Settings** → **Video player**. |
 | **Copy** | Copie le lien magnet de la release et affiche **Magnet link copied.** Si **Download .magnet files instead of copy** est coché dans **Settings**, le bouton affiche **Download** et enregistre un fichier .magnet. |
 | **Report** | Signale une mauvaise release : **XXX / Porn Content**, **Incorrect IMDB ID**, **Malware / Executable File**, et, pour les séries, **Tagged for Wrong Season**. |
@@ -63,7 +63,7 @@ Appuyez sur **Library** sur la page d'accueil. Elle liste tout ce qui se trouve 
 
 DMM sert aussi les autres projets :
 
-- **zurg** demande à DMM quel film ou quel épisode correspond à chaque fichier. Un sponsor obtient la clé API DMM sur [gatekeeper](https://gatekeeper.debridmediamanager.com/). Sans elle, zurg se fie aux noms de fichiers et moins de titres correspondent. [rex with zurg](../rex/with-zurg.md#why-dmm-places-the-files) explique la différence.
+- **zurg** demande à DMM quel film ou quel épisode correspond à chaque fichier. Un sponsor obtient la clé API DMM sur [gatekeeper](https://gatekeeper.debridmediamanager.com/). Sans elle, zurg se fie aux noms de fichiers et moins de titres correspondent. [rex avec zurg](../rex/with-zurg.md#why-dmm-places-the-files) explique la différence.
 - **Sonarr Radarr et Prowlarr** peuvent chercher dans DMM comme indexeur de torrents Torznab ou indexeur Usenet Newznab. Les deux nécessitent un sponsoring actif et la clé API DMM. Configurez-les sur les pages [Torznab](https://debridmediamanager.com/torznab) et [Newznab](https://debridmediamanager.com/newznab).
 - **Votre liste de souhaits** : appuyez sur **Want** ou suivez une liste Trakt ou MDBList. zurg récupère la liste ainsi que les nouveaux épisodes au fur et à mesure de leur diffusion. Sponsoring requis. Voir [liste de souhaits DMM](../zurg/guides/dmm-wanted.md).
 - **Seerr Overseerr et Jellyseerr** peuvent utiliser DMM comme Radarr et Sonarr. Les demandes arrivent alors dans votre liste de souhaits pour que zurg les récupère. Sponsoring requis. Voir [Seerr via DMM](seerr.md).
@@ -80,7 +80,7 @@ Tout ce qu'ouvre un sponsoring, et l'endroit où chaque élément se configure, 
 | **Your TorBox account is on the free plan, which has no API access. DMM needs a paid TorBox plan.** | L'offre gratuite de TorBox ne peut pas être utilisée avec DMM. Passez à une offre payante, ou connectez-vous avec un autre service. |
 | Only **DL with RD** buttons, no **Instant RD** | Votre service n'a aucune de ces versions en cache. Appuyez sur l'une d'elles et attendez qu'elle se télécharge, ou essayez une autre version. |
 
-Vous êtes bloqué ? Posez votre question dans le forum **dmm-support** sur [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) indique quoi inclure.
+Vous êtes bloqué ? Posez votre question dans le forum **dmm-support** sur [Discord](https://discord.com/invite/7u4YjMThXP). [Obtenir de l'aide](../guides/remote-help.md) indique quoi inclure.
 
 ## Questions
 

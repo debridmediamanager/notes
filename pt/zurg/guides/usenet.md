@@ -641,7 +641,7 @@ Ele responde com `{"probes": [...]}`, com um objeto para o provedor `nzb`, conte
 
 ---
 
-Ainda com problemas? Pergunte no fórum **zurg-support** no [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) diz o que incluir.
+Ainda com problemas? Pergunte no fórum **zurg-support** no [Discord](https://discord.com/invite/7u4YjMThXP). [Obtendo ajuda](../../guides/remote-help.md) diz o que incluir.
 
 ## Veja também {#see-also}
 

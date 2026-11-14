@@ -291,10 +291,10 @@ FEED mymusic upsert: 13 created, 0 updated, 0 held, 0 unchanged, 0 rejected
 
 ## غيّرها {#change-it}
 
-- **تخطيط آخر.** مجلد الألبوم المقسّم إلى مجلدات أقراص (`CD1/` و`CD2/`) يعتبره هذه الإضافة ألبومين، وكل واحد منهما فيه عدد مسارات قليل لا يكفي للمطابقة. اجمع هذه المجلدات في `albums()` وأرسل `release` واحدًا لكل ملفاتها. راجع [Music](addons.md#music).
-- **الفنانون بصورهم الخاصة.** أرسل `display.artist.poster` وسجّل بـ `"artwork": "source"`. راجع [More from your addon](addon-more.md#artist-pictures).
-- **قوائم التشغيل.** أرسل مكان كل أغنية في قائمة التشغيل، وسيُنشئ rex قائمة التشغيل بنفسه. راجع [More from your addon](addon-more.md#collections-and-playlists).
-- **مستوى الصوت.** إذا كنت تقيس مستوى صوت كل أغنية، أرسله باسم `loudness` كما في Plex. راجع [Music](addons.md#music). rex لا يقيس أي شيء بنفسه.
+- **تخطيط آخر.** مجلد الألبوم المقسّم إلى مجلدات أقراص (`CD1/` و`CD2/`) يعتبره هذه الإضافة ألبومين، وكل واحد منهما فيه عدد مسارات قليل لا يكفي للمطابقة. اجمع هذه المجلدات في `albums()` وأرسل `release` واحدًا لكل ملفاتها. راجع [الموسيقى](addons.md#music).
+- **الفنانون بصورهم الخاصة.** أرسل `display.artist.poster` وسجّل بـ `"artwork": "source"`. راجع [المزيد من الإضافة الخاصة بك](addon-more.md#artist-pictures).
+- **قوائم التشغيل.** أرسل مكان كل أغنية في قائمة التشغيل، وسيُنشئ rex قائمة التشغيل بنفسه. راجع [المزيد من الإضافة الخاصة بك](addon-more.md#collections-and-playlists).
+- **مستوى الصوت.** إذا كنت تقيس مستوى صوت كل أغنية، أرسله باسم `loudness` كما في Plex. راجع [الموسيقى](addons.md#music). rex لا يقيس أي شيء بنفسه.
 
 ## استكشاف الأخطاء وإصلاحها {#troubleshooting}
 

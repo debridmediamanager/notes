@@ -73,20 +73,20 @@ Déplacez une bibliothèque existante vers zurg sans la retélécharger ni relan
 - [Identité sortante](reference/outbound-identity.md) explique ce que zurg indique aux services qu'il appelle à son sujet
 - [Serveur MCP](reference/mcp.md) permet à un agent IA de piloter zurg via le Model Context Protocol
 - [Tags](reference/tags.md) — ce qui est appliqué à un torrent, et pourquoi
-- [Changelog](reference/changelog.md) — ce qui a changé, et quand
+- [Journal des modifications](reference/changelog.md) — ce qui a changé, et quand
 
 ## Fonctionnement interne {#internals}
 
 Comment zurg est construit, ce qu'on a mesuré et les notes de conception derrière les parties délicates.
 
 - [Architecture](internals/architecture.md) — la forme générale et les invariants faciles à casser
-- [Debrid baseline](internals/debrid-baseline.md) — ce que coûte zurg et sa rapidité sur RD, AD et TorBox
-- [Torrent lifecycle](internals/torrent-lifecycle.md) — ce que chaque compte indique réellement pendant un téléchargement, mesuré en direct
-- [SABnzbd client contract](internals/sabnzbd-client-contract.md) — les formats exacts attendus par Sonarr et Radarr
-- [Plex trash sweep](internals/plex-trash-sweep.md) · [Stream timeout regression](internals/stream-timeout-regression.md) · [Directory config UI/UX](internals/uiux.md)
-- [E2E testing](internals/e2e-test.md) · [Real-Debrid API notes](internals/realdebrid-behavior.md)
-- [qBittorrent client contract](internals/qbittorrent-client-contract.md) · [Persistent caches](internals/persistent-caches.md)
-- [Naming](internals/naming.md) · [rclone move refusal](internals/rclone-move-refusal.md)
+- [Base Debrid](internals/debrid-baseline.md) — ce que coûte zurg et sa rapidité sur RD, AD et TorBox
+- [Cycle de vie d'un torrent](internals/torrent-lifecycle.md) — ce que chaque compte indique réellement pendant un téléchargement, mesuré en direct
+- [Contrat du client SABnzbd](internals/sabnzbd-client-contract.md) — les formats exacts attendus par Sonarr et Radarr
+- [Nettoyage de la corbeille Plex](internals/plex-trash-sweep.md) · [Régression du délai d'expiration du flux](internals/stream-timeout-regression.md) · [Interface de configuration des répertoires](internals/uiux.md)
+- [Tests E2E](internals/e2e-test.md) · [Notes sur l'API Real-Debrid](internals/realdebrid-behavior.md)
+- [Contrat du client qBittorrent](internals/qbittorrent-client-contract.md) · [Caches persistants](internals/persistent-caches.md)
+- [Nommage](internals/naming.md) · [Refus de rclone move](internals/rclone-move-refusal.md)
 
 ---
 

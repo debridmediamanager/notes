@@ -23,7 +23,7 @@ Das war's schon. zurg liest deine Liste ab dem Start einmal pro Minute ein.
 2. Öffne einen Film und drücke **Want**. Auf der Staffelseite einer Serie fügt **Want S2** genau diese Staffel hinzu, und **Want all seasons** fügt die ganze Serie hinzu, inklusive neuer Staffeln.
 3. Deine Liste findest du unter [debridmediamanager.com/wanted](https://debridmediamanager.com/wanted). Dort steht, wann dein zurg sie zuletzt gelesen hat und wann er jeden Film abgerufen hat. Lange Listen werden mit 120 Titeln pro Seite angezeigt.
 
-Anfragen aus Seerr, Overseerr oder Jellyseerr können auf derselben Liste landen: siehe [Seerr through DMM](../../dmm/seerr.md).
+Anfragen aus Seerr, Overseerr oder Jellyseerr können auf derselben Liste landen: siehe [Seerr über DMM](../../dmm/seerr.md).
 
 ## Einer Liste folgen {#following-a-list}
 
@@ -114,4 +114,4 @@ acquisition:
 
 Wenn dein Sponsoring ausläuft oder du deinen Schlüssel zurücksetzt, protokolliert zurg, dass DMM den Schlüssel abgelehnt hat, und fragt jede Stunde erneut nach. Was bereits abgerufen wurde, bleibt in deiner Bibliothek.
 
-Mehr Details: [DMM wanted list](acquisition.md#dmm-wanted-list) in der Referenz zur Akquise.
+Mehr Details: [DMM-Wunschliste](acquisition.md#dmm-wanted-list) in der Referenz zur Akquise.

@@ -111,4 +111,4 @@ acquisition:
 
 如果你的赞助过期了，或者你重置了密钥，zurg 会记录 DMM 拒绝了该密钥，并且每小时重新请求一次。它已经获取的内容仍然保留在你的媒体库中。
 
-更多细节：请参阅 acquisition 参考文档中的 [DMM wanted list](acquisition.md#dmm-wanted-list)。
+更多细节：请参阅 acquisition 参考文档中的 [DMM 想看列表](acquisition.md#dmm-wanted-list)。

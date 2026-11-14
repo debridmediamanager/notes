@@ -100,7 +100,7 @@ Se o `docker` mostrar permission denied, coloque `sudo` antes de cada comando `d
 
 ## 3. Adicione as pastas do zurg no Plex {#3-add-zurgs-folders-in-plex}
 
-Abra o Plex Web em `http://<this machine's LAN IP>:32400/web`. Adicione uma biblioteca **Movies** com a pasta `/zurg_mnt/zurg/movies` e uma biblioteca **TV Shows** com `/zurg_mnt/zurg/shows`, como mostra [Real-Debrid in Plex](../../guides/real-debrid-plex.md#3-add-the-folders-in-plex).
+Abra o Plex Web em `http://<this machine's LAN IP>:32400/web`. Adicione uma biblioteca **Movies** com a pasta `/zurg_mnt/zurg/movies` e uma biblioteca **TV Shows** com `/zurg_mnt/zurg/shows`, como mostra [Real-Debrid no Plex](../../guides/real-debrid-plex.md#3-add-the-folders-in-plex).
 
 Para que o Plex fique sabendo das coisas novas, abra o painel do zurg em `http://<this machine's LAN IP>:9999/config/` e clique em **Login with Plex** em **Media Server Integration** ([passo 4 da página](../../guides/real-debrid-plex.md#4-let-zurg-tell-plex-about-new-things)).
 
@@ -128,14 +128,14 @@ Isso atualiza o zurg, o Plex e o rex juntos. Se o rex com o zurg roda `docker co
 | `Error response from daemon: error from registry: unauthorized` quando o Docker baixa o zurg | Esta máquina não está logada no registro do GitHub com uma conta que tenha acesso ao zurg. Apoie no [gatekeeper](https://gatekeeper.debridmediamanager.com/) e rode o instalador de novo. Para logar manualmente, veja [configuração do zurg com Docker](../setup/docker.md#1-install-docker-and-unlock-the-image): o token precisa de `read:packages` e `repo`. |
 | `path /zurg_mnt is mounted on ... but it is not a shared mount` | `/zurg_mnt` ainda não está compartilhado. Rode `sudo mount --bind /zurg_mnt /zurg_mnt` e `sudo mount --make-rshared /zurg_mnt`, depois `docker compose up -d`. O instalador faz isso ficar salvo depois de reiniciar; manualmente, veja [passo 7 da configuração do zurg com Docker](../setup/docker.md#7-make-the-shared-parent-survive-reboots). |
 | O `zurg` fica reiniciando, e o log termina com `Error: config ./config.yml is not valid YAML: yaml: unmarshal errors:` e `mapping key "..." already defined` | Essa configuração está duplicada no config do zurg. Rode `sudo nano ~/zurg/config.yml`, apague uma das duas linhas que o erro indica, salve e rode `docker compose restart zurg`. |
-| O log do zurg diz `Mount verification failed: mount verification timeout: /zurg_mnt/zurg/version.txt not accessible after 60 attempts -- you appear to be running inside Docker, mount a parent directory with rshared propagation` | As pastas do zurg não subiram. Confira se a linha de volume do zurg é `/zurg_mnt:/zurg_mnt:rshared`, com o pai e não `/zurg_mnt/zurg`, e se `/zurg_mnt` está compartilhado (a linha acima). [Mount is empty](../setup/docker.md#mount-is-empty) tem mais verificações. |
+| O log do zurg diz `Mount verification failed: mount verification timeout: /zurg_mnt/zurg/version.txt not accessible after 60 attempts -- you appear to be running inside Docker, mount a parent directory with rshared propagation` | As pastas do zurg não subiram. Confira se a linha de volume do zurg é `/zurg_mnt:/zurg_mnt:rshared`, com o pai e não `/zurg_mnt/zurg`, e se `/zurg_mnt` está compartilhado (a linha acima). [O mount está vazio](../setup/docker.md#mount-is-empty) tem mais verificações. |
 | As bibliotecas do Plex ficam vazias depois que o zurg reinicia, e `docker exec plex ls /zurg_mnt/zurg` diz `cannot access '/zurg_mnt/zurg': Transport endpoint is not connected` | A linha de volume do Plex está sem `rslave`. Ela precisa ser `/zurg_mnt:/zurg_mnt:rslave`. Corrija e rode `docker compose up -d`. |
 | O rex para com `rex: cannot bind 0.0.0.0:32400: Address already in use (os error 98) (another rex or Plex on this port? --port picks another)` | O Plex Media Server já usa a porta 32400. Mantenha `command: --port 32500` no rex. |
 | `/zurg_mnt/zurg/movies` está vazio, ou diz `Input/output error`, logo depois de iniciar | O zurg ainda está lendo a sua conta. `curl http://localhost:9999/ready` mostra `ready` quando terminar. Não reinicie o zurg enquanto isso: a leitura recomeça do zero. |
 | Os títulos aparecem no rex, mas nada toca | A linha `upstream failed` de [rex com o zurg, Quando algo está errado](../../rex/with-zurg.md#when-something-is-wrong) verifica se o rex consegue alcançar o zurg. |
 | O disco enche | O zurg guarda uma cópia do que foi reproduzido em `~/zurg/data/rclone-cache`, até 256G por padrão. [O que fica onde](../setup/docker.md#what-lives-where) mostra como limitar isso. |
 
-Ainda travado? Pergunte no fórum **zurg-support** no [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) diz o que incluir.
+Ainda travado? Pergunte no fórum **zurg-support** no [Discord](https://discord.com/invite/7u4YjMThXP). [Obtendo ajuda](../../guides/remote-help.md) diz o que incluir.
 
 ## Perguntas {#questions}
 

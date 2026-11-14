@@ -3,12 +3,12 @@
 Tutorial ini membuat addon rex dalam satu file Python. Addon ini memasukkan klip ponsel, file camcorder, atau rekaman layar kamu ke library **Home Videos** di setiap aplikasi Plex. Setiap video mendapatkan judul, tanggal, dan gambar poster.
 Tidak ada yang disalin atau diunggah. rex membaca file dari addon kamu saat kamu menekan play.
 
-Ini adalah versi paling singkat yang berfungsi dari [Building rex addons](addons.md) Langkah 1 sampai 5. Halaman ini memberitahu apa yang harus diketik.
+Ini adalah versi paling singkat yang berfungsi dari [Membangun addon rex](addons.md) Langkah 1 sampai 5. Halaman ini memberitahu apa yang harus diketik.
 Halaman itu menjelaskan alasannya. Tutorial [musik](addon-music.md) dan [IPTV](addon-iptv.md) memakai kerangka yang sama.
 
 | Yang kamu butuhkan | Alasan |
 |---|---|
-| rex, diatur seperti di [rex with your own app](any-source.md) (langkah 1 sampai 3) | Di sanalah library muncul. Sudah di-claim, supaya aplikasi Plex bisa melihatnya |
+| rex, diatur seperti di [rex dengan aplikasi Anda sendiri](any-source.md) (langkah 1 sampai 3) | Di sanalah library muncul. Sudah di-claim, supaya aplikasi Plex bisa melihatnya |
 | Python 3.8 atau yang lebih baru | Untuk addon. Hanya memakai pustaka standar Python |
 | `ffprobe` dan `ffmpeg` | `ffprobe` mendeskripsikan setiap video untuk rex, `ffmpeg` memotong gambar poster. Keduanya ada di FFmpeg |
 | Folder berisi video, di mesin yang menjalankan addon | `.mp4`, `.mkv`, `.mov`, `.m4v`, `.avi`, `.webm`, `.mts`, `.m2ts`, `.3gp`, di subfolder mana pun |

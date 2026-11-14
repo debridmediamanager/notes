@@ -24,7 +24,7 @@
 2. 映画を開いて **Want** を押します。シーズンのページでは、**Want S2** でそのシーズンを追加でき、**Want all seasons** でシリーズ全体を、今後追加されるシーズンも含めて追加できます。
 3. あなたのリストは [debridmediamanager.com/wanted](https://debridmediamanager.com/wanted) にあります。zurg がリストを最後に読み込んだ時刻と、各映画を取得した時刻が表示されます。リストが長いときは、1 ページに 120 タイトルずつ表示されます。
 
-Seerr、Overseerr、Jellyseerr からのリクエストも同じリストに入ることがあります。詳しくは [Seerr through DMM](../../dmm/seerr.md) を参照してください。
+Seerr、Overseerr、Jellyseerr からのリクエストも同じリストに入ることがあります。詳しくは [Seerr を DMM 経由で使う](../../dmm/seerr.md) を参照してください。
 
 ## リストをフォローする {#following-a-list}
 
@@ -113,4 +113,4 @@ acquisition:
 
 もしスポンサーシップが切れたり、キーをリセットしたりすると、zurg は DMM がキーを拒否したことをログに記録し、1時間ごとに再度確認します。それまでに取得済みのものはライブラリに残ります。
 
-詳しくは、acquisition リファレンスの [DMM wanted list](acquisition.md#dmm-wanted-list) をご覧ください。
+詳しくは、acquisition リファレンスの [DMM のウォントリスト](acquisition.md#dmm-wanted-list) をご覧ください。

@@ -12,7 +12,7 @@
 | Debrid-Link | `debridlink` | [Debrid-Link](debridlink.md) |
 | Offcloud | `offcloud` | [Offcloud](offcloud.md) |
 | Usenet | `nzb` | [Usenet](usenet.md) |
-| TorBox hosted Usenet | `torbox_nzb` | [TorBox hosted Usenet](torbox-nzb.md) |
+| TorBox hosted Usenet | `torbox_nzb` | [Usenet المستضاف على TorBox](torbox-nzb.md) |
 
 ثلاث صفحات تتعمق أكثر من الإعداد. تحتوي [حدود TorBox](torbox-limits.md) على الأرقام المقاسة وراء تقييد TorBox.
 توضّح [صفحة خادم أخبار TorBox](torbox-news-server.md) و[صفحة خادم أخبار ElfHosted](elfhosted-news-server.md) ما هي حسابات Usenet المرفقة مع تلك الخطط فعليًا.

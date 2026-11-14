@@ -46,7 +46,7 @@ Plex ne remarque pas quand un nouveau fichier arrive dans votre compte Real-Debr
 
 ![La section Media Server Integration du tableau de bord de zurg, avec le bouton Login with Plex](../assets/real-debrid-plex/01-zurg-login-with-plex.webp)
 
-Ensuite, zurg demande à Plex de scanner chaque dossier qui change. Il désactive aussi quelques paramètres de Plex qui sont risqués pour une bibliothèque en streaming, comme **Empty trash automatically after every scan** : [Recommended Plex Settings](../zurg/guides/plex.md#recommended-plex-settings) les liste.
+Ensuite, zurg demande à Plex de scanner chaque dossier qui change. Il désactive aussi quelques paramètres de Plex qui sont risqués pour une bibliothèque en streaming, comme **Empty trash automatically after every scan** : [Paramètres Plex recommandés](../zurg/guides/plex.md#recommended-plex-settings) les liste.
 
 ## Quand quelque chose ne va pas {#when-something-is-wrong}
 
@@ -78,4 +78,4 @@ Oui, avec rex. [rex avec zurg](../rex/with-zurg.md) affiche ta bibliothèque zur
 
 ### Ça marche aussi avec TorBox ou Usenet ? {#does-it-work-with-torbox-or-usenet-too}
 
-Oui. L'installateur de zurg propose aussi TorBox, AllDebrid, Premiumize, Debrid-Link, Offcloud et Usenet, et les range tous dans les mêmes dossiers `movies` et `shows`. [Providers](../zurg/providers/index.md) a une page pour chacun.
+Oui. L'installateur de zurg propose aussi TorBox, AllDebrid, Premiumize, Debrid-Link, Offcloud et Usenet, et les range tous dans les mêmes dossiers `movies` et `shows`. [Fournisseurs](../zurg/providers/index.md) a une page pour chacun.

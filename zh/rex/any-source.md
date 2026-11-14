@@ -11,7 +11,7 @@
 - **你的应用决定每个文件是什么。** 它需要说明文件是电影还是剧集，属于哪个作品（通过 IMDb 和 TMDB id），如果是剧集，还要说明季和集数。rex 从不根据文件名去猜。
 - **Plex 负责描述内容。** rex 添加到 Plex 账号后，会按照 Plex 自己的元数据中对应这些 id 的信息，显示每个作品的名称、海报、简介和剧集名称。对于 Plex 任何一个 agent 都不认识的内容，由你的应用自己提供名称，详见 [编写 rex 插件](addons.md)。
 
-rex 对个人使用免费（PolyForm Noncommercial 许可）：没有赞助者版本，下载也不需要账号。详见 [rex.debridmediamanager.com](https://rex.debridmediamanager.com/zh/)。如果你只有手机或电视盒子，[rex for Android](android.md) 可以在上面运行 rex 及其插件。对于赞助者，[zurg+rex](../zurg/guides/android.md)（运行在手机上的 Plex 服务器）还可以把你的 debrid 和 Usenet 库连接到 rex。
+rex 对个人使用免费（PolyForm Noncommercial 许可）：没有赞助者版本，下载也不需要账号。详见 [rex.debridmediamanager.com](https://rex.debridmediamanager.com/zh/)。如果你只有手机或电视盒子，[rex 安卓版](android.md) 可以在上面运行 rex 及其插件。对于赞助者，[zurg+rex](../zurg/guides/android.md)（运行在手机上的 Plex 服务器）还可以把你的 debrid 和 Usenet 库连接到 rex。
 
 ## 开始之前 {#before-you-start}
 

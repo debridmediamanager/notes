@@ -46,7 +46,7 @@ Plex tidak otomatis tahu saat ada file baru masuk ke akun Real-Debrid Anda. zurg
 
 ![Bagian Media Server Integration di dasbor zurg, dengan tombol Login with Plex](../assets/real-debrid-plex/01-zurg-login-with-plex.webp)
 
-Setelah itu zurg akan meminta Plex untuk memindai setiap folder yang berubah. zurg juga mematikan beberapa pengaturan Plex yang berisiko untuk perpustakaan streaming, seperti **Empty trash automatically after every scan**: [Recommended Plex Settings](../zurg/guides/plex.md#recommended-plex-settings) berisi daftar lengkapnya.
+Setelah itu zurg akan meminta Plex untuk memindai setiap folder yang berubah. zurg juga mematikan beberapa pengaturan Plex yang berisiko untuk perpustakaan streaming, seperti **Empty trash automatically after every scan**: [Pengaturan Plex yang Direkomendasikan](../zurg/guides/plex.md#recommended-plex-settings) berisi daftar lengkapnya.
 
 ## Ketika ada yang salah {#when-something-is-wrong}
 
@@ -78,4 +78,4 @@ Ya, bisa dengan rex. [rex dengan zurg](../rex/with-zurg.md) menampilkan library 
 
 ### Apakah ini juga bisa dipakai dengan TorBox atau Usenet? {#does-it-work-with-torbox-or-usenet-too}
 
-Ya. Installer zurg juga menyediakan TorBox, AllDebrid, Premiumize, Debrid-Link, Offcloud, dan Usenet, dan semuanya ditaruh di folder `movies` dan `shows` yang sama. [Providers](../zurg/providers/index.md) punya halaman untuk masing-masing.
+Ya. Installer zurg juga menyediakan TorBox, AllDebrid, Premiumize, Debrid-Link, Offcloud, dan Usenet, dan semuanya ditaruh di folder `movies` dan `shows` yang sama. [Penyedia](../zurg/providers/index.md) punya halaman untuk masing-masing.

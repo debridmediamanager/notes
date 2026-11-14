@@ -32,7 +32,7 @@
 | 文件已经在磁盘或 NAS 上 | **现有的媒体服务器或网络播放器**；如果想用 rex，则使用 **HTTP 源 → rex** | 继续使用你拥有的文件；不需要 debrid 或 Usenet 账户 | rex 需要通过其 feed API 提交元数据，并能通过 HTTP 访问文件；feed 提供方和文件服务器可以是两台不同的机器。rex 不会扫描磁盘 |
 | 可流式传输的 HTTP 媒体或我自己的 HTTP 服务器 | **HTTP 源 + rex feed → rex → Plex 应用**，或直接使用兼容的播放器 | 无需 debrid 或 zurg，就能使用现有的源 | rex 需要 feed 提供方来提交身份和媒体详情；只有一个裸 URL 无法提供这些元数据 |
 
-从这里开始：[DMM Cast](https://debridmediamanager.com/stremio/) · [Kodi](https://debridmediamanager.com/kodi) · [DMM Settings](https://debridmediamanager.com/settings) · [zurg 设置](../zurg/setup/index.md) · [rex 与 zurg](../rex/with-zurg.md) · [rex 与 Stremio addon](../rex/stremio.md) · [Jellyfin 插件](https://debridmediamanager.com/jellyfin) · [Emby 插件](https://debridmediamanager.com/emby) · [zurg 的 Stremio addon](../zurg/guides/stremio.md) · [zurg+rex 在 Android 上](../zurg/guides/android.md) · [rex for Android](../rex/android.md) · [rex 与任意源](../rex/any-source.md)。
+从这里开始：[DMM Cast](https://debridmediamanager.com/stremio/) · [Kodi](https://debridmediamanager.com/kodi) · [DMM Settings](https://debridmediamanager.com/settings) · [zurg 设置](../zurg/setup/index.md) · [rex 与 zurg](../rex/with-zurg.md) · [rex 与 Stremio addon](../rex/stremio.md) · [Jellyfin 插件](https://debridmediamanager.com/jellyfin) · [Emby 插件](https://debridmediamanager.com/emby) · [zurg 的 Stremio addon](../zurg/guides/stremio.md) · [zurg+rex 在 Android 上](../zurg/guides/android.md) · [rex 安卓版](../rex/android.md) · [rex 与任意源](../rex/any-source.md)。
 
 Cast 链接默认从 Real-Debrid 开始。如果你使用 [TorBox](https://debridmediamanager.com/stremio-torbox/)、[AllDebrid](https://debridmediamanager.com/stremio-alldebrid/)、[Premiumize](https://debridmediamanager.com/stremio-premiumize/)、[Offcloud](https://debridmediamanager.com/stremio-offcloud/)、[Debrid-Link](https://debridmediamanager.com/stremio-debridlink/) 或 [Easynews](https://debridmediamanager.com/stremio-easynews/) 的账户，请使用对应的设置页面。这里的 Cast 指的是 **DMM addon**，不是 Chromecast，也不是投屏镜像。Nuvio 使用同一个 addon：把 Cast 页面上的 addon 链接粘贴到 Nuvio 中即可。
 
@@ -132,7 +132,7 @@ flowchart TD
     R --> P[Your chosen RD playback route]
 ```
 
-当你希望 TorBox 负责下载和修复时，请选择 **TorBox hosted NZBs**。DMM 会把 NZB 发送到那里。当前的 zurg 每夜构建版使用提供方类型 `torbox_nzb`，并接受来自 watch directory 和 SABnzbd 接口的 NZB。[TorBox hosted Usenet](../zurg/providers/torbox-nzb.md) 中有对应的 zurg 设置说明。缓存未命中时，必须先下载完成才能播放。下载与种子共用名额。已保留的文件可能会过期，zurg 也不保证会重新获取过期的版本。请保留 NZB，以便之后再次获取。
+当你希望 TorBox 负责下载和修复时，请选择 **TorBox hosted NZBs**。DMM 会把 NZB 发送到那里。当前的 zurg 每夜构建版使用提供方类型 `torbox_nzb`，并接受来自 watch directory 和 SABnzbd 接口的 NZB。[TorBox 托管的 Usenet](../zurg/providers/torbox-nzb.md) 中有对应的 zurg 设置说明。缓存未命中时，必须先下载完成才能播放。下载与种子共用名额。已保留的文件可能会过期，zurg 也不保证会重新获取过期的版本。请保留 NZB，以便之后再次获取。
 
 当你希望 zurg 通过你自己的新闻服务器账户读取内容（包括备用或区块账户）时，请选择**直接 Usenet**。它使用 `nzb` 加 NNTP 凭据。TorBox 的新闻服务器登录也属于这一类。它与 TorBox hosted NZBs 是分开的。请参阅 [TorBox NNTP](../zurg/providers/torbox-news-server.md) 和[它的套餐](https://torbox.app/pricing)。
 
@@ -175,7 +175,7 @@ DMM 的 TorBox **Add** 对话框可以把直接的 HTTP(S) 链接当作网页下
 | 谁承担带宽？ | 供应商的流量配额依然适用。服务器代理会转发播放流量，并占用它的上行带宽；直接播放则把连接转移到观看者那里。媒体库分析也可能读取远程文件。 |
 | 在外面能用吗？ | 托管的插件可以避免暴露你自己的服务器。自托管服务需要一个可以安全访问的地址；仅有局域网地址在外面是无法使用的。参见 [rex 远程访问](../rex/any-source.md#use-it-outside-your-home-optional) 和 [Stremio HTTPS 指南](../zurg/guides/stremio.md#installing-it-on-another-device)。 |
 | 家人能同时使用吗？ | 请检查你供应商的 IP/并发规则，以及服务器的共享方式。Real-Debrid 的使用必须保持在同一个公网 IP 上；即使是由中央库提供的直链，如果发给不同住户，也可能违反这一规则。在没有弄清下载来源之前，不要启用重定向。 |
-| 我要为什么付费？ | 请把供应商订阅、索引器访问、DMM 赞助、托管服务，以及播放器/服务器的购买分开看待。DMM 的基础网站以及个人使用的 rex 是免费的；[rex for Android](../rex/android.md) 也是免费的。zurg+rex 会把你的 debrid 和 Usenet 库同时接入 Android 上的 rex，它只面向赞助者。当前的 zurg 每日构建版和 DMM 的插件分发是赞助者权益；Wanted 以及 DMM 的索引器 API 也需要赞助。rex-stremio 不需要赞助。[赞助能带来什么](sponsorship.md) 列出了所有权益以及在哪里设置。 |
+| 我要为什么付费？ | 请把供应商订阅、索引器访问、DMM 赞助、托管服务，以及播放器/服务器的购买分开看待。DMM 的基础网站以及个人使用的 rex 是免费的；[rex 安卓版](../rex/android.md) 也是免费的。zurg+rex 会把你的 debrid 和 Usenet 库同时接入 Android 上的 rex，它只面向赞助者。当前的 zurg 每日构建版和 DMM 的插件分发是赞助者权益；Wanted 以及 DMM 的索引器 API 也需要赞助。rex-stremio 不需要赞助。[赞助能带来什么](sponsorship.md) 列出了所有权益以及在哪里设置。 |
 | 目录里有条目就一定能播放吗？ | 不能。插件目录只描述影片名称；云端文件可能过期；种子可能没有来源；Usenet 文章可能缺失。请选择你能接受其失败和等待方式的路线。 |
 
 兼容的服务器客户端也可以是第三方应用。[Infuse 可以连接 Plex、Emby 和 Jellyfin](https://support.firecore.com/hc/en-us/articles/360006462093-Streaming-from-Plex-Emby-and-Jellyfin)。你可能不需要单独挂载 zurg。请同时检查插件和客户端。

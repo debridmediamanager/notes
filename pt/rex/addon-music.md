@@ -3,7 +3,7 @@
 Este tutorial coloca uma pasta de álbuns em uma biblioteca **Music** que o Plexamp, o Plex Web e o Plex for Android reproduzem.
 Ele suporta FLAC, MP3, AAC e outros arquivos comuns. Seus arquivos continuam onde estão. O MusicBrainz fornece os detalhes de álbuns conhecidos. Álbuns desconhecidos usam as tags deles e o `cover.jpg`. Um arquivo `.lrc` ao lado vira letra com tempo.
 
-Ele segue [Building rex addons](addons.md) e a seção [Music](addons.md#music) dele. Leia o
+Ele segue [Criando addons para o rex](addons.md) e a seção [Música](addons.md#music) dele. Leia o
 [tutorial de vídeos caseiros](addon-home-videos.md) primeiro se este for seu primeiro addon.
 
 | Você precisa | Por quê |
@@ -292,10 +292,10 @@ O rex não lê tags por conta própria. Tudo que o Plex mostra vem do id da rele
 
 ## Altere {#change-it}
 
-- **Outro layout.** Um álbum dividido em pastas de disco (`CD1/`, `CD2/`) é, para este addon, dois álbuns, cada um com poucas faixas para casar. Agrupe essas pastas em `albums()` e envie um `release` para todos os arquivos delas; veja [Music](addons.md#music).
-- **Artistas pelas próprias fotos.** Envie `display.artist.poster` e registre com `"artwork": "source"`: veja [More from your addon](addon-more.md#artist-pictures).
-- **Playlists.** Envie a posição de cada música em uma playlist e o rex monta a playlist: veja [More from your addon](addon-more.md#collections-and-playlists).
-- **Loudness.** Se você medir o volume de cada música, envie-o como `loudness` nos nomes do Plex: veja [Music](addons.md#music). O rex não mede nada por conta própria.
+- **Outro layout.** Um álbum dividido em pastas de disco (`CD1/`, `CD2/`) é, para este addon, dois álbuns, cada um com poucas faixas para casar. Agrupe essas pastas em `albums()` e envie um `release` para todos os arquivos delas; veja [Música](addons.md#music).
+- **Artistas pelas próprias fotos.** Envie `display.artist.poster` e registre com `"artwork": "source"`: veja [Mais do seu addon](addon-more.md#artist-pictures).
+- **Playlists.** Envie a posição de cada música em uma playlist e o rex monta a playlist: veja [Mais do seu addon](addon-more.md#collections-and-playlists).
+- **Loudness.** Se você medir o volume de cada música, envie-o como `loudness` nos nomes do Plex: veja [Música](addons.md#music). O rex não mede nada por conta própria.
 
 ## Solução de problemas {#troubleshooting}
 

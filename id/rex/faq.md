@@ -8,7 +8,7 @@ Jawaban singkat untuk pertanyaan yang sering muncul sebelum kamu memasang rex, d
 
 A media server untuk aplikasi Plex resmi yang tidak menyimpan file apa pun. Aplikasi Anda akan melihat satu server Plex tambahan dengan poster, musim, riwayat tontonan, dan Continue Watching. Sebuah **source** memberi tahu rex apa saja yang ada di perpustakaan dan melayani setiap file. rex memutarnya langsung saat Anda menekan play. Tidak ada yang diunduh dulu.
 
-Ini adalah server tersendiri. Ini bukan plugin Plex Media Server dan tidak memerlukannya. Jalankan di samping Plex jika Anda ingin keduanya. [Install rex](any-source.md#step-1-install-rex) menjelaskan nama-nama yang dipakai, dan [Move from Plex to rex](from-plex.md) membahas kedua jalurnya.
+Ini adalah server tersendiri. Ini bukan plugin Plex Media Server dan tidak memerlukannya. Jalankan di samping Plex jika Anda ingin keduanya. [Install rex](any-source.md#step-1-install-rex) menjelaskan nama-nama yang dipakai, dan [Pindah dari Plex ke rex](from-plex.md) membahas kedua jalurnya.
 
 ### Berapa biayanya? {#what-does-it-cost}
 
@@ -56,19 +56,19 @@ Ya. File diputar dalam kualitas aslinya: rex memberikan file ke aplikasi apa ada
 
 ### Apakah saya butuh Plex Pass? {#do-i-need-plex-pass}
 
-Tidak. rex memberitahu aplikasi Plex bahwa akun tempat rex terdaftar memiliki Plex Pass, jadi memutar dari luar rumah dan mengonversi video tetap berfungsi dengan akun gratis. Memutar dari luar rumah sudah diuji di Plex Web dengan akun gratis di kedua sisi; aplikasi lain belum diuji dari luar rumah. Edisi film, Dashboard, Downloads, lewati intro dan kredit, serta sisa [Movie and TV capabilities](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities) juga berfungsi. Aplikasi tetap bisa menerapkan aturannya sendiri.
+Tidak. rex memberitahu aplikasi Plex bahwa akun tempat rex terdaftar memiliki Plex Pass, jadi memutar dari luar rumah dan mengonversi video tetap berfungsi dengan akun gratis. Memutar dari luar rumah sudah diuji di Plex Web dengan akun gratis di kedua sisi; aplikasi lain belum diuji dari luar rumah. Edisi film, Dashboard, Downloads, lewati intro dan kredit, serta sisa [Kemampuan film dan serial TV](https://github.com/debridmediamanager/rex/blob/main/docs/setup.md#movie-and-tv-capabilities) juga berfungsi. Aplikasi tetap bisa menerapkan aturannya sendiri.
 
 ### Bisakah saya mengunduh untuk ditonton offline? {#can-i-download-for-offline-viewing}
 
-Unduhan **Downloads** di aplikasi Plex sudah tersedia. rex menyiapkan unduhan di mesinnya sendiri, baik sebagai file asli maupun yang sudah dikonversi dengan FFmpeg, lalu menyimpannya di folder di sebelah `rex.db` sampai aplikasi mengambilnya. Akun tempat rex didaftarkan selalu bisa mengunduh. Orang yang Anda bagikan akses juga perlu izin unduh di share mereka ([Share rex](sharing.md#what-each-person-may-see-and-do)). Aplikasi tetap bisa menerapkan aturannya sendiri. Unduhan yang dikonversi tidak menyertakan subtitle teks. Menyimpan unduhan di ponsel dan menontonnya secara offline belum pernah diuji.
+Unduhan **Downloads** di aplikasi Plex sudah tersedia. rex menyiapkan unduhan di mesinnya sendiri, baik sebagai file asli maupun yang sudah dikonversi dengan FFmpeg, lalu menyimpannya di folder di sebelah `rex.db` sampai aplikasi mengambilnya. Akun tempat rex didaftarkan selalu bisa mengunduh. Orang yang Anda bagikan akses juga perlu izin unduh di share mereka ([Bagikan rex](sharing.md#what-each-person-may-see-and-do)). Aplikasi tetap bisa menerapkan aturannya sendiri. Unduhan yang dikonversi tidak menyertakan subtitle teks. Menyimpan unduhan di ponsel dan menontonnya secara offline belum pernah diuji.
 
 ### Bisakah beberapa orang memakainya, masing-masing dengan riwayatnya sendiri? {#can-several-people-use-it-each-with-their-own-history}
 
-Ya. Setiap orang yang Anda bagikan rex-nya akan masuk dengan akunnya sendiri dan mendapatkan status tontonan, Continue Watching, rating, dan playlist mereka sendiri. Masing-masing bisa menyalin riwayat tontonannya dari server Plex lama ([Bring your watch history](import-watched.md)). [Share rex with family and friends](sharing.md) berisi langkah-langkahnya, termasuk untuk managed users anak-anak.
+Ya. Setiap orang yang Anda bagikan rex-nya akan masuk dengan akunnya sendiri dan mendapatkan status tontonan, Continue Watching, rating, dan playlist mereka sendiri. Masing-masing bisa menyalin riwayat tontonannya dari server Plex lama ([Bawa riwayat tontonanmu](import-watched.md)). [Bagikan rex dengan keluarga dan teman](sharing.md) berisi langkah-langkahnya, termasuk untuk managed users anak-anak.
 
 ### Perangkat keras apa yang dibutuhkan? {#what-hardware-does-it-need}
 
-Sebuah mesin yang selalu menyala, berjalan di Linux (amd64 atau arm64, glibc 2.35 atau lebih baru, jadi Ubuntu 22.04 ke atas), macOS (Intel atau Apple Silicon), atau Windows 64-bit. Di ponsel, tablet, atau kotak TV Android, [rex for Android](android.md) menjalankan rex dan addon-addonnya secara gratis. Untuk sponsor, aplikasi zurg+rex, server Plex di ponsel Anda, juga menghubungkan library debrid dan Usenet Anda ke rex (lihat [panduan Android](../zurg/guides/android.md)).
+Sebuah mesin yang selalu menyala, berjalan di Linux (amd64 atau arm64, glibc 2.35 atau lebih baru, jadi Ubuntu 22.04 ke atas), macOS (Intel atau Apple Silicon), atau Windows 64-bit. Di ponsel, tablet, atau kotak TV Android, [rex untuk Android](android.md) menjalankan rex dan addon-addonnya secara gratis. Untuk sponsor, aplikasi zurg+rex, server Plex di ponsel Anda, juga menghubungkan library debrid dan Usenet Anda ke rex (lihat [panduan Android](../zurg/guides/android.md)).
 
 **Memori:** sediakan 1 GB. Pada library dengan 4.062 film dan 656 serial, rex memakai kurang dari 500 MB saat dijalankan dan sekitar 730 MB saat library sedang dijelajahi. Konversi video membutuhkan tambahan memori.
 
@@ -99,7 +99,7 @@ Beberapa sumber dapat mengisi pustaka Movies dan TV yang sama.
 
 Tidak di rumah. Aplikasi Plex di jaringan rumah Anda menemukan rex tanpa perlu mengubah router. app.plex.tv juga berfungsi melalui alamat HTTPS yang diberikan [rex-direct](any-source.md#rex-direct) untuk rex yang sudah diklaim.
 
-rex memerlukan alamatnya sendiri untuk menonton dari luar rumah atau untuk rumah tangga lain. Cara paling sederhana adalah satu port forward ([rex-direct](any-source.md#rex-direct)). Dengan IPv6 dan tanpa IPv4 publik, gunakan [rex-direct over IPv6](any-source.md#rex-direct-over-ipv6). [Tailscale serve](any-source.md#tailscale-serve) tidak memerlukan port forward pada perangkat yang menjalankan Tailscale. [Use it outside your home](any-source.md#use-it-outside-your-home-optional) membandingkan pilihan-pilihannya.
+rex memerlukan alamatnya sendiri untuk menonton dari luar rumah atau untuk rumah tangga lain. Cara paling sederhana adalah satu port forward ([rex-direct](any-source.md#rex-direct)). Dengan IPv6 dan tanpa IPv4 publik, gunakan [rex-direct melalui IPv6](any-source.md#rex-direct-over-ipv6). [Tailscale serve](any-source.md#tailscale-serve) tidak memerlukan port forward pada perangkat yang menjalankan Tailscale. [Use it outside your home](any-source.md#use-it-outside-your-home-optional) membandingkan pilihan-pilihannya.
 
 ### Apa yang tidak dilakukan rex? {#what-does-it-not-do}
 
@@ -109,7 +109,7 @@ Tidak ada tuner atau DVR. Musik, Live TV, dan foto memerlukan sumber yang mengir
 
 ### Kenapa aplikasi menampilkan versi Plex, dan "Check for Updates"? {#why-does-the-app-show-a-plex-version-and-check-for-updates}
 
-rex memperkenalkan diri ke aplikasi dan ke plex.tv sebagai Plex Media Server, jadi aplikasi menampilkan nomor versi Plex Media Server. Nomor itu bukan milik rex. **Check for Updates** selalu menjawab bahwa server sudah terbaru: rex tidak pernah memperbarui dirinya sendiri. Untuk memperbarui rex, unduh nightly yang lebih baru seperti di [Updating](any-source.md#updating).
+rex memperkenalkan diri ke aplikasi dan ke plex.tv sebagai Plex Media Server, jadi aplikasi menampilkan nomor versi Plex Media Server. Nomor itu bukan milik rex. **Check for Updates** selalu menjawab bahwa server sudah terbaru: rex tidak pernah memperbarui dirinya sendiri. Untuk memperbarui rex, unduh nightly yang lebih baru seperti di [Memperbarui](any-source.md#updating).
 
 ### Kenapa browser saya di port 32400/web tidak membuka pustaka? {#why-does-my-browser-at-port-32400web-not-open-a-library}
 

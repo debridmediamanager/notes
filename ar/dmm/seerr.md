@@ -69,7 +69,7 @@ Radarr أو Sonarr. يحتاج Seerr فقط إلى الوصول إلى debridmed
 
 فتح العنوان في Seerr، ثم اضغط على زر الترس واختر **Remove from Radarr** (أو **Remove from Sonarr**). سيؤدي ذلك إلى إزالته من قائمة المطلوبات لديك. ما جلبه zurg بالفعل يبقى في مكتبتك. **Open in Radarr** بجانبه يفتح العنوان على DMM.
 
-هل تحتاج إلى مساعدة؟ اسأل في منتدى **dmm-support** على [Discord](https://discord.com/invite/7u4YjMThXP). صفحة [Getting help](../guides/remote-help.md) تشرح ما يجب تضمينه.
+هل تحتاج إلى مساعدة؟ اسأل في منتدى **dmm-support** على [Discord](https://discord.com/invite/7u4YjMThXP). صفحة [الحصول على المساعدة](../guides/remote-help.md) تشرح ما يجب تضمينه.
 
 ## Seerr عبر DMM أو مصدر Seerr الخاص بـ zurg {#seerr-through-dmm-or-zurgs-own-seerr-source}
 

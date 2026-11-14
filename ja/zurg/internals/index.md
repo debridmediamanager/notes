@@ -8,18 +8,18 @@ zurg を動かすだけなら、ここの内容は必要ありません。
 
 | ページ | 内容 |
 |---|---|
-| [Architecture](architecture.md) | 全体の構造と、壊れやすい不変条件。ここから読んでください。 |
-| [Naming](naming.md) | リリースとそのファイルが、マウントに表示される名前を得るまでの仕組み。 |
-| [Persistent caches](persistent-caches.md) | 再起動をまたいでディスクに保存されるものと、そのコスト。 |
-| [Directory config UI/UX](uiux.md) | ディレクトリエディターの背後にある設計評価。 |
+| [アーキテクチャ](architecture.md) | 全体の構造と、壊れやすい不変条件。ここから読んでください。 |
+| [命名](naming.md) | リリースとそのファイルが、マウントに表示される名前を得るまでの仕組み。 |
+| [永続キャッシュ](persistent-caches.md) | 再起動をまたいでディスクに保存されるものと、そのコスト。 |
+| [ディレクトリ設定 UI/UX](uiux.md) | ディレクトリエディターの背後にある設計評価。 |
 
 ## 計測した内容 {#what-was-measured}
 
 | ページ | 内容 |
 |---|---|
-| [Debrid baseline](debrid-baseline.md) | zurg のコストと、Real-Debrid、AllDebrid、TorBox での体感速度。 |
-| [Torrent lifecycle](torrent-lifecycle.md) | グラブの実行中に各アカウントが実際に報告する内容をライブで記録したもの。 |
-| [Real-Debrid API notes](realdebrid-behavior.md) | リンクの仕様、ファイル選択、cached が実際に意味するもの。 |
+| [デブリッドのベースライン](debrid-baseline.md) | zurg のコストと、Real-Debrid、AllDebrid、TorBox での体感速度。 |
+| [トレントのライフサイクル](torrent-lifecycle.md) | グラブの実行中に各アカウントが実際に報告する内容をライブで記録したもの。 |
+| [Real-Debrid APIのメモ](realdebrid-behavior.md) | リンクの仕様、ファイル選択、cached が実際に意味するもの。 |
 
 ## zurg が満たすべき契約 {#contracts-zurg-has-to-satisfy}
 
@@ -41,4 +41,4 @@ zurg を動かすだけなら、ここの内容は必要ありません。
 
 - [E2E テスト](e2e-test.md) では、E2E スイートが何を検証するか、また実行にどれだけのコストがかかるかを説明しています。
 
-特定のサービスが何をするのか、また何に制限があるのかについては、ここではなく [Providers](../providers/index.md) にまとめています。
+特定のサービスが何をするのか、また何に制限があるのかについては、ここではなく [プロバイダー](../providers/index.md) にまとめています。

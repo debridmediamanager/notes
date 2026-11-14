@@ -443,7 +443,7 @@ tail -100 ~/zurg/logs/service-stderr.log   # manual LaunchAgent: launchd-stderr.
 
 أما التثبيت الذي ينشئه `zurg setup` على جهاز Mac بلا شاشة، فيستخدم LaunchDaemon ولا يحتاج إلى تسجيل دخول عبر الواجهة الرسومية. تحقّق من ذلك بتشغيل `cd ~/zurg && ./zurg service status`.
 
-ما زلت عالقًا؟ اسأل في منتدى **zurg-support** على [Discord](https://discord.com/invite/7u4YjMThXP). يشرح [Getting help](../../guides/remote-help.md) ما يجب تضمينه.
+ما زلت عالقًا؟ اسأل في منتدى **zurg-support** على [Discord](https://discord.com/invite/7u4YjMThXP). يشرح [الحصول على المساعدة](../../guides/remote-help.md) ما يجب تضمينه.
 
 ## نظرة عامة على البنية {#architecture-overview}
 

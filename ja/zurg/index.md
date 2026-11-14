@@ -25,7 +25,7 @@ zurg を自分のマシンで動かしてみましょう。
 zurg をアカウントに接続します。
 各ページでは、認証情報と `config.yml` の設定項目を説明しています。
 例はすべて Docker を使っています。バイナリでインストールする場合も、設定項目は同じです。
-コマンドについては [Setup](setup/index.md) を参照してください。
+コマンドについては [セットアップ](setup/index.md) を参照してください。
 
 | ページ | 違う点 |
 |---|---|
@@ -36,7 +36,7 @@ zurg をアカウントに接続します。
 | [Debrid-Link](providers/debridlink.md) | seedbox の一覧にはすべてのファイルが含まれ、キャッシュチェックはない |
 | [Offcloud](providers/offcloud.md) | サイズは配信サーバーで確認し、フォルダパスはキャッシュされたメタデータから取得する |
 | [Usenet](providers/usenet.md) | プロバイダー項目としての `nzb` タイプ。トークンは不要で、代わりに監視ディレクトリを使う |
-| [TorBox limits](providers/torbox-limits.md) | TorBox のスロットリングの背景にある実測値と、zurg がそれに合わせてどうペース調整するか |
+| [TorBoxの制限](providers/torbox-limits.md) | TorBox のスロットリングの背景にある実測値と、zurg がそれに合わせてどうペース調整するか |
 | [TorBox ニュースサーバー](providers/torbox-news-server.md) · [ElfHosted ニュースサーバー](providers/elfhosted-news-server.md) | 同梱の Usenet アカウントが通信上どういうものか |
 
 [共通ページ](providers/index.md)では、Docker でアカウントを追加する 3 つの方法と、設定ローダーが適用するルールを説明しています。
@@ -44,19 +44,19 @@ zurg をアカウントに接続します。
 ## ガイド {#guides}
 
 - [Usenet](guides/usenet.md) — `nzb` バックエンドのエンドツーエンドの手順です。ニュースアカウント、NZB、マウント、Plex まで扱います
-- [Sonarr & Radarr for Usenet](guides/sonarr-radarr.md) — \*arr は zurg の回答を SABnzbd として受け取るので、インポートはダウンロードではなく名前の変更で済みます
-- [Sonarr & Radarr for torrents](guides/sonarr-radarr-torrents.md) — 同じ内容ですが、zurg が qBittorrent として応答します。Prowlarr も対象です
-- [zurg searches for Sonarr & Radarr](guides/sonarr-radarr-fetch.md)。Radarr と Sonarr はリストを保持し、リリースの検索と配置は zurg が行います。どちらにもインデクサーやダウンロードクライアントは不要です
+- [Sonarr と Radarr で Usenet を使う](guides/sonarr-radarr.md) — \*arr は zurg の回答を SABnzbd として受け取るので、インポートはダウンロードではなく名前の変更で済みます
+- [Sonarr と Radarr（トレント用）](guides/sonarr-radarr-torrents.md) — 同じ内容ですが、zurg が qBittorrent として応答します。Prowlarr も対象です
+- [zurg は Sonarr と Radarr を検索します](guides/sonarr-radarr-fetch.md)。Radarr と Sonarr はリストを保持し、リリースの検索と配置は zurg が行います。どちらにもインデクサーやダウンロードクライアントは不要です
 - [`__magic__`](guides/magic.md) — レイアウトが保存される唯一のディレクトリで、そのため自分で整理できます。ライブラリはタイトルごとに Kodi と Plex 用に整理されます
-- [Renaming](guides/renaming.md) — ライブラリのどこでもリリースやファイルの名前を変更できます。移動は拒否され、その理由がページに表示されます
+- [リネーム](guides/renaming.md) — ライブラリのどこでもリリースやファイルの名前を変更できます。移動は拒否され、その理由がページに表示されます
 - [Plex](guides/plex.md) — zurg が Plex トークンで何をするか、そして意図的に何をしないか
 - [Jellyfin](guides/jellyfin.md) — Jellyfin 向けの同じ内容です
-- [rex with zurg](../rex/with-zurg.md) — ファイルを持たず、debrid アカウントから zurg が中身を入れる Plex アプリ向けメディアサーバーです。詳しくは [rex](../rex/index.md) をご覧ください
-- [The Stremio addon](guides/stremio.md) — 自分のインデクサーを検索し、Usenet バックエンドから直接再生する Stremio です
-- [Watchlist and Seerr](guides/acquisition.md) は、自分のインデクサー経由で依頼したものを取得します
-- [Plex watchlist](guides/plex-watchlist.md) は、その Plex 側の機能です
-- [DMM wanted list](guides/dmm-wanted.md) は、DMM で Want を押したものを取得します。ほかに設定は必要ありません
-- [Local libraries](guides/local-libraries.md) は、共有のリリース一覧を自分のアカウント経由で再生します
+- [rex と zurg の併用](../rex/with-zurg.md) — ファイルを持たず、debrid アカウントから zurg が中身を入れる Plex アプリ向けメディアサーバーです。詳しくは [rex](../rex/index.md) をご覧ください
+- [Stremioアドオン](guides/stremio.md) — 自分のインデクサーを検索し、Usenet バックエンドから直接再生する Stremio です
+- [ウォッチリストとSeerr](guides/acquisition.md) は、自分のインデクサー経由で依頼したものを取得します
+- [Plexのウォッチリスト](guides/plex-watchlist.md) は、その Plex 側の機能です
+- [DMM のウォントリスト](guides/dmm-wanted.md) は、DMM で Want を押したものを取得します。ほかに設定は必要ありません
+- [ローカルライブラリ](guides/local-libraries.md) は、共有のリリース一覧を自分のアカウント経由で再生します
 - [Android と Google TV](guides/android.md) は、スマートフォンや TV ボックスでライブラリ全体を動かします
 
 ## 移行 {#migrating}
@@ -71,12 +71,12 @@ zurg をアカウントに接続します。
 
 ## リファレンス {#reference}
 
-- [Configuration](reference/config.md) — `config.yml` のすべてのオプション
-- [Command line](reference/cli.md) では zurg のバイナリが受け付けるすべてのコマンドとフラグを一覧できます
-- [Outbound identity](reference/outbound-identity.md) では、zurg が呼び出すサービスに自分自身について何を伝えるかを説明しています
-- [MCP server](reference/mcp.md) では、AI エージェントが Model Context Protocol 経由で zurg を操作する方法を説明しています
-- [Tags](reference/tags.md) — torrent にどのタグが付けられ、その理由は何か
-- [Changelog](reference/changelog.md) — いつ何が変わったか
+- [設定](reference/config.md) — `config.yml` のすべてのオプション
+- [コマンドライン](reference/cli.md) では zurg のバイナリが受け付けるすべてのコマンドとフラグを一覧できます
+- [アウトバウンド ID](reference/outbound-identity.md) では、zurg が呼び出すサービスに自分自身について何を伝えるかを説明しています
+- [MCPサーバー](reference/mcp.md) では、AI エージェントが Model Context Protocol 経由で zurg を操作する方法を説明しています
+- [タグ](reference/tags.md) — torrent にどのタグが付けられ、その理由は何か
+- [変更履歴](reference/changelog.md) — いつ何が変わったか
 
 ## 内部構造 {#internals}
 
@@ -94,4 +94,4 @@ zurg の構成、計測結果、そして扱いにくい部分の設計メモで
 ---
 
 zurg はスポンサー向けに配布しています: [GitHub Releases](https://github.com/debridmediamanager/zurg/releases)
-· [Sponsor](https://gatekeeper.debridmediamanager.com/) · [Discord](https://discord.com/invite/7u4YjMThXP)
+· [スポンサー](https://gatekeeper.debridmediamanager.com/) · [Discord](https://discord.com/invite/7u4YjMThXP)

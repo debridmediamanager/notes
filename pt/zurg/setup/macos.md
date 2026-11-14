@@ -437,7 +437,7 @@ Se você instalou o LaunchAgent manual e o login automático não está ativado,
 
 Uma instalação criada pelo `zurg setup` em um Mac headless usa um LaunchDaemon e não precisa de login na interface gráfica. Verifique com `cd ~/zurg && ./zurg service status`.
 
-Ainda com problemas? Pergunte no fórum **zurg-support** no [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../../guides/remote-help.md) explica o que incluir.
+Ainda com problemas? Pergunte no fórum **zurg-support** no [Discord](https://discord.com/invite/7u4YjMThXP). [Obtendo ajuda](../../guides/remote-help.md) explica o que incluir.
 
 ## Visão geral da arquitetura {#architecture-overview}
 
@@ -464,7 +464,7 @@ launchd (PID 1)
 
 ## Referência rápida {#quick-reference}
 
-Execute estes comandos em `~/zurg`. As linhas `zurg service` são para uma instalação feita pelo `zurg setup`; o LaunchAgent manual usa os comandos launchctl em [Managing the Services](#managing-the-services).
+Execute estes comandos em `~/zurg`. As linhas `zurg service` são para uma instalação feita pelo `zurg setup`; o LaunchAgent manual usa os comandos launchctl em [Gerenciando os serviços](#managing-the-services).
 
 | Ação | Comando |
 |--------|---------|

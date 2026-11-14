@@ -339,6 +339,6 @@ magic:
 ## См. также {#see-also}
 
 - [sabnzbd.md](sonarr-radarr.md) — подключение Sonarr и Radarr к zurg, ради чего и был создан `__magic__`
-- [DMM wanted list](dmm-wanted.md) — нажмите Want в DMM, и zurg загрузит его в `__movies__`, `__shows__` или `__anime__`
+- [Список желаемого в DMM](dmm-wanted.md) — нажмите Want в DMM, и zurg загрузит его в `__movies__`, `__shows__` или `__anime__`
 - [usenet.md](usenet.md) — бэкенд NZB, куда попадают эти загрузки
 - [config.md](../reference/config.md#__magic__-a-directory-you-can-organise) — каждый ключ в блоке `magic:`

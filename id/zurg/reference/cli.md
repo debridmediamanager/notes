@@ -171,7 +171,7 @@ Mengukur seberapa cepat host ini mencapai setiap server unduh Real-Debrid melalu
 
 ## Plex
 
-Ketiga ini bekerja dengan server Plex di host ini. Konfigurasi Plex dulu. Lihat [Plex Integration](config.md#plex-integration).
+Ketiga ini bekerja dengan server Plex di host ini. Konfigurasi Plex dulu. Lihat [Integrasi Plex](config.md#plex-integration).
 
 ### zurg plex-settings
 

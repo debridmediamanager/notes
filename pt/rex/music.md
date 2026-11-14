@@ -14,8 +14,8 @@ O que você ganha:
 | Você precisa | Por quê |
 |---|---|
 | Um nightly do rex datado de 2026.11.02 ou mais recente | A música veio nessa build |
-| rex configurado como em [rex with your own app](any-source.md) | É ali que a biblioteca de música aparece |
-| Um addon de música | Qualquer programa que envie músicas pela feed API do rex. Para uma pasta de álbuns nos seus próprios discos, [Tutorial: a music addon](addon-music.md) é um exemplo completo em um único arquivo Python |
+| rex configurado como em [rex com seu próprio app](any-source.md) | É ali que a biblioteca de música aparece |
+| Um addon de música | Qualquer programa que envie músicas pela feed API do rex. Para uma pasta de álbuns nos seus próprios discos, [Tutorial: um addon de música](addon-music.md) é um exemplo completo em um único arquivo Python |
 | [Converting video](any-source.md#converting-video-optional), opcional | O rex converte uma música somente para um app configurado com uma qualidade de música menor que a original |
 
 ## Passo 1. Instale o rex e adicione-o a uma conta do Plex {#step-1-install-rex-and-add-it-to-a-plex-account}
@@ -43,7 +43,7 @@ A linha `SECTION create` só aparece se o addon declarar a biblioteca. A bibliot
 
 ## Passo 3. Compartilhe a biblioteca de música {#step-3-share-the-music-library}
 
-A biblioteca de música é nova, então ainda não está no compartilhamento de ninguém. Logado com a conta nova, adicione-a ao compartilhamento da sua própria conta e ao de todos os outros em **Manage Library Access** ([Share rex](sharing.md)).
+A biblioteca de música é nova, então ainda não está no compartilhamento de ninguém. Logado com a conta nova, adicione-a ao compartilhamento da sua própria conta e ao de todos os outros em **Manage Library Access** ([Compartilhar rex](sharing.md)).
 
 ## Passo 4. Ouça {#step-4-listen}
 

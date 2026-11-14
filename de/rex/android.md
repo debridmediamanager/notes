@@ -102,7 +102,7 @@ Addons kommen aus **repositories**: Git-Repositories, die Addons enthalten. Die 
 
 Jede Plex-App, die mit demselben Konto angemeldet ist, findet rex in deinem Heimnetzwerk anhand seines Namens: dein Fernseher, ein anderes Handy, Plex Web auf einem Computer. **Status** zeigt dir die Adresse von rex im Heimnetz, zum Beispiel `http://192.168.1.20:32400`.
 
-Wenn du Familie und Freunde mit ihren eigenen Plex-Konten schauen lassen willst, lies [Share rex with family and friends](sharing.md).
+Wenn du Familie und Freunde mit ihren eigenen Plex-Konten schauen lassen willst, lies [rex mit Familie und Freunden teilen](sharing.md).
 
 ## Im Dauerbetrieb lassen {#keep-it-running}
 

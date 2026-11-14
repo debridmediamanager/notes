@@ -63,7 +63,7 @@ Di Debrid-Link, cast akan menambahkan rilisan ke akun kamu. Rilisan yang belum a
 | **No episodes in this release on Premiumize** | DMM tidak bisa mencocokkan file pada rilis itu dengan episode. Cast rilis lain. |
 | Alamat addon yang ditempel di kolom pencarian di bagian atas Stremio Web tidak melakukan apa-apa | Kolom itu hanya untuk mencari. Gunakan **Addons** → **Add addon**. |
 
-Masih bingung? Tanyakan di forum **dmm-cast-support** di [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan.
+Masih bingung? Tanyakan di forum **dmm-cast-support** di [Discord](https://discord.com/invite/7u4YjMThXP). [Mendapatkan bantuan](../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan.
 
 ## Pertanyaan {#questions}
 

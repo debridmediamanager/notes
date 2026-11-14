@@ -21,7 +21,7 @@ Traitez-le comme un mot de passe. Il n'expire pas, et quiconque le possède peut
 
 ![Page Connect Real-Debrid de DMM](../assets/real-debrid-api-token/02-dmm-paste-key.webp)
 
-DMM n'a pas besoin du jeton du tout : **Sign in with Real-Debrid** affiche un code que vous validez sur real-debrid.com/device. DMM dispose ainsi de sa propre connexion, qui se renouvelle toute seule. Pour en savoir plus, voir [What is DMM and how do I use it?](../dmm/index.md#sign-in)
+DMM n'a pas besoin du jeton du tout : **Sign in with Real-Debrid** affiche un code que vous validez sur real-debrid.com/device. DMM dispose ainsi de sa propre connexion, qui se renouvelle toute seule. Pour en savoir plus, voir [Qu'est-ce que DMM et comment l'utiliser ?](../dmm/index.md#sign-in)
 
 ## Le mettre dans zurg {#put-it-in-zurg}
 

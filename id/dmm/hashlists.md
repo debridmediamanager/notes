@@ -59,7 +59,7 @@ Masih bingung? Tanyakan di forum **dmm-support** di [Discord](https://discord.co
 
 ### Bagaimana cara menambahkan hash list ke library saya sendiri? {#how-do-i-add-hash-lists-to-my-own-library}
 
-Buka daftarnya, masuk ke DMM dengan layanan debrid Anda, lalu tekan tombol layanan Anda pada sebuah baris, atau **RD Download** (atau **Download** layanan Anda) untuk semua yang ditampilkan. Lihat [Add a list to your library](#add-a-list-to-your-library).
+Buka daftarnya, masuk ke DMM dengan layanan debrid Anda, lalu tekan tombol layanan Anda pada sebuah baris, atau **RD Download** (atau **Download** layanan Anda) untuk semua yang ditampilkan. Lihat [Tambahkan list ke library kamu](#add-a-list-to-your-library).
 
 ### Kenapa semua item di hash list saya tersembunyi? {#why-are-all-the-items-in-my-hash-list-hidden}
 

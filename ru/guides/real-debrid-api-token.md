@@ -21,7 +21,7 @@
 
 ![Страница Connect Real-Debrid в DMM](../assets/real-debrid-api-token/02-dmm-paste-key.webp)
 
-DMM вообще не требует токена: **Sign in with Real-Debrid** показывает код, который нужно подтвердить на real-debrid.com/device. Так DMM получает собственный вход, который продлевается сам. Подробнее в [What is DMM and how do I use it?](../dmm/index.md#sign-in)
+DMM вообще не требует токена: **Sign in with Real-Debrid** показывает код, который нужно подтвердить на real-debrid.com/device. Так DMM получает собственный вход, который продлевается сам. Подробнее в [Что такое DMM и как им пользоваться?](../dmm/index.md#sign-in)
 
 ## Вставьте его в zurg {#put-it-in-zurg}
 

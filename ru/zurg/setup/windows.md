@@ -510,9 +510,9 @@ $env:ZURG_INSTALL_MODE = "update"; irm https://raw.githubusercontent.com/debridm
 | `realdebrid will not take <name>: it refuses that name outright` | Real-Debrid блокирует некоторые названия релизов (`WEBRip` и похожие). Возьмите релиз с другим названием; с настройкой всё в порядке. |
 | Добавление не проходит с `could not read back id=…` или текстом о лимите запросов | Бюджет API аккаунта исчерпан. Первый обход библиотеки может его потратить. Его может потратить и второй zurg с тем же токеном. Дайте обходу закончиться. Не используйте один токен на нескольких экземплярах. |
 | Запуск задачи отклонён, `0x800710E0` | Задача всё ещё числится «запущенной»: окно-лаунчер не закрылось. Выполните `Stop-ScheduledTask zurg`, затем запустите снова. |
-| `data\rclone-cache` постоянно растёт | Это кэш воспроизведения монтирования, по умолчанию он ограничен 256G. См. [Keeping the cache small](#keeping-the-cache-small). |
+| `data\rclone-cache` постоянно растёт | Это кэш воспроизведения монтирования, по умолчанию он ограничен 256G. См. [Держим кэш маленьким](#keeping-the-cache-small). |
 
-Всё ещё не получается? Спросите на форуме **zurg-support** в [Discord](https://discord.com/invite/7u4YjMThXP). В [Getting help](../../guides/remote-help.md) написано, что приложить к вопросу.
+Всё ещё не получается? Спросите на форуме **zurg-support** в [Discord](https://discord.com/invite/7u4YjMThXP). В [Получение помощи](../../guides/remote-help.md) написано, что приложить к вопросу.
 
 ## PowerShell через SSH, для тех, кто любит удалёнку {#powershell-over-ssh-for-the-remote-minded}
 

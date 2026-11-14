@@ -21,7 +21,7 @@
 
 ![صفحة Connect Real-Debrid في DMM](../assets/real-debrid-api-token/02-dmm-paste-key.webp)
 
-لا يحتاج DMM إلى الرمز أصلاً: الزر **Sign in with Real-Debrid** يعرض رمزاً توافق عليه على real-debrid.com/device. بذلك يحصل DMM على تسجيل دخول خاص به، ويتجدد تلقائياً. للمزيد، انظر [What is DMM and how do I use it?](../dmm/index.md#sign-in)
+لا يحتاج DMM إلى الرمز أصلاً: الزر **Sign in with Real-Debrid** يعرض رمزاً توافق عليه على real-debrid.com/device. بذلك يحصل DMM على تسجيل دخول خاص به، ويتجدد تلقائياً. للمزيد، انظر [ما هو DMM وكيف أستخدمه؟](../dmm/index.md#sign-in)
 
 ## ضعه في zurg {#put-it-in-zurg}
 

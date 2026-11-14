@@ -97,4 +97,4 @@ Rodar de novo não muda nada do que você já tem, então rode sempre que mais d
 | Uma página `Unauthorized` | O rex não aceitou o token do passo 2. Copie de novo, de uma requisição feita ao rex, não ao `plex.tv` |
 | `notInRex` está muito mais alto do que você espera | A maior parte da sua biblioteca ainda não está no rex, ou sua biblioteca antiga usa um dos agentes mais antigos do Plex. Rode de novo quando sua biblioteca tiver chegado |
 
-Ainda travado? Pergunte no fórum **rex-support** no [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) explica o que incluir.
+Ainda travado? Pergunte no fórum **rex-support** no [Discord](https://discord.com/invite/7u4YjMThXP). [Obtendo ajuda](../guides/remote-help.md) explica o que incluir.

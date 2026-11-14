@@ -9,9 +9,9 @@
 - **ファイルを配信するのはあなたのアプリです。** rex は、ブラウザがファイルをダウンロードするのと同じように、HTTP または HTTPS で、すべてのデータをあなたのアプリから取得します。rex はファイルを保存せず、メディア用のディスクやマウントも必要ありません。
 - **あなたのアプリが、何を持っているかを rex に伝えます。** rex の feed API を使って、ファイルの一覧と、その後のすべての変更を rex に送ります。rex がフォルダを一覧表示したり、スキャンしたりすることはありません。
 - **ファイルが何であるかを決めるのはあなたのアプリです。** そのファイルが映画かエピソードか、どのタイトルに属するか（IMDb と TMDB の ID で）、エピソードの場合はシーズンと話数を指定します。rex がファイル名から推測することはありません。
-- **Plex が情報を提供します。** rex を Plex アカウントに接続すると、各タイトルについて、その ID に対して Plex 自身のメタデータが持つ名前、ポスター、あらすじ、エピソード名を表示します。どの Plex エージェントも知らないものは、あなたのアプリが自分で名前を付けます。詳しくは [Building rex addons](addons.md) を参照してください。
+- **Plex が情報を提供します。** rex を Plex アカウントに接続すると、各タイトルについて、その ID に対して Plex 自身のメタデータが持つ名前、ポスター、あらすじ、エピソード名を表示します。どの Plex エージェントも知らないものは、あなたのアプリが自分で名前を付けます。詳しくは [rex アドオンの作成](addons.md) を参照してください。
 
-rex は個人利用であれば無料です（PolyForm Noncommercial）。スポンサー向けの階層や、ダウンロードにアカウントは必要ありません。詳しくは [rex.debridmediamanager.com](https://rex.debridmediamanager.com/ja/) をご覧ください。スマートフォンや TV ボックスしか持っていませんか？ [rex for Android](android.md) では、その端末上で rex とそのアドオンを動かせます。スポンサー向けには、スマートフォン上で Plex サーバーを動かす [zurg+rex](../zurg/guides/android.md) もあり、debrid と Usenet のライブラリを rex に接続できます。
+rex は個人利用であれば無料です（PolyForm Noncommercial）。スポンサー向けの階層や、ダウンロードにアカウントは必要ありません。詳しくは [rex.debridmediamanager.com](https://rex.debridmediamanager.com/ja/) をご覧ください。スマートフォンや TV ボックスしか持っていませんか？ [Android 版 rex](android.md) では、その端末上で rex とそのアドオンを動かせます。スポンサー向けには、スマートフォン上で Plex サーバーを動かす [zurg+rex](../zurg/guides/android.md) もあり、debrid と Usenet のライブラリを rex に接続できます。
 
 ## 始める前に {#before-you-start}
 
@@ -20,10 +20,10 @@ rex は個人利用であれば無料です（PolyForm Noncommercial）。スポ
 | rex の nightly 2026.10.25 以降のビルド | ステップ 1 で最新版をダウンロードします |
 | 常時起動しているマシン: Linux (Ubuntu 22.04 以降)、macOS、または Windows (64 bit) | rex はサーバーです。Plex のアプリは再生ボタンを押すたびに rex に接続します。コマンドが OS によって違う場合、ステップごとに OS 別のタブがあります。[Docker](#run-rex-in-docker) は Linux 向けに後ろで説明しています |
 | メモリ 1 GB | 4,062 本の映画と 656 本のシリーズ (34,678 エピソード) の場合、rex は起動中に 500 MB 未満、ライブラリを閲覧中に約 730 MB を使いました。動画の変換にはさらに多くのメモリと、より多くのコア、またはグラフィックチップが必要です |
-| [What your app must do](#what-your-app-must-do) に記載の動作をするアプリ | ライブラリはここから取得されます |
-| このマシン、自宅のネットワーク、または Tailscale からアプリがフィードを送信すること | rex はそこからのフィードだけを受け付けます ([Keep the port private](#keep-the-port-private))。シードボックスやクラウドサーバー上のアプリは、そのサーバーが tailnet に参加していない限り rex にプッシュできません。ファイル自体は rex が到達できる場所であればどこからでも配信できます |
+| [アプリに必要なこと](#what-your-app-must-do) に記載の動作をするアプリ | ライブラリはここから取得されます |
+| このマシン、自宅のネットワーク、または Tailscale からアプリがフィードを送信すること | rex はそこからのフィードだけを受け付けます ([ポートを非公開にする](#keep-the-port-private))。シードボックスやクラウドサーバー上のアプリは、そのサーバーが tailnet に参加していない限り rex にプッシュできません。ファイル自体は rex が到達できる場所であればどこからでも配信できます |
 | このマシンのディスク上のファイル? それらを HTTP で配信してプッシュするもの | rex はディスクを直接読み込みません。[ステップ 2](#step-2-see-it-work-by-hand) では 1 つのファイルを手動で試せます。それ以外は、それらのファイルには Plex を使い続けてください |
-| Usenet? それを読み取るソース (zurg など) | rex は Usenet プロバイダーとは直接通信しません。Usenet を扱うソースとして zurg があります。詳しくは [rex with zurg](with-zurg.md) を参照してください |
+| Usenet? それを読み取るソース (zurg など) | rex は Usenet プロバイダーとは直接通信しません。Usenet を扱うソースとして zurg があります。詳しくは [rex と zurg の併用](with-zurg.md) を参照してください |
 | rex 専用に作った新しい Plex アカウント | [Plex アカウントに追加](#step-3-add-it-to-a-plex-account) された後、rex はすべてのタイトル、ポスター、概要、エピソード名を Plex から取得します。それまでは、タイトルはファイル名のままで、ポスターはありません |
 
 ## アプリに必要なこと {#what-your-app-must-do}
@@ -354,9 +354,9 @@ Plex アプリを、スマホ、テレビ、パソコンのどれかで開いて
 見かけることがある表示は次の 2 つです。
 
 - **"yourhost server is unclaimed and not secure"**。Plex アプリは、Plex アカウントに紐付いていないサーバーに対してこの表示を出します。紐付けるまで、rex は何も再生しません。[手順 3](#step-3-add-it-to-a-plex-account) を実行してください。
-- **"This server is not powerful enough to convert video"**。すべてのデバイスですべてのタイトルが失敗する場合は、再生を押した直後の rex のログを確認してください。そこに `upstream failed` や `502` があれば、rex がアプリに到達できていません。この場合、FFmpeg では直りません。[When something is wrong](#when-something-is-wrong) の `upstream failed` の行に対処法が書かれています。一部のファイルだけが失敗する場合（特に Web ブラウザで多い場合）は、デバイスがそのままでは再生できないファイルです。AC3 や DTS の音声であることが多いです。テレビやスマホの Plex アプリは、ほとんどのファイルをそのまま再生できます。どの環境でもすべて再生したい場合は、[Converting video](#converting-video-optional) を設定してください。
+- **"This server is not powerful enough to convert video"**。すべてのデバイスですべてのタイトルが失敗する場合は、再生を押した直後の rex のログを確認してください。そこに `upstream failed` や `502` があれば、rex がアプリに到達できていません。この場合、FFmpeg では直りません。[問題が起きたとき](#when-something-is-wrong) の `upstream failed` の行に対処法が書かれています。一部のファイルだけが失敗する場合（特に Web ブラウザで多い場合）は、デバイスがそのままでは再生できないファイルです。AC3 や DTS の音声であることが多いです。テレビやスマホの Plex アプリは、ほとんどのファイルをそのまま再生できます。どの環境でもすべて再生したい場合は、[Converting video](#converting-video-optional) を設定してください。
 
-**削除はアプリ側で行われます。** 新しく作ったアカウントでサインインした状態で、Plex アプリのタイトルで **Delete** を押すと、rex は [What your app must do](#what-your-app-must-do) に書かれているとおり、アプリにそのファイルの削除を依頼します。rex を共有しているほかのアカウントでは削除できません。削除を無効にするには、新しいアカウントで app.plex.tv を開き、**Settings**、rex サーバーの **Library**、**Show Advanced** の順に進みます。**Allow media deletion** のチェックを外して保存してください。
+**削除はアプリ側で行われます。** 新しく作ったアカウントでサインインした状態で、Plex アプリのタイトルで **Delete** を押すと、rex は [アプリに必要なこと](#what-your-app-must-do) に書かれているとおり、アプリにそのファイルの削除を依頼します。rex を共有しているほかのアカウントでは削除できません。削除を無効にするには、新しいアカウントで app.plex.tv を開き、**Settings**、rex サーバーの **Library**、**Show Advanced** の順に進みます。**Allow media deletion** のチェックを外して保存してください。
 
 ![Show Advanced を開いた rex サーバーの Library 設定。Allow media deletion が枠で囲まれている](../assets/rex/32-plex-allow-media-deletion.webp)
 
@@ -388,7 +388,7 @@ Start-ScheduledTask rex
 
 Docker では、ファイルは `~/rex/config` にあり、root だけが読めます。コンテナ内から `docker exec rex sqlite3 /config/rex.db ".backup /config/rex.db.bak"` でバックアップを取り、その後 `mkdir -p ~/rex-backup && sudo cp ~/rex/config/rex.db.bak ~/rex/config/*.json ~/rex-backup/` を実行します。
 
-元に戻すには [Restore a backup](#restore-a-backup) を見てください。
+元に戻すには [バックアップを復元](#restore-a-backup) を見てください。
 
 これで完了です。以下のセクションは任意です。
 
@@ -396,7 +396,7 @@ Docker では、ファイルは `~/rex/config` にあり、root だけが読め�
 
 **これは何をするか。** rex に、家の外にいる Plex アプリから届く HTTPS アドレスを与え、その情報を plex.tv に伝えます。
 
-**なぜ重要か。** 家の外では、app.plex.tv は HTTPS アドレスにしか接続できず、他の Plex アプリも HTTPS を優先します。本物の Plex サーバーなら Plex のリレーに切り替えられますが、rex はそれができません。そのため、接続方法は自分で選ぶ必要があります。rex は先に [claimed](#step-3-add-it-to-a-plex-account) しておいてください。インターネットに面したプロキシを使う場合は、`/rex/` をブロックしてください。詳しくは [Keep the port private](#keep-the-port-private) を見てください。
+**なぜ重要か。** 家の外では、app.plex.tv は HTTPS アドレスにしか接続できず、他の Plex アプリも HTTPS を優先します。本物の Plex サーバーなら Plex のリレーに切り替えられますが、rex はそれができません。そのため、接続方法は自分で選ぶ必要があります。rex は先に [claimed](#step-3-add-it-to-a-plex-account) しておいてください。インターネットに面したプロキシを使う場合は、`/rex/` をブロックしてください。詳しくは [ポートを非公開にする](#keep-the-port-private) を見てください。
 
 **Plex Pass。** Plex Web は、どちらのアカウントにも Plex Pass や Remote Watch Pass がなくても、家の外で再生できます。他の Plex アプリは、家の外での動作をまだテストしていません。
 
@@ -690,7 +690,7 @@ docker compose up -d
 
 ### rex を別のマシンに移動 {#move-rex-to-another-machine}
 
-[ステップ5](#step-5-watch-something)のとおりにバックアップを取ります。次に、[Remove rex](#remove-rex)の最初のブロックにあるとおりに、古いマシンの rex を完全に停止します。新しいマシンでは[ステップ1](#step-1-install-rex)を実行しますが、rex のサービスとして登録する前に、バックアップしたファイルを rex のフォルダーにコピーしてください。Plex アプリから見ると、同じサーバーのままです。引き続きクレーム済みで、共有もされています。そのうえで:
+[ステップ5](#step-5-watch-something)のとおりにバックアップを取ります。次に、[rex を削除](#remove-rex)の最初のブロックにあるとおりに、古いマシンの rex を完全に停止します。新しいマシンでは[ステップ1](#step-1-install-rex)を実行しますが、rex のサービスとして登録する前に、バックアップしたファイルを rex のフォルダーにコピーしてください。Plex アプリから見ると、同じサーバーのままです。引き続きクレーム済みで、共有もされています。そのうえで:
 
 - アプリには、[ステップ4](#step-4-connect-your-app)のとおりに新しい LAN IP を設定します。
 - ルーターのポート転送を新しいマシンに向け直します。または、rex が新しいマシンで起動する前に、その IPv6 のファイアウォールルールを設定します。rex-direct の名前はそのままで、パブリック IP が変わっても自動的に追従します。Tailscale serve と Caddy は、新しいマシンで設定し直します。
@@ -732,7 +732,7 @@ cd ~/rex && docker compose down
 
 ### ヘルプを求める {#getting-help}
 
-DMM [Discord](https://discord.com/invite/7u4YjMThXP) の **rex-support** フォーラムで質問してください。何を含めればよいかは [Getting help](../guides/remote-help.md) に書いてあり、スポンサーがリモートサポートを受ける方法も載っています。
+DMM [Discord](https://discord.com/invite/7u4YjMThXP) の **rex-support** フォーラムで質問してください。何を含めればよいかは [ヘルプの入手方法](../guides/remote-help.md) に書いてあり、スポンサーがリモートサポートを受ける方法も載っています。
 
 ## 問題が起きたとき {#when-something-is-wrong}
 

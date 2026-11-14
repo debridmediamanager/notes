@@ -1,6 +1,6 @@
 # Apa fungsi masing-masing bagian {#what-each-piece-does}
 
-The nama-nama ini tidak menjelaskan fungsinya, jadi di sini ada satu baris untuk masing-masing. Yang tidak ditandai **For sponsors** itu gratis. Untuk mengetahui mana yang kamu butuhkan, gunakan [Choose your setup](choose-your-setup.md).
+The nama-nama ini tidak menjelaskan fungsinya, jadi di sini ada satu baris untuk masing-masing. Yang tidak ditandai **For sponsors** itu gratis. Untuk mengetahui mana yang kamu butuhkan, gunakan [Pilih pengaturan Anda](choose-your-setup.md).
 
 ## Tiga proyeknya {#the-three-projects}
 
@@ -28,7 +28,7 @@ Tidak perlu server untuk semua ini.
 | [rex addons](../rex/addons.md) | Program kecil yang memberi rex sesuatu untuk diputar: YouTube, Spotify, IPTV, video rumahan, atau apa pun yang kamu tulis sendiri |
 | [rex-live-sports](../rex/live-tv.md) | Addon rex yang menampilkan saluran olahraga langsung dan panduan di Live TV aplikasi Plex |
 | [rex-direct](../rex/any-source.md#rex-direct) | Memberi rex kamu alamat aman sendiri, sehingga aplikasi Plex bisa mengaksesnya dari luar rumah |
-| [rex for Android](../rex/android.md) | rex dan addon-nya di ponsel atau TV box Android, tanpa komputer |
+| [rex untuk Android](../rex/android.md) | rex dan addon-nya di ponsel atau TV box Android, tanpa komputer |
 | [zurg+rex for Android](../zurg/guides/android.md) | Server Plex di ponselmu: zurg dan rex bersama-sama di satu perangkat Android, dengan library debrid dan Usenet kamu. Untuk sponsor |
 
 ## Di dalam Jellyfin dan Emby {#inside-jellyfin-and-emby}
@@ -43,7 +43,7 @@ Tidak perlu server untuk semua ini.
 | Nama | Fungsinya |
 |---|---|
 | [Wanted](../zurg/guides/dmm-wanted.md) | Tekan **Want** di DMM dan zurg kamu akan mengambilnya, termasuk episode baru. Untuk sponsor |
-| [Seerr through DMM](../dmm/seerr.md) | Permintaan keluarga di Seerr masuk ke daftar Wanted kamu. Untuk sponsor |
+| [Seerr lewat DMM](../dmm/seerr.md) | Permintaan keluarga di Seerr masuk ke daftar Wanted kamu. Untuk sponsor |
 | [Torznab](https://debridmediamanager.com/torznab) dan [Newznab](https://debridmediamanager.com/newznab) | DMM sebagai indexer untuk Sonarr, Radarr, dan Prowlarr. Untuk sponsor |
 | zurg sebagai download client | zurg menjawab Sonarr dan Radarr seperti qBittorrent untuk [torrents](../zurg/guides/sonarr-radarr-torrents.md) dan SABnzbd untuk [Usenet](../zurg/guides/sonarr-radarr.md), jadi kamu tidak perlu menjalankan keduanya. Untuk sponsor |
 | [Addon Stremio dari zurg](../zurg/guides/stremio.md) | Mencari di Usenet saat kamu menekan play di Stremio dan memutarnya lewat zurg. Untuk sponsor |
@@ -55,7 +55,7 @@ Tidak perlu server untuk semua ini.
 |---|---|
 | Tab Usenet | Mengirim rilis Usenet ke library Real-Debrid kamu, tanpa perlu akun Usenet. Sponsor didahulukan dan mendapat jatah harian yang lebih besar |
 | [Request board](https://debridmediamanager.com/requests) | Minta rilis yang tidak ada di Real-Debrid. Pengguna DMM lain akan memindahkannya ke library kamu. Isi 10 request dan dapatkan 7 hari fitur sponsor DMM |
-| [Hash lists](https://debridmediamanager.com/hashlists) | Bagikan daftar rilis supaya orang lain bisa menambahkannya ke akun mereka sendiri |
+| [Daftar hash](https://debridmediamanager.com/hashlists) | Bagikan daftar rilis supaya orang lain bisa menambahkannya ke akun mereka sendiri |
 | Browser extension | Menambahkan tombol DMM ke situs film dan TV serta di samping magnet link. Untuk [Chrome](https://chromewebstore.google.com/detail/Debrid%20Media%20Manager/oeojlegjfhgefhnbjdnaebgdfkbipghm), [Firefox](https://addons.mozilla.org/en-US/firefox/addon/debrid-media-manager/) dan [Safari](../dmm/safari.md) |
 | [gatekeeper](https://gatekeeper.debridmediamanager.com) | Situs sponsor. Jadi sponsor di sana, hubungkan pledge Patreon atau GitHub Sponsors kamu dan dapatkan API key DMM kamu. [Manfaat yang didapat dari sponsorship](sponsorship.md) |
 

@@ -33,7 +33,7 @@ Radarr и Sonarr для этого не нужны ни индексеры, ни
 
 ## Перед началом {#before-you-start}
 
-1. **zurg має акаунт Usenet або debrid і принаймні один індексатор Newznab або Torznab.** Індексатори вказуються в конфігурації zurg у `acquisition.indexers`. Про цей блок розповідається на сторінці [Watchlist and Seerr](acquisition.md).
+1. **zurg має акаунт Usenet або debrid і принаймні один індексатор Newznab або Torznab.** Індексатори вказуються в конфігурації zurg у `acquisition.indexers`. Про цей блок розповідається на сторінці [Список желаемого и Seerr](acquisition.md).
 2. **`magic.enabled` має бути `true`.** Джерела Radarr і Sonarr не запустяться без цього, і в логу про це буде написано. Див. [`__magic__`](magic.md).
 3. **Radarr і Sonarr бачать mount zurg.** Якщо встановити їх як звичайні застосунки, у кожної системи є одна особливість, перелічена в [гайді про Usenet](sonarr-radarr.md#before-you-start). У Docker на Linux-хості це означає прив'язку mount до їхніх контейнерів. Прив'яжіть батьківську папку mount один раз і працюйте з усім через неї. Якщо вони також беруть завантаження від zurg як download client, то два volume для папки завантажень і кореневих папок призводять до копіювання кожного імпорту. Див. [один volume](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
 4. **Ви використовуєте nightly від 26 вересня 2026 або новішу.** Старіші збірки не знають джерел `radarr` і `sonarr`.

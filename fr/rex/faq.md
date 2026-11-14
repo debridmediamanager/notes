@@ -12,7 +12,7 @@ C'est un serveur à part entière. Ce n'est pas un plugin pour Plex Media Server
 
 ### Combien ça coûte ? {#what-does-it-cost}
 
-rex est gratuit pour un usage personnel, sans offre payante. Son code source est public sous la licence PolyForm Noncommercial. L'utilisation commerciale n'est pas autorisée. Chaque version est publiée sur [GitHub Releases](https://github.com/debridmediamanager/rex/releases), et l'application Android est [rex for Android](android.md).
+rex est gratuit pour un usage personnel, sans offre payante. Son code source est public sous la licence PolyForm Noncommercial. L'utilisation commerciale n'est pas autorisée. Chaque version est publiée sur [GitHub Releases](https://github.com/debridmediamanager/rex/releases), et l'application Android est [rex pour Android](android.md).
 
 Certains éléments autour peuvent coûter quelque chose :
 
@@ -97,7 +97,7 @@ Plusieurs sources peuvent alimenter les mêmes bibliothèques Movies et TV.
 
 Pas à la maison ? Les apps Plex sur ton réseau domestique trouvent rex sans modifier le routeur. app.plex.tv fonctionne aussi via l'adresse HTTPS que donne [rex-direct](any-source.md#rex-direct) pour un rex réclamé.
 
-rex a besoin de sa propre adresse pour regarder hors de chez toi ou pour un autre foyer. La solution la plus simple est une seule redirection de port ([rex-direct](any-source.md#rex-direct)). Avec IPv6 et sans IPv4 publique, utilise [rex-direct over IPv6](any-source.md#rex-direct-over-ipv6). [Tailscale serve](any-source.md#tailscale-serve) ne nécessite aucune redirection de port sur les appareils qui font tourner Tailscale. [Use it outside your home](any-source.md#use-it-outside-your-home-optional) compare les options.
+rex a besoin de sa propre adresse pour regarder hors de chez toi ou pour un autre foyer. La solution la plus simple est une seule redirection de port ([rex-direct](any-source.md#rex-direct)). Avec IPv6 et sans IPv4 publique, utilise [rex-direct sur IPv6](any-source.md#rex-direct-over-ipv6). [Tailscale serve](any-source.md#tailscale-serve) ne nécessite aucune redirection de port sur les appareils qui font tourner Tailscale. [Use it outside your home](any-source.md#use-it-outside-your-home-optional) compare les options.
 
 ### Que ne fait-il pas ? {#what-does-it-not-do}
 
@@ -107,7 +107,7 @@ Il n'y a pas de tuner ni de DVR. La musique, la TV en direct et les photos ont b
 
 ### Pourquoi l'application affiche-t-elle une version de Plex et « Check for Updates » ? {#why-does-the-app-show-a-plex-version-and-check-for-updates}
 
-rex se présente aux applications et à plex.tv comme un Plex Media Server, si bien que les applications affichent un numéro de version de Plex Media Server. Ce numéro n'est pas celui de rex. **Check for Updates** répond toujours que le serveur est à jour : rex ne se met jamais à jour tout seul. Pour mettre rex à jour, télécharge une version nightly plus récente comme indiqué dans [Updating](any-source.md#updating).
+rex se présente aux applications et à plex.tv comme un Plex Media Server, si bien que les applications affichent un numéro de version de Plex Media Server. Ce numéro n'est pas celui de rex. **Check for Updates** répond toujours que le serveur est à jour : rex ne se met jamais à jour tout seul. Pour mettre rex à jour, télécharge une version nightly plus récente comme indiqué dans [Mise à jour](any-source.md#updating).
 
 ### Pourquoi mon navigateur sur port 32400/web n'affiche-t-il aucune bibliothèque ? {#why-does-my-browser-at-port-32400web-not-open-a-library}
 
@@ -134,7 +134,7 @@ Oui. Supprimer un film ou un épisode dans une app Plex, connecté avec le compt
 
 ### Rien ne se lance, ou toutes les applications disent que la machine n'est pas assez puissante {#nothing-plays-or-every-app-says-it-is-not-powerful-enough}
 
-Regardez le journal de rex juste après avoir appuyé sur Lecture. `upstream failed` ou `502` dans ce journal signifie que rex ne peut pas joindre votre source à l'adresse que la source lui a donnée, et installer FFmpeg ne règle pas ce problème. La cause habituelle est zurg dans Docker Desktop sous Windows ou macOS. La ligne `upstream failed` de [rex with zurg](with-zurg.md#when-something-is-wrong) ou de [rex with your own app](any-source.md#when-something-is-wrong) vérifie l'adresse et indique ce qu'il faut changer. Si seuls certains fichiers échouent, souvent uniquement dans un navigateur web, l'appareil ne peut pas les lire tels quels : configurez [Converting video](any-source.md#converting-video-optional).
+Regardez le journal de rex juste après avoir appuyé sur Lecture. `upstream failed` ou `502` dans ce journal signifie que rex ne peut pas joindre votre source à l'adresse que la source lui a donnée, et installer FFmpeg ne règle pas ce problème. La cause habituelle est zurg dans Docker Desktop sous Windows ou macOS. La ligne `upstream failed` de [rex avec zurg](with-zurg.md#when-something-is-wrong) ou de [rex avec votre propre application](any-source.md#when-something-is-wrong) vérifie l'adresse et indique ce qu'il faut changer. Si seuls certains fichiers échouent, souvent uniquement dans un navigateur web, l'appareil ne peut pas les lire tels quels : configurez [Converting video](any-source.md#converting-video-optional).
 
 ### Un titre est mal associé. Comment corriger ? {#a-title-is-matched-wrong-how-do-i-fix-it}
 
