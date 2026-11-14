@@ -22,22 +22,22 @@ Pilih satu cara. Setiap cara memperbarui rex dengan caranya sendiri.
 |---|---|
 | Google Play | Ponsel, tablet, Android TV dan Google TV. Segera hadir |
 | Amazon Appstore | Fire TV dan tablet Fire. Segera hadir |
-| [Obtainium](#with-obtainium) | Ponsel dan tablet. Pembaruan datang dengan sendirinya |
+| [Obtainium](#with-obtainium) | Ponsel dan tablet. Memberi tahu saat ada pembaruan |
 | [Downloader](#with-downloader-on-fire-tv) | Fire TV dan kotak TV |
-| [File dari GitHub](#the-file-from-github) | Perangkat apa pun. Kamu memasang pembaruan sendiri |
+| [File dari GitHub](#the-file-from-github) | Perangkat apa saja. Anda memasang pembaruan sendiri |
 
-**Cara-cara ini tidak bisa dicampur.** Google Play, Amazon Appstore, dan file dari GitHub (yang juga dipasang oleh Obtainium dan Downloader) ditandatangani secara berbeda, jadi yang satu tidak bisa memperbarui yang lain. Untuk berpindah, hapus rex lalu lakukan Langkah 2 dan 3 lagi.
+**Cara-cara ini tidak bisa dicampur.** Google Play, Amazon Appstore, dan file dari GitHub (yang juga dipasang oleh Obtainium dan Downloader) ditandatangani dengan cara berbeda, jadi yang satu tidak bisa memperbarui yang lain. Untuk berpindah, copot rex, lakukan Langkah 2 dan 3 lagi, lalu pasang ulang addon Anda.
 
-**Cara-cara ini mulai dengan addon yang berbeda.** File dari GitHub dimulai dengan repositori [rex-addons](https://github.com/debridmediamanager/rex-addons) sudah ditambahkan. Versi di toko hanya dimulai dengan addon Internet Archive; tambahkan rex-addons sendiri (lihat [Add-on](#addons)) jika kamu menginginkannya.
+**Cara-cara ini dimulai dengan addon yang berbeda.** File dari GitHub dimulai dengan repositori [rex-addons](https://github.com/debridmediamanager/rex-addons) sudah ditambahkan. Versi dari toko hanya dimulai dengan addon Internet Archive; tambahkan rex-addons sendiri (lihat [Add-on](#addons)) jika Anda menginginkannya.
 
 ### Dengan Obtainium {#with-obtainium}
 
 [Obtainium](https://obtainium.imranr.dev/) memasang aplikasi dari GitHub dan menjaganya tetap terbarui.
 
-1. Pasang Obtainium.
+1. Pasang Obtainium lalu buka sekali.
 2. Di perangkat yang sama, buka [rex.debridmediamanager.com/obtainium](https://rex.debridmediamanager.com/id/obtainium). Obtainium akan terbuka dan menanyakan **Import app**. Tekan **Continue**.
 3. Tekan **rex**, lalu **Install**. Obtainium akan memilih file yang sesuai dengan prosesor perangkatmu.
-4. Pertama kali, Android akan bilang bahwa Obtainium tidak diizinkan memasang aplikasi. Aktifkan **Allow from this source** lalu kembali.
+4. Pertama kali, Android akan membuka **Install unknown apps** untuk Obtainium. Nyalakan **Allow from this source** lalu kembali.
 5. Tekan **Install**. Jika Play Protect menampilkan **App scan recommended**, tekan **Scan app**, lalu **Install**.
 
 Saat ada versi baru, Obtainium akan menampilkan **Update** di sebelah rex.
@@ -149,19 +149,19 @@ Untuk membiarkan keluarga menonton dengan akun Plex mereka sendiri, lihat [Bagik
 
 | Yang Anda lihat | Yang harus dilakukan |
 |---|---|
-| **App not installed as app isn't compatible with your phone.** | Anda memilih file yang salah untuk prosesornya. Coba file yang lain dari tabel di Langkah 1 |
+| **App not installed as app isn't compatible with your phone.** | Anda memilih file yang salah untuk prosesor. Coba file lainnya dari tabel di bawah [File dari GitHub](#the-file-from-github) |
 | **Another app here already uses this port, maybe a Plex server. Try 32500.** | Ketik `32500` sebagai port |
 | **Use a number from 1024 to 65535** | Port harus berupa angka dalam rentang itu |
-| Server tidak ada di aplikasi Plex | Masuk ke aplikasi Plex dengan akun yang sama seperti di Langkah 3, dan pastikan kedua perangkat berada di jaringan rumah yang sama |
-| Perpustakaan kosong | Sinkronisasi pertama masih berjalan: tunggu sampai **Status** menampilkan jumlah judul |
-| **Sign in needed** di bawah addon | Tekan tombol **Sign in** pada addon itu dan masukkan kodenya |
-| **Needs an update** di bawah addon | Versi aplikasi ini tidak bisa lagi menjalankan salinan addon tersebut. Segarkan repository-nya lalu tekan **Update**. Judul-judulnya tetap ada sementara itu |
-| **That isn't a repository link. Try github.com/user/repo.** | Ketik tautan repository, misalnya `github.com/user/repo` |
-| **no public git repository there (it asks for a login)** | Tautannya salah atau repository-nya privat. Periksa di browser |
-| rex berhenti saat layar mati | Atur ulang pengaturan latar belakang di Langkah 2, dan lihat [Jangan matikan aplikasi saya](https://dontkillmyapp.com/) |
+| Server tidak muncul di aplikasi Plex | Login aplikasi Plex dengan akun yang sama seperti di Step 3, dan pastikan kedua perangkat berada di jaringan rumah yang sama |
+| Library-nya kosong | Sinkronisasi pertama masih berjalan: tunggu sampai **Status** menampilkan jumlah judul |
+| **Sign in needed** di bawah addon | Tekan tombol **Sign in** miliknya dan masukkan kodenya |
+| **Needs an update** di bawah addon | Versi aplikasi ini tidak bisa lagi menjalankan salinan addon tersebut. Refresh repository-nya lalu tekan **Update**. Judul-judulnya tetap ada sementara itu |
+| **That isn't a repository link. Try github.com/user/repo.** | Ketik link repository-nya, misalnya `github.com/user/repo` |
+| **no public git repository there (it asks for a login)** | Link-nya salah atau repository-nya privat. Cek di browser |
+| rex berhenti saat layar mati | Atur ulang pengaturan background di Step 2, dan lihat [Don't kill my app](https://dontkillmyapp.com/) |
 
-**Logs** menampilkan apa yang dikatakan rex dan addon belakangan ini, dengan kunci dan kata sandi disembunyikan. Jika tim support meminta log, tekan **Send logs to support**: Anda bisa melihat semuanya sebelum apa pun dikirim, lalu tekan **Send** dan posting kode yang Anda dapat.
+**Logs** menampilkan apa yang dikatakan rex dan addon belakangan ini, dengan kunci dan kata sandi disembunyikan. Jika tim support meminta log, tekan **Send logs to support**: Anda bisa melihat semuanya sebelum ada yang dikirim, lalu tekan **Send** dan posting kode yang Anda dapatkan.
 
-Apa yang dikirim aplikasi dan ke mana, ada di [kebijakan privasi](android-privacy.md)-nya.
+Apa yang dikirim aplikasi dan ke mana dikirim ada di [kebijakan privasi](android-privacy.md)-nya.
 
 Masih bingung? Tanyakan di forum **rex-support** di [Discord](https://discord.com/invite/7u4YjMThXP).

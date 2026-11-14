@@ -16,29 +16,31 @@ rex for Android は無料です。debrid アカウントや Usenet も使いた�
 
 ## ステップ 1. アプリを入手する {#step-1-get-the-app}
 
+選べる方法は1つです。それぞれ独自の方法で rex を最新の状態に保ちます。
+
 | 方法 | 向いている用途 |
 |---|---|
 | Google Play | スマートフォン、タブレット、Android TV、Google TV。近日公開 |
 | Amazon Appstore | Fire TV と Fire タブレット。近日公開 |
-| [Obtainium](#with-obtainium) | スマートフォンとタブレット。更新は自動で届く |
-| [Downloader](#with-downloader-on-fire-tv) | Fire TV とテレビ用ボックス |
-| [GitHub のファイル](#the-file-from-github) | どのデバイスでも。更新は自分でインストールする |
+| [Obtainium](#with-obtainium) | スマートフォンとタブレット。アップデートが出ると知らせてくれます |
+| [Downloader](#with-downloader-on-fire-tv) | Fire TV とテレビボックス |
+| [GitHub のファイルを使う](#the-file-from-github) | どのデバイスでも。アップデートは自分でインストールします |
 
-**方法は混ぜられません。** Google Play、Amazon Appstore、GitHub のファイル（Obtainium と Downloader でインストールするものも含む）は署名が異なるため、ある方法で入れた rex を別の方法で更新することはできません。方法を切り替えるときは、rex をアンインストールしてから手順 2 と 3 をやり直してください。
+**方法は混ぜて使えません。** Google Play、Amazon Appstore、GitHub のファイル（Obtainium と Downloader もこれをインストールします）は署名の仕組みが異なるため、ある方法でインストールしたものを別の方法で更新することはできません。方法を切り替えるには、rex をアンインストールし、手順 2 と 3 をやり直してから、アドオンをもう一度インストールしてください。
 
-**最初から入っているアドオンが異なります。** GitHub のファイルは、[rex-addons](https://github.com/debridmediamanager/rex-addons) リポジトリが最初から追加された状態になります。ストア版は Internet Archive アドオンだけで始まります。rex-addons も使いたい場合は、[アドオン](#addons)の説明に従って自分で追加してください。
+**最初から入っているアドオンが異なります。** GitHub のファイルでは、[rex-addons](https://github.com/debridmediamanager/rex-addons) リポジトリが最初から追加されています。ストア版では Internet Archive アドオンだけが最初から入っています。rex-addons も使いたい場合は、自分で追加してください（[アドオン](#addons)を参照）。
 
 ### Obtainium を使う {#with-obtainium}
 
-[Obtainium](https://obtainium.imranr.dev/) は GitHub からアプリをインストールして、常に最新の状態に保ってくれるアプリです。
+[Obtainium](https://obtainium.imranr.dev/)は、GitHubからアプリをインストールし、常に最新の状態に保ってくれます。
 
-1. Obtainium をインストールします。
-2. 同じデバイスで [rex.debridmediamanager.com/obtainium](https://rex.debridmediamanager.com/ja/obtainium) を開きます。Obtainium が開いて **Import app** と聞いてきます。**Continue** を押します。
-3. **rex** を押してから **Install** を押します。Obtainium がお使いのデバイスのプロセッサに合ったファイルを選んでくれます。
-4. 初めてのときは、Android から Obtainium にはアプリのインストールが許可されていないと表示されます。**Allow from this source** をオンにして、戻ります。
-5. **Install** を押します。Play プロテクトに **App scan recommended** と表示されたら、**Scan app** を押してから **Install** を押します。
+1. Obtainiumをインストールして、一度開いてください。
+2. 同じデバイスで、[rex.debridmediamanager.com/obtainium](https://rex.debridmediamanager.com/ja/obtainium)を開きます。Obtainiumが開き、**Import app**を確認してきます。**Continue**を押してください。
+3. **rex**を押してから、**Install**を押します。Obtainiumがお使いのデバイスのプロセッサに合ったファイルを選びます。
+4. 初回は、Androidが Obtainium 用の**Install unknown apps**を開きます。**Allow from this source**をオンにして、戻ってください。
+5. **Install**を押します。Play Protectに**App scan recommended**と表示されたら、**Scan app**を押してから、**Install**を押してください。
 
-新しいバージョンが出ると、rex の横に **Update** と表示されます。
+新しいバージョンが出ると、rexの横にObtainiumが**Update**を表示します。
 
 ### Fire TV の Downloader を使う {#with-downloader-on-fire-tv}
 
@@ -145,21 +147,21 @@ Plex に同じアカウントでサインインしているアプリはすべて
 
 ## トラブルシューティング {#troubleshooting}
 
-| 画面に表示される内容 | 対処方法 |
+| 表示される内容 | やること |
 |---|---|
-| **App not installed as app isn't compatible with your phone.** | プロセッサー用のファイルを間違えて選んでいます。手順 1 の表にある別のファイルを試してください |
-| **Another app here already uses this port, maybe a Plex server. Try 32500.** | ポートとして `32500` を入力してください |
-| **Use a number from 1024 to 65535** | ポートは 1024 から 65535 までの範囲の数字にしてください |
-| Plex アプリにサーバーが表示されない | 手順 3 で使ったのと同じアカウントで Plex アプリにサインインし、両方の端末を同じホームネットワークに接続したままにしてください |
+| **App not installed as app isn't compatible with your phone.** | プロセッサに合わないファイルを選んでしまっています。表にある別のファイルを [GitHub のファイル](#the-file-from-github) から選び直してください |
+| **Another app here already uses this port, maybe a Plex server. Try 32500.** | ポートとして `32500` と入力してください |
+| **Use a number from 1024 to 65535** | ポートは 1024 から 65535 までの数字にしてください |
+| Plex アプリにサーバーが表示されない | Step 3 で使ったのと同じアカウントで Plex アプリにサインインし、両方の端末を同じホームネットワークに接続したままにしてください |
 | ライブラリが空っぽ | 最初の同期がまだ実行中です。**Status** に作品数が表示されるまで待ってください |
 | アドオンの下に **Sign in needed** と表示される | そのアドオンの **Sign in** ボタンを押して、コードを入力してください |
-| アドオンの下に **Needs an update** と表示される | このバージョンのアプリでは、そのアドオンのコピーをもう実行できません。リポジトリを更新してから **Update** を押してください。その間も作品は残ります |
+| アドオンの下に **Needs an update** と表示される | このバージョンのアプリでは、そのアドオンのコピーをもう動かせません。リポジトリを更新してから **Update** を押してください。その間も作品は残ります |
 | **That isn't a repository link. Try github.com/user/repo.** | `github.com/user/repo` のように、リポジトリのリンクを入力してください |
-| **no public git repository there (it asks for a login)** | リンクが間違っているか、リポジトリが非公開です。ブラウザでリンクを確認してください |
-| 画面がオフになると rex が停止する | 手順 2 のバックグラウンド設定をやり直してください。また [Don't kill my app](https://dontkillmyapp.com/) も参照してください |
+| **no public git repository there (it asks for a login)** | リンクが間違っているか、リポジトリが非公開です。ブラウザで確認してください |
+| 画面を消すと rex が止まる | Step 2 のバックグラウンド設定をやり直してください。あわせて [Don't kill my app](https://dontkillmyapp.com/) も確認してください |
 
-**Logs** には、rex とアドオンが最近出力したメッセージが表示されます。キーやパスワードは隠されています。サポートからログを求められたら **Send logs to support** を押してください。送信前に内容をすべて確認できます。その後 **Send** を押し、表示されたコードを投稿してください。
+**Logs** には、rex とアドオンが最近出力した内容が表示されます。キーやパスワードは隠されています。サポートからログを求められたら、**Send logs to support** を押してください。送信前に中身をすべて確認できます。そのあと **Send** を押し、表示されたコードを投稿してください。
 
-アプリが何を送信し、どこに送るかは、[プライバシーポリシー](android-privacy.md)に書かれています。
+アプリが送信する内容と送信先は、[プライバシーポリシー](android-privacy.md) に書かれています。
 
-困ったときは、[Discord](https://discord.com/invite/7u4YjMThXP) の **rex-support** フォーラムで質問してください。
+困ったときは、[Discord](https://discord.com/invite/7u4YjMThXP) の **rex-support** フォーラムで聞いてください。

@@ -16,26 +16,28 @@ O rex para Android é gratuito. Quer colocar suas contas de debrid e Usenet nele
 
 ## Passo 1. Obtenha o app {#step-1-get-the-app}
 
-| Forma | Ideal para |
+Escolha um jeito. Cada um mantém o rex atualizado do seu próprio jeito.
+
+| Jeito | Indicado para |
 |---|---|
 | Google Play | Celulares, tablets, Android TV e Google TV. Em breve |
 | Amazon Appstore | Fire TV e tablets Fire. Em breve |
-| [Obtainium](#with-obtainium) | Celulares e tablets. As atualizações chegam sozinhas |
+| [Obtainium](#with-obtainium) | Celulares e tablets. Ele avisa quando sai uma atualização |
 | [Downloader](#with-downloader-on-fire-tv) | Fire TV e TV boxes |
 | [O arquivo do GitHub](#the-file-from-github) | Qualquer dispositivo. Você instala as atualizações por conta própria |
 
-**As formas não se misturam.** Google Play, Amazon Appstore e o arquivo do GitHub (que o Obtainium e o Downloader também instalam) são assinados de maneiras diferentes, então um não consegue atualizar o outro. Para trocar, desinstale o rex e refaça os Passos 2 e 3.
+**Os jeitos não se misturam.** O Google Play, a Amazon Appstore e o arquivo do GitHub (que o Obtainium e o Downloader também instalam) são assinados de forma diferente, então um não consegue atualizar o outro. Para trocar, desinstale o rex, refaça os Passos 2 e 3 e instale seus addons de novo.
 
-**Elas começam com addons diferentes.** O arquivo do GitHub começa com o repositório [rex-addons](https://github.com/debridmediamanager/rex-addons) já adicionado. As versões da loja começam só com o addon do Internet Archive; adicione o rex-addons por conta própria (veja [Complementos](#addons)) se quiser.
+**Eles começam com addons diferentes.** O arquivo do GitHub começa com o repositório [rex-addons](https://github.com/debridmediamanager/rex-addons) já adicionado. As versões das lojas começam só com o addon do Internet Archive; adicione o rex-addons por conta própria (veja [Complementos](#addons)) se quiser usá-lo.
 
 ### Com o Obtainium {#with-obtainium}
 
 [Obtainium](https://obtainium.imranr.dev/) instala apps do GitHub e mantém eles atualizados.
 
-1. Instale o Obtainium.
-2. No mesmo dispositivo, abra [rex.debridmediamanager.com/obtainium](https://rex.debridmediamanager.com/pt/obtainium). O Obtainium abre e pede para **Import app**. Toque em **Continue**.
-3. Toque em **rex** e depois em **Install**. O Obtainium escolhe o arquivo para o processador do seu dispositivo.
-4. Na primeira vez, o Android diz que o Obtainium não tem permissão para instalar apps. Ative **Allow from this source** e volte.
+1. Instale o Obtainium e abra ele uma vez.
+2. No mesmo dispositivo, abra [rex.debridmediamanager.com/obtainium](https://rex.debridmediamanager.com/pt/obtainium). O Obtainium abre e pergunta sobre **Import app**. Toque em **Continue**.
+3. Toque em **rex**, depois em **Install**. O Obtainium escolhe o arquivo para o processador do seu dispositivo.
+4. Na primeira vez, o Android abre **Install unknown apps** para o Obtainium. Ative **Allow from this source** e volte.
 5. Toque em **Install**. Se o Play Protect mostrar **App scan recommended**, toque em **Scan app** e depois em **Install**.
 
 Quando uma nova versão sair, o Obtainium mostra **Update** ao lado do rex.
@@ -147,19 +149,19 @@ Para deixar a família assistir com as próprias contas do Plex, veja [Compartil
 
 | O que você vê | O que fazer |
 |---|---|
-| **App not installed as app isn't compatible with your phone.** | Você escolheu o arquivo errado para o processador. Tente o outro da tabela no Passo 1 |
+| **App not installed as app isn't compatible with your phone.** | Você escolheu o arquivo errado para o processador. Tente o outro arquivo da tabela em [O arquivo do GitHub](#the-file-from-github) |
 | **Another app here already uses this port, maybe a Plex server. Try 32500.** | Digite `32500` como a porta |
-| **Use a number from 1024 to 65535** | A porta precisa ser um número nessa faixa |
-| O servidor não aparece no app Plex | Entre no app Plex com a mesma conta que você usou no Passo 3, e deixe os dois dispositivos na mesma rede doméstica |
+| **Use a number from 1024 to 65535** | A porta precisa ser um número nesse intervalo |
+| O servidor não aparece no app do Plex | Entre no app do Plex com a mesma conta que você usou no Passo 3, e deixe os dois dispositivos na mesma rede doméstica |
 | A biblioteca está vazia | A primeira sincronização ainda está rodando: espere até **Status** mostrar um número de títulos |
-| **Sign in needed** em um addon | Pressione o botão **Sign in** dele e digite o código |
-| **Needs an update** em um addon | Esta versão do app não consegue mais rodar essa cópia do addon. Atualize o repositório dele e pressione **Update**. Os títulos continuam disponíveis enquanto isso |
+| **Sign in needed** em um addon | Aperte o botão **Sign in** dele e digite o código |
+| **Needs an update** em um addon | Esta versão do app não consegue mais rodar essa cópia do addon. Atualize o repositório dele e aperte **Update**. Os títulos continuam disponíveis enquanto isso |
 | **That isn't a repository link. Try github.com/user/repo.** | Digite o link do repositório, como `github.com/user/repo` |
 | **no public git repository there (it asks for a login)** | O link está errado ou o repositório é privado. Confira no navegador |
-| rex para quando a tela é desligada | Refaça a configuração de segundo plano do Passo 2, e veja [Don't kill my app](https://dontkillmyapp.com/) |
+| rex para quando a tela está desligada | Refaça a configuração de segundo plano do Passo 2, e veja [Don't kill my app](https://dontkillmyapp.com/) |
 
-**Logs** mostra o que o rex e os addons disseram recentemente, com chaves e senhas ocultas. Se o suporte pedir os logs, pressione **Send logs to support**: você vê tudo antes de qualquer coisa ser enviada, depois pressione **Send** e poste o código que você receber.
+**Logs** mostra o que o rex e os addons disseram recentemente, com chaves e senhas ocultadas. Se o suporte pedir os logs, aperte **Send logs to support**: você vê tudo antes de qualquer coisa ser enviada, depois aperte **Send** e poste o código que você receber.
 
-O que o app envia e para onde está na sua [política de privacidade](android-privacy.md).
+O que o app envia e para onde vai está na sua [política de privacidade](android-privacy.md).
 
-Ficou travado? Pergunte no fórum **rex-support** no [Discord](https://discord.com/invite/7u4YjMThXP).
+Ficou preso? Pergunte no fórum **rex-support** no [Discord](https://discord.com/invite/7u4YjMThXP).

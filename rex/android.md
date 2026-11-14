@@ -22,11 +22,11 @@ Pick one way. Each one keeps rex up to date its own way.
 |---|---|
 | Google Play | Phones, tablets, Android TV and Google TV. Coming soon |
 | Amazon Appstore | Fire TV and Fire tablets. Coming soon |
-| [Obtainium](#with-obtainium) | Phones and tablets. Updates come by themselves |
+| [Obtainium](#with-obtainium) | Phones and tablets. It tells you when an update is out |
 | [Downloader](#with-downloader-on-fire-tv) | Fire TV and TV boxes |
 | [The file from GitHub](#the-file-from-github) | Any device. You install updates yourself |
 
-**The ways don't mix.** Google Play, the Amazon Appstore and the file from GitHub (which Obtainium and Downloader install too) are signed differently, so one can't update another. To switch, uninstall rex and do Steps 2 and 3 again.
+**The ways don't mix.** Google Play, the Amazon Appstore and the file from GitHub (which Obtainium and Downloader install too) are signed differently, so one can't update another. To switch, uninstall rex, do Steps 2 and 3 again and install your addons again.
 
 **They start with different addons.** The file from GitHub starts with the [rex-addons](https://github.com/debridmediamanager/rex-addons) repository added. The store versions start with only the Internet Archive addon; add rex-addons yourself (see [Addons](#addons)) if you want it.
 
@@ -34,10 +34,10 @@ Pick one way. Each one keeps rex up to date its own way.
 
 [Obtainium](https://obtainium.imranr.dev/) installs apps from GitHub and keeps them updated.
 
-1. Install Obtainium.
+1. Install Obtainium and open it once.
 2. On the same device, open [rex.debridmediamanager.com/obtainium](https://rex.debridmediamanager.com/obtainium). Obtainium opens and asks to **Import app**. Press **Continue**.
 3. Press **rex**, then **Install**. Obtainium picks the file for your device's processor.
-4. The first time, Android says Obtainium isn't allowed to install apps. Turn on **Allow from this source** and go back.
+4. The first time, Android opens **Install unknown apps** for Obtainium. Turn on **Allow from this source** and go back.
 5. Press **Install**. If Play Protect says **App scan recommended**, press **Scan app**, then **Install**.
 
 When a new version is out, Obtainium shows **Update** next to rex.
@@ -149,7 +149,7 @@ To let family watch with their own Plex accounts, see [Share rex with family and
 
 | What you see | What to do |
 |---|---|
-| **App not installed as app isn't compatible with your phone.** | You picked the wrong file for the processor. Try the other one from the table in Step 1 |
+| **App not installed as app isn't compatible with your phone.** | You picked the wrong file for the processor. Try the other one from the table under [The file from GitHub](#the-file-from-github) |
 | **Another app here already uses this port, maybe a Plex server. Try 32500.** | Type `32500` as the port |
 | **Use a number from 1024 to 65535** | The port must be a number in that range |
 | The server isn't in the Plex app | Sign the Plex app in to the same account you used in Step 3, and keep both devices on the same home network |

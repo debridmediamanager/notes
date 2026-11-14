@@ -16,31 +16,31 @@ rex for Android 是免费的。如果你也想把 debrid 账户和 Usenet 加进
 
 ## 第 1 步：获取应用 {#step-1-get-the-app}
 
+选一种方式。每种方式都有自己的更新办法，让 rex 保持最新。
+
 | 方式 | 适合 |
 |---|---|
 | Google Play | 手机、平板、Android TV 和 Google TV。即将推出 |
 | Amazon Appstore | Fire TV 和 Fire 平板。即将推出 |
-| [Obtainium](#with-obtainium) | 手机和平板。更新会自动获取 |
+| [Obtainium](#with-obtainium) | 手机和平板。有更新时会提醒你 |
 | [Downloader](#with-downloader-on-fire-tv) | Fire TV 和电视盒子 |
 | [GitHub 上的文件](#the-file-from-github) | 任何设备。更新需要你自己安装 |
 
-选一种方式即可。每种方式都有自己的更新方法来保持 rex 为最新版本。
+**这几种方式不能混用。** Google Play、Amazon Appstore 和 GitHub 上的文件（Obtainium 和 Downloader 安装的也是这个）使用的签名不同，所以一种无法更新另一种。要切换的话，先卸载 rex，然后重新完成第 2 步和第 3 步，并重新安装你的插件。
 
-**各种方式不能混用。** Google Play、Amazon Appstore 和 GitHub 上的文件（Obtainium 和 Downloader 安装的也是这个）使用的签名不同，因此无法互相更新。要切换方式，请先卸载 rex，然后重新执行第 2 步和第 3 步。
-
-**它们默认的插件不同。** GitHub 上的文件默认已添加 [rex-addons](https://github.com/debridmediamanager/rex-addons) 仓库。应用商店版本默认只有 Internet Archive 插件；如果你想要 rex-addons，请自行添加（参见 [附加组件](#addons)）。
+**它们一开始带的插件也不同。** GitHub 上的文件一开始就已经添加了 [rex-addons](https://github.com/debridmediamanager/rex-addons) 仓库。应用商店版本一开始只有 Internet Archive 插件；如果你想要 rex-addons，请自己添加（见 [插件](#addons)）。
 
 ### 使用 Obtainium {#with-obtainium}
 
-[Obtainium](https://obtainium.imranr.dev/) 可以从 GitHub 安装应用，并保持它们更新。
+[Obtainium](https://obtainium.imranr.dev/) 可以从 GitHub 安装应用，并自动保持更新。
 
-1. 安装 Obtainium。
-2. 在同一台设备上，打开 [rex.debridmediamanager.com/obtainium](https://rex.debridmediamanager.com/zh/obtainium)。Obtainium 会打开并询问是否要 **Import app**。点按 **Continue**。
-3. 点按 **rex**，然后点按 **Install**。Obtainium 会根据你设备的处理器选择对应的文件。
-4. 第一次安装时，Android 会提示 Obtainium 不允许安装应用。打开 **Allow from this source**，然后返回。
-5. 点按 **Install**。如果 Play Protect 显示 **App scan recommended**，点按 **Scan app**，然后点按 **Install**。
+1. 安装 Obtainium，然后打开一次。
+2. 在同一台设备上，打开 [rex.debridmediamanager.com/obtainium](https://rex.debridmediamanager.com/zh/obtainium)。Obtainium 会打开并询问是否要 **Import app**。点击 **Continue**。
+3. 点击 **rex**，然后点击 **Install**。Obtainium 会自动选择适合你设备处理器的文件。
+4. 第一次安装时，Android 会打开 Obtainium 的 **Install unknown apps** 页面。打开 **Allow from this source**，然后返回。
+5. 点击 **Install**。如果 Play Protect 显示 **App scan recommended**，点击 **Scan app**，然后再点击 **Install**。
 
-当有新版本发布时，Obtainium 会在 rex 旁边显示 **Update**。
+有新版本发布时，Obtainium 会在 rex 旁边显示 **Update**。
 
 ### 在 Fire TV 上使用 Downloader {#with-downloader-on-fire-tv}
 
@@ -147,21 +147,21 @@ Plex 应用只要登录的是同一个账号，就能在家庭网络里通过名
 
 ## 故障排除 {#troubleshooting}
 
-| 你看到的 | 该怎么做 |
+| 你看到的 | 你该怎么做 |
 |---|---|
-| **App not installed as app isn't compatible with your phone.** | 你选错了处理器对应的文件。请从第 1 步的表格中换另一个文件试试 |
-| **Another app here already uses this port, maybe a Plex server. Try 32500.** | 把端口填成 `32500` |
-| **Use a number from 1024 to 65535** | 端口必须是这个范围内的数字 |
-| Plex 应用里找不到这台服务器 | 让 Plex 应用登录你第 3 步用的同一个账号，并确保两台设备连在同一个家庭网络上 |
-| 媒体库是空的 | 第一次同步还在进行中：等到 **Status** 显示出标题数量 |
-| 插件下面显示 **Sign in needed** | 按下它的 **Sign in** 按钮，然后输入验证码 |
-| 插件下面显示 **Needs an update** | 这个版本的应用已经无法运行该插件的这个副本。请刷新它的仓库，然后按 **Update**。这期间它的标题会保留 |
+| **应用未安装，因为该应用与你的手机不兼容。** | 你选错了处理器对应的文件。请从 [来自 GitHub 的文件](#the-file-from-github) 下的表格中选择另一个文件 |
+| **这里的另一个应用已在使用此端口，可能是 Plex 服务器。请尝试 32500。** | 将端口输入为 `32500` |
+| **请使用 1024 到 65535 之间的数字** | 端口必须是该范围内的数字 |
+| Plex 应用中找不到服务器 | 请用你在第 3 步中使用的同一账户登录 Plex 应用，并确保两台设备位于同一个家庭网络中 |
+| 资料库是空的 | 首次同步仍在进行：请等待，直到 **Status** 显示出标题数量 |
+| 某个插件下显示 **Sign in needed** | 按下它的 **Sign in** 按钮并输入代码 |
+| 某个插件下显示 **Needs an update** | 此版本的应用已无法运行该插件的这个副本。请刷新其仓库并按下 **Update**。与此同时，它的标题会保留 |
 | **That isn't a repository link. Try github.com/user/repo.** | 输入仓库的链接，例如 `github.com/user/repo` |
-| **no public git repository there (it asks for a login)** | 链接有误，或者仓库是私有的。请用浏览器打开检查一下 |
-| 屏幕关闭后 rex 就停止运行 | 重新设置第 2 步中的后台选项，并参考 [别杀我的应用](https://dontkillmyapp.com/) |
+| **no public git repository there (it asks for a login)** | 链接有误，或者仓库是私有的。请在浏览器中检查一下 |
+| 屏幕关闭时 rex 停止运行 | 重新设置第 2 步中的后台运行选项，并参阅 [Don't kill my app](https://dontkillmyapp.com/) |
 
-**Logs** 会显示 rex 和插件最近输出的内容，其中的密钥和密码已被隐藏。如果支持人员索要日志，请按 **Send logs to support**：在任何内容发送之前，你都能看到全部内容，然后按 **Send**，并把得到的代码发出去。
+**Logs** 会显示 rex 和插件最近的输出，其中的密钥和密码已被隐藏。如果支持人员要求提供日志，请按下 **Send logs to support**：在发送任何内容之前，你可以看到全部内容，然后按下 **Send**，并粘贴你得到的代码。
 
-应用会发送哪些内容、发送到哪里，都写在它的[隐私政策](android-privacy.md)里。
+应用会发送哪些内容、发送到哪里，详见其 [隐私政策](android-privacy.md)。
 
-还有问题？可以到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **rex-support** 论坛提问。
+遇到问题？请到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **rex-support** 论坛提问。

@@ -16,28 +16,28 @@ rex für Android ist kostenlos. Willst du deine Debrid-Konten und Usenet dort au
 
 ## Schritt 1: Die App holen {#step-1-get-the-app}
 
-Wähle eine Methode. Jede hält rex auf ihre eigene Art aktuell.
+Wähle einen Weg. Jeder hält rex auf seine eigene Art aktuell.
 
-| Methode | Gut für |
+| Weg | Geeignet für |
 |---|---|
 | Google Play | Handys, Tablets, Android TV und Google TV. Kommt bald |
 | Amazon Appstore | Fire TV und Fire-Tablets. Kommt bald |
-| [Obtainium](#with-obtainium) | Handys und Tablets. Updates kommen von selbst |
+| [Obtainium](#with-obtainium) | Handys und Tablets. Es sagt dir, wenn ein Update da ist |
 | [Downloader](#with-downloader-on-fire-tv) | Fire TV und TV-Boxen |
 | [Die Datei von GitHub](#the-file-from-github) | Jedes Gerät. Du installierst Updates selbst |
 
-**Die Methoden lassen sich nicht mischen.** Google Play, der Amazon Appstore und die Datei von GitHub (die auch Obtainium und Downloader installieren) sind unterschiedlich signiert, deshalb kann eine die andere nicht aktualisieren. Zum Wechseln deinstallierst du rex und machst Schritt 2 und 3 noch einmal.
+**Die Wege lassen sich nicht mischen.** Google Play, der Amazon Appstore und die Datei von GitHub (die Obtainium und Downloader ebenfalls installieren) sind unterschiedlich signiert, daher kann das eine das andere nicht aktualisieren. Zum Wechseln deinstallierst du rex, führst Schritt 2 und 3 erneut aus und installierst deine Addons wieder.
 
-**Sie starten mit unterschiedlichen Addons.** Die Datei von GitHub startet mit dem hinzugefügten [rex-addons](https://github.com/debridmediamanager/rex-addons)-Repository. Die Store-Versionen starten nur mit dem Internet-Archive-Addon. Füge rex-addons selbst hinzu (siehe [Add-ons](#addons)), wenn du es möchtest.
+**Sie starten mit unterschiedlichen Addons.** Die Datei von GitHub startet mit bereits hinzugefügtem [rex-addons](https://github.com/debridmediamanager/rex-addons)-Repository. Die Store-Versionen starten nur mit dem Internet Archive-Addon; füge rex-addons selbst hinzu (siehe [Add-ons](#addons)), wenn du es willst.
 
 ### Mit Obtainium {#with-obtainium}
 
-[Obtainium](https://obtainium.imranr.dev/) installiert Apps von GitHub und hält sie auf dem neuesten Stand.
+[Obtainium](https://obtainium.imranr.dev/) installiert Apps von GitHub und hält sie aktuell.
 
-1. Installiere Obtainium.
-2. Öffne auf demselben Gerät [rex.debridmediamanager.com/obtainium](https://rex.debridmediamanager.com/de/obtainium). Obtainium öffnet sich und fragt, ob du **Import app** auswählen willst. Tippe auf **Continue**.
+1. Installiere Obtainium und öffne es einmal.
+2. Öffne auf demselben Gerät [rex.debridmediamanager.com/obtainium](https://rex.debridmediamanager.com/de/obtainium). Obtainium öffnet sich und fragt, ob du **Import app** ausführen willst. Tippe auf **Continue**.
 3. Tippe auf **rex** und dann auf **Install**. Obtainium wählt die Datei für den Prozessor deines Geräts aus.
-4. Beim ersten Mal sagt Android, dass Obtainium keine Apps installieren darf. Aktiviere **Allow from this source** und geh dann zurück.
+4. Beim ersten Mal öffnet Android **Install unknown apps** für Obtainium. Aktiviere **Allow from this source** und geh zurück.
 5. Tippe auf **Install**. Wenn Play Protect **App scan recommended** anzeigt, tippe auf **Scan app** und dann auf **Install**.
 
 Wenn eine neue Version erscheint, zeigt Obtainium neben rex **Update** an.
@@ -149,19 +149,19 @@ Wenn du Familie und Freunde mit ihren eigenen Plex-Konten schauen lassen willst,
 
 | Was du siehst | Was du tun solltest |
 |---|---|
-| **App nicht installiert, da die App nicht mit deinem Handy kompatibel ist.** | Du hast die falsche Datei für den Prozessor gewählt. Probiere die andere aus der Tabelle in Schritt 1 |
-| **Eine andere App hier nutzt bereits diesen Port, vielleicht ein Plex-Server. Probiere 32500.** | Gib `32500` als Port ein |
-| **Verwende eine Zahl von 1024 bis 65535** | Der Port muss eine Zahl in diesem Bereich sein |
-| Der Server ist nicht in der Plex-App | Melde die Plex-App mit demselben Konto an, das du in Schritt 3 verwendet hast, und halte beide Geräte im selben Heimnetzwerk |
-| Die Bibliothek ist leer | Die erste Synchronisierung läuft noch: Warte, bis **Status** eine Anzahl an Titeln anzeigt |
-| **Anmeldung nötig** bei einem Addon | Drücke auf den Button **Sign in** des Addons und gib den Code ein |
-| **Braucht ein Update** bei einem Addon | Diese Version der App kann diese Kopie des Addons nicht mehr ausführen. Aktualisiere das Repository und drücke auf **Update**. Die Titel bleiben in der Zwischenzeit erhalten |
-| **Das ist kein Repository-Link. Probiere github.com/user/repo.** | Gib den Link des Repositorys ein, zum Beispiel `github.com/user/repo` |
-| **Dort gibt es kein öffentliches Git-Repository (es fragt nach einer Anmeldung).** | Der Link ist falsch oder das Repository ist privat. Prüfe ihn im Browser |
-| rex stoppt, wenn der Bildschirm aus ist | Stelle die Hintergrund-Einstellung aus Schritt 2 erneut ein und schau dir [Don't kill my app](https://dontkillmyapp.com/) an |
+| **App not installed as app isn't compatible with your phone.** | Du hast die falsche Datei für den Prozessor gewählt. Probier die andere aus der Tabelle unter [Die Datei von GitHub](#the-file-from-github) |
+| **Another app here already uses this port, maybe a Plex server. Try 32500.** | Gib `32500` als Port ein |
+| **Use a number from 1024 to 65535** | Der Port muss eine Zahl in diesem Bereich sein |
+| Der Server ist nicht in der Plex-App | Melde die Plex-App mit demselben Konto an, das du in Schritt 3 benutzt hast, und lass beide Geräte im selben Heimnetzwerk |
+| Die Bibliothek ist leer | Die erste Synchronisierung läuft noch: Warte, bis **Status** eine Anzahl an Titeln zeigt |
+| **Sign in needed** under an addon | Drück auf den Button **Sign in** des Addons und gib den Code ein |
+| **Needs an update** under an addon | Diese Version der App kann diese Kopie des Addons nicht mehr ausführen. Aktualisiere dessen Repository und drück auf **Update**. Die Titel bleiben in der Zwischenzeit erhalten |
+| **That isn't a repository link. Try github.com/user/repo.** | Gib den Link des Repositorys ein, zum Beispiel `github.com/user/repo` |
+| **no public git repository there (it asks for a login)** | Der Link ist falsch oder das Repository ist privat. Prüf ihn im Browser |
+| rex stoppt, wenn der Bildschirm aus ist | Stell die Hintergrund-Einstellung aus Schritt 2 noch einmal ein und schau dir [Don't kill my app](https://dontkillmyapp.com/) an |
 
-**Logs** zeigt, was rex und die Addons zuletzt gemeldet haben, wobei Schlüssel und Passwörter ausgeblendet sind. Wenn der Support nach Logs fragt, drücke auf **Send logs to support**: Du siehst alles, bevor etwas gesendet wird. Dann drücke auf **Send** und poste den Code, den du bekommst.
+**Logs** zeigt, was rex und die Addons zuletzt gemeldet haben, wobei Schlüssel und Passwörter verborgen sind. Wenn der Support nach Logs fragt, drück auf **Send logs to support**: Du siehst alles, bevor etwas gesendet wird. Drück dann auf **Send** und poste den Code, den du bekommst.
 
-Was die App sendet und wohin, steht in ihrer [Datenschutzerklärung](android-privacy.md).
+Was die App sendet und wohin, steht in der [Datenschutzerklärung](android-privacy.md).
 
-Du hängst fest? Frag im Forum **rex-support** auf [Discord](https://discord.com/invite/7u4YjMThXP).
+Nicht weiter? Frag im Forum **rex-support** auf [Discord](https://discord.com/invite/7u4YjMThXP).

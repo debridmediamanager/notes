@@ -16,29 +16,31 @@ rex for Android مجاني. هل تريد أن تضيف إليه حسابات de
 
 ## الخطوة 1. احصل على التطبيق {#step-1-get-the-app}
 
+اختر طريقة واحدة. كل طريقة تُبقي rex محدّثًا بطريقتها الخاصة.
+
 | الطريقة | مناسبة لـ |
 |---|---|
 | Google Play | الهواتف والأجهزة اللوحية وAndroid TV وGoogle TV. قريبًا |
 | Amazon Appstore | Fire TV وأجهزة Fire اللوحية. قريبًا |
-| [Obtainium](#with-obtainium) | الهواتف والأجهزة اللوحية. التحديثات تأتي تلقائيًا |
+| [Obtainium](#with-obtainium) | الهواتف والأجهزة اللوحية. يخبرك عندما يتوفر تحديث |
 | [Downloader](#with-downloader-on-fire-tv) | Fire TV وصناديق التلفزيون |
 | [الملف من GitHub](#the-file-from-github) | أي جهاز. تثبّت التحديثات بنفسك |
 
-**الطرق لا تُخلط.** Google Play وAmazon Appstore والملف من GitHub (الذي يثبّته Obtainium وDownloader أيضًا) موقّعة بشكل مختلف، لذا لا يستطيع أحدها تحديث الآخر. للتبديل، احذف rex وأعد تنفيذ الخطوتين 2 و3.
+**الطرق لا تُخلَط.** Google Play وAmazon Appstore والملف من GitHub (الذي يثبّته Obtainium وDownloader أيضًا) موقّعة بطرق مختلفة، لذلك لا يستطيع أحدها تحديث الآخر. للتبديل، أزل rex، ثم أعد تنفيذ الخطوتين 2 و3 وأعد تثبيت الإضافات.
 
-**كل طريقة تبدأ بإضافات مختلفة.** الملف من GitHub يبدأ ومستودع [rex-addons](https://github.com/debridmediamanager/rex-addons) مضاف. نسخ المتاجر تبدأ بإضافة Internet Archive فقط؛ أضف rex-addons بنفسك (انظر [الإضافات](#addons)) إذا أردتها.
+**تبدأ الطرق بإضافات مختلفة.** يبدأ الملف من GitHub ومعه مستودع [rex-addons](https://github.com/debridmediamanager/rex-addons) مضافًا. أما نسخ المتاجر فتبدأ بإضافة Internet Archive فقط؛ أضف rex-addons بنفسك (انظر [الإضافات](#addons)) إن أردته.
 
 ### باستخدام Obtainium {#with-obtainium}
 
 [Obtainium](https://obtainium.imranr.dev/) يثبّت التطبيقات من GitHub ويبقيها محدّثة.
 
-1. ثبّت Obtainium.
-2. على الجهاز نفسه، افتح [rex.debridmediamanager.com/obtainium](https://rex.debridmediamanager.com/ar/obtainium). يُفتح Obtainium ويسألك عن **Import app**. اضغط **Continue**.
+1. ثبّت Obtainium وافتحه مرة واحدة.
+2. على الجهاز نفسه، افتح [rex.debridmediamanager.com/obtainium](https://rex.debridmediamanager.com/ar/obtainium). يُفتح Obtainium ويطلب منك **Import app**. اضغط **Continue**.
 3. اضغط **rex**، ثم **Install**. يختار Obtainium الملف المناسب لمعالج جهازك.
-4. في المرة الأولى، يقول Android إن Obtainium غير مسموح له بتثبيت التطبيقات. فعّل **Allow from this source** ثم ارجع.
-5. اضغط **Install**. إذا قال Play Protect **App scan recommended**، اضغط **Scan app** ثم **Install**.
+4. في المرة الأولى، يفتح Android شاشة **Install unknown apps** الخاصة بـ Obtainium. فعّل **Allow from this source** ثم ارجع.
+5. اضغط **Install**. إذا ظهرت رسالة **App scan recommended** من Play Protect، اضغط **Scan app** ثم **Install**.
 
-عندما يصدر إصدار جديد، يعرض Obtainium الزر **Update** بجانب rex.
+عندما يصدر إصدار جديد، يُظهر Obtainium زر **Update** بجانب rex.
 
 ### باستخدام Downloader على Fire TV {#with-downloader-on-fire-tv}
 
@@ -145,21 +147,21 @@ rex for Android مجاني. هل تريد أن تضيف إليه حسابات de
 
 ## استكشاف الأخطاء وإصلاحها {#troubleshooting}
 
-| What you see | What to do |
+| ما تراه | ما الذي عليك فعله |
 |---|---|
-| **App not installed as app isn't compatible with your phone.** | اخترت الملف الخاطئ للمعالج. جرّب الملف الآخر من الجدول في الخطوة 1 |
+| **App not installed as app isn't compatible with your phone.** | اخترت الملف الخطأ لمعالج جهازك. جرّب الملف الآخر من الجدول الموجود تحت [الملف من GitHub](#the-file-from-github) |
 | **Another app here already uses this port, maybe a Plex server. Try 32500.** | اكتب `32500` كمنفذ |
 | **Use a number from 1024 to 65535** | يجب أن يكون المنفذ رقمًا ضمن هذا النطاق |
-| لا يظهر الخادم في تطبيق Plex | سجّل الدخول في تطبيق Plex بالحساب نفسه الذي استخدمته في الخطوة 3، وأبقِ الجهازين على شبكة المنزل نفسها |
-| المكتبة فارغة | المزامنة الأولى ما زالت جارية: انتظر حتى تظهر في **Status** عدد من العناوين |
-| **Sign in needed** under an addon | اضغط على زر **Sign in** الخاص بها وأدخل الرمز |
-| **Needs an update** under an addon | هذه النسخة من التطبيق لم تعد قادرة على تشغيل نسخة الإضافة هذه. حدّث المستودع الخاص بها واضغط على **Update**. تبقى عناوينها متاحة في هذه الأثناء |
+| لا يظهر الخادم في تطبيق Plex | سجّل الدخول إلى تطبيق Plex بالحساب نفسه الذي استخدمته في الخطوة 3، واجعل الجهازين على شبكة المنزل نفسها |
+| المكتبة فارغة | ما زالت المزامنة الأولى قيد التشغيل: انتظر حتى تُظهر **Status** عدد العناوين |
+| **Sign in needed** أسفل إضافة | اضغط زر **Sign in** الخاص بها وأدخل الرمز |
+| **Needs an update** أسفل إضافة | لم يعد هذا الإصدار من التطبيق قادرًا على تشغيل نسخة الإضافة هذه. حدّث المستودع الخاص بها واضغط **Update**. تبقى عناوينها محفوظة في الأثناء |
 | **That isn't a repository link. Try github.com/user/repo.** | اكتب رابط المستودع، مثل `github.com/user/repo` |
-| **no public git repository there (it asks for a login)** | الرابط خاطئ أو أن المستودع خاص. تحقق منه في المتصفح |
-| يتوقف rex عندما تُطفأ الشاشة | أعد ضبط إعداد التشغيل في الخلفية من الخطوة 2، وراجع [لا تقتل تطبيقي](https://dontkillmyapp.com/) |
+| **no public git repository there (it asks for a login)** | الرابط خاطئ أو أن المستودع خاص. تحقّق منه في المتصفح |
+| يتوقف rex عندما تكون الشاشة مطفأة | أعد ضبط إعداد الخلفية في الخطوة 2، وراجع [Don't kill my app](https://dontkillmyapp.com/) |
 
-**Logs** يعرض ما قاله rex والإضافات مؤخرًا، مع إخفاء المفاتيح وكلمات المرور. إذا طلب الدعم السجلات، اضغط على **Send logs to support**: سترى كل شيء قبل إرساله، ثم اضغط على **Send** وانشر الرمز الذي تحصل عليه.
+يعرض **Logs** ما قاله rex والإضافات مؤخرًا، مع إخفاء المفاتيح وكلمات المرور. إذا طلب الدعم السجلات، فاضغط **Send logs to support**: سترى كل شيء قبل إرساله، ثم اضغط **Send** وانشر الرمز الذي تحصل عليه.
 
-ما يرسله التطبيق وإلى أين يذهب موجود في [سياسة الخصوصية](android-privacy.md).
+ما يرسله التطبيق وإلى أين، مذكور في [سياسة الخصوصية](android-privacy.md) الخاصة به.
 
-إذا علقت، اسأل في منتدى **rex-support** على [Discord](https://discord.com/invite/7u4YjMThXP).
+هل تعثرت؟ اسأل في منتدى **rex-support** على [Discord](https://discord.com/invite/7u4YjMThXP).
