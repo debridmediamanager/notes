@@ -107,9 +107,9 @@ If `docker` says permission denied, put `sudo` before every `docker` command on 
 
 ## 3. Add zurg's folders in Plex
 
-Open Plex Web at `http://<this machine's LAN IP>:32400/web`. Add a **Movies** library with the folder `/zurg_mnt/zurg/movies` and a **TV Shows** library with `/zurg_mnt/zurg/shows`.
+Open Plex Web at `http://<this machine's LAN IP>:32400/web`. Add a **Movies** library with the folder `/zurg_mnt/zurg/movies` and a **TV Shows** library with `/zurg_mnt/zurg/shows`, as [Real-Debrid in Plex](../../guides/real-debrid-plex.md#3-add-the-folders-in-plex) shows.
 
-So Plex hears about new things, open zurg's dashboard at `http://<this machine's LAN IP>:9999/config/` and press **Login with Plex** under **Media Server Integration**.
+So Plex hears about new things, open zurg's dashboard at `http://<this machine's LAN IP>:9999/config/` and press **Login with Plex** under **Media Server Integration** ([step 4 there](../../guides/real-debrid-plex.md#4-let-zurg-tell-plex-about-new-things)).
 
 ## 4. Set up rex
 

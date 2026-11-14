@@ -16,6 +16,7 @@ Every guide on this site, by project.
 - ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): what that green screen in Stremio means and what to do
 - [Your Real-Debrid API token](real-debrid-api-token.md): where to get it, where DMM and zurg take it, and what `bad_token` and the other errors mean
 - [Usenet for beginners](usenet-for-beginners.md): provider, indexer and NZB, what you need to buy, and how zurg and DMM fit
+- [A Real-Debrid library in Plex](real-debrid-plex.md): zurg's `movies` and `shows` folders in Plex Media Server, per system, and the usual problems
 - [Getting help](remote-help.md) with zurg and rex: where to ask, what to include, and remote help for sponsors
 - [What a sponsorship gives you](sponsorship.md): every perk and where to set it up, or how to earn the DMM ones on the request board
 
