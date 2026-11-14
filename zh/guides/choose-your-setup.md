@@ -10,31 +10,31 @@
 
 ## 按你已经在用的东西来选 {#pick-by-what-you-already-use}
 
-在手机上，左右滑动表格即可看到所有列。
+在手机上，把表格左右滑动，就能看到所有列。
 
-| 我有 / 我想要… | 选择这条路线 | 为什么选它？ | 你需要承担的 |
+| 我有 / 想要… | 选择这条路线 | 为什么选它？ | 你需要承担的 |
 |---|---|---|---|
-| Stremio 或 Nuvio，并且有 debrid 或 Easynews 账号；不想维护服务器 | **DMM Cast → Stremio 或 Nuvio**，或者你现有的流媒体插件 | 无需运行 zurg、rex 或媒体服务器，通过你的账号观看 | 插件和服务商必须提供可播放的流；播放由设备完成 |
-| Kodi，并且有 debrid、Easynews 或 TorBox Pro 账号 | **DMM 的 Kodi 插件 → 你的账号** | 在 Kodi 里浏览、搜索和播放；可以用手机配对。插件的 TorBox 库包含托管的 NZB 下载 | 播放由 Kodi 完成。赞助者的 Wanted list 仍然需要 zurg 来完成请求 |
-| 想用常用播放器看一部电影 | **DMM Watch → 外部播放器** | 不需要媒体库服务器 | 安装受支持的播放器，并选择它能播放的文件 |
-| Infuse、Kodi 或其他 WebDAV 播放器 | **服务商 WebDAV**（无需主机）；**如果主机能保持在线，则用 zurg → WebDAV 播放器** | 无需 Plex、Jellyfin、Emby 或 rex 就能浏览云端库 | Real-Debrid、AllDebrid、Premiumize、TorBox 和 Debrid-Link 各自提供 WebDAV，文件夹结构也各不相同。Offcloud 没有 WebDAV，因此需要 zurg。zurg 需要主机在你观看时保持在线 |
-| 已经在运行 Plex Media Server | **zurg → 挂载的文件夹 → Plex Media Server → Plex 应用** | 保留你的服务器、它的媒体库和现有工作流 | 需要与服务器一起运行 zurg 和文件系统挂载；扫描时会读取远程文件 |
-| 想用 Plex 应用，但不想维护挂载的媒体库 | **zurg → rex → Plex 应用** | zurg 把媒体库提供给 rex，无需挂载，也无需 Plex Media Server | 两个服务都要保持运行；请查看 rex 的应用兼容性和账号说明 |
-| 想用 Stremio 插件，但我更喜欢 Plex 应用 | **插件 → rex-stremio → rex → Plex 应用** | 把插件目录变成 Plex 媒体库；zurg 可选 | 需要运行 rex 和 rex-stremio；流媒体插件必须返回可播放的 URL，而不是原始种子 |
-| 我的播放器通过 Jellyfin 访问媒体库 | **Jellyfin 内的服务商插件 → 兼容客户端** | 无需单独的 zurg 服务或挂载 | Jellyfin 12 和对应的插件；插件有各自的归档限制 |
-| 我的播放器通过 Emby 访问媒体库 | **Emby 内的服务商插件 → 兼容客户端** | 所有内容都保留在现有的 Emby 服务器中 | 使用受支持的 Emby 版本；这六个插件仅支持 debrid，不支持直接的 Usenet |
-| 通过 Jellyfin/Emby 访问，同时其他使用者需要自己的文件系统/WebDAV 访问 | **zurg → 挂载 → Jellyfin/Emby** | 同一个媒体库可以服务多个使用者 | 需要维护挂载和服务器路径；其他使用者可以直接使用 zurg |
-| NZB 文件、我自己的 Usenet 账号和 Jellyfin | **Jellyfin 内的 NZB 插件 → 兼容客户端** | 无需单独的 zurg 服务即可串流 NZB | 需要 NNTP 访问和受支持的 Jellyfin 版本；插件会排除压缩/加密的归档成员，并且不使用 PAR2 修复 |
-| 支持 SMB 共享的硬件播放器 | **zurg → 挂载 → 主机的 SMB 共享 → 播放器** | 保留播放器原生的文件浏览器和播放功能 | SMB 由主机提供；zurg 本身提供 WebDAV，而不是 SMB 服务器 |
-| 我自己的 Usenet 账号和 Stremio | **Newznab 索引器 → zurg 的 Stremio 插件 → Stremio** | 在播放时搜索，并通过你的新闻账号串流 | 需要 zurg 正在运行、索引器访问权限和 NNTP 凭据；其他设备需要能访问的 HTTPS 插件地址 |
-| Android/Google TV 设备，没有其他电脑 | **zurg+rex Android → 该设备上的播放器，或该设备上及家中周边的 Plex 应用** | 在 Android 设备上运行 zurg 和 rex，在手机或电视盒子上运行你自己的 Plex 服务器，用于该屏幕以及家中的 Plex 应用 | 需要赞助者权限、侧载和后台运行；Usenet 需要 64 位 Android；TorBox 托管的 NZB 在 Android 上不可用 |
-| Android/Google TV 设备，以及 Stremio 插件、YouTube、Spotify 或 NAS 上的文件 | **rex for Android → 该设备上及家中周边的 Plex 应用** | rex 和它的插件都在设备上运行，免费，且无需电脑 | 需要侧载和后台运行；流媒体插件必须返回可播放的 URL，而不是原始种子；NAS 上的文件需要你自己编写插件。对于你的 debrid 和 Usenet 库，赞助者使用 zurg+rex（见上一行） |
-| 文件已经在磁盘/NAS 上 | **现有的媒体服务器或网络播放器**；如果你想用 rex，则使用 **HTTP 源 → rex** | 继续使用你拥有的文件；无需 debrid 或 Usenet 账号 | rex 需要通过其 feed API 提交元数据，并需要通过 HTTP 访问文件；feed 生产者和文件服务器可以分开。rex 不会扫描磁盘 |
-| 可串流的 HTTP 媒体或我自己的 HTTP 服务器 | **HTTP 源 + rex feed → rex → Plex 应用**，或直接使用兼容的播放器 | 无需 debrid 或 zurg 即可使用现有源 | rex 需要 feed 生产者来提交身份和媒体详情；单独的 URL 无法提供这些元数据 |
+| Stremio 或 Nuvio，以及一个 debrid 或 Easynews 账户；不想维护服务器 | **[DMM Cast](../dmm/stremio.md) → Stremio 或 Nuvio**，或你现有的流媒体 addon | 不用运行 zurg、rex 或媒体服务器，通过你的账户直接观看 | addon 和服务商必须提供可播放的流；播放由设备完成 |
+| Kodi，以及一个 debrid、Easynews 或 TorBox Pro 账户 | **DMM 的 Kodi addon → 你的账户** | 在 Kodi 里浏览、搜索和播放；用手机配对。addon 的 TorBox 库包含托管的 NZB 下载 | 播放由 Kodi 完成。赞助者的 Wanted 列表仍需要 zurg 来完成请求 |
+| 想用我习惯的播放器看一部电影 | **DMM Watch → 外部播放器** | 不需要媒体库服务器 | 安装受支持的播放器，并选择它能播放的文件 |
+| Infuse、Kodi 或其他 WebDAV 播放器 | **服务商 WebDAV（无需主机）**；**zurg → WebDAV 播放器**（需要一台能一直开着的主机） | 不用 Plex、Jellyfin、Emby 或 rex，也能浏览云端库 | Real-Debrid、AllDebrid、Premiumize、TorBox 和 Debrid-Link 都提供自己的 WebDAV，文件夹结构各不相同。Offcloud 没有 WebDAV，所以需要 zurg。zurg 需要一台在你观看时保持开机的主机 |
+| 已经在用 Plex Media Server | **zurg → 挂载的文件夹 → Plex Media Server → Plex 应用** | 保留你的服务器、媒体库和现有的工作流 | 需要和服务器一起运行 zurg 和文件系统挂载；扫描时会读取远程文件 |
+| 想用 Plex 应用，但不想维护挂载的媒体库 | **zurg → rex → Plex 应用** | zurg 为 rex 提供媒体库，无需挂载，也不需要 Plex Media Server | 两个服务都要保持运行；请查看 rex 的应用兼容性和账户说明 |
+| 想用 Stremio 的 addon，但更喜欢 Plex 应用 | **Addon → rex-stremio → rex → Plex 应用** | 把 addon 的目录变成 Plex 媒体库；zurg 可选 | 需要运行 rex 和 rex-stremio；流媒体 addon 必须返回可播放的 URL，而不是原始种子 |
+| 我的播放器通过 Jellyfin 访问媒体库 | **Jellyfin 内的服务商插件 → 兼容的客户端** | 不需要单独的 zurg 服务或挂载 | Jellyfin 12 和对应的插件；插件有各自的归档限制 |
+| 我的播放器通过 Emby 访问媒体库 | **Emby 内的服务商插件 → 兼容的客户端** | 所有内容都保留在现有的 Emby 服务器里 | 使用受支持的 Emby 版本；这六个插件只支持 debrid，不支持直接的 Usenet |
+| Jellyfin/Emby，外加需要自己访问文件系统/WebDAV 的其他客户端 | **zurg → 挂载 → Jellyfin/Emby** | 一个媒体库可以服务多个客户端 | 需要维护挂载和服务器路径；其他客户端可以直接使用 zurg |
+| NZB 文件、我自己的 Usenet 账户和 Jellyfin | **Jellyfin 内的 NZB 插件 → 兼容的客户端** | 无需单独的 zurg 服务即可播放 NZB | 需要 NNTP 访问权限和受支持的 Jellyfin 版本；插件会排除压缩或加密的归档成员，也不支持用 PAR2 修复 |
+| 一个能读取 SMB 共享的硬件播放器 | **zurg → 挂载 → 主机的 SMB 共享 → 播放器** | 保留播放器原生的文件浏览器和播放功能 | SMB 由主机提供；zurg 本身提供的是 WebDAV，不是 SMB 服务器 |
+| 我自己的 Usenet 账户和 Stremio | **Newznab 索引器 → zurg 的 Stremio addon → Stremio** | 在播放时搜索，并通过你的新闻服务器账户串流 | 需要 zurg 正在运行、能访问索引器，以及 NNTP 凭据；其他设备需要能访问的 HTTPS addon 地址 |
+| Android/Google TV 设备，没有其他电脑 | **zurg+rex Android → 该设备上的播放器，或设备上以及家里的 Plex 应用** | 在 Android 设备上运行 zurg 和 rex，在手机或电视盒子上运行你自己的 Plex 服务器，用于这块屏幕以及家里的 Plex 应用 | 需要赞助者权限、侧载和后台运行；Usenet 需要 64 位 Android；TorBox 的托管 NZB 在 Android 上不可用 |
+| Android/Google TV 设备，以及 Stremio 的 addon、YouTube、Spotify 或 NAS 上的文件 | **rex for Android → 设备上以及家里的 Plex 应用** | rex 及其 addon 都在设备上运行，免费，无需电脑 | 需要侧载和后台运行；流媒体 addon 必须返回可播放的 URL，而不是原始种子；NAS 上的文件需要你自己编写的 addon。若要使用你的 debrid 和 Usenet 库，赞助者请使用 zurg+rex（见上一行） |
+| 文件已经在磁盘或 NAS 上 | **现有的媒体服务器或网络播放器**；如果想用 rex，则使用 **HTTP 源 → rex** | 继续使用你拥有的文件；不需要 debrid 或 Usenet 账户 | rex 需要通过其 feed API 提交元数据，并能通过 HTTP 访问文件；feed 提供方和文件服务器可以是两台不同的机器。rex 不会扫描磁盘 |
+| 可流式传输的 HTTP 媒体或我自己的 HTTP 服务器 | **HTTP 源 + rex feed → rex → Plex 应用**，或直接使用兼容的播放器 | 无需 debrid 或 zurg，就能使用现有的源 | rex 需要 feed 提供方来提交身份和媒体详情；只有一个裸 URL 无法提供这些元数据 |
 
-入门链接：[DMM Cast](https://debridmediamanager.com/stremio/) · [Kodi](https://debridmediamanager.com/kodi) · [DMM 设置](https://debridmediamanager.com/settings) · [zurg 设置](../zurg/setup/index.md) · [rex 与 zurg](../rex/with-zurg.md) · [rex 与 Stremio 插件](../rex/stremio.md) · [Jellyfin 插件](https://debridmediamanager.com/jellyfin) · [Emby 插件](https://debridmediamanager.com/emby) · [zurg 的 Stremio 插件](../zurg/guides/stremio.md) · [zurg+rex 在 Android 上](../zurg/guides/android.md) · [rex for Android](../rex/android.md) · [rex 与任意源](../rex/any-source.md)。
+从这里开始：[DMM Cast](https://debridmediamanager.com/stremio/) · [Kodi](https://debridmediamanager.com/kodi) · [DMM Settings](https://debridmediamanager.com/settings) · [zurg 设置](../zurg/setup/index.md) · [rex 与 zurg](../rex/with-zurg.md) · [rex 与 Stremio addon](../rex/stremio.md) · [Jellyfin 插件](https://debridmediamanager.com/jellyfin) · [Emby 插件](https://debridmediamanager.com/emby) · [zurg 的 Stremio addon](../zurg/guides/stremio.md) · [zurg+rex 在 Android 上](../zurg/guides/android.md) · [rex for Android](../rex/android.md) · [rex 与任意源](../rex/any-source.md)。
 
-Cast 链接默认从 Real-Debrid 开始。如果你使用其他账号，请使用对应的设置页面：[TorBox](https://debridmediamanager.com/stremio-torbox/)、[AllDebrid](https://debridmediamanager.com/stremio-alldebrid/)、[Premiumize](https://debridmediamanager.com/stremio-premiumize/)、[Offcloud](https://debridmediamanager.com/stremio-offcloud/)、[Debrid-Link](https://debridmediamanager.com/stremio-debridlink/) 或 [Easynews](https://debridmediamanager.com/stremio-easynews/)。这里的 Cast 指的是 **DMM 插件**，不是 Chromecast，也不是屏幕镜像。Nuvio 使用同一个插件：把 Cast 页面中的插件链接粘贴到 Nuvio 即可。
+Cast 链接默认从 Real-Debrid 开始。如果你使用 [TorBox](https://debridmediamanager.com/stremio-torbox/)、[AllDebrid](https://debridmediamanager.com/stremio-alldebrid/)、[Premiumize](https://debridmediamanager.com/stremio-premiumize/)、[Offcloud](https://debridmediamanager.com/stremio-offcloud/)、[Debrid-Link](https://debridmediamanager.com/stremio-debridlink/) 或 [Easynews](https://debridmediamanager.com/stremio-easynews/) 的账户，请使用对应的设置页面。这里的 Cast 指的是 **DMM addon**，不是 Chromecast，也不是投屏镜像。Nuvio 使用同一个 addon：把 Cast 页面上的 addon 链接粘贴到 Nuvio 中即可。
 
 ## 播放示意图 {#the-playback-map}
 

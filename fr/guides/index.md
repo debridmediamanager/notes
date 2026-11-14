@@ -6,14 +6,16 @@ Chaque guide de ce site, par projet.
 
 - [Choisir votre configuration](choose-your-setup.md) : schémas de routage et quand utiliser DMM, zurg, rex, Kodi, Stremio, Nuvio ou les plugins Jellyfin/Emby
 - [Le rôle de chaque élément](glossary.md) : une ligne pour chaque élément de DMM, zurg et rex, ainsi que les termes utilisés dans les guides
+- [« Torrent is being downloaded to debrid »](torrent-being-downloaded-to-debrid.md) : ce que signifie cet écran vert dans Stremio et quoi faire
 - [Obtenir de l'aide](remote-help.md) pour zurg et rex : où demander, quoi inclure, et l'aide à distance pour les sponsors
-- [Ce que vous apporte un sponsoring](sponsorship.md) : chaque avantage et où le configurer, ou comment gagner ceux de DMM sur le tableau des demandes
+- [Ce que vous apporte un sponsoring](sponsorship.md) : chaque avantage et où le configurer, ou comment gagner les avantages DMM sur le tableau des demandes
 
 ## DMM
 
-- [Boutons DMM dans Safari](../dmm/safari.md) : l'extension de navigateur en tant que userscript sur Mac, iPhone et iPad
+- [DMM dans Stremio](../dmm/stremio.md) : regardez dans Stremio avec l'addon DMM Cast, et que faire quand ça ne marche pas
+- [Boutons DMM dans Safari](../dmm/safari.md) : l'extension de navigateur en userscript sur Mac, iPhone et iPad
 - [Seerr via DMM](../dmm/seerr.md)
-- [Liste de souhaits DMM](../zurg/guides/dmm-wanted.md) : zurg récupère ce sur quoi tu appuies **Want**
+- [Liste de souhaits DMM](../zurg/guides/dmm-wanted.md) : zurg récupère ce sur quoi vous appuyez **Want**
 
 ## zurg
 

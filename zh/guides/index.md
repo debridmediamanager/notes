@@ -4,16 +4,18 @@
 
 ## 概述 {#general}
 
-- [选择你的设置](choose-your-setup.md)：路线图，以及何时使用 DMM、zurg、rex、Kodi、Stremio、Nuvio 或 Jellyfin/Emby 插件
-- [各部分的作用](glossary.md)：DMM、zurg 和 rex 的每个组件，以及指南中用到的术语，每项一行说明
-- [获取帮助](remote-help.md)：zurg 和 rex 的求助渠道、需要提供的信息，以及赞助者的远程帮助
-- [赞助权益](sponsorship.md)：每项权益及其设置位置，或如何在请求板上获得 DMM 相关权益
+- [Choose your setup](choose-your-setup.md): 路线图，以及何时使用 DMM、zurg、rex、Kodi、Stremio、Nuvio 或 Jellyfin/Emby 插件
+- [What each piece does](glossary.md): 为 DMM、zurg 和 rex 的每个组件以及指南中的术语各提供一行说明
+- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): 说明 Stremio 中那个绿色屏幕是什么意思，以及该怎么做
+- [Getting help](remote-help.md) with zurg and rex: 在哪里提问、需要提供哪些信息，以及赞助者可获得的远程帮助
+- [What a sponsorship gives you](sponsorship.md): 每项赞助权益及其设置位置，或如何在请求看板上获得 DMM 相关权益
 
 ## DMM
 
-- [Safari 中的 DMM 按钮](../dmm/safari.md)：在 Mac、iPhone 和 iPad 上以用户脚本的形式使用浏览器扩展
-- [通过 DMM 使用 Seerr](../dmm/seerr.md)
-- [DMM 想要列表](../zurg/guides/dmm-wanted.md)：zurg 会获取你在 DMM 中点击 **Want** 的内容
+- [DMM 在 Stremio 中](../dmm/stremio.md)：用 DMM Cast 插件在 Stremio 中观看，以及出问题时该怎么办
+- [Safari 中的 DMM 按钮](../dmm/safari.md)：以用户脚本形式在 Mac、iPhone 和 iPad 上使用的浏览器扩展
+- [通过 Seerr 使用 DMM](../dmm/seerr.md)
+- [DMM 想看列表](../zurg/guides/dmm-wanted.md)：zurg 会获取你按下 **Want** 的内容
 
 ## zurg
 

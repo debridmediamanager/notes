@@ -4,16 +4,18 @@ Jede Anleitung auf dieser Seite, nach Projekt sortiert.
 
 ## Allgemein {#general}
 
-- [Wähle dein Setup](choose-your-setup.md): Routenkarten und wann du DMM, zurg, rex, Kodi, Stremio, Nuvio oder die Jellyfin/Emby-Plugins verwendest
-- [Was jedes Teil macht](glossary.md): eine Zeile für jedes DMM-, zurg- und rex-Teil und die Begriffe aus den Anleitungen
-- [Hilfe bekommen](remote-help.md) bei zurg und rex: wo du fragen kannst, was du angeben solltest, und Remote-Hilfe für Sponsoren
-- [Was dir eine Sponsoring-Mitgliedschaft bringt](sponsorship.md): jeder Vorteil und wo du ihn einrichtest, oder wie du die DMM-Vorteile über das Anfrage-Board verdienst
+- [Choose your setup](choose-your-setup.md): Routenübersichten und wann du DMM, zurg, rex, Kodi, Stremio, Nuvio oder die Jellyfin/Emby-Plugins verwenden solltest
+- [What each piece does](glossary.md): eine Zeile für jedes DMM-, zurg- und rex-Teil sowie die Begriffe aus den Anleitungen
+- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): was dieser grüne Bildschirm in Stremio bedeutet und was du tun solltest
+- [Getting help](remote-help.md) with zurg and rex: wo du fragen kannst, was du angeben solltest, und Remote-Hilfe für Sponsoren
+- [What a sponsorship gives you](sponsorship.md): alle Vorteile und wo du sie einrichtest, oder wie du die DMM-Vorteile über das Anfragen-Board verdienst
 
 ## DMM
 
-- [DMM-Buttons in Safari](../dmm/safari.md): die Browsererweiterung als Userscript auf Mac, iPhone und iPad
+- [DMM in Stremio](../dmm/stremio.md): Mit dem DMM Cast-Addon in Stremio schauen und was zu tun ist, wenn es nicht klappt
+- [DMM-Buttons in Safari](../dmm/safari.md): Die Browser-Erweiterung als Userscript auf Mac, iPhone und iPad
 - [Seerr über DMM](../dmm/seerr.md)
-- [DMM-Wunschliste](../zurg/guides/dmm-wanted.md): zurg holt sich, was du auf **Want** drückst
+- [DMM-Wunschliste](../zurg/guides/dmm-wanted.md): zurg holt sich alles, worauf du **Want** gedrückt hast
 
 ## zurg
 

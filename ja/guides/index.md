@@ -4,16 +4,18 @@
 
 ## 一般 {#general}
 
-- [作業構成を選ぶ](choose-your-setup.md): DMM、zurg、rex、Kodi、Stremio、Nuvio、Jellyfin/Emby プラグインについて、どの構成でどれを使うかをまとめたルートマップ
-- [各パーツの役割](glossary.md): DMM、zurg、rex の各パーツと、ガイドに出てくる用語の一行解説
-- [zurg と rex のヘルプ](remote-help.md): 質問先、含めるべき情報、スポンサー向けのリモートヘルプ
-- [スポンサーシップの特典](sponsorship.md): すべての特典と設定場所、または DMM 向け特典をリクエストボードで獲得する方法
+- [セットアップを選ぶ](choose-your-setup.md): 経路図と、DMM、zurg、rex、Kodi、Stremio、Nuvio、Jellyfin/Emby プラグインをいつ使うかの説明です
+- [各パーツの役割](glossary.md): DMM、zurg、rex の各パーツと、ガイドに出てくる用語を1行ずつ説明しています
+- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): Stremio で緑の画面が出たときの意味と、やるべきことです
+- [ヘルプを受ける](remote-help.md): zurg と rex について、どこで質問するか、何を書けばよいか、スポンサー向けのリモートヘルプです
+- [スポンサーになると得られるもの](sponsorship.md): 特典の一覧と、その設定場所です。DMM の特典は、リクエストボードで獲得する方法もあります
 
 ## DMM
 
-- [Safari での DMM ボタン](../dmm/safari.md): Mac、iPhone、iPad でユーザースクリプトとしてブラウザ拡張機能を使う方法
-- [Seerr 経由の DMM](../dmm/seerr.md)
-- [DMM のウォントリスト](../zurg/guides/dmm-wanted.md): **Want** を押したものを zurg が取得します
+- [Stremioでの DMM](../dmm/stremio.md): DMM Cast addonを使ってStremioで視聴する方法と、うまくいかないときの対処法
+- [SafariでのDMMボタン](../dmm/safari.md): Mac、iPhone、iPadでユーザースクリプトとして使うブラウザ拡張機能
+- [DMM経由のSeerr](../dmm/seerr.md)
+- [DMMのウォッチリスト](../zurg/guides/dmm-wanted.md): **Want**を押したものをzurgが取得します
 
 ## zurg
 

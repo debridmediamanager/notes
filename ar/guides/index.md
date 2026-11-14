@@ -4,14 +4,16 @@
 
 ## عام {#general}
 
-- [اختر إعدادك](choose-your-setup.md): خرائط المسارات ومتى تستخدم DMM وzurg وrex وKodi وStremio وNuvio أو إضافات Jellyfin/Emby
-- [وظيفة كل جزء](glossary.md): سطر واحد لكل جزء من DMM وzurg وrex والكلمات الواردة في الأدلة
-- [الحصول على المساعدة](remote-help.md) مع zurg وrex: أين تسأل، وماذا تُرفق، والمساعدة عن بُعد للرعاة
-- [ماذا تمنحك الرعاية](sponsorship.md): كل ميزة وأين تُفعّلها، أو كيف تكسب ميزات DMM من لوحة الطلبات
+- [اختر الإعداد المناسب لك](choose-your-setup.md): خرائط المسارات ومتى تستخدم DMM وzurg وrex وKodi وStremio وNuvio أو إضافات Jellyfin/Emby
+- [وظيفة كل جزء](glossary.md): سطر واحد لكل جزء من DMM وzurg وrex، والكلمات المستخدمة في الأدلة
+- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): معنى تلك الشاشة الخضراء في Stremio وما الذي يجب فعله
+- [الحصول على المساعدة](remote-help.md) مع zurg وrex: أين تسأل، وما الذي يجب أن تذكره، والمساعدة عن بُعد للرعاة
+- [ما الذي تحصل عليه مع الرعاية](sponsorship.md): كل ميزة وأين تضبطها، أو كيف تحصل على ميزات DMM من خلال لوحة الطلبات
 
 ## DMM
 
-- [أزرار DMM في Safari](../dmm/safari.md): إضافة المتصفح كسكربت مستخدم على Mac وiPhone وiPad
+- [DMM في Stremio](../dmm/stremio.md): شاهد في Stremio باستخدام إضافة DMM Cast، وما الذي تفعله عندما تسوء الأمور
+- [أزرار DMM في Safari](../dmm/safari.md): إضافة المتصفح كسكريبت مستخدم على Mac وiPhone وiPad
 - [Seerr عبر DMM](../dmm/seerr.md)
 - [قائمة DMM المطلوبة](../zurg/guides/dmm-wanted.md): يجلب zurg ما تضغط عليه **Want**
 

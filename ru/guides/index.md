@@ -4,16 +4,18 @@
 
 ## Общее {#general}
 
-- [Choose your setup](choose-your-setup.md): маршруты и когда использовать DMM, zurg, rex, Kodi, Stremio, Nuvio или плагины Jellyfin/Emby
+- [Choose your setup](choose-your-setup.md): карты маршрутов и когда использовать DMM, zurg, rex, Kodi, Stremio, Nuvio или плагины Jellyfin/Emby
 - [What each piece does](glossary.md): одна строка для каждого компонента DMM, zurg и rex и для слов из гайдов
-- [Getting help](remote-help.md) with zurg and rex: where to ask, what to include, and remote help for sponsors
-- [What a sponsorship gives you](sponsorship.md): every perk and where to set it up, or how to earn the DMM ones on the request board
+- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): что означает зелёный экран в Stremio и что с ним делать
+- [Getting help](remote-help.md) with zurg and rex: где спросить, что указать и удалённая помощь для спонсоров
+- [What a sponsorship gives you](sponsorship.md): все бонусы и где их настроить, или как получить бонусы DMM на доске запросов
 
 ## DMM
 
+- [DMM в Stremio](../dmm/stremio.md): смотрите в Stremio через аддон DMM Cast и что делать, если что-то пошло не так
 - [Кнопки DMM в Safari](../dmm/safari.md): расширение браузера как userscript на Mac, iPhone и iPad
 - [Seerr через DMM](../dmm/seerr.md)
-- [Список желаемого DMM](../zurg/guides/dmm-wanted.md): zurg забирает то, на что ты нажал **Want**
+- [Список желаемого DMM](../zurg/guides/dmm-wanted.md): zurg загружает то, что вы нажимаете **Want**
 
 ## zurg
 
