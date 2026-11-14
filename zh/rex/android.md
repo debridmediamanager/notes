@@ -44,12 +44,12 @@ rex for Android 是免费的。如果你也想把 debrid 账户和 Usenet 加进
 
 ### 在 Fire TV 上使用 Downloader {#with-downloader-on-fire-tv}
 
-1. 在 Fire TV 上，从 Appstore 安装 AFTVnews 出品的 **Downloader**。
-2. 打开它，选中地址框并输入 `rex.debridmediamanager.com/tv`。按 **Next**。它会下载 `rex-android-armeabi-v7a.apk`。
-3. 按 **Install**。第一次时，Fire TV 会改为打开 **Developer options**。选择 **Install unknown apps**，再选 **Downloader**，让它显示 **ON**。按两次返回键，然后再次按 **Install**。
+1. 在 Fire TV 上，从应用商店安装 AFTVnews 开发的 **Downloader**。
+2. 打开它，选中地址框并输入代码 `6291659`（或 `rex.debridmediamanager.com/tv`）。按 **Next**。它会下载 `rex-android-armeabi-v7a.apk`。
+3. 按 **Install**。第一次时，Fire TV 会改为打开 **Developer options**。选择 **Install unknown apps**，再选择 **Downloader**，使其显示 **ON**。连按两次 Back，然后再次按 **Install**。
 4. 按 **Install**，然后按 **Open**。
 
-要更新，请重复第 2 到 4 步。一个简短的 Downloader 代码即将推出。
+要更新，再做一遍第 2 到 4 步即可。
 
 ### 从 GitHub 下载文件 {#the-file-from-github}
 

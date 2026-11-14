@@ -45,11 +45,11 @@ rex для Android бесплатен. Хотите добавить в него
 ### С помощью Downloader на Fire TV {#with-downloader-on-fire-tv}
 
 1. На Fire TV установите **Downloader** от AFTVnews из Appstore.
-2. Откройте его, выберите поле адреса и введите `rex.debridmediamanager.com/tv`. Нажмите **Next**. Начнётся загрузка `rex-android-armeabi-v7a.apk`.
-3. Нажмите **Install**. В первый раз Fire TV вместо этого откроет **Developer options**. Выберите **Install unknown apps**, затем **Downloader**, чтобы там появилось **ON**. Дважды нажмите Back и снова нажмите **Install**.
+2. Откройте его, выберите поле адреса и введите код `6291659` (или `rex.debridmediamanager.com/tv`). Нажмите **Next**. Начнётся загрузка `rex-android-armeabi-v7a.apk`.
+3. Нажмите **Install**. В первый раз Fire TV вместо этого откроет **Developer options**. Выберите **Install unknown apps**, затем **Downloader**, чтобы там стояло **ON**. Дважды нажмите Back и снова нажмите **Install**.
 4. Нажмите **Install**, затем **Open**.
 
-Чтобы обновить, повторите шаги со 2 по 4. Короткий код для Downloader скоро появится.
+Чтобы обновить, повторите шаги со 2 по 4.
 
 ### Файл с GitHub {#the-file-from-github}
 

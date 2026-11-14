@@ -44,12 +44,12 @@ Saat ada versi baru, Obtainium akan menampilkan **Update** di sebelah rex.
 
 ### Dengan Downloader di Fire TV {#with-downloader-on-fire-tv}
 
-1. Di Fire TV, pasang **Downloader** buatan AFTVnews dari Appstore.
-2. Buka aplikasinya, pilih kotak alamat, lalu ketik `rex.debridmediamanager.com/tv`. Tekan **Next**. Aplikasi akan mengunduh `rex-android-armeabi-v7a.apk`.
-3. Tekan **Install**. Pertama kali, Fire TV malah membuka **Developer options**. Pilih **Install unknown apps**, lalu pilih **Downloader** sampai tulisannya **ON**. Tekan Back dua kali, lalu tekan **Install** lagi.
+1. Di Fire TV, instal **Downloader** oleh AFTVnews dari Appstore.
+2. Buka aplikasinya, pilih kotak alamat lalu ketik kode `6291659` (atau `rex.debridmediamanager.com/tv`). Tekan **Next**. Aplikasi akan mengunduh `rex-android-armeabi-v7a.apk`.
+3. Tekan **Install**. Pertama kali, Fire TV malah membuka **Developer options**. Pilih **Install unknown apps**, lalu **Downloader** sampai tertulis **ON**. Tekan Back dua kali dan tekan **Install** lagi.
 4. Tekan **Install**, lalu **Open**.
 
-Untuk memperbarui, ulangi langkah 2 sampai 4. Kode pendek Downloader akan segera tersedia.
+Untuk memperbarui, ulangi langkah 2 sampai 4.
 
 ### File dari GitHub {#the-file-from-github}
 
