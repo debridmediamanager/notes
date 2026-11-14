@@ -33,7 +33,7 @@ The `dmm_api_key` features need a zurg nightly. The free public build does not i
 
 | What you get | Where |
 |---|---|
-| A wanted list that zurg fetches with new episodes and upgrades. Fill it from DMM or Kodi or Trakt, MDBList and TMDB lists or a Radarr or Sonarr backup | [DMM wanted list](../zurg/guides/dmm-wanted.md) |
+| A wanted list that zurg fetches with new episodes and upgrades. Fill it from DMM or Kodi or Trakt, MDBList, TMDB and Simkl lists or a Radarr or Sonarr backup | [DMM wanted list](../zurg/guides/dmm-wanted.md) |
 | Requests from Seerr or Overseerr or Jellyseerr land on your wanted list | [Seerr through DMM](../dmm/seerr.md) |
 | Any Easynews result sent to your zurg in one click | The Easynews results on a film or show page on DMM |
 | DMM as a Newznab indexer for Usenet | DMM's [Newznab page](https://debridmediamanager.com/newznab) |
