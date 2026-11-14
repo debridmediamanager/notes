@@ -20,7 +20,7 @@ On a phone, swipe a table sideways to see all its columns.
 
 | I have / want… | Choose this route | Why choose it? | What you take on |
 |---|---|---|---|
-| Stremio and a debrid or Easynews account; no server to maintain | **DMM Cast → Stremio**, or your existing stream addon | Watch through your account without running zurg, rex or a media server | The addon and provider must supply a playable stream; the device handles playback |
+| Stremio or Nuvio and a debrid or Easynews account; no server to maintain | **DMM Cast → Stremio or Nuvio**, or your existing stream addon | Watch through your account without running zurg, rex or a media server | The addon and provider must supply a playable stream; the device handles playback |
 | Kodi and a debrid, Easynews or TorBox Pro account | **DMM's Kodi addon → your account** | Browse, search and play inside Kodi; pair from your phone. The addon's TorBox library includes hosted NZB downloads | Kodi does the playback. A sponsor's Wanted list still needs zurg to fulfil requests |
 | One movie to watch in my usual player | **DMM Watch → external player** | No library server needed | Install a supported player and choose a file it can play |
 | Infuse, Kodi or another WebDAV player | **Provider WebDAV** with no host; **zurg → WebDAV player** when a host can stay on | Browse a cloud library without Plex, Jellyfin, Emby or rex | Real-Debrid, AllDebrid, Premiumize, TorBox and Debrid-Link serve their own WebDAV, with their own folder layout. Offcloud has none, so it needs zurg. zurg needs a host that stays on while you watch |
@@ -40,7 +40,7 @@ On a phone, swipe a table sideways to see all its columns.
 
 Start here: [DMM Cast](https://debridmediamanager.com/stremio/) · [Kodi](https://debridmediamanager.com/kodi) · [DMM Settings](https://debridmediamanager.com/settings) · [zurg setup](../zurg/setup/index.md) · [rex with zurg](../rex/with-zurg.md) · [rex with Stremio addons](../rex/stremio.md) · [Jellyfin plugins](https://debridmediamanager.com/jellyfin) · [Emby plugins](https://debridmediamanager.com/emby) · [zurg's Stremio addon](../zurg/guides/stremio.md) · [zurg+rex on Android](../zurg/guides/android.md) · [rex for Android](../rex/android.md) · [rex with any source](../rex/any-source.md).
 
-The Cast link starts with Real-Debrid. Use the setup page for [TorBox](https://debridmediamanager.com/stremio-torbox/) or [AllDebrid](https://debridmediamanager.com/stremio-alldebrid/) or [Premiumize](https://debridmediamanager.com/stremio-premiumize/) or [Offcloud](https://debridmediamanager.com/stremio-offcloud/) or [Debrid-Link](https://debridmediamanager.com/stremio-debridlink/) or [Easynews](https://debridmediamanager.com/stremio-easynews/) when you use that account. Cast here means the **DMM addon**. It does not mean Chromecast or screen mirroring.
+The Cast link starts with Real-Debrid. Use the setup page for [TorBox](https://debridmediamanager.com/stremio-torbox/) or [AllDebrid](https://debridmediamanager.com/stremio-alldebrid/) or [Premiumize](https://debridmediamanager.com/stremio-premiumize/) or [Offcloud](https://debridmediamanager.com/stremio-offcloud/) or [Debrid-Link](https://debridmediamanager.com/stremio-debridlink/) or [Easynews](https://debridmediamanager.com/stremio-easynews/) when you use that account. Cast here means the **DMM addon**. It does not mean Chromecast or screen mirroring. Nuvio takes the same addon: paste the addon link from the Cast page into Nuvio.
 
 ## The playback map
 
@@ -204,7 +204,7 @@ There is also a [legacy free zurg release](https://github.com/debridmediamanager
 
 ## Other media and existing setups
 
-- **Music:** [DMM Music](https://debridmediamanager.com/music/) provides Real-Debrid browser playback/downloads. [rex music sources](../rex/music.md) feed Plexamp and supported Plex apps. A source can be an addon or zurg configured for music. Do not assume a movie/TV addon supplies music too.
+- **Music:** [rex music sources](../rex/music.md) feed Plexamp and supported Plex apps. A source can be an addon or zurg configured for music. Do not assume a movie/TV addon supplies music too. [DMM Music](https://debridmediamanager.com/music) is a proof of concept for Real-Debrid only, not a full music app.
 - **Live TV:** [rex's Live TV route](../rex/live-tv.md) provides channels and a guide in the documented apps. Live channels from rex-stremio instead form a library of channels; that is not the same guide interface. Check source availability. rex does not provide DVR recording.
 - **Home videos, recordings and photos:** use an existing media server, or a [rex source you control](../rex/addons.md). The [home-video tutorial](../rex/addon-home-videos.md) shows the latter. zurg can also supply comic books as photos to rex; app support differs.
 - **Existing Kodi/Stremio addons:** if yours already gives the experience you want, keep it. DMM can be the place you select and manage releases without replacing your player. Addon support for providers, Usenet and HTTP varies; the DMM route is not a compatibility promise for all addons.
@@ -213,8 +213,8 @@ There is also a [legacy free zurg release](https://github.com/debridmediamanager
 
 ## Five common starting points
 
-1. **“I have Stremio and RD.”** Start with DMM Cast. Add zurg only when you want a shared library, automation or another consumer that needs it.
-2. **“I have TorBox Pro and want the NZBs in that post.”** Send the NZB to TorBox through DMM. Use TorBox Cast to watch in Stremio, the Kodi addon to watch in Kodi, or zurg's hosted NZB backend to feed your chosen library/player route.
+1. **“I have Stremio or Nuvio and RD.”** Start with DMM Cast. Add zurg only when you want a shared library, automation or another consumer that needs it.
+2. **“I have TorBox Pro and want the NZBs in that post.”** Send the NZB to TorBox through DMM. Use TorBox Cast to watch in Stremio or Nuvio, the Kodi addon to watch in Kodi, or zurg's hosted NZB backend to feed your chosen library/player route.
 3. **“I already have Jellyfin.”** Start with the plugin for your provider. Choose separate zurg when you need its shared filesystem, automation or broader backend capabilities.
 4. **“I want Plex apps, no mounts, and my existing addons.”** Use rex-stremio with rex. Use zurg as a source instead when the thing you want to expose is your managed debrid/Usenet library. Both sources can feed the same rex.
 5. **“I have news accounts and want Sonarr/Radarr.”** Use DMM Newznab or your existing indexers, zurg's NZB/SABnzbd route and a playback route from the first table. For permanent local files, choose a normal downloader or explicitly save complete copies; virtual imports alone are not offline files.
