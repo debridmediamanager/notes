@@ -32,9 +32,11 @@ jobs:
         env:
           OPENROUTER_TRANSLATE_KEY: ${{ secrets.OPENROUTER_TRANSLATE_KEY }}
         run: |
-          bash i18n/build.sh || code=$?
-          echo "code=${code:-0}" >> "$GITHUB_OUTPUT"
-          [ "${code:-0}" -eq 0 ] || [ "${code:-0}" -ge 3 ]
+          set +e
+          bash i18n/build.sh 2>&1 | tee "$RUNNER_TEMP/build.log"
+          code=${PIPESTATUS[0]}
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          [ "$code" -eq 0 ] || [ "$code" -ge 3 ]
 
       - name: Keep the translations
         run: |
@@ -47,6 +49,7 @@ jobs:
 
       # Cloudflare Pages serves the retype branch.
       - name: Publish to the retype branch
+        id: publish
         run: |
           git fetch -q origin retype
           git worktree add -q /tmp/site origin/retype
@@ -58,6 +61,33 @@ jobs:
           git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
             commit -q -m "Publish ${GITHUB_SHA::8}"
           git push -q origin HEAD:retype
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      # Cloudflare builds the retype branch after this push, and the zone cache keeps serving the old pages
+      # (a HIT even with max-age=0) until it is purged. Wait for this exact commit to be live, then purge.
+      - name: Purge the edge cache once Cloudflare has deployed
+        if: steps.publish.outputs.sha != ''
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          ZONE: ${{ vars.CLOUDFLARE_ZONE_ID }}
+          SHA: ${{ steps.publish.outputs.sha }}
+        run: |
+          api=https://api.cloudflare.com/client/v4 auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+          for i in $(seq 60); do
+            state=$(curl -fsS "$api/accounts/$ACCOUNT/pages/projects/notes/deployments?per_page=10" -H "$auth" |
+              jq -r --arg s "$SHA" 'first(.result[] | select(.deployment_trigger.metadata.commit_hash == $s)
+                | .latest_stage.name + ":" + .latest_stage.status) // "waiting"') || state=unreachable
+            echo "$state"
+            case $state in
+              deploy:success) break ;;
+              *:failure|*:canceled) echo "::error::Cloudflare Pages deploy of $SHA: $state"; exit 1 ;;
+            esac
+            sleep 20
+          done
+          [ "$state" = deploy:success ] || { echo "::error::Cloudflare Pages did not deploy $SHA in 20 minutes"; exit 1; }
+          curl -fsS -X POST "$api/zones/$ZONE/purge_cache" -H "$auth" -H "Content-Type: application/json" \
+            --data '{"hosts":["notes.debridmediamanager.com"]}' | jq -e .success
 
       - name: Report text left in English
         if: steps.build.outputs.code == '3' || steps.build.outputs.code == '4'
@@ -67,3 +97,9 @@ jobs:
             exit 1
           fi
           echo "::warning::Some sections could not be translated and were published in English. They are tried again on the next push."
+
+      - name: Tell #platform-alerts
+        if: always()
+        env:
+          PLATFORM_ALERTS_WEBHOOK: ${{ secrets.PLATFORM_ALERTS_WEBHOOK }}
+        run: bash i18n/alert.sh notes "${{ steps.build.outputs.code }}" "${{ job.status }}" "$RUNNER_TEMP/build.log"
