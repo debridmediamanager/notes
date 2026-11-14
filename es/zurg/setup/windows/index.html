@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
     <meta name="turbo-root" content="/es">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847994113333">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847994376193">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -45,12 +45,12 @@
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
     <link id="retype-favicon" rel="icon" href="../../../assets/favicon.png" />
-    <link href="../../../resources/css/retype.css?v=4.6.0.847994113333" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.847994376193" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847994113333" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847994376193" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847994113333" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847994113333" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847994376193" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847994376193" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -865,68 +865,94 @@ Remove-Item -Recurse -Force .\data\rclone-cache\vfs\*, .\data\rclone-cache\vfsMe
 <div id="updating-zurg-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$env:ZURG_INSTALL_MODE = &quot;update&quot;; irm https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.ps1 | iex</code></pre>
 </doc-codeblock></div>
-<h2 id="troubleshooting">Solución de problemas</h2>
-<retype-table copy-text="| Lo que ves | Qué significa |
+<h2 id="when-something-is-wrong">Cuando algo va mal</h2>
+<p>Empieza con <code translate="no" v-pre>.\zurg.exe doctor</code> en la carpeta de zurg (<code translate="no" v-pre>cd $HOME\zurg</code>). Comprueba la instalación e imprime una línea <code translate="no" v-pre>PASS</code>, <code translate="no" v-pre>WARN</code> o <code translate="no" v-pre>FAIL</code> por cada parte. Las filas de abajo se comprobaron en Windows 11 Pro con PowerShell 5.1 y zurg <code translate="no" v-pre>2026.11.14.1134-nightly</code> el 14 de noviembre de 2026.</p>
+<retype-table copy-text="| Lo que ves | Qué hacer |
 |---|---|
-| `Z:` no aparece en el Explorador | La regla de sesión — ver [arriba](#keeping-it-running-the-session-rules). Es probable que el montaje esté bien; revisa primero `http://localhost:9999/http/`. |
-| `zurg doctor` dice que la tarea está lista pero no se está ejecutando | No hay ningún usuario interactivo con sesión iniciada. Inicia sesión en el escritorio y ejecuta `.\zurg.exe service start`. |
-| `symlinks not supported without the --links flag` | Falta `--links` en `rclone_extra_args`. Es solo cosmético: rclone responde una vez, al subir la unidad, a la prueba de enlaces simbólicos de WinFsp sobre la raíz del montaje. El montaje funciona sin él; añade la opción para silenciar la línea. |
-| `Library is still loading` en `__magic__` o `/http/` | La primera ejecución de Real-Debrid recorre la cuenta. Espera. Con una cuenta grande puede tardar casi una hora. Una biblioteca NZB nunca muestra esto: empieza vacía. |
-| `realdebrid will not take &lt;name&gt;: it refuses that name outright` | Real-Debrid bloquea algunos nombres de release (`WEBRip` y similares). Usa una release con otro nombre; la configuración está bien. |
-| Una adición falla con `could not read back id=…` o con texto de límite de peticiones | Se ha agotado el presupuesto de API de la cuenta. El primer recorrido de la biblioteca puede agotarlo. Otro zurg con el mismo token también puede hacerlo. Deja que el recorrido termine. No compartas un mismo token entre instancias. |
-| Inicio de la tarea rechazado, `0x800710E0` | La tarea sigue &quot;running&quot;: una ventana del lanzador nunca se cerró. Ejecuta `Stop-ScheduledTask zurg` y luego inicia la tarea. |
-| `Get-PSDrive` no muestra `Z:` desde una sesión SSH | Es lo esperado: es otra sesión de inicio. Mira la tabla de sesiones. |
-| `data\rclone-cache` no deja de crecer | Es la caché de reproducción del montaje, limitada a 256G por defecto. Mira [Mantener la caché pequeña](#keeping-the-cache-small). |">
+| `iex : The property 'OSArchitecture' cannot be found on this object.` justo después del comando de instalación | Un error del instalador, corregido el 12 de septiembre de 2026. Ejecuta el mismo comando otra vez. Si guardaste una copia de `install.ps1` antes de esa fecha, descárgala de nuevo. |
+| El instalador se detiene con `zurg doctor found a failed check.` | El instalador ejecuta `zurg doctor` al final, y una comprobación falló. La línea `FAIL` de justo arriba indica cuál; las filas de abajo las cubren. Después de solucionarlo, ejecuta `.\zurg.exe doctor` otra vez en `$HOME\zurg`. Espera hasta dos minutos a que zurg arranque y monte `Z:`. |
+| `FAIL mount` con `drive Z: is already in use on this computer so rclone cannot mount there. Pick a drive letter nothing else uses` | Otra cosa ya usa `Z:`: un disco USB, una unidad de red o un rclone que configuraste antes de que zurg lo hiciera por ti. Dale a zurg una letra libre con `.\zurg.exe setup --mount-path &quot;Y:&quot;`, y luego `.\zurg.exe service restart`. La configuración mantiene tus cuentas y ajustes y solo cambia la unidad. |
+| `WARN service user service is installed but not running`, y luego `FAIL HTTP` con `No connection could be made because the target machine actively refused it.` | zurg no está en marcha. Arranca cuando inicias sesión en Windows. Inicia sesión en el escritorio y ejecuta `.\zurg.exe service start`. |
+| `Error: service zurg is not installed` después de `.\zurg.exe service start` | Falta la tarea programada de zurg, normalmente porque zurg se arrancó a mano. Ejecuta `.\zurg.exe setup` en la carpeta de zurg. Mantiene tu `config.yml`, añade la tarea y arranca zurg. |
+| `Error: config ./config.yml is not valid YAML: yaml: unmarshal errors:` y `mapping key &quot;enable_repair&quot; already defined at line 38` | Ese ajuste está dos veces en `config.yml`. Abre el archivo con `notepad config.yml`, borra una de las dos líneas que indica el error, guarda y ejecuta `.\zurg.exe service restart`. |
+| No puedes abrir `Z:` en el Explorador, o no aparece | La regla de sesión: mira [arriba](#keeping-it-running-the-session-rules). Lo más probable es que el montaje esté bien; comprueba primero `http://localhost:9999/http/` en el navegador. Si `doctor` dice `FAIL mount`, las filas de arriba explican por qué. |
+| `dir Z:\` dice `Cannot find drive. A drive with the name 'Z' does not exist.` | Ese PowerShell no ve la unidad. Una ventana abierta con **Run as administrator** no ve `Z:`, y tampoco una sesión SSH: ambas se ejecutan aparte de tu sesión de escritorio, donde vive `Z:`. Usa una ventana normal de PowerShell o el Explorador. |
+| `symlinks not supported without the --links flag` | Falta `--links` en `rclone_extra_args`. Es solo cosmético: rclone responde a la comprobación de enlaces simbólicos de WinFsp en la raíz del montaje, una vez, cuando la unidad se levanta. El montaje funciona sin él; añade la opción para silenciar la línea. |
+| `Z:` tiene `movies` y `shows` pero están vacías, o aparece `Library is still loading` bajo `__magic__` o `/http/` | La primera ejecución con Real-Debrid recorre la cuenta. Espera. En una cuenta grande puede tardar casi una hora. `curl.exe http://localhost:9999/ready` imprime `ready` cuando termina. Una biblioteca NZB nunca muestra esto: empieza vacía. |
+| `realdebrid will not take &lt;name&gt;: it refuses that name outright` | Real-Debrid bloquea algunos nombres de release (`WEBRip` y similares). Consigue una release con otro nombre; la configuración no tiene nada malo. |
+| Un añadido falla con `could not read back id=…` o con texto de límite de peticiones | Se ha agotado el presupuesto de API de la cuenta. Un primer recorrido de la biblioteca puede gastarlo. También puede hacerlo un segundo zurg con el mismo token. Deja que el recorrido termine. No compartas un token entre instancias. |
+| Inicio de tarea rechazado, `0x800710E0` | La tarea sigue en &quot;running&quot;: una ventana del lanzador nunca se cerró. Ejecuta `Stop-ScheduledTask zurg` y luego inicia la tarea. |
+| `data\rclone-cache` sigue creciendo | Es la caché de reproducción del montaje, limitada a 256G por defecto. Consulta [Mantener la caché pequeña](#keeping-the-cache-small). |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
 <tr>
 <th>Lo que ves</th>
-<th>Qué significa</th>
+<th>Qué hacer</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code translate="no" v-pre>Z:</code> no aparece en el Explorador</td>
-<td>La regla de sesión — ver <doc-anchor-trigger to="#keeping-it-running-the-session-rules">arriba</doc-anchor-trigger>. Es probable que el montaje esté bien; revisa primero <code translate="no" v-pre>http://localhost:9999/http/</code>.</td>
+<td><code translate="no" v-pre>iex : The property 'OSArchitecture' cannot be found on this object.</code> justo después del comando de instalación</td>
+<td>Un error del instalador, corregido el 12 de septiembre de 2026. Ejecuta el mismo comando otra vez. Si guardaste una copia de <code translate="no" v-pre>install.ps1</code> antes de esa fecha, descárgala de nuevo.</td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>zurg doctor</code> dice que la tarea está lista pero no se está ejecutando</td>
-<td>No hay ningún usuario interactivo con sesión iniciada. Inicia sesión en el escritorio y ejecuta <code translate="no" v-pre>.\zurg.exe service start</code>.</td>
+<td>El instalador se detiene con <code translate="no" v-pre>zurg doctor found a failed check.</code></td>
+<td>El instalador ejecuta <code translate="no" v-pre>zurg doctor</code> al final, y una comprobación falló. La línea <code translate="no" v-pre>FAIL</code> de justo arriba indica cuál; las filas de abajo las cubren. Después de solucionarlo, ejecuta <code translate="no" v-pre>.\zurg.exe doctor</code> otra vez en <code translate="no" v-pre>$HOME\zurg</code>. Espera hasta dos minutos a que zurg arranque y monte <code translate="no" v-pre>Z:</code>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>FAIL mount</code> con <code translate="no" v-pre>drive Z: is already in use on this computer so rclone cannot mount there. Pick a drive letter nothing else uses</code></td>
+<td>Otra cosa ya usa <code translate="no" v-pre>Z:</code>: un disco USB, una unidad de red o un rclone que configuraste antes de que zurg lo hiciera por ti. Dale a zurg una letra libre con <code translate="no" v-pre>.\zurg.exe setup --mount-path &quot;Y:&quot;</code>, y luego <code translate="no" v-pre>.\zurg.exe service restart</code>. La configuración mantiene tus cuentas y ajustes y solo cambia la unidad.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>WARN service user service is installed but not running</code>, y luego <code translate="no" v-pre>FAIL HTTP</code> con <code translate="no" v-pre>No connection could be made because the target machine actively refused it.</code></td>
+<td>zurg no está en marcha. Arranca cuando inicias sesión en Windows. Inicia sesión en el escritorio y ejecuta <code translate="no" v-pre>.\zurg.exe service start</code>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Error: service zurg is not installed</code> después de <code translate="no" v-pre>.\zurg.exe service start</code></td>
+<td>Falta la tarea programada de zurg, normalmente porque zurg se arrancó a mano. Ejecuta <code translate="no" v-pre>.\zurg.exe setup</code> en la carpeta de zurg. Mantiene tu <code translate="no" v-pre>config.yml</code>, añade la tarea y arranca zurg.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Error: config ./config.yml is not valid YAML: yaml: unmarshal errors:</code> y <code translate="no" v-pre>mapping key &quot;enable_repair&quot; already defined at line 38</code></td>
+<td>Ese ajuste está dos veces en <code translate="no" v-pre>config.yml</code>. Abre el archivo con <code translate="no" v-pre>notepad config.yml</code>, borra una de las dos líneas que indica el error, guarda y ejecuta <code translate="no" v-pre>.\zurg.exe service restart</code>.</td>
+</tr>
+<tr>
+<td>No puedes abrir <code translate="no" v-pre>Z:</code> en el Explorador, o no aparece</td>
+<td>La regla de sesión: mira <doc-anchor-trigger to="#keeping-it-running-the-session-rules">arriba</doc-anchor-trigger>. Lo más probable es que el montaje esté bien; comprueba primero <code translate="no" v-pre>http://localhost:9999/http/</code> en el navegador. Si <code translate="no" v-pre>doctor</code> dice <code translate="no" v-pre>FAIL mount</code>, las filas de arriba explican por qué.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>dir Z:\</code> dice <code translate="no" v-pre>Cannot find drive. A drive with the name 'Z' does not exist.</code></td>
+<td>Ese PowerShell no ve la unidad. Una ventana abierta con <strong>Run as administrator</strong> no ve <code translate="no" v-pre>Z:</code>, y tampoco una sesión SSH: ambas se ejecutan aparte de tu sesión de escritorio, donde vive <code translate="no" v-pre>Z:</code>. Usa una ventana normal de PowerShell o el Explorador.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>symlinks not supported without the --links flag</code></td>
-<td>Falta <code translate="no" v-pre>--links</code> en <code translate="no" v-pre>rclone_extra_args</code>. Es solo cosmético: rclone responde una vez, al subir la unidad, a la prueba de enlaces simbólicos de WinFsp sobre la raíz del montaje. El montaje funciona sin él; añade la opción para silenciar la línea.</td>
+<td>Falta <code translate="no" v-pre>--links</code> en <code translate="no" v-pre>rclone_extra_args</code>. Es solo cosmético: rclone responde a la comprobación de enlaces simbólicos de WinFsp en la raíz del montaje, una vez, cuando la unidad se levanta. El montaje funciona sin él; añade la opción para silenciar la línea.</td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>Library is still loading</code> en <code translate="no" v-pre>__magic__</code> o <code translate="no" v-pre>/http/</code></td>
-<td>La primera ejecución de Real-Debrid recorre la cuenta. Espera. Con una cuenta grande puede tardar casi una hora. Una biblioteca NZB nunca muestra esto: empieza vacía.</td>
+<td><code translate="no" v-pre>Z:</code> tiene <code translate="no" v-pre>movies</code> y <code translate="no" v-pre>shows</code> pero están vacías, o aparece <code translate="no" v-pre>Library is still loading</code> bajo <code translate="no" v-pre>__magic__</code> o <code translate="no" v-pre>/http/</code></td>
+<td>La primera ejecución con Real-Debrid recorre la cuenta. Espera. En una cuenta grande puede tardar casi una hora. <code translate="no" v-pre>curl.exe http://localhost:9999/ready</code> imprime <code translate="no" v-pre>ready</code> cuando termina. Una biblioteca NZB nunca muestra esto: empieza vacía.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>realdebrid will not take &lt;name&gt;: it refuses that name outright</code></td>
-<td>Real-Debrid bloquea algunos nombres de release (<code translate="no" v-pre>WEBRip</code> y similares). Usa una release con otro nombre; la configuración está bien.</td>
+<td>Real-Debrid bloquea algunos nombres de release (<code translate="no" v-pre>WEBRip</code> y similares). Consigue una release con otro nombre; la configuración no tiene nada malo.</td>
 </tr>
 <tr>
-<td>Una adición falla con <code translate="no" v-pre>could not read back id=…</code> o con texto de límite de peticiones</td>
-<td>Se ha agotado el presupuesto de API de la cuenta. El primer recorrido de la biblioteca puede agotarlo. Otro zurg con el mismo token también puede hacerlo. Deja que el recorrido termine. No compartas un mismo token entre instancias.</td>
+<td>Un añadido falla con <code translate="no" v-pre>could not read back id=…</code> o con texto de límite de peticiones</td>
+<td>Se ha agotado el presupuesto de API de la cuenta. Un primer recorrido de la biblioteca puede gastarlo. También puede hacerlo un segundo zurg con el mismo token. Deja que el recorrido termine. No compartas un token entre instancias.</td>
 </tr>
 <tr>
-<td>Inicio de la tarea rechazado, <code translate="no" v-pre>0x800710E0</code></td>
-<td>La tarea sigue &quot;running&quot;: una ventana del lanzador nunca se cerró. Ejecuta <code translate="no" v-pre>Stop-ScheduledTask zurg</code> y luego inicia la tarea.</td>
+<td>Inicio de tarea rechazado, <code translate="no" v-pre>0x800710E0</code></td>
+<td>La tarea sigue en &quot;running&quot;: una ventana del lanzador nunca se cerró. Ejecuta <code translate="no" v-pre>Stop-ScheduledTask zurg</code> y luego inicia la tarea.</td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>Get-PSDrive</code> no muestra <code translate="no" v-pre>Z:</code> desde una sesión SSH</td>
-<td>Es lo esperado: es otra sesión de inicio. Mira la tabla de sesiones.</td>
-</tr>
-<tr>
-<td><code translate="no" v-pre>data\rclone-cache</code> no deja de crecer</td>
-<td>Es la caché de reproducción del montaje, limitada a 256G por defecto. Mira <doc-anchor-trigger to="#keeping-the-cache-small">Mantener la caché pequeña</doc-anchor-trigger>.</td>
+<td><code translate="no" v-pre>data\rclone-cache</code> sigue creciendo</td>
+<td>Es la caché de reproducción del montaje, limitada a 256G por defecto. Consulta <doc-anchor-trigger to="#keeping-the-cache-small">Mantener la caché pequeña</doc-anchor-trigger>.</td>
 </tr>
 </tbody>
 </table>
 </div>
 </retype-table>
-<p>¿Sigues atascado? Pregunta en el foro <strong>zurg-support</strong> de <a href="https://discord.com/invite/7u4YjMThXP">Discord</a>. <a href="../../../guides/remote-help/">Cómo pedir ayuda</a> explica qué incluir.</p>
+<p>¿Sigues atascado? Pregunta en el foro <strong>zurg-support</strong> de <a href="https://discord.com/invite/7u4YjMThXP">Discord</a>. <a href="../../../guides/remote-help/">Obtener ayuda</a> explica qué incluir.</p>
 <h2 id="powershell-over-ssh-for-the-remote-minded">PowerShell por SSH, para los más orientados a remoto</h2>
 <p>Windows PowerShell interpreta mal algunos hábitos de POSIX, y SSH complica el entrecomillado. <code translate="no" v-pre>&amp;&amp;</code> no es un separador; <code translate="no" v-pre>2&gt;/dev/null</code> no es una redirección; <code translate="no" v-pre>$_.Property</code> dentro de un <code translate="no" v-pre>-Command</code> en línea llega deformado. Para cualquier cosa no trivial, guárdalo en un <code translate="no" v-pre>.ps1</code>, cópialo y ejecuta <code translate="no" v-pre>powershell -ExecutionPolicy Bypass -File C:\path\script.ps1</code>. Todo el montaje de esta página se hizo exactamente así.</p>
 <h2 id="see-also">Ver también</h2>

@@ -496,21 +496,28 @@ Pada build yang terlalu lama untuk memuat perintah itu, installer melakukan peke
 $env:ZURG_INSTALL_MODE = "update"; irm https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.ps1 | iex
 ```
 
-## Pemecahan masalah {#troubleshooting}
+## Ketika ada yang salah {#when-something-is-wrong}
 
-| Yang kamu lihat | Artinya |
+Mulai dengan `.\zurg.exe doctor` di folder zurg (`cd $HOME\zurg`). Perintah ini memeriksa instalasi dan mencetak baris `PASS`, `WARN` atau `FAIL` untuk setiap bagian. Baris-baris di bawah ini diperiksa di Windows 11 Pro dengan PowerShell 5.1 dan zurg `2026.11.14.1134-nightly` pada 14 November 2026.
+
+| Yang Anda lihat | Yang harus dilakukan |
 |---|---|
-| `Z:` tidak ada di Explorer | Aturan sesi — lihat [di atas](#keeping-it-running-the-session-rules). Mount kemungkinan besar masih aman; cek `http://localhost:9999/http/` dulu. |
-| `zurg doctor` bilang task sudah siap tapi tidak berjalan | Belum ada pengguna interaktif yang login. Login ke desktop lalu jalankan `.\zurg.exe service start`. |
-| `symlinks not supported without the --links flag` | `--links` belum ada di `rclone_extra_args`. Cuma soal tampilan — rclone menjawab probe symlink WinFsp di root mount, sekali saja, saat drive mulai aktif. Mount tetap jalan tanpa itu; tambahkan flag-nya kalau mau menghilangkan baris ini. |
-| `Library is still loading` di `__magic__` atau `/http/` | Run pertama Real-Debrid akan menelusuri akun. Tunggu saja. Untuk akun yang besar, bisa makan waktu hampir satu jam. Library NZB tidak pernah menampilkan ini — library itu mulai dalam keadaan kosong. |
-| `realdebrid will not take <name>: it refuses that name outright` | Real-Debrid memblokir beberapa nama rilis (`WEBRip` dan sejenisnya). Ambil rilis dengan nama yang berbeda; setup kamu tidak ada masalah. |
-| Penambahan gagal dengan `could not read back id=…` atau teks rate-limit | Jatah API akun sudah habis. Penelusuran library pertama bisa menghabiskannya. Zurg kedua dengan token yang sama juga bisa. Biarkan penelusuran selesai. Jangan pakai satu token untuk banyak instance. |
-| Start task ditolak, `0x800710E0` | Task masih berstatus "running" — jendela launcher belum pernah keluar. Jalankan `Stop-ScheduledTask zurg`, lalu start. |
-| `Get-PSDrive` tidak menampilkan `Z:` dari sesi SSH | Memang begitu — sesi login-nya berbeda. Lihat tabel sesi. |
+| `iex : The property 'OSArchitecture' cannot be found on this object.` tepat setelah perintah instalasi | Ini bug di installer, sudah diperbaiki pada 12 September 2026. Jalankan lagi perintah yang sama. Jika Anda sudah menyimpan salinan `install.ps1` sebelum tanggal itu, unduh ulang. |
+| Installer berhenti dengan `zurg doctor found a failed check.` | Installer menjalankan `zurg doctor` di akhir, dan satu pemeriksaan gagal. Baris `FAIL` tepat di atasnya menunjukkan yang mana; baris-baris di bawah membahasnya. Setelah diperbaiki, jalankan lagi `.\zurg.exe doctor` di `$HOME\zurg`. Perintah ini menunggu sampai dua menit agar zurg berjalan dan me-mount `Z:`. |
+| `FAIL mount` dengan `drive Z: is already in use on this computer so rclone cannot mount there. Pick a drive letter nothing else uses` | Ada yang sudah memakai `Z:`: disk USB, drive jaringan, atau rclone yang Anda atur sebelum zurg mengaturnya untuk Anda. Beri zurg huruf drive yang kosong dengan `.\zurg.exe setup --mount-path "Y:"`, lalu `.\zurg.exe service restart`. Setup tetap menyimpan akun dan pengaturan Anda, dan hanya memindahkan drive. |
+| `WARN service user service is installed but not running`, lalu `FAIL HTTP` dengan `No connection could be made because the target machine actively refused it.` | zurg tidak berjalan. Ia mulai saat Anda login ke Windows. Login ke desktop, lalu jalankan `.\zurg.exe service start`. |
+| `Error: service zurg is not installed` setelah `.\zurg.exe service start` | Tugas terjadwal (scheduled task) zurg hilang, biasanya karena zurg dijalankan secara manual. Jalankan `.\zurg.exe setup` di folder zurg. Perintah ini menyimpan `config.yml` Anda, menambahkan tugas, dan menjalankan zurg. |
+| `Error: config ./config.yml is not valid YAML: yaml: unmarshal errors:` dan `mapping key "enable_repair" already defined at line 38` | Pengaturan itu ada di `config.yml` dua kali. Buka file dengan `notepad config.yml`, hapus salah satu dari dua baris yang disebutkan error, simpan, lalu jalankan `.\zurg.exe service restart`. |
+| Anda tidak bisa membuka `Z:` di Explorer, atau drive-nya tidak ada | Aturan sesi: lihat [di atas](#keeping-it-running-the-session-rules). Mount kemungkinan besar baik-baik saja; cek `http://localhost:9999/http/` di browser dulu. Jika `doctor` menyebut `FAIL mount`, baris-baris di atas menjelaskan penyebabnya. |
+| `dir Z:\` menampilkan `Cannot find drive. A drive with the name 'Z' does not exist.` | PowerShell itu tidak bisa melihat drive tersebut. Jendela yang dibuka dengan **Run as administrator** tidak melihat `Z:`, begitu juga sesi SSH: keduanya berjalan di luar sesi desktop Anda, tempat `Z:` berada. Gunakan jendela PowerShell biasa, atau Explorer. |
+| `symlinks not supported without the --links flag` | `--links` belum ada di `rclone_extra_args`. Ini hanya soal tampilan: rclone menjawab probe symlink WinFsp di root mount, sekali, saat drive naik. Mount tetap berfungsi tanpa flag ini; tambahkan flag untuk menghilangkan baris ini. |
+| `Z:` berisi `movies` dan `shows` tapi kosong, atau `Library is still loading` di bawah `__magic__` atau `/http/` | Penelusuran pertama Real-Debrid memindai akun Anda. Tunggu. Pada akun besar, prosesnya bisa memakan hampir satu jam. `curl.exe http://localhost:9999/ready` mencetak `ready` setelah selesai. Library NZB tidak pernah menampilkan ini karena memang mulai kosong. |
+| `realdebrid will not take <name>: it refuses that name outright` | Real-Debrid memblokir beberapa nama rilis (`WEBRip` dan sejenisnya). Ambil rilis dengan nama yang berbeda; tidak ada yang salah dengan pengaturannya. |
+| Penambahan gagal dengan `could not read back id=…` atau teks rate-limit | Kuota API akun sudah habis. Penelusuran library pertama bisa menghabiskannya. Instance zurg kedua dengan token yang sama juga bisa. Biarkan penelusuran selesai. Jangan bagikan satu token ke beberapa instance. |
+| Start tugas ditolak, `0x800710E0` | Tugas masih berstatus "running" karena jendela launcher belum pernah keluar. Jalankan `Stop-ScheduledTask zurg`, lalu mulai lagi. |
 | `data\rclone-cache` terus membesar | Itu cache pemutaran mount, dibatasi 256G secara default. Lihat [Menjaga cache tetap kecil](#keeping-the-cache-small). |
 
-Masih buntu? Tanyakan di forum **zurg-support** di [Discord](https://discord.com/invite/7u4YjMThXP). [Cara minta bantuan](../../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan.
+Masih buntu? Tanyakan di forum **zurg-support** di [Discord](https://discord.com/invite/7u4YjMThXP). [Meminta bantuan](../../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan.
 
 ## PowerShell lewat SSH, untuk yang suka remote {#powershell-over-ssh-for-the-remote-minded}
 

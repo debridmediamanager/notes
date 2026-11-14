@@ -4,13 +4,14 @@
 
 ## 概述 {#general}
 
-- [选择你的设置](choose-your-setup.md)：路线图，以及什么时候用 DMM、zurg、rex、Kodi、Stremio、Nuvio 或 Jellyfin/Emby 插件
-- [每个部分的作用](glossary.md)：DMM、zurg 和 rex 的每个部分各一行说明，以及指南里出现的术语
-- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md)：Stremio 里那个绿色画面是什么意思，该怎么办
+- [选择你的配置](choose-your-setup.md)：路线图，以及什么时候用 DMM、zurg、rex、Kodi、Stremio、Nuvio 或 Jellyfin/Emby 插件
+- [每个部分的作用](glossary.md)：DMM、zurg 和 rex 每个组件用一行说明，以及指南里出现的术语
+- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md)：Stremio 里那个绿色画面是什么意思，以及该怎么做
 - [你的 Real-Debrid API token](real-debrid-api-token.md)：在哪里获取、DMM 和 zurg 在哪里填写，以及 `bad_token` 等错误是什么意思
-- [Usenet 新手指南](usenet-for-beginners.md)：服务商、索引站和 NZB，你需要买什么，以及 zurg 和 DMM 怎么配合
-- [获取帮助](remote-help.md)：zurg 和 rex 的问题去哪里问、该附上什么信息，以及赞助者可以获得的远程帮助
-- [赞助能得到什么](sponsorship.md)：每项福利以及在哪里设置，或者如何在请求面板上赚取 DMM 相关福利
+- [Usenet 新手指南](usenet-for-beginners.md)：provider、indexer 和 NZB，你需要购买什么，以及 zurg 和 DMM 如何配合
+- [Plex 中的 Real-Debrid 媒体库](real-debrid-plex.md)：Plex Media Server 中 zurg 的 `movies` 和 `shows` 文件夹，按系统区分，以及常见问题
+- [获取帮助](remote-help.md)：zurg 和 rex 的求助渠道、需要提供的信息，以及赞助者的远程帮助
+- [赞助权益](sponsorship.md)：每项权益及其设置位置，或如何在请求看板上获得 DMM 相关权益
 
 ## DMM
 
@@ -25,20 +26,21 @@
 ## zurg
 
 - [Usenet](../zurg/guides/usenet.md)
-- [Usenet 版 Sonarr 和 Radarr](../zurg/guides/sonarr-radarr.md)
-- [种子版 Sonarr 和 Radarr](../zurg/guides/sonarr-radarr-torrents.md)
+- [Sonarr 和 Radarr 用于 Usenet](../zurg/guides/sonarr-radarr.md)
+- [Sonarr 和 Radarr 用于 torrents](../zurg/guides/sonarr-radarr-torrents.md)
 - [Sonarr 和 Radarr 中的列表](../zurg/guides/import-lists.md)
-- [zurg 为 Sonarr 和 Radarr 提供搜索](../zurg/guides/sonarr-radarr-fetch.md)
-- [使用 Bazarr 下载字幕](../zurg/guides/subtitles.md)
+- [zurg 为 Sonarr 和 Radarr 搜索](../zurg/guides/sonarr-radarr-fetch.md)
+- [用 Bazarr 添加字幕](../zurg/guides/subtitles.md)
 - [Whisparr](../zurg/guides/whisparr.md)
 - [\_\_magic\_\_](../zurg/guides/magic.md)
 - [重命名](../zurg/guides/renaming.md)
 - [Plex](../zurg/guides/plex.md)
+- [一个 Docker Compose 文件](../zurg/guides/docker-compose.md)：在一台 Linux 机器上运行 zurg、Plex Media Server 和 rex
 - [Jellyfin](../zurg/guides/jellyfin.md)
 - [Stremio 插件](../zurg/guides/stremio.md)
-- [观看列表和 Seerr](../zurg/guides/acquisition.md)
-- [Plex 观看列表](../zurg/guides/plex-watchlist.md)
-- [DMM 求片列表](../zurg/guides/dmm-wanted.md)
+- [Watchlist 和 Seerr](../zurg/guides/acquisition.md)
+- [Plex watchlist](../zurg/guides/plex-watchlist.md)
+- [DMM wanted list](../zurg/guides/dmm-wanted.md)
 - [本地媒体库](../zurg/guides/local-libraries.md)
 - [Android 和 Google TV](../zurg/guides/android.md)
 - [从其他工具迁移](../zurg/migrate/index.md)

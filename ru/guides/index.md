@@ -5,12 +5,13 @@
 ## Общее {#general}
 
 - [Выбор настройки](choose-your-setup.md): схемы маршрутов и когда использовать DMM, zurg, rex, Kodi, Stremio, Nuvio или плагины Jellyfin/Emby
-- [Что делает каждый компонент](glossary.md): одна строка для каждого компонента DMM, zurg и rex и слов из руководств
+- [Что делает каждая часть](glossary.md): одна строка для каждой части DMM, zurg и rex и слов из гайдов
 - ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): что означает зелёный экран в Stremio и что с ним делать
-- [Ваш API-токен Real-Debrid](real-debrid-api-token.md): где его взять, куда его вводят DMM и zurg и что значат `bad_token` и другие ошибки
+- [Ваш токен API Real-Debrid](real-debrid-api-token.md): где его взять, куда его вставляют DMM и zurg, и что означают `bad_token` и другие ошибки
 - [Usenet для начинающих](usenet-for-beginners.md): провайдер, индексатор и NZB, что нужно купить и как в этом участвуют zurg и DMM
-- [Получение помощи](remote-help.md) по zurg и rex: где спросить, что указать и удалённая помощь для спонсоров
-- [Что даёт спонсорство](sponsorship.md): все преимущества и где их настроить, или как заработать награды DMM на доске запросов
+- [Библиотека Real-Debrid в Plex](real-debrid-plex.md): папки `movies` и `shows` от zurg в Plex Media Server для каждой системы и типичные проблемы
+- [Получить помощь](remote-help.md) по zurg и rex: где спросить, что указать, и удалённая помощь для спонсоров
+- [Что даёт спонсорство](sponsorship.md): все бонусы и где их настроить, или как получить бонусы DMM через доску запросов
 
 ## DMM
 
@@ -34,14 +35,15 @@
 - [\_\_magic\_\_](../zurg/guides/magic.md)
 - [Переименование](../zurg/guides/renaming.md)
 - [Plex](../zurg/guides/plex.md)
+- [Один файл Docker Compose](../zurg/guides/docker-compose.md): zurg, Plex Media Server и rex на одной Linux-машине
 - [Jellyfin](../zurg/guides/jellyfin.md)
-- [Аддон Stremio](../zurg/guides/stremio.md)
-- [Watchlist и Seerr](../zurg/guides/acquisition.md)
-- [Watchlist в Plex](../zurg/guides/plex-watchlist.md)
-- [Список желаемого в DMM](../zurg/guides/dmm-wanted.md)
+- [Дополнение Stremio](../zurg/guides/stremio.md)
+- [Список желаемого и Seerr](../zurg/guides/acquisition.md)
+- [Список просмотра Plex](../zurg/guides/plex-watchlist.md)
+- [Список желаемого DMM](../zurg/guides/dmm-wanted.md)
 - [Локальные библиотеки](../zurg/guides/local-libraries.md)
 - [Android и Google TV](../zurg/guides/android.md)
-- [Переход с другого инструмента](../zurg/migrate/index.md)
+- [Перенос с другого инструмента](../zurg/migrate/index.md)
 
 ## rex
 

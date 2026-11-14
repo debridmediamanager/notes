@@ -491,21 +491,28 @@ cd $HOME\zurg
 $env:ZURG_INSTALL_MODE = "update"; irm https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.ps1 | iex
 ```
 
-## Устранение неполадок {#troubleshooting}
+## Если что-то не работает {#when-something-is-wrong}
 
-| Что видишь | Что это значит |
+Начните с `.\zurg.exe doctor` в папке zurg (`cd $HOME\zurg`). Команда проверяет установку и выводит строку `PASS`, `WARN` или `FAIL` для каждой части. Строки ниже проверены в Windows 11 Pro с PowerShell 5.1 и zurg `2026.11.14.1134-nightly` 14 ноября 2026 года.
+
+| Что вы видите | Что делать |
 |---|---|
-| `Z:` нет в Explorer | Правило сессии, см. [выше](#keeping-it-running-the-session-rules). Монтирование, скорее всего, в порядке. Сначала проверь `http://localhost:9999/http/`. |
-| `zurg doctor` говорит, что задача готова, но не запущена | Ни один интерактивный пользователь не вошёл в систему. Войди в рабочий стол и выполни `.\zurg.exe service start`. |
-| `symlinks not supported without the --links flag` | В `rclone_extra_args` не хватает `--links`. Это косметика: rclone один раз отвечает на зонд символических ссылок WinFsp для корня монтирования, когда диск поднимается. Монтирование работает и без флага. Чтобы убрать строку, добавь флаг. |
-| `Library is still loading` под `__magic__` или `/http/` | Первый прогон Real-Debrid обходит аккаунт. Просто подожди. На большом аккаунте это может занять почти час. Библиотека NZB такого никогда не покажет, она начинается пустой. |
-| `realdebrid will not take <name>: it refuses that name outright` | Real-Debrid блокирует некоторые имена релизов (`WEBRip` и похожие). Возьми релиз с другим названием. С настройкой всё в порядке. |
-| Добавление падает с `could not read back id=…` или текстом о лимите запросов | Бюджет API аккаунта исчерпан. Первый обход библиотеки может его выжечь, и второй zurg с тем же токеном тоже. Дай обходу закончиться. Не используй один токен на нескольких экземплярах. |
-| Запуск задачи отклонён, `0x800710E0` | Задача всё ещё «running»: окно лаунчера так и не закрылось. Выполни `Stop-ScheduledTask zurg`, потом запускай снова. |
-| `Get-PSDrive` не показывает `Z:` из SSH-сессии | Так и должно быть, это другая сессия входа. См. таблицу сессий. |
-| `data\rclone-cache` продолжает расти | Это кэш воспроизведения монтирования, по умолчанию ограниченный 256G. См. [Как держать кэш небольшим](#keeping-the-cache-small). |
+| `iex : The property 'OSArchitecture' cannot be found on this object.` сразу после команды установки | Ошибка в установщике, исправлена 12 сентября 2026 года. Запустите ту же команду ещё раз. Если вы сохранили копию `install.ps1` до этой даты, скачайте её заново. |
+| Установщик останавливается с `zurg doctor found a failed check.` | Установщик запускает `zurg doctor` последним, и одна проверка не прошла. Строка `FAIL` чуть выше покажет, какая именно; ниже описаны эти случаи. После исправления запустите `.\zurg.exe doctor` снова в `$HOME\zurg`. Команда ждёт до двух минут, пока zurg запустится и подключит `Z:`. |
+| `FAIL mount` с `drive Z: is already in use on this computer so rclone cannot mount there. Pick a drive letter nothing else uses` | Буква `Z:` уже занята: USB-диск, сетевой диск или rclone, который вы настроили до того, как zurg сделал это за вас. Дайте zurg свободную букву командой `.\zurg.exe setup --mount-path "Y:"`, затем выполните `.\zurg.exe service restart`. Setup сохраняет ваши аккаунты и настройки и меняет только диск. |
+| `WARN service user service is installed but not running`, затем `FAIL HTTP` с `No connection could be made because the target machine actively refused it.` | zurg не запущен. Он стартует при входе в Windows. Войдите в рабочий стол и выполните `.\zurg.exe service start`. |
+| `Error: service zurg is not installed` после `.\zurg.exe service start` | Задача zurg в планировщике отсутствует, обычно потому что zurg запускали вручную. Выполните `.\zurg.exe setup` в папке zurg. Команда сохранит ваш `config.yml`, добавит задачу и запустит zurg. |
+| `Error: config ./config.yml is not valid YAML: yaml: unmarshal errors:` и `mapping key "enable_repair" already defined at line 38` | Эта настройка в `config.yml` записана дважды. Откройте файл командой `notepad config.yml`, удалите одну из двух строк, которые указаны в ошибке, сохраните и выполните `.\zurg.exe service restart`. |
+| `Z:` не открывается в Explorer или его нет | Правило сессии: см. [выше](#keeping-it-running-the-session-rules). Скорее всего, монтирование в порядке; сначала проверьте `http://localhost:9999/http/` в браузере. Если `doctor` показывает `FAIL mount`, причину ищите в строках выше. |
+| `dir Z:\` выдаёт `Cannot find drive. A drive with the name 'Z' does not exist.` | Эта копия PowerShell не видит диск. Окно, открытое через **Run as administrator**, не видит `Z:`, как и сессия SSH: обе работают отдельно от вашей сессии рабочего стола, где и живёт `Z:`. Используйте обычное окно PowerShell или Explorer. |
+| `symlinks not supported without the --links flag` | В `rclone_extra_args` не хватает `--links`. Это косметика: rclone один раз проверяет символические ссылки в корне монтирования через WinFsp, когда диск появляется. Монтирование работает и без флага; добавьте его, если строка мешает. |
+| В `Z:` есть `movies` и `shows`, но они пустые, или под `__magic__` или `/http/` написано `Library is still loading` | Первый запуск Real-Debrid обходит аккаунт. Подождите. На большом аккаунте это может занять почти час. Команда `curl.exe http://localhost:9999/ready` выведет `ready`, когда обход закончится. Библиотека NZB никогда этого не пишет: она начинается пустой. |
+| `realdebrid will not take <name>: it refuses that name outright` | Real-Debrid блокирует некоторые названия релизов (`WEBRip` и похожие). Возьмите релиз с другим названием; с настройкой всё в порядке. |
+| Добавление не проходит с `could not read back id=…` или текстом о лимите запросов | Бюджет API аккаунта исчерпан. Первый обход библиотеки может его потратить. Его может потратить и второй zurg с тем же токеном. Дайте обходу закончиться. Не используйте один токен на нескольких экземплярах. |
+| Запуск задачи отклонён, `0x800710E0` | Задача всё ещё числится «запущенной»: окно-лаунчер не закрылось. Выполните `Stop-ScheduledTask zurg`, затем запустите снова. |
+| `data\rclone-cache` постоянно растёт | Это кэш воспроизведения монтирования, по умолчанию он ограничен 256G. См. [Keeping the cache small](#keeping-the-cache-small). |
 
-Всё ещё застрял? Спроси на форуме **zurg-support** в [Discord](https://discord.com/invite/7u4YjMThXP). В [Как попросить помощи](../../guides/remote-help.md) написано, что стоит указать.
+Всё ещё не получается? Спросите на форуме **zurg-support** в [Discord](https://discord.com/invite/7u4YjMThXP). В [Getting help](../../guides/remote-help.md) написано, что приложить к вопросу.
 
 ## PowerShell через SSH, для тех, кто любит удалёнку {#powershell-over-ssh-for-the-remote-minded}
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847994086881">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847994342585">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -44,12 +44,12 @@
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
     <link id="retype-favicon" rel="icon" href="../../../assets/favicon.png" />
-    <link href="../../../resources/css/retype.css?v=4.6.0.847994086881" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.847994342585" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847994086881" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847994342585" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847994086881" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847994086881" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847994342585" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847994342585" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -867,42 +867,72 @@ Remove-Item -Recurse -Force .\data\rclone-cache\vfs\*, .\data\rclone-cache\vfsMe
 <div id="updating-zurg-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$env:ZURG_INSTALL_MODE = &quot;update&quot;; irm https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.ps1 | iex</code></pre>
 </doc-codeblock></div>
-<h2 id="troubleshooting">Troubleshooting</h2>
-<retype-table copy-text="| What you see | What it means |
+<h2 id="when-something-is-wrong">When something is wrong</h2>
+<p>Start with <code translate="no" v-pre>.\zurg.exe doctor</code> in the zurg folder (<code translate="no" v-pre>cd $HOME\zurg</code>). It checks the install and prints a <code translate="no" v-pre>PASS</code>, <code translate="no" v-pre>WARN</code> or <code translate="no" v-pre>FAIL</code> line for each part. The rows below were checked on Windows 11 Pro with PowerShell 5.1 and zurg <code translate="no" v-pre>2026.11.14.1134-nightly</code> on 14 November 2026.</p>
+<retype-table copy-text="| What you see | What to do |
 |---|---|
-| `Z:` not in Explorer | The session rule — see [above](#keeping-it-running-the-session-rules). The mount is probably fine; check `http://localhost:9999/http/` first. |
-| `zurg doctor` says the task is ready but not running | No interactive user is logged in. Log into the desktop and run `.\zurg.exe service start`. |
+| `iex : The property 'OSArchitecture' cannot be found on this object.` right after the install command | A bug in the installer, fixed on 12 September 2026. Run the same command again. If you saved a copy of `install.ps1` before then, download it again. |
+| The installer stops with `zurg doctor found a failed check.` | The installer runs `zurg doctor` last, and one check failed. The `FAIL` line just above says which one; the rows below cover them. After the fix, run `.\zurg.exe doctor` again in `$HOME\zurg`. It waits up to two minutes for zurg to start and mount `Z:`. |
+| `FAIL mount` with `drive Z: is already in use on this computer so rclone cannot mount there. Pick a drive letter nothing else uses` | Something else already has `Z:`: a USB disk, a network drive, or an rclone you set up before zurg did it for you. Give zurg a free letter with `.\zurg.exe setup --mount-path &quot;Y:&quot;`, then `.\zurg.exe service restart`. Setup keeps your accounts and settings and only moves the drive. |
+| `WARN service user service is installed but not running`, then `FAIL HTTP` with `No connection could be made because the target machine actively refused it.` | zurg isn't running. It starts when you log in to Windows. Log in to the desktop and run `.\zurg.exe service start`. |
+| `Error: service zurg is not installed` after `.\zurg.exe service start` | zurg's scheduled task is missing, usually because zurg was started by hand. Run `.\zurg.exe setup` in the zurg folder. It keeps your `config.yml`, adds the task and starts zurg. |
+| `Error: config ./config.yml is not valid YAML: yaml: unmarshal errors:` and `mapping key &quot;enable_repair&quot; already defined at line 38` | That setting is in `config.yml` twice. Open the file with `notepad config.yml`, delete one of the two lines the error names, save, and run `.\zurg.exe service restart`. |
+| You can't open `Z:` in Explorer, or it's not there | The session rule: see [above](#keeping-it-running-the-session-rules). The mount is probably fine; check `http://localhost:9999/http/` in a browser first. If `doctor` says `FAIL mount`, the rows above say why. |
+| `dir Z:\` says `Cannot find drive. A drive with the name 'Z' does not exist.` | That PowerShell can't see the drive. A window opened with **Run as administrator** doesn't see `Z:`, and neither does an SSH session: both run apart from your desktop session, where `Z:` lives. Use a normal PowerShell window, or Explorer. |
 | `symlinks not supported without the --links flag` | `--links` missing from `rclone_extra_args`. Cosmetic — rclone answering WinFsp's symlink probe of the mount root, once, as the drive comes up. The mount works without it; add the flag to silence the line. |
-| `Library is still loading` under `__magic__` or `/http/` | The first Real-Debrid run walks the account. Wait. On a large account it can take most of an hour. An NZB library never says this — it starts empty. |
+| `Z:` has `movies` and `shows` but they're empty, or `Library is still loading` under `__magic__` or `/http/` | The first Real-Debrid run walks the account. Wait. On a large account it can take most of an hour. `curl.exe http://localhost:9999/ready` prints `ready` once it's done. An NZB library never says this — it starts empty. |
 | `realdebrid will not take &lt;name&gt;: it refuses that name outright` | Real-Debrid blocks some release names (`WEBRip` and friends). Grab a differently-named release; nothing is wrong with the setup. |
 | An add fails with `could not read back id=…` or rate-limit text | The account's API budget is spent. A first library walk can spend it. So can a second zurg on the same token. Let the walk finish. Do not share one token across instances. |
 | Task start refused, `0x800710E0` | The task is still &quot;running&quot; — a launcher window never exited. `Stop-ScheduledTask zurg`, then start. |
-| `Get-PSDrive` shows no `Z:` from an SSH session | Expected — different logon session. See the session table. |
 | `data\rclone-cache` keeps growing | That is the mount's playback cache, capped at 256G by default. See [Keeping the cache small](#keeping-the-cache-small). |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
 <tr>
 <th>What you see</th>
-<th>What it means</th>
+<th>What to do</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code translate="no" v-pre>Z:</code> not in Explorer</td>
-<td>The session rule — see <doc-anchor-trigger to="#keeping-it-running-the-session-rules">above</doc-anchor-trigger>. The mount is probably fine; check <code translate="no" v-pre>http://localhost:9999/http/</code> first.</td>
+<td><code translate="no" v-pre>iex : The property 'OSArchitecture' cannot be found on this object.</code> right after the install command</td>
+<td>A bug in the installer, fixed on 12 September 2026. Run the same command again. If you saved a copy of <code translate="no" v-pre>install.ps1</code> before then, download it again.</td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>zurg doctor</code> says the task is ready but not running</td>
-<td>No interactive user is logged in. Log into the desktop and run <code translate="no" v-pre>.\zurg.exe service start</code>.</td>
+<td>The installer stops with <code translate="no" v-pre>zurg doctor found a failed check.</code></td>
+<td>The installer runs <code translate="no" v-pre>zurg doctor</code> last, and one check failed. The <code translate="no" v-pre>FAIL</code> line just above says which one; the rows below cover them. After the fix, run <code translate="no" v-pre>.\zurg.exe doctor</code> again in <code translate="no" v-pre>$HOME\zurg</code>. It waits up to two minutes for zurg to start and mount <code translate="no" v-pre>Z:</code>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>FAIL mount</code> with <code translate="no" v-pre>drive Z: is already in use on this computer so rclone cannot mount there. Pick a drive letter nothing else uses</code></td>
+<td>Something else already has <code translate="no" v-pre>Z:</code>: a USB disk, a network drive, or an rclone you set up before zurg did it for you. Give zurg a free letter with <code translate="no" v-pre>.\zurg.exe setup --mount-path &quot;Y:&quot;</code>, then <code translate="no" v-pre>.\zurg.exe service restart</code>. Setup keeps your accounts and settings and only moves the drive.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>WARN service user service is installed but not running</code>, then <code translate="no" v-pre>FAIL HTTP</code> with <code translate="no" v-pre>No connection could be made because the target machine actively refused it.</code></td>
+<td>zurg isn&#x27;t running. It starts when you log in to Windows. Log in to the desktop and run <code translate="no" v-pre>.\zurg.exe service start</code>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Error: service zurg is not installed</code> after <code translate="no" v-pre>.\zurg.exe service start</code></td>
+<td>zurg&#x27;s scheduled task is missing, usually because zurg was started by hand. Run <code translate="no" v-pre>.\zurg.exe setup</code> in the zurg folder. It keeps your <code translate="no" v-pre>config.yml</code>, adds the task and starts zurg.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Error: config ./config.yml is not valid YAML: yaml: unmarshal errors:</code> and <code translate="no" v-pre>mapping key &quot;enable_repair&quot; already defined at line 38</code></td>
+<td>That setting is in <code translate="no" v-pre>config.yml</code> twice. Open the file with <code translate="no" v-pre>notepad config.yml</code>, delete one of the two lines the error names, save, and run <code translate="no" v-pre>.\zurg.exe service restart</code>.</td>
+</tr>
+<tr>
+<td>You can&#x27;t open <code translate="no" v-pre>Z:</code> in Explorer, or it&#x27;s not there</td>
+<td>The session rule: see <doc-anchor-trigger to="#keeping-it-running-the-session-rules">above</doc-anchor-trigger>. The mount is probably fine; check <code translate="no" v-pre>http://localhost:9999/http/</code> in a browser first. If <code translate="no" v-pre>doctor</code> says <code translate="no" v-pre>FAIL mount</code>, the rows above say why.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>dir Z:\</code> says <code translate="no" v-pre>Cannot find drive. A drive with the name 'Z' does not exist.</code></td>
+<td>That PowerShell can&#x27;t see the drive. A window opened with <strong>Run as administrator</strong> doesn&#x27;t see <code translate="no" v-pre>Z:</code>, and neither does an SSH session: both run apart from your desktop session, where <code translate="no" v-pre>Z:</code> lives. Use a normal PowerShell window, or Explorer.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>symlinks not supported without the --links flag</code></td>
 <td><code translate="no" v-pre>--links</code> missing from <code translate="no" v-pre>rclone_extra_args</code>. Cosmetic — rclone answering WinFsp&#x27;s symlink probe of the mount root, once, as the drive comes up. The mount works without it; add the flag to silence the line.</td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>Library is still loading</code> under <code translate="no" v-pre>__magic__</code> or <code translate="no" v-pre>/http/</code></td>
-<td>The first Real-Debrid run walks the account. Wait. On a large account it can take most of an hour. An NZB library never says this — it starts empty.</td>
+<td><code translate="no" v-pre>Z:</code> has <code translate="no" v-pre>movies</code> and <code translate="no" v-pre>shows</code> but they&#x27;re empty, or <code translate="no" v-pre>Library is still loading</code> under <code translate="no" v-pre>__magic__</code> or <code translate="no" v-pre>/http/</code></td>
+<td>The first Real-Debrid run walks the account. Wait. On a large account it can take most of an hour. <code translate="no" v-pre>curl.exe http://localhost:9999/ready</code> prints <code translate="no" v-pre>ready</code> once it&#x27;s done. An NZB library never says this — it starts empty.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>realdebrid will not take &lt;name&gt;: it refuses that name outright</code></td>
@@ -915,10 +945,6 @@ Remove-Item -Recurse -Force .\data\rclone-cache\vfs\*, .\data\rclone-cache\vfsMe
 <tr>
 <td>Task start refused, <code translate="no" v-pre>0x800710E0</code></td>
 <td>The task is still &quot;running&quot; — a launcher window never exited. <code translate="no" v-pre>Stop-ScheduledTask zurg</code>, then start.</td>
-</tr>
-<tr>
-<td><code translate="no" v-pre>Get-PSDrive</code> shows no <code translate="no" v-pre>Z:</code> from an SSH session</td>
-<td>Expected — different logon session. See the session table.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>data\rclone-cache</code> keeps growing</td>

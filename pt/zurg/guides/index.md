@@ -1,17 +1,18 @@
 # Guias {#guides}
 
-Trabalhando com a biblioteca: Usenet, os arrs, `__magic__` e servidores de mídia. O rex tem [seção própria](../../rex/index.md).
+Trabalhando com a biblioteca: Usenet, os arrs, `__magic__` e servidores de mídia. O rex [tem sua própria seção](../../rex/index.md).
 
 - [Usenet](usenet.md)
-- [Sonarr e Radarr para Usenet](sonarr-radarr.md)
-- [Sonarr e Radarr para torrents](sonarr-radarr-torrents.md)
-- [Listas no Sonarr e Radarr](import-lists.md)
-- [Buscas do zurg para Sonarr e Radarr](sonarr-radarr-fetch.md)
-- [Legendas com Bazarr](subtitles.md)
+- [Sonarr & Radarr para Usenet](sonarr-radarr.md)
+- [Sonarr & Radarr para torrents](sonarr-radarr-torrents.md)
+- [Listas no Sonarr & Radarr](import-lists.md)
+- [Buscas do zurg para Sonarr & Radarr](sonarr-radarr-fetch.md)
+- [Legendas com o Bazarr](subtitles.md)
 - [Whisparr](whisparr.md)
 - [\_\_magic\_\_](magic.md)
 - [Renomeação](renaming.md)
 - [Plex](plex.md)
+- [Um arquivo Docker Compose para zurg, Plex e rex](docker-compose.md)
 - [Jellyfin](jellyfin.md)
 - [O addon do Stremio](stremio.md)
 - [Watchlist e Seerr](acquisition.md)
@@ -20,4 +21,4 @@ Trabalhando com a biblioteca: Usenet, os arrs, `__magic__` e servidores de mídi
 - [Bibliotecas locais](local-libraries.md)
 - [Android e Google TV](android.md)
 
-Para apontar o zurg para uma conta, use a seção [Provedores](../providers/index.md), com uma página para cada serviço. Para colocar o zurg para rodar, use a seção [Configuração](../setup/index.md), com uma página para [Linux](../setup/linux.md), [macOS](../setup/macos.md), [Windows](../setup/windows.md) e [Docker](../setup/docker.md) no Linux. A página do Windows é um passo a passo do zero da instalação do binário: primeiro o RealDebrid com o endpoint do qBittorrent, depois o Usenet com o SABnzbd.
+Para apontar o zurg para uma conta, veja a seção [Providers](../providers/index.md), com uma página para cada serviço. Para colocar o próprio zurg para rodar, veja a seção [Setup](../setup/index.md), com uma página para cada um: [Linux](../setup/linux.md), [macOS](../setup/macos.md), [Windows](../setup/windows.md) e [Docker](../setup/docker.md) no Linux. A página do Windows é um passo a passo do zero da instalação pelo binário, com o RealDebrid usando primeiro o endpoint do qBittorrent e depois o Usenet com o SABnzbd.

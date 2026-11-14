@@ -495,21 +495,28 @@ Bei einem Build, der zu alt ist, um den Befehl zu kennen, erledigt der Installer
 $env:ZURG_INSTALL_MODE = "update"; irm https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.ps1 | iex
 ```
 
-## Fehlerbehebung {#troubleshooting}
+## Wenn etwas nicht stimmt {#when-something-is-wrong}
 
-| Was du siehst | Was es bedeutet |
+Fang im zurg-Ordner an (`cd $HOME\zurg`) mit `.\zurg.exe doctor`. Es prüft die Installation und gibt für jeden Teil eine Zeile mit `PASS`, `WARN` oder `FAIL` aus. Die Zeilen unten wurden auf Windows 11 Pro mit PowerShell 5.1 und zurg `2026.11.14.1134-nightly` am 14. November 2026 geprüft.
+
+| Was du siehst | Was zu tun ist |
 |---|---|
-| `Z:` nicht im Explorer | Die Sitzungsregel, siehe [oben](#keeping-it-running-the-session-rules). Der Mount ist wahrscheinlich in Ordnung. Prüfe zuerst `http://localhost:9999/http/`. |
-| `zurg doctor` meldet, dass die Aufgabe bereit ist, aber nicht läuft | Kein interaktiver Benutzer ist angemeldet. Melde dich am Desktop an und führe `.\zurg.exe service start` aus. |
-| `symlinks not supported without the --links flag` | `--links` fehlt in `rclone_extra_args`. Nur kosmetisch: rclone antwortet beim Hochfahren des Laufwerks einmalig auf WinFsps Symlink-Prüfung des Mount-Roots. Der Mount funktioniert auch ohne das Flag. Füge es hinzu, um die Zeile zu unterdrücken. |
-| `Library is still loading` unter `__magic__` oder `/http/` | Der erste Real-Debrid-Lauf durchsucht das Konto. Warte einfach. Bei einem großen Konto kann das fast eine Stunde dauern. Eine NZB-Bibliothek zeigt diese Meldung nie an, sie startet leer. |
-| `realdebrid will not take <name>: it refuses that name outright` | Real-Debrid blockiert manche Release-Namen (`WEBRip` und Co.). Nimm ein Release mit einem anderen Namen. Mit deinem Setup ist alles in Ordnung. |
-| Ein Hinzufügen schlägt mit `could not read back id=…` oder einer Rate-Limit-Meldung fehl | Das API-Kontingent des Kontos ist aufgebraucht. Ein erster Bibliotheksdurchlauf kann es verbrauchen. Ein zweites zurg mit demselben Token kann das auch. Lass den Durchlauf fertig werden. Teile ein Token nicht zwischen mehreren Instanzen. |
-| Start der Aufgabe abgelehnt, `0x800710E0` | Die Aufgabe läuft noch, ein Launcher-Fenster wurde nie beendet. Führe `Stop-ScheduledTask zurg` aus und starte dann neu. |
-| `Get-PSDrive` zeigt aus einer SSH-Sitzung kein `Z:` | Erwartet, da es sich um eine andere Anmeldesitzung handelt. Siehe die Sitzungstabelle. |
-| `data\rclone-cache` wird immer größer | Das ist der Wiedergabe-Cache des Mounts, standardmäßig auf 256G begrenzt. Siehe [Cache klein halten](#keeping-the-cache-small). |
+| `iex : The property 'OSArchitecture' cannot be found on this object.` direkt nach dem Installationsbefehl | Ein Fehler im Installer, am 12. September 2026 behoben. Führ denselben Befehl einfach noch einmal aus. Falls du vorher eine Kopie von `install.ps1` gespeichert hast, lad sie noch einmal herunter. |
+| Der Installer bricht mit `zurg doctor found a failed check.` ab | Der Installer führt zum Schluss `zurg doctor` aus, und eine Prüfung ist fehlgeschlagen. Die `FAIL`-Zeile direkt darüber sagt dir, welche. Die Zeilen unten erklären die einzelnen Fälle. Nach der Behebung führ `.\zurg.exe doctor` erneut in `$HOME\zurg` aus. Es wartet bis zu zwei Minuten, bis zurg startet und `Z:` eingebunden hat. |
+| `FAIL mount` mit `drive Z: is already in use on this computer so rclone cannot mount there. Pick a drive letter nothing else uses` | Etwas anderes belegt schon `Z:`: eine USB-Festplatte, ein Netzlaufwerk oder ein rclone, das du eingerichtet hast, bevor zurg es für dich gemacht hat. Gib zurg mit `.\zurg.exe setup --mount-path "Y:"` einen freien Buchstaben und starte dann mit `.\zurg.exe service restart` neu. Setup behält deine Konten und Einstellungen und verschiebt nur das Laufwerk. |
+| `WARN service user service is installed but not running`, danach `FAIL HTTP` mit `No connection could be made because the target machine actively refused it.` | zurg läuft nicht. Es startet beim Anmelden bei Windows. Melde dich am Desktop an und führ `.\zurg.exe service start` aus. |
+| `Error: service zurg is not installed` nach `.\zurg.exe service start` | Die geplante Aufgabe von zurg fehlt, meist weil zurg von Hand gestartet wurde. Führ `.\zurg.exe setup` im zurg-Ordner aus. Das behält deine `config.yml`, legt die Aufgabe an und startet zurg. |
+| `Error: config ./config.yml is not valid YAML: yaml: unmarshal errors:` und `mapping key "enable_repair" already defined at line 38` | Diese Einstellung steht zweimal in `config.yml`. Öffne die Datei mit `notepad config.yml`, lösch eine der beiden Zeilen aus der Fehlermeldung, speichere und führ `.\zurg.exe service restart` aus. |
+| Du kannst `Z:` im Explorer nicht öffnen, oder das Laufwerk fehlt | Die Sitzungsregel: siehe [oben](#keeping-it-running-the-session-rules). Das Laufwerk ist wahrscheinlich in Ordnung. Prüf zuerst `http://localhost:9999/http/` im Browser. Wenn `doctor` `FAIL mount` meldet, erklären die Zeilen oben, warum. |
+| `dir Z:\` meldet `Cannot find drive. A drive with the name 'Z' does not exist.` | Diese PowerShell sieht das Laufwerk nicht. Ein Fenster, das mit **Run as administrator** geöffnet wurde, sieht `Z:` nicht, und eine SSH-Sitzung auch nicht. Beide laufen getrennt von deiner Desktop-Sitzung, in der `Z:` liegt. Nimm ein normales PowerShell-Fenster oder den Explorer. |
+| `symlinks not supported without the --links flag` | `--links` fehlt in `rclone_extra_args`. Das ist nur kosmetisch: rclone beantwortet einmal, wenn das Laufwerk hochkommt, die Symlink-Prüfung von WinFsp für die Mount-Wurzel. Der Mount funktioniert auch ohne. Wenn du die Zeile loswerden willst, füg das Flag hinzu. |
+| `Z:` hat `movies` und `shows`, aber sie sind leer, oder unter `__magic__` oder `/http/` steht `Library is still loading` | Der erste Real-Debrid-Durchlauf geht das Konto durch. Warte ab. Bei einem großen Konto kann das fast eine Stunde dauern. `curl.exe http://localhost:9999/ready` gibt `ready` aus, sobald es fertig ist. Eine NZB-Bibliothek meldet das nie, sie startet einfach leer. |
+| `realdebrid will not take <name>: it refuses that name outright` | Real-Debrid blockt manche Release-Namen (`WEBRip` und Co.). Nimm ein Release mit einem anderen Namen. Am Setup liegt es nicht. |
+| Ein Hinzufügen schlägt mit `could not read back id=…` oder mit Rate-Limit-Text fehl | Das API-Kontingent des Kontos ist aufgebraucht. Ein erster Bibliotheks-Durchlauf kann es verbrauchen, und ein zweites zurg mit demselben Token kann es ebenfalls. Lass den Durchlauf fertig werden. Teil keinen Token zwischen mehreren Instanzen. |
+| Aufgabenstart wird abgelehnt, `0x800710E0` | Die Aufgabe gilt noch als „running“, weil ein Launcher-Fenster nie beendet wurde. Führ `Stop-ScheduledTask zurg` aus und starte sie dann neu. |
+| `data\rclone-cache` wird immer größer | Das ist der Wiedergabe-Cache des Mounts. Standardmäßig ist er auf 256G begrenzt. Siehe [Den Cache klein halten](#keeping-the-cache-small). |
 
-Immer noch nicht weiter? Frag im **zurg-support**-Forum auf [Discord](https://discord.com/invite/7u4YjMThXP). [Hilfe bekommen](../../guides/remote-help.md) erklärt, was du angeben solltest.
+Noch Probleme? Frag im **zurg-support**-Forum auf [Discord](https://discord.com/invite/7u4YjMThXP) nach. In [Hilfe bekommen](../../guides/remote-help.md) steht, was du angeben solltest.
 
 ## PowerShell über SSH, für Remote-Fans {#powershell-over-ssh-for-the-remote-minded}
 

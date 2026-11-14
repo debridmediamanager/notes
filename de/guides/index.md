@@ -4,13 +4,14 @@ Jede Anleitung auf dieser Seite, nach Projekt sortiert.
 
 ## Allgemein {#general}
 
-- [Die richtige Einrichtung wählen](choose-your-setup.md): Übersichten, wann du DMM, zurg, rex, Kodi, Stremio, Nuvio oder die Jellyfin/Emby-Plugins nutzt
-- [Was jedes Teil macht](glossary.md): eine Zeile für jedes DMM-, zurg- und rex-Teil und die Begriffe aus den Anleitungen
-- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): was dieser grüne Bildschirm in Stremio bedeutet und was du tun solltest
-- [Dein Real-Debrid-API-Token](real-debrid-api-token.md): wo du ihn bekommst, wo DMM und zurg ihn eintragen und was `bad_token` und die anderen Fehler bedeuten
+- [Wähle dein Setup](choose-your-setup.md): Übersichten zu den Wegen und wann du DMM, zurg, rex, Kodi, Stremio, Nuvio oder die Jellyfin/Emby-Plugins nutzt
+- [Was jedes Teil macht](glossary.md): eine Zeile zu jedem DMM-, zurg- und rex-Teil sowie zu den Begriffen in den Anleitungen
+- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): was dieser grüne Bildschirm in Stremio bedeutet und was du dagegen tun kannst
+- [Dein Real-Debrid API-Token](real-debrid-api-token.md): wo du ihn bekommst, wo DMM und zurg ihn eintragen und was `bad_token` und die anderen Fehler bedeuten
 - [Usenet für Einsteiger](usenet-for-beginners.md): Provider, Indexer und NZB, was du kaufen musst und wie zurg und DMM zusammenpassen
-- [Hilfe bekommen](remote-help.md) bei zurg und rex: wo du fragst, was du angeben solltest, und Remote-Hilfe für Sponsoren
-- [Was dir eine Sponsorschaft bringt](sponsorship.md): alle Vorteile und wo du sie einrichtest, oder wie du die DMM-Vorteile über das Anfrage-Board verdienen kannst
+- [Eine Real-Debrid-Bibliothek in Plex](real-debrid-plex.md): zurgs `movies`- und `shows`-Ordner im Plex Media Server, pro System, und die üblichen Probleme
+- [Hilfe bekommen](remote-help.md) bei zurg und rex: wo du fragen kannst, was du angeben solltest, und Fernhilfe für Sponsoren
+- [Was dir eine Sponsorschaft bringt](sponsorship.md): jeder Vorteil und wo du ihn einrichtest, oder wie du die DMM-Vorteile über das Anfrage-Board verdienen kannst
 
 ## DMM
 
@@ -28,12 +29,13 @@ Jede Anleitung auf dieser Seite, nach Projekt sortiert.
 - [Sonarr & Radarr für Usenet](../zurg/guides/sonarr-radarr.md)
 - [Sonarr & Radarr für Torrents](../zurg/guides/sonarr-radarr-torrents.md)
 - [Listen in Sonarr & Radarr](../zurg/guides/import-lists.md)
-- [zurg sucht für Sonarr & Radarr](../zurg/guides/sonarr-radarr-fetch.md)
+- [zurg-Suchen für Sonarr & Radarr](../zurg/guides/sonarr-radarr-fetch.md)
 - [Untertitel mit Bazarr](../zurg/guides/subtitles.md)
 - [Whisparr](../zurg/guides/whisparr.md)
 - [\_\_magic\_\_](../zurg/guides/magic.md)
 - [Umbenennen](../zurg/guides/renaming.md)
 - [Plex](../zurg/guides/plex.md)
+- [Eine Docker Compose-Datei](../zurg/guides/docker-compose.md): zurg, Plex Media Server und rex auf einem Linux-Rechner
 - [Jellyfin](../zurg/guides/jellyfin.md)
 - [Das Stremio-Addon](../zurg/guides/stremio.md)
 - [Watchlist und Seerr](../zurg/guides/acquisition.md)

@@ -12,6 +12,7 @@ Working with the library: Usenet, the arrs, `__magic__`, and media servers. rex 
 - [\_\_magic\_\_](magic.md)
 - [Renaming](renaming.md)
 - [Plex](plex.md)
+- [One Docker Compose file for zurg, Plex and rex](docker-compose.md)
 - [Jellyfin](jellyfin.md)
 - [The Stremio addon](stremio.md)
 - [Watchlist and Seerr](acquisition.md)

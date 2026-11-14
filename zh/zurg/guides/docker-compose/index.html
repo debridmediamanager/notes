@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="turbo-root" content="/zh">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847994442339">
+
+    <!-- See retype.com -->
+    <meta name="generator" content="Retype 4.6.0">
+
+    <!-- Primary Meta Tags -->
+    <title>一个 Docker Compose 文件搞定 zurg、Plex 和 rex | DMM + zurg + rex</title>
+    <meta name="title" content="一个 Docker Compose 文件搞定 zurg、Plex 和 rex | DMM + zurg + rex">
+    <meta name="description" content="一份经过测试的 docker-compose.yml，可在一台 Linux 机器上同时运行 zurg、Plex Media Server 和 rex，从安装到在 Plex 中播放，并附上常见错误的解决办法。">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://notes.debridmediamanager.com/zh/zurg/guides/docker-compose/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://notes.debridmediamanager.com/zh/sitemap.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://notes.debridmediamanager.com/zh/zurg/guides/docker-compose/">
+    <meta property="og:title" content="一个 Docker Compose 文件搞定 zurg、Plex 和 rex | DMM + zurg + rex">
+    <meta property="og:description" content="一份经过测试的 docker-compose.yml，可在一台 Linux 机器上同时运行 zurg、Plex Media Server 和 rex，从安装到在 Plex 中播放，并附上常见错误的解决办法。">
+    <meta property="og:site_name" content="DMM + zurg + rex">
+    <meta property="og:locale" content="zh_CN">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://notes.debridmediamanager.com/zh/zurg/guides/docker-compose/">
+    <meta name="twitter:title" content="一个 Docker Compose 文件搞定 zurg、Plex 和 rex | DMM + zurg + rex">
+    <meta name="twitter:description" content="一份经过测试的 docker-compose.yml，可在一台 Linux 机器上同时运行 zurg、Plex Media Server 和 rex，从安装到在 Plex 中播放，并附上常见错误的解决办法。">
+
+    <!-- Alternate Markdown -->
+    <link rel="alternate" type="text/markdown" href="https://notes.debridmediamanager.com/zh/zurg/guides/docker-compose.md">
+
+    <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
+
+    <link id="retype-favicon" rel="icon" href="../../../assets/favicon.png" />
+    <link href="../../../resources/css/retype.css?v=4.6.0.847994442339" rel="stylesheet">
+
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847994442339" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847994442339" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847994442339" defer></script>
+
+    <style>
+      /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
+      :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+      .font-body { font-family: var(--font-sans); }
+      /* Retype sets inline code inline-flex, so a long path or URL cannot wrap and widens the page on a phone. */
+      p > code, li > code, h1 > code, h2 > code, h3 > code, h4 > code { overflow-wrap: anywhere; }
+      @media (max-width: 767px) {
+        /* The "notes" label pushes the header past a phone's width. */
+        #retype-branding-label { display: none; }
+        /* Four tabs (Linux, macOS, Windows, Docker) overrun the tab bar at phone width. */
+        .retype-markdown .pluggable a.px-5 { padding-left: 0.75rem; padding-right: 0.75rem; }
+      }
+    </style>
+    <style>
+      /* Arabic pages: the text reads right to left, code and commands stay left to right. */
+      html[lang="ar"] .retype-markdown { direction: rtl; }
+      html[lang="ar"] .retype-markdown pre, html[lang="ar"] .retype-markdown code { direction: ltr; unicode-bidi: isolate; }
+    </style>
+    <script>
+      // Every language is its own Retype build under /<lang>/. The language menu links end in #lang: keep the
+      // reader on the same page in the other language instead of sending them to its home page.
+      (function () {
+        var langs = /^\/(zh|es|ar|id|pt|fr|ja|ru|de)(?=\/|$)/;
+        var m = location.pathname.match(langs);
+        if (m) document.documentElement.lang = m[1]; // Retype has no Indonesian locale and labels /id/ as English
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href$="#lang"]');
+          if (!a) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var to = new URL(a.href).pathname.replace(/\/$/, "");
+          location.href = to + (location.pathname.replace(langs, "") || "/") + location.search;
+        }, true);
+      })();
+    </script>
+    <script>
+      // Sponsor links say which guide sent the reader and where the reader came from (an AI answer, a search),
+      // so gatekeeper can stamp it on the purchase. Kept in this browser only, for 30 days.
+      (function () {
+        var KEY = "dmm_via", DAY = 864e5, own = /(^|\.)debridmediamanager\.com$/;
+        try {
+          var utm = new URLSearchParams(location.search).get("utm_source");
+          var host = document.referrer && new URL(document.referrer).hostname;
+          var via = utm || (host && !own.test(host) ? host : "");
+          var stored = JSON.parse(localStorage.getItem(KEY) || "null");
+          if (via && (utm || !stored || Date.now() - stored.at > 30 * DAY)) localStorage.setItem(KEY, JSON.stringify({ via: via, at: Date.now() }));
+        } catch (e) {}
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest && e.target.closest('a[href^="https://gatekeeper.debridmediamanager.com"]');
+          if (!a) return;
+          var url = new URL(a.href);
+          url.searchParams.set("ref", "notes" + location.pathname.replace(/\/$/, ""));
+          try {
+            var s = JSON.parse(localStorage.getItem(KEY) || "null");
+            if (s && Date.now() - s.at <= 30 * DAY) url.searchParams.set("via", s.via);
+          } catch (e) {}
+          a.href = url.toString();
+        }, true);
+      })();
+    </script>
+    <!-- Link previews (Discord, Reddit, X) and search: the card, and the site name Google shows beside results. -->
+    <meta property="og:image" content="https://notes.debridmediamanager.com/assets/social-card.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Set up DMM, zurg and rex. Step by step.">
+    <meta name="twitter:image" content="https://notes.debridmediamanager.com/assets/social-card.png">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"DMM + zurg + rex","alternateName":["Debrid Media Manager docs","zurg docs","rex docs"],"url":"https://notes.debridmediamanager.com/"}</script>
+
+<link rel="alternate" hreflang="en" href="https://notes.debridmediamanager.com/zurg/guides/docker-compose/"><link rel="alternate" hreflang="zh" href="https://notes.debridmediamanager.com/zh/zurg/guides/docker-compose/"><link rel="alternate" hreflang="es" href="https://notes.debridmediamanager.com/es/zurg/guides/docker-compose/"><link rel="alternate" hreflang="ar" href="https://notes.debridmediamanager.com/ar/zurg/guides/docker-compose/"><link rel="alternate" hreflang="id" href="https://notes.debridmediamanager.com/id/zurg/guides/docker-compose/"><link rel="alternate" hreflang="pt" href="https://notes.debridmediamanager.com/pt/zurg/guides/docker-compose/"><link rel="alternate" hreflang="fr" href="https://notes.debridmediamanager.com/fr/zurg/guides/docker-compose/"><link rel="alternate" hreflang="ja" href="https://notes.debridmediamanager.com/ja/zurg/guides/docker-compose/"><link rel="alternate" hreflang="ru" href="https://notes.debridmediamanager.com/ru/zurg/guides/docker-compose/"><link rel="alternate" hreflang="de" href="https://notes.debridmediamanager.com/de/zurg/guides/docker-compose/"><link rel="alternate" hreflang="x-default" href="https://notes.debridmediamanager.com/zurg/guides/docker-compose/"></head>
+<body>
+    <div id="retype-app" class="relative text-base antialiased text-base-text bg-base-bg font-body">
+    <div class="absolute bottom-0 left-0" style="top: 5rem; right: 50%"></div>
+
+    <header id="retype-header" class="sticky top-0 z-30 flex w-full h-16 bg-header-bg border-b border-header-border md:h-20">
+        <div class="container relative flex items-center justify-between pr-6 grow md:justify-start">
+            <!-- Mobile menu button skeleton -->
+            <button v-cloak class="skeleton retype-mobile-menu-button flex items-center justify-center shrink-0 overflow-hidden dark:text-white focus:outline-hidden rounded-full w-10 h-10 ml-3.5 md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="mb-px shrink-0" width="24" height="24" viewBox="0 0 24 24" role="presentation" style="margin-bottom: 0px;"><g fill="currentColor"><path d="M2 4h20v2H2zM2 11h20v2H2zM2 18h20v2H2z"></path></g></svg></button>
+            <div v-cloak id="retype-sidebar-left-toggle-button"></div>
+    
+            <!-- Logo -->
+            <div class="flex items-center justify-between h-full py-2 md:w-75">
+                <div class="flex items-center px-2 md:px-6">
+                    <a id="retype-branding-logo" href="https://notes.debridmediamanager.com/zh/" class="flex items-center leading-snug text-xl">
+                        <span class="dark:text-white font-bold line-clamp-1 md:line-clamp-2">DMM + zurg + rex</span>
+                    </a><span id="retype-branding-label" class="inline-flex mt-1 px-2 py-1 ml-4 text-xs font-medium leading-none items-center rounded-md bg-branding-label-bg text-branding-label-text ring-1 ring-branding-label-border ring-inset md:inline-block">notes</span>
+                </div>
+    
+                <span class="hidden h-8 border-r md:inline-block border-base-border"></span>
+            </div>
+    
+            <div class="flex justify-between md:grow">
+                <!-- Top Nav -->
+                <nav id="retype-header-nav" class="hidden md:flex">
+                    <ul class="flex flex-col mb-4 md:pl-16 md:mb-0 md:flex-row md:items-center">
+                        <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                            <span class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                    <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                </svg>
+                                <span>中文</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </span>
+                            <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                            <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">English</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Español</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">العربية</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Português</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Français</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">日本語</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Русский</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                            <span class="min-w-0 max-w-full">
+                                                <span class="block font-header-text leading-tight">Deutsch</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/" target="_blank">zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/download.html" target="_blank">下载 zurg</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/zh/" target="_blank">rex</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">赞助</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                        </li>
+                        <li class="mr-6">
+                            <a class="py-2 md:mb-0 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+    
+                <div v-cloak class="flex justify-end grow">
+                    <div id="retype-mobile-search-button"></div>
+                    <doc-search-desktop></doc-search-desktop>
+    
+                    <doc-theme-switch class="lg:ml-2"></doc-theme-switch>
+                    <doc-history></doc-history>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div id="retype-container" class="container relative flex bg-white">
+        <!-- Sidebar Skeleton -->
+        <div v-cloak class="fixed flex flex-col shrink-0 duration-300 ease-in-out bg-sidebar-left-bg border-sidebar-left-border sidebar top-20 w-75 border-r h-screen md:sticky transition-transform skeleton">
+        
+            <div class="flex items-center h-16 px-6">
+                <input id="retype-filter-input-mock" class="w-full h-10 pl-8 px-3 py-2 transition-colors duration-200 ease-linear bg-filter-bg border border-filter-border rounded-lg shadow-none md:text-sm hover:border-filter-border-hover focus:outline-hidden focus:border-filter-border-focus placeholder-filter-placeholder" type="text">
+            </div>
+        
+            <div class="pl-6 mt-1 mb-4">
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+                <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            </div>
+        
+            <div class="shrink-0 mt-auto bg-transparent dark:border-base-border">
+                <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                    <span class="text-xs whitespace-nowrap">Powered by</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Sidebar component -->
+        <doc-sidebar v-cloak>
+            <template #sidebar-footer>
+                <div class="shrink-0 mt-auto border-t md:bg-transparent md:border-none dark:border-base-border">
+        
+                    <div class="py-3 px-6 md:hidden border-b dark:border-base-border">
+                        <nav>
+                            <ul class="flex flex-wrap justify-center items-center">
+                                <li class="mr-6 relative group/nav" data-retype-header-link-group>
+                                    <span class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text cursor-default group-hover/nav:text-header-text-hover group-focus-within/nav:text-header-text-hover">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="block shrink-0 mr-1.5" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                                            <path d="M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm3.241 10.5v-.001c-.1-2.708-.992-4.904-1.89-6.452a13.919 13.919 0 0 0-1.304-1.88L12 3.11l-.047.059c-.354.425-.828 1.06-1.304 1.88-.898 1.547-1.79 3.743-1.89 6.451Zm-12.728 0h4.745c.1-3.037 1.1-5.49 2.093-7.204.39-.672.78-1.233 1.119-1.673C6.11 3.329 2.746 7 2.513 11.5Zm18.974 0C21.254 7 17.89 3.329 13.53 2.623c.339.44.729 1.001 1.119 1.673.993 1.714 1.993 4.167 2.093 7.204ZM8.787 13c.182 2.478 1.02 4.5 1.862 5.953.382.661.818 1.29 1.304 1.88l.047.057.047-.059c.354-.425.828-1.06 1.304-1.88.842-1.451 1.679-3.471 1.862-5.951Zm-1.504 0H2.552a9.505 9.505 0 0 0 7.918 8.377 15.773 15.773 0 0 1-1.119-1.673C8.413 18.085 7.47 15.807 7.283 13Zm9.434 0c-.186 2.807-1.13 5.085-2.068 6.704-.39.672-.78 1.233-1.118 1.673A9.506 9.506 0 0 0 21.447 13Z"/>
+                                        </svg>
+                                        <span>中文</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                    </span>
+                                    <span class="absolute bottom-full md:bottom-auto md:top-full" style="left: var(--header-links-dropdown-offset, 0rem); width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem)); height: var(--header-links-dropdown-gap, 0.5rem);"></span>
+                                    <div class="absolute bottom-full md:bottom-auto md:top-full z-50 min-w-[180px] w-max opacity-0 invisible -translate-y-1 md:translate-y-1 group-hover/nav:translate-y-0 group-focus-within/nav:translate-y-0 group-hover/nav:opacity-100 group-focus-within/nav:opacity-100 group-hover/nav:visible group-focus-within/nav:visible pointer-events-none group-hover/nav:pointer-events-auto group-focus-within/nav:pointer-events-auto transition-all duration-150 ease-out" data-retype-header-link-menu style="left: var(--header-links-dropdown-offset, 0rem); margin-bottom: var(--header-links-dropdown-gap, 0.5rem); margin-top: var(--header-links-dropdown-gap, 0.5rem); max-width: min(var(--header-links-dropdown-max-width, 300px), calc(100vw - 2rem));">
+                                        <ul class="flex flex-col rounded-lg border border-base-border bg-base-bg shadow-lg overflow-hidden w-full">
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">English</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/es/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Español</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ar/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">العربية</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/id/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Bahasa Indonesia</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/pt/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Português</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/fr/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Français</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ja/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">日本語</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/ru/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Русский</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="flex items-start pl-4 pr-3 py-3 text-sm transition-colors duration-200 ease-linear text-header-text hover:text-header-text-hover hover:bg-base-item-bg-hover" href="https://notes.debridmediamanager.com/de/#lang">
+                                                    <span class="min-w-0 max-w-full">
+                                                        <span class="block font-header-text leading-tight">Deutsch</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://debridmediamanager.com" target="_blank">DMM</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/" target="_blank">zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://zurg.debridmediamanager.com/zh/download.html" target="_blank">下载 zurg</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://rex.debridmediamanager.com/zh/" target="_blank">rex</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://gatekeeper.debridmediamanager.com" target="_blank">赞助</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://discord.com/invite/7u4YjMThXP" target="_blank">Discord</a>
+                                </li>
+                                <li class="mr-6">
+                                    <a class="block py-1 inline-flex items-center text-sm whitespace-nowrap transition-colors duration-200 ease-linear md:text-header-text font-header-text hover:text-header-text-hover" href="https://www.reddit.com/r/debridmediamanager/" target="_blank">Reddit</a>
+                                </li>
+        
+                            </ul>
+                        </nav>
+                    </div>
+        
+                    <a class="flex items-center justify-center flex-nowrap h-16 text-gray-350 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-300 transition-colors duration-150 ease-in docs-powered-by" target="_blank" href="https://retype.com/" rel="noopener">
+                        <span class="text-xs whitespace-nowrap">Powered by</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" fill="currentColor" width="96" height="20" overflow="visible"><path d="M0 0v20h13.59V0H0zm11.15 17.54H2.44V2.46h8.71v15.08zM15.8 20h2.44V4.67L15.8 2.22zM20.45 6.89V20h2.44V9.34z"/><g><path d="M40.16 8.44c0 1.49-.59 2.45-1.75 2.88l2.34 3.32h-2.53l-2.04-2.96h-1.43v2.96h-2.06V5.36h3.5c1.43 0 2.46.24 3.07.73s.9 1.27.9 2.35zm-2.48 1.1c.26-.23.38-.59.38-1.09 0-.5-.13-.84-.4-1.03s-.73-.28-1.39-.28h-1.54v2.75h1.5c.72 0 1.2-.12 1.45-.35zM51.56 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92h4.74v1.83h-6.79V5.36h6.64zM60.09 7.15v7.48h-2.06V7.15h-2.61V5.36h7.28v1.79h-2.61zM70.81 14.64h-2.06v-3.66l-3.19-5.61h2.23l1.99 3.45 1.99-3.45H74l-3.19 5.61v3.66zM83.99 6.19c.65.55.97 1.4.97 2.55s-.33 1.98-1 2.51-1.68.8-3.04.8h-1.23v2.59h-2.06V5.36h3.26c1.42 0 2.45.28 3.1.83zm-1.51 3.65c.25-.28.37-.69.37-1.22s-.16-.92-.48-1.14c-.32-.23-.82-.34-1.5-.34H79.7v3.12h1.38c.68 0 1.15-.14 1.4-.42zM95.85 5.36V7.2h-4.59v1.91h4.13v1.76h-4.13v1.92H96v1.83h-6.79V5.36h6.64z"/></g></svg>
+                    </a>
+                </div>
+            </template>
+        </doc-sidebar>
+
+        <div class="grow min-w-0 bg-body-bg">
+            <!-- Render "toolbar" template here on api pages --><!-- Render page content -->
+<div class="flex">
+    <div id="retype-main" class="min-w-0 p-4 grow md:px-16">
+        <main class="relative pb-12 lg:pt-2">
+            <div class="relative retype-markdown" id="retype-content">
+                <!-- Rendered if sidebar right is enabled -->
+                <div id="retype-sidebar-right-toggle"></div>
+                <doc-page-actions></doc-page-actions>
+
+                <!-- Page content  -->
+<h1 id="one-docker-compose-file-for-zurg-plex-and-rex">一个 Docker Compose 文件搞定 zurg、Plex 和 rex</h1>
+<div id="retype-page-description" class="description-display text-description font-description leading-description mb-description-margin-bottom mt-description-margin-top tracking-description text-transform-description">一份经过测试的 docker-compose.yml，可在一台 Linux 机器上同时运行 zurg、Plex Media Server 和 rex，从安装到在 Plex 中播放，并附上常见错误的解决办法。</div>
+<p>在 Linux 机器上，一个 <code translate="no" v-pre>docker-compose.yml</code> 就能让 zurg、Plex Media Server 和 rex 同时运行。zurg 会把你的库以文件夹的形式显示在 <code translate="no" v-pre>/zurg_mnt/zurg</code> 下，Plex Media Server 读取这些文件夹，而 rex 则直接从 zurg 获取同一个库，不需要任何文件夹。先运行一次 zurg 的 Docker 安装程序，然后把它的 <code translate="no" v-pre>docker-compose.yml</code> 换成下面这个。</p>
+<p>只想用 Plex Media Server 或 rex 其中一个？就把另一个从文件里删掉。如果不用 Plex，还要删掉 rex 的 <code translate="no" v-pre>command:</code> 那一行。</p>
+<p>Windows 或 Mac 上的 Docker Desktop 无法运行这套方案：zurg 的文件夹不会出现在资源管理器或访达（Finder）里，而且 rex 也无法访问它里面的 zurg。这种情况请使用 <a href="../../setup/windows/">Windows 上的 zurg</a> 或 <a href="../../setup/macos/">macOS 上的 zurg</a>。</p>
+<h2 id="before-you-start">开始之前</h2>
+<ul>
+<li><strong>一台一直开着的 Linux 机器。</strong> 如果没装 Docker，安装程序会自动装上。</li>
+<li><strong>一个 zurg 赞助。</strong> zurg 镜像是私有的。在 <a href="https://gatekeeper.debridmediamanager.com/">gatekeeper</a> 上赞助一下，它就会给你的 GitHub 账号开通访问权限。</li>
+<li><strong>你的 Real-Debrid API 令牌</strong>，或者 zurg 支持的其他服务的登录信息：<a href="../../../guides/real-debrid-api-token/">你的 Real-Debrid API 令牌</a>。</li>
+<li><strong>如果用 Plex Media Server</strong>，需要你的 Plex 账号。<strong>如果用 rex</strong>，需要专门为它新建的一个 Plex 账号：<a href="../../../rex/with-zurg/#before-you-start">rex 与 zurg 配合使用</a> 里解释了原因。</li>
+</ul>
+<h2 id="1-run-zurgs-docker-installer">1. 运行 zurg 的 Docker 安装程序</h2>
+<div id="1-run-zurgs-docker-installer-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">curl -fsSL https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install-docker.sh | bash</code></pre>
+</doc-codeblock></div>
+<p>它会在缺少 Docker 时自动安装（会先询问你）。然后为 zurg 的文件夹准备好 <code translate="no" v-pre>/zurg_mnt</code>，现在和每次重启后都会执行。接着登录 GitHub 以拉取 zurg 镜像，写入 <code translate="no" v-pre>~/zurg/docker-compose.yml</code>，询问你的服务和 token，启动 zurg，并运行 <code translate="no" v-pre>zurg doctor</code>。<a href="../../setup/docker/">zurg 的 Docker 设置</a>也是手动完成同样的事情。</p>
+<p><strong>你应该看到的结果。</strong></p>
+<div id="1-run-zurgs-docker-installer-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">ls /zurg_mnt/zurg</code></pre>
+</doc-codeblock></div>
+<p>列出 <code translate="no" v-pre>__all__</code>、<code translate="no" v-pre>__downloads__</code>、<code translate="no" v-pre>__unplayable__</code>、<code translate="no" v-pre>movies</code>、<code translate="no" v-pre>shows</code> 和 <code translate="no" v-pre>version.txt</code>。</p>
+<h2 id="2-swap-in-the-full-file">2. 换成完整的文件</h2>
+<div id="2-swap-in-the-full-file-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/zurg
+nano docker-compose.yml</code></pre>
+</doc-codeblock></div>
+<p>用下面的内容替换其中的全部内容：</p>
+<div id="2-swap-in-the-full-file-code-2" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-yaml"><code v-pre class="language-yaml">services:
+  zurg:
+    image: ghcr.io/debridmediamanager/zurg:${ZURG_TAG}
+    container_name: zurg
+    restart: unless-stopped
+    devices:
+      - /dev/fuse
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    ports:
+      - 9999:9999
+    volumes:
+      - ./:/config
+      - /zurg_mnt:/zurg_mnt:rshared
+
+  plex:
+    image: plexinc/pms-docker
+    container_name: plex
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - TZ=Europe/London
+      - PLEX_CLAIM=
+    volumes:
+      - ../plex/config:/config
+      - ../plex/transcode:/transcode
+      - /zurg_mnt:/zurg_mnt:rslave
+    depends_on:
+      zurg:
+        condition: service_healthy
+
+  rex:
+    image: ghcr.io/debridmediamanager/rex:nightly
+    container_name: rex
+    restart: unless-stopped
+    network_mode: host
+    command: --port 32500
+    volumes:
+      - ../rex/config:/config</code></pre>
+</doc-codeblock></div>
+<ul>
+<li><strong>zurg</strong> 是安装程序自带的服务，保持不变。</li>
+<li><strong>plex</strong> 会在与 zurg 相同的路径 <code translate="no" v-pre>/zurg_mnt/zurg</code> 下看到 zurg 的文件夹，所以 zurg 请求扫描时给出的名称，就是 Plex 认识的文件夹。<code translate="no" v-pre>rslave</code> 能让这些文件夹在 zurg 重启后仍然保留。在 <code translate="no" v-pre>TZ</code> 中填写你自己的时区。</li>
+<li><strong>PLEX_CLAIM</strong> 会在 Plex Media Server 首次启动时把它登录到你的账户。先登录 Plex，打开 <a href="https://www.plex.tv/claim">plex.tv/claim</a>，复制代码，然后粘贴到 <code translate="no" v-pre>=</code> 后面。代码几分钟后就会过期，所以请立即启动整套服务。</li>
+<li><strong>rex</strong> 是 <a href="../../../rex/with-zurg/#d2-start-rex-in-docker">rex 搭配 zurg</a> 中介绍的服务，使用端口 32500，因为 Plex Media Server 占用了 32400。它的文件会保存在 <code translate="no" v-pre>~/rex/config</code>，这也是 rex 搭配 zurg 时查找文件的位置。</li>
+</ul>
+<p>保存后启动所有服务：</p>
+<div id="2-swap-in-the-full-file-code-3" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">docker compose up -d
+docker compose ps</code></pre>
+</doc-codeblock></div>
+<p>如果 <code translate="no" v-pre>docker</code> 提示 permission denied，就在本页每条 <code translate="no" v-pre>docker</code> 命令前面加上 <code translate="no" v-pre>sudo</code>。</p>
+<p><strong>你应该看到什么。</strong> 三个容器：<code translate="no" v-pre>plex</code> 和 <code translate="no" v-pre>zurg</code> 显示 <code translate="no" v-pre>(healthy)</code>，<code translate="no" v-pre>rex</code> 显示 <code translate="no" v-pre>Up</code>。Plex Media Server 自己的文件会保存到 <code translate="no" v-pre>~/plex</code>。</p>
+<h2 id="3-add-zurgs-folders-in-plex">3. 在 Plex 中添加 zurg 的文件夹</h2>
+<p>在 Plex Web 中打开 <code translate="no" v-pre>http://&lt;this machine's LAN IP&gt;:32400/web</code>。添加一个 <strong>Movies</strong> 资料库,文件夹为 <code translate="no" v-pre>/zurg_mnt/zurg/movies</code>,再添加一个 <strong>TV Shows</strong> 资料库,文件夹为 <code translate="no" v-pre>/zurg_mnt/zurg/shows</code>,具体做法参见 <a href="../../../guides/real-debrid-plex/#3-add-the-folders-in-plex">Real-Debrid in Plex</a>。</p>
+<p>为了让 Plex 及时知道有新内容,请打开 zurg 的仪表盘 <code translate="no" v-pre>http://&lt;this machine's LAN IP&gt;:9999/config/</code>,在 <strong>Media Server Integration</strong> 下点击 <strong>Login with Plex</strong>(参见其中的<a href="../../../guides/real-debrid-plex/#4-let-zurg-tell-plex-about-new-things">第 4 步</a>)。</p>
+<h2 id="4-set-up-rex">4. 设置 rex</h2>
+<p>按照 <a href="../../../rex/with-zurg/">rex 搭配 zurg</a> 中从 <a href="../../../rex/with-zurg/#d3-add-it-to-a-plex-account">D3</a> 到 <a href="../../../rex/with-zurg/#d5-watch">D5</a> 的步骤操作，只是凡是写 <code translate="no" v-pre>32400</code> 的地方都改用 <code translate="no" v-pre>32500</code>。例如 zurg 的那一行是 <code translate="no" v-pre>rex_url: http://192.168.1.20:32500</code>，IP 用 rex 的局域网 IP。这样你的 Plex 应用就会同时列出两个服务器：<a href="../../../rex/with-zurg/#step-2-install-rex">rex 搭配 zurg 的第 2 步</a> 说明了如何区分它们。</p>
+<p>（之前的译文被拒绝了：代码片段有差异（<code translate="no" v-pre>32400</code>）。请保持结构完全不变。）</p>
+<h2 id="updating">更新</h2>
+<div id="updating-code-1" class="codeblock-wrapper"><doc-codeblock>
+<pre translate="no" class="language-bash"><code v-pre class="language-bash">cd ~/zurg
+docker compose pull
+docker compose up -d</code></pre>
+</doc-codeblock></div>
+<p>这会同时更新 zurg、Plex 和 rex。如果 rex 与 zurg 一起运行在 <code translate="no" v-pre>~/rex</code> 中执行 <code translate="no" v-pre>docker compose</code>，那么在这里 <code translate="no" v-pre>~/zurg</code> 中执行时要在末尾加上 <code translate="no" v-pre>rex</code>，这样只会影响 rex：用 <code translate="no" v-pre>docker compose stop rex</code> 代替 <code translate="no" v-pre>docker compose down</code>，用 <code translate="no" v-pre>docker compose up -d rex</code> 代替 <code translate="no" v-pre>docker compose up -d</code>。</p>
+<h2 id="when-something-is-wrong">出现问题时</h2>
+<p><code translate="no" v-pre>docker compose logs --tail=100 zurg</code>（或 <code translate="no" v-pre>plex</code>、<code translate="no" v-pre>rex</code>）会显示容器最后输出的内容。</p>
+<retype-table copy-text="| 你看到的 | 该怎么做 |
+|---|---|
+| 安装程序显示 `Host-visible Docker mounts require a Linux host. Use the binary installer on macOS or Windows.` | 你用的是 Mac 或 Windows。请改用 [Windows](../setup/windows.md) 或 [macOS](../setup/macos.md) 的安装程序来安装 zurg。 |
+| Docker 拉取 zurg 时出现 `Error response from daemon: error from registry: unauthorized` | 这台机器没有用一个有 zurg 访问权限的账号登录 GitHub 的镜像仓库。请先在 [gatekeeper](https://gatekeeper.debridmediamanager.com/) 上赞助，然后重新运行安装程序。如果要手动登录，请参阅 [zurg 的 Docker 设置](../setup/docker.md#1-install-docker-and-unlock-the-image)：令牌需要同时具备 `read:packages` 和 `repo` 权限。 |
+| `path /zurg_mnt is mounted on ... but it is not a shared mount` | `/zurg_mnt` 还没有设置为共享挂载。运行 `sudo mount --bind /zurg_mnt /zurg_mnt` 和 `sudo mount --make-rshared /zurg_mnt`，然后执行 `docker compose up -d`。安装程序会让这个设置在重启后依然生效；如果手动操作，请参阅 [zurg 的 Docker 设置第 7 步](../setup/docker.md#7-make-the-shared-parent-survive-reboots)。 |
+| `zurg` 不断重启，日志结尾是 `Error: config ./config.yml is not valid YAML: yaml: unmarshal errors:` 和 `mapping key &quot;...&quot; already defined` | zurg 的配置里有同一个设置写了两次。运行 `sudo nano ~/zurg/config.yml`，删除报错中指出的两行之一，保存后运行 `docker compose restart zurg`。 |
+| zurg 的日志显示 `Mount verification failed: mount verification timeout: /zurg_mnt/zurg/version.txt not accessible after 60 attempts -- you appear to be running inside Docker, mount a parent directory with rshared propagation` | zurg 的文件夹没有挂载成功。请检查 zurg 的 volume 配置行是否为 `/zurg_mnt:/zurg_mnt:rshared`（挂载的是父目录，而不是 `/zurg_mnt/zurg`），并确认 `/zurg_mnt` 已设为共享（见上一行）。[Mount is empty](../setup/docker.md#mount-is-empty) 里有更多检查项。 |
+| zurg 重启后 Plex 的媒体库变空，并且 `docker exec plex ls /zurg_mnt/zurg` 显示 `cannot access '/zurg_mnt/zurg': Transport endpoint is not connected` | Plex 的 volume 配置行缺少 `rslave`。它必须是 `/zurg_mnt:/zurg_mnt:rslave`。改好后运行 `docker compose up -d`。 |
+| rex 启动时报错 `rex: cannot bind 0.0.0.0:32400: Address already in use (os error 98) (another rex or Plex on this port? --port picks another)` | Plex Media Server 已经占用了 32400 端口。请在 rex 上保留 `command: --port 32500`。 |
+| 刚启动后 `/zurg_mnt/zurg/movies` 为空，或者显示 `Input/output error` | zurg 还在读取你的账号内容。运行 `curl http://localhost:9999/ready`，完成后会输出 `ready`。在此期间不要重启 zurg，否则会从头开始读取。 |
+| 标题在 rex 里能看到，但无法播放 | [rex with zurg 的 When something is wrong](../../rex/with-zurg.md#when-something-is-wrong) 中的 `upstream failed` 那一行会检查 rex 能否连到 zurg。 |
+| 磁盘被占满 | zurg 会把播放过的内容副本保存在 `~/zurg/data/rclone-cache` 中，默认最多 256G。[What lives where](../setup/docker.md#what-lives-where) 说明了如何限制大小。 |">
+<div class="table-wrapper scrollbar overflow-hidden">
+<table class="comfortable">
+<thead>
+<tr>
+<th>你看到的</th>
+<th>该怎么做</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>安装程序显示 <code translate="no" v-pre>Host-visible Docker mounts require a Linux host. Use the binary installer on macOS or Windows.</code></td>
+<td>你用的是 Mac 或 Windows。请改用 <a href="../../setup/windows/">Windows</a> 或 <a href="../../setup/macos/">macOS</a> 的安装程序来安装 zurg。</td>
+</tr>
+<tr>
+<td>Docker 拉取 zurg 时出现 <code translate="no" v-pre>Error response from daemon: error from registry: unauthorized</code></td>
+<td>这台机器没有用一个有 zurg 访问权限的账号登录 GitHub 的镜像仓库。请先在 <a href="https://gatekeeper.debridmediamanager.com/">gatekeeper</a> 上赞助，然后重新运行安装程序。如果要手动登录，请参阅 <a href="../../setup/docker/#1-install-docker-and-unlock-the-image">zurg 的 Docker 设置</a>：令牌需要同时具备 <code translate="no" v-pre>read:packages</code> 和 <code translate="no" v-pre>repo</code> 权限。</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>path /zurg_mnt is mounted on ... but it is not a shared mount</code></td>
+<td><code translate="no" v-pre>/zurg_mnt</code> 还没有设置为共享挂载。运行 <code translate="no" v-pre>sudo mount --bind /zurg_mnt /zurg_mnt</code> 和 <code translate="no" v-pre>sudo mount --make-rshared /zurg_mnt</code>，然后执行 <code translate="no" v-pre>docker compose up -d</code>。安装程序会让这个设置在重启后依然生效；如果手动操作，请参阅 <a href="../../setup/docker/#7-make-the-shared-parent-survive-reboots">zurg 的 Docker 设置第 7 步</a>。</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>zurg</code> 不断重启，日志结尾是 <code translate="no" v-pre>Error: config ./config.yml is not valid YAML: yaml: unmarshal errors:</code> 和 <code translate="no" v-pre>mapping key &quot;...&quot; already defined</code></td>
+<td>zurg 的配置里有同一个设置写了两次。运行 <code translate="no" v-pre>sudo nano ~/zurg/config.yml</code>，删除报错中指出的两行之一，保存后运行 <code translate="no" v-pre>docker compose restart zurg</code>。</td>
+</tr>
+<tr>
+<td>zurg 的日志显示 <code translate="no" v-pre>Mount verification failed: mount verification timeout: /zurg_mnt/zurg/version.txt not accessible after 60 attempts -- you appear to be running inside Docker, mount a parent directory with rshared propagation</code></td>
+<td>zurg 的文件夹没有挂载成功。请检查 zurg 的 volume 配置行是否为 <code translate="no" v-pre>/zurg_mnt:/zurg_mnt:rshared</code>（挂载的是父目录，而不是 <code translate="no" v-pre>/zurg_mnt/zurg</code>），并确认 <code translate="no" v-pre>/zurg_mnt</code> 已设为共享（见上一行）。<a href="../../setup/docker/#mount-is-empty">Mount is empty</a> 里有更多检查项。</td>
+</tr>
+<tr>
+<td>zurg 重启后 Plex 的媒体库变空，并且 <code translate="no" v-pre>docker exec plex ls /zurg_mnt/zurg</code> 显示 <code translate="no" v-pre>cannot access '/zurg_mnt/zurg': Transport endpoint is not connected</code></td>
+<td>Plex 的 volume 配置行缺少 <code translate="no" v-pre>rslave</code>。它必须是 <code translate="no" v-pre>/zurg_mnt:/zurg_mnt:rslave</code>。改好后运行 <code translate="no" v-pre>docker compose up -d</code>。</td>
+</tr>
+<tr>
+<td>rex 启动时报错 <code translate="no" v-pre>rex: cannot bind 0.0.0.0:32400: Address already in use (os error 98) (another rex or Plex on this port? --port picks another)</code></td>
+<td>Plex Media Server 已经占用了 32400 端口。请在 rex 上保留 <code translate="no" v-pre>command: --port 32500</code>。</td>
+</tr>
+<tr>
+<td>刚启动后 <code translate="no" v-pre>/zurg_mnt/zurg/movies</code> 为空，或者显示 <code translate="no" v-pre>Input/output error</code></td>
+<td>zurg 还在读取你的账号内容。运行 <code translate="no" v-pre>curl http://localhost:9999/ready</code>，完成后会输出 <code translate="no" v-pre>ready</code>。在此期间不要重启 zurg，否则会从头开始读取。</td>
+</tr>
+<tr>
+<td>标题在 rex 里能看到，但无法播放</td>
+<td><a href="../../../rex/with-zurg/#when-something-is-wrong">rex with zurg 的 When something is wrong</a> 中的 <code translate="no" v-pre>upstream failed</code> 那一行会检查 rex 能否连到 zurg。</td>
+</tr>
+<tr>
+<td>磁盘被占满</td>
+<td>zurg 会把播放过的内容副本保存在 <code translate="no" v-pre>~/zurg/data/rclone-cache</code> 中，默认最多 256G。<a href="../../setup/docker/#what-lives-where">What lives where</a> 说明了如何限制大小。</td>
+</tr>
+</tbody>
+</table>
+</div>
+</retype-table>
+<p>还是解决不了？请到 <a href="https://discord.com/invite/7u4YjMThXP">Discord</a> 上的 <strong>zurg-support</strong> 论坛提问。<a href="../../../guides/remote-help/">Getting help</a> 说明了需要提供哪些信息。</p>
+<h2 id="questions">常见问题</h2>
+<h3 id="can-you-check-my-docker-compose-file">你能帮我检查一下我的 docker compose 文件吗？</h3>
+<p>和上面的那个对比一下。最重要的是:zurg 以 <code translate="no" v-pre>rshared</code> 方式挂载 <code translate="no" v-pre>/zurg_mnt</code>,Plex 以 <code translate="no" v-pre>rslave</code> 方式挂载同一个 <code translate="no" v-pre>/zurg_mnt</code>,rex 使用 <code translate="no" v-pre>ghcr.io/debridmediamanager/rex</code> 镜像,并设置 <code translate="no" v-pre>network_mode: host</code>。一个名为 <code translate="no" v-pre>rex</code> 却运行 <code translate="no" v-pre>plexinc/pms-docker</code> 的服务,只是第二个 Plex Media Server,而不是 rex。</p>
+<h3 id="do-i-need-a-separate-rclone-container">我需要单独的 rclone 容器吗？</h3>
+<p>不对。zurg 会在自己的容器里运行 rclone，并把你的媒体库直接挂载到 <code translate="no" v-pre>/zurg_mnt/zurg</code>。</p>
+<h3 id="can-i-use-plex-media-server-and-rex-together">我能同时使用 Plex Media Server 和 rex 吗？</h3>
+<p>是的，这个文件就是这么做的。Plex Media Server 从 zurg 的文件夹播放，rex 则直接从 zurg 播放。你的 Plex 应用里会同时显示两者。如果你不想两个都保留，只留下你实际使用的那个就行。</p>
+<h3 id="does-this-work-on-a-nas">这个能在 NAS 上用吗？</h3>
+<p>测试是在 Linux 电脑上做的，不是在 NAS 上。安装程序需要终端（SSH）并能使用 <code translate="no" v-pre>sudo</code>，还需要 FUSE（<code translate="no" v-pre>/dev/fuse</code>）。如果第 1 步结束后 zurg 的文件夹位于 <code translate="no" v-pre>/zurg_mnt/zurg</code>，就继续第 2 步。</p>
+<h3 id="which-versions-was-this-tested-with">这个方案是用哪些版本测试的？</h3>
+<p>zurg <code translate="no" v-pre>2026.11.14.1134-nightly</code>、rex <code translate="no" v-pre>2026.11.14.1123-nightly</code> 和 Plex Media Server <code translate="no" v-pre>1.43.5.11079</code>，发布于 2026 年 11 月 14 日。</p>
+
+                
+                <!-- Required only on API pages -->
+                <doc-toolbar-member-filter-no-results></doc-toolbar-member-filter-no-results>
+            </div>
+            <footer id="retype-content-footer" class="clear-both">
+            
+                <nav id="retype-nextprev" class="print:hidden flex mt-14">
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 h-full flex items-center break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-l-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/guides/renaming/">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19 11H7.41l5.29-5.29a.996.996 0 10-1.41-1.41l-7 7a1 1 0 000 1.42l7 7a1.024 1.024 0 001.42-.01.996.996 0 000-1.41L7.41 13H19c.55 0 1-.45 1-1s-.45-1-1-1z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                            <span>
+                                <span class="block text-xs font-normal text-base-text-muted">上一个</span>
+                                <span class="block mt-1">重命名</span>
+                            </span>
+                        </a>
+                    </div>
+            
+                    <div class="w-1/2">
+                        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-normal font-medium text-body-link border border-base-border hover:border-base-border-hover rounded-r-lg transition-colors duration-150 relative hover:z-5" href="../../../zurg/guides/plex/">
+                            <span>
+                                <span class="block text-xs font-normal text-right text-base-text-muted">下一个</span>
+                                <span class="block mt-1">Plex</span>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+
+        <div id="retype-page-footer" class="print:border-none border-t border-base-border pt-6 mb-8">
+            <footer class="flex flex-wrap items-center justify-between print:justify-center">
+                <div id="retype-footer-links" class="print:hidden">
+                    <ul class="flex flex-wrap items-center text-sm">
+                    </ul>
+                </div>
+                <div id="retype-copyright" class="print:justify-center py-2 text-footer-text font-footer-link text-sm leading-relaxed"><p>© Copyright 2026. All rights reserved.</p></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Rendered if sidebar right is enabled -->
+    <!-- Sidebar right skeleton-->
+    <div v-cloak class="fixed top-0 bottom-0 right-0 translate-x-full bg-sidebar-right-bg border-sidebar-right-border lg:sticky lg:border-l lg:shrink-0 lg:pt-6 lg:translate-x-0 sm:w-1/2 lg:w-64 lg:z-0 md:w-104 sidebar-right skeleton">
+        <div class="pl-5">
+            <div class="w-32 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-48 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+            <div class="w-40 h-3 mb-4 bg-skeleton-bg rounded-full loading"></div>
+        </div>
+    </div>
+
+    <!-- User should be able to hide sidebar right -->
+    <doc-sidebar-right v-cloak></doc-sidebar-right>
+</div>
+
+        </div>
+    </div>
+
+    <doc-search-mobile></doc-search-mobile>
+    <doc-back-to-top></doc-back-to-top>
+</div>
+
+
+    <div id="retype-overlay-target"></div>
+
+        <script data-cfasync="false">window.__DOCS__ = { "title": "Docker Compose", level: 3, icon: "file", hasPrism: true, hasInstagram: false, hasMermaid: false, hasMath: false, tocDepth: 23, "md": "/zurg/guides/docker-compose.md" }</script>
+</body>
+</html>

@@ -496,21 +496,28 @@ cd $HOME\zurg
 $env:ZURG_INSTALL_MODE = "update"; irm https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.ps1 | iex
 ```
 
-## トラブルシューティング {#troubleshooting}
+## 問題が起きたとき {#when-something-is-wrong}
 
-| 見えるもの | 意味 |
+まず、zurg フォルダ（`cd $HOME\zurg`）で `.\zurg.exe doctor` を実行します。インストールを確認し、各項目ごとに `PASS`、`WARN`、`FAIL` のいずれかの行を表示します。以下の行は、Windows 11 Pro、PowerShell 5.1、zurg `2026.11.14.1134-nightly` で 2026年11月14日に確認したものです。
+
+| 表示される内容 | やること |
 |---|---|
-| `Z:` がエクスプローラーに表示されない | セッションのルールです。[上記](#keeping-it-running-the-session-rules)を見てください。マウント自体は多分問題ないので、まず `http://localhost:9999/http/` を確認してください。 |
-| `zurg doctor` でタスクは準備はできているのに running ではない | 対話型ユーザーがログインしていません。デスクトップにログインして `.\zurg.exe service start` を実行してください。 |
-| `symlinks not supported without the --links flag` | `rclone_extra_args` に `--links` がありません。見た目だけの問題です。ドライブの起動時に、rclone が WinFsp のシンボリックリンクの確認をマウントのルートに一度だけ行い、その答えとして出ているメッセージです。フラグがなくてもマウントは動きます。このメッセージを消したい場合はフラグを追加してください。 |
-| `__magic__` または `/http/` の下に `Library is still loading` | 最初の Real-Debrid の実行でアカウント全体をたどります。そのまま待ってください。アカウントが大きいと1時間近くかかることもあります。NZB ライブラリではこのメッセージは出ません。最初から空の状態で始まるからです。 |
-| `realdebrid will not take <name>: it refuses that name outright` | Real-Debrid は一部のリリース名（`WEBRip` など）を拒否します。別の名前のリリースを使ってください。セットアップに問題はありません。 |
-| 追加が `could not read back id=…` やレート制限のテキストで失敗する | アカウントの API 上限を使い切っています。最初のライブラリのスキャンで使い切ることがあります。同じトークンで2つ目の zurg を動かしたときも同じになります。スキャンが終わるまで待ってください。1つのトークンを複数のインスタンスで共有しないでください。 |
-| タスクの起動が `0x800710E0` で拒否される | タスクがまだ「実行中」のままです。ランチャーのウィンドウが終了していません。`Stop-ScheduledTask zurg` を実行してから起動してください。 |
-| SSH セッションから `Get-PSDrive` に `Z:` が表示されない | 想定どおりです。ログオンセッションが違うためです。セッションの表を見てください。 |
-| `data\rclone-cache` が増え続ける | マウントの再生キャッシュです。既定では 256G で上限があります。[キャッシュを小さく保つ](#keeping-the-cache-small)を見てください。 |
+| インストールコマンドの直後に `iex : The property 'OSArchitecture' cannot be found on this object.` と表示される | インストーラーのバグで、2026年9月12日に修正されました。同じコマンドをもう一度実行してください。それより前に `install.ps1` のコピーを保存していた場合は、もう一度ダウンロードしてください。 |
+| インストーラーが `zurg doctor found a failed check.` で止まる | インストーラーは最後に `zurg doctor` を実行しますが、そのうちのひとつのチェックが失敗しました。すぐ上の `FAIL` の行に、どの項目かが書かれています。その項目の対処法は以下の行に書いてあります。修正したら、`$HOME\zurg` で `.\zurg.exe doctor` をもう一度実行してください。zurg の起動と `Z:` のマウントを、最大2分間待ちます。 |
+| `FAIL mount` と `drive Z: is already in use on this computer so rclone cannot mount there. Pick a drive letter nothing else uses` が表示される | 別のものがすでに `Z:` を使っています。USB ディスク、ネットワークドライブ、または zurg が設定する前に自分で設定した rclone のいずれかです。空いているドライブ文字を指定して `.\zurg.exe setup --mount-path "Y:"` を実行し、その後 `.\zurg.exe service restart` を実行してください。setup はアカウントと設定を残し、ドライブの場所だけを変更します。 |
+| `WARN service user service is installed but not running` の後に、`FAIL HTTP` と `No connection could be made because the target machine actively refused it.` が表示される | zurg が動いていません。zurg は Windows にログインしたときに起動します。デスクトップにログインして、`.\zurg.exe service start` を実行してください。 |
+| `.\zurg.exe service start` の後に `Error: service zurg is not installed` と表示される | zurg のスケジュールタスクがありません。たいていは zurg を手動で起動したことが原因です。zurg フォルダで `.\zurg.exe setup` を実行してください。`config.yml` は残したまま、タスクを追加して zurg を起動します。 |
+| `Error: config ./config.yml is not valid YAML: yaml: unmarshal errors:` と `mapping key "enable_repair" already defined at line 38` が表示される | 同じ設定が `config.yml` に2回書かれています。`notepad config.yml` でファイルを開き、エラーに出ている2行のうち1行を削除して保存し、`.\zurg.exe service restart` を実行してください。 |
+| エクスプローラーで `Z:` を開けない、または表示されない | セッションのルールです。[上記](#keeping-it-running-the-session-rules)を参照してください。マウント自体は問題ないことが多いので、まずブラウザで `http://localhost:9999/http/` を確認してください。`doctor` が `FAIL mount` と表示する場合は、上の行に原因が書いてあります。 |
+| `dir Z:\` で `Cannot find drive. A drive with the name 'Z' does not exist.` と表示される | その PowerShell からは、このドライブが見えていません。**Run as administrator** で開いたウィンドウや SSH セッションからは `Z:` が見えません。どちらもデスクトップセッションとは別に動いており、`Z:` はデスクトップセッション側にあります。通常の PowerShell ウィンドウか、エクスプローラーを使ってください。 |
+| `symlinks not supported without the --links flag` と表示される | `rclone_extra_args` に `--links` がありません。見た目だけの問題です。ドライブが立ち上がるときに、rclone が WinFsp のシンボリックリンク確認を一度だけ行うために出るものです。フラグがなくてもマウントは動きます。このメッセージを消したい場合は、フラグを追加してください。 |
+| `Z:` に `movies` と `shows` はあるのに中身が空、または `__magic__` や `/http/` の下に `Library is still loading` と表示される | 最初の Real-Debrid の実行で、アカウントの中身を読み込みます。しばらく待ってください。大きなアカウントだと1時間近くかかることもあります。`curl.exe http://localhost:9999/ready` は、完了すると `ready` と表示します。NZB ライブラリはこの表示を出しません。最初から空の状態で始まります。 |
+| `realdebrid will not take <name>: it refuses that name outright` と表示される | Real-Debrid は一部のリリース名（`WEBRip` など）を受け付けません。別の名前のリリースを使ってください。セットアップに問題はありません。 |
+| 追加が `could not read back id=…` やレート制限のメッセージで失敗する | アカウントの API の上限を使い切っています。最初のライブラリ読み込みで使い切ることがあります。同じトークンを使う2つ目の zurg でも起きることがあります。読み込みが終わるまで待ってください。1つのトークンを複数のインスタンスで共有しないでください。 |
+| `0x800710E0` でタスクの開始が拒否される | タスクがまだ「実行中」のままです。ランチャーのウィンドウが終了していないためです。`Stop-ScheduledTask zurg` を実行してから、起動し直してください。 |
+| `data\rclone-cache` がどんどん大きくなる | マウントの再生キャッシュです。既定では 256G までに制限されています。[キャッシュを小さく保つ](#keeping-the-cache-small)を参照してください。 |
 
-まだ解決しませんか？ [Discord](https://discord.com/invite/7u4YjMThXP) の **zurg-support** フォーラムで質問してください。[サポートの受け方](../../guides/remote-help.md)には、何を含めればよいかが書かれています。
+それでも解決しない場合は、[Discord](https://discord.com/invite/7u4YjMThXP) の **zurg-support** フォーラムで質問してください。[サポートの依頼方法](../../guides/remote-help.md)に、含めるべき情報が書かれています。
 
 ## リモート派向け: SSH 経由の PowerShell {#powershell-over-ssh-for-the-remote-minded}
 

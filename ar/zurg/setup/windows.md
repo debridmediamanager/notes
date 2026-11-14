@@ -486,21 +486,28 @@ cd $HOME\zurg
 $env:ZURG_INSTALL_MODE = "update"; irm https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.ps1 | iex
 ```
 
-## استكشاف الأخطاء وإصلاحها {#troubleshooting}
+## عندما تحدث مشكلة {#when-something-is-wrong}
 
-| ما تراه | ما معناه |
+ابدأ بالأمر `.\zurg.exe doctor` داخل مجلد zurg (`cd $HOME\zurg`). يفحص الأمر التثبيت ويطبع سطر `PASS` أو `WARN` أو `FAIL` لكل جزء. تم التحقق من الصفوف أدناه على Windows 11 Pro مع PowerShell 5.1 وzurg `2026.11.14.1134-nightly` في 14 نوفمبر 2026.
+
+| What you see | What to do |
 |---|---|
-| `Z:` غير ظاهر في Explorer | قاعدة الجلسة — انظر [أعلاه](#keeping-it-running-the-session-rules). على الأرجح أن التركيب سليم؛ تحقّق من `http://localhost:9999/http/` أولاً. |
-| يقول `zurg doctor` إن المهمة جاهزة لكنها غير قيد التشغيل | لا يوجد مستخدم مسجّل دخوله بشكل تفاعلي. سجّل الدخول إلى سطح المكتب وشغّل `.\zurg.exe service start`. |
-| `symlinks not supported without the --links flag` | الخيار `--links` غير موجود في `rclone_extra_args`. أمر تجميلي — rclone يردّ على فحص WinFsp للروابط الرمزية في جذر التركيب، مرة واحدة فقط عند ظهور القرص. التركيب يعمل بدونه؛ أضف الخيار لإخفاء هذا السطر. |
-| `Library is still loading` تحت `__magic__` أو `/http/` | أول تشغيل لـ Real-Debrid يمرّ على الحساب كله. انتظر. في الحسابات الكبيرة قد يستغرق ذلك معظم ساعة. مكتبة NZB لا تظهر هذه الرسالة أبداً — تبدأ فارغة. |
-| `realdebrid will not take <name>: it refuses that name outright` | Real-Debrid يمنع بعض أسماء الإصدارات (`WEBRip` وما شابهها). جرّب إصداراً باسم مختلف؛ لا خلل في الإعداد. |
-| تفشل الإضافة برسالة `could not read back id=…` أو نص تحديد المعدل | استُنفدت حصة واجهة برمجة التطبيقات الخاصة بالحساب. قد يستنفدها المرور الأول على المكتبة، ويمكن أن يفعل ذلك أيضاً zurg ثانٍ على نفس الرمز. دع المرور ينتهي. لا تشارك رمزاً واحداً بين عدة نسخ. |
-| رُفض بدء المهمة، `0x800710E0` | المهمة ما زالت «running» — نافذة المشغّل لم تُغلق أبداً. أوقفها بـ `Stop-ScheduledTask zurg`، ثم ابدأها. |
-| `Get-PSDrive` لا يُظهر `Z:` من جلسة SSH | أمر متوقّع — جلسة تسجيل دخول مختلفة. انظر جدول الجلسات. |
-| `data\rclone-cache` يستمر في النمو | هذا هو كاش التشغيل الخاص بالتركيب، ويُحدّ بـ 256G افتراضياً. انظر [الحفاظ على صغر الكاش](#keeping-the-cache-small). |
+| `iex : The property 'OSArchitecture' cannot be found on this object.` مباشرةً بعد أمر التثبيت | خلل في المثبّت، تم إصلاحه في 12 سبتمبر 2026. شغّل الأمر نفسه مرة أخرى. إذا كنت قد حفظت نسخة من `install.ps1` قبل ذلك التاريخ، فحمّلها من جديد. |
+| يتوقف المثبّت مع `zurg doctor found a failed check.` | يشغّل المثبّت الأمر `zurg doctor` في النهاية، وفشل أحد الفحوص. يوضح سطر `FAIL` الذي يسبقها أي فحص هو، والصفوف أدناه تغطي هذه الحالات. بعد الإصلاح، شغّل `.\zurg.exe doctor` مرة أخرى داخل `$HOME\zurg`. ينتظر الأمر حتى دقيقتين كي يبدأ zurg ويركّب `Z:`. |
+| `FAIL mount` مع `drive Z: is already in use on this computer so rclone cannot mount there. Pick a drive letter nothing else uses` | هناك شيء آخر يستخدم `Z:` بالفعل: قرص USB، أو محرك شبكة، أو rclone كنت قد أعددته قبل أن يعدّه zurg عنك. أعطِ zurg حرفاً حراً بالأمر `.\zurg.exe setup --mount-path "Y:"`، ثم شغّل `.\zurg.exe service restart`. تحتفظ الإعدادات بحساباتك وإعداداتك، وتنقل المحرك فقط. |
+| `WARN service user service is installed but not running`، ثم `FAIL HTTP` مع `No connection could be made because the target machine actively refused it.` | zurg لا يعمل. يبدأ تلقائياً عند تسجيل الدخول إلى Windows. سجّل الدخول إلى سطح المكتب وشغّل `.\zurg.exe service start`. |
+| `Error: service zurg is not installed` بعد `.\zurg.exe service start` | المهمة المجدولة الخاصة بـ zurg مفقودة، وغالباً لأن zurg شُغّل يدوياً. شغّل `.\zurg.exe setup` داخل مجلد zurg. يحتفظ الأمر بملف `config.yml`، ويضيف المهمة، ويشغّل zurg. |
+| `Error: config ./config.yml is not valid YAML: yaml: unmarshal errors:` و `mapping key "enable_repair" already defined at line 38` | هذا الإعداد موجود مرتين في `config.yml`. افتح الملف بالأمر `notepad config.yml`، واحذف أحد السطرين اللذين يذكرهما الخطأ، ثم احفظ، وشغّل `.\zurg.exe service restart`. |
+| لا تستطيع فتح `Z:` في Explorer، أو أنه غير موجود | قاعدة الجلسة: انظر [أعلاه](#keeping-it-running-the-session-rules). التركيب غالباً سليم؛ تحقق من `http://localhost:9999/http/` في المتصفح أولاً. إذا قال `doctor` إن `FAIL mount`، فالصفوف السابقة توضح السبب. |
+| `dir Z:\` يقول `Cannot find drive. A drive with the name 'Z' does not exist.` | لا يرى PowerShell هذا المحرك. النافذة التي فُتحت باستخدام **Run as administrator** لا ترى `Z:`، وكذلك جلسة SSH، لأن كليهما يعمل بعيداً عن جلسة سطح المكتب التي يعيش فيها `Z:`. استخدم نافذة PowerShell عادية، أو Explorer. |
+| `symlinks not supported without the --links flag` | الخيار `--links` غير موجود في `rclone_extra_args`. الرسالة شكلية فقط، فهي رد rclone على فحص WinFsp للروابط الرمزية في جذر التركيب، ويحدث مرة واحدة عند ظهور المحرك. يعمل التركيب بدونه؛ أضف الخيار لإخفاء السطر. |
+| `Z:` يحتوي على `movies` و`shows` لكنهما فارغان، أو تظهر `Library is still loading` تحت `__magic__` أو `/http/` | يمر التشغيل الأول لـ Real-Debrid على الحساب كاملاً. انتظر. في الحسابات الكبيرة قد يستغرق ذلك معظم ساعة. يطبع `curl.exe http://localhost:9999/ready` كلمة `ready` عند الانتهاء. مكتبة NZB لا تظهر هذه الرسالة أبداً، فهي تبدأ فارغة. |
+| `realdebrid will not take <name>: it refuses that name outright` | يرفض Real-Debrid بعض أسماء الإصدارات (مثل `WEBRip` وما شابهها). جرّب إصداراً باسم مختلف؛ لا خلل في الإعداد. |
+| تفشل إضافة بمحتوى `could not read back id=…` أو نص عن تجاوز حد الطلبات | نفد حد استخدام واجهة API للحساب. قد تستهلكه عملية المسح الأولى للمكتبة. ويمكن أن يستهلكه أيضاً zurg ثانٍ يستخدم الرمز نفسه. دع عملية المسح تكتمل. لا تشارك رمزاً واحداً بين عدة نسخ. |
+| رفض بدء المهمة، `0x800710E0` | المهمة ما زالت "running" لأن نافذة المشغّل لم تُغلق. نفّذ `Stop-ScheduledTask zurg` ثم ابدأها. |
+| يستمر `data\rclone-cache` في النمو | هذا هو ذاكرة التخزين المؤقت للتشغيل الخاصة بالتركيب، ويبلغ حدها الأقصى 256G افتراضياً. انظر [الحفاظ على حجم الذاكرة المؤقتة صغيراً](#keeping-the-cache-small). |
 
-ما زلت عالقاً؟ اسأل في منتدى **zurg-support** على [Discord](https://discord.com/invite/7u4YjMThXP). يوضّح [طلب المساعدة](../../guides/remote-help.md) ما يجب ذكره.
+هل ما زلت عالقاً؟ اسأل في منتدى **zurg-support** على [Discord](https://discord.com/invite/7u4YjMThXP). يوضح [طلب المساعدة](../../guides/remote-help.md) ما الذي يجب تضمينه.
 
 ## PowerShell عبر SSH، لمن يفكر بالتحكم عن بُعد {#powershell-over-ssh-for-the-remote-minded}
 

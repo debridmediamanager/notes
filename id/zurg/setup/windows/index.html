@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark">
     <meta name="turbo-root" content="/id">
-    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847994131292">
+    <meta name="turbo-cache-control" content="no-cache" data-turbo-track="reload" data-track-token="4.6.0.847994398381">
 
     <!-- See retype.com -->
     <meta name="generator" content="Retype 4.6.0">
@@ -45,12 +45,12 @@
     <script data-cfasync="false">(function(){var cl=document.documentElement.classList,ls=localStorage.getItem("retype_scheme"),hd=cl.contains("dark"),hl=cl.contains("light"),wm=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;if(ls==="dark"||(!ls&&wm&&!hd&&!hl)){cl.remove("light");cl.add("dark")}else if(ls==="light"||(!ls&&!wm&&!hd&&!hl)){cl.remove("dark");cl.add("light")}})();</script>
 
     <link id="retype-favicon" rel="icon" href="../../../assets/favicon.png" />
-    <link href="../../../resources/css/retype.css?v=4.6.0.847994131292" rel="stylesheet">
+    <link href="../../../resources/css/retype.css?v=4.6.0.847994398381" rel="stylesheet">
 
-    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847994131292" data-turbo-eval="false" defer></script>
+    <script data-cfasync="false" src="../../../resources/js/config.js?v=4.6.0.847994398381" data-turbo-eval="false" defer></script>
     <script data-cfasync="false" src="../../../resources/js/retype.js?v=4.6.0" data-turbo-eval="false" defer></script>
-    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847994131292" data-turbo-eval="false" defer></script>
-    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847994131292" defer></script>
+    <script id="lunr-js" data-cfasync="false" src="../../../resources/js/lunr.js?v=4.6.0.847994398381" data-turbo-eval="false" defer></script>
+    <script id="prism-js" data-cfasync="false" src="../../../resources/js/prism.js?v=4.6.0.847994398381" defer></script>
 
     <style>
       /* debridmediamanager.com's font, shared by every DMM site. Code stays monospace. */
@@ -869,58 +869,84 @@ Remove-Item -Recurse -Force .\data\rclone-cache\vfs\*, .\data\rclone-cache\vfsMe
 <div id="updating-zurg-code-2" class="codeblock-wrapper"><doc-codeblock>
 <pre translate="no" class="language-powershell"><code v-pre class="language-powershell">$env:ZURG_INSTALL_MODE = &quot;update&quot;; irm https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.ps1 | iex</code></pre>
 </doc-codeblock></div>
-<h2 id="troubleshooting">Pemecahan masalah</h2>
-<retype-table copy-text="| Yang kamu lihat | Artinya |
+<h2 id="when-something-is-wrong">Ketika ada yang salah</h2>
+<p>Mulai dengan <code translate="no" v-pre>.\zurg.exe doctor</code> di folder zurg (<code translate="no" v-pre>cd $HOME\zurg</code>). Perintah ini memeriksa instalasi dan mencetak baris <code translate="no" v-pre>PASS</code>, <code translate="no" v-pre>WARN</code> atau <code translate="no" v-pre>FAIL</code> untuk setiap bagian. Baris-baris di bawah ini diperiksa di Windows 11 Pro dengan PowerShell 5.1 dan zurg <code translate="no" v-pre>2026.11.14.1134-nightly</code> pada 14 November 2026.</p>
+<retype-table copy-text="| Yang Anda lihat | Yang harus dilakukan |
 |---|---|
-| `Z:` tidak ada di Explorer | Aturan sesi — lihat [di atas](#keeping-it-running-the-session-rules). Mount kemungkinan besar masih aman; cek `http://localhost:9999/http/` dulu. |
-| `zurg doctor` bilang task sudah siap tapi tidak berjalan | Belum ada pengguna interaktif yang login. Login ke desktop lalu jalankan `.\zurg.exe service start`. |
-| `symlinks not supported without the --links flag` | `--links` belum ada di `rclone_extra_args`. Cuma soal tampilan — rclone menjawab probe symlink WinFsp di root mount, sekali saja, saat drive mulai aktif. Mount tetap jalan tanpa itu; tambahkan flag-nya kalau mau menghilangkan baris ini. |
-| `Library is still loading` di `__magic__` atau `/http/` | Run pertama Real-Debrid akan menelusuri akun. Tunggu saja. Untuk akun yang besar, bisa makan waktu hampir satu jam. Library NZB tidak pernah menampilkan ini — library itu mulai dalam keadaan kosong. |
-| `realdebrid will not take &lt;name&gt;: it refuses that name outright` | Real-Debrid memblokir beberapa nama rilis (`WEBRip` dan sejenisnya). Ambil rilis dengan nama yang berbeda; setup kamu tidak ada masalah. |
-| Penambahan gagal dengan `could not read back id=…` atau teks rate-limit | Jatah API akun sudah habis. Penelusuran library pertama bisa menghabiskannya. Zurg kedua dengan token yang sama juga bisa. Biarkan penelusuran selesai. Jangan pakai satu token untuk banyak instance. |
-| Start task ditolak, `0x800710E0` | Task masih berstatus &quot;running&quot; — jendela launcher belum pernah keluar. Jalankan `Stop-ScheduledTask zurg`, lalu start. |
-| `Get-PSDrive` tidak menampilkan `Z:` dari sesi SSH | Memang begitu — sesi login-nya berbeda. Lihat tabel sesi. |
+| `iex : The property 'OSArchitecture' cannot be found on this object.` tepat setelah perintah instalasi | Ini bug di installer, sudah diperbaiki pada 12 September 2026. Jalankan lagi perintah yang sama. Jika Anda sudah menyimpan salinan `install.ps1` sebelum tanggal itu, unduh ulang. |
+| Installer berhenti dengan `zurg doctor found a failed check.` | Installer menjalankan `zurg doctor` di akhir, dan satu pemeriksaan gagal. Baris `FAIL` tepat di atasnya menunjukkan yang mana; baris-baris di bawah membahasnya. Setelah diperbaiki, jalankan lagi `.\zurg.exe doctor` di `$HOME\zurg`. Perintah ini menunggu sampai dua menit agar zurg berjalan dan me-mount `Z:`. |
+| `FAIL mount` dengan `drive Z: is already in use on this computer so rclone cannot mount there. Pick a drive letter nothing else uses` | Ada yang sudah memakai `Z:`: disk USB, drive jaringan, atau rclone yang Anda atur sebelum zurg mengaturnya untuk Anda. Beri zurg huruf drive yang kosong dengan `.\zurg.exe setup --mount-path &quot;Y:&quot;`, lalu `.\zurg.exe service restart`. Setup tetap menyimpan akun dan pengaturan Anda, dan hanya memindahkan drive. |
+| `WARN service user service is installed but not running`, lalu `FAIL HTTP` dengan `No connection could be made because the target machine actively refused it.` | zurg tidak berjalan. Ia mulai saat Anda login ke Windows. Login ke desktop, lalu jalankan `.\zurg.exe service start`. |
+| `Error: service zurg is not installed` setelah `.\zurg.exe service start` | Tugas terjadwal (scheduled task) zurg hilang, biasanya karena zurg dijalankan secara manual. Jalankan `.\zurg.exe setup` di folder zurg. Perintah ini menyimpan `config.yml` Anda, menambahkan tugas, dan menjalankan zurg. |
+| `Error: config ./config.yml is not valid YAML: yaml: unmarshal errors:` dan `mapping key &quot;enable_repair&quot; already defined at line 38` | Pengaturan itu ada di `config.yml` dua kali. Buka file dengan `notepad config.yml`, hapus salah satu dari dua baris yang disebutkan error, simpan, lalu jalankan `.\zurg.exe service restart`. |
+| Anda tidak bisa membuka `Z:` di Explorer, atau drive-nya tidak ada | Aturan sesi: lihat [di atas](#keeping-it-running-the-session-rules). Mount kemungkinan besar baik-baik saja; cek `http://localhost:9999/http/` di browser dulu. Jika `doctor` menyebut `FAIL mount`, baris-baris di atas menjelaskan penyebabnya. |
+| `dir Z:\` menampilkan `Cannot find drive. A drive with the name 'Z' does not exist.` | PowerShell itu tidak bisa melihat drive tersebut. Jendela yang dibuka dengan **Run as administrator** tidak melihat `Z:`, begitu juga sesi SSH: keduanya berjalan di luar sesi desktop Anda, tempat `Z:` berada. Gunakan jendela PowerShell biasa, atau Explorer. |
+| `symlinks not supported without the --links flag` | `--links` belum ada di `rclone_extra_args`. Ini hanya soal tampilan: rclone menjawab probe symlink WinFsp di root mount, sekali, saat drive naik. Mount tetap berfungsi tanpa flag ini; tambahkan flag untuk menghilangkan baris ini. |
+| `Z:` berisi `movies` dan `shows` tapi kosong, atau `Library is still loading` di bawah `__magic__` atau `/http/` | Penelusuran pertama Real-Debrid memindai akun Anda. Tunggu. Pada akun besar, prosesnya bisa memakan hampir satu jam. `curl.exe http://localhost:9999/ready` mencetak `ready` setelah selesai. Library NZB tidak pernah menampilkan ini karena memang mulai kosong. |
+| `realdebrid will not take &lt;name&gt;: it refuses that name outright` | Real-Debrid memblokir beberapa nama rilis (`WEBRip` dan sejenisnya). Ambil rilis dengan nama yang berbeda; tidak ada yang salah dengan pengaturannya. |
+| Penambahan gagal dengan `could not read back id=…` atau teks rate-limit | Kuota API akun sudah habis. Penelusuran library pertama bisa menghabiskannya. Instance zurg kedua dengan token yang sama juga bisa. Biarkan penelusuran selesai. Jangan bagikan satu token ke beberapa instance. |
+| Start tugas ditolak, `0x800710E0` | Tugas masih berstatus &quot;running&quot; karena jendela launcher belum pernah keluar. Jalankan `Stop-ScheduledTask zurg`, lalu mulai lagi. |
 | `data\rclone-cache` terus membesar | Itu cache pemutaran mount, dibatasi 256G secara default. Lihat [Menjaga cache tetap kecil](#keeping-the-cache-small). |">
 <div class="table-wrapper scrollbar overflow-hidden">
 <table class="comfortable">
 <thead>
 <tr>
-<th>Yang kamu lihat</th>
-<th>Artinya</th>
+<th>Yang Anda lihat</th>
+<th>Yang harus dilakukan</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code translate="no" v-pre>Z:</code> tidak ada di Explorer</td>
-<td>Aturan sesi — lihat <doc-anchor-trigger to="#keeping-it-running-the-session-rules">di atas</doc-anchor-trigger>. Mount kemungkinan besar masih aman; cek <code translate="no" v-pre>http://localhost:9999/http/</code> dulu.</td>
+<td><code translate="no" v-pre>iex : The property 'OSArchitecture' cannot be found on this object.</code> tepat setelah perintah instalasi</td>
+<td>Ini bug di installer, sudah diperbaiki pada 12 September 2026. Jalankan lagi perintah yang sama. Jika Anda sudah menyimpan salinan <code translate="no" v-pre>install.ps1</code> sebelum tanggal itu, unduh ulang.</td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>zurg doctor</code> bilang task sudah siap tapi tidak berjalan</td>
-<td>Belum ada pengguna interaktif yang login. Login ke desktop lalu jalankan <code translate="no" v-pre>.\zurg.exe service start</code>.</td>
+<td>Installer berhenti dengan <code translate="no" v-pre>zurg doctor found a failed check.</code></td>
+<td>Installer menjalankan <code translate="no" v-pre>zurg doctor</code> di akhir, dan satu pemeriksaan gagal. Baris <code translate="no" v-pre>FAIL</code> tepat di atasnya menunjukkan yang mana; baris-baris di bawah membahasnya. Setelah diperbaiki, jalankan lagi <code translate="no" v-pre>.\zurg.exe doctor</code> di <code translate="no" v-pre>$HOME\zurg</code>. Perintah ini menunggu sampai dua menit agar zurg berjalan dan me-mount <code translate="no" v-pre>Z:</code>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>FAIL mount</code> dengan <code translate="no" v-pre>drive Z: is already in use on this computer so rclone cannot mount there. Pick a drive letter nothing else uses</code></td>
+<td>Ada yang sudah memakai <code translate="no" v-pre>Z:</code>: disk USB, drive jaringan, atau rclone yang Anda atur sebelum zurg mengaturnya untuk Anda. Beri zurg huruf drive yang kosong dengan <code translate="no" v-pre>.\zurg.exe setup --mount-path &quot;Y:&quot;</code>, lalu <code translate="no" v-pre>.\zurg.exe service restart</code>. Setup tetap menyimpan akun dan pengaturan Anda, dan hanya memindahkan drive.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>WARN service user service is installed but not running</code>, lalu <code translate="no" v-pre>FAIL HTTP</code> dengan <code translate="no" v-pre>No connection could be made because the target machine actively refused it.</code></td>
+<td>zurg tidak berjalan. Ia mulai saat Anda login ke Windows. Login ke desktop, lalu jalankan <code translate="no" v-pre>.\zurg.exe service start</code>.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Error: service zurg is not installed</code> setelah <code translate="no" v-pre>.\zurg.exe service start</code></td>
+<td>Tugas terjadwal (scheduled task) zurg hilang, biasanya karena zurg dijalankan secara manual. Jalankan <code translate="no" v-pre>.\zurg.exe setup</code> di folder zurg. Perintah ini menyimpan <code translate="no" v-pre>config.yml</code> Anda, menambahkan tugas, dan menjalankan zurg.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>Error: config ./config.yml is not valid YAML: yaml: unmarshal errors:</code> dan <code translate="no" v-pre>mapping key &quot;enable_repair&quot; already defined at line 38</code></td>
+<td>Pengaturan itu ada di <code translate="no" v-pre>config.yml</code> dua kali. Buka file dengan <code translate="no" v-pre>notepad config.yml</code>, hapus salah satu dari dua baris yang disebutkan error, simpan, lalu jalankan <code translate="no" v-pre>.\zurg.exe service restart</code>.</td>
+</tr>
+<tr>
+<td>Anda tidak bisa membuka <code translate="no" v-pre>Z:</code> di Explorer, atau drive-nya tidak ada</td>
+<td>Aturan sesi: lihat <doc-anchor-trigger to="#keeping-it-running-the-session-rules">di atas</doc-anchor-trigger>. Mount kemungkinan besar baik-baik saja; cek <code translate="no" v-pre>http://localhost:9999/http/</code> di browser dulu. Jika <code translate="no" v-pre>doctor</code> menyebut <code translate="no" v-pre>FAIL mount</code>, baris-baris di atas menjelaskan penyebabnya.</td>
+</tr>
+<tr>
+<td><code translate="no" v-pre>dir Z:\</code> menampilkan <code translate="no" v-pre>Cannot find drive. A drive with the name 'Z' does not exist.</code></td>
+<td>PowerShell itu tidak bisa melihat drive tersebut. Jendela yang dibuka dengan <strong>Run as administrator</strong> tidak melihat <code translate="no" v-pre>Z:</code>, begitu juga sesi SSH: keduanya berjalan di luar sesi desktop Anda, tempat <code translate="no" v-pre>Z:</code> berada. Gunakan jendela PowerShell biasa, atau Explorer.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>symlinks not supported without the --links flag</code></td>
-<td><code translate="no" v-pre>--links</code> belum ada di <code translate="no" v-pre>rclone_extra_args</code>. Cuma soal tampilan — rclone menjawab probe symlink WinFsp di root mount, sekali saja, saat drive mulai aktif. Mount tetap jalan tanpa itu; tambahkan flag-nya kalau mau menghilangkan baris ini.</td>
+<td><code translate="no" v-pre>--links</code> belum ada di <code translate="no" v-pre>rclone_extra_args</code>. Ini hanya soal tampilan: rclone menjawab probe symlink WinFsp di root mount, sekali, saat drive naik. Mount tetap berfungsi tanpa flag ini; tambahkan flag untuk menghilangkan baris ini.</td>
 </tr>
 <tr>
-<td><code translate="no" v-pre>Library is still loading</code> di <code translate="no" v-pre>__magic__</code> atau <code translate="no" v-pre>/http/</code></td>
-<td>Run pertama Real-Debrid akan menelusuri akun. Tunggu saja. Untuk akun yang besar, bisa makan waktu hampir satu jam. Library NZB tidak pernah menampilkan ini — library itu mulai dalam keadaan kosong.</td>
+<td><code translate="no" v-pre>Z:</code> berisi <code translate="no" v-pre>movies</code> dan <code translate="no" v-pre>shows</code> tapi kosong, atau <code translate="no" v-pre>Library is still loading</code> di bawah <code translate="no" v-pre>__magic__</code> atau <code translate="no" v-pre>/http/</code></td>
+<td>Penelusuran pertama Real-Debrid memindai akun Anda. Tunggu. Pada akun besar, prosesnya bisa memakan hampir satu jam. <code translate="no" v-pre>curl.exe http://localhost:9999/ready</code> mencetak <code translate="no" v-pre>ready</code> setelah selesai. Library NZB tidak pernah menampilkan ini karena memang mulai kosong.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>realdebrid will not take &lt;name&gt;: it refuses that name outright</code></td>
-<td>Real-Debrid memblokir beberapa nama rilis (<code translate="no" v-pre>WEBRip</code> dan sejenisnya). Ambil rilis dengan nama yang berbeda; setup kamu tidak ada masalah.</td>
+<td>Real-Debrid memblokir beberapa nama rilis (<code translate="no" v-pre>WEBRip</code> dan sejenisnya). Ambil rilis dengan nama yang berbeda; tidak ada yang salah dengan pengaturannya.</td>
 </tr>
 <tr>
 <td>Penambahan gagal dengan <code translate="no" v-pre>could not read back id=…</code> atau teks rate-limit</td>
-<td>Jatah API akun sudah habis. Penelusuran library pertama bisa menghabiskannya. Zurg kedua dengan token yang sama juga bisa. Biarkan penelusuran selesai. Jangan pakai satu token untuk banyak instance.</td>
+<td>Kuota API akun sudah habis. Penelusuran library pertama bisa menghabiskannya. Instance zurg kedua dengan token yang sama juga bisa. Biarkan penelusuran selesai. Jangan bagikan satu token ke beberapa instance.</td>
 </tr>
 <tr>
-<td>Start task ditolak, <code translate="no" v-pre>0x800710E0</code></td>
-<td>Task masih berstatus &quot;running&quot; — jendela launcher belum pernah keluar. Jalankan <code translate="no" v-pre>Stop-ScheduledTask zurg</code>, lalu start.</td>
-</tr>
-<tr>
-<td><code translate="no" v-pre>Get-PSDrive</code> tidak menampilkan <code translate="no" v-pre>Z:</code> dari sesi SSH</td>
-<td>Memang begitu — sesi login-nya berbeda. Lihat tabel sesi.</td>
+<td>Start tugas ditolak, <code translate="no" v-pre>0x800710E0</code></td>
+<td>Tugas masih berstatus &quot;running&quot; karena jendela launcher belum pernah keluar. Jalankan <code translate="no" v-pre>Stop-ScheduledTask zurg</code>, lalu mulai lagi.</td>
 </tr>
 <tr>
 <td><code translate="no" v-pre>data\rclone-cache</code> terus membesar</td>
@@ -930,7 +956,7 @@ Remove-Item -Recurse -Force .\data\rclone-cache\vfs\*, .\data\rclone-cache\vfsMe
 </table>
 </div>
 </retype-table>
-<p>Masih buntu? Tanyakan di forum <strong>zurg-support</strong> di <a href="https://discord.com/invite/7u4YjMThXP">Discord</a>. <a href="../../../guides/remote-help/">Cara minta bantuan</a> menjelaskan apa saja yang perlu disertakan.</p>
+<p>Masih buntu? Tanyakan di forum <strong>zurg-support</strong> di <a href="https://discord.com/invite/7u4YjMThXP">Discord</a>. <a href="../../../guides/remote-help/">Meminta bantuan</a> menjelaskan apa saja yang perlu disertakan.</p>
 <h2 id="powershell-over-ssh-for-the-remote-minded">PowerShell lewat SSH, untuk yang suka remote</h2>
 <p>Windows PowerShell salah membaca beberapa kebiasaan POSIX, dan SSH merusak quoting. <code translate="no" v-pre>&amp;&amp;</code> bukan pemisah; <code translate="no" v-pre>2&gt;/dev/null</code> bukan redirect; <code translate="no" v-pre>$_.Property</code> di dalam <code translate="no" v-pre>-Command</code> inline akan rusak. Untuk apa pun yang tidak sepele, simpan di <code translate="no" v-pre>.ps1</code>, salin ke mesin, lalu jalankan <code translate="no" v-pre>powershell -ExecutionPolicy Bypass -File C:\path\script.ps1</code> — seluruh rig di halaman ini dijalankan dengan cara itu.</p>
 <h2 id="see-also">Lihat juga</h2>

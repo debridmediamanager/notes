@@ -1,6 +1,6 @@
 # Anleitungen {#guides}
 
-Mit der Bibliothek arbeiten: Usenet, die Arrs, `__magic__` und Media-Server. rex hat [einen eigenen Abschnitt](../../rex/index.md).
+Mit der Bibliothek arbeiten: Usenet, die Arrs, `__magic__` und Medienserver. rex hat einen [eigenen Bereich](../../rex/index.md).
 
 - [Usenet](usenet.md)
 - [Sonarr & Radarr für Usenet](sonarr-radarr.md)
@@ -12,6 +12,7 @@ Mit der Bibliothek arbeiten: Usenet, die Arrs, `__magic__` und Media-Server. rex
 - [\_\_magic\_\_](magic.md)
 - [Umbenennen](renaming.md)
 - [Plex](plex.md)
+- [Eine Docker-Compose-Datei für zurg, Plex und rex](docker-compose.md)
 - [Jellyfin](jellyfin.md)
 - [Das Stremio-Addon](stremio.md)
 - [Watchlist und Seerr](acquisition.md)
@@ -20,4 +21,4 @@ Mit der Bibliothek arbeiten: Usenet, die Arrs, `__magic__` und Media-Server. rex
 - [Lokale Bibliotheken](local-libraries.md)
 - [Android und Google TV](android.md)
 
-Um zurg mit einem Konto zu verbinden, schau in den Abschnitt [Provider](../providers/index.md), der für jeden Dienst eine eigene Seite hat. Wie du zurg selbst zum Laufen bringst, zeigt der Abschnitt [Setup](../setup/index.md), mit jeweils einer Seite für [Linux](../setup/linux.md), [macOS](../setup/macos.md), [Windows](../setup/windows.md) und [Docker](../setup/docker.md) unter Linux. Die Windows-Seite ist eine Schritt-für-Schritt-Anleitung von Grund auf für die Installation der Binärdatei: zuerst RealDebrid mit dem qBittorrent-Endpunkt, danach Usenet mit SABnzbd.
+Wie du zurg mit einem Konto verbindest, steht im Bereich [Anbieter](../providers/index.md) mit einer Seite pro Dienst. zurg selbst zum Laufen zu bringen, dafür gibt es den Bereich [Einrichtung](../setup/index.md) mit je einer Seite für [Linux](../setup/linux.md), [macOS](../setup/macos.md), [Windows](../setup/windows.md) und [Docker](../setup/docker.md) unter Linux. Die Windows-Seite ist eine Schritt-für-Schritt-Anleitung von Grund auf für die Binary-Installation: zuerst RealDebrid mit dem qBittorrent-Endpunkt, danach Usenet mit SABnzbd.

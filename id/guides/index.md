@@ -5,12 +5,13 @@ Setiap panduan di situs ini, dikelompokkan per proyek.
 ## Umum {#general}
 
 - [Pilih setup Anda](choose-your-setup.md): peta rute dan kapan memakai DMM, zurg, rex, Kodi, Stremio, Nuvio atau plugin Jellyfin/Emby
-- [Fungsi setiap bagian](glossary.md): satu baris untuk setiap bagian DMM, zurg dan rex serta istilah yang dipakai di panduan
+- [Fungsi setiap bagian](glossary.md): satu baris untuk setiap bagian DMM, zurg, dan rex serta istilah yang dipakai di panduan
 - ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): arti layar hijau di Stremio dan apa yang harus dilakukan
-- [Token API Real-Debrid Anda](real-debrid-api-token.md): cara mendapatkannya, di mana DMM dan zurg memakainya, dan arti `bad_token` serta error lainnya
-- [Usenet untuk pemula](usenet-for-beginners.md): provider, indexer dan NZB, apa yang perlu Anda beli, dan bagaimana zurg dan DMM saling terhubung
-- [Meminta bantuan](remote-help.md) untuk zurg dan rex: di mana bertanya, apa yang harus disertakan, dan bantuan jarak jauh untuk sponsor
-- [Manfaat sponsorship](sponsorship.md): setiap keuntungan dan tempat mengaturnya, atau cara mendapatkan fitur DMM di papan permintaan
+- [Token API Real-Debrid Anda](real-debrid-api-token.md): cara mendapatkannya, tempat DMM dan zurg memasukkannya, serta arti `bad_token` dan error lainnya
+- [Usenet untuk pemula](usenet-for-beginners.md): penyedia, indexer dan NZB, apa saja yang perlu dibeli, dan bagaimana zurg dan DMM cocok dengan itu
+- [Pustaka Real-Debrid di Plex](real-debrid-plex.md): folder `movies` dan `shows` dari zurg di Plex Media Server, per sistem, dan masalah yang umum terjadi
+- [Mendapatkan bantuan](remote-help.md) untuk zurg dan rex: tempat bertanya, apa yang perlu disertakan, dan bantuan jarak jauh untuk sponsor
+- [Manfaat sponsorship](sponsorship.md): setiap keuntungan dan tempat mengaturnya, atau cara mendapatkan fitur DMM di request board
 
 ## DMM
 
@@ -25,15 +26,16 @@ Setiap panduan di situs ini, dikelompokkan per proyek.
 ## zurg
 
 - [Usenet](../zurg/guides/usenet.md)
-- [Sonarr & Radarr for Usenet](../zurg/guides/sonarr-radarr.md)
-- [Sonarr & Radarr for torrents](../zurg/guides/sonarr-radarr-torrents.md)
+- [Sonarr & Radarr untuk Usenet](../zurg/guides/sonarr-radarr.md)
+- [Sonarr & Radarr untuk torrent](../zurg/guides/sonarr-radarr-torrents.md)
 - [Daftar di Sonarr & Radarr](../zurg/guides/import-lists.md)
 - [Pencarian zurg untuk Sonarr & Radarr](../zurg/guides/sonarr-radarr-fetch.md)
 - [Subtitle dengan Bazarr](../zurg/guides/subtitles.md)
 - [Whisparr](../zurg/guides/whisparr.md)
 - [\_\_magic\_\_](../zurg/guides/magic.md)
-- [Penggantian nama](../zurg/guides/renaming.md)
+- [Renaming](../zurg/guides/renaming.md)
 - [Plex](../zurg/guides/plex.md)
+- [Satu file Docker Compose](../zurg/guides/docker-compose.md): zurg, Plex Media Server dan rex dalam satu mesin Linux
 - [Jellyfin](../zurg/guides/jellyfin.md)
 - [Addon Stremio](../zurg/guides/stremio.md)
 - [Watchlist dan Seerr](../zurg/guides/acquisition.md)
@@ -41,7 +43,7 @@ Setiap panduan di situs ini, dikelompokkan per proyek.
 - [Daftar yang diinginkan DMM](../zurg/guides/dmm-wanted.md)
 - [Library lokal](../zurg/guides/local-libraries.md)
 - [Android dan Google TV](../zurg/guides/android.md)
-- [Pindah dari alat lain](../zurg/migrate/index.md)
+- [Pindah dari tool lain](../zurg/migrate/index.md)
 
 ## rex
 

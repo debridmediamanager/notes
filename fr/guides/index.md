@@ -4,13 +4,14 @@ Chaque guide de ce site, par projet.
 
 ## Général {#general}
 
-- [Choisir votre configuration](choose-your-setup.md) : schémas de routage et quand utiliser DMM, zurg, rex, Kodi, Stremio, Nuvio ou les plugins Jellyfin/Emby
-- [Le rôle de chaque élément](glossary.md) : une ligne pour chaque élément de DMM, zurg et rex, ainsi que les termes utilisés dans les guides
-- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md) : ce que signifie cet écran vert dans Stremio et ce qu'il faut faire
-- [Votre jeton API Real-Debrid](real-debrid-api-token.md) : où le trouver, où DMM et zurg le renseignent, et ce que signifient `bad_token` et les autres erreurs
-- [L'Usenet pour les débutants](usenet-for-beginners.md) : fournisseur, indexeur et NZB, ce que vous devez acheter, et la place de zurg et DMM dans tout ça
-- [Obtenir de l'aide](remote-help.md) pour zurg et rex : où poser vos questions, quoi inclure, et l'aide à distance pour les sponsors
-- [Ce que vous apporte un sponsoring](sponsorship.md) : tous les avantages et où les configurer, ou comment obtenir les avantages DMM en vous servant du tableau des demandes
+- [Choisir votre configuration](choose-your-setup.md) : cartes des chemins et quand utiliser DMM, zurg, rex, Kodi, Stremio, Nuvio ou les plugins Jellyfin/Emby
+- [Ce que fait chaque élément](glossary.md) : une ligne pour chaque élément de DMM, zurg et rex, ainsi que les termes utilisés dans les guides
+- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md) : ce que signifie cet écran vert dans Stremio et quoi faire
+- [Votre jeton API Real-Debrid](real-debrid-api-token.md) : où l'obtenir, où DMM et zurg l'utilisent, et ce que signifient `bad_token` et les autres erreurs
+- [Usenet pour débutants](usenet-for-beginners.md) : fournisseur, indexeur et NZB, ce que vous devez acheter, et comment zurg et DMM s'articulent
+- [Une bibliothèque Real-Debrid dans Plex](real-debrid-plex.md) : les dossiers `movies` et `shows` de zurg dans Plex Media Server, selon le système, et les problèmes courants
+- [Obtenir de l'aide](remote-help.md) pour zurg et rex : où demander, quoi inclure, et l'aide à distance pour les sponsors
+- [Ce qu'apporte un sponsoring](sponsorship.md) : chaque avantage et où le configurer, ou comment gagner ceux de DMM sur le tableau des demandes
 
 ## DMM
 
@@ -25,20 +26,21 @@ Chaque guide de ce site, par projet.
 ## zurg
 
 - [Usenet](../zurg/guides/usenet.md)
-- [Sonarr et Radarr pour Usenet](../zurg/guides/sonarr-radarr.md)
-- [Sonarr et Radarr pour les torrents](../zurg/guides/sonarr-radarr-torrents.md)
-- [Listes dans Sonarr et Radarr](../zurg/guides/import-lists.md)
-- [Recherches de zurg pour Sonarr et Radarr](../zurg/guides/sonarr-radarr-fetch.md)
+- [Sonarr & Radarr pour Usenet](../zurg/guides/sonarr-radarr.md)
+- [Sonarr & Radarr pour les torrents](../zurg/guides/sonarr-radarr-torrents.md)
+- [Listes dans Sonarr & Radarr](../zurg/guides/import-lists.md)
+- [Recherches de zurg pour Sonarr & Radarr](../zurg/guides/sonarr-radarr-fetch.md)
 - [Sous-titres avec Bazarr](../zurg/guides/subtitles.md)
 - [Whisparr](../zurg/guides/whisparr.md)
 - [\_\_magic\_\_](../zurg/guides/magic.md)
 - [Renommage](../zurg/guides/renaming.md)
 - [Plex](../zurg/guides/plex.md)
+- [Un seul fichier Docker Compose](../zurg/guides/docker-compose.md) : zurg, Plex Media Server et rex sur une seule machine Linux
 - [Jellyfin](../zurg/guides/jellyfin.md)
 - [L'addon Stremio](../zurg/guides/stremio.md)
-- [Liste de suivi et Seerr](../zurg/guides/acquisition.md)
-- [Liste de suivi Plex](../zurg/guides/plex-watchlist.md)
-- [Liste des souhaits de DMM](../zurg/guides/dmm-wanted.md)
+- [Watchlist et Seerr](../zurg/guides/acquisition.md)
+- [Watchlist Plex](../zurg/guides/plex-watchlist.md)
+- [Liste de souhaits DMM](../zurg/guides/dmm-wanted.md)
 - [Bibliothèques locales](../zurg/guides/local-libraries.md)
 - [Android et Google TV](../zurg/guides/android.md)
 - [Migrer depuis un autre outil](../zurg/migrate/index.md)

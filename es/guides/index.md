@@ -9,6 +9,7 @@ Cada guía de este sitio, por proyecto.
 - ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): qué significa esa pantalla verde en Stremio y qué hacer
 - [Tu token de API de Real-Debrid](real-debrid-api-token.md): dónde conseguirlo, dónde lo usan DMM y zurg, y qué significan `bad_token` y los demás errores
 - [Usenet para principiantes](usenet-for-beginners.md): proveedor, indexador y NZB, qué necesitas comprar y cómo encajan zurg y DMM
+- [Una biblioteca de Real-Debrid en Plex](real-debrid-plex.md): las carpetas `movies` y `shows` de zurg en Plex Media Server, según el sistema, y los problemas más comunes
 - [Pedir ayuda](remote-help.md) con zurg y rex: dónde preguntar, qué incluir y la ayuda remota para patrocinadores
 - [Qué te da un patrocinio](sponsorship.md): cada ventaja y dónde configurarla, o cómo ganar las de DMM en el tablero de solicitudes
 
@@ -34,6 +35,7 @@ Cada guía de este sitio, por proyecto.
 - [\_\_magic\_\_](../zurg/guides/magic.md)
 - [Renombrado](../zurg/guides/renaming.md)
 - [Plex](../zurg/guides/plex.md)
+- [Un archivo de Docker Compose](../zurg/guides/docker-compose.md): zurg, Plex Media Server y rex en una sola máquina Linux
 - [Jellyfin](../zurg/guides/jellyfin.md)
 - [El addon de Stremio](../zurg/guides/stremio.md)
 - [Watchlist y Seerr](../zurg/guides/acquisition.md)

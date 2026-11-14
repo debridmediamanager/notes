@@ -496,21 +496,28 @@ cd $HOME\zurg
 $env:ZURG_INSTALL_MODE = "update"; irm https://raw.githubusercontent.com/debridmediamanager/zurg-site/main/public/install.ps1 | iex
 ```
 
-## 故障排除 {#troubleshooting}
+## 出现问题时 {#when-something-is-wrong}
 
-| 你看到的 | 含义 |
+先在 zurg 文件夹（`cd $HOME\zurg`）里运行 `.\zurg.exe doctor`。它会检查安装情况，并为每个部分打印一行 `PASS`、`WARN` 或 `FAIL`。下表内容是在 2026 年 11 月 14 日，于 Windows 11 Pro、PowerShell 5.1 和 zurg `2026.11.14.1134-nightly` 上核对的。
+
+| 你看到的 | 怎么办 |
 |---|---|
-| `Z:` 不在资源管理器中 | 会话规则，见[上文](#keeping-it-running-the-session-rules)。挂载大概率是正常的，请先检查 `http://localhost:9999/http/`。 |
-| `zurg doctor` 显示任务已就绪但未运行 | 没有交互式用户登录。请登录桌面，然后运行 `.\zurg.exe service start`。 |
-| `symlinks not supported without the --links flag` | `rclone_extra_args` 中缺少 `--links`。这只是外观问题：驱动器启动时，rclone 会对挂载根目录做一次 WinFsp 符号链接探测并作出回应。挂载本身可以正常工作，添加该参数即可去掉这一行提示。 |
-| `__magic__` 或 `/http/` 下显示 `Library is still loading` | 第一次运行 Real-Debrid 时，会遍历你的账户。请耐心等待。账户很大时可能要花将近一个小时。NZB 库从不会显示这条信息，它一开始就是空的。 |
-| `realdebrid will not take <name>: it refuses that name outright` | Real-Debrid 会直接拒绝某些发布名称（比如 `WEBRip` 等）。换一个命名不同的发布版本即可，设置本身没有问题。 |
-| 添加失败，并出现 `could not read back id=…` 或速率限制相关文字 | 账户的 API 配额已经用完。第一次遍历库可能会耗尽配额，同一个令牌上的第二个 zurg 也可能造成这种情况。请等遍历完成。不要让多个实例共用同一个令牌。 |
-| 任务启动被拒绝，`0x800710E0` | 任务仍显示为"正在运行"，是因为某个启动器窗口没有退出。请先执行 `Stop-ScheduledTask zurg`，然后再启动。 |
-| 在 SSH 会话中 `Get-PSDrive` 看不到 `Z:` | 这是正常的，因为登录会话不同。见会话表。 |
-| `data\rclone-cache` 持续增长 | 这是挂载的播放缓存，默认上限为 256G。见[控制缓存大小](#keeping-the-cache-small)。 |
+| 紧跟在安装命令之后出现的 `iex : The property 'OSArchitecture' cannot be found on this object.` | 安装程序的一个 bug，已于 2026 年 9 月 12 日修复。再运行一次同样的命令。如果你在那之前保存过 `install.ps1` 的副本，请重新下载。 |
+| 安装程序停止，并显示 `zurg doctor found a failed check.` | 安装程序最后会运行 `zurg doctor`，而其中有一项检查失败了。上面那行 `FAIL` 会告诉你是哪一项；下面的各行都有说明。修复后，在 `$HOME\zurg` 里再运行一次 `.\zurg.exe doctor`。它最多会等两分钟，让 zurg 启动并挂载 `Z:`。 |
+| `FAIL mount` with `drive Z: is already in use on this computer so rclone cannot mount there. Pick a drive letter nothing else uses` | `Z:` 已经被别的东西占用了：可能是 U 盘、网络驱动器，或者你在 zurg 替你设置之前自己装的 rclone。用 `.\zurg.exe setup --mount-path "Y:"` 给 zurg 换一个空闲的盘符，然后运行 `.\zurg.exe service restart`。setup 会保留你的账号和设置，只会移动挂载的盘符。 |
+| `WARN service user service is installed but not running`，然后是 `FAIL HTTP` with `No connection could be made because the target machine actively refused it.` | zurg 没有在运行。它会在你登录 Windows 时启动。请登录桌面，然后运行 `.\zurg.exe service start`。 |
+| `Error: service zurg is not installed` after `.\zurg.exe service start` | zurg 的计划任务不见了，通常是因为 zurg 是手动启动的。请在 zurg 文件夹里运行 `.\zurg.exe setup`。它会保留你的 `config.yml`，添加计划任务并启动 zurg。 |
+| `Error: config ./config.yml is not valid YAML: yaml: unmarshal errors:` 和 `mapping key "enable_repair" already defined at line 38` | 这个设置在 `config.yml` 里出现了两次。用 `notepad config.yml` 打开文件，删掉错误信息里指的两行中的一行，保存，然后运行 `.\zurg.exe service restart`。 |
+| 你打不开资源管理器里的 `Z:`，或者它不见了 | 会话规则：见[上面](#keeping-it-running-the-session-rules)。挂载大概没问题；先在浏览器里打开 `http://localhost:9999/http/` 检查一下。如果 `doctor` 显示 `FAIL mount`，上面的各行会说明原因。 |
+| `dir Z:\` says `Cannot find drive. A drive with the name 'Z' does not exist.` | 这个 PowerShell 看不到该驱动器。用 **Run as administrator** 打开的窗口看不到 `Z:`，SSH 会话也看不到：它们都运行在你的桌面会话之外，而 `Z:` 在桌面会话里。请用普通的 PowerShell 窗口，或者资源管理器。 |
+| `symlinks not supported without the --links flag` | `rclone_extra_args` 里缺少 `--links`。这只是表面问题：驱动器挂载时，rclone 会对挂载根目录做一次 WinFsp 的符号链接探测并给出回应。没有它挂载也能用；加上这个参数就能让这行提示消失。 |
+| `Z:` 里有 `movies` 和 `shows`，但是是空的，或者 `__magic__` 或 `/http/` 下显示 `Library is still loading` | 第一次运行 Real-Debrid 时会遍历整个账号。请耐心等待。账号很大的话，可能要花将近一个小时。`curl.exe http://localhost:9999/ready` 完成后会打印 `ready`。NZB 库不会显示这个——它一开始就是空的。 |
+| `realdebrid will not take <name>: it refuses that name outright` | Real-Debrid 会屏蔽一些发布名（`WEBRip` 之类）。换一个名字不同的发布版本即可；设置本身没有问题。 |
+| 添加失败，并显示 `could not read back id=…` 或速率限制相关文字 | 账号的 API 额度用完了。第一次遍历库时可能会用光。同一个 token 上再开一个 zurg 也会。让遍历完成。不要在多个实例之间共用同一个 token。 |
+| 任务启动被拒绝，`0x800710E0` | 计划任务仍然显示为 "running"——某个启动器窗口一直没有退出。运行 `Stop-ScheduledTask zurg`，然后再启动。 |
+| `data\rclone-cache` 一直在变大 | 这是挂载的播放缓存，默认上限为 256G。见[保持缓存较小](#keeping-the-cache-small)。 |
 
-还有问题？请到 [Discord](https://discord.com/invite/7u4YjMThXP) 的 **zurg-support** 论坛提问。[获取帮助](../../guides/remote-help.md) 中说明了提问时应包含哪些信息。
+还是搞不定？请到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **zurg-support** 论坛提问。[获取帮助](../../guides/remote-help.md) 里写了需要提供哪些信息。
 
 ## 通过 SSH 使用 PowerShell（适合远程管理的用户） {#powershell-over-ssh-for-the-remote-minded}
 

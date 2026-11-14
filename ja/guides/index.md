@@ -5,12 +5,13 @@
 ## 一般 {#general}
 
 - [Choose your setup](choose-your-setup.md): ルートマップと、DMM、zurg、rex、Kodi、Stremio、Nuvio、Jellyfin/Emby プラグインをいつ使うか
-- [各パーツの役割](glossary.md): DMM、zurg、rex の各パーツと、ガイドに出てくる用語の一行説明
-- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): Stremio に出る緑の画面が何を意味するか、そしてどうすればよいか
-- [Real-Debrid の API トークン](real-debrid-api-token.md): 取得先、DMM と zurg での設定場所、`bad_token` などのエラーの意味
-- [Usenet 入門](usenet-for-beginners.md): プロバイダー、インデクサー、NZB、必要なものの買い方、zurg と DMM の関係
-- [サポートを受ける](remote-help.md) zurg と rex: 質問先、伝えるべき情報、スポンサー向けのリモートサポート
-- [スポンサーの特典](sponsorship.md): 特典一覧と設定場所、またはリクエストボードで DMM の特典を獲得する方法
+- [What each piece does](glossary.md): DMM、zurg、rex の各パーツと、ガイドに出てくる用語の一行説明
+- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): Stremio で表示される緑の画面の意味と、その対処法
+- [Your Real-Debrid API token](real-debrid-api-token.md): 取得場所、DMM と zurg での設定場所、`bad_token` などのエラーの意味
+- [Usenet for beginners](usenet-for-beginners.md): プロバイダー、インデクサー、NZB とは何か、何を購入する必要があるか、zurg と DMM がどう関わるか
+- [A Real-Debrid library in Plex](real-debrid-plex.md): Plex Media Server での zurg の `movies` と `shows` フォルダー（システムごと）と、よくある問題
+- [Getting help](remote-help.md): zurg と rex のサポートの受け方、質問先、何を伝えればよいか、スポンサー向けのリモートサポート
+- [What a sponsorship gives you](sponsorship.md): 特典の一覧と各設定場所、または DMM 向け特典をリクエストボードで獲得する方法
 
 ## DMM
 
@@ -32,13 +33,14 @@
 - [Bazarrで字幕](../zurg/guides/subtitles.md)
 - [Whisparr](../zurg/guides/whisparr.md)
 - [\_\_magic\_\_](../zurg/guides/magic.md)
-- [リネーム](../zurg/guides/renaming.md)
+- [名前の変更](../zurg/guides/renaming.md)
 - [Plex](../zurg/guides/plex.md)
+- [1つのDocker Composeファイル](../zurg/guides/docker-compose.md): zurg、Plex Media Server、rexを1台のLinuxマシンで
 - [Jellyfin](../zurg/guides/jellyfin.md)
 - [Stremioアドオン](../zurg/guides/stremio.md)
 - [ウォッチリストとSeerr](../zurg/guides/acquisition.md)
-- [Plexウォッチリスト](../zurg/guides/plex-watchlist.md)
-- [DMMのwanted list](../zurg/guides/dmm-wanted.md)
+- [Plexのウォッチリスト](../zurg/guides/plex-watchlist.md)
+- [DMMのwantedリスト](../zurg/guides/dmm-wanted.md)
 - [ローカルライブラリ](../zurg/guides/local-libraries.md)
 - [AndroidとGoogle TV](../zurg/guides/android.md)
 - [他のツールからの移行](../zurg/migrate/index.md)

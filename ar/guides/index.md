@@ -5,12 +5,13 @@
 ## عام {#general}
 
 - [اختر إعدادك](choose-your-setup.md): خرائط المسارات ومتى تستخدم DMM وzurg وrex وKodi وStremio وNuvio أو إضافات Jellyfin/Emby
-- [وظيفة كل جزء](glossary.md): سطر واحد لكل جزء من DMM وzurg وrex والكلمات الواردة في الأدلة
-- ["جارٍ تنزيل التورنت إلى debrid"](torrent-being-downloaded-to-debrid.md): معنى تلك الشاشة الخضراء في Stremio وما الذي يجب فعله
-- [رمز API الخاص بك في Real-Debrid](real-debrid-api-token.md): أين تحصل عليه، وأين يضعه DMM وzurg، وما معنى `bad_token` والأخطاء الأخرى
-- [Usenet للمبتدئين](usenet-for-beginners.md): المزوّد والفهرس وNZB، وما الذي تحتاج إلى شرائه، وكيف يتناسب zurg وDMM معها
-- [الحصول على المساعدة](remote-help.md) في zurg وrex: أين تسأل، وما الذي تُدرجه في رسالتك، والمساعدة عن بُعد للرعاة
-- [ما الذي تمنحه الرعاية](sponsorship.md): كل ميزة وأين تُعدّها، أو كيف تحصل على ميزات DMM عبر لوحة الطلبات
+- [ما الذي يفعله كل جزء](glossary.md): سطر واحد لكل جزء من أجزاء DMM وzurg وrex، والكلمات الواردة في الأدلة
+- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): ماذا تعني تلك الشاشة الخضراء في Stremio وما الذي ينبغي فعله
+- [رمز API الخاص بك في Real-Debrid](real-debrid-api-token.md): أين تحصل عليه، وأين يستخدمه DMM وzurg، وماذا تعني `bad_token` والأخطاء الأخرى
+- [Usenet للمبتدئين](usenet-for-beginners.md): المزوّد والفهرس وNZB، وما تحتاج إلى شرائه، وكيف يتناسب zurg وDMM معه
+- [مكتبة Real-Debrid في Plex](real-debrid-plex.md): مجلدا `movies` و`shows` الخاصان بـzurg في Plex Media Server، حسب كل نظام، والمشكلات الشائعة
+- [طلب المساعدة](remote-help.md) في zurg وrex: أين تسأل، وما الذي تضمّنه، والمساعدة عن بُعد للرعاة
+- [ما الذي تمنحه الرعاية](sponsorship.md): كل ميزة وأين تُعدّ، أو كيف تكسب ميزات DMM عبر لوحة الطلبات
 
 ## DMM
 
@@ -25,22 +26,23 @@
 ## zurg
 
 - [Usenet](../zurg/guides/usenet.md)
-- [Sonarr و Radarr لـ Usenet](../zurg/guides/sonarr-radarr.md)
-- [Sonarr و Radarr لملفات التورنت](../zurg/guides/sonarr-radarr-torrents.md)
+- [Sonarr و Radarr مع Usenet](../zurg/guides/sonarr-radarr.md)
+- [Sonarr و Radarr مع التورنت](../zurg/guides/sonarr-radarr-torrents.md)
 - [القوائم في Sonarr و Radarr](../zurg/guides/import-lists.md)
-- [عمليات بحث zurg لـ Sonarr و Radarr](../zurg/guides/sonarr-radarr-fetch.md)
+- [عمليات البحث في zurg لـ Sonarr و Radarr](../zurg/guides/sonarr-radarr-fetch.md)
 - [الترجمات مع Bazarr](../zurg/guides/subtitles.md)
 - [Whisparr](../zurg/guides/whisparr.md)
 - [\_\_magic\_\_](../zurg/guides/magic.md)
 - [إعادة التسمية](../zurg/guides/renaming.md)
 - [Plex](../zurg/guides/plex.md)
+- [ملف Docker Compose واحد](../zurg/guides/docker-compose.md): zurg وPlex Media Server وrex على جهاز Linux واحد
 - [Jellyfin](../zurg/guides/jellyfin.md)
 - [إضافة Stremio](../zurg/guides/stremio.md)
 - [قائمة المشاهدة و Seerr](../zurg/guides/acquisition.md)
 - [قائمة مشاهدة Plex](../zurg/guides/plex-watchlist.md)
 - [قائمة DMM المطلوبة](../zurg/guides/dmm-wanted.md)
 - [المكتبات المحلية](../zurg/guides/local-libraries.md)
-- [Android و Google TV](../zurg/guides/android.md)
+- [Android وGoogle TV](../zurg/guides/android.md)
 - [الانتقال من أداة أخرى](../zurg/migrate/index.md)
 
 ## rex
