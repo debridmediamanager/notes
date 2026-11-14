@@ -24,9 +24,9 @@ Vos bibliothèques, votre historique de visionnage, les réglages des addons (y 
 
 ## Modules complémentaires {#addons}
 
-Un addon est du code écrit par la personne qui l'a créé, installé depuis un dépôt que tu as ajouté. Il tourne isolé du reste de ton appareil et ne peut contacter que les sites qu'il indique, ce que rex te montre avant l'installation. N'installe des addons que de personnes en qui tu as confiance.
+Un addon est du code écrit par quelqu'un d'autre, installé depuis un dépôt que vous avez ajouté. Il s'exécute isolé du reste de votre appareil et ne peut joindre que les sites qu'il nomme, ce que rex vous montre avant l'installation. N'installez des addons que de personnes en qui vous avez confiance.
 
-Un addon qui a besoin d'un compte sur son site, comme YouTube, se connecte avec un code : tu le saisis sur la page du site lui-même, donc ton mot de passe ne passe jamais par l'application. Le jeton que le site donne ensuite à l'addon reste sur ton appareil et ne retourne que vers ce site. Supprimer l'addon le supprime aussi.
+Un addon qui demande un compte sur son site se connecte avec un code : vous le saisissez sur la page de ce site, si bien que votre mot de passe ne passe jamais par l'application. Le jeton que le site remet ensuite à l'addon reste sur votre appareil et ne retourne que vers ce site. Supprimer l'addon efface ce jeton.
 
 ## Enfants {#children}
 

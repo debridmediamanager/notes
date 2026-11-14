@@ -24,9 +24,9 @@ Deine Bibliotheken, der Wiedergabeverlauf, die Addon-Einstellungen (einschließl
 
 ## Add-ons {#addons}
 
-Ein Addon ist Code von der Person, die es geschrieben hat. Es wird aus einem Repository installiert, das du hinzugefügt hast. Es läuft abgeschottet vom restlichen Gerät und kann nur die Seiten erreichen, die es nennt. rex zeigt dir diese Seiten, bevor du das Addon installierst. Installiere Addons nur von Leuten, denen du vertraust.
+Ein Addon ist Code von der Person, die es geschrieben hat, installiert aus einem Repository, das du hinzugefügt hast. Es läuft abgeschottet vom Rest deines Geräts und kann nur die Seiten erreichen, die es nennt. rex zeigt dir diese Seiten, bevor du es installierst. Installiere Addons nur von Leuten, denen du vertraust.
 
-Ein Addon, das ein Konto auf der Website braucht, etwa YouTube, meldet sich mit einem Code an. Du gibst den Code auf der eigenen Seite der Website ein, deshalb geht dein Passwort nie durch die App. Der Token, den die Website dem Addon danach gibt, bleibt auf deinem Gerät und wird nur an diese Website zurückgeschickt. Wenn du das Addon entfernst, wird er gelöscht.
+Ein Addon, das ein Konto auf seiner Website braucht, meldet sich mit einem Code an: Du gibst ihn auf der eigenen Seite der Website ein, sodass dein Passwort nie durch die App läuft. Das Token, das die Website dem Addon danach gibt, bleibt auf deinem Gerät und geht nur zurück an diese Website. Wenn du das Addon entfernst, wird es gelöscht.
 
 ## Kinder {#children}
 
