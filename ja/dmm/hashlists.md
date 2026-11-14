@@ -11,21 +11,21 @@
 
 ## リストを自分のライブラリに追加 {#add-a-list-to-your-library}
 
-1. リストを開きます。**Login to RD/AD/TB/PM/OC/DL to download** と表示される場合は、まず同じブラウザで [DMM](https://debridmediamanager.com) にサインインし（[サインインの方法](index.md#sign-in)を参照）、それからリストをもう一度開きます。
+1. リストを開きます。**Login to RD/AD/TB/PM/OC/DL to download** と表示されている場合は、同じブラウザで先に [DMM](https://debridmediamanager.com) にサインインし([サインインの方法](index.md#sign-in)を参照)、その後にリストをもう一度開きます。
 2. DMM は、お使いのサービスにすでにあるリリースを確認します。表示されるのはそれらだけで、ライブラリにすでにあるものは除外されます。緑色の **hidden** ボックスには、除外された件数が表示されます。
 3. 必要に応じて絞り込みます:
    - **Movies** と **TV Shows** では、どちらか一方の種類だけを表示します。数字はファイル数ではなくタイトル数です。
-   - **One per title** は、各タイトルで最も良いリリースを1つだけ残します。
+   - **One per title** は、各タイトルで最も良いリリースを 1 つだけ残します。
    - タイトルの横にある緑色の **other files** チップを押すと、そのタイトルのすべてのリリースが表示されます。
    - **quick search on filename, hash, or id; supports regex** で、リストを検索できます。
-4. 行のボタン（**RD**、**TB**、**AD**、**PM**、**OC**、**DL**）を押すと、そのリリースを1つだけ追加します。
-5. または **RD Download**（**TB Download**、**PM Download** など）を押すと、表示されているリリースをすべて追加します。ボタンに表示される数字が、その件数です。確認のダイアログは出ず、すぐに開始されます。
+4. 行のボタン(**RD**、**TB**、**AD**、**PM**、**OC**、**DL**)を押すと、そのリリースを 1 つだけ追加します。
+5. または **RD Download**(**TB Download**、**PM Download** など)を押すと、表示されているすべてのリリースを追加します。ボタンの数字は追加する件数です。DMM は先に確認します。たとえば **Add 11 releases to Premiumize?** と表示されたら、**Add 11** を押して開始します。
 
-![PremiumizeでサインインしたDMMの、オープンな映画の共有ハッシュリスト](../assets/dmm-hashlists/01-hash-list.webp)
+![Premiumize でサインインした DMM の共有ハッシュリスト(オープンな映画)](../assets/dmm-hashlists/01-hash-list.webp)
 
-Real-Debrid、AllDebrid、TorBox では、**Show All** を押すと、お使いのサービスにないリリースも表示されます。**Show Instant** を押すと、キャッシュ済みのリリースのみの表示に戻ります。
+**Show All** を押すと、お使いのサービスにないリリースも表示されます。**Show Instant** を押すと、キャッシュ済みのリリースだけの表示に戻ります。
 
-**RD Download** は、Real-Debrid にすでにあるリリースだけを追加し、1分に1件ずつ進めます。Real-Debrid は、短時間に追加が多すぎるアカウントを一時停止するためです。60件なら約1時間かかります。追加処理はページ上で行われるため、**Started 60 downloads.** と表示されるまでタブを開いたままにしてください。TorBox と AllDebrid は、キャッシュされていないものをスキップします。
+**RD Download** は、Real-Debrid にすでにあるリリースだけを追加します。Real-Debrid は、短時間に追加しすぎるアカウントを一時停止するため、1 分に 1 件ずつ追加されます。60 件なら約 1 時間かかります。追加はページ内で行われるため、**Started 60 downloads.** と表示されるまでタブを開いたままにしてください。TorBox と AllDebrid は、キャッシュされていないものを飛ばします。
 
 ## 自分のライブラリを共有 {#share-your-own-library}
 
@@ -42,18 +42,18 @@ Real-Debrid、AllDebrid、TorBox では、**Show All** を押すと、お使い�
 
 ## 問題が起きたとき {#when-something-is-wrong}
 
-| 表示される内容 | 対処法 |
+| 画面に表示されるもの | 対処方法 |
 |---|---|
 | **Login to RD/AD/TB/PM/OC/DL to download** | このブラウザではDMMにサインインしていません。サインインしてから、リストをもう一度開いてください。 |
-| 全部が**hidden**になっていて、リストが空に見える | 非表示の行は、すでにライブラリにあるか、利用中のサービスにないものです。Real-Debrid、AllDebrid、TorBoxでは**Show All**を押してください。 |
-| **This hash list is still being published; refresh in a minute or two.** | リストは数秒前に共有されたばかりです。1〜2分待ってから再読み込みしてください。 |
-| **0 files** と行がない | そのリストは空です。**Next hash list**または**Random hash list**を押してください。 |
-| **Everything already downloaded** | 表示されているリリースは、すべてライブラリにすでにあります。 |
-| **Torrent not instant in TorBox; skipped.** または **Torrent not instant in AD; skipped.** | 利用中のサービスにそのファイルのキャッシュがないため、DMMはダウンロードを開始せずにスキップしました。 |
-| **Skipping 3 items with no info hash — they cannot be shared.** | those行（たとえばTorBoxのWebダウンロード）には共有用のハッシュがありません。残りのリストは共有されます。 |
+| 何もかも **hidden** になっていて、リストが空に見える | 非表示の行はすでにライブラリにあるか、お使いのサービスにないものです。**Show All** を押してください。 |
+| **This hash list is still being published; refresh in a minute or two.** | このリストは公開されたばかりです。1〜2分待ってから再読み込みしてください。 |
+| **0 files** で行が表示されない | そのリストは空です。**Next hash list** か **Random hash list** を押してください。 |
+| **Everything already downloaded** | 表示されているリリースはすべて、ライブラリにすでにあります。 |
+| **Torrent not instant in TorBox; skipped.** または **Torrent not instant in AD; skipped.** | お使いのサービスではそのトレントがキャッシュされていないため、DMMはダウンロードを開始せずにスキップしました。 |
+| **Skipping 3 items with no info hash — they cannot be shared.** | それらの行（たとえばTorBoxのWebダウンロード）には共有できるハッシュがありません。リストの残りは共有されます。 |
 | **Failed to generate hash list; try again soon.** | リストの公開に失敗しました。しばらくしてからもう一度お試しください。 |
 
-困ったときは、[Discord](https://discord.com/invite/7u4YjMThXP)の**dmm-support**フォーラムで聞いてください。
+困ったときは、[Discord](https://discord.com/invite/7u4YjMThXP) の **dmm-support** フォーラムで聞いてみてください。
 
 ## よくある質問 {#questions}
 
@@ -63,7 +63,7 @@ Real-Debrid、AllDebrid、TorBox では、**Show All** を押すと、お使い�
 
 ### ハッシュリストのアイテムがすべて非表示になるのはなぜ？ {#why-are-all-the-items-in-my-hash-list-hidden}
 
-DMMは、ライブラリにすでにあるものと、サービスにキャッシュされていないものを非表示にします。**hidden** の枠には非表示の件数が表示されます。Real-Debrid、AllDebrid、TorBox では、**Show All** を押すと残りのものも表示されます。
+DMMは、ライブラリにすでにあるものや、サービスにキャッシュされていないものを隠します。**hidden**の箱には、その数が表示されます。**Show All**を押すと、残りが表示されます。
 
 ### ハッシュリストにTV番組が表示されないのはなぜ？ {#why-dont-tv-shows-show-up-in-a-hash-list}
 

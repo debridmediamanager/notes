@@ -55,18 +55,15 @@ DMM Cast 是 Debrid Media Manager 的 Stremio 插件。它让 DMM 出现在 Stre
 
 ## 出现问题时 {#when-something-is-wrong}
 
-| 你会看到什么 | 怎么做 |
+| 你看到的内容 | 你需要做的事 |
 |---|---|
-| 按下 **Cast** 后，Stremio 显示 **Failed to get addon manifest from https://detail/movie/…** 和 **Failed to fetch: Failed to fetch** | 你的投递已经保存。Stremio 把 DMM 里的影片链接当成了要安装的插件。按 **Cancel**，自己在 Stremio 里打开这部影片，然后选择 **(Yours)** 的流。 |
-| 只显示 **DMM Cast PM ✨ · Cast a file inside a torrent**（RD、TB 等），没有其他流 | 这部影片还没有投递过任何内容。点这一行，它会在 DMM 上打开这部影片。在某个版本上按 **Cast**，然后再次在 Stremio 里打开这部影片。 |
-| 只显示 **⚠️ DMM Cast · Set up DMM Cast for Premiumize again**（或你的服务商）这一个流 | Stremio 里的插件和你的 DMM 登录信息对不上了。点它打开你的 Cast 页面，登录，然后从 Stremio 里删除旧插件，再从那个页面重新安装。 |
-| 只显示 **Real-Debrid Required. You must be logged in with Real-Debrid to use the Stremio Cast feature.**（或 TorBox、Easynews 等） | 你没有在 DMM 上登录该服务，或者你打开了其他服务的 Cast 页面。按 **Login with …**，或者使用 DMM 首页上的 **Cast for …** 按钮。 |
-| **No episodes in this release on Premiumize** | DMM 无法把这个版本的文件匹配到剧集。请投递另一个版本。 |
-| 把插件地址粘贴到 Stremio Web 顶部的搜索栏后没有反应 | 那个栏只用来搜索。请使用 **Addons** → **Add addon**。 |
+| 只显示 **DMM Cast PM ✨ · Cast a file inside a torrent**（RD、TB……），没有其他流 | 这个影片还没有被 cast 过。点击该行：它会在 DMM 上打开这个影片。在某个版本上点 **Cast**，然后在 Stremio 中重新打开该影片。 |
+| 只显示 **⚠️ DMM Cast · Set up DMM Cast for Premiumize again**（或你的其他服务商）作为唯一的流 | Stremio 中的插件已与你的 DMM 登录信息不匹配。点击它打开你的 Cast 页面，登录，然后在 Stremio 中删除旧插件，并从该页面重新安装。 |
+| **Real-Debrid Required. You must be logged in with Real-Debrid to use the Stremio Cast feature.**（或 TorBox、Easynews……） | 你在 DMM 上没有登录该服务商，或者你打开了另一个服务商的 Cast 页面。点击 **Login with …**，或使用 DMM 首页上的 **Cast for …** 按钮。 |
+| **No episodes in this release on Premiumize** | DMM 无法将该版本的文件与剧集匹配。请 cast 另一个版本。 |
+| 粘贴到 Stremio Web 顶部搜索栏中的插件地址没有任何反应 | 那个搜索栏只用来搜索。请使用 **Addons** → **Add addon**。 |
 
-![按下 Cast 后 Stremio 显示的 Failed to get addon manifest 消息](../assets/dmm-stremio/05-failed-addon-manifest.webp)
-
-卡住了？可以在 [Discord](https://discord.com/invite/7u4YjMThXP) 的 **dmm-cast-support** 论坛里提问。[获取帮助](../guides/remote-help.md)里写了该提供哪些信息。
+还是搞不定？请到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **dmm-cast-support** 论坛提问。[Getting help](../guides/remote-help.md) 中说明了需要提供哪些信息。
 
 ## 常见问题 {#questions}
 

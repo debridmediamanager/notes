@@ -57,16 +57,13 @@ No Debrid-Link, o cast adiciona o release à sua conta. Um release que o Debrid-
 
 | O que você vê | O que fazer |
 |---|---|
-| Depois de apertar **Cast**, o Stremio mostra **Failed to get addon manifest from https://detail/movie/…** e **Failed to fetch: Failed to fetch** | Seu cast foi salvo. O Stremio leu o link do DMM para o título como um addon para instalar. Aperte **Cancel**, abra o título no Stremio você mesmo e escolha o stream **(Yours)**. |
-| Só aparece **DMM Cast PM ✨ · Cast a file inside a torrent** (RD, TB…), sem outros streams | Nada foi enviado para cast desse título ainda. Aperte essa linha: ela abre o título no DMM. Aperte **Cast** em um release e depois abra o título no Stremio de novo. |
-| **⚠️ DMM Cast · Set up DMM Cast for Premiumize again** (ou seu provedor) como único stream | O addon no Stremio não combina mais com seu login no DMM. Aperte para abrir sua página de Cast, faça login, depois remova o addon antigo do Stremio e instale de novo a partir dessa página. |
-| **Real-Debrid Required. You must be logged in with Real-Debrid to use the Stremio Cast feature.** (ou TorBox, Easynews…) | Você não está logado nesse provedor no DMM, ou abriu a página de Cast de outro provedor. Aperte **Login with …** ou use o botão **Cast for …** na página inicial do DMM. |
-| **No episodes in this release on Premiumize** | O DMM não conseguiu associar os arquivos desse release a episódios. Faça cast de outro release. |
-| O endereço do addon colado na barra de pesquisa no topo do Stremio Web não faz nada | Essa barra só pesquisa. Use **Addons** → **Add addon**. |
+| Só aparece **DMM Cast PM ✨ · Cast a file inside a torrent** (RD, TB…), sem outros streams | Nada foi enviado para esse título ainda. Clique nessa linha: ela abre o título no DMM. Clique em **Cast** em um lançamento e depois abra o título no Stremio de novo. |
+| **⚠️ DMM Cast · Set up DMM Cast for Premiumize again** (ou seu provedor) como único stream | O addon no Stremio não corresponde mais ao seu login no DMM. Clique nele para abrir sua página de Cast, faça login, depois remova o addon antigo do Stremio e instale de novo a partir dessa página. |
+| **Real-Debrid Required. You must be logged in with Real-Debrid to use the Stremio Cast feature.** (ou TorBox, Easynews…) | Você não está logado nesse provedor no DMM, ou abriu a página de Cast de outro provedor. Clique em **Login with …**, ou use o botão **Cast for …** na página inicial do DMM. |
+| **No episodes in this release on Premiumize** | O DMM não conseguiu associar os arquivos desse lançamento a episódios. Envie um lançamento diferente. |
+| O endereço do addon colado na barra de pesquisa no topo do Stremio Web não faz nada | Essa barra serve só para pesquisar. Use **Addons** → **Add addon**. |
 
-![Mensagem Failed to get addon manifest do Stremio depois de apertar Cast](../assets/dmm-stremio/05-failed-addon-manifest.webp)
-
-Travado? Pergunte no fórum **dmm-cast-support** no [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) explica o que incluir.
+Travou? Pergunte no fórum **dmm-cast-support** no [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) explica o que incluir.
 
 ## Perguntas {#questions}
 

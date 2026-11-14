@@ -57,16 +57,13 @@ Cast здесь означает аддон DMM. Это не Chromecast и не 
 
 | Что вы видите | Что делать |
 |---|---|
-| После нажатия **Cast** Stremio показывает **Failed to get addon manifest from https://detail/movie/…** и **Failed to fetch: Failed to fetch** | Ваш cast сохранён. Stremio принял ссылку DMM на тайтл за аддон для установки. Нажмите **Cancel**, откройте тайтл в Stremio сами и выберите поток **(Yours)**. |
-| Показывается только **DMM Cast PM ✨ · Cast a file inside a torrent** (RD, TB…), других потоков нет | Для этого тайтла ещё ничего не кастили. Нажмите на эту строку: откроется страница тайтла на DMM. Нажмите **Cast** у нужного релиза, затем снова откройте тайтл в Stremio. |
-| Единственный поток: **⚠️ DMM Cast · Set up DMM Cast for Premiumize again** (или ваш провайдер) | Аддон в Stremio больше не подходит к вашему входу в DMM. Нажмите на него, чтобы открыть страницу Cast, войдите, затем удалите старый аддон из Stremio и установите его заново со страницы. |
-| **Real-Debrid Required. You must be logged in with Real-Debrid to use the Stremio Cast feature.** (или TorBox, Easynews…) | Вы не вошли в этот сервис на DMM или открыли страницу Cast другого сервиса. Нажмите **Login with …** или используйте кнопку **Cast for …** на главной странице DMM. |
-| **No episodes in this release on Premiumize** | DMM не смог сопоставить файлы этого релиза с эпизодами. Выберите для cast другой релиз. |
+| Только **DMM Cast PM ✨ · Cast a file inside a torrent** (RD, TB…) и никаких других потоков | Для этого тайтла ещё ничего не было скастено. Нажмите на эту строку: откроется тайтл на DMM. Нажмите **Cast** у нужного релиза, а затем снова откройте тайтл в Stremio. |
+| **⚠️ DMM Cast · Set up DMM Cast for Premiumize again** (или ваш провайдер) как единственный поток | Аддон в Stremio больше не совпадает с вашим входом в DMM. Нажмите на него, чтобы открыть страницу Cast, войдите, затем удалите старый аддон из Stremio и установите его заново со страницы. |
+| **Real-Debrid Required. You must be logged in with Real-Debrid to use the Stremio Cast feature.** (или TorBox, Easynews…) | Вы не вошли в этого провайдера на DMM или открыли страницу Cast другого провайдера. Нажмите **Login with …** или используйте кнопку **Cast for …** на главной странице DMM. |
+| **No episodes in this release on Premiumize** | DMM не смог сопоставить файлы этого релиза с эпизодами. Скастите другой релиз. |
 | Адрес аддона, вставленный в строку поиска вверху Stremio Web, ничего не делает | Эта строка только ищет. Используйте **Addons** → **Add addon**. |
 
-![Сообщение Stremio Failed to get addon manifest после нажатия Cast](../assets/dmm-stremio/05-failed-addon-manifest.webp)
-
-Не получается разобраться? Спросите в форуме **dmm-cast-support** на [Discord](https://discord.com/invite/7u4YjMThXP). В [Getting help](../guides/remote-help.md) написано, что нужно указать.
+Застряли? Спросите на форуме **dmm-cast-support** в [Discord](https://discord.com/invite/7u4YjMThXP). В [Getting help](../guides/remote-help.md) написано, что указать.
 
 ## Вопросы {#questions}
 

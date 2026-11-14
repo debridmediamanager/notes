@@ -55,18 +55,15 @@ Di Debrid-Link, cast akan menambahkan rilisan ke akun kamu. Rilisan yang belum a
 
 ## Ketika ada yang salah {#when-something-is-wrong}
 
-| Yang kamu lihat | Yang harus dilakukan |
+| Yang Anda lihat | Yang perlu dilakukan |
 |---|---|
-| Setelah menekan **Cast**, Stremio menampilkan **Failed to get addon manifest from https://detail/movie/…** dan **Failed to fetch: Failed to fetch** | Cast kamu sudah tersimpan. Stremio menganggap link DMM ke judul itu sebagai addon yang harus dipasang. Tekan **Cancel**, buka judulnya sendiri di Stremio, lalu pilih stream **(Yours)**. |
-| Hanya **DMM Cast PM ✨ · Cast a file inside a torrent** (RD, TB…) yang muncul, tidak ada stream lain | Belum ada yang di-cast untuk judul ini. Tekan baris itu: akan membuka judulnya di DMM. Tekan **Cast** pada sebuah rilis, lalu buka lagi judulnya di Stremio. |
-| **⚠️ DMM Cast · Set up DMM Cast for Premiumize again** (atau provider kamu) sebagai satu-satunya stream | Addon di Stremio sudah tidak cocok dengan login DMM kamu. Tekan itu untuk membuka halaman Cast kamu, login, lalu hapus addon lama dari Stremio dan pasang ulang dari halaman tersebut. |
-| **Real-Debrid Required. You must be logged in with Real-Debrid to use the Stremio Cast feature.** (atau TorBox, Easynews…) | Kamu belum login ke provider itu di DMM, atau kamu membuka halaman Cast provider lain. Tekan **Login with …**, atau gunakan tombol **Cast for …** di halaman depan DMM. |
-| **No episodes in this release on Premiumize** | DMM tidak bisa mencocokkan file rilis itu dengan episode. Cast rilis lain. |
-| Alamat addon yang ditempel ke kolom pencarian di bagian atas Stremio Web tidak melakukan apa-apa | Kolom itu hanya untuk pencarian. Gunakan **Addons** → **Add addon**. |
+| Hanya **DMM Cast PM ✨ · Cast a file inside a torrent** (RD, TB…) yang muncul, tanpa stream lain | Belum ada yang di-cast untuk judul ini. Tekan baris itu: akan membuka judul tersebut di DMM. Tekan **Cast** pada sebuah rilis, lalu buka kembali judul itu di Stremio. |
+| **⚠️ DMM Cast · Set up DMM Cast for Premiumize again** (atau provider Anda) sebagai satu-satunya stream | Addon di Stremio sudah tidak cocok dengan sign-in DMM Anda. Tekan untuk membuka halaman Cast Anda, sign in, lalu hapus addon lama dari Stremio dan pasang lagi dari halaman itu. |
+| **Real-Debrid Required. You must be logged in with Real-Debrid to use the Stremio Cast feature.** (atau TorBox, Easynews…) | Anda belum sign in ke provider itu di DMM, atau Anda membuka halaman Cast milik provider lain. Tekan **Login with …**, atau gunakan tombol **Cast for …** di halaman depan DMM. |
+| **No episodes in this release on Premiumize** | DMM tidak bisa mencocokkan file pada rilis itu dengan episode. Cast rilis lain. |
+| Alamat addon yang ditempel di kolom pencarian di bagian atas Stremio Web tidak melakukan apa-apa | Kolom itu hanya untuk mencari. Gunakan **Addons** → **Add addon**. |
 
-![Pesan Failed to get addon manifest dari Stremio setelah menekan Cast](../assets/dmm-stremio/05-failed-addon-manifest.webp)
-
-Masih bingung? Tanyakan di forum **dmm-cast-support** di [Discord](https://discord.com/invite/7u4YjMThXP). [Cara meminta bantuan](../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan.
+Masih bingung? Tanyakan di forum **dmm-cast-support** di [Discord](https://discord.com/invite/7u4YjMThXP). [Getting help](../guides/remote-help.md) menjelaskan apa saja yang perlu disertakan.
 
 ## Pertanyaan {#questions}
 

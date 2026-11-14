@@ -11,21 +11,21 @@ Eine Liste enthält Release-Namen, ihre Hashes und Größen. Keine Dateien und k
 
 ## Eine Liste zu deiner Bibliothek hinzufügen {#add-a-list-to-your-library}
 
-1. Öffne die Liste. Steht dort **Login to RD/AD/TB/PM/OC/DL to download**, melde dich zuerst im selben Browser bei [DMM](https://debridmediamanager.com) an (siehe [wie du dich anmeldest](index.md#sign-in)) und öffne die Liste danach erneut.
-2. DMM prüft, welche Releases dein Dienst bereits hat. Angezeigt werden nur diese, und alles, was schon in deiner Bibliothek liegt, wird ausgelassen. Das grüne **hidden**-Feld zeigt, wie viele es ausgelassen hat.
+1. Öffne die Liste. Wenn dort **Login to RD/AD/TB/PM/OC/DL to download** steht, melde dich zuerst im selben Browser bei [DMM](https://debridmediamanager.com) an (siehe [wie du dich anmeldest](index.md#sign-in)) und öffne danach die Liste erneut.
+2. DMM prüft, welche Releases dein Dienst bereits hat. Es zeigt nur diese an und lässt alles weg, was schon in deiner Bibliothek ist. Die grüne **hidden**-Box zählt, was ausgeblendet wurde.
 3. Grenze die Liste bei Bedarf ein:
-   - **Movies** und **TV Shows** zeigen jeweils eine Art. Die Zahlen zählen Titel, nicht Dateien.
+   - **Movies** und **TV Shows** zeigen jeweils nur eine Art. Die Zahlen zählen Titel, nicht Dateien.
    - **One per title** behält das beste Release jedes Titels.
-   - Das grüne **other files**-Chip neben einem Titel zeigt alle seine Releases.
+   - Der grüne **other files**-Chip neben einem Titel zeigt alle seine Releases.
    - **quick search on filename, hash, or id; supports regex** durchsucht die Liste.
 4. Drücke den Button in einer Zeile (**RD**, **TB**, **AD**, **PM**, **OC** oder **DL**), um nur dieses eine Release hinzuzufügen.
-5. Oder drücke **RD Download** (**TB Download**, **PM Download** usw.), um alle angezeigten Releases hinzuzufügen. Die Zahl darauf gibt an, wie viele es sind. Es startet sofort, ohne Nachfrage „are you sure“.
+5. Oder drücke **RD Download** (**TB Download**, **PM Download** und so weiter), um alle angezeigten Releases hinzuzufügen. Die Zahl darauf ist die Anzahl. DMM fragt vorher nach, zum Beispiel **Add 11 releases to Premiumize?**: Drücke **Add 11**, um zu starten.
 
-![Eine geteilte Hash-Liste offener Filme in DMM, angemeldet mit Premiumize](../assets/dmm-hashlists/01-hash-list.webp)
+![A shared hash list of open movies in DMM, signed in with Premiumize](../assets/dmm-hashlists/01-hash-list.webp)
 
-Bei Real-Debrid, AllDebrid und TorBox listet **Show All** auch die Releases auf, die dein Dienst nicht hat, und **Show Instant** zeigt wieder nur die gecachten.
+**Show All** zeigt auch die Releases, die dein Dienst nicht hat, und **Show Instant** wechselt wieder zu den gecachten.
 
-**RD Download** fügt nur Releases hinzu, die Real-Debrid bereits hat, und zwar eines pro Minute, weil Real-Debrid Konten pausiert, die schneller hinzufügen. Sechzig Releases dauern etwa eine Stunde. Die Hinzufügungen laufen im Browser, also lass den Tab offen, bis dort **Started 60 downloads.** steht. TorBox und AllDebrid überspringen alles, was sie nicht gecacht haben.
+**RD Download** fügt nur Releases hinzu, die Real-Debrid schon hat, und zwar eins pro Minute, weil Real-Debrid Konten pausiert, die zu schnell hinzufügen. Sechzig Releases dauern etwa eine Stunde. Die Hinzufügungen laufen in der Seite, also lass den Tab offen, bis **Started 60 downloads.** erscheint. TorBox und AllDebrid überspringen alles, was sie nicht gecacht haben.
 
 ## Deine eigene Bibliothek teilen {#share-your-own-library}
 
@@ -45,15 +45,15 @@ Wenn du ein einzelnes Release teilen willst, ohne etwas zu veröffentlichen, dr�
 | Was du siehst | Was du tun solltest |
 |---|---|
 | **Login to RD/AD/TB/PM/OC/DL to download** | Du bist in diesem Browser nicht bei DMM angemeldet. Melde dich an und öffne die Liste dann erneut. |
-| Alles ist **hidden** und die Liste wirkt leer | Ausgeblendete Zeilen sind schon in deiner Bibliothek oder dein Dienst hat sie nicht. Bei Real-Debrid, AllDebrid oder TorBox drückst du auf **Show All**. |
-| **This hash list is still being published; refresh in a minute or two.** | Die Liste wurde gerade erst geteilt. Warte ein, zwei Minuten und lade die Seite neu. |
-| **0 files** und keine Zeilen | Diese Liste ist leer. Drücke auf **Next hash list** oder **Random hash list**. |
-| **Everything already downloaded** | Jede angezeigte Veröffentlichung ist schon in deiner Bibliothek. |
-| **Torrent not instant in TorBox; skipped.** oder **Torrent not instant in AD; skipped.** | Dein Dienst hat dieses Torrent nicht im Cache, deshalb hat DMM es übersprungen, statt einen Download zu starten. |
-| **Skipping 3 items with no info hash — they cannot be shared.** | Diese Zeilen (zum Beispiel TorBox-Web-Downloads) haben keinen Hash zum Teilen. Der Rest der Liste wird geteilt. |
+| Alles ist **hidden** und die Liste wirkt leer | Versteckte Zeilen sind bereits in deiner Bibliothek oder dein Dienst hat sie nicht. Drücke **Show All**. |
+| **This hash list is still being published; refresh in a minute or two.** | Die Liste wurde vor wenigen Augenblicken geteilt. Warte eine oder zwei Minuten und lade die Seite neu. |
+| **0 files** und keine Zeilen | Diese Liste ist leer. Drücke **Next hash list** oder **Random hash list**. |
+| **Everything already downloaded** | Jede angezeigte Version ist bereits in deiner Bibliothek. |
+| **Torrent not instant in TorBox; skipped.** oder **Torrent not instant in AD; skipped.** | Dein Dienst hat diesen Torrent nicht im Cache, deshalb hat DMM ihn übersprungen, anstatt einen Download zu starten. |
+| **Skipping 3 items with no info hash — they cannot be shared.** | Diese Zeilen (zum Beispiel TorBox-Web-Downloads) haben keinen Hash, den man teilen könnte. Der Rest der Liste wird geteilt. |
 | **Failed to generate hash list; try again soon.** | Das Veröffentlichen der Liste ist fehlgeschlagen. Versuche es später noch einmal. |
 
-Hängst du fest? Frag im Forum **dmm-support** auf [Discord](https://discord.com/invite/7u4YjMThXP).
+Du hängst fest? Frag im Forum **dmm-support** auf [Discord](https://discord.com/invite/7u4YjMThXP).
 
 ## Fragen {#questions}
 
@@ -63,7 +63,7 @@ Hängst du fest? Frag im Forum **dmm-support** auf [Discord](https://discord.com
 
 ### Warum sind alle Einträge in meiner Hash-Liste ausgeblendet? {#why-are-all-the-items-in-my-hash-list-hidden}
 
-DMM blendet aus, was schon in deiner Bibliothek liegt und was dein Dienst nicht zwischengespeichert hat. Das **hidden**-Feld zeigt dir, wie viele es sind. Bei Real-Debrid, AllDebrid oder TorBox zeigt dir **Show All** den Rest.
+DMM blendet aus, was schon in deiner Bibliothek ist und was dein Dienst nicht im Cache hat. Das **hidden**-Feld zeigt, wie viele es sind. **Show All** zeigt den Rest.
 
 ### Warum tauchen Serien nicht in einer Hash-Liste auf? {#why-dont-tv-shows-show-up-in-a-hash-list}
 

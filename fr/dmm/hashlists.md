@@ -12,20 +12,20 @@ Une liste contient les noms des releases, leurs hashes et leurs tailles. Aucun f
 ## Ajouter une liste à votre bibliothèque {#add-a-list-to-your-library}
 
 1. Ouvrez la liste. Si elle affiche **Login to RD/AD/TB/PM/OC/DL to download**, connectez-vous d'abord à [DMM](https://debridmediamanager.com) dans le même navigateur (voir [comment se connecter](index.md#sign-in)), puis rouvrez la liste.
-2. DMM vérifie quelles versions votre service a déjà. Il n'affiche que celles-là et laisse de côté ce qui est déjà dans votre bibliothèque. La case verte **hidden** indique combien ont été laissées de côté.
+2. DMM vérifie quelles versions votre service a déjà. Il n'affiche que celles-ci et laisse de côté ce qui se trouve déjà dans votre bibliothèque. La case verte **hidden** indique combien d'éléments ont été laissés de côté.
 3. Affinez si vous le souhaitez :
    - **Movies** et **TV Shows** n'affichent qu'un type. Les chiffres comptent des titres, pas des fichiers.
    - **One per title** garde la meilleure version de chaque titre.
-   - La pastille verte **other files** à côté d'un titre affiche toutes ses versions.
-   - **quick search on filename, hash, or id; supports regex** sert à chercher dans la liste.
+   - La puce verte **other files** à côté d'un titre affiche toutes ses versions.
+   - **quick search on filename, hash, or id; supports regex** permet de chercher dans la liste.
 4. Appuyez sur le bouton d'une ligne (**RD**, **TB**, **AD**, **PM**, **OC** ou **DL**) pour ajouter cette seule version.
-5. Ou appuyez sur **RD Download** (**TB Download**, **PM Download** et ainsi de suite) pour ajouter toutes les versions affichées. Le nombre indiqué sur le bouton correspond au total. Cela démarre tout de suite, sans demande de confirmation.
+5. Ou appuyez sur **RD Download** (**TB Download**, **PM Download** et ainsi de suite) pour ajouter toutes les versions affichées. Le chiffre sur le bouton indique leur nombre. DMM demande d'abord, par exemple **Add 11 releases to Premiumize?** : appuyez sur **Add 11** pour lancer.
 
 ![A shared hash list of open movies in DMM, signed in with Premiumize](../assets/dmm-hashlists/01-hash-list.webp)
 
-Sur Real-Debrid, AllDebrid et TorBox, **Show All** affiche aussi les versions que votre service n'a pas, et **Show Instant** revient aux versions en cache.
+**Show All** affiche aussi les versions que votre service n'a pas, et **Show Instant** revient aux versions en cache.
 
-**RD Download** n'ajoute que les versions que Real-Debrid a déjà, une par minute, car Real-Debrid met en pause les comptes qui ajoutent trop vite. Soixante versions prennent environ une heure. Les ajouts se font depuis la page, donc gardez l'onglet ouvert jusqu'à ce qu'il affiche **Started 60 downloads.** TorBox et AllDebrid ignorent ce qu'ils n'ont pas en cache.
+**RD Download** n'ajoute que les versions que Real-Debrid a déjà, une par minute, car Real-Debrid suspend les comptes qui ajoutent trop vite. Soixante versions prennent environ une heure. Les ajouts se font dans la page, donc gardez l'onglet ouvert jusqu'à ce qu'il affiche **Started 60 downloads.** TorBox et AllDebrid ignorent tout ce qui n'est pas en cache chez eux.
 
 ## Partager votre propre bibliothèque {#share-your-own-library}
 
@@ -42,18 +42,18 @@ Pour partager une seule version sans rien publier, appuyez sur l'icône de parta
 
 ## Quand quelque chose ne va pas {#when-something-is-wrong}
 
-| Ce que vous voyez | Quoi faire |
+| Ce que vous voyez | Ce qu'il faut faire |
 |---|---|
 | **Login to RD/AD/TB/PM/OC/DL to download** | Vous n'êtes pas connecté à DMM dans ce navigateur. Connectez-vous, puis rouvrez la liste. |
-| Tout est **hidden** et la liste semble vide | Les lignes masquées sont déjà dans votre bibliothèque, ou votre service ne les possède pas. Sur Real-Debrid, AllDebrid ou TorBox, appuyez sur **Show All**. |
-| **This hash list is still being published; refresh in a minute or two.** | La liste vient d'être partagée il y a quelques instants. Attendez une minute ou deux, puis actualisez la page. |
+| Tout est **hidden** et la liste semble vide | Les lignes masquées sont déjà dans votre bibliothèque, ou votre service ne les a pas. Appuyez sur **Show All**. |
+| **This hash list is still being published; refresh in a minute or two.** | La liste vient d'être partagée. Attendez une minute ou deux, puis actualisez. |
 | **0 files** et aucune ligne | Cette liste est vide. Appuyez sur **Next hash list** ou **Random hash list**. |
 | **Everything already downloaded** | Toutes les versions affichées sont déjà dans votre bibliothèque. |
 | **Torrent not instant in TorBox; skipped.** ou **Torrent not instant in AD; skipped.** | Votre service n'a pas ce torrent en cache, donc DMM l'a ignoré au lieu de lancer un téléchargement. |
 | **Skipping 3 items with no info hash — they cannot be shared.** | Ces lignes (les téléchargements web de TorBox, par exemple) n'ont pas de hash à partager. Le reste de la liste est partagé. |
 | **Failed to generate hash list; try again soon.** | La publication de la liste a échoué. Réessayez plus tard. |
 
-Vous êtes bloqué ? Posez votre question dans le forum **dmm-support** sur [Discord](https://discord.com/invite/7u4YjMThXP).
+Vous bloquez ? Posez votre question dans le forum **dmm-support** sur [Discord](https://discord.com/invite/7u4YjMThXP).
 
 ## Questions
 
@@ -63,7 +63,7 @@ Ouvrez la liste, connectez-vous à DMM avec votre service debrid, puis appuyez s
 
 ### Pourquoi tous les éléments de ma liste de hash sont-ils masqués ? {#why-are-all-the-items-in-my-hash-list-hidden}
 
-DMM masque ce qui est déjà dans votre bibliothèque et ce que votre service n'a pas en cache. La case **hidden** indique combien il y en a. Sur Real-Debrid, AllDebrid ou TorBox, **Show All** affiche le reste.
+DMM masque ce qui est déjà dans ta bibliothèque et ce que ton service n'a pas en cache. La case **hidden** indique combien il y en a. **Show All** affiche le reste.
 
 ### Pourquoi les séries TV n'apparaissent-elles pas dans une liste de hash ? {#why-dont-tv-shows-show-up-in-a-hash-list}
 

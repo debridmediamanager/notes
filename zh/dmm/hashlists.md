@@ -11,21 +11,21 @@
 
 ## 将列表添加到你的库 {#add-a-list-to-your-library}
 
-1. 打开列表。如果按钮显示 **Login to RD/AD/TB/PM/OC/DL to download**，先在同一个浏览器里登录 [DMM](https://debridmediamanager.com)（参见[如何登录](index.md#sign-in)），然后再重新打开列表。
-2. DMM 会检查你的服务已经有哪些版本。它只显示这些版本，并把你库里已有的内容去掉。绿色的 **hidden** 框显示被去掉的数量。
-3. 如果需要，可以进一步筛选：
-   - **Movies** 和 **TV Shows** 只显示一种类型。数字统计的是标题数，不是文件数。
-   - **One per title** 会保留每个标题的最佳版本。
-   - 标题旁边绿色的 **other files** 标签会列出该标题的所有版本。
-   - **quick search on filename, hash, or id; supports regex** 用于搜索列表。
-4. 点击某一行上的按钮（**RD**、**TB**、**AD**、**PM**、**OC** 或 **DL**），只添加该版本。
-5. 或者点击 **RD Download**（**TB Download**、**PM Download** 等）来添加显示的所有版本。按钮上的数字就是数量。它会立即开始，不会弹出"你确定吗"之类的确认。
+1. 打开列表。如果按钮显示 **Login to RD/AD/TB/PM/OC/DL to download**，请先在同一个浏览器中登录 [DMM](https://debridmediamanager.com)（参见[如何登录](index.md#sign-in)），然后再重新打开列表。
+2. DMM 会检查你的服务中已经有哪些资源，只显示这些资源，并去掉你库里已经有的内容。绿色的 **hidden** 方框显示被去掉的数量。
+3. 如有需要，可以进一步筛选：
+   - **Movies** 和 **TV Shows** 只显示其中一类。数字统计的是标题数，而不是文件数。
+   - **One per title** 会为每个标题只保留最佳资源。
+   - 标题旁边的绿色 **other files** 标签会列出该标题的所有资源。
+   - **quick search on filename, hash, or id; supports regex** 可以搜索列表。
+4. 点击某一行上的按钮（**RD**、**TB**、**AD**、**PM**、**OC** 或 **DL**），即可只添加该资源。
+5. 或者点击 **RD Download**（**TB Download**、**PM Download** 等）来添加所有显示的资源。按钮上的数字就是资源数量。DMM 会先询问，例如 **Add 11 releases to Premiumize?**，点击 **Add 11** 即可开始。
 
-![A shared hash list of open movies in DMM, signed in with Premiumize](../assets/dmm-hashlists/01-hash-list.webp)
+![DMM 中一个共享的 hash 列表，展示已用 Premiumize 登录后的电影](../assets/dmm-hashlists/01-hash-list.webp)
 
-在 Real-Debrid、AllDebrid 和 TorBox 上，**Show All** 还会列出你的服务没有的版本，**Show Instant** 则切换回已缓存的版本。
+**Show All** 会同时列出你的服务没有的资源，**Show Instant** 则会切回仅显示已缓存的资源。
 
-**RD Download** 只添加 Real-Debrid 已经有的版本，每分钟一个，因为 Real-Debrid 在账户添加得太快时会暂停。六十个版本大约需要一小时。添加操作在页面中运行，所以请保持标签页打开，直到显示 **Started 60 downloads.**。TorBox 和 AllDebrid 会跳过没有缓存的版本。
+**RD Download** 只添加 Real-Debrid 已经有的资源，每分钟添加一个，因为 Real-Debrid 会暂停添加过快的账户。六十个资源大约需要一小时。添加过程在页面中进行，所以请保持标签页打开，直到显示 **Started 60 downloads.**。TorBox 和 AllDebrid 会跳过它们没有缓存的资源。
 
 ## 分享你自己的库 {#share-your-own-library}
 
@@ -42,18 +42,18 @@
 
 ## 出现问题时 {#when-something-is-wrong}
 
-| 你看到的内容 | 你该怎么做 |
+| 你看到的 | 该怎么做 |
 |---|---|
-| **Login to RD/AD/TB/PM/OC/DL to download** | 你在这个浏览器里还没有登录 DMM。登录后重新打开列表。 |
-| 所有内容都是 **hidden**，列表看起来是空的 | 被隐藏的行要么已经在你的库里，要么你的服务里没有它们。在 Real-Debrid、AllDebrid 或 TorBox 上，点击 **Show All**。 |
-| **This hash list is still being published; refresh in a minute or two.** | 这个列表刚刚才分享出来。等一两分钟再刷新。 |
+| **Login to RD/AD/TB/PM/OC/DL to download** | 你在这个浏览器里还没有登录 DMM。先登录，然后重新打开列表。 |
+| 所有内容都被**隐藏**，列表看起来是空的 | 被隐藏的行已经在你的库里了，或者你的服务里没有它们。点击 **Show All**。 |
+| **This hash list is still being published; refresh in a minute or two.** | 这个列表刚刚才分享出来。等一两分钟，然后刷新页面。 |
 | **0 files** 且没有任何行 | 这个列表是空的。点击 **Next hash list** 或 **Random hash list**。 |
 | **Everything already downloaded** | 显示的每个资源都已经在你的库里了。 |
-| **Torrent not instant in TorBox; skipped.** 或 **Torrent not instant in AD; skipped.** | 你的服务上没有这个种子的缓存，所以 DMM 跳过了它，没有开始下载。 |
-| **Skipping 3 items with no info hash — they cannot be shared.** | 这些行（例如 TorBox 网页下载）没有可分享的 hash。列表中的其余部分会正常分享。 |
-| **Failed to generate hash list; try again soon.** | 发布列表失败了。稍后再试。 |
+| **Torrent not instant in TorBox; skipped.** 或 **Torrent not instant in AD; skipped.** | 你的服务上没有缓存这个种子，所以 DMM 跳过了它，没有开始下载。 |
+| **Skipping 3 items with no info hash — they cannot be shared.** | 这些行（例如 TorBox 网页下载）没有可以分享的 hash。列表中的其余部分会照常分享。 |
+| **Failed to generate hash list; try again soon.** | 发布列表失败了。过一会儿再试。 |
 
-还有问题？到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **dmm-support** 论坛提问。
+还有问题？到 [Discord](https://discord.com/invite/7u4YjMThXP) 的 **dmm-support** 论坛里问。
 
 ## 常见问题 {#questions}
 
@@ -63,7 +63,7 @@
 
 ### 为什么我哈希列表里的所有条目都被隐藏了？ {#why-are-all-the-items-in-my-hash-list-hidden}
 
-DMM 会隐藏你库中已有的内容，以及你的服务中没有缓存的内容。**hidden** 框会显示隐藏了多少项。在 Real-Debrid、AllDebrid 或 TorBox 上，点击 **Show All** 即可显示其余内容。
+DMM 会隐藏你库里已有的内容，以及你的服务没有缓存的内容。**hidden** 框里会显示隐藏了多少个。点击 **Show All** 可以显示其余内容。
 
 ### 为什么哈希列表里看不到电视剧？ {#why-dont-tv-shows-show-up-in-a-hash-list}
 

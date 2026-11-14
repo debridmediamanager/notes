@@ -54,18 +54,15 @@ Debrid-Link の場合、キャストするとそのリリースがアカウン�
 
 ## 問題が起きたとき {#when-something-is-wrong}
 
-| 表示される内容 | やること |
+| 表示される内容 | 対処方法 |
 |---|---|
-| **Cast** を押したあと、Stremio に **Failed to get addon manifest from https://detail/movie/…** と **Failed to fetch: Failed to fetch** が表示される | Cast 自体は保存されています。Stremio は DMM のタイトルへのリンクを、インストールするアドオンとして読んでしまっただけです。**Cancel** を押し、Stremio で自分でタイトルを開いて **(Yours)** のストリームを選んでください。 |
-| **DMM Cast PM ✨ · Cast a file inside a torrent** (RD、TB など) だけが表示され、ほかのストリームが出ない | このタイトルはまだ何も Cast されていません。その行を押すと DMM でタイトルが開きます。リリースの **Cast** を押してから、Stremio でタイトルをもう一度開いてください。 |
-| **⚠️ DMM Cast · Set up DMM Cast for Premiumize again** (またはお使いのプロバイダー) だけが唯一のストリームとして表示される | Stremio のアドオンが、DMM へのサインイン情報と合っていません。その行を押すと Cast のページが開くので、サインインしてください。そのあと Stremio から古いアドオンを削除し、そのページから入れ直してください。 |
-| **Real-Debrid Required. You must be logged in with Real-Debrid to use the Stremio Cast feature.** (TorBox、Easynews など) | その プロバイダーに DMM でサインインしていないか、別のプロバイダーの Cast ページを開いています。**Login with …** を押すか、DMM のホームページにある **Cast for …** ボタンを使ってください。 |
-| **No episodes in this release on Premiumize** | DMM はそのリリースのファイルをエピソードと対応づけられませんでした。別のリリースを Cast してください。 |
-| Stremio Web の上部の検索バーに貼り付けたアドオンのアドレスが何もしない | そのバーは検索専用です。**Addons** → **Add addon** を使ってください。 |
+| **DMM Cast PM ✨ · Cast a file inside a torrent** (RD, TB…) だけが表示され、他のストリームがない | このタイトルはまだ Cast されていません。その行を押すと、DMM でタイトルが開きます。リリースの **Cast** を押してから、Stremio でタイトルをもう一度開いてください。 |
+| **⚠️ DMM Cast · Set up DMM Cast for Premiumize again** (またはご利用のプロバイダー) だけがストリームとして表示される | Stremio のアドオンが、DMM へのサインイン情報と合わなくなっています。押すと Cast ページが開くので、サインインしてください。その後、Stremio から古いアドオンを削除し、そのページからもう一度インストールしてください。 |
+| **Real-Debrid Required. You must be logged in with Real-Debrid to use the Stremio Cast feature.** (または TorBox、Easynews など) | DMM にそのプロバイダーでサインインしていないか、別のプロバイダーの Cast ページを開いています。**Login with …** を押すか、DMM のホームページにある **Cast for …** ボタンを使ってください。 |
+| **No episodes in this release on Premiumize** | DMM がそのリリースのファイルをエピソードと照合できませんでした。別のリリースを Cast してください。 |
+| Stremio Web の上部にある検索バーにアドオンのアドレスを貼り付けても何も起きない | あのバーは検索専用です。**Addons** → **Add addon** を使ってください。 |
 
-![Cast を押したあとに表示される Stremio の Failed to get addon manifest のメッセージ](../assets/dmm-stremio/05-failed-addon-manifest.webp)
-
-困ったときは、[Discord](https://discord.com/invite/7u4YjMThXP) の **dmm-cast-support** フォーラムで質問してください。何を書けばよいかは[サポートの受け方](../guides/remote-help.md)にまとめてあります。
+困ったときは、[Discord](https://discord.com/invite/7u4YjMThXP) の **dmm-cast-support** フォーラムで質問してください。[ヘルプを求めるには](../guides/remote-help.md)に、何を書けばよいかが載っています。
 
 ## よくある質問 {#questions}
 

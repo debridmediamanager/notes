@@ -11,21 +11,21 @@ Sebuah daftar berisi nama rilis, hash, dan ukurannya. Tidak ada file dan tidak a
 
 ## Tambahkan list ke library kamu {#add-a-list-to-your-library}
 
-1. Buka daftarnya. Jika tertulis **Login to RD/AD/TB/PM/OC/DL to download**, login dulu ke [DMM](https://debridmediamanager.com) di browser yang sama (lihat [cara login](index.md#sign-in)), lalu buka lagi daftarnya.
-2. DMM mengecek release mana yang sudah ada di layanan debrid kamu. Hanya release itu yang ditampilkan, dan yang sudah ada di library kamu tidak ikut ditampilkan. Kotak hijau **hidden** menghitung berapa release yang tidak ditampilkan.
-3. Persempit jika kamu mau:
-   - **Movies** dan **TV Shows** menampilkan salah satu jenis saja. Angkanya menghitung judul, bukan file.
-   - **One per title** menyimpan release terbaik untuk setiap judul.
-   - Chip hijau **other files** di sebelah judul menampilkan semua release judul tersebut.
-   - **quick search on filename, hash, or id; supports regex** untuk mencari di dalam daftar.
-4. Tekan tombol di sebuah baris (**RD**, **TB**, **AD**, **PM**, **OC** atau **DL**) untuk menambahkan satu release itu saja.
-5. Atau tekan **RD Download** (**TB Download**, **PM Download** dan seterusnya) untuk menambahkan semua release yang ditampilkan. Angka di tombol itu adalah jumlahnya. Prosesnya langsung mulai, tanpa konfirmasi "are you sure".
+1. Buka daftar. Jika tertulis **Login to RD/AD/TB/PM/OC/DL to download**, masuk ke [DMM](https://debridmediamanager.com) dulu di browser yang sama (lihat [cara masuk](index.md#sign-in)), lalu buka lagi daftarnya.
+2. DMM memeriksa rilis mana yang sudah dimiliki layanan Anda. DMM hanya menampilkan rilis tersebut dan menyembunyikan yang sudah ada di pustaka Anda. Kotak hijau **hidden** menghitung jumlah rilis yang disembunyikan.
+3. Persempit daftar jika perlu:
+   - **Movies** dan **TV Shows** menampilkan satu jenis saja. Angkanya menghitung judul, bukan file.
+   - **One per title** menyimpan rilis terbaik untuk setiap judul.
+   - Chip hijau **other files** di sebelah judul menampilkan semua rilisnya.
+   - **quick search on filename, hash, or id; supports regex** digunakan untuk mencari dalam daftar.
+4. Tekan tombol di sebuah baris (**RD**, **TB**, **AD**, **PM**, **OC** atau **DL**) untuk menambahkan rilis itu saja.
+5. Atau tekan **RD Download** (**TB Download**, **PM Download** dan seterusnya) untuk menambahkan semua rilis yang ditampilkan. Angka di tombol itu menunjukkan jumlahnya. DMM akan bertanya dulu, misalnya **Add 11 releases to Premiumize?**: tekan **Add 11** untuk memulai.
 
-![A shared hash list of open movies in DMM, signed in with Premiumize](../assets/dmm-hashlists/01-hash-list.webp)
+![Daftar hash bersama berisi film terbuka di DMM, sudah masuk dengan Premiumize](../assets/dmm-hashlists/01-hash-list.webp)
 
-Di Real-Debrid, AllDebrid dan TorBox, **Show All** juga menampilkan release yang tidak ada di layanan kamu, dan **Show Instant** kembali ke release yang sudah ter-cache.
+**Show All** juga menampilkan rilis yang tidak dimiliki layanan Anda, dan **Show Instant** kembali ke rilis yang sudah ter-cache.
 
-**RD Download** hanya menambahkan release yang sudah ada di Real-Debrid, satu per menit, karena Real-Debrid menjeda akun yang menambahkan terlalu cepat. Enam puluh release memakan waktu sekitar satu jam. Penambahan berjalan di halaman, jadi biarkan tab tetap terbuka sampai muncul **Started 60 downloads.** TorBox dan AllDebrid melewati release yang tidak ada di cache mereka.
+**RD Download** hanya menambahkan rilis yang sudah dimiliki Real-Debrid, satu per menit, karena Real-Debrid menjeda akun yang menambah terlalu cepat. Enam puluh rilis memakan waktu sekitar satu jam. Penambahan berjalan di halaman, jadi biarkan tab tetap terbuka sampai muncul tulisan **Started 60 downloads.** TorBox dan AllDebrid melewati rilis yang tidak mereka miliki di cache.
 
 ## Bagikan library kamu sendiri {#share-your-own-library}
 
@@ -44,16 +44,16 @@ Untuk membagikan satu rilis tanpa mempublikasikan apa pun, tekan ikon bagikan di
 
 | Yang Anda lihat | Yang harus dilakukan |
 |---|---|
-| **Login to RD/AD/TB/PM/OC/DL to download** | Anda belum login ke DMM di browser ini. Login dulu, lalu buka lagi daftarnya. |
-| Semuanya **hidden** dan daftarnya terlihat kosong | Baris yang hidden sudah ada di library Anda, atau layanan Anda tidak memilikinya. Di Real-Debrid, AllDebrid, atau TorBox, tekan **Show All**. |
-| **This hash list is still being published; refresh in a minute or two.** | Daftar ini baru saja dibagikan. Tunggu satu atau dua menit lalu refresh. |
+| **Login to RD/AD/TB/PM/OC/DL to download** | Anda belum masuk ke DMM di browser ini. Masuk dulu, lalu buka daftar itu lagi. |
+| Semuanya **hidden** dan daftarnya terlihat kosong | Baris yang hidden sudah ada di library Anda, atau layanan Anda tidak memilikinya. Tekan **Show All**. |
+| **This hash list is still being published; refresh in a minute or two.** | Daftar ini baru saja dibagikan. Tunggu satu atau dua menit, lalu refresh. |
 | **0 files** dan tidak ada baris | Daftar itu kosong. Tekan **Next hash list** atau **Random hash list**. |
-| **Everything already downloaded** | Semua rilis yang ditampilkan sudah ada di library Anda. |
-| **Torrent not instant in TorBox; skipped.** atau **Torrent not instant in AD; skipped.** | Layanan Anda tidak punya cache untuk torrent itu, jadi DMM melewatinya dan tidak memulai download. |
-| **Skipping 3 items with no info hash — they cannot be shared.** | Baris-baris itu (misalnya web downloads di TorBox) tidak punya hash untuk dibagikan. Sisa daftarnya tetap dibagikan. |
+| **Everything already downloaded** | Setiap rilis yang ditampilkan sudah ada di library Anda. |
+| **Torrent not instant in TorBox; skipped.** atau **Torrent not instant in AD; skipped.** | Layanan Anda tidak punya cache untuk torrent itu, jadi DMM melewatinya alih-alih memulai download. |
+| **Skipping 3 items with no info hash — they cannot be shared.** | Baris-baris itu (misalnya TorBox web downloads) tidak punya hash untuk dibagikan. Sisa daftarnya tetap dibagikan. |
 | **Failed to generate hash list; try again soon.** | Gagal membagikan daftar. Coba lagi nanti. |
 
-Masih bingung? Tanya di forum **dmm-support** di [Discord](https://discord.com/invite/7u4YjMThXP).
+Masih bingung? Tanyakan di forum **dmm-support** di [Discord](https://discord.com/invite/7u4YjMThXP).
 
 ## Pertanyaan {#questions}
 
@@ -63,7 +63,7 @@ Buka daftarnya, masuk ke DMM dengan layanan debrid Anda, lalu tekan tombol layan
 
 ### Kenapa semua item di hash list saya tersembunyi? {#why-are-all-the-items-in-my-hash-list-hidden}
 
-DMM menyembunyikan apa yang sudah ada di perpustakaan Anda dan apa yang tidak di-cache oleh layanan Anda. Kotak **hidden** menunjukkan jumlahnya. Di Real-Debrid, AllDebrid, atau TorBox, **Show All** menampilkan sisanya.
+DMM menyembunyikan apa yang sudah ada di library Anda dan apa yang tidak ada di cache layanan Anda. Kotak **hidden** menunjukkan jumlahnya. **Show All** menampilkan sisanya.
 
 ### Kenapa acara TV tidak muncul di hash list? {#why-dont-tv-shows-show-up-in-a-hash-list}
 

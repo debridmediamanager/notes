@@ -57,16 +57,13 @@ Sur Debrid-Link, caster ajoute la release à votre compte. Une release que Debri
 
 | Ce que tu vois | Quoi faire |
 |---|---|
-| Après avoir appuyé sur **Cast**, Stremio affiche **Failed to get addon manifest from https://detail/movie/…** et **Failed to fetch: Failed to fetch** | Ton cast a été enregistré. Stremio a pris le lien de DMM vers le titre pour un addon à installer. Appuie sur **Cancel**, ouvre le titre dans Stremio toi-même, et choisis le flux **(Yours)**. |
-| Seul **DMM Cast PM ✨ · Cast a file inside a torrent** (RD, TB…) s'affiche, aucun autre flux | Rien n'a encore été casté pour ce titre. Appuie sur cette ligne : elle ouvre le titre sur DMM. Appuie sur **Cast** sur une release, puis rouvre le titre dans Stremio. |
-| **⚠️ DMM Cast · Set up DMM Cast for Premiumize again** (ou ton provider) comme seul flux | L'addon dans Stremio ne correspond plus à ta connexion DMM. Appuie dessus pour ouvrir ta page Cast, connecte-toi, puis supprime l'ancien addon de Stremio et réinstalle-le depuis cette page. |
-| **Real-Debrid Required. You must be logged in with Real-Debrid to use the Stremio Cast feature.** (ou TorBox, Easynews…) | Tu n'es pas connecté à ce provider sur DMM, ou tu as ouvert la page Cast d'un autre provider. Appuie sur **Login with …**, ou utilise le bouton **Cast for …** sur la page d'accueil de DMM. |
+| Seul **DMM Cast PM ✨ · Cast a file inside a torrent** (RD, TB…) apparaît, sans autre flux | Rien n'a encore été casté pour ce titre. Appuie sur cette ligne : elle ouvre le titre sur DMM. Appuie sur **Cast** sur une release, puis rouvre le titre dans Stremio. |
+| **⚠️ DMM Cast · Set up DMM Cast for Premiumize again** (ou ton fournisseur) comme seul flux | L'addon dans Stremio ne correspond plus à ta connexion DMM. Appuie dessus pour ouvrir ta page Cast, connecte-toi, puis supprime l'ancien addon de Stremio et réinstalle-le depuis cette page. |
+| **Real-Debrid Required. You must be logged in with Real-Debrid to use the Stremio Cast feature.** (ou TorBox, Easynews…) | Tu n'es pas connecté à ce fournisseur sur DMM, ou tu as ouvert la page Cast d'un autre fournisseur. Appuie sur **Login with …**, ou utilise le bouton **Cast for …** sur la page d'accueil de DMM. |
 | **No episodes in this release on Premiumize** | DMM n'a pas pu associer les fichiers de cette release à des épisodes. Cast une autre release. |
 | L'adresse de l'addon collée dans la barre de recherche en haut de Stremio Web ne fait rien | Cette barre ne sert qu'à chercher. Utilise **Addons** → **Add addon**. |
 
-![Message Failed to get addon manifest de Stremio après avoir appuyé sur Cast](../assets/dmm-stremio/05-failed-addon-manifest.webp)
-
-Bloqué ? Demande sur le forum **dmm-cast-support** sur [Discord](https://discord.com/invite/7u4YjMThXP). [Obtenir de l'aide](../guides/remote-help.md) indique ce qu'il faut inclure.
+Bloqué ? Demande sur le forum **dmm-cast-support** du [Discord](https://discord.com/invite/7u4YjMThXP). [Obtenir de l'aide](../guides/remote-help.md) indique ce qu'il faut inclure.
 
 ## Questions
 
