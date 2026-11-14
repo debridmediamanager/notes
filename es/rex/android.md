@@ -130,16 +130,17 @@ Si quieres que tu familia vea contenido con sus propias cuentas de Plex, consult
 |---|---|
 | **App not installed as app isn't compatible with your phone.** | Elegiste el archivo equivocado para el procesador. Prueba con el otro de la tabla del Paso 1 |
 | **Another app here already uses this port, maybe a Plex server. Try 32500.** | Escribe `32500` como puerto |
-| **Use a number from 1024 to 65535** | El puerto debe ser un número de ese rango |
-| El servidor no aparece en la app de Plex | Inicia sesión en la app de Plex con la misma cuenta que usaste en el Paso 4, y mantén los dos dispositivos en la misma red doméstica |
-| La biblioteca está vacía | La primera sincronización todavía está en marcha: espera hasta que **Status** muestre un número de títulos |
-| **Sign in needed** en un addon | Pulsa su botón **Sign in** e introduce el código |
+| **Use a number from 1024 to 65535** | El puerto debe ser un número en ese rango |
+| El servidor no aparece en la app de Plex | Inicia sesión en la app de Plex con la misma cuenta que usaste en el Paso 4, y mantén los dos dispositivos en la misma red de casa |
+| La biblioteca está vacía | La primera sincronización sigue en marcha: espera hasta que **Status** muestre un número de títulos |
+| **Sign in needed** under an addon | Pulsa su botón **Sign in** e introduce el código |
+| **Needs an update** under an addon | Esta versión de la app ya no puede ejecutar esa copia del addon. Actualiza su repositorio y pulsa **Update**. Mientras tanto, sus títulos siguen disponibles |
 | **That isn't a repository link. Try github.com/user/repo.** | Escribe el enlace del repositorio, como `github.com/user/repo` |
-| **no public git repository there (it asks for a login)** | El enlace está mal o el repositorio es privado. Compruébalo en un navegador |
-| rex se detiene cuando la pantalla se apaga | Vuelve a hacer el ajuste de segundo plano del Paso 3, y consulta [Don't kill my app](https://dontkillmyapp.com/) |
+| **no public git repository there (it asks for a login)** | El enlace es incorrecto o el repositorio es privado. Compruébalo en un navegador |
+| rex se detiene cuando la pantalla se apaga | Vuelve a hacer la configuración de segundo plano del Paso 3, y consulta [No mates mi aplicación](https://dontkillmyapp.com/) |
 
-**Logs** muestra lo que rex y los addons han dicho recientemente, con las claves y contraseñas ocultas. Si el soporte te pide los logs, pulsa **Send logs to support**: verás todo antes de que se envíe nada, luego pulsa **Send** y publica el código que recibas.
+**Logs** muestra lo que rex y los addons han dicho recientemente, con las claves y contraseñas ocultas. Si el soporte te pide los logs, pulsa **Send logs to support**: verás todo antes de que se envíe nada, luego pulsa **Send** y publica el código que te den.
 
-Lo que envía la app y adónde lo envía está en su [política de privacidad](android-privacy.md).
+Lo que envía la app y a dónde va está en su [política de privacidad](android-privacy.md).
 
-¿Sigues atascado? Pregunta en el foro **rex-support** de [Discord](https://discord.com/invite/7u4YjMThXP).
+¿Te quedaste atascado? Pregunta en el foro **rex-support** de [Discord](https://discord.com/invite/7u4YjMThXP).

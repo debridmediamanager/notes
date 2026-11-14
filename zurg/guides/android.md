@@ -92,7 +92,7 @@ The field is in nightlies from 14 November 2026. In an older one, add `dmm_api_k
 
 Addons bring more to watch into rex, beside your library. Open **Addons**: the Internet Archive addon comes installed and adds public domain films, and the [rex-addons](https://github.com/debridmediamanager/rex-addons) repository is already listed. Add another repository by its link, open it and install what it offers.
 
-Each addon says which websites it can reach, and an update that reaches new ones asks first. Install addons only from people you trust. **Log** shows what an addon did lately. Removing an addon takes only its titles away.
+Each addon says which websites it can reach, and an update that reaches new ones asks first. Install addons only from people you trust. An addon that needs your account shows a code to enter on its website; the sign-in it gets stays on this device. **Log** shows what an addon did lately. Removing an addon takes only its titles away.
 
 ## Other players on this device
 
@@ -152,6 +152,7 @@ Your GitHub token is stored encrypted on the device. Uninstalling the app delete
 | **The Plex code expired. Ask for a new one.** | Press **Sign in to Plex** again and enter the new code within 10 minutes |
 | The server isn't in the Plex app | Sign the Plex app in to the account you used in Step 6, and keep both devices on the same home network |
 | Titles show a file name and no poster | Enter your DMM API key (see [Get more titles named](#get-more-titles-named)), or use **Fix Match** in a Plex app |
+| **Needs an update** under an addon | This version of the app can no longer run that copy of the addon. Refresh its repository and press **Update**. Its titles stay meanwhile |
 | It stops when the screen is off | Allow background use again and see [Don't kill my app](https://dontkillmyapp.com/) |
 | An update leaves the app without an engine | Install an engine from **Updates** once. Your providers and settings stay |
 

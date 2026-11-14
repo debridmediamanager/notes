@@ -125,12 +125,13 @@ Para deixar a família assistir com as próprias contas do Plex, veja [Compartil
 | **App not installed as app isn't compatible with your phone.** | Você escolheu o arquivo errado para o processador. Tente o outro da tabela no Passo 1 |
 | **Another app here already uses this port, maybe a Plex server. Try 32500.** | Digite `32500` como a porta |
 | **Use a number from 1024 to 65535** | A porta precisa ser um número nessa faixa |
-| O servidor não aparece no app do Plex | Entre no app do Plex com a mesma conta que você usou no Passo 4, e deixe os dois aparelhos na mesma rede doméstica |
-| A biblioteca está vazia | A primeira sincronização ainda está rodando: espere até que **Status** mostre um número de títulos |
+| O servidor não aparece no app do Plex | Entre no app do Plex com a mesma conta que você usou no Passo 4, e deixe os dois dispositivos na mesma rede doméstica |
+| A biblioteca está vazia | A primeira sincronização ainda está em andamento: espere até **Status** mostrar um número de títulos |
 | **Sign in needed** em um addon | Pressione o botão **Sign in** dele e digite o código |
+| **Needs an update** em um addon | Esta versão do app não consegue mais rodar essa cópia do addon. Atualize o repositório dele e pressione **Update**. Os títulos continuam disponíveis enquanto isso |
 | **That isn't a repository link. Try github.com/user/repo.** | Digite o link do repositório, como `github.com/user/repo` |
 | **no public git repository there (it asks for a login)** | O link está errado ou o repositório é privado. Confira no navegador |
-| rex para quando a tela está desligada | Refaça a configuração de segundo plano do Passo 3, e veja [Don't kill my app](https://dontkillmyapp.com/) |
+| O rex para quando a tela é desligada | Refaça a configuração de segundo plano do Passo 3, e veja [Don't kill my app](https://dontkillmyapp.com/) |
 
 **Logs** mostra o que o rex e os addons disseram recentemente, com chaves e senhas ocultas. Se o suporte pedir os logs, pressione **Send logs to support**: você vê tudo antes de qualquer coisa ser enviada, depois pressione **Send** e poste o código que você receber.
 

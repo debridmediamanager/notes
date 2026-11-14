@@ -120,20 +120,21 @@ Pour permettre à votre famille de regarder avec son propre compte Plex, consult
 
 ## Dépannage {#troubleshooting}
 
-| What you see | What to do |
+| Ce que tu vois | Quoi faire |
 |---|---|
-| **App not installed as app isn't compatible with your phone.** | Tu as choisi le mauvais fichier pour le processeur. Essaie l'autre de la table de l'Étape 1 |
+| **App not installed as app isn't compatible with your phone.** | Tu as choisi le mauvais fichier pour le processeur. Essaie l'autre de la table de l'étape 1 |
 | **Another app here already uses this port, maybe a Plex server. Try 32500.** | Tape `32500` comme port |
-| **Use a number from 1024 to 65535** | Le port doit être un nombre dans cette plage |
-| Le serveur n'apparaît pas dans l'app Plex | Connecte l'app Plex avec le même compte que celui de l'Étape 4, et garde les deux appareils sur le même réseau domestique |
+| **Use a number from 1024 to 65535** | Le port doit être un nombre compris dans cette plage |
+| L'app Plex ne affiche pas le serveur | Connecte l'app Plex au même compte que celui utilisé à l'étape 4, et garde les deux appareils sur le même réseau domestique |
 | La bibliothèque est vide | La première synchronisation tourne encore : attends que **Status** affiche un nombre de titres |
-| **Sign in needed** under an addon | Appuie sur son bouton **Sign in** et saisis le code |
-| **That isn't a repository link. Try github.com/user/repo.** | Tape le lien du dépôt, par exemple `github.com/user/repo` |
+| **Sign in needed** sous un addon | Appuie sur son bouton **Sign in** et saisis le code |
+| **Needs an update** sous un addon | Cette version de l'app ne peut plus faire tourner cette copie de l'addon. Actualise son dépôt et appuie sur **Update**. Ses titres restent disponibles en attendant |
+| **That isn't a repository link. Try github.com/user/repo.** | Tape le lien du dépôt, comme `github.com/user/repo` |
 | **no public git repository there (it asks for a login)** | Le lien est faux ou le dépôt est privé. Vérifie-le dans un navigateur |
-| rex s'arrête quand l'écran est éteint | Refais le réglage d'arrière-plan de l'Étape 3, et regarde [Ne tue pas mon app](https://dontkillmyapp.com/) |
+| rex s'arrête quand l'écran est éteint | Refais le réglage d'arrière-plan de l'étape 3, et consulte [Ne tue pas mon app](https://dontkillmyapp.com/) |
 
-**Logs** affiche ce que rex et les addons ont dit récemment, clés et mots de passe masqués. Si le support demande des logs, appuie sur **Send logs to support** : tu vois tout avant l'envoi, puis appuie sur **Send** et poste le code que tu reçois.
+**Logs** affiche ce que rex et les addons ont dit récemment, avec les clés et mots de passe masqués. Si le support demande les logs, appuie sur **Send logs to support** : tu vois tout avant que quoi que ce soit soit envoyé, puis appuie sur **Send** et poste le code que tu reçois.
 
-Ce que l'app envoie et où est expliqué dans sa [politique de confidentialité](android-privacy.md).
+Ce que l'app envoie et où figure dans sa [politique de confidentialité](android-privacy.md).
 
-Bloqué ? Demande sur le forum **rex-support** de [Discord](https://discord.com/invite/7u4YjMThXP).
+Tu bloques ? Demande sur le forum **rex-support** sur [Discord](https://discord.com/invite/7u4YjMThXP).

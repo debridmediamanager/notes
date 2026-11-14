@@ -120,20 +120,21 @@ Plex に同じアカウントでサインインしているアプリはすべて
 
 ## トラブルシューティング {#troubleshooting}
 
-| 見えるもの | やること |
+| 表示される内容 | 対処法 |
 |---|---|
-| **App not installed as app isn't compatible with your phone.** | ファイルの選び方が間違っています。Step 1 の表から、もう一方のファイルを試してください |
-| **Another app here already uses this port, maybe a Plex server. Try 32500.** | ポートとして `32500` と入力してください |
-| **Use a number from 1024 to 65535** | ポートは、その範囲の数字にしてください |
-| Plex アプリにサーバーが表示されない | Step 4 で使ったのと同じアカウントで Plex アプリにサインインし、両方の機器を同じホームネットワークに接続したままにしてください |
-| ライブラリが空っぽ | 最初の同期がまだ実行中です。**Status** に作品数が表示されるまで待ってください |
-| addon の下に **Sign in needed** と表示される | その addon の **Sign in** ボタンを押して、コードを入力してください |
+| **App not installed as app isn't compatible with your phone.** | 処理装置に合わないファイルを選んでいます。ステップ1の表にあるもう一方のファイルを試してください |
+| **Another app here already uses this port, maybe a Plex server. Try 32500.** | ポートとして `32500` を入力してください |
+| **Use a number from 1024 to 65535** | ポートは、この範囲の数字である必要があります |
+| Plex アプリにサーバーが表示されない | ステップ4で使ったのと同じアカウントで Plex アプリにサインインし、両方の端末を同じホームネットワークに接続したままにしてください |
+| ライブラリが空っぽ | 最初の同期がまだ動いています。**Status** に作品数が表示されるまで待ってください |
+| アドオンの下に **Sign in needed** と表示される | そのアドオンの **Sign in** ボタンを押して、コードを入力してください |
+| アドオンの下に **Needs an update** と表示される | このバージョンのアプリでは、そのアドオンの現在のコピーを動かせなくなっています。リポジトリを更新してから **Update** を押してください。その間も作品は残ります |
 | **That isn't a repository link. Try github.com/user/repo.** | リポジトリのリンクを入力してください。例: `github.com/user/repo` |
-| **no public git repository there (it asks for a login)** | リンクが間違っているか、リポジトリが非公開です。ブラウザで確認してください |
-| 画面を消すと rex が止まる | Step 3 のバックグラウンド設定をやり直してください。あわせて [アプリを強制終了させない](https://dontkillmyapp.com/) も確認してください |
+| **no public git repository there (it asks for a login)** | リンクが間違っているか、リポジトリが非公開になっています。ブラウザで確認してください |
+| 画面がオフになると rex が止まる | ステップ3のバックグラウンドの設定をやり直してください。あわせて [Don't kill my app](https://dontkillmyapp.com/) も確認してください |
 
-**Logs** には、rex と addon が最近何を伝えたかが、キーやパスワードを隠した状態で表示されます。サポートからログを求められたら、**Send logs to support** を押してください。送信前に中身をすべて確認できます。その後 **Send** を押して、表示されたコードを投稿してください。
+**Logs** には、rex とアドオンが最近出力した内容が表示されます。キーやパスワードは隠されています。サポートからログを求められたら **Send logs to support** を押してください。送信前にすべての内容を確認できます。その後 **Send** を押して、表示されたコードを投稿してください。
 
-アプリが送信する内容と送信先は、[プライバシーポリシー](android-privacy.md)に書かれています。
+アプリが送信する内容と送信先は、[プライバシーポリシー](android-privacy.md)に記載されています。
 
-困ったときは、[Discord](https://discord.com/invite/7u4YjMThXP) の **rex-support** フォーラムで聞いてください。
+困ったときは、[Discord](https://discord.com/invite/7u4YjMThXP) の **rex-support** フォーラムで質問してください。

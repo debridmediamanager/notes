@@ -90,9 +90,9 @@ Le champ est présent dans les versions nightly à partir du 14 novembre 2026. D
 
 ## Modules complémentaires {#addons}
 
-Les addons ajoutent d'autres contenus à regarder dans rex, en plus de ta bibliothèque. Ouvre **Addons** : l'addon Internet Archive est déjà installé et ajoute des films du domaine public, et le dépôt [rex-addons](https://github.com/debridmediamanager/rex-addons) est déjà listé. Ajoute un autre dépôt avec son lien, ouvre-le et installe ce qu'il propose.
+Les addons ajoutent du contenu à regarder dans rex, en plus de ta bibliothèque. Ouvre **Addons** : l'addon Internet Archive est déjà installé et ajoute des films du domaine public, et le dépôt [rex-addons](https://github.com/debridmediamanager/rex-addons) est déjà listé. Ajoute un autre dépôt avec son lien, ouvre-le et installe ce qu'il propose.
 
-Chaque addon indique les sites web auxquels il peut accéder, et une mise à jour qui en atteint de nouveaux demande d'abord ton accord. N'installe des addons que de personnes en qui tu as confiance. **Log** affiche ce qu'un addon a fait récemment. Supprimer un addon retire seulement ses titres.
+Chaque addon indique les sites web qu'il peut atteindre, et une mise à jour qui en atteint de nouveaux te demande d'abord ton accord. Installe uniquement des addons venant de personnes en qui tu as confiance. Un addon qui a besoin de ton compte affiche un code à saisir sur son site web ; la connexion qu'il obtient reste sur cet appareil. **Log** affiche ce qu'un addon a fait récemment. Supprimer un addon retire seulement ses titres.
 
 ## Autres lecteurs sur cet appareil {#other-players-on-this-device}
 
@@ -146,15 +146,16 @@ Ton token GitHub est stocké chiffré sur l'appareil. Désinstaller l'app suppri
 | Ce que vous voyez | Quoi faire |
 |---|---|
 | GitHub répond 404 sur la page de téléchargement | Connectez-vous à GitHub avec votre compte sponsor et [acceptez l'invitation](https://github.com/debridmediamanager/zurg/invitations). Pas encore sponsor : [gatekeeper](https://gatekeeper.debridmediamanager.com/) |
-| **No engine is installed. zurg needs one before it can serve your library.** | Appuyez sur **Install an engine** et autorisez Android à l'installer |
-| **No engine is available in the sponsor releases for this device yet.** | La nightly la plus récente n'a pas de moteur pour votre processeur. Demandez sur le support |
-| **This is a 32-bit device. Debrid libraries are supported; Usenet needs 64-bit Android.** | Ajoutez un compte debrid, ou utilisez un appareil 64 bits pour Usenet |
-| **The Plex code expired. Ask for a new one.** | Appuyez à nouveau sur **Sign in to Plex** et saisissez le nouveau code dans les 10 minutes |
-| The server isn't in the Plex app | Connectez l'application Plex au compte utilisé à l'étape 6, et gardez les deux appareils sur le même réseau domestique |
-| Titles show a file name and no poster | Saisissez votre clé API DMM (voir [Get more titles named](#get-more-titles-named)), ou utilisez **Fix Match** dans une application Plex |
-| It stops when the screen is off | Autorisez à nouveau l'utilisation en arrière-plan et consultez [Don't kill my app](https://dontkillmyapp.com/) |
-| An update leaves the app without an engine | Installez un moteur depuis **Updates** une seule fois. Vos fournisseurs et réglages sont conservés |
+| **No engine is installed. zurg needs one before it can serve your library.** | Appuie sur **Install an engine** et autorise Android à l'installer |
+| **No engine is available in the sponsor releases for this device yet.** | La dernière nightly n'a pas de moteur pour ton processeur. Demande sur le support |
+| **This is a 32-bit device. Debrid libraries are supported; Usenet needs 64-bit Android.** | Ajoute un compte debrid, ou utilise un appareil 64 bits pour Usenet |
+| **The Plex code expired. Ask for a new one.** | Appuie à nouveau sur **Sign in to Plex** et saisis le nouveau code dans les 10 minutes |
+| Le serveur n'apparaît pas dans l'app Plex | Connecte l'app Plex au compte utilisé à l'étape 6, et garde les deux appareils sur le même réseau domestique |
+| Les titres affichent un nom de fichier et pas d'affiche | Saisis ta clé API DMM (voir [Get more titles named](#get-more-titles-named)), ou utilise **Fix Match** dans une app Plex |
+| **Needs an update** sous un addon | Cette version de l'app ne peut plus faire tourner cette copie de l'addon. Actualise son dépôt et appuie sur **Update**. Ses titres restent en attendant |
+| Ça s'arrête quand l'écran est éteint | Autorise à nouveau l'utilisation en arrière-plan et consulte [Don't kill my app](https://dontkillmyapp.com/) |
+| Une mise à jour laisse l'app sans moteur | Installe un moteur depuis **Updates** une seule fois. Tes fournisseurs et tes réglages restent |
 
-If support asks for logs, open **Logs** and press **Send logs to support**. You see everything before anything is sent, then press **Send** and post the code you get.
+Si le support demande des logs, ouvre **Logs** et appuie sur **Send logs to support**. Tu vois tout avant l'envoi, puis appuie sur **Send** et publie le code que tu reçois.
 
-Stuck? Ask in the **zurg-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP).
+Bloqué ? Demande sur le forum **zurg-support** sur [Discord](https://discord.com/invite/7u4YjMThXP).

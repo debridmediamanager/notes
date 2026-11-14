@@ -120,20 +120,21 @@ Untuk membiarkan keluarga menonton dengan akun Plex mereka sendiri, lihat [Bagik
 
 ## Pemecahan masalah {#troubleshooting}
 
-| Yang Anda lihat | Yang harus dilakukan |
+| Yang kamu lihat | Yang harus dilakukan |
 |---|---|
-| **App not installed as app isn't compatible with your phone.** | Anda memilih file yang salah untuk prosesor. Coba yang satunya dari tabel di Langkah 1 |
+| **App not installed as app isn't compatible with your phone.** | Kamu memilih file yang salah untuk prosesornya. Coba file lainnya dari tabel di Langkah 1 |
 | **Another app here already uses this port, maybe a Plex server. Try 32500.** | Ketik `32500` sebagai port |
 | **Use a number from 1024 to 65535** | Port harus berupa angka dalam rentang itu |
-| Server tidak muncul di aplikasi Plex | Masuk ke aplikasi Plex dengan akun yang sama seperti di Langkah 4, dan pastikan kedua perangkat ada di jaringan rumah yang sama |
+| Server tidak ada di aplikasi Plex | Masuk ke aplikasi Plex dengan akun yang sama seperti di Langkah 4, dan pastikan kedua perangkat berada di jaringan rumah yang sama |
 | Pustaka kosong | Sinkronisasi pertama masih berjalan: tunggu sampai **Status** menampilkan jumlah judul |
-| **Sign in needed** di bawah addon | Tekan tombol **Sign in** di addon tersebut lalu masukkan kodenya |
-| **That isn't a repository link. Try github.com/user/repo.** | Ketik tautan repositori, misalnya `github.com/user/repo` |
-| **no public git repository there (it asks for a login)** | Tautannya salah atau repositorinya privat. Periksa di browser |
-| rex berhenti saat layar mati | Ulangi pengaturan background di Langkah 3, dan lihat [Jangan matikan aplikasi saya](https://dontkillmyapp.com/) |
+| **Sign in needed** di bawah addon | Tekan tombol **Sign in** lalu masukkan kodenya |
+| **Needs an update** di bawah addon | Versi aplikasi ini tidak bisa lagi menjalankan salinan addon tersebut. Segarkan repository-nya lalu tekan **Update**. Judul-judulnya tetap ada sementara itu |
+| **That isn't a repository link. Try github.com/user/repo.** | Ketik link repository-nya, misalnya `github.com/user/repo` |
+| **no public git repository there (it asks for a login)** | Link-nya salah atau repository-nya privat. Cek di browser |
+| rex berhenti saat layar mati | Atur ulang pengaturan background di Langkah 3, dan lihat [Jangan matikan aplikasiku](https://dontkillmyapp.com/) |
 
-**Logs** menampilkan apa yang dikatakan rex dan add-on belakangan ini, dengan kunci dan kata sandi disembunyikan. Jika tim dukungan meminta log, tekan **Send logs to support**: Anda bisa melihat semuanya sebelum apa pun dikirim, lalu tekan **Send** dan kirim kode yang Anda dapat.
+**Logs** menampilkan apa yang dikatakan rex dan addon belakangan ini, dengan kunci dan sandi disembunyikan. Jika tim support meminta log, tekan **Send logs to support**: kamu bisa melihat semuanya sebelum apa pun dikirim, lalu tekan **Send** dan posting kode yang kamu dapat.
 
-Apa yang dikirim aplikasi dan ke mana tercantum di [kebijakan privasinya](android-privacy.md).
+Apa yang dikirim aplikasi dan ke mana tercantum di [kebijakan privasi](android-privacy.md).
 
-Mentok? Tanyakan di forum **rex-support** di [Discord](https://discord.com/invite/7u4YjMThXP).
+Masih macet? Tanyakan di forum **rex-support** di [Discord](https://discord.com/invite/7u4YjMThXP).

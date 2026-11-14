@@ -90,9 +90,9 @@ Das Feld gibt es in Nightlies ab dem 14. November 2026. In einer älteren Versio
 
 ## Add-ons {#addons}
 
-Add-ons bringen mehr zum Anschauen in rex, neben deiner Bibliothek. Öffne **Addons**: Das Internet-Archive-Add-on ist schon installiert und bringt gemeinfreie Filme mit, und das Repository [rex-addons](https://github.com/debridmediamanager/rex-addons) ist bereits eingetragen. Füge ein weiteres Repository über seinen Link hinzu, öffne es und installiere, was es anbietet.
+Addons bringen dir neben deiner Bibliothek noch mehr zum Anschauen in rex. Öffne **Addons**: Das Internet-Archive-Addon ist schon installiert und ergänzt gemeinfreie Filme, und das Repository [rex-addons](https://github.com/debridmediamanager/rex-addons) ist bereits eingetragen. Füge über seinen Link ein weiteres Repository hinzu, öffne es und installiere, was es anbietet.
 
-Jedes Add-on zeigt an, auf welche Websites es zugreifen kann, und ein Update, das neue Websites erreicht, fragt vorher nach. Installiere Add-ons nur von Leuten, denen du vertraust. **Log** zeigt, was ein Add-on zuletzt getan hat. Ein Add-on zu entfernen nimmt nur seine Titel weg.
+Jedes Addon zeigt an, welche Websites es erreichen kann, und ein Update, das neue Websites erreicht, fragt vorher nach. Installiere Addons nur von Leuten, denen du vertraust. Ein Addon, das dein Konto braucht, zeigt dir einen Code, den du auf seiner Website eingeben musst. Die Anmeldung, die es dabei erhält, bleibt auf diesem Gerät. **Log** zeigt, was ein Addon zuletzt gemacht hat. Wenn du ein Addon entfernst, verschwinden nur seine Titel.
 
 ## Andere Player auf diesem Gerät {#other-players-on-this-device}
 
@@ -145,18 +145,19 @@ Du hast eine Liste, also gehe ich nach den Regeln vor: Formatierung und Link ble
 
 ## Fehlerbehebung {#troubleshooting}
 
-| Was du siehst | Was du tun solltest |
+| Was du siehst | Was du tun kannst |
 |---|---|
-| GitHub zeigt auf der Download-Seite 404 an | Melde dich bei GitHub mit deinem Sponsor-Konto an und [nimm die Einladung an](https://github.com/debridmediamanager/zurg/invitations). Noch kein Sponsor: [gatekeeper](https://gatekeeper.debridmediamanager.com/) |
-| **No engine is installed. zurg needs one before it can serve your library.** | Tippe auf **Install an engine** und erlaube Android, ihn zu installieren |
-| **No engine is available in the sponsor releases for this device yet.** | Das neueste Nightly hat keine Engine für deinen Prozessor. Frag im Support nach |
+| GitHub zeigt auf der Download-Seite 404 an | Melde dich mit deinem Sponsor-Account bei GitHub an und [nimm die Einladung an](https://github.com/debridmediamanager/zurg/invitations). Noch kein Sponsor: [gatekeeper](https://gatekeeper.debridmediamanager.com/) |
+| **No engine is installed. zurg needs one before it can serve your library.** | Drücke **Install an engine** und erlaube Android, ihn zu installieren |
+| **No engine is available in the sponsor releases for this device yet.** | Die neueste Nightly hat keine Engine für deinen Prozessor. Frag im Support nach |
 | **This is a 32-bit device. Debrid libraries are supported; Usenet needs 64-bit Android.** | Füge ein Debrid-Konto hinzu oder nutze ein 64-Bit-Gerät für Usenet |
-| **The Plex code expired. Ask for a new one.** | Tippe erneut auf **Sign in to Plex** und gib den neuen Code innerhalb von 10 Minuten ein |
-| Der Server erscheint nicht in der Plex-App | Melde die Plex-App mit dem Konto an, das du in Schritt 6 verwendet hast, und halte beide Geräte im selben Heimnetzwerk |
+| **The Plex code expired. Ask for a new one.** | Drücke erneut **Sign in to Plex** und gib den neuen Code innerhalb von 10 Minuten ein |
+| Der Server erscheint nicht in der Plex-App | Melde die Plex-App mit dem Account an, den du in Schritt 6 benutzt hast, und halte beide Geräte im selben Heimnetzwerk |
 | Titel zeigen einen Dateinamen und kein Poster | Gib deinen DMM-API-Schlüssel ein (siehe [Get more titles named](#get-more-titles-named)) oder nutze **Fix Match** in einer Plex-App |
+| **Needs an update** bei einem Addon | Diese Version der App kann diese Kopie des Addons nicht mehr ausführen. Aktualisiere das Repository und drücke **Update**. Die Titel bleiben solange erhalten |
 | Es stoppt, wenn der Bildschirm aus ist | Erlaube die Hintergrundnutzung wieder und schau dir [Don't kill my app](https://dontkillmyapp.com/) an |
 | Ein Update lässt die App ohne Engine zurück | Installiere einmal eine Engine über **Updates**. Deine Anbieter und Einstellungen bleiben erhalten |
 
-Wenn der Support Logs möchte, öffne **Logs** und tippe auf **Send logs to support**. Du siehst alles, bevor etwas gesendet wird. Tippe dann auf **Send** und poste den Code, den du bekommst.
+Wenn der Support nach Logs fragt, öffne **Logs** und drücke **Send logs to support**. Du siehst alles, bevor etwas gesendet wird. Drücke dann **Send** und poste den Code, den du bekommst.
 
-Du kommst nicht weiter? Frag im Forum **zurg-support** auf [Discord](https://discord.com/invite/7u4YjMThXP).
+Hängst du fest? Frag im Forum **zurg-support** auf [Discord](https://discord.com/invite/7u4YjMThXP).

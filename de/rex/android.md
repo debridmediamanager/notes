@@ -122,18 +122,19 @@ Wenn du Familie und Freunde mit ihren eigenen Plex-Konten schauen lassen willst,
 
 | Was du siehst | Was du tun solltest |
 |---|---|
-| **App not installed as app isn't compatible with your phone.** | Du hast die falsche Datei für den Prozessor gewählt. Probier die andere aus der Tabelle in Schritt 1 |
+| **App not installed as app isn't compatible with your phone.** | Du hast die falsche Datei für den Prozessor gewählt. Probiere die andere aus der Tabelle in Schritt 1 |
 | **Another app here already uses this port, maybe a Plex server. Try 32500.** | Gib `32500` als Port ein |
 | **Use a number from 1024 to 65535** | Der Port muss eine Zahl in diesem Bereich sein |
-| Der Server ist nicht in der Plex-App | Melde die Plex-App mit demselben Konto an, das du in Schritt 4 benutzt hast, und lass beide Geräte im selben Heimnetzwerk |
-| Die Bibliothek ist leer | Die erste Synchronisierung läuft noch: warte, bis **Status** eine Anzahl an Titeln anzeigt |
-| **Sign in needed** unter einem Addon | Drück auf dessen Button **Sign in** und gib den Code ein |
+| Der Server erscheint nicht in der Plex-App | Melde die Plex-App mit demselben Konto an, das du in Schritt 4 verwendet hast, und stelle sicher, dass beide Geräte im selben Heimnetzwerk sind |
+| Die Bibliothek ist leer | Die erste Synchronisierung läuft noch: Warte, bis **Status** eine Anzahl an Titeln anzeigt |
+| **Sign in needed** unter einem Addon | Drücke auf dessen **Sign in**-Schaltfläche und gib den Code ein |
+| **Needs an update** unter einem Addon | Diese Version der App kann diese Version des Addons nicht mehr ausführen. Aktualisiere dessen Repository und drücke auf **Update**. Die Titel bleiben in der Zwischenzeit erhalten |
 | **That isn't a repository link. Try github.com/user/repo.** | Gib den Link zum Repository ein, zum Beispiel `github.com/user/repo` |
-| **no public git repository there (it asks for a login)** | Der Link ist falsch oder das Repository ist privat. Prüf es im Browser |
-| rex stoppt, wenn der Bildschirm aus ist | Stell die Hintergrund-Einstellung aus Schritt 3 noch mal ein und schau dir [Don't kill my app](https://dontkillmyapp.com/) an |
+| **no public git repository there (it asks for a login)** | Der Link ist falsch oder das Repository ist privat. Prüfe ihn in einem Browser |
+| rex stoppt, wenn der Bildschirm aus ist | Richte die Hintergrundeinstellung aus Schritt 3 erneut ein und lies dir [Beende meine App nicht](https://dontkillmyapp.com/) durch |
 
-**Logs** zeigt, was rex und die Addons zuletzt gemeldet haben, wobei Schlüssel und Passwörter ausgeblendet sind. Wenn der Support Logs haben möchte, drück auf **Send logs to support**: Du siehst alles, bevor etwas gesendet wird. Dann drück auf **Send** und poste den Code, den du bekommst.
+**Logs** zeigt, was rex und die Addons zuletzt gemeldet haben, wobei Schlüssel und Passwörter verborgen sind. Wenn der Support nach Logs fragt, drücke auf **Send logs to support**: Du siehst alles, bevor etwas gesendet wird. Drücke dann auf **Send** und poste den Code, den du bekommst.
 
 Was die App sendet und wohin, steht in der [Datenschutzerklärung](android-privacy.md).
 
-Festgefahren? Frag im **rex-support**-Forum auf [Discord](https://discord.com/invite/7u4YjMThXP).
+Hängst du fest? Frag im Forum **rex-support** auf [Discord](https://discord.com/invite/7u4YjMThXP).

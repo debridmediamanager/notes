@@ -90,9 +90,9 @@ zurg+rex هو خادم Plex يعمل على هاتفك. يضيف zurg حسابا
 
 ## الإضافات {#addons}
 
-تضيف الإضافات المزيد لمشاهدته في rex، إلى جانب مكتبتك. افتح **Addons**: تأتي إضافة Internet Archive مثبتة مسبقاً وتضيف أفلاماً من الملك العام، ومستودع [rex-addons](https://github.com/debridmediamanager/rex-addons) مُدرج بالفعل. أضف مستودعاً آخر عبر رابطه، وافتحه، وثبّت ما يقدمه.
+Add-ons تضيف لـ rex المزيد لتشاهده، إلى جانب مكتبتك. افتح **Addons**: إضافة Internet Archive مثبّتة مسبقاً وتضيف أفلاماً من الملك العام، ومستودع [rex-addons](https://github.com/debridmediamanager/rex-addons) مدرج بالفعل. أضف مستودعاً آخر عبر رابطه، وافتحه، ثم ثبّت ما يقدمه.
 
-تُعلن كل إضافة المواقع التي تستطيع الوصول إليها، وأي تحديث يصل إلى مواقع جديدة يسألك أولاً. ثبّت الإضافات من أشخاص تثق بهم فقط. يُظهر **Log** ما فعلته الإضافة مؤخراً. وإزالة إضافة تزيل عناوينها فقط.
+كل إضافة تذكر المواقع الإلكترونية التي تستطيع الوصول إليها، والتحديث الذي يصل إلى مواقع جديدة يسألك أولاً. ثبّت الإضافات من أشخاص تثق بهم فقط. الإضافة التي تحتاج إلى حسابك تعرض رمزاً لتدخله على موقعها، وتسجيل الدخول الذي تحصل عليه يبقى على هذا الجهاز. **Log** يعرض ما فعلته الإضافة مؤخراً. إزالة الإضافة تحذف عناوينها فقط.
 
 ## مشغّلات أخرى على هذا الجهاز {#other-players-on-this-device}
 
@@ -145,16 +145,17 @@ zurg+rex هو خادم Plex يعمل على هاتفك. يضيف zurg حسابا
 
 | ما تراه | ما الذي تفعله |
 |---|---|
-| GitHub يرد بـ 404 على صفحة التنزيل | سجّل الدخول إلى GitHub بحساب الداعم الخاص بك و[اقبل الدعوة](https://github.com/debridmediamanager/zurg/invitations). إن لم تكن داعمًا بعد: [gatekeeper](https://gatekeeper.debridmediamanager.com/) |
+| GitHub يرد برمز 404 على صفحة التنزيل | سجّل الدخول إلى GitHub بحساب الراعي الخاص بك و[اقبل الدعوة](https://github.com/debridmediamanager/zurg/invitations). إن لم تكن راعيًا بعد: [gatekeeper](https://gatekeeper.debridmediamanager.com/) |
 | **No engine is installed. zurg needs one before it can serve your library.** | اضغط **Install an engine** واسمح لأندرويد بتثبيته |
 | **No engine is available in the sponsor releases for this device yet.** | أحدث إصدار ليلي لا يحتوي على محرك لمعالجك. اسأل في الدعم |
-| **This is a 32-bit device. Debrid libraries are supported; Usenet needs 64-bit Android.** | أضف حساب debrid، أو استخدم جهازًا بمعالج 64 بت لاستخدام Usenet |
+| **This is a 32-bit device. Debrid libraries are supported; Usenet needs 64-bit Android.** | أضف حساب debrid، أو استخدم جهازًا 64-bit لـ Usenet |
 | **The Plex code expired. Ask for a new one.** | اضغط **Sign in to Plex** مرة أخرى وأدخل الرمز الجديد خلال 10 دقائق |
-| The server isn't in the Plex app | سجّل الدخول في تطبيق Plex بالحساب الذي استخدمته في الخطوة 6، وأبقِ الجهازين على نفس شبكة المنزل |
-| Titles show a file name and no poster | أدخل مفتاح DMM API الخاص بك (انظر [Get more titles named](#get-more-titles-named))، أو استخدم **Fix Match** في تطبيق Plex |
-| It stops when the screen is off | فعّل الاستخدام في الخلفية من جديد وراجع [Don't kill my app](https://dontkillmyapp.com/) |
-| An update leaves the app without an engine | ثبّت محركًا من **Updates** مرة واحدة. مزوّديك وإعداداتك تبقى كما هي |
+| الخادم غير موجود في تطبيق Plex | سجّل الدخول في تطبيق Plex بالحساب الذي استخدمته في الخطوة 6، وأبقِ الجهازين على نفس شبكة المنزل |
+| العناوين تظهر باسم ملف بدون ملصق | أدخل مفتاح DMM API الخاص بك (انظر [Get more titles named](#get-more-titles-named))، أو استخدم **Fix Match** في تطبيق Plex |
+| **Needs an update** تحت إضافة | هذا الإصدار من التطبيق لم يعد قادرًا على تشغيل هذه النسخة من الإضافة. حدّث المستودع الخاص بها واضغط **Update**. عناوينها تبقى كما هي في هذه الأثناء |
+| يتوقف عندما تُطفأ الشاشة | اسمح بالتشغيل في الخلفية من جديد وانظر [Don't kill my app](https://dontkillmyapp.com/) |
+| التحديث يترك التطبيق بدون محرك | ثبّت محركًا من **Updates** مرة واحدة. مزوّديك وإعداداتك تبقى كما هي |
 
-If support asks for logs, open **Logs** and press **Send logs to support**. You see everything before anything is sent, then press **Send** and post the code you get.
+إن طلب الدعم ملفات السجل، افتح **Logs** واضغط **Send logs to support**. ترى كل شيء قبل أن يُرسل أي شيء، ثم اضغط **Send** وانشر الرمز الذي تحصل عليه.
 
-ألم تنجح الأمور؟ اسأل في منتدى **zurg-support** على [Discord](https://discord.com/invite/7u4YjMThXP).
+عالق؟ اسأل في منتدى **zurg-support** على [Discord](https://discord.com/invite/7u4YjMThXP).

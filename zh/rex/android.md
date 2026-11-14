@@ -131,20 +131,21 @@ Plex 应用只要登录的是同一个账号，就能在家庭网络里通过名
 
 ## 故障排除 {#troubleshooting}
 
-| 你看到的 | 该怎么做 |
+| 你看到的内容 | 该怎么做 |
 |---|---|
-| **App not installed as app isn't compatible with your phone.** | 你选错了处理器对应的文件。请从第 1 步的表格中选另一个文件。 |
-| **Another app here already uses this port, maybe a Plex server. Try 32500.** | 将端口改为 `32500`。 |
-| **Use a number from 1024 to 65535** | 端口必须是这个范围内的数字。 |
-| 应用里找不到服务器 | 在 Plex 应用中登录第 4 步用的同一账号，并确保两台设备连接的是同一个家庭网络。 |
-| 资料库是空的 | 首次同步还在进行。请等待，直到 **Status** 显示出标题数量。 |
-| 某个插件下方显示 **Sign in needed** | 点击它的 **Sign in** 按钮，然后输入验证码。 |
-| **That isn't a repository link. Try github.com/user/repo.** | 输入仓库链接，例如 `github.com/user/repo`。 |
-| **no public git repository there (it asks for a login)** | 链接有误，或者仓库是私有的。请在浏览器中检查一下。 |
-| 屏幕关闭后 rex 停止运行 | 重新设置第 3 步中的后台运行选项，并参阅 [Don't kill my app](https://dontkillmyapp.com/)。 |
+| **App not installed as app isn't compatible with your phone.** | 你选错了处理器对应的文件。请从第 1 步的表格中换一个文件再试 |
+| **Another app here already uses this port, maybe a Plex server. Try 32500.** | 将端口输入为 `32500` |
+| **Use a number from 1024 to 65535** | 端口必须是这个范围内的数字 |
+| The server isn't in the Plex app | 让 Plex 应用登录到第 4 步所用的同一个账号，并确保两台设备处于同一个家庭网络中 |
+| The library is empty | 首次同步仍在进行：请等待，直到 **Status** 显示出标题数量 |
+| **Sign in needed** under an addon | 点击该插件下的 **Sign in** 按钮，然后输入验证码 |
+| **Needs an update** under an addon | 此版本的应用已无法运行该插件的这个副本。请刷新它的仓库，然后点击 **Update**。在此期间，它的标题会保留 |
+| **That isn't a repository link. Try github.com/user/repo.** | 输入仓库的链接，例如 `github.com/user/repo` |
+| **no public git repository there (it asks for a login)** | 链接有误，或者仓库是私有的。请在浏览器中检查一下 |
+| rex stops when the screen is off | 重新设置第 3 步中的后台运行选项，并参考 [Don't kill my app](https://dontkillmyapp.com/) |
 
-**Logs** 会显示 rex 和插件最近的运行记录，其中的密钥和密码已被隐藏。如果支持人员索要日志，请点击 **Send logs to support**：发送前你可以看到全部内容，然后点击 **Send**，并把得到的代码发出去。
+**Logs** 会显示 rex 和插件最近输出的内容，其中的密钥和密码已隐藏。如果支持人员索要日志，请点击 **Send logs to support**：在发送任何内容之前，你都可以先看到全部内容，然后点击 **Send**，并把得到的代码发给对方。
 
-应用会发送哪些数据、发送到哪里，请参阅它的[隐私政策](android-privacy.md)。
+应用会发送哪些内容、发往何处，请参阅其[隐私政策](android-privacy.md)。
 
-遇到问题？可以到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **rex-support** 论坛提问。
+遇到问题？请到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **rex-support** 论坛提问。

@@ -90,9 +90,9 @@ rex は、プレイヤーで再生できないものを、端末自身のビデ�
 
 ## アドオン {#addons}
 
-rex では、ライブラリに加えて、アドオンで見られるものを増やせます。**Addons** を開いてください。Internet Archive アドオンは最初からインストールされていて、パブリックドメインの映画を追加します。[rex-addons](https://github.com/debridmediamanager/rex-addons) リポジトリもすでに登録されています。別のリポジトリを追加したい場合は、そのリンクを使って追加し、開いて提供されているアドオンをインストールしてください。
+アドオンを使うと、ライブラリ以外にも rex で見られるものが増えます。**Addons** を開いてください。Internet Archive のアドオンは最初からインストールされていて、パブリックドメインの映画を追加します。[rex-addons](https://github.com/debridmediamanager/rex-addons) のリポジトリもすでに登録されています。別のリポジトリを追加するには、そのリンクを入力して開き、提供されているアドオンをインストールしてください。
 
-各アドオンには、アクセスするウェブサイトが表示されます。新しいサイトにアクセスする更新は、先に確認を求めてきます。インストールするアドオンは、信頼できる人が作ったものだけにしてください。**Log** では、アドオンが最近何をしたかを確認できます。アドオンを削除すると、そのアドオンのタイトルだけが消えます。
+各アドオンは、アクセスできる Web サイトを明示しています。新しいサイトにアクセスするようになったアップデートは、事前に確認を求めます。信頼できる人が提供するアドオンだけをインストールしてください。アカウントが必要なアドオンは、Web サイトで入力するコードを表示します。そこで得られたサインイン情報は、この端末に保存されたままになります。**Log** では、アドオンが最近何をしたかを確認できます。アドオンを削除すると、そのアドオンが追加したタイトルだけが消えます。
 
 ## このデバイスの他のプレイヤー {#other-players-on-this-device}
 
@@ -143,18 +143,19 @@ GitHub トークンはデバイス上で暗号化されて保存されます。�
 
 ## トラブルシューティング {#troubleshooting}
 
-| 表示された内容 | 対処法 |
+| 表示される内容 | 対処方法 |
 |---|---|
-| GitHub のダウンロードページで 404 が表示される | sponsor アカウントで GitHub にサインインし、[招待を承諾](https://github.com/debridmediamanager/zurg/invitations)してください。まだ sponsor でない場合は [gatekeeper](https://gatekeeper.debridmediamanager.com/) へ |
-| **エンジンがインストールされていません。zurg がライブラリを提供するには、エンジンが必要です。** | **Install an engine** を押して、Android でのインストールを許可してください |
-| **このデバイス向けのエンジンは、sponsor 向けリリースにまだありません。** | 最新のナイトリービルドには、お使いのプロセッサ向けのエンジンがありません。サポートで聞いてください |
-| **これは 32-bit デバイスです。デブリッドライブラリは対応していますが、Usenet には 64-bit の Android が必要です。** | デブリッドアカウントを追加するか、Usenet を使う場合は 64-bit デバイスを使ってください |
-| **Plex のコードの有効期限が切れました。新しいコードを求めてください。** | **Sign in to Plex** をもう一度押し、10 分以内に新しいコードを入力してください |
-| Plex アプリにサーバーが表示されない | Step 6 で使ったアカウントで Plex アプリにサインインし、両方のデバイスを同じホームネットワークに接続したままにしてください |
-| タイトルがファイル名だけで、ポスターが表示されない | DMM API キーを入力するか（[より多くのタイトルに名前を付ける](#get-more-titles-named)を参照）、Plex アプリで **Fix Match** を使ってください |
-| 画面を消すと停止する | バックグラウンドでの使用を再度許可し、[Don't kill my app](https://dontkillmyapp.com/) を確認してください |
-| アップデート後、アプリにエンジンがない | **Updates** からエンジンを一度インストールしてください。プロバイダーと設定はそのまま残ります |
+| GitHub のダウンロードページで 404 が表示される | スポンサーのアカウントで GitHub にサインインし、[招待を承諾](https://github.com/debridmediamanager/zurg/invitations)してください。まだスポンサーでない場合は [gatekeeper](https://gatekeeper.debridmediamanager.com/) をご覧ください |
+| **No engine is installed. zurg needs one before it can serve your library.** | **Install an engine** を押して、Android にインストールを許可してください |
+| **No engine is available in the sponsor releases for this device yet.** | 最新の nightly には、お使いのプロセッサ向けのエンジンがありません。サポートで相談してください |
+| **This is a 32-bit device. Debrid libraries are supported; Usenet needs 64-bit Android.** | debrid アカウントを追加するか、Usenet を使うなら 64 ビットの端末を使ってください |
+| **The Plex code expired. Ask for a new one.** | **Sign in to Plex** をもう一度押して、10 分以内に新しいコードを入力してください |
+| Plex アプリにサーバーが表示されない | Plex アプリを、ステップ6で使ったアカウントでサインインしてください。両方の端末は同じホームネットワークに接続したままにしてください |
+| タイトルがファイル名だけで、ポスターが表示されない | DMM の API キーを入力するか（[タイトル名を増やす](#get-more-titles-named)を参照）、Plex アプリで **Fix Match** を使ってください |
+| アドオンの下に **Needs an update** と表示される | このバージョンのアプリでは、そのアドオンのコピーをもう実行できません。リポジトリを更新して **Update** を押してください。その間もタイトルは残ります |
+| 画面を消すと停止する | バックグラウンドでの動作を再度許可し、[Don't kill my app](https://dontkillmyapp.com/) を確認してください |
+| アップデート後にアプリにエンジンがなくなる | **Updates** からエンジンを一度インストールしてください。プロバイダーと設定はそのまま残ります |
 
-サポートからログを求められた場合は、**Logs** を開いて **Send logs to support** を押してください。送信前に内容をすべて確認できます。その後 **Send** を押し、表示されたコードを投稿してください。
+サポートからログを求められた場合は、**Logs** を開いて **Send logs to support** を押してください。送信前に内容をすべて確認できます。そのあと **Send** を押して、表示されたコードを投稿してください。
 
-困ったときは、[Discord](https://discord.com/invite/7u4YjMThXP) の **zurg-support** フォーラムで聞いてください。
+困ったときは、[Discord](https://discord.com/invite/7u4YjMThXP) の **zurg-support** フォーラムで質問してください。

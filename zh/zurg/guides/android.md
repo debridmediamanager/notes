@@ -92,9 +92,9 @@ rex 会使用设备自带的视频编码器,把播放器无法直接播放的内
 
 ## 附加组件 {#addons}
 
-附加组件会为 rex 带来更多可观看的内容，不只是你的媒体库。打开 **Addons**：Internet Archive 附加组件已预先安装，会添加公共领域电影，[rex-addons](https://github.com/debridmediamanager/rex-addons) 仓库也已列出。通过链接添加另一个仓库，打开它，然后安装它提供的附加组件。
+打开 **Addons**，你就能在 rex 里看到库之外的更多内容。Internet Archive 插件已经装好，会添加公共领域电影；[rex-addons](https://github.com/debridmediamanager/rex-addons) 仓库也已经列在那里。想添加其他仓库，就粘贴它的链接，打开后安装它提供的插件。
 
-每个附加组件都会说明它能访问哪些网站，如果更新后要访问新的网站，会先询问你。只从你信任的人那里安装附加组件。**Log** 会显示附加组件最近做了什么。移除附加组件只会删除它的内容条目。
+每个插件都会说明它能访问哪些网站。如果更新后要访问新的网站，它会先询问你。只从你信任的人那里安装插件。需要你账户的插件会在它的网站上显示一个代码，让你输入；它获得的登录信息只保存在这台设备上。**Log** 会显示插件最近做了什么。移除插件只会删除它提供的条目。
 
 ## 此设备上的其他播放器 {#other-players-on-this-device}
 
@@ -145,16 +145,17 @@ Plex 在家里的应用无需额外设置：它们会自己找到 rex。如果�
 
 | 你看到的 | 该怎么做 |
 |---|---|
-| GitHub 在下载页面返回 404 | 用你的赞助者账号登录 GitHub，然后[接受邀请](https://github.com/debridmediamanager/zurg/invitations)。还不是赞助者？去 [gatekeeper](https://gatekeeper.debridmediamanager.com/) |
-| **未安装引擎。zurg 需要先安装一个引擎，才能提供你的库。** | 按 **Install an engine**，并允许 Android 安装它 |
-| **这台设备在赞助者版本中暂时没有可用的引擎。** | 最新的 nightly 版本没有适配你处理器的引擎。到支持频道问问 |
-| **这是 32 位设备。支持 Debrid 库；Usenet 需要 64 位 Android。** | 添加一个 debrid 账号，或者换一台 64 位设备来用 Usenet |
-| **Plex 代码已过期。请重新获取一个。** | 再次按 **Sign in to Plex**，并在 10 分钟内输入新代码 |
-| Plex 应用里看不到这个服务器 | 用第 6 步所用的账号登录 Plex 应用，并确保两台设备连接的是同一个家庭网络 |
-| 影片只显示文件名，没有海报 | 输入你的 DMM API key（见[获取更多正确的片名](#get-more-titles-named)），或者在 Plex 应用里使用 **Fix Match** |
-| 屏幕关闭后就停止工作 | 重新允许后台运行，并查看 [Don't kill my app](https://dontkillmyapp.com/) |
-| 更新后应用没有引擎了 | 在 **Updates** 里重新安装一次引擎。你的 providers 和设置都会保留 |
+| GitHub 在下载页面返回 404 | 用你的赞助者账号登录 GitHub，然后[接受邀请](https://github.com/debridmediamanager/zurg/invitations)。还没成为赞助者的话，请去 [gatekeeper](https://gatekeeper.debridmediamanager.com/) |
+| **No engine is installed. zurg needs one before it can serve your library.** | 点击 **Install an engine**，然后允许 Android 安装它 |
+| **No engine is available in the sponsor releases for this device yet.** | 最新的 nightly 版本没有适配你处理器的引擎。请在支持频道提问 |
+| **This is a 32-bit device. Debrid libraries are supported; Usenet needs 64-bit Android.** | 添加一个 debrid 账号，或者使用 64 位设备来使用 Usenet |
+| **The Plex code expired. Ask for a new one.** | 再次点击 **Sign in to Plex**，并在 10 分钟内输入新的验证码 |
+| Plex 应用里找不到这个服务器 | 把 Plex 应用登录到你在第 6 步中使用的账号，并确保两台设备处于同一个家庭网络中 |
+| 标题只显示文件名，没有海报 | 输入你的 DMM API key（参见[获取更多标题名称](#get-more-titles-named)），或者在 Plex 应用中使用 **Fix Match** |
+| 某个插件下方显示 **Needs an update** | 这个版本的应用已无法运行该插件的这个副本。请刷新它的仓库，然后点击 **Update**。在此期间它的标题会保留 |
+| 屏幕关闭后应用就停止了 | 重新允许后台运行，并参阅 [Don't kill my app](https://dontkillmyapp.com/) |
+| 更新后应用没有引擎了 | 从 **Updates** 安装一次引擎。你的提供商和设置都会保留 |
 
-如果支持人员要日志，打开 **Logs**，按 **Send logs to support**。发送前你可以先看到所有内容，然后按 **Send**，把得到的代码发出去。
+如果支持人员需要日志，请打开 **Logs** 并点击 **Send logs to support**。发送前你可以看到所有内容，然后点击 **Send**，并发布得到的代码。
 
-还有问题？到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **zurg-support** 论坛提问。
+还有问题？请到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **zurg-support** 论坛提问。

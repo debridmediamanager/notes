@@ -90,9 +90,9 @@ Kolom ini ada di nightly dari 14 November 2026. Di nightly yang lebih lama, tamb
 
 ## Add-on {#addons}
 
-Addon menambahkan lebih banyak tontonan ke rex, selain perpustakaan Anda. Buka **Addons**: addon Internet Archive sudah terpasang dan menambahkan film domain publik, dan repositori [rex-addons](https://github.com/debridmediamanager/rex-addons) sudah ada dalam daftar. Tambahkan repositori lain dengan tautannya, buka repositori tersebut, lalu pasang apa pun yang ditawarkannya.
+Add-on memberi lebih banyak tontonan ke rex, selain pustaka Anda. Buka **Addons**: add-on Internet Archive sudah terpasang dan menambahkan film domain publik, dan repositori [rex-addons](https://github.com/debridmediamanager/rex-addons) sudah tercantum. Tambahkan repositori lain dengan tautannya, buka, lalu pasang apa pun yang ditawarkannya.
 
-Setiap addon menyebutkan situs web mana saja yang bisa dijangkaunya, dan pembaruan yang menjangkau situs baru akan meminta izin Anda terlebih dahulu. Pasang addon hanya dari orang yang Anda percaya. **Log** menampilkan apa yang dilakukan addon belakangan ini. Menghapus addon hanya menghilangkan judul-judulnya.
+Setiap add-on menyebutkan situs web mana saja yang bisa dijangkaunya, dan pembaruan yang menjangkau situs baru akan meminta izin Anda dulu. Pasanglah add-on hanya dari orang yang Anda percaya. Add-on yang membutuhkan akun Anda akan menampilkan kode untuk dimasukkan di situs webnya; sesi login yang didapat tetap tersimpan di perangkat ini. **Log** menampilkan apa saja yang dilakukan add-on belakangan ini. Menghapus add-on hanya menghilangkan judul-judulnya.
 
 ## Pemutar lain di perangkat ini {#other-players-on-this-device}
 
@@ -143,16 +143,17 @@ Token GitHub kamu disimpan terenkripsi di perangkat. Jika aplikasi dicopot, semu
 
 | Yang Anda lihat | Yang harus dilakukan |
 |---|---|
-| GitHub menjawab 404 di halaman unduhan | Masuk ke GitHub dengan akun sponsor Anda dan [terima undangannya](https://github.com/debridmediamanager/zurg/invitations). Belum jadi sponsor: [gatekeeper](https://gatekeeper.debridmediamanager.com/) |
-| **No engine is installed. zurg needs one before it can serve your library.** | Tekan **Install an engine** dan izinkan Android untuk memasangnya |
+| GitHub menjawab 404 di halaman unduh | Masuk ke GitHub dengan akun sponsor Anda dan [terima undangannya](https://github.com/debridmediamanager/zurg/invitations). Belum jadi sponsor: [gatekeeper](https://gatekeeper.debridmediamanager.com/) |
+| **No engine is installed. zurg needs one before it can serve your library.** | Tekan **Install an engine** lalu izinkan Android untuk memasangnya |
 | **No engine is available in the sponsor releases for this device yet.** | Nightly terbaru belum punya engine untuk prosesor Anda. Tanyakan di support |
 | **This is a 32-bit device. Debrid libraries are supported; Usenet needs 64-bit Android.** | Tambahkan akun debrid, atau gunakan perangkat 64-bit untuk Usenet |
-| **The Plex code expired. Ask for a new one.** | Tekan **Sign in to Plex** lagi dan masukkan kode baru dalam 10 menit |
+| **The Plex code expired. Ask for a new one.** | Tekan **Sign in to Plex** lagi lalu masukkan kode baru dalam 10 menit |
 | Server tidak muncul di aplikasi Plex | Masuk ke aplikasi Plex dengan akun yang Anda pakai di Langkah 6, dan pastikan kedua perangkat berada di jaringan rumah yang sama |
 | Judul hanya menampilkan nama file dan tanpa poster | Masukkan API key DMM Anda (lihat [Get more titles named](#get-more-titles-named)), atau gunakan **Fix Match** di aplikasi Plex |
+| **Needs an update** di bawah addon | Versi aplikasi ini tidak bisa lagi menjalankan salinan addon tersebut. Segarkan repository-nya lalu tekan **Update**. Judulnya tetap tersimpan sementara itu |
 | Aplikasi berhenti saat layar mati | Izinkan penggunaan di latar belakang lagi dan lihat [Don't kill my app](https://dontkillmyapp.com/) |
-| Pembaruan membuat aplikasi tidak punya engine | Pasang engine dari **Updates** sekali saja. Provider dan pengaturan Anda tetap ada |
+| Pembaruan membuat aplikasi tidak punya engine | Pasang engine dari **Updates** sekali saja. Penyedia dan pengaturan Anda tetap ada |
 
-Jika support meminta log, buka **Logs** lalu tekan **Send logs to support**. Anda bisa melihat semuanya sebelum apa pun dikirim, lalu tekan **Send** dan posting kode yang Anda dapat.
+Jika support meminta log, buka **Logs** lalu tekan **Send logs to support**. Anda bisa melihat semuanya sebelum apa pun dikirim, lalu tekan **Send** dan kirimkan kode yang Anda dapat.
 
 Masih buntu? Tanyakan di forum **zurg-support** di [Discord](https://discord.com/invite/7u4YjMThXP).

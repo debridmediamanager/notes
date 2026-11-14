@@ -90,9 +90,9 @@ O campo está nas nightlies a partir de 14 de novembro de 2026. Em uma versão m
 
 ## Complementos {#addons}
 
-Addons trazem mais coisas para assistir no rex, além da sua biblioteca. Abra **Addons**: o addon do Internet Archive já vem instalado e adiciona filmes de domínio público, e o repositório [rex-addons](https://github.com/debridmediamanager/rex-addons) já está na lista. Adicione outro repositório pelo link, abra-o e instale o que ele oferece.
+Complementos trazem mais para assistir no rex, além da sua biblioteca. Abra **Addons**: o complemento do Internet Archive já vem instalado e adiciona filmes de domínio público, e o repositório [rex-addons](https://github.com/debridmediamanager/rex-addons) já está na lista. Adicione outro repositório pelo link dele, abra-o e instale o que ele oferece.
 
-Cada addon diz quais sites ele consegue acessar, e uma atualização que passe a acessar sites novos pede sua permissão antes. Instale addons apenas de pessoas em quem você confia. **Log** mostra o que um addon fez recentemente. Remover um addon tira só os títulos dele.
+Cada complemento informa quais sites ele pode acessar, e uma atualização que passe a acessar sites novos pede sua permissão antes. Instale complementos somente de pessoas em quem você confia. Um complemento que precisa da sua conta mostra um código para você digitar no site dele; o login que ele recebe fica guardado apenas neste dispositivo. **Log** mostra o que um complemento fez recentemente. Remover um complemento tira apenas os títulos dele.
 
 ## Outros players neste dispositivo {#other-players-on-this-device}
 
@@ -145,15 +145,16 @@ Seu token do GitHub é armazenado criptografado no dispositivo. Desinstalar o ap
 
 | O que você vê | O que fazer |
 |---|---|
-| GitHub responde 404 na página de download | Entre no GitHub com sua conta de patrocinador e [aceite o convite](https://github.com/debridmediamanager/zurg/invitations). Ainda não é patrocinador: [gatekeeper](https://gatekeeper.debridmediamanager.com/) |
-| **No engine is installed. zurg needs one before it can serve your library.** | Toque em **Install an engine** e permita que o Android instale |
+| O GitHub responde 404 na página de download | Entre no GitHub com sua conta de patrocinador e [aceite o convite](https://github.com/debridmediamanager/zurg/invitations). Ainda não é patrocinador: [gatekeeper](https://gatekeeper.debridmediamanager.com/) |
+| **No engine is installed. zurg needs one before it can serve your library.** | Toque em **Install an engine** e permita que o Android a instale |
 | **No engine is available in the sponsor releases for this device yet.** | A nightly mais recente não tem um engine para o seu processador. Pergunte no suporte |
 | **This is a 32-bit device. Debrid libraries are supported; Usenet needs 64-bit Android.** | Adicione uma conta debrid, ou use um dispositivo 64-bit para Usenet |
 | **The Plex code expired. Ask for a new one.** | Toque em **Sign in to Plex** de novo e digite o novo código em até 10 minutos |
-| O servidor não aparece no app do Plex | Entre no app do Plex com a conta que você usou no Passo 6, e deixe os dois dispositivos na mesma rede doméstica |
-| Os títulos mostram um nome de arquivo e não têm pôster | Digite sua chave de API do DMM (veja [Get more titles named](#get-more-titles-named)), ou use **Fix Match** em um app do Plex |
+| O servidor não aparece no app do Plex | Entre no app do Plex com a conta que você usou no Passo 6, e mantenha os dois dispositivos na mesma rede doméstica |
+| Os títulos mostram um nome de arquivo e sem pôster | Digite sua chave de API do DMM (veja [Get more titles named](#get-more-titles-named)), ou use **Fix Match** em um app do Plex |
+| **Needs an update** em um addon | Esta versão do app não consegue mais rodar essa cópia do addon. Atualize o repositório dele e toque em **Update**. Os títulos continuam disponíveis enquanto isso |
 | Ele para quando a tela é desligada | Permita o uso em segundo plano de novo e veja [Don't kill my app](https://dontkillmyapp.com/) |
-| Uma atualização deixa o app sem um engine | Instale um engine em **Updates** uma vez. Seus provedores e configurações continuam |
+| Uma atualização deixa o app sem engine | Instale um engine em **Updates** uma vez. Seus provedores e configurações são mantidos |
 
 Se o suporte pedir logs, abra **Logs** e toque em **Send logs to support**. Você vê tudo antes de qualquer coisa ser enviada, depois toque em **Send** e poste o código que você receber.
 
