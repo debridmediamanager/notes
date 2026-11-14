@@ -1,14 +1,14 @@
 # Apa fungsi masing-masing bagian {#what-each-piece-does}
 
-Nama-nama ini tidak menjelaskan fungsinya, jadi berikut satu baris untuk masing-masing. Untuk mencari mana yang kamu butuhkan, gunakan [Choose your setup](choose-your-setup.md).
+The nama-nama ini tidak menjelaskan fungsinya, jadi di sini ada satu baris untuk masing-masing. Yang tidak ditandai **For sponsors** itu gratis. Untuk mengetahui mana yang kamu butuhkan, gunakan [Choose your setup](choose-your-setup.md).
 
 ## Tiga proyeknya {#the-three-projects}
 
 | Nama | Fungsinya |
 |---|---|
-| [DMM](https://debridmediamanager.com) (Debrid Media Manager) | Sebuah situs web untuk mencari rilis dan menambahkannya ke akun debrid kamu. Situs ini juga mencari di Usenet dan Easynews. Gratis |
-| [zurg](../zurg/index.md) | Semua akun debrid dan Usenet dalam satu folder. Plex, Jellyfin, Emby, Infuse dan rex membaca folder itu seperti drive biasa. Untuk sponsor |
-| [rex](../rex/index.md) | Sebuah media server yang tidak memiliki file apa pun. Sumbernya memberi tahu apa yang mereka punya dan setiap aplikasi Plex dapat memutarnya. Gratis untuk penggunaan pribadi |
+| [DMM](https://debridmediamanager.com) (Debrid Media Manager) | Situs web untuk mencari rilis dan menambahkannya ke akun debrid kamu. Situs ini juga mencari di Usenet dan Easynews |
+| [zurg](../zurg/index.md) | Menggabungkan setiap akun debrid dan Usenet menjadi satu perpustakaan. Plex, Jellyfin dan Emby membacanya sebagai folder, Infuse dan Kodi lewat WebDAV, dan rex mengambilnya langsung. Build terbaru hanya untuk sponsor |
+| [rex](../rex/index.md) | Media server untuk aplikasi Plex yang tidak punya file sendiri. zurg atau addon memberi tahu rex apa saja yang ada. Gratis untuk penggunaan pribadi |
 
 ## Menonton langsung dari DMM {#watching-straight-from-dmm}
 
@@ -16,55 +16,70 @@ Tidak perlu server untuk semua ini.
 
 | Name | What it does |
 |---|---|
-| [DMM Cast](https://debridmediamanager.com/stremio/) | Addon Stremio yang memutar rilis dari akun debrid atau Easynews kamu |
+| [DMM Cast](https://debridmediamanager.com/stremio) | Addon Stremio yang memutar rilis dari akun debrid atau Easynews kamu |
 | [DMM Kodi addon](https://debridmediamanager.com/kodi) | Jelajahi, cari, dan putar dari akun debrid atau Easynews kamu di dalam Kodi |
-| DMM Watch | Tombol di DMM yang membuka file di pemutar kamu sendiri, seperti VLC atau Infuse |
-| [DMM Music](https://debridmediamanager.com/music/) | Putar dan unduh musik dari Real-Debrid langsung di browser kamu |
+| DMM Watch | Tombol di DMM yang membuka file di pemutar sendiri, seperti VLC atau Infuse |
+| [DMM Music](https://debridmediamanager.com/music) | Putar dan unduh musik dari Real-Debrid langsung di browser |
 
 ## Memberi makan rex {#feeding-rex}
 
-| Name | Apa fungsinya |
+| Nama | Fungsinya |
 |---|---|
-| [rex-stremio](../rex/stremio.md) | Mengubah addon Stremio Anda menjadi library rex, sehingga bisa diputar di aplikasi Plex. Gratis |
-| [rex addons](../rex/addons.md) | Program kecil yang memberi rex sesuatu untuk diputar: YouTube, Spotify, IPTV, video rumahan, atau apa pun yang Anda tulis sendiri |
-| [rex for Android](../rex/android.md) | rex dan addon-nya di ponsel atau TV box Android, tanpa komputer. Gratis. Untuk library debrid dan Usenet Anda, sponsor menggunakan zurg+rex |
-| [zurg+rex for Android](../zurg/guides/android.md) | Server Plex di ponsel Anda: zurg dan rex bersama dalam satu perangkat Android. Untuk sponsor |
+| [rex-stremio](../rex/stremio.md) | Mengubah addon Stremio kamu menjadi library rex, sehingga bisa diputar di aplikasi Plex |
+| [rex addons](../rex/addons.md) | Program kecil yang memberi rex sesuatu untuk diputar: YouTube, Spotify, IPTV, video rumahan, atau apa pun yang kamu tulis sendiri |
+| [rex-live-sports](../rex/live-tv.md) | Addon rex yang menampilkan saluran olahraga langsung dan panduan di Live TV aplikasi Plex |
+| [rex-direct](../rex/any-source.md#rex-direct) | Memberi rex kamu alamat aman sendiri, sehingga aplikasi Plex bisa mengaksesnya dari luar rumah |
+| [rex for Android](../rex/android.md) | rex dan addon-nya di ponsel atau TV box Android, tanpa komputer |
+| [zurg+rex for Android](../zurg/guides/android.md) | Server Plex di ponselmu: zurg dan rex bersama-sama di satu perangkat Android, dengan library debrid dan Usenet kamu. Untuk sponsor |
 
 ## Di dalam Jellyfin dan Emby {#inside-jellyfin-and-emby}
 
 | Nama | Fungsinya |
 |---|---|
-| [RD, AD, TB, PM, OC and DL zurg](https://debridmediamanager.com/jellyfin) | Satu plugin untuk setiap penyedia debrid. Library debrid Anda muncul di Jellyfin atau [Emby](https://debridmediamanager.com/emby) tanpa aplikasi zurg atau mount. Untuk sponsor |
-| [NZB zurg](https://debridmediamanager.com/jellyfin) | Plugin Jellyfin yang men-streaming NZB lewat akun Usenet Anda sendiri. Untuk sponsor |
+| [Plugin debrid](https://debridmediamanager.com/jellyfin) (RD zurg, AD zurg, TB zurg, PM zurg, OC zurg, DL zurg) | Satu plugin untuk tiap penyedia debrid: Real-Debrid, AllDebrid, TorBox, Premiumize, Offcloud, dan Debrid-Link. Pustaka debrid kamu muncul di Jellyfin atau [Emby](https://debridmediamanager.com/emby) tanpa perlu aplikasi zurg atau mount. Untuk sponsor |
+| [NZB zurg](https://debridmediamanager.com/jellyfin) | Plugin Jellyfin yang memutar NZB lewat akun Usenet kamu sendiri. Untuk sponsor |
 
 ## Menambahkan judul untukmu {#adding-titles-for-you}
 
-| Name | Apa fungsinya |
+| Nama | Fungsinya |
 |---|---|
 | [Wanted](../zurg/guides/dmm-wanted.md) | Tekan **Want** di DMM dan zurg kamu akan mengambilnya, termasuk episode baru. Untuk sponsor |
-| [Seerr lewat DMM](../dmm/seerr.md) | Permintaan keluarga di Seerr masuk ke daftar Wanted kamu. Untuk sponsor |
-| [Torznab dan Newznab](https://debridmediamanager.com/torznab) | DMM sebagai indexer untuk Sonarr, Radarr dan Prowlarr, dengan zurg sebagai download client. Untuk sponsor |
-| [Addon Stremio zurg](../zurg/guides/stremio.md) | Mencari di Usenet saat kamu menekan play di Stremio dan memutarnya lewat zurg |
-| [`__magic__`](../zurg/guides/magic.md) | Folder zurg yang kamu atur sendiri, atau biarkan Sonarr dan Radarr yang mengaturnya |
+| [Seerr through DMM](../dmm/seerr.md) | Permintaan keluarga di Seerr masuk ke daftar Wanted kamu. Untuk sponsor |
+| [Torznab](https://debridmediamanager.com/torznab) dan [Newznab](https://debridmediamanager.com/newznab) | DMM sebagai indexer untuk Sonarr, Radarr, dan Prowlarr. Untuk sponsor |
+| zurg sebagai download client | zurg menjawab Sonarr dan Radarr seperti qBittorrent untuk [torrents](../zurg/guides/sonarr-radarr-torrents.md) dan SABnzbd untuk [Usenet](../zurg/guides/sonarr-radarr.md), jadi kamu tidak perlu menjalankan keduanya. Untuk sponsor |
+| [Addon Stremio dari zurg](../zurg/guides/stremio.md) | Mencari di Usenet saat kamu menekan play di Stremio dan memutarnya lewat zurg. Untuk sponsor |
+| [`__magic__`](../zurg/guides/magic.md) | Folder zurg yang kamu atur sendiri, atau biarkan Sonarr dan Radarr yang mengaturnya. Untuk sponsor |
 
 ## Fitur DMM lainnya {#the-rest-of-dmm}
 
 | Nama | Fungsinya |
 |---|---|
-| [Papan permintaan](https://debridmediamanager.com/requests) | Minta rilis yang belum ada di Real-Debrid. Pengguna DMM lain akan memindahkannya ke perpustakaanmu. Memenuhi permintaan memberi keuntungan sponsor DMM |
-| [Daftar hash](https://debridmediamanager.com/hashlists) | Bagikan daftar rilis supaya orang lain bisa menambahkannya ke akun mereka |
-| [Ekstensi browser](../dmm/safari.md) | Menambahkan tombol DMM ke situs film dan serial TV serta di sebelah tautan magnet |
-| [Halaman sponsor](https://gatekeeper.debridmediamanager.com) | Tempat kamu menjadi sponsor dan menautkan pledge Patreon atau GitHub Sponsors-mu. [Apa yang kamu dapatkan dari sponsorship](sponsorship.md) |
+| Tab Usenet | Mengirim rilis Usenet ke library Real-Debrid kamu, tanpa perlu akun Usenet. Sponsor didahulukan dan mendapat jatah harian yang lebih besar |
+| [Request board](https://debridmediamanager.com/requests) | Minta rilis yang tidak ada di Real-Debrid. Pengguna DMM lain akan memindahkannya ke library kamu. Isi 10 request dan dapatkan 7 hari fitur sponsor DMM |
+| [Hash lists](https://debridmediamanager.com/hashlists) | Bagikan daftar rilis supaya orang lain bisa menambahkannya ke akun mereka sendiri |
+| Browser extension | Menambahkan tombol DMM ke situs film dan TV serta di samping magnet link. Untuk [Chrome](https://chromewebstore.google.com/detail/Debrid%20Media%20Manager/oeojlegjfhgefhnbjdnaebgdfkbipghm), [Firefox](https://addons.mozilla.org/en-US/firefox/addon/debrid-media-manager/) dan [Safari](../dmm/safari.md) |
+| [gatekeeper](https://gatekeeper.debridmediamanager.com) | Situs sponsor. Jadi sponsor di sana, hubungkan pledge Patreon atau GitHub Sponsors kamu dan dapatkan API key DMM kamu. [Manfaat yang didapat dari sponsorship](sponsorship.md) |
 
 ## Istilah yang akan kamu temui di panduan {#words-youll-see-in-the-guides}
 
-| Kata | Artinya |
+| Istilah | Artinya |
 |---|---|
-| Penyedia debrid | Layanan berbayar yang mengunduh torrent untuk kamu dan memungkinkan kamu streaming: Real-Debrid, AllDebrid, TorBox, Premiumize, Offcloud, Debrid-Link |
-| Cached | Penyedia sudah punya rilisnya, jadi langsung bisa diputar |
-| Usenet | Tempat lain untuk mendapatkan rilis. Kamu butuh akun penyedia Usenet, atau TorBox Pro untuk melakukannya untuk kamu |
-| NZB | File kecil yang menunjukkan lokasi rilis Usenet, seperti file torrent untuk torrent |
-| Indexer | Situs pencarian untuk rilis. Sonarr dan Radarr menggunakannya untuk mencari sesuatu |
-| WebDAV | Cara berbagi file lewat web. Infuse, Kodi, dan banyak pemutar TV bisa membukanya |
-| Mount | Membuat folder zurg terlihat seperti drive lokal, sehingga Plex, Jellyfin, atau Emby bisa memindainya |
-| Plex Media Server vs Plex apps | Server menyimpan library kamu. Aplikasi di TV dan HP kamu yang memutarnya. rex menggantikan server, bukan aplikasinya |
+| Release | Satu salinan film, episode atau musim seperti yang dipublikasikan seseorang. Satu judul biasanya punya banyak release, dengan kualitas yang berbeda |
+| Debrid provider | Layanan berbayar yang mengunduh torrent untukmu dan membiarkanmu men-stream-nya: Real-Debrid, AllDebrid, TorBox, Premiumize, Offcloud, Debrid-Link |
+| Cached | Provider sudah punya release-nya, jadi langsung bisa diputar |
+| Usenet | Tempat lain untuk mendapatkan release. Pakai akun Usenet milikmu sendiri, biarkan TorBox Pro atau Easynews yang mengurusnya, atau minta DMM mengirim hasilnya ke Real-Debrid |
+| Easynews | Layanan Usenet berbayar dengan pencariannya sendiri, yang memutar file langsung lewat web |
+| NZB | File kecil yang memberi tahu di mana release Usenet berada, seperti file torrent untuk torrent |
+| Indexer | Situs pencarian untuk release. Sonarr dan Radarr memakainya untuk mencari sesuatu |
+| Sonarr, Radarr and Prowlarr | Aplikasi yang mengambilkan judul untukmu: Sonarr untuk serial, Radarr untuk film. Prowlarr menyimpan indexer mereka di satu tempat |
+| Seerr | Situs permintaan untuk keluarga dan teman. Overseerr dan Jellyseerr cara kerjanya sama |
+| Stremio and Kodi | Aplikasi pemutar media. Addon memberi mereka sesuatu untuk diputar |
+| DMM API key | Kunci sponsor dari gatekeeper. Tempel di tempat panduan memintanya, dan jaga kerahasiaannya seperti kata sandi |
+| Nightly | Build terbaru dari zurg atau rex, dibuat setiap malam. Nightly zurg hanya untuk sponsor |
+| WebDAV | Cara berbagi file lewat web. Infuse, Kodi dan banyak pemutar TV bisa membukanya |
+| Mount | Membuat folder zurg terlihat seperti drive lokal, supaya Plex, Jellyfin atau Emby bisa memindainya |
+| rclone | Alat yang dipakai zurg untuk membuat mount. Setup zurg menyiapkannya untukmu |
+| `.strm` | File kecil yang berisi tautan sebagai pengganti video, untuk pemutar seperti Kodi |
+| Source | Apa pun yang memberi tahu rex apa yang dimilikinya dan menyajikan file-nya: zurg, rex-stremio atau addon |
+| Claim | Memasang rex ke akun Plex, supaya rex bisa menampilkan judul dan poster, dan aplikasi Plex bisa menemukannya |
+| Plex Media Server vs Plex apps | Server menyimpan pustakamu. Aplikasi di TV dan ponselmu yang memutarnya. rex menggantikan server, bukan aplikasinya |
