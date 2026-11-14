@@ -10,13 +10,22 @@ python3 i18n/translate.py md --src . --out build/i18n
 status=$?
 [ "$status" -eq 0 ] || [ "$status" -ge 3 ] || exit "$status"  # 3 and 4 still build from the cache
 
+# Retype now and then crashes in its parallel file writer ("capacity ('-2') must be a non-negative value",
+# "a concurrent update was performed on this collection"); the same build passes when run again.
+build() {  # build <dir> <absolute output>
+  (cd "$1" && $retype build --output "$2") && return
+  echo "Retype crashed building $1, building it again"
+  rm -rf "$2"
+  (cd "$1" && $retype build --output "$2")
+}
+
 rm -rf .retype
-$retype build --output .retype || exit 1
+build . "$PWD/.retype" || exit 1
 for dir in build/i18n/*/; do
   lang=$(basename "$dir")
   # Built on its own and moved in: Retype failed to write files when building into the English output.
   rm -rf "build/site-$lang"
-  (cd "$dir" && $retype build --output "$OLDPWD/build/site-$lang") || exit 1
+  build "$dir" "$PWD/build/site-$lang" || exit 1
   mv "build/site-$lang" ".retype/$lang"
   # Old URLs keep redirecting in every language.
   awk -v l="/$lang" '!/^#/ && NF >= 2 { to = ($2 ~ /^\//) ? l $2 : $2; print l $1, to, $3 }' _redirects >> .retype/_redirects
