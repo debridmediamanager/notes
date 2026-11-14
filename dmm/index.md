@@ -8,6 +8,8 @@ order: 70
 
 [Debrid Media Manager](https://debridmediamanager.com) helps you find movies and shows and keep them in your debrid library.
 
+To watch in Stremio, add DMM's own addon, DMM Cast. [DMM in Stremio](stremio.md) shows how.
+
 The DMM browser extension adds a button to IMDb Trakt and other movie and TV sites. [DMM buttons in Safari](safari.md) explains the Safari setup.
 
 DMM also serves the other projects:

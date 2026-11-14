@@ -20,7 +20,7 @@ On a phone, swipe a table sideways to see all its columns.
 
 | I have / want… | Choose this route | Why choose it? | What you take on |
 |---|---|---|---|
-| Stremio or Nuvio and a debrid or Easynews account; no server to maintain | **DMM Cast → Stremio or Nuvio**, or your existing stream addon | Watch through your account without running zurg, rex or a media server | The addon and provider must supply a playable stream; the device handles playback |
+| Stremio or Nuvio and a debrid or Easynews account; no server to maintain | **[DMM Cast](../dmm/stremio.md) → Stremio or Nuvio**, or your existing stream addon | Watch through your account without running zurg, rex or a media server | The addon and provider must supply a playable stream; the device handles playback |
 | Kodi and a debrid, Easynews or TorBox Pro account | **DMM's Kodi addon → your account** | Browse, search and play inside Kodi; pair from your phone. The addon's TorBox library includes hosted NZB downloads | Kodi does the playback. A sponsor's Wanted list still needs zurg to fulfil requests |
 | One movie to watch in my usual player | **DMM Watch → external player** | No library server needed | Install a supported player and choose a file it can play |
 | Infuse, Kodi or another WebDAV player | **Provider WebDAV** with no host; **zurg → WebDAV player** when a host can stay on | Browse a cloud library without Plex, Jellyfin, Emby or rex | Real-Debrid, AllDebrid, Premiumize, TorBox and Debrid-Link serve their own WebDAV, with their own folder layout. Offcloud has none, so it needs zurg. zurg needs a host that stays on while you watch |

@@ -19,6 +19,7 @@ Every guide on this site, by project.
 
 ## DMM
 
+- [DMM in Stremio](../dmm/stremio.md): watch in Stremio with the DMM Cast addon, and what to do when it goes wrong
 - [DMM buttons in Safari](../dmm/safari.md): the browser extension as a userscript on Mac, iPhone and iPad
 - [Seerr through DMM](../dmm/seerr.md)
 - [DMM wanted list](../zurg/guides/dmm-wanted.md): zurg fetches what you press **Want** on
