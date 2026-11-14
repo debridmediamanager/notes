@@ -35,6 +35,11 @@ An addon is code from whoever wrote it, installed from a repository you added. I
 off from the rest of your device and can only reach the sites it names, which rex shows you
 before you install it. Install addons only from people you trust.
 
+An addon that needs an account on its website, such as YouTube, signs in with a code: you
+enter it on that website's own page, so your password never passes through the app. The
+token the website then gives the addon stays on your device and goes only back to that
+website. Removing the addon deletes it.
+
 ## Children
 
 The app is not directed at children.

@@ -24,7 +24,13 @@ Tu biblioteca, el historial de reproducción, la configuración de los complemen
 
 ## Complementos {#addons}
 
-Un addon es código de quien lo escribió, instalado desde un repositorio que tú añadiste. Se ejecuta aislado del resto de tu dispositivo y solo puede acceder a los sitios que nombra, cosa que rex te muestra antes de instalarlo. Instala addons solo de personas en las que confíes.
+An addon is code from whoever wrote it, installed from a repository you added. It runs sealed off from the rest of your device and can only reach the sites it names, which rex shows you before you install it. Install addons only from people you trust.
+
+Un addon es código de quien lo escribió, instalado desde un repositorio que tú añadiste. Se ejecuta aislado del resto de tu dispositivo y solo puede acceder a los sitios que nombra, algo que rex te muestra antes de que lo instales. Instala addons solo de personas en las que confíes.
+
+An addon that needs an account on its website, such as YouTube, signs in with a code: you enter it on that website's own page, so your password never passes through the app. The token the website then gives the addon stays on your device and goes only back to that website. Removing the addon deletes it.
+
+Un addon que necesita una cuenta en su sitio web, como YouTube, inicia sesión con un código: lo introduces en la propia página de ese sitio web, así que tu contraseña nunca pasa por la app. El token que el sitio web entrega después al addon se queda en tu dispositivo y solo vuelve a ese mismo sitio web. Si eliminas el addon, el token también se borra.
 
 ## Menores {#children}
 

@@ -28,6 +28,8 @@ Suas bibliotecas, histórico de exibição, configurações de addons (incluindo
 
 Um addon é um código de quem o escreveu, instalado a partir de um repositório que você adicionou. Ele roda isolado do resto do seu dispositivo e só consegue acessar os sites que ele declara, o que o rex mostra para você antes de instalar. Instale addons apenas de pessoas em quem você confia.
 
+Um addon que precisa de uma conta no site dele, como o YouTube, faz login com um código: você digita esse código na própria página do site, então sua senha nunca passa pelo app. O token que o site entrega ao addon fica no seu dispositivo e só é enviado de volta para esse site. Remover o addon apaga tudo.
+
 ## Crianças {#children}
 
 O aplicativo não é voltado para crianças.

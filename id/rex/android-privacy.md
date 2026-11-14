@@ -24,7 +24,9 @@ Perpustakaan Anda, riwayat tontonan, pengaturan addon (termasuk kunci apa pun ya
 
 ## Add-on {#addons}
 
-Addon adalah kode dari pembuatnya, yang dipasang dari repositori yang kamu tambahkan. Kode ini berjalan terisolasi dari bagian lain perangkatmu dan hanya bisa mengakses situs yang disebutkannya, yang akan ditampilkan rex kepada kamu sebelum kamu memasangnya. Pasang addon hanya dari orang yang kamu percaya.
+Addon adalah kode dari siapa pun yang menulisnya, dipasang dari repositori yang Anda tambahkan. Kode itu berjalan terpisah dari bagian lain perangkat Anda dan hanya bisa mengakses situs yang disebutkannya, yang akan ditampilkan rex kepada Anda sebelum Anda memasangnya. Pasang addon hanya dari orang yang Anda percaya.
+
+Addon yang membutuhkan akun di situs webnya, misalnya YouTube, masuk dengan kode: Anda memasukkannya di halaman milik situs tersebut, jadi kata sandi Anda tidak pernah melewati aplikasi. Token yang diberikan situs itu kepada addon tetap tersimpan di perangkat Anda dan hanya dikirim kembali ke situs tersebut. Menghapus addon akan menghapus token itu.
 
 ## Anak-anak {#children}
 
