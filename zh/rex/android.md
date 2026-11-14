@@ -49,34 +49,47 @@ Wait, I should not wrap in a code fence. Correct output:
 
 ## 第 3 步：启动 rex {#step-3-start-rex}
 
-打开 **rex**。第一个界面会显示 **Welcome to rex.**
+```
+```
 
-1. 点 **Allow notifications**，再点 **Allow**。rex 会在后台运行，并带一个通知，你可以通过它停止 rex。
-2. 点 **Let rex keep running in the background**。在打开的列表里选择 **rex**，然后点 **Don't optimize**。较新的 Android 上是 **Allow background usage**，然后点 **Unrestricted**。返回 rex。两个按钮现在都以 ✓ 开头。
-3. **Name** 是 Plex 应用里显示的服务器名称。如果愿意，可以改一下。
-4. **Port** 保持 `32400` 不变。如果这台设备上已经运行了另一个 Plex 服务器，rex 会提示 **Another app here already uses this port, maybe a Plex server. Try 32500.**。这时输入 `32500`。
+Ah, the input is not a code fence; I should not add one. Let me give the translation properly.
+
+**打开 rex。** 第一个屏幕写着 **Welcome to rex.**
+
+1. 点 **Allow notifications**，然后点 **Allow**。rex 会在后台运行，并带有一个通知，你可以通过它停止 rex。
+2. 点 **Let rex keep running in the background**。在打开的列表中，选择 **rex**，然后选 **Don't optimize**。在较新的 Android 上，选项是 **Allow background usage**，然后选 **Unrestricted**。返回 rex。两个按钮现在都以 ✓ 开头。
+3. **Name** 是 Plex 应用中显示的服务器名称。如果你想，可以修改。
+4. **Port** 保持 `32400`。如果这台设备上已经运行了另一个 Plex 服务器，rex 会提示 **Another app here already uses this port, maybe a Plex server. Try 32500.** 那就输入 `32500`。
 5. 点 **Start rex**。
 
-**你应该看到的画面。** **2 / 2** 和 **Sign in to Plex.**
+**你应该看到的画面。** **2 / 2** 和 **Sign in to Plex**。
+
+| 第一个屏幕 | Plex 应用中的影片页面（第 5 步） |
+|---|---|
+| ![rex for Android 的第一个屏幕，包含名称和端口字段以及 Start rex](../assets/rex/android-setup.webp) | ![Internet Archive 上一部 1916 年无声电影在 Plex for Android 中的页面](../assets/rex/android-plex-film.webp) |
 
 ## 第 4 步：登录 Plex {#step-4-sign-in-to-plex}
 
-按下 **Sign in to Plex**。rex 会显示一个代码：**On any phone or computer, go to plex.tv/link and enter** 它。
+按下 **Sign in to Plex**。rex 会显示一个代码：**On any phone or computer, go to plex.tv/link and enter** it。
 
 - **在手机或平板上**，你的浏览器也会打开一个 Plex 页面，上面写着 **rex for Android would like to sign in to your Plex account**。在那里登录即可。
-- **在电视上**，请用手机或电脑打开 [plex.tv/link](https://plex.tv/link)，登录后输入代码。
+- **在电视上**，请用手机或电脑打开 [plex.tv/link](https://plex.tv/link)，登录并输入代码。
 
-请使用你的 Plex 应用登录时所用的账号。你也可以按 **Skip for now**，之后再从 **Status** 登录。
+使用你的 Plex 应用当前登录的账号。你可以按 **Skip for now**，之后再从 **Status** 登录。
 
-**你应该看到的画面。** **Signed in. rex shows up in the Plex apps as** 你的服务器名称。按 **Done**。**Status** 显示 **RUNNING**，并且 **Ready for the Plex apps.**
+![rex for Android on a TV showing the code to enter at plex.tv/link](../assets/rex/android-tv-signin.webp)
+
+**你应该看到的结果。** **Signed in. rex shows up in the Plex apps as** 你的服务器名称。按 **Done**。**Status** 会显示 **RUNNING** 和 **Ready for the Plex apps.**
 
 ## 第 5 步：在 Plex 应用中观看 {#step-5-watch-in-a-plex-app}
 
-打开任意已登录同一账号的 Plex 应用。如果 Plex 安装在这台设备上，**Status** 中会有一个 **Open Plex** 按钮。
+打开任意一个已登录同一账号的 Plex 应用。如果 Plex 在这台设备上,**Status** 里会有一个 **Open Plex** 按钮。
 
-在 Plex for Android 中，打开 **Libraries**，然后点 **All Libraries**，再在你的服务器名称下找到 **Movies**。其他 Plex 应用也会在服务器名称下列出它。
+在 Plex for Android 中,打开 **Libraries**,然后是 **All Libraries**,再点你服务器名称下的 **Movies**。其他 Plex 应用也会在服务器名称下列出它。
 
-Internet Archive 的首次同步需要一些时间：在我们的测试设备上大约半小时，rex 需要逐个检查每部电影。在此之前 **Status** 会显示 **Syncing**，同步完成后会显示数量，例如 **Ready · 97 titles**。随便选一部电影播放即可。
+Internet Archive 的首次同步需要一点时间:在我们的测试设备上大约半小时,rex 会逐一检查每部影片。**Status** 会显示 **Syncing**,直到完成,然后显示数量,比如 **Ready · 97 titles**。随便选一部影片播放就行。
+
+![The Plex app on a TV playing a 1914 Chaplin short from rex on the same TV](../assets/rex/android-tv-playing.webp)
 
 ## 附加组件 {#addons}
 
@@ -114,7 +127,7 @@ Plex 应用只要登录的是同一个账号，就能在家庭网络里通过名
 - **It plays at home.** Away from home, Plex apps need an HTTPS address that reaches the device, which needs a port forward on your router to it. See [Use it outside your home](any-source.md#use-it-outside-your-home-optional).
 - **The device is the server.** Keep it on, on Wi-Fi or Ethernet, and plugged in. Converting video for a player that can't play a file uses the device's own hardware and can be slow on a cheap box.
 - **Only what addons bring.** It has no library of files on the device itself.
-- **Not on Google Play yet.** To update, install the new file from [the releases](https://github.com/debridmediamanager/rex-android/releases/latest) over the old one, then open rex and press **Start**. Your sign-in and addons stay.
+- **Not on Google Play yet.** To update, install the new file from [the releases](https://github.com/debridmediamanager/rex-android/releases/latest) over the old one, and rex starts again by itself. Your sign-in and addons stay.
 
 ## 故障排除 {#troubleshooting}
 

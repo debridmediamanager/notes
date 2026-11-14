@@ -46,23 +46,29 @@ Di TV box tanpa browser, unduh file dengan aplikasi downloader yang bisa membuka
 Buka **rex**. Layar pertama bertuliskan **Welcome to rex.**
 
 1. Tekan **Allow notifications**, lalu **Allow**. rex berjalan di latar belakang dengan notifikasi yang bisa kamu pakai untuk menghentikannya.
-2. Tekan **Let rex keep running in the background**. Di daftar yang terbuka, pilih **rex** lalu pilih **Don't optimize**. Di Android yang lebih baru, pilihannya adalah **Allow background usage**, lalu **Unrestricted**. Kembali ke rex. Kedua tombol sekarang diawali dengan ✓.
-3. **Name** adalah nama yang dipakai aplikasi Plex untuk server ini. Ubah kalau kamu mau.
-4. Biarkan **Port** di `32400`. Jika server Plex lain sudah berjalan di perangkat ini, rex akan menampilkan **Another app here already uses this port, maybe a Plex server. Try 32500.** Ketik `32500`.
+2. Tekan **Let rex keep running in the background**. Di daftar yang terbuka, pilih **rex** dan pilih **Don't optimize**. Di Android yang lebih baru, pilihannya **Allow background usage**, lalu **Unrestricted**. Kembali ke rex. Kedua tombol sekarang diawali ✓.
+3. **Name** adalah nama yang ditampilkan aplikasi Plex untuk server ini. Ubah kalau kamu mau.
+4. Biarkan **Port** di `32400`. Kalau ada server Plex lain yang sudah berjalan di perangkat ini, rex akan menampilkan **Another app here already uses this port, maybe a Plex server. Try 32500.** Ketik `32500`.
 5. Tekan **Start rex**.
 
-**Yang seharusnya kamu lihat.** **2 / 2** dan **Sign in to Plex.**
+**Yang harus kamu lihat.** **2 / 2** dan **Sign in to Plex.**
+
+| Layar pertama | Halaman film di aplikasi Plex (Langkah 5) |
+|---|---|
+| ![Layar pertama rex untuk Android, dengan kolom nama dan port serta tombol Start rex](../assets/rex/android-setup.webp) | ![Film bisu tahun 1916 dari Internet Archive di halamannya di Plex untuk Android](../assets/rex/android-plex-film.webp) |
 
 ## Langkah 4. Masuk ke Plex {#step-4-sign-in-to-plex}
 
 Tekan **Sign in to Plex**. rex menampilkan kode: **On any phone or computer, go to plex.tv/link and enter** it.
 
-- **Di ponsel atau tablet** browser kamu juga akan membuka halaman Plex yang bertuliskan **rex for Android would like to sign in to your Plex account**. Masuk di sana.
-- **Di TV** buka [plex.tv/link](https://plex.tv/link) di ponsel atau komputer kamu, masuk, lalu masukkan kodenya.
+- **On a phone or tablet** browser kamu juga akan membuka halaman Plex yang bertuliskan **rex for Android would like to sign in to your Plex account**. Masuk di sana.
+- **On a TV** buka [plex.tv/link](https://plex.tv/link) di ponsel atau komputer kamu, masuk, lalu masukkan kodenya.
 
-Gunakan akun yang dipakai aplikasi Plex kamu untuk masuk. Kamu bisa menekan **Skip for now** dan masuk nanti dari **Status**.
+Gunakan akun yang dipakai untuk masuk di aplikasi Plex kamu. Kamu bisa menekan **Skip for now** dan masuk nanti dari **Status**.
 
-**Yang seharusnya kamu lihat.** **Signed in. rex shows up in the Plex apps as** nama server kamu. Tekan **Done**. **Status** bertuliskan **RUNNING** dan **Ready for the Plex apps.**
+![rex for Android on a TV showing the code to enter at plex.tv/link](../assets/rex/android-tv-signin.webp)
+
+**Yang seharusnya kamu lihat.** **Signed in. rex shows up in the Plex apps as** nama server kamu. Tekan **Done**. **Status** menampilkan **RUNNING** dan **Ready for the Plex apps.**
 
 ## Langkah 5. Tonton di aplikasi Plex {#step-5-watch-in-a-plex-app}
 
@@ -70,7 +76,9 @@ Buka aplikasi Plex mana pun yang sudah masuk dengan akun yang sama. Jika Plex ad
 
 Di Plex untuk Android, buka **Libraries**, lalu **All Libraries**, lalu **Movies** di bawah nama server Anda. Aplikasi Plex lain juga menampilkannya di bawah nama server.
 
-Sinkronisasi pertama dari Internet Archive butuh waktu cukup lama: sekitar setengah jam di perangkat uji kami, sementara rex memeriksa setiap film. **Status** menampilkan **Syncing** sampai selesai, lalu jumlahnya, seperti **Ready · 97 titles**. Tekan putar di film mana pun.
+Sinkronisasi pertama Internet Archive butuh waktu. Kira-kira setengah jam di perangkat uji kami, sambil rex memeriksa setiap film. **Status** menampilkan **Syncing** sampai selesai, lalu jumlahnya, misalnya **Ready · 97 titles**. Tekan putar pada film mana pun.
+
+![Aplikasi Plex di TV memutar film pendek Chaplin 1914 dari rex di TV yang sama](../assets/rex/android-tv-playing.webp)
 
 ## Add-on {#addons}
 
@@ -105,10 +113,10 @@ Untuk membiarkan keluarga menonton dengan akun Plex mereka sendiri, lihat [Bagik
 
 ## Batasan {#limits}
 
-- **Ini jalan di rumah.** Di luar rumah, aplikasi Plex butuh alamat HTTPS yang bisa mencapai perangkat, dan itu butuh port forward di router kamu ke perangkat tersebut. Lihat [Gunakan di luar rumah](any-source.md#use-it-outside-your-home-optional).
-- **Perangkatnya adalah servernya.** Biarkan menyala, sambung lewat Wi-Fi atau Ethernet, dan colokkan ke listrik. Mengonversi video untuk pemutar yang tidak bisa memutar file tertentu memakai hardware perangkat itu sendiri, dan bisa lambat di kotak murah.
-- **Hanya yang dibawa addon.** Tidak ada pustaka file di perangkat itu sendiri.
-- **Belum ada di Google Play.** Untuk memperbarui, instal file baru dari [the releases](https://github.com/debridmediamanager/rex-android/releases/latest) di atas file lama, lalu buka rex dan tekan **Start**. Login dan addon kamu tetap tersimpan.
+- **Berfungsi di rumah.** Di luar rumah, aplikasi Plex memerlukan alamat HTTPS yang bisa menjangkau perangkat, dan itu butuh port forward di router ke perangkat tersebut. Lihat [Gunakan di luar rumah](any-source.md#use-it-outside-your-home-optional).
+- **Perangkatnya adalah servernya.** Biarkan tetap menyala, terhubung ke Wi-Fi atau Ethernet, dan tetap tercolok listrik. Mengonversi video untuk pemutar yang tidak bisa memutar file tertentu memakai perangkat keras bawaan perangkat, dan bisa lambat di kotak murah.
+- **Hanya yang dibawa addon.** Tidak ada perpustakaan file di perangkat itu sendiri.
+- **Belum ada di Google Play.** Untuk memperbarui, pasang file baru dari [rilis](https://github.com/debridmediamanager/rex-android/releases/latest) di atas file lama, dan rex akan mulai lagi dengan sendirinya. Akun masuk dan addon Anda tetap ada.
 
 ## Pemecahan masalah {#troubleshooting}
 

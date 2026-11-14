@@ -1,79 +1,160 @@
 # zurg+rex の Android と Google TV 向け {#zurgrex-for-android-and-google-tv}
 
-Android アプリは、端末上で zurg エンジンを動かし、その横で rex も動かします。
-スマホや TV ボックスの中に自分専用の Plex サーバーができて、Plex アプリから見られるようになります。
-1つのアプリで、スマホ、タブレット、Android TV、Google TV に対応しています。
-Android 8.0 以降が必要です。
-Fire TV でも同じ APK をサイドロードできます。
-端末にシステムのファイルアプリがない場合は、WebDAV プレーヤーを使ってください。
-Usenet には 64 ビットの Android が必要です。TorBox でホストされている NZB (`torbox_nzb`) は、Android では利用できません。
+zurg+rex は、スマホの中で動く Plex サーバーです。zurg がデバッドのアカウントと Usenet を取り込み、rex が家の中のすべての Plex アプリに配信します。ポスター、シーズン、視聴の続きからの再生も使えます。スマホ、タブレット、Android TV、Google TV、Fire TV で動き、パソコンは要りません。
 
-## インストールとセットアップ {#install-and-set-up}
+スポンサー特典付きで提供されています。スポンサーではない場合は、[rex for Android](../../rex/android.md) が無料で使えます。アドオンが提供するものを再生します。
 
-[APK をダウンロード](https://zurg.debridmediamanager.com/ja/download.html#android)します。プライベートなスポンサー用リポジトリのナイトリーリリースから入手できます。ほとんどのスマホや TV ボックスでは `arm64-v8a` を、古い 32 ビット端末では `armeabi-v7a` を、エミュレーターや対応する Chromebook では `x86_64` を選んでください。どの APK にも、スマホ用と TV 用の両方の画面が含まれています。
+| アプリ | Plex アプリ内 | 他のどの Plex アプリでも |
+|---|---|---|
+| ![ライブラリの準備が整い、rex が Plex にサインインしている zurg+rex のステータス画面](../../assets/zurg/android-status.webp) | ![Plex アプリで表示された Big Buck Bunny のページ。同じスマホから配信されています](../../assets/zurg/android-plex.webp) | ![Plezy アプリで表示された、同じオープンムービーのライブラリ](../../assets/zurg/android-plezy.webp) |
 
-アプリには zurg 本体は含まれていません。GitHub にサインインしてから、アプリ内でエンジンをインストールします。スポンサー権限が必要です。GitHub アカウントにアクセス権を付与するには、[gatekeeper](https://gatekeeper.debridmediamanager.com/) でスポンサーになってください。Setup で手順を順番に案内してくれます。
+## 始める前に {#before-you-start}
 
-APK を開くのに使ったアプリからのインストールを許可してください。Android や Play Protect から、サイドロードの確認を求められることがあります。アプリケーション ID は `com.debridmediamanager.zurg` です。アップデートでも、リリース時の署名情報を維持する必要があります。
+| 必要なもの | 理由 |
+|---|---|
+| Android 8.0 以降のデバイス | スマートフォン、タブレット、Android TV、Google TV、Fire TV。Usenet には 64 ビットのデバイスが必要です |
+| GitHub アカウントを連携したスポンサー登録 | アプリとそのエンジンは、スポンサー向けリポジトリからダウンロードされます。[gatekeeper](https://gatekeeper.debridmediamanager.com/) でスポンサーになり、GitHub を連携してください |
+| debrid アカウントまたは Usenet アカウント | zurg が取り込むもの。TorBox のホストする NZB (`torbox_nzb`) は Android では利用できません |
+| Plex アカウント | rex は、そのアカウントでサインインした Plex アプリに表示されます。無料アカウントで十分です |
+| DMM の API キー (gatekeeper から取得、任意) | これがあると、より多くのタイトルで名前とポスターが表示されます |
 
-1. zurg を開いて GitHub にサインインし、エンジンのバージョンを 1 つインストールします。エンジンがインストールされるまでは、ライブラリを開始できません。
-2. プロバイダーのアカウントを追加して、認証情報をテストします。同じプロバイダーに複数のアカウントがある場合は、アカウント名で区別されます。Usenet の接続数の上限は、そのアカウントを使う他のすべてのアプリと共有されます。
-3. Phone、Tablet、TV box、TV stick から選びます。プロファイルによって、エンジンのメモリ目標値とディスクキャッシュのサイズが設定されます。Go のヒープ目標値は、RSS の厳密な上限ではありません。
-4. 通知とバックグラウンド動作を許可します。この端末で常にライブラリを提供したい場合は、「start after reboot」を有効にしてください。
-5. ライブラリを開始します。大きなアカウントでは、最初の読み込みに数分かかることがあります。通知と Status 画面で、ディレクトリの準備ができたかどうかを確認できます。
+## ステップ 1. ダウンロードする {#step-1-download-it}
 
-## このデバイスで視聴 {#watch-on-this-device}
+デバイスで、[ダウンロードページ](https://zurg.debridmediamanager.com/ja/download.html#android)を開き、スポンサー用のアカウントで GitHub にサインインして、お使いのプロセッサに合ったファイルを選んでください。
 
-Library でフォルダを参照し、ファイルを再生できます。More では別のプレイヤーや Android のドキュメント URI を選べます。選んだプレイヤーを優先プレイヤーに設定することもできます。
-Files とドキュメントピッカーからは、同じライブラリが zurg のストレージルートの下に表示されます。
-ファイルはランダムアクセスでストリーミングされるので、先に全体をダウンロードする必要はありません。
-Files からプレイヤーを選ぶ前に、一度プレイヤーを開いてセットアップを済ませておいてください。
+| お使いのデバイス | ファイル |
+|---|---|
+| ほとんどのスマートフォン、タブレット、TVボックス（64ビット） | `android-arm64-v8a.apk` |
+| 古い32ビットのスマートフォンやTVスティック | `android-armeabi-v7a.apk` |
+| Chromebook やエミュレーター | `android-x86_64.apk` |
 
-WebDAV 対応のプレイヤーでは、`http://127.0.0.1:9999/dav/` をソースとして追加します。ポートを変更している場合は、Status に表示されているポートを使ってください。VLC、Kodi、Nova は WebDAV ソースを参照できます。個別の URL しか受け付けないプレイヤーは、Library から起動できます。
-TV では、D-pad と Select でコントロールを移動・操作し、Back で戻ります。リリースに対する操作は Menu または More から行えます。テキストフィールドを編集するには Select で選び、編集後に Back を押してナビゲーションに戻ります。スマートフォンでは、長押しでも More が開きます。
+1つのファイルでスマートフォンもTVも動きます。
 
-Repair、rename、tags、show all files、delete は、そのファイルを含むリリース全体に対して動作します。delete を実行すると確認が表示され、契約しているプロバイダーのアカウントからも削除されます。
-MediaInfo はバンドルされている ffprobe を使い、ビデオ、音声、字幕の詳細をダッシュボードに表示します。別途メディアツールをインストールする必要はありません。
+**GitHub で 404 と表示される？** サインインしているアカウントにはまだスポンサーとしてのアクセス権がありません。スポンサーになったばかりなら、まず[招待を承認](https://github.com/debridmediamanager/zurg/invitations)してください。招待は15分以内に届きます。
 
-## Plex アプリで視聴 {#watch-in-the-plex-apps}
+## ステップ 2. インストールする {#step-2-install-it}
 
-From the nightly of 10 November 2026, the app also runs rex (64-bit devices in
-that nightly, every supported device from the 11 November nightly), a media
-server for the Plex apps, and points zurg at it. That way your library appears
-in the official Plex apps and in Plezy, on this device and on others in your
-home. Once your library is running, Status shows **rex for the Plex apps**.
-Choose **Sign in to Plex** and approve the sign-in (on a TV, enter the code at
-plex.tv/link). The server appears in Plex under this device's name. rex converts
-what a player cannot play with the device's hardware encoder. To turn rex off, go to
-Settings, Connection. zurg then stops feeding it.
+ダウンロードしたファイルを開き、そのファイルを開いたアプリからのインストールを許可してください。Androidや Play Protect から確認を求められることがあります。
 
-## ローカルネットワークで共有 {#share-over-the-local-network}
+**表示されるもの。** アプリ一覧に **zurg+rex** が表示されます。
 
-**Expose on local network** を Settings でオンにしてください。zurg が認証情報を生成し、デバイスの LAN WebDAV アドレスを表示します。そのアドレスと認証情報を、別のデバイスのプレーヤーに入力してください。Android ホストは電源を入れたまま、起動した状態にしておいてください。
-HTTP の基本認証では通信は暗号化されません。信頼できるローカルネットワークで使ってください。
-ループバックがデフォルトです。プレーヤーのインテントには、サーバーのパスワードは含まれません。
+## ステップ3. GitHubにサインインしてエンジンをインストール {#step-3-sign-in-to-github-and-install-the-engine}
 
-## 設定、バックアップ、アップデート {#settings-backups-and-updates}
+Appを開きます。画面に **Welcome to zurg+rex.** と表示されます。
 
-Settings では、接続、プロバイダー、ライブラリ、修復、リソース、ログを設定できます。
-Advanced では生の YAML を入力でき、保存する前にインストール済みのエンジンで検証させられます。
-Settings には DMM の API キーを入れる欄がありません。[DMMのウォンテッドリスト](dmm-wanted.md)と DMM のリリース名の規則を使うには、Advanced に `dmm_api_key: YOUR_DMM_API_KEY` を追加してください。
-実行中の設定を保存すると、サーバーを再起動する前に確認されます。
-Web dashboard では、デスクトップ連携の設定用にローカルのダッシュボードを開けます。
+1. **Sign in with GitHub** を押します。Appにコードが表示されるので、**Open GitHub** を押し、コードを入力して承認してください。スポンサー向けのリリースは非公開のため、GitHubが `repo` へのアクセスを求めてきます。
+2. **エンジンをインストールします。** エンジンはzurgとrex本体で、Appとは別のパッケージに入っているため、Appとは別に更新されます。**Install** を押してください。Androidがインストール前に確認してくるので、許可してください。
 
-Logs には、エンジンの最近の出力と supervisor の最後の 200 行が含まれます。
-共有用のログでは、設定済みの秘密情報と URL が伏せられます。
-バックアップには認証情報とライブラリの状態が含まれるため、非公開の場所に安全に保存してください。復元する前に zurg を停止してください。
-Android では、バックアップのリンクや特殊ファイルは拒否され、復元はまず loopback に対して行われます。
+**表示されるはずの画面。** **Add your providers.**
 
-Updates では、非公開のスポンサーリポジトリを確認します。リリースのアセットは非公開なので、GitHub のデバイスサインインでは `repo` スコープを要求します。
-GitHub のトークンは、Android Keystore に対応した preferences で暗号化して保存されます。リポジトリへの読み取り権限を持つトークンを手動で入力することもできます。
-保存されたサインインを Android が復号できなくなった場合、Updates から再度サインインするよう求められますが、ライブラリの設定はそのまま残ります。
-ダウンロードした更新は、アプリケーション ID と署名鍵が一致し、バージョンコードが新しい必要があります。Android のインストーラーは、アプリを置き換える前に確認します。
+## ステップ4. プロバイダーを追加 {#step-4-add-your-providers}
 
-エンジンを同梱していたビルドからアップデートすると、アプリにはエンジンがなくなります。Updates から一度エンジンをインストールしてください。プロバイダーとライブラリの設定はそのまま引き継がれます。
+1. **Add an account** を押して、プロバイダーを選びます。
+2. デブリッドのアカウントの場合は、そのトークンを **Provider token** に貼り付けます。Usenet の場合は、**NNTP server**、**Port**、**Username**、**Password**、**Connections** を入力します。
+3. **Test account** を押してから、**Add provider** を押します。
 
-アプリとエンジンは別々に更新されます。Updates には、スポンサーリポジトリの直近 30 件のリリースに含まれるエンジンのバージョンが一覧表示され、お使いのものには印が付きます。どれでもインストールできます。
-新しい nightly が端末で不具合を起こす場合は、動作していた版をインストールしてください。エンジンを変更する前に、Status でライブラリを停止してください。アプリは自身の鍵で署名されたエンジンパッケージだけを実行し、起動のたびにその署名を確認します。
+アカウントは持っている分だけ追加できます。同じプロバイダーのアカウントが複数ある場合は、**Account name** で区別できます。Usenet アカウントの接続数の上限は、そのアカウントを使っている他のアプリやデバイスも合わせてカウントされます。
 
-常駐通知には Stop のアクションがあります。Quick Settings のタイルからも、サーバーを起動・停止できます。Battery exemption は Android のアイドル制限への対策に役立ちます。メーカー独自のタスクキラーには追加の設定が必要な場合があり、その場合は [Don't kill my app](https://dontkillmyapp.com/)（アプリを強制終了させない）を参照してください。
+## ステップ5. ライブラリを開始 {#step-5-start-your-library}
+
+1. **Phone**、**Tablet**、**TV box**、**TV stick**のいずれかを選びます。小さい方を選ぶと、メモリとキャッシュの使用量が少なくなります。
+2. 通知を許可して、アプリがバックグラウンドで動作できるようにします。このデバイスでライブラリを常に配信したい場合は、**Start after reboot**をオンにします。
+3. **Start my library**を押します。
+
+**表示される内容。** **Status**に**Ready for your players**と表示され、リリースの件数が数えられます。アカウントのデータが多いと、最初の読み込みに数分かかることがあります。
+
+## ステップ6. Plexにサインイン {#step-6-sign-in-to-plex}
+
+**Status** の **rex for the Plex apps** で **Sign in to Plex** を押します。
+
+- **スマホやタブレットの場合**、ブラウザが Plex のサインインページを開きます。そこでサインインしてください。
+- **テレビの場合**、アプリに **On any device, go to plex.tv/link and enter** とコードが表示されます。スマホかパソコンで plex.tv/link を開き、そのコードを入力してください。
+
+Plex アプリにサインインしているのと同じアカウントを使ってください。
+
+**正しく設定できているときの表示。** この端末に Plex がある場合、**Ready for the Plex app** と **Open Plex** ボタンが表示されます。
+
+## ステップ7. Plexアプリで視聴 {#step-7-watch-in-a-plex-app}
+
+同じアカウントでサインインしている Plex アプリを開いてください。この端末でも、テレビでも、別のスマホでも、自宅のパソコンでも構いません。サーバーは、この端末の名前で表示されます。ライブラリ **Debrid Movies** と **Debrid TV** があるはずです。再生を押してください。
+
+rex は、プレイヤーで再生できないものを、端末自身のビデオエンコーダーを使って変換します。
+
+## 名前で他のタイトルを探す {#get-more-titles-named}
+
+**Settings**、**Library** を開き、DMM の API キーを **Dmm api key** 欄に貼り付けて保存します。その後 zurg が DMM に各ファイルの内容を問い合わせます。キーがないと、zurg はリリース名から推測するため、名前やポスターが付くタイトルが少なくなります。
+
+タイトルが間違って見える場合は、Plex アプリでそのタイトルの **⋯** メニューを開き、**Fix Match** を選んで修正できます。
+
+この欄は 2026年11月14日以降の nightly ビルドにあります。それより古いバージョンでは、**Settings** の **Advanced** に `dmm_api_key: YOUR_DMM_API_KEY` を追加してください。同じキーで [DMM のウィッシュリスト](dmm-wanted.md)も読み込めます。
+
+## アドオン {#addons}
+
+rex では、ライブラリに加えて、アドオンで見られるものを増やせます。**Addons** を開いてください。Internet Archive アドオンは最初からインストールされていて、パブリックドメインの映画を追加します。[rex-addons](https://github.com/debridmediamanager/rex-addons) リポジトリもすでに登録されています。別のリポジトリを追加したい場合は、そのリンクを使って追加し、開いて提供されているアドオンをインストールしてください。
+
+各アドオンには、アクセスするウェブサイトが表示されます。新しいサイトにアクセスする更新は、先に確認を求めてきます。インストールするアドオンは、信頼できる人が作ったものだけにしてください。**Log** では、アドオンが最近何をしたかを確認できます。アドオンを削除すると、そのアドオンのタイトルだけが消えます。
+
+## このデバイスの他のプレイヤー {#other-players-on-this-device}
+
+Plex アプリがなくても視聴できます。
+
+- **Library** ではフォルダを参照し、選んだプレイヤーでファイルを再生できます。**More** では別のプレイヤーを開いたり、リリース全体に対する操作を行えます。操作は repair、rename、tags、show all files、delete です。これらはリリース全体に作用し、delete は実行前に確認を求めたうえで、プロバイダーアカウントからリリースを削除します。
+- **Files** アプリとドキュメントピッカーには、zurg ルート配下にある同じライブラリが表示されます。Files からプレイヤーを選ぶ前に、一度そのプレイヤーを開いてセットアップを済ませてください。
+- VLC、Kodi、Nova などの WebDAV 対応プレイヤーでは、ソースとして `http://127.0.0.1:9999/dav/` を指定します。ポートを変更している場合は、**Status** でアドレスを確認できます。
+
+TV では D-pad と Select で移動し、Back で戻ります。Menu か **More** を押すと、リリースの操作を開けます。テキストフィールドを選択すると入力でき、入力が終わったら Back を押して次に進みます。
+
+## 自宅の他のプレイヤーと共有 {#share-with-other-players-at-home}
+
+Plex アプリが自宅にあるなら、それ以上の設定は要りません。rex は自動で見つけてくれます。別のデバイスにある WebDAV プレーヤーで使うには、**Settings**、**Connection** を開き、**Expose on local network** をオンにしてください。zurg がユーザー名とパスワードを作成し、そのプレーヤーに入力するアドレスを表示します。
+
+信頼できるネットワークでだけ使ってください。パスワードは暗号化されずに送られます。この機能は初期状態ではオフで、自分でオンにしたときだけ有効になります。
+
+## 実行し続ける {#keep-it-running}
+
+- 通知にはサーバーの状態が表示され、**Stop** があります。クイック設定タイルからも開始と停止ができます。
+- 一部のスマートフォンは、それでもバックグラウンドのアプリを停止させることがあります。[Don't kill my app](https://dontkillmyapp.com/) では、アプリに必要な設定が説明されています。
+- **Updates** では新しいアプリと新しいエンジンを確認できます。両者は別々に更新されます。新しいナイトリービルドが端末で不具合を起こす場合は、**Show engine versions** を押して、正常に動いていたものをインストールしてください。その前に **Status** でライブラリを停止しておきます。
+- **Settings** には **Create backup** と **Restore backup** があります。バックアップにはパスワードやトークンが含まれるため、取り扱いに注意してください。復元する前にライブラリを停止しておきます。
+- **Settings** の **Connection** にある **rex for the Plex apps** をオフにしてください。そうすると zurg は rex へのデータ送信を止めます。
+
+## アプリが送信する内容と送信先 {#what-the-app-sends-and-where}
+
+zurg+rex には広告もアナリティクスもありません。デバイスから外に出るものは次のとおりです。
+
+| 送信先 | 内容 | いつ |
+|---|---|---|
+| GitHub | サインイン情報と、スポンサー向けリリースのリクエスト | サインインしたときと、**Updates** で更新を確認したとき |
+| あなたのプロバイダー | アカウントのトークンまたは Usenet のログイン情報、ライブラリとファイルへのリクエスト | ライブラリが動いている間 |
+| debridmediamanager.com | リリース名（それぞれが何かを調べるため）。DMM API キーを入力している場合はそのキーも含む | rex をオンにしてライブラリが動いている間 |
+| plex.tv と Plex のメタデータサービス | サインインコードのリクエスト。その後、ポスターや説明を取得するためのサーバー名、アドレス、タイトルの ID | Plex にサインインするときと、サインインした状態で rex が動いている間 |
+| debridmediamanager.com (rex-direct) | rex の識別子、Plex が発行したサーバートークン、IP アドレスとポート（Plex アプリが HTTPS で接続できるように） | Plex にサインインした後、6 時間ごと |
+| 各アドオンの Web サイトと追加したリポジトリ | アドオンが要求する内容 | アドオンが同期するときや、タイトルを再生するとき |
+| logs.debridmediamanager.com | バージョン、デバイスのモデル、アプリとエンジンのログ、設定内容（キー、パスワード、トークンは `[redacted]` に置き換え） | **Send logs to support** の下の **Send** を押したときだけ。内容をすべて確認した後に限ります。7 日後に削除されます |
+
+GitHub トークンはデバイス上で暗号化されて保存されます。アプリをアンインストールすると、アプリが保存していたものはすべて削除されます。
+
+## 制限 {#limits}
+
+- **The device is the server.** Keep it on, connected and plugged in. Converting video is slow on a cheap box.
+- **It plays at home.** Away from home, Plex apps need an HTTPS address that reaches the device, which needs a port forward on your router. See [Use it outside your home](../../rex/with-zurg.md#use-it-outside-your-home-optional).
+- **Usenet needs 64-bit Android.** A 32-bit device runs debrid libraries only.
+- **Not on Google Play.** It updates from inside the app, under **Updates**.
+
+## トラブルシューティング {#troubleshooting}
+
+| 表示された内容 | 対処法 |
+|---|---|
+| GitHub のダウンロードページで 404 が表示される | sponsor アカウントで GitHub にサインインし、[招待を承諾](https://github.com/debridmediamanager/zurg/invitations)してください。まだ sponsor でない場合は [gatekeeper](https://gatekeeper.debridmediamanager.com/) へ |
+| **エンジンがインストールされていません。zurg がライブラリを提供するには、エンジンが必要です。** | **Install an engine** を押して、Android でのインストールを許可してください |
+| **このデバイス向けのエンジンは、sponsor 向けリリースにまだありません。** | 最新のナイトリービルドには、お使いのプロセッサ向けのエンジンがありません。サポートで聞いてください |
+| **これは 32-bit デバイスです。デブリッドライブラリは対応していますが、Usenet には 64-bit の Android が必要です。** | デブリッドアカウントを追加するか、Usenet を使う場合は 64-bit デバイスを使ってください |
+| **Plex のコードの有効期限が切れました。新しいコードを求めてください。** | **Sign in to Plex** をもう一度押し、10 分以内に新しいコードを入力してください |
+| Plex アプリにサーバーが表示されない | Step 6 で使ったアカウントで Plex アプリにサインインし、両方のデバイスを同じホームネットワークに接続したままにしてください |
+| タイトルがファイル名だけで、ポスターが表示されない | DMM API キーを入力するか（[より多くのタイトルに名前を付ける](#get-more-titles-named)を参照）、Plex アプリで **Fix Match** を使ってください |
+| 画面を消すと停止する | バックグラウンドでの使用を再度許可し、[Don't kill my app](https://dontkillmyapp.com/) を確認してください |
+| アップデート後、アプリにエンジンがない | **Updates** からエンジンを一度インストールしてください。プロバイダーと設定はそのまま残ります |
+
+サポートからログを求められた場合は、**Logs** を開いて **Send logs to support** を押してください。送信前に内容をすべて確認できます。その後 **Send** を押し、表示されたコードを投稿してください。
+
+困ったときは、[Discord](https://discord.com/invite/7u4YjMThXP) の **zurg-support** フォーラムで聞いてください。

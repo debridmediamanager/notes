@@ -43,34 +43,42 @@ rex for Android は無料です。debrid アカウントや Usenet も使いた�
 
 ## ステップ 3. rex を起動する {#step-3-start-rex}
 
-**rex** を開きます。最初の画面に **Welcome to rex.** と表示されます。
+**rex** を開きます。最初の画面には **Welcome to rex.** と表示されます。
 
-1. **Allow notifications** を押してから **Allow** を押します。rex はバックグラウンドで動き、その通知から停止できます。
-2. **Let rex keep running in the background** を押します。開いたリストで **rex** を選び、**Don't optimize** を選びます。新しい Android では **Allow background usage**、次に **Unrestricted** です。rex に戻ります。両方のボタンの先頭に ✓ が付いていれば完了です。
-3. **Name** は Plex アプリでこのサーバーを表示する名前です。好みで変更してください。
-4. **Port** は `32400` のままにします。この端末で別の Plex サーバーがすでに動いている場合、rex は **Another app here already uses this port, maybe a Plex server. Try 32500.** と表示します。その場合は `32500` と入力してください。
+1. **Allow notifications** を押してから **Allow** を押します。rex はバックグラウンドで動き、通知からいつでも停止できます。
+2. **Let rex keep running in the background** を押します。開いたリストで **rex** を選び、**Don't optimize** を選びます。新しい Android では **Allow background usage** を押してから **Unrestricted** を選びます。rex に戻ると、両方のボタンの先頭に ✓ が付いています。
+3. **Name** は Plex アプリでこのサーバーに表示される名前です。必要なら変更してください。
+4. **Port** は `32400` のままにします。この端末ですでに別の Plex サーバーが動いている場合、rex に **Another app here already uses this port, maybe a Plex server. Try 32500.** と表示されます。その場合は `32500` と入力します。
 5. **Start rex** を押します。
 
-**表示されるはずの画面。** **2 / 2** と **Sign in to Plex.** が表示されます。
+**表示されるはずの内容。** **2 / 2** と **Sign in to Plex.**
+
+| 最初の画面 | Plex アプリでの映画のページ（手順 5） |
+|---|---|
+| ![名前とポートの入力欄と Start rex が表示された、Android 版 rex の最初の画面](../assets/rex/android-setup.webp) | ![Internet Archive の 1916 年のサイレント映画の、Plex for Android でのページ](../assets/rex/android-plex-film.webp) |
 
 ## ステップ 4. Plex にサインインする {#step-4-sign-in-to-plex}
 
-Ｐlex の **Sign in to Plex** を押します。rex にコードが表示されます。**On any phone or computer, go to plex.tv/link and enter** に従って、スマホかパソコンで plex.tv/link を開き、そのコードを入力してください。
+**Sign in to Plex** を押します。rex にコードが表示されます。**On any phone or computer, go to plex.tv/link and enter** it.
 
-- **On a phone or tablet** の場合は、ブラウザで Plex のページも開きます。そこには **rex for Android would like to sign in to your Plex account** と表示されるので、そこでサインインしてください。
-- **On a TV** の場合は、スマホかパソコンで [plex.tv/link](https://plex.tv/link) を開き、サインインしてコードを入力してください。
+- **On a phone or tablet** ブラウザーでも Plex のページが開きます。そこには **rex for Android would like to sign in to your Plex account** と表示されるので、そこでサインインしてください。
+- **On a TV** スマートフォンかパソコンで [plex.tv/link](https://plex.tv/link) を開き、サインインしてコードを入力してください。
 
-Plex アプリにサインインしているアカウントを使ってください。**Skip for now** を押して、あとで **Status** からサインインすることもできます。
+Plex アプリにサインインしているのと同じアカウントを使ってください。**Skip for now** を押せば、あとで **Status** からサインインすることもできます。
 
-**表示される内容。** **Signed in. rex shows up in the Plex apps as** のあとにサーバー名が表示されれば成功です。**Done** を押してください。**Status** に **RUNNING** と **Ready for the Plex apps.** が表示されていれば準備完了です。
+![テレビに表示された rex for Android の画面。plex.tv/link で入力するコードが出ている](../assets/rex/android-tv-signin.webp)
+
+**表示されるはずの内容。** **Signed in. rex shows up in the Plex apps as** のあとにサーバー名が表示されます。**Done** を押してください。**Status** には **RUNNING** と **Ready for the Plex apps.** が表示されます。
 
 ## ステップ 5. Plex アプリで視聴する {#step-5-watch-in-a-plex-app}
 
-Plex の同じアカウントでサインインしている Plex アプリを開いてください。Plex がこのデバイスにインストールされている場合は、**Status** に **Open Plex** ボタンがあります。
+Любой Plex-приложение, вошедшее под тем же аккаунтом, подойдёт. Если Plex установлен на этом устройстве, в разделе **Status** есть кнопка **Open Plex**.
 
-Plex for Android では、**Libraries**、**All Libraries** の順に開き、サーバー名の下にある **Movies** を選んでください。ほかの Plex アプリでも、サーバー名の下に表示されます。
+В Plex для Android откройте **Libraries**, затем **All Libraries**, а затем **Movies** под именем вашего сервера. В других приложениях Plex библиотека тоже показана под именем сервера.
 
-Internet Archive の初回同期には時間がかかります。テスト用のデバイスでは約 30 分かかりました。その間、rex が各映画をチェックしています。**Status** には、同期が終わるまで **Syncing** と表示され、終わると **Ready · 97 titles** のように件数が表示されます。好きな映画を選んで再生してください。
+Первая синхронизация Internet Archive занимает время: примерно полчаса на нашем тестовом устройстве, пока rex проверяет каждый фильм. **Status** показывает **Syncing**, пока всё не готово, а потом количество, например **Ready · 97 titles**. Нажмите play на любом фильме.
+
+![Приложение Plex на телевизоре, воспроизводящее короткометражку Чаплина 1914 года из rex на том же телевизоре](../assets/rex/android-tv-playing.webp)
 
 ## アドオン {#addons}
 
@@ -105,10 +113,10 @@ Plex に同じアカウントでサインインしているアプリはすべて
 
 ## 制限 {#limits}
 
-- **Funktioniert zu Hause.** Außerhalb deines Zuhauses brauchen Plex-Apps eine HTTPS-Adresse, die das Gerät erreicht. Dafür muss dein Router einen Port zu diesem Gerät weiterleiten. Siehe [Außerhalb deines Zuhauses nutzen](any-source.md#use-it-outside-your-home-optional).
-- **Das Gerät ist der Server.** Lass es eingeschaltet, per WLAN oder Ethernet verbunden und am Strom. Wenn ein Video für einen Player umgewandelt werden muss, der die Datei nicht abspielen kann, nutzt das die Hardware des Geräts und kann auf einem günstigen Gerät langsam sein.
-- **Nur, was die Addons liefern.** Auf dem Gerät selbst liegt keine Dateibibliothek.
-- **Noch nicht bei Google Play.** Zum Aktualisieren installierst du die neue Datei von [den Releases](https://github.com/debridmediamanager/rex-android/releases/latest) über die alte. Öffne danach rex und tippe auf **Start**. Deine Anmeldung und Addons bleiben erhalten.
+- **自宅では再生できます。** 外出先から Plex アプリで見るには、デバイスに届く HTTPS アドレスが必要です。そのためには、ルーターでデバイスへのポート転送を設定する必要があります。[自宅の外で使う](any-source.md#use-it-outside-your-home-optional)を参照してください。
+- **デバイスがサーバーになります。** 電源を入れたままにして、Wi-Fi または Ethernet に接続し、電源に挿したままにしてください。再生できないファイルを、プレイヤーで再生できる形式に変換するときは、デバイス自体のハードウェアを使います。安価な機器だと遅くなることがあります。
+- **アドオンが提供するものだけ。** デバイス本体にはファイルのライブラリはありません。
+- **Google Play にはまだありません。** アップデートするには、[リリース](https://github.com/debridmediamanager/rex-android/releases/latest)から新しいファイルをダウンロードして古いものの上からインストールしてください。rex は自動的に起動し直します。サインイン情報とアドオンはそのまま残ります。
 
 ## トラブルシューティング {#troubleshooting}
 

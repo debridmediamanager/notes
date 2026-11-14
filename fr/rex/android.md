@@ -45,32 +45,40 @@ Sur une box TV sans navigateur, télécharge le fichier avec une application de 
 
 Ouvre **rex**. Le premier écran affiche **Welcome to rex.**
 
-1. Appuie sur **Allow notifications**, puis sur **Allow**. rex tourne en arrière-plan avec une notification qui te permet de l'arrêter.
-2. Appuie sur **Let rex keep running in the background**. Dans la liste qui s'ouvre, choisis **rex** et sélectionne **Don't optimize**. Sur les versions récentes d'Android, c'est **Allow background usage**, puis **Unrestricted**. Reviens dans rex. Les deux boutons commencent maintenant par un ✓.
-3. **Name** correspond au nom que les applis Plex affichent pour ce serveur. Change-le si tu veux.
-4. Laisse **Port** sur `32400`. Si un autre serveur Plex tourne déjà sur cet appareil, rex affiche **Another app here already uses this port, maybe a Plex server. Try 32500.** Saisis `32500`.
+1. Appuie sur **Allow notifications**, puis sur **Allow**. rex tourne en arrière-plan avec une notification qui permet de l'arrêter.
+2. Appuie sur **Let rex keep running in the background**. Dans la liste qui s'ouvre, choisis **rex** puis **Don't optimize**. Sur les versions récentes d'Android, c'est **Allow background usage**, puis **Unrestricted**. Reviens dans rex. Les deux boutons commencent maintenant par un ✓.
+3. **Name** est le nom que les applis Plex donnent à ce serveur. Change-le si tu veux.
+4. Laisse **Port** à `32400`. Si un autre serveur Plex tourne déjà sur cet appareil, rex affiche **Another app here already uses this port, maybe a Plex server. Try 32500.** Tape `32500`.
 5. Appuie sur **Start rex**.
 
-**Ce que tu dois voir.** **2 / 2** et **Sign in to Plex.**
+**Ce que tu devrais voir.** **2 / 2** et **Sign in to Plex.**
+
+| Le premier écran | La page du film dans l'appli Plex (étape 5) |
+|---|---|
+| ![Le premier écran de rex pour Android, avec les champs name et port et le bouton Start rex](../assets/rex/android-setup.webp) | ![Un film muet de 1916 de l'Internet Archive sur sa page dans Plex pour Android](../assets/rex/android-plex-film.webp) |
 
 ## Étape 4. Connectez-vous à Plex {#step-4-sign-in-to-plex}
 
 Appuyez sur **Sign in to Plex**. rex affiche un code : **On any phone or computer, go to plex.tv/link and enter** it.
 
-- **Sur un téléphone ou une tablette**, votre navigateur ouvre aussi une page Plex qui indique **rex for Android would like to sign in to your Plex account**. Connectez-vous là.
+- **Sur un téléphone ou une tablette**, votre navigateur ouvre aussi une page Plex indiquant **rex for Android would like to sign in to your Plex account**. Connectez-vous là.
 - **Sur une TV**, allez sur [plex.tv/link](https://plex.tv/link) depuis votre téléphone ou votre ordinateur, connectez-vous et saisissez le code.
 
-Utilisez le compte auquel vos applications Plex sont connectées. Vous pouvez appuyer sur **Skip for now** et vous connecter plus tard depuis **Status**.
+Utilisez le compte avec lequel vos applications Plex sont connectées. Vous pouvez appuyer sur **Skip for now** et vous connecter plus tard depuis **Status**.
 
-**Ce que vous devriez voir.** **Signed in. rex shows up in the Plex apps as** le nom de votre serveur. Appuyez sur **Done**. **Status** affiche **RUNNING** et **Ready for the Plex apps.**
+![rex for Android sur une TV affichant le code à saisir sur plex.tv/link](../assets/rex/android-tv-signin.webp)
+
+**Ce que vous devriez voir.** **Signed in. rex shows up in the Plex apps as** suivi du nom de votre serveur. Appuyez sur **Done**. **Status** affiche **RUNNING** et **Ready for the Plex apps.**
 
 ## Étape 5. Regardez dans une appli Plex {#step-5-watch-in-a-plex-app}
 
 Ouvrez n'importe quelle application Plex connectée au même compte. Si Plex est sur cet appareil, **Status** affiche un bouton **Open Plex**.
 
-Dans Plex pour Android, ouvrez **Libraries**, puis **All Libraries**, puis **Movies** sous le nom de votre serveur. Les autres applications Plex affichent aussi ce dossier sous le nom du serveur.
+Dans Plex pour Android, ouvrez **Libraries**, puis **All Libraries**, puis **Movies** sous le nom de votre serveur. Les autres applications Plex affichent aussi la bibliothèque sous le nom du serveur.
 
-La première synchronisation de l'Internet Archive prend un moment : environ une demi-heure sur notre appareil de test, le temps que rex vérifie chaque film. **Status** affiche **Syncing** jusqu'à la fin, puis le nombre, comme **Ready · 97 titles**. Appuyez sur lecture sur n'importe quel film.
+La première synchronisation d'Internet Archive prend un moment : environ une demi-heure sur notre appareil de test, le temps que rex vérifie chaque film. **Status** affiche **Syncing** jusqu'à la fin, puis le nombre, comme **Ready · 97 titles**. Lancez la lecture de n'importe quel film.
+
+![L'application Plex sur une TV lisant un court métrage de Chaplin de 1914 provenant de rex sur la même TV](../assets/rex/android-tv-playing.webp)
 
 ## Modules complémentaires {#addons}
 
@@ -105,10 +113,10 @@ Pour permettre à votre famille de regarder avec son propre compte Plex, consult
 
 ## Limites {#limits}
 
-- **Ça marche à la maison.** Hors de chez toi, les applis Plex ont besoin d'une adresse HTTPS qui atteint l'appareil, ce qui demande une redirection de port sur ton routeur vers celui-ci. Voir [Utiliser depuis l'extérieur de chez toi](any-source.md#use-it-outside-your-home-optional).
-- **L'appareil fait office de serveur.** Garde-le allumé, connecté en Wi-Fi ou en Ethernet, et branché. La conversion de vidéos pour un lecteur qui ne sait pas lire un fichier utilise le matériel de l'appareil et peut être lente sur un boîtier bas de gamme.
-- **Uniquement ce que apportent les addons.** Il n'a pas de bibliothèque de fichiers sur l'appareil lui-même.
-- **Pas encore sur Google Play.** Pour mettre à jour, installe le nouveau fichier depuis [les releases](https://github.com/debridmediamanager/rex-android/releases/latest) par-dessus l'ancien, puis ouvre rex et appuie sur **Start**. Ta connexion et tes addons restent en place.
+- **Ça marche à la maison.** En dehors de chez vous, les applis Plex ont besoin d'une adresse HTTPS qui atteint l'appareil, ce qui demande une redirection de port vers celui-ci sur votre box. Voir [Utiliser-le en dehors de chez vous](any-source.md#use-it-outside-your-home-optional).
+- **L'appareil fait office de serveur.** Gardez-le allumé, connecté en Wi-Fi ou en Ethernet, et branché sur le secteur. La conversion de vidéos pour un lecteur qui ne peut pas lire un fichier utilise le matériel de l'appareil et peut être lente sur un boîtier bas de gamme.
+- **Uniquement ce que vos addons apportent.** Il n'a pas de bibliothèque de fichiers sur l'appareil lui-même.
+- **Pas encore sur Google Play.** Pour mettre à jour, installez le nouveau fichier depuis [les releases](https://github.com/debridmediamanager/rex-android/releases/latest) par-dessus l'ancien, et rex redémarre tout seul. Votre connexion et vos addons restent en place.
 
 ## Dépannage {#troubleshooting}
 

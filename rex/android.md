@@ -53,6 +53,10 @@ Open **rex**. The first screen says **Welcome to rex.**
 
 **What you should see.** **2 / 2** and **Sign in to Plex.**
 
+| The first screen | The film's page in the Plex app (Step 5) |
+|---|---|
+| ![The first screen of rex for Android, with the name and port fields and Start rex](../assets/rex/android-setup.webp) | ![A 1916 silent film from the Internet Archive on its page in Plex for Android](../assets/rex/android-plex-film.webp) |
+
 ## Step 4. Sign in to Plex
 
 Press **Sign in to Plex**. rex shows a code: **On any phone or computer, go to plex.tv/link and enter** it.
@@ -61,6 +65,8 @@ Press **Sign in to Plex**. rex shows a code: **On any phone or computer, go to p
 - **On a TV** go to [plex.tv/link](https://plex.tv/link) on your phone or computer, sign in and enter the code.
 
 Use the account your Plex apps are signed in to. You can press **Skip for now** and sign in later from **Status**.
+
+![rex for Android on a TV showing the code to enter at plex.tv/link](../assets/rex/android-tv-signin.webp)
 
 **What you should see.** **Signed in. rex shows up in the Plex apps as** your server's name. Press **Done**. **Status** says **RUNNING** and **Ready for the Plex apps.**
 
@@ -71,6 +77,8 @@ Open any Plex app signed in to the same account. If Plex is on this device, **St
 In Plex for Android open **Libraries**, **All Libraries**, then **Movies** under your server's name. Other Plex apps list it under the server's name too.
 
 The Internet Archive's first sync takes a while: about half an hour on our test device, while rex checks each film. **Status** shows **Syncing** until it is done and then the count, like **Ready · 97 titles**. Press play on any film.
+
+![The Plex app on a TV playing a 1914 Chaplin short from rex on the same TV](../assets/rex/android-tv-playing.webp)
 
 ## Addons
 
@@ -108,7 +116,7 @@ To let family watch with their own Plex accounts, see [Share rex with family and
 - **It plays at home.** Away from home, Plex apps need an HTTPS address that reaches the device, which needs a port forward on your router to it. See [Use it outside your home](any-source.md#use-it-outside-your-home-optional).
 - **The device is the server.** Keep it on, on Wi-Fi or Ethernet, and plugged in. Converting video for a player that can't play a file uses the device's own hardware and can be slow on a cheap box.
 - **Only what addons bring.** It has no library of files on the device itself.
-- **Not on Google Play yet.** To update, install the new file from [the releases](https://github.com/debridmediamanager/rex-android/releases/latest) over the old one, then open rex and press **Start**. Your sign-in and addons stay.
+- **Not on Google Play yet.** To update, install the new file from [the releases](https://github.com/debridmediamanager/rex-android/releases/latest) over the old one, and rex starts again by itself. Your sign-in and addons stay.
 
 ## Troubleshooting
 

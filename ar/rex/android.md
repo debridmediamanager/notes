@@ -43,34 +43,42 @@ rex for Android مجاني. هل تريد أن تضيف إليه حسابات de
 
 ## الخطوة 3. شغّل rex {#step-3-start-rex}
 
-افتح **rex**.‏ الشاشة الأولى تقول **Welcome to rex.**
+افتح **rex**. أول شاشة تقول **Welcome to rex.**
 
 1. اضغط **Allow notifications**، ثم **Allow**. يعمل rex في الخلفية ويظهر له إشعار يمكنك إيقافه منه.
-2. اضغط **Let rex keep running in the background**. في القائمة التي تفتح، اختر **rex** ثم **Don't optimize**. في أندرويد الأحدث يكون الخيار **Allow background usage**، ثم **Unrestricted**. ارجع إلى rex. سيبدأ الزران الآن بعلامة ✓.
+2. اضغط **Let rex keep running in the background**. في القائمة التي تفتح، اختر **rex** ثم اختر **Don't optimize**. في أندرويد الأحدث يكون الخيار **Allow background usage**، ثم **Unrestricted**. ارجع إلى rex. الزرّان الآن يبدآن بعلامة ✓.
 3. **Name** هو الاسم الذي تعرضه تطبيقات Plex لهذا الخادم. غيّره إذا أردت.
-4. اترك **Port** على `32400`. إذا كان هناك خادم Plex آخر يعمل على هذا الجهاز، سيقول rex **Another app here already uses this port, maybe a Plex server. Try 32500.** اكتب `32500`.
+4. اترك **Port** على `32400`. إذا كان خادم Plex آخر يعمل على هذا الجهاز بالفعل، سيقول لك rex **Another app here already uses this port, maybe a Plex server. Try 32500.** اكتب `32500`.
 5. اضغط **Start rex**.
 
-**ما يجب أن تراه.** **2 / 2** و**Sign in to Plex.**
+**ماذا يجب أن تشاهد.** **2 / 2** و **Sign in to Plex.**
+
+| الشاشة الأولى | صفحة الفيلم في تطبيق Plex (الخطوة 5) |
+|---|---|
+| ![الشاشة الأولى لـ rex على أندرويد، مع حقلي الاسم والمنفذ وزر Start rex](../assets/rex/android-setup.webp) | ![فيلم صامت من عام 1916 من Internet Archive في صفحته داخل Plex لأندرويد](../assets/rex/android-plex-film.webp) |
 
 ## الخطوة 4. سجّل الدخول إلى Plex {#step-4-sign-in-to-plex}
 
-اضغط على **Sign in to Plex**. يعرض rex رمزًا: **On any phone or computer, go to plex.tv/link and enter** it.
+اضغط **Sign in to Plex**. يعرض rex رمزًا: **On any phone or computer, go to plex.tv/link and enter** it.
 
-- **على الهاتف أو الجهاز اللوحي** سيفتح متصفحك أيضًا صفحة Plex تقول **rex for Android would like to sign in to your Plex account**. سجّل الدخول هناك.
-- **على التلفاز** ادخل إلى [plex.tv/link](https://plex.tv/link) من هاتفك أو حاسوبك، وسجّل الدخول وأدخل الرمز.
+- **على الهاتف أو الجهاز اللوحي** سيفتح المتصفح أيضًا صفحة Plex تقول **rex for Android would like to sign in to your Plex account**. سجّل الدخول هناك.
+- **على التلفاز** افتح [plex.tv/link](https://plex.tv/link) على هاتفك أو حاسوبك، وسجّل الدخول وأدخل الرمز.
 
-استخدم الحساب الذي سجّلت الدخول إليه في تطبيقات Plex الخاصة بك. يمكنك الضغط على **Skip for now** وتسجيل الدخول لاحقًا من **Status**.
+استخدم الحساب الذي سجّلت الدخول إليه في تطبيقات Plex. يمكنك الضغط على **Skip for now** وتسجيل الدخول لاحقًا من **Status**.
 
-**ما الذي يجب أن تراه.** **Signed in. rex shows up in the Plex apps as** اسم الخادم الخاص بك. اضغط على **Done**. تُظهر **Status** الحالة **RUNNING** و**Ready for the Plex apps.**
+![rex for Android على التلفاز يعرض الرمز الذي يجب إدخاله في plex.tv/link](../assets/rex/android-tv-signin.webp)
+
+**ما الذي يجب أن تراه.** **Signed in. rex shows up in the Plex apps as** اسم الخادم الخاص بك. اضغط **Done**. تُظهر **Status** الحالة **RUNNING** والرسالة **Ready for the Plex apps.**
 
 ## الخطوة 5. شاهد من تطبيق Plex {#step-5-watch-in-a-plex-app}
 
-Open any Plex app signed in to the same account. If Plex is on this device, **Status** has an **Open Plex** button.
+افتح أي تطبيق Plex مسجّل الدخول بنفس الحساب. إذا كان Plex على هذا الجهاز، فستجد في **Status** زر **Open Plex**.
 
-في تطبيق Plex على Android، افتح **Libraries** ثم **All Libraries**، ثم **Movies** تحت اسم الخادم الخاص بك. تطبيقات Plex الأخرى تعرضها أيضًا تحت اسم الخادم.
+في تطبيق Plex للأندرويد، افتح **Libraries**، ثم **All Libraries**، ثم **Movies** تحت اسم الخادم الخاص بك. تعرض تطبيقات Plex الأخرى المكتبة تحت اسم الخادم أيضاً.
 
-المزامنة الأولى لـ Internet Archive تأخذ وقتًا: حوالي نصف ساعة على جهاز الاختبار الخاص بنا، while rex يتحقق من كل فيلم. تعرض **Status** الحالة **Syncing** حتى تنتهي، ثم العدد مثل **Ready · 97 titles**. اضغط تشغيل على أي فيلم.
+تستغرق المزامنة الأولى لأرشيف الإنترنت وقتاً، نحو نصف ساعة على جهاز الاختبار لدينا، لأن rex يتحقق من كل فيلم. تبقى **Status** تعرض **Syncing** حتى تنتهي، ثم تعرض العدد، مثل **Ready · 97 titles**. اضغط على التشغيل لأي فيلم.
+
+![تطبيق Plex على تلفاز يعرض فيلماً قصيراً لتشابلن من عام 1914 من rex على التلفاز نفسه](../assets/rex/android-tv-playing.webp)
 
 ## الإضافات {#addons}
 
@@ -105,10 +113,10 @@ Open any Plex app signed in to the same account. If Plex is on this device, **St
 
 ## القيود {#limits}
 
-- **Funktioniert zu Hause.** Außerhalb deines Zuhauses brauchen die Plex-Apps eine HTTPS-Adresse, die das Gerät erreicht. Dafür musst du an deinem Router eine Portweiterleitung auf das Gerät einrichten. Siehe [Außerhalb deines Zuhauses nutzen](any-source.md#use-it-outside-your-home-optional).
-- **Das Gerät ist der Server.** Lass es eingeschaltet, mit WLAN oder Ethernet verbunden und am Strom. Wenn Videos für einen Player umgewandelt werden müssen, der eine Datei nicht abspielen kann, nutzt das die eigene Hardware des Geräts. Auf einem günstigen Gerät kann das langsam sein.
-- **Nur, was Addons liefern.** Auf dem Gerät selbst liegt keine Dateibibliothek.
-- **Noch nicht im Google Play Store.** Zum Aktualisieren installierst du die neue Datei aus [den Releases](https://github.com/debridmediamanager/rex-android/releases/latest) über die alte. Öffne dann rex und tippe auf **Start**. Deine Anmeldung und deine Addons bleiben erhalten.
+- **Funktioniert zu Hause.** Außerhalb deines Zuhauses brauchen Plex-Apps eine HTTPS-Adresse, die das Gerät erreicht. Dafür musst du auf deinem Router eine Portweiterleitung zu diesem Gerät einrichten. Siehe [Außerhalb deines Zuhauses nutzen](any-source.md#use-it-outside-your-home-optional).
+- **Das Gerät ist der Server.** Lass es eingeschaltet, verbinde es per WLAN oder Ethernet und steck es ein. Wenn Videos für einen Player umgewandelt werden müssen, der eine Datei nicht abspielen kann, nutzt das die Hardware des Geräts. Auf einem günstigen Gerät kann das langsam sein.
+- **Nur was Addons liefern.** Auf dem Gerät selbst liegt keine Dateibibliothek.
+- **Noch nicht im Google Play Store.** Zum Aktualisieren installierst du die neue Datei aus [den Releases](https://github.com/debridmediamanager/rex-android/releases/latest) über die alte. rex startet danach von selbst neu. Deine Anmeldung und deine Addons bleiben erhalten.
 
 ## استكشاف الأخطاء وإصلاحها {#troubleshooting}
 
