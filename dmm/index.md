@@ -14,7 +14,7 @@ DMM is open source and not part of Real-Debrid or any other service. The files s
 ## Sign in
 
 1. Open [debridmediamanager.com](https://debridmediamanager.com) and press your service: **Login with Real Debrid**, **Login with AllDebrid**, **Login with Torbox**, **Login with Premiumize**, **Login with Offcloud** or **Login with Debrid-Link**.
-2. On Real-Debrid, press **Sign in with Real-Debrid**. DMM shows a code: press **Open real-debrid.com/device**, enter the code there and approve. The DMM page finishes on its own. You can also paste your API token from [real-debrid.com/apitoken](https://real-debrid.com/apitoken) under **or paste an API key** and press **Save API Key**.
+2. On Real-Debrid, press **Sign in with Real-Debrid**. DMM shows a code: press **Open real-debrid.com/device**, enter the code there and approve. The DMM page finishes on its own. You can also paste your [API token](../guides/real-debrid-api-token.md) under **or paste an API key** and press **Save API Key**.
 3. Other services: follow their login page. Where it asks for an API key, copy it from your account on that service, paste it and press **Save API Key**.
 
 ![DMM's sign-in page](../assets/dmm-index/01-sign-in.webp)
@@ -81,7 +81,7 @@ Everything a sponsorship opens and where each thing is set up is on [What a spon
 
 | What you see | What to do |
 |---|---|
-| **Real-Debrid rejected that API key.** | The token you pasted isn't a working one. Copy it again from [real-debrid.com/apitoken](https://real-debrid.com/apitoken), or press **Sign in with Real-Debrid** instead. |
+| **Real-Debrid rejected that API key.** | The token you pasted isn't a working one. Copy it again from [real-debrid.com/apitoken](https://real-debrid.com/apitoken), or press **Sign in with Real-Debrid** instead. More in [Your Real-Debrid API token](../guides/real-debrid-api-token.md). |
 | **That code expired before it was approved. Try again.** | The Real-Debrid code timed out. Press **Sign in with Real-Debrid** again and approve the new code sooner. |
 | **Your TorBox account is on the free plan, which has no API access. DMM needs a paid TorBox plan.** | TorBox's free plan can't be used with DMM. Upgrade it, or sign in with another service. |
 | Only **DL with RD** buttons, no **Instant RD** | Your service has none of these releases cached. Press one and wait for it to download, or try another release. |
