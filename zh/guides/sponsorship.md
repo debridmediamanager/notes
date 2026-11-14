@@ -25,19 +25,19 @@ DMM 免费使用。赞助费用用于支付托管费用，并让 zurg 和 rex �
 
 ## DMM
 
-| 功能 | 位置 |
+| 你能获得的功能 | 位置 |
 |---|---|
-| 一个 zurg 会自动抓取的想看列表，包含新剧集和升级版本。可以从 DMM、Kodi、Trakt 和 MDBList 列表，或 Radarr、Sonarr 备份中填充 | [DMM 想看列表](../zurg/guides/dmm-wanted.md) |
-| Seerr、Overseerr 或 Jellyseerr 的请求会自动进入你的想看列表 | [通过 DMM 使用 Seerr](../dmm/seerr.md) |
-| 一键把任意 Easynews 结果发送到你的 zurg | 在 DMM 电影或剧集页面上的 Easynews 结果 |
-| 把 DMM 用作 Usenet 的 Newznab 索引器 | DMM 的 [Newznab 页面](https://debridmediamanager.com/newznab) |
-| 把 DMM 用作 Torznab 索引器，为 Real-Debrid、AllDebrid、Debrid-Link、TorBox、Premiumize 和 Offcloud 提供仅限缓存的订阅源。TorBox、Premiumize 和 Offcloud 还需要绑定的服务密钥 | DMM 的 [Torznab 页面](https://debridmediamanager.com/torznab) |
-| 七个用于 debrid 和 Usenet 库的 Jellyfin 插件，以及六个用于 debrid 库、且未挂载任何内容的 Emby 插件 | DMM 的 [Jellyfin](https://debridmediamanager.com/jellyfin) 和 [Emby](https://debridmediamanager.com/emby) 页面 |
-| 在 Stremio Cast 和 Kodi 中，每个标题可以多看十个其他串流（原来是五个）。Real-Debrid、TorBox 和 AllDebrid 在 DMM 设置中调整，其他服务在各自的 Cast 页面调整 | DMM 对 Real-Debrid、TorBox 和 AllDebrid 的设置；其他服务见各自的 Cast 页面 |
-| NZB 上传优先处理，Usenet 每日额度为 2 TB（原来是 300 GB） | DMM 的 Usenet 标签页 |
-| Sonarr 和 Radarr 享有相同的优先级和额度 | 在 DMM 的 [SABnzbd 页面](https://debridmediamanager.com/sabnzbd) 中，把你的 DMM API 密钥填入 Password 字段 |
-| 可以同时向 Real-Debrid 上传三个种子文件（原来是一个） | DMM 搜索结果和库中的上传按钮 |
-| 在 Kodi 中添加到 DMM Wanted，并生成一个 Wanted 文件夹 | 在 DMM 的 [Kodi 页面](https://debridmediamanager.com/kodi) 配对 Kodi |
+| zurg 会抓取的待看清单，包含新集和升级版本。可以从 DMM、Kodi 或 Trakt、MDBList 和 TMDB 列表填充，也可以从 Radarr 或 Sonarr 备份导入 | [DMM 待看清单](../zurg/guides/dmm-wanted.md) |
+| Seerr、Overseerr 或 Jellyseerr 的请求会进入你的待看清单 | [通过 DMM 使用 Seerr](../dmm/seerr.md) |
+| 一键将任意 Easynews 结果发送到你的 zurg | 在 DMM 的电影或剧集页面上的 Easynews 结果 |
+| 将 DMM 用作 Usenet 的 Newznab 索引器 | DMM 的 [Newznab 页面](https://debridmediamanager.com/newznab) |
+| 将 DMM 用作 Torznab 索引器，为 Real-Debrid、AllDebrid、Debrid-Link、TorBox、Premiumize 和 Offcloud 提供仅缓存的订阅源。TorBox、Premiumize 和 Offcloud 还需要关联的服务密钥 | DMM 的 [Torznab 页面](https://debridmediamanager.com/torznab)。TorBox、Premiumize 和 Offcloud 还需要关联的服务密钥 |
+| 为调试和 Usenet 库提供七个 Jellyfin 插件，为调试库提供六个 Emby 插件，且无需挂载任何内容 | DMM 的 [Jellyfin](https://debridmediamanager.com/jellyfin) 和 [Emby](https://debridmediamanager.com/emby) 页面 |
+| 在 Stremio Cast 和 Kodi 中，每个标题可显示十个其他流，而不是五个 | Real-Debrid、TorBox 和 AllDebrid 的 DMM 设置；其他服务请查看各自的 Cast 页面 |
+| NZB 上传优先处理，每天 2 TB 的 Usenet 额度，而不是 300 GB | DMM 的 Usenet 标签页 |
+| Sonarr 和 Radarr 享有相同的优先级和额度 | 将你的 DMM API 密钥填入 DMM [SABnzbd 页面](https://debridmediamanager.com/sabnzbd) 中的 Password 字段 |
+| 可同时向 Real-Debrid 上传三个种子文件，而不是一个 | DMM 搜索结果和库中的上传按钮 |
+| 将内容添加到 DMM Wanted，以及 Kodi 中的 Wanted 文件夹 | 在 DMM 的 [Kodi 页面](https://debridmediamanager.com/kodi) 上配对 Kodi |
 | 用于获取发布名称、缓存检查、媒体详情和元数据的 DMM API | [API 文档](https://debridmediamanager.com/api-docs) |
 
 ## rex

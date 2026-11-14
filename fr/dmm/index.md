@@ -55,21 +55,21 @@ Appuyez sur **Library** sur la page d'accueil. Elle liste tout ce qui se trouve 
 
 ## Où aller ensuite {#where-to-go-next}
 
-- [DMM dans Stremio](stremio.md) : regardez ce que vous trouvez dans Stremio grâce à l'addon DMM Cast.
+- [DMM dans Stremio](stremio.md) : regardez ce que vous trouvez dans Stremio avec l'addon DMM Cast.
 - [Listes de hashes](hashlists.md) : ajoutez une bibliothèque partagée entière à la vôtre, ou partagez la vôtre.
-- [TorBox dans DMM](torbox.md) : ce que fait chaque forfait TorBox dans DMM, et l'envoi de releases Usenet vers TorBox Pro.
-- ["Torrent is being downloaded to debrid"](../guides/torrent-being-downloaded-to-debrid.md) : ce que signifie cet écran dans Stremio et comment DMM affiche ce qui est en cache.
-- [Boutons DMM dans Safari](safari.md) : l'extension navigateur ajoute un bouton DMM sur IMDb, Trakt et d'autres sites de films et de séries.
+- [TorBox dans DMM](torbox.md) : ce que fait chaque offre TorBox dans DMM, et l'envoi de releases Usenet vers TorBox Pro.
+- ["Torrent is being downloaded to debrid"](../guides/torrent-being-downloaded-to-debrid.md) : ce que signifie cet écran dans Stremio et comment DMM indique ce qui est en cache.
+- [Boutons DMM dans Safari](safari.md) : l'extension de navigateur ajoute un bouton DMM sur IMDb, Trakt et d'autres sites de films et de séries.
 
 DMM sert aussi les autres projets :
 
-- **zurg** demande à DMM quel film ou quel épisode correspond à chaque fichier. Un sponsor obtient la clé API DMM sur [gatekeeper](https://gatekeeper.debridmediamanager.com/). Sans elle, zurg se fie aux noms de fichiers et moins de titres correspondent. [rex avec zurg](../rex/with-zurg.md#why-dmm-places-the-files) explique la différence.
+- **zurg** demande à DMM quel film ou quel épisode correspond à chaque fichier. Un sponsor obtient la clé API DMM sur [gatekeeper](https://gatekeeper.debridmediamanager.com/). Sans elle, zurg se base sur les noms de fichiers et moins de titres correspondent. [rex avec zurg](../rex/with-zurg.md#why-dmm-places-the-files) explique la différence.
 - **Sonarr Radarr et Prowlarr** peuvent chercher dans DMM comme indexeur de torrents Torznab ou indexeur Usenet Newznab. Les deux nécessitent un sponsoring actif et la clé API DMM. Configurez-les sur les pages [Torznab](https://debridmediamanager.com/torznab) et [Newznab](https://debridmediamanager.com/newznab).
-- **Votre liste de souhaits** : appuyez sur **Want** ou suivez une liste Trakt ou MDBList. zurg récupère la liste ainsi que les nouveaux épisodes au fur et à mesure de leur diffusion. Sponsoring requis. Voir [liste de souhaits DMM](../zurg/guides/dmm-wanted.md).
-- **Seerr Overseerr et Jellyseerr** peuvent utiliser DMM comme Radarr et Sonarr. Les demandes arrivent alors dans votre liste de souhaits pour que zurg les récupère. Sponsoring requis. Voir [Seerr via DMM](seerr.md).
+- **Votre liste de souhaits** : appuyez sur **Want** ou suivez une liste Trakt, MDBList ou TMDB. zurg récupère la liste et les nouveaux épisodes au fur et à mesure de leur diffusion. Sponsoring requis. Voir [Liste de souhaits DMM](../zurg/guides/dmm-wanted.md).
+- **Seerr Overseerr et Jellyseerr** peuvent utiliser DMM comme Radarr et Sonarr. Les demandes arrivent alors dans votre liste de souhaits, que zurg récupère. Sponsoring requis. Voir [Seerr via DMM](seerr.md).
 - **rex-direct** donne à un rex réclamé sa propre adresse et son propre certificat. Voir [rex-direct](../rex/any-source.md#rex-direct).
 
-Tout ce qu'ouvre un sponsoring, et l'endroit où chaque élément se configure, se trouve sur [Ce que vous apporte un sponsoring](../guides/sponsorship.md).
+Tout ce qu'un sponsoring débloque, et l'endroit où chaque chose se configure, se trouve sur [Ce que vous apporte un sponsoring](../guides/sponsorship.md).
 
 ## Quand quelque chose ne va pas {#when-something-is-wrong}
 

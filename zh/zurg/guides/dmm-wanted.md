@@ -27,22 +27,23 @@
 
 ## 订阅列表 {#following-a-list}
 
-把 Trakt 或 MDBList 列表的页面粘贴到你的[想看列表](https://debridmediamanager.com/wanted)上，然后点 **Follow**。列表里的每部电影和每个节目都会进入想看列表，DMM 每六小时会重新读取一次列表，所以之后加进列表的内容也会被加进来。支持以下页面：
+将 Trakt、MDBList 或 TMDB 列表的页面粘贴到你的[想看列表](https://debridmediamanager.com/wanted)中，然后点击 **Follow**。列表里的每部电影和每个剧集都会被加入想看列表，DMM 每六小时重新读取一次列表，所以之后添加到列表里的内容也会被加入。支持的页面如下：
 
 - `https://trakt.tv/users/<user>/lists/<list>` 和 `https://trakt.tv/lists/<id>`
-- `https://trakt.tv/users/<user>/watchlist`（前提是该 Trakt 账号是公开的）
+- `https://trakt.tv/users/<user>/watchlist`，前提是该 Trakt 个人资料是公开的
 - `https://mdblist.com/lists/<user>/<list>`
+- `https://www.themoviedb.org/list/<id>`，前提是该 TMDB 列表是公开的
 
-在 DMM 自己的 Trakt 页面上，你的观看清单和每个列表旁边都有一个 **Follow with Want** 按钮，效果一样。
+在 DMM 自己的 Trakt 页面上，你的观看清单和每个列表都有一个 **Follow with Want** 按钮，效果相同。
 
-如果是 IMDb、Letterboxd、Rotten Tomatoes 或 Plex 的观看清单：先在 mdblist.com 上用它的网址创建一个[外部列表](https://docs.mdblist.com/docs/external_lists)，然后关注这个列表。MDBList 会让它和原始来源保持同步。
+IMDb、Letterboxd、Rotten Tomatoes 或 Plex 的观看清单：请在 mdblist.com 上根据其网址创建一个[外部列表](https://docs.mdblist.com/docs/external_lists)，然后关注该列表。MDBList 会让它与原始来源保持同步。
 
-关注之后会发生这些事：
+关注列表的作用：
 
-- 节目会整部加入想看，包括之后新增的季。
-- 只有自上次读取以来新加入列表的内容才会被添加。你从想看列表里删掉的内容会保持删除状态，从列表里移走的内容会保留在想看里。**Unfollow** 会保留列表已经添加的内容。
-- 页面会显示每个列表的标题数量、目前已添加的数量，以及上次读取的时间。**Read again** 会立即重新读取。没有 IMDb id 的标题会被忽略，数量里会注明有多少个。
-- 你的列表最多可容纳 10,000 个仍待获取的标题：包括所有节目，以及 zurg 还没有获取或正在等待升级的电影。zurg 已经获取的电影不计算在内。超出容量的标题会在之后的读取中添加，等有空位了再加入。
+- 剧集会整部加入想看列表，包括之后新增的季。
+- 只有自上次读取以来在列表中新出现的标题才会被添加。你从想看列表中移除的标题会保持移除状态；从列表中被删除的标题仍会留在想看列表中。**Unfollow** 会保留列表已经添加的内容。
+- 页面会显示每个列表的标题总数、已添加的数量以及上次读取的时间。**Read again** 会立即重新读取。没有 IMDb id 的标题会被略过，页面上的数字会显示略过了多少个。
+- 你的列表最多可以容纳 10,000 个仍需获取的标题：包括所有剧集，以及 zurg 尚未获取或正在等待升级的电影。zurg 已经获取过的电影不计入其中。放不下的标题会在之后的读取中添加，等有空位时再加入。
 
 ## 从 Radarr 或 Sonarr 迁移 {#moving-from-radarr-or-sonarr}
 

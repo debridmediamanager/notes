@@ -32,33 +32,23 @@ Permintaan dari Seerr, Overseerr, atau Jellyseerr juga bisa masuk ke daftar yang
 
 ## Mengikuti daftar {#following-a-list}
 
-Tempel halaman daftar Trakt atau MDBList ke [daftar wanted](https://debridmediamanager.com/wanted) kamu
-lalu tekan **Follow**. Setiap film dan serial di dalamnya ditandai sebagai wanted, dan DMM membaca ulang
-daftar itu setiap enam jam, jadi yang ditambahkan ke daftar itu nanti juga ikut wanted. Halaman yang didukung:
+Tempel halaman daftar Trakt, MDBList atau TMDB ke [daftar inginan](https://debridmediamanager.com/wanted) kamu lalu tekan **Follow**. Semua film dan serial di dalamnya jadi inginan, dan DMM membaca ulang daftar itu setiap enam jam, jadi yang ditambahkan ke daftar nanti juga ikut jadi inginan. Halaman yang didukung:
 
 - `https://trakt.tv/users/<user>/lists/<list>` dan `https://trakt.tv/lists/<id>`
-- `https://trakt.tv/users/<user>/watchlist`, kalau profil Trakt itu publik
+- `https://trakt.tv/users/<user>/watchlist`, jika profil Trakt itu publik
 - `https://mdblist.com/lists/<user>/<list>`
+- `https://www.themoviedb.org/list/<id>`, jika daftar TMDB itu publik
 
-Di halaman Trakt milik DMM sendiri, watchlist kamu dan setiap daftar milikmu punya tombol **Follow with Want**
-yang melakukan hal yang sama.
+Di halaman Trakt milik DMM sendiri, watchlist kamu dan setiap daftar kamu punya tombol **Follow with Want** yang melakukan hal yang sama.
 
-Untuk watchlist IMDb, Letterboxd, Rotten Tomatoes, atau Plex: di mdblist.com, buat
-[daftar eksternal](https://docs.mdblist.com/docs/external_lists) dari URL-nya lalu follow
-daftar itu. MDBList akan menjaganya tetap sinkron dengan sumbernya.
+Untuk watchlist IMDb, Letterboxd, Rotten Tomatoes atau Plex: di mdblist.com, buat [daftar eksternal](https://docs.mdblist.com/docs/external_lists) dari URL-nya lalu follow daftar itu. MDBList akan menjaganya tetap sinkron dengan sumbernya.
 
-Yang dilakukan follow:
+Apa yang dilakukan follow:
 
-- Serial dianggap wanted secara utuh, termasuk season baru.
-- Hanya judul yang baru masuk ke daftar sejak terakhir dibaca yang ditambahkan. Judul yang kamu hapus dari
-  daftar wanted tetap terhapus, dan judul yang keluar dari daftar tetap wanted.
-  **Unfollow** tetap menyimpan apa yang sudah ditambahkan daftar itu.
-- Halaman menampilkan setiap daftar beserta jumlah judulnya, berapa yang sudah ditambahkan sejauh ini, dan
-  kapan terakhir dibaca. **Read again** membacanya sekarang juga. Judul tanpa IMDb id dilewati, dan
-  jumlahnya ditampilkan.
-- Daftar wanted kamu menampung 10.000 judul yang masih perlu diambil: setiap serial, dan setiap film yang belum
-  diambil zurg atau sedang menunggu upgrade. Film yang sudah diambil zurg tidak dihitung. Judul yang tidak muat
-  akan ditambahkan di pembacaan berikutnya, begitu ada ruang.
+- Serial dianggap inginan secara utuh, termasuk season baru.
+- Hanya judul yang baru di daftar sejak terakhir dibaca yang ditambahkan. Judul yang kamu hapus dari daftar inginan tetap terhapus, dan judul yang keluar dari daftar tetap jadi inginan. **Unfollow** menyimpan apa yang sudah ditambahkan daftar itu.
+- Halaman menampilkan setiap daftar beserta jumlah judulnya, berapa yang sudah ditambahkan sejauh ini, dan kapan terakhir dibaca. **Read again** membacanya sekarang. Judul tanpa IMDb id dilewati, dan jumlahnya ditampilkan.
+- Daftar inginan kamu menampung 10.000 judul yang masih perlu diambil: setiap serial, dan setiap film yang belum diambil zurg atau yang sedang menunggu untuk di-upgrade. Film yang sudah diambil zurg tidak dihitung. Judul yang tidak muat akan ditambahkan pada pembacaan berikutnya, setelah ada ruang.
 
 ## Pindah dari Radarr atau Sonarr {#moving-from-radarr-or-sonarr}
 

@@ -55,21 +55,21 @@ DMM 是开源项目，不隶属于 Real-Debrid 或其他任何服务。文件仍
 
 ## 接下来去哪里 {#where-to-go-next}
 
-- [在 Stremio 中使用 DMM](stremio.md)：用 DMM Cast 插件在 Stremio 里观看你找到的内容。
+- [在 Stremio 中使用 DMM](stremio.md)：在 Stremio 里用 DMM Cast 插件观看你找到的内容。
 - [Hash 列表](hashlists.md)：把整个共享库加到你的库里，或者分享你自己的库。
-- [DMM 中的 TorBox](torbox.md)：TorBox 的各个套餐在 DMM 中分别能做什么，以及如何把 Usenet 资源发送到 TorBox Pro。
+- [DMM 里的 TorBox](torbox.md)：TorBox 的各个套餐在 DMM 里分别能做什么，以及如何把 Usenet 资源发送到 TorBox Pro。
 - ["Torrent is being downloaded to debrid"](../guides/torrent-being-downloaded-to-debrid.md)：Stremio 里那个画面是什么意思，以及 DMM 如何显示哪些内容已缓存。
-- [Safari 中的 DMM 按钮](safari.md)：浏览器扩展会在 IMDb、Trakt 以及其他电影和电视网站上添加一个 DMM 按钮。
+- [Safari 中的 DMM 按钮](safari.md)：浏览器扩展会在 IMDb、Trakt 以及其他电影和剧集网站上添加一个 DMM 按钮。
 
 DMM 也为其他项目提供服务：
 
-- **zurg** 会向 DMM 询问每个文件对应的是哪部电影或哪一集。赞助者可以从 [gatekeeper](https://gatekeeper.debridmediamanager.com/) 获取 DMM API key。没有它的话，zurg 只能依赖文件名，匹配到的标题会更少。[rex 与 zurg](../rex/with-zurg.md#why-dmm-places-the-files) 解释了两者的区别。
-- **Sonarr Radarr 和 Prowlarr** 可以把 DMM 当作 Torznab 种子索引器或 Newznab Usenet 索引器来搜索。两者都需要有效的赞助和 DMM API key。在 [Torznab](https://debridmediamanager.com/torznab) 和 [Newznab](https://debridmediamanager.com/newznab) 页面上进行设置。
-- **你的想看列表**：点击 **Want**，或者关注一个 Trakt 或 MDBList 列表。zurg 会抓取其中的内容，以及新播出的剧集。需要赞助。参见 [DMM 想看列表](../zurg/guides/dmm-wanted.md)。
-- **Seerr Overseerr 和 Jellyseerr** 可以把 DMM 当作 Radarr 和 Sonarr 来使用。之后的请求会进入你的想看列表，由 zurg 去抓取。需要赞助。参见 [通过 DMM 使用 Seerr](seerr.md)。
-- **rex-direct** 会为已认领的 rex 提供自己的地址和证书。参见 [rex-direct](../rex/any-source.md#rex-direct)。
+- **zurg** 会向 DMM 询问每个文件对应哪部电影或哪一集。赞助者可以从 [gatekeeper](https://gatekeeper.debridmediamanager.com/) 获取 DMM API 密钥。没有它，zurg 只能依赖文件名，能匹配的标题会少一些。[rex 与 zurg](../rex/with-zurg.md#why-dmm-places-the-files) 解释了两者的区别。
+- **Sonarr Radarr 和 Prowlarr** 可以把 DMM 当作 Torznab 种子索引器或 Newznab Usenet 索引器来搜索。两者都需要有效的赞助和 DMM API 密钥。请在 [Torznab](https://debridmediamanager.com/torznab) 和 [Newznab](https://debridmediamanager.com/newznab) 页面上进行设置。
+- **你的想看列表**：点击 **Want**，或者关注 Trakt、MDBList 或 TMDB 列表。zurg 会获取列表内容，并在新剧集播出时获取新集。需要赞助。详见 [DMM 想看列表](../zurg/guides/dmm-wanted.md)。
+- **Seerr Overseerr 和 Jellyseerr** 可以把 DMM 当作 Radarr 和 Sonarr 使用。之后请求会进入你的想看列表，由 zurg 去获取。需要赞助。详见 [通过 DMM 使用 Seerr](seerr.md)。
+- **rex-direct** 会为已认领的 rex 提供独立的地址和证书。详见 [rex-direct](../rex/any-source.md#rex-direct)。
 
-赞助能解锁的所有功能，以及每项功能的设置位置，都在[赞助者权益](../guides/sponsorship.md)中。
+赞助能解锁哪些功能，以及每项功能在哪里设置，都写在[赞助能给你带来什么](../guides/sponsorship.md)里。
 
 ## 出现问题时 {#when-something-is-wrong}
 

@@ -28,22 +28,23 @@ Seerr、Overseerr、Jellyseerr からのリクエストも同じリストに入�
 
 ## リストをフォローする {#following-a-list}
 
-[wanted リスト](https://debridmediamanager.com/wanted)に Trakt または MDBList のリストのページを貼り付けて、**Follow** を押してください。そのリストにあるすべての映画と番組が wanted になります。DMM は 6 時間ごとにリストを読み直すので、後からリストに追加されたものも wanted になります。対応しているページは次のとおりです:
+[wanted list](https://debridmediamanager.com/wanted) に Trakt、MDBList、TMDB のリストのページを貼り付けて、**Follow** を押します。そのリストにある映画と番組はすべて wanted になります。DMM はリストを 6 時間ごとに読み直すので、後からリストに追加された作品も wanted になります。読み込めるページは次のとおりです:
 
 - `https://trakt.tv/users/<user>/lists/<list>` と `https://trakt.tv/lists/<id>`
-- `https://trakt.tv/users/<user>/watchlist`（その Trakt プロフィールが公開されている場合）
+- `https://trakt.tv/users/<user>/watchlist`（そのTraktプロフィールが公開されている場合）
 - `https://mdblist.com/lists/<user>/<list>`
+- `https://www.themoviedb.org/list/<id>`（そのTMDBリストが公開されている場合）
 
-DMM 自身の Trakt ページでは、ウォッチリストと自分の各リストに **Follow with Want** ボタンがあり、同じことができます。
+DMM 自身の Trakt ページにある、あなたのウォッチリストと各リストには、同じことをする **Follow with Want** ボタンがあります。
 
-IMDb、Letterboxd、Rotten Tomatoes、Plex のウォッチリストの場合: mdblist.com で、その URL から[外部リスト](https://docs.mdblist.com/docs/external_lists)を作成し、それをフォローしてください。MDBList が元のソースと同期を保ちます。
+IMDb、Letterboxd、Rotten Tomatoes、Plex のウォッチリストの場合は、mdblist.com でその URL から [external list](https://docs.mdblist.com/docs/external_lists) を作り、それをフォローします。MDBList がソースとの同期を保ちます。
 
 フォローすると次のようになります:
 
-- 番組は丸ごと wanted になり、新しいシーズンも含まれます。
-- 前回読み込んでから新しくリストに追加されたタイトルだけが追加されます。wanted リストから削除したタイトルは削除されたままになり、リストから外れたタイトルは wanted のままになります。**Unfollow** しても、リストが追加したものは残ります。
-- ページには各リストについて、タイトル数、これまでに追加された数、最後に読み込まれた日時が表示されます。**Read again** を押すと、今すぐ読み直します。IMDb ID のないタイトルは除外され、その数も表示されます。
-- wanted リストには、まだ取得していないタイトルを 10,000 件まで保持できます。対象は、すべての番組と、zurg がまだ取得していない、またはアップグレード待ちの映画です。zurg がすでに取得した映画はこの数に含まれません。入りきらないタイトルは、空きができたあとの次回の読み込みで追加されます。
+- 番組は、新しいシーズンも含めて丸ごと wanted になります。
+- 前回読み込んだ後にリストへ新しく追加された作品だけが追加されます。wanted リストから削除した作品は削除されたままです。リストから外れた作品は wanted のまま残ります。**Unfollow** しても、リストが追加した作品は残ります。
+- ページには各リストについて、作品数、これまでに追加された数、最後に読み込んだ時刻が表示されます。**Read again** を押すと、今すぐ読み直します。IMDb ID のない作品は除外され、その数も表示されます。
+- wanted リストには、まだ取得していない作品を 10,000 件まで入れられます。対象は全ての番組と、zurg がまだ取得していない、またはアップグレードを待っている映画です。zurg が取得済みの映画は数えません。入りきらない作品は、空きができた後の次回の読み込みで追加されます。
 
 ## RadarrやSonarrから移行する {#moving-from-radarr-or-sonarr}
 

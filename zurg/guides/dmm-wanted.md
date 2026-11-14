@@ -34,13 +34,14 @@ Requests from Seerr, Overseerr or Jellyseerr can land on the same list: see
 
 ## Following a list
 
-Paste the page of a Trakt or MDBList list on your [wanted list](https://debridmediamanager.com/wanted)
+Paste the page of a Trakt, MDBList or TMDB list on your [wanted list](https://debridmediamanager.com/wanted)
 and press **Follow**. Every film and show on it is wanted, and DMM reads the list again
 every six hours, so what is added to it later is wanted too. Pages it takes:
 
 - `https://trakt.tv/users/<user>/lists/<list>` and `https://trakt.tv/lists/<id>`
 - `https://trakt.tv/users/<user>/watchlist`, if that Trakt profile is public
 - `https://mdblist.com/lists/<user>/<list>`
+- `https://www.themoviedb.org/list/<id>`, if that TMDB list is public
 
 On DMM's own Trakt pages, your watchlist and each of your lists have a **Follow with Want**
 button that does the same.

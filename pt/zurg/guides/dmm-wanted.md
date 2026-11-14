@@ -29,23 +29,25 @@ Pedidos feitos no Seerr, Overseerr ou Jellyseerr também podem cair nessa mesma 
 
 ## Seguindo uma lista {#following-a-list}
 
-Cole a página de uma lista do Trakt ou do MDBList na sua [lista de desejados](https://debridmediamanager.com/wanted)
-e clique em **Follow**. Todo filme e série nela entra como desejado, e o DMM lê a lista de novo a cada seis horas, então o que for adicionado depois também entra como desejado. Páginas aceitas:
+Cole a página de uma lista do Trakt, MDBList ou TMDB na sua [lista de desejados](https://debridmediamanager.com/wanted)
+e clique em **Follow**. Todo filme e série nela entra como desejado, e o DMM lê a lista de novo
+a cada seis horas, então o que for adicionado depois também entra. Páginas aceitas:
 
 - `https://trakt.tv/users/<user>/lists/<list>` e `https://trakt.tv/lists/<id>`
 - `https://trakt.tv/users/<user>/watchlist`, se esse perfil do Trakt for público
 - `https://mdblist.com/lists/<user>/<list>`
+- `https://www.themoviedb.org/list/<id>`, se essa lista do TMDB for pública
 
-Nas próprias páginas do Trakt no DMM, sua watchlist e cada uma das suas listas têm um botão **Follow with Want** que faz a mesma coisa.
+Nas páginas do Trakt do próprio DMM, sua watchlist e cada uma das suas listas têm um botão **Follow with Want** que faz a mesma coisa.
 
-Uma watchlist do IMDb, Letterboxd, Rotten Tomatoes ou Plex: no mdblist.com, crie uma [lista externa](https://docs.mdblist.com/docs/external_lists) a partir da URL dela e siga essa lista. O MDBList mantém ela sincronizada com a origem.
+Para uma watchlist do IMDb, Letterboxd, Rotten Tomatoes ou Plex: no mdblist.com, crie uma [lista externa](https://docs.mdblist.com/docs/external_lists) a partir da URL dela e siga essa lista. O MDBList mantém ela sincronizada com a origem.
 
-O que seguir uma lista faz:
+O que seguir faz:
 
 - Uma série entra inteira, incluindo as temporadas novas.
-- Só entram os títulos que são novos na lista desde a última leitura. Um título que você tirar da sua lista de desejados continua fora, e um título que sair da lista continua desejado. **Unfollow** mantém o que a lista adicionou.
-- A página mostra cada lista com quantos títulos ela tem, quantos ela já adicionou e quando foi lida pela última vez. **Read again** lê a lista agora. Títulos sem id do IMDb ficam de fora, e a contagem mostra quantos são.
-- Sua lista comporta 10.000 títulos a buscar: todas as séries, e cada filme que o zurg ainda não buscou ou que está esperando para ser atualizado. Filmes que o zurg já buscou não contam. Um título que não cabe é adicionado em uma leitura posterior, quando houver espaço.
+- Só entram títulos que são novos na lista desde a última leitura. Um título que você remover da sua lista de desejados continua removido, e um título que sair da lista continua desejado. **Unfollow** mantém o que a lista adicionou.
+- A página mostra cada lista com quantos títulos ela tem, quantos já foram adicionados e quando foi lida pela última vez. **Read again** lê agora. Títulos sem id do IMDb ficam de fora, e a contagem mostra quantos são.
+- Sua lista de desejados comporta 10.000 títulos ainda a buscar: todas as séries, e cada filme que o zurg ainda não buscou ou que está esperando para ser atualizado. Filmes que o zurg já buscou não contam. Um título que não couber é adicionado em uma leitura posterior, assim que houver espaço.
 
 ## Migrando do Radarr ou Sonarr {#moving-from-radarr-or-sonarr}
 

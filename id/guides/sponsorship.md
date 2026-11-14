@@ -25,20 +25,20 @@ Fitur `dmm_api_key` membutuhkan build nightly zurg. Build publik gratis tidak me
 
 ## DMM
 
-| Yang kamu dapat | Di mana |
+| Yang Anda dapatkan | Di mana |
 |---|---|
-| Daftar wanted yang diambil zurg beserta episode baru dan upgrade. Isi dari DMM atau Kodi, atau dari daftar Trakt dan MDBList, atau dari backup Radarr atau Sonarr | [Daftar wanted DMM](../zurg/guides/dmm-wanted.md) |
-| Permintaan dari Seerr, Overseerr, atau Jellyseerr masuk ke daftar wanted kamu | [Seerr lewat DMM](../dmm/seerr.md) |
-| Hasil Easynews apa pun dikirim ke zurg kamu dengan satu klik | Hasil Easynews di halaman film atau acara di DMM |
-| DMM sebagai indexer Newznab untuk Usenet | [Halaman Newznab](https://debridmediamanager.com/newznab) DMM |
-| DMM sebagai indexer Torznab dengan feed khusus cache untuk Real-Debrid, AllDebrid, Debrid-Link, TorBox, Premiumize, dan Offcloud | [Halaman Torznab](https://debridmediamanager.com/torznab) DMM. TorBox, Premiumize, dan Offcloud juga butuh service key yang sudah ditautkan |
-| Tujuh plugin Jellyfin untuk library debrid dan Usenet, dan enam plugin Emby untuk library debrid, tanpa mount apa pun | Halaman [Jellyfin](https://debridmediamanager.com/jellyfin) dan [Emby](https://debridmediamanager.com/emby) DMM |
-| Sepuluh stream lain per judul di Stremio Cast dan Kodi, bukan lima | Settings DMM untuk Real-Debrid, TorBox, dan AllDebrid; halaman Cast masing-masing provider untuk yang lain |
-| Upload NZB didahulukan dengan 2 TB Usenet per hari, bukan 300 GB | Tab Usenet DMM |
-| Prioritas dan kuota yang sama untuk Sonarr dan Radarr | API key DMM kamu sebagai Password di [halaman SABnzbd](https://debridmediamanager.com/sabnzbd) DMM |
-| Tiga upload torrent ke Real-Debrid sekaligus, bukan satu | Tombol upload di hasil pencarian dan library DMM |
-| Tambah ke DMM Wanted dan folder Wanted di dalam Kodi | Pasangkan Kodi di [halaman Kodi](https://debridmediamanager.com/kodi) DMM |
-| API DMM untuk nama rilis, cek cache, detail media, dan metadata | [Dokumentasi API](https://debridmediamanager.com/api-docs) |
+| Daftar keinginan (wanted) yang diambil zurg beserta episode baru dan peningkatan kualitas. Isi dari DMM atau Kodi atau Trakt, daftar MDBList dan TMDB, atau cadangan Radarr atau Sonarr | [Daftar wanted DMM](../zurg/guides/dmm-wanted.md) |
+| Permintaan dari Seerr atau Overseerr atau Jellyseerr masuk ke daftar wanted Anda | [Seerr lewat DMM](../dmm/seerr.md) |
+| Hasil Easynews apa pun dikirim ke zurg Anda dalam satu klik | Hasil Easynews di halaman film atau acara di DMM |
+| DMM sebagai indeks Newznab untuk Usenet | [Halaman Newznab](https://debridmediamanager.com/newznab) DMM |
+| DMM sebagai indeks Torznab dengan feed hanya-cache untuk Real-Debrid dan AllDebrid dan Debrid-Link dan TorBox dan Premiumize dan Offcloud | [Halaman Torznab](https://debridmediamanager.com/torznab) DMM. TorBox dan Premiumize dan Offcloud juga memerlukan kunci layanan yang ditautkan |
+| Tujuh plugin Jellyfin untuk pustaka debrid dan Usenet, dan enam plugin Emby untuk pustaka debrid tanpa ada yang di-mount | Halaman [Jellyfin](https://debridmediamanager.com/jellyfin) dan [Emby](https://debridmediamanager.com/emby) DMM |
+| Sepuluh stream lain per judul di Stremio Cast dan Kodi, bukan lima | Pengaturan DMM untuk Real-Debrid, TorBox, dan AllDebrid; halaman Cast masing-masing penyedia untuk yang lain |
+| Unggahan NZB didahulukan dengan kuota 2 TB Usenet per hari, bukan 300 GB | Tab Usenet di DMM |
+| Prioritas dan kuota yang sama untuk Sonarr dan Radarr | Kunci API DMM Anda sebagai Password di [halaman SABnzbd](https://debridmediamanager.com/sabnzbd) DMM |
+| Tiga unggahan torrent ke Real-Debrid sekaligus, bukan satu | Tombol unggah di hasil pencarian DMM dan pustaka |
+| Tambahkan ke DMM Wanted dan folder Wanted di dalam Kodi | Pasangkan Kodi di [halaman Kodi](https://debridmediamanager.com/kodi) DMM |
+| API DMM untuk nama rilis, pengecekan cache, detail media, dan metadata | [Dokumentasi API](https://debridmediamanager.com/api-docs) |
 
 ## rex
 
