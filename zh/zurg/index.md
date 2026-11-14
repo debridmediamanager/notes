@@ -61,15 +61,13 @@ zurg 把你的 debrid 账号和 Usenet 库合并到一个虚拟文件夹里。�
 
 ## 迁移 {#migrating}
 
-Will not translate link targets. Keep names: AltMount, decypharr, InfiniDysk, nzbdav, streamnzb are project names, keep English.
+Move an existing library onto zurg without a re-download or a re-scan.
 
-将现有媒体库迁移到 zurg，无需重新下载，也无需重新扫描。
-
-- [从 AltMount 迁移](migrate/altmount.md)
-- [从 decypharr 迁移](migrate/decypharr.md)
-- [从 InfiniDysk 迁移](migrate/infinidysk.md)
-- [从 nzbdav 迁移](migrate/nzbdav.md)
-- [从 streamnzb 迁移](migrate/streamnzb.md)
+- [从 AltMount](migrate/altmount.md)
+- [从 decypharr](migrate/decypharr.md)
+- [从 InfiniDysk](migrate/infinidysk.md)
+- [从 nzbdav](migrate/nzbdav.md)
+- [从 streamnzb](migrate/streamnzb.md)
 
 ## 参考 {#reference}
 

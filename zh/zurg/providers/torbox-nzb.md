@@ -42,20 +42,14 @@ docker compose restart zurg
 
 ## NZB 是如何进入的 {#how-nzbs-get-in}
 
-```
-这里说的是 DMM 的 Wanted 和 watchlist 等功能 ...
-```
-
-Wait, I need to be careful: no preamble. Here is the translation:
-
-所有进入 `nzb` 条目的内容，都是以同样的方式进入这个条目的；DMM 的 TorBox 操作是唯一绕过 zurg 的路径。
+以下所有进入 `nzb` 条目的内容，都是用同样的方式进入的。DMM 的 TorBox 操作是唯一绕过 zurg 的途径。
 
 - **监视目录。** 把文件放进配置文件旁边的 `nzbs/` 目录（宿主机上是 `~/zurg/nzbs/`，容器里是 `/config/nzbs/`）。zurg 会把它提交到 TorBox。
-- **Sonarr 和 Radarr**，通过 zurg 兼容 SABnzbd 的接口接入。参见 [Sonarr and Radarr for Usenet](../guides/sonarr-radarr.md)。
-- **资源获取。** Newznab 索引器、DMM Wanted 和 watchlist 会把内容抓取到这里。参见 [Acquisition](../guides/acquisition.md)。
-- **DMM 的 TorBox 操作**作用于 Usenet 结果时，会直接把 NZB 发送到 TorBox。该资源也会列在 zurg 中，但 zurg 并没有保存它的 NZB，所以一旦 TorBox 删除了它，修复按钮就无法重新获取。
+- **Sonarr 和 Radarr**，通过 zurg 的 SABnzbd 兼容接口。参见 [Sonarr and Radarr for Usenet](../guides/sonarr-radarr.md)。
+- **自动获取。** Newznab 索引器、DMM Wanted 和观看列表都会把内容抓取到这里。参见 [Acquisition](../guides/acquisition.md)。
+- **DMM 的 TorBox 操作**作用于 Usenet 结果时，会直接把 NZB 发送给 TorBox。发布列表也会出现在 zurg 中，但 zurg 不保存该 NZB，所以一旦 TorBox 丢弃了它，修复按钮就无法重新获取。
 
-如果 TorBox 无法获取某个帖子，它会被报告给 Sonarr 或 Radarr 为下载失败。客户端会将该资源加入黑名单，然后重新搜索。
+如果 TorBox 无法获取某个帖子，它会向 Sonarr 或 Radarr 报告下载失败。客户端会把该发布加入黑名单，然后重新搜索。
 
 ## 与 `nzb` 的区别 {#what-differs-from-nzb}
 

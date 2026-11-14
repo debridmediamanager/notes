@@ -432,23 +432,14 @@ tail -100 ~/zurg/logs/service-stderr.log   # manual LaunchAgent: launchd-stderr.
 
 ### 之前一切正常，重启后却停止工作 {#everything-was-working-but-stopped-after-reboot}
 
-```
-如果你安装了手动的 LaunchAgent，并且没有开启自动登录，那么必须先登录，它才会启动。你可以选择以下任一方式：
+如果你安装了手动 LaunchAgent，且未开启自动登录，那么必须先登录才会启动。你可以选择以下任一方式：
 - 开启自动登录（见第 10 步）
-- 通过 SSH 连接 —— 用户会话存在后，LaunchAgent 就会自动加载
-- 使用 VNC/屏幕共享远程登录
-```
+- 通过 SSH 连接：一旦用户会话存在，LaunchAgent 就会自动加载
+- 使用 VNC/Screen Sharing 远程登录
 
-Wait, I should output only the translation without code fence. Correcting:
+在无显示器的 Mac 上通过 `zurg setup` 创建的安装使用的是 LaunchDaemon，不需要图形界面登录。可以用 `cd ~/zurg && ./zurg service status` 检查。
 
-如果你安装了手动的 LaunchAgent，并且没有开启自动登录，那么必须先登录，它才会启动。你可以选择以下任一方式：
-- 开启自动登录（见第 10 步）
-- 通过 SSH 连接 —— 用户会话存在后，LaunchAgent 就会自动加载
-- 使用 VNC/屏幕共享远程登录
-
-通过 `zurg setup` 在无头 Mac 上创建的安装使用的是 LaunchDaemon，不需要图形界面登录。你可以用 `cd ~/zurg && ./zurg service status` 来检查。
-
-还是搞不定？可以到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **zurg-support** 论坛提问。[获取帮助](../../guides/remote-help.md)一文说明了需要提供哪些信息。
+仍然遇到问题？请到 [Discord](https://discord.com/invite/7u4YjMThXP) 的 **zurg-support** 论坛提问。[获取帮助](../../guides/remote-help.md)一文说明了需要提供哪些信息。
 
 ## 架构概览 {#architecture-overview}
 

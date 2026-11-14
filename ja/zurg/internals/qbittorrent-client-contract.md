@@ -1,30 +1,25 @@
 # qBittorrent Web API の契約（Sonarr と Radarr から見た形、develop） {#qbittorrent-web-api-contract-as-consumed-by-sonarr-and-radarr-develop}
 
-Source of truth: files fetched from `raw.githubusercontent.com/{Sonarr/Sonarr,Radarr/Radarr}/develop/...`
-and from `qbittorrent/qBittorrent/master` on **2026-08-27**. 以下のすべての行番号は、これらのファイルから読み取ったものです。
+ソース: `raw.githubusercontent.com/{Sonarr/Sonarr,Radarr/Radarr}/develop/...` および `qbittorrent/qBittorrent/master` から取得したファイル。取得日は **2026-08-27** です。以下の行番号は、すべてこれらのファイルから読み取ったものです。
 
-これは [sabnzbd-client-contract.md](sabnzbd-client-contract.md) の qBittorrent 版です。そちらは `internal/sabnzbd` がなぜそのような形式で応答するのかを記録したものです。この文書は、qBittorrent シムを書く前に満たすべき仕様です。これにより、grab、poll、**移動としての**インポート、インポート後のクリーンアップが、両方のクライアントで動作します。HTTP レイヤー、JSON シリアライザー、`DiskTransferService`、ヘルスチェックなど、2 つのクライアントで共通する部分については、この文書では同じ行を引用し、分析を繰り返さずに元の箇所を示します。
+これは [sabnzbd-client-contract.md](sabnzbd-client-contract.md) の、トレント版にあたる文書です。あちらは `internal/sabnzbd` がなぜその形式で応答するのかを記録したものです。こちらは、qBittorrent 用の shim を書く前に満たすべき仕様です。これにより、grab、poll、**move** としてのインポート、インポート後のクリーンアップが、両方のクライアントで動くようになります。HTTP レイヤー、JSON シリアライザー、`DiskTransferService`、ヘルスチェックなど、両クライアントで共通の仕組みについては、分析を繰り返さず、同じ行を引用して前の文書を参照します。
 
-特に断りがない限り、**2 つのリポジトリの qBittorrent 関連ファイルは `Tv*` → `Movie*` の名前変更を除いて同一**であり、次のとおりです。
+特に断りがない限り、**両リポジトリの qBittorrent 関連ファイルは `Tv*` → `Movie*` のリネームを除いて同一です**。また:
 
-| File | Line numbers |
+| ファイル | 行番号 |
 |---|---|
-| `QBittorrent.cs` (両方とも 746 行) | **1 対 1 で一致** |
-| `QBittorrentPreferences.cs`, `QBittorrentTorrent.cs`, `QBittorrentState.cs`, `QBittorrentLabel.cs`, `QBittorrentPriority.cs`, `QBittorrentContentLayout.cs` | **バイト単位で同一**、1 対 1 で一致 |
-| `QBittorrentSettings.cs` (両方とも 91 行) | 1 対 1 で一致 |
-| `QBittorrentProxyV2.cs`, `QBittorrentProxyV1.cs` | Sonarr には 13 行目に空行がありますが、Radarr にはありません（確認済み：Sonarr の `:12` は `// API https://…` のコメント、`:13` は空行、`:14` は `public class QBittorrentProxyV2`。Radarr のクラス宣言は `:13`）。**N ≥ 14 の場合、Sonarr の N 行目 = Radarr の N−1 行目。** |
-| `QBittorrentProxySelector.cs` | 3 行目以降は同じ |
-| `QBittorrentFixture.cs` | 順序が入れ替わっているだけで、ずれはない。リポジトリごとに引用 |
+| `QBittorrent.cs`（両方とも 746 行） | **1 対 1 で一致** |
+| `QBittorrentPreferences.cs`、`QBittorrentTorrent.cs`、`QBittorrentState.cs`、`QBittorrentLabel.cs`、`QBittorrentPriority.cs`、`QBittorrentContentLayout.cs` | **バイト単位で同一**、1 対 1 で一致 |
+| `QBittorrentSettings.cs`（両方とも 91 行） | 1 対 1 で一致 |
+| `QBittorrentProxyV2.cs`、`QBittorrentProxyV1.cs` | Sonarr には 13 行目に空行があり、Radarr にはありません（確認済み: Sonarr の `:12` は `// API https://…` コメント、`:13` は空行、`:14` は `public class QBittorrentProxyV2`。Radarr のクラス宣言は `:13`）。**N ≥ 14 について、Sonarr の N 行目 = Radarr の N−1 行目。** |
+| `QBittorrentProxySelector.cs` | 3 行目以降、同じ規則 |
+| `QBittorrentFixture.cs` | 順序が入れ替わっているだけで、ずれてはいません。リポジトリごとに引用します |
 
-パスは両方とも `src/NzbDrone.Core/Download/Clients/QBittorrent/...` です。以下の引用は、特に明記がない限り **Sonarr** の行番号です。完全な差分は §9 にあります。
+パスは両方とも `src/NzbDrone.Core/Download/Clients/QBittorrent/...` です。特に断りがない限り、以下の引用行番号は **Sonarr** のものです。差分の全体は §9 にあります。
 
-ここに書かれているのは qBittorrent 自体についての推測ではありません。すべての記述は *クライアント* がどう動くかを示したものです。qBittorrent 自身の動作に関する記述は `qbittorrent/qBittorrent` master を引用し、.NET や Newtonsoft ランタイムの挙動に関する記述はその旨を明記します。
+ここに書かれているのは、qBittorrent 自体についての推測ではありません。すべて *クライアント* が何をするかについての記述です。qBittorrent 自身の動作に関する記述には `qbittorrent/qBittorrent` master を引用します。.NET や Newtonsoft ランタイムの挙動に関する記述には、その旨を明記します。
 
 ---
-
-(An earlier translation was rejected: length ratio 0.14. Keep the structure exactly.)
-
-（以前の翻訳は却下されました：長さの比率が 0.14 でした。構造はそのまま維持してください。）
 
 ## 0. 通信レベルのルール（最初にハマるところ） {#0-transport-level-rules-these-bite-first}
 

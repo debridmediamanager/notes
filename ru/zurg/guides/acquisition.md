@@ -464,19 +464,9 @@ Acquisition: chose <release> for <title>: results=143 local_refusals=97 radarr_r
 
 ## Проверка *arr, который использует zurg только как клиент загрузки {#checking-an-arr-that-only-uses-zurg-as-its-download-client}
 
-A Sonarr or Radarr pointed at zurg's [SABnzbd](sonarr-radarr.md) or
-[qBittorrent](sonarr-radarr-torrents.md) endpoint does its own searching, and does not
-need a source here. zurg still wants its API key, because three of its settings
-decide whether every import is a free rename or a whole release downloaded
-from the debrid account and written to zurg's disk: Remove Completed on a
-qBittorrent client, the download folder and the root folders on one volume,
-and root folders inside `__magic__`. With the key, zurg turns Remove Completed
-on by itself (see [qbittorrent.md](sonarr-radarr-torrents.md#what-to-put-in-each-field))
-and warns about the other two. See
-[One volume for the download folder and the root folders](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
+Sonarr или Radarr, направленный на endpoint zurg [SABnzbd](sonarr-radarr.md) или [qBittorrent](sonarr-radarr-torrents.md), ищет сам и не нуждается в источнике здесь. zurg всё равно нужен его API-ключ, потому что три настройки решают, будет ли каждый импорт бесплатным переименованием или скачиванием всего релиза с аккаунта debrid и записью на диск zurg: Remove Completed у клиента qBittorrent, папка загрузки и корневые папки на одном томе и корневые папки внутри `__magic__`. С ключом zurg сам включает Remove Completed (см. [qbittorrent.md](sonarr-radarr-torrents.md#what-to-put-in-each-field)) и предупреждает о двух других. См. [Один том для папки загрузки и корневых папок](sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders).
 
-The easiest way to give zurg the key is the banner on the main dashboard,
-described below. Or add it as a source that is switched off:
+Проще всего передать zurg ключ через баннер на главной панели, который описан ниже. Или добавьте его как источник, который выключен:
 
 ```yaml
 acquisition:
@@ -488,40 +478,13 @@ acquisition:
       api_key: YOUR_SONARR_API_KEY
 ```
 
-A Radarr or Sonarr source with `enabled: false` acquires nothing. zurg never
-reads its wanted list and never searches for it. With its `url` and `api_key`
-set, and one of the two endpoints on, zurg only reads the \*arr's root folders,
-remote path mappings and download clients, at start, every ten minutes and as
-soon as the \*arr first calls one of the endpoints. It turns Remove Completed
-on for the \*arr's zurg qBittorrent client when it is off, the one change zurg
-makes, and reports a layout that makes imports copies. Every source with a URL
-and an API key, enabled or not, is checked and corrected the same way. It is
-listed on the acquisition page under **Checked, never searched for**, with
-what zurg changed, the findings go to the log, and `zurg doctor` shows them as
-`imports (<name>)`. `library_path` is not judged for such a source, since
-nothing is placed for it. A source added to config.yml by hand is read at
-start, so restart zurg after adding one that way.
+Источник Radarr или Sonarr с `enabled: false` ничего не получает. zurg никогда не читает его список желаемого и не ищет по нему. Если заданы `url` и `api_key` и включён один из двух endpoints, zurg читает только корневые папки *arr, сопоставления удалённых путей и клиенты загрузки. Делает он это при старте, каждые десять минут и сразу, как только *arr впервые обращается к одному из endpoints. Если Remove Completed выключен у клиента qBittorrent *arr, который принадлежит zurg, он его включает. Это единственное изменение, которое zurg вносит. Он также сообщает о раскладке, из-за которой импорты превращаются в копии. Каждый источник с URL и API-ключом, включённый или нет, проверяется и исправляется так же. Такой источник показан на странице получения в разделе **Checked, never searched for**. Вместе с ним указано, что zurg изменил. Результаты проверки пишутся в лог, а `zurg doctor` показывает их как `imports (<name>)`. Для такого источника `library_path` не проверяется, потому что для него ничего не размещается. Источник, добавленный в config.yml вручную, читается при старте, так что после добавления такого источника перезапустите zurg.
 
-zurg also notices a Sonarr or Radarr it cannot check. Both send their name in
-every request to the endpoints (`Sonarr/4.0.20.3014 (alpine 3.24.1)`), so zurg
-records which ones call it and from which address. When one calls and no
-source of its kind has a URL and an API key, zurg logs one warning, `zurg
-doctor` reports it on its `*arr settings` line, and the main dashboard shows a
-banner with a form for its URL and API key. The URL is filled in with a guess:
-the address the \*arr calls from, on its default port (8989 for Sonarr, 7878
-for Radarr). That address is often a container's own, which zurg may or may
-not reach, so change it to whatever URL reaches the \*arr from where zurg
-runs. The API key is in the \*arr under Settings, General, Security. zurg
-first asks the \*arr for its status with that key, and saves nothing unless it
-answers as the app it was named as. It then adds the source above to
-config.yml with `enabled: false`, keeping everything else in the file as it
-was, and checks it straight away, with no restart. The form shows what zurg
-found and changed. The key is written to config.yml and sent to the \*arr, and
-nowhere else.
+zurg также замечает Sonarr или Radarr, которые он не может проверить. Оба присылают своё имя в каждом запросе к endpoints (`Sonarr/4.0.20.3014 (alpine 3.24.1)`), поэтому zurg запоминает, какие из них к нему обращаются и с какого адреса. Когда кто-то обращается, а ни у одного источника этого типа нет URL и API-ключа, zurg записывает одно предупреждение в лог, `zurg doctor` сообщает об этом в строке `*arr settings`, а главная панель показывает баннер с формой для URL и API-ключа. URL подставляется как догадка: адрес, с которого *arr к нам обращается, на порту по умолчанию (8989 для Sonarr, 7878 для Radarr). Этот адрес часто принадлежит контейнеру, и zurg может до него не достучаться, поэтому замените его на тот URL, по которому *arr достижим оттуда, где запущен zurg. API-ключ находится в *arr в Settings, General, Security. zurg сначала запрашивает у *arr статус с этим ключом и ничего не сохраняет, пока тот не ответит как приложение, под именем которого он представился. Затем он добавляет источник, описанный выше, в config.yml с `enabled: false`, оставляя всё остальное в файле как было, и сразу его проверяет, без перезапуска. Форма показывает, что zurg нашёл и что изменил. Ключ записывается в config.yml и отправляется в *arr и никуда больше.
 
-The banner matches by kind, not by address: an \*arr calls zurg from inside
-its container, on an address that has nothing to do with the URL zurg reaches
-it on, so one Sonarr source with a key silences the banner for every Sonarr.
+Баннер сопоставляет по типу, а не по адресу: *arr обращается к zurg изнутри своего контейнера, по адресу, который никак не связан с URL, по которому zurg до него достучится. Поэтому один источник Sonarr с ключом скрывает баннер для всех Sonarr.
+
+(Предыдущий перевод был отклонён: code spans differ (` reports it on its `). Сохраните структуру точно.)
 
 ## Поиск дублирующихся релизов {#finding-duplicate-releases}
 

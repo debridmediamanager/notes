@@ -79,17 +79,7 @@
 
 ## نقل سجلّ مشاهدة كل شخص {#bring-each-persons-history}
 
-Translate to MSA. Keep link target unchanged, translate link text. Informal friendly tone but MSA.
-
-"Everyone you share with can copy what they watched and rated on another Plex server, each with their own tokens:" -> "يمكن لكل من تشاركه معهم أن ينسخ ما شاهده وقيّمه على خادم Plex آخر، كلٌّ باستخدام رموزه الخاصة:"
-
-Link text "Bring your watch history" -> "استورد سجل المشاهدة الخاص بك"
-
-"Running it changes nobody else's history." -> "تشغيله لا يغيّر سجل المشاهدة لأي شخص آخر."
-
-Keep "Plex" in English. Good.
-
-يمكن لكل من تشاركه معهم أن ينسخ ما شاهده وقيّمه على خادم Plex آخر، كلٌّ باستخدام رموزه الخاصة: [استورد سجل المشاهدة الخاص بك](import-watched.md). تشغيله لا يغيّر سجل المشاهدة لأي شخص آخر.
+يمكن لكل من تشاركه معك أن ينسخ ما شاهده وقيّمه على خادم Plex آخر، وذلك باستخدام رموزه الخاصة: [اجلب سجل مشاهدتك](import-watched.md). تشغيل هذه العملية لا يغيّر سجل أي شخص آخر.
 
 ## كم عدد المشاهدات في وقت واحد {#how-many-at-once}
 
