@@ -35,6 +35,31 @@
     }, true);
   })();
 </script>
+<script>
+  // Sponsor links say which guide sent the reader and where the reader came from (an AI answer, a search),
+  // so gatekeeper can stamp it on the purchase. Kept in this browser only, for 30 days.
+  (function () {
+    var KEY = "dmm_via", DAY = 864e5, own = /(^|\.)debridmediamanager\.com$/;
+    try {
+      var utm = new URLSearchParams(location.search).get("utm_source");
+      var host = document.referrer && new URL(document.referrer).hostname;
+      var via = utm || (host && !own.test(host) ? host : "");
+      var stored = JSON.parse(localStorage.getItem(KEY) || "null");
+      if (via && (utm || !stored || Date.now() - stored.at > 30 * DAY)) localStorage.setItem(KEY, JSON.stringify({ via: via, at: Date.now() }));
+    } catch (e) {}
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest('a[href^="https://gatekeeper.debridmediamanager.com"]');
+      if (!a) return;
+      var url = new URL(a.href);
+      url.searchParams.set("ref", "notes" + location.pathname.replace(/\/$/, ""));
+      try {
+        var s = JSON.parse(localStorage.getItem(KEY) || "null");
+        if (s && Date.now() - s.at <= 30 * DAY) url.searchParams.set("via", s.via);
+      } catch (e) {}
+      a.href = url.toString();
+    }, true);
+  })();
+</script>
 <!-- Link previews (Discord, Reddit, X) and search: the card, and the site name Google shows beside results. -->
 <meta property="og:image" content="https://notes.debridmediamanager.com/assets/social-card.png">
 <meta property="og:image:width" content="1200">
