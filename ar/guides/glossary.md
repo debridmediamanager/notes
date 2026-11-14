@@ -12,14 +12,13 @@
 
 ## المشاهدة مباشرةً من DMM {#watching-straight-from-dmm}
 
-لا حاجة لأي خادم لأي من هذه.
+لا حاجة إلى أي خادم لأي من هذه.
 
-| الاسم | ماذا يفعل |
+| الاسم | ماذا تفعل |
 |---|---|
-| [DMM Cast](https://debridmediamanager.com/stremio) | إضافة لـ Stremio تشغّل الإصدارات من حسابك في debrid أو Easynews |
-| [إضافة DMM لـ Kodi](https://debridmediamanager.com/kodi) | تصفّح وابحث وشغّل من حسابك في debrid أو Easynews داخل Kodi |
+| [DMM Cast](https://debridmediamanager.com/stremio) | إضافة Stremio تشغّل الإصدارات من حسابك في debrid أو Easynews. تعمل أيضًا في Nuvio |
+| [DMM Kodi addon](https://debridmediamanager.com/kodi) | تصفّح وابحث وشغّل من حسابك في debrid أو Easynews داخل Kodi |
 | DMM Watch | زر في DMM يفتح الملف في مشغّلك الخاص، مثل VLC أو Infuse |
-| [DMM Music](https://debridmediamanager.com/music) | شغّل الموسيقى ونزّلها من Real-Debrid في متصفحك |
 
 ## تغذية rex {#feeding-rex}
 
@@ -64,22 +63,22 @@
 
 | الكلمة | معناها |
 |---|---|
-| Release | نسخة واحدة من فيلم أو حلقة أو موسم كما نشرها شخص ما. العنوان عادةً له نسخ كثيرة بجودات مختلفة |
-| Debrid provider | خدمة مدفوعة تنزّل التورنتات نيابةً عنك وتتيح لك بثها: Real-Debrid وAllDebrid وTorBox وPremiumize وOffcloud وDebrid-Link |
-| Cached | المزوّد يملك الإصدار مسبقاً، لذلك يُشغَّل فوراً |
-| Usenet | مكان آخر للحصول على الإصدارات. استخدم حساب Usenet الخاص بك، أو دع TorBox Pro أو Easynews يتولّون ذلك، أو اطلب من DMM إرسال نتيجة إلى Real-Debrid |
-| Easynews | خدمة Usenet مدفوعة لها بحث خاص بها، وتشغّل الملفات مباشرةً عبر الويب |
-| NZB | ملف صغير يحدد مكان إصدار Usenet، مثلما يفعل ملف التورنت مع التورنتات |
-| Indexer | موقع بحث عن الإصدارات. يستخدمه Sonarr وRadarr للعثور على الأشياء |
-| Sonarr, Radarr and Prowlarr | تطبيقات تجلب العناوين لك: Sonarr للمسلسلات وRadarr للأفلام. Prowlarr يجمع الـ indexers الخاصة بها في مكان واحد |
+| Release | نسخة واحدة من فيلم أو حلقة أو موسم كما نشرها أحدهم. عادةً يكون للعنوان الواحد نسخ كثيرة بجودات مختلفة |
+| مزوّد Debrid | خدمة مدفوعة تنزّل التورنتات نيابةً عنك وتتيح لك بثّها: Real-Debrid وAllDebrid وTorBox وPremiumize وOffcloud وDebrid-Link |
+| Cached | المزوّد يملك الإصدار بالفعل، لذا يُشغَّل فوراً |
+| Usenet | مصدر آخر للإصدارات. استخدم حسابك الخاص في Usenet، أو دع TorBox Pro أو Easynews يتولّى الأمر، أو اطلب من DMM إرسال نتيجة إلى Real-Debrid |
+| Easynews | خدمة Usenet مدفوعة لها بحثها الخاص، وتشغّل الملفات مباشرةً عبر الويب |
+| NZB | ملف صغير يحدد مكان إصدار Usenet، تماماً كما يفعل ملف التورنت مع التورنتات |
+| مفهرِس | موقع بحث عن الإصدارات. تستخدمه Sonarr وRadarr للعثور على المحتوى |
+| Sonarr وRadarr وProwlarr | تطبيقات تجلب العناوين نيابةً عنك: Sonarr للمسلسلات وRadarr للأفلام. أما Prowlarr فيجمع المفهرِسات الخاصة بهما في مكان واحد |
 | Seerr | موقع طلبات للعائلة والأصدقاء. Overseerr وJellyseerr يعملان بالطريقة نفسها |
-| Stremio and Kodi | تطبيقات مشغّلات وسائط. الإضافات (Addons) تزوّدها بما تشغّله |
-| DMM API key | مفتاح راعٍ من gatekeeper. الصقه حيث يطلب الدليل، واحتفظ به سرّياً كأنه كلمة مرور |
-| Nightly | أحدث نسخة من zurg أو rex، وتُبنى كل ليلة. نسخ zurg الليلية مخصصة للرعاة |
-| WebDAV | طريقة لمشاركة الملفات عبر الويب. يمكن لـ Infuse وKodi وكثير من مشغّلات التلفاز فتحها |
-| Mount | يجعل مجلد zurg يبدو كقرص محلي، حتى تستطيع Plex أو Jellyfin أو Emby فحصه |
-| rclone | الأداة التي يستخدمها zurg لإنشاء الـ mount. إعداد zurg يحضّرها لك |
-| `.strm` | ملف صغير يحمل رابطاً بدلاً من الفيديو، لمشغّلات مثل Kodi |
-| Source | أي شيء يخبر rex بما لديه ويقدّم الملفات: zurg أو rex-stremio أو إضافة (addon) |
-| Claim | ربط rex بحساب Plex، فيتمكن من عرض العناوين والملصقات وتجد تطبيقات Plex له |
-| Plex Media Server vs Plex apps | الخادم يحتفظ بمكتبتك. التطبيقات على التلفاز وهاتفك تشغّلها. rex يحل محل الخادم، وليس محل التطبيقات |
+| Stremio وNuvio وKodi | تطبيقات لتشغيل الوسائط. الإضافات تزوّدها بما تشغّله. وNuvio يقبل إضافات Stremio |
+| مفتاح DMM API | مفتاح خاص بالداعم من gatekeeper. الصقه حيث يطلبه الدليل، واحفظه بسرية كما تحفظ كلمة المرور |
+| Nightly | أحدث نسخة من zurg أو rex، وتُبنى كل ليلة. نسخ zurg الليلية مخصصة للداعمين |
+| WebDAV | طريقة لمشاركة الملفات عبر الويب. يستطيع Infuse وKodi وكثير من مشغّلات التلفاز فتحها |
+| Mount | يجعل مجلد zurg يبدو كأنه قرص محلي، فتتمكن Plex أو Jellyfin أو Emby من فحصه |
+| rclone | الأداة التي يستخدمها zurg لإنشاء الربط. إعداد zurg يحصل عليها لك |
+| `.strm` | ملف صغير يحمل رابطاً بدلاً من الفيديو، وذلك لمشغّلات مثل Kodi |
+| Source | أي شيء يخبر rex بما لديه ويقدّم الملفات، مثل zurg أو rex-stremio أو إحدى الإضافات |
+| Claim | ربط rex بحساب Plex، ليتمكن من عرض العناوين والملصقات ويجد تطبيقات Plex الخادم |
+| Plex Media Server مقابل تطبيقات Plex | الخادم يحتوي مكتبتك. أما التطبيقات على التلفاز والهاتف فتشغّلها. rex يحل محل الخادم، لا محل التطبيقات |

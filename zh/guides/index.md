@@ -4,10 +4,10 @@
 
 ## 概述 {#general}
 
-- [选择你的方案](choose-your-setup.md)：路线图，以及何时使用 DMM、zurg、rex、Kodi、Stremio 或 Jellyfin/Emby 插件
-- [各组件的作用](glossary.md)：DMM、zurg 和 rex 的每个组件，以及指南中相关术语的一行解释
+- [选择你的设置](choose-your-setup.md)：路线图，以及何时使用 DMM、zurg、rex、Kodi、Stremio、Nuvio 或 Jellyfin/Emby 插件
+- [各部分的作用](glossary.md)：DMM、zurg 和 rex 的每个组件，以及指南中用到的术语，每项一行说明
 - [获取帮助](remote-help.md)：zurg 和 rex 的求助渠道、需要提供的信息，以及赞助者的远程帮助
-- [赞助权益](sponsorship.md)：每项特权及其设置位置，或如何在请求看板上获得 DMM 相关特权
+- [赞助权益](sponsorship.md)：每项权益及其设置位置，或如何在请求板上获得 DMM 相关权益
 
 ## DMM
 

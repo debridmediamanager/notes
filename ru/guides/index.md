@@ -4,10 +4,10 @@
 
 ## Общее {#general}
 
-- [Выберите свою настройку](choose-your-setup.md): схемы маршрутов и когда использовать DMM, zurg, rex, Kodi, Stremio или плагины Jellyfin/Emby
-- [Что делает каждый компонент](glossary.md): одна строка для каждого компонента DMM, zurg и rex и для терминов из руководств
-- [Получение помощи](remote-help.md) по zurg и rex: где спросить, что указать, и удалённая помощь для спонсоров
-- [Что даёт спонсорство](sponsorship.md): все преимущества и где их настроить, или как получить функции DMM через доску запросов
+- [Choose your setup](choose-your-setup.md): маршруты и когда использовать DMM, zurg, rex, Kodi, Stremio, Nuvio или плагины Jellyfin/Emby
+- [What each piece does](glossary.md): одна строка для каждого компонента DMM, zurg и rex и для слов из гайдов
+- [Getting help](remote-help.md) with zurg and rex: where to ask, what to include, and remote help for sponsors
+- [What a sponsorship gives you](sponsorship.md): every perk and where to set it up, or how to earn the DMM ones on the request board
 
 ## DMM
 

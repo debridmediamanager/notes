@@ -4,10 +4,10 @@
 
 ## 一般 {#general}
 
-- [セットアップを選ぶ](choose-your-setup.md): ルートマップと、DMM、zurg、rex、Kodi、Stremio、Jellyfin/Emby プラグインをいつ使うかの説明
-- [各パーツの役割](glossary.md): DMM、zurg、rex の各パーツと、ガイドに出てくる用語を 1 行ずつ説明
-- [zurg と rex のヘルプ](remote-help.md): どこで質問するか、何を書けばよいか、スポンサー向けのリモートヘルプ
-- [スポンサーシップの特典](sponsorship.md): 各特典と設定場所の一覧。DMM の特典は request board で獲得することもできます
+- [作業構成を選ぶ](choose-your-setup.md): DMM、zurg、rex、Kodi、Stremio、Nuvio、Jellyfin/Emby プラグインについて、どの構成でどれを使うかをまとめたルートマップ
+- [各パーツの役割](glossary.md): DMM、zurg、rex の各パーツと、ガイドに出てくる用語の一行解説
+- [zurg と rex のヘルプ](remote-help.md): 質問先、含めるべき情報、スポンサー向けのリモートヘルプ
+- [スポンサーシップの特典](sponsorship.md): すべての特典と設定場所、または DMM 向け特典をリクエストボードで獲得する方法
 
 ## DMM
 

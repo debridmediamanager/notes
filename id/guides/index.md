@@ -4,10 +4,10 @@ Setiap panduan di situs ini, dikelompokkan per proyek.
 
 ## Umum {#general}
 
-- [Pilih setup Anda](choose-your-setup.md): peta rute dan kapan memakai DMM, zurg, rex, Kodi, Stremio atau plugin Jellyfin/Emby
-- [Fungsi tiap bagian](glossary.md): satu baris untuk setiap bagian DMM, zurg dan rex beserta kata-kata yang dipakai di panduan
-- [Mendapatkan bantuan](remote-help.md) untuk zurg dan rex: di mana bertanya, apa yang perlu disertakan, dan bantuan jarak jauh untuk sponsor
-- [Manfaat sponsor](sponsorship.md): setiap keuntungan dan di mana mengaturnya, atau cara mendapatkan keuntungan DMM di papan permintaan
+- [Pilih setup Anda](choose-your-setup.md): peta rute dan kapan memakai DMM, zurg, rex, Kodi, Stremio, Nuvio, atau plugin Jellyfin/Emby
+- [Fungsi setiap bagian](glossary.md): satu baris untuk setiap bagian DMM, zurg, dan rex serta kata-kata dalam panduan
+- [Mendapatkan bantuan](remote-help.md) untuk zurg dan rex: tempat bertanya, apa yang perlu disertakan, dan bantuan jarak jauh untuk sponsor
+- [Manfaat sponsorship](sponsorship.md): setiap keuntungan dan tempat mengaturnya, atau cara mendapatkan keuntungan DMM di request board
 
 ## DMM
 

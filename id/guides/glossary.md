@@ -16,10 +16,9 @@ Tidak perlu server untuk semua ini.
 
 | Name | What it does |
 |---|---|
-| [DMM Cast](https://debridmediamanager.com/stremio) | Addon Stremio yang memutar rilis dari akun debrid atau Easynews kamu |
-| [DMM Kodi addon](https://debridmediamanager.com/kodi) | Jelajahi, cari, dan putar dari akun debrid atau Easynews kamu di dalam Kodi |
-| DMM Watch | Tombol di DMM yang membuka file di pemutar sendiri, seperti VLC atau Infuse |
-| [DMM Music](https://debridmediamanager.com/music) | Putar dan unduh musik dari Real-Debrid langsung di browser |
+| [DMM Cast](https://debridmediamanager.com/stremio) | Addon Stremio yang memutar rilis dari akun debrid atau Easynews kamu. Bisa juga dipakai di Nuvio |
+| [DMM Kodi addon](https://debridmediamanager.com/kodi) | Jelajahi, cari, dan putar dari akun debrid atau Easynews kamu langsung di dalam Kodi |
+| DMM Watch | Tombol di DMM yang membuka file di pemutar kamu sendiri, seperti VLC atau Infuse |
 
 ## Memberi makan rex {#feeding-rex}
 
@@ -62,24 +61,24 @@ Tidak perlu server untuk semua ini.
 
 ## Istilah yang akan kamu temui di panduan {#words-youll-see-in-the-guides}
 
-| Istilah | Artinya |
+| Kata | Artinya |
 |---|---|
-| Release | Satu salinan film, episode atau musim seperti yang dipublikasikan seseorang. Satu judul biasanya punya banyak release, dengan kualitas yang berbeda |
-| Debrid provider | Layanan berbayar yang mengunduh torrent untukmu dan membiarkanmu men-stream-nya: Real-Debrid, AllDebrid, TorBox, Premiumize, Offcloud, Debrid-Link |
+| Release | Satu salinan film, episode, atau season seperti yang dipublikasikan seseorang. Satu judul biasanya punya banyak release, dengan kualitas yang berbeda |
+| Debrid provider | Layanan berbayar yang mengunduh torrent untukmu dan memungkinkanmu men-stream-nya: Real-Debrid, AllDebrid, TorBox, Premiumize, Offcloud, Debrid-Link |
 | Cached | Provider sudah punya release-nya, jadi langsung bisa diputar |
-| Usenet | Tempat lain untuk mendapatkan release. Pakai akun Usenet milikmu sendiri, biarkan TorBox Pro atau Easynews yang mengurusnya, atau minta DMM mengirim hasilnya ke Real-Debrid |
-| Easynews | Layanan Usenet berbayar dengan pencariannya sendiri, yang memutar file langsung lewat web |
-| NZB | File kecil yang memberi tahu di mana release Usenet berada, seperti file torrent untuk torrent |
+| Usenet | Tempat lain untuk mendapatkan release. Pakai akun Usenet sendiri, biarkan TorBox Pro atau Easynews yang mengurusnya, atau minta DMM mengirim hasil ke Real-Debrid |
+| Easynews | Layanan Usenet berbayar dengan pencarian sendiri yang memutar file langsung lewat web |
+| NZB | File kecil yang menunjukkan lokasi release Usenet, seperti file torrent untuk torrent |
 | Indexer | Situs pencarian untuk release. Sonarr dan Radarr memakainya untuk mencari sesuatu |
 | Sonarr, Radarr and Prowlarr | Aplikasi yang mengambilkan judul untukmu: Sonarr untuk serial, Radarr untuk film. Prowlarr menyimpan indexer mereka di satu tempat |
-| Seerr | Situs permintaan untuk keluarga dan teman. Overseerr dan Jellyseerr cara kerjanya sama |
-| Stremio and Kodi | Aplikasi pemutar media. Addon memberi mereka sesuatu untuk diputar |
-| DMM API key | Kunci sponsor dari gatekeeper. Tempel di tempat panduan memintanya, dan jaga kerahasiaannya seperti kata sandi |
+| Seerr | Situs permintaan untuk keluarga dan teman. Overseerr dan Jellyseerr bekerja dengan cara yang sama |
+| Stremio, Nuvio and Kodi | Aplikasi pemutar media. Addon memberi mereka hal-hal untuk diputar. Nuvio mendukung addon Stremio |
+| DMM API key | Kunci sponsor dari gatekeeper. Tempel di tempat yang diminta panduan, dan jaga kerahasiaannya seperti password |
 | Nightly | Build terbaru dari zurg atau rex, dibuat setiap malam. Nightly zurg hanya untuk sponsor |
-| WebDAV | Cara berbagi file lewat web. Infuse, Kodi dan banyak pemutar TV bisa membukanya |
-| Mount | Membuat folder zurg terlihat seperti drive lokal, supaya Plex, Jellyfin atau Emby bisa memindainya |
-| rclone | Alat yang dipakai zurg untuk membuat mount. Setup zurg menyiapkannya untukmu |
-| `.strm` | File kecil yang berisi tautan sebagai pengganti video, untuk pemutar seperti Kodi |
-| Source | Apa pun yang memberi tahu rex apa yang dimilikinya dan menyajikan file-nya: zurg, rex-stremio atau addon |
-| Claim | Memasang rex ke akun Plex, supaya rex bisa menampilkan judul dan poster, dan aplikasi Plex bisa menemukannya |
-| Plex Media Server vs Plex apps | Server menyimpan pustakamu. Aplikasi di TV dan ponselmu yang memutarnya. rex menggantikan server, bukan aplikasinya |
+| WebDAV | Cara berbagi file lewat web. Infuse, Kodi, dan banyak pemutar TV bisa membukanya |
+| Mount | Membuat folder zurg terlihat seperti drive lokal, sehingga Plex, Jellyfin, atau Emby bisa memindainya |
+| rclone | Alat yang dipakai zurg untuk membuat mount. Setup zurg mengurusnya untukmu |
+| `.strm` | File kecil yang menyimpan tautan sebagai pengganti video, untuk pemutar seperti Kodi |
+| Source | Apa pun yang memberi tahu rex apa yang dimilikinya dan menyajikan file-filenya: zurg, rex-stremio, atau sebuah addon |
+| Claim | Memasang rex ke akun Plex, supaya bisa menampilkan judul dan poster, dan aplikasi Plex bisa menemukannya |
+| Plex Media Server vs Plex apps | Server menyimpan library-mu. Aplikasi di TV dan ponselmu yang memutarnya. rex menggantikan server, bukan aplikasinya |

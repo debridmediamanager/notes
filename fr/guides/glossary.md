@@ -14,12 +14,11 @@ Les noms ne disent pas à quoi chacun sert, donc voici une ligne pour chacun. To
 
 Aucun serveur n'est nécessaire pour aucun de ces outils.
 
-| Name | What it does |
+| Nom | Ce qu'il fait |
 |---|---|
-| [DMM Cast](https://debridmediamanager.com/stremio) | Un addon Stremio qui lit les releases de votre compte debrid ou Easynews |
-| [DMM Kodi addon](https://debridmediamanager.com/kodi) | Parcourez, recherchez et lisez depuis votre compte debrid ou Easynews directement dans Kodi |
+| [DMM Cast](https://debridmediamanager.com/stremio) | Un addon Stremio qui lit les releases de votre compte debrid ou Easynews. Il fonctionne aussi dans Nuvio |
+| [DMM Kodi addon](https://debridmediamanager.com/kodi) | Parcourez, recherchez et lisez les contenus de votre compte debrid ou Easynews directement dans Kodi |
 | DMM Watch | Un bouton sur DMM qui ouvre un fichier dans votre propre lecteur, comme VLC ou Infuse |
-| [DMM Music](https://debridmediamanager.com/music) | Lisez et téléchargez de la musique depuis Real-Debrid directement dans votre navigateur |
 
 ## Alimenter rex {#feeding-rex}
 
@@ -64,22 +63,22 @@ Aucun serveur n'est nécessaire pour aucun de ces outils.
 
 | Mot | Ce que ça veut dire |
 |---|---|
-| Release | Une copie d'un film, d'un épisode ou d'une saison, telle que quelqu'un l'a publiée. Un titre en a souvent plusieurs, en différentes qualités |
-| Debrid provider | Un service payant qui télécharge les torrents à ta place et te permet de les streamer : Real-Debrid, AllDebrid, TorBox, Premiumize, Offcloud, Debrid-Link |
-| En cache | Le fournisseur a déjà la release, donc elle se lance tout de suite |
-| Usenet | Un autre endroit où trouver des releases. Utilise ton propre compte Usenet, laisse TorBox Pro ou Easynews s'en charger, ou demande à DMM d'envoyer un résultat à Real-Debrid |
+| Release | Une copie d'un film, d'un épisode ou d'une saison telle que quelqu'un l'a publiée. Un titre en a souvent plusieurs, en différentes qualités |
+| Fournisseur debrid | Un service payant qui télécharge des torrents pour toi et te permet de les streamer : Real-Debrid, AllDebrid, TorBox, Premiumize, Offcloud, Debrid-Link |
+| Cached | Le fournisseur a déjà la release, donc elle se lance tout de suite |
+| Usenet | Un autre endroit où trouver des releases. Utilise ton propre compte Usenet, laisse TorBox Pro ou Easynews s'en charger, ou fais envoyer un résultat à Real-Debrid par DMM |
 | Easynews | Un service Usenet payant avec sa propre recherche, qui lit les fichiers directement sur le web |
 | NZB | Un petit fichier qui indique où se trouve une release Usenet, comme un fichier torrent le fait pour les torrents |
-| Indexer | Un site de recherche de releases. Sonarr et Radarr s'en servent pour trouver des trucs |
-| Sonarr, Radarr et Prowlarr | Des applis qui récupèrent des titres pour toi : Sonarr pour les séries, Radarr pour les films. Prowlarr garde leurs indexers au même endroit |
+| Indexeur | Un site de recherche de releases. Sonarr et Radarr s'en servent pour trouver des choses |
+| Sonarr, Radarr et Prowlarr | Des applis qui récupèrent des titres pour toi : Sonarr pour les séries, Radarr pour les films. Prowlarr garde leurs indexeurs au même endroit |
 | Seerr | Un site de demandes pour la famille et les amis. Overseerr et Jellyseerr fonctionnent de la même façon |
-| Stremio et Kodi | Des applis lecteurs multimédias. Les addons leur fournissent des contenus à lire |
-| Clé API DMM | La clé d'un sponsor, fournie par gatekeeper. Colle-la là où un guide le demande, et garde-la privée comme un mot de passe |
-| Nightly | La version la plus récente de zurg ou rex, générée chaque nuit. Les nightlies de zurg sont réservées aux sponsors |
-| WebDAV | Une façon de partager des fichiers sur le web. Infuse, Kodi et beaucoup de lecteurs TV peuvent l'ouvrir |
-| Mount | Fait ressembler le dossier de zurg à un disque local, pour que Plex, Jellyfin ou Emby puissent le scanner |
-| rclone | L'outil que zurg utilise pour créer le mount. La configuration de zurg l'installe pour toi |
-| `.strm` | Un petit fichier qui contient un lien à la place de la vidéo, pour des lecteurs comme Kodi |
-| Source | Tout ce qui dit à rex ce qu'il a et qui sert les fichiers : zurg, rex-stremio ou un addon |
-| Claim | Relier rex à un compte Plex, pour qu'il affiche les titres et les affiches et que les applis Plex puissent le trouver |
+| Stremio, Nuvio et Kodi | Des applis lecteurs multimédias. Les addons leur fournissent des contenus à lire. Nuvio prend les addons Stremio |
+| Clé API DMM | Une clé de sponsor fournie par gatekeeper. Colle-la là où un guide le demande, et garde-la privée comme un mot de passe |
+| Nightly | La build la plus récente de zurg ou rex, générée chaque nuit. Les nightlies de zurg sont réservées aux sponsors |
+| WebDAV | Une façon de partager des fichiers via le web. Infuse, Kodi et beaucoup de lecteurs TV peuvent l'ouvrir |
+| Montage | Fait ressembler le dossier de zurg à un disque local, pour que Plex, Jellyfin ou Emby puissent le scanner |
+| rclone | L'outil que zurg utilise pour faire le montage. La configuration de zurg l'installe pour toi |
+| `.strm` | Un petit fichier qui contient un lien à la place de la vidéo, pour les lecteurs comme Kodi |
+| Source | Tout ce qui indique à rex ce qu'il a et qui sert les fichiers : zurg, rex-stremio ou un addon |
+| Claim | Associer rex à un compte Plex, pour qu'il puisse afficher les titres et les affiches, et que les applis Plex puissent le trouver |
 | Plex Media Server vs applis Plex | Le serveur contient ta bibliothèque. Les applis sur ta TV et ton téléphone la lisent. rex remplace le serveur, pas les applis |

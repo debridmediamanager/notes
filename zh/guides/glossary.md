@@ -12,14 +12,13 @@
 
 ## 直接从 DMM 观看 {#watching-straight-from-dmm}
 
-无需服务器即可使用以下所有功能。
+不需要服务器也能用这些工具。
 
-| Name | What it does |
+| 名称 | 功能 |
 |---|---|
-| [DMM Cast](https://debridmediamanager.com/stremio) | 一个 Stremio 插件,可播放来自你的 debrid 或 Easynews 账户的资源 |
-| [DMM Kodi addon](https://debridmediamanager.com/kodi) | 在 Kodi 中浏览、搜索并播放你的 debrid 或 Easynews 账户内容 |
-| DMM Watch | DMM 上的一个按钮,可在你自己的播放器(如 VLC 或 Infuse)中打开文件 |
-| [DMM Music](https://debridmediamanager.com/music) | 在浏览器中播放并下载来自 Real-Debrid 的音乐 |
+| [DMM Cast](https://debridmediamanager.com/stremio) | 一个 Stremio 插件，可以播放你 debrid 或 Easynews 账户中的资源。在 Nuvio 中也能用 |
+| [DMM Kodi addon](https://debridmediamanager.com/kodi) | 在 Kodi 中浏览、搜索并播放你 debrid 或 Easynews 账户中的内容 |
+| DMM Watch | DMM 上的一个按钮，可以用你自己的播放器打开文件，比如 VLC 或 Infuse |
 
 ## 为 rex 提供内容 {#feeding-rex}
 
@@ -64,22 +63,22 @@
 
 | 词语 | 含义 |
 |---|---|
-| Release | 某部电影、某一集或某一季的一个发布版本，由某人发布。一个标题通常有很多个，画质各不相同 |
-| Debrid provider | 一种付费服务，替你下载种子并让你在线播放：Real-Debrid、AllDebrid、TorBox、Premiumize、Offcloud、Debrid-Link |
-| Cached | 服务商已经有这个 release 了，所以能立即播放 |
-| Usenet | 另一种获取 release 的途径。你可以用自己的 Usenet 账号，让 TorBox Pro 或 Easynews 来处理，或者让 DMM 把结果发送到 Real-Debrid |
-| Easynews | 一种付费 Usenet 服务，自带搜索功能，文件可以直接通过网页播放 |
-| NZB | 一个小文件，记录了 Usenet release 的位置，就像种子文件对于 BT 下载一样 |
-| Indexer | 用于搜索 release 的网站。Sonarr 和 Radarr 用它来查找内容 |
-| Sonarr、Radarr 和 Prowlarr | 帮你自动获取内容的应用：Sonarr 管剧集，Radarr 管电影。Prowlarr 把它们的 indexer 集中在一个地方管理 |
-| Seerr | 供家人和朋友提交请求的网站。Overseerr 和 Jellyseerr 的用法相同 |
-| Stremio 和 Kodi | 媒体播放器应用。插件（addon）为它们提供可播放的内容 |
-| DMM API key | 来自 gatekeeper 的赞助者密钥。在指南要求的地方粘贴进去，并像密码一样保密 |
-| Nightly | zurg 或 rex 的最新构建版本，每晚生成一次。zurg 的 nightly 版本仅供赞助者使用 |
-| WebDAV | 一种通过网络共享文件的方式。Infuse、Kodi 以及许多电视播放器都能打开它 |
-| Mount | 让 zurg 的文件夹看起来像本地硬盘，这样 Plex、Jellyfin 或 Emby 就能扫描它 |
-| rclone | zurg 用来创建挂载的工具。zurg 的安装程序会自动为你配置好 |
-| `.strm` | 一个小文件，内容是一个链接，代替视频文件，供 Kodi 等播放器使用 |
-| Source | 任何告诉 rex 它有哪些内容并提供文件的东西：zurg、rex-stremio 或某个插件 |
-| Claim | 把 rex 绑定到一个 Plex 账号上，这样它就能显示标题和海报，Plex 应用也能找到它 |
-| Plex Media Server vs Plex apps | 服务器保存你的媒体库，电视和手机上的应用负责播放。rex 替代的是服务器，而不是应用 |
+| 发布版本 | 某部电影、剧集或季由某人发布的一个副本。一个标题通常有许多不同画质的版本 |
+| Debrid 服务商 | 一项付费服务，替你下载种子并让你串流播放：Real-Debrid、AllDebrid、TorBox、Premiumize、Offcloud、Debrid-Link |
+| 已缓存 | 服务商已经有这个发布版本，所以能立即播放 |
+| Usenet | 获取发布版本的另一个途径。你可以使用自己的 Usenet 账号，让 TorBox Pro 或 Easynews 来处理，或者让 DMM 把结果发送到 Real-Debrid |
+| Easynews | 一项付费 Usenet 服务，有自己的搜索功能，可以直接通过网页播放文件 |
+| NZB | 一个小文件，记录 Usenet 发布版本的位置，就像种子文件对于 BitTorrent 那样 |
+| 索引站 | 用于搜索发布版本的网站。Sonarr 和 Radarr 用它来查找内容 |
+| Sonarr、Radarr 和 Prowlarr | 替你获取影视内容的应用：Sonarr 管剧集，Radarr 管电影。Prowlarr 把它们的索引站集中在一处管理 |
+| Seerr | 供家人和朋友提交求片请求的网站。Overseerr 和 Jellyseerr 的工作方式相同 |
+| Stremio、Nuvio 和 Kodi | 媒体播放器应用。插件（Addon）为它们提供可播放的内容。Nuvio 支持 Stremio 插件 |
+| DMM API 密钥 | 来自 gatekeeper 的赞助者密钥。在指南要求的地方粘贴进去，并像密码一样妥善保密 |
+| 每夜构建版 | zurg 或 rex 的最新构建版，每晚生成。zurg 的每夜构建版仅供赞助者使用 |
+| WebDAV | 一种通过网络共享文件的方式。Infuse、Kodi 和许多电视播放器都能打开它 |
+| 挂载 | 让 zurg 的文件夹看起来像一个本地磁盘，这样 Plex、Jellyfin 或 Emby 就能扫描它 |
+| rclone | zurg 用来创建挂载的工具。zurg 的安装程序会替你把它装好 |
+| `.strm` | 一个小文件，里面存放的是链接而不是视频本身，供 Kodi 等播放器使用 |
+| 数据源 | 任何告诉 rex 它有哪些内容并提供文件的东西：zurg、rex-stremio 或某个插件 |
+| 认领 | 把 rex 认领到 Plex 账号上，这样它就能显示标题和海报，Plex 应用也能找到它 |
+| Plex Media Server 与 Plex 应用 | 服务器保存你的媒体库，电视和手机上的应用负责播放。rex 替代的是服务器，不是应用 |

@@ -16,10 +16,9 @@ No server needed for any of these.
 
 | Name | What it does |
 |---|---|
-| [DMM Cast](https://debridmediamanager.com/stremio) | A Stremio addon that plays releases from your debrid or Easynews account |
+| [DMM Cast](https://debridmediamanager.com/stremio) | A Stremio addon that plays releases from your debrid or Easynews account. It works in Nuvio too |
 | [DMM Kodi addon](https://debridmediamanager.com/kodi) | Browse, search and play from your debrid or Easynews account inside Kodi |
 | DMM Watch | A button on DMM that opens a file in your own player, like VLC or Infuse |
-| [DMM Music](https://debridmediamanager.com/music) | Play and download music from Real-Debrid in your browser |
 
 ## Feeding rex
 
@@ -73,7 +72,7 @@ No server needed for any of these.
 | Indexer | A search site for releases. Sonarr and Radarr use one to find things |
 | Sonarr, Radarr and Prowlarr | Apps that fetch titles for you: Sonarr for shows, Radarr for films. Prowlarr keeps their indexers in one place |
 | Seerr | A request site for family and friends. Overseerr and Jellyseerr work the same way |
-| Stremio and Kodi | Media player apps. Addons give them things to play |
+| Stremio, Nuvio and Kodi | Media player apps. Addons give them things to play. Nuvio takes Stremio addons |
 | DMM API key | A sponsor's key from gatekeeper. Paste it where a guide asks, and keep it private like a password |
 | Nightly | The newest build of zurg or rex, made every night. zurg's nightlies are for sponsors |
 | WebDAV | A way to share files over the web. Infuse, Kodi and many TV players can open it |

@@ -4,10 +4,10 @@ Chaque guide de ce site, par projet.
 
 ## Général {#general}
 
-- [Choisir votre configuration](choose-your-setup.md) : cartes des parcours et quand utiliser DMM, zurg, rex, Kodi, Stremio ou les plugins Jellyfin/Emby
-- [Ce que fait chaque élément](glossary.md) : une ligne pour chaque élément de DMM, zurg et rex et pour les mots utilisés dans les guides
+- [Choisir votre configuration](choose-your-setup.md) : schémas de routage et quand utiliser DMM, zurg, rex, Kodi, Stremio, Nuvio ou les plugins Jellyfin/Emby
+- [Le rôle de chaque élément](glossary.md) : une ligne pour chaque élément de DMM, zurg et rex, ainsi que les termes utilisés dans les guides
 - [Obtenir de l'aide](remote-help.md) pour zurg et rex : où demander, quoi inclure, et l'aide à distance pour les sponsors
-- [Ce que vous apporte un sponsoring](sponsorship.md) : chaque avantage et où le configurer, ou comment obtenir les avantages DMM via le tableau des demandes
+- [Ce que vous apporte un sponsoring](sponsorship.md) : chaque avantage et où le configurer, ou comment gagner ceux de DMM sur le tableau des demandes
 
 ## DMM
 
