@@ -134,6 +134,7 @@ To let family watch with their own Plex accounts, see [Share rex with family and
 | The server isn't in the Plex app | Sign the Plex app in to the same account you used in Step 4, and keep both devices on the same home network |
 | The library is empty | The first sync is still running: wait until **Status** shows a number of titles |
 | **Sign in needed** under an addon | Press its **Sign in** button and enter the code |
+| **Needs an update** under an addon | This version of the app can no longer run that copy of the addon. Refresh its repository and press **Update**. Its titles stay meanwhile |
 | **That isn't a repository link. Try github.com/user/repo.** | Type the repository's link, such as `github.com/user/repo` |
 | **no public git repository there (it asks for a login)** | The link is wrong or the repository is private. Check it in a browser |
 | rex stops when the screen is off | Redo Step 3's background setting, and see [Don't kill my app](https://dontkillmyapp.com/) |
