@@ -8,7 +8,7 @@ order: 93
 
 rex is a media server for the Plex apps that owns no files. rex for Android runs it on a phone, tablet, Android TV, Google TV or Fire TV, with no computer. The Plex apps on your devices find it like any Plex server and play from it.
 
-What it plays comes from **addons**. It starts with the Internet Archive's public domain films. More addons, such as your Stremio addons, YouTube and Spotify, install from inside the app.
+What it plays comes from **addons**. It starts with the Internet Archive's public domain films. More addons, such as your Stremio addons, YouTube and Spotify, install from inside the app once you add their repository.
 
 rex for Android is free. Want your debrid accounts and Usenet in it too? zurg+rex, a Plex server on your phone with zurg built in, comes with a sponsorship: see [zurg+rex for Android](../zurg/guides/android.md).
 
@@ -82,11 +82,10 @@ The Internet Archive's first sync takes a while: about half an hour on our test 
 
 **Addons** lists what you installed. Each shows its titles and when it last synced. Its buttons are **Sync now**, **Settings**, **Log** and **Remove**; on a phone, swipe the row of buttons sideways to see them all. The **Enabled** switch turns an addon off without removing it.
 
-Addons come from **repositories**: git repositories that hold addons. The app starts with [rex-addons](https://github.com/debridmediamanager/rex-addons) added, which offers:
+Addons come from **repositories**: git repositories that hold addons. The app starts with [rex-addons](https://github.com/debridmediamanager/rex-addons) added, which offers Internet Archive's public domain films, installed from the start. For more, add [rex-community-addons](https://github.com/debridmediamanager/rex-community-addons) (see **Add a repository** below), which offers:
 
 | Addon | What it brings |
 |---|---|
-| Internet Archive | Public domain films. Installed from the start |
 | Stremio addons | Your Stremio addons' film and series catalogs, played from the streams your stream addons give |
 | YouTube | Your YouTube playlists. You sign in with a code |
 | Spotify | Your Spotify library as music for Plex and Plexamp. Needs the YouTube addon, signed in |
