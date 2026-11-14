@@ -27,25 +27,27 @@ Anfragen aus Seerr, Overseerr oder Jellyseerr können auf derselben Liste landen
 
 ## Einer Liste folgen {#following-a-list}
 
-Füge die Seite einer Trakt-, MDBList- oder TMDB-Liste auf deiner [Wunschliste](https://debridmediamanager.com/wanted) ein
-und drücke auf **Follow**. Jeder Film und jede Serie darin wird gewünscht, und DMM liest die Liste alle sechs Stunden neu ein. Was später hinzukommt, wird also auch gewünscht.
-Diese Seiten werden unterstützt:
+Füge die Seite einer Trakt-, MDBList-, TMDB- oder Simkl-Liste auf deiner [Wunschliste](https://debridmediamanager.com/wanted) ein
+und drücke **Follow**. Jeder Film und jede Serie darauf wird gewünscht, und DMM liest die Liste alle sechs Stunden neu, daher wird auch alles gewünscht, was später hinzukommt. Unterstützte Seiten:
 
 - `https://trakt.tv/users/<user>/lists/<list>` und `https://trakt.tv/lists/<id>`
-- `https://trakt.tv/users/<user>/watchlist`, sofern dieses Trakt-Profil öffentlich ist
+- `https://trakt.tv/users/<user>/watchlist`, falls dieses Trakt-Profil öffentlich ist
 - `https://mdblist.com/lists/<user>/<list>`
-- `https://www.themoviedb.org/list/<id>`, sofern diese TMDB-Liste öffentlich ist
+- `https://www.themoviedb.org/list/<id>`, falls diese TMDB-Liste öffentlich ist
+- `https://simkl.com/<user>/list/<id>`, eine deiner eigenen Simkl-Listen, während du bei DMM bei Simkl angemeldet bist
 
-Auf den eigenen Trakt-Seiten von DMM haben deine Watchlist und jede deiner Listen einen Button **Follow with Want**, der dasselbe macht.
+Auf DMMs eigenen Trakt-Seiten haben deine Watchlist und jede deiner Listen einen Button **Follow with Want**, der dasselbe tut. Dasselbe gilt für jede deiner Listen unter **Simkl custom lists** auf [DMMs Simkl-Seite](https://debridmediamanager.com/simkl/mylists), wo du dich bei Simkl anmeldest.
 
-Eine IMDb-, Letterboxd-, Rotten-Tomatoes- oder Plex-Watchlist: Erstelle auf mdblist.com aus deren URL eine [externe Liste](https://docs.mdblist.com/docs/external_lists) und folge dieser. MDBList hält sie mit der Quelle synchron.
+Simkl beantwortet nur angemeldete Anfragen, daher liest DMM eine Simkl-Liste mit deiner Simkl-Anmeldung bei DMM, und Simkl zeigt Listenelemente nur PRO- und VIP-Mitgliedern. Wenn du dich bei DMM von Simkl abmeldest, wird die Liste nicht mehr aktualisiert. Melde dich dann wieder an und folge der Liste erneut.
+
+Eine IMDb-, Letterboxd-, Rotten-Tomatoes- oder Plex-Watchlist: Erstelle auf mdblist.com aus ihrer URL eine [externe Liste](https://docs.mdblist.com/docs/external_lists) und folge dieser. MDBList hält sie mit der Quelle synchron.
 
 Was Folgen bewirkt:
 
-- Eine Serie wird komplett gewünscht, inklusive neuer Staffeln.
-- Nur Titel, die seit dem letzten Einlesen neu auf der Liste stehen, werden hinzugefügt. Ein Titel, den du von deiner Wunschliste entfernst, bleibt entfernt, und ein Titel, der die Liste verlässt, bleibt gewünscht. **Unfollow** behält, was die Liste hinzugefügt hat.
-- Die Seite zeigt jede Liste mit der Anzahl ihrer Titel, der Anzahl der bisher hinzugefügten Titel und dem Zeitpunkt des letzten Einlesens. **Read again** liest sie jetzt ein. Titel ohne IMDb-ID werden ausgelassen, und die Anzahl zeigt, wie viele es sind.
-- Deine Liste hält 10.000 Titel, die noch geholt werden müssen: jede Serie und jeder Film, den zurg noch nicht geholt hat oder auf ein Upgrade wartet. Bereits von zurg geholte Filme zählen nicht mit. Ein Titel, der nicht mehr hineinpasst, wird bei einem späteren Einlesen hinzugefügt, sobald wieder Platz ist.
+- Eine Serie wird komplett gewünscht, einschließlich neuer Staffeln.
+- Nur Titel, die seit dem letzten Lesen neu auf der Liste stehen, werden hinzugefügt. Ein Titel, den du von deiner Wunschliste entfernst, bleibt entfernt, und ein Titel, der die Liste verlässt, bleibt gewünscht. **Unfollow** behält, was die Liste hinzugefügt hat.
+- Die Seite zeigt jede Liste mit der Anzahl ihrer Titel, der Anzahl der bisher hinzugefügten und dem Zeitpunkt des letzten Lesens. **Read again** liest sie jetzt erneut. Titel ohne IMDb-ID werden ausgelassen, und die Anzahl zeigt, wie viele es sind.
+- Deine Wunschliste hat Platz für 10.000 Titel, die noch abgerufen werden müssen: jede Serie und jeder Film, den zurg noch nicht abgerufen hat oder der auf ein Upgrade wartet. Bereits von zurg abgerufene Filme zählen nicht. Ein Titel, der nicht mehr hineinpasst, wird bei einem späteren Lesen hinzugefügt, sobald wieder Platz ist.
 
 ## Von Radarr oder Sonarr umsteigen {#moving-from-radarr-or-sonarr}
 

@@ -55,21 +55,21 @@ Tekan **Library** di halaman utama. Di sana tercantum semua yang ada di akun yan
 
 ## Langkah selanjutnya {#where-to-go-next}
 
-- [DMM di Stremio](stremio.md): tonton apa yang kamu temukan di Stremio dengan addon DMM Cast.
+- [DMM di Stremio](stremio.md): tonton apa pun yang kamu temukan di Stremio lewat addon DMM Cast.
 - [Daftar hash](hashlists.md): tambahkan seluruh library bersama ke milikmu, atau bagikan milikmu sendiri.
-- [TorBox di DMM](torbox.md): paket TorBox mana yang melakukan apa di DMM, dan cara mengirim rilis Usenet ke TorBox Pro.
-- ["Torrent is being downloaded to debrid"](../guides/torrent-being-downloaded-to-debrid.md): apa arti layar itu di Stremio dan bagaimana DMM menunjukkan mana yang sudah cached.
+- [TorBox di DMM](torbox.md): paket TorBox mana yang bisa apa di DMM, dan cara mengirim rilis Usenet ke TorBox Pro.
+- ["Torrent is being downloaded to debrid"](../guides/torrent-being-downloaded-to-debrid.md): arti layar itu di Stremio dan cara DMM menunjukkan apa yang sudah ter-cache.
 - [Tombol DMM di Safari](safari.md): ekstensi browser menambahkan tombol DMM ke IMDb, Trakt, dan situs film serta TV lainnya.
 
-DMM juga melayani proyek-proyek lainnya:
+DMM juga melayani proyek-proyek lain:
 
-- **zurg** bertanya ke DMM film atau episode mana yang sesuai dengan setiap file. Sponsor mendapatkan API key DMM dari [gatekeeper](https://gatekeeper.debridmediamanager.com/). Tanpa itu, zurg mengandalkan nama file dan lebih sedikit judul yang cocok. [rex dengan zurg](../rex/with-zurg.md#why-dmm-places-the-files) menjelaskan perbedaannya.
-- **Sonarr Radarr and Prowlarr** bisa mencari di DMM sebagai indexer torrent Torznab atau indexer Usenet Newznab. Keduanya butuh sponsorship yang aktif dan API key DMM. Atur keduanya di halaman [Torznab](https://debridmediamanager.com/torznab) dan [Newznab](https://debridmediamanager.com/newznab).
-- **Your wanted list**: tekan **Want** atau ikuti daftar Trakt, MDBList, atau TMDB. zurg akan mengambil daftar itu dan episode baru saat tayang. Butuh sponsorship. Lihat [Daftar keinginan DMM](../zurg/guides/dmm-wanted.md).
-- **Seerr Overseerr and Jellyseerr** bisa memakai DMM sebagai Radarr dan Sonarr. Permintaan kemudian masuk ke daftar yang diinginkan agar zurg mengambilnya. Butuh sponsorship. Lihat [Seerr lewat DMM](seerr.md).
+- **zurg** bertanya ke DMM film atau episode apa yang ada di setiap file. Sponsor mendapatkan kunci API DMM dari [gatekeeper](https://gatekeeper.debridmediamanager.com/). Tanpa kunci itu, zurg mengandalkan nama file dan lebih sedikit judul yang cocok. [rex dengan zurg](../rex/with-zurg.md#why-dmm-places-the-files) menjelaskan perbedaannya.
+- **Sonarr Radarr dan Prowlarr** bisa mencari di DMM sebagai indexer torrent Torznab atau indexer Usenet Newznab. Keduanya membutuhkan sponsorship yang aktif dan kunci API DMM. Atur keduanya di halaman [Torznab](https://debridmediamanager.com/torznab) dan [Newznab](https://debridmediamanager.com/newznab).
+- **Daftar keinginanmu**: tekan **Want** atau ikuti daftar Trakt, MDBList, TMDB, atau Simkl. zurg akan mengambil daftar itu dan episode baru saat tayang. Perlu sponsorship. Lihat [Daftar keinginan DMM](../zurg/guides/dmm-wanted.md).
+- **Seerr Overseerr dan Jellyseerr** bisa memakai DMM sebagai Radarr dan Sonarr. Permintaan kemudian masuk ke daftar keinginanmu agar zurg mengambilnya. Perlu sponsorship. Lihat [Seerr lewat DMM](seerr.md).
 - **rex-direct** memberi rex yang sudah diklaim alamat dan sertifikatnya sendiri. Lihat [rex-direct](../rex/any-source.md#rex-direct).
 
-Semua yang dibuka oleh sponsorship dan di mana setiap hal diatur ada di [Apa yang didapat dari sponsor](../guides/sponsorship.md).
+Semua yang dibuka oleh sponsorship dan tempat setiap hal diatur ada di [Apa yang didapat dari sponsor](../guides/sponsorship.md).
 
 ## Ketika ada yang salah {#when-something-is-wrong}
 

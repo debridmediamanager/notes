@@ -27,18 +27,18 @@ DMMは無料です。スポンサーからの支援で、ホスティング費�
 
 | 得られるもの | 場所 |
 |---|---|
-| zurg が新しいエピソードやアップグレードを取得するウォンテッドリスト。DMM、Kodi、Trakt、MDBList と TMDB のリスト、または Radarr か Sonarr のバックアップから埋められます | [DMM ウォンテッドリスト](../zurg/guides/dmm-wanted.md) |
+| zurg が新しいエピソードやアップグレードを取得する ウォンテッドリスト。DMM、Kodi、Trakt、MDBList、TMDB、Simkl のリスト、または Radarr か Sonarr のバックアップから入力できます | [DMM ウォンテッドリスト](../zurg/guides/dmm-wanted.md) |
 | Seerr、Overseerr、Jellyseerr からのリクエストがウォンテッドリストに入ります | [DMM 経由の Seerr](../dmm/seerr.md) |
-| Easynews の結果をワンクリックで zurg に送れます | 映画やシリーズのページにある DMM の Easynews の結果 |
-| DMM を Usenet 用の Newznab インデクサーとして使えます | DMM の [Newznab ページ](https://debridmediamanager.com/newznab) |
-| DMM を Torznab インデクサーとして使えます。Real-Debrid、AllDebrid、Debrid-Link、TorBox、Premiumize、Offcloud のキャッシュ済みのみのフィードが使えます。TorBox、Premiumize、Offcloud では連携したサービスキーも必要です | DMM の [Torznab ページ](https://debridmediamanager.com/torznab)。TorBox、Premiumize、Offcloud は連携したサービスキーも必要です |
-| デブリッドと Usenet のライブラリ用の Jellyfin プラグインが 7 つ、マウントなしのデブリッドライブラリ用の Emby プラグインが 6 つ | DMM の [Jellyfin](https://debridmediamanager.com/jellyfin) と [Emby](https://debridmediamanager.com/emby) のページ |
-| タイトルごとの他のストリームが Stremio Cast と Kodi で 5 つではなく 10 あります | DMM の Real-Debrid、TorBox、AllDebrid の Settings。ほかのサービスは各プロバイダーの Cast ページ |
-| NZB アップロードが優先され、1 日あたりの Usenet 容量が 300 GB ではなく 2 TB になります | DMM の Usenet タブ |
-| Sonarr と Radarr も同じ優先度と容量になります | DMM の [SABnzbd ページ](https://debridmediamanager.com/sabnzbd) で、Password に DMM の API キーを入力 |
-| Real-Debrid へのトレントのアップロードが 1 つではなく 3 つ同時にできます | DMM の検索結果とライブラリにあるアップロードボタン |
-| DMM Wanted に追加ボタンと Kodi 内の Wanted フォルダ | DMM の [Kodi ページ](https://debridmediamanager.com/kodi) で Kodi をペアリング |
-| リリース名、キャッシュ確認、メディア詳細、メタデータ用の DMM API | [APIドキュメント](https://debridmediamanager.com/api-docs) |
+| 映画やシリーズのページにある Easynews の結果を、ワンクリックで zurg に送れます | DMM の映画・シリーズページにある Easynews の結果 |
+| Usenet 用の Newznab インデクサーとして DMM を使えます | DMM の [Newznab ページ](https://debridmediamanager.com/newznab) |
+| キャッシュ済みのみのフィードを使って、Real-Debrid、AllDebrid、Debrid-Link、TorBox、Premiumize、Offcloud 向けの Torznab インデクサーとして DMM を使えます | DMM の [Torznab ページ](https://debridmediamanager.com/torznab)。TorBox、Premiumize、Offcloud では、紐づけたサービスキーも必要です |
+| マウントなしで、デブリッドと Usenet のライブラリ用の Jellyfin プラグイン 7 種と、デブリッドのライブラリ用の Emby プラグイン 6 種を使えます | DMM の [Jellyfin ページ](https://debridmediamanager.com/jellyfin)と [Emby ページ](https://debridmediamanager.com/emby) |
+| Stremio Cast と Kodi で、1 タイトルあたりの他のストリームが 5 本ではなく 10 本になります | Real-Debrid、TorBox、AllDebrid は DMM の Settings。それ以外は各プロバイダーの Cast ページ |
+| NZB のアップロードが優先され、Usenet の上限が 1 日 300 GB から 2 TB になります | DMM の Usenet タブ |
+| Sonarr と Radarr にも同じ優先度と上限が適用されます | DMM の [SABnzbd ページ](https://debridmediamanager.com/sabnzbd)で、Password に DMM の API キーを入力 |
+| Real-Debrid へのトレントのアップロードを、1 回ではなく同時に 3 件まで行えます | DMM の検索結果とライブラリにあるアップロードボタン |
+| DMM のウォンテッドリストへの追加と、Kodi 内の Wanted フォルダ | DMM の [Kodi ページ](https://debridmediamanager.com/kodi)で Kodi をペアリング |
+| リリース名、キャッシュ確認、メディア詳細、メタデータ用の DMM API | [API ドキュメント](https://debridmediamanager.com/api-docs) |
 
 ## rex
 

@@ -28,23 +28,26 @@ Seerr、Overseerr、Jellyseerr からのリクエストも同じリストに入�
 
 ## リストをフォローする {#following-a-list}
 
-[wanted list](https://debridmediamanager.com/wanted) に Trakt、MDBList、TMDB のリストのページを貼り付けて、**Follow** を押します。そのリストにある映画と番組はすべて wanted になります。DMM はリストを 6 時間ごとに読み直すので、後からリストに追加された作品も wanted になります。読み込めるページは次のとおりです:
+Trakt、MDBList、TMDB、Simkl のリストのページを[ウォントリスト](https://debridmediamanager.com/wanted)に貼り付けて、**Follow** を押します。そのリストにある映画とシリーズはすべてウォントリストに入ります。DMM は 6 時間ごとにリストを読み直すので、後からリストに追加されたものもウォントに入ります。読み込めるページは次のとおりです。
 
 - `https://trakt.tv/users/<user>/lists/<list>` と `https://trakt.tv/lists/<id>`
-- `https://trakt.tv/users/<user>/watchlist`（そのTraktプロフィールが公開されている場合）
+- `https://trakt.tv/users/<user>/watchlist`（その Trakt プロフィールが公開されている場合）
 - `https://mdblist.com/lists/<user>/<list>`
-- `https://www.themoviedb.org/list/<id>`（そのTMDBリストが公開されている場合）
+- `https://www.themoviedb.org/list/<id>`（その TMDB リストが公開されている場合）
+- `https://simkl.com/<user>/list/<id>`（DMM で Simkl にサインインしている間、自分の Simkl リスト）
 
-DMM 自身の Trakt ページにある、あなたのウォッチリストと各リストには、同じことをする **Follow with Want** ボタンがあります。
+DMM 独自の Trakt ページでは、自分のウォッチリストと各リストに **Follow with Want** ボタンがあり、同じことができます。Simkl にサインインする [DMM の Simkl ページ](https://debridmediamanager.com/simkl/mylists) の **Simkl custom lists** の下にある各リストでも同じです。
 
-IMDb、Letterboxd、Rotten Tomatoes、Plex のウォッチリストの場合は、mdblist.com でその URL から [external list](https://docs.mdblist.com/docs/external_lists) を作り、それをフォローします。MDBList がソースとの同期を保ちます。
+Simkl はサインイン済みのユーザーにしか応答しないため、DMM は DMM 上の Simkl サインインを使って Simkl リストを読み込みます。また、Simkl はリストの項目を PRO と VIP の会員にしか表示しません。DMM で Simkl からサインアウトすると、リストは更新されなくなります。その場合は、もう一度サインインして、そのリストを再度 Follow してください。
 
-フォローすると次のようになります:
+IMDb、Letterboxd、Rotten Tomatoes、Plex のウォッチリストは、mdblist.com で URL から[外部リスト](https://docs.mdblist.com/docs/external_lists)を作り、それを Follow します。MDBList が元のリストと同期を保ちます。
 
-- 番組は、新しいシーズンも含めて丸ごと wanted になります。
-- 前回読み込んだ後にリストへ新しく追加された作品だけが追加されます。wanted リストから削除した作品は削除されたままです。リストから外れた作品は wanted のまま残ります。**Unfollow** しても、リストが追加した作品は残ります。
-- ページには各リストについて、作品数、これまでに追加された数、最後に読み込んだ時刻が表示されます。**Read again** を押すと、今すぐ読み直します。IMDb ID のない作品は除外され、その数も表示されます。
-- wanted リストには、まだ取得していない作品を 10,000 件まで入れられます。対象は全ての番組と、zurg がまだ取得していない、またはアップグレードを待っている映画です。zurg が取得済みの映画は数えません。入りきらない作品は、空きができた後の次回の読み込みで追加されます。
+Follow すると次のようになります。
+
+- シリーズは丸ごとウォントに入ります。新しいシーズンも含まれます。
+- 前回読み込んだ後にリストに新しく追加されたタイトルだけが追加されます。ウォントリストから削除したタイトルは削除されたままです。リストから外れたタイトルはウォントのまま残ります。**Unfollow** をしても、リストが追加したものは残ります。
+- ページには、各リストのタイトル数、これまでに追加された数、最後に読み込んだ日時が表示されます。**Read again** を押すと、今すぐ読み込みます。IMDb ID のないタイトルは除外され、その件数も表示されます。
+- ウォントリストには、まだ取得していないタイトルを 10,000 件まで入れられます。対象は、すべてのシリーズと、zurg がまだ取得していないか、アップグレード待ちの映画です。zurg が取得済みの映画は数えません。入りきらないタイトルは、空きができた後の次回の読み込みで追加されます。
 
 ## RadarrやSonarrから移行する {#moving-from-radarr-or-sonarr}
 

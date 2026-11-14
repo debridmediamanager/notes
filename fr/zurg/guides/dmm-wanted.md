@@ -33,34 +33,40 @@ Les demandes venant de Seerr, Overseerr ou Jellyseerr peuvent aussi arriver dans
 
 ## Suivre une liste {#following-a-list}
 
-Collez la page d'une liste Trakt, MDBList ou TMDB dans votre [liste de souhaits](https://debridmediamanager.com/wanted)
+Collez la page d'une liste Trakt, MDBList, TMDB ou Simkl sur votre [liste de souhaits](https://debridmediamanager.com/wanted)
 et appuyez sur **Follow**. Chaque film et chaque série de la liste est ajouté à vos souhaits, et DMM relit la liste
-toutes les six heures : ce qui y sera ajouté plus tard sera donc aussi souhaité. Pages acceptées :
+toutes les six heures : ce qui y sera ajouté plus tard sera donc aussi ajouté à vos souhaits. Pages acceptées :
 
 - `https://trakt.tv/users/<user>/lists/<list>` et `https://trakt.tv/lists/<id>`
 - `https://trakt.tv/users/<user>/watchlist`, si ce profil Trakt est public
 - `https://mdblist.com/lists/<user>/<list>`
 - `https://www.themoviedb.org/list/<id>`, si cette liste TMDB est publique
+- `https://simkl.com/<user>/list/<id>`, l'une de vos propres listes Simkl, pendant que vous êtes connecté à Simkl sur DMM
 
-Sur les pages Trakt de DMM elles-mêmes, votre liste de suivi et chacune de vos listes ont un bouton **Follow with Want**
-qui fait la même chose.
+Sur les pages Trakt de DMM, votre liste de suivi et chacune de vos listes ont un bouton **Follow with Want**
+qui fait la même chose. C'est aussi le cas pour chacune de vos listes sous **Simkl custom lists** sur
+[la page Simkl de DMM](https://debridmediamanager.com/simkl/mylists), où vous vous connectez à Simkl.
 
-Une watchlist IMDb, Letterboxd, Rotten Tomatoes ou Plex : sur mdblist.com, créez une
-[external list](https://docs.mdblist.com/docs/external_lists) à partir de son URL, puis suivez
-cette liste. MDBList la tient à jour avec la source.
+Simkl ne répond qu'à une personne connectée, donc DMM lit une liste Simkl avec votre connexion Simkl sur DMM,
+et Simkl n'affiche les éléments de liste qu'aux membres PRO et VIP. Si vous vous déconnectez de Simkl sur DMM,
+la liste cesse de se mettre à jour : reconnectez-vous puis suivez-la à nouveau.
+
+Une liste IMDb, Letterboxd, Rotten Tomatoes ou Plex : sur mdblist.com, créez une
+[liste externe](https://docs.mdblist.com/docs/external_lists) à partir de son URL, puis suivez-la.
+MDBList la garde synchronisée avec la source.
 
 Ce que fait le suivi :
 
-- Une série est souhaitée en entier, y compris les nouvelles saisons.
-- Seuls les titres nouveaux dans la liste depuis sa dernière lecture sont ajoutés. Un titre que vous retirez de
-  votre liste de souhaits reste retiré, et un titre qui quitte la liste reste souhaité.
+- Une série est ajoutée en entier, y compris les nouvelles saisons.
+- Seuls les titres nouveaux sur la liste depuis sa dernière lecture sont ajoutés. Un titre que vous retirez de
+  votre liste de souhaits reste retiré, et un titre qui quitte la liste reste dans vos souhaits.
   **Unfollow** conserve ce que la liste a ajouté.
-- La page affiche chaque liste avec son nombre de titres, le nombre déjà ajoutés et la date de sa dernière lecture.
-  **Read again** la relit tout de suite. Les titres sans identifiant IMDb sont laissés de côté, et le
-  compteur indique combien.
-- Votre liste peut contenir 10 000 titres à récupérer : toutes les séries, et chaque film que zurg n'a pas encore
-  récupéré ou qui attend une mise à niveau. Les films déjà récupérés par zurg ne comptent pas. Un titre qui ne
-  rentre pas est ajouté lors d'une lecture ultérieure, dès qu'il y a de la place.
+- La page affiche chaque liste avec le nombre de titres qu'elle contient, le nombre déjà ajouté et la date de
+  sa dernière lecture. **Read again** la relit tout de suite. Les titres sans identifiant IMDb sont laissés de côté,
+  et le compteur indique combien il y en a.
+- Votre liste peut contenir 10 000 titres en attente de récupération : toutes les séries, et chaque film que zurg
+  n'a pas encore récupéré ou qui attend une mise à niveau. Les films déjà récupérés par zurg ne comptent pas.
+  Un titre qui ne rentre pas est ajouté lors d'une lecture ultérieure, dès qu'il y a de la place.
 
 ## Passer depuis Radarr ou Sonarr {#moving-from-radarr-or-sonarr}
 

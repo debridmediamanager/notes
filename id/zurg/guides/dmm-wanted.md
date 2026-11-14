@@ -32,23 +32,26 @@ Permintaan dari Seerr, Overseerr, atau Jellyseerr juga bisa masuk ke daftar yang
 
 ## Mengikuti daftar {#following-a-list}
 
-Tempel halaman daftar Trakt, MDBList atau TMDB ke [daftar inginan](https://debridmediamanager.com/wanted) kamu lalu tekan **Follow**. Semua film dan serial di dalamnya jadi inginan, dan DMM membaca ulang daftar itu setiap enam jam, jadi yang ditambahkan ke daftar nanti juga ikut jadi inginan. Halaman yang didukung:
+Tempel halaman dari daftar Trakt, MDBList, TMDB, atau Simkl ke [daftar wanted](https://debridmediamanager.com/wanted) Anda, lalu tekan **Follow**. Setiap film dan serial di daftar itu akan ditandai wanted, dan DMM membaca ulang daftar tersebut setiap enam jam, jadi apa pun yang ditambahkan ke daftar nanti juga ikut wanted. Halaman yang bisa diambil:
 
 - `https://trakt.tv/users/<user>/lists/<list>` dan `https://trakt.tv/lists/<id>`
-- `https://trakt.tv/users/<user>/watchlist`, jika profil Trakt itu publik
+- `https://trakt.tv/users/<user>/watchlist`, jika profil Trakt tersebut publik
 - `https://mdblist.com/lists/<user>/<list>`
-- `https://www.themoviedb.org/list/<id>`, jika daftar TMDB itu publik
+- `https://www.themoviedb.org/list/<id>`, jika daftar TMDB tersebut publik
+- `https://simkl.com/<user>/list/<id>`, salah satu daftar Simkl milik Anda sendiri, selama Anda masuk ke Simkl di DMM
 
-Di halaman Trakt milik DMM sendiri, watchlist kamu dan setiap daftar kamu punya tombol **Follow with Want** yang melakukan hal yang sama.
+Di halaman Trakt milik DMM sendiri, watchlist Anda dan setiap daftar Anda punya tombol **Follow with Want** yang melakukan hal yang sama. Begitu juga setiap daftar Anda di bawah **Simkl custom lists** di [halaman Simkl DMM](https://debridmediamanager.com/simkl/mylists), tempat Anda masuk ke Simkl.
 
-Untuk watchlist IMDb, Letterboxd, Rotten Tomatoes atau Plex: di mdblist.com, buat [daftar eksternal](https://docs.mdblist.com/docs/external_lists) dari URL-nya lalu follow daftar itu. MDBList akan menjaganya tetap sinkron dengan sumbernya.
+Simkl hanya menjawab orang yang sudah masuk, jadi DMM membaca daftar Simkl memakai akun Simkl Anda di DMM. Simkl juga hanya menampilkan item daftar untuk anggota PRO dan VIP. Jika Anda keluar dari Simkl di DMM, daftar itu berhenti diperbarui: masuk lagi dan follow lagi.
 
-Apa yang dilakukan follow:
+Untuk watchlist IMDb, Letterboxd, Rotten Tomatoes, atau Plex: di mdblist.com, buat [daftar eksternal](https://docs.mdblist.com/docs/external_lists) dari URL-nya, lalu follow daftar itu. MDBList akan menjaganya tetap sinkron dengan sumbernya.
 
-- Serial dianggap inginan secara utuh, termasuk season baru.
-- Hanya judul yang baru di daftar sejak terakhir dibaca yang ditambahkan. Judul yang kamu hapus dari daftar inginan tetap terhapus, dan judul yang keluar dari daftar tetap jadi inginan. **Unfollow** menyimpan apa yang sudah ditambahkan daftar itu.
-- Halaman menampilkan setiap daftar beserta jumlah judulnya, berapa yang sudah ditambahkan sejauh ini, dan kapan terakhir dibaca. **Read again** membacanya sekarang. Judul tanpa IMDb id dilewati, dan jumlahnya ditampilkan.
-- Daftar inginan kamu menampung 10.000 judul yang masih perlu diambil: setiap serial, dan setiap film yang belum diambil zurg atau yang sedang menunggu untuk di-upgrade. Film yang sudah diambil zurg tidak dihitung. Judul yang tidak muat akan ditambahkan pada pembacaan berikutnya, setelah ada ruang.
+Yang dilakukan follow:
+
+- Serial dibuat wanted secara utuh, termasuk season baru.
+- Hanya judul yang baru masuk ke daftar sejak terakhir dibaca yang ditambahkan. Judul yang Anda hapus dari daftar wanted tetap terhapus, dan judul yang keluar dari daftar tetap wanted. **Unfollow** menyimpan apa yang sudah ditambahkan daftar tersebut.
+- Halaman ini menampilkan setiap daftar beserta jumlah judulnya, berapa banyak yang sudah ditambahkan sejauh ini, dan kapan terakhir dibaca. **Read again** membacanya sekarang. Judul tanpa id IMDb dilewati, dan jumlahnya ditampilkan.
+- Daftar Anda menampung 10.000 judul yang masih menunggu diambil: setiap serial, dan setiap film yang belum diambil oleh zurg atau sedang menunggu untuk di-upgrade. Film yang sudah diambil zurg tidak dihitung. Judul yang tidak muat akan ditambahkan pada pembacaan berikutnya, begitu ada ruang.
 
 ## Pindah dari Radarr atau Sonarr {#moving-from-radarr-or-sonarr}
 

@@ -27,18 +27,18 @@ DMM бесплатный. Спонсорство оплачивает хости
 
 | Что вы получаете | Где |
 |---|---|
-| Список желаемого, который zurg сам собирает с новыми сериями и обновлениями. Заполняйте его из DMM, Kodi, Trakt, списков MDBList и TMDB или из бэкапа Radarr или Sonarr | [Список желаемого DMM](../zurg/guides/dmm-wanted.md) |
-| Запросы из Seerr, Overseerr или Jellyseerr попадают в ваш список желаемого | [Seerr через DMM](../dmm/seerr.md) |
+| Список Wanted, который zurg подтягивает с новыми сериями и апгрейдами. Заполнить его можно из DMM, Kodi или списков Trakt, MDBList, TMDB и Simkl, либо из бэкапа Radarr или Sonarr | [Список Wanted в DMM](../zurg/guides/dmm-wanted.md) |
+| Запросы из Seerr, Overseerr или Jellyseerr попадают в ваш список Wanted | [Seerr через DMM](../dmm/seerr.md) |
 | Любой результат Easynews отправляется в ваш zurg одним кликом | Результаты Easynews на странице фильма или сериала в DMM |
 | DMM как индексатор Newznab для Usenet | [Страница Newznab](https://debridmediamanager.com/newznab) в DMM |
-| DMM как индексатор Torznab с лентами только для закешированного для Real-Debrid, AllDebrid, Debrid-Link, TorBox, Premiumize и Offcloud. Для TorBox, Premiumize и Offcloud также нужен ключ привязанного сервиса | [Страница Torznab](https://debridmediamanager.com/torznab) в DMM |
-| Семь плагинов Jellyfin для библиотек debrid и Usenet и шесть плагинов Emby для библиотек debrid, без смонтированных файлов | Страницы DMM [Jellyfin](https://debridmediamanager.com/jellyfin) и [Emby](https://debridmediamanager.com/emby) |
-| Десять дополнительных потоков на тайтл в Stremio Cast и Kodi вместо пяти | Настройки DMM для Real-Debrid, TorBox и AllDebrid; страница Cast каждого провайдера для остальных |
-| Загрузки NZB идут first, с 2 ТБ Usenet в день вместо 300 ГБ | Вкладка Usenet в DMM |
+| DMM как индексатор Torznab с лентами только для кэшированных раздач для Real-Debrid, AllDebrid, Debrid-Link, TorBox, Premiumize и Offcloud | [Страница Torznab](https://debridmediamanager.com/torznab) в DMM. Для TorBox, Premiumize и Offcloud также нужен ключ привязанного сервиса |
+| Семь плагинов Jellyfin для библиотек debrid и Usenet и шесть плагинов Emby для библиотек debrid без монтирования | Страницы [Jellyfin](https://debridmediamanager.com/jellyfin) и [Emby](https://debridmediamanager.com/emby) в DMM |
+| Десять дополнительных потоков на тайтл в Stremio Cast и Kodi вместо пяти | Настройки DMM (Settings) для Real-Debrid, TorBox и AllDebrid; Cast-страница каждого провайдера для остальных |
+| Загрузки NZB идут в первую очередь, а лимит Usenet составляет 2 ТБ в день вместо 300 ГБ | Вкладка Usenet в DMM |
 | Такой же приоритет и лимит для Sonarr и Radarr | Ваш API-ключ DMM в поле Password на [странице SABnzbd](https://debridmediamanager.com/sabnzbd) в DMM |
-| Три загрузки торрентов в Real-Debrid одновременно вместо одной | Кнопки загрузки в результатах поиска DMM и в библиотеке |
-| Добавление в Wanted DMM и папка Wanted внутри Kodi | Подключите Kodi на [странице Kodi](https://debridmediamanager.com/kodi) в DMM |
-| API DMM для названий релизов, проверки кеша, сведений о медиа и метаданных | [Документация API](https://debridmediamanager.com/api-docs) |
+| Три торрент-загрузки в Real-Debrid одновременно вместо одной | Кнопки загрузки в результатах поиска DMM и в библиотеке |
+| Добавление в DMM Wanted и папка Wanted внутри Kodi | Привяжите Kodi на [странице Kodi](https://debridmediamanager.com/kodi) в DMM |
+| API DMM для названий релизов, проверки кэша, данных о медиа и метаданных | [Документация API](https://debridmediamanager.com/api-docs) |
 
 ## rex
 

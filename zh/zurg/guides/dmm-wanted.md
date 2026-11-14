@@ -27,23 +27,26 @@
 
 ## 订阅列表 {#following-a-list}
 
-将 Trakt、MDBList 或 TMDB 列表的页面粘贴到你的[想看列表](https://debridmediamanager.com/wanted)中，然后点击 **Follow**。列表里的每部电影和每个剧集都会被加入想看列表，DMM 每六小时重新读取一次列表，所以之后添加到列表里的内容也会被加入。支持的页面如下：
+在你的[待看列表](https://debridmediamanager.com/wanted)上粘贴 Trakt、MDBList、TMDB 或 Simkl 列表的页面，然后点击 **Follow**。列表里的每部电影和每个剧集都会被加入待看，DMM 每六小时重新读取一次列表，所以之后添加到列表里的内容也会被加入待看。支持以下页面：
 
 - `https://trakt.tv/users/<user>/lists/<list>` 和 `https://trakt.tv/lists/<id>`
-- `https://trakt.tv/users/<user>/watchlist`，前提是该 Trakt 个人资料是公开的
+- `https://trakt.tv/users/<user>/watchlist`，前提是该 Trakt 个人主页是公开的
 - `https://mdblist.com/lists/<user>/<list>`
 - `https://www.themoviedb.org/list/<id>`，前提是该 TMDB 列表是公开的
+- `https://simkl.com/<user>/list/<id>`，即你自己的 Simkl 列表，前提是你在 DMM 上已登录 Simkl
 
-在 DMM 自己的 Trakt 页面上，你的观看清单和每个列表都有一个 **Follow with Want** 按钮，效果相同。
+在 DMM 自己的 Trakt 页面上，你的观看列表和每个自定义列表都有一个 **Follow with Want** 按钮，效果相同。在你登录 Simkl 的 [DMM Simkl 页面](https://debridmediamanager.com/simkl/mylists)上，**Simkl custom lists** 下的每个列表也有同样的功能。
 
-IMDb、Letterboxd、Rotten Tomatoes 或 Plex 的观看清单：请在 mdblist.com 上根据其网址创建一个[外部列表](https://docs.mdblist.com/docs/external_lists)，然后关注该列表。MDBList 会让它与原始来源保持同步。
+Simkl 只响应已登录的用户，所以 DMM 会使用你在 DMM 上的 Simkl 登录信息来读取 Simkl 列表。Simkl 只向 PRO 和 VIP 会员显示列表内容。如果你在 DMM 上退出 Simkl，该列表将停止更新：需要重新登录并再次关注该列表。
 
-关注列表的作用：
+IMDb、Letterboxd、Rotten Tomatoes 或 Plex 的观看列表：请在 mdblist.com 上用其网址创建一个[外部列表](https://docs.mdblist.com/docs/external_lists)，然后关注它。MDBList 会让它与源列表保持同步。
 
-- 剧集会整部加入想看列表，包括之后新增的季。
-- 只有自上次读取以来在列表中新出现的标题才会被添加。你从想看列表中移除的标题会保持移除状态；从列表中被删除的标题仍会留在想看列表中。**Unfollow** 会保留列表已经添加的内容。
-- 页面会显示每个列表的标题总数、已添加的数量以及上次读取的时间。**Read again** 会立即重新读取。没有 IMDb id 的标题会被略过，页面上的数字会显示略过了多少个。
-- 你的列表最多可以容纳 10,000 个仍需获取的标题：包括所有剧集，以及 zurg 尚未获取或正在等待升级的电影。zurg 已经获取过的电影不计入其中。放不下的标题会在之后的读取中添加，等有空位时再加入。
+关注列表的作用如下：
+
+- 剧集会整部加入待看，包括之后新增的季。
+- 只有自上次读取以来新出现在列表中的内容才会被添加。你从待看列表中移除的标题会保持移除状态；从列表中消失的标题仍会保留在待看中。**Unfollow** 会保留列表已添加的内容。
+- 页面会显示每个列表的标题数量、已添加的数量以及上次读取的时间。**Read again** 会立即重新读取。没有 IMDb 编号的标题会被略过，计数中会注明略过的数量。
+- 你的待取列表最多容纳 10,000 个标题：包括所有剧集，以及 zurg 尚未获取或正在等待升级的每部电影。zurg 已获取的电影不计入。放不下的标题会在之后的读取中添加，等有空位时再加入。
 
 ## 从 Radarr 或 Sonarr 迁移 {#moving-from-radarr-or-sonarr}
 

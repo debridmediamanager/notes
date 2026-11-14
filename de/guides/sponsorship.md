@@ -27,17 +27,17 @@ Die `dmm_api_key`-Funktionen brauchen einen zurg-Nightly-Build. Die kostenlose �
 
 | Was du bekommst | Wo |
 |---|---|
-| Eine Wunschliste, die zurg mit neuen Episoden und Upgrades abruft. Befülle sie aus DMM oder Kodi oder Trakt, MDBList- und TMDB-Listen oder einem Radarr- oder Sonarr-Backup | [DMM-Wunschliste](../zurg/guides/dmm-wanted.md) |
-| Anfragen aus Seerr oder Overseerr oder Jellyseerr landen auf deiner Wunschliste | [Seerr über DMM](../dmm/seerr.md) |
-| Jedes Easynews-Ergebnis mit einem Klick an dein zurg schicken | Die Easynews-Ergebnisse auf einer Film- oder Serienseite in DMM |
+| Eine Wunschliste, die zurg mit neuen Episoden und Upgrades abruft. Fülle sie aus DMM, Kodi oder Trakt-, MDBList-, TMDB- und Simkl-Listen oder aus einem Radarr- oder Sonarr-Backup | [DMM-Wunschliste](../zurg/guides/dmm-wanted.md) |
+| Anfragen von Seerr, Overseerr oder Jellyseerr landen auf deiner Wunschliste | [Seerr über DMM](../dmm/seerr.md) |
+| Jedes Easynews-Ergebnis mit einem Klick an deinen zurg schicken | Die Easynews-Ergebnisse auf einer Film- oder Serienseite in DMM |
 | DMM als Newznab-Indexer für Usenet | DMMs [Newznab-Seite](https://debridmediamanager.com/newznab) |
-| DMM als Torznab-Indexer mit nur gecachten Feeds für Real-Debrid und AllDebrid und Debrid-Link und TorBox und Premiumize und Offcloud | DMMs [Torznab-Seite](https://debridmediamanager.com/torznab). TorBox, Premiumize und Offcloud brauchen zusätzlich deinen verknüpften Dienst-Schlüssel |
-| Sieben Jellyfin-Plugins für Debrid- und Usenet-Bibliotheken und sechs Emby-Plugins für Debrid-Bibliotheken, ohne dass etwas eingebunden ist | DMMs [Jellyfin](https://debridmediamanager.com/jellyfin)- und [Emby](https://debridmediamanager.com/emby)-Seiten |
-| Zehn statt fünf weitere Streams pro Titel in Stremio Cast und Kodi | DMM-Einstellungen für Real-Debrid, TorBox und AllDebrid; die Cast-Seite jedes Anbieters für die übrigen |
-| NZB-Uploads kommen zuerst, mit 2 TB Usenet pro Tag statt 300 GB | DMMs Usenet-Tab |
-| Dieselbe Priorität und dasselbe Kontingent für Sonarr und Radarr | Dein DMM-API-Schlüssel als Password auf DMMs [SABnzbd-Seite](https://debridmediamanager.com/sabnzbd) |
+| DMM als Torznab-Indexer mit nur gecachten Feeds für Real-Debrid, AllDebrid, Debrid-Link, TorBox, Premiumize und Offcloud. TorBox, Premiumize und Offcloud brauchen zusätzlich ihren verknüpften Service-Key | DMMs [Torznab-Seite](https://debridmediamanager.com/torznab) |
+| Sieben Jellyfin-Plugins für Debrid- und Usenet-Bibliotheken und sechs Emby-Plugins für Debrid-Bibliotheken ohne eingebundenes Mount | DMMs [Jellyfin-](https://debridmediamanager.com/jellyfin) und [Emby-Seite](https://debridmediamanager.com/emby) |
+| Zehn weitere Streams pro Titel in Stremio Cast und Kodi statt fünf | DMM-Settings für Real-Debrid, TorBox und AllDebrid; die Cast-Seite des jeweiligen Anbieters für die anderen |
+| NZB-Uploads werden bevorzugt, mit 2 TB Usenet pro Tag statt 300 GB | Der Usenet-Tab in DMM |
+| Dieselbe Priorität und dasselbe Kontingent für Sonarr und Radarr | Dein DMM-API-Key als Password auf DMMs [SABnzbd-Seite](https://debridmediamanager.com/sabnzbd) |
 | Drei Torrent-Uploads gleichzeitig zu Real-Debrid statt einem | Die Upload-Buttons in den DMM-Suchergebnissen und der Bibliothek |
-| Zur DMM-Wunschliste hinzufügen und ein Wanted-Ordner in Kodi | Kodi auf DMMs [Kodi-Seite](https://debridmediamanager.com/kodi) koppeln |
+| Add to DMM Wanted und ein Wanted-Ordner in Kodi | Kopple Kodi auf DMMs [Kodi-Seite](https://debridmediamanager.com/kodi) |
 | Die DMM-API für Release-Namen, Cache-Prüfungen, Medieninformationen und Metadaten | [API-Doku](https://debridmediamanager.com/api-docs) |
 
 ## rex

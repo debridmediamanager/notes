@@ -29,25 +29,28 @@ Pedidos feitos no Seerr, Overseerr ou Jellyseerr também podem cair nessa mesma 
 
 ## Seguindo uma lista {#following-a-list}
 
-Cole a página de uma lista do Trakt, MDBList ou TMDB na sua [lista de desejados](https://debridmediamanager.com/wanted)
-e clique em **Follow**. Todo filme e série nela entra como desejado, e o DMM lê a lista de novo
-a cada seis horas, então o que for adicionado depois também entra. Páginas aceitas:
+Cole a página de uma lista do Trakt, MDBList, TMDB ou Simkl na sua [lista de desejos](https://debridmediamanager.com/wanted)
+e clique em **Follow**. Todo filme e série dela entra como desejado, e o DMM relê a lista a cada seis horas, então o que for adicionado depois também entra como desejado. Páginas aceitas:
 
 - `https://trakt.tv/users/<user>/lists/<list>` e `https://trakt.tv/lists/<id>`
 - `https://trakt.tv/users/<user>/watchlist`, se esse perfil do Trakt for público
 - `https://mdblist.com/lists/<user>/<list>`
 - `https://www.themoviedb.org/list/<id>`, se essa lista do TMDB for pública
+- `https://simkl.com/<user>/list/<id>`, uma das suas próprias listas do Simkl, enquanto você estiver logado no Simkl no DMM
 
-Nas páginas do Trakt do próprio DMM, sua watchlist e cada uma das suas listas têm um botão **Follow with Want** que faz a mesma coisa.
+Nas páginas do Trakt do próprio DMM, sua watchlist e cada uma das suas listas têm um botão **Follow with Want** que faz o mesmo. Também é o caso de cada uma das suas listas em **Simkl custom lists** na [página do Simkl no DMM](https://debridmediamanager.com/simkl/mylists), onde você faz login no Simkl.
 
-Para uma watchlist do IMDb, Letterboxd, Rotten Tomatoes ou Plex: no mdblist.com, crie uma [lista externa](https://docs.mdblist.com/docs/external_lists) a partir da URL dela e siga essa lista. O MDBList mantém ela sincronizada com a origem.
+O Simkl só responde a quem está logado, então o DMM lê uma lista do Simkl usando o seu login no Simkl feito no DMM, e o Simkl só mostra os itens da lista para membros PRO e VIP. Se você sair do Simkl no DMM, a lista para de atualizar: entre de novo e siga a lista outra vez.
 
-O que seguir faz:
+Um watchlist do IMDb, Letterboxd, Rotten Tomatoes ou Plex: no mdblist.com, crie uma [external list](https://docs.mdblist.com/docs/external_lists) a partir da URL dele e siga essa lista. O MDBList a mantém sincronizada com a origem.
 
-- Uma série entra inteira, incluindo as temporadas novas.
-- Só entram títulos que são novos na lista desde a última leitura. Um título que você remover da sua lista de desejados continua removido, e um título que sair da lista continua desejado. **Unfollow** mantém o que a lista adicionou.
+O que seguir uma lista faz:
+
+- Uma série entra como desejada inteira, incluindo as temporadas novas.
+- Só entram títulos novos na lista desde a última leitura. Um título que você remove da sua lista de desejos continua removido, e um título que sai da lista continua desejado.
+**Unfollow** mantém o que a lista adicionou.
 - A página mostra cada lista com quantos títulos ela tem, quantos já foram adicionados e quando foi lida pela última vez. **Read again** lê agora. Títulos sem id do IMDb ficam de fora, e a contagem mostra quantos são.
-- Sua lista de desejados comporta 10.000 títulos ainda a buscar: todas as séries, e cada filme que o zurg ainda não buscou ou que está esperando para ser atualizado. Filmes que o zurg já buscou não contam. Um título que não couber é adicionado em uma leitura posterior, assim que houver espaço.
+- Sua lista comporta 10.000 títulos ainda a buscar: todas as séries, e cada filme que o zurg ainda não buscou ou que está esperando para ser atualizado. Filmes que o zurg já buscou não contam. Um título que não cabe é adicionado numa leitura posterior, quando houver espaço.
 
 ## Migrando do Radarr ou Sonarr {#moving-from-radarr-or-sonarr}
 

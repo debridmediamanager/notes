@@ -55,21 +55,21 @@ DMM مشروع مفتوح المصدر، وليس جزءًا من Real-Debrid أ
 
 ## إلى أين تذهب بعد ذلك {#where-to-go-next}
 
-- [DMM في Stremio](stremio.md): شاهد ما تجده في Stremio مع إضافة DMM Cast.
-- [قوائم الهاشات](hashlists.md): أضف مكتبة مشتركة كاملة إلى مكتبتك، أو شارك مكتبتك الخاصة.
-- [TorBox في DMM](torbox.md): ما الذي تفعله كل خطة من خطط TorBox داخل DMM، وإرسال إصدارات Usenet إلى TorBox Pro.
-- ["Torrent is being downloaded to debrid"](../guides/torrent-being-downloaded-to-debrid.md): معنى تلك الشاشة في Stremio، وكيف يعرض DMM ما هو مخزّن مؤقتاً.
-- [أزرار DMM في Safari](safari.md): تضيف الإضافة الخاصة بالمتصفح زر DMM إلى IMDb وTrakt وغيرها من مواقع الأفلام والمسلسلات.
+- [DMM في Stremio](stremio.md): شاهد ما تجده في Stremio عبر إضافة DMM Cast.
+- [قوائم الهاش](hashlists.md): أضف مكتبة مشتركة كاملة إلى مكتبتك، أو شارك مكتبتك الخاصة.
+- [TorBox في DMM](torbox.md): ما الذي تفعله كل خطة من خطط TorBox في DMM، وإرسال إصدارات Usenet إلى TorBox Pro.
+- ["Torrent is being downloaded to debrid"](../guides/torrent-being-downloaded-to-debrid.md): ما يعنيه تلك الشاشة في Stremio وكيف يعرض DMM ما هو مخزّن مؤقتًا.
+- [أزرار DMM في Safari](safari.md): تضيف إضافة المتصفح زر DMM إلى IMDb وTrakt ومواقع الأفلام والمسلسلات الأخرى.
 
-يخدم DMM المشاريع الأخرى أيضاً:
+كما يخدم DMM المشاريع الأخرى:
 
-- **zurg** يسأل DMM عن الفيلم أو الحلقة التي يمثلها كل ملف. يحصل الراعي على مفتاح API الخاص بـ DMM من [gatekeeper](https://gatekeeper.debridmediamanager.com/). بدونه يعتمد zurg على أسماء الملفات، فتتطابق عناوين أقل. يشرح [rex مع zurg](../rex/with-zurg.md#why-dmm-places-the-files) الفرق.
-- **Sonarr Radarr and Prowlarr** يمكنها البحث في DMM كفهرس تورنت من نوع Torznab أو فهرس Usenet من نوع Newznab. يتطلب الأمران اشتراكاً نشطاً ومفتاح API الخاص بـ DMM. أعدّهما من خلال صفحتي [Torznab](https://debridmediamanager.com/torznab) و[Newznab](https://debridmediamanager.com/newznab).
-- **قائمة رغباتك**: اضغط **Want** أو تابع قائمة Trakt أو MDBList أو TMDB. يجلب zurg القائمة والحلقات الجديدة فور عرضها. يتطلب اشتراكاً. انظر [قائمة رغبات DMM](../zurg/guides/dmm-wanted.md).
-- **Seerr Overseerr and Jellyseerr** يمكنها استخدام DMM كـ Radarr وSonarr. عندها تصل الطلبات إلى قائمة رغباتك ليجلبها zurg. يتطلب اشتراكاً. انظر [Seerr عبر DMM](seerr.md).
-- **rex-direct** يمنح rex المطالَب به عنواناً خاصاً به وشهادة خاصة. انظر [rex-direct](../rex/any-source.md#rex-direct).
+- **zurg** يسأل DMM عن الفيلم أو الحلقة التي يمثلها كل ملف. يحصل الراعي على مفتاح API الخاص بـ DMM من [gatekeeper](https://gatekeeper.debridmediamanager.com/). بدونه يعتمد zurg على أسماء الملفات وتتطابق عناوين أقل. يشرح [rex مع zurg](../rex/with-zurg.md#why-dmm-places-the-files) الفرق.
+- **Sonarr Radarr وProwlarr** يمكنها البحث في DMM كفهرس تورنت Torznab أو فهرس Usenet من نوع Newznab. كلاهما يحتاج إلى رعاية نشطة ومفتاح API الخاص بـ DMM. قم بإعدادهما في صفحتي [Torznab](https://debridmediamanager.com/torznab) و[Newznab](https://debridmediamanager.com/newznab).
+- **قائمة رغباتك**: اضغط **Want** أو تابع قائمة Trakt أو MDBList أو TMDB أو Simkl. يجلب zurg القائمة والحلقات الجديدة فور عرضها. تتطلب الرعاية. انظر [قائمة رغبات DMM](../zurg/guides/dmm-wanted.md).
+- **Seerr Overseerr وJellyseerr** يمكنها استخدام DMM كما تستخدم Radarr وSonarr. تصل الطلبات حينها إلى قائمة رغباتك ليجلبها zurg. تتطلب الرعاية. انظر [Seerr عبر DMM](seerr.md).
+- **rex-direct** يمنح rex المُطالَب به عنوانًا وشهادة خاصة به. انظر [rex-direct](../rex/any-source.md#rex-direct).
 
-كل ما يفتحه الاشتراك، وأين يُعدّ كل شيء، موجود في [ما يمنحك إياه الاشتراك](../guides/sponsorship.md).
+كل ما تفتحه الرعاية، وأين يُعدّ كل شيء، موجود في [ما تمنحك الرعاية](../guides/sponsorship.md).
 
 ## عندما تحدث مشكلة {#when-something-is-wrong}
 

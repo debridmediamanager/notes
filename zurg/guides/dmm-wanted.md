@@ -34,7 +34,7 @@ Requests from Seerr, Overseerr or Jellyseerr can land on the same list: see
 
 ## Following a list
 
-Paste the page of a Trakt, MDBList or TMDB list on your [wanted list](https://debridmediamanager.com/wanted)
+Paste the page of a Trakt, MDBList, TMDB or Simkl list on your [wanted list](https://debridmediamanager.com/wanted)
 and press **Follow**. Every film and show on it is wanted, and DMM reads the list again
 every six hours, so what is added to it later is wanted too. Pages it takes:
 
@@ -42,9 +42,15 @@ every six hours, so what is added to it later is wanted too. Pages it takes:
 - `https://trakt.tv/users/<user>/watchlist`, if that Trakt profile is public
 - `https://mdblist.com/lists/<user>/<list>`
 - `https://www.themoviedb.org/list/<id>`, if that TMDB list is public
+- `https://simkl.com/<user>/list/<id>`, one of your own Simkl lists, while you are signed in to Simkl on DMM
 
 On DMM's own Trakt pages, your watchlist and each of your lists have a **Follow with Want**
-button that does the same.
+button that does the same. So does each of your lists under **Simkl custom lists** on
+[DMM's Simkl page](https://debridmediamanager.com/simkl/mylists), where you sign in to Simkl.
+
+Simkl only answers someone signed in, so DMM reads a Simkl list with your Simkl sign-in on
+DMM, and Simkl shows list items only to PRO and VIP members. If you sign out of Simkl on DMM,
+the list stops updating: sign in again and follow it again.
 
 An IMDb, Letterboxd, Rotten Tomatoes or Plex watchlist: on mdblist.com, make an
 [external list](https://docs.mdblist.com/docs/external_lists) from its URL and follow

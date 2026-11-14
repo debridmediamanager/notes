@@ -63,10 +63,10 @@ Pulsa **Library** en la página de inicio. Muestra todo lo que hay en las cuenta
 
 DMM también da servicio a los otros proyectos:
 
-- **zurg** le pregunta a DMM qué película o episodio es cada archivo. Un patrocinador obtiene la clave API de DMM desde [gatekeeper](https://gatekeeper.debridmediamanager.com/). Sin ella, zurg se basa en los nombres de archivo y coinciden menos títulos. [rex con zurg](../rex/with-zurg.md#why-dmm-places-the-files) explica la diferencia.
-- **Sonarr Radarr y Prowlarr** pueden buscar en DMM como indexador de torrents Torznab o indexador de Usenet Newznab. Ambos requieren una patrocinio activo y la clave API de DMM. Configúralos en las páginas [Torznab](https://debridmediamanager.com/torznab) y [Newznab](https://debridmediamanager.com/newznab).
-- **Tu lista de deseados**: pulsa **Want** o sigue una lista de Trakt, MDBList o TMDB. zurg la descarga, y también los episodios nuevos según se emiten. Requiere patrocinio. Consulta [Lista de deseados de DMM](../zurg/guides/dmm-wanted.md).
-- **Seerr Overseerr y Jellyseerr** pueden usar DMM como si fuera Radarr y Sonarr. Las solicitudes llegan entonces a tu lista de deseados para que zurg las descargue. Requiere patrocinio. Consulta [Seerr a través de DMM](seerr.md).
+- **zurg** le pregunta a DMM qué película o episodio es cada archivo. Un patrocinador obtiene la clave API de DMM desde [gatekeeper](https://gatekeeper.debridmediamanager.com/). Sin ella, zurg depende de los nombres de archivo y coinciden menos títulos. [rex con zurg](../rex/with-zurg.md#why-dmm-places-the-files) explica la diferencia.
+- **Sonarr Radarr y Prowlarr** pueden buscar en DMM como indexador de torrents Torznab o indexador de Usenet Newznab. Ambos necesitan un patrocinio activo y la clave API de DMM. Configúralos en las páginas [Torznab](https://debridmediamanager.com/torznab) y [Newznab](https://debridmediamanager.com/newznab).
+- **Tu lista de deseados**: pulsa **Want** o sigue una lista de Trakt, MDBList, TMDB o Simkl. zurg la descarga, y también los episodios nuevos según se van emitiendo. Requiere patrocinio. Consulta [Lista de deseados de DMM](../zurg/guides/dmm-wanted.md).
+- **Seerr Overseerr y Jellyseerr** pueden usar DMM como si fuera Radarr y Sonarr. Las solicitudes entonces van a tu lista de deseados para que zurg las descargue. Requiere patrocinio. Consulta [Seerr a través de DMM](seerr.md).
 - **rex-direct** le da a un rex reclamado su propia dirección y certificado. Consulta [rex-direct](../rex/any-source.md#rex-direct).
 
 Todo lo que abre un patrocinio y dónde se configura cada cosa está en [Lo que te da un patrocinio](../guides/sponsorship.md).
