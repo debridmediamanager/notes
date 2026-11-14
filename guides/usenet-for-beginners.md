@@ -57,7 +57,7 @@ What a row can do depends on what you're signed in with:
 |---|---|---|
 | The file icon at the end, or **NZB** when it's the only button | Saves the NZB, named after the release, with the indexer's watermark taken out. Put it in zurg's `nzbs/` folder. | A DMM sign-in |
 | **Send** | DMM fetches the release from Usenet and adds it to your Real-Debrid library. You need no Usenet account for this. | Real-Debrid |
-| **TorBox** | Sends the NZB to TorBox, which downloads the release for you. | TorBox Pro |
+| **TorBox** | Sends the NZB to TorBox, which downloads the release for you. | TorBox Pro, see [TorBox in DMM](../dmm/torbox.md) |
 
 Sponsors get two more:
 
