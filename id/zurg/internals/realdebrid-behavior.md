@@ -10,20 +10,11 @@ DOWNLOADCODE adalah ID unik sepanjang tepat 13 karakter untuk file tertentu (kar
 
 # Memilih file {#selecting-files}
 
-As mentioned, it is possible to select files that you only want to download inside a torrent
-Seperti yang sudah disebutkan, kamu bisa memilih file mana saja yang hanya ingin diunduh di dalam sebuah torrent.
-
-If a torrent contains files A B and C and you select A and B, it will only download A and B
-Jika sebuah torrent berisi file A, B, dan C, lalu kamu memilih A dan B, maka hanya A dan B yang akan diunduh.
-
-The cached status of a torrent actually depends on this unique file selection
-Status cached dari sebuah torrent sebenarnya bergantung pada pilihan file yang unik ini.
-
-Going back to the torrent containing files A B and C, there are different cached status for A or B or B (single), A+B, B+C, A+C (pair), or A+B+C (all files)
-Kembali ke torrent yang berisi file A, B, dan C, ada beberapa status cached yang berbeda untuk A atau B atau B (single), A+B, B+C, A+C (pair), atau A+B+C (all files).
-
-Each unique selection redownloads the torrent again from trackers and returns a different cached link even if for the same file
-Setiap pilihan unik akan mengunduh ulang torrent dari tracker dan menghasilkan link cached yang berbeda, meskipun untuk file yang sama.
+Seperti yang sudah disebutkan, kamu bisa memilih file mana saja yang ingin didownload dari dalam sebuah torrent.
+Jika sebuah torrent berisi file A, B, dan C, lalu kamu memilih A dan B, maka hanya A dan B yang akan didownload.
+Status cached dari sebuah torrent sebenarnya bergantung pada pemilihan file yang unik ini.
+Kembali ke torrent yang berisi file A, B, dan C, ada beberapa status cached yang berbeda: untuk A, untuk B, atau untuk B (single), A+B, B+C, A+C (pair), atau A+B+C (semua file).
+Setiap pilihan yang unik akan mendownload ulang torrent dari tracker dan menghasilkan link cached yang berbeda, meskipun untuk file yang sama.
 
 # Tautan Cache {#cached-links}
 

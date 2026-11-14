@@ -295,15 +295,15 @@ Stop-Process -InputObject $server
 
 ### شاركه مع حسابك الخاص {#share-it-with-your-own-account}
 
-1. ما زلت مسجّلاً بالحساب الجديد، افتح [app.plex.tv](https://app.plex.tv)، ثم **Settings** (أيقونة المفتاح)، و**Manage Library Access**، و**Grant Library Access**.
-2. اكتب اسم المستخدم أو البريد الإلكتروني الخاص بحسابك، واختر خادم rex والمكتبتين **Movies** و**TV Shows**، ثم أرسل الدعوة.
-3. سجّل الخروج، وادخل باسمك **أنت**، واقبل الدعوة. ستصلك بالبريد الإلكتروني وتظهر أيضاً في app.plex.tv.
+1. ما زلت مسجّلاً بالحساب الجديد، افتح [app.plex.tv](https://app.plex.tv)، ثم **Settings** (المفتاح الإنجليزي)، ثم **Manage Library Access** و**Grant Library Access**.
+2. أدخل اسم المستخدم أو البريد الإلكتروني لحسابك، واختر خادم rex والمكتبتين **Movies** و**TV Shows**، then أرسل الدعوة.
+3. سجّل الخروج، ثم سجّل الدخول باسم **حسابك أنت**، وقبل الدعوة. تصلك الدعوة بالبريد الإلكتروني وأيضاً داخل app.plex.tv.
 
 ![Manage Library Access in app.plex.tv's settings, with the Grant Library Access button](../assets/rex/20-plex-manage-library-access.webp)
 
 ![The Grant Library Access dialog with the rex server's Movies and TV Shows ticked](../assets/rex/21-plex-grant-library-access.webp)
 
-**ما الذي يجب أن تراه.** عند تسجيل دخولك باسمك، تعرض تطبيقات Plex خادم rex بجانب خوادمك الخاصة، مع المكتبتين. سجلّ المشاهدة الخاص بك على rex يخصّك وحدك، ويبقى منفصلاً عن سجلّ الحساب الجديد. وشاركه بالطريقة نفسها مع أي شخص آخر في منزلك.
+**ما الذي يجب أن تراه.** عند تسجيل الدخول بحسابك، تعرض تطبيقات Plex خادم rex بجانب خوادمك الخاصة، مع المكتبتين. سجلّ المشاهدة على rex خاص بك: يُحفظ منفصلاً عن سجلّ الحساب الجديد. شاركه بالطريقة نفسها مع أي شخص آخر في منزلك.
 
 ## الخطوة 4. ربط تطبيقك {#step-4-connect-your-app}
 

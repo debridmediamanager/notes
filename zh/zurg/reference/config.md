@@ -395,23 +395,23 @@ watchlist:
 
 ### 获取来源 {#acquisition-sources}
 
-`acquisition.sources` lists the services zurg acquires for, each on the shared queue described in [acquisition sources](../guides/acquisition.md). The search settings (`indexers`, `quality`, `prefer`, `max_size_gb`, `max_season_size_gb`) sit beside `sources` in the `acquisition:` block and fall back to the `watchlist:` block above. Only `acquisition.quality` also takes a list of resolutions, such as `[1080p, 4k]`: zurg then keeps a copy of each film on the DMM wanted list at each of them, while shows on that list, and every other source, take the list's highest resolution as their one `quality`. See [a copy at each of several resolutions](../guides/acquisition.md#a-copy-at-each-of-several-resolutions).
+`acquisition.sources` 列出了 zurg 为之获取内容的服务，每个服务都使用 [acquisition sources](../guides/acquisition.md) 中描述的共享队列。搜索设置（`indexers`、`quality`、`prefer`、`max_size_gb`、`max_season_size_gb`）和 `sources` 一起放在 `acquisition:` 块中，缺省时回退到上面的 `watchlist:` 块。只有 `acquisition.quality` 还接受分辨率列表，例如 `[1080p, 4k]`：这时 zurg 会为 DMM 想看列表中的每部电影在每个分辨率下各保留一份副本，而列表中的剧集以及其他所有来源，都会取列表中最高的分辨率作为它们唯一的 `quality`。参见 [同一部电影保留多个分辨率的副本](../guides/acquisition.md#a-copy-at-each-of-several-resolutions)。
 
-`best_first` belongs to the `acquisition:` block alone and is off by default. Turned on it makes a `radarr` or `sonarr` source's first grab follow the quality profile's order of preference. The best allowed resolution comes first. Anything at or above the cutoff counts as the cutoff. When a release fails zurg moves down the profile. When it is off a movie takes the allowed release that is cheapest to check. A series takes the one `quality` ranks first. The upgrade pass heads for the cutoff afterwards. The best release is more often a large archive set so the first file tends to arrive later. See [taking the profile's best first](../guides/acquisition.md#taking-the-profiles-best-first).
+`best_first` 只属于 `acquisition:` 块，默认关闭。开启后，`radarr` 或 `sonarr` 来源的首次抓取会按照质量配置文件的偏好顺序进行。允许的最佳分辨率优先。达到或超过截止线的都算作截止线。当某个发布失败时，zurg 会沿着配置文件往下移。关闭时，电影会选取允许的、检查成本最低的发布。剧集则选取 `quality` 排名最靠前的那个。之后升级流程会朝截止线推进。最佳发布通常是体积很大的压缩包集，所以第一个文件往往会来得更晚。参见 [优先抓取配置文件中的最佳版本](../guides/acquisition.md#taking-the-profiles-best-first)。
 
-`exclude_words` (list, default empty) sits there too and has no watchlist fallback. A release whose name has one of these words is never taken, from any source. Matching is by whole word and ignores case, so `DV` does not catch `DVDRip`. `DV`, `DoVi` and `Dolby Vision` count as one word, and so do `HDR10+` and `HDR10Plus`. `HDR10` and `HDR10+` are different words. An entry with no letter or digit is refused at startup. The full rules and how they combine with Radarr and Sonarr profiles are in [excluding releases by name](../guides/acquisition.md#excluding-releases-by-name).
+`exclude_words`（列表，默认为空）也在这里，并且没有 watchlist 回退。名称中包含其中任一词的发布永远不会被抓取，无论来自哪个来源。匹配按整词进行且不区分大小写，所以 `DV` 不会匹配 `DVDRip`。`DV`、`DoVi` 和 `Dolby Vision` 算作同一个词，`HDR10+` 和 `HDR10Plus` 也是。`HDR10` 与 `HDR10+` 是不同的词。不含任何字母或数字的条目会在启动时被拒绝。完整规则以及它们与 Radarr 和 Sonarr 配置文件的组合方式，参见 [按名称排除发布](../guides/acquisition.md#excluding-releases-by-name)。
 
-| Option | Type | Default | Description |
+| 选项 | 类型 | 默认值 | 说明 |
 |--------|------|---------|-------------|
-| `name` | string | required | 字母、数字、`_` 和 `-`，且必须唯一。用于标识该来源保存的队列，所以请保持不变。 |
-| `type` | string | required | `plex_watchlist`、`seerr`、`radarr` 或 `sonarr`。 |
-| `enabled` | bool | `false` | 已禁用的来源会保留在文件中，但不会被轮询。已禁用的 `radarr` 或 `sonarr` 来源仍会被只读方式读取，供管理页面的[重复项视图](../guides/acquisition.md#finding-duplicate-releases)使用。 |
+| `name` | string | 必填 | 字母、数字、`_` 和 `-`，且唯一。用于标识该来源保存的队列，因此请保持稳定。 |
+| `type` | string | 必填 | `plex_watchlist`、`seerr`、`radarr` 或 `sonarr`。 |
+| `enabled` | bool | `false` | 禁用的来源会保留在文件中，但不会被轮询。禁用的 `radarr` 或 `sonarr` 来源仍会被只读地读取，供管理页面的[重复项视图](../guides/acquisition.md#finding-duplicate-releases)使用。 |
 | `check_every_secs` | int | `60` | 轮询该来源的频率。 |
-| `url` | string | | `seerr`、`radarr` 和 `sonarr`：服务的 HTTP(S) 基础 URL，不含凭据、查询参数或片段。可以填写基础 URL，也可以带结尾的 `/api/v1`（Seerr）或 `/api/v3`（Radarr、Sonarr）。 |
-| `api_key` | string | | `seerr`、`radarr` 和 `sonarr`：服务的 API 密钥。以请求头发送，绝不放在 URL 中，并会从共享日志和配置中隐去。 |
-| `library_path` | string | `mount_path` + `/__magic__` | 仅适用于 `radarr` 和 `sonarr`：*arr 看到 zurg `__magic__` 目录的位置，例如容器把 zurg 挂载在 `/data/zurg` 时，可填写 `/data/zurg/__magic__`。该目录下的电影或剧集文件夹会以相同的相对路径放在 `__magic__` 内；其他位置的文件夹会被跳过。必须是绝对路径；也接受 `Z:\__magic__` 这类 Windows 路径。zurg 还会将其与 *arr 看到的 zurg 下载客户端下载文件夹位置进行比较，如果布局会导致导入变成复制，就会报告；详见 [sabnzbd.md](../guides/sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders)。 |
+| `url` | string | | `seerr`、`radarr` 和 `sonarr`：服务的 HTTP(S) 基础 URL，不含凭据、查询参数或片段。可以接受 URL 基础加尾部的 `/api/v1`（Seerr）或 `/api/v3`（Radarr、Sonarr）。 |
+| `api_key` | string | | `seerr`、`radarr` 和 `sonarr`：服务的 API 密钥。以请求头发送，绝不放在 URL 中，并会在共享的日志和配置中隐去。 |
+| `library_path` | string | `mount_path` + `/__magic__` | 仅适用于 `radarr` 和 `sonarr`：\*arr 看到 zurg 的 `__magic__` 目录的位置，例如容器将 zurg 挂载在 `/data/zurg` 时，对应路径为 `/data/zurg/__magic__`。位于其下的电影或剧集文件夹会被放到 `__magic__` 中相同的相对路径下；位于其他位置的文件夹会被跳过。必须是绝对路径；诸如 `Z:\__magic__` 之类的 Windows 路径也可接受。zurg 还会将其与 \*arr 看到的 zurg 下载客户端下载文件夹的位置进行比较，并报告会导致导入变成复制的布局；参见 [sabnzbd.md](../guides/sonarr-radarr.md#one-volume-for-the-download-folder-and-the-root-folders)。 |
 | `remove_after_grab` | bool | `true` | 仅适用于 `plex_watchlist`；对 `seerr`、`radarr` 和 `sonarr` 无效。 |
-| `only_new_items` | bool | `true` | 仅适用于 `plex_watchlist`；对 `seerr`、`radarr` 和 `sonarr` 无效，因为它们的待获取项目始终需要处理。 |
+| `only_new_items` | bool | `true` | 仅适用于 `plex_watchlist`；对 `seerr`、`radarr` 和 `sonarr` 无效，它们的想看项目始终都是需要处理的。 |
 
 ```yaml
 acquisition:

@@ -97,20 +97,20 @@ flowchart LR
 
 ## Выберите, откуда берутся файлы {#choose-where-the-files-come-from}
 
-An **indexer** finds releases. A **torrent or NZB** describes how to fetch one. A **provider** supplies the bytes. A **player** decodes them. Access to one does not include the others.
+Индексатор находит релизы. Торрент или NZB описывает, как его скачать. Провайдер отдаёт сами байты. Плеер их декодирует. Доступ к одному из них не даёт доступа к остальным.
 
-| Input | What obtains/serves the video? | What you need | When it is useful |
+| Вход | Что получает/отдаёт видео? | Что нужно | Когда это полезно |
 |---|---|---|---|
-| Cached torrent, magnet or torrent file | Your debrid provider | Аккаунт, который поддерживает выбранная тобой интеграция | Often the shortest wait when the exact release is already available |
-| Uncached torrent | The debrid provider downloads it first | Аккаунт, который принимает торрент, доступные источники и место в его лимитах | A release you want is not cached; expect a wait and possible failure |
-| NZB, using your own news accounts | zurg's **direct Usenet** backend, or Jellyfin's NZB plugin, reads articles as needed | NZB, доступ к NNTP и выбранная тобой интеграция; доступ к индексатору, если хочешь поиск | Choose your providers/backbones, use fallback accounts, avoid storing whole videos locally |
-| NZB, using TorBox's hosted service | **TorBox fetches and repairs it**, then serves the completed files | TorBox Pro; отправь через DMM или через бэкенд zurg **TorBox hosted NZB** | You want NZBs without managing news-server credentials or local decoding |
-| DMM Usenet result sent to Real-Debrid | DMM's hosted transfer service fetches it and passes it to **your Real-Debrid library** | Real-Debrid и доступный лимит передач DMM | You already watch through RD and want that release there; no personal NNTP account required |
-| Easynews search result | Easynews serves a direct HTTP download/stream | Твой собственный аккаунт Easynews | Watch or Cast from DMM, or use its Easynews Cast/Kodi route, without building an NZB library |
-| Direct HTTP(S) download link | A compatible player/HTTP source, or a provider supporting that download | Доступ к самому медиа-URL; подходящий аккаунт провайдера, если импортируешь или разблокируешь его там | You already have a file URL rather than a torrent/NZB |
-| Files on your disk or NAS | Your file/media server | Локальное хранилище и плеер, который может до него достучаться | Offline ownership, home videos, or keeping an existing collection |
+| Кэшированный торрент, magnet или torrent-файл | Ваш debrid-провайдер | Аккаунт, поддерживаемый выбранной интеграцией | Часто самое короткое ожидание, если нужный релиз уже есть в кэше |
+| Некэшированный торрент | Debrid-провайдер сначала скачивает его | Аккаунт, который принимает торрент, доступные источники и место в лимитах | Нужного релиза нет в кэше; готовьтесь к ожиданию и возможному сбою |
+| NZB, через ваши новостные аккаунты | Direct Usenet backend в zurg или NZB-плагин Jellyfin читают статьи по мере необходимости | NZB, доступ к NNTP и выбранная интеграция; доступ к индексатору, если нужен поиск | Выберите провайдеров/бэкбоны, используйте резервные аккаунты, не храните целые видео локально |
+| NZB, через хостируемый сервис TorBox | **TorBox скачивает и восстанавливает его**, затем отдаёт готовые файлы | TorBox Pro; отправка через DMM или бэкенд **TorBox hosted NZB** в zurg | Нужны NZB без управления данными от новостного сервера и без локального декодирования |
+| Результат DMM Usenet, отправленный в Real-Debrid | Хостируемый сервис переноса DMM скачивает его и передаёт в **вашу библиотеку Real-Debrid** | Real-Debrid и доступный лимит переносов DMM | Вы уже смотрите через RD и хотите получить этот релиз там; личный NNTP-аккаунт не нужен |
+| Результат поиска Easynews | Easynews отдаёт прямую HTTP-загрузку/стрим | Ваш собственный аккаунт Easynews | Смотреть или транслировать из DMM либо использовать маршрут Easynews Cast/Kodi без создания библиотеки NZB |
+| Прямая ссылка на загрузку HTTP(S) | Совместимый плеер/HTTP-источник или провайдер, поддерживающий эту загрузку | Доступ к реальному URL медиа; подходящий аккаунт провайдера, если импортируете или разблокируете его там | У вас есть ссылка на файл, а не торрент/NZB |
+| Файлы на диске или NAS | Ваш сервер файлов/медиа | Локальное хранилище и плеер, который до него достучится | Офлайн-владение, домашние видео или сохранение существующей коллекции |
 
-zurg supports **Real-Debrid, AllDebrid, TorBox, Premiumize, Offcloud and Debrid-Link**. You can combine accounts in one library. Caches quotas and file availability still differ. A cached badge is evidence, not a playback guarantee. See [providers](../zurg/providers/index.md).
+zurg поддерживает **Real-Debrid, AllDebrid, TorBox, Premiumize, Offcloud и Debrid-Link**. Аккаунты можно комбинировать в одной библиотеке. Лимиты кэша и доступность файлов при этом всё равно различаются. Значок «кэшировано» — это признак, а не гарантия воспроизведения. См. [providers](../zurg/providers/index.md).
 
 ### «Usenet без аккаунта Usenet»: какой путь выбрать? {#usenet-without-a-usenet-account-which-route}
 

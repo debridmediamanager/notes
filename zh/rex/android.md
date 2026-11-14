@@ -49,24 +49,19 @@ Wait, I should not wrap in a code fence. Correct output:
 
 ## 第 3 步：启动 rex {#step-3-start-rex}
 
-```
-```
+**rex**を開きます。最初の画面には**Welcome to rex.**と表示されます。
 
-Ah, the input is not a code fence; I should not add one. Let me give the translation properly.
+1. **Allow notifications**を押し、次に**Allow**を押します。rex はバックグラウンドで動き、通知から停止できます。
+2. **Let rex keep running in the background**を押します。開いたリストで**rex**を選び、**Don't optimize**を選択します。新しい Android では**Allow background usage**、次に**Unrestricted**です。rex に戻ります。両方のボタンの先頭に✓が付きます。
+3. **Name**は Plex アプリがこのサーバーを呼ぶ名前です。必要なら変更してください。
+4. **Port**は`32400`のままにします。この端末で別の Plex サーバーがすでに動いている場合、rex は**Another app here already uses this port, maybe a Plex server. Try 32500.**と表示します。`32500`と入力してください。
+5. **Start rex**を押します。
 
-**打开 rex。** 第一个屏幕写着 **Welcome to rex.**
+**表示されるはずの画面。** **2 / 2**と**Sign in to Plex**です。
 
-1. 点 **Allow notifications**，然后点 **Allow**。rex 会在后台运行，并带有一个通知，你可以通过它停止 rex。
-2. 点 **Let rex keep running in the background**。在打开的列表中，选择 **rex**，然后选 **Don't optimize**。在较新的 Android 上，选项是 **Allow background usage**，然后选 **Unrestricted**。返回 rex。两个按钮现在都以 ✓ 开头。
-3. **Name** 是 Plex 应用中显示的服务器名称。如果你想，可以修改。
-4. **Port** 保持 `32400`。如果这台设备上已经运行了另一个 Plex 服务器，rex 会提示 **Another app here already uses this port, maybe a Plex server. Try 32500.** 那就输入 `32500`。
-5. 点 **Start rex**。
-
-**你应该看到的画面。** **2 / 2** 和 **Sign in to Plex**。
-
-| 第一个屏幕 | Plex 应用中的影片页面（第 5 步） |
+| 最初の画面 | Plex アプリでの映画のページ（ステップ5） |
 |---|---|
-| ![rex for Android 的第一个屏幕，包含名称和端口字段以及 Start rex](../assets/rex/android-setup.webp) | ![Internet Archive 上一部 1916 年无声电影在 Plex for Android 中的页面](../assets/rex/android-plex-film.webp) |
+| ![名前とポートの入力欄、Start rex があるrex for Androidの最初の画面](../assets/rex/android-setup.webp) | ![Internet Archive の1916年のサイレント映画が Plex for Android のページに表示されている様子](../assets/rex/android-plex-film.webp) |
 
 ## 第 4 步：登录 Plex {#step-4-sign-in-to-plex}
 
@@ -83,13 +78,13 @@ Ah, the input is not a code fence; I should not add one. Let me give the transla
 
 ## 第 5 步：在 Plex 应用中观看 {#step-5-watch-in-a-plex-app}
 
-打开任意一个已登录同一账号的 Plex 应用。如果 Plex 在这台设备上,**Status** 里会有一个 **Open Plex** 按钮。
+用同一账号登录的任意 Plex 应用打开。如果 Plex 在这台设备上,**Status** 里有一个 **Open Plex** 按钮。
 
-在 Plex for Android 中,打开 **Libraries**,然后是 **All Libraries**,再点你服务器名称下的 **Movies**。其他 Plex 应用也会在服务器名称下列出它。
+在 Plex for Android 中,打开 **Libraries**,然后是 **All Libraries**,再点你服务器名称下的 **Movies**。其他 Plex 应用也都在服务器名称下列出它。
 
-Internet Archive 的首次同步需要一点时间:在我们的测试设备上大约半小时,rex 会逐一检查每部影片。**Status** 会显示 **Syncing**,直到完成,然后显示数量,比如 **Ready · 97 titles**。随便选一部影片播放就行。
+Internet Archive 的首次同步需要一些时间:在我们的测试设备上大约半小时,rex 会逐个检查每部影片。在完成之前,**Status** 会显示 **Syncing**,完成后显示数量,例如 **Ready · 97 titles**。随便选一部影片播放即可。
 
-![The Plex app on a TV playing a 1914 Chaplin short from rex on the same TV](../assets/rex/android-tv-playing.webp)
+![在电视上通过 Plex 应用播放 rex 提供的 1914 年卓别林短片](../assets/rex/android-tv-playing.webp)
 
 ## 附加组件 {#addons}
 
@@ -131,21 +126,21 @@ Plex 应用只要登录的是同一个账号，就能在家庭网络里通过名
 
 ## 故障排除 {#troubleshooting}
 
-| 你看到的内容 | 该怎么做 |
+| 你看到的 | 该怎么做 |
 |---|---|
-| **App not installed as app isn't compatible with your phone.** | 你选错了处理器对应的文件。请从第 1 步的表格中换一个文件再试 |
-| **Another app here already uses this port, maybe a Plex server. Try 32500.** | 将端口输入为 `32500` |
-| **Use a number from 1024 to 65535** | 端口必须是这个范围内的数字 |
-| The server isn't in the Plex app | 让 Plex 应用登录到第 4 步所用的同一个账号，并确保两台设备处于同一个家庭网络中 |
-| The library is empty | 首次同步仍在进行：请等待，直到 **Status** 显示出标题数量 |
-| **Sign in needed** under an addon | 点击该插件下的 **Sign in** 按钮，然后输入验证码 |
-| **Needs an update** under an addon | 此版本的应用已无法运行该插件的这个副本。请刷新它的仓库，然后点击 **Update**。在此期间，它的标题会保留 |
-| **That isn't a repository link. Try github.com/user/repo.** | 输入仓库的链接，例如 `github.com/user/repo` |
-| **no public git repository there (it asks for a login)** | 链接有误，或者仓库是私有的。请在浏览器中检查一下 |
-| rex stops when the screen is off | 重新设置第 3 步中的后台运行选项，并参考 [Don't kill my app](https://dontkillmyapp.com/) |
+| **App not installed as app isn't compatible with your phone.** | 你选的文件和处理器不匹配。请从步骤 1 的表格中选另一个文件。 |
+| **Another app here already uses this port, maybe a Plex server. Try 32500.** | 端口填 `32500` |
+| **Use a number from 1024 to 65535** | 端口必须是该范围内的数字 |
+| Plex 应用中看不到服务器 | 用步骤 4 中使用的同一账号登录 Plex 应用，并让两台设备保持在同一个家庭网络中。 |
+| 媒体库是空的 | 首次同步仍在进行：等待 **Status** 显示出标题数量。 |
+| 插件下方显示 **Sign in needed** | 按下它的 **Sign in** 按钮并输入验证码。 |
+| 插件下方显示 **Needs an update** | 当前版本的应用已无法运行该插件的这个副本。刷新它的仓库并按下 **Update**。期间它的标题会保留。 |
+| **That isn't a repository link. Try github.com/user/repo.** | 输入仓库链接，例如 `github.com/user/repo` |
+| **no public git repository there (it asks for a login)** | 链接有误，或仓库是私有的。请在浏览器中检查。 |
+| 屏幕关闭时 rex 停止运行 | 重新设置步骤 3 中的后台设置，并参阅 [不要杀我的应用](https://dontkillmyapp.com/) |
 
-**Logs** 会显示 rex 和插件最近输出的内容，其中的密钥和密码已隐藏。如果支持人员索要日志，请点击 **Send logs to support**：在发送任何内容之前，你都可以先看到全部内容，然后点击 **Send**，并把得到的代码发给对方。
+**Logs** 会显示 rex 和插件最近输出的内容，其中的密钥和密码已被隐藏。如果支持人员要求提供日志，请按下 **Send logs to support**：在发送任何内容之前，你都能看到全部内容。然后按下 **Send**，并把得到的代码发送出去。
 
-应用会发送哪些内容、发往何处，请参阅其[隐私政策](android-privacy.md)。
+应用会发送什么内容、发往何处，请见其 [隐私政策](android-privacy.md)。
 
 遇到问题？请到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **rex-support** 论坛提问。

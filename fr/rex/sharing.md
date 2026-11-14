@@ -17,15 +17,15 @@ Votre propre compte ne reçoit pas plus que n'importe quelle autre personne avec
 
 ## Inviter quelqu'un {#invite-someone}
 
-1. Connecte-toi sur [app.plex.tv](https://app.plex.tv) **en tant que propriétaire**, puis ouvre **Settings** (la clé à molette), **Manage Library Access** et **Grant Library Access**.
-2. Entre le nom d'utilisateur ou l'e-mail Plex de la personne, choisis le serveur rex et les bibliothèques à partager, puis envoie l'invitation.
+1. Connectez-vous à [app.plex.tv](https://app.plex.tv) **en tant que propriétaire**, puis ouvrez **Settings** (la clé à molette), **Manage Library Access** et **Grant Library Access**.
+2. Saisissez le nom d'utilisateur ou l'e-mail Plex de la personne, choisissez le serveur rex et les bibliothèques à partager, puis envoyez l'invitation.
 3. Elle l'accepte en se connectant avec son propre compte. L'invitation arrive par e-mail et dans app.plex.tv. Chaque invitation s'accepte séparément.
 
 ![The Grant Library Access dialog with the rex server's Movies and TV Shows ticked](../assets/rex/21-plex-grant-library-access.webp)
 
-**Une bibliothèque que tu ajoutes plus tard** (une que une source déclare, comme une bibliothèque **Anime** ou celle d'un catalogue rex-stremio, ou une créée avec **Add Library**) n'est dans le partage de personne pour l'instant. Ajoute-la à chaque partage dans Manage Library Access.
+**Une bibliothèque que vous ajoutez plus tard** (une bibliothèque déclarée par une source, comme une bibliothèque **Anime** ou celle d'un catalogue rex-stremio, ou une bibliothèque créée avec **Add Library**) n'est dans le partage de personne pour l'instant. Ajoutez-la à chaque partage dans Manage Library Access.
 
-**Ce qu'elle devrait voir.** Connectée avec son propre compte, son appli Plex affiche rex à côté de ses propres serveurs. À la maison, ça suffit. En dehors de chez toi, lis la suite.
+**Ce qu'elle devrait voir.** Connectée avec son propre compte, son application Plex affiche rex à côté de ses propres serveurs. À la maison, cela suffit. En dehors de chez vous, continuez à lire.
 
 ## À la maison et en déplacement {#at-home-and-away}
 

@@ -801,9 +801,7 @@ dilupakan setiap kali restart dan dihitung ulang dari awal.
 
 ## Jaga link tetap stabil untuk rilis yang ada dua kali di akun Anda {#keep-the-link-steady-for-a-release-your-account-holds-twice}
 
-A release added twice to one account has two of everything, including two download links per file. zurg kept one link per account, so each copy replaced the other's on every refresh and the entry never settled. Nothing was unplayable, but the log filled with re-pointing and the library was rewritten to disk every few seconds. zurg now leaves the link alone when it can only see part of what the account holds.
-
-Sebuah rilis yang ditambahkan dua kali ke satu akun akan punya dua dari segalanya, termasuk dua tautan unduhan untuk setiap file. zurg hanya menyimpan satu tautan per akun, jadi setiap salinan menggantikan tautan milik salinan lain pada setiap refresh dan entri itu tidak pernah stabil. Tidak ada yang tidak bisa diputar, tetapi log penuh dengan pengarahan ulang dan library ditulis ulang ke disk setiap beberapa detik. Sekarang zurg membiarkan tautan itu tetap apa adanya ketika ia hanya bisa melihat sebagian dari isi akun.
+Sebuah rilis yang ditambahkan dua kali ke satu akun akan memiliki dua salinan dari semuanya, termasuk dua tautan unduh untuk setiap file. zurg hanya menyimpan satu tautan per akun, jadi setiap salinan menggantikan tautan milik salinan lain pada setiap refresh, dan entri tersebut tidak pernah stabil. Tidak ada yang gagal diputar, tetapi log penuh dengan pengarahan ulang tautan dan library ditulis ulang ke disk setiap beberapa detik. Sekarang zurg membiarkan tautan itu apa adanya ketika ia hanya bisa melihat sebagian dari isi akun.
 
 ## Pengecekan perubahan di TorBox lebih cepat saat akun menyimpan torrent yang gagal {#faster-change-checks-on-torbox-when-the-account-holds-failed-torrents}
 

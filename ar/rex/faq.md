@@ -1,10 +1,6 @@
 # أسئلة rex {#rex-questions}
 
-Short answers to what people ask before they install rex, and soon after. Each answer links to the guide that has the details.
-
-Wait — the translation target is Arabic. Here is the translation:
-
-إجابات قصيرة لأكثر ما يسأله الناس قبل تثبيت rex، وبعد ذلك بقليل. كل إجابة ترتبط بالدليل الذي يحتوي على التفاصيل.
+إجابات قصيرة على ما يسأله الناس قبل تثبيت rex، وبعده بقليل. كل إجابة تربط بالدليل الذي يحتوي على التفاصيل.
 
 ## قبل التثبيت {#before-you-install}
 

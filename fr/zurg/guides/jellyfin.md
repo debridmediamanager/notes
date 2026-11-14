@@ -41,9 +41,9 @@
 - On peut aussi écrire `jellyfin_server_url` et `jellyfin_token` via les handlers génériques de mise à jour de configuration, donc sans passer par la fenêtre modale QuickConnect (`handlers["jellyfin_server_url"]`/`["jellyfin_token"]` dans `dashboard.go` ; `updateJellyfinServerURL` dans `scripts.tmpl`).
 
 ## Effets de bord sur la bibliothèque et actualisation {#library-side-effects--refresh}
-- Any library side effects (directory assignment changes, STRM sync, repairs) invoke `MediaScanner.TriggerScan`, which includes Jellyfin refreshes when the client is connected (`internal/torrent/hooks.go:TriggerLibrarySideEffects` → `pkg/scan/scanner.go`).
-- Le même appel oublie d'abord les entrées de cache dircache du VFS rclone concernées, pour que le scan de Jellyfin voie le changement plutôt qu'une liste mise en cache pendant des heures.
-- La synchronisation STRM et les hooks `on_library_update` s'exécutent en parallèle du déclenchement du scan (le hook est débouncé à 500 ms et dédupliqué) ; Jellyfin reçoit des chemins de bibliothèque préfixés par mount_path dans les tâches de rafraîchissement.
+- Tout effet de bord sur la bibliothèque (changements d'affectation de répertoire, synchronisation STRM, réparations) appelle `MediaScanner.TriggerScan`, qui inclut les rafraîchissements Jellyfin lorsque le client est connecté (`internal/torrent/hooks.go:TriggerLibrarySideEffects` → `pkg/scan/scanner.go`).
+- Ce même appel commence par oublier les entrées du cache de répertoires rclone VFS concernées, afin que le scan de Jellyfin voie le changement plutôt qu'une liste mise en cache pendant des heures.
+- La synchronisation STRM et les hooks `on_library_update` s'exécutent en parallèle du déclenchement du scan (le hook est temporisé de 500 ms et dédupliqué) ; Jellyfin reçoit des chemins de bibliothèque préfixés par mount_path dans les tâches de rafraîchissement.
 
 ## Divers {#miscellaneous}
 - Emby est une intégration sœur avec ses propres clés de config (`emby_server_url`, `emby_token`) et le même cœur partagé, mais sans QuickConnect : tu te connectes avec une clé API, ou tu choisis un utilisateur et tu saisis son mot de passe (`/emby/users`, `/emby/auth`). Sa carte du tableau de bord affiche les bibliothèques avec des boutons de scan (`/emby/scan/{sectionID}`, `/emby/scan-all`), ainsi que les activités et les sessions, comme pour Jellyfin (`EmbyStatusFetcher`).

@@ -295,15 +295,15 @@ Stop-Process -InputObject $server
 
 ### Compártelo con tu propia cuenta {#share-it-with-your-own-account}
 
-1. Sigue con la cuenta nueva, abre [app.plex.tv](https://app.plex.tv) y luego **Settings** (la llave inglesa), **Manage Library Access** y **Grant Library Access**.
-2. Escribe el nombre de usuario o el correo de tu cuenta, elige el servidor de rex y las dos bibliotecas, **Movies** y **TV Shows**, y envía la invitación.
-3. Cierra sesión, entra como **tú** y acepta la invitación. Llega por correo y en app.plex.tv.
+1. Siguiendo con la cuenta nueva, abre [app.plex.tv](https://app.plex.tv) y luego **Settings** (la llave inglesa), **Manage Library Access** y **Grant Library Access**.
+2. Escribe el nombre de usuario o el correo de tu propia cuenta, elige el servidor de rex y las dos bibliotecas, **Movies** y **TV Shows**, y envía la invitación.
+3. Cierra sesión, entra como **tú** y acepta la invitación. Llega por correo y dentro de app.plex.tv.
 
-![Manage Library Access in app.plex.tv's settings, with the Grant Library Access button](../assets/rex/20-plex-manage-library-access.webp)
+![Manage Library Access en los ajustes de app.plex.tv, con el botón Grant Library Access](../assets/rex/20-plex-manage-library-access.webp)
 
-![The Grant Library Access dialog with the rex server's Movies and TV Shows ticked](../assets/rex/21-plex-grant-library-access.webp)
+![El diálogo Grant Library Access con Movies y TV Shows del servidor de rex marcadas](../assets/rex/21-plex-grant-library-access.webp)
 
-**Qué deberías ver.** Con tu cuenta, las apps de Plex muestran el servidor de rex junto a tus propios servidores, con las dos bibliotecas. Tu historial de reproducción en rex es tuyo: se guarda aparte del de la cuenta nueva. Compártelo de la misma forma con cualquier otra persona de tu casa.
+**Lo que deberías ver.** Con tu sesión iniciada, las apps de Plex muestran el servidor de rex junto a tus propios servidores, con las dos bibliotecas. Tu historial de reproducción en rex es tuyo: se guarda aparte del de la cuenta nueva. Compártelo de la misma forma con cualquier otra persona de tu casa.
 
 ## Paso 4. Conecta tu app {#step-4-connect-your-app}
 

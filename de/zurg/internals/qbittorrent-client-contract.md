@@ -1165,26 +1165,14 @@ Ein Import eines Releases mit N Dateien kostet also mindestens N ffprobe-Zugriff
 
 ## 8. Die Health-Checks {#8-the-health-checks}
 
-All three are shared with the SAB client and analysed in
-[sabnzbd-client-contract.md §6](sabnzbd-client-contract.md). What is qBittorrent-specific:
+Alle drei werden mit dem SAB-Client geteilt und in
+[sabnzbd-client-contract.md §6](sabnzbd-client-contract.md) analysiert. Was qBittorrent-spezifisch ist:
 
 - **`RemotePathMappingCheck`** (`src/NzbDrone.Core/HealthCheck/Checks/RemotePathMappingCheck.cs:59-173`)
-  geht `client.GetStatus().OutputRootFolders` durch — bei qBittorrent ist das der einzelne Ordner, der in
-  `QBittorrent.cs:377-407` berechnet wird: der globale `save_path`, überschrieben oder erweitert durch den
-  `savePath` der konfigurierten Kategorie (§1.5). Er muss ein gültiger Pfad sein **für das Betriebssystem, auf dem der \*arr läuft** (`:68-113`),
-  und er muss **auf dem \*arr-Host existieren** (`:115-158`). Beschreibbar muss er nicht sein.
-  `IsLocalhost` ist `Settings.Host == "127.0.0.1" || Settings.Host == "localhost"` (`:406`) und bestimmt nur,
-  welche von drei Fehlermeldungen ausgegeben wird.
+  geht `client.GetStatus().OutputRootFolders` durch. Bei qBittorrent ist das der einzelne Ordner, der bei `QBittorrent.cs:377-407` berechnet wird: der globale `save_path`, überschrieben oder erweitert durch das `savePath` der konfigurierten Kategorie (§1.5). Er muss ein gültiger Pfad **für das Betriebssystem sein, auf dem der \*arr läuft** (`:68-113`), und er muss **auf dem \*arr-Host existieren** (`:115-158`). Er muss nicht beschreibbar sein. `IsLocalhost` ist `Settings.Host == "127.0.0.1" || Settings.Host == "localhost"` (`:406`) und bestimmt nur, welche von drei Fehlermeldungen ausgegeben wird.
 - **`DownloadClientRemovesCompletedDownloadsCheck`**
-  (`src/NzbDrone.Core/HealthCheck/Checks/RemovesCompletedCheck.cs:33-66`) warnt immer dann, wenn
-  `GetStatus().RemovesCompletedDownloads` true ist — also immer dann, wenn das abgeleitete Flag aus §1.4 true ist. Lässt du
-  `max_ratio_enabled` und `max_seeding_time_enabled` auf false (was das Rezept aus §3.5 ohnehin so macht), bleibt er still.
-- **`DownloadClientRootFolderCheck`** ist die eine Stelle, an der sich die beiden Repos wirklich unterscheiden — Sonarr warnt
-  nur, wenn ein Root-Ordner *gleich* einem Output-Ordner ist, Radarr auch dann, wenn ein Root-Ordner *einen* Output-Ordner *enthält*.
-  Die vollständige Analyse steht in [sabnzbd-client-contract.md §6.1](sabnzbd-client-contract.md); die praktische Regel ist hier
-  dieselbe: Lege keinen Root-Ordner auf oder über den Save-Path, und auch keinen darin — `/mnt/zurg/__magic__/tv` ist ein Geschwister von `/mnt/zurg/__magic__/__all__`.
-
----
+  (`src/NzbDrone.Core/HealthCheck/Checks/RemovesCompletedCheck.cs:33-66`) warnt immer dann, wenn `GetStatus().RemovesCompletedDownloads` true ist, also immer dann, wenn das abgeleitete Flag aus §1.4 true ist. Wenn `max_ratio_enabled` und `max_seeding_time_enabled` false bleiben (das macht das Rezept aus §3.5 bereits so), bleibt er still.
+- **`DownloadClientRootFolderCheck`** ist die einzige Stelle, an der sich die beiden Repos wirklich unterscheiden. Sonarr warnt nur, wenn ein Root-Ordner *gleich* einem Output-Ordner ist, Radarr auch, wenn ein Root-Ordner einen Output-Ordner *enthält*. Die vollständige Analyse steht in [sabnzbd-client-contract.md §6.1](sabnzbd-client-contract.md). Die praktische Regel ist hier dieselbe: Lege keinen Root-Ordner auf oder über den Save-Pfad, und lege auch keinen darin ab. `/mnt/zurg/__magic__/tv` ist ein Geschwisterordner von `/mnt/zurg/__magic__/__all__`.
 
 ## 9. Sonarr vs. Radarr — der vollständige Unterschied {#9-sonarr-vs-radarr--the-complete-diff}
 

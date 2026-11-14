@@ -57,21 +57,17 @@ Pembacaan library dan streamed reads dan redirected reads dan STRM dan penambaha
 
 ## Batasan yang perlu diketahui {#limits-worth-knowing}
 
-**8 gleichzeitige API-Anfragen.** Vier Teile eines mehrteiligen Archivs werden gleichzeitig aufgelöst.
+**8 permintaan API bersamaan.** Empat volume dari arsip multi-volume diselesaikan sekaligus.
 
-Wait — I'm writing in Indonesian, not German. Let me correct that.
+**Konten kedaluwarsa.** Rilis yang sudah hilang dianggap wajar, bukan rusak. Repair membiarkannya kecuali Anda memintanya.
 
-**8 permintaan API serentak.** Empat volume dari arsip multi-volume diselesaikan sekaligus.
+**Daftar torrent tidak memuat detail file.** Setiap rilis membutuhkan lookup sendiri saat pertama kali diakses.
 
-**Konten kedaluwarsa.** Rilis yang sudah hilang memang diharapkan, bukan dianggap rusak. Repair tidak menyentuhnya kecuali kamu memintanya.
+**Daftar file yang ambigu dianggap error, bukan tebakan.** Kadang metadata torrent yang di-cache tidak bisa dicocokkan ke tepat satu rilis. zurg melaporkannya daripada memilih path folder yang mungkin milik rilis lain.
 
-**Daftar torrent tidak memuat detail file.** Setiap rilis memerlukan pencarian sendiri saat pertama kali.
+**Magnet yang rusak ditolak secara lokal.** Magnet tersebut tidak pernah sampai ke layanan. Magnet yang buruk tidak menimbulkan biaya apa pun.
 
-**Daftar file yang ambigu dianggap sebagai error, bukan tebakan.** Kadang metadata torrent yang di-cache tidak bisa dicocokkan ke tepat satu rilis. zurg melaporkannya daripada memilih path folder yang mungkin milik hal lain.
-
-**Magnet yang rusak ditolak secara lokal.** Magnet itu tidak pernah sampai ke layanan. Magnet yang buruk tidak memakan biaya apa pun.
-
-Kosakata kegagalan Offcloud cukup terbatas. `NOAUTH` adalah satu-satunya kode yang bisa ditangani zurg, dan artinya kredensial ditolak. Semua yang lain muncul sebagai penolakan tanpa alasan.
+Kosakata kegagalan Offcloud cukup terbatas. `NOAUTH` adalah satu-satunya kode yang bisa ditangani zurg, dan artinya kredensial ditolak. Semua kode lain datang sebagai penolakan tanpa alasan.
 
 ## Cek apakah sudah berhasil {#check-it-worked}
 

@@ -764,17 +764,7 @@ Debrid-Link يرد على القفل المؤقت لكل نقطة نهاية، �
 
 ## توقف عن إعادة سؤال AllDebrid عن الـ magnets التي رفض إعادة محاولتها بالفعل {#stop-re-asking-alldebrid-about-magnets-it-has-already-refused-to-retry}
 
-> When a magnet fails, zurg asks AllDebrid to fetch it again. AllDebrid refuses
-some of those, and the refusal was not counted against the two attempts a
-torrent gets, so the same magnet was asked about on every library refresh for
-as long as zurg ran. The answer is now remembered for an hour, and for the
-status the account gave it, so a magnet that changes gets asked afresh. The
-count of attempts is also written to disk, instead of being forgotten on every
-restart and spent all over again.
-
-Wait, this is the input text itself, not an English-to-Arabic request. Let me redo it properly.
-
-عندما يفشل magnet، يطلب zurg من AllDebrid جلبه مرة أخرى. ترفض AllDebrid بعض هذه الطلبات، ولم يُحتسب هذا الرفض ضمن المحاولتين المسموح بهما لكل torrent، لذلك كان يُسأل عن نفس الـ magnet في كل تحديث للمكتبة طالما كان zurg يعمل. أصبحت الإجابة تُحفظ الآن لمدة ساعة، وكذلك للحالة التي أعطاها الحساب، حتى إذا تغيّر magnet يُسأل من جديد. كما يُكتب عدد المحاولات الآن على القرص، بدلاً من أن يُنسى مع كل إعادة تشغيل فيُستنفد من جديد.
+ع��دما يفشل magnet، يطلب zurg من AllDebrid أن يجلبه من جديد. يرفض AllDebrid بعض هذه الطلبات، ولم يكن هذا الرفض يُحسب ضمن المحاولتين اللتين يُسمح بهما لكل torrent، لذلك كان يُسأل عن الـmagnet نفسه في كل تحديث للمكتبة طوال مدة تشغيل zurg. أصبحت الإجابة تُحفظ الآن لمدة ساعة، وكذلك حالة الرفض التي أعطاها الحساب، فإذا تغيّر magnet يُسأل من جديد. كما صار عدد المحاولات يُكتب على القرص، بدلاً من أن يُنسى عند كل إعادة تشغيل ثم يُستنفد من جديد.
 
 ## أبقِ الرابط ثابتاً لإصدار يحتفظ به حسابك مرتين {#keep-the-link-steady-for-a-release-your-account-holds-twice}
 

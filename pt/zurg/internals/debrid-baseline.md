@@ -234,30 +234,30 @@ Real-Debrid e AllDebrid ainda fazem o leitor esperar até estourar o próprio ti
 
 ### Um 503 transitório deixa releases como pastas vazias {#a-transient-503-leaves-releases-as-empty-folders}
 
-The clearest defect of the run, and it was found by accident.
+The defeito mais claro da execução, e ele foi achado por acaso.
 
-Dos 3.316 torrents de um cold build no Real-Debrid, **85 respostas vieram como 503** e
+De 3.316 torrents em uma build fria do Real-Debrid, **85 respostas vieram como 503** e
 **84 torrents acabaram em `broken_torrent`**. Um release nesse estado continua listado
 no mount, mas a pasta dele fica **vazia**. Isso foi verificado com PROPFIND em dois deles, que tinham 10 e 3 arquivos selecionados no registro salvo e não serviam nenhum.
 
-Ele não se resolve sozinho. O benchmark roda com `enable_repair: false`, e esses releases continuaram quebrados por mais de uma hora e vários restarts depois.
+Ele não se resolve sozinho. O bench roda com `enable_repair: false`, e esses releases continuaram quebrados por mais de uma hora e vários reinícios depois.
 
-Ligar o repair, que é o padrão da versão lançada, funciona e vai resolvendo os casos, mas devagar. Com um pass disparado manualmente:
+Ligar o repair, que é o padrão da versão lançada, funciona nesses casos, mas devagar. Com um pass disparado manualmente:
 
-| Tempo decorrido | Quebrados | Em reparo |
+| Tempo decorrido | Quebrados | Em repair |
 |---|---|---|
 | 0 min | 85 | 0 |
 | ~2 min | 77 | 2 |
 | ~15 min | 73 | 4 |
 
-Doze releases em um quarto de hora, e a taxa cai depois dos primeiros minutos. Nesse ritmo, o volume de quebras de um cold build inteiro leva mais de uma hora para ser limpo, e cada release que ainda não foi alcançado fica como pasta vazia durante todo esse tempo.
+Doze releases em um quarto de hora, e a taxa cai depois dos primeiros minutos. Nessa velocidade, a quebra de uma build fria inteira leva mais de uma hora para ser resolvida, e cada release que não foi alcançado fica como uma pasta vazia durante todo esse tempo.
 
 Então a gravidade depende de uma configuração:
 
-- Com o repair ligado (padrão), um 503 durante um scan custa a um release os arquivos dele até um pass de reparo chegar até ele. São cerca de uma hora para uma biblioteca completa.
-- Com o repair desligado, o release fica como pasta vazia por tempo indeterminado.
+- Com o repair ligado (padrão), um 503 durante um scan faz um release perder os arquivos até que um pass de repair chegue até ele, algo na ordem de uma hora para uma biblioteca completa.
+- Com o repair desligado, o release fica como uma pasta vazia por tempo indeterminado.
 
-A TorBox tem a versão mais grave disso. Ela reporta `StoredLinksCanRot: false`, então o refresh nunca rechecka os links dela. Não existe caminho que limpe um estado quebrado sem passar pelo reparo. O único release da TorBox marcado como quebrado durante o teste de queda continuou quebrado por 68 minutos e vários restarts depois, enquanto o provedor o reportava como `cached`, `download_present`, com um arquivo, 7,31 GB.
+O TorBox tem a versão mais grave disso. Ele reporta `StoredLinksCanRot: false`, então o refresh nunca verifica os links de novo. Não existe caminho que limpe um estado quebrado sem passar pelo repair. O único release do TorBox marcado como quebrado durante o teste de queda ainda estava quebrado 68 minutos e vários reinícios depois, enquanto o provedor o reportava como `cached`, `download_present`, um arquivo, 7.31 GB.
 
 ### Integridade de leitura {#read-integrity}
 

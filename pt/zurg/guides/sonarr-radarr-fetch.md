@@ -1,12 +1,12 @@
 # Deixe o zurg buscar o que o Sonarr e o Radarr querem {#let-zurg-fetch-what-sonarr-and-radarr-want}
 
-There are three ways to use Sonarr and Radarr with zurg. The real choice is who searches, zurg or the \*arrs: [which one to pick](#which-one-to-pick) compares them.
+Há três formas de usar o Sonarr e o Radarr com o zurg. A escolha que realmente importa é quem faz a busca: o zurg ou o \*arrs. [Qual escolher](#which-one-to-pick) compara as duas.
 
-| Guia | Quem pesquisa | O zurg atua como | Você precisa de |
+| Guia | Quem busca | O zurg atua como | Você precisa de |
 |---|---|---|---|
 | [Usenet](sonarr-radarr.md) | Sonarr e Radarr | um SABnzbd | uma conta Usenet (ou TorBox Pro para o backend `torbox_nzb`) e indexadores Usenet no Prowlarr ou nos \*arrs |
 | [Torrents](sonarr-radarr-torrents.md) | Sonarr e Radarr | um qBittorrent | uma conta de debrid e indexadores de torrent no Prowlarr ou nos \*arrs |
-| [Pesquisas pelo zurg](sonarr-radarr-fetch.md) | zurg | nenhum cliente de download | uma conta Usenet, TorBox Pro ou de debrid, e indexadores Newznab ou Torznab na própria configuração do zurg |
+| [Buscas pelo zurg](sonarr-radarr-fetch.md) | zurg | nenhum cliente de download | uma conta Usenet, TorBox Pro ou debrid, e indexadores Newznab ou Torznab na própria configuração do zurg |
 
 As duas primeiras podem rodar lado a lado. Elas compartilham a mesma pasta `__magic__`.
 
@@ -112,15 +112,15 @@ Uma lista de importação no Sonarr tem a mesma opção nas configurações. Des
 
 ## 4. Deixe os indexadores e os clientes de download vazios {#4-leave-indexers-and-download-clients-empty}
 
-That is the whole setup on the arr side. A página de indexers pode ficar vazia.
+Essa é a configuração completa do lado dos arr. A página de indexers pode ficar vazia.
 
-![Radarr's indexers page with nothing in it](../../assets/sonarr-radarr-fetch/05-radarr-indexers-empty.webp)
+![Página de indexers do Radarr sem nada](../../assets/sonarr-radarr-fetch/05-radarr-indexers-empty.webp)
 
 A página de download clients também pode ficar vazia.
 
-![Radarr's download clients page with nothing in it](../../assets/sonarr-radarr-fetch/06-radarr-download-clients-empty.webp)
+![Página de download clients do Radarr sem nada](../../assets/sonarr-radarr-fetch/06-radarr-download-clients-empty.webp)
 
-O Sonarr é igual. Se algum dos apps já tiver indexers e um download client de uma configuração anterior, eles continuam funcionando. Nesse caso, o app vai buscar junto com o zurg para os mesmos títulos. Desative a busca automática nesses indexers ou remova-os dos títulos que o zurg cuida.
+O Sonarr é igual. Se algum dos dois apps já tiver indexers e um download client de uma configuração anterior, eles continuam funcionando. Nesse caso, o app vai buscar junto com o zurg para os mesmos títulos. Desative a busca automática nesses indexers ou remova-os para os títulos que o zurg cuida.
 
 ## 5. Veja funcionando {#5-watch-it-work}
 

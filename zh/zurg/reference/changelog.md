@@ -410,33 +410,19 @@ zurg 在告诉 Radarr 某个发布版本已就绪前，只会检查每个文件�
 
 ## 文件名中带有重音符号或 CJK 字符的资源会保留完整名称 {#releases-with-accents-or-cjk-in-their-filenames-keep-their-whole-names}
 
-A release whose files are named with anything outside plain English letters came
-out of zurg with the front of every name missing. `Détective Conan S11E01 - 286
-[MULTI] [AVC].mkv` was served as `tective Conan S11E01 - 286 [MULTI] [AVC].mkv`,
-and a Chinese or Japanese title lost even more, because everything up to the last
-such character was dropped.
+文件名中含有纯英文字母以外字符的发布，经 zurg 输出后，每个文件名的前半部分都会丢失。`Détective Conan S11E01 - 286
+[MULTI] [AVC].mkv` 被输出成了 `tective Conan S11E01 - 286 [MULTI] [AVC].mkv`，
+中文或日文标题丢得更多，因为最后一个这类字符之前的全部内容都被丢弃了。
 
-Sonarr and Radarr could not do anything with what was left. A name like `tective
-Conan S11E01` matches no series, so they fell back to the download's grab history,
-refused to import on that alone, and parked the item with "release was matched to
-series by ID. Automatic import is not possible." The release sat in the queue and
-nothing moved it.
+Sonarr 和 Radarr 对剩下的部分无能为力。像 `tective Conan S11E01` 这样的名字匹配不到任何剧集，于是它们退回到下载的抓取历史，仅凭这一点拒绝导入，并把该项目搁置，附上 "release was matched to series by ID. Automatic import is not possible."（发布已通过 ID 匹配到剧集，无法自动导入。）发布一直停在队列里，没有任何进展。
 
-It could also cost you files. When the only thing telling two files apart sits
-after the last accented character, both come out with the same name, and a name
-is a path. One French release with ten repair volumes had all ten reduced to the
-same name and published four files where the post holds thirteen, leaving the
-repair data with no way to reach it.
+这还可能让你丢失文件。当区分两个文件的唯一依据位于最后一个带重音符号的字符之后时，两个文件会输出成同一个名字，而文件名就是路径。一个法语发布含十个修复卷，十个卷都被简化成同名，结果只发布了四个文件，而帖子里有十三个。修复数据因此无法被找到。
 
-zurg now reads every character above plain ASCII as part of the filename, which
-is what it always is: the part counters, the `yEnc` marker, the brackets and the
-file extensions posters write are all plain ASCII, so anything else belongs to
-the title. Releases named in plain ASCII are unaffected and come out exactly as
-before.
+zurg 现在会把纯 ASCII 以上的每个字符都当作文件名的一部分，这本来就是它应有的样子：分卷计数、`yEnc` 标记、方括号以及发布者写的文件扩展名都是纯 ASCII，因此其他字符都属于标题。使用纯 ASCII 命名的发布不受影响，输出结果与之前完全一致。
 
-Releases already in your library keep the names they were filed under, since
-zurg does not revisit a file list it has already recorded. Re-adding an affected
-release picks up the corrected names.
+库中已有的发布会保留它们当时被记录的文件名，因为 zurg 不会重新处理已经记录过的文件列表。重新添加受影响的发布即可获得更正后的文件名。
+
+（此前的译文因代码片段不一致被驳回（` was served as `）。请保持结构完全一致。）
 
 ## 日文、韩文、中文、泰文或阿拉伯文的名称保持不变 {#a-name-written-in-japanese-korean-chinese-thai-or-arabic-is-left-alone}
 

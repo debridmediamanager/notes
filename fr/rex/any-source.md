@@ -297,13 +297,13 @@ Stop-Process -InputObject $server
 
 1. Toujours connecté avec le compte neuf, ouvre [app.plex.tv](https://app.plex.tv), puis **Settings** (la clé à molette), **Manage Library Access** et **Grant Library Access**.
 2. Saisis le nom d'utilisateur ou l'adresse e-mail de ton propre compte, choisis le serveur rex et les deux bibliothèques, **Movies** et **TV Shows**, puis envoie l'invitation.
-3. Déconnecte-toi, connecte-toi en tant que **toi**, et accepte l'invitation. Elle arrive par e-mail et dans app.plex.tv.
+3. Déconnecte-toi, connecte-toi en tant que **toi-même**, puis accepte l'invitation. Elle arrive par e-mail et dans app.plex.tv.
 
-![Manage Library Access in app.plex.tv's settings, with the Grant Library Access button](../assets/rex/20-plex-manage-library-access.webp)
+![Manage Library Access dans les paramètres de app.plex.tv, avec le bouton Grant Library Access](../assets/rex/20-plex-manage-library-access.webp)
 
-![The Grant Library Access dialog with the rex server's Movies and TV Shows ticked](../assets/rex/21-plex-grant-library-access.webp)
+![La boîte de dialogue Grant Library Access avec Movies et TV Shows cochés pour le serveur rex](../assets/rex/21-plex-grant-library-access.webp)
 
-**Ce que tu dois voir.** Connecté avec ton compte, les applications Plex affichent le serveur rex à côté de tes propres serveurs, avec les deux bibliothèques. Ton historique de visionnage sur rex est le tien : il est séparé de celui du compte neuf. Partage-le de la même façon avec les autres personnes de ton foyer.
+**Ce que tu dois voir.** Connecté en tant que toi-même, les applis Plex affichent le serveur rex à côté de tes propres serveurs, avec les deux bibliothèques. Ton historique de visionnage sur rex t'appartient : il est séparé de celui du compte neuf. Partage-le de la même façon avec les autres membres de ton foyer.
 
 ## Étape 4. Connecter votre app {#step-4-connect-your-app}
 

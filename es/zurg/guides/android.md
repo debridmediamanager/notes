@@ -145,17 +145,17 @@ Tu token de GitHub se guarda cifrado en el dispositivo. Al desinstalar la app se
 
 | Lo que ves | Qué hacer |
 |---|---|
-| GitHub responde 404 en la página de descarga | Inicia sesión en GitHub con tu cuenta de patrocinador y [acepta la invitación](https://github.com/debridmediamanager/zurg/invitations). Todavía no eres patrocinador: [gatekeeper](https://gatekeeper.debridmediamanager.com/) |
+| GitHub responde 404 en la página de descarga | Inicia sesión en GitHub con tu cuenta de patrocinador y [acepta la invitación](https://github.com/debridmediamanager/zurg/invitations). Si todavía no eres patrocinador: [gatekeeper](https://gatekeeper.debridmediamanager.com/) |
 | **No engine is installed. zurg needs one before it can serve your library.** | Pulsa **Install an engine** y permite que Android lo instale |
 | **No engine is available in the sponsor releases for this device yet.** | La nightly más reciente no tiene un engine para tu procesador. Pregunta en support |
-| **This is a 32-bit device. Debrid libraries are supported; Usenet needs 64-bit Android.** | Añade una cuenta de debrid, o usa un dispositivo de 64 bits para Usenet |
-| **The Plex code expired. Ask for a new one.** | Pulsa **Sign in to Plex** otra vez e introduce el código nuevo en un plazo de 10 minutos |
-| The server isn't in the Plex app | Inicia sesión en la app de Plex con la cuenta que usaste en el Paso 6, y mantén ambos dispositivos en la misma red doméstica |
-| Titles show a file name and no poster | Introduce tu API key de DMM (consulta [Get more titles named](#get-more-titles-named)), o usa **Fix Match** en una app de Plex |
-| **Needs an update** under an addon | Esta versión de la app ya no puede ejecutar esa copia del addon. Actualiza su repositorio y pulsa **Update**. Mientras tanto, sus títulos se mantienen |
-| It stops when the screen is off | Vuelve a permitir el uso en segundo plano y consulta [Don't kill my app](https://dontkillmyapp.com/) |
-| An update leaves the app without an engine | Instala un engine desde **Updates** una vez. Tus proveedores y ajustes se mantienen |
+| **This is a 32-bit device. Debrid libraries are supported; Usenet needs 64-bit Android.** | Añade una cuenta de debrid o usa un dispositivo de 64 bits para Usenet |
+| **The Plex code expired. Ask for a new one.** | Pulsa **Sign in to Plex** otra vez e introduce el código nuevo en menos de 10 minutos |
+| The server isn't in the Plex app | Inicia sesión en la app de Plex con la cuenta que usaste en el Paso 6, y mantén los dos dispositivos en la misma red doméstica |
+| Los títulos muestran un nombre de archivo y no tienen póster | Introduce tu API key de DMM (consulta [Get more titles named](#get-more-titles-named)), o usa **Fix Match** en una app de Plex |
+| **Needs an update** under an addon | Esta versión de la app ya no puede ejecutar esa copia del addon. Actualiza su repositorio y pulsa **Update**. Sus títulos se mantienen mientras tanto |
+| Se detiene cuando la pantalla está apagada | Vuelve a permitir el uso en segundo plano y consulta [Don't kill my app](https://dontkillmyapp.com/) |
+| Una actualización deja la app sin engine | Instala un engine desde **Updates** una vez. Tus proveedores y ajustes se mantienen |
 
-Si support pide logs, abre **Logs** y pulsa **Send logs to support**. Verás todo antes de que se envíe nada; luego pulsa **Send** y publica el código que obtengas.
+Si support pide logs, abre **Logs** y pulsa **Send logs to support**. Verás todo antes de que se envíe nada; después pulsa **Send** y publica el código que obtengas.
 
-¿Te atascas? Pregunta en el foro **zurg-support** de [Discord](https://discord.com/invite/7u4YjMThXP).
+¿Te quedaste atascado? Pregunta en el foro **zurg-support** de [Discord](https://discord.com/invite/7u4YjMThXP).

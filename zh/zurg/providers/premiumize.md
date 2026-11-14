@@ -74,25 +74,21 @@ providers:
 
 ## 值得了解的限制 {#limits-worth-knowing}
 
-**Cloud-Speicher und Fair Use sind die eigenen Grenzen des Kontos.** zurg hebt sie nicht auf und umgeht sie auch nicht.
+**云存储和公平使用限制属于账户自身的限制。** zurg 不会提高这些限制，也不会绕过它们。
 
-Hier ist die deutsche Fassung, aber der Text ist Simplified Chinese, also hier die richtige Übersetzung:
+**8 个并发 API 请求。** 多卷压缩包的四个分卷会同时解析。
 
-**云存储和合理使用是账户本身的限制。** zurg 不会提高这些限制，也不会绕过它们。
-
-**同时最多 8 个 API 请求。** 多卷压缩包的四个分卷会同时解析。
-
-**内容会过期。** 资源已失效是预期中的结果，而不是故障。除非你主动要求，修复操作不会去动它。
+**内容会过期。** 资源已经失效是一种正常结果，而不是故障。除非你主动要求，修复功能不会去动它。
 
 **种子列表不包含文件详情。** 每个资源第一次都需要单独查询一次。
 
-zurg 会把服务返回的错误代码映射成它接下来应该做的事。
+zurg 会把服务返回的错误代码映射为下一步应采取的操作。
 
 | Premiumize 返回的代码 | zurg 的处理方式 |
 |---|---|
-| `authentication_failed` | 报告凭据有误。请修正 key。 |
+| `authentication_failed` | 报告凭据有误。请修改密钥。 |
 | `rate_limit_reached` | 暂停该账户一分钟。 |
-| `account_limit_reached` 或 `service_limit_reached` | 报告配额已用完。 |
+| `account_limit_reached` 或 `service_limit_reached` | 报告额度已用完。 |
 | `service_down` | 将该账户视为暂时不可用。 |
 | `not_found` | 将该种子视为已失效。 |
 

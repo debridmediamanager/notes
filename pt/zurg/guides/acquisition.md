@@ -493,49 +493,13 @@ Um source do Sonarr precisa de `__magic__` (`magic.enabled`). Sem ele, o source 
 
 ## Pacotes com várias temporadas {#packs-of-several-seasons}
 
-A season can be taken from a pack that holds several, such as
-`Game.of.Thrones.S01-08.BDRip.1080p` or `Breaking Bad Season 1-5`. Indexers
-file such a pack under every season it covers. On DMM's feed, 72 of the 691
-results for Breaking Bad season 3 were packs of several seasons. For some
-seasons one of them is the only copy an account holds.
+Uma temporada pode ser tirada de um pacote que traz várias, como `Game.of.Thrones.S01-08.BDRip.1080p` ou `Breaking Bad Season 1-5`. Os indexadores catalogam esse pacote em cada temporada que ele cobre. No feed do DMM, 72 dos 691 resultados para Breaking Bad temporada 3 eram pacotes de várias temporadas. Para algumas temporadas, um desses pacotes é a única cópia que a conta tem.
 
-- **O título diz quais temporadas.** `S01-S05`, `S01-05`, `[S01-08]`, `S1-9`,
-  `Seasons 1-8`, `Season 1 to 5`, `Season 1 · 2 · 3`, `Stagioni 01-05` e
-  `Temporadas 1-4` são todos lidos. Um título sem números de temporada, como
-  `Complete Series`, não é aceito. Também não é aceito um que cite uma única
-  temporada só como palavra, como `Season 3 Complete`. Esses nunca foram lidos
-  como packs.
-- **Só essa temporada é colocada.** Um pack pego para a temporada 4 coloca os
-  episódios da temporada 4 na pasta da temporada. Os arquivos das outras
-  temporadas ficam onde a biblioteca os lista. Um pack cujos arquivos não
-  tenham todos os episódios da temporada é recusado antes de qualquer coisa
-  ser movida, não importa o que o título diz.
-- **O tamanho é avaliado por episódio.** O tamanho do pack é dividido pelas
-  temporadas que ele cita e depois pelos episódios da temporada, e comparado
-  com `max_size_gb`, como seria o mesmo encode postado episódio por episódio.
-  Um pack de 346 GB com oito temporadas de dez episódios dá 4.3 GB por
-  episódio. O remux da temporada 2 de I Love Lucy, com 31 episódios, tem
-  106 GiB, 3.4 GiB por episódio, e cabe num limite escrito de 40. Quando a
-  fonte não listou os episódios da temporada, os packs não têm limite por
-  episódio. Um `max_season_size_gb` que você escrever limita cada temporada
-  citada no pack, além disso; por padrão não há nenhum.
-- **A qualidade continua vindo primeiro.** Os packs são ranqueados como
-  qualquer outro lançamento: primeiro a resolução, depois o que eles têm por
-  episódio, do jeito que a página de temporada do DMM os ranqueia. Um pack
-  2160p de uma temporada é pego antes de um pack 1080p de oito. Dentro da
-  mesma resolução, o remux próprio de uma temporada vem antes de um pack de
-  oito temporadas que é maior no total, mas menor por episódio.
-- **As outras temporadas da série usam o mesmo pack.** Depois que uma
-  temporada pega um pack de várias temporadas, as outras temporadas da série
-  tentam esse pack primeiro, antes de qualquer pack da mesma resolução que a
-  busca própria delas encontrou. Ele já está na conta, então não custa nada.
-  Enquanto as temporadas de uma série estão escolhendo entre packs de várias
-  temporadas, elas escolhem uma de cada vez, para que temporadas pedidas juntas
-  (uma série do Sonarr, com todas as temporadas numa mesma consulta) não
-  escolham cada uma uma cópia diferente da série. Quando uma delas escolher sem
-  um pack desses, porque nenhum estava na conta ou o perfil não permitia
-  nenhum, as demais escolhem de uma vez. Uma temporada pedida uma hora depois
-  faz uma busca nova.
+- **O título diz quais temporadas.** Todos estes formatos são lidos: `S01-S05`, `S01-05`, `[S01-08]`, `S1-9`, `Seasons 1-8`, `Season 1 to 5`, `Season 1 · 2 · 3`, `Stagioni 01-05` e `Temporadas 1-4`. Um título sem números de temporada, como `Complete Series`, não é aceito. Também não é aceito um que cite só uma temporada como palavra, como `Season 3 Complete`. Esses nunca foram lidos como pacotes.
+- **Só essa temporada é colocada.** Um pacote usado para a temporada 4 coloca os episódios da temporada 4 na pasta da temporada. Os arquivos das outras temporadas continuam onde a biblioteca os lista. Um pacote cujos arquivos não tragam todos os episódios da temporada é recusado antes de qualquer coisa ser movida, não importa o que o título diga.
+- **O tamanho é avaliado por episódio.** O tamanho do pacote é dividido pelas temporadas que ele cita e depois pelos episódios da temporada, e comparado com `max_size_gb`, do mesmo jeito que seria o mesmo encode postado episódio por episódio. Um pacote de 346 GB com oito temporadas de dez episódios dá 4.3 GB por episódio. O remux da temporada 2 de I Love Lucy, com 31 episódios, tem 106 GiB, ou 3.4 GiB por episódio, e cabe no limite de 40 que você definiu. Quando a fonte não listou os episódios da temporada, os pacotes não têm teto por episódio. Um `max_season_size_gb` que você escrever limita cada temporada que o pacote cita, além disso; por padrão, não há limite.
+- **A qualidade continua vindo primeiro.** Os pacotes são ranqueados como qualquer outro lançamento: primeiro a resolução, depois o que trazem por episódio, do jeito que a página de temporada do DMM os ranqueia. Um pacote 2160p de uma temporada é pego antes de um pacote 1080p de oito. Dentro da mesma resolução, o remux próprio de uma temporada vem antes de um pacote de oito temporadas que é maior no total, mas menor por episódio.
+- **As outras temporadas da série usam o mesmo pacote.** Depois que uma temporada pega um pacote de várias temporadas, as outras temporadas da série tentam esse pacote primeiro, antes de qualquer pacote da mesma resolução que a busca delas tenha encontrado. Ele já está na conta, então não custa nada. Enquanto as temporadas de uma série escolhem entre pacotes de várias temporadas, elas escolhem uma de cada vez, para que temporadas pedidas juntas (uma série do Sonarr, com todas as temporadas numa mesma consulta) não escolham, cada uma, uma cópia diferente da série. Quando uma delas escolhe sem um desses pacotes, porque nenhum estava na conta ou o perfil não permitia nenhum, as demais escolhem de uma vez. Uma temporada pedida uma hora depois busca de novo do zero.
 
 ## Vendo funcionar {#watching-it-work}
 

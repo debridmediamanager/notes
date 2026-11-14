@@ -16,15 +16,15 @@ Ejecútalo una vez desde cualquier computadora de casa. Cada persona que usa rex
 
 ## 1. Copia la dirección de tu servidor anterior {#1-copy-your-old-servers-address}
 
-1. Abre [app.plex.tv](https://app.plex.tv) en un navegador e inicia sesión como **tú mismo**, con la cuenta cuyo historial quieres.
-2. Elige tu servidor antiguo y abre cualquier película que tenga.
+1. Abre [app.plex.tv](https://app.plex.tv) en el navegador e inicia sesión como **tú**, la cuenta cuyo historial quieres.
+2. Elige tu servidor antiguo y abre cualquier película.
 3. Haz clic en **⋯** (Más) y luego en **Get Info**.
-4. Haz clic en **View XML**, abajo a la izquierda del cuadro **Media Info** que se abre. Se abre una pestaña nueva, llena de texto.
+4. Haz clic en **View XML** en la esquina inferior izquierda del cuadro **Media Info** que se abre. Se abre una pestaña nueva, llena de texto.
 
-   ![The Media Info box that Get Info opens, with View XML at the bottom left](../assets/rex/40-plex-get-info.webp)
+   ![El cuadro Media Info que abre Get Info, con View XML en la esquina inferior izquierda](../assets/rex/40-plex-get-info.webp)
 5. Copia la **dirección completa** de la barra de direcciones de esa pestaña.
 
-Tiene este aspecto, todo en una sola línea, y termina en `X-Plex-Token=` seguido de un código:
+Tiene este aspecto, todo en una sola línea, y termina con `X-Plex-Token=` seguido de un código:
 
 ```
 https://192-168-1-5.0123456789abcdef.plex.direct:32400/library/metadata/1234?checkFiles=1&includeAllConcerts=1&X-Plex-Token=AbCdEfGh1234567890xy
@@ -32,7 +32,7 @@ https://192-168-1-5.0123456789abcdef.plex.direct:32400/library/metadata/1234?che
 
 Ese código es tu **token de Plex** para ese servidor. Funciona como una contraseña de tu cuenta de Plex: nunca lo pegues en Discord, en una publicación de soporte ni en una captura de pantalla.
 
-**¿No aparece View XML en el paso 4?** Plex Web solo lo muestra en un servidor que tú seas dueño, así que un servidor que alguien te ha compartido no lo tiene. Usa las herramientas de desarrollo del navegador en tu servidor antiguo, como en el [paso 2](#2-get-your-token-on-rex), y elige una petición a tu servidor antiguo (su dirección contiene `plex.direct`). Haz clic derecho sobre ella y copia su dirección: **Copy**, **Copy URL** en Chrome y Edge, **Copy Value**, **Copy URL** en Firefox. Esa es la dirección que necesitas. Contiene `X-Plex-Token=` y el código, entre otras partes `X-Plex-`: pega todo.
+**¿No aparece View XML en el paso 4?** Plex Web solo lo muestra en un servidor que tú seas dueño, así que un servidor que alguien compartió contigo no lo tiene. Usa las herramientas de desarrollador del navegador en tu servidor antiguo, como en el [paso 2](#2-get-your-token-on-rex), y elige una petición a tu servidor antiguo (su dirección contiene `plex.direct`). Haz clic derecho sobre ella y copia su dirección: **Copy**, **Copy URL** en Chrome y Edge, **Copy Value** o **Copy URL** en Firefox. Esa es la dirección que necesitas. Tiene `X-Plex-Token=` y el código entre otras partes `X-Plex-`: pega todo.
 
 ## 2. Obtén tu token en rex {#2-get-your-token-on-rex}
 

@@ -43,25 +43,19 @@ En una caja de TV sin navegador, descarga el archivo con una app de descargas qu
 
 ## Paso 3. Inicia rex {#step-3-start-rex}
 
-**Abre **rex**. La primera pantalla dice **Welcome to rex.****
+**rex**, ábrelo. La primera pantalla dice **Welcome to rex.**
 
-Wait, I need to keep the UI strings in English as they appear. The first line should read: **Abre rex**. The first screen says **Welcome to rex.**
-
-Let me redo this cleanly.
-
-Abre **rex**. La primera pantalla dice **Welcome to rex.**
-
-1. Pulsa **Allow notifications** y luego **Allow**. rex se ejecuta en segundo plano con una notificación con la que puedes detenerlo.
-2. Pulsa **Let rex keep running in the background**. En la lista que se abre, elige **rex** y selecciona **Don't optimize**. En Android más nuevo es **Allow background usage** y luego **Unrestricted**. Vuelve a rex. Ahora ambos botones empiezan con un ✓.
+1. Pulsa **Allow notifications** y luego **Allow**. rex se ejecuta en segundo plano con una notificación desde la que puedes detenerlo.
+2. Pulsa **Let rex keep running in the background**. En la lista que se abre, elige **rex** y selecciona **Don't optimize**. En Android más reciente es **Allow background usage** y luego **Unrestricted**. Vuelve a rex. Ahora ambos botones empiezan con un ✓.
 3. **Name** es el nombre que las apps de Plex muestran para este servidor. Cámbialo si quieres.
 4. Deja **Port** en `32400`. Si otro servidor de Plex ya se ejecuta en este dispositivo, rex muestra **Another app here already uses this port, maybe a Plex server. Try 32500.** Escribe `32500`.
 5. Pulsa **Start rex**.
 
-**Lo que deberías ver.** **2 / 2** y **Sign in to Plex.**
+**Qué deberías ver.** **2 / 2** y **Sign in to Plex.**
 
-| La primera pantalla | La página de la película en la app de Plex (Paso 5) |
+| La primera pantalla | La página de la película en la app de Plex (paso 5) |
 |---|---|
-| ![La primera pantalla de rex para Android, con los campos de nombre y puerto y Start rex](../assets/rex/android-setup.webp) | ![Una película muda de 1916 de Internet Archive en su página en Plex para Android](../assets/rex/android-plex-film.webp) |
+| ![La primera pantalla de rex para Android, con los campos de nombre y puerto y Start rex](../assets/rex/android-setup.webp) | ![Una película muda de 1916 del Internet Archive en su página en Plex para Android](../assets/rex/android-plex-film.webp) |
 
 ## Paso 4. Inicia sesión en Plex {#step-4-sign-in-to-plex}
 

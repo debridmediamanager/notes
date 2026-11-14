@@ -18,13 +18,13 @@ Sua conta pessoal não recebe mais do que qualquer outra pessoa com quem você c
 
 1. Entre no [app.plex.tv](https://app.plex.tv) **como dono**, depois abra **Settings** (a chave inglesa), **Manage Library Access** e **Grant Library Access**.
 2. Digite o nome de usuário ou o e-mail do Plex da pessoa, escolha o servidor do rex e as bibliotecas que quer compartilhar, e envie o convite.
-3. Ela aceita o convite entrando com a própria conta. O convite chega por e-mail e também no app.plex.tv. Cada convite precisa ser aceito separadamente.
+3. Ela aceita o convite entrando com a própria conta. O convite chega por e-mail e no app.plex.tv. Cada convite precisa ser aceito separadamente.
 
-![The Grant Library Access dialog with the rex server's Movies and TV Shows ticked](../assets/rex/21-plex-grant-library-access.webp)
+![A caixa de diálogo Grant Library Access com Movies e TV Shows do servidor do rex marcadas](../assets/rex/21-plex-grant-library-access.webp)
 
-**Uma biblioteca que você adiciona depois** (uma que uma fonte declara, como uma biblioteca **Anime** ou a de um catálogo do rex-stremio, ou uma criada com **Add Library**) ainda não está no compartilhamento de ninguém. Adicione-a em cada compartilhamento em Manage Library Access.
+**Uma biblioteca que você adicionar depois** (uma que uma fonte declara, como uma biblioteca **Anime** ou uma do catálogo rex-stremio, ou uma criada com **Add Library**) ainda não está no compartilhamento de ninguém. Adicione-a em cada compartilhamento em Manage Library Access.
 
-**O que a pessoa deve ver.** Logada com a própria conta, os apps do Plex dela mostram o rex junto com os servidores dela. Em casa, isso já basta. Fora de casa, continue lendo.
+**O que a pessoa deve ver.** Entrando com a própria conta, os apps do Plex dela listam o rex ao lado dos servidores dela. Em casa, isso já basta. Fora de casa, continue lendo.
 
 ## Em casa e fora de casa {#at-home-and-away}
 
@@ -83,15 +83,15 @@ Qualquer pessoa com quem você compartilha pode copiar o que assistiu e avaliou 
 
 ## Quantos ao mesmo tempo {#how-many-at-once}
 
-rex não define um limite próprio para o número de pessoas assistindo ao mesmo tempo. Quem define isso é a sua velocidade de upload, a sua máquina e a sua fonte. Cada conversão roda o FFmpeg na máquina do rex, e quantas delas a sua máquina aguenta ao mesmo tempo depende do hardware. Duas ao mesmo tempo ainda não foram medidas. Um vídeo copiado (só o áudio é convertido) quase não custa nada.
+rex não define um limite próprio para o número de pessoas assistindo ao mesmo tempo. Sua velocidade de upload, sua máquina e sua fonte definem esse limite. Cada conversão roda o FFmpeg na máquina do rex. Quantas conversões ao mesmo tempo a sua máquina aguenta depende do hardware, e dois ao mesmo tempo não foram medidos. Um vídeo copiado (só o áudio é convertido) quase não custa nada.
 
-Para definir limites, entre como proprietário e abra as configurações do servidor:
+Para definir limites, entre como dono e abra as configurações do servidor:
 
 | Setting | Where | Default |
 |---|---|---|
 | **Remote streams allowed per user** | Network, under the advanced settings | 0, no limit. Counts streams away from home only |
 | **Maximum simultaneous CPU transcodes** | Transcoder | 0, no limit. Counts every video conversion, on the graphics chip too. A copied video is never counted |
 
-O rex recusa a reprodução se ela passar do limite.
+O rex recusa uma reprodução que passe do limite.
 
-![The rex server's Network and Transcoder settings with Remote streams allowed per user and the conversion limits outlined](../assets/rex/33-plex-server-limits.webp)
+![As configurações de Network e Transcoder do servidor rex com Remote streams allowed per user e os limites de conversão destacados](../assets/rex/33-plex-server-limits.webp)

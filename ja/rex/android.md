@@ -82,21 +82,21 @@ Internet Archiveの最初の同期には時間がかかります。テスト用�
 
 ## アドオン {#addons}
 
-**Addons** は、インストールしたものを一覧表示します。各アドオンには、そのタイトルと最後に同期した日時が表示されます。ボタンは **Sync now**、**Settings**、**Log**、**Remove** の4つです。スマホでは、ボタンの並びを横にスワイプすると全部見られます。**Enabled** のスイッチを切ると、削除せずにアドオンをオフにできます。
+**アドオン**には、インストール済みのものが一覧で表示されます。それぞれ、そのアドオンが提供するタイトルと最後に同期した時刻が出ます。ボタンは **Sync now**、**Settings**、**Log**、**Remove** の4つです。スマートフォンでは、ボタンの並んだ行を横にスワイプすると、すべて見られます。**Enabled** のスイッチをオフにすると、アドオンを削除せずに無効にできます。
 
-アドオンは **repositories**（アドオンを入れた git リポジトリ）から届きます。アプリは最初から [rex-addons](https://github.com/debridmediamanager/rex-addons) が追加された状態で起動し、Internet Archive のパブリックドメインの映画がはじめからインストールされています。さらに増やしたい場合は、[rex-community-addons](https://github.com/debridmediamanager/rex-community-addons) を追加してください（下の **Add a repository** を参照）。次のアドオンが使えるようになります。
+アドオンは**リポジトリ**から入手します。リポジトリとは、アドオンを収めた git のリポジトリのことです。アプリには最初から [rex-addons](https://github.com/debridmediamanager/rex-addons) が追加されています。これはインターネットアーカイブのパブリックドメインの映画を提供するもので、最初からインストールされています。ほかのアドオンも使いたい場合は、[rex-community-addons](https://github.com/debridmediamanager/rex-community-addons) を追加してください（下の **Add a repository** を参照）。このリポジトリでは次のアドオンが使えます。
 
-| Addon | What it brings |
+| アドオン | 提供される内容 |
 |---|---|
-| Stremio addons | Your Stremio addons' film and series catalogs, played from the streams your stream addons give |
-| YouTube | Your YouTube playlists. You sign in with a code |
-| Spotify | Your Spotify library as music for Plex and Plexamp. Needs the YouTube addon, signed in |
+| Stremio addons | Stremio のアドオンの映画・シリーズのカタログを表示します。再生は、ストリームアドオンが返すストリームから行います |
+| YouTube | YouTube のプレイリストを取り込みます。コードを使ってサインインします |
+| Spotify | Spotify のライブラリを、Plex と Plexamp で聴ける音楽として取り込みます。YouTube アドオンにサインイン済みである必要があります |
 
-**インストールする。** **Repositories** の下で、リポジトリの横にある **Addons** を押し、そのアドオンの下にある **Install** を押します。rex は、アクセスできるウェブサイトを表示して、もう一度確認してから同期を始めます。
+**インストールする。** **Repositories** の下で、リポジトリの横にある **Addons** を押し、次にアドオンの下にある **Install** を押します。rex は接続できるウェブサイトを表示し、もう一度確認を求めてから、そのアドオンの同期を始めます。
 
-**サインインする。** アカウントが必要なアドオンには **Sign in to start.** と表示されます。その **Sign in** ボタンを押し、表示されたページをどのデバイスでも開いて、表示されたコードを入力してください。
+**サインインする。** アカウントが必要なアドオンには **Sign in to start.** と表示されます。その **Sign in** ボタンを押し、表示されたページをどの端末でもいいので開いて、表示されたコードを入力してください。
 
-**リポジトリを追加する。** **Add a repository** の下にリンクを入力します（`github.com/user/repo` だけで十分です）。そして **Add** を押してください。信頼できる人が作ったものだけをインストールしてください。自分でアドオンを作りたい場合は [rex-addons](https://github.com/debridmediamanager/rex-addons) を参照してください。
+**リポジトリを追加する。** **Add a repository** の下に、リポジトリのリンクを入力し（`github.com/user/repo` だけで十分です）、**Add** を押します。信頼できる人が作ったアドオンだけをインストールしてください。自分でアドオンを作りたい場合は [rex-addons](https://github.com/debridmediamanager/rex-addons) を参照してください。
 
 ## 自宅の他のデバイスで視聴する {#watch-on-other-devices-at-home}
 

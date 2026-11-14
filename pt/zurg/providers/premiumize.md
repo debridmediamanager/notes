@@ -68,25 +68,25 @@ Excluir uma transferência do Premiumize pelo zurg também exclui os arquivos qu
 
 ## Limites que vale conhecer {#limits-worth-knowing}
 
-**Los límites de almacenamiento en la nube y de uso justo son los de la cuenta.** zurg no los sube ni los esquiva.
+**Os limites de armazenamento na nuvem e de uso justo são da própria conta.** O zurg não aumenta
+esses limites e não tenta contorná-los.
 
-Ah, wait, this is supposed to be Brazilian Portuguese. Let me restart the translation properly.
+**8 requisições de API simultâneas.** Quatro volumes de um arquivo com vários volumes são
+resolvidos ao mesmo tempo.
 
-**Os limites de armazenamento em nuvem e de uso justo são os da própria conta.** O zurg não os aumenta nem contorna.
+**O conteúdo expira.** Um release que já saiu é um resultado esperado, e não uma falha. O repair
+deixa esse release de lado, a menos que você peça o contrário.
 
-**8 requisições simultâneas à API.** Quatro volumes de um arquivo com várias partes são resolvidos ao mesmo tempo.
+**A lista de torrents não traz detalhes dos arquivos.** Cada release precisa de uma consulta própria
+na primeira vez.
 
-**O conteúdo expira.** Um lançamento que sumiu é um resultado esperado, não um erro. O reparo não mexe nele, a menos que você peça.
-
-**A lista de torrents não traz detalhes dos arquivos.** Cada lançamento precisa de uma consulta própria na primeira vez.
-
-O zurg converte os códigos de erro do serviço naquilo que deve fazer em seguida.
+O zurg associa os códigos de erro do serviço àquilo que ele deve fazer em seguida.
 
 | Código do Premiumize | O que o zurg faz |
 |---|---|
-| `authentication_failed` | Informa que a credencial está errada. Corrija a chave. |
+| `authentication_failed` | Informa que a credencial está incorreta. Corrija a chave. |
 | `rate_limit_reached` | Pausa a conta por um minuto. |
-| `account_limit_reached` or `service_limit_reached` | Informa que a cota foi esgotada. |
+| `account_limit_reached` ou `service_limit_reached` | Informa que a cota foi esgotada. |
 | `service_down` | Trata a conta como temporariamente indisponível. |
 | `not_found` | Trata o torrent como removido. |
 

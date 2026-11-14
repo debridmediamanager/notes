@@ -644,8 +644,8 @@ Responde con `{"probes": [...]}`, con un objeto por el proveedor `nzb`: `found`,
 
 ## Ver también {#see-also}
 
-- [config.md](../reference/config.md) — every option, including the [Usenet account reference](../reference/config.md#usenet-accounts) and the [directory filter reference](../reference/config.md#7-directories--filters)
-- [plex.md](plex.md) — cómo zurg maneja el escaneo, la coincidencia y la limpieza de Plex
+- [config.md](../reference/config.md) — cada opción, incluida la [referencia de cuentas de Usenet](../reference/config.md#usenet-accounts) y la [referencia de filtros de directorios](../reference/config.md#7-directories--filters)
+- [plex.md](plex.md) — cómo zurg controla el escaneo, la coincidencia y la limpieza de la papelera en Plex
 - [jellyfin.md](jellyfin.md) — integración con Jellyfin
 - [docker.md](../setup/docker.md) — configuración de Docker, propagación de FUSE y solución de problemas
 - [tags.md](../reference/tags.md) — el sistema de etiquetas

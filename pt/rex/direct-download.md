@@ -48,23 +48,23 @@ Seja qual for a sua escolha, todo app e toda pessoa com quem você compartilha o
 
 ### zurg
 
-The setting is zurg's, so anything else that reads zurg (rclone, a Plex or Jellyfin server on zurg's mount) gets the links too; zurg's [config reference](../zurg/reference/config.md) has the details.
+O ajuste é do zurg, então qualquer outro app que leia o zurg (o rclone, ou um servidor Plex ou Jellyfin montado no zurg) também recebe os links. Os detalhes estão na [referência de configuração do zurg](../zurg/reference/config.md).
 
-+++ Linux and macOS
-Veja se a configuração já está no config do zurg:
++++ Linux e macOS
+Veja se a configuração já existe no config do zurg:
 
 ```bash
 grep -n '^disable_stream_proxy:' ~/zurg/config.yml
 ```
 
-Se ela imprimir uma linha, altere-a para `disable_stream_proxy: true` com `nano ~/zurg/config.yml`. Se não imprimir nada, adicione:
+Se ela imprimir uma linha, troque para `disable_stream_proxy: true` com `nano ~/zurg/config.yml`. Se não imprimir nada, adicione:
 
 ```bash
 printf '\ndisable_stream_proxy: true\n' >> ~/zurg/config.yml
 cd ~/zurg && ./zurg service restart
 ```
 +++ Windows
-Abra o config do zurg com `notepad $HOME\zurg\config.yml`. Se houver uma linha `disable_stream_proxy:`, altere-a para `disable_stream_proxy: true`; se não houver, adicione essa linha no final. Salve e reinicie o zurg:
+Abra o config do zurg com `notepad $HOME\zurg\config.yml`. Se ele tiver uma linha `disable_stream_proxy:`, troque para `disable_stream_proxy: true`; se não tiver, adicione essa linha no final. Salve e reinicie o zurg:
 
 ```powershell
 cd $HOME\zurg; .\zurg.exe service restart
@@ -76,7 +76,7 @@ Na pasta do zurg:
 sudo grep -n '^disable_stream_proxy:' config.yml
 ```
 
-Se ela imprimir uma linha, altere-a com `sudo nano config.yml`. Se não imprimir:
+Se ela imprimir uma linha, troque com `sudo nano config.yml`. Se não:
 
 ```bash
 printf '\ndisable_stream_proxy: true\n' | sudo tee -a config.yml >/dev/null

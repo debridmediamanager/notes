@@ -35,12 +35,14 @@ Três comandos funcionam antes da autenticação e nenhum outro.
 
 ## Quem administra {#who-runs-it}
 
-The TorBox page had to infer the operator from adjacency. This one does not. `news.elfhosted.com`
-sits inside the Abavia reader block itself.
+O TorBox exigia inferir o operador pela adjacência. Este não exige. `news.elfhosted.com`
+fica dentro do próprio bloco de leitores da Abavia.
 
-`94.232.116.124` is in `94.232.112.0/21`, `AS48345 AS-ABAVIA`, registered to Abavia S.r.l. of San
-Marino. Uma varredura reversa de `94.232.116.0/24` retorna 79 nomes. Quarenta e cinco deles respondem NNTP na porta 563,
-e todos os quarenta e cinco informam `nntpswitch2 (local-dev)` com listas de capacidades idênticas byte a byte, na mesma ordem. Os roteadores de borda da própria Abavia estão no mesmo /24, assim como os alimentadores, o host web e o nameserver da XS News.
+`94.232.116.124` está em `94.232.112.0/21`, `AS48345 AS-ABAVIA`, registrado para a Abavia S.r.l.
+de San Marino. Uma varredura reversa em `94.232.116.0/24` retorna 79 nomes. Quarenta e cinco deles
+respondem NNTP na porta 563, e todos os quarenta e cinco informam `nntpswitch2 (local-dev)`, com
+listas de capacidades idênticas byte a byte e na mesma ordem. Os roteadores de borda da própria
+Abavia estão no mesmo /24, assim como os alimentadores da XS News, o servidor web e o nameserver.
 
 | Endereço | Leitor | Saudação |
 |---|---|---|
@@ -56,13 +58,21 @@ e todos os quarenta e cinco informam `nntpswitch2 (local-dev)` com listas de cap
 | `94.232.116.150` | `news.usenext.de` | `200 Welcome to Aviteo Ltd DE` |
 | `94.232.116.174` | `news.hitnews.com` | `200 Welcome to Hitnews` |
 
-ElfHosted tem quatro endereços da Easyusenet, sete da XS News e doze da TorrentClaw, que é outro addon do Stremio que atua como frente da mesma plataforma.
+O ElfHosted fica a quatro endereços do Easyusenet, a sete da XS News e a doze do TorrentClaw, que é
+outro addon do Stremio operando sobre a mesma plataforma.
 
-Não há multiplexação baseada em nome. Conectar ao endereço com um servername `reader.xsnews.nl`, ou com um que nem existe, retorna o mesmo certificado e a mesma saudação `200 Welcome to elfhosted`. Um endereço por marca.
+Não há multiplexação baseada em nome. Conectar ao endereço com um servername `reader.xsnews.nl`, ou
+com um que nem existe, retorna o mesmo certificado e a mesma saudação `200 Welcome to elfhosted`.
+Um endereço por marca.
 
-A TorBox não está nesse bloco. Ela fica em `78.152.55.171`, em `AS3257 GTT`, na Holanda. Por isso, a atribuição ao ElfHosted é a mais forte das duas. A TorBox roda o mesmo software ao lado de uma marca dessa família. O ElfHosted roda nele no próprio espaço de endereços da Abavia.
+O TorBox não está nesse bloco. Ele fica em `78.152.55.171`, em `AS3257 GTT`, na Holanda. Por isso, a
+atribuição ao ElfHosted é a mais forte das duas. O TorBox roda o mesmo software ao lado de uma marca
+dessa família. O ElfHosted roda nele no próprio espaço de endereços da Abavia.
 
-**Medido** é a impressão digital do software, a propriedade do endereço, o certificado e a ausência de multiplexação baseada em nome. **Inferido** é que o spool por trás disso é da própria Abavia, e não uma mistura montada pelo ElfHosted. Nada no wire distingue essas duas coisas sem uma credencial.
+**Medido** é a impressão digital do software, a propriedade dos endereços, o certificado e a ausência
+de multiplexação baseada em nome. **Inferido** é que o spool por trás disso é da própria Abavia, e
+não uma mistura que o ElfHosted montou. Nada no tráfego distingue essas duas coisas sem uma
+credencial.
 
 ## A credencial publicada está morta {#the-published-credential-is-dead}
 

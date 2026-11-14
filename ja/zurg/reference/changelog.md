@@ -131,12 +131,6 @@ Sonarr や Radarr が整理しているライブラリでは、インポート�
 
 On Windows, zurg logged `cannot truncate data\magic.journal ... Access is
 denied.` every time it tried to tidy the file where `__magic__` records your
-移動やフォルダーを記録している`__magic__`のファイルを整理しようとするたびに、
-
-Let me redo this properly with the exact line structure.
-
-On Windows, zurg logged `cannot truncate data\magic.journal ... Access is
-denied.` every time it tried to tidy the file where `__magic__` records your
 moves and folders. The file was never emptied, so it grew with every change
 and every start read all of it again. After a few thousand changes in one run,
 each further change also rewrote the whole saved layout. zurg now empties it
@@ -480,13 +474,9 @@ zurg は、Radarr にリリースの準備ができたと伝える前に、フ�
 
 ## 完全に難読化されたリリースでも、名前のない映像ファイルが出力されなくなりました {#a-fully-obfuscated-release-no-longer-comes-out-with-a-nameless-video-file}
 
-When a Usenet post hides every filename, zurg works out what the main file is from its first bytes and names it after the release, the way SABnzbd does. That check came last in a pass with a ninety-second limit, and when grabs arrived in a burst the limit could run out first. The video file was then published under the release's name with no extension at all, which Radarr and Sonarr skip, so the download sat in their queue waiting for a file they could import.
+Usenet の投稿でファイル名がすべて隠されている場合、zurg は先頭のバイト列から本体のファイルを特定し、SABnzbd と同じようにリリース名を付けます。この確認は、処理時間が 90 秒に制限された一連の処理の最後に行われていました。そのため、取得要求が一度にまとまって届くと、制限時間が先に尽きることがありました。すると動画ファイルは拡張子のないリリース名のまま公開され、Radarr と Sonarr はそれを読み飛ばしてしまいます。結果として、取り込み待ちのダウンロードがキューに残ったままになっていました。
 
-Usenet の投稿でファイル名がすべて隠されている場合、zurg は最初のバイト列からメインのファイルを特定し、SABnzbd と同じようにリリース名を付けます。このチェックは、90 秒の制限がある処理パスの最後に行われていました。grab が一気に届くと、この制限時間が先に切れることがありました。すると動画ファイルは拡張子のないリリース名のまま公開され、Radarr と Sonarr はそれを読み飛ばしてしまいます。その結果、ダウンロードは取り込めるファイルを待ったまま、キューで止まっていました。
-
-Now a release is named again, up to three times, until zurg has been able to look at the file, and only then shown to your library and your *arr. In a run of the IMDb Top 100 through Radarr this was Seven Samurai, a 42 GB .mkv.
-
-今では、zurg がファイルを確認できるまで、リリースは最大 3 回まで名前付けし直されます。その後で初めてライブラリと *arr に表示されます。IMDb Top 100 を Radarr 経由で実行したときの例が Seven Samurai で、42 GB の .mkv でした。
+現在は、zurg がファイルを確認できるまで、リリース名の付け直しを最大 3 回まで行うようになりました。その後で初めて、ライブラリと *arr にファイルが表示されます。IMDb Top 100 を Radarr 経由で実行したテストでは、この問題の対象になったのは Seven Samurai（42 GB の .mkv）でした。
 
 ## ファイル名にアクセント記号や CJK 文字を含むリリースも、名前全体が保持されます {#releases-with-accents-or-cjk-in-their-filenames-keep-their-whole-names}
 
@@ -865,11 +855,7 @@ zurgは、Sonarr、Radarrなどのダウンロードクライアントに完了�
 
 ## アカウントに2つ持っているリリースでも、リンクが安定したままになります {#keep-the-link-steady-for-a-release-your-account-holds-twice}
 
-A release added twice to one account has two of everything, including two download links per file. zurg kept one link per account, so each copy replaced the other's on every refresh and the entry never settled. Nothing was unplayable, but the log filled with re-pointing and the library was rewritten to disk every few seconds. zurg now leaves the link alone when it can only see part of what the account holds.
-
-Japanese translation:
-
-同じリリースを1つのアカウントに2回追加すると、すべてが2つずつになります。ファイルごとのダウンロードリンクも2つです。zurg はアカウントごとに1つのリンクしか保持していなかったため、更新のたびにコピーどうしがお互いのリンクを置き換えてしまい、エントリーが落ち着きませんでした。再生できなくなるものはありませんでしたが、ログはリンクの張り直しで埋まり、ライブラリは数秒ごとにディスクへ書き直されていました。zurg は、アカウントが保持している内容の一部しか見えないときはリンクをそのままにするようになりました。
+同じリリースを1つのアカウントに2回追加すると、すべてが2つずつになり、ファイルごとにダウンロードリンクも2つずつできます。zurg はアカウントごとにリンクを1つだけ保持していたため、更新のたびに各コピーがもう一方のリンクを置き換えてしまい、エントリが落ち着きませんでした。再生できないものはありませんでしたが、ログはリンクの付け替えで埋まり、ライブラリは数秒ごとにディスクへ書き直されていました。zurg は、アカウントが保持している内容の一部しか確認できない場合、リンクをそのままにするようになりました。
 
 ## アカウントに失敗したトレントがある場合でも、TorBox の変更チェックが速くなりました {#faster-change-checks-on-torbox-when-the-account-holds-failed-torrents}
 

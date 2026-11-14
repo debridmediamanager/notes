@@ -1,15 +1,6 @@
 # Pustaka debrid lokal dan zurgtorrent portabel {#local-debrid-libraries-and-portable-zurgtorrents}
 
-A local library takes its membership from portable `.zurgtorrent` files. It
-appears in the normal WebDAV, HTTP and provider directories. Importing files,
-listing them and refreshing the catalog do not add torrents or resolve download
-links. Playback resolves the requested file through your configured account.
-
-Perpustakaan lokal mengambil daftar isinya dari file `.zurgtorrent` yang bisa
-dibawa ke mana-mana. Perpustakaan ini muncul di direktori WebDAV, HTTP, dan
-penyedia layanan yang biasa. Mengimpor file, menampilkan daftarnya, dan
-menyegarkan katalog tidak menambahkan torrent atau mengambil tautan unduhan.
-Saat diputar, file yang diminta akan diambil melalui akun yang sudah kamu atur.
+Pustaka lokal mengambil keanggotaannya dari file `.zurgtorrent` yang bisa dibawa-bawa. Pustaka ini muncul di direktori WebDAV, HTTP, dan provider yang biasa. Mengimpor file, menampilkan daftarnya, dan menyegarkan katalog tidak menambahkan torrent atau mengambil tautan unduhan. Pemutaran akan mengambil file yang diminta melalui akun yang sudah Anda konfigurasi.
 
 ## Ekspor pustaka {#export-a-library}
 

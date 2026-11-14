@@ -47,10 +47,7 @@ zurg 不会记录出站请求计数，而 `log_requests` 有意跳过了两个 R
 
 ## 结果 {#results}
 
-All numbers from build `23869fa4` on zen, 2026-08-19. Latency and throughput come
-from one interleaved run over the same 7.31 GB file — same infohash on all three
-accounts, and `ffprobe` reports the identical 8552.574 s duration through each, so
-the content really is byte-identical.
+所有数字都来自 zen 上的构建 `23869fa4`，日期是 2026-08-19。延迟和吞吐量取自同一次交错运行，测试的是同一个 7.31 GB 文件。三个账号上的 infohash 都相同，而且 `ffprobe` 通过每个账号报告的时长都是 8552.574 s，所以内容确实是逐字节一致的。
 
 ### 冷库构建 {#cold-library-build}
 

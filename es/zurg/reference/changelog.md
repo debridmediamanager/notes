@@ -887,13 +887,9 @@ El manifiesto del addon ahora muestra la versión real de la compilación en lug
 
 ## Los releases sanos dejan de desaparecer de la biblioteca {#healthy-releases-stop-disappearing-from-the-library}
 
-A failed connection or DNS lookup at the Real-Debrid API now marks the account temporarily unavailable. It used to mark healthy files broken. They then sat waiting for repair after the network came back.
+Un fallo de conexión o de búsqueda DNS en la API de Real-Debrid ahora marca la cuenta como temporalmente no disponible. Antes marcaba como rotos archivos que estaban sanos. Luego esos archivos esperaban a ser reparados una vez que la red volvía.
 
-La falla de conexión o de búsqueda DNS en la API de Real-Debrid ahora marca la cuenta como temporalmente no disponible. Antes marcaba como rotos archivos que estaban sanos. Esos archivos se quedaban esperando una reparación incluso después de que la red volvía.
-
-Cleanup after a library refresh used to wait behind background media analysis. By the time it ran a newer refresh could have added a release back. The late cleanup then removed it again. Cleanup now finishes before a refresh returns. Media analysis still runs in the background.
-
-La limpieza tras una actualización de la biblioteca antes esperaba a que terminara el análisis de medios en segundo plano. Para cuando por fin se ejecutaba, una actualización más reciente podía haber vuelto a añadir un release. Entonces la limpieza tardía lo eliminaba otra vez. Ahora la limpieza termina antes de que la actualización devuelva el control. El análisis de medios sigue ejecutándose en segundo plano.
+La limpieza después de una actualización de la biblioteca solía esperar a que terminara el análisis de medios en segundo plano. Para cuando se ejecutaba, una actualización más reciente podía haber vuelto a añadir un lanzamiento. La limpieza tardía lo eliminaba otra vez. Ahora la limpieza termina antes de que la actualización devuelva el control. El análisis de medios sigue ejecutándose en segundo plano.
 
 ## Kodi puede explorar el recurso compartido WebDAV {#kodi-can-browse-the-webdav-share}
 

@@ -44,18 +44,18 @@
 
 ## عندما تحدث مشكلة {#when-something-is-wrong}
 
-| ما تراه | ما الذي تفعله |
+| ما تراه | ما يجب فعله |
 |---|---|
-| **Login to RD/AD/TB/PM/OC/DL to download** | أنت غير مسجّل الدخول إلى DMM في هذا المتصفح. سجّل الدخول، ثم افتح القائمة مرة أخرى. |
-| Everything is **hidden** and the list looks empty | الصفوف المخفية موجودة بالفعل في مكتبتك، أو أن خدمتك لا تملكها. على Real-Debrid أو AllDebrid أو TorBox اضغط على **Show All**. |
-| **This hash list is still being published; refresh in a minute or two.** | تمت مشاركة القائمة قبل لحظات. انتظر دقيقة أو دقيقتين ثم أعد التحميل. |
-| **0 files** and no rows | هذه القائمة فارغة. اضغط على **Next hash list** أو **Random hash list**. |
+| **Login to RD/AD/TB/PM/OC/DL to download** | لم تسجّل الدخول إلى DMM في هذا المتصفح. سجّل الدخول، ثم افتح القائمة مرة أخرى. |
+| كل شيء **مخفي** والقائمة تبدو فارغة | الصفوف المخفية موجودة بالفعل في مكتبتك، أو أن خدمتك لا تملكها. على Real-Debrid أو AllDebrid أو TorBox اضغط **Show All**. |
+| **This hash list is still being published; refresh in a minute or two.** | تمت مشاركة القائمة قبل لحظات. انتظر دقيقة أو دقيقتين ثم حدّث الصفحة. |
+| **0 files** ولا توجد صفوف | هذه القائمة فارغة. اضغط **Next hash list** أو **Random hash list**. |
 | **Everything already downloaded** | كل إصدار معروض موجود بالفعل في مكتبتك. |
-| **Torrent not instant in TorBox; skipped.** or **Torrent not instant in AD; skipped.** | خدمتك لا تملك هذا الملف مخزّناً مؤقتاً، لذا تخطّاه DMM بدلاً من بدء التنزيل. |
-| **Skipping 3 items with no info hash — they cannot be shared.** | هذه الصفوف (مثل تنزيلات TorBox عبر الويب، على سبيل المثال) ليس لها hash للمشاركة. بقية القائمة تتم مشاركتها. |
-| **Failed to generate hash list; try again soon.** | فشل نشر القائمة. حاول مرة أخرى لاحقاً. |
+| **Torrent not instant in TorBox; skipped.** أو **Torrent not instant in AD; skipped.** | خدمتك لا تملك هذا الملف مخزّنًا مؤقتًا، لذا تخطّاه DMM بدلًا من بدء التنزيل. |
+| **Skipping 3 items with no info hash — they cannot be shared.** | هذه الصفوف (مثل تنزيلات TorBox عبر الويب) ليس لها هاش لمشاركته. يتم مشاركة بقية القائمة. |
+| **Failed to generate hash list; try again soon.** | فشل نشر القائمة. حاول مرة أخرى لاحقًا. |
 
-هل تواجه مشكلة؟ اسأل في منتدى **dmm-support** على [Discord](https://discord.com/invite/7u4YjMThXP).
+عالق؟ اسأل في منتدى **dmm-support** على [Discord](https://discord.com/invite/7u4YjMThXP).
 
 ## أسئلة {#questions}
 

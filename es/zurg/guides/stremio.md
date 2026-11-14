@@ -5,11 +5,11 @@ Todo lo que se reproduce de esta forma también se guarda en la biblioteca y apa
 
 ## Configuración {#configuration}
 
-The addon needs an NZB account, `nzb` or
-[`torbox_nzb`](../providers/torbox-nzb.md), which is what serves the bytes, and
-at least one indexer. With `torbox_nzb`, a release TorBox already holds starts
-within the addon's wait when no other NZB post is waiting; an uncached one must
-finish on TorBox first, which is longer than a player waits.
+El addon necesita una cuenta NZB, `nzb` o
+[`torbox_nzb`](../providers/torbox-nzb.md), que es la que sirve los datos, y
+al menos un indexador. Con `torbox_nzb`, una release que TorBox ya tiene empieza
+dentro del tiempo de espera del addon si no hay otra publicación NZB esperando; una que no está en caché debe
+terminar primero en TorBox, lo cual tarda más de lo que un reproductor espera.
 
 ```yaml
 stremio:
@@ -25,15 +25,22 @@ stremio:
       api_path: /api/v1/api   # for an indexer that 404s the default /api
 ```
 
-Todo eso está en la página de configuración bajo **Stremio Addon**: el interruptor, la lista de indexadores y el límite de resultados. La URL del addon aparece ahí con un botón de copiar, creada a partir de la dirección que abriste el panel. Esa es la dirección que debes usar: consulta [Instalarlo en otro dispositivo](#installing-it-on-another-device).
+Todo esto está en la página de configuración, en **Stremio Addon**: el interruptor, la
+lista de indexadores y el límite de resultados, y la URL del addon se muestra ahí con un botón de copiar
+, construida a partir de la dirección en la que abriste el panel. Esa es la dirección
+que hay que usar: consulta [Instalarlo en otro dispositivo](#installing-it-on-another-device).
 
-Al arrancar, zurg registra la URL del addon:
+Al iniciar, zurg registra la URL del addon:
 
 ```
 <zurg>/stremio/<token>/manifest.json
 ```
 
-Pégala en Stremio (Addons → el cuadro de búsqueda acepta una URL). El token de la ruta es toda la autorización: los clientes de Stremio no envían autenticación propia, por eso las rutas quedan fuera de la autenticación básica, igual que los endpoints de SABnzbd. Trata la URL como si fuera una contraseña: los enlaces de reproducción que genera llevan tus api keys de indexadores, y cualquiera que tenga la URL puede gastar tus grabs de indexadores y tus conexiones a servidores de noticias.
+Pégala en Stremio (Addons → el cuadro de búsqueda acepta una URL). El token en la
+ruta es toda la autorización: los clientes de Stremio no envían autenticación propia,
+así que las rutas quedan fuera de la autenticación básica, igual que las del endpoint de SABnzbd. Trata
+la URL como una contraseña: los enlaces de reproducción que genera llevan tus claves API de indexadores, y
+cualquiera que la tenga puede gastar tus descargas de indexadores y tus conexiones al servidor de noticias.
 
 ## Instalarlo en otro dispositivo {#installing-it-on-another-device}
 
@@ -62,8 +69,8 @@ Cuando pongas zurg en internet, publica solo esas dos rutas. Todo lo demás es t
 
 ### Tailscale Serve
 
-The simplest option when every device that runs Stremio can run Tailscale. zurg
-stays off the internet.
+La opción más sencilla cuando todos los dispositivos que usan Stremio pueden ejecutar Tailscale. zurg
+no queda expuesto a internet.
 
 1. En la consola de administración de Tailscale, activa MagicDNS y HTTPS certificates.
 2. Ejecuta esto en la máquina de zurg. Usa tu propio puerto si zurg no está en 9999.
@@ -72,9 +79,8 @@ stays off the internet.
    tailscale serve --bg 9999
    ```
 
-   En Windows, ejecuta el mismo comando en PowerShell y, si responde access
-   denied, en un PowerShell abierto como administrador. En Linux, pon `sudo` delante a menos que te hayas hecho operador de Tailscale
-   (`sudo tailscale set --operator=$USER`). En macOS, si no se encuentra `tailscale`, la copia de la propia app de Tailscale es
+   En Windows, ejecuta el mismo comando en PowerShell. Si responde access denied, prueba con un PowerShell abierto como administrador. En Linux, pon `sudo` delante, a menos que te hayas hecho operador de Tailscale
+   (`sudo tailscale set --operator=$USER`). En macOS, si no se encuentra `tailscale`, la copia de la app de Tailscale está en
    `/Applications/Tailscale.app/Contents/MacOS/Tailscale`.
 
 3. Abre `https://<machine>.<tailnet>.ts.net/config/` y copia la URL del addon de la tarjeta **Stremio Addon**.
@@ -82,7 +88,7 @@ stays off the internet.
 Tailscale obtiene el certificado y envía ambas cabeceras. `tailscale serve reset`
 lo desactiva de nuevo.
 
-Un dispositivo que no pueda ejecutar Tailscale puede usar Tailscale Funnel en su lugar. Pone la misma dirección en internet. Publica solo lo que Stremio necesita.
+Un dispositivo que no pueda ejecutar Tailscale puede usar Tailscale Funnel en su lugar. Pone la misma dirección en internet. Publica solo lo que necesita Stremio.
 
 ```bash
 tailscale funnel --bg --set-path /stremio http://127.0.0.1:9999/stremio
@@ -90,7 +96,7 @@ tailscale funnel --bg --set-path /strm/e http://127.0.0.1:9999/strm/e
 ```
 
 La página de configuración no está en esa dirección. Copia la URL del addon desde la página como la abres normalmente y cambia el inicio por `https://<machine>.<tailnet>.ts.net`.
-Tailscale limita el ancho de banda que recibe un Funnel. Un remux 4K puede entrecortarse.
+Tailscale limita el ancho de banda que recibe un Funnel. Un remux en 4K puede ir a trompicones.
 
 ### Tu propio reverse proxy {#your-own-reverse-proxy}
 

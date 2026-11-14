@@ -175,21 +175,21 @@ Anda mungkin melihat satu peringatan. Peringatan ini sudah diketahui dan tidak b
 
 ### Dashboard {#the-dashboard}
 
-`http://localhost:9999/` — ukuran library naik terus selama proses walk berjalan, traffic yang dilayani, dan memory. **Quick Links** adalah seluruh UI-nya: Torrent Manager, Config, Directories, Magic, Logs.
+`http://localhost:9999/` — ukuran library terus bertambah selama proses walk berjalan, traffic yang dilayani, dan memori. **Quick Links** adalah seluruh UI: Torrent Manager, Config, Directories, Magic, Logs.
 
-![The zurg dashboard on Windows](../../assets/windows-setup/10-dashboard-home.webp)
+![Dashboard zurg di Windows](../../assets/windows-setup/10-dashboard-home.webp)
 
 **Config** adalah tempat semua pengaturan disimpan setelah run pertama. Blok providers menampilkan satu akun:
 
-![The providers block with the Real-Debrid row](../../assets/windows-setup/12-config-providers.webp)
+![Blok providers dengan baris Real-Debrid](../../assets/windows-setup/12-config-providers.webp)
 
-Blok download-client berisi toggle yang sama seperti yang kamu atur di `config.yml`, tapi bisa diedit di sini. Setiap perubahan akan diberi tanda **Restart Required**, dan itu memang artinya harfiah: kedua endpoint mendaftarkan route-nya sekali saat startup.
+Blok download-client berisi toggle yang sama dengan yang kamu atur di `config.yml`, dan bisa diedit di sini. Setiap perubahan diberi tanda **Restart Required**, dan itu memang harfiah: kedua endpoint mendaftarkan route-nya sekali saat startup.
 
-![The __magic__ and download clients block with the qBittorrent endpoint on](../../assets/windows-setup/13-config-magic-qbittorrent.webp)
+![Blok __magic__ dan download clients dengan endpoint qBittorrent aktif](../../assets/windows-setup/13-config-magic-qbittorrent.webp)
 
 Dan blok mount, yang menampilkan drive letter dan supervisi rclone:
 
-![The rclone mount block with Z: configured](../../assets/windows-setup/14-config-rclone.webp)
+![Blok mount rclone dengan Z: sudah dikonfigurasi](../../assets/windows-setup/14-config-rclone.webp)
 
 ### Drive Z: {#the-z-drive}
 

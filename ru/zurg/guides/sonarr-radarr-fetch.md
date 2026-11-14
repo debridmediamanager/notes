@@ -1,14 +1,14 @@
 # Пусть zurg забирает то, что нужно Sonarr и Radarr {#let-zurg-fetch-what-sonarr-and-radarr-want}
 
-Есть три способа использовать Sonarr и Radarr с zurg. Главный выбор — кто ищет: zurg или \*arrs. [Какой выбрать](#which-one-to-pick) — там они сравниваются.
+Есть три способа использовать Sonarr и Radarr с zurg. Главный выбор — кто ищет: zurg или *arr-приложения. [Какой вариант выбрать](#which-one-to-pick), объясняется ниже.
 
-| Guide | Who searches | zurg acts as | You need |
+| Руководство | Кто ищет | Роль zurg | Что нужно |
 |---|---|---|---|
-| [Usenet](sonarr-radarr.md) | Sonarr and Radarr | a SABnzbd | a Usenet account (or TorBox Pro for the `torbox_nzb` backend) and Usenet indexers in Prowlarr or the \*arrs |
-| [Torrents](sonarr-radarr-torrents.md) | Sonarr and Radarr | a qBittorrent | a debrid account and torrent indexers in Prowlarr or the \*arrs |
-| [zurg searches](sonarr-radarr-fetch.md) | zurg | no download client at all | a Usenet, TorBox Pro or debrid account, and Newznab or Torznab indexers in zurg's own config |
+| [Usenet](sonarr-radarr.md) | Sonarr и Radarr | SABnzbd | аккаунт Usenet (или TorBox Pro для бэкенда `torbox_nzb`) и индексаторы Usenet в Prowlarr или *arr-приложениях |
+| [Торренты](sonarr-radarr-torrents.md) | Sonarr и Radarr | qBittorrent | аккаунт debrid и торрент-индексаторы в Prowlarr или *arr-приложениях |
+| [Поиск через zurg](sonarr-radarr-fetch.md) | zurg | клиент загрузки не нужен | аккаунт Usenet, TorBox Pro или debrid, а также индексаторы Newznab или Torznab в собственном конфиге zurg |
 
-Первые два можно запускать вместе. Они используют одну и ту же папку `__magic__`.
+Первые два варианта могут работать одновременно. Они используют одну и ту же папку `__magic__`.
 
 ### Какой вариант выбрать {#which-one-to-pick}
 

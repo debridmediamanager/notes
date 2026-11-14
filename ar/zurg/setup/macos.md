@@ -248,27 +248,27 @@ launchctl list | grep zurg
 
 ## الخطوة 8: إعداد مكتبات Plex {#step-8-configure-plex-libraries}
 
-Now that zurg is running and the mount is active:
+الآن بعد أن أصبح zurg يعمل وتم تفعيل الـ mount:
 
 1. افتح [http://localhost:32400/web](http://localhost:32400/web)
 2. انتقل إلى **Settings** (أيقونة المفتاح الإنجليزي) ← **Manage** ← **Libraries**
 3. انقر على **Add Library**
 
 **أضف مكتبة Movies:**
-- النوع: **Movies**
+- Type: **Movies**
 - انقر على **Browse for media folder**
 - انتقل إلى `/Volumes/Zurg/movies`
 - انقر على **Add Library**
 
 **أضف مكتبة TV Shows:**
-- النوع: **TV Shows**
+- Type: **TV Shows**
 - انقر على **Browse for media folder**
 - انتقل إلى `/Volumes/Zurg/shows`
 - انقر على **Add Library**
 
 **إعدادات المكتبة الموصى بها** (تحت Edit ← Advanced لكل مكتبة):
-- ألغِ تحديد **Empty trash automatically after every scan** — فـ zurg يدير دورة حياة المحتوى
-- ألغِ تحديد **Generate video preview thumbnails** — يوفر عرض النطاق الترددي لأن الملفات تُبث من Real-Debrid
+- ألغِ تحديد **Empty trash automatically after every scan** — لأن zurg يدير دورة حياة المحتوى بنفسه
+- ألغِ تحديد **Generate video preview thumbnails** — لتوفير عرض النطاق الترددي لأن الملفات تُبث من Real-Debrid
 
 ## الخطوة 9: التحقق من أن كل شيء يعمل {#step-9-verify-everything-works}
 

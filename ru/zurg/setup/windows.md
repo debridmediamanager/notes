@@ -475,7 +475,7 @@ Remove-Item -Recurse -Force .\data\rclone-cache\vfs\*, .\data\rclone-cache\vfsMe
 
 ## Обновление zurg {#updating-zurg}
 
-A sponsor build replaces itself:
+A сборка для спонсоров обновляет сама себя:
 
 ```powershell
 cd $HOME\zurg
@@ -483,7 +483,7 @@ cd $HOME\zurg
 .\zurg.exe service restart
 ```
 
-`update` takes the newest nightly, checks the download reports the version it expected before replacing anything, and moves the running `zurg.exe` aside so Windows will let the new one land. When the installed build is already the newest it says so and changes nothing. The restart runs the new build.
+`update` берёт самую свежую nightly-сборку, перед заменой проверяет, что скачанная версия совпадает с ожидаемой, и переносит запущенный `zurg.exe` в сторону, чтобы Windows позволила записать новый файл. Если установленная сборка уже самая свежая, команда так и говорит и ничего не меняет. Перезапуск запускает новую сборку.
 
 На сборке, которая слишком старая для этой команды, установщик делает то же самое:
 

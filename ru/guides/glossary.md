@@ -51,13 +51,13 @@
 
 ## Остальное в DMM {#the-rest-of-dmm}
 
-| Name | What it does |
+| Название | Что делает |
 |---|---|
-| Usenet tab | Sends a Usenet release to your Real-Debrid library, with no Usenet account. Sponsors go first and get a bigger daily allowance |
-| [Request board](https://debridmediamanager.com/requests) | Попроси релиз, которого нет у Real-Debrid. Другой пользователь DMM перенесёт его в твою библиотеку. Заполни 10 запросов и получи 7 дней бонусов спонсора DMM |
-| [Hash lists](https://debridmediamanager.com/hashlists) | Делись списком релизов, чтобы другие могли добавить их в свои аккаунты |
-| Browser extension | Добавляет кнопки DMM на сайты с фильмами и сериалами и рядом с magnet-ссылками. Для [Chrome](https://chromewebstore.google.com/detail/Debrid%20Media%20Manager/oeojlegjfhgefhnbjdnaebgdfkbipghm), [Firefox](https://addons.mozilla.org/en-US/firefox/addon/debrid-media-manager/) и [Safari](../dmm/safari.md) |
-| [gatekeeper](https://gatekeeper.debridmediamanager.com) | Сайт спонсоров. Стань спонсором там, привяжи свой план на Patreon или GitHub Sponsors и получи свой API-ключ DMM. [Что даёт спонсорство](sponsorship.md) |
+| Вкладка Usenet | Отправляет релиз из Usenet в вашу библиотеку Real-Debrid без аккаунта Usenet. Спонсоры идут в начале очереди и получают больший дневной лимит |
+| [Request board](https://debridmediamanager.com/requests) | Запросите релиз, которого нет в Real-Debrid. Другой пользователь DMM переносит его в вашу библиотеку. Заполните 10 запросов и получите 7 дней бонусов спонсора DMM |
+| [Hash lists](https://debridmediamanager.com/hashlists) | Поделитесь списком релизов, чтобы другие могли добавить их в свои аккаунты |
+| Расширение для браузера | Добавляет кнопки DMM на сайты с фильмами и сериалами и рядом со ссылками magnet. Для [Chrome](https://chromewebstore.google.com/detail/Debrid%20Media%20Manager/oeojlegjfhgefhnbjdnaebgdfkbipghm), [Firefox](https://addons.mozilla.org/en-US/firefox/addon/debrid-media-manager/) и [Safari](../dmm/safari.md) |
+| [gatekeeper](https://gatekeeper.debridmediamanager.com) | Сайт спонсоров. Станьте спонсором там, привяжите свой Patreon или GitHub Sponsors и получите ваш API-ключ DMM. [Что даёт спонсорство](sponsorship.md) |
 
 ## Слова, которые вы встретите в гайдах {#words-youll-see-in-the-guides}
 

@@ -126,11 +126,7 @@ Real-Debridは114回の呼び出しのうち32回を、`/downloads` の一覧を
 
 ### 一覧表示 {#listing}
 
-Nirgendwo ein Engpass, egal bei welcher Bibliotheksgröße.
-
-Wait, that's German; the target language is Japanese. Here is the translation:
-
-スケールしても、どこもボトルネックにはなりません。ライブラリのサイズは問いません。
+どのライブラリのサイズでも、ボトルネックになる箇所はありません。
 
 | | Real-Debrid (3,312) | AllDebrid (14) | TorBox (479) |
 |---|---|---|---|

@@ -176,21 +176,21 @@ Eine Warnung kannst du sehen. Sie ist bekannt und nicht schlimm:
 
 ### Das Dashboard {#the-dashboard}
 
-`http://localhost:9999/` — Bibliotheksgröße steigt, während der Scan läuft, dazu Traffic und Speicher. Die **Quick Links** sind die gesamte UI: Torrent Manager, Config, Directories, Magic, Logs.
+`http://localhost:9999/` — Bibliotheksgröße steigt, während der Walk läuft, dazu Traffic und Speicher. Die **Quick Links** sind die ganze Oberfläche: Torrent Manager, Config, Directories, Magic, Logs.
 
-![The zurg dashboard on Windows](../../assets/windows-setup/10-dashboard-home.webp)
+![Das zurg-Dashboard unter Windows](../../assets/windows-setup/10-dashboard-home.webp)
 
-**Config** ist nach dem ersten Start der Ort, an dem alles steht. Der providers-Block zeigt den einen Account:
+**Config** ist nach dem ersten Start der Ort, an dem alles gespeichert wird. Der Providers-Block zeigt das eine Konto:
 
-![The providers block with the Real-Debrid row](../../assets/windows-setup/12-config-providers.webp)
+![Der Providers-Block mit der Real-Debrid-Zeile](../../assets/windows-setup/12-config-providers.webp)
 
-Der download-client-Block – dieselben Schalter, die du in `config.yml` setzt, hier editierbar. Jede Änderung wird mit **Restart Required** markiert, und das ist wörtlich gemeint: Beide Endpunkte registrieren ihre Routen nur einmal beim Start.
+Der Download-Client-Block – dieselben Schalter, die du in `config.yml` setzt, hier editierbar. Jede Änderung bekommt ein **Restart Required**-Label, und das ist wörtlich gemeint: Beide Endpunkte registrieren ihre Routen nur einmal beim Start.
 
-![The __magic__ and download clients block with the qBittorrent endpoint on](../../assets/windows-setup/13-config-magic-qbittorrent.webp)
+![Der __magic__- und Download-Clients-Block mit eingeschaltetem qBittorrent-Endpunkt](../../assets/windows-setup/13-config-magic-qbittorrent.webp)
 
-Und der mount-Block mit Laufwerksbuchstabe und der rclone-Überwachung:
+Und der Mount-Block, mit Laufwerksbuchstabe und der rclone-Überwachung:
 
-![The rclone mount block with Z: configured](../../assets/windows-setup/14-config-rclone.webp)
+![Der rclone-Mount-Block mit konfiguriertem Z:](../../assets/windows-setup/14-config-rclone.webp)
 
 ### Das Z:-Laufwerk {#the-z-drive}
 

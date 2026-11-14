@@ -8,7 +8,7 @@ zurg のマウントで書き込みできるのは 1 つだけです。リリー
 
 ## マウント経由での名前変更 {#renaming-through-the-mount}
 
-A rename in the mount is a WebDAV `MOVE` whose destination differs from the source in the last path segment alone. rclone turns a rename on the mount (a FUSE `rename(2)`, or its WinFsp counterpart on Windows) into exactly that, so `mv` or `Rename-Item` in the mount, renaming in Finder, Explorer or another file manager, and a WebDAV client all arrive at the same handler.
+マウント上でのリネームは、移動先が移動元と最後のパスセグメントだけ異なる WebDAV `MOVE` になります。rclone はマウント上のリネーム（FUSE の `rename(2)`、Windows では WinFsp の対応する処理）を、まさにそれに変換します。そのため、マウント内の `mv` や `Rename-Item`、Finder、Explorer、その他のファイルマネージャーでの名前変更、WebDAV クライアントからの操作は、すべて同じハンドラーに届きます。
 
 +++ Linux と macOS
 
@@ -17,7 +17,7 @@ mv "/mnt/zurg/shows/Show.S01.1080p.WEB-DL/Show.S01E01.mkv" \
    "/mnt/zurg/shows/Show.S01.1080p.WEB-DL/Show - s01e01.mkv"
 ```
 
-`mount_path` を変更していなければ、macOS でのマウント先は `/Volumes/Zurg` です。
+`mount_path` を変更していない限り、macOS のマウント先は `/Volumes/Zurg` です。
 
 +++ Windows
 
@@ -27,14 +27,14 @@ Rename-Item -LiteralPath "Z:\shows\Show.S01.1080p.WEB-DL\Show.S01E01.mkv" -NewNa
 
 +++
 
-どちらのレベルでも動作します。
+どちらのレベルでもリネームできます。
 
-| 名前の変更 | 保存先の形式 |
+| リネーム | 保存名 |
 |---|---|
-| リリースフォルダー | `Torrent.Rename` |
+| リリースのフォルダ | `Torrent.Rename` |
 | リリース内のファイル | `File.Rename` |
 
-`/dav/` と `/infuse/` のエンドポイントは `MOVE` に対応しています。`/http/` は対応していません。読み取り専用のブラウザで、`__magic__` の外では `405` を返します。
+`/dav/` と `/infuse/` のエンドポイントは `MOVE` を受け付けます。`/http/` は受け付けません。これは読み取り専用のブラウザで、`__magic__` の外では `405` を返します。
 
 ### 名前が満たすべき条件 {#what-a-name-has-to-satisfy}
 
