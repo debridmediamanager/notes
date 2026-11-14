@@ -191,7 +191,7 @@ auto-start. Warnings do not make doctor fail. A `FAIL` does.
 Then probe the account itself from the Dashboard or from the shell.
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/torbox/test
+curl -sS -X POST http://localhost:9999/api/providers/torbox/test
 ```
 
 `{"success":true}` means the credential authenticated. The name in the path is

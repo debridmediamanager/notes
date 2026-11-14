@@ -117,7 +117,7 @@ zurg maps the service's error codes onto what it should do next.
 ## Check it worked
 
 ```bash
-curl -fsS -X POST http://localhost:9999/api/providers/premiumize/test
+curl -sS -X POST http://localhost:9999/api/providers/premiumize/test
 ls /zurg_mnt/zurg/__all__/ | head
 ```
 
