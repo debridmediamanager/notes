@@ -1,10 +1,10 @@
 # rex for Android
 
-rex は、ファイルを一切持たない Plex アプリ向けのメディアサーバーです。rex for Android を使えば、コンピューターがなくてもスマートフォン、タブレット、Android TV、Google TV、Fire TV で動かせます。お使いの機器の Plex アプリは、他の Plex サーバーと同じように rex を見つけて、そこから再生します。
+rex は、Plex アプリ向けのメディアサーバーです。ファイルは一切持ちません。rex for Android を使えば、スマートフォン、タブレット、Android TV、Google TV、Fire TV などで、パソコンなしで動かせます。お使いの機器の Plex アプリは、rex を他の Plex サーバーと同じように見つけて、そこから再生します。
 
-再生できるものは **アドオン** から来ます。最初から入っているのは Internet Archive のパブリックドメイン映画です。Stremio のアドオン、YouTube、Spotify などの追加アドオンは、アプリ内からインストールできます。
+再生する内容は **addons** から来ます。最初から入っているのは Internet Archive のパブリックドメイン映画です。Stremio のアドオンや YouTube、Spotify などのアドオンは、リポジトリを追加すれば、アプリ内からインストールできます。
 
-rex for Android は無料です。デブリッドのアカウントや Usenet も使いたい場合は? zurg+rex は、zurg を内蔵した Plex サーバーをスマートフォン上で動かすもので、スポンサーシップ付きで提供されています。詳しくは [zurg+rex for Android](../zurg/guides/android.md) をご覧ください。
+rex for Android は無料です。debrid アカウントや Usenet も使いたいですか？ それなら zurg+rex がおすすめです。zurg を内蔵した Plex サーバーをスマートフォンで動かせて、スポンサー特典が付いています: [zurg+rex for Android](../zurg/guides/android.md)
 
 ## 始める前に {#before-you-start}
 
@@ -74,22 +74,21 @@ Internet Archive の初回同期には時間がかかります。テスト用の
 
 ## アドオン {#addons}
 
-**Addons** に、インストールしたアドオンが一覧で表示されます。各アドオンには、そのタイトルと最後に同期した日時が表示されます。ボタンは **Sync now**、**Settings**、**Log**、**Remove** の4つです。スマホでは、ボタンの並んだ行を横にスワイプすると、すべて見られます。**Enabled** スイッチを使うと、アドオンを削除せずにオフにできます。
+**Addons** は、インストールしたものを一覧表示します。各アドオンには、そのタイトルと最後に同期した日時が表示されます。ボタンは **Sync now**、**Settings**、**Log**、**Remove** の4つです。スマホでは、ボタンの並びを横にスワイプすると全部見られます。**Enabled** のスイッチを切ると、削除せずにアドオンをオフにできます。
 
-アドオンは **repositories** から提供されます。repositories とは、アドオンを収めた git リポジトリのことです。アプリは最初から [rex-addons](https://github.com/debridmediamanager/rex-addons) が追加された状態で起動します。ここには次のアドオンがあります:
+アドオンは **repositories**（アドオンを入れた git リポジトリ）から届きます。アプリは最初から [rex-addons](https://github.com/debridmediamanager/rex-addons) が追加された状態で起動し、Internet Archive のパブリックドメインの映画がはじめからインストールされています。さらに増やしたい場合は、[rex-community-addons](https://github.com/debridmediamanager/rex-community-addons) を追加してください（下の **Add a repository** を参照）。次のアドオンが使えるようになります。
 
-| アドオン | 追加されるもの |
+| Addon | What it brings |
 |---|---|
-| Internet Archive | パブリックドメインの映画。最初からインストール済み |
-| Stremio addons | Stremio のアドオンにある映画とシリーズのカタログ。再生は、それぞれのストリームアドオンが提供するストリームから行われます |
-| YouTube | あなたの YouTube プレイリスト。コードを使ってサインインします |
-| Spotify | あなたの Spotify ライブラリを、Plex と Plexamp で聴ける音楽として追加します。YouTube アドオンにサインインしておく必要があります |
+| Stremio addons | Your Stremio addons' film and series catalogs, played from the streams your stream addons give |
+| YouTube | Your YouTube playlists. You sign in with a code |
+| Spotify | Your Spotify library as music for Plex and Plexamp. Needs the YouTube addon, signed in |
 
-**インストールするには。** **Repositories** の下で、リポジトリの横にある **Addons** を押し、次にアドオンの下の **Install** を押します。rex は、そのアドオンが接続できるウェブサイトを表示し、もう一度確認してから同期を始めます。
+**インストールする。** **Repositories** の下で、リポジトリの横にある **Addons** を押し、そのアドオンの下にある **Install** を押します。rex は、アクセスできるウェブサイトを表示して、もう一度確認してから同期を始めます。
 
-**サインインするには。** アカウントが必要なアドオンには **Sign in to start.** と表示されます。その **Sign in** ボタンを押してください。表示されたページを任意のデバイスで開き、画面に出たコードを入力します。
+**サインインする。** アカウントが必要なアドオンには **Sign in to start.** と表示されます。その **Sign in** ボタンを押し、表示されたページをどのデバイスでも開いて、表示されたコードを入力してください。
 
-**repository を追加するには。** **Add a repository** の下に、そのリンクを入力します (`github.com/user/repo` だけで十分です)。次に **Add** を押します。信頼できる人が作ったアドオンだけをインストールしてください。自分でアドオンを作りたい場合は [rex-addons](https://github.com/debridmediamanager/rex-addons) を参照してください。
+**リポジトリを追加する。** **Add a repository** の下にリンクを入力します（`github.com/user/repo` だけで十分です）。そして **Add** を押してください。信頼できる人が作ったものだけをインストールしてください。自分でアドオンを作りたい場合は [rex-addons](https://github.com/debridmediamanager/rex-addons) を参照してください。
 
 ## 自宅の他のデバイスで視聴する {#watch-on-other-devices-at-home}
 
@@ -113,18 +112,20 @@ Plex に同じアカウントでサインインしているアプリはすべて
 
 ## トラブルシューティング {#troubleshooting}
 
-| 表示される内容 | 対処法 |
+| 見えるもの | やること |
 |---|---|
-| **App not installed as app isn't compatible with your phone.** | プロセッサー用のファイルを間違えています。ステップ1の表にあるもう一方のファイルを試してください |
-| **Another app here already uses this port, maybe a Plex server. Try 32500.** | ポートとして `32500` を入力してください |
-| **Use a number from 1024 to 65535** | ポートは1024から65535までの数字にしてください |
-| Plexアプリにサーバーが表示されない | ステップ4で使ったのと同じアカウントでPlexアプリにサインインし、両方の端末を同じホームネットワークに接続したままにしてください |
+| **App not installed as app isn't compatible with your phone.** | ファイルの選び方が間違っています。Step 1 の表から、もう一方のファイルを試してください |
+| **Another app here already uses this port, maybe a Plex server. Try 32500.** | ポートとして `32500` と入力してください |
+| **Use a number from 1024 to 65535** | ポートは、その範囲の数字にしてください |
+| Plex アプリにサーバーが表示されない | Step 4 で使ったのと同じアカウントで Plex アプリにサインインし、両方の機器を同じホームネットワークに接続したままにしてください |
 | ライブラリが空っぽ | 最初の同期がまだ実行中です。**Status** に作品数が表示されるまで待ってください |
-| アドオンの下に **Sign in needed** と表示される | そのアドオンの **Sign in** ボタンを押して、コードを入力してください |
+| addon の下に **Sign in needed** と表示される | その addon の **Sign in** ボタンを押して、コードを入力してください |
 | **That isn't a repository link. Try github.com/user/repo.** | リポジトリのリンクを入力してください。例: `github.com/user/repo` |
 | **no public git repository there (it asks for a login)** | リンクが間違っているか、リポジトリが非公開です。ブラウザで確認してください |
-| 画面を消すとrexが止まる | ステップ3のバックグラウンド設定をやり直し、[Don't kill my app](https://dontkillmyapp.com/) も確認してください |
+| 画面を消すと rex が止まる | Step 3 のバックグラウンド設定をやり直してください。あわせて [アプリを強制終了させない](https://dontkillmyapp.com/) も確認してください |
 
-**Logs** には、rexとアドオンが最近出力した内容が、キーやパスワードを隠した状態で表示されます。サポートからログを求められたら、**Send logs to support** を押してください。送信前に内容をすべて確認できます。その後 **Send** を押し、表示されたコードを投稿してください。
+**Logs** には、rex と addon が最近何を伝えたかが、キーやパスワードを隠した状態で表示されます。サポートからログを求められたら、**Send logs to support** を押してください。送信前に中身をすべて確認できます。その後 **Send** を押して、表示されたコードを投稿してください。
 
-行き詰まったら、[Discord](https://discord.com/invite/7u4YjMThXP) の **rex-support** フォーラムで質問してください。
+アプリが送信する内容と送信先は、[プライバシーポリシー](android-privacy.md)に書かれています。
+
+困ったときは、[Discord](https://discord.com/invite/7u4YjMThXP) の **rex-support** フォーラムで聞いてください。

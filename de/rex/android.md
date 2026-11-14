@@ -1,10 +1,10 @@
 # rex für Android {#rex-for-android}
 
-rex ist ein Medienserver für die Plex-Apps, der selbst keine Dateien besitzt. rex für Android betreibt ihn auf einem Handy, Tablet, Android TV, Google TV oder Fire TV, ganz ohne Computer. Die Plex-Apps auf deinen Geräten finden ihn wie jeden anderen Plex-Server und spielen von ihm ab.
+rex ist ein Medienserver für die Plex-Apps, der selbst keine Dateien besitzt. rex für Android läuft auf einem Handy, Tablet, Android TV, Google TV oder Fire TV, ganz ohne Computer. Die Plex-Apps auf deinen Geräten finden ihn wie jeden anderen Plex-Server und spielen von dort ab.
 
-Was abgespielt wird, kommt aus **Addons**. Den Anfang machen die gemeinfreien Filme des Internet Archive. Weitere Addons, etwa deine Stremio-Addons, YouTube und Spotify, installierst du direkt in der App.
+Was abgespielt wird, kommt aus **Addons**. Los geht es mit den gemeinfreien Filmen des Internet Archive. Weitere Addons, etwa deine Stremio-Addons, YouTube und Spotify, installierst du direkt in der App, sobald du deren Repository hinzugefügt hast.
 
-rex für Android ist kostenlos. Möchtest du deine Debrid-Konten und Usenet ebenfalls einbinden? zurg+rex, ein Plex-Server auf deinem Handy mit eingebautem zurg, gibt es mit einer Sponsoring-Bedingung: siehe [zurg+rex für Android](../zurg/guides/android.md).
+rex für Android ist kostenlos. Willst du deine Debrid-Konten und Usenet dort auch einbinden? zurg+rex, ein Plex-Server auf deinem Handy mit eingebautem zurg, gibt es gegen eine Sponsoring-Mitgliedschaft: siehe [zurg+rex für Android](../zurg/guides/android.md).
 
 ## Bevor du anfängst {#before-you-start}
 
@@ -74,22 +74,21 @@ Die erste Synchronisierung des Internet Archive dauert eine Weile: etwa eine hal
 
 ## Add-ons {#addons}
 
-**Addons** listet auf, was du installiert hast. Jeder zeigt seine Titel und wann er zuletzt synchronisiert wurde. Die Buttons heißen **Sync now**, **Settings**, **Log** und **Remove**; auf dem Handy wischst du die Buttonzeile seitlich, um alle zu sehen. Mit dem Schalter **Enabled** schaltest du einen Addon aus, ohne ihn zu entfernen.
+**Addons** listet alles auf, was du installiert hast. Jeder zeigt seine Titel und wann er zuletzt synchronisiert wurde. Die Buttons sind **Sync now**, **Settings**, **Log** und **Remove**; auf dem Handy kannst du die Buttonleiste seitlich wischen, um alle zu sehen. Mit dem Schalter **Enabled** schaltest du einen Addon aus, ohne ihn zu entfernen.
 
-Addons kommen aus **repositories**: Git-Repositories, die Addons enthalten. Die App hat bereits [rex-addons](https://github.com/debridmediamanager/rex-addons) hinzugefügt, das Folgendes anbietet:
+Addons kommen aus **repositories**: Git-Repositories, die Addons enthalten. Die App hat [rex-addons](https://github.com/debridmediamanager/rex-addons) schon von Anfang an hinzugefügt. Es bietet die gemeinfreien Filme des Internet Archive, die direkt installiert sind. Für mehr füge [rex-community-addons](https://github.com/debridmediamanager/rex-community-addons) hinzu (siehe unten **Add a repository**). Es bietet:
 
 | Addon | Was es bringt |
 |---|---|
-| Internet Archive | Filme ohne Urheberrecht. Ist von Anfang an installiert |
-| Stremio addons | Die Film- und Serien-Kataloge deiner Stremio-Addons, abgespielt von den Streams, die deine Stream-Addons liefern |
+| Stremio addons | Die Film- und Serienkataloge deiner Stremio-Addons, abgespielt über die Streams, die deine Stream-Addons liefern |
 | YouTube | Deine YouTube-Playlists. Du meldest dich mit einem Code an |
 | Spotify | Deine Spotify-Bibliothek als Musik für Plex und Plexamp. Braucht das YouTube-Addon, angemeldet |
 
-**Ein Addon installieren.** Unter **Repositories** drückst du neben einem Repository auf **Addons** und dann unter dem Addon auf **Install**. rex zeigt dir, welche Websites es erreichen kann, und fragt noch einmal nach. Dann startet die Synchronisierung.
+**Installieren.** Unter **Repositories** drückst du neben einem Repository auf **Addons** und dann unter dem Addon auf **Install**. rex zeigt dir, welche Websites es erreichen kann, und fragt noch einmal nach. Danach beginnt die Synchronisierung.
 
-**Anmelden.** Ein Addon, das dein Konto braucht, zeigt **Sign in to start.** an. Drück auf seinen Button **Sign in**: Geh auf der genannten Seite auf einem beliebigen Gerät und gib den angezeigten Code ein.
+**Anmelden.** Ein Addon, das dein Konto braucht, zeigt **Sign in to start.** Drück auf seinen Button **Sign in**: Ruf auf einem beliebigen Gerät die Seite auf, die dort genannt wird, und gib den angezeigten Code ein.
 
-**Ein Repository hinzufügen.** Unter **Add a repository** tippst du den Link ein (`github.com/user/repo` reicht) und drückst auf **Add**. Installiere nur Addons von Leuten, denen du vertraust. Wenn du dein eigenes Addon schreiben willst, schau dir [rex-addons](https://github.com/debridmediamanager/rex-addons) an.
+**Ein Repository hinzufügen.** Unter **Add a repository** tippst du seinen Link ein (`github.com/user/repo` reicht) und drückst auf **Add**. Installiere nur Addons von Leuten, denen du vertraust. Um dein eigenes Addon zu schreiben, schau dir [rex-addons](https://github.com/debridmediamanager/rex-addons) an.
 
 ## Auf anderen Geräten zu Hause ansehen {#watch-on-other-devices-at-home}
 
@@ -113,18 +112,20 @@ Wenn du Familie und Freunde mit ihren eigenen Plex-Konten schauen lassen willst,
 
 ## Fehlerbehebung {#troubleshooting}
 
-| Was du siehst | Was zu tun ist |
+| Was du siehst | Was du tun solltest |
 |---|---|
 | **App not installed as app isn't compatible with your phone.** | Du hast die falsche Datei für den Prozessor gewählt. Probier die andere aus der Tabelle in Schritt 1 |
 | **Another app here already uses this port, maybe a Plex server. Try 32500.** | Gib `32500` als Port ein |
 | **Use a number from 1024 to 65535** | Der Port muss eine Zahl in diesem Bereich sein |
-| The server isn't in the Plex app | Melde die Plex-App mit demselben Konto an, das du in Schritt 4 benutzt hast, und lass beide Geräte im selben Heimnetzwerk |
-| The library is empty | Die erste Synchronisierung läuft noch: warte, bis **Status** eine Anzahl an Titeln anzeigt |
-| **Sign in needed** under an addon | Drück auf dessen Button **Sign in** und gib den Code ein |
+| Der Server ist nicht in der Plex-App | Melde die Plex-App mit demselben Konto an, das du in Schritt 4 benutzt hast, und lass beide Geräte im selben Heimnetzwerk |
+| Die Bibliothek ist leer | Die erste Synchronisierung läuft noch: warte, bis **Status** eine Anzahl an Titeln anzeigt |
+| **Sign in needed** unter einem Addon | Drück auf dessen Button **Sign in** und gib den Code ein |
 | **That isn't a repository link. Try github.com/user/repo.** | Gib den Link zum Repository ein, zum Beispiel `github.com/user/repo` |
-| **no public git repository there (it asks for a login)** | Der Link ist falsch oder das Repository ist privat. Prüf ihn im Browser |
-| rex stops when the screen is off | Stell die Hintergrund-Einstellung aus Schritt 3 noch mal ein und schau dir [Don't kill my app](https://dontkillmyapp.com/) an |
+| **no public git repository there (it asks for a login)** | Der Link ist falsch oder das Repository ist privat. Prüf es im Browser |
+| rex stoppt, wenn der Bildschirm aus ist | Stell die Hintergrund-Einstellung aus Schritt 3 noch mal ein und schau dir [Don't kill my app](https://dontkillmyapp.com/) an |
 
-**Logs** zeigt, was rex und die Addons zuletzt gemeldet haben, mit ausgeblendeten Keys und Passwörtern. Wenn der Support nach Logs fragt, drück auf **Send logs to support**: Du siehst alles, bevor etwas gesendet wird. Dann drück auf **Send** und poste den Code, den du bekommst.
+**Logs** zeigt, was rex und die Addons zuletzt gemeldet haben, wobei Schlüssel und Passwörter ausgeblendet sind. Wenn der Support Logs haben möchte, drück auf **Send logs to support**: Du siehst alles, bevor etwas gesendet wird. Dann drück auf **Send** und poste den Code, den du bekommst.
 
-Nicht weiterkommen? Frag im Forum **rex-support** auf [Discord](https://discord.com/invite/7u4YjMThXP).
+Was die App sendet und wohin, steht in der [Datenschutzerklärung](android-privacy.md).
+
+Festgefahren? Frag im **rex-support**-Forum auf [Discord](https://discord.com/invite/7u4YjMThXP).

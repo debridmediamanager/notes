@@ -2,9 +2,9 @@
 
 rex est un serveur média pour les applications Plex qui ne possède aucun fichier. rex pour Android le fait tourner sur un téléphone, une tablette, Android TV, Google TV ou Fire TV, sans ordinateur. Les applications Plex de vos appareils le trouvent comme n'importe quel serveur Plex et lisent depuis lui.
 
-Ce qui est lu vient des **addons**. Il commence avec les films du domaine public de l'Internet Archive. D'autres addons, comme vos addons Stremio, YouTube et Spotify, s'installent depuis l'application.
+Ce qu'il lit provient d'**addons**. Il commence avec les films du domaine public de l'Internet Archive. D'autres addons, comme vos addons Stremio, YouTube et Spotify, s'installent depuis l'application une fois que vous ajoutez leur dépôt.
 
-rex pour Android est gratuit. Vous voulez aussi y mettre vos comptes debrid et votre Usenet ? zurg+rex, un serveur Plex sur votre téléphone avec zurg intégré, est proposé avec un parrainage : voir [zurg+rex pour Android](../zurg/guides/android.md).
+rex pour Android est gratuit. Vous voulez aussi y intégrer vos comptes debrid et Usenet ? zurg+rex, un serveur Plex sur votre téléphone avec zurg intégré, est proposé avec un système de parrainage : voir [zurg+rex pour Android](../zurg/guides/android.md).
 
 ## Avant de commencer {#before-you-start}
 
@@ -74,22 +74,21 @@ La première synchronisation de l'Internet Archive prend un moment : environ une
 
 ## Modules complémentaires {#addons}
 
-**Addons** liste ce que vous avez installé. Chacun affiche ses titres et la date de sa dernière synchronisation. Ses boutons sont **Sync now**, **Settings**, **Log** et **Remove** ; sur téléphone, faites glisser la rangée de boutons vers la gauche ou la droite pour les voir tous. L'interrupteur **Enabled** désactive un addon sans le supprimer.
+**Addons** liste ce que vous avez installé. Chacun affiche ses titres et la date de sa dernière synchronisation. Ses boutons sont **Sync now**, **Settings**, **Log** et **Remove** ; sur un téléphone, faites glisser la rangée de boutons vers la gauche ou la droite pour tous les voir. L'interrupteur **Enabled** désactive un addon sans le supprimer.
 
-Les addons viennent de **repositories** : des dépôts git qui contiennent des addons. L'application démarre avec [rex-addons](https://github.com/debridmediamanager/rex-addons) ajouté, qui propose :
+Les addons viennent de **repositories** : des dépôts git qui contiennent des addons. L'application ajoute déjà [rex-addons](https://github.com/debridmediamanager/rex-addons) au départ, qui propose les films du domaine public d'Internet Archive, installés dès le début. Pour en avoir davantage, ajoutez [rex-community-addons](https://github.com/debridmediamanager/rex-community-addons) (voir **Add a repository** plus bas), qui propose :
 
 | Addon | Ce qu'il apporte |
 |---|---|
-| Internet Archive | Films du domaine public. Installé dès le départ |
-| Stremio addons | Les catalogues de films et de séries de vos addons Stremio, lus depuis les flux fournis par vos addons de flux |
+| Stremio addons | Les catalogues de films et de séries de vos addons Stremio, lus depuis les flux que vos addons de flux fournissent |
 | YouTube | Vos playlists YouTube. Vous vous connectez avec un code |
-| Spotify | Votre bibliothèque Spotify sous forme de musique pour Plex et Plexamp. Nécessite l'addon YouTube, connecté |
+| Spotify | Votre bibliothèque Spotify, en musique pour Plex et Plexamp. Nécessite l'addon YouTube, connecté |
 
-**Installer un addon.** Sous **Repositories**, appuyez sur **Addons** à côté d'un repository, puis sur **Install** sous l'addon. rex affiche les sites web auxquels il peut accéder et vous demande une fois de plus, puis lance la synchronisation.
+**Installer un addon.** Sous **Repositories**, appuyez sur **Addons** à côté d'un repository, puis sur **Install** sous l'addon. rex affiche les sites web qu'il peut joindre et vous demande une dernière fois confirmation, puis lance la synchronisation.
 
 **Se connecter.** Un addon qui a besoin de votre compte affiche **Sign in to start.** Appuyez sur son bouton **Sign in** : rendez-vous sur la page indiquée depuis n'importe quel appareil et saisissez le code affiché.
 
-**Ajouter un repository.** Sous **Add a repository**, tapez son lien (`github.com/user/repo` suffit) et appuyez sur **Add**. N'installez que des addons venant de personnes en qui vous avez confiance. Pour écrire votre propre addon, consultez [rex-addons](https://github.com/debridmediamanager/rex-addons).
+**Ajouter un repository.** Sous **Add a repository**, tapez son lien (`github.com/user/repo` suffit) et appuyez sur **Add**. N'installez que des addons de personnes en qui vous avez confiance. Pour écrire votre propre addon, consultez [rex-addons](https://github.com/debridmediamanager/rex-addons).
 
 ## Regardez sur d'autres appareils à la maison {#watch-on-other-devices-at-home}
 
@@ -113,18 +112,20 @@ Pour permettre à votre famille de regarder avec son propre compte Plex, consult
 
 ## Dépannage {#troubleshooting}
 
-| Ce que vous voyez | Quoi faire |
+| What you see | What to do |
 |---|---|
-| **App not installed as app isn't compatible with your phone.** | Vous avez choisi le mauvais fichier pour le processeur. Essayez l'autre dans le tableau de l'Étape 1 |
-| **Another app here already uses this port, maybe a Plex server. Try 32500.** | Tapez `32500` comme port |
-| **Use a number from 1024 to 65535** | Le port doit être un nombre compris dans cette plage |
-| The server isn't in the Plex app | Connectez l'application Plex au même compte que celui utilisé à l'Étape 4, et gardez les deux appareils sur le même réseau domestique |
-| The library is empty | La première synchronisation est toujours en cours : attendez que **Status** affiche un nombre de titres |
-| **Sign in needed** under an addon | Appuyez sur son bouton **Sign in** et saisissez le code |
-| **That isn't a repository link. Try github.com/user/repo.** | Tapez le lien du dépôt, par exemple `github.com/user/repo` |
-| **no public git repository there (it asks for a login)** | Le lien est incorrect ou le dépôt est privé. Vérifiez-le dans un navigateur |
-| rex stops when the screen is off | Refaites le réglage d'arrière-plan de l'Étape 3, et consultez [Don't kill my app](https://dontkillmyapp.com/) |
+| **App not installed as app isn't compatible with your phone.** | Tu as choisi le mauvais fichier pour le processeur. Essaie l'autre de la table de l'Étape 1 |
+| **Another app here already uses this port, maybe a Plex server. Try 32500.** | Tape `32500` comme port |
+| **Use a number from 1024 to 65535** | Le port doit être un nombre dans cette plage |
+| Le serveur n'apparaît pas dans l'app Plex | Connecte l'app Plex avec le même compte que celui de l'Étape 4, et garde les deux appareils sur le même réseau domestique |
+| La bibliothèque est vide | La première synchronisation tourne encore : attends que **Status** affiche un nombre de titres |
+| **Sign in needed** under an addon | Appuie sur son bouton **Sign in** et saisis le code |
+| **That isn't a repository link. Try github.com/user/repo.** | Tape le lien du dépôt, par exemple `github.com/user/repo` |
+| **no public git repository there (it asks for a login)** | Le lien est faux ou le dépôt est privé. Vérifie-le dans un navigateur |
+| rex s'arrête quand l'écran est éteint | Refais le réglage d'arrière-plan de l'Étape 3, et regarde [Ne tue pas mon app](https://dontkillmyapp.com/) |
 
-**Logs** affiche ce que rex et les addons ont dit récemment, avec les clés et mots de passe masqués. Si le support demande les logs, appuyez sur **Send logs to support** : vous voyez tout avant l'envoi, puis appuyez sur **Send** et publiez le code que vous recevez.
+**Logs** affiche ce que rex et les addons ont dit récemment, clés et mots de passe masqués. Si le support demande des logs, appuie sur **Send logs to support** : tu vois tout avant l'envoi, puis appuie sur **Send** et poste le code que tu reçois.
 
-Bloqué ? Posez votre question dans le forum **rex-support** sur [Discord](https://discord.com/invite/7u4YjMThXP).
+Ce que l'app envoie et où est expliqué dans sa [politique de confidentialité](android-privacy.md).
+
+Bloqué ? Demande sur le forum **rex-support** de [Discord](https://discord.com/invite/7u4YjMThXP).

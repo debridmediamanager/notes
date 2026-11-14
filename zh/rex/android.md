@@ -1,10 +1,10 @@
 # rex 安卓版 {#rex-for-android}
 
-rex 是一个为 Plex 应用提供服务的媒体服务器，它本身不存储任何文件。rex for Android 可以直接在手机、平板、Android TV、Google TV 或 Fire TV 上运行，不需要电脑。你设备上的 Plex 应用会像找到普通 Plex 服务器一样找到它，并从它那里播放内容。
+rex 是一个用于 Plex 应用的媒体服务器，本身不拥有任何文件。rex for Android 可以把它直接跑在手机、平板、Android TV、Google TV 或 Fire TV 上，不需要电脑。你设备上的 Plex 应用会像找普通 Plex 服务器一样找到它，并从它那里播放内容。
 
-它能播放的内容来自 **addons（插件）**。一开始就有 Internet Archive 的公共领域电影。其他插件，比如你的 Stremio 插件、YouTube 和 Spotify，可以直接在应用内安装。
+它能播放的内容来自 **addons**（插件）。一开始就有互联网档案馆（Internet Archive）的公共领域电影。更多插件，比如你的 Stremio 插件、YouTube 和 Spotify，在添加它们的仓库后可以直接在应用里安装。
 
-rex for Android 是免费的。如果你也想把你的 debrid 账号和 Usenet 加进来？zurg+rex 是一个内置了 zurg 的手机端 Plex 服务器，需要赞助才能使用：请参阅 [zurg+rex for Android](../zurg/guides/android.md)。
+rex for Android 是免费的。如果你也想把 debrid 账户和 Usenet 加进来，可以用 zurg+rex：一个在手机上运行、内置 zurg 的 Plex 服务器，需要赞助才能使用。详见 [zurg+rex for Android](../zurg/guides/android.md)。
 
 ## 开始之前 {#before-you-start}
 
@@ -80,22 +80,21 @@ Internet Archive 的首次同步需要一些时间：在我们的测试设备上
 
 ## 附加组件 {#addons}
 
-**Addons** 列出你安装过的插件。每个插件会显示它的标题数量以及上次同步的时间。它的按钮有 **Sync now**、**Settings**、**Log** 和 **Remove**；在手机上，左右滑动这一排按钮就能看到全部。**Enabled** 开关可以让插件停用但不删除它。
+**Addons** 列出你安装过的插件。每个插件都会显示它的条目数，以及上次同步的时间。它的按钮有 **Sync now**、**Settings**、**Log** 和 **Remove**；在手机上，左右滑动按钮所在的那一行即可看到全部按钮。**Enabled** 开关可以在不删除插件的情况下关闭它。
 
-插件来自**仓库**：也就是存放插件的 git 仓库。应用一开始已经添加了 [rex-addons](https://github.com/debridmediamanager/rex-addons)，它提供以下插件：
+插件来自 **repositories**（仓库），也就是存放插件的 git 仓库。应用一开始就添加了 [rex-addons](https://github.com/debridmediamanager/rex-addons)，其中提供 Internet Archive 的公共领域电影，并且从一开始就已安装。如果想要更多，可以添加 [rex-community-addons](https://github.com/debridmediamanager/rex-community-addons)（见下方的 **Add a repository**），它提供：
 
-| 插件 | 提供的内容 |
+| 插件 | 功能 |
 |---|---|
-| Internet Archive | 公有领域电影。从一开始就已安装 |
-| Stremio addons | 你的 Stremio 插件里的电影和剧集目录，播放来源是你的流媒体插件提供的串流 |
+| Stremio addons | 你的 Stremio 插件中的电影和剧集目录，播放来源是你的流媒体插件提供的串流 |
 | YouTube | 你的 YouTube 播放列表。需要用验证码登录 |
-| Spotify | 你的 Spotify 音乐库，作为音乐提供给 Plex 和 Plexamp。需要先登录已配置好的 YouTube 插件 |
+| Spotify | 你的 Spotify 音乐库，作为音乐提供给 Plex 和 Plexamp。需要已登录的 YouTube 插件 |
 
-**安装插件。** 在 **Repositories** 下面，点仓库旁边的 **Addons**，然后点插件下方的 **Install**。rex 会列出它能访问的网站，再问你一次，确认后开始同步。
+**安装一个插件。** 在 **Repositories** 下，点击某个仓库旁边的 **Addons**，然后点击插件下方的 **Install**。rex 会列出它能访问的网站，并再次询问你是否确认，然后开始同步该插件。
 
-**登录。** 需要账号的插件会显示 **Sign in to start.**。点它的 **Sign in** 按钮：在任意设备上打开它指定的页面，输入屏幕上显示的验证码即可。
+**登录。** 需要账号的插件会显示 **Sign in to start.**。点击它的 **Sign in** 按钮：在任意设备上打开它指定的页面，并输入屏幕上显示的验证码。
 
-**添加仓库。** 在 **Add a repository** 下面输入仓库链接（`github.com/user/repo` 就够了），然后点 **Add**。只从你信任的人那里安装插件。想自己写插件，请参阅 [rex-addons](https://github.com/debridmediamanager/rex-addons)。
+**添加仓库。** 在 **Add a repository** 下，输入它的链接（`github.com/user/repo` 就够了），然后点击 **Add**。只从你信任的人那里安装。想自己编写插件，请参阅 [rex-addons](https://github.com/debridmediamanager/rex-addons)。
 
 ## 在家中的其他设备上观看 {#watch-on-other-devices-at-home}
 
@@ -119,18 +118,20 @@ Plex 应用只要登录的是同一个账号，就能在家庭网络里通过名
 
 ## 故障排除 {#troubleshooting}
 
-| 你会看到什么 | 该怎么做 |
+| 你看到的 | 该怎么做 |
 |---|---|
-| **App not installed as app isn't compatible with your phone.** | 你选错了处理器对应的文件。请从步骤 1 的表格中换另一个文件试试。 |
+| **App not installed as app isn't compatible with your phone.** | 你选错了处理器对应的文件。请从第 1 步的表格中选另一个文件。 |
 | **Another app here already uses this port, maybe a Plex server. Try 32500.** | 将端口改为 `32500`。 |
 | **Use a number from 1024 to 65535** | 端口必须是这个范围内的数字。 |
-| Plex App 里找不到服务器 | 在 Plex App 中登录步骤 4 所用的同一个账号，并确保两台设备连接的是同一个家庭网络。 |
-| 媒体库是空的 | 首次同步还在进行中，请等到 **Status** 显示出标题数量。 |
-| 某个插件下出现 **Sign in needed** | 按下它的 **Sign in** 按钮，然后输入验证码。 |
+| 应用里找不到服务器 | 在 Plex 应用中登录第 4 步用的同一账号，并确保两台设备连接的是同一个家庭网络。 |
+| 资料库是空的 | 首次同步还在进行。请等待，直到 **Status** 显示出标题数量。 |
+| 某个插件下方显示 **Sign in needed** | 点击它的 **Sign in** 按钮，然后输入验证码。 |
 | **That isn't a repository link. Try github.com/user/repo.** | 输入仓库链接，例如 `github.com/user/repo`。 |
 | **no public git repository there (it asks for a login)** | 链接有误，或者仓库是私有的。请在浏览器中检查一下。 |
-| 屏幕关闭后 rex 停止运行 | 重新设置步骤 3 中的后台运行选项，并参考 [Don't kill my app](https://dontkillmyapp.com/)。 |
+| 屏幕关闭后 rex 停止运行 | 重新设置第 3 步中的后台运行选项，并参阅 [Don't kill my app](https://dontkillmyapp.com/)。 |
 
-**Logs** 会显示 rex 和插件最近的运行记录，其中的密钥和密码已被隐藏。如果支持人员要求提供日志，请按下 **Send logs to support**。发送前你可以看到全部内容，然后按下 **Send**，把得到的代码发过去即可。
+**Logs** 会显示 rex 和插件最近的运行记录，其中的密钥和密码已被隐藏。如果支持人员索要日志，请点击 **Send logs to support**：发送前你可以看到全部内容，然后点击 **Send**，并把得到的代码发出去。
 
-还是没解决？请到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **rex-support** 论坛提问。
+应用会发送哪些数据、发送到哪里，请参阅它的[隐私政策](android-privacy.md)。
+
+遇到问题？可以到 [Discord](https://discord.com/invite/7u4YjMThXP) 上的 **rex-support** 论坛提问。

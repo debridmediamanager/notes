@@ -1,10 +1,10 @@
 # rex لأندرويد {#rex-for-android}
 
-rex هو خادم وسائط لتطبيقات Plex لا يملك أي ملفات. يعمل rex for Android على الهاتف أو الجهاز اللوحي أو Android TV أو Google TV أو Fire TV، دون الحاجة إلى حاسوب. تجد تطبيقات Plex على أجهزتك هذا الخادم كما تجد أي خادم Plex آخر، وتشغّل منه المحتوى.
+rex هو خادم وسائط لتطبيقات Plex لا يملك أي ملفات. يعمل rex for Android على الهاتف أو الجهاز اللوحي أو Android TV أو Google TV أو Fire TV، دون الحاجة إلى حاسوب. تجد تطبيقات Plex على أجهزتك هذا الخادم كما تجد أي خادم Plex آخر، وتشغّل منه.
 
-ما يتم تشغيله يأتي من **الإضافات**. تبدأ الأمور بأفلام الملك العام من Internet Archive. يمكنك تثبيت إضافات أخرى، مثل إضافات Stremio و YouTube و Spotify، من داخل التطبيق.
+ما يُشغَّل يأتي من **الإضافات**. تبدأ المجموعة بأفلام الملكية العامة من Internet Archive. وتُثبَّت إضافات أخرى، مثل إضافات Stremio وYouTube وSpotify، من داخل التطبيق بعد أن تضيف مستودعها.
 
-rex for Android مجاني. هل تريد إضافة حسابات debrid و Usenet إليه أيضًا؟ zurg+rex، وهو خادم Plex على هاتفك مع zurg مدمج، يأتي برعاية: راجع [zurg+rex for Android](../zurg/guides/android.md).
+rex for Android مجاني. هل تريد أن تضيف إليه حسابات debrid وUsenet الخاصة بك أيضاً؟ zurg+rex، وهو خادم Plex على هاتفك مع zurg مدمج، يأتي مع اشتراك رعاية: راجع [zurg+rex for Android](../zurg/guides/android.md).
 
 ## قبل أن تبدأ {#before-you-start}
 
@@ -74,22 +74,21 @@ Open any Plex app signed in to the same account. If Plex is on this device, **St
 
 ## الإضافات {#addons}
 
-**Addons** lista los que tienes instalados. Cada uno muestra sus títulos y cuándo se sincronizó por última vez. Sus botones son **Sync now**, **Settings**, **Log** y **Remove**; en el móvil, desliza la fila de botones hacia los lados para verlos todos. El interruptor **Enabled** desactiva un addon sin eliminarlo.
+**Addons** تعرض ما قمت بتثبيته. تعرض كل إضافة عناوينها ووقت آخر مزامنة لها. أزرارها هي **Sync now** و**Settings** و**Log** و**Remove**. على الهاتف، مرّر صف الأزرار جانبًا لترى كلها. مفتاح **Enabled** يوقف الإضافة دون حذفها.
 
-Los addons vienen de **repositories**: repositorios de git que contienen addons. La app empieza con [rex-addons](https://github.com/debridmediamanager/rex-addons) añadido, que ofrece:
+تأتي الإضافات من **مستودعات**، وهي مستودعات git تحتوي على إضافات. يبدأ التطبيق ومعه إضافة [rex-addons](https://github.com/debridmediamanager/rex-addons)، وهي تقدم أفلام الملك العام من Internet Archive، وتكون مثبتة من البداية. لمزيد من الإضافات، أضف [rex-community-addons](https://github.com/debridmediamanager/rex-community-addons) (انظر **Add a repository** أدناه)، وهي تقدم:
 
-| Addon | Qué aporta |
+| الإضافة | ما تضيفه |
 |---|---|
-| Internet Archive | Películas de dominio público. Instalado desde el principio |
-| Stremio addons | Los catálogos de películas y series de tus addons de Stremio, reproducidos desde los streams que te dan tus addons de streams |
-| YouTube | Tus listas de reproducción de YouTube. Inicias sesión con un código |
-| Spotify | Tu biblioteca de Spotify como música para Plex y Plexamp. Necesita el addon de YouTube, con sesión iniciada |
+| إضافات Stremio | كتالوجات الأفلام والمسلسلات من إضافات Stremio الخاصة بك، وتُشغَّل من البثوث التي تقدمها إضافات البث لديك |
+| YouTube | قوائم تشغيل YouTube الخاصة بك. تسجل الدخول برمز |
+| Spotify | مكتبة Spotify الخاصة بك كموسيقى لـ Plex وPlexamp. تحتاج إلى إضافة YouTube، وأن تكون مسجلاً فيها |
 
-**Instala uno.** En **Repositories**, pulsa **Addons** junto a un repositorio y luego **Install** debajo del addon. rex te muestra a qué sitios web puede acceder y te vuelve a preguntar una vez, y después empieza a sincronizarlo.
+**تثبيت إضافة.** ضمن **Repositories**، اضغط **Addons** بجانب المستودع، ثم **Install** أسفل الإضافة. يعرض rex المواقع التي يمكنه الوصول إليها ويسألك مرة أخرى، ثم يبدأ بمزامنتها.
 
-**Inicia sesión.** Un addon que necesita tu cuenta dice **Sign in to start.** Pulsa su botón **Sign in**: ve a la página que te indica desde cualquier dispositivo e introduce el código que aparece.
+**تسجيل الدخول.** إضافة تحتاج إلى حسابك تعرض **Sign in to start.** اضغط زر **Sign in** الخاص بها: افتح الصفحة المذكورة على أي جهاز وأدخل الرمز الظاهر.
 
-**Añade un repositorio.** En **Add a repository**, escribe su enlace (`github.com/user/repo` es suficiente) y pulsa **Add**. Instala solo desde personas en las que confíes. Para escribir tu propio addon, consulta [rex-addons](https://github.com/debridmediamanager/rex-addons).
+**إضافة مستودع.** ضمن **Add a repository**، اكتب رابطه (يكفي `github.com/user/repo`) واضغط **Add**. ثبّت فقط من أشخاص تثق بهم. لكتابة إضافتك الخاصة، راجع [rex-addons](https://github.com/debridmediamanager/rex-addons).
 
 ## شاهد على أجهزة أخرى في المنزل {#watch-on-other-devices-at-home}
 
@@ -113,18 +112,20 @@ Los addons vienen de **repositories**: repositorios de git que contienen addons.
 
 ## استكشاف الأخطاء وإصلاحها {#troubleshooting}
 
-| ما تراه | ما يجب فعله |
+| ما تراه | ما الذي تفعله |
 |---|---|
-| **App not installed as app isn't compatible with your phone.** | اخترت الملف الخطأ لمعالج هاتفك. جرّب الملف الآخر من الجدول في الخطوة 1 |
-| **Another app here already uses this port, maybe a Plex server. Try 32500.** | اكتب `32500` كرقم للمنفذ |
+| **App not installed as app isn't compatible with your phone.** | اخترت الملف الخطأ لمعالج جهازك. جرّب الملف الآخر من الجدول في الخطوة 1 |
+| **Another app here already uses this port, maybe a Plex server. Try 32500.** | اكتب `32500` كمنفذ |
 | **Use a number from 1024 to 65535** | يجب أن يكون المنفذ رقمًا ضمن هذا النطاق |
-| الخادم غير ظاهر في تطبيق Plex | سجّل الدخول إلى تطبيق Plex بالحساب نفسه الذي استخدمته في الخطوة 4، واجعل الجهازين على شبكة المنزل نفسها |
-| المكتبة فارغة | المزامنة الأولى ما زالت تعمل: انتظر حتى يعرض **Status** عددًا من العناوين |
-| **Sign in needed** under an addon | اضغط زر **Sign in** الخاص بها وأدخل الرمز |
+| لا يظهر الخادم في تطبيق Plex | سجّل الدخول إلى تطبيق Plex بالحساب نفسه الذي استخدمته في الخطوة 4، وأبقِ الجهازين على شبكة المنزل نفسها |
+| المكتبة فارغة | ما زالت المزامنة الأولى تعمل: انتظر حتى يظهر عدد من العناوين في **Status** |
+| **Sign in needed** under an addon | اضغط على زر **Sign in** الخاص بها وأدخل الرمز |
 | **That isn't a repository link. Try github.com/user/repo.** | اكتب رابط المستودع، مثل `github.com/user/repo` |
 | **no public git repository there (it asks for a login)** | الرابط خاطئ أو أن المستودع خاص. تحقق منه في المتصفح |
-| يتوقف rex عندما تُطفأ الشاشة | أعد ضبط إعداد الخلفية في الخطوة 3، وراجع [Don't kill my app](https://dontkillmyapp.com/) |
+| rex يتوقف عندما تنطفئ الشاشة | أعد ضبط إعداد الخلفية في الخطوة 3، وراجع [لا تُغلق تطبيقي](https://dontkillmyapp.com/) |
 
-**Logs** يعرض ما قاله rex والإضافات مؤخرًا، مع إخفاء المفاتيح وكلمات المرور. إذا طلب الدعم السجلات، اضغط **Send logs to support**: سترى كل شيء قبل إرساله، ثم اضغط **Send** وأرسل الرمز الذي تحصل عليه.
+**Logs** يعرض ما قاله rex والإضافات مؤخرًا، مع إخفاء المفاتيح وكلمات المرور. إذا طلب فريق الدعم السجلات، فاضغط على **Send logs to support**: سترى كل شيء قبل إرسال أي شيء، ثم اضغط على **Send** وانشر الرمز الذي تحصل عليه.
 
-تحتاج مساعدة؟ اسأل في منتدى **rex-support** على [Discord](https://discord.com/invite/7u4YjMThXP).
+ما يرسله التطبيق وإلى أين يُرسل مذكور في [سياسة الخصوصية](android-privacy.md) الخاصة به.
+
+هل علقت؟ اسأل في منتدى **rex-support** على [Discord](https://discord.com/invite/7u4YjMThXP).

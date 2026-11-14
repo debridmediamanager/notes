@@ -1,10 +1,10 @@
 # rex untuk Android {#rex-for-android}
 
-rex adalah media server untuk aplikasi Plex yang tidak memiliki file apa pun. rex untuk Android menjalankannya di ponsel, tablet, Android TV, Google TV, atau Fire TV, tanpa komputer. Aplikasi Plex di perangkat Anda menemukannya seperti server Plex biasa dan memutar dari sana.
+rex adalah server media untuk aplikasi Plex yang tidak menyimpan file apa pun. rex untuk Android menjalankannya di ponsel, tablet, Android TV, Google TV, atau Fire TV, tanpa perlu komputer. Aplikasi Plex di perangkat Anda menemukannya seperti server Plex biasa dan memutar konten darinya.
 
-Yang diputar berasal dari **addon**. Awalnya ada film domain publik dari Internet Archive. Addon lain, seperti addon Stremio Anda, YouTube, dan Spotify, bisa dipasang dari dalam aplikasi.
+Konten yang bisa diputar berasal dari **addon**. Awalnya ada film domain publik dari Internet Archive. Addon lain, seperti addon Stremio Anda, YouTube, dan Spotify, dapat dipasang dari dalam aplikasi setelah Anda menambahkan repository-nya.
 
-rex untuk Android gratis. Ingin akun debrid dan Usenet Anda juga masuk ke sana? zurg+rex, server Plex di ponsel Anda dengan zurg sudah tertanam, hadir dengan sponsorship: lihat [zurg+rex for Android](../zurg/guides/android.md).
+rex untuk Android gratis. Ingin akun debrid dan Usenet Anda juga ada di sini? zurg+rex, server Plex di ponsel dengan zurg sudah terpasang, hadir dengan sponsorship: lihat [zurg+rex for Android](../zurg/guides/android.md).
 
 ## Sebelum kamu mulai {#before-you-start}
 
@@ -74,22 +74,21 @@ Sinkronisasi pertama dari Internet Archive butuh waktu cukup lama: sekitar seten
 
 ## Add-on {#addons}
 
-**Addons** menampilkan daftar addon yang sudah kamu pasang. Tiap addon menampilkan judul-judulnya dan kapan terakhir disinkronkan. Tombolnya adalah **Sync now**, **Settings**, **Log** dan **Remove**; di ponsel, geser baris tombol ke samping untuk melihat semuanya. Sakelar **Enabled** mematikan addon tanpa menghapusnya.
+**Addons** mencantumkan apa saja yang sudah kamu pasang. Setiap addon menampilkan judulnya dan kapan terakhir kali disinkronkan. Tombolnya adalah **Sync now**, **Settings**, **Log** dan **Remove**; di ponsel, geser baris tombol ke samping untuk melihat semuanya. Sakelar **Enabled** mematikan addon tanpa menghapusnya.
 
-Addon berasal dari **repositories**: repositori git yang berisi addon. Aplikasi ini sudah menambahkan [rex-addons](https://github.com/debridmediamanager/rex-addons) di awal, yang menyediakan:
+Addon berasal dari **repositories**: repositori git yang berisi addon. Aplikasi ini sudah menambahkan [rex-addons](https://github.com/debridmediamanager/rex-addons) sejak awal, yang menawarkan film domain publik dari Internet Archive, dan sudah terpasang dari awal. Untuk lebih banyak, tambahkan [rex-community-addons](https://github.com/debridmediamanager/rex-community-addons) (lihat **Add a repository** di bawah), yang menawarkan:
 
-| Addon | Isinya |
+| Addon | Yang dibawa |
 |---|---|
-| Internet Archive | Film domain publik. Sudah terpasang dari awal |
 | Stremio addons | Katalog film dan serial dari addon Stremio kamu, diputar dari stream yang diberikan addon stream kamu |
 | YouTube | Playlist YouTube kamu. Kamu masuk dengan kode |
-| Spotify | Pustaka Spotify kamu sebagai musik untuk Plex dan Plexamp. Perlu addon YouTube, sudah masuk |
+| Spotify | Perpustakaan Spotify kamu sebagai musik untuk Plex dan Plexamp. Perlu addon YouTube, sudah masuk |
 
-**Pasang satu.** Di bagian **Repositories**, tekan **Addons** di samping repositori, lalu **Install** di bawah addon. rex menampilkan situs web mana saja yang bisa dihubunginya dan bertanya sekali lagi, lalu mulai menyinkronkannya.
+**Pasang satu.** Di bawah **Repositories**, tekan **Addons** di samping repositori, lalu **Install** di bawah addon. rex menampilkan situs web mana saja yang bisa dijangkaunya dan bertanya sekali lagi, lalu mulai menyinkronkannya.
 
-**Masuk.** Addon yang butuh akunmu akan menampilkan **Sign in to start.** Tekan tombol **Sign in**-nya: buka halaman yang disebutkan di perangkat apa pun, lalu masukkan kode yang ditampilkan.
+**Masuk.** Addon yang memerlukan akun kamu akan menampilkan **Sign in to start.** Tekan tombol **Sign in**-nya: buka halaman yang disebutkan di perangkat mana pun dan masukkan kode yang ditampilkan.
 
-**Tambah repositori.** Di bagian **Add a repository**, ketik tautannya (`github.com/user/repo` sudah cukup) lalu tekan **Add**. Pasang hanya dari orang yang kamu percaya. Untuk membuat addon sendiri, lihat [rex-addons](https://github.com/debridmediamanager/rex-addons).
+**Tambahkan repositori.** Di bawah **Add a repository**, ketik tautannya (`github.com/user/repo` sudah cukup) dan tekan **Add**. Pasang hanya dari orang yang kamu percaya. Untuk menulis addon sendiri, lihat [rex-addons](https://github.com/debridmediamanager/rex-addons).
 
 ## Tonton di perangkat lain di rumah {#watch-on-other-devices-at-home}
 
@@ -113,18 +112,20 @@ Untuk membiarkan keluarga menonton dengan akun Plex mereka sendiri, lihat [Bagik
 
 ## Pemecahan masalah {#troubleshooting}
 
-| What you see | What to do |
+| Yang Anda lihat | Yang harus dilakukan |
 |---|---|
-| **App not installed as app isn't compatible with your phone.** | Kamu memilih file yang salah untuk prosesor. Coba yang satunya dari tabel di Langkah 1 |
+| **App not installed as app isn't compatible with your phone.** | Anda memilih file yang salah untuk prosesor. Coba yang satunya dari tabel di Langkah 1 |
 | **Another app here already uses this port, maybe a Plex server. Try 32500.** | Ketik `32500` sebagai port |
 | **Use a number from 1024 to 65535** | Port harus berupa angka dalam rentang itu |
-| Server tidak ada di aplikasi Plex | Masuk ke aplikasi Plex dengan akun yang sama seperti di Langkah 4, dan pastikan kedua perangkat berada di jaringan rumah yang sama |
-| Pustakanya kosong | Sinkronisasi pertama masih berjalan: tunggu sampai **Status** menampilkan jumlah judul |
-| **Sign in needed** di bawah addon | Tekan tombol **Sign in** di addon itu dan masukkan kodenya |
+| Server tidak muncul di aplikasi Plex | Masuk ke aplikasi Plex dengan akun yang sama seperti di Langkah 4, dan pastikan kedua perangkat ada di jaringan rumah yang sama |
+| Pustaka kosong | Sinkronisasi pertama masih berjalan: tunggu sampai **Status** menampilkan jumlah judul |
+| **Sign in needed** di bawah addon | Tekan tombol **Sign in** di addon tersebut lalu masukkan kodenya |
 | **That isn't a repository link. Try github.com/user/repo.** | Ketik tautan repositori, misalnya `github.com/user/repo` |
 | **no public git repository there (it asks for a login)** | Tautannya salah atau repositorinya privat. Periksa di browser |
-| rex berhenti saat layar mati | Atur ulang pengaturan background di Langkah 3, dan lihat [Don't kill my app](https://dontkillmyapp.com/) |
+| rex berhenti saat layar mati | Ulangi pengaturan background di Langkah 3, dan lihat [Jangan matikan aplikasi saya](https://dontkillmyapp.com/) |
 
-**Logs** menampilkan apa yang dikatakan rex dan addon belakangan ini, dengan kunci dan kata sandi disembunyikan. Jika support meminta log, tekan **Send logs to support**: kamu bisa melihat semuanya sebelum ada yang dikirim, lalu tekan **Send** dan posting kode yang kamu dapat.
+**Logs** menampilkan apa yang dikatakan rex dan add-on belakangan ini, dengan kunci dan kata sandi disembunyikan. Jika tim dukungan meminta log, tekan **Send logs to support**: Anda bisa melihat semuanya sebelum apa pun dikirim, lalu tekan **Send** dan kirim kode yang Anda dapat.
+
+Apa yang dikirim aplikasi dan ke mana tercantum di [kebijakan privasinya](android-privacy.md).
 
 Mentok? Tanyakan di forum **rex-support** di [Discord](https://discord.com/invite/7u4YjMThXP).

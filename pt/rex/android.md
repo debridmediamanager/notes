@@ -2,7 +2,7 @@
 
 rex é um servidor de mídia para os apps do Plex que não possui nenhum arquivo. O rex para Android roda em um celular, tablet, Android TV, Google TV ou Fire TV, sem precisar de computador. Os apps do Plex nos seus dispositivos encontram o rex como qualquer outro servidor Plex e reproduzem a partir dele.
 
-O que ele reproduz vem de **addons**. Começa com os filmes de domínio público do Internet Archive. Outros addons, como seus addons do Stremio, YouTube e Spotify, são instalados de dentro do app.
+O que ele reproduz vem de **addons**. Ele começa com os filmes de domínio público do Internet Archive. Outros addons, como os seus addons do Stremio, YouTube e Spotify, são instalados dentro do app depois que você adiciona o repositório deles.
 
 O rex para Android é gratuito. Quer colocar suas contas de debrid e Usenet nele também? O zurg+rex, um servidor Plex no seu celular com o zurg embutido, vem com um patrocínio: veja [zurg+rex para Android](../zurg/guides/android.md).
 
@@ -74,20 +74,19 @@ A primeira sincronização do Internet Archive demora um pouco: cerca de meia ho
 
 ## Complementos {#addons}
 
-**Addons** lista o que você instalou. Cada um mostra os títulos e quando foi sincronizado pela última vez. Os botões são **Sync now**, **Settings**, **Log** e **Remove**; no celular, deslize a linha de botões para o lado para ver todos. A chave **Enabled** desliga um addon sem removê-lo.
+**Addons** lista o que você instalou. Cada um mostra seus títulos e quando foi sincronizado pela última vez. Os botões são **Sync now**, **Settings**, **Log** e **Remove**; no celular, deslize a linha de botões para o lado para ver todos. A chave **Enabled** desativa um addon sem removê-lo.
 
-Os addons vêm de **repositories**: repositórios git que guardam addons. O app já começa com o [rex-addons](https://github.com/debridmediamanager/rex-addons) adicionado, que oferece:
+Os addons vêm de **repositories**: repositórios git que guardam addons. O app já começa com o [rex-addons](https://github.com/debridmediamanager/rex-addons) adicionado, que oferece os filmes de domínio público do Internet Archive, instalados desde o início. Para mais, adicione o [rex-community-addons](https://github.com/debridmediamanager/rex-community-addons) (veja **Add a repository** abaixo), que oferece:
 
 | Addon | O que traz |
 |---|---|
-| Internet Archive | Filmes de domínio público. Instalado desde o início |
 | Stremio addons | Os catálogos de filmes e séries dos seus addons do Stremio, reproduzidos a partir dos streams que os seus addons de stream fornecem |
 | YouTube | Suas playlists do YouTube. Você entra com um código |
-| Spotify | Sua biblioteca do Spotify como música para Plex e Plexamp. Precisa do addon do YouTube, com login feito |
+| Spotify | Sua biblioteca do Spotify como música para o Plex e o Plexamp. Precisa do addon do YouTube, com login feito |
 
-**Instale um.** Em **Repositories**, pressione **Addons** ao lado de um repositório e, depois, **Install** embaixo do addon. O rex mostra quais sites ele consegue acessar e pergunta mais uma vez, e então começa a sincronizar.
+**Instale um.** Em **Repositories**, pressione **Addons** ao lado de um repositório e depois **Install** embaixo do addon. O rex mostra quais sites ele consegue acessar e pergunta mais uma vez, e então começa a sincronizá-lo.
 
-**Entre na conta.** Um addon que precisa da sua conta diz **Sign in to start.** Pressione o botão **Sign in** dele: acesse a página indicada em qualquer dispositivo e digite o código que aparece.
+**Entre na sua conta.** Um addon que precisa da sua conta diz **Sign in to start.** Pressione o botão **Sign in** dele: acesse a página que ele indica em qualquer dispositivo e digite o código mostrado.
 
 **Adicione um repositório.** Em **Add a repository**, digite o link (`github.com/user/repo` já basta) e pressione **Add**. Instale apenas de pessoas em quem você confia. Para criar seu próprio addon, veja o [rex-addons](https://github.com/debridmediamanager/rex-addons).
 
@@ -117,14 +116,16 @@ Para deixar a família assistir com as próprias contas do Plex, veja [Compartil
 |---|---|
 | **App not installed as app isn't compatible with your phone.** | Você escolheu o arquivo errado para o processador. Tente o outro da tabela no Passo 1 |
 | **Another app here already uses this port, maybe a Plex server. Try 32500.** | Digite `32500` como a porta |
-| **Use a number from 1024 to 65535** | A porta precisa ser um número nesse intervalo |
+| **Use a number from 1024 to 65535** | A porta precisa ser um número nessa faixa |
 | O servidor não aparece no app do Plex | Entre no app do Plex com a mesma conta que você usou no Passo 4, e deixe os dois aparelhos na mesma rede doméstica |
-| A biblioteca está vazia | A primeira sincronização ainda está rodando: espere até **Status** mostrar um número de títulos |
-| **Sign in needed** em um addon | Aperte o botão **Sign in** dele e digite o código |
+| A biblioteca está vazia | A primeira sincronização ainda está rodando: espere até que **Status** mostre um número de títulos |
+| **Sign in needed** em um addon | Pressione o botão **Sign in** dele e digite o código |
 | **That isn't a repository link. Try github.com/user/repo.** | Digite o link do repositório, como `github.com/user/repo` |
 | **no public git repository there (it asks for a login)** | O link está errado ou o repositório é privado. Confira no navegador |
-| O rex para quando a tela desliga | Refaça a configuração de segundo plano do Passo 3, e veja [Don't kill my app](https://dontkillmyapp.com/) |
+| rex para quando a tela está desligada | Refaça a configuração de segundo plano do Passo 3, e veja [Don't kill my app](https://dontkillmyapp.com/) |
 
-**Logs** mostra o que o rex e os addons disseram recentemente, com chaves e senhas ocultas. Se o suporte pedir os logs, aperte **Send logs to support**: você vê tudo antes de qualquer coisa ser enviada, depois aperte **Send** e poste o código que você receber.
+**Logs** mostra o que o rex e os addons disseram recentemente, com chaves e senhas ocultas. Se o suporte pedir os logs, pressione **Send logs to support**: você vê tudo antes de qualquer coisa ser enviada, depois pressione **Send** e poste o código que você receber.
+
+O que o app envia e para onde vai está na sua [política de privacidade](android-privacy.md).
 
 Travou? Pergunte no fórum **rex-support** no [Discord](https://discord.com/invite/7u4YjMThXP).
