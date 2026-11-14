@@ -49,19 +49,19 @@ Wait, I should not wrap in a code fence. Correct output:
 
 ## 第 3 步：启动 rex {#step-3-start-rex}
 
-**rex**を開きます。最初の画面には**Welcome to rex.**と表示されます。
+打开 **rex**。第一个界面显示 **Welcome to rex.**
 
-1. **Allow notifications**を押し、次に**Allow**を押します。rex はバックグラウンドで動き、通知から停止できます。
-2. **Let rex keep running in the background**を押します。開いたリストで**rex**を選び、**Don't optimize**を選択します。新しい Android では**Allow background usage**、次に**Unrestricted**です。rex に戻ります。両方のボタンの先頭に✓が付きます。
-3. **Name**は Plex アプリがこのサーバーを呼ぶ名前です。必要なら変更してください。
-4. **Port**は`32400`のままにします。この端末で別の Plex サーバーがすでに動いている場合、rex は**Another app here already uses this port, maybe a Plex server. Try 32500.**と表示します。`32500`と入力してください。
-5. **Start rex**を押します。
+1. 点 **Allow notifications**，再点 **Allow**。rex 会在后台运行，并带有一个通知，你可以通过它停止 rex。
+2. 点 **Let rex keep running in the background**。在打开的列表里选择 **rex**，然后选 **Don't optimize**。较新的 Android 上是 **Allow background usage**，然后选 **Unrestricted**。回到 rex。两个按钮现在前面都会带一个 ✓。
+3. **Name** 是 Plex 应用里显示的服务器名称。如果你愿意，可以改掉它。
+4. **Port** 保持 `32400`。如果这台设备上已经运行了另一个 Plex 服务器，rex 会提示 **Another app here already uses this port, maybe a Plex server. Try 32500.** 此时输入 `32500`。
+5. 点 **Start rex**。
 
-**表示されるはずの画面。** **2 / 2**と**Sign in to Plex**です。
+**你应该看到的画面。** **2 / 2** 和 **Sign in to Plex**。
 
-| 最初の画面 | Plex アプリでの映画のページ（ステップ5） |
+| 第一个界面 | Plex 应用中的电影页面（第 5 步） |
 |---|---|
-| ![名前とポートの入力欄、Start rex があるrex for Androidの最初の画面](../assets/rex/android-setup.webp) | ![Internet Archive の1916年のサイレント映画が Plex for Android のページに表示されている様子](../assets/rex/android-plex-film.webp) |
+| ![rex for Android 的第一个界面，带有名称和端口输入框以及 Start rex](../assets/rex/android-setup.webp) | ![Internet Archive 上一部 1916 年的默片在 Plex for Android 中的页面](../assets/rex/android-plex-film.webp) |
 
 ## 第 4 步：登录 Plex {#step-4-sign-in-to-plex}
 

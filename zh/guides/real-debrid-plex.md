@@ -13,16 +13,16 @@ zurg 会把你 Real-Debrid 账户里的所有内容显示为电脑上的文件�
 
 ## 1. 安装 zurg {#1-install-zurg}
 
-Each setup page starts with a one-line installer. When it says `Choose one or more providers in priority order:`, type `1` for Real-Debrid, then paste your token.
+每个安装页面都以一行安装命令开始。当它显示 `Choose one or more providers in priority order:` 时，输入 `1` 选择 Real-Debrid，然后粘贴你的 token。
 
-| Your computer | Install with | Your library shows up at |
+| 你的电脑 | 安装方式 | 你的媒体库会出现在 |
 |---|---|---|
-| Windows | [zurg on Windows](../zurg/setup/windows.md) | `Z:\movies` and `Z:\shows` |
-| Linux | [zurg on Linux](../zurg/setup/linux.md) | `/mnt/zurg/movies` and `/mnt/zurg/shows` |
-| Mac | [zurg on macOS](../zurg/setup/macos.md) | `/Volumes/Zurg/movies` and `/Volumes/Zurg/shows` |
-| Linux with Docker | [One Docker Compose file](../zurg/guides/docker-compose.md), which runs Plex Media Server beside zurg | `/zurg_mnt/zurg/movies` and `/zurg_mnt/zurg/shows` |
+| Windows | [Windows 上的 zurg](../zurg/setup/windows.md) | `Z:\movies` and `Z:\shows` |
+| Linux | [Linux 上的 zurg](../zurg/setup/linux.md) | `/mnt/zurg/movies` and `/mnt/zurg/shows` |
+| Mac | [macOS 上的 zurg](../zurg/setup/macos.md) | `/Volumes/Zurg/movies` and `/Volumes/Zurg/shows` |
+| 带 Docker 的 Linux | [一个 Docker Compose 文件](../zurg/guides/docker-compose.md)，它会在 zurg 旁边运行 Plex Media Server | `/zurg_mnt/zurg/movies` and `/zurg_mnt/zurg/shows` |
 
-The installer ends with `zurg doctor`, a list of `PASS` lines.
+安装程序最后会运行 `zurg doctor`，输出一列 `PASS` 行。
 
 ## 2. 检查文件夹 {#2-check-the-folders}
 
