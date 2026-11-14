@@ -4,21 +4,23 @@ Chaque guide de ce site, par projet.
 
 ## Général {#general}
 
-- [Choisir votre configuration](choose-your-setup.md) : les schémas de routage et quand utiliser DMM, zurg, rex, Kodi, Stremio, Nuvio ou les plugins Jellyfin/Emby
+- [Choisir votre configuration](choose-your-setup.md) : schémas de routage et quand utiliser DMM, zurg, rex, Kodi, Stremio, Nuvio ou les plugins Jellyfin/Emby
 - [Le rôle de chaque élément](glossary.md) : une ligne pour chaque élément de DMM, zurg et rex, ainsi que les termes utilisés dans les guides
-- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md) : ce que signifie cet écran vert dans Stremio et quoi faire
-- [Votre jeton API Real-Debrid](real-debrid-api-token.md) : où l'obtenir, où DMM et zurg le renseignent, et ce que signifient `bad_token` et les autres erreurs
-- [Obtenir de l'aide](remote-help.md) pour zurg et rex : où demander, quoi inclure, et l'aide à distance pour les sponsors
-- [Ce que vous apporte un sponsoring](sponsorship.md) : chaque avantage et où le configurer, ou comment obtenir les avantages DMM sur le tableau des demandes
+- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md) : ce que signifie cet écran vert dans Stremio et ce qu'il faut faire
+- [Votre jeton API Real-Debrid](real-debrid-api-token.md) : où le trouver, où DMM et zurg le renseignent, et ce que signifient `bad_token` et les autres erreurs
+- [L'Usenet pour les débutants](usenet-for-beginners.md) : fournisseur, indexeur et NZB, ce que vous devez acheter, et la place de zurg et DMM dans tout ça
+- [Obtenir de l'aide](remote-help.md) pour zurg et rex : où poser vos questions, quoi inclure, et l'aide à distance pour les sponsors
+- [Ce que vous apporte un sponsoring](sponsorship.md) : tous les avantages et où les configurer, ou comment obtenir les avantages DMM en vous servant du tableau des demandes
 
 ## DMM
 
-- [Ce qu'est DMM et comment l'utiliser](../dmm/index.md) : se connecter, chercher, les boutons sur une release et ta bibliothèque
+- [Ce qu'est DMM et comment l'utiliser](../dmm/index.md) : se connecter, chercher, les boutons sur une release et votre bibliothèque
 - [DMM dans Stremio](../dmm/stremio.md) : regarder dans Stremio avec l'addon DMM Cast, et que faire quand ça ne marche pas
-- [Listes de hashs](../dmm/hashlists.md) : trouver des listes partagées, les ajouter à ta bibliothèque debrid, partager les tiennes
+- [Listes de hash](../dmm/hashlists.md) : trouver des listes partagées, les ajouter à votre bibliothèque debrid, partager les vôtres
+- [TorBox dans DMM](../dmm/torbox.md) : se connecter, ce que fait chaque offre, Instant TB, Cast et l'envoi de releases Usenet vers TorBox Pro
 - [Boutons DMM dans Safari](../dmm/safari.md) : l'extension du navigateur en userscript sur Mac, iPhone et iPad
 - [Seerr via DMM](../dmm/seerr.md)
-- [Liste de souhaits DMM](../zurg/guides/dmm-wanted.md) : zurg récupère ce sur quoi tu appuies sur **Want**
+- [Liste de souhaits DMM](../zurg/guides/dmm-wanted.md) : zurg récupère ce sur quoi vous appuyez **Want**
 
 ## zurg
 

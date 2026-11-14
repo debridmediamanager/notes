@@ -5,18 +5,20 @@
 ## عام {#general}
 
 - [اختر إعدادك](choose-your-setup.md): خرائط المسارات ومتى تستخدم DMM وzurg وrex وKodi وStremio وNuvio أو إضافات Jellyfin/Emby
-- [ما الذي تفعله كل قطعة](glossary.md): سطر واحد لكل قطعة من DMM وzurg وrex والكلمات الواردة في الأدلة
-- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): ماذا تعني تلك الشاشة الخضراء في Stremio وماذا تفعل حيالها
-- [رمز API الخاص بـ Real-Debrid](real-debrid-api-token.md): أين تحصل عليه، وأين يضعه DMM وzurg، وماذا تعني `bad_token` والأخطاء الأخرى
-- [الحصول على المساعدة](remote-help.md) مع zurg وrex: أين تسأل، وماذا تُرفق، والمساعدة عن بُعد للرعاة
-- [ماذا تمنحك الرعاية](sponsorship.md): كل ميزة وأين تُفعَّل، أو كيف تكسب ميزات DMM عبر لوحة الطلبات
+- [وظيفة كل جزء](glossary.md): سطر واحد لكل جزء من DMM وzurg وrex والكلمات الواردة في الأدلة
+- ["جارٍ تنزيل التورنت إلى debrid"](torrent-being-downloaded-to-debrid.md): معنى تلك الشاشة الخضراء في Stremio وما الذي يجب فعله
+- [رمز API الخاص بك في Real-Debrid](real-debrid-api-token.md): أين تحصل عليه، وأين يضعه DMM وzurg، وما معنى `bad_token` والأخطاء الأخرى
+- [Usenet للمبتدئين](usenet-for-beginners.md): المزوّد والفهرس وNZB، وما الذي تحتاج إلى شرائه، وكيف يتناسب zurg وDMM معها
+- [الحصول على المساعدة](remote-help.md) في zurg وrex: أين تسأل، وما الذي تُدرجه في رسالتك، والمساعدة عن بُعد للرعاة
+- [ما الذي تمنحه الرعاية](sponsorship.md): كل ميزة وأين تُعدّها، أو كيف تحصل على ميزات DMM عبر لوحة الطلبات
 
 ## DMM
 
-- [ما هو DMM وكيفية استخدامه](../dmm/index.md): تسجيل الدخول، والبحث، والأزرار الموجودة على الإصدار ومكتبتك
-- [DMM في Stremio](../dmm/stremio.md): المشاهدة في Stremio عبر الإضافة DMM Cast، وما يجب فعله عند حدوث مشكلة
-- [قوائم الهاش](../dmm/hashlists.md): البحث عن القوائم المشتركة، وإضافتها إلى مكتبة debrid الخاصة بك، ومشاركة قوائمك
-- [أزرار DMM في Safari](../dmm/safari.md): إضافة المتصفح كسكربت مستخدم على Mac وiPhone وiPad
+- [ما هو DMM وكيفية استخدامه](../dmm/index.md): تسجيل الدخول، البحث، الأزرار الموجودة على الإصدار ومكتبتك
+- [DMM في Stremio](../dmm/stremio.md): المشاهدة في Stremio عبر إضافة DMM Cast، وما يجب فعله عند حدوث مشكلة
+- [قوائم الهاش](../dmm/hashlists.md): البحث عن القوائم المشتركة، وإضافتها إلى مكتبة الدебريد الخاصة بك، ومشاركة قائمتك
+- [TorBox في DMM](../dmm/torbox.md): تسجيل الدخول، وما الذي تقدمه كل خطة، وInstant TB، وCast، وإرسال إصدارات Usenet إلى TorBox Pro
+- [أزرار DMM في Safari](../dmm/safari.md): إضافة المتصفح كسكربت مستخدم (userscript) على Mac وiPhone وiPad
 - [Seerr عبر DMM](../dmm/seerr.md)
 - [قائمة DMM المطلوبة](../zurg/guides/dmm-wanted.md): يجلب zurg ما تضغط عليه **Want**
 

@@ -55,20 +55,21 @@ Easynews しか持っていない場合は **Login with Easynews** を押して�
 
 ## 次に読むページ {#where-to-go-next}
 
-- [DMM in Stremio](stremio.md): DMM Cast アドオンで、Stremio で見つけた作品をそのまま再生できます。
-- [Hash lists](hashlists.md): 共有ライブラリ全体を自分のものに追加したり、自分のリストを共有したりできます。
-- ["Torrent is being downloaded to debrid"](../guides/torrent-being-downloaded-to-debrid.md): Stremio に出るこの画面の意味と、DMM がキャッシュ状況をどう表示するかを説明します。
-- [DMM buttons in Safari](safari.md): ブラウザ拡張機能が、IMDb、Trakt などの映画・TV サイトに DMM ボタンを追加します。
+- [Stremio での DMM](stremio.md): Stremio で見つけたものを DMM Cast アドオンで再生できます。
+- [ハッシュリスト](hashlists.md): 共有ライブラリ全体を自分のものに追加したり、自分のライブラリを共有したりできます。
+- [DMM での TorBox](torbox.md): TorBox のどのプランが DMM でどんな働きをするか、また Usenet のリリースを TorBox Pro に送る方法を説明します。
+- ["Torrent is being downloaded to debrid"](../guides/torrent-being-downloaded-to-debrid.md): Stremio に出るその画面の意味と、DMM がキャッシュ済みの項目をどう表示するかを説明します。
+- [Safari の DMM ボタン](safari.md): ブラウザ拡張機能を入れると、IMDb、Trakt などの映画・TV サイトに DMM ボタンが追加されます。
 
 DMM は他のプロジェクトにも機能を提供しています:
 
-- **zurg** は、各ファイルがどの映画やエピソードかを DMM に問い合わせます。スポンサーは [gatekeeper](https://gatekeeper.debridmediamanager.com/) から DMM API キーを取得できます。キーがないと zurg はファイル名だけに頼るため、一致するタイトルが少なくなります。違いについては [rex with zurg](../rex/with-zurg.md#why-dmm-places-the-files) を見てください。
-- **Sonarr Radarr Prowlarr** は、DMM を Torznab のトレントインデクサー、または Newznab の Usenet インデクサーとして検索できます。どちらもスポンサーシップが有効であることと DMM API キーが必要です。設定は [Torznab](https://debridmediamanager.com/torznab) と [Newznab](https://debridmediamanager.com/newznab) のページで行えます。
-- **Your wanted list**: **Want** を押すか、Trakt または MDBList のリストをフォローします。zurg がリストと、放送された新しいエピソードを取得します。スポンサーシップが必要です。詳しくは [DMM wanted list](../zurg/guides/dmm-wanted.md) を見てください。
-- **Seerr Overseerr Jellyseerr** は、DMM を Radarr と Sonarr の代わりに使えます。リクエストは wanted list に入り、zurg が取得します。スポンサーシップが必要です。詳しくは [Seerr through DMM](seerr.md) を見てください。
-- **rex-direct** は、スポンサーになった rex に専用のアドレスと証明書を割り当てます。詳しくは [rex-direct](../rex/any-source.md#rex-direct) を見てください。
+- **zurg** は、各ファイルがどの映画やエピソードかを DMM に問い合わせます。スポンサーは [gatekeeper](https://gatekeeper.debridmediamanager.com/) から DMM API キーを取得できます。キーがないと zurg はファイル名だけに頼るため、一致するタイトルが減ります。違いについては [rex with zurg](../rex/with-zurg.md#why-dmm-places-the-files) を参照してください。
+- **Sonarr Radarr and Prowlarr** は、DMM を Torznab の torrent インデクサー、または Newznab の Usenet インデクサーとして検索できます。どちらも有効なスポンサーシップと DMM API キーが必要です。設定は [Torznab](https://debridmediamanager.com/torznab) と [Newznab](https://debridmediamanager.com/newznab) のページで行えます。
+- **ウォントリスト**: **Want** を押すか、Trakt または MDBList のリストをフォローします。zurg がそのリストと、放送開始された新しいエピソードを取得します。スポンサーシップが必要です。詳しくは [DMM wanted list](../zurg/guides/dmm-wanted.md) を参照してください。
+- **Seerr Overseerr and Jellyseerr** は、DMM を Radarr や Sonarr の代わりに使えます。リクエストはウォントリストに入り、zurg が取得します。スポンサーシップが必要です。詳しくは [Seerr through DMM](seerr.md) を参照してください。
+- **rex-direct** は、認証済みの rex に専用のアドレスと証明書を与えます。詳しくは [rex-direct](../rex/any-source.md#rex-direct) を参照してください。
 
-スポンサーシップで利用できる機能と、それぞれの設定場所は [What a sponsorship gives you](../guides/sponsorship.md) にまとめてあります。
+スポンサーシップで利用できる機能の一覧と、それぞれの設定場所は [What a sponsorship gives you](../guides/sponsorship.md) にあります。
 
 ## 問題が起きたとき {#when-something-is-wrong}
 

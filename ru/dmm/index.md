@@ -55,18 +55,19 @@ DMM имеет открытый исходный код и не входит в 
 
 ## Куда дальше {#where-to-go-next}
 
-- [DMM в Stremio](stremio.md): смотрите то, что нашли, в Stremio с аддоном DMM Cast.
-- [Хэш-списки](hashlists.md): добавьте в свою библиотеку целую общую библиотеку или поделитесь своей.
+- [DMM в Stremio](stremio.md): смотрите то, что нашли в Stremio, с помощью аддона DMM Cast.
+- [Списки хешей](hashlists.md): добавьте в свою библиотеку целую общую коллекцию или поделитесь своей.
+- [TorBox в DMM](torbox.md): какой тариф TorBox что даёт в DMM и как отправлять Usenet-релизы на TorBox Pro.
 - ["Torrent is being downloaded to debrid"](../guides/torrent-being-downloaded-to-debrid.md): что означает этот экран в Stremio и как DMM показывает, что уже закэшировано.
-- [Кнопки DMM в Safari](safari.md): расширение для браузера добавляет кнопку DMM на IMDb, Trakt и другие сайты про фильмы и сериалы.
+- [Кнопки DMM в Safari](safari.md): расширение для браузера добавляет кнопку DMM на IMDb, Trakt и другие сайты с фильмами и сериалами.
 
-DMM также работает с другими проектами:
+DMM также помогает другим проектам:
 
-- **zurg** спрашивает у DMM, какой фильм или эпизод соответствует каждому файлу. Спонсор получает API-ключ DMM на [gatekeeper](https://gatekeeper.debridmediamanager.com/). Без него zurg опирается на имена файлов, и совпадает меньше названий. [rex with zurg](../rex/with-zurg.md#why-dmm-places-the-files) объясняет разницу.
-- **Sonarr Radarr и Prowlarr** могут искать через DMM как торрент-индексер Torznab или Usenet-индексер Newznab. Для обоих нужны активное спонсорство и API-ключ DMM. Настраиваются они на страницах [Torznab](https://debridmediamanager.com/torznab) и [Newznab](https://debridmediamanager.com/newznab).
-- **Ваш список желаемого**: нажмите **Want** или подпишитесь на список Trakt или MDBList. zurg будет загружать его и новые эпизоды по мере выхода. Нужно спонсорство. См. [DMM wanted list](../zurg/guides/dmm-wanted.md).
-- **Seerr Overseerr и Jellyseerr** могут использовать DMM вместо Radarr и Sonarr. Заявки тогда попадают в ваш список желаемого, и zurg их загружает. Нужно спонсорство. См. [Seerr through DMM](seerr.md).
-- **rex-direct** даёт привязанному rex свой адрес и сертификат. См. [rex-direct](../rex/any-source.md#rex-direct).
+- **zurg** спрашивает у DMM, какой фильм или эпизод соответствует каждому файлу. Спонсор получает ключ API DMM в [gatekeeper](https://gatekeeper.debridmediamanager.com/). Без него zurg опирается на имена файлов, и совпадает меньше названий. [rex with zurg](../rex/with-zurg.md#why-dmm-places-the-files) объясняет разницу.
+- **Sonarr Radarr и Prowlarr** могут искать в DMM как торрент-индексатор Torznab или Usenet-индексатор Newznab. Для обоих нужны активное спонсорство и ключ API DMM. Настройте их на страницах [Torznab](https://debridmediamanager.com/torznab) и [Newznab](https://debridmediamanager.com/newznab).
+- **Ваш список желаемого**: нажмите **Want** или подпишитесь на список Trakt или MDBList. zurg будет забирать его и новые эпизоды по мере выхода. Требуется спонсорство. См. [список желаемого DMM](../zurg/guides/dmm-wanted.md).
+- **Seerr Overseerr и Jellyseerr** могут использовать DMM вместо Radarr и Sonarr. Запросы тогда попадают в ваш список желаемого, и zurg их загружает. Требуется спонсорство. См. [Seerr через DMM](seerr.md).
+- **rex-direct** даёт зарегистрированному rex собственный адрес и сертификат. См. [rex-direct](../rex/any-source.md#rex-direct).
 
 Всё, что открывает спонсорство, и где что настраивается, описано на странице [What a sponsorship gives you](../guides/sponsorship.md).
 

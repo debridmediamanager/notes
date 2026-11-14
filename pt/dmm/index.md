@@ -57,18 +57,19 @@ Pressione **Library** na página inicial. Ela lista tudo o que existe nas contas
 
 - [DMM no Stremio](stremio.md): assista ao que você encontrar no Stremio com o addon DMM Cast.
 - [Listas de hashes](hashlists.md): adicione uma biblioteca compartilhada inteira à sua, ou compartilhe a sua.
+- [TorBox no DMM](torbox.md): o que cada plano do TorBox faz no DMM, e como enviar releases de Usenet para o TorBox Pro.
 - ["Torrent is being downloaded to debrid"](../guides/torrent-being-downloaded-to-debrid.md): o que aquela tela no Stremio significa e como o DMM mostra o que está em cache.
 - [Botões do DMM no Safari](safari.md): a extensão do navegador adiciona um botão do DMM ao IMDb, Trakt e outros sites de filmes e séries.
 
 O DMM também atende os outros projetos:
 
-- **zurg** pergunta ao DMM qual filme ou episódio é cada arquivo. Um apoiador obtém a chave de API do DMM em [gatekeeper](https://gatekeeper.debridmediamanager.com/). Sem ela, o zurg depende dos nomes dos arquivos e menos títulos batem. [rex with zurg](../rex/with-zurg.md#why-dmm-places-the-files) explica a diferença.
-- **Sonarr Radarr e Prowlarr** podem pesquisar no DMM como um indexador de torrent Torznab ou indexador Usenet Newznab. Ambos exigem uma apoio ativo e a chave de API do DMM. Configure-os nas páginas [Torznab](https://debridmediamanager.com/torznab) e [Newznab](https://debridmediamanager.com/newznab).
-- **Sua lista de desejos**: pressione **Want** ou siga uma lista do Trakt ou do MDBList. O zurg busca essa lista e os novos episódios conforme forem ao ar. Requer apoio. Veja [DMM wanted list](../zurg/guides/dmm-wanted.md).
-- **Seerr Overseerr e Jellyseerr** podem usar o DMM como Radarr e Sonarr. Os pedidos então vão para sua lista de desejos para o zurg buscar. Requer apoio. Veja [Seerr through DMM](seerr.md).
+- **zurg** pergunta ao DMM qual filme ou episódio é cada arquivo. Um patrocinador recebe a chave de API do DMM em [gatekeeper](https://gatekeeper.debridmediamanager.com/). Sem ela, o zurg depende dos nomes dos arquivos e menos títulos batem. [rex com zurg](../rex/with-zurg.md#why-dmm-places-the-files) explica a diferença.
+- **Sonarr Radarr e Prowlarr** podem pesquisar no DMM como um indexador de torrents Torznab ou um indexador de Usenet Newznab. Os dois precisam de uma patrocinação ativa e da chave de API do DMM. Configure-os nas páginas [Torznab](https://debridmediamanager.com/torznab) e [Newznab](https://debridmediamanager.com/newznab).
+- **Sua lista de desejos**: pressione **Want** ou siga uma lista do Trakt ou do MDBList. O zurg busca a lista e os novos episódios conforme forem sendo exibidos. Requer patrocínio. Veja [lista de desejos do DMM](../zurg/guides/dmm-wanted.md).
+- **Seerr Overseerr e Jellyseerr** podem usar o DMM como Radarr e Sonarr. Os pedidos então vão para a sua lista de desejos para o zurg buscar. Requer patrocínio. Veja [Seerr através do DMM](seerr.md).
 - **rex-direct** dá a um rex reivindicado seu próprio endereço e certificado. Veja [rex-direct](../rex/any-source.md#rex-direct).
 
-Tudo o que um apoio libera e onde cada coisa é configurada está em [What a sponsorship gives you](../guides/sponsorship.md).
+Tudo o que um patrocínio libera e onde cada coisa é configurada está em [O que um patrocínio oferece](../guides/sponsorship.md).
 
 ## Quando algo está errado {#when-something-is-wrong}
 

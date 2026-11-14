@@ -4,21 +4,23 @@
 
 ## 一般 {#general}
 
-- [Choose your setup](choose-your-setup.md): ルートマップと、DMM、zurg、rex、Kodi、Stremio、Nuvio、Jellyfin/Emby プラグインをいつ使うかの説明
-- [What each piece does](glossary.md): DMM、zurg、rex の各パーツと、ガイドに出てくる用語の一行説明
-- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): Stremio に出る緑の画面が何を意味するのか、そして何をすればよいか
-- [Your Real-Debrid API token](real-debrid-api-token.md): 取得先、DMM と zurg での使い方、そして `bad_token` などのエラーの意味
-- [Getting help](remote-help.md) with zurg and rex: 質問先、含めるべき情報、スポンサー向けのリモートサポート
-- [What a sponsorship gives you](sponsorship.md): 特典の一覧と設定場所、または DMM 関連の特典をリクエストボードで獲得する方法
+- [Choose your setup](choose-your-setup.md): ルートマップと、DMM、zurg、rex、Kodi、Stremio、Nuvio、Jellyfin/Emby プラグインをいつ使うか
+- [各パーツの役割](glossary.md): DMM、zurg、rex の各パーツと、ガイドに出てくる用語の一行説明
+- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): Stremio に出る緑の画面が何を意味するか、そしてどうすればよいか
+- [Real-Debrid の API トークン](real-debrid-api-token.md): 取得先、DMM と zurg での設定場所、`bad_token` などのエラーの意味
+- [Usenet 入門](usenet-for-beginners.md): プロバイダー、インデクサー、NZB、必要なものの買い方、zurg と DMM の関係
+- [サポートを受ける](remote-help.md) zurg と rex: 質問先、伝えるべき情報、スポンサー向けのリモートサポート
+- [スポンサーの特典](sponsorship.md): 特典一覧と設定場所、またはリクエストボードで DMM の特典を獲得する方法
 
 ## DMM
 
 - [DMMの概要と使い方](../dmm/index.md): サインイン、検索、リリースのボタン、ライブラリについて
 - [StremioでのDMM](../dmm/stremio.md): DMM Castアドオンを使ってStremioで視聴する方法と、うまくいかないときの対処法
-- [ハッシュリスト](../dmm/hashlists.md): 共有リストを探す、デブリッドライブラリに追加する、自分のリストを共有する
+- [ハッシュリスト](../dmm/hashlists.md): 共有リストの探し方、デブリッドライブラリへの追加、自分のリストの共有
+- [DMMでのTorBox](../dmm/torbox.md): サインイン、各プランでできること、Instant TB、Cast、TorBox ProへのUsenetリリース送信
 - [SafariでのDMMボタン](../dmm/safari.md): Mac、iPhone、iPadでユーザースクリプトとして使うブラウザ拡張機能
 - [DMM経由のSeerr](../dmm/seerr.md)
-- [DMMのウォントリスト](../zurg/guides/dmm-wanted.md): **Want**を押した作品をzurgが取得します
+- [DMMの希望リスト](../zurg/guides/dmm-wanted.md): **Want**を押した作品をzurgが取得します
 
 ## zurg
 

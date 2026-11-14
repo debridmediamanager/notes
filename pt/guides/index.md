@@ -7,18 +7,20 @@ Todos os guias deste site, organizados por projeto.
 - [Escolha sua configuração](choose-your-setup.md): mapas de rotas e quando usar DMM, zurg, rex, Kodi, Stremio, Nuvio ou os plugins do Jellyfin/Emby
 - [O que cada parte faz](glossary.md): uma linha para cada parte do DMM, zurg e rex e as palavras usadas nos guias
 - ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): o que aquela tela verde no Stremio significa e o que fazer
-- [Seu token de API do Real-Debrid](real-debrid-api-token.md): onde pegá-lo, onde o DMM e o zurg o usam, e o que significam `bad_token` e os outros erros
-- [Pedindo ajuda](remote-help.md) com zurg e rex: onde perguntar, o que incluir, e ajuda remota para patrocinadores
-- [O que um patrocínio te dá](sponsorship.md): cada vantagem e onde configurá-la, ou como ganhar as do DMM no quadro de pedidos
+- [Seu token de API do Real-Debrid](real-debrid-api-token.md): onde pegar, onde o DMM e o zurg usam ele, e o que `bad_token` e os outros erros significam
+- [Usenet para iniciantes](usenet-for-beginners.md): provedor, indexador e NZB, o que você precisa comprar e como o zurg e o DMM se encaixam
+- [Pedindo ajuda](remote-help.md) com zurg e rex: onde perguntar, o que incluir e ajuda remota para patrocinadores
+- [O que um patrocínio te dá](sponsorship.md): todos os benefícios e onde configurar, ou como ganhar os do DMM no quadro de pedidos
 
 ## DMM
 
 - [O que é o DMM e como usar](../dmm/index.md): entrar, pesquisar, os botões de um lançamento e a sua biblioteca
 - [DMM no Stremio](../dmm/stremio.md): assistir no Stremio com o addon DMM Cast e o que fazer quando algo dá errado
 - [Listas de hashes](../dmm/hashlists.md): encontrar listas compartilhadas, adicioná-las à sua biblioteca debrid e compartilhar as suas
+- [TorBox no DMM](../dmm/torbox.md): entrar, quais planos fazem o quê, Instant TB, Cast e envio de lançamentos Usenet para o TorBox Pro
 - [Botões do DMM no Safari](../dmm/safari.md): a extensão do navegador como userscript no Mac, iPhone e iPad
 - [Seerr pelo DMM](../dmm/seerr.md)
-- [Lista de desejados do DMM](../zurg/guides/dmm-wanted.md): o zurg busca o que você clica em **Want**
+- [Lista de desejados do DMM](../zurg/guides/dmm-wanted.md): o zurg busca o que você marca com **Want**
 
 ## zurg
 

@@ -57,6 +57,7 @@ Press **Library** on the home page. It lists everything in the accounts you sign
 
 - [DMM in Stremio](stremio.md): watch what you find in Stremio with the DMM Cast addon.
 - [Hash lists](hashlists.md): add a whole shared library to yours, or share your own.
+- [TorBox in DMM](torbox.md): which TorBox plan does what in DMM, and sending Usenet releases to TorBox Pro.
 - ["Torrent is being downloaded to debrid"](../guides/torrent-being-downloaded-to-debrid.md): what that screen in Stremio means and how DMM shows what's cached.
 - [DMM buttons in Safari](safari.md): the browser extension adds a DMM button to IMDb, Trakt and other movie and TV sites.
 

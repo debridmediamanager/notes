@@ -5,20 +5,22 @@
 ## Общее {#general}
 
 - [Выбор настройки](choose-your-setup.md): схемы маршрутов и когда использовать DMM, zurg, rex, Kodi, Stremio, Nuvio или плагины Jellyfin/Emby
-- [Что делает каждая часть](glossary.md): по одной строке для каждой части DMM, zurg и rex и для терминов из руководств
+- [Что делает каждый компонент](glossary.md): одна строка для каждого компонента DMM, zurg и rex и слов из руководств
 - ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): что означает зелёный экран в Stremio и что с ним делать
-- [Ваш API-токен Real-Debrid](real-debrid-api-token.md): где его взять, куда его вводят DMM и zurg, и что означают `bad_token` и другие ошибки
-- [Получение помощи](remote-help.md) по zurg и rex: где спросить, что указать, и удалённая помощь для спонсоров
-- [Что даёт спонсорство](sponsorship.md): все привилегии и где их настроить, или как получить функции DMM через доску запросов
+- [Ваш API-токен Real-Debrid](real-debrid-api-token.md): где его взять, куда его вводят DMM и zurg и что значат `bad_token` и другие ошибки
+- [Usenet для начинающих](usenet-for-beginners.md): провайдер, индексатор и NZB, что нужно купить и как в этом участвуют zurg и DMM
+- [Получение помощи](remote-help.md) по zurg и rex: где спросить, что указать и удалённая помощь для спонсоров
+- [Что даёт спонсорство](sponsorship.md): все преимущества и где их настроить, или как заработать награды DMM на доске запросов
 
 ## DMM
 
 - [Что такое DMM и как им пользоваться](../dmm/index.md): вход, поиск, кнопки у релиза и ваша библиотека
-- [DMM в Stremio](../dmm/stremio.md): смотрите в Stremio через аддон DMM Cast и что делать, если что-то пошло не так
-- [Списки хешей](../dmm/hashlists.md): находите общие списки, добавляйте их в свою библиотеку debrid и делитесь своими
+- [DMM в Stremio](../dmm/stremio.md): смотрите в Stremio через дополнение DMM Cast и что делать, если что-то пошло не так
+- [Списки хешей](../dmm/hashlists.md): найдите общие списки, добавьте их в свою debrid-библиотеку, делитесь своими
+- [TorBox в DMM](../dmm/torbox.md): вход, что даёт каждый тариф, Instant TB, Cast и отправка Usenet-релизов в TorBox Pro
 - [Кнопки DMM в Safari](../dmm/safari.md): расширение для браузера как userscript на Mac, iPhone и iPad
 - [Seerr через DMM](../dmm/seerr.md)
-- [Список желаемого DMM](../zurg/guides/dmm-wanted.md): zurg забирает то, что вы нажали **Want**
+- [Список желаемого DMM](../zurg/guides/dmm-wanted.md): zurg забирает то, на что вы нажали **Want**
 
 ## zurg
 
