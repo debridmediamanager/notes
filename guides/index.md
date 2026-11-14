@@ -13,6 +13,7 @@ Every guide on this site, by project.
 
 - [Choose your setup](choose-your-setup.md): route maps and when to use DMM, zurg, rex, Kodi, Stremio, Nuvio or the Jellyfin/Emby plugins
 - [What each piece does](glossary.md): one line for every DMM, zurg and rex piece and the words in the guides
+- ["Torrent is being downloaded to debrid"](torrent-being-downloaded-to-debrid.md): what that green screen in Stremio means and what to do
 - [Getting help](remote-help.md) with zurg and rex: where to ask, what to include, and remote help for sponsors
 - [What a sponsorship gives you](sponsorship.md): every perk and where to set it up, or how to earn the DMM ones on the request board
 
