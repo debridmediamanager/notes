@@ -132,4 +132,6 @@ To let family watch with their own Plex accounts, see [Share rex with family and
 
 **Logs** shows what rex and the addons said lately, with keys and passwords hidden. If support asks for logs, press **Send logs to support**: you see everything before anything is sent, then press **Send** and post the code you get.
 
+What the app sends and where is in its [privacy policy](android-privacy.md).
+
 Stuck? Ask in the **rex-support** forum on [Discord](https://discord.com/invite/7u4YjMThXP).
