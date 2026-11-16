@@ -120,17 +120,17 @@ Gunakan ini hanya di jaringan yang kamu percaya: password dikirim tanpa enkripsi
 
 ## Apa yang dikirim aplikasi dan ke mana {#what-the-app-sends-and-where}
 
-| Ke mana | Apa | Kapan |
+| Tujuan | Apa | Kapan |
 |---|---|---|
-| GitHub | Login kamu, lalu permintaan untuk rilis sponsor | Saat kamu login dan saat **Updates** mengecek pembaruan |
-| Penyedia kamu | Token akun atau login Usenet kamu, dan permintaan untuk library dan file kamu | Selama library kamu berjalan |
-| debridmediamanager.com | Nama rilis kamu, untuk mengetahui isi tiap rilis, beserta kunci API DMM kamu jika kamu memasukkannya | Selama library berjalan dengan rex aktif |
-| plex.tv dan layanan metadata Plex | Permintaan kode login; lalu nama server, alamat, dan id judul kamu, untuk mengambil poster dan deskripsi | Saat kamu login ke Plex, dan selama rex berjalan dalam keadaan login |
-| debridmediamanager.com (rex-direct) | Identifier rex, token server yang diberikan Plex, alamat IP dan port-nya, supaya aplikasi Plex bisa terhubung ke sana lewat HTTPS | Setelah login ke Plex, lalu setiap 6 jam |
-| Website tiap addon dan repositori yang kamu tambahkan | Apa yang diminta addon | Saat addon melakukan sinkronisasi atau judul diputar |
-| logs.debridmediamanager.com | Versi, model perangkat, log aplikasi dan engine, serta config kamu, dengan kunci, kata sandi, dan token diganti dengan `[redacted]` | Hanya saat kamu menekan **Send** di bawah **Send logs to support**, setelah melihat semuanya. Dihapus setelah 7 hari |
+| GitHub | Login kamu, lalu permintaan untuk rilis sponsor | Saat kamu login dan saat **Updates** memeriksa |
+| Penyedia kamu | Token akun atau login Usenet kamu, dan permintaan untuk pustaka dan file kamu | Selama pustakamu berjalan |
+| debridmediamanager.com | Nama rilis kamu, untuk mengetahui isi tiap rilis, beserta kunci API DMM kamu jika kamu memasukkannya | Selama pustakamu berjalan dengan rex aktif |
+| plex.tv dan layanan metadata Plex | Permintaan kode masuk (di ponsel atau tablet, satu lagi untuk halaman masuk Plex); lalu nama server, alamat, dan id judul kamu, untuk mengambil poster dan deskripsi | Saat kamu masuk ke Plex, dan selama rex berjalan dalam keadaan sudah masuk |
+| debridmediamanager.com (rex-direct) | Identifier rex, token server yang diberikan Plex, alamat IP dan port-nya, agar aplikasi Plex bisa terhubung lewat HTTPS | Setelah masuk ke Plex, lalu setiap 6 jam |
+| Situs web tiap addon dan repositori yang kamu tambahkan | Apa yang diminta addon | Saat addon sinkron atau judul diputar |
+| logs.debridmediamanager.com | Versi, model perangkat, log aplikasi dan engine, serta config kamu, dengan kunci, sandi, dan token diganti dengan `[redacted]` | Hanya saat kamu menekan **Send** di bawah **Send logs to support**, setelah melihat semuanya. Dihapus setelah 7 hari |
 
-Token GitHub kamu disimpan terenkripsi di perangkat. Jika aplikasi dicopot, semua yang disimpannya ikut terhapus.
+Token GitHub kamu disimpan terenkripsi di perangkat. Menghapus aplikasi akan menghapus semua yang pernah disimpannya.
 
 ## Batasan {#limits}
 

@@ -124,15 +124,15 @@ zurg+rex no tiene anuncios ni analítica. Esto es todo lo que sale de tu disposi
 
 | Dónde | Qué | Cuándo |
 |---|---|---|
-| GitHub | Tu inicio de sesión, luego las peticiones para las versiones de los patrocinadores | Cuando inicias sesión y cuando **Updates** comprueba si hay novedades |
-| Tus proveedores | Tu token de cuenta o tu inicio de sesión de Usenet, y las peticiones para tu biblioteca y tus archivos | Mientras tu biblioteca está en funcionamiento |
-| debridmediamanager.com | Los nombres de tus releases, para saber qué es cada uno, con tu clave API de DMM si la introdujiste | Mientras tu biblioteca funciona con rex activado |
-| plex.tv y el servicio de metadatos de Plex | Una petición de código de inicio de sesión; luego el nombre y la dirección del servidor, y los ids de tus títulos, para obtener pósters y descripciones | Cuando inicias sesión en Plex, y mientras rex funciona con sesión iniciada |
+| GitHub | Tu inicio de sesión y luego las peticiones de las versiones de los patrocinadores | Cuando inicias sesión y cuando **Updates** busca actualizaciones |
+| Tus proveedores | Tu token de cuenta o tu acceso a Usenet, y las peticiones de tu biblioteca y tus archivos | Mientras tu biblioteca está en funcionamiento |
+| debridmediamanager.com | Los nombres de tus lanzamientos, para saber qué es cada uno, con tu clave API de DMM si la has introducido | Mientras tu biblioteca funciona con rex activado |
+| plex.tv y el servicio de metadatos de Plex | Una petición de código de inicio de sesión (en un teléfono o tableta, una segunda para la página de inicio de sesión de Plex); después, el nombre del servidor, su dirección y los ids de tus títulos, para obtener pósteres y descripciones | Cuando inicias sesión en Plex, y mientras rex funciona con la sesión iniciada |
 | debridmediamanager.com (rex-direct) | El identificador de rex, el token de servidor que te dio Plex, sus direcciones IP y su puerto, para que las apps de Plex puedan conectarse por HTTPS | Una vez que has iniciado sesión en Plex, y después cada 6 horas |
 | Los sitios web de cada addon y los repositorios que añades | Lo que pide el addon | Cuando un addon se sincroniza o se reproduce un título |
-| logs.debridmediamanager.com | Versiones, modelo del dispositivo, los logs de la app y del motor, y tu configuración, con las claves, contraseñas y tokens sustituidos por `[redacted]` | Solo cuando pulsas **Send** en **Send logs to support**, después de revisar todo. Se borran a los 7 días |
+| logs.debridmediamanager.com | Versiones, modelo del dispositivo, los registros de la app y del motor, y tu configuración, con las claves, contraseñas y tokens sustituidos por `[redacted]` | Solo cuando pulsas **Send** en **Send logs to support**, después de ver todo ello. Se borran a los 7 días |
 
-Tu token de GitHub se guarda cifrado en el dispositivo. Al desinstalar la app se borra todo lo que guardaba.
+Tu token de GitHub se guarda cifrado en el dispositivo. Al desinstalar la app se borra todo lo que había guardado.
 
 ## Límites {#limits}
 

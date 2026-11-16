@@ -120,17 +120,17 @@ Nutzen Sie das nur in einem Netzwerk, dem Sie vertrauen: Das Passwort wird unver
 
 ## Was die App sendet und wohin {#what-the-app-sends-and-where}
 
-zurg+rex hat keine Werbung und keine Analytics. Das ist alles, was dein Gerät verlässt:
+Bei zurg+rex fallen keine Werbung und keine Analysen an. Das hier ist alles, was dein Gerät verlässt:
 
 | Wohin | Was | Wann |
 |---|---|---|
-| GitHub | Deine Anmeldung, danach Anfragen für die Sponsor-Releases | Wenn du dich anmeldest und wenn **Updates** nach neuen Versionen sucht |
-| Deine Anbieter | Dein Konto-Token oder dein Usenet-Login sowie Anfragen für deine Bibliothek und Dateien | Solange deine Bibliothek läuft |
-| debridmediamanager.com | Die Namen deiner Releases, damit erkannt wird, was jedes davon ist, mit deinem DMM-API-Key, falls du einen eingegeben hast | Solange deine Bibliothek mit aktiviertem rex läuft |
-| plex.tv und Plex-Metadatendienst | Eine Anfrage für den Anmeldecode; danach der Name und die Adresse des Servers sowie die IDs deiner Titel, um Poster und Beschreibungen zu laden | Wenn du dich bei Plex anmeldest und solange rex angemeldet läuft |
-| debridmediamanager.com (rex-direct) | Die Kennung von rex, das Server-Token, das Plex ihm gegeben hat, seine IP-Adressen und sein Port, damit Plex-Apps per HTTPS darauf zugreifen können | Nach der Anmeldung bei Plex, danach alle 6 Stunden |
+| GitHub | Deine Anmeldung, danach Anfragen für die Sponsor-Releases | Wenn du dich anmeldest und wenn **Updates** nach Updates sucht |
+| Deine Anbieter | Dein Account-Token oder dein Usenet-Login sowie Anfragen für deine Bibliothek und Dateien | Während deine Bibliothek läuft |
+| debridmediamanager.com | Die Namen deiner Releases, damit erkannt wird, was jedes davon ist, mit deinem DMM-API-Key, falls du einen eingegeben hast | Während deine Bibliothek läuft und rex aktiv ist |
+| plex.tv und Plex-Metadatendienst | Eine Anfrage für einen Anmeldecode (auf einem Handy oder Tablet eine zweite für die Anmeldeseite von Plex); danach der Name und die Adresse des Servers sowie die IDs deiner Titel, um Poster und Beschreibungen abzurufen | Wenn du dich bei Plex anmeldest und während rex angemeldet läuft |
+| debridmediamanager.com (rex-direct) | Die Kennung von rex, das Server-Token, das Plex ihm gegeben hat, seine IP-Adressen und sein Port, damit Plex-Apps per HTTPS darauf zugreifen können | Sobald du bei Plex angemeldet bist, danach alle 6 Stunden |
 | Die Websites der einzelnen Addons und die Repositories, die du hinzufügst | Was das Addon anfordert | Wenn ein Addon synchronisiert oder ein Titel abgespielt wird |
-| logs.debridmediamanager.com | Versionen, Gerätemodell, die Logs von App und Engine sowie deine Konfiguration, wobei Schlüssel, Passwörter und Token durch `[redacted]` ersetzt werden | Nur wenn du unter **Send logs to support** auf **Send** drückst, nachdem du alles gesehen hast. Wird nach 7 Tagen gelöscht |
+| logs.debridmediamanager.com | Versionen, Gerätemodell, die Logs der App und der Engine sowie deine Konfiguration, wobei Keys, Passwörter und Tokens durch `[redacted]` ersetzt werden | Nur wenn du unter **Send logs to support** auf **Send** drückst, nachdem du alles gesehen hast. Wird nach 7 Tagen gelöscht |
 
 Dein GitHub-Token wird verschlüsselt auf dem Gerät gespeichert. Wenn du die App deinstallierst, wird alles gelöscht, was sie gespeichert hat.
 

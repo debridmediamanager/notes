@@ -120,19 +120,19 @@ Utilisez cette option sur un réseau de confiance : le mot de passe circule sans
 
 ## Ce que l'application envoie et où {#what-the-app-sends-and-where}
 
-zurg+rex n'a ni pub ni analytics. Voici tout ce qui quitte ton appareil :
+zurg+rex n'a ni publicité ni analytics. Voici tout ce qui quitte votre appareil :
 
 | Où | Quoi | Quand |
 |---|---|---|
-| GitHub | Ta connexion, puis des requêtes pour les releases des sponsors | Quand tu te connectes et quand **Updates** vérifie les mises à jour |
-| Tes fournisseurs | Ton token de compte ou ton login Usenet, et des requêtes pour ta bibliothèque et tes fichiers | Pendant que ta bibliothèque tourne |
-| debridmediamanager.com | Les noms de tes releases, pour savoir ce que chacune est, avec ta clé API DMM si tu en as saisi une | Pendant que ta bibliothèque tourne avec rex activé |
-| plex.tv et le service de métadonnées de Plex | Une demande de code de connexion ; puis le nom du serveur, son adresse et les ids de tes titres, pour récupérer les affiches et les descriptions | Quand tu te connectes à Plex, et pendant que rex tourne connecté |
-| debridmediamanager.com (rex-direct) | L'identifiant de rex, le token de serveur que Plex lui a donné, ses adresses IP et son port, pour que les applis Plex puissent le joindre en HTTPS | Une fois connecté à Plex, puis toutes les 6 heures |
-| Les sites de chaque addon et les dépôts que tu ajoutes | Ce que l'addon demande | Quand un addon se synchronise ou qu'un titre se lance |
-| logs.debridmediamanager.com | Versions, modèle d'appareil, les logs de l'app et du moteur, et ta config, avec les clés, mots de passe et tokens remplacés par `[redacted]` | Seulement quand tu appuies sur **Send** sous **Send logs to support**, après avoir tout vu. Supprimé au bout de 7 jours |
+| GitHub | Votre connexion, puis les requêtes pour les versions sponsor | Lors de votre connexion et quand **Updates** vérifie les mises à jour |
+| Vos fournisseurs | Votre jeton de compte ou votre identifiant Usenet, et les requêtes pour votre bibliothèque et vos fichiers | Pendant que votre bibliothèque tourne |
+| debridmediamanager.com | Les noms de vos releases, pour savoir ce que chacune est, avec votre clé API DMM si vous en avez saisi une | Pendant que votre bibliothèque tourne avec rex activé |
+| plex.tv et le service de métadonnées de Plex | Une demande de code de connexion (sur un téléphone ou une tablette, une seconde demande pour la page de connexion de Plex) ; puis le nom du serveur, son adresse et les identifiants de vos titres, pour récupérer les affiches et les descriptions | Quand vous vous connectez à Plex, et pendant que rex tourne connecté |
+| debridmediamanager.com (rex-direct) | L'identifiant de rex, le jeton de serveur que Plex lui a donné, ses adresses IP et son port, pour que les applications Plex puissent le joindre en HTTPS | Une fois connecté à Plex, puis toutes les 6 heures |
+| Les sites web de chaque addon et les dépôts que vous ajoutez | Ce que l'addon demande | Quand un addon se synchronise ou qu'un titre est lu |
+| logs.debridmediamanager.com | Versions, modèle de l'appareil, les journaux de l'application et du moteur, et votre configuration, avec les clés, mots de passe et jetons remplacés par `[redacted]` | Uniquement quand vous appuyez sur **Send** sous **Send logs to support**, après avoir tout vérifié. Supprimés au bout de 7 jours |
 
-Ton token GitHub est stocké chiffré sur l'appareil. Désinstaller l'app supprime tout ce qu'elle a gardé.
+Votre jeton GitHub est stocké chiffré sur l'appareil. Désinstaller l'application supprime tout ce qu'elle a conservé.
 
 ## Limites {#limits}
 

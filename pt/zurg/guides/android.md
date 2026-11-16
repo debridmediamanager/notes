@@ -120,19 +120,19 @@ Use isso em uma rede em que você confia: a senha viaja sem criptografia. Essa o
 
 ## O que o app envia e para onde {#what-the-app-sends-and-where}
 
-zurg+rex não tem anúncios nem analytics. Esta é a lista completa de tudo o que sai do seu dispositivo:
+zurg+rex não tem anúncios nem analytics. Esta é a lista completa do que sai do seu dispositivo:
 
 | Onde | O quê | Quando |
 |---|---|---|
-| GitHub | Seu login, depois pedidos pelas releases dos patrocinadores | Quando você faz login e quando **Updates** verifica atualizações |
-| Seus provedores | Seu token de conta ou seu login da Usenet, e pedidos pela sua biblioteca e pelos seus arquivos | Enquanto sua biblioteca estiver rodando |
-| debridmediamanager.com | Os nomes das suas releases, para descobrir o que cada uma é, com a sua chave de API do DMM se você tiver informado uma | Enquanto sua biblioteca estiver rodando com o rex ativo |
-| plex.tv e o serviço de metadados do Plex | Um pedido de código de login; depois, o nome do servidor, o endereço e os ids dos seus títulos, para buscar pôsteres e descrições | Quando você faz login no Plex, e enquanto o rex roda logado |
-| debridmediamanager.com (rex-direct) | O identificador do rex, o token de servidor que o Plex deu a ele, seus endereços IP e porta, para que os apps do Plex consigam acessá-lo por HTTPS | Depois de fazer login no Plex e, depois disso, a cada 6 horas |
-| Os sites de cada addon e os repositórios que você adiciona | O que o addon pede | Quando um addon sincroniza ou quando um título é reproduzido |
-| logs.debridmediamanager.com | Versões, modelo do dispositivo, os logs do app e do engine e sua configuração, com chaves, senhas e tokens substituídos por `[redacted]` | Só quando você pressiona **Send** em **Send logs to support**, depois de ver tudo. Excluído após 7 dias |
+| GitHub | Seu login, depois pedidos pelas versões de patrocinadores | Quando você faz login e quando **Updates** verifica atualizações |
+| Seus provedores | Seu token de conta ou seu login de Usenet, e pedidos pela sua biblioteca e pelos arquivos | Enquanto sua biblioteca estiver rodando |
+| debridmediamanager.com | Os nomes dos seus lançamentos, para descobrir o que cada um é, com sua chave de API do DMM se você tiver informado uma | Enquanto sua biblioteca estiver rodando com o rex ligado |
+| plex.tv e o serviço de metadados do Plex | Um pedido de código de login (em celular ou tablet, um segundo para a página de login do Plex); depois o nome do servidor, o endereço e os ids dos seus títulos, para buscar pôsteres e descrições | Quando você faz login no Plex, e enquanto o rex roda logado |
+| debridmediamanager.com (rex-direct) | O identificador do rex, o token de servidor que o Plex deu a ele, seus endereços IP e porta, para que os apps do Plex consigam chegar até ele por HTTPS | Depois de logar no Plex, e a cada 6 horas |
+| Os sites de cada addon e os repositórios que você adiciona | O que o addon pedir | Quando um addon sincroniza ou um título é reproduzido |
+| logs.debridmediamanager.com | Versões, modelo do dispositivo, os logs do app e do engine, e sua configuração, com chaves, senhas e tokens substituídos por `[redacted]` | Somente quando você pressiona **Send** em **Send logs to support**, depois de ver tudo. Excluído após 7 dias |
 
-Seu token do GitHub é armazenado criptografado no dispositivo. Desinstalar o app apaga tudo o que ele guardou.
+Seu token do GitHub fica armazenado criptografado no dispositivo. Desinstalar o app apaga tudo o que ele guardou.
 
 ## Limites {#limits}
 
