@@ -133,7 +133,7 @@ zurg+rex has no ads and no analytics. This is everything that leaves your device
 | GitHub | Your sign-in, then requests for the sponsor releases | When you sign in and when **Updates** checks |
 | Your providers | Your account token or Usenet login, and requests for your library and files | While your library runs |
 | debridmediamanager.com | The names of your releases, to learn what each one is, with your DMM API key if you entered it | While your library runs with rex on |
-| plex.tv and Plex's metadata service | A sign-in code request; then the server's name, address and the ids of your titles, to fetch posters and descriptions | When you sign in to Plex, and while rex runs signed in |
+| plex.tv and Plex's metadata service | A sign-in code request (on a phone or tablet, a second one for Plex's sign-in page); then the server's name, address and the ids of your titles, to fetch posters and descriptions | When you sign in to Plex, and while rex runs signed in |
 | debridmediamanager.com (rex-direct) | rex's identifier, the server token Plex gave it, its IP addresses and port, so Plex apps can reach it over HTTPS | Once signed in to Plex, then every 6 hours |
 | Each addon's websites and the repositories you add | What the addon asks for | When an addon syncs or a title plays |
 | logs.debridmediamanager.com | Versions, device model, the app's and engine's logs and your config, with keys, passwords and tokens replaced by `[redacted]` | Only when you press **Send** under **Send logs to support**, after seeing all of it. Deleted after 7 days |
