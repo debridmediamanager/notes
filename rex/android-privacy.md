@@ -6,7 +6,7 @@ visibility: hidden
 
 # rex for Android: privacy policy
 
-*Last updated: 14 November 2026.*
+*Last updated: 16 November 2026.*
 
 rex for Android runs a media server on your device. It has no account with us, no ads and no
 analytics, and it does not send us your library, your viewing or anything about you, except
@@ -16,7 +16,7 @@ for rex-direct and the logs you choose to send, both named below.
 
 | Where | What | When |
 |---|---|---|
-| **plex.tv** (Plex, Inc.) | A sign-in code request with a random app identifier and this server's name; then, once you approve it, a one-time request for a claim code | When you choose Sign in to Plex |
+| **plex.tv** (Plex, Inc.) | A sign-in code request (on a phone or tablet, a second one for Plex's sign-in page) with a random app identifier and this server's name; then, once you approve one, a one-time request for a claim code | When you choose Sign in to Plex |
 | **plex.tv** | The server's name, identifier, version and the addresses the Plex apps can reach it at | While rex runs and is signed in, as any Plex server reports itself |
 | **Plex's metadata service** | The ids of the titles your addons add, to fetch posters and descriptions | While rex runs and is signed in |
 | **debridmediamanager.com** (rex-direct) | The server's identifier, the server token Plex gave it, its local and public IP addresses and its port | Once signed in, then every 6 hours, so the Plex apps can reach rex over HTTPS away from home |
