@@ -27,7 +27,7 @@ Pick one way. Each one keeps rex up to date its own way.
 | Way | Good for |
 |---|---|
 | Google Play | Phones, tablets, Android TV and Google TV. Coming soon |
-| Amazon Appstore | Fire TV and Fire tablets. Coming soon |
+| [Amazon Appstore](https://www.amazon.com/dp/B0HRQM5GGW) | Fire TV and Fire tablets |
 | [Obtainium](#with-obtainium) | Phones and tablets. It tells you when an update is out |
 | [Downloader](#with-downloader-on-fire-tv) | Fire TV and TV boxes |
 | [The file from GitHub](#the-file-from-github) | Any device. You install updates yourself |
