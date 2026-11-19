@@ -16,19 +16,19 @@ rex for Android は無料です。debrid アカウントや Usenet も使いた�
 
 ## ステップ 1. アプリを入手する {#step-1-get-the-app}
 
-選べる方法は1つです。それぞれ独自の方法で rex を最新の状態に保ちます。
+選び方は一つだけにしてください。どの方法でも、rex の更新の仕方がそれぞれ違います。
 
 | 方法 | 向いている用途 |
 |---|---|
-| Google Play | スマートフォン、タブレット、Android TV、Google TV。近日公開 |
-| Amazon Appstore | Fire TV と Fire タブレット。近日公開 |
-| [Obtainium](#with-obtainium) | スマートフォンとタブレット。アップデートが出ると知らせてくれます |
+| Google Play | スマホ、タブレット、Android TV、Google TV。近日公開 |
+| [Amazon Appstore](https://www.amazon.com/dp/B0HRQM5GGW) | Fire TV と Fire タブレット |
+| [Obtainium](#with-obtainium) | スマホとタブレット。アップデートが出ると知らせてくれます |
 | [Downloader](#with-downloader-on-fire-tv) | Fire TV とテレビボックス |
-| [GitHub のファイルを使う](#the-file-from-github) | どのデバイスでも。アップデートは自分でインストールします |
+| [GitHub のファイルを使う](#the-file-from-github) | どの端末でも。更新は自分でインストールします |
 
-**方法は混ぜて使えません。** Google Play、Amazon Appstore、GitHub のファイル（Obtainium と Downloader もこれをインストールします）は署名の仕組みが異なるため、ある方法でインストールしたものを別の方法で更新することはできません。方法を切り替えるには、rex をアンインストールし、手順 2 と 3 をやり直してから、アドオンをもう一度インストールしてください。
+**方法は混ぜられません。** Google Play、Amazon Appstore、GitHub のファイル（Obtainium や Downloader でインストールするものも含む）は署名の仕方が違うため、ある方法でインストールした rex を別の方法で更新することはできません。方法を切り替えるには、rex をアンインストールして、手順 2 と 3 をやり直し、アドオンもインストールし直してください。
 
-**最初から入っているアドオンが異なります。** GitHub のファイルでは、[rex-addons](https://github.com/debridmediamanager/rex-addons) リポジトリが最初から追加されています。ストア版では Internet Archive アドオンだけが最初から入っています。rex-addons も使いたい場合は、自分で追加してください（[アドオン](#addons)を参照）。
+**最初から入っているアドオンが違います。** GitHub のファイルでは、最初から [rex-addons](https://github.com/debridmediamanager/rex-addons) リポジトリが追加されています。ストア版では Internet Archive アドオンだけが最初から入っています。rex-addons も使いたい場合は、自分で追加してください（[アドオン](#addons)を参照）。
 
 ### Obtainium を使う {#with-obtainium}
 

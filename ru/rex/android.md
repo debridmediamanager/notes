@@ -16,19 +16,19 @@ rex для Android бесплатен. Хотите добавить в него
 
 ## Шаг 1. Установите приложение {#step-1-get-the-app}
 
-Выберите один способ. Каждый обновляет rex по-своему.
+Выберите один способ. Каждый из них обновляет rex по-своему.
 
 | Способ | Подходит для |
 |---|---|
-| Google Play | Телефоны, планшеты, Android TV и Google TV. Скоро |
-| Amazon Appstore | Fire TV и планшеты Fire. Скоро |
-| [Obtainium](#with-obtainium) | Телефоны и планшеты. Сообщает, когда выходит обновление |
-| [Downloader](#with-downloader-on-fire-tv) | Fire TV и ТВ-приставки |
-| [Файл с GitHub](#the-file-from-github) | Любое устройство. Обновления вы устанавливаете сами |
+| Google Play | Телефонов, планшетов, Android TV и Google TV. Скоро появится |
+| [Amazon Appstore](https://www.amazon.com/dp/B0HRQM5GGW) | Fire TV и планшетов Fire |
+| [Obtainium](#with-obtainium) | Телефонов и планшетов. Сообщает, когда выходит обновление |
+| [Downloader](#with-downloader-on-fire-tv) | Fire TV и ТВ-боксов |
+| [Файл с GitHub](#the-file-from-github) | Любых устройств. Обновления вы устанавливаете сами |
 
-**Способы нельзя смешивать.** Google Play, Amazon Appstore и файл с GitHub (который также устанавливают Obtainium и Downloader) подписаны по-разному, поэтому один не может обновить другой. Чтобы переключиться, удалите rex, повторите Шаги 2 и 3 и установите аддоны заново.
+**Способы не смешиваются.** Google Play, Amazon Appstore и файл с GitHub (который также устанавливают Obtainium и Downloader) подписаны по-разному, поэтому один не может обновить другой. Чтобы сменить способ, удалите rex, заново выполните Шаги 2 и 3 и установите аддоны заново.
 
-**Они стартуют с разных аддонов.** Версия с GitHub стартует с уже добавленным репозиторием [rex-addons](https://github.com/debridmediamanager/rex-addons). Версии из магазинов стартуют только с аддоном Internet Archive; добавьте rex-addons сами (см. [Дополнения](#addons)), если он вам нужен.
+**Начинаются они с разными аддонами.** Файл с GitHub сразу добавляет репозиторий [rex-addons](https://github.com/debridmediamanager/rex-addons). Версии из магазинов начинаются только с аддона Internet Archive; если хотите rex-addons, добавьте его сами (см. [Дополнения](#addons)).
 
 ### С помощью Obtainium {#with-obtainium}
 

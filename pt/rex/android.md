@@ -18,17 +18,17 @@ O rex para Android é gratuito. Quer colocar suas contas de debrid e Usenet nele
 
 Escolha um jeito. Cada um mantém o rex atualizado do seu próprio jeito.
 
-| Jeito | Indicado para |
+| Jeito | Ideal para |
 |---|---|
 | Google Play | Celulares, tablets, Android TV e Google TV. Em breve |
-| Amazon Appstore | Fire TV e tablets Fire. Em breve |
+| [Amazon Appstore](https://www.amazon.com/dp/B0HRQM5GGW) | Fire TV e tablets Fire |
 | [Obtainium](#with-obtainium) | Celulares e tablets. Ele avisa quando sai uma atualização |
 | [Downloader](#with-downloader-on-fire-tv) | Fire TV e TV boxes |
 | [O arquivo do GitHub](#the-file-from-github) | Qualquer dispositivo. Você instala as atualizações por conta própria |
 
 **Os jeitos não se misturam.** O Google Play, a Amazon Appstore e o arquivo do GitHub (que o Obtainium e o Downloader também instalam) são assinados de forma diferente, então um não consegue atualizar o outro. Para trocar, desinstale o rex, refaça os Passos 2 e 3 e instale seus addons de novo.
 
-**Eles começam com addons diferentes.** O arquivo do GitHub começa com o repositório [rex-addons](https://github.com/debridmediamanager/rex-addons) já adicionado. As versões das lojas começam só com o addon do Internet Archive; adicione o rex-addons por conta própria (veja [Complementos](#addons)) se quiser usá-lo.
+**Eles começam com addons diferentes.** O arquivo do GitHub começa com o repositório [rex-addons](https://github.com/debridmediamanager/rex-addons) já adicionado. As versões da loja começam só com o addon do Internet Archive; adicione o rex-addons você mesmo (veja [Complementos](#addons)) se quiser usá-lo.
 
 ### Com o Obtainium {#with-obtainium}
 

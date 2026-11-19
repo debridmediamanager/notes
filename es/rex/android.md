@@ -20,13 +20,13 @@ Elige una forma. Cada una mantiene rex actualizado a su manera.
 
 | Forma | Ideal para |
 |---|---|
-| Google Play | Teléfonos, tabletas, Android TV y Google TV. Próximamente |
-| Amazon Appstore | Fire TV y tabletas Fire. Próximamente |
-| [Obtainium](#with-obtainium) | Teléfonos y tabletas. Te avisa cuando sale una actualización |
+| Google Play | Teléfonos, tablets, Android TV y Google TV. Próximamente |
+| [Amazon Appstore](https://www.amazon.com/dp/B0HRQM5GGW) | Fire TV y tablets Fire |
+| [Obtainium](#with-obtainium) | Teléfonos y tablets. Te avisa cuando sale una actualización |
 | [Downloader](#with-downloader-on-fire-tv) | Fire TV y cajas de TV |
 | [El archivo de GitHub](#the-file-from-github) | Cualquier dispositivo. Tú instalas las actualizaciones |
 
-**Las formas no se mezclan.** Google Play, Amazon Appstore y el archivo de GitHub (que Obtainium y Downloader también instalan) están firmados de forma distinta, así que una no puede actualizar a otra. Para cambiar, desinstala rex, repite los Pasos 2 y 3 y vuelve a instalar tus addons.
+**Las formas no se mezclan.** Google Play, la Amazon Appstore y el archivo de GitHub (que también instalan Obtainium y Downloader) están firmados de forma diferente, así que una no puede actualizar a otra. Para cambiar, desinstala rex, vuelve a hacer los Pasos 2 y 3 e instala otra vez tus addons.
 
 **Empiezan con addons distintos.** El archivo de GitHub empieza con el repositorio [rex-addons](https://github.com/debridmediamanager/rex-addons) ya agregado. Las versiones de la tienda empiezan solo con el addon de Internet Archive; agrega rex-addons tú mismo (consulta [Complementos](#addons)) si lo quieres.
 

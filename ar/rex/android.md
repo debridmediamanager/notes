@@ -16,19 +16,19 @@ rex for Android مجاني. هل تريد أن تضيف إليه حسابات de
 
 ## الخطوة 1. احصل على التطبيق {#step-1-get-the-app}
 
-اختر طريقة واحدة. كل طريقة تُبقي rex محدّثًا بطريقتها الخاصة.
+اختر طريقة واحدة. كل طريقة تُبقي rex محدَّثًا بطريقتها الخاصة.
 
 | الطريقة | مناسبة لـ |
 |---|---|
 | Google Play | الهواتف والأجهزة اللوحية وAndroid TV وGoogle TV. قريبًا |
-| Amazon Appstore | Fire TV وأجهزة Fire اللوحية. قريبًا |
-| [Obtainium](#with-obtainium) | الهواتف والأجهزة اللوحية. يخبرك عندما يتوفر تحديث |
-| [Downloader](#with-downloader-on-fire-tv) | Fire TV وصناديق التلفزيون |
-| [الملف من GitHub](#the-file-from-github) | أي جهاز. تثبّت التحديثات بنفسك |
+| [Amazon Appstore](https://www.amazon.com/dp/B0HRQM5GGW) | أجهزة Fire TV وأجهزة Fire اللوحية |
+| [Obtainium](#with-obtainium) | الهواتف والأجهزة اللوحية. يخبرك عندما يصدر تحديث |
+| [Downloader](#with-downloader-on-fire-tv) | أجهزة Fire TV وصناديق التلفزيون |
+| [الملف من GitHub](#the-file-from-github) | أي جهاز. أنت تثبّت التحديثات بنفسك |
 
-**الطرق لا تُخلَط.** Google Play وAmazon Appstore والملف من GitHub (الذي يثبّته Obtainium وDownloader أيضًا) موقّعة بطرق مختلفة، لذلك لا يستطيع أحدها تحديث الآخر. للتبديل، أزل rex، ثم أعد تنفيذ الخطوتين 2 و3 وأعد تثبيت الإضافات.
+**الطرق لا تُخلط.** Google Play وAmazon Appstore وملف GitHub (الذي يثبّته Obtainium وDownloader أيضًا) موقَّعة بطرق مختلفة، لذلك لا يستطيع أحدها تحديث الآخر. للتبديل، احذف rex، ثم أعد تنفيذ الخطوتين 2 و3 وثبّت الإضافات من جديد.
 
-**تبدأ الطرق بإضافات مختلفة.** يبدأ الملف من GitHub ومعه مستودع [rex-addons](https://github.com/debridmediamanager/rex-addons) مضافًا. أما نسخ المتاجر فتبدأ بإضافة Internet Archive فقط؛ أضف rex-addons بنفسك (انظر [الإضافات](#addons)) إن أردته.
+**كل طريقة تبدأ بإضافات مختلفة.** ملف GitHub يبدأ ومستودع [rex-addons](https://github.com/debridmediamanager/rex-addons) مُضاف. نسخ المتاجر تبدأ بإضافة Internet Archive فقط؛ أضف rex-addons بنفسك (انظر [الإضافات](#addons)) إذا أردته.
 
 ### باستخدام Obtainium {#with-obtainium}
 

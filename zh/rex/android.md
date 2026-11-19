@@ -16,19 +16,19 @@ rex for Android 是免费的。如果你也想把 debrid 账户和 Usenet 加进
 
 ## 第 1 步：获取应用 {#step-1-get-the-app}
 
-选一种方式。每种方式都有自己的更新办法，让 rex 保持最新。
+选一种方式。每种方式都有自己的更新方法来让 rex 保持最新。
 
 | 方式 | 适合 |
 |---|---|
 | Google Play | 手机、平板、Android TV 和 Google TV。即将推出 |
-| Amazon Appstore | Fire TV 和 Fire 平板。即将推出 |
-| [Obtainium](#with-obtainium) | 手机和平板。有更新时会提醒你 |
+| [Amazon Appstore](https://www.amazon.com/dp/B0HRQM5GGW) | Fire TV 和 Fire 平板 |
+| [Obtainium](#with-obtainium) | 手机和平板。有更新时会通知你 |
 | [Downloader](#with-downloader-on-fire-tv) | Fire TV 和电视盒子 |
-| [GitHub 上的文件](#the-file-from-github) | 任何设备。更新需要你自己安装 |
+| [从 GitHub 下载文件](#the-file-from-github) | 任何设备。更新需要你自己安装 |
 
-**这几种方式不能混用。** Google Play、Amazon Appstore 和 GitHub 上的文件（Obtainium 和 Downloader 安装的也是这个）使用的签名不同，所以一种无法更新另一种。要切换的话，先卸载 rex，然后重新完成第 2 步和第 3 步，并重新安装你的插件。
+**这些方式不能混用。** Google Play、Amazon Appstore 和来自 GitHub 的文件（Obtainium 和 Downloader 也会安装这个文件）使用的签名不同，所以一种方式无法更新另一种安装的版本。要切换的话，先卸载 rex，再重新执行第 2 步和第 3 步，然后重新安装你的插件。
 
-**它们一开始带的插件也不同。** GitHub 上的文件一开始就已经添加了 [rex-addons](https://github.com/debridmediamanager/rex-addons) 仓库。应用商店版本一开始只有 Internet Archive 插件；如果你想要 rex-addons，请自己添加（见 [插件](#addons)）。
+**它们默认带的插件不同。** 来自 GitHub 的文件默认已添加 [rex-addons](https://github.com/debridmediamanager/rex-addons) 仓库。应用商店版本默认只有 Internet Archive 插件；如果你需要 rex-addons，请自己添加（见 [附加组件](#addons)）。
 
 ### 使用 Obtainium {#with-obtainium}
 

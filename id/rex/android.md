@@ -21,14 +21,14 @@ Pilih satu cara. Setiap cara memperbarui rex dengan caranya sendiri.
 | Cara | Cocok untuk |
 |---|---|
 | Google Play | Ponsel, tablet, Android TV dan Google TV. Segera hadir |
-| Amazon Appstore | Fire TV dan tablet Fire. Segera hadir |
-| [Obtainium](#with-obtainium) | Ponsel dan tablet. Memberi tahu saat ada pembaruan |
+| [Amazon Appstore](https://www.amazon.com/dp/B0HRQM5GGW) | Fire TV dan tablet Fire |
+| [Obtainium](#with-obtainium) | Ponsel dan tablet. Obtainium memberi tahu kamu saat ada pembaruan |
 | [Downloader](#with-downloader-on-fire-tv) | Fire TV dan kotak TV |
-| [File dari GitHub](#the-file-from-github) | Perangkat apa saja. Anda memasang pembaruan sendiri |
+| [File dari GitHub](#the-file-from-github) | Perangkat apa pun. Kamu sendiri yang memasang pembaruan |
 
-**Cara-cara ini tidak bisa dicampur.** Google Play, Amazon Appstore, dan file dari GitHub (yang juga dipasang oleh Obtainium dan Downloader) ditandatangani dengan cara berbeda, jadi yang satu tidak bisa memperbarui yang lain. Untuk berpindah, copot rex, lakukan Langkah 2 dan 3 lagi, lalu pasang ulang addon Anda.
+**Cara-cara ini tidak bisa dicampur.** Google Play, Amazon Appstore dan file dari GitHub (yang juga dipasang oleh Obtainium dan Downloader) ditandatangani dengan cara yang berbeda, jadi yang satu tidak bisa memperbarui yang lain. Untuk pindah, hapus rex, lakukan lagi Langkah 2 dan 3, lalu pasang ulang addon kamu.
 
-**Cara-cara ini dimulai dengan addon yang berbeda.** File dari GitHub dimulai dengan repositori [rex-addons](https://github.com/debridmediamanager/rex-addons) sudah ditambahkan. Versi dari toko hanya dimulai dengan addon Internet Archive; tambahkan rex-addons sendiri (lihat [Add-on](#addons)) jika Anda menginginkannya.
+**Cara-cara ini juga dimulai dengan addon yang berbeda.** File dari GitHub dimulai dengan repositori [rex-addons](https://github.com/debridmediamanager/rex-addons) yang sudah ditambahkan. Versi di toko hanya dimulai dengan addon Internet Archive; tambahkan rex-addons sendiri (lihat [Add-on](#addons)) jika kamu menginginkannya.
 
 ### Dengan Obtainium {#with-obtainium}
 

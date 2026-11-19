@@ -16,19 +16,19 @@ rex pour Android est gratuit. Vous voulez aussi y intégrer vos comptes debrid e
 
 ## Étape 1. Installer l'application {#step-1-get-the-app}
 
-Choisissez une seule méthode. Chacune garde rex à jour à sa façon.
+Choisissez une seule façon. Chacune met rex à jour à sa manière.
 
-| Méthode | Idéal pour |
+| Façon | Idéal pour |
 |---|---|
 | Google Play | Téléphones, tablettes, Android TV et Google TV. Bientôt disponible |
-| Amazon Appstore | Fire TV et tablettes Fire. Bientôt disponible |
+| [Amazon Appstore](https://www.amazon.com/dp/B0HRQM5GGW) | Fire TV et tablettes Fire |
 | [Obtainium](#with-obtainium) | Téléphones et tablettes. Il vous prévient quand une mise à jour sort |
 | [Downloader](#with-downloader-on-fire-tv) | Fire TV et boîtiers TV |
 | [Le fichier depuis GitHub](#the-file-from-github) | Tous les appareils. Vous installez les mises à jour vous-même |
 
-**Les méthodes ne se mélangent pas.** Google Play, l'Amazon Appstore et le fichier depuis GitHub (que Obtainium et Downloader installent aussi) sont signés différemment, donc l'une ne peut pas mettre à jour une autre. Pour changer de méthode, désinstallez rex, refaites les étapes 2 et 3, puis réinstallez vos addons.
+**Les façons ne se mélangent pas.** Google Play, l'Amazon Appstore et le fichier depuis GitHub (que Obtainium et Downloader installent aussi) sont signés différemment, donc l'une ne peut pas mettre à jour une autre. Pour changer, désinstallez rex, refaites les étapes 2 et 3, puis réinstallez vos addons.
 
-**Elles commencent avec des addons différents.** Le fichier depuis GitHub commence avec le dépôt [rex-addons](https://github.com/debridmediamanager/rex-addons) déjà ajouté. Les versions des stores commencent seulement avec l'addon Internet Archive ; ajoutez rex-addons vous-même (voir [Modules complémentaires](#addons)) si vous le souhaitez.
+**Elles ne démarrent pas avec les mêmes addons.** Le fichier depuis GitHub démarre avec le dépôt [rex-addons](https://github.com/debridmediamanager/rex-addons) déjà ajouté. Les versions du store commencent uniquement avec l'addon Internet Archive ; ajoutez rex-addons vous-même (voir [Modules complémentaires](#addons)) si vous le voulez.
 
 ### Avec Obtainium {#with-obtainium}
 

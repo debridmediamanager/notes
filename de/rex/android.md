@@ -16,19 +16,19 @@ rex für Android ist kostenlos. Willst du deine Debrid-Konten und Usenet dort au
 
 ## Schritt 1: Die App holen {#step-1-get-the-app}
 
-Wähle einen Weg. Jeder hält rex auf seine eigene Art aktuell.
+Wähle einen Weg. Jeder hält rex auf seine eigene Art auf dem neuesten Stand.
 
 | Weg | Geeignet für |
 |---|---|
-| Google Play | Handys, Tablets, Android TV und Google TV. Kommt bald |
-| Amazon Appstore | Fire TV und Fire-Tablets. Kommt bald |
-| [Obtainium](#with-obtainium) | Handys und Tablets. Es sagt dir, wenn ein Update da ist |
+| Google Play | Telefone, Tablets, Android TV und Google TV. Kommt bald |
+| [Amazon Appstore](https://www.amazon.com/dp/B0HRQM5GGW) | Fire TV und Fire-Tablets |
+| [Obtainium](#with-obtainium) | Telefone und Tablets. Es sagt dir Bescheid, wenn ein Update da ist |
 | [Downloader](#with-downloader-on-fire-tv) | Fire TV und TV-Boxen |
-| [Die Datei von GitHub](#the-file-from-github) | Jedes Gerät. Du installierst Updates selbst |
+| [Die Datei von GitHub](#the-file-from-github) | Jedes Gerät. Updates installierst du selbst |
 
-**Die Wege lassen sich nicht mischen.** Google Play, der Amazon Appstore und die Datei von GitHub (die Obtainium und Downloader ebenfalls installieren) sind unterschiedlich signiert, daher kann das eine das andere nicht aktualisieren. Zum Wechseln deinstallierst du rex, führst Schritt 2 und 3 erneut aus und installierst deine Addons wieder.
+**Die Wege lassen sich nicht mischen.** Google Play, der Amazon Appstore und die Datei von GitHub (die auch Obtainium und Downloader installieren) sind unterschiedlich signiert, daher kann das eine das andere nicht aktualisieren. Zum Wechseln deinstallierst du rex, führst Schritt 2 und 3 erneut aus und installierst deine Addons wieder.
 
-**Sie starten mit unterschiedlichen Addons.** Die Datei von GitHub startet mit bereits hinzugefügtem [rex-addons](https://github.com/debridmediamanager/rex-addons)-Repository. Die Store-Versionen starten nur mit dem Internet Archive-Addon; füge rex-addons selbst hinzu (siehe [Add-ons](#addons)), wenn du es willst.
+**Sie starten mit unterschiedlichen Addons.** Die Datei von GitHub startet mit dem hinzugefügten [rex-addons](https://github.com/debridmediamanager/rex-addons)-Repository. Die Store-Versionen starten nur mit dem Internet-Archive-Addon; füge rex-addons selbst hinzu (siehe [Add-ons](#addons)), wenn du es willst.
 
 ### Mit Obtainium {#with-obtainium}
 
